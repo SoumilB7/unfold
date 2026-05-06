@@ -1,0 +1,7 @@
+
+[dev]
+pytest>=7
+transformers>=4.40
+
+[hf]
+transformers>=4.40

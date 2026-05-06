@@ -1,0 +1,18 @@
+Metadata-Version: 2.4
+Name: unfold
+Version: 0.2.0
+Summary: Unfold any HuggingFace transformer into an interactive architecture diagram, inline in Jupyter.
+Author: unfold contributors
+License: MIT
+Keywords: transformers,visualization,llm,architecture,jupyter
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Framework :: Jupyter
+Classifier: Topic :: Scientific/Engineering :: Visualization
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: hf
+Requires-Dist: transformers>=4.40; extra == "hf"
+Provides-Extra: dev
+Requires-Dist: pytest>=7; extra == "dev"
+Requires-Dist: transformers>=4.40; extra == "dev"

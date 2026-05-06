@@ -1,35 +1,38 @@
-"""transformer_viz — auto-generated architecture diagrams for HF transformer models.
+"""unfold — turn any HuggingFace transformer into a clear architecture diagram.
 
 Quick start in a Jupyter notebook::
 
-    from transformer_viz import visualize
-    visualize("moonshotai/Kimi-K2-Instruct")
+    from unfold import unfold
+    unfold("moonshotai/Kimi-K2-Instruct")
 
 Outside Jupyter::
 
-    diagram = visualize(cfg)
+    diagram = unfold(cfg)
     diagram.save("kimi_k2.html")
 """
-from .diagram import TransformerDiagram
+from .diagram import Diagram
 from .parser import config_to_ir
 from .ir import ModelIR, LayerSpec, AttentionSpec, FFNSpec, CrossLayerEdge
+from .params import estimate_params
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
-    "visualize",
-    "TransformerDiagram",
+    "unfold",
+    "show",
+    "Diagram",
     "ModelIR",
     "LayerSpec",
     "AttentionSpec",
     "FFNSpec",
     "CrossLayerEdge",
     "config_to_ir",
+    "estimate_params",
 ]
 
 
-def visualize(cfg_or_id) -> TransformerDiagram:
-    """Render a transformer architecture diagram.
+def unfold(cfg_or_id) -> Diagram:
+    """Unfold a transformer into a renderable architecture diagram.
 
     Parameters
     ----------
@@ -40,8 +43,12 @@ def visualize(cfg_or_id) -> TransformerDiagram:
 
     Returns
     -------
-    TransformerDiagram
+    Diagram
         Renders inline in Jupyter; otherwise call ``.save()`` or ``.to_html()``.
     """
     ir = config_to_ir(cfg_or_id)
-    return TransformerDiagram(ir)
+    return Diagram(ir)
+
+
+# friendly alias
+show = unfold

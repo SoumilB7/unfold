@@ -4,7 +4,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from transformer_viz import visualize
+from unfold import unfold
 
 KIMI_K2_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -74,7 +74,7 @@ LLAMA3_8B_CONFIG = {
 
 
 def test_kimi_k2():
-    d = visualize(KIMI_K2_CONFIG)
+    d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
     assert ir["name"] == "Kimi-K2-Instruct"
     assert ir["vocab_size"] == 163840
@@ -84,19 +84,23 @@ def test_kimi_k2():
     assert ir["layers"][1]["ffn"]["num_experts"] == 384
     assert ir["layers"][0]["attention"]["kind"] == "mla"
 
+    # param estimates surface on the IR
+    assert ir["params"]["is_sparse"] is True
+    assert ir["params"]["total"] > ir["params"]["active"]
+
     html = d.to_html(standalone=True)
     assert "<!doctype html>" in html.lower()
-    assert "TransformerViz" in html
+    assert "Unfold" in html
 
     fragment = d._repr_html_()
     assert "<script>" in fragment
     assert d._mount_id in fragment
 
-    print("Kimi K2 OK")
+    print(f"Kimi K2 OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")
 
 
 def test_deepseek_v3_phase_change():
-    d = visualize(DEEPSEEK_V3_CONFIG)
+    d = unfold(DEEPSEEK_V3_CONFIG)
     ir = d.to_ir()
     assert len(ir["layers"]) == 61
     for i in range(3):
@@ -104,18 +108,19 @@ def test_deepseek_v3_phase_change():
     for i in range(3, 61):
         assert ir["layers"][i]["ffn"]["kind"] == "moe"
     assert ir["layers"][3]["ffn"]["num_experts"] == 256
-    print("DeepSeek-V3 phase change OK")
+    print(f"DeepSeek-V3 phase change OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")
 
 
 def test_llama3():
-    d = visualize(LLAMA3_8B_CONFIG)
+    d = unfold(LLAMA3_8B_CONFIG)
     ir = d.to_ir()
     assert len(ir["layers"]) == 32
     assert ir["layers"][0]["attention"]["kind"] == "gqa"
     assert ir["layers"][0]["attention"]["num_heads"] == 32
     assert ir["layers"][0]["attention"]["num_kv_heads"] == 8
     assert ir["layers"][0]["ffn"]["kind"] == "dense"
-    print("Llama-3 OK")
+    assert ir["params"]["is_sparse"] is False
+    print(f"Llama-3 OK  — ~{ir['params']['total_h']} params")
 
 
 if __name__ == "__main__":
