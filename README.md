@@ -28,6 +28,11 @@ from unfold import unfold
 # By model ID (needs `transformers` installed)
 unfold("meta-llama/Meta-Llama-3-8B")
 
+# Gated/private model IDs use auth only for config loading.
+# `HF_TOKEN` is picked up automatically, or pass a token explicitly:
+unfold("meta-llama/Meta-Llama-3-8B-Instruct")
+unfold("meta-llama/Meta-Llama-3-8B-Instruct", token="hf_...")
+
 # From a HF config object
 from transformers import AutoConfig
 cfg = AutoConfig.from_pretrained("deepseek-ai/DeepSeek-V3", trust_remote_code=True)

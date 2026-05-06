@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-def unfold(cfg_or_id) -> Diagram:
+def unfold(cfg_or_id, token=None) -> Diagram:
     """Unfold a transformer into a renderable architecture diagram.
 
     Parameters
@@ -40,13 +40,17 @@ def unfold(cfg_or_id) -> Diagram:
         A HuggingFace ``PretrainedConfig`` instance, a model ID string
         (e.g. ``"moonshotai/Kimi-K2-Instruct"``), or a plain ``dict`` of
         ``config.json`` contents.
+    token
+        Optional Hugging Face token used only when ``cfg_or_id`` is a model ID.
+        If omitted, ``HF_TOKEN`` and legacy Hugging Face token env vars are used
+        when present.
 
     Returns
     -------
     Diagram
         Renders inline in Jupyter; otherwise call ``.save()`` or ``.to_html()``.
     """
-    ir = config_to_ir(cfg_or_id)
+    ir = config_to_ir(cfg_or_id, token=token)
     return Diagram(ir)
 
 

@@ -16,34 +16,24 @@
   const FONT_MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace';
   const GAP = 6;
 
-  // role-based palette — different block types get visually distinct hues
-  // so the eye can find "attention" or "FFN" without reading every label.
+  // unified mint/green theme
   const C = {
-    bg_outer:    "#F4F1F8",   // pale lavender
-    bg_inner:    "#E5F0FF",   // pale azure (the "transformer block" backdrop)
+    bg_outer:    "#E1F5EE",   // pale mint  (outer card)
+    bg_inner:    "#9FE1CB",   // mint       (inner "transformer block" card)
     bg_card:     "#FFFFFF",
-    canvas:      "#FAFBFD",
+    canvas:      "#F4FBF8",
 
-    embed:       "#7C3AED",   // violet
-    norm:        "#475569",   // slate
-    attn:        "#0D9488",   // teal
-    attn_mla:    "#0F766E",   // darker teal — MLA gets its own shade
-    ffn:         "#D97706",   // amber
-    ffn_moe:     "#C2410C",   // burnt orange — MoE
-    output:      "#059669",   // emerald
-    add:         "#1F2937",   // dark slate
+    block:       "#0F6E56",   // unified dark green for all blocks
+    block_alt:   "#0E5C48",   // darker shade for stroke
     text_block:  "#FFFFFF",
 
-    arrow:       "#475569",
-    text:        "#0F172A",
-    muted:       "#64748B",
-    border:      "#E2E8F0",
-    badge_bg:    "#EEF2FF",
-    badge_text:  "#3730A3",
-    badge_warm:  "#FEF3C7",
-    badge_warm_t:"#92400E",
-    badge_cool:  "#CCFBF1",
-    badge_cool_t:"#115E59",
+    arrow:       "#0F6E56",
+    text:        "#04342C",
+    muted:       "#5F7C73",
+    border:      "#B6DDCB",
+
+    badge_bg:    "#D6F1E4",
+    badge_text:  "#0E5C48",
   };
 
   function el(tag, attrs) {
@@ -59,22 +49,6 @@
     return Number(n).toLocaleString();
   }
 
-  function fmtH(n) {
-    // human param count; matches Python's humanize()
-    if (n == null) return "?";
-    n = Number(n);
-    const units = [["T",1e12],["B",1e9],["M",1e6],["K",1e3]];
-    for (const [u, s] of units) {
-      if (n >= s) {
-        const v = n / s;
-        if (v >= 100) return v.toFixed(0) + u;
-        if (v >= 10)  return v.toFixed(1) + u;
-        return v.toFixed(2) + u;
-      }
-    }
-    return String(Math.round(n));
-  }
-
   function defs(svg) {
     const d = el("defs");
     const m = el("marker", {
@@ -87,25 +61,17 @@
     }));
     d.appendChild(m);
 
-    // soft drop shadow used on blocks
     const f = el("filter", { id: "uf-shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" });
-    f.appendChild(el("feGaussianBlur", { in: "SourceAlpha", stdDeviation: 1.2 }));
+    f.appendChild(el("feGaussianBlur", { in: "SourceAlpha", stdDeviation: 1 }));
     f.appendChild(el("feOffset", { dx: 0, dy: 1, result: "off" }));
     const ct = el("feComponentTransfer");
-    const fa = el("feFuncA", { type: "linear", slope: "0.18" });
+    const fa = el("feFuncA", { type: "linear", slope: "0.16" });
     ct.appendChild(fa); f.appendChild(ct);
     const m2 = el("feMerge");
     m2.appendChild(el("feMergeNode"));
     m2.appendChild(el("feMergeNode", { in: "SourceGraphic" }));
     f.appendChild(m2);
     d.appendChild(f);
-
-    // subtle stripe pattern for MoE blocks
-    const p = el("pattern", { id: "uf-moe-stripe", patternUnits: "userSpaceOnUse",
-                              width: 6, height: 6, patternTransform: "rotate(45)" });
-    p.appendChild(el("rect", { width: 6, height: 6, fill: C.ffn_moe }));
-    p.appendChild(el("rect", { x: 0, width: 2, height: 6, fill: "rgba(255,255,255,0.13)" }));
-    d.appendChild(p);
 
     svg.appendChild(d);
   }
@@ -120,15 +86,13 @@
 
   function rectBlock(svg, id, x, y, w, h, label, opts) {
     opts = opts || {};
-    const fontSize = opts.fontSize || 17;
-    const fill = opts.fill || C.attn;
-    const isStripe = opts.stripe;
-    const g = el("g", { class: "uf-node", "data-id": id, "data-role": opts.role || "" });
+    const fontSize = opts.fontSize || 18;
+    const g = el("g", { class: "uf-node", "data-id": id });
     g.setAttribute("style", "cursor:pointer;");
     g.appendChild(el("rect", {
       x, y, width: w, height: h, rx: 11, ry: 11,
-      fill: isStripe ? "url(#uf-moe-stripe)" : fill,
-      stroke: "rgba(15, 23, 42, 0.18)", "stroke-width": 0.6,
+      fill: C.block,
+      stroke: C.block_alt, "stroke-width": 0.6,
       filter: "url(#uf-shadow)"
     }));
     const lines = Array.isArray(label) ? label : [label];
@@ -144,22 +108,6 @@
       t.textContent = line;
       g.appendChild(t);
     });
-    if (opts.tag) {
-      const tagW = 36, tagH = 14;
-      const tx = x + w - tagW - 6, ty = y + 6;
-      g.appendChild(el("rect", {
-        x: tx, y: ty, width: tagW, height: tagH, rx: 4, ry: 4,
-        fill: "rgba(255,255,255,0.22)", stroke: "rgba(255,255,255,0.4)", "stroke-width": 0.5
-      }));
-      const tt = el("text", {
-        x: tx + tagW / 2, y: ty + tagH / 2 + 0.5,
-        "text-anchor": "middle", "dominant-baseline": "central",
-        fill: "#FFFFFF", "font-family": FONT_BODY, "font-size": 9,
-        "font-weight": 600, "letter-spacing": "0.08em", "pointer-events": "none"
-      });
-      tt.textContent = opts.tag;
-      g.appendChild(tt);
-    }
     svg.appendChild(g);
     return {
       el: g, kind: "rect",
@@ -169,10 +117,10 @@
   }
 
   function plusBlock(svg, id, cx, cy, sym) {
-    const r = 13;
+    const r = 14;
     const g = el("g", { class: "uf-node", "data-id": id, style: "cursor:pointer;" });
     g.appendChild(el("circle", {
-      cx, cy, r, fill: C.add, stroke: "rgba(255,255,255,0.6)", "stroke-width": 1,
+      cx, cy, r, fill: C.block, stroke: C.block_alt, "stroke-width": 0.6,
       filter: "url(#uf-shadow)"
     }));
     const t = el("text", {
@@ -189,28 +137,44 @@
     };
   }
 
-  function vLine(svg, fromNode, toNode, opts) {
-    opts = opts || {};
-    const line = el("line", {
-      x1: fromNode.cx, y1: fromNode.bottom,
-      x2: fromNode.cx, y2: toNode.top - GAP,
-      stroke: C.arrow, "stroke-width": 1.4, "stroke-linecap": "round",
-      "marker-end": "url(#uf-arrow)", fill: "none"
-    });
-    svg.appendChild(line);
-    if (opts.label) {
-      const midY = (fromNode.bottom + toNode.top) / 2;
-      const t = el("text", {
-        x: fromNode.cx + 10, y: midY,
-        "text-anchor": "start", "dominant-baseline": "central",
-        fill: C.muted, "font-family": FONT_MONO, "font-size": 10
-      });
-      t.textContent = opts.label;
-      svg.appendChild(t);
+  // ── arrow routing convention ────────────────────────────────────────────
+  // START coordinate is exactly ON the source block's edge (the line touches
+  // the block).  END coordinate is offset by GAP from the destination's
+  // edge, so the arrowhead sits in the gap with room to breathe and visibly
+  // points INTO the destination.
+
+  // Straight vertical arrow connecting two stacked blocks.  Auto-detects
+  // whether `from` is above or below `to` based on cy.
+  function vLine(svg, fromNode, toNode) {
+    let y1, y2;
+    if (fromNode.cy > toNode.cy) {        // from is below; arrow goes UP
+      y1 = fromNode.top;
+      y2 = toNode.bottom + GAP;
+    } else {                              // from is above; arrow goes DOWN
+      y1 = fromNode.bottom;
+      y2 = toNode.top - GAP;
     }
+    svg.appendChild(el("line", {
+      x1: fromNode.cx, y1, x2: fromNode.cx, y2,
+      stroke: C.arrow, "stroke-width": 1.6, "stroke-linecap": "round",
+      "marker-end": "url(#uf-arrow)", fill: "none"
+    }));
   }
 
-  function elbowPath(svg, x1, y1, x2, y2) {
+  // Straight vertical arrow at column `x`, from y1 to y2 (caller passes
+  // already-correct edge coordinates).
+  function vSeg(svg, x, y1, y2) {
+    svg.appendChild(el("line", {
+      x1: x, y1, x2: x, y2,
+      stroke: C.arrow, "stroke-width": 1.6, "stroke-linecap": "round",
+      "marker-end": "url(#uf-arrow)", fill: "none"
+    }));
+  }
+
+  // VH elbow: VERTICAL first, then HORIZONTAL.  Arrow ENDS horizontal —
+  // the arrowhead enters its target from the side.  Use this for
+  // "branch into the side of a +/× node" wires.
+  function elbowVH(svg, x1, y1, x2, y2) {
     let d;
     if (Math.abs(x2 - x1) < 1 || Math.abs(y2 - y1) < 1) {
       d = `M ${x1} ${y1} L ${x2} ${y2}`;
@@ -225,11 +189,36 @@
     }
     svg.appendChild(el("path", {
       d, fill: "none", stroke: C.arrow,
-      "stroke-width": 1.4, "stroke-linecap": "round", "stroke-linejoin": "round",
+      "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",
       "marker-end": "url(#uf-arrow)"
     }));
   }
 
+  // HV elbow: HORIZONTAL first, then VERTICAL.  Arrow ENDS vertical —
+  // the arrowhead enters its target from the top or bottom.  Use this for
+  // "fanned-out branch into the bottom of a block" wires.
+  function elbowHV(svg, x1, y1, x2, y2) {
+    let d;
+    if (Math.abs(x2 - x1) < 1 || Math.abs(y2 - y1) < 1) {
+      d = `M ${x1} ${y1} L ${x2} ${y2}`;
+    } else {
+      const sx = Math.sign(x2 - x1);
+      const sy = Math.sign(y2 - y1);
+      const r = Math.min(10, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2);
+      d = `M ${x1} ${y1} ` +
+          `L ${x2 - sx * r} ${y1} ` +
+          `Q ${x2} ${y1} ${x2} ${y1 + sy * r} ` +
+          `L ${x2} ${y2}`;
+    }
+    svg.appendChild(el("path", {
+      d, fill: "none", stroke: C.arrow,
+      "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",
+      "marker-end": "url(#uf-arrow)"
+    }));
+  }
+
+  // residual loop: out the right side of a block, up and around, back into
+  // the right side of a + node above.
   function residualLoopRight(svg, fromNode, toNode, lane) {
     const r = 12;
     const startX = fromNode.right;
@@ -244,30 +233,22 @@
               `L ${endX + GAP} ${endY}`;
     svg.appendChild(el("path", {
       d, fill: "none", stroke: C.arrow,
-      "stroke-width": 1.4, "stroke-linecap": "round", "stroke-linejoin": "round",
-      "stroke-dasharray": "0",
+      "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",
       "marker-end": "url(#uf-arrow)"
     }));
-    // tiny "residual" hint
-    const midY = (startY + endY) / 2;
-    const t = el("text", {
-      x: lane + 8, y: midY, "text-anchor": "start", "dominant-baseline": "central",
-      fill: C.muted, "font-family": FONT_BODY, "font-size": 10, "font-style": "italic"
-    });
-    t.textContent = "residual";
-    svg.appendChild(t);
   }
 
+  // ── description helpers (used by info panel) ───────────────────────────
   function describeAttention(a) {
     if (a.kind === "mla") {
       return `Multi-head latent attention · ${a.num_heads} heads · KV LoRA ${fmtInt(a.kv_lora_rank)}` +
              (a.q_lora_rank ? ` · Q LoRA ${fmtInt(a.q_lora_rank)}` : "");
     }
     if (a.kind === "gqa") {
-      return `Grouped-query · ${a.num_heads} Q heads / ${a.num_kv_heads} KV heads · head dim ${fmtInt(a.head_dim)}`;
+      return `Grouped-query · ${a.num_heads} Q / ${a.num_kv_heads} KV heads · head dim ${fmtInt(a.head_dim)}`;
     }
     if (a.kind === "mqa") {
-      return `Multi-query · ${a.num_heads} Q heads / 1 KV head`;
+      return `Multi-query · ${a.num_heads} Q / 1 KV head`;
     }
     return `Multi-head · ${a.num_heads} heads · head dim ${fmtInt(a.head_dim)}`;
   }
@@ -290,29 +271,21 @@
     const a = info.dominant.spec.attention;
     const f = info.dominant.spec.ffn;
 
-    if (a.kind === "mla") badges.push({ text: "MLA", tone: "cool", title: "Multi-head latent attention" });
-    else if (a.kind === "gqa") badges.push({ text: `GQA ${a.num_heads}/${a.num_kv_heads}`, tone: "cool", title: "Grouped-query attention" });
-    else if (a.kind === "mqa") badges.push({ text: "MQA", tone: "cool", title: "Multi-query attention" });
-    else badges.push({ text: "MHA", tone: "cool", title: "Multi-head attention" });
+    if (a.kind === "mla") badges.push({ text: "MLA", title: "Multi-head latent attention" });
+    else if (a.kind === "gqa") badges.push({ text: `GQA ${a.num_heads}/${a.num_kv_heads}`, title: "Grouped-query attention" });
+    else if (a.kind === "mqa") badges.push({ text: "MQA", title: "Multi-query attention" });
+    else badges.push({ text: "MHA", title: "Multi-head attention" });
 
     if (f.kind === "moe") {
       badges.push({
         text: `MoE ${f.num_experts_per_tok}/${f.num_experts}`,
-        tone: "warm",
         title: `Mixture of experts — top-${f.num_experts_per_tok} of ${f.num_experts}`
       });
     } else {
-      badges.push({ text: "Dense FFN", tone: "warm", title: "Dense feed-forward" });
+      badges.push({ text: "Dense FFN", title: "Dense feed-forward" });
     }
-
-    if (info.groups.length > 1) {
-      badges.push({ text: `${info.groups.length} layer types`, tone: "default" });
-    }
-
-    if (a.mask === "sliding") {
-      badges.push({ text: `SWA ${fmtInt(a.window_size)}`, tone: "default", title: "Sliding-window attention" });
-    }
-
+    if (info.groups.length > 1) badges.push({ text: `${info.groups.length} layer types` });
+    if (a.mask === "sliding") badges.push({ text: `SWA ${fmtInt(a.window_size)}`, title: "Sliding-window attention" });
     return badges;
   }
 
@@ -336,8 +309,7 @@
     const f = dominant.spec.ffn;
 
     return {
-      groups,
-      dominant,
+      groups, dominant,
       meta: {
         tok_text: ["Tokenized text", "Input token IDs · shape [batch, seq_len]"],
         embed: ["Token embedding", `${fmtInt(ir.vocab_size)} × ${fmtInt(ir.hidden_size)}` +
@@ -355,60 +327,45 @@
     };
   }
 
+  // ── architecture view ───────────────────────────────────────────────────
   function buildArchitectureView(ir, info) {
     const W = 720, H = 1080;
     const svg = el("svg", { width: "100%", viewBox: `0 0 ${W} ${H}`, role: "img" });
     const t = el("title"); t.textContent = `${ir.name} architecture`; svg.appendChild(t);
     defs(svg);
 
-    // outer card
     svg.appendChild(regionRect(40, 30, W - 80, H - 60, C.bg_outer));
 
     const cx = W / 2;
-
-    // ── repeating transformer block ───────────────────────────────────────
     const innerX = 110, innerY = 240, innerW = W - 220, innerH = 580;
     svg.appendChild(regionRect(innerX, innerY, innerW, innerH, C.bg_inner));
 
     const a = info.dominant.spec.attention;
     const f = info.dominant.spec.ffn;
 
-    const attnLabel = a.kind === "mla" ? ["Multi-head latent", "attention"]
-                   : a.kind === "gqa" ? ["Grouped-query", "attention"]
-                   : a.kind === "mqa" ? ["Multi-query", "attention"]
-                   : ["Multi-head", "attention"];
+    const attnLabel = a.kind === "mla" ? ["Multi-Head Latent", "Attention"]
+                   : a.kind === "gqa" ? ["Grouped-Query", "Attention"]
+                   : a.kind === "mqa" ? ["Multi-Query", "Attention"]
+                   : ["Multi-Head", "Attention"];
 
-    const ffnLabel = f.kind === "moe"
-      ? [`MoE · ${fmtInt(f.num_experts)} experts`, `top-${f.num_experts_per_tok} per token`]
-      : ["Feed-forward"];
+    const ffnLabel = f.kind === "moe" ? "MoE" : "Feed-Forward";
 
-    const tokText  = rectBlock(svg, "tok_text",  cx - 110, H - 120, 220, 48, "Tokenized text",
-                               { fill: C.embed, role: "embed", fontSize: 16 });
-    const embed    = rectBlock(svg, "embed",     cx - 130, H - 200, 260, 48, "Token embedding",
-                               { fill: C.embed, role: "embed" });
+    const tokText  = rectBlock(svg, "tok_text",  cx - 110, H - 120, 220, 48, "Tokenized text", { fontSize: 18 });
+    const embed    = rectBlock(svg, "embed",     cx - 130, H - 200, 260, 48, "Token Embedding layer");
 
-    const rms1     = rectBlock(svg, "rms1",      cx - 80,  innerY + 470, 160, 38, "RMSNorm",
-                               { fill: C.norm, role: "norm", fontSize: 15 });
-    const attn     = rectBlock(svg, "attn",      cx - 115, innerY + 360, 230, 70, attnLabel,
-                               { fill: a.kind === "mla" ? C.attn_mla : C.attn,
-                                 role: "attn", tag: a.kind.toUpperCase() });
+    const rms1     = rectBlock(svg, "rms1",      cx - 80,  innerY + 470, 160, 40, "RMSNorm", { fontSize: 18 });
+    const attn     = rectBlock(svg, "attn",      cx - 115, innerY + 360, 230, 70, attnLabel, { fontSize: 18 });
     const add1     = plusBlock (svg, "add1",     cx,       innerY + 320);
-    const rms2     = rectBlock(svg, "rms2",      cx - 80,  innerY + 230, 160, 38, "RMSNorm",
-                               { fill: C.norm, role: "norm", fontSize: 15 });
-    const ffn      = rectBlock(svg, "ffn",       cx - 115, innerY + 130, 230, 70, ffnLabel,
-                               { fill: f.kind === "moe" ? C.ffn_moe : C.ffn,
-                                 role: "ffn", stripe: f.kind === "moe",
-                                 tag: f.kind === "moe" ? "MOE" : "FFN" });
+    const rms2     = rectBlock(svg, "rms2",      cx - 80,  innerY + 230, 160, 40, "RMSNorm", { fontSize: 18 });
+    const ffn      = rectBlock(svg, "ffn",       cx - 80,  innerY + 130, 160, 50, ffnLabel);
     const add2     = plusBlock (svg, "add2",     cx,       innerY + 90);
 
-    const finalRms = rectBlock(svg, "final_rms", cx - 80,  170, 160, 38, "Final RMSNorm",
-                               { fill: C.norm, role: "norm", fontSize: 15 });
-    const lmHead   = rectBlock(svg, "lm_head",   cx - 130, 90,  260, 48, "Linear · LM head",
-                               { fill: C.output, role: "output" });
+    const finalRms = rectBlock(svg, "final_rms", cx - 90,  170, 180, 40, "Final RMSNorm", { fontSize: 18 });
+    const lmHead   = rectBlock(svg, "lm_head",   cx - 130, 90,  260, 48, "Linear output layer");
 
     // wires bottom-up
     vLine(svg, tokText, embed);
-    vLine(svg, embed, rms1, { label: `[B, T, ${fmtInt(ir.hidden_size)}]` });
+    vLine(svg, embed, rms1);
     vLine(svg, rms1, attn);
     vLine(svg, attn, add1);
     vLine(svg, add1, rms2);
@@ -417,96 +374,56 @@
     vLine(svg, add2, finalRms);
     vLine(svg, finalRms, lmHead);
 
-    // arrow up off the LM head
+    // arrow leaving the LM head upward
     svg.appendChild(el("line", {
-      x1: cx, y1: lmHead.top, x2: cx, y2: lmHead.top - 28,
-      stroke: C.arrow, "stroke-width": 1.4, "stroke-linecap": "round",
+      x1: cx, y1: lmHead.top, x2: cx, y2: lmHead.top - 32,
+      stroke: C.arrow, "stroke-width": 1.6, "stroke-linecap": "round",
       "marker-end": "url(#uf-arrow)", fill: "none"
     }));
-    const logits = el("text", {
-      x: cx, y: lmHead.top - 38, "text-anchor": "middle",
-      fill: C.muted, "font-family": FONT_MONO, "font-size": 11
-    });
-    logits.textContent = `logits [B, T, ${fmtInt(ir.vocab_size)}]`;
-    svg.appendChild(logits);
 
     // residual loops on the right
     const lane = innerX + innerW - 28;
     residualLoopRight(svg, rms1, add1, lane);
     residualLoopRight(svg, rms2, add2, lane);
 
-    // "× N layers" label, prominently
+    // "× N" label, top-right of inner card
     const repeatBg = el("rect", {
-      x: innerX + innerW - 92, y: innerY + 12, width: 80, height: 26,
-      rx: 13, ry: 13, fill: "rgba(255,255,255,0.7)",
+      x: innerX + innerW - 78, y: innerY + 12, width: 66, height: 26,
+      rx: 13, ry: 13, fill: "rgba(255,255,255,0.65)",
       stroke: C.border, "stroke-width": 0.5
     });
     svg.appendChild(repeatBg);
     const repeat = el("text", {
-      x: innerX + innerW - 52, y: innerY + 25, "text-anchor": "middle",
+      x: innerX + innerW - 45, y: innerY + 25, "text-anchor": "middle",
       "dominant-baseline": "central",
       fill: C.text, "font-family": FONT_HEAD, "font-size": 20
     });
     repeat.textContent = `× ${ir.layers.length}`;
     svg.appendChild(repeat);
 
-    // header label inside the inner card
-    const blockLabel = el("text", {
-      x: innerX + 18, y: innerY + 26, "text-anchor": "start",
-      fill: C.muted, "font-family": FONT_BODY, "font-size": 11,
-      "letter-spacing": "0.12em", "font-weight": 600
-    });
-    blockLabel.textContent = "TRANSFORMER BLOCK";
-    svg.appendChild(blockLabel);
-
-    if (info.groups.length > 1) {
-      const note = el("text", {
-        x: innerX + 18, y: innerY + 44, "text-anchor": "start",
-        fill: C.muted, "font-family": FONT_BODY, "font-size": 11, "font-style": "italic"
-      });
-      note.textContent = `${info.groups.length} variants — see "Layer map"`;
-      svg.appendChild(note);
-    }
-
-    // small annotation: "input embedding" / "output projection" on outer card
-    [
-      { y: H - 220, text: "EMBEDDING" },
-      { y: 70, text: "OUTPUT" }
-    ].forEach(o => {
-      const t = el("text", {
-        x: 64, y: o.y, "text-anchor": "start",
-        fill: C.muted, "font-family": FONT_BODY, "font-size": 10,
-        "letter-spacing": "0.14em", "font-weight": 600
-      });
-      t.textContent = o.text;
-      svg.appendChild(t);
-    });
-
     return svg;
   }
 
+  // ── MoE view ────────────────────────────────────────────────────────────
   function buildMoeView(ir, info) {
-    const W = 720, H = 560;
+    const W = 720, H = 580;
     const svg = el("svg", { width: "100%", viewBox: `0 0 ${W} ${H}`, role: "img" });
     defs(svg);
     svg.appendChild(regionRect(40, 30, W - 80, H - 60, C.bg_outer));
 
     const ffn = info.dominant.spec.ffn;
     const cx = W / 2;
-    const router = rectBlock(svg, "router", cx - 80, H - 110, 160, 50, "Router",
-                             { fill: C.norm, role: "router" });
+    const router = rectBlock(svg, "router", cx - 80, H - 110, 160, 50, "Router");
     const sumNode = plusBlock(svg, "add_moe", cx, 80);
 
-    const expertY = 230, expertW = 130, expertH = 60;
+    const expertY = 240, expertW = 130, expertH = 60;
     const slots = [
-      { x: 110,            label: ["Expert", "1"],     id: "expert_1" },
-      { x: 270,            label: ["Expert", "k"],     id: "expert_k" },
-      { x: 430,            label: ["Expert", "k+1"],   id: "expert_kp1" },
-      { x: W - 110 - expertW, label: ["Expert", `${ffn.num_experts || "N"}`], id: "expert_n" }
+      { x: 110,                label: ["Feed forward", "(expert 1)"],   id: "expert_1" },
+      { x: 270,                label: ["Feed forward", "(expert k)"],   id: "expert_k" },
+      { x: 430,                label: ["Feed forward", "(expert k+1)"], id: "expert_kp1" },
+      { x: W - 110 - expertW,  label: ["Feed forward", `(expert ${ffn.num_experts || "N"})`], id: "expert_n" }
     ];
-    const experts = slots.map(s => rectBlock(svg, s.id, s.x, expertY, expertW, expertH, s.label, {
-      fill: C.ffn_moe, stripe: true, role: "expert", fontSize: 16
-    }));
+    const experts = slots.map(s => rectBlock(svg, s.id, s.x, expertY, expertW, expertH, s.label, { fontSize: 14 }));
 
     // dots between expert k and k+1
     const dotsX = (experts[1].right + experts[2].left) / 2;
@@ -515,46 +432,44 @@
       svg.appendChild(el("circle", { cx: dotsX + i * 7, cy: dotsY, r: 2.5, fill: C.muted }));
     }
 
-    // "(N total)" annotation
     const annot = el("text", {
       x: experts[3].right, y: experts[3].bottom + 22, "text-anchor": "end",
-      fill: C.muted, "font-family": FONT_BODY, "font-size": 12, "font-style": "italic"
+      fill: C.text, "font-family": FONT_HEAD, "font-size": 18, "font-style": "italic"
     });
-    annot.textContent = `${ffn.num_experts || "N"} experts total`;
+    annot.textContent = `(${ffn.num_experts || "N"})`;
     svg.appendChild(annot);
 
+    // router → each expert
+    // (start at router.top, end one GAP below each expert)
     experts.forEach(e => {
-      svg.appendChild(el("line", {
-        x1: e.cx, y1: router.top - GAP, x2: e.cx, y2: e.bottom + GAP,
-        stroke: C.arrow, "stroke-width": 1.4, "stroke-linecap": "round",
-        "marker-end": "url(#uf-arrow)", fill: "none"
-      }));
+      vSeg(svg, e.cx, router.top, e.bottom + GAP);
     });
 
+    // each expert → sum  (start at expert.top, end at sum's left/right edge)
     experts.forEach(e => {
       const sx = sumNode.cx;
       const targetX = sx + (e.cx < sx ? -sumNode.r - GAP : sumNode.r + GAP);
-      elbowPath(svg, e.cx, e.top - GAP, targetX, sumNode.cy);
+      elbowVH(svg, e.cx, e.top, targetX, sumNode.cy);
     });
 
-    // sparsity callout at top-right
+    // top-k callout
     if (ffn.num_experts && ffn.num_experts_per_tok) {
       const sparsity = (100 * ffn.num_experts_per_tok / ffn.num_experts).toFixed(1);
-      const cgX = W - 240, cgY = 60, cgW = 200, cgH = 56;
+      const cgX = W - 224, cgY = 56, cgW = 184, cgH = 56;
       svg.appendChild(el("rect", {
         x: cgX, y: cgY, width: cgW, height: cgH, rx: 10, ry: 10,
         fill: C.bg_card, stroke: C.border, "stroke-width": 0.5
       }));
       const lbl = el("text", {
-        x: cgX + 12, y: cgY + 16, fill: C.muted,
+        x: cgX + 12, y: cgY + 18, fill: C.muted,
         "font-family": FONT_BODY, "font-size": 10,
         "letter-spacing": "0.12em", "font-weight": 600
       });
       lbl.textContent = "ACTIVE PER TOKEN";
       svg.appendChild(lbl);
       const big = el("text", {
-        x: cgX + 12, y: cgY + 42, fill: C.text,
-        "font-family": FONT_HEAD, "font-size": 24
+        x: cgX + 12, y: cgY + 44, fill: C.text,
+        "font-family": FONT_HEAD, "font-size": 22
       });
       big.textContent = `${ffn.num_experts_per_tok} / ${ffn.num_experts}  ·  ${sparsity}%`;
       svg.appendChild(big);
@@ -570,8 +485,9 @@
     return svg;
   }
 
+  // ── FFN view (gated SwiGLU) ─────────────────────────────────────────────
   function buildFfnView(ir, info) {
-    const W = 720, H = 560;
+    const W = 720, H = 600;
     const svg = el("svg", { width: "100%", viewBox: `0 0 ${W} ${H}`, role: "img" });
     defs(svg);
     svg.appendChild(regionRect(40, 30, W - 80, H - 60, C.bg_outer));
@@ -580,40 +496,52 @@
     const cx = W / 2;
     const actName = (ffn.activation || "silu").toUpperCase();
 
-    const downProj = rectBlock(svg, "down_proj", cx - 90, 90, 180, 50, "Linear (down)",
-                               { fill: C.ffn, role: "ffn" });
-    const mulNode  = plusBlock (svg, "mul", cx, 210, "×");
-    const silu     = rectBlock(svg, "silu",      cx - 240, 300, 180, 50, actName,
-                               { fill: C.norm, role: "act" });
-    const upProj   = rectBlock(svg, "up_proj",   cx + 60,  300, 180, 50, "Linear (up)",
-                               { fill: C.ffn, role: "ffn" });
-    const gateProj = rectBlock(svg, "gate_proj", cx - 240, 420, 180, 50, "Linear (gate)",
-                               { fill: C.ffn, role: "ffn" });
+    // layout (top → bottom)
+    const downProj = rectBlock(svg, "down_proj", cx - 90, 80,  180, 50, "Linear (down)");
+    const mulNode  = plusBlock (svg, "mul",      cx, 200, "×");
+    const silu     = rectBlock(svg, "silu",      cx - 270, 300, 180, 50, actName);
+    const upProj   = rectBlock(svg, "up_proj",   cx + 90,  300, 180, 50, "Linear (up)");
+    const gateProj = rectBlock(svg, "gate_proj", cx - 270, 430, 180, 50, "Linear (gate)");
 
-    vLine(svg, mulNode, downProj);
-    elbowPath(svg, silu.cx, silu.top - GAP, mulNode.cx - mulNode.r - GAP, mulNode.cy);
-    elbowPath(svg, upProj.cx, upProj.top - GAP, mulNode.cx + mulNode.r + GAP, mulNode.cy);
+    // input branch dot at bottom-center
+    const branchY = H - 70;
+    svg.appendChild(el("circle", { cx, cy: branchY, r: 4, fill: C.arrow }));
+
+    // ── arrows, all carefully routed ───────────────────────────────────────
+    // input → gate  (HV: go left, then up; arrowhead enters gate from below)
+    elbowHV(svg, cx, branchY, gateProj.cx, gateProj.bottom + GAP);
+    // input → up    (HV: go right, then up; arrowhead enters up from below)
+    elbowHV(svg, cx, branchY, upProj.cx, upProj.bottom + GAP);
+
+    // gate → silu  (vertical; arrowhead enters silu from below)
     vLine(svg, gateProj, silu);
 
-    const inputY = H - 35;
-    const branchY = inputY - 22;
-    svg.appendChild(el("circle", { cx, cy: branchY, r: 3, fill: C.arrow }));
-    svg.appendChild(el("path", {
-      d: `M ${cx} ${inputY} L ${cx} ${branchY}`,
-      fill: "none", stroke: C.arrow, "stroke-width": 1.4, "stroke-linecap": "round"
-    }));
-    elbowPath(svg, cx, branchY, gateProj.cx, gateProj.bottom + GAP);
-    elbowPath(svg, cx, branchY, upProj.cx, upProj.bottom + GAP);
+    // silu → ×   (VH: up, then right; arrowhead enters × from the LEFT side)
+    // Start touches silu's top edge.
+    elbowVH(svg, silu.cx, silu.top, mulNode.cx - mulNode.r - GAP, mulNode.cy);
+    // up → ×     (VH: up, then left; arrowhead enters × from the RIGHT side)
+    elbowVH(svg, upProj.cx, upProj.top, mulNode.cx + mulNode.r + GAP, mulNode.cy);
 
+    // × → down  (vertical; arrowhead enters down from below)
+    vLine(svg, mulNode, downProj);
+
+    // arrow leaving down upward
+    svg.appendChild(el("line", {
+      x1: cx, y1: downProj.top, x2: cx, y2: downProj.top - 32,
+      stroke: C.arrow, "stroke-width": 1.6, "stroke-linecap": "round",
+      "marker-end": "url(#uf-arrow)", fill: "none"
+    }));
+
+    // labels
     const inLabel = el("text", {
-      x: cx, y: H - 14, "text-anchor": "middle",
-      fill: C.text, "font-family": FONT_HEAD, "font-size": 16
+      x: cx, y: H - 22, "text-anchor": "middle",
+      fill: C.text, "font-family": FONT_HEAD, "font-size": 18
     });
     inLabel.textContent = "x  (input)";
     svg.appendChild(inLabel);
 
     const dimLabel = el("text", {
-      x: cx, y: 36, "text-anchor": "middle",
+      x: cx, y: 50, "text-anchor": "middle",
       fill: C.muted, "font-family": FONT_MONO, "font-size": 11
     });
     dimLabel.textContent = `intermediate hidden = ${fmtInt(ffn.expert_intermediate_size || ffn.intermediate_size)}`;
@@ -622,13 +550,16 @@
     return svg;
   }
 
+  // ── layer map ───────────────────────────────────────────────────────────
   function buildLayerMap(ir, info) {
     const W = 720, H = 240;
     const svg = el("svg", { width: "100%", viewBox: `0 0 ${W} ${H}`, role: "img" });
     defs(svg);
     svg.appendChild(regionRect(40, 30, W - 80, H - 60, C.bg_card, { stroke: C.border, strokeWidth: 0.5 }));
 
-    const palette = ["#0D9488", "#D97706", "#7C3AED", "#0EA5E9", "#DC2626", "#65A30D", "#9333EA"];
+    // green-toned palette for the RLE stripes (so layer types are still
+    // distinguishable but stay within the theme)
+    const palette = ["#0F6E56", "#1D9E75", "#0E7C8C", "#3C3489", "#993C1D", "#185FA5", "#65A30D"];
     const sigToColor = {};
     info.groups.forEach((g, i) => { sigToColor[g.sig] = palette[i % palette.length]; });
 
@@ -653,7 +584,6 @@
       fill: "none", stroke: C.text, "stroke-width": 0.4, rx: 4, ry: 4
     }));
 
-    // axis ticks: 0 and N-1
     [0, n - 1].forEach(idx => {
       const x = stripX + (idx + 0.5) * colW;
       const t = el("text", {
@@ -689,18 +619,18 @@
     return svg;
   }
 
-  // ── chrome around the canvas: stats banner, tabs, info panel ─────────────
+  // ── chrome (header, stats, tabs, info panel) ────────────────────────────
   function statsBanner(ir) {
     const root = document.createElement("div");
     const params = ir.params || {};
     const items = [
-      ["Layers",   String(ir.layers.length)],
-      ["Hidden",   fmtInt(ir.hidden_size)],
-      ["Vocab",    fmtInt(ir.vocab_size)],
-      ["Context",  ir.max_position_embeddings ? fmtInt(ir.max_position_embeddings) : "—"],
-      ["Params",   params.is_sparse
-                   ? `${params.total_h} (${params.active_h} active)`
-                   : (params.total_h || "?")],
+      ["Layers",  String(ir.layers.length)],
+      ["Hidden",  fmtInt(ir.hidden_size)],
+      ["Vocab",   fmtInt(ir.vocab_size)],
+      ["Context", ir.max_position_embeddings ? fmtInt(ir.max_position_embeddings) : "—"],
+      ["Params",  params.is_sparse
+                  ? `${params.total_h} (${params.active_h} act.)`
+                  : (params.total_h || "?")],
     ];
     root.style.cssText = `
       display:grid;grid-template-columns:repeat(${items.length},minmax(0,1fr));
@@ -726,17 +656,11 @@
     const row = document.createElement("div");
     row.style.cssText = "display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;";
     badges.forEach(b => {
-      const bg  = b.tone === "warm" ? C.badge_warm
-                : b.tone === "cool" ? C.badge_cool
-                : C.badge_bg;
-      const fg  = b.tone === "warm" ? C.badge_warm_t
-                : b.tone === "cool" ? C.badge_cool_t
-                : C.badge_text;
       const span = document.createElement("span");
       span.title = b.title || "";
       span.style.cssText = `
         display:inline-flex;align-items:center;height:22px;padding:0 9px;
-        background:${bg};color:${fg};border-radius:11px;
+        background:${C.badge_bg};color:${C.badge_text};border-radius:11px;
         font-size:11px;font-weight:600;letter-spacing:0.02em;
       `;
       span.textContent = b.text;
@@ -745,7 +669,19 @@
     return row;
   }
 
+  // Load Caveat from Google Fonts so the handwritten labels actually render
+  // as Caveat instead of falling back to Comic Sans MS.
+  function ensureFonts() {
+    if (typeof document === "undefined" || document.getElementById("uf-fonts")) return;
+    const link = document.createElement("link");
+    link.id = "uf-fonts";
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap";
+    document.head.appendChild(link);
+  }
+
   function render(ir, mount) {
+    ensureFonts();
     const info = makeInfo(ir);
 
     mount.innerHTML = "";
@@ -766,7 +702,6 @@
     head.appendChild(badgeRow(archBadges(ir, info)));
     mount.appendChild(head);
 
-    // stats grid
     mount.appendChild(statsBanner(ir));
 
     // tab strip
@@ -793,7 +728,6 @@
     });
     mount.appendChild(tabs);
 
-    // styles, scoped via the mount id
     const style = document.createElement("style");
     style.textContent = `
       .uf-tab {
@@ -801,10 +735,10 @@
         padding:7px 14px;border-radius:6px;font:600 12px ${FONT_BODY};
         cursor:pointer;transition:background .15s,color .15s;
       }
-      .uf-tab:hover:not(:disabled) { background:#F1F5F9;color:${C.text}; }
-      .uf-tab.uf-active { background:${C.text};color:#FFFFFF; }
+      .uf-tab:hover:not(:disabled) { background:${C.badge_bg};color:${C.text}; }
+      .uf-tab.uf-active { background:${C.block};color:#FFFFFF; }
       .uf-tab:disabled { opacity:.4;cursor:not-allowed; }
-      .uf-node rect, .uf-node circle { transition: filter .15s, transform .15s; transform-origin: center; transform-box: fill-box; }
+      .uf-node rect, .uf-node circle { transition: filter .15s; }
       .uf-node:hover rect, .uf-node:hover circle { filter: brightness(1.08) drop-shadow(0 2px 4px rgba(0,0,0,.18)); }
       .uf-node.uf-selected rect, .uf-node.uf-selected circle { stroke: #FACC15 !important; stroke-width: 2.5 !important; }
       .uf-canvas svg { display:block; max-width:100%; height:auto; animation: uf-fade .35s ease-out; }
