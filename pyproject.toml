@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "unfold"
+version = "0.2.0"
+description = "Unfold any HuggingFace transformer into an interactive architecture diagram, inline in Jupyter."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{name = "unfold contributors"}]
+license = {text = "MIT"}
+keywords = ["transformers", "visualization", "llm", "architecture", "jupyter"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Framework :: Jupyter",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+dependencies = []
+
+[project.optional-dependencies]
+hf = ["transformers>=4.40"]
+dev = ["pytest>=7", "transformers>=4.40"]
+
+[tool.setuptools]
+packages = ["unfold", "unfold.adapters"]
+
+[tool.setuptools.package-data]
+unfold = ["static/*.js", "static/*.css"]
