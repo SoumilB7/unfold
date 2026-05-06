@@ -9,11 +9,11 @@ description = "Unfold any HuggingFace transformer into an interactive architectu
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{name = "unfold contributors"}]
-license = {text = "MIT"}
+license = {text = "Apache-2.0"}
 keywords = ["transformers", "visualization", "llm", "architecture", "jupyter"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Framework :: Jupyter",
     "Topic :: Scientific/Engineering :: Visualization",
 ]
