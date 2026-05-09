@@ -1,7 +1,11 @@
 """Adapter registry. Order matters: more specific adapters come first."""
-from . import deepseek, llama
+from . import custom, diffusor, transformer
 
-ADAPTERS = [deepseek, llama]
+ADAPTERS = [
+    *custom.ADAPTERS,
+    *diffusor.ADAPTERS,
+    *transformer.ADAPTERS,
+]
 
 
 def find_adapter(cfg):

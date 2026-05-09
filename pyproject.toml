@@ -23,8 +23,5 @@ dependencies = []
 hf = ["transformers>=4.40"]
 dev = ["pytest>=7", "transformers>=4.40"]
 
-[tool.setuptools]
-packages = ["unfold", "unfold.adapters"]
-
-[tool.setuptools.package-data]
-unfold = ["static/*.js", "static/*.css"]
+[tool.setuptools.packages.find]
+include = ["unfold*"]
