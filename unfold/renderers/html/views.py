@@ -19,7 +19,6 @@ from .svg import (
     _v_seg,
 )
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
-from .utils import _fmt_int
 
 
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -166,7 +165,7 @@ def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
 
     if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
         sparsity = 100 * ffn["num_experts_per_tok"] / ffn["num_experts"]
-        cg_x, cg_y, cg_w, cg_h = w - 224, 56, 184, 56
+        cg_x, cg_y, cg_w, cg_h = w - 244, 58, 188, 58
         parts.append(
             _svg_tag(
                 "rect",
@@ -236,8 +235,9 @@ def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
 
 
 def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
-    # h=640 (was 600) to fit incoming arrow + label under the input branch.
-    w, h = 720, 640
+    # Tall enough that both the outgoing "out" label and the incoming "in·x"
+    # label sit inside the outer region boundary (region = y 30 → h-30).
+    w, h = 720, 660
     arrow_id, shadow_id = _ids(mount_id, "ffn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
@@ -246,11 +246,11 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     cx = w / 2
     act_name = (ffn.get("activation") or "silu").upper()
 
-    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 90, 180, 50, "Linear (down)")
-    mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 210, "x")
-    silu = _rect_block(parts, info, shadow_id, "silu", cx - 270, 310, 180, 50, act_name)
-    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx + 90, 310, 180, 50, "Linear (up)")
-    gate_proj = _rect_block(parts, info, shadow_id, "gate_proj", cx - 270, 440, 180, 50, "Linear (gate)")
+    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 110, 180, 50, "Linear (down)")
+    mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 230, "×")
+    silu = _rect_block(parts, info, shadow_id, "silu", cx - 270, 330, 180, 50, act_name)
+    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx + 90, 330, 180, 50, "Linear (up)")
+    gate_proj = _rect_block(parts, info, shadow_id, "gate_proj", cx - 270, 460, 180, 50, "Linear (gate)")
 
     branch_y = h - 110
     parts.append(_svg_tag("circle", {"cx": cx, "cy": branch_y, "r": 4, "fill": C["arrow"]}))
@@ -284,16 +284,8 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(
         _svg_text(
             cx,
-            h - 24,
+            h - 48,
             "in  ·  x",
-            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-        )
-    )
-    parts.append(
-        _svg_text(
-            cx,
-            50,
-            f"intermediate hidden = {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}",
             {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
         )
     )

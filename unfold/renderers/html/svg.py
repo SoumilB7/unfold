@@ -155,7 +155,24 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
                 "filter": f"url(#{shadow_id})",
             },
         ),
-        _svg_text(
+    ]
+    # Draw "+" / "×" as crossed strokes — Caveat's glyphs have uneven bearings,
+    # so text-based rendering drifts off-centre. Lines are guaranteed symmetric.
+    arm = 5
+    stroke_attrs = {
+        "stroke": C["text_block"],
+        "stroke-width": 2.2,
+        "stroke-linecap": "round",
+        "pointer-events": "none",
+    }
+    if sym == "+":
+        children.append(_svg_tag("line", {"x1": cx - arm, "y1": cy, "x2": cx + arm, "y2": cy, **stroke_attrs}))
+        children.append(_svg_tag("line", {"x1": cx, "y1": cy - arm, "x2": cx, "y2": cy + arm, **stroke_attrs}))
+    elif sym in ("×", "x", "*"):
+        children.append(_svg_tag("line", {"x1": cx - arm, "y1": cy - arm, "x2": cx + arm, "y2": cy + arm, **stroke_attrs}))
+        children.append(_svg_tag("line", {"x1": cx - arm, "y1": cy + arm, "x2": cx + arm, "y2": cy - arm, **stroke_attrs}))
+    else:
+        children.append(_svg_text(
             cx,
             cy + 1,
             sym,
@@ -167,8 +184,7 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
                 "font-size": 22,
                 "pointer-events": "none",
             },
-        ),
-    ]
+        ))
     parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
     return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}
 
