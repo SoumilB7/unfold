@@ -73,6 +73,21 @@ LLAMA3_8B_CONFIG = {
     "hidden_act": "silu",
 }
 
+MISTRAL_7B_CONFIG = {
+    "architectures": ["MistralForCausalLM"],
+    "model_type": "mistral",
+    "_name_or_path": "mistralai/Mistral-7B-v0.3",
+    "vocab_size": 32768,
+    "hidden_size": 4096,
+    "intermediate_size": 14336,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 32,
+    "num_key_value_heads": 8,
+    "max_position_embeddings": 32768,
+    "tie_word_embeddings": False,
+    "hidden_act": "silu",
+}
+
 
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
