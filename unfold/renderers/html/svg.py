@@ -190,10 +190,8 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
 
 
 def _node_title(info: dict, node_id: str) -> str:
-    meta = info["meta"].get(node_id)
-    if not meta:
-        return ""
-    return _svg_tag("title", {}, f"{_html(meta[0])}: {_html(meta[1])}")
+    # Tooltips intentionally disabled — block details live in the inspect panel.
+    return ""
 
 
 def _v_line(src: dict, dst: dict, arrow_id: str) -> str:
@@ -299,10 +297,18 @@ def _path(d: str, arrow_id: str) -> str:
 
 
 def _svg(w: int, h: int, title: str, parts: list[str]) -> str:
+    # aria-label keeps the diagram accessible to screen readers without
+    # producing a native hover tooltip the way <title> does.
     return _svg_tag(
         "svg",
-        {"width": "100%", "viewBox": f"0 0 {w} {h}", "role": "img", "xmlns": "http://www.w3.org/2000/svg"},
-        _svg_tag("title", {}, _html(title)) + "".join(parts),
+        {
+            "width": "100%",
+            "viewBox": f"0 0 {w} {h}",
+            "role": "img",
+            "aria-label": _attr(title),
+            "xmlns": "http://www.w3.org/2000/svg",
+        },
+        "".join(parts),
     )
 
 

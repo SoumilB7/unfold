@@ -311,7 +311,7 @@ def _style(mount_id: str) -> str:
 }}
 #{mount_id} .uf-section-head {{
   display:flex;
-  align-items:baseline;
+  align-items:center;
   gap:10px;
   padding:9px 12px;
   background:{C['badge_bg']};
@@ -422,14 +422,16 @@ def _style(mount_id: str) -> str:
   display:none;
   margin-top:10px;
   padding:10px 12px;
-  background:{C['canvas']};
+  background:rgba(244,251,248,0.55);
   border:0.5px solid {C['border']};
   border-radius:9px;
-  min-height:32px;
+  min-height:60px;
   animation:uf-fade .2s ease-out;
 }}
 #{mount_id} .uf-section-arch[open] ~ .uf-inspect {{
-  display:block;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }}
 #{mount_id} .uf-card-detail {{
   display:none;
