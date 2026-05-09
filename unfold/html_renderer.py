@@ -34,16 +34,18 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 
     arch_svg = _build_architecture_view(ir, info, mount_id)
     arch_section = (
-        '<section class="uf-section uf-section-arch">'
-        '<div class="uf-section-head">'
+        '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
+        '<summary class="uf-section-head">'
         '<span class="uf-section-label">ARCHITECTURE</span>'
         f'<span class="uf-section-sub">Per-layer block · repeats × {len(ir.get("layers", []))}</span>'
-        '</div>'
+        '<span class="uf-chevron" aria-hidden="true">›</span>'
+        '</summary>'
         f'<div class="uf-section-body">{arch_svg}</div>'
-        '</section>'
+        '</details>'
     )
 
     inspect_panel = _build_inspect_panel(ir, info, mount_id)
+    sub_inspect_panel = _build_sub_inspect_panel(ir, info, mount_id)
 
     map_svg = _build_layer_map(ir, info, mount_id)
     n_groups = len(info["groups"])
@@ -64,6 +66,7 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 {_stats_banner(ir)}
 {arch_section}
 {inspect_panel}
+{sub_inspect_panel}
 {layer_map_section}
 </div>
 {_click_script(mount_id)}
@@ -82,10 +85,9 @@ def _build_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
     attention = info["dominant"]["spec"]["attention"]
     ffn = info["dominant"]["spec"]["ffn"]
 
-    panels.append(_simple_card(
+    panels.append(_hint_card(
         "default",
         "Click a block above to inspect it",
-        "Each block in the architecture is clickable. Simple blocks show their dimensions; the feed-forward block opens its full internal diagram.",
     ))
     panels.append(_simple_card(
         "tok_text",
@@ -171,6 +173,72 @@ def _simple_card(node_id: str, title: str, desc: str) -> str:
     )
 
 
+def _hint_card(node_id: str, hint: str) -> str:
+    """Subtle placeholder shown when no block is selected — just a one-line
+    hint inside the same panel box."""
+    return (
+        f'<div class="uf-card-detail uf-card-hint uf-card-{_attr(node_id)}">'
+        f'{_html(hint)}'
+        '</div>'
+    )
+
+
+def _l3_card(node_id: str, title: str, desc: str) -> str:
+    """L3 sub-inspect detail card. Same layout as a simple card, but lives in
+    the .uf-sub-inspect container so the L3 toggle CSS applies."""
+    return (
+        f'<div class="uf-card-detail uf-l3-{_attr(node_id)}">'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        '</div>'
+    )
+
+
+def _build_sub_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail panel for sub-blocks inside the FFN/MoE diagrams.  Only one card
+    is visible at a time; the JS click handler toggles them."""
+    panels: list[str] = []
+    h = _fmt_int(ir.get("hidden_size"))
+    ffn = info["dominant"]["spec"]["ffn"]
+    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
+    activation = (ffn.get("activation") or "silu").upper()
+
+    # Default L3 card is never actually visible (the whole L3 box is hidden
+    # until uf-sub-active is set), but kept as a safe target for showL3('default').
+    panels.append(_l3_card("default", "", ""))
+
+    # Dense FFN sub-blocks
+    panels.append(_l3_card("gate_proj", "Gate projection",
+        f"Linear · {h} → {inter} (gated path through {activation})"))
+    panels.append(_l3_card("up_proj", "Up projection",
+        f"Linear · {h} → {inter}"))
+    panels.append(_l3_card("silu", f"{activation} activation",
+        "Element-wise non-linearity applied to the gate path"))
+    panels.append(_l3_card("mul", "Element-wise multiply",
+        f"{activation}(gate) × up — combines the gated and ungated paths"))
+    panels.append(_l3_card("down_proj", "Down projection",
+        f"Linear · {inter} → {h}"))
+
+    # MoE sub-blocks (only meaningful for sparse models)
+    if ffn.get("kind") == "moe":
+        n_experts = _fmt_int(ffn.get("num_experts")) if ffn.get("num_experts") else "N"
+        n_active = ffn.get("num_experts_per_tok") or "k"
+        n_shared = ffn.get("num_shared_experts") or 0
+        panels.append(_l3_card("router", "Router",
+            f"Linear · {h} → {n_experts} (selects top-{n_active} experts per token)"))
+        expert_desc = (
+            f"Dense FFN with same shape as above · {h} → {inter} → {h} · "
+            f"only top-{n_active} of {n_experts} active per token"
+            + (f" · plus {n_shared} shared expert(s) always active" if n_shared else "")
+        )
+        for eid in ("expert_1", "expert_k", "expert_kp1", "expert_n"):
+            panels.append(_l3_card(eid, "Expert FFN", expert_desc))
+        panels.append(_l3_card("add_moe", "Weighted sum",
+            f"Combines top-{n_active} expert outputs weighted by router probabilities"))
+
+    return f'<div class="uf-sub-inspect">{"".join(panels)}</div>'
+
+
 def _rich_card(node_id: str, title: str, desc: str, svg: str) -> str:
     return (
         f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
@@ -182,30 +250,74 @@ def _rich_card(node_id: str, title: str, desc: str, svg: str) -> str:
 
 
 def _click_script(mount_id: str) -> str:
-    """Inline JS for click-to-inspect.  Idempotent — re-runs in the same
-    browser cleanly each render."""
+    """Inline JS for click-to-inspect.
+
+    Three levels of progressive disclosure:
+      L1  the architecture diagram (always rendered)
+      L2  inspect panel — opened by clicking an L1 block
+      L3  sub-inspect panel — opened by clicking a sub-block inside L2's SVG
+          (e.g. SiLU / Linear (gate) / Router / Expert)
+
+    Re-clicking the currently selected block returns to the default state.
+    Switching the L2 selection automatically resets L3.
+    """
     return f"""
 <script>
 (function() {{
   var root = document.getElementById('{mount_id}');
   if (!root) return;
-  var nodes  = root.querySelectorAll('.uf-section-arch .uf-node');
-  var panels = root.querySelectorAll('.uf-card-detail');
-  function show(id) {{
-    panels.forEach(function(p) {{
-      var match = p.classList.contains('uf-card-' + id);
-      p.style.display = match ? 'block' : 'none';
+
+  // L1 (architecture) blocks — direct children of the architecture details.
+  var l1 = root.querySelectorAll('.uf-section-arch .uf-node');
+  if (!l1.length) l1 = root.querySelectorAll('.uf-section-body .uf-node');
+  // L2 detail cards (only the .uf-inspect container, not the L3 sub-inspect).
+  var l2cards = root.querySelectorAll('.uf-inspect .uf-card-detail');
+  // L3 sub-block click targets — they live INSIDE the L2 SVG.
+  var l3 = root.querySelectorAll('.uf-inspect .uf-card-svg .uf-node');
+  var l3cards = root.querySelectorAll('.uf-sub-inspect .uf-card-detail');
+  var l3box = root.querySelector('.uf-sub-inspect');
+
+  function showL2(id) {{
+    l2cards.forEach(function(p) {{
+      p.style.display = p.classList.contains('uf-card-' + id) ? 'block' : 'none';
     }});
-    nodes.forEach(function(n) {{
+    l1.forEach(function(n) {{
       if (n.getAttribute('data-id') === id) n.classList.add('uf-selected');
       else n.classList.remove('uf-selected');
     }});
+    // Switching L2 always resets L3 (the sub-block context is gone).
+    showL3('default');
   }}
-  nodes.forEach(function(n) {{
+
+  function showL3(id) {{
+    l3cards.forEach(function(p) {{
+      p.style.display = p.classList.contains('uf-l3-' + id) ? 'block' : 'none';
+    }});
+    l3.forEach(function(n) {{
+      if (n.getAttribute('data-id') === id) n.classList.add('uf-sub-selected');
+      else n.classList.remove('uf-sub-selected');
+    }});
+    if (l3box) {{
+      if (id === 'default') l3box.classList.remove('uf-sub-active');
+      else l3box.classList.add('uf-sub-active');
+    }}
+  }}
+
+  l1.forEach(function(n) {{
     n.style.cursor = 'pointer';
     n.addEventListener('click', function(e) {{
       e.stopPropagation();
-      show(n.getAttribute('data-id'));
+      if (n.classList.contains('uf-selected')) {{ showL2('default'); }}
+      else {{ showL2(n.getAttribute('data-id')); }}
+    }});
+  }});
+
+  l3.forEach(function(n) {{
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', function(e) {{
+      e.stopPropagation();
+      if (n.classList.contains('uf-sub-selected')) {{ showL3('default'); }}
+      else {{ showL3(n.getAttribute('data-id')); }}
     }});
   }});
 }})();
@@ -399,25 +511,58 @@ def _style(mount_id: str) -> str:
   stroke:#FACC15;
   stroke-width:2.5;
 }}
+/* L2 inspect panel — visible only while the architecture is expanded */
 #{mount_id} .uf-inspect {{
-  margin-top:14px;
-  padding:14px 16px;
+  display:none;
+  margin-top:10px;
+  padding:8px 12px;
   background:{C['canvas']};
   border:0.5px solid {C['border']};
-  border-radius:10px;
-  min-height:64px;
-  animation:uf-fade .25s ease-out;
+  border-radius:9px;
+  min-height:32px;
+  align-items:center;
+  animation:uf-fade .2s ease-out;
+}}
+#{mount_id} .uf-section-arch[open] ~ .uf-inspect {{
+  display:flex;
 }}
 #{mount_id} .uf-card-detail {{
   display:none;
+  width:100%;
   animation:uf-fade .2s ease-out;
 }}
 #{mount_id} .uf-card-default {{
   display:block;
 }}
+#{mount_id} .uf-card-hint {{
+  font-size:11px;
+  color:{C['muted']};
+  font-style:italic;
+  text-align:center;
+  padding:0;
+}}
+/* L3 sub-inspect — visible only when arch open AND a sub-block is selected */
+#{mount_id} .uf-sub-inspect {{
+  display:none;
+  margin-top:8px;
+  padding:10px 14px;
+  background:{C['bg_card']};
+  border:0.5px solid {C['border']};
+  border-left:3px solid {C['block']};
+  border-radius:9px;
+  animation:uf-fade .2s ease-out;
+}}
+#{mount_id} .uf-section-arch[open] ~ .uf-sub-inspect.uf-sub-active {{
+  display:block;
+}}
+#{mount_id} .uf-node.uf-sub-selected rect,
+#{mount_id} .uf-node.uf-sub-selected circle {{
+  stroke:#FACC15;
+  stroke-width:2.5;
+}}
 #{mount_id} .uf-card-title {{
   font-family:{FONT_HEAD};
-  font-size:22px;
+  font-size:20px;
   color:{C['text']};
   line-height:1.1;
 }}
@@ -488,13 +633,13 @@ def _stats_banner(ir: dict) -> str:
 
 
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 720, 1080
+    w, h = 720, 920
     arrow_id, shadow_id = _ids(mount_id, "arch")
     parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
 
     cx = w / 2
-    inner_x, inner_y, inner_w, inner_h = 110, 240, w - 220, 580
+    inner_x, inner_y, inner_w, inner_h = 110, 200, w - 220, 490
     parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     attention = info["dominant"]["spec"]["attention"]
@@ -511,16 +656,18 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     ffn_label = "MoE" if ffn.get("kind") == "moe" else "Feed-Forward"
 
-    tok_text = _rect_block(parts, info, shadow_id, "tok_text", cx - 110, h - 120, 220, 48, "Tokenized text", font_size=18)
-    embed = _rect_block(parts, info, shadow_id, "embed", cx - 130, h - 200, 260, 48, "Token Embedding layer")
-    rms1 = _rect_block(parts, info, shadow_id, "rms1", cx - 80, inner_y + 470, 160, 40, "RMSNorm", font_size=18)
-    attn = _rect_block(parts, info, shadow_id, "attn", cx - 115, inner_y + 360, 230, 70, attn_label, font_size=18)
-    add1 = _plus_block(parts, info, shadow_id, "add1", cx, inner_y + 320)
-    rms2 = _rect_block(parts, info, shadow_id, "rms2", cx - 80, inner_y + 230, 160, 40, "RMSNorm", font_size=18)
-    ffn_node = _rect_block(parts, info, shadow_id, "ffn", cx - 80, inner_y + 130, 160, 50, ffn_label)
-    add2 = _plus_block(parts, info, shadow_id, "add2", cx, inner_y + 90)
-    final_rms = _rect_block(parts, info, shadow_id, "final_rms", cx - 90, 170, 180, 40, "Final RMSNorm", font_size=18)
-    lm_head = _rect_block(parts, info, shadow_id, "lm_head", cx - 130, 90, 260, 48, "Linear output layer")
+    # Layout (top → bottom, smaller y = higher on screen):
+    #   lm_head → final_rms → [inner block: add2 → ffn → rms2 → add1 → attn → rms1] → embed → tok_text
+    tok_text  = _rect_block(parts, info, shadow_id, "tok_text",  cx - 110, h - 100, 220, 44, "Tokenized text", font_size=17)
+    embed     = _rect_block(parts, info, shadow_id, "embed",     cx - 130, h - 168, 260, 44, "Token Embedding layer", font_size=17)
+    rms1      = _rect_block(parts, info, shadow_id, "rms1",      cx - 80,  inner_y + 400, 160, 36, "RMSNorm", font_size=16)
+    attn      = _rect_block(parts, info, shadow_id, "attn",      cx - 115, inner_y + 305, 230, 60, attn_label, font_size=17)
+    add1      = _plus_block(parts, info, shadow_id, "add1",      cx,       inner_y + 270)
+    rms2      = _rect_block(parts, info, shadow_id, "rms2",      cx - 80,  inner_y + 195, 160, 36, "RMSNorm", font_size=16)
+    ffn_node  = _rect_block(parts, info, shadow_id, "ffn",       cx - 80,  inner_y + 110, 160, 44, ffn_label, font_size=17)
+    add2      = _plus_block(parts, info, shadow_id, "add2",      cx,       inner_y + 75)
+    final_rms = _rect_block(parts, info, shadow_id, "final_rms", cx - 90,  140, 180, 36, "Final RMSNorm", font_size=16)
+    lm_head   = _rect_block(parts, info, shadow_id, "lm_head",   cx - 130, 70,  260, 44, "Linear output layer", font_size=17)
 
     for src, dst in (
         (tok_text, embed),
