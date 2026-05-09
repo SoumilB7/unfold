@@ -13,8 +13,6 @@ unfold("meta-llama/Meta-Llama-3-8B")
   </a>
 </p>
 
-<sup><i>Static SVG preview from the Llama-3-8B HTML render. Click it to open the full interactive demo.</i></sup>
-
 ---
 
 ## Install
@@ -46,7 +44,7 @@ unfold(json.load(open("config.json")))
 
 Pass a model ID and `unfold` calls `transformers.AutoConfig.from_pretrained(model_id, trust_remote_code=True)` under the hood ([parser.py](unfold/parser.py)). Anything `AutoConfig` can resolve — public, private, gated, or `trust_remote_code` — works here.
 
-## Auth — token from your environment
+## Auth-token from your environment
 
 Gated models (Llama-3, Mistral, Gemma, …) need a HuggingFace token. `unfold` reuses whatever `transformers` / `huggingface_hub` already see:
 
@@ -94,7 +92,6 @@ Open in any browser to interact (click blocks, expand sub-blocks, toggle layer t
 | Llama / Mistral / Qwen2 / Qwen3 / Phi-3 | [adapters/llama.py](unfold/adapters/llama.py) | GQA / MQA / MHA + dense FFN |
 | Gemma 2 / 3 | [adapters/llama.py](unfold/adapters/llama.py) | sliding-window pattern detection |
 
-Adding a new architecture: write `matches(cfg)` and `parse(cfg) -> ModelIR` in a new adapter, register it in [adapters/\_\_init\_\_.py](unfold/adapters/__init__.py).
 
 ## License
 
