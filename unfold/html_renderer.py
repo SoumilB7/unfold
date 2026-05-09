@@ -28,11 +28,76 @@ C = {
 
 
 def render_fragment(ir: dict, mount_id: str) -> str:
-    """Render a complete, script-free HTML fragment."""
-    info = _make_info(ir)
-    style = _style(mount_id)
+    """Render a complete HTML fragment.
 
-    arch_svg = _build_architecture_view(ir, info, mount_id)
+    For heterogeneous models (multiple layer-type groups, e.g. DeepSeek-V3's
+    dense → MoE phase change), one architecture / L2 / L3 panel is emitted
+    per group, all sharing the same DOM tree.  Hidden via CSS, toggled by
+    radio buttons in a pill bar above the SVG.  Pure-CSS toggle, no JS.
+    """
+    info = _make_info(ir)
+    groups = info["groups"]
+    dominant_idx = groups.index(info["dominant"]) if groups else 0
+
+    radios: list[str] = []
+    pills: list[str] = []
+    arch_variants: list[str] = []
+    l2_variants: list[str] = []
+    l3_variants: list[str] = []
+    variant_css: list[str] = []
+    radio_name = f"{mount_id}-g"
+
+    for i, group in enumerate(groups):
+        variant_info = {
+            "groups": groups,
+            "dominant": group,
+            "meta": _meta_for(ir, group["spec"]),
+        }
+        suffix = f"-g{i}"
+        radio_id = f"{mount_id}-g{i}"
+        checked = " checked" if i == dominant_idx else ""
+
+        radios.append(
+            f'<input type="radio" name="{_attr(radio_name)}" '
+            f'id="{_attr(radio_id)}" class="uf-group-radio"{checked}>'
+        )
+        pills.append(
+            f'<label for="{_attr(radio_id)}" class="uf-group-pill">'
+            f'{_html(_group_label(group))}</label>'
+        )
+
+        arch_svg = _build_architecture_view(ir, variant_info, mount_id + suffix)
+        arch_variants.append(
+            f'<div class="uf-arch-variant uf-arch-variant-{i}">{arch_svg}</div>'
+        )
+        l2_inner = _build_inspect_cards(ir, variant_info, mount_id + suffix)
+        l2_variants.append(
+            f'<div class="uf-l2-variant uf-l2-variant-{i}">{l2_inner}</div>'
+        )
+        l3_inner = _build_sub_inspect_cards(ir, variant_info, mount_id + suffix)
+        l3_variants.append(
+            f'<div class="uf-l3-variant uf-l3-variant-{i}">{l3_inner}</div>'
+        )
+
+        # Per-variant visibility + active-pill styling
+        variant_css.append(
+            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-arch-variant-{i},"
+            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l2-variant-{i},"
+            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l3-variant-{i} "
+            f"{{ display:block; }}"
+        )
+        variant_css.append(
+            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-group-pill[for='{radio_id}'] "
+            f"{{ background:{C['block']}; color:#FFFFFF; }}"
+        )
+
+    style = _style(mount_id) + "\n" + "\n".join(variant_css)
+
+    toggle_html = (
+        f'<div class="uf-group-toggle" role="tablist">{"".join(pills)}</div>'
+        if len(groups) > 1 else ""
+    )
+
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
         '<summary class="uf-section-head">'
@@ -40,15 +105,14 @@ def render_fragment(ir: dict, mount_id: str) -> str:
         f'<span class="uf-section-sub">Per-layer block · repeats × {len(ir.get("layers", []))}</span>'
         '<span class="uf-chevron" aria-hidden="true">›</span>'
         '</summary>'
-        f'<div class="uf-section-body">{arch_svg}</div>'
+        f'<div class="uf-section-body">{toggle_html}{"".join(arch_variants)}</div>'
         '</details>'
     )
-
-    inspect_panel = _build_inspect_panel(ir, info, mount_id)
-    sub_inspect_panel = _build_sub_inspect_panel(ir, info, mount_id)
+    inspect_panel = f'<div class="uf-inspect">{"".join(l2_variants)}</div>'
+    sub_inspect_panel = f'<div class="uf-sub-inspect">{"".join(l3_variants)}</div>'
 
     map_svg = _build_layer_map(ir, info, mount_id)
-    n_groups = len(info["groups"])
+    n_groups = len(groups)
     map_sub = (
         "All layers structurally identical"
         if n_groups <= 1
@@ -61,6 +125,7 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 <style>
 {style}
 </style>
+{''.join(radios)}
 <div class="uf-card">
 {_header(ir, info)}
 {_stats_banner(ir)}
@@ -74,10 +139,9 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 """
 
 
-def _build_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
-    """The click-driven detail panel that lives directly under the architecture
-    diagram.  Each block in the architecture has a corresponding detail card
-    here; the JS at the bottom toggles which one is visible."""
+def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
+    """Cards-only HTML for the L2 inspect panel.  The caller wraps in a
+    .uf-l2-variant container so multiple variants can coexist."""
     panels: list[str] = []
     h = _fmt_int(ir.get("hidden_size"))
     v = _fmt_int(ir.get("vocab_size"))
@@ -155,7 +219,7 @@ def _build_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
         + (" · weights tied with input embedding" if tied else ""),
     ))
 
-    return f'<div class="uf-inspect">{"".join(panels)}</div>'
+    return "".join(panels)
 
 
 def _attention_title(attn: dict) -> str:
@@ -194,8 +258,8 @@ def _l3_card(node_id: str, title: str, desc: str) -> str:
     )
 
 
-def _build_sub_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
-    """Detail panel for sub-blocks inside the FFN/MoE diagrams.  Only one card
+def _build_sub_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
+    """Cards-only HTML for the L3 sub-inspect panel.  Only one card
     is visible at a time; the JS click handler toggles them."""
     panels: list[str] = []
     h = _fmt_int(ir.get("hidden_size"))
@@ -236,7 +300,7 @@ def _build_sub_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
         panels.append(_l3_card("add_moe", "Weighted sum",
             f"Combines top-{n_active} expert outputs weighted by router probabilities"))
 
-    return f'<div class="uf-sub-inspect">{"".join(panels)}</div>'
+    return "".join(panels)
 
 
 def _rich_card(node_id: str, title: str, desc: str, svg: str) -> str:
@@ -511,20 +575,55 @@ def _style(mount_id: str) -> str:
   stroke:#FACC15;
   stroke-width:2.5;
 }}
+/* Layer-type variant toggle (only rendered when 2+ groups exist) */
+#{mount_id} .uf-group-radio {{
+  position:absolute;
+  width:0;height:0;
+  opacity:0;
+  pointer-events:none;
+}}
+#{mount_id} .uf-group-toggle {{
+  display:inline-flex;
+  gap:3px;
+  padding:3px;
+  margin-bottom:8px;
+  background:{C['bg_card']};
+  border:0.5px solid {C['border']};
+  border-radius:8px;
+  flex-wrap:wrap;
+}}
+#{mount_id} .uf-group-pill {{
+  padding:5px 11px;
+  font-size:11px;
+  font-weight:600;
+  color:{C['muted']};
+  cursor:pointer;
+  border-radius:5px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+  user-select:none;
+}}
+#{mount_id} .uf-group-pill:hover {{
+  background:{C['badge_bg']};
+  color:{C['text']};
+}}
+#{mount_id} .uf-arch-variant,
+#{mount_id} .uf-l2-variant,
+#{mount_id} .uf-l3-variant {{ display:none; }}
+
 /* L2 inspect panel — visible only while the architecture is expanded */
 #{mount_id} .uf-inspect {{
   display:none;
   margin-top:10px;
-  padding:8px 12px;
+  padding:10px 12px;
   background:{C['canvas']};
   border:0.5px solid {C['border']};
   border-radius:9px;
   min-height:32px;
-  align-items:center;
   animation:uf-fade .2s ease-out;
 }}
 #{mount_id} .uf-section-arch[open] ~ .uf-inspect {{
-  display:flex;
+  display:block;
 }}
 #{mount_id} .uf-card-detail {{
   display:none;
@@ -738,47 +837,48 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
 
 def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 720, 580
+    # Slightly taller (h=620) to leave room for incoming arrow below router
+    # and outgoing arrow above the sum node.
+    w, h = 720, 620
     arrow_id, shadow_id = _ids(mount_id, "moe")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
 
     ffn = info["dominant"]["spec"]["ffn"]
     cx = w / 2
-    router = _rect_block(parts, info, shadow_id, "router", cx - 80, h - 110, 160, 50, "Router")
-    sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 80)
+    # Router spans wide enough that all four expert arrows visibly emerge from
+    # within the router rectangle (otherwise the leftmost/rightmost arrows
+    # appear to start in empty space, far outside the router block).
+    router_w = 540
+    router = _rect_block(parts, info, shadow_id, "router",
+                         (w - router_w) / 2, h - 130, router_w, 50, "Router")
+    sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 100)
 
-    expert_y, expert_w, expert_h = 240, 130, 60
+    # Expert layout: 4 evenly-spaced columns symmetric around the centre.
+    # Previous version overlapped slot 3 and slot 4 (wrong x for slot 4).
+    expert_w, expert_h = 116, 54
+    expert_y = 235
+    n_total = ffn.get("num_experts")
+    last_label = str(n_total) if n_total else "N"
+    # Spacing computed so columns are: 60, 220, 380, 540 with w=720.
+    side_pad = 60
+    gap = (w - 2 * side_pad - 4 * expert_w) / 3
     slots = [
-        (110, ["Feed forward", "(expert 1)"], "expert_1"),
-        (270, ["Feed forward", "(expert k)"], "expert_k"),
-        (430, ["Feed forward", "(expert k+1)"], "expert_kp1"),
-        (w - 110 - expert_w, ["Feed forward", f"(expert {ffn.get('num_experts') or 'N'})"], "expert_n"),
+        (side_pad + 0 * (expert_w + gap), "Expert 1",        "expert_1"),
+        (side_pad + 1 * (expert_w + gap), "Expert k",        "expert_k"),
+        (side_pad + 2 * (expert_w + gap), "Expert k+1",      "expert_kp1"),
+        (side_pad + 3 * (expert_w + gap), f"Expert {last_label}", "expert_n"),
     ]
     experts = [
-        _rect_block(parts, info, shadow_id, node_id, x, expert_y, expert_w, expert_h, label, font_size=14)
+        _rect_block(parts, info, shadow_id, node_id, x, expert_y, expert_w, expert_h, label, font_size=15)
         for x, label, node_id in slots
     ]
 
+    # Ellipsis lives in the gap between expert 2 (k) and expert 3 (k+1).
     dots_x = (experts[1]["right"] + experts[2]["left"]) / 2
     dots_y = expert_y + expert_h / 2
     for i in range(-2, 3):
         parts.append(_svg_tag("circle", {"cx": dots_x + i * 7, "cy": dots_y, "r": 2.5, "fill": C["muted"]}))
-
-    parts.append(
-        _svg_text(
-            experts[3]["right"],
-            experts[3]["bottom"] + 22,
-            f"({ffn.get('num_experts') or 'N'})",
-            {
-                "text-anchor": "end",
-                "fill": C["text"],
-                "font-family": FONT_HEAD,
-                "font-size": 18,
-                "font-style": "italic",
-            },
-        )
-    )
 
     for expert in experts:
         parts.append(_v_seg(expert["cx"], router["top"], expert["bottom"] + GAP, arrow_id))
@@ -829,20 +929,38 @@ def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
             )
         )
 
-    parts.append(
-        _svg_text(
-            cx,
-            h - 22,
-            f"top-{ffn.get('num_experts_per_tok') or 'k'} of {ffn.get('num_experts') or 'N'} experts active per token",
-            {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_HEAD, "font-size": 18},
-        )
-    )
+    # Outgoing arrow at the top — leaves the weighted-sum node going up.
+    parts.append(_svg_tag("line", {
+        "x1": sum_node["cx"], "y1": sum_node["top"],
+        "x2": sum_node["cx"], "y2": sum_node["top"] - 36,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        sum_node["cx"], sum_node["top"] - 46,
+        "out",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    # Incoming arrow at the bottom — enters the router from below.
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": router["bottom"] + 36,
+        "x2": cx, "y2": router["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, router["bottom"] + 50,
+        "in",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
 
     return _svg(w, h, f"{ir.get('name', 'model')} mixture of experts", parts)
 
 
 def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 720, 600
+    # h=640 (was 600) to fit incoming arrow + label under the input branch.
+    w, h = 720, 640
     arrow_id, shadow_id = _ids(mount_id, "ffn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
@@ -851,13 +969,13 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     cx = w / 2
     act_name = (ffn.get("activation") or "silu").upper()
 
-    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 80, 180, 50, "Linear (down)")
-    mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 200, "x")
-    silu = _rect_block(parts, info, shadow_id, "silu", cx - 270, 300, 180, 50, act_name)
-    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx + 90, 300, 180, 50, "Linear (up)")
-    gate_proj = _rect_block(parts, info, shadow_id, "gate_proj", cx - 270, 430, 180, 50, "Linear (gate)")
+    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 90, 180, 50, "Linear (down)")
+    mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 210, "x")
+    silu = _rect_block(parts, info, shadow_id, "silu", cx - 270, 310, 180, 50, act_name)
+    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx + 90, 310, 180, 50, "Linear (up)")
+    gate_proj = _rect_block(parts, info, shadow_id, "gate_proj", cx - 270, 440, 180, 50, "Linear (gate)")
 
-    branch_y = h - 70
+    branch_y = h - 110
     parts.append(_svg_tag("circle", {"cx": cx, "cy": branch_y, "r": 4, "fill": C["arrow"]}))
     parts.append(_elbow_hv(cx, branch_y, gate_proj["cx"], gate_proj["bottom"] + GAP, arrow_id))
     parts.append(_elbow_hv(cx, branch_y, up_proj["cx"], up_proj["bottom"] + GAP, arrow_id))
@@ -865,29 +983,33 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_elbow_vh(silu["cx"], silu["top"], mul_node["cx"] - mul_node["r"] - GAP, mul_node["cy"], arrow_id))
     parts.append(_elbow_vh(up_proj["cx"], up_proj["top"], mul_node["cx"] + mul_node["r"] + GAP, mul_node["cy"], arrow_id))
     parts.append(_v_line(mul_node, down_proj, arrow_id))
-    parts.append(
-        _svg_tag(
-            "line",
-            {
-                "x1": cx,
-                "y1": down_proj["top"],
-                "x2": cx,
-                "y2": down_proj["top"] - 32,
-                "stroke": C["arrow"],
-                "stroke-width": 1.6,
-                "stroke-linecap": "round",
-                "marker-end": f"url(#{arrow_id})",
-                "fill": "none",
-            },
-        )
-    )
 
+    # Outgoing arrow at top — leaves down_proj going up.
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": down_proj["top"],
+        "x2": cx, "y2": down_proj["top"] - 36,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, down_proj["top"] - 46,
+        "out",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    # Incoming arrow at the bottom — points up into the input branch dot.
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": branch_y + 38,
+        "x2": cx, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
     parts.append(
         _svg_text(
             cx,
-            h - 22,
-            "x (input)",
-            {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_HEAD, "font-size": 18},
+            h - 24,
+            "in  ·  x",
+            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
         )
     )
     parts.append(
@@ -1019,12 +1141,18 @@ def _make_info(ir: dict) -> dict:
             },
         }
 
-    attention = dominant["spec"]["attention"]
-    ffn = dominant["spec"]["ffn"]
+    return {"groups": groups, "dominant": dominant, "meta": _meta_for(ir, dominant["spec"])}
+
+
+def _meta_for(ir: dict, spec: dict) -> dict:
+    """Tooltip / detail-card text for one layer-type's spec.  Re-computed per
+    variant so a heterogeneous model (e.g. DeepSeek-V3 dense + MoE) gets
+    correct tooltips for whichever layer type is currently displayed."""
+    attention = spec.get("attention", {})
+    ffn = spec.get("ffn", {})
     hidden = _fmt_int(ir.get("hidden_size"))
     vocab = _fmt_int(ir.get("vocab_size"))
-
-    meta = {
+    return {
         "tok_text": ("Tokenized text", "Input token IDs; shape [batch, seq_len]"),
         "embed": (
             "Token embedding",
@@ -1054,7 +1182,19 @@ def _make_info(ir: dict) -> dict:
         "gate_proj": ("Gate projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
     }
 
-    return {"groups": groups, "dominant": dominant, "meta": meta}
+
+def _group_label(group: dict) -> str:
+    """Short human label for a layer-type group, used on the toggle pill."""
+    spec = group["spec"]
+    indices = group["indices"]
+    bits = []
+    if spec.get("attention", {}).get("mask") == "sliding":
+        bits.append("SWA")
+    bits.append(spec.get("attention", {}).get("kind", "?").upper())
+    bits.append("MoE" if spec.get("ffn", {}).get("kind") == "moe" else "Dense")
+    label = " · ".join(bits)
+    span = f"L{indices[0]}" if len(indices) == 1 else f"L{indices[0]}–L{indices[-1]}"
+    return f"{label}  ({span} · {len(indices)}×)"
 
 
 def _signature(layer: dict) -> str:
