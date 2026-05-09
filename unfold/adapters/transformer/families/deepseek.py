@@ -1,22 +1,22 @@
 """Adapter for DeepSeek-V3 and Kimi K2 (which shares the architecture)."""
 from __future__ import annotations
+
 from typing import Any
-from ..ir import ModelIR, LayerSpec, AttentionSpec, FFNSpec
+
+from ....ir import AttentionSpec, FFNSpec, LayerSpec, ModelIR
+from ..blocks import decoder_layer_blocks, decoder_only_render_spec
+from ..common import architecture_name, get_config_value as _g, model_name
 
 
-def _g(cfg: Any, name: str, default=None):
-    """Get a config value whether cfg is a HF PretrainedConfig or a dict."""
-    if isinstance(cfg, dict):
-        return cfg.get(name, default)
-    return getattr(cfg, name, default)
+_FAMILIES = {"deepseek_v3", "deepseek_v2", "kimi"}
 
 
 def matches(cfg: Any) -> bool:
     arches = _g(cfg, "architectures") or []
     model_type = _g(cfg, "model_type", "")
-    if any("DeepseekV3" in a or "DeepseekV2" in a or "Kimi" in a for a in arches):
+    if any("DeepseekV3" in arch or "DeepseekV2" in arch or "Kimi" in arch for arch in arches):
         return True
-    if model_type in {"deepseek_v3", "deepseek_v2", "kimi"}:
+    if model_type in _FAMILIES:
         return True
     return False
 
@@ -45,9 +45,7 @@ def parse(cfg: Any) -> ModelIR:
     moe_layer_freq = _g(cfg, "moe_layer_freq", 1)
     activation = (_g(cfg, "hidden_act", "silu") or "silu").lower()
 
-    architectures = _g(cfg, "architectures") or []
-    arch_name = architectures[0] if architectures else _g(cfg, "model_type", "deepseek_v3")
-    name = _g(cfg, "_name_or_path") or _g(cfg, "name_or_path") or arch_name
+    arch_name = architecture_name(cfg, "deepseek_v3")
 
     layers = []
     for i in range(num_layers):
@@ -84,17 +82,31 @@ def parse(cfg: Any) -> ModelIR:
                 intermediate_size=intermediate_size,
                 gated=True,
             )
-        layers.append(LayerSpec(index=i, attention=attn, ffn=ffn))
+        layers.append(
+            LayerSpec(
+                index=i,
+                attention=attn,
+                ffn=ffn,
+                blocks=decoder_layer_blocks(attn, ffn, hidden_size),
+            )
+        )
 
+    vocab_size = _g(cfg, "vocab_size", 0)
+    tie_word_embeddings = bool(_g(cfg, "tie_word_embeddings", False))
     return ModelIR(
-        name=str(name).split("/")[-1] if name else arch_name,
+        name=model_name(cfg, arch_name),
         architecture=arch_name,
-        vocab_size=_g(cfg, "vocab_size", 0),
+        vocab_size=vocab_size,
         hidden_size=hidden_size,
         max_position_embeddings=_g(cfg, "max_position_embeddings"),
-        tie_word_embeddings=bool(_g(cfg, "tie_word_embeddings", False)),
+        tie_word_embeddings=tie_word_embeddings,
         layers=layers,
         extras={
+            "render": decoder_only_render_spec(
+                vocab_size,
+                hidden_size,
+                tie_word_embeddings,
+            ),
             "v_head_dim": v_head_dim,
             "first_k_dense_replace": first_k_dense_replace,
             "moe_layer_freq": moe_layer_freq,

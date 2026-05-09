@@ -47,6 +47,7 @@ class LayerSpec:
     ffn: FFNSpec
     norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm"
     norm_placement: str = "pre"     # "pre" | "post" | "double"
+    blocks: list = field(default_factory=list)
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
