@@ -30,36 +30,201 @@ C = {
 def render_fragment(ir: dict, mount_id: str) -> str:
     """Render a complete, script-free HTML fragment."""
     info = _make_info(ir)
-    views = _views(ir, info, mount_id)
-    style = _style(mount_id, views)
+    style = _style(mount_id)
 
-    inputs = []
-    labels = []
-    sections = []
-    for i, view in enumerate(views):
-        view_id, label, svg = view
-        input_id = f"{mount_id}-{view_id}"
-        checked = " checked" if i == 0 else ""
-        inputs.append(
-            f'<input class="uf-toggle" type="radio" name="{_attr(mount_id)}-tabs" '
-            f'id="{_attr(input_id)}"{checked}>'
-        )
-        labels.append(f'<label class="uf-tab" for="{_attr(input_id)}">{_html(label)}</label>')
-        sections.append(f'<section class="uf-view uf-view-{_attr(view_id)}">{svg}</section>')
+    arch_svg = _build_architecture_view(ir, info, mount_id)
+    arch_section = (
+        '<section class="uf-section uf-section-arch">'
+        '<div class="uf-section-head">'
+        '<span class="uf-section-label">ARCHITECTURE</span>'
+        f'<span class="uf-section-sub">Per-layer block · repeats × {len(ir.get("layers", []))}</span>'
+        '</div>'
+        f'<div class="uf-section-body">{arch_svg}</div>'
+        '</section>'
+    )
+
+    inspect_panel = _build_inspect_panel(ir, info, mount_id)
+
+    map_svg = _build_layer_map(ir, info, mount_id)
+    n_groups = len(info["groups"])
+    map_sub = (
+        "All layers structurally identical"
+        if n_groups <= 1
+        else f"{n_groups} layer types across {len(ir.get('layers', []))} layers"
+    )
+    layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
 
     return f"""
 <div id="{_attr(mount_id)}" class="uf-root">
 <style>
 {style}
 </style>
+<div class="uf-card">
 {_header(ir, info)}
 {_stats_banner(ir)}
-{''.join(inputs)}
-<div class="uf-tabs" role="tablist">{''.join(labels)}</div>
-<div class="uf-canvas">{''.join(sections)}</div>
-{_details_panel(info)}
+{arch_section}
+{inspect_panel}
+{layer_map_section}
+</div>
+{_click_script(mount_id)}
 </div>
 """
+
+
+def _build_inspect_panel(ir: dict, info: dict, mount_id: str) -> str:
+    """The click-driven detail panel that lives directly under the architecture
+    diagram.  Each block in the architecture has a corresponding detail card
+    here; the JS at the bottom toggles which one is visible."""
+    panels: list[str] = []
+    h = _fmt_int(ir.get("hidden_size"))
+    v = _fmt_int(ir.get("vocab_size"))
+    tied = ir.get("tie_word_embeddings")
+    attention = info["dominant"]["spec"]["attention"]
+    ffn = info["dominant"]["spec"]["ffn"]
+
+    panels.append(_simple_card(
+        "default",
+        "Click a block above to inspect it",
+        "Each block in the architecture is clickable. Simple blocks show their dimensions; the feed-forward block opens its full internal diagram.",
+    ))
+    panels.append(_simple_card(
+        "tok_text",
+        "Tokenized text",
+        f"Token IDs after tokenization · shape [batch, seq_len]",
+    ))
+    panels.append(_simple_card(
+        "embed",
+        "Token embedding",
+        f"Lookup table · vocab × hidden = {v} × {h}"
+        + (" · weights tied with output" if tied else ""),
+    ))
+    panels.append(_simple_card(
+        "rms1",
+        "Pre-attention RMSNorm",
+        f"RMSNorm · dim {h}",
+    ))
+    panels.append(_simple_card(
+        "attn",
+        _attention_title(attention),
+        _describe_attention(attention),
+    ))
+    panels.append(_simple_card(
+        "add1",
+        "Residual add",
+        "Adds block input + attention output",
+    ))
+    panels.append(_simple_card(
+        "rms2",
+        "Pre-FFN RMSNorm",
+        f"RMSNorm · dim {h}",
+    ))
+
+    # The interesting one: clicking the FFN block in the architecture reveals
+    # the FULL internal FFN diagram (or the MoE diagram for sparse models).
+    if ffn.get("kind") == "moe":
+        panels.append(_rich_card(
+            "ffn",
+            "Mixture of experts",
+            _describe_ffn(ffn),
+            _build_moe_view(ir, info, mount_id),
+        ))
+    else:
+        panels.append(_rich_card(
+            "ffn",
+            "Feed-forward block",
+            _describe_ffn(ffn),
+            _build_ffn_view(ir, info, mount_id),
+        ))
+
+    panels.append(_simple_card(
+        "add2",
+        "Residual add",
+        "Adds post-attention + FFN output",
+    ))
+    panels.append(_simple_card(
+        "final_rms",
+        "Final RMSNorm",
+        f"RMSNorm · dim {h}",
+    ))
+    panels.append(_simple_card(
+        "lm_head",
+        "Linear output (LM head)",
+        f"Linear · {h} → {v}"
+        + (" · weights tied with input embedding" if tied else ""),
+    ))
+
+    return f'<div class="uf-inspect">{"".join(panels)}</div>'
+
+
+def _attention_title(attn: dict) -> str:
+    kinds = {"mla": "Multi-head latent attention", "gqa": "Grouped-query attention",
+             "mqa": "Multi-query attention"}
+    return kinds.get(attn.get("kind", ""), "Attention")
+
+
+def _simple_card(node_id: str, title: str, desc: str) -> str:
+    return (
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        '</div>'
+    )
+
+
+def _rich_card(node_id: str, title: str, desc: str, svg: str) -> str:
+    return (
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
+        f'<div class="uf-card-title">{_html(title)}</div>'
+        f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f'<div class="uf-card-svg">{svg}</div>'
+        '</div>'
+    )
+
+
+def _click_script(mount_id: str) -> str:
+    """Inline JS for click-to-inspect.  Idempotent — re-runs in the same
+    browser cleanly each render."""
+    return f"""
+<script>
+(function() {{
+  var root = document.getElementById('{mount_id}');
+  if (!root) return;
+  var nodes  = root.querySelectorAll('.uf-section-arch .uf-node');
+  var panels = root.querySelectorAll('.uf-card-detail');
+  function show(id) {{
+    panels.forEach(function(p) {{
+      var match = p.classList.contains('uf-card-' + id);
+      p.style.display = match ? 'block' : 'none';
+    }});
+    nodes.forEach(function(n) {{
+      if (n.getAttribute('data-id') === id) n.classList.add('uf-selected');
+      else n.classList.remove('uf-selected');
+    }});
+  }}
+  nodes.forEach(function(n) {{
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', function(e) {{
+      e.stopPropagation();
+      show(n.getAttribute('data-id'));
+    }});
+  }});
+}})();
+</script>
+"""
+
+
+def _details_section(label: str, sub: str, svg: str) -> str:
+    """Collapsible section using <details>; closed by default."""
+    return (
+        '<details class="uf-section uf-section-collapsible">'
+        '<summary class="uf-section-head">'
+        f'<span class="uf-section-label">{_html(label)}</span>'
+        f'<span class="uf-section-sub">{_html(sub)}</span>'
+        '<span class="uf-chevron" aria-hidden="true">›</span>'
+        '</summary>'
+        f'<div class="uf-section-body">{svg}</div>'
+        '</details>'
+    )
 
 
 def render_document(ir: dict, mount_id: str) -> str:
@@ -85,52 +250,33 @@ def render_document(ir: dict, mount_id: str) -> str:
 """
 
 
-def _views(ir: dict, info: dict, mount_id: str) -> list[tuple[str, str, str]]:
-    ffn = info["dominant"]["spec"]["ffn"]
-    views = [
-        ("arch", "Architecture", _build_architecture_view(ir, info, mount_id)),
-    ]
-    if ffn.get("kind") == "moe":
-        views.append(("moe", "MoE", _build_moe_view(ir, info, mount_id)))
-    views.extend(
-        [
-            ("ffn", "Expert" if ffn.get("kind") == "moe" else "FFN", _build_ffn_view(ir, info, mount_id)),
-            ("map", "Layer map", _build_layer_map(ir, info, mount_id)),
-        ]
-    )
-    return views
-
-
-def _style(mount_id: str, views: list[tuple[str, str, str]]) -> str:
-    tab_rules = []
-    for view_id, _, _ in views:
-        input_id = f"{mount_id}-{view_id}"
-        tab_rules.append(
-            f"#{mount_id} #{input_id}:checked ~ .uf-canvas .uf-view-{view_id} {{ display:block; }}"
-        )
-        tab_rules.append(
-            f"#{mount_id} #{input_id}:checked ~ .uf-tabs label[for='{input_id}'] "
-            f"{{ background:{C['block']}; color:#FFFFFF; }}"
-        )
-
+def _style(mount_id: str) -> str:
     return f"""
 #{mount_id} {{
   font-family:{FONT_BODY};
   color:{C['text']};
+  max-width:720px;
+}}
+#{mount_id} .uf-card {{
+  background:{C['bg_card']};
+  border:1.5px solid {C['block']};
+  border-radius:14px;
+  padding:20px 22px 18px;
+  box-shadow:0 1px 3px rgba(15,23,42,0.05);
 }}
 #{mount_id} .uf-header {{
-  margin-bottom:12px;
+  margin-bottom:14px;
 }}
 #{mount_id} .uf-name {{
   font-family:{FONT_HEAD};
-  font-size:30px;
+  font-size:26px;
   line-height:1;
   color:{C['text']};
 }}
 #{mount_id} .uf-arch {{
   color:{C['muted']};
-  font-size:12px;
-  margin-top:4px;
+  font-size:11px;
+  margin-top:3px;
   font-family:{FONT_MONO};
 }}
 #{mount_id} .uf-badges {{
@@ -157,111 +303,146 @@ def _style(mount_id: str, views: list[tuple[str, str, str]]) -> str:
   gap:1px;
   background:{C['border']};
   border:0.5px solid {C['border']};
-  border-radius:10px;
+  border-radius:8px;
   overflow:hidden;
-  margin-bottom:14px;
+  margin-bottom:18px;
 }}
 #{mount_id} .uf-stat {{
-  padding:10px 14px;
+  padding:8px 12px;
   background:{C['bg_card']};
 }}
 #{mount_id} .uf-stat-key {{
-  font-size:10px;
+  font-size:9.5px;
   letter-spacing:0.12em;
   color:{C['muted']};
   font-weight:600;
 }}
 #{mount_id} .uf-stat-val {{
   font-family:{FONT_HEAD};
-  font-size:22px;
+  font-size:19px;
   color:{C['text']};
   margin-top:2px;
   line-height:1.05;
 }}
-#{mount_id} .uf-toggle {{
-  position:absolute;
-  opacity:0;
-  pointer-events:none;
+#{mount_id} .uf-section {{
+  margin-top:14px;
 }}
-#{mount_id} .uf-tabs {{
+#{mount_id} .uf-section-head {{
   display:flex;
-  gap:4px;
-  margin-bottom:10px;
-  padding:4px;
-  background:{C['bg_card']};
-  border:0.5px solid {C['border']};
-  border-radius:9px;
-  width:fit-content;
-}}
-#{mount_id} .uf-tab {{
-  appearance:none;
-  border:0;
-  background:transparent;
-  color:{C['muted']};
-  padding:7px 14px;
-  border-radius:6px;
-  font:600 12px {FONT_BODY};
-  cursor:pointer;
-  transition:background .15s,color .15s;
-}}
-#{mount_id} .uf-tab:hover {{
+  align-items:baseline;
+  gap:10px;
+  padding:9px 12px;
   background:{C['badge_bg']};
-  color:{C['text']};
-}}
-#{mount_id} .uf-canvas {{
-  background:{C['canvas']};
   border:0.5px solid {C['border']};
-  border-radius:12px;
-  padding:8px;
+  border-radius:8px;
+  cursor:default;
+  user-select:none;
+  list-style:none;
 }}
-#{mount_id} .uf-view {{
+#{mount_id} .uf-section-collapsible > summary.uf-section-head {{
+  cursor:pointer;
+  transition:background .15s;
+}}
+#{mount_id} .uf-section-collapsible > summary.uf-section-head:hover {{
+  background:#C8E9D7;
+}}
+#{mount_id} .uf-section-head::-webkit-details-marker,
+#{mount_id} summary.uf-section-head::-webkit-details-marker {{
   display:none;
 }}
-#{mount_id} .uf-view svg {{
+#{mount_id} .uf-section-label {{
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  font-weight:700;
+  color:{C['text']};
+}}
+#{mount_id} .uf-section-sub {{
+  font-size:11px;
+  color:{C['muted']};
+}}
+#{mount_id} .uf-chevron {{
+  margin-left:auto;
+  font-size:18px;
+  color:{C['muted']};
+  transition:transform .15s ease;
+  transform:rotate(0deg);
+}}
+#{mount_id} details.uf-section[open] .uf-chevron {{
+  transform:rotate(90deg);
+}}
+#{mount_id} .uf-section-body {{
+  background:{C['canvas']};
+  border:0.5px solid {C['border']};
+  border-radius:10px;
+  padding:6px;
+  margin-top:6px;
+  animation:uf-fade .25s ease-out;
+}}
+#{mount_id} .uf-section-body svg {{
   display:block;
   max-width:100%;
   height:auto;
-  animation:uf-fade .35s ease-out;
 }}
 #{mount_id} .uf-node rect,
 #{mount_id} .uf-node circle {{
-  transition:filter .15s;
+  transition:filter .15s, stroke .15s, stroke-width .15s;
 }}
-#{mount_id} .uf-node:hover rect,
-#{mount_id} .uf-node:hover circle {{
-  filter:brightness(1.08) drop-shadow(0 2px 4px rgba(0,0,0,.18));
+#{mount_id} .uf-section-arch .uf-node {{
+  cursor:pointer;
 }}
-#{mount_id} .uf-panel {{
-  margin-top:10px;
-  padding:12px 14px;
-  background:{C['bg_card']};
+#{mount_id} .uf-section-arch .uf-node:hover rect,
+#{mount_id} .uf-section-arch .uf-node:hover circle {{
+  filter:brightness(1.1) drop-shadow(0 2px 4px rgba(0,0,0,.18));
+}}
+#{mount_id} .uf-node.uf-selected rect,
+#{mount_id} .uf-node.uf-selected circle {{
+  stroke:#FACC15;
+  stroke-width:2.5;
+}}
+#{mount_id} .uf-inspect {{
+  margin-top:14px;
+  padding:14px 16px;
+  background:{C['canvas']};
   border:0.5px solid {C['border']};
   border-radius:10px;
+  min-height:64px;
+  animation:uf-fade .25s ease-out;
+}}
+#{mount_id} .uf-card-detail {{
+  display:none;
+  animation:uf-fade .2s ease-out;
+}}
+#{mount_id} .uf-card-default {{
+  display:block;
+}}
+#{mount_id} .uf-card-title {{
+  font-family:{FONT_HEAD};
+  font-size:22px;
+  color:{C['text']};
+  line-height:1.1;
+}}
+#{mount_id} .uf-card-desc {{
   font-size:13px;
   color:{C['muted']};
+  margin-top:4px;
   line-height:1.45;
 }}
-#{mount_id} .uf-panel summary {{
-  cursor:pointer;
-  color:{C['text']};
-  font-weight:600;
-}}
-#{mount_id} .uf-detail-grid {{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:8px;
+#{mount_id} .uf-card-svg {{
   margin-top:10px;
+  background:{C['bg_card']};
+  border:0.5px solid {C['border']};
+  border-radius:8px;
+  padding:6px;
 }}
-#{mount_id} .uf-detail {{
-  border-top:1px solid {C['border']};
-  padding-top:8px;
+#{mount_id} .uf-card-svg svg {{
+  display:block;
+  max-width:100%;
+  height:auto;
 }}
-#{mount_id} .uf-detail-title {{
-  color:{C['text']};
-  font-weight:600;
+@keyframes uf-fade {{
+  from {{ opacity:0; transform:translateY(2px); }}
+  to   {{ opacity:1; transform:none; }}
 }}
-@keyframes uf-fade {{ from {{ opacity:0; transform:translateY(4px); }} to {{ opacity:1; transform:none; }} }}
-{chr(10).join(tab_rules)}
 """
 
 
@@ -304,26 +485,6 @@ def _stats_banner(ir: dict) -> str:
             '</div>'
         )
     return f'<div class="uf-stats">{"".join(cells)}</div>'
-
-
-def _details_panel(info: dict) -> str:
-    details = []
-    for key in ("embed", "rms1", "attn", "ffn", "final_rms", "lm_head"):
-        title, desc = info["meta"][key]
-        details.append(
-            '<div class="uf-detail">'
-            f'<div class="uf-detail-title">{_html(title)}</div>'
-            f'<div>{_html(desc)}</div>'
-            '</div>'
-        )
-    return (
-        '<details class="uf-panel" open>'
-        '<summary>Block details</summary>'
-        '<div style="margin-top:6px">Hover blocks in the diagram for quick tooltips; '
-        'the key dimensions are listed below.</div>'
-        f'<div class="uf-detail-grid">{"".join(details)}</div>'
-        '</details>'
-    )
 
 
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:

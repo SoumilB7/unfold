@@ -619,7 +619,7 @@
     return svg;
   }
 
-  // ── chrome (header, stats, tabs, info panel) ────────────────────────────
+  // ── chrome (single outer card holding everything) ───────────────────────
   function statsBanner(ir) {
     const root = document.createElement("div");
     const params = ir.params || {};
@@ -635,21 +635,46 @@
     root.style.cssText = `
       display:grid;grid-template-columns:repeat(${items.length},minmax(0,1fr));
       gap:1px;background:${C.border};border:0.5px solid ${C.border};
-      border-radius:10px;overflow:hidden;margin-bottom:14px;
+      border-radius:8px;overflow:hidden;margin-bottom:18px;
     `;
     items.forEach(([k, v]) => {
       const cell = document.createElement("div");
-      cell.style.cssText = `padding:10px 14px;background:${C.bg_card};`;
+      cell.style.cssText = `padding:8px 12px;background:${C.bg_card};`;
       const k1 = document.createElement("div");
-      k1.style.cssText = `font-size:10px;letter-spacing:0.12em;color:${C.muted};font-weight:600;`;
+      k1.style.cssText = `font-size:9.5px;letter-spacing:0.12em;color:${C.muted};font-weight:600;`;
       k1.textContent = k.toUpperCase();
       const v1 = document.createElement("div");
-      v1.style.cssText = `font-family:${FONT_HEAD};font-size:22px;color:${C.text};margin-top:2px;line-height:1.05;`;
+      v1.style.cssText = `font-family:${FONT_HEAD};font-size:19px;color:${C.text};margin-top:2px;line-height:1.05;`;
       v1.textContent = v;
       cell.appendChild(k1); cell.appendChild(v1);
       root.appendChild(cell);
     });
     return root;
+  }
+
+  function section(label, sub, svg) {
+    const s = document.createElement("div");
+    s.className = "uf-section";
+    s.style.cssText = "margin-top:18px;";
+    const head = document.createElement("div");
+    head.style.cssText = `display:flex;align-items:baseline;gap:10px;margin-bottom:6px;`;
+    const l = document.createElement("span");
+    l.style.cssText = `font-size:10.5px;letter-spacing:0.14em;font-weight:700;color:${C.text};`;
+    l.textContent = label.toUpperCase();
+    head.appendChild(l);
+    if (sub) {
+      const su = document.createElement("span");
+      su.style.cssText = `font-size:11px;color:${C.muted};`;
+      su.textContent = sub;
+      head.appendChild(su);
+    }
+    s.appendChild(head);
+    const body = document.createElement("div");
+    body.className = "uf-svg";
+    body.style.cssText = `background:${C.canvas};border:0.5px solid ${C.border};border-radius:10px;padding:6px;`;
+    body.appendChild(svg);
+    s.appendChild(body);
+    return s;
   }
 
   function badgeRow(badges) {
@@ -683,87 +708,97 @@
   function render(ir, mount) {
     ensureFonts();
     const info = makeInfo(ir);
+    const isMoe = info.dominant.spec.ffn.kind === "moe";
 
     mount.innerHTML = "";
     mount.style.fontFamily = FONT_BODY;
     mount.style.color = C.text;
+    mount.style.maxWidth = "720px";
 
-    // header: name + badges
-    const head = document.createElement("div");
-    head.style.cssText = "margin-bottom:12px;";
-    const name = document.createElement("div");
-    name.style.cssText = `font-family:${FONT_HEAD};font-size:30px;line-height:1;color:${C.text};`;
-    name.textContent = ir.name;
-    head.appendChild(name);
-    const sub = document.createElement("div");
-    sub.style.cssText = `color:${C.muted};font-size:12px;margin-top:4px;font-family:${FONT_MONO};`;
-    sub.textContent = ir.architecture;
-    head.appendChild(sub);
-    head.appendChild(badgeRow(archBadges(ir, info)));
-    mount.appendChild(head);
-
-    mount.appendChild(statsBanner(ir));
-
-    // tab strip
-    const tabs = document.createElement("div");
-    tabs.style.cssText = `
-      display:flex;gap:4px;margin-bottom:10px;padding:4px;background:${C.bg_card};
-      border:0.5px solid ${C.border};border-radius:9px;width:fit-content;
+    // single outer card holds everything
+    const card = document.createElement("div");
+    card.style.cssText = `
+      background:${C.bg_card};
+      border:0.5px solid ${C.border};
+      border-radius:14px;
+      padding:22px 24px 20px;
+      box-shadow:0 1px 3px rgba(15,23,42,0.04);
     `;
-    const tabDefs = [
-      { v: "arch", label: "Architecture", enabled: true },
-      { v: "moe",  label: "MoE",          enabled: info.dominant.spec.ffn.kind === "moe" },
-      { v: "ffn",  label: info.dominant.spec.ffn.kind === "moe" ? "Expert" : "FFN", enabled: true },
-      { v: "map",  label: "Layer map",    enabled: true },
-    ];
-    const tabBtns = [];
-    tabDefs.forEach(td => {
-      const b = document.createElement("button");
-      b.dataset.view = td.v;
-      b.textContent = td.label;
-      b.disabled = !td.enabled;
-      b.className = "uf-tab";
-      tabs.appendChild(b);
-      tabBtns.push(b);
-    });
-    mount.appendChild(tabs);
+    mount.appendChild(card);
 
+    // ── stylesheet (scoped via class names) ──
     const style = document.createElement("style");
     style.textContent = `
-      .uf-tab {
-        appearance:none;border:0;background:transparent;color:${C.muted};
-        padding:7px 14px;border-radius:6px;font:600 12px ${FONT_BODY};
-        cursor:pointer;transition:background .15s,color .15s;
-      }
-      .uf-tab:hover:not(:disabled) { background:${C.badge_bg};color:${C.text}; }
-      .uf-tab.uf-active { background:${C.block};color:#FFFFFF; }
-      .uf-tab:disabled { opacity:.4;cursor:not-allowed; }
       .uf-node rect, .uf-node circle { transition: filter .15s; }
       .uf-node:hover rect, .uf-node:hover circle { filter: brightness(1.08) drop-shadow(0 2px 4px rgba(0,0,0,.18)); }
       .uf-node.uf-selected rect, .uf-node.uf-selected circle { stroke: #FACC15 !important; stroke-width: 2.5 !important; }
-      .uf-canvas svg { display:block; max-width:100%; height:auto; animation: uf-fade .35s ease-out; }
-      @keyframes uf-fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+      .uf-svg svg { display:block; max-width:100%; height:auto; animation: uf-fade .3s ease-out; }
+      @keyframes uf-fade { from { opacity:0; transform:translateY(2px); } to { opacity:1; transform:none; } }
     `;
     mount.appendChild(style);
 
-    const canvas = document.createElement("div");
-    canvas.className = "uf-canvas";
-    canvas.style.cssText = `
-      background:${C.canvas};border:0.5px solid ${C.border};
-      border-radius:12px;padding:8px;
-    `;
-    mount.appendChild(canvas);
+    // header: name, architecture, badges
+    const head = document.createElement("div");
+    head.style.cssText = "margin-bottom:14px;";
+    const name = document.createElement("div");
+    name.style.cssText = `font-family:${FONT_HEAD};font-size:26px;line-height:1;color:${C.text};`;
+    name.textContent = ir.name;
+    head.appendChild(name);
+    const sub = document.createElement("div");
+    sub.style.cssText = `color:${C.muted};font-size:11px;margin-top:3px;font-family:${FONT_MONO};`;
+    sub.textContent = ir.architecture;
+    head.appendChild(sub);
+    head.appendChild(badgeRow(archBadges(ir, info)));
+    card.appendChild(head);
 
+    // stats grid
+    card.appendChild(statsBanner(ir));
+
+    // ── stacked sections (no tabs) ──
+    card.appendChild(section(
+      "Architecture",
+      `Per-layer block · repeats × ${ir.layers.length}`,
+      buildArchitectureView(ir, info)
+    ));
+
+    if (isMoe) {
+      card.appendChild(section(
+        "Mixture of experts",
+        info.dominant.spec.ffn.num_experts && info.dominant.spec.ffn.num_experts_per_tok
+          ? `top-${info.dominant.spec.ffn.num_experts_per_tok} of ${info.dominant.spec.ffn.num_experts} active per token`
+          : "router → top-k experts → weighted sum",
+        buildMoeView(ir, info)
+      ));
+    }
+
+    card.appendChild(section(
+      isMoe ? "Expert FFN" : "FFN block",
+      `Gated ${(info.dominant.spec.ffn.activation || "silu").toUpperCase()} · hidden ` +
+      fmtInt(info.dominant.spec.ffn.expert_intermediate_size || info.dominant.spec.ffn.intermediate_size),
+      buildFfnView(ir, info)
+    ));
+
+    card.appendChild(section(
+      "Layer map",
+      info.groups.length === 1
+        ? "All layers structurally identical"
+        : `${info.groups.length} layer types across ${ir.layers.length} layers`,
+      buildLayerMap(ir, info)
+    ));
+
+    // info panel — updates when any block in any view is clicked
     const panel = document.createElement("div");
     panel.style.cssText = `
-      margin-top:10px;padding:12px 14px;background:${C.bg_card};
-      border:0.5px solid ${C.border};border-radius:10px;
-      font-size:13px;color:${C.muted};min-height:42px;line-height:1.45;
+      margin-top:18px;padding:11px 14px;background:${C.canvas};
+      border:0.5px solid ${C.border};border-radius:9px;
+      font-size:12.5px;color:${C.muted};min-height:38px;line-height:1.45;
     `;
     panel.innerHTML = `<span style="color:${C.text}">Click any block</span> to inspect its dimensions and role.`;
-    mount.appendChild(panel);
+    card.appendChild(panel);
 
-    function attachClicks(svg) {
+    // wire clicks across every section's SVG; selecting a node deselects
+    // siblings within its own SVG (so each diagram has its own selection)
+    card.querySelectorAll(".uf-svg svg").forEach(svg => {
       svg.querySelectorAll(".uf-node").forEach(node => {
         node.addEventListener("click", () => {
           svg.querySelectorAll(".uf-node.uf-selected").forEach(n => n.classList.remove("uf-selected"));
@@ -778,25 +813,7 @@
           }
         });
       });
-    }
-
-    function show(view) {
-      canvas.innerHTML = "";
-      let svg;
-      if (view === "moe" && info.dominant.spec.ffn.kind === "moe") svg = buildMoeView(ir, info);
-      else if (view === "ffn") svg = buildFfnView(ir, info);
-      else if (view === "map") svg = buildLayerMap(ir, info);
-      else svg = buildArchitectureView(ir, info);
-      canvas.appendChild(svg);
-      attachClicks(svg);
-      tabBtns.forEach(b => b.classList.toggle("uf-active", b.dataset.view === view));
-    }
-
-    tabBtns.forEach(b => b.addEventListener("click", () => {
-      if (!b.disabled) show(b.dataset.view);
-    }));
-
-    show("arch");
+    });
   }
 
   global.Unfold = { render };

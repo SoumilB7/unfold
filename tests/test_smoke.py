@@ -92,11 +92,12 @@ def test_kimi_k2():
     html = d.to_html(standalone=True)
     assert "<!doctype html>" in html.lower()
     assert "Unfold" in html
-    assert "<script" not in html.lower()
+    assert "<script" in html.lower()                # click-to-inspect handler
+    assert "uf-card-detail" in html                 # detail panels are present
     assert "<svg" in html.lower()
 
     fragment = d._repr_html_()
-    assert "<script" not in fragment.lower()
+    assert "<script" in fragment.lower()
     assert "<style>" in fragment
     assert "<svg" in fragment.lower()
     assert d._mount_id in fragment
