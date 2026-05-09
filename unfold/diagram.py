@@ -8,13 +8,9 @@ from __future__ import annotations
 import json
 import os
 import uuid
-from importlib import resources
 from .ir import ModelIR
+from .html_renderer import render_document, render_fragment
 from .params import estimate_params, humanize
-
-
-def _load_renderer_js() -> str:
-    return resources.files("unfold.static").joinpath("renderer.js").read_text(encoding="utf-8")
 
 
 class Diagram:
@@ -77,48 +73,9 @@ class Diagram:
         return path
 
     def _html(self, standalone: bool) -> str:
-        ir_json = json.dumps(self.to_ir())
-        renderer_js = _load_renderer_js()
-        mount_id = self._mount_id
-
-        body = f"""
-<div id="{mount_id}" style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#0F172A;"></div>
-<script>
-(function() {{
-  function init() {{
-    if (!window.Unfold) {{
-{renderer_js}
-    }}
-    var mount = document.getElementById("{mount_id}");
-    if (mount) window.Unfold.render({ir_json}, mount);
-  }}
-  if (document.readyState === "loading") {{
-    document.addEventListener("DOMContentLoaded", init);
-  }} else {{
-    init();
-  }}
-}})();
-</script>
-"""
         if not standalone:
-            return body
-
-        return f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{self.ir.name} — unfolded</title>
-<style>
-  body {{ margin: 0; padding: 32px 24px; background: #F8FAFC; min-height: 100vh; }}
-  .uf-frame {{ max-width: 820px; margin: 0 auto; }}
-</style>
-</head>
-<body>
-  <div class="uf-frame">{body}</div>
-</body>
-</html>
-"""
+            return render_fragment(self.to_ir(), self._mount_id)
+        return render_document(self.to_ir(), self._mount_id)
 
     def __repr__(self) -> str:
         return (

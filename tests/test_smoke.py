@@ -92,9 +92,13 @@ def test_kimi_k2():
     html = d.to_html(standalone=True)
     assert "<!doctype html>" in html.lower()
     assert "Unfold" in html
+    assert "<script" not in html.lower()
+    assert "<svg" in html.lower()
 
     fragment = d._repr_html_()
-    assert "<script>" in fragment
+    assert "<script" not in fragment.lower()
+    assert "<style>" in fragment
+    assert "<svg" in fragment.lower()
     assert d._mount_id in fragment
 
     print(f"Kimi K2 OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")

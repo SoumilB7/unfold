@@ -55,11 +55,11 @@ diagram.to_ir()                # the full IR dict
 
 ## What you get
 
-The diagram has four views, switchable via tabs:
+The diagram has up to four views, switchable via CSS-only tabs:
 
 | View | What it shows |
 |------|---------------|
-| **Architecture** | The repeating transformer block (norm → attention → norm → FFN, with residuals). Color-coded by role. Click any block to inspect its dimensions. |
+| **Architecture** | The repeating transformer block (norm → attention → norm → FFN, with residuals). Hover blocks for dimensions and role details. |
 | **MoE** | When the model is sparse — router → top-k experts → weighted sum. With a prominent active-per-token callout (e.g. `8/384 · 2.1%`). |
 | **FFN / Expert** | The gated SwiGLU/GeGLU block (gate × activation × up → down). |
 | **Layer map** | Heterogeneous models (DeepSeek-V3, Gemma) get a stripe-chart showing which layer types appear where. |
@@ -79,14 +79,14 @@ For MoE models, the count splits as `total (active)` — e.g. DeepSeek-V3 report
 ## Architecture
 
 ```
-HF config  →  parser  →  IR (ModelIR dataclass)  →  renderer.js  →  inline SVG
+HF config  →  parser  →  IR (ModelIR dataclass)  →  Python HTML/SVG renderer
 ```
 
-Three layers, sharply separated:
+Four pieces, sharply separated:
 
 - **Parser** ([unfold/adapters/](unfold/adapters/)) — per-architecture Python adapters. Each adapter has `matches(cfg)` and `parse(cfg) -> ModelIR`.
 - **IR** ([unfold/ir.py](unfold/ir.py)) — dataclasses describing a model as a list of `LayerSpec`s, each carrying its own `AttentionSpec` and `FFNSpec`. Layer-aware so heterogeneous architectures (DeepSeek-V3 dense+MoE, Gemma sliding+full) map onto the same shape.
-- **Renderer** ([unfold/static/renderer.js](unfold/static/renderer.js)) — vanilla JS, no build step. Consumes IR JSON, produces SVG.
+- **Renderer** ([unfold/html_renderer.py](unfold/html_renderer.py)) — pure Python, no JS runtime. Consumes IR dicts and produces self-contained HTML/SVG with CSS-only tabs.
 - **Glue** ([unfold/diagram.py](unfold/diagram.py)) — `Diagram` class. Implements `_repr_html_()`, `save()`, `to_html()`.
 
 ## Adding a new architecture
