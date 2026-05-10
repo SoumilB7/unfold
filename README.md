@@ -76,24 +76,24 @@ diagram.to_ir()              # full IR dict
 
 Param estimates are close to published numbers — DeepSeek-V3 reports `~675B (~41B active)`, Llama-3-8B reports `8.03B`.
 
-## Live demos
+## Models supported
 
-Open in any browser to interact (click blocks, expand sub-blocks, toggle layer types):
+### Transformers
 
-| Model | Highlights | Demo |
-|---|---|---|
-| Llama-3-8B | GQA + dense baseline | [examples/llama-3-8b.html](examples/llama-3-8b.html) |
-| Mistral-7B-v0.3 | GQA + dense, 32k context | [examples/mistral-7b-v0.3.html](examples/mistral-7b-v0.3.html) |
-| DeepSeek-V3 | MLA + dense → MoE phase change | [examples/deepseek-v3.html](examples/deepseek-v3.html) |
-| Kimi K2 | MLA + 384-expert MoE, ~1T params | [examples/kimi-k2.html](examples/kimi-k2.html) |
+| Family | Models |
+|---|---|
+| DeepSeek | DeepSeek-V2, DeepSeek-V3, Kimi K2 |
+| Llama | Llama 3 / 3.1 / 3.2 / 3.3 |
+| Mistral | v0.1 / 0.2 / 0.3 | 
+| Gemma | Gemma 3, Gemma 4 (31B, E2B, E4B) |
 
-## Supported architectures
+### Diffusors
 
-| Family | Adapter | Notes |
-|---|---|---|
-| DeepSeek-V2 / V3 / Kimi K2 | [families/deepseek.py](model_unfolder/adapters/transformer/families/deepseek.py) | MLA + dense → MoE phase change |
-| Llama / Mistral / Qwen2 / Qwen3 / Phi-3 | [families/llama.py](model_unfolder/adapters/transformer/families/llama.py) | GQA / MQA / MHA + dense FFN |
-| Gemma 4 | [families/gemma4.py](model_unfolder/adapters/transformer/families/gemma4.py) | sliding/global layers, KV sharing, PLE |
+Coming soon.
+
+### Custom
+
+Drop a request in issues.
 
 
 ## License
