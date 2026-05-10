@@ -18,11 +18,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ....ir import AttentionSpec, CrossLayerEdge, FFNSpec, LayerSpec, ModelIR
-from ..blocks import (
-    decoder_layer_blocks,
-    decoder_only_render_spec,
-)
+from ....ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
+from ..assembly import decoder_extras, decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 from ..special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
@@ -74,7 +71,7 @@ def parse(cfg: Any) -> ModelIR:
     ple_dim = _g(text_cfg, "hidden_size_per_layer_input") or 0
     ple_vocab = _g(text_cfg, "vocab_size_per_layer_input") or _g(text_cfg, "vocab_size", 0)
 
-    layers: list[LayerSpec] = []
+    layers = []
     cross_edges: list[CrossLayerEdge] = []
     for i in range(num_layers):
         layer_type = layer_types[i] if i < len(layer_types) else "full_attention"
@@ -133,30 +130,25 @@ def parse(cfg: Any) -> ModelIR:
                 gated=True,
             )
 
-        layer_blocks = decoder_layer_blocks(attn, ffn, hidden_size)
+        extra_blocks = []
         if ple_dim:
-            layer_blocks.extend(
+            extra_blocks.extend(
                 per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")
             )
         layers.append(
-            LayerSpec(
-                index=i,
-                attention=attn,
-                ffn=ffn,
-                blocks=layer_blocks,
-            )
+            decoder_layer(i, attn, ffn, hidden_size, extra_blocks=extra_blocks)
         )
 
     vocab_size = _g(text_cfg, "vocab_size", 0)
     tie_word_embeddings = bool(_g(text_cfg, "tie_word_embeddings", _g(cfg, "tie_word_embeddings", False)))
 
-    extras = {
-        "render": decoder_only_render_spec(vocab_size, hidden_size, tie_word_embeddings),
-    }
-    if ple_dim:
-        extras.update(
-            per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers)
-        )
+    extras = decoder_extras(
+        vocab_size,
+        hidden_size,
+        tie_word_embeddings,
+        per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers)
+        if ple_dim else None,
+    )
     if num_kv_shared:
         extras["num_kv_shared_layers"] = num_kv_shared
     if _g(text_cfg, "attention_k_eq_v"):

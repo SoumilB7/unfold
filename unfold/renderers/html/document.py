@@ -1,16 +1,11 @@
 """Top-level HTML document and fragment rendering."""
 from __future__ import annotations
 
-from .components import (
-    _build_inspect_cards,
-    _build_sub_inspect_cards,
-    _click_script,
-    _details_section,
-    _header,
-    _stats_banner,
-    _style,
-)
+from .cards import _build_inspect_cards, _build_sub_inspect_cards
+from .interactions import _click_script
 from .metadata import _block_lookup, _group_label, _make_info, _meta_for
+from .sections import _details_section, _header, _stats_banner
+from .styles import _style
 from .theme import C, FONT_IMPORT, FONT_LINK
 from .utils import _attr, _html
 from .views import _build_architecture_view, _build_layer_map
