@@ -5,15 +5,33 @@ from .utils import _fmt_int
 
 
 def _make_info(ir: dict) -> dict:
-    groups = []
+    layers = ir.get("layers", [])
+    sigs = [_signature(layer) for layer in layers]
+
+    # Run-length encode for diagnostics, but the consumer-facing ``groups``
+    # collapses by signature so a periodic pattern (Gemma 4: 5 sliding + 1
+    # full × 10 cycles) shows up as 2 layer types, not 20 segments.
+    rle = []
     cur = None
-    for layer in ir.get("layers", []):
-        sig = _signature(layer)
+    for sig, layer in zip(sigs, layers):
         if cur and cur["sig"] == sig:
             cur["indices"].append(layer.get("index", len(cur["indices"])))
         else:
             cur = {"sig": sig, "indices": [layer.get("index", 0)], "spec": layer}
-            groups.append(cur)
+            rle.append(cur)
+
+    by_sig: dict = {}
+    order: list = []
+    for run in rle:
+        sig = run["sig"]
+        if sig not in by_sig:
+            by_sig[sig] = {"sig": sig, "spec": run["spec"], "indices": [], "runs": []}
+            order.append(sig)
+        by_sig[sig]["indices"].extend(run["indices"])
+        by_sig[sig]["runs"].append((run["indices"][0], run["indices"][-1]))
+    groups = [by_sig[sig] for sig in order]
+
+    period = _detect_period(sigs)
 
     if groups:
         dominant = max(groups, key=lambda group: len(group["indices"]))
@@ -21,6 +39,7 @@ def _make_info(ir: dict) -> dict:
         dominant = {
             "sig": "",
             "indices": [],
+            "runs": [],
             "spec": {
                 "attention": {"kind": "mha", "num_heads": 0, "num_kv_heads": 0},
                 "ffn": {"kind": "dense", "activation": "silu", "intermediate_size": 0, "gated": True},
@@ -30,9 +49,28 @@ def _make_info(ir: dict) -> dict:
     return {
         "groups": groups,
         "dominant": dominant,
+        "period": period,
+        "n_layers": len(layers),
         "blocks": _block_lookup(ir, dominant["spec"]),
         "meta": _meta_for(ir, dominant["spec"]),
     }
+
+
+def _detect_period(sigs: list) -> int | None:
+    """Smallest period p < n such that sigs[i] == sigs[i % p] for all i.
+
+    Returns None when no shorter period exists (i.e. the sequence is aperiodic
+    or only repeats at full length).
+    """
+    n = len(sigs)
+    if n < 2:
+        return None
+    for p in range(1, n // 2 + 1):
+        if n % p:
+            continue
+        if all(sigs[i] == sigs[i % p] for i in range(n)):
+            return p
+    return None
 
 
 def _meta_for(ir: dict, spec: dict) -> dict:
@@ -107,7 +145,7 @@ def _block_meta(blocks: dict) -> dict:
     return meta
 
 
-def _group_label(group: dict) -> str:
+def _group_label(group: dict, info: dict | None = None) -> str:
     """Short human label for a layer-type group, used on the toggle pill."""
     spec = group["spec"]
     indices = group["indices"]
@@ -117,8 +155,35 @@ def _group_label(group: dict) -> str:
     bits.append(spec.get("attention", {}).get("kind", "?").upper())
     bits.append("MoE" if spec.get("ffn", {}).get("kind") == "moe" else "Dense")
     label = " · ".join(bits)
-    span = f"L{indices[0]}" if len(indices) == 1 else f"L{indices[0]}–L{indices[-1]}"
-    return f"{label}  ({span} · {len(indices)}×)"
+    return f"{label}  ({_indices_summary(group, info)})"
+
+
+def _indices_summary(group: dict, info: dict | None) -> str:
+    """Compact human description of which layers belong to a group.
+
+    Three cases:
+      * Single contiguous run               → "L3–L60 · 58×"
+      * Periodic pattern (Gemma-4 style)    → "5 of every 6 · 50 layers"
+      * Otherwise                           → "50 layers · L0–L58"
+    """
+    indices = group["indices"]
+    runs = group.get("runs") or [(indices[0], indices[-1])]
+    n = len(indices)
+
+    if len(runs) == 1:
+        first, last = runs[0]
+        if first == last:
+            return f"L{first} · 1×"
+        return f"L{first}–L{last} · {n}×"
+
+    period = info.get("period") if info else None
+    total = info.get("n_layers") if info else None
+    if period and total:
+        per_cycle = sum(1 for i in range(period) if i in set(indices))
+        cycles = total // period
+        return f"{per_cycle} of every {period} · {n} layers (×{cycles})"
+
+    return f"{n} layers · L{indices[0]}–L{indices[-1]}"
 
 
 def _signature(layer: dict) -> str:

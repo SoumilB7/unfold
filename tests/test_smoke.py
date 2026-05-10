@@ -89,6 +89,38 @@ MISTRAL_7B_CONFIG = {
 }
 
 
+# Gemma 4 31B (dense) — alternates 5 sliding + 1 full across 60 layers, with
+# distinct head_dim and num_kv_heads on global vs sliding layers.
+GEMMA4_31B_LAYER_TYPES = [
+    "sliding_attention" if (i % 6) != 5 else "full_attention" for i in range(60)
+]
+GEMMA4_31B_CONFIG = {
+    "architectures": ["Gemma4ForConditionalGeneration"],
+    "model_type": "gemma4",
+    "_name_or_path": "google/gemma-4-31B",
+    "tie_word_embeddings": True,
+    "text_config": {
+        "model_type": "gemma4_text",
+        "vocab_size": 262144,
+        "hidden_size": 5376,
+        "intermediate_size": 21504,
+        "num_hidden_layers": 60,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 16,
+        "num_global_key_value_heads": 4,
+        "head_dim": 256,
+        "global_head_dim": 512,
+        "sliding_window": 1024,
+        "max_position_embeddings": 262144,
+        "tie_word_embeddings": True,
+        "hidden_activation": "gelu_pytorch_tanh",
+        "layer_types": GEMMA4_31B_LAYER_TYPES,
+        "enable_moe_block": False,
+        "attention_k_eq_v": True,
+    },
+}
+
+
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
@@ -130,6 +162,39 @@ def test_deepseek_v3_phase_change():
         assert ir["layers"][i]["ffn"]["kind"] == "moe"
     assert ir["layers"][3]["ffn"]["num_experts"] == 256
     print(f"DeepSeek-V3 phase change OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")
+
+
+def test_gemma4_31b():
+    d = unfold(GEMMA4_31B_CONFIG)
+    ir = d.to_ir()
+    assert ir["name"] == "gemma-4-31B"
+    assert len(ir["layers"]) == 60
+
+    # Sliding/full pattern: every 6th layer is full, rest are sliding.
+    for i, layer in enumerate(ir["layers"]):
+        attn = layer["attention"]
+        if (i % 6) == 5:
+            assert attn["mask"] == "global", f"layer {i} should be full attention"
+            assert attn["num_kv_heads"] == 4
+            assert attn["head_dim"] == 512
+        else:
+            assert attn["mask"] == "sliding", f"layer {i} should be sliding"
+            assert attn["window_size"] == 1024
+            assert attn["num_kv_heads"] == 16
+            assert attn["head_dim"] == 256
+        assert attn["num_heads"] == 32
+        assert layer["ffn"]["kind"] == "dense"
+
+    # Two distinct layer signatures → layer-map shows two colored groups.
+    sigs = {(l["attention"]["mask"], l["attention"]["window_size"]) for l in ir["layers"]}
+    assert sigs == {("sliding", 1024), ("global", None)}
+
+    assert ir["params"]["is_sparse"] is False
+
+    html = d.to_html(standalone=True)
+    assert "<!doctype html>" in html.lower()
+    assert "<svg" in html.lower()
+    print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
 
 
 def test_llama3():
@@ -219,6 +284,7 @@ def _restore_env(name, value):
 if __name__ == "__main__":
     test_kimi_k2()
     test_deepseek_v3_phase_change()
+    test_gemma4_31b()
     test_llama3()
     test_model_id_uses_hf_token_env_and_explicit_override()
     test_model_id_falls_back_to_legacy_hf_auth_kwarg()

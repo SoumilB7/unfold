@@ -53,7 +53,7 @@ def render_fragment(ir: dict, mount_id: str) -> str:
         )
         pills.append(
             f'<label for="{_attr(radio_id)}" class="uf-group-pill">'
-            f'{_html(_group_label(group))}</label>'
+            f'{_html(_group_label(group, info))}</label>'
         )
 
         arch_svg = _build_architecture_view(ir, variant_info, mount_id + suffix)
@@ -103,11 +103,16 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 
     map_svg = _build_layer_map(ir, info, mount_id)
     n_groups = len(groups)
-    map_sub = (
-        "All layers structurally identical"
-        if n_groups <= 1
-        else f"{n_groups} layer types across {len(ir.get('layers', []))} layers"
-    )
+    n_layers = len(ir.get("layers", []))
+    if n_groups <= 1:
+        map_sub = "All layers structurally identical"
+    elif info.get("period") and info["period"] < n_layers:
+        cycles = n_layers // info["period"]
+        map_sub = (
+            f"{n_groups} layer types  ·  {info['period']}-layer cycle ×{cycles}"
+        )
+    else:
+        map_sub = f"{n_groups} layer types across {n_layers} layers"
     layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
 
     return f"""

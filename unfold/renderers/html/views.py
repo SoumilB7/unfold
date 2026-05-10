@@ -1,7 +1,7 @@
 """SVG views for architecture, FFN, MoE, and layer maps."""
 from __future__ import annotations
 
-from .metadata import _block_label, _signature
+from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
     _defs,
     _elbow_hv,
@@ -294,16 +294,28 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
 
 
 def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 720, 240
+    w = 720
+    layers = ir.get("layers", [])
+    kv_shared_indices = [
+        i for i, layer in enumerate(layers)
+        if (layer.get("attention") or {}).get("kv_source_layer") is not None
+    ]
+    has_kv_share = bool(kv_shared_indices)
+    n_legend_rows = len(info["groups"]) + (1 if has_kv_share else 0)
+    # Reserve extra room for the optional "KV CACHE" sub-strip and its annotation.
+    extra = 56 if has_kv_share else 0
+    h = max(240, 160 + extra + 22 * n_legend_rows)
     arrow_id, shadow_id = _ids(mount_id, "map")
     parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_hatch_pattern(mount_id))
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_card"], stroke=C["border"], stroke_width=0.5))
 
-    palette = ["#0F6E56", "#1D9E75", "#0E7C8C", "#3C3489", "#993C1D", "#185FA5", "#65A30D"]
+    # Green-family palette so the layer map shares the diagram's theme.
+    # Ordered dark → light so consecutive groups read like a gradient step.
+    palette = ["#0F6E56", "#1F9E78", "#5BB89A", "#0A4F3F", "#7FCFB4", "#0E5C48", "#A0E3CD"]
     sig_to_color = {group["sig"]: palette[i % len(palette)] for i, group in enumerate(info["groups"])}
 
     strip_x, strip_y, strip_w, strip_h = 80, 90, w - 160, 36
-    layers = ir.get("layers", [])
     n = len(layers)
     col_w = strip_w / max(n, 1)
 
@@ -319,6 +331,22 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
                     "height": strip_h,
                     "fill": sig_to_color.get(sig, palette[0]),
                     "opacity": 0.95,
+                },
+            )
+        )
+
+    # KV-share overlay — diagonal hatch on layers that don't compute their own K/V.
+    for i in kv_shared_indices:
+        parts.append(
+            _svg_tag(
+                "rect",
+                {
+                    "x": strip_x + i * col_w,
+                    "y": strip_y,
+                    "width": max(col_w - 0.5, 1),
+                    "height": strip_h,
+                    "fill": f"url(#uf-{mount_id}-hatch)",
+                    "pointer-events": "none",
                 },
             )
         )
@@ -362,15 +390,55 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
         )
     )
 
-    lx, ly = strip_x, strip_y + strip_h + 44
+    legend_y = strip_y + strip_h + 44
+
+    if has_kv_share:
+        first = kv_shared_indices[0]
+        last = kv_shared_indices[-1]
+        # Bracket above the strip marking where KV reuse kicks in.
+        bracket_y = strip_y - 8
+        x_start = strip_x + first * col_w
+        x_end = strip_x + (last + 1) * col_w - 0.5
+        parts.append(
+            _svg_tag(
+                "path",
+                {
+                    "d": f"M {x_start} {bracket_y - 6} L {x_start} {bracket_y} L {x_end} {bracket_y} L {x_end} {bracket_y - 6}",
+                    "fill": "none",
+                    "stroke": C["muted"],
+                    "stroke-width": 1.0,
+                    "stroke-linecap": "round",
+                },
+            )
+        )
+        # Sources of the K/V tensors — collected from cross-layer edges.
+        edges = ir.get("cross_layer_edges") or []
+        kv_sources = sorted({e.get("from_layer") for e in edges if e.get("kind") == "kv_share"})
+        src_summary = (
+            f"L{kv_sources[0]}–L{kv_sources[-1]}" if len(kv_sources) > 1
+            else (f"L{kv_sources[0]}" if kv_sources else "earlier layer")
+        )
+        share_label = (
+            f"K/V reused: L{first}–L{last} ({len(kv_shared_indices)} layers)  ←  {src_summary}"
+        )
+        parts.append(
+            _svg_text(
+                (x_start + x_end) / 2,
+                bracket_y - 12,
+                share_label,
+                {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
+            )
+        )
+        legend_y += 8
+
+    lx, ly = strip_x, legend_y
     for group in info["groups"]:
         spec = group["spec"]
         ffn_kind = "MoE" if spec["ffn"].get("kind") == "moe" else "Dense"
         mask = "SWA" if spec["attention"].get("mask") == "sliding" else "full"
-        first, last = group["indices"][0], group["indices"][-1]
         label = (
-            f"{spec['attention'].get('kind', '').upper()} + {ffn_kind} ({mask}) - "
-            f"L{first}-L{last} - {len(group['indices'])}x"
+            f"{spec['attention'].get('kind', '').upper()} + {ffn_kind} ({mask})"
+            f"  ·  {_indices_summary(group, info)}"
         )
         color = sig_to_color[group["sig"]]
         parts.append(_svg_tag("rect", {"x": lx, "y": ly - 9, "width": 12, "height": 12, "fill": color, "rx": 2}))
@@ -384,4 +452,47 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
         )
         ly += 20
 
+    if has_kv_share:
+        # Hatched chip in the legend.
+        parts.append(
+            _svg_tag(
+                "rect",
+                {"x": lx, "y": ly - 9, "width": 12, "height": 12, "fill": palette[0], "rx": 2},
+            )
+        )
+        parts.append(
+            _svg_tag(
+                "rect",
+                {
+                    "x": lx,
+                    "y": ly - 9,
+                    "width": 12,
+                    "height": 12,
+                    "fill": f"url(#uf-{mount_id}-hatch)",
+                    "rx": 2,
+                },
+            )
+        )
+        parts.append(
+            _svg_text(
+                lx + 18,
+                ly,
+                f"K/V reused (no own K/V projections)  ·  {len(kv_shared_indices)} layers",
+                {"dominant-baseline": "central", "fill": C["text"], "font-family": FONT_BODY, "font-size": 12},
+            )
+        )
+
     return _svg(w, h, f"{ir.get('name', 'model')} layer map", parts)
+
+
+def _hatch_pattern(mount_id: str) -> str:
+    """Diagonal-stripe pattern used to mark KV-shared layers."""
+    pid = f"uf-{mount_id}-hatch"
+    return (
+        '<defs>'
+        f'<pattern id="{pid}" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">'
+        '<rect width="6" height="6" fill="none"/>'
+        '<line x1="0" y1="0" x2="0" y2="6" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>'
+        '</pattern>'
+        '</defs>'
+    )
