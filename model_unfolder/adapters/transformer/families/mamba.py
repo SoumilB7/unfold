@@ -37,12 +37,13 @@ def matches(cfg: Any) -> bool:
     arches = _g(cfg, "architectures") or []
     if any(a.lower().startswith("mamba") or "mambafor" in a.lower() for a in arches):
         return True
-    # Old state-spaces configs have no model_type or architectures, but do have
-    # the Mamba-specific structural fields n_layer + d_model + d_conv.
+    # Old state-spaces configs have no model_type or architectures.
+    # The combination n_layer + d_model (without num_hidden_layers / hidden_size)
+    # is unique to Mamba among configs that reach us without a model_type.
     if (not model_type
             and _g(cfg, "n_layer") is not None
             and _g(cfg, "d_model") is not None
-            and _g(cfg, "d_conv") is not None):
+            and _g(cfg, "num_hidden_layers") is None):
         return True
     return False
 
