@@ -19,7 +19,12 @@ from __future__ import annotations
 from typing import Any
 
 from ....ir import AttentionSpec, CrossLayerEdge, FFNSpec, LayerSpec, ModelIR
-from ..blocks import decoder_layer_blocks, decoder_only_render_spec
+from ..blocks import (
+    decoder_layer_blocks,
+    decoder_only_render_spec,
+    per_layer_embedding_blocks,
+    per_layer_embedding_pathway,
+)
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
@@ -63,6 +68,9 @@ def parse(cfg: Any) -> ModelIR:
 
     num_kv_shared = _g(text_cfg, "num_kv_shared_layers") or 0
     first_shared = num_layers - num_kv_shared if num_kv_shared else num_layers
+
+    ple_dim = _g(text_cfg, "hidden_size_per_layer_input") or 0
+    ple_vocab = _g(text_cfg, "vocab_size_per_layer_input") or _g(text_cfg, "vocab_size", 0)
 
     layers: list[LayerSpec] = []
     cross_edges: list[CrossLayerEdge] = []
@@ -123,12 +131,17 @@ def parse(cfg: Any) -> ModelIR:
                 gated=True,
             )
 
+        layer_blocks = decoder_layer_blocks(attn, ffn, hidden_size)
+        if ple_dim:
+            layer_blocks.extend(
+                per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")
+            )
         layers.append(
             LayerSpec(
                 index=i,
                 attention=attn,
                 ffn=ffn,
-                blocks=decoder_layer_blocks(attn, ffn, hidden_size),
+                blocks=layer_blocks,
             )
         )
 
@@ -138,12 +151,11 @@ def parse(cfg: Any) -> ModelIR:
     extras = {
         "render": decoder_only_render_spec(vocab_size, hidden_size, tie_word_embeddings),
     }
-    ple_dim = _g(text_cfg, "hidden_size_per_layer_input") or 0
     if ple_dim:
-        extras["per_layer_embeddings"] = {
-            "hidden": ple_dim,
-            "vocab": _g(text_cfg, "vocab_size_per_layer_input") or vocab_size,
-        }
+        extras["per_layer_embeddings"] = {"hidden": ple_dim, "vocab": ple_vocab}
+        extras["external_pathways"] = [
+            per_layer_embedding_pathway(hidden_size, ple_dim, ple_vocab, num_layers),
+        ]
     if num_kv_shared:
         extras["num_kv_shared_layers"] = num_kv_shared
     if _g(text_cfg, "attention_k_eq_v"):

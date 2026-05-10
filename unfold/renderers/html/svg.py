@@ -195,11 +195,14 @@ def _node_title(info: dict, node_id: str) -> str:
 
 
 def _v_line(src: dict, dst: dict, arrow_id: str) -> str:
+    # Symmetric GAPs on both ends so arrows leave the source with breathing
+    # room and arrive at the destination cleanly — important around small
+    # circle blocks (residual_add / gate_mul) where the boundary is tight.
     if src["cy"] > dst["cy"]:
-        y1 = src["top"]
+        y1 = src["top"] - GAP
         y2 = dst["bottom"] + GAP
     else:
-        y1 = src["bottom"]
+        y1 = src["bottom"] + GAP
         y2 = dst["top"] - GAP
     return _svg_tag(
         "line",
@@ -267,8 +270,16 @@ def _elbow_hv(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
 
 
 def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> str:
+    """Residual bypass that taps the *input arrow* of ``src`` rather than
+    leaving from ``src``'s right side.
+
+    The visual is "the same x flowing into rms1 also feeds add1" — so the
+    branch peels off the central column just below ``src``, runs to the lane
+    on the right, climbs to ``dst`` level, and arrives from the right.
+    """
     r = 12
-    start_x, start_y = src["right"], src["cy"]
+    start_x = src["cx"]
+    start_y = src["bottom"] + GAP + 8  # tap on the input-arrow stem, below src
     end_x, end_y = dst["right"], dst["cy"]
     d = (
         f"M {_num(start_x)} {_num(start_y)} "
@@ -279,6 +290,11 @@ def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> st
         f"L {_num(end_x + GAP)} {_num(end_y)}"
     )
     return _path(d, arrow_id)
+
+
+def _branch_dot(cx: float, cy: float) -> str:
+    """Small filled circle marking a tap point on an arrow stem."""
+    return _svg_tag("circle", {"cx": cx, "cy": cy, "r": 3.2, "fill": C["arrow"]})
 
 
 def _path(d: str, arrow_id: str) -> str:
