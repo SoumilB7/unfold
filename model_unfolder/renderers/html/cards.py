@@ -112,6 +112,13 @@ def _fallback_sub_inspect_cards(ir: dict, ffn: dict) -> list[str]:
     h = _fmt_int(ir.get("hidden_size"))
     inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
     activation = activation_label(ffn.get("activation") or "silu")
+    if ffn.get("kind") != "moe" and not ffn.get("gated", True):
+        return [
+            _l3_card("up_proj", "Input projection", f"Linear · {h} → {inter}"),
+            _l3_card("silu", f"{activation} activation", "Element-wise non-linearity after the input projection"),
+            _l3_card("down_proj", "Output projection", f"Linear · {inter} → {h}"),
+        ]
+
     panels = [
         _l3_card("gate_proj", "Gate projection", f"Linear · {h} → {inter} (gated path through {activation})"),
         _l3_card("up_proj", "Up projection", f"Linear · {h} → {inter}"),

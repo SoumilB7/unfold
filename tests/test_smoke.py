@@ -89,6 +89,38 @@ MISTRAL_7B_CONFIG = {
 }
 
 
+GPT_NEOX_CONFIG = {
+    "architectures": ["GPTNeoXForCausalLM"],
+    "model_type": "gpt_neox",
+    "_name_or_path": "EleutherAI/gpt-neox-20b",
+    "vocab_size": 50432,
+    "hidden_size": 6144,
+    "intermediate_size": 24576,
+    "num_hidden_layers": 44,
+    "num_attention_heads": 64,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": False,
+    "hidden_act": "gelu",
+    "use_parallel_residual": True,
+}
+
+
+FALCON_PARALLEL_CONFIG = {
+    "architectures": ["FalconForCausalLM"],
+    "model_type": "falcon",
+    "_name_or_path": "tiiuae/falcon-7b",
+    "vocab_size": 65024,
+    "hidden_size": 4544,
+    "intermediate_size": 18176,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 71,
+    "multi_query": True,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": False,
+    "parallel_attn": True,
+}
+
+
 # Gemma 4 31B (dense) — alternates 5 sliding + 1 full across 60 layers, with
 # distinct head_dim and num_kv_heads on global vs sliding layers.
 GEMMA4_31B_LAYER_TYPES = [
@@ -246,6 +278,135 @@ def test_llama3():
     assert ir["layers"][0]["ffn"]["kind"] == "dense"
     assert ir["params"]["is_sparse"] is False
     print(f"Llama-3 OK  — ~{ir['params']['total_h']} params")
+
+
+def test_non_gated_dense_ffn_has_plain_mlp_view():
+    d = unfold(GPT_NEOX_CONFIG)
+    ir = d.to_ir()
+    ffn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "ffn")
+    child_ids = {child["id"] for child in ffn_block["children"]}
+
+    assert ir["layers"][0]["ffn"]["gated"] is False
+    assert ffn_block["detail_view"] == "dense_ffn"
+    assert {"up_proj", "silu", "down_proj"} <= child_ids
+    assert "gate_proj" not in child_ids
+    assert "mul" not in child_ids
+
+    html = d.to_html(standalone=True)
+    assert "Linear (in)" in html
+    assert "Linear (gate)" not in html
+    assert "uf-l3-gate_proj" not in html
+    assert "uf-l3-mul" not in html
+
+
+def test_falcon_parallel_attn_uses_parallel_topology():
+    d = unfold(FALCON_PARALLEL_CONFIG)
+    ir = d.to_ir()
+    blocks = ir["layers"][0]["blocks"]
+    block_by_id = {block["id"]: block for block in blocks}
+
+    assert ir["extras"]["parallel_attn"] is True
+    assert ir["extras"]["parallel_residual"] is True
+    assert block_by_id["rms1"]["label"] == "LayerNorm"
+    assert block_by_id["add1"]["title"] == "Residual add (parallel)"
+    assert block_by_id["ffn"]["lane"] == "left"
+    assert block_by_id["ffn"]["tap_from"] == "attn"
+    assert block_by_id["ffn"]["feeds"] == "add1"
+    assert block_by_id["ffn"]["side_align"] == "tap"
+    assert "add2" not in block_by_id
+
+
+def test_attention_detail_views_dispatch_by_kind():
+    base = {
+        "vocab_size": 32000,
+        "hidden_size": 64,
+        "intermediate_size": 256,
+        "num_hidden_layers": 4,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 2,
+        "head_dim": 16,
+        "hidden_act": "silu",
+    }
+    cases = [
+        (
+            "mla",
+            KIMI_K2_CONFIG,
+            "mla_kv_down",
+            "Multi-Head Latent",
+            True,
+        ),
+        (
+            "ssm",
+            {
+                **base,
+                "architectures": ["FalconH1ForCausalLM"],
+                "model_type": "falcon_h1",
+                "mamba_d_state": 16,
+                "mamba_d_ssm": 64,
+                "attn_layer_indices": None,
+            },
+            "ssm_scan",
+            "Selective Scan",
+            True,
+        ),
+        (
+            "recurrent",
+            {
+                **base,
+                "architectures": ["RecurrentGemmaForCausalLM"],
+                "model_type": "recurrent_gemma",
+                "block_types": ["recurrent", "recurrent", "attention"],
+                "attention_window_size": 128,
+                "lru_width": 32,
+            },
+            "lru_state",
+            "Recurrent State",
+            False,
+        ),
+        (
+            "rwkv",
+            {
+                "architectures": ["RwkvForCausalLM"],
+                "model_type": "rwkv",
+                "vocab_size": 32000,
+                "hidden_size": 64,
+                "num_hidden_layers": 4,
+                "attention_hidden_size": 64,
+                "head_size": 16,
+                "intermediate_size": 224,
+            },
+            "rwkv_time_mix",
+            "Time-Mix",
+            True,
+        ),
+        (
+            "linear",
+            {
+                **base,
+                "architectures": ["MiniMaxText01ForCausalLM"],
+                "model_type": "minimax_text_01",
+                "attn_type_list": [0, 0, 0, 0],
+                "num_local_experts": 8,
+                "num_experts_per_tok": 2,
+            },
+            "linear_mix",
+            "Linear Attention Mix",
+            True,
+        ),
+    ]
+
+    for kind, cfg, expected_child, expected_html, forbid_sdpa in cases:
+        d = unfold(cfg)
+        ir = d.to_ir()
+        attn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "attn")
+        child_ids = {child["id"] for child in attn_block["children"]}
+        html = d.to_html(standalone=True)
+
+        assert ir["layers"][0]["attention"]["kind"] == kind
+        assert expected_child in child_ids
+        assert expected_html in html
+        if forbid_sdpa:
+            assert "Scaled Dot-Product Attention" not in html
 
 
 def test_model_id_uses_hf_token_env_and_explicit_override():

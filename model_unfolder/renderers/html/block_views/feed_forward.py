@@ -135,7 +135,58 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     return _svg(w, h, f"{ir.get('name', 'model')} mixture of experts", parts)
 
 
+def build_dense_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail view for a plain two-matrix MLP: Linear -> activation -> Linear."""
+    w, h = 720, 500
+    arrow_id, shadow_id = _ids(mount_id, "dense-ffn")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    ffn = info["dominant"]["spec"]["ffn"]
+    hidden = _fmt_int(ir.get("hidden_size"))
+    inter = _fmt_int(ffn.get("intermediate_size"))
+    cx = w / 2
+    act_name = activation_label(ffn.get("activation") or "gelu")
+
+    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 100, 100, 200, 50, "Linear (out)")
+    act = _rect_block(parts, info, shadow_id, "silu", cx - 85, 220, 170, 44, act_name)
+    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx - 100, 340, 200, 50, "Linear (in)")
+
+    parts.append(_v_line(up_proj, act, arrow_id))
+    parts.append(_v_line(act, down_proj, arrow_id))
+
+    _dim_label(parts, up_proj["right"] + 14, up_proj["cy"], f"{hidden} -> {inter}")
+    _dim_label(parts, down_proj["right"] + 14, down_proj["cy"], f"{inter} -> {hidden}")
+
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": down_proj["top"],
+        "x2": cx, "y2": down_proj["top"] - 36,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, down_proj["top"] - 46,
+        f"out ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": up_proj["bottom"] + 42,
+        "x2": cx, "y2": up_proj["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, h - 42,
+        f"in ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    return _svg(w, h, f"{ir.get('name', 'model')} dense feed-forward block", parts)
+
+
 def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail view for a gated FFN: gate path x up path -> down projection."""
     w, h = 720, 660
     arrow_id, shadow_id = _ids(mount_id, "ffn")
     parts = [_defs(arrow_id, shadow_id)]

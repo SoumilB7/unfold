@@ -17,7 +17,8 @@ from . import gemma  # gemma/ package — dispatches to gemma2/gemma3/gemma4 int
 # ``zamba`` before ``llama``           (Zamba has both SSM and attention; more specific).
 # ``gpt_neox`` before ``llama``        (distinct model_type, no overlap).
 # ``fallback`` always matches — must be last.
-# NOTE: ``mamba`` (pure SSM) is intentionally excluded — only LLM families supported.
+# NOTE: pure ``mamba``/``mamba2`` is intentionally unsupported for now; hybrid
+# LLM families with SSM blocks live in jamba/falcon/zamba.
 ADAPTERS = [
     deepseek, gemma, jamba, falcon, minimax, mistral,
     qwen, recurrent_gemma, rwkv, cohere, zamba, gpt_neox,

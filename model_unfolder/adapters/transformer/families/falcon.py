@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import Any
 
 from ....ir import AttentionSpec, FFNSpec, ModelIR
-from ..assembly import decoder_extras, decoder_layer
+from ..assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
@@ -79,13 +79,17 @@ def _parse_classic(cfg: Any) -> ModelIR:
             intermediate_size=intermediate_size,
             gated=False,
         )
-        layers.append(decoder_layer(i, attn, ffn, hidden_size))
+        if parallel_attn:
+            layers.append(parallel_decoder_layer(i, attn, ffn, hidden_size, norm_kind="layernorm"))
+        else:
+            layers.append(decoder_layer(i, attn, ffn, hidden_size, norm_kind="layernorm"))
 
     vocab_size = _g(cfg, "vocab_size", 0)
     tie_word_embeddings = bool(_g(cfg, "tie_word_embeddings", False))
     extras = decoder_extras(vocab_size, hidden_size, tie_word_embeddings)
     if parallel_attn:
         extras["parallel_attn"] = True
+        extras["parallel_residual"] = True
 
     return ModelIR(
         name=model_name(cfg, arch_name),

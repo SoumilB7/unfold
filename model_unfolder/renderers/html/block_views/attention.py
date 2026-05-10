@@ -20,6 +20,23 @@ from ..utils import _fmt_int, _html
 
 
 def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Rich SVG detail view for the active attention-like block."""
+    attn = info["dominant"]["spec"].get("attention") or {}
+    kind = attn.get("kind")
+    if kind == "mla":
+        return _build_mla_attention_view(ir, info, mount_id)
+    if kind == "ssm":
+        return _build_ssm_view(ir, info, mount_id)
+    if kind == "recurrent":
+        return _build_recurrent_view(ir, info, mount_id)
+    if kind == "rwkv":
+        return _build_rwkv_view(ir, info, mount_id)
+    if kind == "linear":
+        return _build_linear_attention_view(ir, info, mount_id)
+    return _build_sdpa_attention_view(ir, info, mount_id)
+
+
+def _build_sdpa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     """Rich SVG detail view for MHA / GQA / MQA attention blocks.
 
     Layout (bottom → top, matching the feed-forward convention):
@@ -115,6 +132,243 @@ def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     _attn_dim_label(parts, o_proj["right"] + 10, o_proj["cy"], f"{q_out} → {hidden}")
 
     return _svg(w, h, f"{ir.get('name', 'model')} attention", parts)
+
+
+def _build_mla_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail view for Multi-head Latent Attention (DeepSeek / Kimi style)."""
+    w, h = 720, 620
+    arrow_id, shadow_id = _ids(mount_id, "mla")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    attn = info["dominant"]["spec"].get("attention") or {}
+    hidden = _fmt_int(ir.get("hidden_size"))
+    kv_rank = _fmt_int(attn.get("kv_lora_rank"))
+    q_rank = _fmt_int(attn.get("q_lora_rank")) if attn.get("q_lora_rank") else "direct"
+    rope_dim = _fmt_int(attn.get("rope_dim"))
+    cx = w / 2
+
+    o_proj = _rect_block(parts, info, shadow_id, "o_proj", cx - 90, 82, 180, 50, "Linear (out)")
+    mla = _rect_block(parts, info, shadow_id, "mla_attn", 142, 182, 436, 58, ["Multi-Head Latent", "Attention"], font_size=16)
+    q_path = _rect_block(parts, info, shadow_id, "mla_q", 76, 350, 170, 50, ["Q path", f"rank {q_rank}"], font_size=15)
+    kv_down = _rect_block(parts, info, shadow_id, "mla_kv_down", 276, 418, 170, 50, ["KV down", f"rank {kv_rank}"], font_size=15)
+    kv_up = _rect_block(parts, info, shadow_id, "mla_kv_up", 276, 302, 170, 50, "KV up", font_size=16)
+    rope = _rect_block(parts, info, shadow_id, "mla_rope", 476, 350, 170, 50, ["RoPE split", f"dim {rope_dim}"], font_size=15)
+
+    branch_x, branch_y = cx, 540
+    parts.append(_branch_dot(branch_x, branch_y))
+    parts.append(_svg_tag("line", {
+        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        branch_x, h - 28,
+        f"in ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    parts.append(_elbow_hv(branch_x, branch_y, q_path["cx"], q_path["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(branch_x, branch_y, kv_down["cx"], kv_down["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(branch_x, branch_y, rope["cx"], rope["bottom"] + GAP, arrow_id))
+    parts.append(_v_line(kv_down, kv_up, arrow_id))
+    parts.append(_elbow_hv(q_path["cx"], q_path["top"], 210, mla["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(kv_up["cx"], kv_up["top"], mla["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(rope["cx"], rope["top"], 510, mla["bottom"] + GAP, arrow_id))
+    parts.append(_v_line(mla, o_proj, arrow_id))
+
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": o_proj["top"],
+        "x2": cx, "y2": o_proj["top"] - 34,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, o_proj["top"] - 44,
+        f"out ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    return _svg(w, h, f"{ir.get('name', 'model')} multi-head latent attention", parts)
+
+
+def _build_ssm_view(ir: dict, info: dict, mount_id: str) -> str:
+    attn = info["dominant"]["spec"].get("attention") or {}
+    state = _fmt_int(attn.get("head_dim"))
+    subtitle = f"state dim {state}" if state != "?" else "selective recurrence"
+    return _vertical_attention_stack(
+        ir,
+        info,
+        mount_id,
+        "ssm",
+        "selective state-space block",
+        [
+            ("ssm_out_proj", "Output projection", None),
+            ("ssm_gate", "Gate", None),
+            ("ssm_scan", ["Selective Scan", subtitle], 16),
+            ("ssm_conv", "Local Conv", None),
+            ("ssm_in_proj", "Input projection", None),
+        ],
+    )
+
+
+def _build_recurrent_view(ir: dict, info: dict, mount_id: str) -> str:
+    attn = info["dominant"]["spec"].get("attention") or {}
+    width = _fmt_int(attn.get("head_dim"))
+    return _vertical_attention_stack(
+        ir,
+        info,
+        mount_id,
+        "recurrent",
+        "linear recurrent unit",
+        [
+            ("lru_out_proj", "Output projection", None),
+            ("lru_gate", "Gate", None),
+            ("lru_state", ["Recurrent State", f"width {width}"], 16),
+            ("lru_in_proj", "Input projection", None),
+        ],
+        h=520,
+    )
+
+
+def _build_linear_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    w, h = 720, 610
+    arrow_id, shadow_id = _ids(mount_id, "linear-attn")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    hidden = _fmt_int(ir.get("hidden_size"))
+    cx = w / 2
+    o_proj = _rect_block(parts, info, shadow_id, "o_proj", cx - 90, 78, 180, 50, "Linear (out)")
+    mix = _rect_block(parts, info, shadow_id, "linear_mix", 165, 178, 390, 54, ["Linear Attention Mix", "prefix/state accumulation"], font_size=15)
+    kernel = _rect_block(parts, info, shadow_id, "kernel_map", 215, 286, 290, 48, "Kernel feature map", font_size=15)
+    q_proj = _rect_block(parts, info, shadow_id, "q_proj", 70, 400, 165, 50, "Linear (Q)")
+    k_proj = _rect_block(parts, info, shadow_id, "k_proj", 278, 400, 165, 50, "Linear (K)")
+    v_proj = _rect_block(parts, info, shadow_id, "v_proj", 486, 400, 165, 50, "Linear (V)")
+
+    branch_x, branch_y = cx, 540
+    parts.append(_branch_dot(branch_x, branch_y))
+    parts.append(_svg_tag("line", {
+        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(branch_x, h - 28, f"in ({hidden})", {
+        "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11,
+    }))
+
+    parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(q_proj["cx"], q_proj["top"], 250, kernel["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(k_proj["cx"], k_proj["top"], kernel["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(v_proj["cx"], v_proj["top"], 470, mix["bottom"] + GAP, arrow_id))
+    parts.append(_v_line(kernel, mix, arrow_id))
+    parts.append(_v_line(mix, o_proj, arrow_id))
+    _output_stem(parts, cx, o_proj, arrow_id, hidden)
+
+    return _svg(w, h, f"{ir.get('name', 'model')} linear attention", parts)
+
+
+def _build_rwkv_view(ir: dict, info: dict, mount_id: str) -> str:
+    w, h = 600, 560
+    arrow_id, shadow_id = _ids(mount_id, "rwkv")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    hidden = _fmt_int(ir.get("hidden_size"))
+    cx = w / 2
+    out = _rect_block(parts, info, shadow_id, "rwkv_out", cx - 100, 80, 200, 50, "Output projection")
+    time_mix = _rect_block(parts, info, shadow_id, "rwkv_time_mix", cx - 135, 190, 270, 54, ["Time-Mix", "linear recurrence"], font_size=16)
+    receptance = _rect_block(parts, info, shadow_id, "rwkv_receptance", 55, 335, 150, 48, "Receptance", font_size=15)
+    key = _rect_block(parts, info, shadow_id, "rwkv_key", 225, 335, 150, 48, "Key", font_size=15)
+    value = _rect_block(parts, info, shadow_id, "rwkv_value", 395, 335, 150, 48, "Value", font_size=15)
+
+    branch_x, branch_y = cx, 480
+    parts.append(_branch_dot(branch_x, branch_y))
+    parts.append(_svg_tag("line", {
+        "x1": branch_x, "y1": branch_y + 32, "x2": branch_x, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(branch_x, h - 26, f"in ({hidden})", {
+        "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11,
+    }))
+    for node in (receptance, key, value):
+        parts.append(_elbow_hv(branch_x, branch_y, node["cx"], node["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(receptance["cx"], receptance["top"], 210, time_mix["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(key["cx"], key["top"], time_mix["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(value["cx"], value["top"], 390, time_mix["bottom"] + GAP, arrow_id))
+    parts.append(_v_line(time_mix, out, arrow_id))
+    _output_stem(parts, cx, out, arrow_id, hidden)
+
+    return _svg(w, h, f"{ir.get('name', 'model')} RWKV token mixing", parts)
+
+
+def _vertical_attention_stack(
+    ir: dict,
+    info: dict,
+    mount_id: str,
+    view: str,
+    title: str,
+    nodes: list[tuple[str, str | list[str], int | None]],
+    *,
+    h: int = 590,
+) -> str:
+    w = 560
+    arrow_id, shadow_id = _ids(mount_id, view)
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    hidden = _fmt_int(ir.get("hidden_size"))
+    cx = w / 2
+    geoms = []
+    top_y = 86
+    step = (h - 190) / max(len(nodes) - 1, 1)
+    for i, (node_id, label, font_size) in enumerate(nodes):
+        block_w = 240 if isinstance(label, list) else 210
+        y = top_y + i * step
+        geoms.append(
+            _rect_block(
+                parts, info, shadow_id, node_id,
+                cx - block_w / 2, y, block_w, 50,
+                label,
+                font_size=font_size or 16,
+            )
+        )
+
+    for src, dst in zip(reversed(geoms), reversed(geoms[:-1])):
+        parts.append(_v_line(src, dst, arrow_id))
+
+    input_node = geoms[-1]
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": input_node["bottom"] + 38,
+        "x2": cx, "y2": input_node["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, h - 34,
+        f"in ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+    _output_stem(parts, cx, geoms[0], arrow_id, hidden)
+
+    return _svg(w, h, f"{ir.get('name', 'model')} {title}", parts)
+
+
+def _output_stem(parts: list[str], cx: float, top_node: dict, arrow_id: str, hidden: str) -> None:
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": top_node["top"],
+        "x2": cx, "y2": top_node["top"] - 34,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        cx, top_node["top"] - 44,
+        f"out ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
 
 
 def _attn_dim_label(parts: list[str], x: float, y: float, text: str) -> None:

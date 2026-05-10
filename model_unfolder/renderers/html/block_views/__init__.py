@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from .attention import attention_card, attention_card_css, build_attention_view
-from .feed_forward import build_ffn_view, build_moe_view
+from .feed_forward import build_dense_ffn_view, build_ffn_view, build_moe_view
 from .per_layer_embedding import build_per_layer_embedding_view
 
 
@@ -15,6 +15,8 @@ def block_detail_svg(ir: dict, info: dict, mount_id: str, block: dict) -> str | 
         ffn = info["dominant"]["spec"]["ffn"]
         if ffn.get("kind") == "moe":
             return build_moe_view(ir, info, mount_id)
+        if block.get("detail_view") == "dense_ffn" or not ffn.get("gated", True):
+            return build_dense_ffn_view(ir, info, mount_id)
         return build_ffn_view(ir, info, mount_id)
 
     if block.get("detail_view") == "per_layer_embedding":
