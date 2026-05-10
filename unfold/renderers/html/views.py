@@ -8,6 +8,7 @@ from .svg import (
     _defs,
     _elbow_hv,
     _elbow_vh,
+    _input_tap,
     _ids,
     _path,
     _plus_block,
@@ -38,7 +39,7 @@ _KIND_LAYOUT = {
     "residual_add": {"shape": "circle", "w": 28,  "h": 28, "sym": "+"},
     "gate_mul":     {"shape": "circle", "w": 28,  "h": 28, "sym": "×"},
 }
-_BLOCK_GAP = 28  # vertical gap between consecutive layer-body blocks
+_BLOCK_GAP = 32  # vertical gap between consecutive layer-body blocks
 # Larger than the arrow padding (`GAP` ×2) so the chain arrow has a visible
 # stem between blocks rather than collapsing to just an arrowhead.
 
@@ -49,13 +50,12 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     The layer body comes from ``info['dominant']['spec']['blocks']`` — an
     ordered list of typed blocks emitted by the adapter.  Each block's
     ``kind`` selects a glyph in :data:`_KIND_LAYOUT`; ``residual_from`` adds
-    a residual loop on the right-hand lane; ``external_from`` ties the block
-    to an entry in ``ir.extras['external_pathways']`` and renders a parallel
-    rail to the left of the inner region.
+    a residual loop when the bypass is not already represented by the central
+    chain; side-lane blocks render as parallel rails to the left or right of
+    the inner region.
 
-    Standard 6-block llama models render exactly as before; PLE-bearing
-    Gemma 4 models extend the inner region downward to fit 12 blocks plus
-    a parallel construction inset above the embed.
+    The view grows from the block list, so PLE-bearing Gemma models get extra
+    vertical space while compact decoder-only models keep the same vocabulary.
     """
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
@@ -133,23 +133,28 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
 
     # --- 5. Residual loops (declared via residual_from) ---
+    chain_ids = [b["id"] for b in chain_blocks]
+    chain_prev = {block_id: chain_ids[i - 1] for i, block_id in enumerate(chain_ids[1:], start=1)}
+    branch_taps: set[tuple[float, float]] = set()
     lane = inner_x + inner_w - 28
     for block in layer_blocks:
         src_id = block.get("residual_from")
         if src_id and src_id in block_pos and block["id"] in block_pos:
+            if chain_prev.get(block["id"]) == src_id:
+                continue
             src_geom = block_pos[src_id]
             dst_geom = block_pos[block["id"]]
             parts.append(_residual_loop_right(src_geom, dst_geom, lane, arrow_id))
             # Junction dot at the tap point on the input-arrow stem so the
             # bypass visually originates from the arrow, not from the block.
-            parts.append(_branch_dot(src_geom["cx"], src_geom["bottom"] + GAP + 8))
+            _mark_branch_tap(parts, branch_taps, _input_tap(src_geom))
 
     # --- 6. Side blocks (e.g. PLE) — placed off the central column ---
     for block in side_blocks:
         _draw_side_block(
             parts, info, shadow_id,
             block, block_pos,
-            inner_x, inner_w, cx, arrow_id,
+            inner_x, inner_w, arrow_id, branch_taps,
         )
 
     # --- 7. × N badge over the inner region ---
@@ -184,8 +189,8 @@ def _draw_side_block(
     block_pos: dict,
     inner_x: float,
     inner_w: float,
-    cx: float,
     arrow_id: str,
+    branch_taps: set[tuple[float, float]],
 ) -> None:
     """Render a block that lives OFF the central chain (e.g. Gemma 4 PLE).
 
@@ -224,20 +229,11 @@ def _draw_side_block(
 
     # --- Input: long arrow up the side, tapping the chain at tap_from's input
     #     stem (so the visual reads "the same x flowing into the layer also
-    #     feeds this side block").  Routed as an L-bend.
+    #     feeds this side block").  Routed as a rounded L-bend.
     rail_x = geom["cx"]
-    tap_y = tap_geom["bottom"] + GAP + 8
-    parts.append(_branch_dot(tap_geom["cx"], tap_y))
-    parts.append(_svg_tag("path", {
-        "d": (
-            f"M {tap_geom['cx']} {tap_y} "
-            f"L {rail_x} {tap_y} "
-            f"L {rail_x} {geom['bottom'] + GAP}"
-        ),
-        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})",
-    }))
+    tap_x, tap_y = _input_tap(tap_geom)
+    parts.append(_elbow_hv(tap_x, tap_y, rail_x, geom["bottom"] + GAP, arrow_id))
+    _mark_branch_tap(parts, branch_taps, (tap_x, tap_y))
 
     # --- Output: short horizontal arrow into feeds target.
     if lane == "left":
@@ -251,6 +247,18 @@ def _draw_side_block(
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
+
+
+def _mark_branch_tap(
+    parts: list[str],
+    branch_taps: set[tuple[float, float]],
+    tap: tuple[float, float],
+) -> None:
+    key = (round(tap[0], 3), round(tap[1], 3))
+    if key in branch_taps:
+        return
+    branch_taps.add(key)
+    parts.append(_branch_dot(*tap))
 
 
 def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:

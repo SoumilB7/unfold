@@ -195,14 +195,14 @@ def _node_title(info: dict, node_id: str) -> str:
 
 
 def _v_line(src: dict, dst: dict, arrow_id: str) -> str:
-    # Symmetric GAPs on both ends so arrows leave the source with breathing
-    # room and arrive at the destination cleanly — important around small
-    # circle blocks (residual_add / gate_mul) where the boundary is tight.
+    # Arrows originate on the source edge and stop with breathing room before
+    # the destination.  That keeps flow lines visually attached to the block
+    # they leave, while the arrowhead has enough room before the next block.
     if src["cy"] > dst["cy"]:
-        y1 = src["top"] - GAP
+        y1 = src["top"]
         y2 = dst["bottom"] + GAP
     else:
-        y1 = src["bottom"] + GAP
+        y1 = src["bottom"]
         y2 = dst["top"] - GAP
     return _svg_tag(
         "line",
@@ -278,8 +278,7 @@ def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> st
     on the right, climbs to ``dst`` level, and arrives from the right.
     """
     r = 12
-    start_x = src["cx"]
-    start_y = src["bottom"] + GAP + 8  # tap on the input-arrow stem, below src
+    start_x, start_y = _input_tap(src)
     end_x, end_y = dst["right"], dst["cy"]
     d = (
         f"M {_num(start_x)} {_num(start_y)} "
@@ -290,6 +289,11 @@ def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> st
         f"L {_num(end_x + GAP)} {_num(end_y)}"
     )
     return _path(d, arrow_id)
+
+
+def _input_tap(node: dict) -> tuple[float, float]:
+    """Tap point on the input stem below a block."""
+    return node["cx"], node["bottom"] + GAP + 16
 
 
 def _branch_dot(cx: float, cy: float) -> str:
