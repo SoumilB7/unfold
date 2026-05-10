@@ -59,7 +59,18 @@ def _coerce(cfg_or_id, token: Any = None):
 
 def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
     auth_token = _resolve_hf_token(token)
-    kwargs = {"trust_remote_code": True}
+    try:
+        return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=False)
+    except Exception as e:
+        if not _should_retry_with_remote_code(e):
+            raise
+        return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=True)
+
+
+def _from_pretrained(auto_config: Any, model_id: str, auth_token: Any, *, trust_remote_code: bool):
+    kwargs = {}
+    if trust_remote_code:
+        kwargs["trust_remote_code"] = True
     if auth_token is None:
         return auto_config.from_pretrained(model_id, **kwargs)
 
@@ -107,5 +118,20 @@ def _should_retry_with_legacy_auth(error: Exception) -> bool:
             "403",
             "gated",
             "private",
+        )
+    )
+
+
+def _should_retry_with_remote_code(error: Exception) -> bool:
+    msg = str(error).lower()
+    return any(
+        marker in msg
+        for marker in (
+            "trust_remote_code",
+            "remote code",
+            "custom code",
+            "custom configuration",
+            "execute the configuration file",
+            "execute the repository",
         )
     )

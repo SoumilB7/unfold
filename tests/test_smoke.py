@@ -272,7 +272,7 @@ def test_model_id_uses_hf_token_env_and_explicit_override():
         _restore_env("HF_TOKEN", old_token)
 
     assert calls[0][0] == "meta-llama/Meta-Llama-3-8B"
-    assert calls[0][1]["trust_remote_code"] is True
+    assert "trust_remote_code" not in calls[0][1]
     assert calls[0][1]["token"] == "hf_env_token"
     assert calls[1][1]["token"] == "hf_call_token"
 
@@ -295,6 +295,26 @@ def test_model_id_falls_back_to_legacy_hf_auth_kwarg():
 
     assert calls[0]["token"] == "hf_call_token"
     assert calls[1]["use_auth_token"] == "hf_call_token"
+    assert "trust_remote_code" not in calls[1]
+
+
+def test_model_id_uses_remote_code_only_when_required():
+    calls = []
+
+    class FakeAutoConfig:
+        @staticmethod
+        def from_pretrained(model_id, **kwargs):
+            calls.append(dict(kwargs))
+            if not kwargs.get("trust_remote_code"):
+                raise ValueError("set trust_remote_code=True to execute the configuration file")
+            return LLAMA3_8B_CONFIG
+
+    _with_fake_transformers(
+        FakeAutoConfig,
+        lambda: unfold("custom/model"),
+    )
+
+    assert "trust_remote_code" not in calls[0]
     assert calls[1]["trust_remote_code"] is True
 
 
@@ -328,4 +348,5 @@ if __name__ == "__main__":
     test_llama3()
     test_model_id_uses_hf_token_env_and_explicit_override()
     test_model_id_falls_back_to_legacy_hf_auth_kwarg()
+    test_model_id_uses_remote_code_only_when_required()
     print("\nAll smoke tests passed.")

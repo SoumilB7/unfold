@@ -65,13 +65,15 @@ def _make_info(ir: dict) -> dict:
             },
         }
 
+    blocks = _block_lookup(ir, dominant["spec"])
     return {
         "groups": groups,
         "dominant": dominant,
         "period": period,
         "n_layers": len(layers),
-        "blocks": _block_lookup(ir, dominant["spec"]),
-        "meta": _meta_for(ir, dominant["spec"]),
+        "layer_sigs": sigs,
+        "blocks": blocks,
+        "meta": _meta_for(ir, dominant["spec"], blocks),
     }
 
 
@@ -92,7 +94,7 @@ def _detect_period(sigs: list) -> int | None:
     return None
 
 
-def _meta_for(ir: dict, spec: dict) -> dict:
+def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     """Tooltip / detail-card text for one layer-type's spec.  Re-computed per
     variant so a heterogeneous model (e.g. DeepSeek-V3 dense + MoE) gets
     correct tooltips for whichever layer type is currently displayed."""
@@ -130,7 +132,7 @@ def _meta_for(ir: dict, spec: dict) -> dict:
         "up_proj": ("Up projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
         "gate_proj": ("Gate projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
     }
-    fallback.update(_block_meta(_block_lookup(ir, spec)))
+    fallback.update(_block_meta(blocks if blocks is not None else _block_lookup(ir, spec)))
     return fallback
 
 

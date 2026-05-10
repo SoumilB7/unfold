@@ -11,7 +11,7 @@ from .utils import _attr, _html
 from .views import _build_architecture_view, _build_layer_map
 
 
-def render_fragment(ir: dict, mount_id: str) -> str:
+def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -> str:
     """Render a complete HTML fragment.
 
     For heterogeneous models (multiple layer-type groups, e.g. DeepSeek-V3's
@@ -32,11 +32,12 @@ def render_fragment(ir: dict, mount_id: str) -> str:
     radio_name = f"{mount_id}-g"
 
     for i, group in enumerate(groups):
+        blocks = _block_lookup(ir, group["spec"])
         variant_info = {
             "groups": groups,
             "dominant": group,
-            "blocks": _block_lookup(ir, group["spec"]),
-            "meta": _meta_for(ir, group["spec"]),
+            "blocks": blocks,
+            "meta": _meta_for(ir, group["spec"], blocks),
         }
         suffix = f"-g{i}"
         radio_id = f"{mount_id}-g{i}"
@@ -113,7 +114,7 @@ def render_fragment(ir: dict, mount_id: str) -> str:
     return f"""
 <div id="{_attr(mount_id)}" class="uf-root">
 <style>
-{FONT_IMPORT}
+{FONT_IMPORT if include_font_import else ""}
 {style}
 </style>
 {''.join(radios)}
@@ -133,7 +134,7 @@ def render_fragment(ir: dict, mount_id: str) -> str:
 def render_document(ir: dict, mount_id: str) -> str:
     """Render a standalone HTML document."""
     title = f"{ir.get('name', 'model')} - unfolded"
-    body = render_fragment(ir, mount_id)
+    body = render_fragment(ir, mount_id, include_font_import=False)
     return f"""<!doctype html>
 <html lang="en">
 <head>

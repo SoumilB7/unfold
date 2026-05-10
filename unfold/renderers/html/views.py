@@ -282,8 +282,8 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     n = len(layers)
     col_w = strip_w / max(n, 1)
 
-    for i, layer in enumerate(layers):
-        sig = _signature(layer)
+    layer_sigs = info.get("layer_sigs") or [_signature(layer) for layer in layers]
+    for i, sig in enumerate(layer_sigs):
         parts.append(
             _svg_tag(
                 "rect",

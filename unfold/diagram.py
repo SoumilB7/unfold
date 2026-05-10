@@ -20,9 +20,14 @@ class Diagram:
         self.ir = ir
         self._mount_id = f"uf-{uuid.uuid4().hex[:10]}"
         self._params = estimate_params(ir)
+        self._ir_cache: dict | None = None
+        self._html_cache: dict[bool, str] = {}
 
     def to_ir(self) -> dict:
         """Return the underlying IR (plus param estimates) as a plain dict."""
+        if self._ir_cache is not None:
+            return self._ir_cache
+
         d = self.ir.to_dict()
         p = self._params
         d["params"] = {
@@ -32,6 +37,7 @@ class Diagram:
             "active_h": humanize(p["active"]),
             "is_sparse": p["is_sparse"],
         }
+        self._ir_cache = d
         return d
 
     def param_count(self) -> dict:
@@ -73,9 +79,12 @@ class Diagram:
         return path
 
     def _html(self, standalone: bool) -> str:
-        if not standalone:
-            return render_fragment(self.to_ir(), self._mount_id)
-        return render_document(self.to_ir(), self._mount_id)
+        if standalone not in self._html_cache:
+            if standalone:
+                self._html_cache[standalone] = render_document(self.to_ir(), self._mount_id)
+            else:
+                self._html_cache[standalone] = render_fragment(self.to_ir(), self._mount_id)
+        return self._html_cache[standalone]
 
     def __repr__(self) -> str:
         return (

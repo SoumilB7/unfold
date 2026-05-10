@@ -7,7 +7,7 @@ heterogeneous architectures (Gemma sliding-window patterns, DeepSeek
 dense+MoE phase changes, YOCO/CLA cross-layer KV sharing, etc.).
 """
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from typing import Any, Optional
 
 
@@ -83,7 +83,21 @@ class ModelIR:
     extras: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
-        return asdict(self)
+        # Avoid dataclasses.asdict here: it recursively deepcopy()s every
+        # nested dict/list, including repeated render block metadata for every
+        # layer.  The IR is treated as immutable after parsing, so a direct
+        # structural projection is much cheaper and enough for rendering.
+        return {
+            "name": self.name,
+            "architecture": self.architecture,
+            "vocab_size": self.vocab_size,
+            "hidden_size": self.hidden_size,
+            "max_position_embeddings": self.max_position_embeddings,
+            "tie_word_embeddings": self.tie_word_embeddings,
+            "layers": [_layer_to_dict(layer) for layer in self.layers],
+            "cross_layer_edges": [_cross_edge_to_dict(edge) for edge in self.cross_layer_edges],
+            "extras": self.extras,
+        }
 
     @property
     def num_layers(self) -> int:
@@ -99,3 +113,51 @@ class ModelIR:
             else:
                 groups.append((sig, [layer.index]))
         return groups
+
+
+def _attention_to_dict(a: AttentionSpec) -> dict:
+    return {
+        "kind": a.kind,
+        "num_heads": a.num_heads,
+        "num_kv_heads": a.num_kv_heads,
+        "head_dim": a.head_dim,
+        "kv_lora_rank": a.kv_lora_rank,
+        "q_lora_rank": a.q_lora_rank,
+        "rope_dim": a.rope_dim,
+        "mask": a.mask,
+        "window_size": a.window_size,
+        "kv_source_layer": a.kv_source_layer,
+    }
+
+
+def _ffn_to_dict(f: FFNSpec) -> dict:
+    return {
+        "kind": f.kind,
+        "activation": f.activation,
+        "intermediate_size": f.intermediate_size,
+        "gated": f.gated,
+        "num_experts": f.num_experts,
+        "num_experts_per_tok": f.num_experts_per_tok,
+        "num_shared_experts": f.num_shared_experts,
+        "expert_intermediate_size": f.expert_intermediate_size,
+    }
+
+
+def _layer_to_dict(layer: LayerSpec) -> dict:
+    return {
+        "index": layer.index,
+        "attention": _attention_to_dict(layer.attention),
+        "ffn": _ffn_to_dict(layer.ffn),
+        "norm_kind": layer.norm_kind,
+        "norm_placement": layer.norm_placement,
+        "blocks": layer.blocks,
+    }
+
+
+def _cross_edge_to_dict(edge: CrossLayerEdge) -> dict:
+    return {
+        "kind": edge.kind,
+        "from_layer": edge.from_layer,
+        "to_layer": edge.to_layer,
+        "shared": edge.shared,
+    }
