@@ -10,6 +10,7 @@ model header.
 from __future__ import annotations
 
 from ...labels import (
+    activation_label,
     describe_attention as _describe_attention,
     describe_ffn as _describe_ffn,
     is_sliding,
@@ -99,6 +100,7 @@ def _meta_for(ir: dict, spec: dict) -> dict:
     ffn = spec.get("ffn", {})
     hidden = _fmt_int(ir.get("hidden_size"))
     vocab = _fmt_int(ir.get("vocab_size"))
+    activation = activation_label(ffn.get("activation") or "silu")
     fallback = {
         "tok_text": ("Tokenized text", "Input token IDs; shape [batch, seq_len]"),
         "embed": (
@@ -124,7 +126,7 @@ def _meta_for(ir: dict, spec: dict) -> dict:
         "expert_n": ("Expert", _describe_ffn(ffn)),
         "down_proj": ("Down projection", f"intermediate -> hidden ({hidden})"),
         "mul": ("Gate product", "activation(gate) x up projection"),
-        "silu": ("Activation", (ffn.get("activation") or "silu").upper()),
+        "silu": ("Activation", activation),
         "up_proj": ("Up projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
         "gate_proj": ("Gate projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
     }

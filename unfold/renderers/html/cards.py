@@ -1,6 +1,7 @@
 """Inspect-card HTML for architecture block clicks."""
 from __future__ import annotations
 
+from ...labels import activation_label
 from .block_views import attention_card, block_detail_svg
 from .utils import _attr, _fmt_int, _html
 
@@ -105,7 +106,7 @@ def _sub_inspect_children(info: dict) -> list[dict]:
 def _fallback_sub_inspect_cards(ir: dict, ffn: dict) -> list[str]:
     h = _fmt_int(ir.get("hidden_size"))
     inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    activation = (ffn.get("activation") or "silu").upper()
+    activation = activation_label(ffn.get("activation") or "silu")
     panels = [
         _l3_card("gate_proj", "Gate projection", f"Linear · {h} → {inter} (gated path through {activation})"),
         _l3_card("up_proj", "Up projection", f"Linear · {h} → {inter}"),

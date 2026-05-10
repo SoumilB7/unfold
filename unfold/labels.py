@@ -38,6 +38,17 @@ _KIND_LONG = {
     "mqa": "Multi-query attention",
     "mha": "Multi-head attention",
 }
+_ACTIVATION_LABELS = {
+    "gelu": "GELU",
+    "gelu_new": "GELU",
+    "gelu_fast": "GELU",
+    "gelu_pytorch_tanh": "GELU",
+    "relu": "ReLU",
+    "silu": "SiLU",
+    "swish": "SiLU",
+    "geglu": "GEGLU",
+    "swiglu": "SwiGLU",
+}
 
 
 def mask_short(attention: dict) -> str:
@@ -85,6 +96,21 @@ def kv_shared(attention: dict) -> bool:
     return attention.get("kv_source_layer") is not None
 
 
+def activation_label(name: str | None) -> str:
+    """Display label for activation names stored in configs.
+
+    Configs often expose backend-specific names such as
+    ``gelu_pytorch_tanh``.  Diagrams should show the mathematical operation,
+    not the implementation detail.
+    """
+    key = (name or "").strip().lower().replace("-", "_")
+    if key in _ACTIVATION_LABELS:
+        return _ACTIVATION_LABELS[key]
+    if key.startswith("gelu"):
+        return "GELU"
+    return key.replace("_", " ").title() if key else "Activation"
+
+
 def describe_attention(attention: dict) -> str:
     """Multi-clause human description suitable for tooltips and cards.
 
@@ -128,7 +154,7 @@ def describe_ffn(ffn: dict) -> str:
         text += f"; expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"
         return text
     gated = "gated " if ffn.get("gated") else ""
-    return f"{gated}FFN; {ffn.get('activation')}; hidden {_fmt_int(ffn.get('intermediate_size'))}"
+    return f"{gated}FFN; {activation_label(ffn.get('activation'))}; hidden {_fmt_int(ffn.get('intermediate_size'))}"
 
 
 def _fmt_int(value) -> str:

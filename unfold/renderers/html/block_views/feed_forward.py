@@ -1,6 +1,7 @@
 """Detail SVGs for feed-forward blocks."""
 from __future__ import annotations
 
+from ....labels import activation_label
 from ..svg import (
     _defs,
     _elbow_hv,
@@ -16,6 +17,7 @@ from ..svg import (
     _v_seg,
 )
 from ..theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
+from ..utils import _fmt_int
 
 
 def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -25,6 +27,9 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
 
     ffn = info["dominant"]["spec"]["ffn"]
+    hidden = _fmt_int(ir.get("hidden_size"))
+    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
+    n_experts = _fmt_int(ffn.get("num_experts")) if ffn.get("num_experts") else "N"
     cx = w / 2
     router_w = 540
     router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 130, router_w, 50, "Router")
@@ -46,6 +51,8 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
         _rect_block(parts, info, shadow_id, node_id, x, expert_y, expert_w, expert_h, label, font_size=15)
         for x, label, node_id in slots
     ]
+    _dim_label(parts, router["cx"], router["top"] - 14, f"router: {hidden} -> {n_experts}", anchor="middle")
+    _dim_label(parts, cx, expert_y - 18, f"each expert: {hidden} -> {inter} -> {hidden}", anchor="middle")
 
     dots_x = (experts[1]["right"] + experts[2]["left"]) / 2
     dots_y = expert_y + expert_h / 2
@@ -109,7 +116,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
     parts.append(_svg_text(
         sum_node["cx"], sum_node["top"] - 46,
-        "out",
+        f"out ({hidden})",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
@@ -121,7 +128,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
     parts.append(_svg_text(
         cx, router["bottom"] + 50,
-        "in",
+        f"in ({hidden})",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
@@ -135,8 +142,10 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
 
     ffn = info["dominant"]["spec"]["ffn"]
+    hidden = _fmt_int(ir.get("hidden_size"))
+    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
     cx = w / 2
-    act_name = (ffn.get("activation") or "silu").upper()
+    act_name = activation_label(ffn.get("activation") or "silu")
 
     down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 110, 180, 50, "Linear (down)")
     mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 230, "×")
@@ -152,6 +161,10 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_elbow_vh(silu["cx"], silu["top"], mul_node["cx"] - mul_node["r"] - GAP, mul_node["cy"], arrow_id))
     parts.append(_elbow_vh(up_proj["cx"], up_proj["top"], mul_node["cx"] + mul_node["r"] + GAP, mul_node["cy"], arrow_id))
     parts.append(_v_line(mul_node, down_proj, arrow_id))
+    _dim_label(parts, down_proj["right"] + 14, down_proj["cy"], f"{inter} -> {hidden}")
+    _dim_label(parts, gate_proj["right"] + 14, gate_proj["cy"], f"{hidden} -> {inter}")
+    _dim_label(parts, up_proj["cx"], up_proj["bottom"] + 18, f"{hidden} -> {inter}", anchor="middle")
+    _dim_label(parts, mul_node["cx"], mul_node["cy"] + 36, f"{inter} x {inter}", anchor="middle")
 
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": down_proj["top"],
@@ -161,7 +174,7 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
     parts.append(_svg_text(
         cx, down_proj["top"] - 46,
-        "out",
+        f"out ({hidden})",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
@@ -175,9 +188,26 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
         _svg_text(
             cx,
             h - 48,
-            "in  ·  x",
+            f"in ({hidden})",
             {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
         )
     )
 
     return _svg(w, h, f"{ir.get('name', 'model')} feed-forward block", parts)
+
+
+def _dim_label(parts: list[str], x: float, y: float, text: str, *, anchor: str = "start") -> None:
+    parts.append(
+        _svg_text(
+            x,
+            y,
+            text,
+            {
+                "text-anchor": anchor,
+                "dominant-baseline": "central",
+                "fill": C["muted"],
+                "font-family": FONT_MONO,
+                "font-size": 10,
+            },
+        )
+    )

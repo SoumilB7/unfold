@@ -22,6 +22,7 @@ Edges between blocks travel on the destination side as plain string fields:
 """
 from __future__ import annotations
 
+from ...labels import activation_label
 from ...ir import AttentionSpec, FFNSpec
 from .common import format_dim as _fmt
 
@@ -135,7 +136,7 @@ def decoder_layer_blocks(attention: AttentionSpec, ffn: FFNSpec, hidden_size: in
 def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[dict]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
-    activation = (ffn.activation or "silu").upper()
+    activation = activation_label(ffn.activation)
     children = [
         {
             "id": "gate_proj",
@@ -234,4 +235,4 @@ def describe_ffn(ffn: FFNSpec) -> str:
         text += f"; expert hidden {_fmt(ffn.expert_intermediate_size or ffn.intermediate_size)}"
         return text
     gated = "gated " if ffn.gated else ""
-    return f"{gated}FFN; {ffn.activation}; hidden {_fmt(ffn.intermediate_size)}"
+    return f"{gated}FFN; {activation_label(ffn.activation)}; hidden {_fmt(ffn.intermediate_size)}"

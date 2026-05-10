@@ -233,6 +233,7 @@ def test_gemma4_ple_uses_reusable_part_contract():
     assert "uf-l3-ple_gate" in html
     assert "uf-l3-per_layer_input" in html
     assert "per_layer_input[L]" in html
+    assert "gelu_pytorch_tanh" not in html.lower()
 
 
 def test_llama3():

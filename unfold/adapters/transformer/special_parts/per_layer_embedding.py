@@ -7,6 +7,7 @@ metadata, so the feature is not tied to any one model family.
 """
 from __future__ import annotations
 
+from ....labels import activation_label
 from ..common import format_dim as _fmt
 
 
@@ -216,5 +217,4 @@ def _child_ids(block_id: str) -> dict[str, str]:
 
 
 def _activation_label(activation: str) -> str:
-    raw = (activation or "gelu").upper()
-    return raw.split("_")[0]
+    return activation_label(activation or "gelu")
