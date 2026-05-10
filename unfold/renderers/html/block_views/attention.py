@@ -1,28 +1,12 @@
-"""HTML renderer pieces specific to the attention block.
-
-Anything that turns an attention spec into HTML (the multi-variant inspect
-card, the per-row description) lives here so attention semantics aren't
-scattered across the larger ``components`` module.
-
-Pure label / predicate logic (``mask_short``, ``is_sliding``, ``kv_shared``,
-``describe_attention`` …) lives in :mod:`unfold.labels` — this module only
-deals with HTML.
-"""
+"""Inspect-card content for attention blocks."""
 from __future__ import annotations
 
-from ...labels import describe_attention, kv_shared, mask_long
-from .utils import _attr, _html
+from ....labels import describe_attention, kv_shared, mask_long
+from ..utils import _html
 
 
 def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
-    """Inspect card for the attention block.
-
-    With a single attention variant this falls through to a normal card.  With
-    multiple variants (Gemma 4: sliding + full) the card lists every variant
-    as its own row so the bifurcation is explicit no matter which variant
-    pill is currently active.  Each row also notes how many of that variant
-    reuse K/V from earlier layers.
-    """
+    """Inspect card for the attention block."""
     attn_groups = [
         g for g in info.get("groups", []) if g.get("spec", {}).get("attention")
     ]
@@ -60,7 +44,6 @@ def _attention_row_for_group(group: dict, ir: dict) -> str:
 
 
 def _attention_row(attn: dict, n_layers: int, n_shared: int) -> str:
-    """One row in the multi-variant attention card."""
     title = f"{mask_long(attn)} · {describe_attention(attn)}"
     bits: list[str] = []
     if attn.get("window_size"):
@@ -78,9 +61,6 @@ def _attention_row(attn: dict, n_layers: int, n_shared: int) -> str:
     )
 
 
-# Scoped CSS for the attention card.  Lives next to the attention rendering
-# so updating row styling doesn't require digging through the central style
-# block.
 def attention_card_css(mount_id: str, theme: dict) -> str:
     return f"""
 #{mount_id} .uf-attn-rows {{

@@ -145,8 +145,8 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
             for child in block.get("children", []):
                 if child.get("id"):
                     blocks[child["id"]] = child
-    # External pathways (Gemma 4 PLE) declare their own construction blocks
-    # outside the per-layer chain — pull them in so click cards work.
+    # External pathways can declare construction blocks outside the per-layer
+    # chain. Pull them in so click cards work for reusable parts too.
     for pathway in (ir.get("extras") or {}).get("external_pathways") or []:
         for child in pathway.get("construction") or []:
             if child.get("id"):

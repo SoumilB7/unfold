@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ....ir import AttentionSpec, FFNSpec, LayerSpec, ModelIR
-from ..blocks import decoder_layer_blocks, decoder_only_render_spec
+from ....ir import AttentionSpec, FFNSpec, ModelIR
+from ..assembly import decoder_extras, decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
@@ -82,14 +82,7 @@ def parse(cfg: Any) -> ModelIR:
                 intermediate_size=intermediate_size,
                 gated=True,
             )
-        layers.append(
-            LayerSpec(
-                index=i,
-                attention=attn,
-                ffn=ffn,
-                blocks=decoder_layer_blocks(attn, ffn, hidden_size),
-            )
-        )
+        layers.append(decoder_layer(i, attn, ffn, hidden_size))
 
     vocab_size = _g(cfg, "vocab_size", 0)
     tie_word_embeddings = bool(_g(cfg, "tie_word_embeddings", False))
@@ -101,14 +94,14 @@ def parse(cfg: Any) -> ModelIR:
         max_position_embeddings=_g(cfg, "max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
-        extras={
-            "render": decoder_only_render_spec(
-                vocab_size,
-                hidden_size,
-                tie_word_embeddings,
-            ),
-            "v_head_dim": v_head_dim,
-            "first_k_dense_replace": first_k_dense_replace,
-            "moe_layer_freq": moe_layer_freq,
-        },
+        extras=decoder_extras(
+            vocab_size,
+            hidden_size,
+            tie_word_embeddings,
+            {
+                "v_head_dim": v_head_dim,
+                "first_k_dense_replace": first_k_dense_replace,
+                "moe_layer_freq": moe_layer_freq,
+            },
+        ),
     )

@@ -1,4 +1,4 @@
-"""SVG views for architecture, FFN, MoE, and layer maps."""
+"""Top-level SVG views for architecture and layer maps."""
 from __future__ import annotations
 
 from ...labels import kind_short, mask_short
@@ -7,10 +7,8 @@ from .svg import (
     _branch_dot,
     _defs,
     _elbow_hv,
-    _elbow_vh,
     _input_tap,
     _ids,
-    _path,
     _plus_block,
     _rect_block,
     _region_rect,
@@ -19,10 +17,8 @@ from .svg import (
     _svg_tag,
     _svg_text,
     _v_line,
-    _v_seg,
 )
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
-from .utils import _fmt_int
 
 
 # --- Layout vocabulary for the data-driven architecture view ----------------
@@ -54,15 +50,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     chain; side-lane blocks render as parallel rails to the left or right of
     the inner region.
 
-    The view grows from the block list, so PLE-bearing Gemma models get extra
-    vertical space while compact decoder-only models keep the same vocabulary.
+    The view grows from the block list, so side-path models get extra vertical
+    space while compact decoder-only models keep the same vocabulary.
     """
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
 
-    # Side blocks (e.g. PLE) live OFF the central column.  They share a row
-    # with the block they feed but get their own offset x-position and
-    # explicit input/output connections.
+    # Side blocks live OFF the central column.  They share a row with the block
+    # they feed but get their own offset x-position and explicit connections.
     chain_blocks = [b for b in layer_blocks if not b.get("lane")]
     side_blocks = [b for b in layer_blocks if b.get("lane")]
 
@@ -149,7 +144,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             # bypass visually originates from the arrow, not from the block.
             _mark_branch_tap(parts, branch_taps, _input_tap(src_geom))
 
-    # --- 6. Side blocks (e.g. PLE) — placed off the central column ---
+    # --- 6. Side blocks — placed off the central column ---
     for block in side_blocks:
         _draw_side_block(
             parts, info, shadow_id,
@@ -192,7 +187,7 @@ def _draw_side_block(
     arrow_id: str,
     branch_taps: set[tuple[float, float]],
 ) -> None:
-    """Render a block that lives OFF the central chain (e.g. Gemma 4 PLE).
+    """Render a block that lives OFF the central chain.
 
     The block is drawn at the y-row of whatever it ``feeds``, offset to the
     declared ``lane`` (left/right).  Its input is a long arrow tapping the
@@ -259,286 +254,6 @@ def _mark_branch_tap(
         return
     branch_taps.add(key)
     parts.append(_branch_dot(*tap))
-
-
-def _build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
-    # Slightly taller (h=620) to leave room for incoming arrow below router
-    # and outgoing arrow above the sum node.
-    w, h = 720, 620
-    arrow_id, shadow_id = _ids(mount_id, "moe")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    ffn = info["dominant"]["spec"]["ffn"]
-    cx = w / 2
-    # Router spans wide enough that all four expert arrows visibly emerge from
-    # within the router rectangle (otherwise the leftmost/rightmost arrows
-    # appear to start in empty space, far outside the router block).
-    router_w = 540
-    router = _rect_block(parts, info, shadow_id, "router",
-                         (w - router_w) / 2, h - 130, router_w, 50, "Router")
-    sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 100)
-
-    # Expert layout: 4 evenly-spaced columns symmetric around the centre.
-    # Previous version overlapped slot 3 and slot 4 (wrong x for slot 4).
-    expert_w, expert_h = 116, 54
-    expert_y = 235
-    n_total = ffn.get("num_experts")
-    last_label = str(n_total) if n_total else "N"
-    # Spacing computed so columns are: 60, 220, 380, 540 with w=720.
-    side_pad = 60
-    gap = (w - 2 * side_pad - 4 * expert_w) / 3
-    slots = [
-        (side_pad + 0 * (expert_w + gap), "Expert 1",        "expert_1"),
-        (side_pad + 1 * (expert_w + gap), "Expert k",        "expert_k"),
-        (side_pad + 2 * (expert_w + gap), "Expert k+1",      "expert_kp1"),
-        (side_pad + 3 * (expert_w + gap), f"Expert {last_label}", "expert_n"),
-    ]
-    experts = [
-        _rect_block(parts, info, shadow_id, node_id, x, expert_y, expert_w, expert_h, label, font_size=15)
-        for x, label, node_id in slots
-    ]
-
-    # Ellipsis lives in the gap between expert 2 (k) and expert 3 (k+1).
-    dots_x = (experts[1]["right"] + experts[2]["left"]) / 2
-    dots_y = expert_y + expert_h / 2
-    for i in range(-2, 3):
-        parts.append(_svg_tag("circle", {"cx": dots_x + i * 7, "cy": dots_y, "r": 2.5, "fill": C["muted"]}))
-
-    for expert in experts:
-        parts.append(_v_seg(expert["cx"], router["top"], expert["bottom"] + GAP, arrow_id))
-
-    for expert in experts:
-        target_x = sum_node["cx"] + (-sum_node["r"] - GAP if expert["cx"] < sum_node["cx"] else sum_node["r"] + GAP)
-        parts.append(_elbow_vh(expert["cx"], expert["top"], target_x, sum_node["cy"], arrow_id))
-
-    if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
-        sparsity = 100 * ffn["num_experts_per_tok"] / ffn["num_experts"]
-        cg_x, cg_y, cg_w, cg_h = w - 244, 58, 188, 58
-        parts.append(
-            _svg_tag(
-                "rect",
-                {
-                    "x": cg_x,
-                    "y": cg_y,
-                    "width": cg_w,
-                    "height": cg_h,
-                    "rx": 10,
-                    "ry": 10,
-                    "fill": C["bg_card"],
-                    "stroke": C["border"],
-                    "stroke-width": 0.5,
-                },
-            )
-        )
-        parts.append(
-            _svg_text(
-                cg_x + 12,
-                cg_y + 18,
-                "ACTIVE PER TOKEN",
-                {
-                    "fill": C["muted"],
-                    "font-family": FONT_BODY,
-                    "font-size": 10,
-                    "letter-spacing": "0.12em",
-                    "font-weight": 600,
-                },
-            )
-        )
-        parts.append(
-            _svg_text(
-                cg_x + 12,
-                cg_y + 44,
-                f"{ffn['num_experts_per_tok']} / {ffn['num_experts']}  -  {sparsity:.1f}%",
-                {"fill": C["text"], "font-family": FONT_HEAD, "font-size": 22},
-            )
-        )
-
-    # Outgoing arrow at the top — leaves the weighted-sum node going up.
-    parts.append(_svg_tag("line", {
-        "x1": sum_node["cx"], "y1": sum_node["top"],
-        "x2": sum_node["cx"], "y2": sum_node["top"] - 36,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        sum_node["cx"], sum_node["top"] - 46,
-        "out",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # Incoming arrow at the bottom — enters the router from below.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": router["bottom"] + 36,
-        "x2": cx, "y2": router["bottom"] + GAP,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, router["bottom"] + 50,
-        "in",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    return _svg(w, h, f"{ir.get('name', 'model')} mixture of experts", parts)
-
-
-def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
-    # Tall enough that both the outgoing "out" label and the incoming "in·x"
-    # label sit inside the outer region boundary (region = y 30 → h-30).
-    w, h = 720, 660
-    arrow_id, shadow_id = _ids(mount_id, "ffn")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    ffn = info["dominant"]["spec"]["ffn"]
-    cx = w / 2
-    act_name = (ffn.get("activation") or "silu").upper()
-
-    down_proj = _rect_block(parts, info, shadow_id, "down_proj", cx - 90, 110, 180, 50, "Linear (down)")
-    mul_node = _plus_block(parts, info, shadow_id, "mul", cx, 230, "×")
-    silu = _rect_block(parts, info, shadow_id, "silu", cx - 270, 330, 180, 50, act_name)
-    up_proj = _rect_block(parts, info, shadow_id, "up_proj", cx + 90, 330, 180, 50, "Linear (up)")
-    gate_proj = _rect_block(parts, info, shadow_id, "gate_proj", cx - 270, 460, 180, 50, "Linear (gate)")
-
-    branch_y = h - 110
-    parts.append(_svg_tag("circle", {"cx": cx, "cy": branch_y, "r": 4, "fill": C["arrow"]}))
-    parts.append(_elbow_hv(cx, branch_y, gate_proj["cx"], gate_proj["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(cx, branch_y, up_proj["cx"], up_proj["bottom"] + GAP, arrow_id))
-    parts.append(_v_line(gate_proj, silu, arrow_id))
-    parts.append(_elbow_vh(silu["cx"], silu["top"], mul_node["cx"] - mul_node["r"] - GAP, mul_node["cy"], arrow_id))
-    parts.append(_elbow_vh(up_proj["cx"], up_proj["top"], mul_node["cx"] + mul_node["r"] + GAP, mul_node["cy"], arrow_id))
-    parts.append(_v_line(mul_node, down_proj, arrow_id))
-
-    # Outgoing arrow at top — leaves down_proj going up.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": down_proj["top"],
-        "x2": cx, "y2": down_proj["top"] - 36,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, down_proj["top"] - 46,
-        "out",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # Incoming arrow at the bottom — points up into the input branch dot.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": branch_y + 38,
-        "x2": cx, "y2": branch_y + 8,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(
-        _svg_text(
-            cx,
-            h - 48,
-            "in  ·  x",
-            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-        )
-    )
-
-    return _svg(w, h, f"{ir.get('name', 'model')} feed-forward block", parts)
-
-
-def _build_ple_view(ir: dict, info: dict, mount_id: str) -> str:
-    """Detail view for the per-layer-embeddings block.
-
-    The forward pass is a 5-stage chain: ``gate → act → × per_layer_input →
-    proj → norm``.  We draw it as a vertical chain (so it fits the same
-    inspect panel as the FFN view), with the multiplication step annotated
-    as receiving the cross-layer ``per_layer_input`` vector — that external
-    feed isn't drawn yet (TODO: visualise the parallel pathway).
-    """
-    w, h = 720, 660
-    arrow_id, shadow_id = _ids(mount_id, "ple")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    spec = info["dominant"]["spec"]
-    ple_dim = ((ir.get("extras") or {}).get("per_layer_embeddings") or {}).get("hidden")
-    hidden_size = ir.get("hidden_size")
-    cx = w / 2
-
-    # Stack bottom → top in execution order.
-    gate = _rect_block(parts, info, shadow_id, "ple_gate",  cx - 110, h - 160, 220, 50, "Linear (gate)")
-    act_label = _ple_activation(spec)
-    act = _rect_block(parts, info, shadow_id, "ple_act",   cx - 90,  h - 250, 180, 44, act_label)
-    mul = _plus_block(parts, info, shadow_id, "ple_mul",   cx,        h - 320, "×")
-    proj = _rect_block(parts, info, shadow_id, "ple_proj", cx - 110, h - 410, 220, 50, "Linear (up)")
-    norm = _rect_block(parts, info, shadow_id, "ple_norm", cx - 90,  h - 500, 180, 44, "RMSNorm")
-
-    # Linear chain.
-    for src, dst in ((gate, act), (act, mul), (mul, proj), (proj, norm)):
-        parts.append(_v_line(src, dst, arrow_id))
-
-    # Outgoing arrow above the norm.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": norm["top"],
-        "x2": cx, "y2": norm["top"] - 36,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, norm["top"] - 46, "out  →  add (residual)",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # Incoming arrow below the gate.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": gate["bottom"] + 38,
-        "x2": cx, "y2": gate["bottom"] + 8,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, gate["bottom"] + 56, "in  (hidden)",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # External feed annotation — points at × from the right.
-    feed_x = mul["cx"] + mul["r"] + 24
-    parts.append(_svg_tag("line", {
-        "x1": feed_x + 110, "y1": mul["cy"],
-        "x2": mul["cx"] + mul["r"] + GAP, "y2": mul["cy"],
-        "stroke": "#1F9E78", "stroke-width": 1.6, "stroke-linecap": "round",
-        "stroke-dasharray": "5 4",
-        "marker-end": f"url(#{arrow_id})",
-    }))
-    parts.append(_svg_text(
-        feed_x + 116, mul["cy"] - 10,
-        "per_layer_input[L]",
-        {"fill": "#1F9E78", "font-family": FONT_MONO, "font-size": 11, "font-weight": 700},
-    ))
-    parts.append(_svg_text(
-        feed_x + 116, mul["cy"] + 6,
-        f"({_fmt_int(ple_dim) if ple_dim else '?'}-d, built outside layers)",
-        {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
-    ))
-
-    # Dim annotations alongside the chain.
-    parts.append(_svg_text(
-        gate["right"] + 14, gate["cy"],
-        f"{_fmt_int(hidden_size)}  →  {_fmt_int(ple_dim)}" if ple_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
-    ))
-    parts.append(_svg_text(
-        proj["right"] + 14, proj["cy"],
-        f"{_fmt_int(ple_dim)}  →  {_fmt_int(hidden_size)}" if ple_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
-    ))
-
-    return _svg(w, h, f"{ir.get('name', 'model')} per-layer embeddings block", parts)
-
-
-def _ple_activation(spec: dict) -> str:
-    # Gemma 4 uses gelu_pytorch_tanh for PLE; fall back to whatever the
-    # adapter declared for the FFN if it's set, otherwise plain GELU.
-    raw = (spec.get("ffn") or {}).get("activation") or "gelu"
-    return raw.split("_")[0].upper()
 
 
 def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:

@@ -121,6 +121,25 @@ GEMMA4_31B_CONFIG = {
 }
 
 
+def _gemma4_e4b_config():
+    cfg = dict(GEMMA4_31B_CONFIG)
+    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
+    text_cfg.update(
+        {
+            "num_hidden_layers": 42,
+            "layer_types": [
+                "sliding_attention" if (i % 6) != 5 else "full_attention"
+                for i in range(42)
+            ],
+            "hidden_size_per_layer_input": 1024,
+            "vocab_size_per_layer_input": text_cfg["vocab_size"],
+        }
+    )
+    cfg["_name_or_path"] = "google/gemma-4-E4B"
+    cfg["text_config"] = text_cfg
+    return cfg
+
+
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
@@ -195,6 +214,24 @@ def test_gemma4_31b():
     assert "<!doctype html>" in html.lower()
     assert "<svg" in html.lower()
     print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
+
+
+def test_gemma4_ple_uses_reusable_part_contract():
+    d = unfold(_gemma4_e4b_config())
+    ir = d.to_ir()
+    blocks = ir["layers"][0]["blocks"]
+    ple = next(block for block in blocks if block["id"] == "ple")
+
+    assert ple["detail_view"] == "per_layer_embedding"
+    assert ple["detail"]["view"] == "per_layer_embedding"
+    assert ple["detail"]["nodes"]["multiply"] == "ple_mul"
+    assert ir["extras"]["per_layer_embeddings"]["hidden"] == 1024
+    assert ir["extras"]["external_pathways"][0]["tap_block"] == "ple_mul"
+
+    html = d.to_html(standalone=True)
+    assert "uf-card-ple" in html
+    assert "uf-l3-ple_gate" in html
+    assert "per_layer_input[L]" in html
 
 
 def test_llama3():
@@ -285,6 +322,7 @@ if __name__ == "__main__":
     test_kimi_k2()
     test_deepseek_v3_phase_change()
     test_gemma4_31b()
+    test_gemma4_ple_uses_reusable_part_contract()
     test_llama3()
     test_model_id_uses_hf_token_env_and_explicit_override()
     test_model_id_falls_back_to_legacy_hf_auth_kwarg()
