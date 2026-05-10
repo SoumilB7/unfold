@@ -195,6 +195,9 @@ def _node_title(info: dict, node_id: str) -> str:
 
 
 def _v_line(src: dict, dst: dict, arrow_id: str) -> str:
+    # Arrows originate on the source edge and stop with breathing room before
+    # the destination.  That keeps flow lines visually attached to the block
+    # they leave, while the arrowhead has enough room before the next block.
     if src["cy"] > dst["cy"]:
         y1 = src["top"]
         y2 = dst["bottom"] + GAP
@@ -267,8 +270,15 @@ def _elbow_hv(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
 
 
 def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> str:
+    """Residual bypass that taps the *input arrow* of ``src`` rather than
+    leaving from ``src``'s right side.
+
+    The visual is "the same x flowing into rms1 also feeds add1" — so the
+    branch peels off the central column just below ``src``, runs to the lane
+    on the right, climbs to ``dst`` level, and arrives from the right.
+    """
     r = 12
-    start_x, start_y = src["right"], src["cy"]
+    start_x, start_y = _input_tap(src)
     end_x, end_y = dst["right"], dst["cy"]
     d = (
         f"M {_num(start_x)} {_num(start_y)} "
@@ -279,6 +289,16 @@ def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> st
         f"L {_num(end_x + GAP)} {_num(end_y)}"
     )
     return _path(d, arrow_id)
+
+
+def _input_tap(node: dict) -> tuple[float, float]:
+    """Tap point on the input stem below a block."""
+    return node["cx"], node["bottom"] + GAP + 16
+
+
+def _branch_dot(cx: float, cy: float) -> str:
+    """Small filled circle marking a tap point on an arrow stem."""
+    return _svg_tag("circle", {"cx": cx, "cy": cy, "r": 3.2, "fill": C["arrow"]})
 
 
 def _path(d: str, arrow_id: str) -> str:

@@ -11,42 +11,52 @@ from .attention import attention_card, attention_card_css
 from .metadata import _arch_badges
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO
 from .utils import _attr, _fmt_int, _html
-from .views import _build_ffn_view, _build_moe_view
+from .views import _build_ffn_view, _build_moe_view, _build_ple_view
 
 
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
-    """Cards-only HTML for the L2 inspect panel.  The caller wraps in a
-    .uf-l2-variant container so multiple variants can coexist."""
-    panels: list[str] = []
-    ffn = info["dominant"]["spec"]["ffn"]
+    """Cards-only HTML for the L2 inspect panel.
 
-    panels.append(_hint_card(
-        "default",
-        "Click a block above to inspect it",
-    ))
-    for node_id in ("tok_text", "embed", "rms1", "add1", "rms2"):
+    Card generation is **data-driven**: we walk the model-level blocks
+    (``ir.extras['render']['model_blocks']``) plus the dominant layer's
+    blocks (``info['dominant']['spec']['blocks']``) and emit one card per
+    block.  Special-cased renderers exist for ``attention`` (multi-variant
+    bifurcation) and ``ffn`` (full internal SVG) — every other ``kind`` falls
+    through to ``_simple_card`` so a new architectural sub-stage like
+    Gemma 4's PLE shows up automatically once the adapter declares it.
+    """
+    panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
+
+    spec = info["dominant"]["spec"]
+    layer_blocks = spec.get("blocks") or []
+
+    # --- Pre-stack: tok_text → embed ---
+    for node_id in ("tok_text", "embed"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
-    panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
 
-    # The interesting one: clicking the FFN block in the architecture reveals
-    # the FULL internal FFN diagram (or the MoE diagram for sparse models).
-    ffn_title, ffn_desc = _meta(info, "ffn")
-    if ffn.get("kind") == "moe":
-        panels.append(_rich_card(
-            "ffn",
-            ffn_title,
-            ffn_desc,
-            _build_moe_view(ir, info, mount_id),
-        ))
-    else:
-        panels.append(_rich_card(
-            "ffn",
-            ffn_title,
-            ffn_desc,
-            _build_ffn_view(ir, info, mount_id),
-        ))
+    # --- Per-layer body — kind-driven ---
+    for block in layer_blocks:
+        kind = block.get("kind")
+        node_id = block["id"]
+        if kind == "attention":
+            panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
+        elif kind == "ffn":
+            ffn_title, ffn_desc = _meta(info, node_id)
+            ffn = spec["ffn"]
+            svg = (
+                _build_moe_view(ir, info, mount_id)
+                if ffn.get("kind") == "moe"
+                else _build_ffn_view(ir, info, mount_id)
+            )
+            panels.append(_rich_card(node_id, ffn_title, ffn_desc, svg))
+        elif kind == "ple":
+            title, desc = _meta(info, node_id)
+            panels.append(_rich_card(node_id, title, desc, _build_ple_view(ir, info, mount_id)))
+        else:
+            panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
-    for node_id in ("add2", "final_rms", "lm_head"):
+    # --- Post-stack: final_rms → lm_head ---
+    for node_id in ("final_rms", "lm_head"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     return "".join(panels)
