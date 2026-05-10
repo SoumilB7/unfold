@@ -8,7 +8,7 @@ from ..assembly import decoder_extras, decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
-_FAMILIES = {"llama", "phi3", "gemma"}
+_FAMILIES = {"llama", "phi3"}
 
 
 def matches(cfg: Any) -> bool:

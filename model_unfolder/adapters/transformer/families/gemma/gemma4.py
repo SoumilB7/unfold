@@ -18,10 +18,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from ....ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
-from ..assembly import decoder_extras, decoder_layer
-from ..common import architecture_name, get_config_value as _g, model_name
-from ..special_parts.per_layer_embedding import (
+from .....ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
+from ...assembly import decoder_extras, decoder_layer
+from ...common import architecture_name, get_config_value as _g, model_name
+from ...special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
     per_layer_embedding_extras,
 )

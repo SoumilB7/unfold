@@ -87,8 +87,9 @@ Param estimates are close to published numbers — DeepSeek-V3 reports `~675B (~
 | DeepSeek | DeepSeek-V2, DeepSeek-V3, Kimi K2 |
 | Llama | Llama 3 / 3.1 / 3.2 / 3.3 |
 | Mistral | Mistral 7B, Mixtral 8x7B / 8x22B, Mistral Medium 3.5 |
-| Qwen | Qwen2 / 2.5, Qwen2-MoE, Qwen3, Qwen3-MoE, Qwen3.5 / 3.6 (hybrid linear+full attn) |
-| Gemma | Gemma 3, Gemma 4 (31B, E2B, E4B) |
+| Qwen | Qwen2 / 2.5, Qwen2-MoE, Qwen3, Qwen3-MoE, Qwen3.5 / 3.6 |
+| Gemma | Gemma 3 / 3n, Gemma 4 (31B, E2B, E4B) |
+| MiniMax | MiniMax-Text-01 |
 
 ### Diffusors
 

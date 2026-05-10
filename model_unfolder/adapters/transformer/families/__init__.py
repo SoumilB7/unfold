@@ -4,10 +4,11 @@ These modules translate family-specific HuggingFace config dialects into the
 shared transformer IR pieces in ``model_unfolder.adapters.transformer``.
 """
 
-from . import deepseek, fallback, gemma4, llama, mistral, qwen
+from . import deepseek, fallback, llama, minimax, mistral, qwen
+from . import gemma  # gemma/ package — dispatches to gemma3/gemma4 internally
 
 # Order matters: more specific adapters first.
-# ``gemma4`` must run before ``llama`` (which also matches ``gemma`` model_type).
-# ``mistral`` and ``qwen`` must run before ``llama``.
+# ``gemma`` must run before ``llama`` (llama previously caught "gemma" model_type).
+# ``mistral``, ``qwen``, ``minimax`` before ``llama``.
 # ``fallback`` always matches — must be last.
-ADAPTERS = [deepseek, gemma4, mistral, qwen, llama, fallback]
+ADAPTERS = [deepseek, gemma, minimax, mistral, qwen, llama, fallback]

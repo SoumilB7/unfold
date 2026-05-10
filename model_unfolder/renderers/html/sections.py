@@ -26,6 +26,16 @@ def _header(ir: dict, info: dict) -> str:
         badges.append(
             f'<span class="uf-badge" title="{_attr(title)}">{_html(badge["text"])}</span>'
         )
+
+    warnings = ir.get("warnings") or []
+    if warnings:
+        tooltip = " · ".join(warnings)
+        badges.append(
+            f'<span class="uf-badge uf-badge-warn" title="{_attr(tooltip)}">'
+            "⚠ partial config"
+            "</span>"
+        )
+
     return f"""
 <div class="uf-header">
   <div class="uf-name">{_html(ir.get("name", "model"))}</div>
