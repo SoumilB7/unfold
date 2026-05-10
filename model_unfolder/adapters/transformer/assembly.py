@@ -15,6 +15,8 @@ def decoder_layer(
     hidden_size: int,
     *,
     extra_blocks: Iterable[dict] | None = None,
+    norm_kind: str = "rmsnorm",
+    norm_placement: str = "pre",
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
     blocks = decoder_layer_blocks(attention, ffn, hidden_size)
@@ -24,6 +26,8 @@ def decoder_layer(
         index=index,
         attention=attention,
         ffn=ffn,
+        norm_kind=norm_kind,
+        norm_placement=norm_placement,
         blocks=blocks,
     )
 
