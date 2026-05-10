@@ -96,6 +96,8 @@ def decoder_layer_blocks(
             "label": attention_label(attention),
             "title": attention_title(attention),
             "description": describe_attention(attention),
+            "detail_view": "attention",
+            "children": attention_child_blocks(attention, hidden_size),
         },
         {
             "id": "add1",
@@ -166,6 +168,8 @@ def parallel_decoder_layer_blocks(
             "label": attention_label(attention),
             "title": attention_title(attention),
             "description": describe_attention(attention),
+            "detail_view": "attention",
+            "children": attention_child_blocks(attention, hidden_size),
         },
         {
             "id": "add1",
@@ -189,6 +193,48 @@ def parallel_decoder_layer_blocks(
             "lane": "left",
             "tap_from": "attn",   # taps the arrow into attn = output of shared norm
             "feeds": "add1",
+            "side_align": "tap",  # position FFN at attn's height, not add1's
+        },
+    ]
+
+
+def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+    hidden = _fmt(hidden_size)
+    num_heads = attention.num_heads or 0
+    num_kv_heads = attention.num_kv_heads or num_heads
+    head_dim = attention.head_dim or 0
+    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
+    kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
+    d_k = _fmt(head_dim) if head_dim else "d_k"
+    return [
+        {
+            "id": "q_proj",
+            "title": "Query projection",
+            "description": f"Linear; {hidden} → {q_out}  ({num_heads} heads × {d_k} dims)",
+        },
+        {
+            "id": "k_proj",
+            "title": "Key projection",
+            "description": f"Linear; {hidden} → {kv_out}  ({num_kv_heads} KV-heads × {d_k} dims)",
+        },
+        {
+            "id": "v_proj",
+            "title": "Value projection",
+            "description": f"Linear; {hidden} → {kv_out}  ({num_kv_heads} KV-heads × {d_k} dims)",
+        },
+        {
+            "id": "qkv_dot",
+            "title": "Scaled dot-product attention",
+            "description": (
+                f"scores = softmax(QKᵀ / √{d_k}); "
+                f"context = scores · V; "
+                f"output shape [batch, {num_heads}, seq, {d_k}]"
+            ),
+        },
+        {
+            "id": "o_proj",
+            "title": "Output projection",
+            "description": f"Linear; {q_out} → {hidden}  (recombines all {num_heads} heads)",
         },
     ]
 

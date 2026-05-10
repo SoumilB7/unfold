@@ -182,9 +182,7 @@ def _attention_kind(num_q: int, num_kv: int) -> str:
         return "mha"
     if num_kv == num_q:
         return "mha"
-    if num_kv == 1:
-        return "mqa"
-    return "gqa"
+    return "gqa"  # includes 1-KV global layers — Gemma 4 is GQA throughout
 
 
 def _last_matching_layer(layer_types: list, i: int, first_shared: int) -> int | None:

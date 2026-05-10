@@ -22,7 +22,6 @@ from typing import Any
 
 from ....ir import AttentionSpec, FFNSpec, ModelIR
 from ..assembly import decoder_extras, decoder_layer, parallel_decoder_layer
-from ..blocks import decoder_layer_blocks, parallel_decoder_layer_blocks
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
@@ -93,19 +92,9 @@ def parse(cfg: Any) -> ModelIR:
     extras = decoder_extras(vocab_size, hidden_size, tie_word_embeddings)
 
     if use_parallel:
-        extras["parallel_attn"] = True
-        # Topology toggle: "Parallel (actual)" shows the real shared-norm design;
-        # "Sequential view" shows the familiar pre-norm chain for comparison.
-        extras["view_variants"] = [
-            {
-                "label": "Parallel (actual)",
-                "blocks": parallel_decoder_layer_blocks(sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"),
-            },
-            {
-                "label": "Sequential view",
-                "blocks": decoder_layer_blocks(sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"),
-            },
-        ]
+        # Signal the renderer that this model uses parallel-residual topology so
+        # it can auto-shift the chain center and avoid block overlap.
+        extras["parallel_residual"] = True
 
     # Surface rotary coverage for info cards
     if rotary_pct is not None:

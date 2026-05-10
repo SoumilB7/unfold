@@ -7,6 +7,7 @@ from .svg import (
     _branch_dot,
     _defs,
     _elbow_hv,
+    _elbow_vh,
     _input_tap,
     _ids,
     _plus_block,
@@ -61,8 +62,27 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     chain_blocks = [b for b in layer_blocks if not b.get("lane")]
     side_blocks = [b for b in layer_blocks if b.get("lane")]
 
-    cx = 360
     inner_x, inner_w = 110, 500
+
+    # Default chain center.  Auto-shift right when a side_align="tap" block on
+    # the left lane would overlap the widest chain block at the default cx.
+    # This handles parallel-residual architectures (e.g. GPT-NeoX / GPT-J) where
+    # FFN and Attention share the same y-row without any renderer special-casing.
+    cx = 360
+    _tap_left = [
+        b for b in side_blocks
+        if b.get("side_align") == "tap" and b.get("lane") == "left"
+    ]
+    if _tap_left:
+        side_right = max(
+            inner_x + 30 + (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"])
+            for b in _tap_left
+        )
+        chain_half_w = max(
+            (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"]) // 2
+            for b in chain_blocks
+        ) if chain_blocks else 115
+        cx = max(cx, side_right + 20 + chain_half_w)
 
     # --- 1. Compute heights from the chain block list ---
     inner_padding = 60
@@ -206,8 +226,13 @@ def _draw_side_block(
     if not feeds_geom or not tap_geom:
         return  # mis-declared; nothing to anchor to
 
-    # Side block sits at the same y as the block it feeds, shifted left/right.
-    cy = feeds_geom["cy"]
+    # ``side_align="tap"`` places the block at the same y as the tap source
+    # (e.g. parallel FFN beside Attention) instead of the default feeds target.
+    if block.get("side_align") == "tap":
+        cy = tap_geom["cy"]
+    else:
+        cy = feeds_geom["cy"]
+
     if lane == "left":
         block_x = inner_x + 30
     else:
@@ -230,18 +255,37 @@ def _draw_side_block(
     parts.append(_elbow_hv(tap_x, tap_y, rail_x, geom["bottom"] + GAP, arrow_id))
     _mark_branch_tap(parts, branch_taps, (tap_x, tap_y))
 
-    # --- Output: short horizontal arrow into feeds target.
+    # --- Output: arrow into feeds target.
+    #     When the side block is at a different y from its feeds target (e.g.
+    #     parallel FFN at Attn level feeding into the higher add node), use an
+    #     elbow so the arrow arrives squarely at the target's edge.
+    feeds_cy = feeds_geom["cy"]
     if lane == "left":
-        x1 = geom["right"]
         x2 = feeds_geom["left"] - GAP
     else:
-        x1 = geom["left"]
         x2 = feeds_geom["right"] + GAP
-    parts.append(_svg_tag("line", {
-        "x1": x1, "y1": cy, "x2": x2, "y2": cy,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
+
+    if abs(cy - feeds_cy) > 4:
+        # The side block sits at a different y than its feeds target (e.g. parallel
+        # FFN at Attn level feeding up into the add node).  Route from the block's
+        # leading edge (top if climbing, bottom if descending) as a vertical-first
+        # elbow: go straight up/down from the block center, then turn horizontally
+        # into the feeds target.  This reads as "FFN output rises to meet the add".
+        if cy > feeds_cy:
+            y_start = geom["top"] - GAP   # arrow leaves from top of block
+        else:
+            y_start = geom["bottom"] + GAP  # arrow leaves from bottom of block
+        parts.append(_elbow_vh(geom["cx"], y_start, x2, feeds_cy, arrow_id))
+    else:
+        if lane == "left":
+            x1 = geom["right"]
+        else:
+            x1 = geom["left"]
+        parts.append(_svg_tag("line", {
+            "x1": x1, "y1": cy, "x2": x2, "y2": cy,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
 
 
 def _mark_branch_tap(

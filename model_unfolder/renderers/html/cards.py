@@ -20,7 +20,12 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         kind = block.get("kind")
         node_id = block["id"]
         if kind == "attention":
-            panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
+            svg = block_detail_svg(ir, info, mount_id, block)
+            if svg:
+                title, desc = _meta(info, node_id)
+                panels.append(_rich_card(node_id, title, desc, svg))
+            else:
+                panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
             continue
 
         svg = block_detail_svg(ir, info, mount_id, block)
