@@ -24,7 +24,7 @@ from ..blocks import (
     decoder_only_render_spec,
 )
 from ..common import architecture_name, get_config_value as _g, model_name
-from ..parts.per_layer_embedding import (
+from ..special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
     per_layer_embedding_extras,
 )
