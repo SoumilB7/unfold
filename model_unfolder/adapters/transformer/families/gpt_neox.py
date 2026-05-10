@@ -21,7 +21,8 @@ from __future__ import annotations
 from typing import Any
 
 from ....ir import AttentionSpec, FFNSpec, ModelIR
-from ..assembly import decoder_extras, decoder_layer
+from ..assembly import decoder_extras, decoder_layer, parallel_decoder_layer
+from ..blocks import decoder_layer_blocks, parallel_decoder_layer_blocks
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
@@ -66,30 +67,46 @@ def parse(cfg: Any) -> ModelIR:
 
     head_dim = hidden_size // num_heads if num_heads else None
 
+    # Build representative specs once — all layers are uniform.
+    sample_attn = AttentionSpec(
+        kind="mha",
+        num_heads=num_heads,
+        num_kv_heads=num_heads,
+        head_dim=head_dim,
+        mask="causal",
+    )
+    sample_ffn = FFNSpec(
+        kind="dense",
+        activation=activation,
+        intermediate_size=intermediate_size,
+        gated=False,
+    )
+
     layers = []
     for i in range(num_layers):
-        attn = AttentionSpec(
-            kind="mha",
-            num_heads=num_heads,
-            num_kv_heads=num_heads,
-            head_dim=head_dim,
-            mask="causal",
-        )
-        ffn = FFNSpec(
-            kind="dense",
-            activation=activation,
-            intermediate_size=intermediate_size,
-            gated=False,  # plain MLP — no gate/up split
-        )
-        layers.append(
-            decoder_layer(i, attn, ffn, hidden_size, norm_kind="layernorm")
-        )
+        if use_parallel:
+            layers.append(parallel_decoder_layer(i, sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"))
+        else:
+            layers.append(decoder_layer(i, sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"))
 
     tie_word_embeddings = bool(_g(cfg, "tie_word_embeddings", False))
     extras = decoder_extras(vocab_size, hidden_size, tie_word_embeddings)
 
     if use_parallel:
         extras["parallel_attn"] = True
+        # Topology toggle: "Parallel (actual)" shows the real shared-norm design;
+        # "Sequential view" shows the familiar pre-norm chain for comparison.
+        extras["view_variants"] = [
+            {
+                "label": "Parallel (actual)",
+                "blocks": parallel_decoder_layer_blocks(sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"),
+            },
+            {
+                "label": "Sequential view",
+                "blocks": decoder_layer_blocks(sample_attn, sample_ffn, hidden_size, norm_kind="layernorm"),
+            },
+        ]
+
     # Surface rotary coverage for info cards
     if rotary_pct is not None:
         extras["rotary_pct"] = rotary_pct

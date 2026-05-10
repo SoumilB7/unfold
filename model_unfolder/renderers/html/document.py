@@ -16,12 +16,18 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
 
     For heterogeneous models (multiple layer-type groups, e.g. DeepSeek-V3's
     dense → MoE phase change), one architecture / L2 / L3 panel is emitted
-    per group, all sharing the same DOM tree.  Hidden via CSS, toggled by
-    radio buttons in a pill bar above the SVG.  Pure-CSS toggle, no JS.
+    per group.  When ``view_variants`` are present in extras (e.g. GPT-NeoX
+    parallel vs sequential), one arch panel is emitted per (group × variant)
+    combination.  All panels share the same DOM tree, hidden via CSS and
+    toggled by radio buttons in a pill bar.  Pure-CSS toggle, no JS.
     """
     info = _make_info(ir)
     groups = info["groups"]
     dominant_idx = groups.index(info["dominant"]) if groups else 0
+
+    # view_variants allow a single layer type to present multiple topology views
+    # (e.g. "Parallel (actual)" vs "Sequential view" for GPT-NeoX).
+    view_variants: list[dict | None] = (ir.get("extras") or {}).get("view_variants") or [None]
 
     radios: list[str] = []
     pills: list[str] = []
@@ -31,57 +37,85 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
     variant_css: list[str] = []
     radio_name = f"{mount_id}-g"
 
+    variant_idx = 0
     for i, group in enumerate(groups):
-        blocks = _block_lookup(ir, group["spec"])
-        variant_info = {
-            "groups": groups,
-            "dominant": group,
-            "blocks": blocks,
-            "meta": _meta_for(ir, group["spec"], blocks),
-        }
-        suffix = f"-g{i}"
-        radio_id = f"{mount_id}-g{i}"
-        checked = " checked" if i == dominant_idx else ""
+        for j, view_var in enumerate(view_variants):
+            # --- Determine display spec for the arch view ---
+            if view_var is not None:
+                display_spec = {**group["spec"], "blocks": view_var["blocks"]}
+                display_group = {**group, "spec": display_spec}
+                # Pill label: use view_variant label; prefix with group label when
+                # there are multiple layer types so each pill is unambiguous.
+                if len(groups) > 1:
+                    pill_label = f"{_group_label(group, info)} · {view_var['label']}"
+                else:
+                    pill_label = view_var["label"]
+            else:
+                display_group = group
+                pill_label = _group_label(group, info)
 
-        radios.append(
-            f'<input type="radio" name="{_attr(radio_name)}" '
-            f'id="{_attr(radio_id)}" class="uf-group-radio"{checked}>'
-        )
-        pills.append(
-            f'<label for="{_attr(radio_id)}" class="uf-group-pill">'
-            f'{_html(_group_label(group, info))}</label>'
-        )
+            arch_blocks = _block_lookup(ir, display_group["spec"])
+            arch_info = {
+                "groups": groups,
+                "dominant": display_group,
+                "blocks": arch_blocks,
+                "meta": _meta_for(ir, display_group["spec"], arch_blocks),
+            }
+            # L2/L3 inspect cards describe block semantics, not topology, so they
+            # always use the original group spec regardless of the topology view.
+            l2_blocks = _block_lookup(ir, group["spec"])
+            l2_info = {
+                "groups": groups,
+                "dominant": group,
+                "blocks": l2_blocks,
+                "meta": _meta_for(ir, group["spec"], l2_blocks),
+            }
 
-        arch_svg = _build_architecture_view(ir, variant_info, mount_id + suffix)
-        arch_variants.append(
-            f'<div class="uf-arch-variant uf-arch-variant-{i}">{arch_svg}</div>'
-        )
-        l2_inner = _build_inspect_cards(ir, variant_info, mount_id + suffix)
-        l2_variants.append(
-            f'<div class="uf-l2-variant uf-l2-variant-{i}">{l2_inner}</div>'
-        )
-        l3_inner = _build_sub_inspect_cards(ir, variant_info, mount_id + suffix)
-        l3_variants.append(
-            f'<div class="uf-l3-variant uf-l3-variant-{i}">{l3_inner}</div>'
-        )
+            suffix = f"-g{variant_idx}"
+            radio_id = f"{mount_id}-g{variant_idx}"
+            checked = " checked" if (i == dominant_idx and j == 0) else ""
 
-        # Per-variant visibility + active-pill styling
-        variant_css.append(
-            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-arch-variant-{i},"
-            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l2-variant-{i},"
-            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l3-variant-{i} "
-            f"{{ display:block; }}"
-        )
-        variant_css.append(
-            f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-group-pill[for='{radio_id}'] "
-            f"{{ background:{C['block']}; color:#FFFFFF; }}"
-        )
+            radios.append(
+                f'<input type="radio" name="{_attr(radio_name)}" '
+                f'id="{_attr(radio_id)}" class="uf-group-radio"{checked}>'
+            )
+            pills.append(
+                f'<label for="{_attr(radio_id)}" class="uf-group-pill">'
+                f'{_html(pill_label)}</label>'
+            )
+
+            arch_svg = _build_architecture_view(ir, arch_info, mount_id + suffix)
+            arch_variants.append(
+                f'<div class="uf-arch-variant uf-arch-variant-{variant_idx}">{arch_svg}</div>'
+            )
+            l2_inner = _build_inspect_cards(ir, l2_info, mount_id + suffix)
+            l2_variants.append(
+                f'<div class="uf-l2-variant uf-l2-variant-{variant_idx}">{l2_inner}</div>'
+            )
+            l3_inner = _build_sub_inspect_cards(ir, l2_info, mount_id + suffix)
+            l3_variants.append(
+                f'<div class="uf-l3-variant uf-l3-variant-{variant_idx}">{l3_inner}</div>'
+            )
+
+            # Per-variant visibility + active-pill styling
+            variant_css.append(
+                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-arch-variant-{variant_idx},"
+                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l2-variant-{variant_idx},"
+                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l3-variant-{variant_idx} "
+                f"{{ display:block; }}"
+            )
+            variant_css.append(
+                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-group-pill[for='{radio_id}'] "
+                f"{{ background:{C['block']}; color:#FFFFFF; }}"
+            )
+
+            variant_idx += 1
 
     style = _style(mount_id) + "\n" + "\n".join(variant_css)
 
     toggle_html = (
         f'<div class="uf-group-toggle" role="tablist">{"".join(pills)}</div>'
-        if len(groups) > 1 else ""
+        if variant_idx > 1 else ""
     )
 
     arch_section = (

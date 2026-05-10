@@ -75,16 +75,19 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
     ]
 
 
-def decoder_layer_blocks(attention: AttentionSpec, ffn: FFNSpec, hidden_size: int) -> list[dict]:
+def decoder_layer_blocks(
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+) -> list[dict]:
     hidden = _fmt(hidden_size)
+    norm_label = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
     return [
         {
             "id": "rms1",
             "role": "norm",
             "kind": "norm",
-            "label": "RMSNorm",
+            "label": norm_label,
             "title": "Pre-attention norm",
-            "description": f"RMSNorm; dim {hidden}",
+            "description": f"{norm_label}; dim {hidden}",
         },
         {
             "id": "attn",
@@ -107,9 +110,9 @@ def decoder_layer_blocks(attention: AttentionSpec, ffn: FFNSpec, hidden_size: in
             "id": "rms2",
             "role": "norm",
             "kind": "norm",
-            "label": "RMSNorm",
+            "label": norm_label,
             "title": "Pre-FFN norm",
-            "description": f"RMSNorm; dim {hidden}",
+            "description": f"{norm_label}; dim {hidden}",
         },
         {
             "id": "ffn",
@@ -129,6 +132,63 @@ def decoder_layer_blocks(attention: AttentionSpec, ffn: FFNSpec, hidden_size: in
             "label": "+",
             "title": "Residual add",
             "description": "post-attention + FFN output",
+        },
+    ]
+
+
+def parallel_decoder_layer_blocks(
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+) -> list[dict]:
+    """Blocks for parallel residual topology (GPT-NeoX / GPT-J).
+
+    A single shared norm feeds both attention and FFN; their outputs are summed
+    into one residual add together with the direct bypass from the layer input.
+
+    Chain: norm → attn → add (residual_from=norm input)
+    Side : FFN taps from the attn input stem (= norm output), feeds into add.
+    """
+    hidden = _fmt(hidden_size)
+    norm_label = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    return [
+        # --- Chain ---
+        {
+            "id": "rms1",
+            "role": "norm",
+            "kind": "norm",
+            "label": norm_label,
+            "title": "Pre-block norm (shared)",
+            "description": f"{norm_label}; dim {hidden}; shared input to both attention and FFN",
+        },
+        {
+            "id": "attn",
+            "role": "attention",
+            "kind": "attention",
+            "label": attention_label(attention),
+            "title": attention_title(attention),
+            "description": describe_attention(attention),
+        },
+        {
+            "id": "add1",
+            "role": "residual",
+            "kind": "residual_add",
+            "residual_from": "rms1",
+            "label": "+",
+            "title": "Residual add (parallel)",
+            "description": "layer input + attention output + FFN output (one combined step)",
+        },
+        # --- Side block: FFN runs in parallel with attention ---
+        {
+            "id": "ffn",
+            "role": "ffn",
+            "kind": "ffn",
+            "label": "MoE" if ffn.kind == "moe" else "Feed-Forward",
+            "title": "Mixture of experts" if ffn.kind == "moe" else "Feed-forward",
+            "description": describe_ffn(ffn),
+            "detail_view": "moe" if ffn.kind == "moe" else "gated_ffn",
+            "children": ffn_child_blocks(ffn, hidden_size),
+            "lane": "left",
+            "tap_from": "attn",   # taps the arrow into attn = output of shared norm
+            "feeds": "add1",
         },
     ]
 
