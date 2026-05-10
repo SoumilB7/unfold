@@ -1,7 +1,14 @@
-"""HTML chrome, inspect cards, scoped CSS, and interaction scripts."""
+"""HTML chrome, inspect cards, scoped CSS, and interaction scripts.
+
+Attention-specific rendering (the multi-variant card) lives in
+:mod:`unfold.renderers.html.attention`.  Pure label vocabulary lives in
+:mod:`unfold.labels`.  This module orchestrates the panel and owns the
+generic chrome: simple cards, hint card, click script, scoped CSS.
+"""
 from __future__ import annotations
 
-from .metadata import _arch_badges, _describe_attention, _describe_ffn
+from .attention import attention_card, attention_card_css
+from .metadata import _arch_badges
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO
 from .utils import _attr, _fmt_int, _html
 from .views import _build_ffn_view, _build_moe_view
@@ -19,7 +26,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     ))
     for node_id in ("tok_text", "embed", "rms1", "add1", "rms2"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
-    panels.append(_attention_card(ir, info))
+    panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
 
     # The interesting one: clicking the FFN block in the architecture reveals
     # the FULL internal FFN diagram (or the MoE diagram for sparse models).
@@ -45,12 +52,6 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     return "".join(panels)
 
 
-def _attention_title(attn: dict) -> str:
-    kinds = {"mla": "Multi-head latent attention", "gqa": "Grouped-query attention",
-             "mqa": "Multi-query attention"}
-    return kinds.get(attn.get("kind", ""), "Attention")
-
-
 def _meta(info: dict, node_id: str) -> tuple[str, str]:
     return info.get("meta", {}).get(node_id, (node_id, ""))
 
@@ -60,69 +61,6 @@ def _simple_card(node_id: str, title: str, desc: str) -> str:
         f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
-        '</div>'
-    )
-
-
-def _attention_card(ir: dict, info: dict) -> str:
-    """Inspect card for the attention block.
-
-    When the model has multiple attention variants (Gemma 4: sliding + full),
-    render every variant as its own row so the bifurcation is explicit no
-    matter which variant pill is currently active.  Each row also notes how
-    many of that variant reuse K/V from earlier layers.
-    """
-    attn_groups = [
-        g for g in info.get("groups", []) if g.get("spec", {}).get("attention")
-    ]
-    if len(attn_groups) <= 1:
-        return _simple_card("attn", *_meta(info, "attn"))
-
-    kv_share_by_idx = {
-        i: (l.get("attention") or {}).get("kv_source_layer")
-        for i, l in enumerate(ir.get("layers", []))
-    }
-
-    rows = []
-    for group in attn_groups:
-        attn = group["spec"]["attention"]
-        n_layers = len(group["indices"])
-        n_shared = sum(1 for i in group["indices"] if kv_share_by_idx.get(i) is not None)
-        rows.append(_attention_row(attn, n_layers, n_shared))
-
-    return (
-        '<div class="uf-card-detail uf-card-attn">'
-        '<div class="uf-card-title">Attention layers</div>'
-        '<div class="uf-card-desc">'
-        f'{len(attn_groups)} attention variants in this model — each row is one variant.'
-        '</div>'
-        f'<div class="uf-attn-rows">{"".join(rows)}</div>'
-        '</div>'
-    )
-
-
-def _attention_row(attn: dict, n_layers: int, n_shared: int) -> str:
-    """One row in the multi-variant attention card."""
-    mask = attn.get("mask")
-    if mask == "sliding":
-        kind_tag = "Sliding-window"
-    elif mask == "global":
-        kind_tag = "Full / global"
-    else:
-        kind_tag = "Causal"
-    title = f"{kind_tag} · {_describe_attention(attn)}"
-    bits: list[str] = []
-    if attn.get("window_size"):
-        bits.append(f"window {attn['window_size']}")
-    if n_shared:
-        bits.append(f"{n_shared} of {n_layers} reuse K/V from earlier layers")
-    else:
-        bits.append(f"{n_layers} layers")
-    detail = "  ·  ".join(bits)
-    return (
-        '<div class="uf-attn-row">'
-        f'<div class="uf-attn-row-title">{_html(title)}</div>'
-        f'<div class="uf-attn-row-detail">{_html(detail)}</div>'
         '</div>'
     )
 
@@ -293,6 +231,23 @@ def _details_section(label: str, sub: str, svg: str) -> str:
         '</summary>'
         f'<div class="uf-section-body">{svg}</div>'
         '</details>'
+    )
+
+
+def _attention_styles(mount_id: str) -> str:
+    """Defer attention-card CSS to the attention module so style edits live
+    next to the markup."""
+    return attention_card_css(
+        mount_id,
+        {
+            "bg_card": C["bg_card"],
+            "border": C["border"],
+            "block": C["block"],
+            "text": C["text"],
+            "muted": C["muted"],
+            "font_head": FONT_HEAD,
+            "font_mono": FONT_MONO,
+        },
     )
 
 
@@ -555,31 +510,7 @@ def _style(mount_id: str) -> str:
   max-width:100%;
   height:auto;
 }}
-#{mount_id} .uf-attn-rows {{
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}}
-#{mount_id} .uf-attn-row {{
-  padding:9px 12px;
-  background:{C['bg_card']};
-  border:0.5px solid {C['border']};
-  border-left:3px solid {C['block']};
-  border-radius:8px;
-}}
-#{mount_id} .uf-attn-row-title {{
-  font-family:{FONT_HEAD};
-  font-size:16px;
-  color:{C['text']};
-  line-height:1.15;
-}}
-#{mount_id} .uf-attn-row-detail {{
-  margin-top:3px;
-  font-size:12px;
-  color:{C['muted']};
-  font-family:{FONT_MONO};
-}}
+{_attention_styles(mount_id)}
 @keyframes uf-fade {{
   from {{ opacity:0; transform:translateY(2px); }}
   to   {{ opacity:1; transform:none; }}

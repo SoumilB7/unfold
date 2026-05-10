@@ -1,6 +1,7 @@
 """SVG views for architecture, FFN, MoE, and layer maps."""
 from __future__ import annotations
 
+from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
     _defs,
@@ -435,9 +436,9 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     for group in info["groups"]:
         spec = group["spec"]
         ffn_kind = "MoE" if spec["ffn"].get("kind") == "moe" else "Dense"
-        mask = "SWA" if spec["attention"].get("mask") == "sliding" else "full"
+        attn = spec.get("attention", {})
         label = (
-            f"{spec['attention'].get('kind', '').upper()} + {ffn_kind} ({mask})"
+            f"{kind_short(attn)} + {ffn_kind} ({mask_short(attn)})"
             f"  ·  {_indices_summary(group, info)}"
         )
         color = sig_to_color[group["sig"]]

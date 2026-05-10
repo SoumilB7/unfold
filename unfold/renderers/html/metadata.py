@@ -1,6 +1,24 @@
-"""Layer grouping, labels, descriptions, and renderer metadata."""
+"""Layer grouping, per-block tooltip metadata, and architecture badges.
+
+The vocabulary used for attention and FFN descriptions lives in
+:mod:`unfold.labels` so it can be referenced from anywhere in the package
+(e.g. the layer-map view, the attention card, future renderers).  This
+module only handles *grouping* concerns: detecting periodic patterns,
+assembling per-block metadata, and the small badges that sit under the
+model header.
+"""
 from __future__ import annotations
 
+from ...labels import (
+    describe_attention as _describe_attention,
+    describe_ffn as _describe_ffn,
+    is_sliding,
+    kind_long,
+    kind_short,
+    mask_chip,
+    mask_short,
+    mask_title,
+)
 from .utils import _fmt_int
 
 
@@ -147,15 +165,16 @@ def _block_meta(blocks: dict) -> dict:
 
 def _group_label(group: dict, info: dict | None = None) -> str:
     """Short human label for a layer-type group, used on the toggle pill."""
-    spec = group["spec"]
-    indices = group["indices"]
+    attn = group["spec"].get("attention", {})
+    ffn = group["spec"].get("ffn", {})
     bits = []
-    if spec.get("attention", {}).get("mask") == "sliding":
-        bits.append("SWA")
-    bits.append(spec.get("attention", {}).get("kind", "?").upper())
-    bits.append("MoE" if spec.get("ffn", {}).get("kind") == "moe" else "Dense")
-    label = " · ".join(bits)
-    return f"{label}  ({_indices_summary(group, info)})"
+    # Tag mixed sliding/global stacks (Gemma 4) so each pill is unambiguous;
+    # plain causal stacks (Llama, DeepSeek) skip the tag.
+    if attn.get("mask") in ("sliding", "global"):
+        bits.append(mask_short(attn))
+    bits.append(kind_short(attn))
+    bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")
+    return f"{' · '.join(bits)}  ({_indices_summary(group, info)})"
 
 
 def _indices_summary(group: dict, info: dict | None) -> str:
@@ -203,53 +222,21 @@ def _signature(layer: dict) -> str:
     )
 
 
-def _describe_attention(attention: dict) -> str:
-    kind = attention.get("kind")
-    if kind == "mla":
-        text = (
-            f"Multi-head latent attention; {attention.get('num_heads')} heads; "
-            f"KV LoRA {_fmt_int(attention.get('kv_lora_rank'))}"
-        )
-        if attention.get("q_lora_rank"):
-            text += f"; Q LoRA {_fmt_int(attention.get('q_lora_rank'))}"
-        return text
-    if kind == "gqa":
-        return (
-            f"Grouped-query; {attention.get('num_heads')} Q / "
-            f"{attention.get('num_kv_heads')} KV heads; head dim {_fmt_int(attention.get('head_dim'))}"
-        )
-    if kind == "mqa":
-        return f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
-    return f"Multi-head; {attention.get('num_heads')} heads; head dim {_fmt_int(attention.get('head_dim'))}"
-
-
-def _describe_ffn(ffn: dict) -> str:
-    if ffn.get("kind") == "moe":
-        text = f"MoE; {_fmt_int(ffn.get('num_experts'))} experts; top-{ffn.get('num_experts_per_tok')}"
-        if ffn.get("num_shared_experts"):
-            text += f" + {ffn.get('num_shared_experts')} shared"
-        if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
-            text += f"; {100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active"
-        text += f"; expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"
-        return text
-    gated = "gated " if ffn.get("gated") else ""
-    return f"{gated}FFN; {ffn.get('activation')}; hidden {_fmt_int(ffn.get('intermediate_size'))}"
-
-
 def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
-    badges = []
+    badges: list[dict[str, str]] = []
     attention = info["dominant"]["spec"]["attention"]
     ffn = info["dominant"]["spec"]["ffn"]
-    kind = attention.get("kind")
+    kind = attention.get("kind", "")
 
-    if kind == "mla":
-        badges.append({"text": "MLA", "title": "Multi-head latent attention"})
-    elif kind == "gqa":
-        badges.append({"text": f"GQA {attention.get('num_heads')}/{attention.get('num_kv_heads')}", "title": "Grouped-query attention"})
-    elif kind == "mqa":
-        badges.append({"text": "MQA", "title": "Multi-query attention"})
+    if kind == "gqa":
+        badges.append(
+            {
+                "text": f"{kind_short(attention)} {attention.get('num_heads')}/{attention.get('num_kv_heads')}",
+                "title": kind_long(attention),
+            }
+        )
     else:
-        badges.append({"text": "MHA", "title": "Multi-head attention"})
+        badges.append({"text": kind_short(attention), "title": kind_long(attention)})
 
     if ffn.get("kind") == "moe":
         badges.append(
@@ -263,6 +250,6 @@ def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
 
     if len(info["groups"]) > 1:
         badges.append({"text": f"{len(info['groups'])} layer types", "title": ""})
-    if attention.get("mask") == "sliding":
-        badges.append({"text": f"SWA {_fmt_int(attention.get('window_size'))}", "title": "Sliding-window attention"})
+    if is_sliding(attention):
+        badges.append({"text": mask_chip(attention), "title": mask_title(attention)})
     return badges
