@@ -8,10 +8,11 @@ generic chrome: simple cards, hint card, click script, scoped CSS.
 from __future__ import annotations
 
 from .attention import attention_card, attention_card_css
+from .block_views.per_layer_embedding import build_per_layer_embedding_view
 from .metadata import _arch_badges
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO
 from .utils import _attr, _fmt_int, _html
-from .views import _build_ffn_view, _build_moe_view, _build_ple_view
+from .views import _build_ffn_view, _build_moe_view
 
 
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
@@ -22,8 +23,8 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     blocks (``info['dominant']['spec']['blocks']``) and emit one card per
     block.  Special-cased renderers exist for ``attention`` (multi-variant
     bifurcation) and ``ffn`` (full internal SVG) — every other ``kind`` falls
-    through to ``_simple_card`` so a new architectural sub-stage like
-    Gemma 4's PLE shows up automatically once the adapter declares it.
+    through to ``_simple_card``. Reusable rich parts, such as PLE, select
+    their own detail view through the block's ``detail_view`` field.
     """
     panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
 
@@ -49,9 +50,10 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
                 else _build_ffn_view(ir, info, mount_id)
             )
             panels.append(_rich_card(node_id, ffn_title, ffn_desc, svg))
-        elif kind == "ple":
+        elif block.get("detail_view") == "per_layer_embedding":
             title, desc = _meta(info, node_id)
-            panels.append(_rich_card(node_id, title, desc, _build_ple_view(ir, info, mount_id)))
+            svg = build_per_layer_embedding_view(ir, info, mount_id, block)
+            panels.append(_rich_card(node_id, title, desc, svg))
         else:
             panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
@@ -101,20 +103,31 @@ def _build_sub_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     is visible at a time; the JS click handler toggles them."""
     panels: list[str] = []
     ffn = info["dominant"]["spec"]["ffn"]
-    ffn_block = info.get("blocks", {}).get("ffn", {})
-    children = ffn_block.get("children", [])
+    children = _sub_inspect_children(info)
 
     # Default L3 card is never actually visible (the whole L3 box is hidden
     # until uf-sub-active is set), but kept as a safe target for showL3('default').
     panels.append(_l3_card("default", "", ""))
 
     if children:
+        seen: set[str] = set()
         for child in children:
-            panels.append(_l3_card(child["id"], child.get("title", child["id"]), child.get("description", "")))
+            child_id = child.get("id")
+            if not child_id or child_id in seen:
+                continue
+            seen.add(child_id)
+            panels.append(_l3_card(child_id, child.get("title", child_id), child.get("description", "")))
     else:
         panels.extend(_fallback_sub_inspect_cards(ir, ffn))
 
     return "".join(panels)
+
+
+def _sub_inspect_children(info: dict) -> list[dict]:
+    children: list[dict] = []
+    for block in (info["dominant"]["spec"].get("blocks") or []):
+        children.extend(block.get("children") or [])
+    return children
 
 
 def _fallback_sub_inspect_cards(ir: dict, ffn: dict) -> list[str]:

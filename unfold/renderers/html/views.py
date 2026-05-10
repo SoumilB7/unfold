@@ -54,15 +54,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     chain; side-lane blocks render as parallel rails to the left or right of
     the inner region.
 
-    The view grows from the block list, so PLE-bearing Gemma models get extra
-    vertical space while compact decoder-only models keep the same vocabulary.
+    The view grows from the block list, so side-path models get extra vertical
+    space while compact decoder-only models keep the same vocabulary.
     """
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
 
-    # Side blocks (e.g. PLE) live OFF the central column.  They share a row
-    # with the block they feed but get their own offset x-position and
-    # explicit input/output connections.
+    # Side blocks live OFF the central column.  They share a row with the block
+    # they feed but get their own offset x-position and explicit connections.
     chain_blocks = [b for b in layer_blocks if not b.get("lane")]
     side_blocks = [b for b in layer_blocks if b.get("lane")]
 
@@ -149,7 +148,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             # bypass visually originates from the arrow, not from the block.
             _mark_branch_tap(parts, branch_taps, _input_tap(src_geom))
 
-    # --- 6. Side blocks (e.g. PLE) — placed off the central column ---
+    # --- 6. Side blocks — placed off the central column ---
     for block in side_blocks:
         _draw_side_block(
             parts, info, shadow_id,
@@ -192,7 +191,7 @@ def _draw_side_block(
     arrow_id: str,
     branch_taps: set[tuple[float, float]],
 ) -> None:
-    """Render a block that lives OFF the central chain (e.g. Gemma 4 PLE).
+    """Render a block that lives OFF the central chain.
 
     The block is drawn at the y-row of whatever it ``feeds``, offset to the
     declared ``lane`` (left/right).  Its input is a long arrow tapping the
@@ -440,105 +439,6 @@ def _build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     )
 
     return _svg(w, h, f"{ir.get('name', 'model')} feed-forward block", parts)
-
-
-def _build_ple_view(ir: dict, info: dict, mount_id: str) -> str:
-    """Detail view for the per-layer-embeddings block.
-
-    The forward pass is a 5-stage chain: ``gate → act → × per_layer_input →
-    proj → norm``.  We draw it as a vertical chain (so it fits the same
-    inspect panel as the FFN view), with the multiplication step annotated
-    as receiving the cross-layer ``per_layer_input`` vector — that external
-    feed isn't drawn yet (TODO: visualise the parallel pathway).
-    """
-    w, h = 720, 660
-    arrow_id, shadow_id = _ids(mount_id, "ple")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    spec = info["dominant"]["spec"]
-    ple_dim = ((ir.get("extras") or {}).get("per_layer_embeddings") or {}).get("hidden")
-    hidden_size = ir.get("hidden_size")
-    cx = w / 2
-
-    # Stack bottom → top in execution order.
-    gate = _rect_block(parts, info, shadow_id, "ple_gate",  cx - 110, h - 160, 220, 50, "Linear (gate)")
-    act_label = _ple_activation(spec)
-    act = _rect_block(parts, info, shadow_id, "ple_act",   cx - 90,  h - 250, 180, 44, act_label)
-    mul = _plus_block(parts, info, shadow_id, "ple_mul",   cx,        h - 320, "×")
-    proj = _rect_block(parts, info, shadow_id, "ple_proj", cx - 110, h - 410, 220, 50, "Linear (up)")
-    norm = _rect_block(parts, info, shadow_id, "ple_norm", cx - 90,  h - 500, 180, 44, "RMSNorm")
-
-    # Linear chain.
-    for src, dst in ((gate, act), (act, mul), (mul, proj), (proj, norm)):
-        parts.append(_v_line(src, dst, arrow_id))
-
-    # Outgoing arrow above the norm.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": norm["top"],
-        "x2": cx, "y2": norm["top"] - 36,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, norm["top"] - 46, "out  →  add (residual)",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # Incoming arrow below the gate.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": gate["bottom"] + 38,
-        "x2": cx, "y2": gate["bottom"] + 8,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, gate["bottom"] + 56, "in  (hidden)",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # External feed annotation — points at × from the right.
-    feed_x = mul["cx"] + mul["r"] + 24
-    parts.append(_svg_tag("line", {
-        "x1": feed_x + 110, "y1": mul["cy"],
-        "x2": mul["cx"] + mul["r"] + GAP, "y2": mul["cy"],
-        "stroke": "#1F9E78", "stroke-width": 1.6, "stroke-linecap": "round",
-        "stroke-dasharray": "5 4",
-        "marker-end": f"url(#{arrow_id})",
-    }))
-    parts.append(_svg_text(
-        feed_x + 116, mul["cy"] - 10,
-        "per_layer_input[L]",
-        {"fill": "#1F9E78", "font-family": FONT_MONO, "font-size": 11, "font-weight": 700},
-    ))
-    parts.append(_svg_text(
-        feed_x + 116, mul["cy"] + 6,
-        f"({_fmt_int(ple_dim) if ple_dim else '?'}-d, built outside layers)",
-        {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
-    ))
-
-    # Dim annotations alongside the chain.
-    parts.append(_svg_text(
-        gate["right"] + 14, gate["cy"],
-        f"{_fmt_int(hidden_size)}  →  {_fmt_int(ple_dim)}" if ple_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
-    ))
-    parts.append(_svg_text(
-        proj["right"] + 14, proj["cy"],
-        f"{_fmt_int(ple_dim)}  →  {_fmt_int(hidden_size)}" if ple_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
-    ))
-
-    return _svg(w, h, f"{ir.get('name', 'model')} per-layer embeddings block", parts)
-
-
-def _ple_activation(spec: dict) -> str:
-    # Gemma 4 uses gelu_pytorch_tanh for PLE; fall back to whatever the
-    # adapter declared for the FFN if it's set, otherwise plain GELU.
-    raw = (spec.get("ffn") or {}).get("activation") or "gelu"
-    return raw.split("_")[0].upper()
 
 
 def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:

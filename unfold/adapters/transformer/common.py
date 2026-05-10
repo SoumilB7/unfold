@@ -24,3 +24,12 @@ def model_name(cfg: Any, fallback: str) -> str:
     )
     return str(name).split("/")[-1] if name else fallback
 
+
+def format_dim(value: Any) -> str:
+    """Human-readable dimension text for adapter-authored metadata."""
+    if value is None:
+        return "?"
+    try:
+        return f"{int(value):,}"
+    except (TypeError, ValueError):
+        return str(value)

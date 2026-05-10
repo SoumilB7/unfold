@@ -22,10 +22,12 @@ from ....ir import AttentionSpec, CrossLayerEdge, FFNSpec, LayerSpec, ModelIR
 from ..blocks import (
     decoder_layer_blocks,
     decoder_only_render_spec,
-    per_layer_embedding_blocks,
-    per_layer_embedding_pathway,
 )
 from ..common import architecture_name, get_config_value as _g, model_name
+from ..parts.per_layer_embedding import (
+    per_layer_embedding_blocks,
+    per_layer_embedding_extras,
+)
 
 
 _TOP_TYPES = {"gemma4"}
@@ -152,10 +154,9 @@ def parse(cfg: Any) -> ModelIR:
         "render": decoder_only_render_spec(vocab_size, hidden_size, tie_word_embeddings),
     }
     if ple_dim:
-        extras["per_layer_embeddings"] = {"hidden": ple_dim, "vocab": ple_vocab}
-        extras["external_pathways"] = [
-            per_layer_embedding_pathway(hidden_size, ple_dim, ple_vocab, num_layers),
-        ]
+        extras.update(
+            per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers)
+        )
     if num_kv_shared:
         extras["num_kv_shared_layers"] = num_kv_shared
     if _g(text_cfg, "attention_k_eq_v"):
