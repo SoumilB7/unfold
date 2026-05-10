@@ -9,7 +9,7 @@ unfold("meta-llama/Meta-Llama-3-8B")
 
 <p align="center">
   <a href="examples/llama-3-8b.html">
-    <img src="examples/images/llama3-8b.png" width="540" alt="Meta-Llama-3-8B architecture diagram">
+    <img src="examples/images/llama-3-8b.png" width="540" alt="Meta-Llama-3-8B architecture diagram">
   </a>
 </p>
 
