@@ -11,6 +11,11 @@ requires-python = ">=3.9"
 authors = [{name = "model-unfolder contributors"}]
 license = {text = "Apache-2.0"}
 keywords = ["transformers", "visualization", "llm", "architecture", "jupyter"]
+
+[project.urls]
+Homepage = "https://github.com/SoumilB7/unfold"
+Repository = "https://github.com/SoumilB7/unfold"
+"Bug Tracker" = "https://github.com/SoumilB7/unfold/issues"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache Software License",

@@ -2,6 +2,8 @@
 
 > your one click model unfolder
 
+[![PyPI](https://img.shields.io/pypi/v/model-unfolder)](https://pypi.org/project/model-unfolder/)
+
 ```python
 from model_unfolder import unfold
 unfold("meta-llama/Meta-Llama-3-8B")
