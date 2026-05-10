@@ -123,6 +123,10 @@ def parse(cfg: Any) -> ModelIR:
     tie_word_embeddings = bool(
         _g(text_cfg, "tie_word_embeddings", _g(cfg, "tie_word_embeddings", False))
     )
+    mtp_layers = _g(text_cfg, "mtp_num_hidden_layers") or 0
+    extras = decoder_extras(vocab_size, hidden_size, tie_word_embeddings)
+    if mtp_layers:
+        extras["mtp"] = {"num_layers": mtp_layers}
     return ModelIR(
         name=model_name(cfg, arch_name),
         architecture=arch_name,
@@ -131,7 +135,7 @@ def parse(cfg: Any) -> ModelIR:
         max_position_embeddings=_g(text_cfg, "max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
-        extras=decoder_extras(vocab_size, hidden_size, tie_word_embeddings),
+        extras=extras,
     )
 
 

@@ -14,7 +14,7 @@ from typing import Any, Optional
 @dataclass
 class AttentionSpec:
     """Specification of an attention block within a layer."""
-    kind: str                       # "mha" | "gqa" | "mqa" | "mla"
+    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "ssm" | "recurrent" | "linear" | "rwkv"
     num_heads: int
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None
@@ -24,6 +24,9 @@ class AttentionSpec:
     mask: str = "causal"            # "causal" | "sliding" | "chunked" | "global"
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
+    qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
+    shared: bool = False            # weight-shared layer reused across positions (Zamba)
+    no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
 
 
 @dataclass
@@ -55,6 +58,7 @@ class LayerSpec:
         f = self.ffn
         return (
             a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
+            a.qk_norm, a.shared, a.no_rope,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
         )
@@ -129,6 +133,9 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "mask": a.mask,
         "window_size": a.window_size,
         "kv_source_layer": a.kv_source_layer,
+        "qk_norm": a.qk_norm,
+        "shared": a.shared,
+        "no_rope": a.no_rope,
     }
 
 

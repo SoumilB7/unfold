@@ -62,9 +62,13 @@ def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
     try:
         return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=False)
     except Exception as e:
-        if not _should_retry_with_remote_code(e):
-            raise
-        return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=True)
+        if _should_retry_with_remote_code(e):
+            return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=True)
+        if _should_fallback_to_raw_json(e):
+            # Some models (e.g. old state-spaces/mamba-*) predate the transformers
+            # model_type registry — download config.json directly as a plain dict.
+            return _load_raw_config_json(model_id, auth_token)
+        raise
 
 
 def _from_pretrained(auto_config: Any, model_id: str, auth_token: Any, *, trust_remote_code: bool):
@@ -120,6 +124,35 @@ def _should_retry_with_legacy_auth(error: Exception) -> bool:
             "private",
         )
     )
+
+
+def _should_fallback_to_raw_json(error: Exception) -> bool:
+    msg = str(error).lower()
+    return any(
+        marker in msg
+        for marker in (
+            "model_type",
+            "unrecognized model",
+            "should have a",
+        )
+    )
+
+
+def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
+    import json
+    try:
+        from huggingface_hub import hf_hub_download
+    except ImportError as e:
+        raise ImportError(
+            "huggingface_hub is required to download config.json for models that are "
+            "not registered with transformers. Install with `pip install huggingface_hub`."
+        ) from e
+    kwargs: dict = {"repo_id": model_id, "filename": "config.json"}
+    if auth_token is not None:
+        kwargs["token"] = auth_token
+    path = hf_hub_download(**kwargs)
+    with open(path) as f:
+        return json.load(f)
 
 
 def _should_retry_with_remote_code(error: Exception) -> bool:

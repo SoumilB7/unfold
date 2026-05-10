@@ -86,6 +86,14 @@ def parse(cfg: Any) -> ModelIR:
 
     vocab_size = _g(cfg, "vocab_size", 0)
     tie_word_embeddings = bool(_g(cfg, "tie_word_embeddings", False))
+    mtp_layers = _g(cfg, "num_nextn_predict_layers") or 0
+    extra_map = {
+        "v_head_dim": v_head_dim,
+        "first_k_dense_replace": first_k_dense_replace,
+        "moe_layer_freq": moe_layer_freq,
+    }
+    if mtp_layers:
+        extra_map["mtp"] = {"num_layers": mtp_layers}
     return ModelIR(
         name=model_name(cfg, arch_name),
         architecture=arch_name,
@@ -94,14 +102,5 @@ def parse(cfg: Any) -> ModelIR:
         max_position_embeddings=_g(cfg, "max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
-        extras=decoder_extras(
-            vocab_size,
-            hidden_size,
-            tie_word_embeddings,
-            {
-                "v_head_dim": v_head_dim,
-                "first_k_dense_replace": first_k_dense_replace,
-                "moe_layer_freq": moe_layer_freq,
-            },
-        ),
+        extras=decoder_extras(vocab_size, hidden_size, tie_word_embeddings, extra_map),
     )
