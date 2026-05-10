@@ -1,4 +1,4 @@
-"""Adapter for Llama, Mistral, Qwen, and similar GQA/MHA dense models."""
+"""Adapter for Llama, Phi, and similar GQA/MHA dense models."""
 from __future__ import annotations
 
 from typing import Any
@@ -8,26 +8,30 @@ from ..assembly import decoder_extras, decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
-_FAMILIES = {"llama", "mistral", "qwen2", "qwen3", "phi3", "gemma"}
+_FAMILIES = {"llama", "phi3", "gemma"}
 
 
 def matches(cfg: Any) -> bool:
-    arches = _g(cfg, "architectures") or []
-    model_type = _g(cfg, "model_type", "")
-    for arch in arches:
-        if any(fam in arch.lower() for fam in ("llama", "mistral", "qwen", "phi3")):
-            return True
+    model_type = (_g(cfg, "model_type") or "").lower()
     if model_type in _FAMILIES:
         return True
-    return False
+    arches = _g(cfg, "architectures") or []
+    return any(
+        any(fam in a.lower() for fam in ("llama", "phi3"))
+        for a in arches
+    )
 
 
 def parse(cfg: Any) -> ModelIR:
+    arch_name = architecture_name(cfg, "llama")
+
     num_layers = _g(cfg, "num_hidden_layers", 0)
     num_heads = _g(cfg, "num_attention_heads", 0)
     num_kv_heads = _g(cfg, "num_key_value_heads", num_heads)
     hidden_size = _g(cfg, "hidden_size", 0)
     head_dim = _g(cfg, "head_dim") or (hidden_size // num_heads if num_heads else None)
+    intermediate_size = _g(cfg, "intermediate_size", 0)
+    activation = (_g(cfg, "hidden_act", "silu") or "silu").lower()
 
     if num_kv_heads == num_heads:
         attn_kind = "mha"
@@ -39,11 +43,6 @@ def parse(cfg: Any) -> ModelIR:
     sliding_window = _g(cfg, "sliding_window")
     sliding_pattern = _g(cfg, "sliding_window_pattern")
     layer_types = _g(cfg, "layer_types")
-
-    intermediate_size = _g(cfg, "intermediate_size", 0)
-    activation = (_g(cfg, "hidden_act", "silu") or "silu").lower()
-
-    arch_name = architecture_name(cfg, "llama")
 
     layers = []
     for i in range(num_layers):
