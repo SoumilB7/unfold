@@ -44,6 +44,11 @@ class Diagram:
         """Return parameter-count estimates: total / active / per-layer breakdown."""
         return self._params
 
+    @property
+    def warnings(self) -> list[str]:
+        """Adapter-emitted warnings — unknown model types, unrecognised layer types, etc."""
+        return list(self.ir.warnings)
+
     def _repr_html_(self) -> str:
         """Jupyter calls this; returned HTML string is rendered inline."""
         return self._html(standalone=False)
@@ -87,9 +92,12 @@ class Diagram:
         return self._html_cache[standalone]
 
     def __repr__(self) -> str:
-        return (
+        s = (
             f"<Diagram {self.ir.name!r} · {self.ir.num_layers} layers · "
             f"~{humanize(self._params['total'])} params"
             + (f" ({humanize(self._params['active'])} active)" if self._params['is_sparse'] else "")
             + ">"
         )
+        if self.ir.warnings:
+            s += "\n" + "\n".join(f"  ⚠ {w}" for w in self.ir.warnings)
+        return s
