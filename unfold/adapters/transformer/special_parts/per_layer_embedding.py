@@ -68,6 +68,12 @@ def per_layer_embedding_blocks(
             ),
         },
         {
+            "id": pathway_id,
+            "label": f"{pathway_id}[L]",
+            "title": "Per-layer input vector",
+            "description": f"{emb}-d vector produced outside the layer stack for layer L.",
+        },
+        {
             "id": ids["projection"],
             "label": "Linear (up)",
             "title": "Per-layer projection",
