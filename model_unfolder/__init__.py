@@ -1,8 +1,8 @@
-"""unfold — turn any HuggingFace transformer into a clear architecture diagram.
+"""model_unfolder — turn any HuggingFace transformer into a clear architecture diagram.
 
 Quick start in a Jupyter notebook::
 
-    from unfold import unfold
+    from model_unfolder import unfold
     unfold("moonshotai/Kimi-K2-Instruct")
 
 Outside Jupyter::

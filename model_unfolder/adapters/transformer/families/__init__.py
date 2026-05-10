@@ -1,7 +1,7 @@
 """Transformer model-family adapters.
 
 These modules translate family-specific HuggingFace config dialects into the
-shared transformer IR pieces in ``unfold.adapters.transformer``.
+shared transformer IR pieces in ``model_unfolder.adapters.transformer``.
 """
 
 from . import deepseek, gemma4, llama
@@ -10,4 +10,3 @@ from . import deepseek, gemma4, llama
 # top-level ``model_type`` / architecture and must run before the generic
 # llama-family matcher.
 ADAPTERS = [deepseek, gemma4, llama]
-

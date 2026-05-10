@@ -1,7 +1,7 @@
 """Layer grouping, per-block tooltip metadata, and architecture badges.
 
 The vocabulary used for attention and FFN descriptions lives in
-:mod:`unfold.labels` so it can be referenced from anywhere in the package
+:mod:`model_unfolder.labels` so it can be referenced from anywhere in the package
 (e.g. the layer-map view, the attention card, future renderers).  This
 module only handles *grouping* concerns: detecting periodic patterns,
 assembling per-block metadata, and the small badges that sit under the

@@ -5,7 +5,7 @@ import types
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from unfold import unfold
+from model_unfolder import unfold
 
 KIMI_K2_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],

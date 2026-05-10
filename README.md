@@ -1,9 +1,9 @@
-# UNFOLD
+# MODEL UNFOLDER
 
 > your one click model unfolder
 
 ```python
-from unfold import unfold
+from model_unfolder import unfold
 unfold("meta-llama/Meta-Llama-3-8B")
 ```
 
@@ -18,6 +18,9 @@ unfold("meta-llama/Meta-Llama-3-8B")
 ## Install
 
 ```bash
+pip install model-unfolder
+
+# for local development
 pip install -e .
 pip install transformers   # only required to load by model ID
 ```
@@ -25,7 +28,7 @@ pip install transformers   # only required to load by model ID
 ## Three ways to call it
 
 ```python
-from unfold import unfold
+from model_unfolder import unfold
 
 # 1) by HuggingFace model ID — only config.json is downloaded, never weights
 unfold("meta-llama/Meta-Llama-3-8B")
@@ -42,7 +45,7 @@ unfold(json.load(open("config.json")))
 
 ## Built on `transformers`
 
-Pass a model ID and `unfold` calls `transformers.AutoConfig.from_pretrained(model_id, trust_remote_code=True)` under the hood ([parser.py](unfold/parser.py)). Anything `AutoConfig` can resolve — public, private, gated, or `trust_remote_code` — works here.
+Pass a model ID and `unfold` calls `transformers.AutoConfig.from_pretrained(model_id)` under the hood ([parser.py](model_unfolder/parser.py)). It only retries with `trust_remote_code=True` when Transformers says the config requires remote code.
 
 ## Auth-token from your environment
 
@@ -59,7 +62,7 @@ huggingface-cli login
 # >>> from dotenv import load_dotenv; load_dotenv()
 ```
 
-No extra config in `unfold` itself.
+No extra config in `model_unfolder` itself.
 
 ## Save / export
 
@@ -88,9 +91,9 @@ Open in any browser to interact (click blocks, expand sub-blocks, toggle layer t
 
 | Family | Adapter | Notes |
 |---|---|---|
-| DeepSeek-V2 / V3 / Kimi K2 | [adapters/deepseek.py](unfold/adapters/deepseek.py) | MLA + dense → MoE phase change |
-| Llama / Mistral / Qwen2 / Qwen3 / Phi-3 | [adapters/llama.py](unfold/adapters/llama.py) | GQA / MQA / MHA + dense FFN |
-| Gemma 2 / 3 | [adapters/llama.py](unfold/adapters/llama.py) | sliding-window pattern detection |
+| DeepSeek-V2 / V3 / Kimi K2 | [families/deepseek.py](model_unfolder/adapters/transformer/families/deepseek.py) | MLA + dense → MoE phase change |
+| Llama / Mistral / Qwen2 / Qwen3 / Phi-3 | [families/llama.py](model_unfolder/adapters/transformer/families/llama.py) | GQA / MQA / MHA + dense FFN |
+| Gemma 4 | [families/gemma4.py](model_unfolder/adapters/transformer/families/gemma4.py) | sliding/global layers, KV sharing, PLE |
 
 
 ## License

@@ -3,12 +3,12 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "unfold"
+name = "model-unfolder"
 version = "0.2.0"
 description = "Unfold any HuggingFace transformer into an interactive architecture diagram, inline in Jupyter."
 readme = "README.md"
 requires-python = ">=3.9"
-authors = [{name = "unfold contributors"}]
+authors = [{name = "model-unfolder contributors"}]
 license = {text = "Apache-2.0"}
 keywords = ["transformers", "visualization", "llm", "architecture", "jupyter"]
 classifiers = [
@@ -24,4 +24,4 @@ hf = ["transformers>=4.40"]
 dev = ["pytest>=7", "transformers>=4.40"]
 
 [tool.setuptools.packages.find]
-include = ["unfold*"]
+include = ["model_unfolder*"]
