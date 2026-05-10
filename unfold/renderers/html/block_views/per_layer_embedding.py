@@ -35,27 +35,28 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
     embedding_dim = detail.get("embedding_dim") or (
         ((ir.get("extras") or {}).get("per_layer_embeddings") or {}).get("hidden")
     )
-    cx = w / 2
+    cx = 300
+    y_shift = -24
 
     gate = _rect_block(
         parts, info, shadow_id, ids["gate"],
-        cx - 110, h - 160, 220, 50,
+        cx - 110, h - 160 + y_shift, 220, 50,
         _label(info, block, ids["gate"], "Linear (gate)"),
     )
     act = _rect_block(
         parts, info, shadow_id, ids["activation"],
-        cx - 90, h - 250, 180, 44,
+        cx - 90, h - 250 + y_shift, 180, 44,
         _label(info, block, ids["activation"], "Activation"),
     )
-    mul = _plus_block(parts, info, shadow_id, ids["multiply"], cx, h - 320, "×")
+    mul = _plus_block(parts, info, shadow_id, ids["multiply"], cx, h - 320 + y_shift, "×")
     proj = _rect_block(
         parts, info, shadow_id, ids["projection"],
-        cx - 110, h - 410, 220, 50,
+        cx - 110, h - 410 + y_shift, 220, 50,
         _label(info, block, ids["projection"], "Linear (up)"),
     )
     norm = _rect_block(
         parts, info, shadow_id, ids["norm"],
-        cx - 90, h - 500, 180, 44,
+        cx - 90, h - 500 + y_shift, 180, 44,
         _label(info, block, ids["norm"], "RMSNorm"),
     )
 
@@ -86,23 +87,27 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
-    feed_x = mul["cx"] + mul["r"] + 24
+    external = _external_tensor_block(
+        parts,
+        shadow_id,
+        detail.get("pathway_id") or "per_layer_input",
+        382,
+        mul["cy"] - 21,
+        178,
+        42,
+        detail.get("external_label") or "per_layer_input[L]",
+    )
     parts.append(_svg_tag("line", {
-        "x1": feed_x + 110, "y1": mul["cy"],
+        "x1": external["left"] - GAP, "y1": external["cy"],
         "x2": mul["cx"] + mul["r"] + GAP, "y2": mul["cy"],
         "stroke": "#1F9E78", "stroke-width": 1.6, "stroke-linecap": "round",
         "stroke-dasharray": "5 4",
         "marker-end": f"url(#{arrow_id})",
     }))
     parts.append(_svg_text(
-        feed_x + 116, mul["cy"] - 10,
-        detail.get("external_label") or "per_layer_input[L]",
-        {"fill": "#1F9E78", "font-family": FONT_MONO, "font-size": 11, "font-weight": 700},
-    ))
-    parts.append(_svg_text(
-        feed_x + 116, mul["cy"] + 6,
-        detail.get("external_description") or f"({_fmt_int(embedding_dim)}-d, built outside layers)",
-        {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
+        external["cx"], external["bottom"] + 16,
+        "(outside stack)",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
     ))
 
     parts.append(_svg_text(
@@ -130,6 +135,58 @@ def _node_ids(block: dict) -> dict[str, str]:
     ids.setdefault("projection", f"{block_id}_proj")
     ids.setdefault("norm", f"{block_id}_norm")
     return ids
+
+
+def _external_tensor_block(
+    parts: list[str],
+    shadow_id: str,
+    node_id: str,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    label: str,
+) -> dict:
+    children = [
+        _svg_tag("rect", {
+            "x": x,
+            "y": y,
+            "width": w,
+            "height": h,
+            "rx": 10,
+            "ry": 10,
+            "fill": C["badge_bg"],
+            "stroke": "#1F9E78",
+            "stroke-width": 1,
+            "stroke-dasharray": "4 3",
+            "filter": f"url(#{shadow_id})",
+        }),
+        _svg_text(
+            x + w / 2,
+            y + h / 2,
+            label,
+            {
+                "text-anchor": "middle",
+                "dominant-baseline": "central",
+                "fill": "#0F6E56",
+                "font-family": FONT_MONO,
+                "font-size": 12,
+                "font-weight": 700,
+                "pointer-events": "none",
+            },
+        ),
+    ]
+    parts.append(_svg_tag("g", {"class": "uf-node uf-external-tensor", "data-id": node_id}, "".join(children)))
+    return {
+        "left": x,
+        "right": x + w,
+        "top": y,
+        "bottom": y + h,
+        "cx": x + w / 2,
+        "cy": y + h / 2,
+        "w": w,
+        "h": h,
+    }
 
 
 def _label(info: dict, block: dict, node_id: str, default: str) -> str:
