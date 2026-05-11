@@ -25,6 +25,8 @@ def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     kind = attn.get("kind")
     if kind == "mla":
         return _build_mla_attention_view(ir, info, mount_id)
+    if kind == "gqa":
+        return _build_gqa_attention_view(ir, info, mount_id)
     if kind == "ssm":
         return _build_ssm_view(ir, info, mount_id)
     if kind == "recurrent":
@@ -34,6 +36,99 @@ def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     if kind == "linear":
         return _build_linear_attention_view(ir, info, mount_id)
     return _build_sdpa_attention_view(ir, info, mount_id)
+
+
+def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail view for grouped-query attention.
+
+    GQA keeps one query head per query stream, but shares each K/V head across a
+    small group of query heads. The diagram makes that sharing the focal point
+    instead of presenting it as ordinary three-way Q/K/V attention.
+    """
+    w, h = 720, 650
+    arrow_id, shadow_id = _ids(mount_id, "gqa-attn")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    attn = info["dominant"]["spec"].get("attention") or {}
+    hidden_sz = ir.get("hidden_size") or 0
+    hidden = _fmt_int(hidden_sz)
+    num_heads = attn.get("num_heads") or 0
+    num_kv_heads = attn.get("num_kv_heads") or num_heads
+    head_dim = attn.get("head_dim") or (hidden_sz // num_heads if num_heads else 0)
+    q_out = _fmt_int(num_heads * head_dim) if (num_heads and head_dim) else hidden
+    kv_out = _fmt_int(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
+    d_k = str(head_dim) if head_dim else "d_k"
+    q_per_group = _queries_per_kv_group(num_heads, num_kv_heads)
+    group_line = (
+        f"{num_kv_heads} KV groups x {q_per_group} Q heads each"
+        if q_per_group
+        else f"{num_heads} Q heads share {num_kv_heads} KV heads"
+    )
+
+    cx = w / 2
+
+    o_proj = _rect_block(parts, info, shadow_id, "o_proj", cx - 92, 78, 184, 50, "Linear (out)")
+    sdpa = _rect_block(
+        parts,
+        info,
+        shadow_id,
+        "qkv_dot",
+        126,
+        165,
+        468,
+        58,
+        ["Grouped SDPA", f"{num_heads} Q / {num_kv_heads} KV heads  ·  d_k = {d_k}"],
+        font_size=15,
+    )
+
+    panel = _gqa_grouping_panel(parts, 76, 280, 568, 114, num_heads, num_kv_heads, q_per_group)
+
+    proj_w, proj_h, proj_y = 168, 50, 474
+    q_proj = _rect_block(parts, info, shadow_id, "q_proj", 70, proj_y, proj_w, proj_h, ["Linear (Q)", f"{num_heads} heads"], font_size=15)
+    k_proj = _rect_block(parts, info, shadow_id, "k_proj", 276, proj_y, proj_w, proj_h, ["Linear (K)", f"{num_kv_heads} heads"], font_size=15)
+    v_proj = _rect_block(parts, info, shadow_id, "v_proj", 482, proj_y, proj_w, proj_h, ["Linear (V)", f"{num_kv_heads} heads"], font_size=15)
+
+    branch_x, branch_y = cx, 582
+    parts.append(_branch_dot(branch_x, branch_y))
+    parts.append(_svg_tag("line", {
+        "x1": branch_x, "y1": branch_y + 36, "x2": branch_x, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        branch_x, h - 24,
+        f"in ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+
+    panel_entry_y = panel["bottom"] + GAP
+    parts.append(_elbow_hv(q_proj["cx"], q_proj["top"], panel["left"] + 136, panel_entry_y, arrow_id))
+    parts.append(_v_seg(k_proj["cx"], k_proj["top"], panel_entry_y, arrow_id))
+    parts.append(_elbow_hv(v_proj["cx"], v_proj["top"], panel["right"] - 136, panel_entry_y, arrow_id))
+    parts.append(_v_line(panel, sdpa, arrow_id))
+    parts.append(_v_line(sdpa, o_proj, arrow_id))
+    _output_stem(parts, cx, o_proj, arrow_id, hidden)
+
+    _attn_dim_label(parts, q_proj["left"], q_proj["bottom"] + 18, f"Q: {hidden} -> {q_out}")
+    _attn_dim_label(parts, k_proj["left"], k_proj["bottom"] + 18, f"K: {hidden} -> {kv_out}")
+    _attn_dim_label(parts, v_proj["left"], v_proj["bottom"] + 18, f"V: {hidden} -> {kv_out}")
+    _attn_dim_label(parts, o_proj["right"] + 12, o_proj["cy"], f"{q_out} -> {hidden}")
+
+    if q_per_group and q_per_group > 1:
+        _gqa_badge(parts, w - 218, 58, f"KV cache {q_per_group}x smaller", "than full MHA")
+
+    parts.append(_svg_text(
+        cx, panel["top"] - 18,
+        group_line,
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    return _svg(w, h, f"{ir.get('name', 'model')} grouped-query attention", parts)
 
 
 def _build_sdpa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -132,6 +227,141 @@ def _build_sdpa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     _attn_dim_label(parts, o_proj["right"] + 10, o_proj["cy"], f"{q_out} → {hidden}")
 
     return _svg(w, h, f"{ir.get('name', 'model')} attention", parts)
+
+
+def _queries_per_kv_group(num_heads: int, num_kv_heads: int) -> int | None:
+    if not num_heads or not num_kv_heads:
+        return None
+    if num_heads % num_kv_heads:
+        return None
+    return num_heads // num_kv_heads
+
+
+def _gqa_grouping_panel(
+    parts: list[str],
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    num_heads: int,
+    num_kv_heads: int,
+    q_per_group: int | None,
+) -> dict:
+    parts.append(_svg_tag("rect", {
+        "x": x,
+        "y": y,
+        "width": w,
+        "height": h,
+        "rx": 14,
+        "ry": 14,
+        "fill": C["bg_card"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+    }))
+    parts.append(_svg_text(
+        x + 18,
+        y + 24,
+        "KV sharing pattern",
+        {
+            "fill": C["text"],
+            "font-family": FONT_MONO,
+            "font-size": 11,
+            "font-weight": 700,
+            "letter-spacing": "0.08em",
+        },
+    ))
+
+    card_y = y + 46
+    card_w = 112
+    gap = 16
+    start_x = x + 38
+    cards = _gqa_card_specs(num_heads, num_kv_heads, q_per_group)
+    for i, (top, bottom) in enumerate(cards):
+        _gqa_group_card(parts, start_x + i * (card_w + gap), card_y, card_w, 48, top, bottom)
+
+    return {
+        "left": x,
+        "right": x + w,
+        "top": y,
+        "bottom": y + h,
+        "cx": x + w / 2,
+        "cy": y + h / 2,
+        "w": w,
+        "h": h,
+    }
+
+
+def _gqa_card_specs(num_heads: int, num_kv_heads: int, q_per_group: int | None) -> list[tuple[str, str]]:
+    if not num_heads or not num_kv_heads or not q_per_group:
+        return [("Q groups", "share K/V"), ("...", "..."), ("KV heads", "reused")]
+
+    def q_range(group_idx: int) -> str:
+        start = group_idx * q_per_group
+        end = min(start + q_per_group - 1, num_heads - 1)
+        return f"Q{start}" if start == end else f"Q{start}-Q{end}"
+
+    if num_kv_heads == 1:
+        return [(f"{q_range(0)}", "use KV0")]
+    if num_kv_heads == 2:
+        return [(q_range(0), "use KV0"), (q_range(1), "use KV1")]
+    return [
+        (q_range(0), "use KV0"),
+        (q_range(1), "use KV1"),
+        ("...", "..."),
+        (q_range(num_kv_heads - 1), f"use KV{num_kv_heads - 1}"),
+    ]
+
+
+def _gqa_group_card(parts: list[str], x: float, y: float, w: float, h: float, top: str, bottom: str) -> None:
+    parts.append(_svg_tag("rect", {
+        "x": x,
+        "y": y,
+        "width": w,
+        "height": h,
+        "rx": 10,
+        "ry": 10,
+        "fill": C["badge_bg"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+    }))
+    parts.append(_svg_text(
+        x + w / 2,
+        y + 18,
+        top,
+        {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_MONO, "font-size": 12, "font-weight": 700},
+    ))
+    parts.append(_svg_text(
+        x + w / 2,
+        y + 36,
+        bottom,
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
+    ))
+
+
+def _gqa_badge(parts: list[str], x: float, y: float, title: str, subtitle: str) -> None:
+    parts.append(_svg_tag("rect", {
+        "x": x,
+        "y": y,
+        "width": 162,
+        "height": 52,
+        "rx": 12,
+        "ry": 12,
+        "fill": C["bg_card"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+    }))
+    parts.append(_svg_text(
+        x + 81,
+        y + 20,
+        title,
+        {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_MONO, "font-size": 11, "font-weight": 700},
+    ))
+    parts.append(_svg_text(
+        x + 81,
+        y + 37,
+        subtitle,
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
+    ))
 
 
 def _build_mla_attention_view(ir: dict, info: dict, mount_id: str) -> str:

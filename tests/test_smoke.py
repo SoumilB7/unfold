@@ -277,6 +277,14 @@ def test_llama3():
     assert ir["layers"][0]["attention"]["num_kv_heads"] == 8
     assert ir["layers"][0]["ffn"]["kind"] == "dense"
     assert ir["params"]["is_sparse"] is False
+
+    html = d.to_html(standalone=True)
+    assert "Grouped SDPA" in html
+    assert "KV sharing pattern" in html
+    assert "8 KV groups x 4 Q heads each" in html
+    assert "KV cache 4x smaller" in html
+    assert "Grouped scaled dot-product attention" in html
+
     print(f"Llama-3 OK  — ~{ir['params']['total_h']} params")
 
 

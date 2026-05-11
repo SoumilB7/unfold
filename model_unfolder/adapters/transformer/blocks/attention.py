@@ -22,9 +22,11 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     num_heads = attention.num_heads or 0
     num_kv_heads = attention.num_kv_heads or num_heads
     head_dim = attention.head_dim or 0
+    q_per_group = num_heads // num_kv_heads if (num_heads and num_kv_heads and num_heads % num_kv_heads == 0) else None
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
     kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
     d_k = _fmt(head_dim) if head_dim else "d_k"
+    attention_title, attention_desc = _sdpa_operation_meta(attention, num_heads, num_kv_heads, d_k, q_per_group)
     return [
         {
             "id": "q_proj",
@@ -43,12 +45,8 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
         },
         {
             "id": "qkv_dot",
-            "title": "Scaled dot-product attention",
-            "description": (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
-                "context = scores * V; "
-                f"output shape [batch, {num_heads}, seq, {d_k}]"
-            ),
+            "title": attention_title,
+            "description": attention_desc,
         },
         {
             "id": "o_proj",
@@ -56,6 +54,44 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
             "description": f"Linear; {q_out} -> {hidden}  (recombines all {num_heads} heads)",
         },
     ]
+
+
+def _sdpa_operation_meta(
+    attention: AttentionSpec,
+    num_heads: int,
+    num_kv_heads: int,
+    d_k: str,
+    q_per_group: int | None,
+) -> tuple[str, str]:
+    if attention.kind == "gqa":
+        group = (
+            f"; each KV head serves {q_per_group} query heads"
+            if q_per_group
+            else ""
+        )
+        return (
+            "Grouped scaled dot-product attention",
+            (
+                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"{num_heads} query heads attend through {num_kv_heads} shared KV heads{group}"
+            ),
+        )
+    if attention.kind == "mqa":
+        return (
+            "Multi-query scaled dot-product attention",
+            (
+                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"{num_heads} query heads share one K/V head"
+            ),
+        )
+    return (
+        "Scaled dot-product attention",
+        (
+            f"scores = softmax(QK^T / sqrt({d_k})); "
+            "context = scores * V; "
+            f"output shape [batch, {num_heads}, seq, {d_k}]"
+        ),
+    )
 
 
 def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
