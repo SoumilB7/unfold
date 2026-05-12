@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ...labels import activation_label
-from .block_views import attention_card, block_detail_svg
+from .block_views import attention_card, block_detail_svg, sub_block_detail_svg
 from .utils import _attr, _fmt_int, _html
 
 
@@ -56,7 +56,8 @@ def _build_sub_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             if not child_id or child_id in seen:
                 continue
             seen.add(child_id)
-            panels.append(_l3_card(child_id, child.get("title", child_id), child.get("description", "")))
+            svg = sub_block_detail_svg(ir, info, mount_id, child)
+            panels.append(_l3_card(child_id, child.get("title", child_id), child.get("description", ""), svg))
     else:
         panels.extend(_fallback_sub_inspect_cards(ir, ffn))
 
@@ -92,11 +93,13 @@ def _hint_card(node_id: str, hint: str) -> str:
     )
 
 
-def _l3_card(node_id: str, title: str, desc: str) -> str:
+def _l3_card(node_id: str, title: str, desc: str, svg: str | None = None) -> str:
+    svg_html = f'<div class="uf-card-svg uf-card-sub-svg">{svg}</div>' if svg else ""
     return (
         f'<div class="uf-card-detail uf-l3-{_attr(node_id)}">'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f"{svg_html}"
         "</div>"
     )
 
