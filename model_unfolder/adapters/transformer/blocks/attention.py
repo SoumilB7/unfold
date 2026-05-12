@@ -26,6 +26,9 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
     kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
     d_k = _fmt(head_dim) if head_dim else "d_k"
+    if attention.kind == "mha":
+        return _mha_child_blocks(hidden, q_out, num_heads, d_k)
+
     attention_title, attention_desc = _sdpa_operation_meta(attention, num_heads, num_kv_heads, d_k, q_per_group)
     return [
         {
@@ -52,6 +55,51 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
             "id": "o_proj",
             "title": "Output projection",
             "description": f"Linear; {q_out} -> {hidden}  (recombines all {num_heads} heads)",
+        },
+    ]
+
+
+def _mha_child_blocks(hidden: str, q_out: str, num_heads: int, d_k: str) -> list[dict]:
+    return [
+        {
+            "id": "q_proj",
+            "title": "Query projection",
+            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+        },
+        {
+            "id": "k_proj",
+            "title": "Key projection",
+            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+        },
+        {
+            "id": "v_proj",
+            "title": "Value projection",
+            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+        },
+        {
+            "id": "scaled_scores",
+            "title": "Scaled attention scores",
+            "description": "Per head: QK^T / sqrt(dim); dot-product scores scaled for numerical stability",
+        },
+        {
+            "id": "attn_softmax",
+            "title": "Softmax weights",
+            "description": "Normalize each query row into attention weights over source tokens",
+        },
+        {
+            "id": "attn_apply_v",
+            "title": "Apply values",
+            "description": "Multiply attention weights by V to produce one context vector per head",
+        },
+        {
+            "id": "concat_heads",
+            "title": "Concatenate heads",
+            "description": f"Stack all {num_heads} per-head context vectors back into width {q_out}",
+        },
+        {
+            "id": "o_proj",
+            "title": "Output projection",
+            "description": f"Linear; {q_out} -> {hidden}  (mixes information across heads)",
         },
     ]
 
