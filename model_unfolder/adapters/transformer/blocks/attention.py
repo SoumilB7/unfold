@@ -26,8 +26,17 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
     kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
     d_k = _fmt(head_dim) if head_dim else "d_k"
-    if attention.kind == "mha":
-        return _mha_child_blocks(hidden, q_out, num_heads, d_k)
+    if attention.kind in {"mha", "gqa", "mqa"}:
+        return _sdpa_detailed_child_blocks(
+            attention.kind,
+            hidden,
+            q_out,
+            kv_out,
+            num_heads,
+            num_kv_heads,
+            d_k,
+            q_per_group,
+        )
 
     attention_title, attention_desc = _sdpa_operation_meta(attention, num_heads, num_kv_heads, d_k, q_per_group)
     return [
@@ -59,7 +68,33 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     ]
 
 
-def _mha_child_blocks(hidden: str, q_out: str, num_heads: int, d_k: str) -> list[dict]:
+def _sdpa_detailed_child_blocks(
+    kind: str,
+    hidden: str,
+    q_out: str,
+    kv_out: str,
+    num_heads: int,
+    num_kv_heads: int,
+    d_k: str,
+    q_per_group: int | None,
+) -> list[dict]:
+    kv_label = "1 shared K/V head" if kind == "mqa" else f"{num_kv_heads} KV-heads"
+    scaled_title = "Scaled attention scores"
+    scaled_desc = "Per head: QK^T / sqrt(dim); dot-product scores scaled for numerical stability"
+    if kind == "gqa":
+        scaled_title = "Grouped scaled dot-product attention"
+        group = f"; each KV head serves {q_per_group} query heads" if q_per_group else ""
+        scaled_desc = (
+            f"Grouped SDPA scores: {num_heads} query heads attend through "
+            f"{num_kv_heads} shared K/V heads{group}; scores use QK^T / sqrt(dim)"
+        )
+    elif kind == "mqa":
+        scaled_title = "Multi-query scaled dot-product attention"
+        scaled_desc = (
+            f"Multi-Query SDPA scores: {num_heads} query heads share one K/V stream; "
+            "scores use QK^T / sqrt(dim)"
+        )
+
     return [
         {
             "id": "q_proj",
@@ -69,17 +104,17 @@ def _mha_child_blocks(hidden: str, q_out: str, num_heads: int, d_k: str) -> list
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+            "description": f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)",
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+            "description": f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)",
         },
         {
             "id": "scaled_scores",
-            "title": "Scaled attention scores",
-            "description": "Per head: QK^T / sqrt(dim); dot-product scores scaled for numerical stability",
+            "title": scaled_title,
+            "description": scaled_desc,
         },
         {
             "id": "attn_softmax",
@@ -180,10 +215,28 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
             "description": f"Separate positional key slice used with RoPE; dim {rope}",
         },
         {
-            "id": "mla_attn",
-            "label": "Latent attention",
-            "title": "Multi-head latent attention",
-            "description": "Attention over decompressed latent K/V plus the RoPE side channel",
+            "id": "scaled_scores",
+            "label": "Latent scores",
+            "title": "Multi-Head Latent scores",
+            "description": "Q attends to expanded latent K plus the RoPE key side-channel; scores use QK^T / sqrt(dim)",
+        },
+        {
+            "id": "attn_softmax",
+            "label": "Softmax",
+            "title": "Softmax weights",
+            "description": "Normalize latent attention scores over source positions",
+        },
+        {
+            "id": "attn_apply_v",
+            "label": "Apply V",
+            "title": "Apply latent values",
+            "description": "Multiply softmax weights by V expanded from the compressed K/V latent",
+        },
+        {
+            "id": "concat_heads",
+            "label": "Concat heads",
+            "title": "Concatenate latent heads",
+            "description": f"Stack all {num_heads} context heads back into width {q_out}",
         },
         {
             "id": "o_proj",

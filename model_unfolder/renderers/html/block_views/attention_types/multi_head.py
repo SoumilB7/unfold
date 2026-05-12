@@ -11,13 +11,12 @@ from ...svg import (
     _region_rect,
     _svg,
     _svg_tag,
-    _svg_text,
     _v_line,
     _v_seg,
 )
-from ...theme import C, FONT_HEAD, GAP
+from ...theme import C, GAP
 from ...utils import _fmt_int
-from .common import output_stem
+from .common import input_to_block, output_stem, sdpa_dot_operator, sdpa_fraction_block
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
@@ -47,9 +46,9 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
         ["Concat heads", f"{num_heads} x {d_k}" if num_heads else "per head"],
         font_size=16,
     )
-    value_dot = _dot_operator(parts, info, shadow_id, "attn_apply_v", cx, 276)
+    value_dot = sdpa_dot_operator(parts, info, shadow_id, "attn_apply_v", cx, 276)
     softmax = _rect_block(parts, info, shadow_id, "attn_softmax", cx - 96, 344, 192, 52, "Softmax")
-    scaled_scores = _fraction_block(
+    scaled_scores = sdpa_fraction_block(
         parts,
         info,
         shadow_id,
@@ -83,131 +82,9 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
     parts.append(_branch_dot(branch_x, branch_y))
 
-    parts.append(_input_to_block(q_proj["cx"], q_proj["top"], scaled_scores["left"] + 92, scaled_scores["bottom"], arrow_id))
+    parts.append(input_to_block(q_proj["cx"], q_proj["top"], scaled_scores["left"] + 92, scaled_scores["bottom"], arrow_id))
     parts.append(_v_seg(k_proj["cx"], k_proj["top"], scaled_scores["bottom"], arrow_id))
     parts.append(_elbow_vh(v_proj["cx"], v_proj["top"], value_dot["right"] + GAP, value_dot["cy"], arrow_id))
     output_stem(parts, cx, o_proj, arrow_id, _fmt_int(hidden_sz), show_label=False)
 
     return _svg(w, h, f"{ir.get('name', 'model')} attention", parts)
-
-
-def _fraction_block(
-    parts: list[str],
-    info: dict,
-    shadow_id: str,
-    node_id: str,
-    x: float,
-    y: float,
-    w: float,
-    h: float,
-    *,
-    numerator: str,
-    denominator: str,
-) -> dict:
-    children = [
-        _svg_tag("rect", {
-            "x": x,
-            "y": y,
-            "width": w,
-            "height": h,
-            "rx": 11,
-            "ry": 11,
-            "fill": C["block"],
-            "stroke": C["block_alt"],
-            "stroke-width": 0.6,
-            "filter": f"url(#{shadow_id})",
-        }),
-        _svg_text(
-            x + w / 2,
-            y + 27,
-            numerator,
-            {
-                "text-anchor": "middle",
-                "dominant-baseline": "central",
-                "fill": C["text_block"],
-                "font-family": FONT_HEAD,
-                "font-size": 22,
-                "pointer-events": "none",
-            },
-        ),
-        _svg_tag("line", {
-            "x1": x + 72,
-            "y1": y + 42,
-            "x2": x + w - 72,
-            "y2": y + 42,
-            "stroke": C["text_block"],
-            "stroke-width": 1.7,
-            "stroke-linecap": "round",
-            "pointer-events": "none",
-        }),
-        _svg_text(
-            x + w / 2,
-            y + 58,
-            denominator,
-            {
-                "text-anchor": "middle",
-                "dominant-baseline": "central",
-                "fill": C["text_block"],
-                "font-family": FONT_HEAD,
-                "font-size": 19,
-                "pointer-events": "none",
-            },
-        ),
-    ]
-    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
-    return {"left": x, "right": x + w, "top": y, "bottom": y + h, "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
-
-
-def _input_to_block(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
-    lane_y = y2 + 26
-    r = 10
-    d = (
-        f"M {x1:g} {y1:g} "
-        f"L {x1:g} {lane_y + r:g} "
-        f"Q {x1:g} {lane_y:g} {x1 + r:g} {lane_y:g} "
-        f"L {x2 - r:g} {lane_y:g} "
-        f"Q {x2:g} {lane_y:g} {x2:g} {lane_y - r:g} "
-        f"L {x2:g} {y2:g}"
-    )
-    return _svg_tag("path", {
-        "d": d,
-        "fill": "none",
-        "stroke": C["arrow"],
-        "stroke-width": 1.6,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})",
-    })
-
-
-def _dot_operator(
-    parts: list[str],
-    info: dict,
-    shadow_id: str,
-    node_id: str,
-    cx: float,
-    cy: float,
-) -> dict:
-    r = 16
-    children = [
-        _svg_tag("circle", {
-            "cx": cx,
-            "cy": cy,
-            "r": r,
-            "fill": C["block"],
-            "stroke": C["block_alt"],
-            "stroke-width": 0.6,
-            "filter": f"url(#{shadow_id})",
-        }),
-        _svg_tag("circle", {
-            "cx": cx,
-            "cy": cy,
-            "r": 5,
-            "fill": "none",
-            "stroke": C["text_block"],
-            "stroke-width": 2,
-            "pointer-events": "none",
-        }),
-    ]
-    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
-    return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}

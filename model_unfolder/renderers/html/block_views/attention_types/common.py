@@ -11,7 +11,7 @@ from ...svg import (
     _svg_text,
     _v_line,
 )
-from ...theme import C, FONT_MONO, GAP
+from ...theme import C, FONT_HEAD, FONT_MONO, GAP
 from ...utils import _fmt_int
 
 
@@ -38,6 +38,9 @@ def gqa_grouping_panel(
     num_kv_heads: int,
     q_per_group: int | None,
 ) -> dict:
+    if w <= 300:
+        return _gqa_compact_legend(parts, x, y, w, h, num_heads, num_kv_heads, q_per_group)
+
     parts.append(_svg_tag("rect", {
         "x": x,
         "y": y,
@@ -68,6 +71,93 @@ def gqa_grouping_panel(
     start_x = x + 38
     for i, (top, bottom) in enumerate(_gqa_card_specs(num_heads, num_kv_heads, q_per_group)):
         _gqa_group_card(parts, start_x + i * (card_w + gap), card_y, card_w, 48, top, bottom)
+
+    return {
+        "left": x,
+        "right": x + w,
+        "top": y,
+        "bottom": y + h,
+        "cx": x + w / 2,
+        "cy": y + h / 2,
+        "w": w,
+        "h": h,
+    }
+
+
+def _gqa_compact_legend(
+    parts: list[str],
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    num_heads: int,
+    num_kv_heads: int,
+    q_per_group: int | None,
+) -> dict:
+    parts.append(_svg_tag("rect", {
+        "x": x,
+        "y": y,
+        "width": w,
+        "height": h,
+        "rx": 14,
+        "ry": 14,
+        "fill": C["bg_card"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+    }))
+    parts.append(_svg_text(
+        x + 18,
+        y + 24,
+        "KV sharing pattern",
+        {
+            "fill": C["text"],
+            "font-family": FONT_MONO,
+            "font-size": 10,
+            "font-weight": 700,
+            "letter-spacing": "0.08em",
+        },
+    ))
+    subtitle = (
+        f"{q_per_group} Q heads per KV"
+        if q_per_group
+        else f"{num_heads} Q / {num_kv_heads} KV"
+    )
+    parts.append(_svg_text(
+        x + 18,
+        y + 42,
+        subtitle,
+        {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
+    ))
+
+    card_y = y + 58
+    card_h = 34
+    gap = 7
+    card_w = w - 36
+    for i, (top, bottom) in enumerate(_gqa_card_specs(num_heads, num_kv_heads, q_per_group)):
+        cy = card_y + i * (card_h + gap)
+        parts.append(_svg_tag("rect", {
+            "x": x + 18,
+            "y": cy,
+            "width": card_w,
+            "height": card_h,
+            "rx": 9,
+            "ry": 9,
+            "fill": C["badge_bg"],
+            "stroke": C["border"],
+            "stroke-width": 0.7,
+        }))
+        parts.append(_svg_text(
+            x + 36,
+            cy + 14,
+            top,
+            {"fill": C["text"], "font-family": FONT_MONO, "font-size": 10, "font-weight": 700},
+        ))
+        parts.append(_svg_text(
+            x + 36,
+            cy + 28,
+            bottom,
+            {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 8.5},
+        ))
 
     return {
         "left": x,
@@ -308,3 +398,121 @@ def attn_dim_label(parts: list[str], x: float, y: float, text: str, *, anchor: s
             "font-size": 10,
         },
     ))
+
+
+def sdpa_fraction_block(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    node_id: str,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    *,
+    numerator: str = "Q K^T",
+    denominator: str = "sqrt(dim)",
+) -> dict:
+    """Green formula block for the scaled score step in SDPA-style attention."""
+    children = [
+        _svg_tag("rect", {
+            "x": x,
+            "y": y,
+            "width": w,
+            "height": h,
+            "rx": 11,
+            "ry": 11,
+            "fill": C["block"],
+            "stroke": C["block_alt"],
+            "stroke-width": 0.6,
+            "filter": f"url(#{shadow_id})",
+        }),
+        _svg_text(
+            x + w / 2,
+            y + h * 0.32,
+            numerator,
+            {
+                "text-anchor": "middle",
+                "dominant-baseline": "central",
+                "fill": C["text_block"],
+                "font-family": FONT_HEAD,
+                "font-size": 22,
+                "pointer-events": "none",
+            },
+        ),
+        _svg_tag("line", {
+            "x1": x + 72,
+            "y1": y + h * 0.52,
+            "x2": x + w - 72,
+            "y2": y + h * 0.52,
+            "stroke": C["text_block"],
+            "stroke-width": 1.7,
+            "stroke-linecap": "round",
+            "pointer-events": "none",
+        }),
+        _svg_text(
+            x + w / 2,
+            y + h * 0.73,
+            denominator,
+            {
+                "text-anchor": "middle",
+                "dominant-baseline": "central",
+                "fill": C["text_block"],
+                "font-family": FONT_HEAD,
+                "font-size": 19,
+                "pointer-events": "none",
+            },
+        ),
+    ]
+    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    return {"left": x, "right": x + w, "top": y, "bottom": y + h, "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
+
+
+def sdpa_dot_operator(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: float, cy: float) -> dict:
+    """Small green dot-product operator used for attention weights × V."""
+    r = 16
+    children = [
+        _svg_tag("circle", {
+            "cx": cx,
+            "cy": cy,
+            "r": r,
+            "fill": C["block"],
+            "stroke": C["block_alt"],
+            "stroke-width": 0.6,
+            "filter": f"url(#{shadow_id})",
+        }),
+        _svg_tag("circle", {
+            "cx": cx,
+            "cy": cy,
+            "r": 5,
+            "fill": "none",
+            "stroke": C["text_block"],
+            "stroke-width": 2,
+            "pointer-events": "none",
+        }),
+    ]
+    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}
+
+
+def input_to_block(x1: float, y1: float, x2: float, y2: float, arrow_id: str, *, lane_offset: float = 26) -> str:
+    """Route an upward input into the lower edge of a block without grazing it."""
+    lane_y = y2 + lane_offset
+    r = 10
+    d = (
+        f"M {x1:g} {y1:g} "
+        f"L {x1:g} {lane_y + r:g} "
+        f"Q {x1:g} {lane_y:g} {x1 + r:g} {lane_y:g} "
+        f"L {x2 - r:g} {lane_y:g} "
+        f"Q {x2:g} {lane_y:g} {x2:g} {lane_y - r:g} "
+        f"L {x2:g} {y2:g}"
+    )
+    return _svg_tag("path", {
+        "d": d,
+        "fill": "none",
+        "stroke": C["arrow"],
+        "stroke-width": 1.6,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})",
+    })
