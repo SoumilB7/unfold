@@ -14,8 +14,9 @@ from ...svg import (
     _v_line,
     _v_seg,
 )
-from ...theme import C, FONT_MONO, GAP
+from ...theme import C, GAP
 from ...utils import _fmt_int
+from .common import output_stem
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
@@ -34,43 +35,27 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
 
     o_proj = _rect_block(parts, info, shadow_id, "o_proj", cx - 90, 82, 180, 50, "Linear (out)")
     mla = _rect_block(parts, info, shadow_id, "mla_attn", 142, 182, 436, 58, ["Multi-Head Latent", "Attention"], font_size=16)
-    q_path = _rect_block(parts, info, shadow_id, "mla_q", 76, 350, 170, 50, ["Q path", f"rank {q_rank}"], font_size=15)
-    kv_down = _rect_block(parts, info, shadow_id, "mla_kv_down", 276, 418, 170, 50, ["KV down", f"rank {kv_rank}"], font_size=15)
-    kv_up = _rect_block(parts, info, shadow_id, "mla_kv_up", 276, 302, 170, 50, "KV up", font_size=16)
-    rope = _rect_block(parts, info, shadow_id, "mla_rope", 476, 350, 170, 50, ["RoPE split", f"dim {rope_dim}"], font_size=15)
+    q_path = _rect_block(parts, info, shadow_id, "mla_q", 78, 365, 170, 50, ["Q projection", f"rank {q_rank}"], font_size=15)
+    kv_down = _rect_block(parts, info, shadow_id, "mla_kv_down", 276, 442, 170, 50, ["KV compress", f"rank {kv_rank}"], font_size=15)
+    kv_up = _rect_block(parts, info, shadow_id, "mla_kv_up", 276, 305, 170, 50, "KV expand", font_size=16)
+    rope = _rect_block(parts, info, shadow_id, "mla_rope", 472, 365, 170, 50, ["RoPE key", f"dim {rope_dim}"], font_size=15)
 
     branch_x, branch_y = cx, 540
-    parts.append(_branch_dot(branch_x, branch_y))
     parts.append(_svg_tag("line", {
-        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
+        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
+        "fill": "none",
     }))
-    parts.append(_svg_text(
-        branch_x, h - 28,
-        f"in ({hidden})",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
 
     parts.append(_elbow_hv(branch_x, branch_y, q_path["cx"], q_path["bottom"] + GAP, arrow_id))
     parts.append(_elbow_hv(branch_x, branch_y, kv_down["cx"], kv_down["bottom"] + GAP, arrow_id))
     parts.append(_elbow_hv(branch_x, branch_y, rope["cx"], rope["bottom"] + GAP, arrow_id))
+    parts.append(_branch_dot(branch_x, branch_y))
     parts.append(_v_line(kv_down, kv_up, arrow_id))
-    parts.append(_elbow_hv(q_path["cx"], q_path["top"], 210, mla["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(q_path["cx"], q_path["top"], mla["bottom"] + GAP, arrow_id))
     parts.append(_v_seg(kv_up["cx"], kv_up["top"], mla["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(rope["cx"], rope["top"], 510, mla["bottom"] + GAP, arrow_id))
+    parts.append(_v_seg(rope["cx"], rope["top"], mla["bottom"] + GAP, arrow_id))
     parts.append(_v_line(mla, o_proj, arrow_id))
-
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": o_proj["top"],
-        "x2": cx, "y2": o_proj["top"] - 34,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-    parts.append(_svg_text(
-        cx, o_proj["top"] - 44,
-        f"out ({hidden})",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
+    output_stem(parts, cx, o_proj, arrow_id, hidden, show_label=False)
 
     return _svg(w, h, f"{ir.get('name', 'model')} multi-head latent attention", parts)

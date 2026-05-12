@@ -105,31 +105,31 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
     return [
         {
             "id": "mla_q",
-            "label": "Q path",
-            "title": "Query path",
+            "label": "Q projection",
+            "title": "Query projection",
             "description": (
-                f"Q projection with LoRA rank {q_rank}"
+                f"Projects hidden states into query heads through LoRA rank {q_rank}"
                 if attention.q_lora_rank
                 else f"Q projection; {hidden} -> {q_out}"
             ),
         },
         {
             "id": "mla_kv_down",
-            "label": "KV down",
-            "title": "KV latent down-projection",
-            "description": f"Compress K/V context; {hidden} -> latent rank {kv_rank} plus RoPE {rope}",
+            "label": "KV compress",
+            "title": "K/V latent compression",
+            "description": f"Compresses the token state into a shared latent K/V vector; {hidden} -> rank {kv_rank}",
         },
         {
             "id": "mla_kv_up",
-            "label": "KV up",
-            "title": "KV latent up-projection",
-            "description": f"Expand latent K/V for {num_heads} query heads",
+            "label": "KV expand",
+            "title": "K/V head expansion",
+            "description": f"Expands the latent K/V vector into per-head key/value content for {num_heads} query heads",
         },
         {
             "id": "mla_rope",
-            "label": "RoPE split",
-            "title": "RoPE side channel",
-            "description": f"Rotary positional slice; dim {rope}",
+            "label": "RoPE key",
+            "title": "Rotary key side-channel",
+            "description": f"Separate positional key slice used with RoPE; dim {rope}",
         },
         {
             "id": "mla_attn",
