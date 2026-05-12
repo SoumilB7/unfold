@@ -4,11 +4,23 @@ These modules translate family-specific HuggingFace config dialects into the
 shared transformer IR pieces in ``model_unfolder.adapters.transformer``.
 """
 
-from . import deepseek, fallback, llama, minimax, mistral, qwen
-from . import gemma  # gemma/ package — dispatches to gemma3/gemma4 internally
+from . import (
+    cohere, deepseek, falcon, fallback, gpt_neox, jamba, llama,
+    minimax, mistral, qwen, recurrent_gemma, rwkv, zamba,
+)
+from . import gemma  # gemma/ package — dispatches to gemma2/gemma3/gemma4 internally
 
 # Order matters: more specific adapters first.
-# ``gemma`` must run before ``llama`` (llama previously caught "gemma" model_type).
-# ``mistral``, ``qwen``, ``minimax`` before ``llama``.
+# ``gemma`` before ``llama``           (llama once matched "gemma" model_type).
+# ``falcon`` before ``llama``          (FalconForCausalLM arches contain "falcon").
+# ``recurrent_gemma`` before ``llama`` (distinct model_type, same safety net).
+# ``zamba`` before ``llama``           (Zamba has both SSM and attention; more specific).
+# ``gpt_neox`` before ``llama``        (distinct model_type, no overlap).
 # ``fallback`` always matches — must be last.
-ADAPTERS = [deepseek, gemma, minimax, mistral, qwen, llama, fallback]
+# NOTE: pure ``mamba``/``mamba2`` is intentionally unsupported for now; hybrid
+# LLM families with SSM blocks live in jamba/falcon/zamba.
+ADAPTERS = [
+    deepseek, gemma, jamba, falcon, minimax, mistral,
+    qwen, recurrent_gemma, rwkv, cohere, zamba, gpt_neox,
+    llama, fallback,
+]

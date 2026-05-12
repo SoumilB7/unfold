@@ -1,8 +1,39 @@
-"""Inspect-card content for attention blocks."""
+"""Attention detail-card dispatcher and grouped attention summary cards."""
 from __future__ import annotations
 
 from ....labels import describe_attention, kv_shared, mask_long
 from ..utils import _html
+from .attention_types import (
+    build_gqa_attention_view,
+    build_linear_attention_view,
+    build_mla_attention_view,
+    build_mqa_attention_view,
+    build_recurrent_view,
+    build_rwkv_view,
+    build_sdpa_attention_view,
+    build_ssm_view,
+)
+
+
+def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Rich SVG detail view for the active attention-like block."""
+    attn = info["dominant"]["spec"].get("attention") or {}
+    kind = attn.get("kind")
+    if kind == "mla":
+        return build_mla_attention_view(ir, info, mount_id)
+    if kind == "mqa":
+        return build_mqa_attention_view(ir, info, mount_id)
+    if kind == "gqa":
+        return build_gqa_attention_view(ir, info, mount_id)
+    if kind == "ssm":
+        return build_ssm_view(ir, info, mount_id)
+    if kind == "recurrent":
+        return build_recurrent_view(ir, info, mount_id)
+    if kind == "rwkv":
+        return build_rwkv_view(ir, info, mount_id)
+    if kind == "linear":
+        return build_linear_attention_view(ir, info, mount_id)
+    return build_sdpa_attention_view(ir, info, mount_id)
 
 
 def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
@@ -13,7 +44,7 @@ def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
     if len(attn_groups) <= 1:
         title, desc = meta_for("attn")
         return (
-            '<div class="uf-card-detail uf-card-attn">'
+            '<div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="compact">'
             f'<div class="uf-card-title">{_html(title)}</div>'
             f'<div class="uf-card-desc">{_html(desc)}</div>'
             "</div>"
@@ -21,7 +52,7 @@ def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
 
     rows = "".join(_attention_row_for_group(group, ir) for group in attn_groups)
     return (
-        '<div class="uf-card-detail uf-card-attn">'
+        '<div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="list">'
         '<div class="uf-card-title">Attention layers</div>'
         '<div class="uf-card-desc">'
         f"{len(attn_groups)} attention variants in this model — each row is one variant."

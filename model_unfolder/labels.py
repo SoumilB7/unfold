@@ -31,12 +31,25 @@ _MASK_TITLE = {
     "chunked": "Chunked attention",
 }
 
-_KIND_SHORT = {"mla": "MLA", "gqa": "GQA", "mqa": "MQA", "mha": "MHA"}
+_KIND_SHORT = {
+    "mla": "MLA",
+    "gqa": "GQA",
+    "mqa": "MQA",
+    "mha": "MHA",
+    "ssm": "SSM",
+    "recurrent": "LRU",
+    "linear": "Lin-Attn",
+    "rwkv": "RWKV",
+}
 _KIND_LONG = {
     "mla": "Multi-head latent attention",
     "gqa": "Grouped-query attention",
     "mqa": "Multi-query attention",
     "mha": "Multi-head attention",
+    "ssm": "Selective state-space model (Mamba)",
+    "recurrent": "Linear Recurrent Unit (LRU)",
+    "linear": "Linear attention",
+    "rwkv": "RWKV token-mixing",
 }
 _ACTIVATION_LABELS = {
     "gelu": "GELU",
@@ -76,11 +89,27 @@ def mask_chip(attention: dict) -> str:
 
 
 def kind_short(attention: dict) -> str:
-    return _KIND_SHORT.get(attention.get("kind", ""), "MHA")
+    short = _KIND_SHORT.get(attention.get("kind", ""), "MHA")
+    tags = []
+    if attention.get("qk_norm"):
+        tags.append("QK-Norm")
+    if attention.get("shared"):
+        tags.append("Shared")
+    if attention.get("no_rope"):
+        tags.append("NoPE")
+    return f"{short} ({', '.join(tags)})" if tags else short
 
 
 def kind_long(attention: dict) -> str:
-    return _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
+    base = _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
+    extras = []
+    if attention.get("qk_norm"):
+        extras.append("per-head Q/K normalisation")
+    if attention.get("shared"):
+        extras.append("weight-shared across positions")
+    if attention.get("no_rope"):
+        extras.append("no positional encoding (NoPE)")
+    return f"{base}; {'; '.join(extras)}" if extras else base
 
 
 def is_sliding(attention: dict) -> bool:
@@ -112,11 +141,7 @@ def activation_label(name: str | None) -> str:
 
 
 def describe_attention(attention: dict) -> str:
-    """Multi-clause human description suitable for tooltips and cards.
-
-    The window-size suffix is appended whenever the layer uses sliding-window
-    attention, regardless of the underlying kind (GQA/MHA/MLA).
-    """
+    """Multi-clause human description suitable for tooltips and cards."""
     kind = attention.get("kind")
     if kind == "mla":
         text = (
@@ -125,14 +150,26 @@ def describe_attention(attention: dict) -> str:
         )
         if attention.get("q_lora_rank"):
             text += f"; Q LoRA {_fmt_int(attention.get('q_lora_rank'))}"
+    elif kind == "mqa":
+        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
     elif kind == "gqa":
         text = (
             f"Grouped-query; {attention.get('num_heads')} Q / "
             f"{attention.get('num_kv_heads')} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
-    elif kind == "mqa":
-        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
+    elif kind == "ssm":
+        text = f"Selective SSM (Mamba); state dim {_fmt_int(attention.get('head_dim'))}"
+    elif kind == "recurrent":
+        text = f"Linear Recurrent Unit; LRU width {_fmt_int(attention.get('head_dim'))}"
+    elif kind == "rwkv":
+        text = f"RWKV token-mixing; {attention.get('num_heads')} heads"
+    elif kind == "linear":
+        text = (
+            f"Linear attention; {attention.get('num_heads')} Q / "
+            f"{attention.get('num_kv_heads')} KV heads; "
+            f"head dim {_fmt_int(attention.get('head_dim'))}"
+        )
     else:
         text = (
             f"Multi-head; {attention.get('num_heads')} heads; "
@@ -140,6 +177,16 @@ def describe_attention(attention: dict) -> str:
         )
     if is_sliding(attention) and attention.get("window_size"):
         text += f"; sliding window {_fmt_int(attention.get('window_size'))}"
+    # Surface structural flags as annotations
+    extras = []
+    if attention.get("qk_norm"):
+        extras.append("QK-Norm")
+    if attention.get("shared"):
+        extras.append("weight-shared")
+    if attention.get("no_rope"):
+        extras.append("NoPE")
+    if extras:
+        text += "; " + ", ".join(extras)
     return text
 
 

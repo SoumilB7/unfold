@@ -84,12 +84,18 @@ Param estimates are close to published numbers — DeepSeek-V3 reports `~675B (~
 
 | Family | Models |
 |---|---|
-| DeepSeek | DeepSeek-V2, DeepSeek-V3, Kimi K2 |
-| Llama | Llama 3 / 3.1 / 3.2 / 3.3 |
+| DeepSeek | DeepSeek-V2, DeepSeek-V3 (+ MTP head), Kimi K2 |
+| Llama | Llama 3 / 3.1 / 3.2 / 3.3, OLMo-2, Llama 4 Scout / Maverick (MoE + iRoPE NoPE layers) |
 | Mistral | Mistral 7B, Mixtral 8x7B / 8x22B, Mistral Medium 3.5 |
-| Qwen | Qwen2 / 2.5, Qwen2-MoE, Qwen3, Qwen3-MoE, Qwen3.5 / 3.6 |
-| Gemma | Gemma 3 / 3n, Gemma 4 (31B, E2B, E4B) |
-| MiniMax | MiniMax-Text-01 |
+| Qwen | Qwen2 / 2.5, Qwen2-MoE, Qwen3, Qwen3-MoE, Qwen3.5 / 3.6 (+ MTP) |
+| Gemma | Gemma 2 9B / 27B (interleaved local+global), Gemma 3 / 3n (+ PLE), Gemma 4 31B / E2B / E4B (+ PLE), RecurrentGemma 2B / 9B (LRU + local attention) |
+| Cohere | Command R, Command R+, Command R7B (QK-Norm attention) |
+| Jamba | Jamba (SSM + attention hybrid, MoE) |
+| Zamba | Zamba 7B, Zamba2 2.7B / 7B (Mamba SSM + weight-shared attention) |
+| Mamba | Mamba 130M–2.8B, Mamba-2 (pure SSM, no attention) |
+| Falcon | Falcon 7B / 40B (parallel attn+FFN), Falcon-H1 (Mamba-2 SSM) |
+| MiniMax | MiniMax-Text-01 (lightning + softmax hybrid, MoE) |
+| RWKV | RWKV-4 / 5 / 6 (pure recurrent, no attention) |
 
 ### Diffusors
 

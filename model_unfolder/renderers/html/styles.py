@@ -193,21 +193,42 @@ def _style(mount_id: str) -> str:
 }}
 #{mount_id} .uf-arch-variant,
 #{mount_id} .uf-l2-variant,
-#{mount_id} .uf-l3-variant {{ display:none; }}
-#{mount_id} .uf-inspect {{
-  display:none;
-  margin-top:10px;
-  padding:10px 12px;
+#{mount_id} .uf-nested-variant {{ display:none; }}
+#{mount_id} .uf-inspect-panel {{
   background:rgba(244,251,248,0.55);
   border:0.5px solid {C['border']};
   border-radius:9px;
-  min-height:60px;
   animation:uf-fade .2s ease-out;
+}}
+#{mount_id} .uf-inspect {{
+  display:none;
+  margin-top:10px;
 }}
 #{mount_id} .uf-section-arch[open] ~ .uf-inspect {{
   display:flex;
   flex-direction:column;
   justify-content:center;
+}}
+#{mount_id} .uf-panel-hint,
+#{mount_id} .uf-panel-compact {{
+  min-height:64px;
+  padding:10px 12px;
+}}
+#{mount_id} .uf-panel-list {{
+  min-height:96px;
+  padding:12px;
+}}
+#{mount_id} .uf-panel-diagram-compact {{
+  min-height:0;
+  padding:12px 10px 14px;
+}}
+#{mount_id} .uf-panel-diagram {{
+  min-height:0;
+  padding:14px 12px 16px;
+}}
+#{mount_id} .uf-panel-diagram-tall {{
+  min-height:0;
+  padding:16px 14px 18px;
 }}
 #{mount_id} .uf-card-detail {{
   display:none;
@@ -224,21 +245,15 @@ def _style(mount_id: str) -> str:
   text-align:center;
   padding:0;
 }}
-#{mount_id} .uf-sub-inspect {{
+#{mount_id} .uf-nested-inspect {{
   display:none;
   margin-top:8px;
-  padding:10px 14px;
-  background:{C['bg_card']};
-  border:0.5px solid {C['border']};
-  border-left:3px solid {C['block']};
-  border-radius:9px;
-  animation:uf-fade .2s ease-out;
 }}
-#{mount_id} .uf-section-arch[open] ~ .uf-sub-inspect.uf-sub-active {{
+#{mount_id} .uf-section-arch[open] ~ .uf-nested-inspect.uf-nested-active {{
   display:block;
 }}
-#{mount_id} .uf-node.uf-sub-selected rect,
-#{mount_id} .uf-node.uf-sub-selected circle {{
+#{mount_id} .uf-node.uf-nested-selected rect,
+#{mount_id} .uf-node.uf-nested-selected circle {{
   stroke:#FACC15;
   stroke-width:2.5;
 }}
@@ -259,10 +274,11 @@ def _style(mount_id: str) -> str:
   background:{C['bg_card']};
   border:0.5px solid {C['border']};
   border-radius:8px;
-  padding:6px;
+  padding:8px 6px 10px;
 }}
 #{mount_id} .uf-card-svg svg {{
   display:block;
+  width:100%;
   max-width:100%;
   height:auto;
 }}

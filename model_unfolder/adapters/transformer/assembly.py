@@ -5,7 +5,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from ...ir import AttentionSpec, FFNSpec, LayerSpec
-from .blocks import decoder_layer_blocks, decoder_only_render_spec
+from .blocks import decoder_layer_blocks, decoder_only_render_spec, parallel_decoder_layer_blocks
 
 
 def decoder_layer(
@@ -15,15 +15,43 @@ def decoder_layer(
     hidden_size: int,
     *,
     extra_blocks: Iterable[dict] | None = None,
+    norm_kind: str = "rmsnorm",
+    norm_placement: str = "pre",
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
-    blocks = decoder_layer_blocks(attention, ffn, hidden_size)
+    blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(
         index=index,
         attention=attention,
         ffn=ffn,
+        norm_kind=norm_kind,
+        norm_placement=norm_placement,
+        blocks=blocks,
+    )
+
+
+def parallel_decoder_layer(
+    index: int,
+    attention: AttentionSpec,
+    ffn: FFNSpec,
+    hidden_size: int,
+    *,
+    norm_kind: str = "rmsnorm",
+) -> LayerSpec:
+    """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
+
+    Attention and FFN share a single input norm and their outputs are summed
+    into one residual add rather than two sequential adds.
+    """
+    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    return LayerSpec(
+        index=index,
+        attention=attention,
+        ffn=ffn,
+        norm_kind=norm_kind,
+        norm_placement="pre",
         blocks=blocks,
     )
 

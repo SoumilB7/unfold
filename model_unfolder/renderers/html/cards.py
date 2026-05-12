@@ -1,9 +1,13 @@
 """Inspect-card HTML for architecture block clicks."""
 from __future__ import annotations
 
+import re
+
 from ...labels import activation_label
-from .block_views import attention_card, block_detail_svg
+from .block_views import attention_card, block_detail_svg, sub_block_detail_svg
 from .utils import _attr, _fmt_int, _html
+
+_VIEWBOX_RE = re.compile(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"')
 
 
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
@@ -20,12 +24,19 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         kind = block.get("kind")
         node_id = block["id"]
         if kind == "attention":
-            panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
+            svg = block_detail_svg(ir, info, mount_id, block)
+            if svg:
+                title, desc = _meta(info, node_id)
+                desc = _with_io_dim(ir, desc)
+                panels.append(_rich_card(node_id, title, desc, svg))
+            else:
+                panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
             continue
 
         svg = block_detail_svg(ir, info, mount_id, block)
         if svg:
             title, desc = _meta(info, node_id)
+            desc = _with_io_dim(ir, desc)
             panels.append(_rich_card(node_id, title, desc, svg))
         else:
             panels.append(_simple_card(node_id, *_meta(info, node_id)))
@@ -36,33 +47,30 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     return "".join(panels)
 
 
-def _build_sub_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
-    """Cards-only HTML for the L3 sub-inspect panel."""
-    panels: list[str] = [_l3_card("default", "", "")]
-    ffn = info["dominant"]["spec"]["ffn"]
-    children = _sub_inspect_children(info)
-
-    if children:
-        seen: set[str] = set()
-        for child in children:
-            child_id = child.get("id")
-            if not child_id or child_id in seen:
-                continue
-            seen.add(child_id)
-            panels.append(_l3_card(child_id, child.get("title", child_id), child.get("description", "")))
-    else:
-        panels.extend(_fallback_sub_inspect_cards(ir, ffn))
-
-    return "".join(panels)
+def _build_nested_inspect_panels(ir: dict, info: dict, mount_id: str) -> list[str]:
+    """Cards-only HTML for recursive nested inspect panels."""
+    levels = _nested_child_levels(info)
+    if not levels:
+        levels = [_fallback_sub_inspect_children(ir, info["dominant"]["spec"]["ffn"])]
+    return [_nested_panel(ir, info, mount_id, children) for children in levels if children]
 
 
 def _meta(info: dict, node_id: str) -> tuple[str, str]:
     return info.get("meta", {}).get(node_id, (node_id, ""))
 
 
+def _with_io_dim(ir: dict, desc: str) -> str:
+    hidden = _fmt_int(ir.get("hidden_size"))
+    if not hidden:
+        return desc
+    suffix = f"input/output dim {hidden}"
+    return f"{desc}; {suffix}" if desc else suffix
+
+
 def _simple_card(node_id: str, title: str, desc: str) -> str:
     return (
-        f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}" data-card-size="compact">'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
         "</div>"
@@ -71,29 +79,69 @@ def _simple_card(node_id: str, title: str, desc: str) -> str:
 
 def _hint_card(node_id: str, hint: str) -> str:
     return (
-        f'<div class="uf-card-detail uf-card-hint uf-card-{_attr(node_id)}">'
+        f'<div class="uf-card-detail uf-card-hint uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}" data-card-size="hint">'
         f"{_html(hint)}"
         "</div>"
     )
 
 
-def _l3_card(node_id: str, title: str, desc: str) -> str:
+def _nested_panel(ir: dict, info: dict, mount_id: str, children: list[dict]) -> str:
+    panels: list[str] = [_nested_card("default", "", "")]
+    for child in _unique_children(children):
+        child_id = child.get("id")
+        if not child_id:
+            continue
+        svg = sub_block_detail_svg(ir, info, mount_id, child)
+        panels.append(_nested_card(child_id, child.get("title", child_id), child.get("description", ""), svg))
+    return "".join(panels)
+
+
+def _nested_card(node_id: str, title: str, desc: str, svg: str | None = None) -> str:
+    svg_html = f'<div class="uf-card-svg">{svg}</div>' if svg else ""
+    size_attrs = _size_attrs(svg)
     return (
-        f'<div class="uf-card-detail uf-l3-{_attr(node_id)}">'
+        f'<div class="uf-card-detail" data-card-id="{_attr(node_id)}"{size_attrs}>'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
+        f"{svg_html}"
         "</div>"
     )
 
 
 def _rich_card(node_id: str, title: str, desc: str, svg: str) -> str:
+    size_attrs = _size_attrs(svg)
     return (
-        f'<div class="uf-card-detail uf-card-{_attr(node_id)}">'
+        f'<div class="uf-card-detail uf-card-{_attr(node_id)}" '
+        f'data-card-id="{_attr(node_id)}"{size_attrs}>'
         f'<div class="uf-card-title">{_html(title)}</div>'
         f'<div class="uf-card-desc">{_html(desc)}</div>'
         f'<div class="uf-card-svg">{svg}</div>'
         "</div>"
     )
+
+
+def _size_attrs(svg: str | None) -> str:
+    size, width, height = _card_size(svg)
+    attrs = f' data-card-size="{_attr(size)}"'
+    if width is not None and height is not None:
+        attrs += f' data-svg-width="{_attr(width)}" data-svg-height="{_attr(height)}"'
+    return attrs
+
+
+def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
+    if not svg:
+        return "compact", None, None
+    match = _VIEWBOX_RE.search(svg)
+    if not match:
+        return "diagram", None, None
+    width = int(float(match.group(1)))
+    height = int(float(match.group(2)))
+    if height >= 640:
+        return "diagram-tall", width, height
+    if height >= 540:
+        return "diagram", width, height
+    return "diagram-compact", width, height
 
 
 def _sub_inspect_children(info: dict) -> list[dict]:
@@ -103,28 +151,84 @@ def _sub_inspect_children(info: dict) -> list[dict]:
     return children
 
 
-def _fallback_sub_inspect_cards(ir: dict, ffn: dict) -> list[str]:
+def _nested_child_levels(info: dict) -> list[list[dict]]:
+    levels: list[list[dict]] = []
+    current = _sub_inspect_children(info)
+    while current:
+        current = _unique_children(current)
+        levels.append(current)
+        next_level: list[dict] = []
+        for child in current:
+            next_level.extend(child.get("children") or [])
+        current = next_level
+    return levels
+
+
+def _unique_children(children: list[dict]) -> list[dict]:
+    seen: set[str] = set()
+    unique: list[dict] = []
+    for child in children:
+        child_id = child.get("id")
+        if not child_id or child_id in seen:
+            continue
+        seen.add(child_id)
+        unique.append(child)
+    return unique
+
+
+def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
     h = _fmt_int(ir.get("hidden_size"))
     inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
     activation = activation_label(ffn.get("activation") or "silu")
+    if ffn.get("kind") != "moe" and not ffn.get("gated", True):
+        return [
+            {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},
+            {
+                "id": "silu",
+                "title": f"{activation} activation",
+                "description": "Element-wise non-linearity after the input projection",
+            },
+            {"id": "down_proj", "title": "Output projection", "description": f"Linear · {inter} → {h}"},
+        ]
+
     panels = [
-        _l3_card("gate_proj", "Gate projection", f"Linear · {h} → {inter} (gated path through {activation})"),
-        _l3_card("up_proj", "Up projection", f"Linear · {h} → {inter}"),
-        _l3_card("silu", f"{activation} activation", "Element-wise non-linearity applied to the gate path"),
-        _l3_card("mul", "Element-wise multiply", f"{activation}(gate) × up — combines the gated and ungated paths"),
-        _l3_card("down_proj", "Down projection", f"Linear · {inter} → {h}"),
+        {
+            "id": "gate_proj",
+            "title": "Gate projection",
+            "description": f"Linear · {h} → {inter} (gated path through {activation})",
+        },
+        {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
+        {
+            "id": "silu",
+            "title": f"{activation} activation",
+            "description": "Element-wise non-linearity applied to the gate path",
+        },
+        {
+            "id": "mul",
+            "title": "Element-wise multiply",
+            "description": f"{activation}(gate) × up — combines the gated and ungated paths",
+        },
+        {"id": "down_proj", "title": "Down projection", "description": f"Linear · {inter} → {h}"},
     ]
     if ffn.get("kind") == "moe":
         n_experts = _fmt_int(ffn.get("num_experts")) if ffn.get("num_experts") else "N"
         n_active = ffn.get("num_experts_per_tok") or "k"
         n_shared = ffn.get("num_shared_experts") or 0
-        panels.append(_l3_card("router", "Router", f"Linear · {h} → {n_experts} (selects top-{n_active} experts per token)"))
+        panels.append({
+            "id": "router",
+            "title": "Router",
+            "description": f"Linear · {h} → {n_experts} (selects top-{n_active} experts per token)",
+        })
         expert_desc = (
             f"Dense FFN with same shape as above · {h} → {inter} → {h} · "
             f"only top-{n_active} of {n_experts} active per token"
             + (f" · plus {n_shared} shared expert(s) always active" if n_shared else "")
         )
         for eid in ("expert_1", "expert_k", "expert_kp1", "expert_n"):
-            panels.append(_l3_card(eid, "Expert FFN", expert_desc))
-        panels.append(_l3_card("add_moe", "Weighted sum", f"Combines top-{n_active} expert outputs weighted by router probabilities"))
+            panels.append({"id": eid, "title": "Expert FFN", "description": expert_desc})
+        panels.append({
+            "id": "add_moe",
+            "title": "Weighted sum",
+            "description": f"Combines top-{n_active} expert outputs weighted by router probabilities",
+        })
     return panels
