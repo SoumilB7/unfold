@@ -1,7 +1,7 @@
 """Top-level HTML document and fragment rendering."""
 from __future__ import annotations
 
-from .cards import _build_inspect_cards, _build_sub_inspect_cards
+from .cards import _build_inspect_cards, _build_nested_inspect_panels
 from .interactions import _click_script
 from .metadata import _block_lookup, _group_label, _make_info, _meta_for
 from .sections import _details_section, _header, _stats_banner
@@ -33,7 +33,7 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
     pills: list[str] = []
     arch_variants: list[str] = []
     l2_variants: list[str] = []
-    l3_variants: list[str] = []
+    nested_variants_by_depth: list[list[str]] = []
     variant_css: list[str] = []
     radio_name = f"{mount_id}-g"
 
@@ -92,16 +92,19 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
             l2_variants.append(
                 f'<div class="uf-l2-variant uf-l2-variant-{variant_idx}">{l2_inner}</div>'
             )
-            l3_inner = _build_sub_inspect_cards(ir, l2_info, mount_id + suffix)
-            l3_variants.append(
-                f'<div class="uf-l3-variant uf-l3-variant-{variant_idx}">{l3_inner}</div>'
-            )
+            nested_panels = _build_nested_inspect_panels(ir, l2_info, mount_id + suffix)
+            for depth_idx, nested_inner in enumerate(nested_panels):
+                while len(nested_variants_by_depth) <= depth_idx:
+                    nested_variants_by_depth.append([])
+                nested_variants_by_depth[depth_idx].append(
+                    f'<div class="uf-nested-variant uf-nested-variant-{variant_idx}">{nested_inner}</div>'
+                )
 
             # Per-variant visibility + active-pill styling
             variant_css.append(
                 f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-arch-variant-{variant_idx},"
                 f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l2-variant-{variant_idx},"
-                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-l3-variant-{variant_idx} "
+                f"#{mount_id} #{radio_id}:checked ~ .uf-card .uf-nested-variant-{variant_idx} "
                 f"{{ display:block; }}"
             )
             variant_css.append(
@@ -128,8 +131,15 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
         f'<div class="uf-section-body">{toggle_html}{"".join(arch_variants)}</div>'
         '</details>'
     )
-    inspect_panel = f'<div class="uf-inspect">{"".join(l2_variants)}</div>'
-    sub_inspect_panel = f'<div class="uf-sub-inspect">{"".join(l3_variants)}</div>'
+    inspect_panel = (
+        f'<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2">'
+        f'{"".join(l2_variants)}</div>'
+    )
+    nested_inspect_panels = "".join(
+        f'<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" '
+        f'data-depth="{depth_idx + 3}">{"".join(variants)}</div>'
+        for depth_idx, variants in enumerate(nested_variants_by_depth)
+    )
 
     map_svg = _build_layer_map(ir, info, mount_id)
     n_groups = len(groups)
@@ -157,7 +167,7 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
 {_stats_banner(ir)}
 {arch_section}
 {inspect_panel}
-{sub_inspect_panel}
+{nested_inspect_panels}
 {layer_map_section}
 </div>
 {_click_script(mount_id)}

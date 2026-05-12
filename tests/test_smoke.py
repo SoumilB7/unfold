@@ -295,8 +295,8 @@ def test_gemma4_ple_uses_reusable_part_contract():
 
     html = d.to_html(standalone=True)
     assert "uf-card-ple" in html
-    assert "uf-l3-ple_gate" in html
-    assert "uf-l3-per_layer_input" in html
+    assert 'data-card-id="ple_gate"' in html
+    assert 'data-card-id="per_layer_input"' in html
     assert "per_layer_input[L]" in html
     assert "gelu_pytorch_tanh" not in html.lower()
 
@@ -337,8 +337,8 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     html = d.to_html(standalone=True)
     assert "Linear (in)" in html
     assert "Linear (gate)" not in html
-    assert "uf-l3-gate_proj" not in html
-    assert "uf-l3-mul" not in html
+    assert 'data-card-id="gate_proj"' not in html
+    assert 'data-card-id="mul"' not in html
 
 
 def test_falcon_parallel_attn_uses_parallel_topology():

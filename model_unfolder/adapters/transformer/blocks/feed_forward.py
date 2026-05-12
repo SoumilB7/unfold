@@ -87,6 +87,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
+    activation = activation_label(ffn.activation)
+    expert_children = _moe_expert_child_blocks(hidden, inter, activation)
     expert_desc = (
         f"Dense FFN; {hidden} -> {inter} -> {hidden}; "
         f"only top-{n_active} of {n_experts} active per token"
@@ -98,13 +100,67 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
             "title": "Router",
             "description": f"Linear; {hidden} -> {n_experts} (selects top-{n_active} experts per token)",
         },
-        {"id": "expert_1", "title": "Expert FFN", "description": expert_desc, "detail_view": "moe_expert"},
-        {"id": "expert_k", "title": "Expert FFN", "description": expert_desc, "detail_view": "moe_expert"},
-        {"id": "expert_kp1", "title": "Expert FFN", "description": expert_desc, "detail_view": "moe_expert"},
-        {"id": "expert_n", "title": "Expert FFN", "description": expert_desc, "detail_view": "moe_expert"},
+        {
+            "id": "expert_1",
+            "title": "Expert FFN",
+            "description": expert_desc,
+            "detail_view": "moe_expert",
+            "children": expert_children,
+        },
+        {
+            "id": "expert_k",
+            "title": "Expert FFN",
+            "description": expert_desc,
+            "detail_view": "moe_expert",
+            "children": expert_children,
+        },
+        {
+            "id": "expert_kp1",
+            "title": "Expert FFN",
+            "description": expert_desc,
+            "detail_view": "moe_expert",
+            "children": expert_children,
+        },
+        {
+            "id": "expert_n",
+            "title": "Expert FFN",
+            "description": expert_desc,
+            "detail_view": "moe_expert",
+            "children": expert_children,
+        },
         {
             "id": "add_moe",
             "title": "Weighted sum",
             "description": f"Combines top-{n_active} expert outputs weighted by router probabilities",
+        },
+    ]
+
+
+def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[dict]:
+    return [
+        {
+            "id": "expert_gate_proj",
+            "title": "Expert gate projection",
+            "description": f"Linear; {hidden} -> {inter} (expert gated path)",
+        },
+        {
+            "id": "expert_act",
+            "title": f"{activation} activation",
+            "description": "Element-wise non-linearity applied to the expert gate path",
+        },
+        {
+            "id": "expert_up_proj",
+            "title": "Expert up projection",
+            "description": f"Linear; {hidden} -> {inter} (expert value path)",
+        },
+        {
+            "id": "expert_mul",
+            "title": "Expert multiply",
+            "description": f"{activation}(gate) x up; combines this expert's two paths",
+        },
+        {
+            "id": "expert_down_proj",
+            "title": "Expert down projection",
+            "description": f"Linear; {inter} -> {hidden}",
         },
     ]

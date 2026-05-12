@@ -27,7 +27,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     ffn = info["dominant"]["spec"]["ffn"]
     cx = w / 2
     router_w = 540
-    router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 130, router_w, 50, "Router")
+    router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 200, router_w, 50, "Router")
     sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 100)
 
     expert_w, expert_h = 116, 54
@@ -78,7 +78,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
 
 def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Third-level view for the FFN that lives inside one MoE expert."""
-    w, h = 720, 520
+    w, h = 720, 560
     arrow_id, shadow_id = _ids(mount_id, child.get("id", "expert"))
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
@@ -93,7 +93,7 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
     act = _rect_block(parts, info, shadow_id, "expert_act", 96, 252, 184, 50, act_name, font_size=16)
     up_proj = _rect_block(parts, info, shadow_id, "expert_up_proj", 440, 360, 184, 50, "Linear (up)", font_size=16)
 
-    branch_y = h - 66
+    branch_y = h - 106
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": branch_y + 36,
         "x2": cx, "y2": branch_y,

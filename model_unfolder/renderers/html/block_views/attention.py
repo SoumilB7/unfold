@@ -44,7 +44,7 @@ def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
     if len(attn_groups) <= 1:
         title, desc = meta_for("attn")
         return (
-            '<div class="uf-card-detail uf-card-attn">'
+            '<div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="compact">'
             f'<div class="uf-card-title">{_html(title)}</div>'
             f'<div class="uf-card-desc">{_html(desc)}</div>'
             "</div>"
@@ -52,7 +52,7 @@ def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
 
     rows = "".join(_attention_row_for_group(group, ir) for group in attn_groups)
     return (
-        '<div class="uf-card-detail uf-card-attn">'
+        '<div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="list">'
         '<div class="uf-card-title">Attention layers</div>'
         '<div class="uf-card-desc">'
         f"{len(attn_groups)} attention variants in this model — each row is one variant."
