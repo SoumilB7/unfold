@@ -8,13 +8,14 @@ from ..common import format_dim as _fmt
 
 def attention_label(attention: AttentionSpec) -> list[str]:
     kind = attention.kind
+    prefix = _attention_mask_prefix(attention)
     if kind == "mla":
-        return ["Multi-Head Latent", "Attention"]
+        return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":
-        return ["Multi-Query", "Attention"]
+        return _prefixed_label(prefix, "Multi-Query", "Attention")
     if kind == "gqa":
         tag = "(QK-Norm)" if attention.qk_norm else "Attention"
-        return ["Grouped-Query", tag]
+        return _prefixed_label(prefix, "Grouped-Query", tag)
     if kind == "ssm":
         shared_tag = "(Shared)" if attention.shared else "Block"
         return ["Selective SSM", shared_tag]
@@ -47,6 +48,7 @@ def attention_title(attention: AttentionSpec) -> str:
             "rwkv": "RWKV token-mixing",
             "linear": "Linear attention",
         }.get(attention.kind, "Attention")
+    base = _prefixed_title(_attention_mask_title_prefix(attention), base)
     extras = []
     if attention.qk_norm:
         extras.append("QK-Norm")
@@ -67,12 +69,12 @@ def describe_attention(attention: AttentionSpec) -> str:
             text += f"; Q LoRA {_fmt(attention.q_lora_rank)}"
         return text
     if attention.kind == "mqa":
-        return f"Multi-query; {attention.num_heads} Q / 1 KV head"
+        return _with_attention_window(attention, f"Multi-query; {attention.num_heads} Q / 1 KV head")
     if attention.kind == "gqa":
-        return (
+        return _with_attention_window(attention, (
             f"Grouped-query; {attention.num_heads} Q / {attention.num_kv_heads} KV heads; "
             f"head dim {_fmt(attention.head_dim)}"
-        )
+        ))
     if attention.kind == "ssm":
         shared = "; weight-shared across positions" if attention.shared else ""
         return f"Selective SSM; state dim {_fmt(attention.head_dim)}{shared}"
@@ -92,7 +94,29 @@ def describe_attention(attention: AttentionSpec) -> str:
     if attention.no_rope:
         extras.append("NoPE")
     suffix = f"; {', '.join(extras)}" if extras else ""
-    return f"Multi-head; {attention.num_heads} heads; head dim {_fmt(attention.head_dim)}{suffix}"
+    return _with_attention_window(attention, f"Multi-head; {attention.num_heads} heads; head dim {_fmt(attention.head_dim)}{suffix}")
+
+
+def _attention_mask_prefix(attention: AttentionSpec) -> str:
+    return "SWA" if attention.mask == "sliding" else ""
+
+
+def _attention_mask_title_prefix(attention: AttentionSpec) -> str:
+    return "Sliding-window" if attention.mask == "sliding" else ""
+
+
+def _prefixed_label(prefix: str, first: str, second: str) -> list[str]:
+    return [f"{prefix} · {first}", second] if prefix else [first, second]
+
+
+def _prefixed_title(prefix: str, title: str) -> str:
+    return f"{prefix} {title}" if prefix else title
+
+
+def _with_attention_window(attention: AttentionSpec, text: str) -> str:
+    if attention.mask == "sliding" and attention.window_size:
+        return f"{text}; sliding window {_fmt(attention.window_size)}"
+    return text
 
 
 def describe_ffn(ffn: FFNSpec) -> str:

@@ -69,11 +69,6 @@ def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     kv_out = _fmt_int(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
     d_k = str(head_dim) if head_dim else "d_k"
     q_per_group = _queries_per_kv_group(num_heads, num_kv_heads)
-    group_line = (
-        f"{num_kv_heads} KV groups x {q_per_group} Q heads each"
-        if q_per_group
-        else f"{num_heads} Q heads share {num_kv_heads} KV heads"
-    )
 
     cx = w / 2
 
@@ -100,32 +95,26 @@ def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     v_proj = _rect_block(body, info, shadow_id, "v_proj", 482, proj_y, proj_w, proj_h, ["Linear (V)", kv_head_label], font_size=15)
 
     branch_x, branch_y = cx, 582
-    body.append(_branch_dot(branch_x, branch_y))
     body.append(_svg_tag("line", {
-        "x1": branch_x, "y1": branch_y + 36, "x2": branch_x, "y2": branch_y + 8,
+        "x1": branch_x, "y1": branch_y + 36, "x2": branch_x, "y2": branch_y,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
+        "fill": "none",
     }))
     body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
     body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
     body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+    body.append(_branch_dot(branch_x, branch_y))
 
     panel_entry_y = panel["bottom"] + GAP
-    body.append(_elbow_hv(q_proj["cx"], q_proj["top"], panel["left"] + 136, panel_entry_y, arrow_id))
+    body.append(_v_seg(q_proj["cx"], q_proj["top"], panel_entry_y, arrow_id))
     body.append(_v_seg(k_proj["cx"], k_proj["top"], panel_entry_y, arrow_id))
-    body.append(_elbow_hv(v_proj["cx"], v_proj["top"], panel["right"] - 136, panel_entry_y, arrow_id))
+    body.append(_v_seg(v_proj["cx"], v_proj["top"], panel_entry_y, arrow_id))
     body.append(_v_line(panel, sdpa, arrow_id))
     body.append(_v_line(sdpa, o_proj, arrow_id))
     _output_stem(body, cx, o_proj, arrow_id, hidden, show_label=False)
 
     if q_per_group and q_per_group > 1:
         _kv_cache_badge(body, w - 218, 58, f"KV cache {q_per_group}x smaller", "than full MHA")
-
-    body.append(_svg_text(
-        cx, panel["top"] - 18,
-        group_line,
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
 
     parts.append(_placed_figure(body, "gqa"))
     return _svg(w, h, f"{ir.get('name', 'model')} grouped-query attention", parts)

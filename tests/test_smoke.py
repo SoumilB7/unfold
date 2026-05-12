@@ -314,7 +314,8 @@ def test_llama3():
     html = d.to_html(standalone=True)
     assert "Grouped SDPA" in html
     assert "KV sharing pattern" in html
-    assert "8 KV groups x 4 Q heads each" in html
+    assert "Q0-Q3" in html
+    assert "use KV0" in html
     assert "KV cache 4x smaller" in html
     assert "Grouped scaled dot-product attention" in html
 
