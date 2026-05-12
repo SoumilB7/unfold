@@ -197,11 +197,11 @@ def _style(mount_id: str) -> str:
 #{mount_id} .uf-inspect {{
   display:none;
   margin-top:10px;
-  padding:10px 12px;
+  padding:14px 12px;
   background:rgba(244,251,248,0.55);
   border:0.5px solid {C['border']};
   border-radius:9px;
-  min-height:60px;
+  min-height:110px;
   animation:uf-fade .2s ease-out;
 }}
 #{mount_id} .uf-section-arch[open] ~ .uf-inspect {{
@@ -259,10 +259,11 @@ def _style(mount_id: str) -> str:
   background:{C['bg_card']};
   border:0.5px solid {C['border']};
   border-radius:8px;
-  padding:6px;
+  padding:8px 6px 10px;
 }}
 #{mount_id} .uf-card-svg svg {{
   display:block;
+  width:100%;
   max-width:100%;
   height:auto;
 }}

@@ -10,11 +10,11 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     kind = attention.kind
     if kind == "mla":
         return ["Multi-Head Latent", "Attention"]
+    if kind == "mqa":
+        return ["Multi-Query", "Attention"]
     if kind == "gqa":
         tag = "(QK-Norm)" if attention.qk_norm else "Attention"
         return ["Grouped-Query", tag]
-    if kind == "mqa":
-        return ["Multi-Query", "Attention"]
     if kind == "ssm":
         shared_tag = "(Shared)" if attention.shared else "Block"
         return ["Selective SSM", shared_tag]
@@ -36,16 +36,17 @@ def attention_label(attention: AttentionSpec) -> list[str]:
 
 
 def attention_title(attention: AttentionSpec) -> str:
-    titles = {
-        "mla": "Multi-head latent attention",
-        "gqa": "Grouped-query attention",
-        "mqa": "Multi-query attention",
-        "ssm": "Selective state-space model (Mamba)",
-        "recurrent": "Linear Recurrent Unit (LRU)",
-        "rwkv": "RWKV token-mixing",
-        "linear": "Linear attention",
-    }
-    base = titles.get(attention.kind, "Attention")
+    if attention.kind == "mqa":
+        base = "Multi-query attention"
+    else:
+        base = {
+            "mla": "Multi-head latent attention",
+            "gqa": "Grouped-query attention",
+            "ssm": "Selective state-space model (Mamba)",
+            "recurrent": "Linear Recurrent Unit (LRU)",
+            "rwkv": "RWKV token-mixing",
+            "linear": "Linear attention",
+        }.get(attention.kind, "Attention")
     extras = []
     if attention.qk_norm:
         extras.append("QK-Norm")
@@ -65,13 +66,13 @@ def describe_attention(attention: AttentionSpec) -> str:
         if attention.q_lora_rank:
             text += f"; Q LoRA {_fmt(attention.q_lora_rank)}"
         return text
+    if attention.kind == "mqa":
+        return f"Multi-query; {attention.num_heads} Q / 1 KV head"
     if attention.kind == "gqa":
         return (
             f"Grouped-query; {attention.num_heads} Q / {attention.num_kv_heads} KV heads; "
             f"head dim {_fmt(attention.head_dim)}"
         )
-    if attention.kind == "mqa":
-        return f"Multi-query; {attention.num_heads} Q / 1 KV head"
     if attention.kind == "ssm":
         shared = "; weight-shared across positions" if attention.shared else ""
         return f"Selective SSM; state dim {_fmt(attention.head_dim)}{shared}"

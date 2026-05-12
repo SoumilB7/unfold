@@ -248,6 +248,39 @@ def test_gemma4_31b():
     print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
 
 
+def test_single_kv_gemma4_stays_gqa_view():
+    cfg = dict(GEMMA4_31B_CONFIG)
+    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
+    text_cfg.update(
+        {
+            "hidden_size": 1536,
+            "intermediate_size": 6144,
+            "num_hidden_layers": 1,
+            "num_attention_heads": 8,
+            "num_key_value_heads": 1,
+            "num_global_key_value_heads": 1,
+            "head_dim": 256,
+            "global_head_dim": 256,
+            "layer_types": ["sliding_attention"],
+        }
+    )
+    cfg["text_config"] = text_cfg
+
+    d = unfold(cfg)
+    ir = d.to_ir()
+    assert ir["layers"][0]["attention"]["kind"] == "gqa"
+    assert ir["layers"][0]["attention"]["num_kv_heads"] == 1
+
+    html = d.to_html(standalone=True)
+    assert "Grouped-query attention" in html
+    assert "Grouped SDPA" in html
+    assert "GQA 8/1" in html
+    assert "Q0-Q7" in html
+    assert "use KV0" in html
+    assert "Multi-query attention" not in html
+    assert "Multi-Query SDPA" not in html
+
+
 def test_gemma4_ple_uses_reusable_part_contract():
     d = unfold(_gemma4_e4b_config())
     ir = d.to_ir()
@@ -313,6 +346,7 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     blocks = ir["layers"][0]["blocks"]
     block_by_id = {block["id"]: block for block in blocks}
 
+    assert ir["layers"][0]["attention"]["kind"] == "mqa"
     assert ir["extras"]["parallel_attn"] is True
     assert ir["extras"]["parallel_residual"] is True
     assert block_by_id["rms1"]["label"] == "LayerNorm"
@@ -322,6 +356,13 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     assert block_by_id["ffn"]["feeds"] == "add1"
     assert block_by_id["ffn"]["side_align"] == "tap"
     assert "add2" not in block_by_id
+
+    html = d.to_html(standalone=True)
+    assert "Multi-Query SDPA" in html
+    assert "Shared K/V cache" in html
+    assert "1 K + 1 V reused by 71 Q" in html
+    assert "KV cache 71x smaller" in html
+    assert "Multi-query scaled dot-product attention" in html
 
 
 def test_attention_detail_views_dispatch_by_kind():

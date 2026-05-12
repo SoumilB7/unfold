@@ -23,6 +23,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             svg = block_detail_svg(ir, info, mount_id, block)
             if svg:
                 title, desc = _meta(info, node_id)
+                desc = _with_io_dim(ir, desc)
                 panels.append(_rich_card(node_id, title, desc, svg))
             else:
                 panels.append(attention_card(ir, info, lambda nid: _meta(info, nid)))
@@ -31,6 +32,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
         svg = block_detail_svg(ir, info, mount_id, block)
         if svg:
             title, desc = _meta(info, node_id)
+            desc = _with_io_dim(ir, desc)
             panels.append(_rich_card(node_id, title, desc, svg))
         else:
             panels.append(_simple_card(node_id, *_meta(info, node_id)))
@@ -63,6 +65,14 @@ def _build_sub_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
 
 def _meta(info: dict, node_id: str) -> tuple[str, str]:
     return info.get("meta", {}).get(node_id, (node_id, ""))
+
+
+def _with_io_dim(ir: dict, desc: str) -> str:
+    hidden = _fmt_int(ir.get("hidden_size"))
+    if not hidden:
+        return desc
+    suffix = f"input/output dim {hidden}"
+    return f"{desc}; {suffix}" if desc else suffix
 
 
 def _simple_card(node_id: str, title: str, desc: str) -> str:

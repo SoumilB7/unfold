@@ -63,6 +63,14 @@ def _sdpa_operation_meta(
     d_k: str,
     q_per_group: int | None,
 ) -> tuple[str, str]:
+    if attention.kind == "mqa":
+        return (
+            "Multi-query scaled dot-product attention",
+            (
+                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"{num_heads} query heads share one K/V head"
+            ),
+        )
     if attention.kind == "gqa":
         group = (
             f"; each KV head serves {q_per_group} query heads"
@@ -74,14 +82,6 @@ def _sdpa_operation_meta(
             (
                 f"scores = softmax(QK^T / sqrt({d_k})); "
                 f"{num_heads} query heads attend through {num_kv_heads} shared KV heads{group}"
-            ),
-        )
-    if attention.kind == "mqa":
-        return (
-            "Multi-query scaled dot-product attention",
-            (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
-                f"{num_heads} query heads share one K/V head"
             ),
         )
     return (

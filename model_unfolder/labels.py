@@ -150,14 +150,14 @@ def describe_attention(attention: dict) -> str:
         )
         if attention.get("q_lora_rank"):
             text += f"; Q LoRA {_fmt_int(attention.get('q_lora_rank'))}"
+    elif kind == "mqa":
+        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
     elif kind == "gqa":
         text = (
             f"Grouped-query; {attention.get('num_heads')} Q / "
             f"{attention.get('num_kv_heads')} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
-    elif kind == "mqa":
-        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
     elif kind == "ssm":
         text = f"Selective SSM (Mamba); state dim {_fmt_int(attention.get('head_dim'))}"
     elif kind == "recurrent":

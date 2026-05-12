@@ -6,6 +6,7 @@ from ..svg import (
     _branch_dot,
     _defs,
     _elbow_hv,
+    _elbow_vh,
     _ids,
     _rect_block,
     _region_rect,
@@ -19,12 +20,19 @@ from ..theme import C, FONT_MONO, GAP
 from ..utils import _fmt_int, _html
 
 
+_DETAIL_PLACEMENT = {
+    "gqa": {"dx": 0, "dy": 8},
+}
+
+
 def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     """Rich SVG detail view for the active attention-like block."""
     attn = info["dominant"]["spec"].get("attention") or {}
     kind = attn.get("kind")
     if kind == "mla":
         return _build_mla_attention_view(ir, info, mount_id)
+    if kind == "mqa":
+        return _build_mqa_attention_view(ir, info, mount_id)
     if kind == "gqa":
         return _build_gqa_attention_view(ir, info, mount_id)
     if kind == "ssm":
@@ -45,10 +53,11 @@ def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     small group of query heads. The diagram makes that sharing the focal point
     instead of presenting it as ordinary three-way Q/K/V attention.
     """
-    w, h = 720, 650
+    w, h = 720, 730
     arrow_id, shadow_id = _ids(mount_id, "gqa-attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    body: list[str] = []
 
     attn = info["dominant"]["spec"].get("attention") or {}
     hidden_sz = ir.get("hidden_size") or 0
@@ -68,9 +77,9 @@ def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
 
     cx = w / 2
 
-    o_proj = _rect_block(parts, info, shadow_id, "o_proj", cx - 92, 78, 184, 50, "Linear (out)")
+    o_proj = _rect_block(body, info, shadow_id, "o_proj", cx - 92, 78, 184, 50, "Linear (out)")
     sdpa = _rect_block(
-        parts,
+        body,
         info,
         shadow_id,
         "qkv_dot",
@@ -82,53 +91,144 @@ def _build_gqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
         font_size=15,
     )
 
-    panel = _gqa_grouping_panel(parts, 76, 280, 568, 114, num_heads, num_kv_heads, q_per_group)
+    panel = _gqa_grouping_panel(body, 76, 280, 568, 114, num_heads, num_kv_heads, q_per_group)
 
     proj_w, proj_h, proj_y = 168, 50, 474
-    q_proj = _rect_block(parts, info, shadow_id, "q_proj", 70, proj_y, proj_w, proj_h, ["Linear (Q)", f"{num_heads} heads"], font_size=15)
-    k_proj = _rect_block(parts, info, shadow_id, "k_proj", 276, proj_y, proj_w, proj_h, ["Linear (K)", f"{num_kv_heads} heads"], font_size=15)
-    v_proj = _rect_block(parts, info, shadow_id, "v_proj", 482, proj_y, proj_w, proj_h, ["Linear (V)", f"{num_kv_heads} heads"], font_size=15)
+    q_proj = _rect_block(body, info, shadow_id, "q_proj", 70, proj_y, proj_w, proj_h, ["Linear (Q)", f"{num_heads} heads"], font_size=15)
+    kv_head_label = f"{num_kv_heads} head" if num_kv_heads == 1 else f"{num_kv_heads} heads"
+    k_proj = _rect_block(body, info, shadow_id, "k_proj", 276, proj_y, proj_w, proj_h, ["Linear (K)", kv_head_label], font_size=15)
+    v_proj = _rect_block(body, info, shadow_id, "v_proj", 482, proj_y, proj_w, proj_h, ["Linear (V)", kv_head_label], font_size=15)
 
     branch_x, branch_y = cx, 582
-    parts.append(_branch_dot(branch_x, branch_y))
-    parts.append(_svg_tag("line", {
+    body.append(_branch_dot(branch_x, branch_y))
+    body.append(_svg_tag("line", {
         "x1": branch_x, "y1": branch_y + 36, "x2": branch_x, "y2": branch_y + 8,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
-    parts.append(_svg_text(
-        branch_x, h - 24,
-        f"in ({hidden})",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
-    parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+    body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+    body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
+    body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
 
     panel_entry_y = panel["bottom"] + GAP
-    parts.append(_elbow_hv(q_proj["cx"], q_proj["top"], panel["left"] + 136, panel_entry_y, arrow_id))
-    parts.append(_v_seg(k_proj["cx"], k_proj["top"], panel_entry_y, arrow_id))
-    parts.append(_elbow_hv(v_proj["cx"], v_proj["top"], panel["right"] - 136, panel_entry_y, arrow_id))
-    parts.append(_v_line(panel, sdpa, arrow_id))
-    parts.append(_v_line(sdpa, o_proj, arrow_id))
-    _output_stem(parts, cx, o_proj, arrow_id, hidden)
-
-    _attn_dim_label(parts, q_proj["left"], q_proj["bottom"] + 18, f"Q: {hidden} -> {q_out}")
-    _attn_dim_label(parts, k_proj["left"], k_proj["bottom"] + 18, f"K: {hidden} -> {kv_out}")
-    _attn_dim_label(parts, v_proj["left"], v_proj["bottom"] + 18, f"V: {hidden} -> {kv_out}")
-    _attn_dim_label(parts, o_proj["right"] + 12, o_proj["cy"], f"{q_out} -> {hidden}")
+    body.append(_elbow_hv(q_proj["cx"], q_proj["top"], panel["left"] + 136, panel_entry_y, arrow_id))
+    body.append(_v_seg(k_proj["cx"], k_proj["top"], panel_entry_y, arrow_id))
+    body.append(_elbow_hv(v_proj["cx"], v_proj["top"], panel["right"] - 136, panel_entry_y, arrow_id))
+    body.append(_v_line(panel, sdpa, arrow_id))
+    body.append(_v_line(sdpa, o_proj, arrow_id))
+    _output_stem(body, cx, o_proj, arrow_id, hidden, show_label=False)
 
     if q_per_group and q_per_group > 1:
-        _gqa_badge(parts, w - 218, 58, f"KV cache {q_per_group}x smaller", "than full MHA")
+        _kv_cache_badge(body, w - 218, 58, f"KV cache {q_per_group}x smaller", "than full MHA")
 
-    parts.append(_svg_text(
+    body.append(_svg_text(
         cx, panel["top"] - 18,
         group_line,
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 
+    parts.append(_placed_figure(body, "gqa"))
     return _svg(w, h, f"{ir.get('name', 'model')} grouped-query attention", parts)
+
+
+def _build_mqa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Detail view for multi-query attention / single shared K/V attention."""
+    w, h = 780, 604
+    dx = (w - 720) / 2
+    arrow_id, shadow_id = _ids(mount_id, "mqa-attn")
+    parts = [_defs(arrow_id, shadow_id)]
+    body: list[str] = []
+
+    attn = info["dominant"]["spec"].get("attention") or {}
+    hidden_sz = ir.get("hidden_size") or 0
+    hidden = _fmt_int(hidden_sz)
+    num_heads = attn.get("num_heads") or 0
+    head_dim = attn.get("head_dim") or (hidden_sz // num_heads if num_heads else 0)
+    q_out = _fmt_int(num_heads * head_dim) if (num_heads and head_dim) else hidden
+    kv_out = _fmt_int(head_dim) if head_dim else hidden
+    d_k = str(head_dim) if head_dim else "d_k"
+    cx = w / 2
+
+    o_proj = _rect_block(body, info, shadow_id, "o_proj", cx - 92, 82, 184, 50, "Linear (out)")
+    sdpa = _rect_block(
+        body,
+        info,
+        shadow_id,
+        "qkv_dot",
+        132 + dx,
+        180,
+        456,
+        58,
+        ["Multi-Query SDPA", f"{num_heads} Q heads + 1 shared K/V  ·  d_k = {d_k}"],
+        font_size=15,
+    )
+
+    shared_kv = _mqa_shared_kv_node(body, 260 + dx, 310, 200, 48, num_heads)
+
+    q_proj = _rect_block(body, info, shadow_id, "q_proj", 92 + dx, 418, 184, 50, ["Linear (Q)", f"{num_heads} heads"], font_size=15)
+    k_proj = _rect_block(body, info, shadow_id, "k_proj", 330 + dx, 422, 140, 48, ["Linear (K)", "1 head"], font_size=15)
+    v_proj = _rect_block(body, info, shadow_id, "v_proj", 500 + dx, 422, 140, 48, ["Linear (V)", "1 head"], font_size=15)
+
+    branch_x, branch_y = cx, 526
+    body.append(_branch_dot(branch_x, branch_y))
+    body.append(_svg_tag("line", {
+        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    body.append(_svg_text(
+        branch_x, h - 24,
+        f"in ({hidden})",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+    body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
+    body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+
+    sdpa_entry_y = sdpa["bottom"] + GAP
+    body.append(_elbow_hv(q_proj["cx"], q_proj["top"], sdpa["left"] + 120, sdpa_entry_y, arrow_id))
+    body.append(_elbow_vh(k_proj["cx"], k_proj["top"], shared_kv["left"] + 62, shared_kv["bottom"] + GAP, arrow_id))
+    body.append(_elbow_vh(v_proj["cx"], v_proj["top"], shared_kv["right"] - 62, shared_kv["bottom"] + GAP, arrow_id))
+    body.append(_v_line(shared_kv, sdpa, arrow_id))
+    body.append(_v_line(sdpa, o_proj, arrow_id))
+    _output_stem(body, cx, o_proj, arrow_id, hidden)
+
+    _attn_dim_label(body, q_proj["left"] + 4, q_proj["bottom"] + 23, f"Q: {hidden} -> {q_out}")
+    _attn_dim_label(body, k_proj["left"] + 4, k_proj["bottom"] + 23, f"K: {hidden} -> {kv_out}")
+    _attn_dim_label(body, v_proj["left"] + 4, v_proj["bottom"] + 23, f"V: {hidden} -> {kv_out}")
+    _attn_dim_label(body, o_proj["left"] - 16, o_proj["cy"], f"{q_out} -> {hidden}", anchor="end")
+
+    badge = None
+    if num_heads and num_heads > 1:
+        badge = _kv_cache_badge(body, w - 218, 58, f"KV cache {num_heads}x smaller", "than full MHA")
+
+    body.append(_svg_text(
+        cx,
+        shared_kv["top"] - 18,
+        f"1 shared K/V head feeds all {num_heads} Q heads" if num_heads else "single shared K/V head",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+    ))
+
+    region = _dynamic_region_rect(
+        [
+            o_proj,
+            sdpa,
+            shared_kv,
+            q_proj,
+            k_proj,
+            v_proj,
+            badge,
+            {"left": cx - 86, "right": cx + 86, "top": o_proj["top"] - 56, "bottom": branch_y + 56},
+        ],
+        w,
+        h,
+        pad_x=86,
+        pad_y=36,
+    )
+    parts.append(region)
+    parts.extend(body)
+    return _svg(w, h, f"{ir.get('name', 'model')} multi-query attention", parts)
 
 
 def _build_sdpa_attention_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -291,6 +391,42 @@ def _gqa_grouping_panel(
     }
 
 
+def _mqa_shared_kv_node(parts: list[str], x: float, y: float, w: float, h: float, num_heads: int) -> dict:
+    parts.append(_svg_tag("rect", {
+        "x": x,
+        "y": y,
+        "width": w,
+        "height": h,
+        "rx": 12,
+        "ry": 12,
+        "fill": C["badge_bg"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+    }))
+    parts.append(_svg_text(
+        x + w / 2,
+        y + 18,
+        "Shared K/V cache",
+        {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_MONO, "font-size": 12, "font-weight": 700},
+    ))
+    parts.append(_svg_text(
+        x + w / 2,
+        y + 35,
+        f"1 K + 1 V reused by {num_heads} Q" if num_heads else "1 K + 1 V reused",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
+    ))
+    return {
+        "left": x,
+        "right": x + w,
+        "top": y,
+        "bottom": y + h,
+        "cx": x + w / 2,
+        "cy": y + h / 2,
+        "w": w,
+        "h": h,
+    }
+
+
 def _gqa_card_specs(num_heads: int, num_kv_heads: int, q_per_group: int | None) -> list[tuple[str, str]]:
     if not num_heads or not num_kv_heads or not q_per_group:
         return [("Q groups", "share K/V"), ("...", "..."), ("KV heads", "reused")]
@@ -338,12 +474,13 @@ def _gqa_group_card(parts: list[str], x: float, y: float, w: float, h: float, to
     ))
 
 
-def _gqa_badge(parts: list[str], x: float, y: float, title: str, subtitle: str) -> None:
+def _kv_cache_badge(parts: list[str], x: float, y: float, title: str, subtitle: str) -> dict:
+    w, h = 162, 52
     parts.append(_svg_tag("rect", {
         "x": x,
         "y": y,
-        "width": 162,
-        "height": 52,
+        "width": w,
+        "height": h,
         "rx": 12,
         "ry": 12,
         "fill": C["bg_card"],
@@ -362,6 +499,41 @@ def _gqa_badge(parts: list[str], x: float, y: float, title: str, subtitle: str) 
         subtitle,
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
     ))
+    return {"left": x, "right": x + w, "top": y, "bottom": y + h, "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
+
+
+def _dynamic_region_rect(
+    geoms: list[dict | None],
+    svg_w: int,
+    svg_h: int,
+    *,
+    pad_x: float,
+    pad_y: float,
+) -> str:
+    real_geoms = [g for g in geoms if g]
+    if not real_geoms:
+        return _region_rect(40, 30, svg_w - 80, svg_h - 60, C["bg_outer"])
+    left = max(10, min(g["left"] for g in real_geoms) - pad_x)
+    right = min(svg_w - 10, max(g["right"] for g in real_geoms) + pad_x)
+    top = max(18, min(g["top"] for g in real_geoms) - pad_y)
+    bottom = min(svg_h - 18, max(g["bottom"] for g in real_geoms) + pad_y)
+    return _region_rect(left, top, right - left, bottom - top, C["bg_outer"])
+
+
+def _placed_figure(parts: list[str], key: str) -> str:
+    """Wrap a detail drawing in a tiny placement shim.
+
+    This is the deliberate adjustment trigger for hand-drawn block detail
+    views.  Keep node coordinates stable inside each view, then nudge the whole
+    figure with ``_DETAIL_PLACEMENT`` when it looks visually off in the card.
+    """
+    placement = _DETAIL_PLACEMENT.get(key, {})
+    dx = placement.get("dx", 0)
+    dy = placement.get("dy", 0)
+    body = "".join(parts)
+    if not dx and not dy:
+        return body
+    return _svg_tag("g", {"transform": f"translate({dx} {dy})"}, body)
 
 
 def _build_mla_attention_view(ir: dict, info: dict, mount_id: str) -> str:
@@ -587,13 +759,23 @@ def _vertical_attention_stack(
     return _svg(w, h, f"{ir.get('name', 'model')} {title}", parts)
 
 
-def _output_stem(parts: list[str], cx: float, top_node: dict, arrow_id: str, hidden: str) -> None:
+def _output_stem(
+    parts: list[str],
+    cx: float,
+    top_node: dict,
+    arrow_id: str,
+    hidden: str,
+    *,
+    show_label: bool = True,
+) -> None:
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": top_node["top"],
         "x2": cx, "y2": top_node["top"] - 34,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
+    if not show_label:
+        return
     parts.append(_svg_text(
         cx, top_node["top"] - 44,
         f"out ({hidden})",
@@ -601,11 +783,11 @@ def _output_stem(parts: list[str], cx: float, top_node: dict, arrow_id: str, hid
     ))
 
 
-def _attn_dim_label(parts: list[str], x: float, y: float, text: str) -> None:
+def _attn_dim_label(parts: list[str], x: float, y: float, text: str, *, anchor: str = "start") -> None:
     parts.append(_svg_text(
         x, y, text,
         {
-            "text-anchor": "start",
+            "text-anchor": anchor,
             "dominant-baseline": "central",
             "fill": C["muted"],
             "font-family": FONT_MONO,
