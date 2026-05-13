@@ -185,34 +185,114 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
     num_heads = attention.num_heads or 0
     head_dim = attention.head_dim or 0
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
-    return [
+    query_children = [
         {
             "id": "mla_q",
             "label": "Q projection",
             "title": "Query projection",
             "description": (
-                f"Projects hidden states into query heads through LoRA rank {q_rank}"
+                f"Projects hidden states into query latent space through LoRA rank {q_rank}"
                 if attention.q_lora_rank
-                else f"Q projection; {hidden} -> {q_out}"
+                else f"Projects hidden states directly into query heads; {hidden} -> {q_out}"
             ),
         },
+        {
+            "id": "mla_q_nope",
+            "label": "Q noPE",
+            "title": "Query content slice",
+            "description": "Query content component that does not receive rotary position encoding",
+        },
+        {
+            "id": "mla_q_rope",
+            "label": "Q RoPE",
+            "title": "Query positional slice",
+            "description": f"Query positional component prepared for rotary position encoding; dim {rope}",
+        },
+        {
+            "id": "mla_q_rope_apply",
+            "label": "Apply RoPE",
+            "title": "Apply RoPE to query",
+            "description": "Applies rotary position encoding to the query positional slice",
+        },
+        {
+            "id": "mla_q_concat",
+            "label": "Q concat",
+            "title": "Final MLA query",
+            "description": "Concatenates Q noPE with RoPE-encoded Q RoPE before score computation",
+        },
+    ]
+    kv_children = [
         {
             "id": "mla_kv_down",
             "label": "KV compress",
             "title": "K/V latent compression",
-            "description": f"Compresses the token state into a shared latent K/V vector; {hidden} -> rank {kv_rank}",
+            "description": f"Compresses the token state into the shared latent K/V cache; {hidden} -> rank {kv_rank}",
+        },
+        {
+            "id": "mla_cache",
+            "label": "latent cache c_t",
+            "title": "Stored latent cache",
+            "description": f"Compressed K/V latent stored in the cache instead of full K and V heads; rank {kv_rank}",
         },
         {
             "id": "mla_kv_up",
             "label": "KV expand",
             "title": "K/V head expansion",
-            "description": f"Expands the latent K/V vector into per-head key/value content for {num_heads} query heads",
+            "description": f"Expands cached latent c_t into K noPE content and V values for {num_heads} query heads",
         },
         {
-            "id": "mla_rope",
-            "label": "RoPE key",
-            "title": "Rotary key side-channel",
-            "description": f"Separate positional key slice used with RoPE; dim {rope}",
+            "id": "mla_k_nope",
+            "label": "K noPE",
+            "title": "Latent key content",
+            "description": "Key content expanded from the compressed K/V latent; concatenated with the RoPE key before scoring",
+        },
+        {
+            "id": "mla_k_rope",
+            "label": "K RoPE",
+            "title": "Key positional slice",
+            "description": f"Key positional component produced alongside the latent cache; dim {rope}",
+        },
+        {
+            "id": "mla_k_rope_apply",
+            "label": "Apply RoPE",
+            "title": "Apply RoPE to key",
+            "description": "Applies rotary position encoding to the key positional slice",
+        },
+        {
+            "id": "mla_k_merge",
+            "label": "K concat",
+            "title": "Composed MLA key",
+            "description": "Concatenates K noPE with the RoPE key side-channel before QK^T score computation",
+        },
+        {
+            "id": "mla_v",
+            "label": "V values",
+            "title": "Latent value heads",
+            "description": "Value heads expanded from the compressed K/V latent; consumed after softmax",
+        },
+    ]
+    return [
+        {
+            "id": "mla_query_path",
+            "label": "Query path",
+            "title": "MLA query path",
+            "description": (
+                "Builds Q by projecting the hidden state, splitting content and positional slices, "
+                "applying RoPE to the positional slice, then concatenating them"
+            ),
+            "detail_view": "mla_query_path",
+            "children": query_children,
+        },
+        {
+            "id": "mla_kv_path",
+            "label": "KV cache path",
+            "title": "MLA K/V cache path",
+            "description": (
+                f"Compresses hidden state into rank {kv_rank} latent cache, expands K/V content, "
+                "and combines K noPE with a RoPE key side-channel"
+            ),
+            "detail_view": "mla_kv_cache_path",
+            "children": kv_children,
         },
         {
             "id": "scaled_scores",

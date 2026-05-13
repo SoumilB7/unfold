@@ -6,6 +6,9 @@ from typing import Any
 from .theme import C, FONT_HEAD, GAP
 from .utils import _attr, _html, _num
 
+SVG_FONT_BOOST = 2
+BLOCK_LABEL_FONT_BOOST = 3
+
 
 def _ids(mount_id: str, view: str) -> tuple[str, str]:
     return f"{mount_id}-{view}-arrow", f"{mount_id}-{view}-shadow"
@@ -89,7 +92,8 @@ def _rect_block(
     font_size: int = 18,
 ) -> dict:
     lines = label if isinstance(label, list) else [label]
-    line_h = font_size + 3
+    label_font_size = font_size + BLOCK_LABEL_FONT_BOOST
+    line_h = label_font_size + SVG_FONT_BOOST + 2
     start_y = y + h / 2 - ((len(lines) - 1) * line_h) / 2
 
     children = [_node_title(info, node_id)]
@@ -121,7 +125,7 @@ def _rect_block(
                     "dominant-baseline": "central",
                     "fill": C["text_block"],
                     "font-family": FONT_HEAD,
-                    "font-size": font_size,
+                    "font-size": label_font_size,
                     "pointer-events": "none",
                 },
             )
@@ -269,6 +273,17 @@ def _elbow_hv(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
     return _path(d, arrow_id)
 
 
+def _block_top_to_block_bottom(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
+    """Route a block output into a block above it.
+
+    Use this when the source point is the top edge of a block.  The line leaves
+    vertically first, then turns, so arrows do not appear to start from the
+    middle side of the source block.  Split-dot fan-outs should keep using
+    ``_elbow_hv``.
+    """
+    return _elbow_vh(x1, y1, x2, y2, arrow_id)
+
+
 def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> str:
     """Residual bypass that taps the *input arrow* of ``src`` rather than
     leaving from ``src``'s right side.
@@ -334,6 +349,8 @@ def _svg(w: int, h: int, title: str, parts: list[str]) -> str:
 
 def _svg_text(x: float, y: float, text: Any, attrs: dict[str, Any] | None = None) -> str:
     attrs = dict(attrs or {})
+    if isinstance(attrs.get("font-size"), (int, float)):
+        attrs["font-size"] += SVG_FONT_BOOST
     attrs.update({"x": x, "y": y})
     return _svg_tag("text", attrs, _html(text))
 

@@ -381,7 +381,7 @@ def test_attention_detail_views_dispatch_by_kind():
         (
             "mla",
             KIMI_K2_CONFIG,
-            "mla_kv_down",
+            "mla_kv_path",
             "Multi-Head Latent",
             True,
         ),
@@ -455,6 +455,8 @@ def test_attention_detail_views_dispatch_by_kind():
         assert ir["layers"][0]["attention"]["kind"] == kind
         assert expected_child in child_ids
         assert expected_html in html
+        if kind == "mla":
+            assert "mla_kv_down" in html
         if forbid_sdpa:
             assert "Scaled Dot-Product Attention" not in html
 

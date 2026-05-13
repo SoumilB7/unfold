@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ...svg import (
+    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -45,9 +46,9 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     }))
     for node in (receptance, key, value):
         parts.append(_elbow_hv(branch_x, branch_y, node["cx"], node["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(receptance["cx"], receptance["top"], 210, time_mix["bottom"] + GAP, arrow_id))
+    parts.append(_block_top_to_block_bottom(receptance["cx"], receptance["top"], 210, time_mix["bottom"] + GAP, arrow_id))
     parts.append(_v_seg(key["cx"], key["top"], time_mix["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(value["cx"], value["top"], 390, time_mix["bottom"] + GAP, arrow_id))
+    parts.append(_block_top_to_block_bottom(value["cx"], value["top"], 390, time_mix["bottom"] + GAP, arrow_id))
     parts.append(_v_line(time_mix, out, arrow_id))
     output_stem(parts, cx, out, arrow_id, hidden)
 

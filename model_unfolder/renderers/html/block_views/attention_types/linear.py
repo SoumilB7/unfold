@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ...svg import (
+    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -48,9 +49,9 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
     parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
     parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(q_proj["cx"], q_proj["top"], 250, kernel["bottom"] + GAP, arrow_id))
+    parts.append(_block_top_to_block_bottom(q_proj["cx"], q_proj["top"], 250, kernel["bottom"] + GAP, arrow_id))
     parts.append(_v_seg(k_proj["cx"], k_proj["top"], kernel["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(v_proj["cx"], v_proj["top"], 470, mix["bottom"] + GAP, arrow_id))
+    parts.append(_block_top_to_block_bottom(v_proj["cx"], v_proj["top"], 470, mix["bottom"] + GAP, arrow_id))
     parts.append(_v_line(kernel, mix, arrow_id))
     parts.append(_v_line(mix, o_proj, arrow_id))
     output_stem(parts, cx, o_proj, arrow_id, hidden)
