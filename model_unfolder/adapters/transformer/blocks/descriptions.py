@@ -98,7 +98,7 @@ def describe_attention(attention: AttentionSpec) -> str:
 
 
 def _attention_mask_prefix(attention: AttentionSpec) -> str:
-    return "SWA" if attention.mask == "sliding" else ""
+    return "SW" if attention.mask == "sliding" else ""
 
 
 def _attention_mask_title_prefix(attention: AttentionSpec) -> str:

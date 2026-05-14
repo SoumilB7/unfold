@@ -62,7 +62,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     value_dot = sdpa_dot_operator(body, info, shadow_id, "attn_apply_v", cx, 276)
     softmax = _rect_block(body, info, shadow_id, "attn_softmax", cx - 96, 344, 192, 52, "Softmax")
     scaled_scores = sdpa_fraction_block(body, info, shadow_id, "scaled_scores", cx - 140, 452, 280, 82)
-    gqa_grouping_panel(body, 64, 92, 220, 218, num_heads, num_kv_heads, q_per_group)
+    gqa_grouping_panel(body, 64, 112, 220, 228, num_heads, num_kv_heads, q_per_group)
 
     body.append(_v_line(scaled_scores, softmax, arrow_id))
     body.append(_v_line(softmax, value_dot, arrow_id))
