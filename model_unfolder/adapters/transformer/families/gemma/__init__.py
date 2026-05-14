@@ -4,14 +4,15 @@ Sub-adapters (in priority order):
   gemma4  — Gemma 4 (31B, E2B, E4B, 26B-A4B)   model_type: gemma4 / gemma4_text
   gemma2  — Gemma 2 (9B, 27B)                   model_type: gemma2
   gemma3  — Gemma 3 / 3n (1B–27B, E2B, E4B)     model_type: gemma3 / gemma3n
+  gemma1  — Gemma 1 / CodeGemma                 model_type: gemma
 """
 from __future__ import annotations
 
 from typing import Any
 
-from . import gemma2, gemma3, gemma4
+from . import gemma1, gemma2, gemma3, gemma4
 
-_SUB_ADAPTERS = [gemma4, gemma2, gemma3]
+_SUB_ADAPTERS = [gemma4, gemma2, gemma3, gemma1]
 
 
 def matches(cfg: Any) -> bool:
@@ -23,4 +24,4 @@ def parse(cfg: Any) -> Any:
         if a.matches(cfg):
             return a.parse(cfg)
     # Should not be reached since matches() already confirmed one hit
-    return gemma3.parse(cfg)
+    return gemma1.parse(cfg)

@@ -5,8 +5,8 @@ shared transformer IR pieces in ``model_unfolder.adapters.transformer``.
 """
 
 from . import (
-    cohere, deepseek, falcon, fallback, gpt_neox, jamba, llama,
-    minimax, mistral, qwen, recurrent_gemma, rwkv, zamba,
+    cohere, dbrx, deepseek, falcon, fallback, gpt_neox, jamba, llama,
+    minimax, mistral, olmo, phi, qwen, recurrent_gemma, rwkv, yi, zamba,
 )
 from . import gemma  # gemma/ package — dispatches to gemma2/gemma3/gemma4 internally
 
@@ -20,7 +20,8 @@ from . import gemma  # gemma/ package — dispatches to gemma2/gemma3/gemma4 int
 # NOTE: pure ``mamba``/``mamba2`` is intentionally unsupported for now; hybrid
 # LLM families with SSM blocks live in jamba/falcon/zamba.
 ADAPTERS = [
-    deepseek, gemma, jamba, falcon, minimax, mistral,
+    deepseek, gemma, dbrx, jamba, falcon, minimax, mistral,
     qwen, recurrent_gemma, rwkv, cohere, zamba, gpt_neox,
+    phi, yi, olmo,
     llama, fallback,
 ]

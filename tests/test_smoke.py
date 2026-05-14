@@ -120,6 +120,110 @@ FALCON_PARALLEL_CONFIG = {
     "parallel_attn": True,
 }
 
+GEMMA1_CONFIG = {
+    "architectures": ["GemmaForCausalLM"],
+    "model_type": "gemma",
+    "_name_or_path": "google/gemma-7b",
+    "vocab_size": 256000,
+    "hidden_size": 3072,
+    "intermediate_size": 24576,
+    "num_hidden_layers": 28,
+    "num_attention_heads": 16,
+    "num_key_value_heads": 1,
+    "max_position_embeddings": 8192,
+    "tie_word_embeddings": True,
+    "hidden_activation": "gelu_pytorch_tanh",
+}
+
+PHI2_CONFIG = {
+    "architectures": ["PhiForCausalLM"],
+    "model_type": "phi",
+    "_name_or_path": "microsoft/phi-2",
+    "vocab_size": 51200,
+    "hidden_size": 2560,
+    "intermediate_size": 10240,
+    "num_hidden_layers": 32,
+    "num_attention_heads": 32,
+    "max_position_embeddings": 2048,
+    "tie_word_embeddings": False,
+    "hidden_act": "gelu_new",
+    "partial_rotary_factor": 0.4,
+}
+
+YI_34B_CONFIG = {
+    "architectures": ["YiForCausalLM"],
+    "model_type": "yi",
+    "_name_or_path": "01-ai/Yi-34B",
+    "vocab_size": 64000,
+    "hidden_size": 7168,
+    "intermediate_size": 20480,
+    "num_hidden_layers": 60,
+    "num_attention_heads": 56,
+    "num_key_value_heads": 8,
+    "max_position_embeddings": 4096,
+    "tie_word_embeddings": False,
+    "hidden_act": "silu",
+}
+
+OLMO_7B_CONFIG = {
+    "architectures": ["OlmoForCausalLM"],
+    "model_type": "olmo",
+    "_name_or_path": "allenai/OLMo-7B",
+    "vocab_size": 50304,
+    "d_model": 4096,
+    "n_layers": 32,
+    "n_heads": 32,
+    "mlp_ratio": 8,
+    "max_sequence_length": 2048,
+    "tie_word_embeddings": False,
+    "activation_type": "swiglu",
+    "norm_type": "layer_norm",
+}
+
+OLMOE_CONFIG = {
+    "architectures": ["OlmoeForCausalLM"],
+    "model_type": "olmoe",
+    "_name_or_path": "allenai/OLMoE-1B-7B-0924",
+    "vocab_size": 50304,
+    "hidden_size": 2048,
+    "intermediate_size": 1024,
+    "num_hidden_layers": 16,
+    "num_attention_heads": 16,
+    "num_key_value_heads": 16,
+    "max_position_embeddings": 4096,
+    "tie_word_embeddings": False,
+    "hidden_act": "swiglu",
+    "num_experts": 64,
+    "num_experts_per_tok": 8,
+    "expert_intermediate_size": 1024,
+    "use_qk_norm": True,
+    "norm_type": "rms_norm",
+}
+
+DBRX_CONFIG = {
+    "architectures": ["DbrxForCausalLM"],
+    "model_type": "dbrx",
+    "_name_or_path": "databricks/dbrx-base",
+    "vocab_size": 100352,
+    "d_model": 6144,
+    "n_layers": 40,
+    "n_heads": 48,
+    "max_seq_len": 32768,
+    "tie_word_embeddings": False,
+    "attn_config": {
+        "kv_n_heads": 8,
+        "clip_qkv": 8,
+        "rope_theta": 500000,
+    },
+    "ffn_config": {
+        "ffn_act_fn": {"name": "silu"},
+        "ffn_hidden_size": 3584,
+        "moe_num_experts": 16,
+        "moe_top_k": 4,
+    },
+    "router_aux_loss_coef": 0.05,
+}
+
 
 # Gemma 4 31B (dense) — alternates 5 sliding + 1 full across 60 layers, with
 # distinct head_dim and num_kv_heads on global vs sliding layers.
@@ -366,6 +470,59 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     assert "Multi-query scaled dot-product attention" in html
 
 
+def test_new_should_support_family_routes():
+    cases = [
+        (GEMMA1_CONFIG, "mqa", "dense", "rmsnorm"),
+        (PHI2_CONFIG, "mha", "dense", "layernorm"),
+        (YI_34B_CONFIG, "gqa", "dense", "rmsnorm"),
+        (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
+        (OLMOE_CONFIG, "mha", "moe", "rmsnorm"),
+    ]
+
+    for cfg, attn_kind, ffn_kind, norm_kind in cases:
+        d = unfold(cfg)
+        ir = d.to_ir()
+        layer = ir["layers"][0]
+
+        assert not ir["warnings"]
+        assert layer["attention"]["kind"] == attn_kind
+        assert layer["ffn"]["kind"] == ffn_kind
+        assert layer["norm_kind"] == norm_kind
+
+    phi = unfold(PHI2_CONFIG).to_ir()
+    assert phi["layers"][0]["ffn"]["gated"] is False
+    assert phi["extras"]["partial_rotary_factor"] == 0.4
+
+    olmoe = unfold(OLMOE_CONFIG).to_ir()
+    assert olmoe["layers"][0]["attention"]["qk_norm"] is True
+    assert olmoe["layers"][0]["ffn"]["num_experts"] == 64
+    assert olmoe["layers"][0]["ffn"]["num_experts_per_tok"] == 8
+
+
+def test_dbrx_nested_config_routes_to_gqa_moe():
+    d = unfold(DBRX_CONFIG)
+    ir = d.to_ir()
+    layer = ir["layers"][0]
+
+    assert not ir["warnings"]
+    assert ir["name"] == "dbrx-base"
+    assert len(ir["layers"]) == 40
+    assert layer["attention"]["kind"] == "gqa"
+    assert layer["attention"]["num_heads"] == 48
+    assert layer["attention"]["num_kv_heads"] == 8
+    assert layer["attention"]["head_dim"] == 128
+    assert layer["ffn"]["kind"] == "moe"
+    assert layer["ffn"]["num_experts"] == 16
+    assert layer["ffn"]["num_experts_per_tok"] == 4
+    assert layer["ffn"]["expert_intermediate_size"] == 3584
+    assert ir["extras"]["dbrx"]["clip_qkv"] == 8
+
+    html = d.to_html(standalone=True)
+    assert "GQA 48/8" in html
+    assert "MoE" in html
+    assert "16 experts" in html
+
+
 def test_attention_detail_views_dispatch_by_kind():
     base = {
         "vocab_size": 32000,
@@ -559,6 +716,8 @@ if __name__ == "__main__":
     test_gemma4_31b()
     test_gemma4_ple_uses_reusable_part_contract()
     test_llama3()
+    test_new_should_support_family_routes()
+    test_dbrx_nested_config_routes_to_gqa_moe()
     test_model_id_uses_hf_token_env_and_explicit_override()
     test_model_id_falls_back_to_legacy_hf_auth_kwarg()
     test_model_id_uses_remote_code_only_when_required()

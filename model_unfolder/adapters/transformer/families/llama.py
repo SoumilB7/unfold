@@ -1,4 +1,4 @@
-"""Adapter for Llama, Phi, OLMo-2, and Llama 4 (MoE + iRoPE).
+"""Adapter for Llama and Llama 4 (MoE + iRoPE).
 
 Llama 4 introduces two structural variations over the base Llama decoder:
 
@@ -19,7 +19,7 @@ from ..assembly import decoder_extras, decoder_layer
 from ..common import architecture_name, get_config_value as _g, model_name
 
 
-_FAMILIES = {"llama", "phi3", "olmo2", "llama4"}
+_FAMILIES = {"llama", "llama4"}
 
 
 def matches(cfg: Any) -> bool:
@@ -28,7 +28,7 @@ def matches(cfg: Any) -> bool:
         return True
     arches = _g(cfg, "architectures") or []
     return any(
-        any(fam in a.lower() for fam in ("llama", "phi3"))
+        "llama" in a.lower()
         for a in arches
     )
 
