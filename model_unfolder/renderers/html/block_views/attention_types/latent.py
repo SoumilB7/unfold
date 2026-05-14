@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from ...svg import (
-    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -105,8 +104,10 @@ def build_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
     q_proj = _rect_block(parts, info, shadow_id, "mla_q", cx - 120, 396, 240, 56, ["Query projection", f"rank {q_rank}"], font_size=15)
 
     parts.append(_v_line(q_rope, q_rope_apply, arrow_id))
-    parts.append(_block_top_to_block_bottom(q_nope["cx"], q_nope["top"], q_concat["left"] + 76, q_concat["bottom"] + GAP, arrow_id))
-    parts.append(_block_top_to_block_bottom(q_rope_apply["cx"], q_rope_apply["top"], q_concat["right"] - 76, q_concat["bottom"] + GAP, arrow_id))
+    q_merge_lane_y = q_concat["bottom"] + 32
+    q_merge_target_y = q_concat["bottom"] + GAP
+    parts.append(_upper_merge_route(q_nope["cx"], q_nope["top"], q_concat["left"] + 76, q_merge_target_y, q_merge_lane_y, arrow_id))
+    parts.append(_upper_merge_route(q_rope_apply["cx"], q_rope_apply["top"], q_concat["right"] - 76, q_merge_target_y, q_merge_lane_y, arrow_id))
 
     split_y = q_proj["top"] - 34
     parts.append(_stem_to_split(q_proj["cx"], q_proj["top"], split_y))
