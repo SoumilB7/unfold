@@ -151,12 +151,12 @@ def describe_attention(attention: dict) -> str:
         if attention.get("q_lora_rank"):
             text += f"; Q LoRA {_fmt_int(attention.get('q_lora_rank'))}"
     elif kind == "mqa":
-        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head"
+        text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head; cache ports mark K/V write/read state"
     elif kind == "gqa":
         text = (
             f"Grouped-query; {attention.get('num_heads')} Q / "
             f"{attention.get('num_kv_heads')} KV heads; "
-            f"head dim {_fmt_int(attention.get('head_dim'))}"
+            f"head dim {_fmt_int(attention.get('head_dim'))}; cache ports mark K/V write/read state"
         )
     elif kind == "ssm":
         text = f"Selective SSM (Mamba); state dim {_fmt_int(attention.get('head_dim'))}"
@@ -173,7 +173,7 @@ def describe_attention(attention: dict) -> str:
     else:
         text = (
             f"Multi-head; {attention.get('num_heads')} heads; "
-            f"head dim {_fmt_int(attention.get('head_dim'))}"
+            f"head dim {_fmt_int(attention.get('head_dim'))}; cache ports mark K/V write/read state"
         )
     if is_sliding(attention) and attention.get("window_size"):
         text += f"; sliding window {_fmt_int(attention.get('window_size'))}"

@@ -69,11 +69,11 @@ def describe_attention(attention: AttentionSpec) -> str:
             text += f"; Q LoRA {_fmt(attention.q_lora_rank)}"
         return text
     if attention.kind == "mqa":
-        return _with_attention_window(attention, f"Multi-query; {attention.num_heads} Q / 1 KV head")
+        return _with_attention_window(attention, f"Multi-query; {attention.num_heads} Q / 1 KV head; cache ports mark K/V write/read state")
     if attention.kind == "gqa":
         return _with_attention_window(attention, (
             f"Grouped-query; {attention.num_heads} Q / {attention.num_kv_heads} KV heads; "
-            f"head dim {_fmt(attention.head_dim)}"
+            f"head dim {_fmt(attention.head_dim)}; cache ports mark K/V write/read state"
         ))
     if attention.kind == "ssm":
         shared = "; weight-shared across positions" if attention.shared else ""
@@ -94,7 +94,8 @@ def describe_attention(attention: AttentionSpec) -> str:
     if attention.no_rope:
         extras.append("NoPE")
     suffix = f"; {', '.join(extras)}" if extras else ""
-    return _with_attention_window(attention, f"Multi-head; {attention.num_heads} heads; head dim {_fmt(attention.head_dim)}{suffix}")
+    cache_note = "; cache ports mark K/V write/read state"
+    return _with_attention_window(attention, f"Multi-head; {attention.num_heads} heads; head dim {_fmt(attention.head_dim)}{suffix}{cache_note}")
 
 
 def _attention_mask_prefix(attention: AttentionSpec) -> str:

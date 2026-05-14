@@ -158,6 +158,7 @@ def _gqa_compact_legend(
             bottom,
             {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 8.5},
         ))
+        _cache_io_ports(parts, x + 18, cy, card_w, card_h, compact=True)
 
     return {
         "left": x,
@@ -252,6 +253,7 @@ def _gqa_group_card(parts: list[str], x: float, y: float, w: float, h: float, to
         bottom,
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10},
     ))
+    _cache_io_ports(parts, x, y, w, h, compact=True)
 
 
 def kv_cache_badge(parts: list[str], x: float, y: float, title: str, subtitle: str) -> dict:
@@ -280,6 +282,76 @@ def kv_cache_badge(parts: list[str], x: float, y: float, title: str, subtitle: s
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
     ))
     return {"left": x, "right": x + w, "top": y, "bottom": y + h, "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
+
+
+def kv_cache_port_hint(parts: list[str], kv_nodes: list[dict]) -> None:
+    """Two punched ports on K/V blocks: arrowhead for write, tail for read."""
+    for node in kv_nodes:
+        _cache_io_ports(parts, node["left"], node["top"], node["w"], node["h"])
+
+
+def _cache_io_ports(
+    parts: list[str],
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    *,
+    compact: bool = False,
+) -> None:
+    radius = 3.7 if compact else 5.2
+    gap = 9 if compact else 13
+    pad_right = 11 if compact else 17
+    cy = y + h - (8 if compact else 10)
+    head_cx = x + w - pad_right - gap
+    tail_cx = x + w - pad_right
+    ports = []
+    for cx, kind in ((head_cx, "head"), (tail_cx, "tail")):
+        ports.append(_svg_tag("circle", {
+            "cx": cx,
+            "cy": cy,
+            "r": radius,
+            "fill": C["bg_outer"],
+            "stroke": C["border"],
+            "stroke-width": 0.7,
+            "pointer-events": "none",
+        }))
+        if kind == "head":
+            ports.append(_svg_tag("path", {
+                "d": f"M {cx - radius * 0.52:g} {cy + radius * 0.22:g} L {cx:g} {cy - radius * 0.48:g} L {cx + radius * 0.52:g} {cy + radius * 0.22:g}",
+                "fill": "none",
+                "stroke": C["arrow"],
+                "stroke-width": 1.25 if compact else 1.45,
+                "stroke-linecap": "round",
+                "stroke-linejoin": "round",
+                "pointer-events": "none",
+            }))
+        else:
+            ports.append(_svg_tag("line", {
+                "x1": cx,
+                "y1": cy - radius * 0.5,
+                "x2": cx,
+                "y2": cy + radius * 0.42,
+                "stroke": C["arrow"],
+                "stroke-width": 1.25 if compact else 1.45,
+                "stroke-linecap": "round",
+                "pointer-events": "none",
+            }))
+            ports.append(_svg_tag("line", {
+                "x1": cx - radius * 0.45,
+                "y1": cy + radius * 0.42,
+                "x2": cx + radius * 0.45,
+                "y2": cy + radius * 0.42,
+                "stroke": C["arrow"],
+                "stroke-width": 1.25 if compact else 1.45,
+                "stroke-linecap": "round",
+                "pointer-events": "none",
+            }))
+    parts.append(_svg_tag("g", {
+        "class": "uf-cache-ports",
+        "pointer-events": "none",
+        "aria-hidden": "true",
+    }, "".join(ports)))
 
 
 def dynamic_region_rect(

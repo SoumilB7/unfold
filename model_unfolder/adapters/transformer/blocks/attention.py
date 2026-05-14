@@ -48,12 +48,18 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims)",
+            "description": (
+                f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims). "
+                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+            ),
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims)",
+            "description": (
+                f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims). "
+                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+            ),
         },
         {
             "id": "qkv_dot",
@@ -104,12 +110,18 @@ def _sdpa_detailed_child_blocks(
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)",
+            "description": (
+                f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
+                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+            ),
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)",
+            "description": (
+                f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
+                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+            ),
         },
         {
             "id": "scaled_scores",
