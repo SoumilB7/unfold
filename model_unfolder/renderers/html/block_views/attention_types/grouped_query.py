@@ -26,17 +26,19 @@ from .common import (
     sdpa_dot_operator,
     sdpa_fraction_block,
 )
+from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Detail view for grouped-query attention."""
-    w, h = 820, 880
+    attn = info["dominant"]["spec"].get("attention") or {}
+    is_sliding = is_sliding_window(attn)
+    w, h = 820, canvas_height(attn, 880)
     arrow_id, shadow_id = _ids(mount_id, "gqa-attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
     body: list[str] = []
 
-    attn = info["dominant"]["spec"].get("attention") or {}
     hidden_sz = ir.get("hidden_size") or 0
     hidden = _fmt_int(hidden_sz)
     num_heads = attn.get("num_heads") or 0
@@ -76,11 +78,14 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     v_proj = _rect_block(body, info, shadow_id, "v_proj", w - 78 - proj_w, proj_y, proj_w, proj_h, ["Linear (V)", kv_head_label], font_size=15)
 
     branch_x, branch_y = cx, 792
-    body.append(_svg_tag("line", {
-        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "fill": "none",
-    }))
+    if is_sliding:
+        sliding_window_input(body, arrow_id, branch_x, branch_y, attn.get("window_size"))
+    else:
+        body.append(_svg_tag("line", {
+            "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none",
+        }))
     body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
     body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
     body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))

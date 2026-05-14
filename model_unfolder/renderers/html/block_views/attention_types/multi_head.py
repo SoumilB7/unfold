@@ -17,16 +17,18 @@ from ...svg import (
 from ...theme import C, GAP
 from ...utils import _fmt_int
 from .common import input_to_block, output_stem, sdpa_dot_operator, sdpa_fraction_block
+from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Rich SVG detail view for standard MHA / SDPA attention blocks."""
-    w, h = 820, 880
+    attn = info["dominant"]["spec"].get("attention") or {}
+    is_sliding = is_sliding_window(attn)
+    w, h = 820, canvas_height(attn, 880)
     arrow_id, shadow_id = _ids(mount_id, "attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
 
-    attn = info["dominant"]["spec"].get("attention") or {}
     hidden_sz = ir.get("hidden_size") or 0
     num_heads = attn.get("num_heads") or 0
     head_dim = attn.get("head_dim") or (hidden_sz // num_heads if num_heads else 0)
@@ -72,11 +74,14 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     v_proj = _rect_block(parts, info, shadow_id, "v_proj", w - 78 - proj_w, proj_y, proj_w, proj_h, "Linear (V)")
 
     branch_x, branch_y = cx, 792
-    parts.append(_svg_tag("line", {
-        "x1": branch_x, "y1": branch_y + 42, "x2": branch_x, "y2": branch_y,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "fill": "none",
-    }))
+    if is_sliding:
+        sliding_window_input(parts, arrow_id, branch_x, branch_y, attn.get("window_size"))
+    else:
+        parts.append(_svg_tag("line", {
+            "x1": branch_x, "y1": branch_y + 42, "x2": branch_x, "y2": branch_y,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none",
+        }))
     parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
     parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
     parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))

@@ -16,18 +16,27 @@ from ...svg import (
 )
 from ...theme import C, GAP
 from ...utils import _fmt_int
-from .common import input_to_block, kv_cache_badge, mqa_shared_kv_node, output_stem, sdpa_dot_operator, sdpa_fraction_block
+from .common import (
+    input_to_block,
+    kv_cache_badge,
+    mqa_shared_kv_node,
+    output_stem,
+    sdpa_dot_operator,
+    sdpa_fraction_block,
+)
+from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Detail view for multi-query attention / single shared K/V attention."""
-    w, h = 820, 920
+    attn = info["dominant"]["spec"].get("attention") or {}
+    is_sliding = is_sliding_window(attn)
+    w, h = 820, canvas_height(attn, 920, extra_height=60)
     arrow_id, shadow_id = _ids(mount_id, "mqa-attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
     body: list[str] = []
 
-    attn = info["dominant"]["spec"].get("attention") or {}
     hidden_sz = ir.get("hidden_size") or 0
     hidden = _fmt_int(hidden_sz)
     num_heads = attn.get("num_heads") or 0
@@ -67,11 +76,14 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
 
     branch_x, branch_y = cx, 834
     body.append(_branch_dot(branch_x, branch_y))
-    body.append(_svg_tag("line", {
-        "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
+    if is_sliding:
+        sliding_window_input(body, arrow_id, branch_x, branch_y, attn.get("window_size"))
+    else:
+        body.append(_svg_tag("line", {
+            "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y + 8,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
 
     body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
     body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
