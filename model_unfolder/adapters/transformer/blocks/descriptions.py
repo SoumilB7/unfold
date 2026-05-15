@@ -67,6 +67,7 @@ def describe_attention(attention: AttentionSpec) -> str:
         )
         if attention.q_lora_rank:
             text += f"; Q LoRA {_fmt(attention.q_lora_rank)}"
+        text += "; cache ports mark latent write/read state"
         return text
     if attention.kind == "mqa":
         return _with_attention_window(attention, f"Multi-query; {attention.num_heads} Q / 1 KV head; cache ports mark K/V write/read state")

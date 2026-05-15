@@ -290,6 +290,27 @@ def kv_cache_port_hint(parts: list[str], kv_nodes: list[dict]) -> None:
         _cache_io_ports(parts, node["left"], node["top"], node["w"], node["h"])
 
 
+def cache_read_write_ports(
+    parts: list[str],
+    node: dict,
+    *,
+    write_side: str = "bottom",
+    read_side: str = "top",
+) -> None:
+    """Punched ports on a cache node, placed where cache write/read happen."""
+    write = _edge_port_center(node, write_side, "write")
+    read = _edge_port_center(node, read_side, "read")
+    ports = [
+        _cache_port(write[0], write[1], 5.2, "head"),
+        _cache_port(read[0], read[1], 5.2, "tail"),
+    ]
+    parts.append(_svg_tag("g", {
+        "class": "uf-cache-ports",
+        "pointer-events": "none",
+        "aria-hidden": "true",
+    }, "".join(ports)))
+
+
 def _cache_io_ports(
     parts: list[str],
     x: float,
@@ -305,53 +326,81 @@ def _cache_io_ports(
     cy = y + h - (8 if compact else 10)
     head_cx = x + w - pad_right - gap
     tail_cx = x + w - pad_right
-    ports = []
-    for cx, kind in ((head_cx, "head"), (tail_cx, "tail")):
-        ports.append(_svg_tag("circle", {
-            "cx": cx,
-            "cy": cy,
-            "r": radius,
-            "fill": C["bg_outer"],
-            "stroke": C["border"],
-            "stroke-width": 0.7,
-            "pointer-events": "none",
-        }))
-        if kind == "head":
-            ports.append(_svg_tag("path", {
-                "d": f"M {cx - radius * 0.52:g} {cy + radius * 0.22:g} L {cx:g} {cy - radius * 0.48:g} L {cx + radius * 0.52:g} {cy + radius * 0.22:g}",
-                "fill": "none",
-                "stroke": C["arrow"],
-                "stroke-width": 1.25 if compact else 1.45,
-                "stroke-linecap": "round",
-                "stroke-linejoin": "round",
-                "pointer-events": "none",
-            }))
-        else:
-            ports.append(_svg_tag("line", {
-                "x1": cx,
-                "y1": cy - radius * 0.5,
-                "x2": cx,
-                "y2": cy + radius * 0.42,
-                "stroke": C["arrow"],
-                "stroke-width": 1.25 if compact else 1.45,
-                "stroke-linecap": "round",
-                "pointer-events": "none",
-            }))
-            ports.append(_svg_tag("line", {
-                "x1": cx - radius * 0.45,
-                "y1": cy + radius * 0.42,
-                "x2": cx + radius * 0.45,
-                "y2": cy + radius * 0.42,
-                "stroke": C["arrow"],
-                "stroke-width": 1.25 if compact else 1.45,
-                "stroke-linecap": "round",
-                "pointer-events": "none",
-            }))
+    stroke_w = 1.25 if compact else 1.45
+    ports = [
+        _cache_port(head_cx, cy, radius, "head", stroke_width=stroke_w),
+        _cache_port(tail_cx, cy, radius, "tail", stroke_width=stroke_w),
+    ]
     parts.append(_svg_tag("g", {
         "class": "uf-cache-ports",
         "pointer-events": "none",
         "aria-hidden": "true",
     }, "".join(ports)))
+
+
+def _edge_port_center(node: dict, side: str, role: str) -> tuple[float, float]:
+    x, y, w, h = node["left"], node["top"], node["w"], node["h"]
+    inset = 17
+    x_pos = x + w - inset
+    if side == "top":
+        return x_pos, y + 10
+    if side == "bottom":
+        return x_pos, y + h - 10
+    y_pos = y + h - (18 if role == "write" else 34)
+    if side == "left":
+        return x + 10, y_pos
+    return x + w - 10, y_pos
+
+
+def _cache_port(
+    cx: float,
+    cy: float,
+    radius: float,
+    kind: str,
+    *,
+    stroke_width: float = 1.45,
+) -> str:
+    port = [_svg_tag("circle", {
+        "cx": cx,
+        "cy": cy,
+        "r": radius,
+        "fill": C["bg_outer"],
+        "stroke": C["border"],
+        "stroke-width": 0.7,
+        "pointer-events": "none",
+    })]
+    if kind == "head":
+        port.append(_svg_tag("path", {
+            "d": f"M {cx - radius * 0.52:g} {cy + radius * 0.22:g} L {cx:g} {cy - radius * 0.48:g} L {cx + radius * 0.52:g} {cy + radius * 0.22:g}",
+            "fill": "none",
+            "stroke": C["arrow"],
+            "stroke-width": stroke_width,
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round",
+            "pointer-events": "none",
+        }))
+    else:
+        port.append(_svg_tag("line", {
+            "x1": cx,
+            "y1": cy - radius * 0.5,
+            "x2": cx,
+            "y2": cy + radius * 0.42,
+            "stroke": C["arrow"],
+            "stroke-width": stroke_width,
+            "stroke-linecap": "round",
+            "pointer-events": "none",
+        }))
+        port.append(_svg_tag("line", {
+            "x1": cx - radius * 0.45,
+            "y1": cy + radius * 0.42,
+            "x2": cx + radius * 0.45,
+            "y2": cy + radius * 0.42,
+            "stroke": C["arrow"],
+            "stroke-width": stroke_width,
+            "stroke-linecap": "round",
+            "pointer-events": "none",
+        }))
+    return "".join(port)
 
 
 def dynamic_region_rect(

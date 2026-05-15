@@ -244,7 +244,10 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
             "id": "mla_cache",
             "label": "latent cache c_t",
             "title": "Stored latent cache",
-            "description": f"Compressed K/V latent stored in the cache instead of full K and V heads; rank {kv_rank}",
+            "description": (
+                f"Compressed K/V latent stored in the cache instead of full K and V heads; rank {kv_rank}. "
+                "Cache ports show write from compression and read back into K/V expansion."
+            ),
         },
         {
             "id": "mla_kv_up",
@@ -301,7 +304,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
             "title": "MLA K/V cache path",
             "description": (
                 f"Compresses hidden state into rank {kv_rank} latent cache, expands K/V content, "
-                "and combines K noPE with a RoPE key side-channel"
+                "and combines K noPE with a RoPE key side-channel. Cache ports mark the latent write/read point."
             ),
             "detail_view": "mla_kv_cache_path",
             "children": kv_children,

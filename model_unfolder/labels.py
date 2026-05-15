@@ -150,6 +150,7 @@ def describe_attention(attention: dict) -> str:
         )
         if attention.get("q_lora_rank"):
             text += f"; Q LoRA {_fmt_int(attention.get('q_lora_rank'))}"
+        text += "; cache ports mark latent write/read state"
     elif kind == "mqa":
         text = f"Multi-query; {attention.get('num_heads')} Q / 1 KV head; cache ports mark K/V write/read state"
     elif kind == "gqa":
