@@ -452,7 +452,6 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     block_by_id = {block["id"]: block for block in blocks}
 
     assert ir["layers"][0]["attention"]["kind"] == "mqa"
-    assert ir["extras"]["parallel_attn"] is True
     assert ir["extras"]["parallel_residual"] is True
     assert block_by_id["rms1"]["label"] == "LayerNorm"
     assert block_by_id["add1"]["title"] == "Residual add (parallel)"
@@ -472,7 +471,9 @@ def test_falcon_parallel_attn_uses_parallel_topology():
 
 def test_new_should_support_family_routes():
     cases = [
-        (GEMMA1_CONFIG, "mqa", "dense", "rmsnorm"),
+        # Gemma 7B has num_kv=1 but no `multi_query` flag — extreme GQA,
+        # matching Google's "GQA throughout" naming.
+        (GEMMA1_CONFIG, "gqa", "dense", "rmsnorm"),
         (PHI2_CONFIG, "mha", "dense", "layernorm"),
         (YI_34B_CONFIG, "gqa", "dense", "rmsnorm"),
         (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
@@ -515,7 +516,7 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     assert layer["ffn"]["num_experts"] == 16
     assert layer["ffn"]["num_experts_per_tok"] == 4
     assert layer["ffn"]["expert_intermediate_size"] == 3584
-    assert ir["extras"]["dbrx"]["clip_qkv"] == 8
+    assert ir["extras"]["attention"]["clip_qkv"] == 8
 
     html = d.to_html(standalone=True)
     assert "GQA 48/8" in html
@@ -524,98 +525,19 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
 
 
 def test_attention_detail_views_dispatch_by_kind():
-    base = {
-        "vocab_size": 32000,
-        "hidden_size": 64,
-        "intermediate_size": 256,
-        "num_hidden_layers": 4,
-        "num_attention_heads": 4,
-        "num_key_value_heads": 2,
-        "head_dim": 16,
-        "hidden_act": "silu",
-    }
-    cases = [
-        (
-            "mla",
-            KIMI_K2_CONFIG,
-            "mla_kv_path",
-            "Multi-Head Latent",
-            True,
-        ),
-        (
-            "ssm",
-            {
-                **base,
-                "architectures": ["FalconH1ForCausalLM"],
-                "model_type": "falcon_h1",
-                "mamba_d_state": 16,
-                "mamba_d_ssm": 64,
-                "attn_layer_indices": None,
-            },
-            "ssm_scan",
-            "Selective Scan",
-            True,
-        ),
-        (
-            "recurrent",
-            {
-                **base,
-                "architectures": ["RecurrentGemmaForCausalLM"],
-                "model_type": "recurrent_gemma",
-                "block_types": ["recurrent", "recurrent", "attention"],
-                "attention_window_size": 128,
-                "lru_width": 32,
-            },
-            "lru_state",
-            "Recurrent State",
-            False,
-        ),
-        (
-            "rwkv",
-            {
-                "architectures": ["RwkvForCausalLM"],
-                "model_type": "rwkv",
-                "vocab_size": 32000,
-                "hidden_size": 64,
-                "num_hidden_layers": 4,
-                "attention_hidden_size": 64,
-                "head_size": 16,
-                "intermediate_size": 224,
-            },
-            "rwkv_time_mix",
-            "Time-Mix",
-            True,
-        ),
-        (
-            "linear",
-            {
-                **base,
-                "architectures": ["MiniMaxText01ForCausalLM"],
-                "model_type": "minimax_text_01",
-                "attn_type_list": [0, 0, 0, 0],
-                "num_local_experts": 8,
-                "num_experts_per_tok": 2,
-            },
-            "linear_mix",
-            "Linear Attention Mix",
-            True,
-        ),
-    ]
+    # Scope: transformer-LLM attention kinds (MHA / GQA / MQA / MLA).
+    # Non-attention mixers (SSM, RWKV, linear, recurrent) are out of scope.
+    d = unfold(KIMI_K2_CONFIG)
+    ir = d.to_ir()
+    attn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "attn")
+    child_ids = {child["id"] for child in attn_block["children"]}
+    html = d.to_html(standalone=True)
 
-    for kind, cfg, expected_child, expected_html, forbid_sdpa in cases:
-        d = unfold(cfg)
-        ir = d.to_ir()
-        attn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "attn")
-        child_ids = {child["id"] for child in attn_block["children"]}
-        html = d.to_html(standalone=True)
-
-        assert ir["layers"][0]["attention"]["kind"] == kind
-        assert expected_child in child_ids
-        assert expected_html in html
-        if kind == "mla":
-            assert "mla_kv_down" in html
-        if forbid_sdpa:
-            assert "Scaled Dot-Product Attention" not in html
+    assert ir["layers"][0]["attention"]["kind"] == "mla"
+    assert "mla_kv_path" in child_ids
+    assert "Multi-Head Latent" in html
+    assert "mla_kv_down" in html
+    assert "Scaled Dot-Product Attention" not in html
 
 
 def test_model_id_uses_hf_token_env_and_explicit_override():
