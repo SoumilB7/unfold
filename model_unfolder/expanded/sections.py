@@ -35,10 +35,11 @@ def build_parameters(params: dict) -> dict[str, Any]:
 
 
 def build_io(raw: dict) -> dict[str, Any]:
-    """Tokens → embedding → (stack) → final norm → LM head, fully specified."""
+    """Tokens → embedding → stack → final norm → LM head."""
     hidden = raw.get("hidden_size")
     vocab  = raw.get("vocab_size")
-    return {
+
+    out: dict[str, Any] = {
         "input": {
             "kind":  "token_ids",
             "shape": ["batch", "sequence"],
@@ -52,21 +53,22 @@ def build_io(raw: dict) -> dict[str, Any]:
             "output_width":  hidden,
             "trace":         {"ir_path": "extras.render.model_blocks.embed"},
         }),
-        "final_norm": drop_none({
-            "operation":        "norm",
-            "kind":             _final_norm_kind(raw),
-            "normalized_shape": hidden,
-            "trace":            {"ir_path": "extras.render.model_blocks.final_rms"},
-        }),
-        "lm_head": drop_none({
-            "operation":               "linear",
-            "in_features":             hidden,
-            "out_features":            vocab,
-            "weight_shape":            shape(vocab, hidden),
-            "tied_to_token_embedding": bool(raw.get("tie_word_embeddings")),
-            "trace":                   {"ir_path": "extras.render.model_blocks.lm_head"},
-        }),
     }
+    out["final_norm"] = drop_none({
+        "operation":        "norm",
+        "kind":             _final_norm_kind(raw),
+        "normalized_shape": hidden,
+        "trace":            {"ir_path": "extras.render.model_blocks.final_rms"},
+    })
+    out["lm_head"] = drop_none({
+        "operation":               "linear",
+        "in_features":             hidden,
+        "out_features":            vocab,
+        "weight_shape":            shape(vocab, hidden),
+        "tied_to_token_embedding": bool(raw.get("tie_word_embeddings")),
+        "trace":                   {"ir_path": "extras.render.model_blocks.lm_head"},
+    })
+    return out
 
 
 def _final_norm_kind(raw: dict) -> str | None:

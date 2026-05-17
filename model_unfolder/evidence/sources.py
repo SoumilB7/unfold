@@ -9,6 +9,7 @@ from .models import SourceBundle
 
 
 MODEL_TYPE_TO_TRANSFORMERS_DIR = {
+    # Text-only transformer LMs
     "baichuan": "baichuan",
     "bloom": "bloom",
     "dbrx": "dbrx",
@@ -17,8 +18,6 @@ MODEL_TYPE_TO_TRANSFORMERS_DIR = {
     "falcon": "falcon",
     "gemma": "gemma",
     "gemma2": "gemma2",
-    "gemma3": "gemma3",
-    "gemma3n": "gemma3n",
     "gpt_bigcode": "gpt_bigcode",
     "gpt_j": "gptj",
     "gpt_neox": "gpt_neox",
@@ -39,6 +38,31 @@ MODEL_TYPE_TO_TRANSFORMERS_DIR = {
     "qwen3": "qwen3",
     "qwen3_moe": "qwen3_moe",
     "stablelm": "stablelm",
+
+    # Multi-modal wrappers (transformer LM with vision/audio encoders).
+    # The wrapper directory contains both the LM and the modality pieces, so
+    # the evidence scanner sees attention/FFN/MoE patterns alongside the
+    # multimodal projector classes.
+    "gemma3":           "gemma3",
+    "gemma3_text":      "gemma3",
+    "gemma3n":          "gemma3n",
+    "gemma3n_text":     "gemma3n",
+    "gemma4":           "gemma4",
+    "gemma4_text":      "gemma4",
+    "mllama":           "mllama",
+    "llava":            "llava",
+    "llava_next":       "llava_next",
+    "llava_onevision":  "llava_onevision",
+    "paligemma":        "paligemma",
+    "qwen2_vl":         "qwen2_vl",
+    "qwen2_5_vl":       "qwen2_5_vl",
+    "qwen3_vl":         "qwen3_vl",
+    "idefics2":         "idefics2",
+    "idefics3":         "idefics3",
+    "smolvlm":          "smolvlm",
+    "internvl":         "internvl",
+    "pixtral":          "pixtral",
+    "fuyu":             "fuyu",
 }
 
 

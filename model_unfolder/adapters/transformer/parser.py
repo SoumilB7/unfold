@@ -117,8 +117,7 @@ def parse(cfg: Any) -> ModelIR:
     arch_name  = architecture_name(cfg, model_type)
 
     text_cfg = _unwrap_text(cfg)
-    if text_cfg is not cfg:
-        warnings.append("Config fields read from nested text_config sub-key (multimodal wrapper detected).")
+    # Nested text_config (multimodal wrapper) is fully supported — no warning needed.
 
     # DBRX-style nested config dicts: pull through transparently.
     attn_cfg = _nested(text_cfg, "attn_config")
@@ -276,7 +275,7 @@ def parse(cfg: Any) -> ModelIR:
                 kind="moe",
                 activation=activation,
                 intermediate_size=intermediate_size or moe_intermediate_size,
-                gated=_is_gated(activation),
+                gated=_is_gated(activation, norm_kind),
                 num_experts=num_experts,
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
@@ -287,7 +286,7 @@ def parse(cfg: Any) -> ModelIR:
                 kind="dense",
                 activation=activation,
                 intermediate_size=intermediate_size,
-                gated=_is_gated(activation),
+                gated=_is_gated(activation, norm_kind),
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
@@ -475,9 +474,25 @@ def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
     return "rmsnorm"
 
 
-def _is_gated(activation: str) -> bool:
+def _is_gated(activation: str, norm_kind: str | None = None) -> bool:
+    """Whether the FFN has a separate gate projection (SwiGLU/GeGLU style).
+
+    Heuristics, in order:
+
+    * Activation explicitly says so: ``silu``/``swish`` (Llama/Mistral/Qwen/
+      DeepSeek/GPT-OSS style), anything with ``glu`` in the name, or
+      ``gelu_pytorch_tanh`` (Gemma family — uses gate/up/down despite the
+      GELU name).
+    * Otherwise, default to gated when the model uses ``RMSNorm`` (a strong
+      "modern decoder" signal — modern LMs almost universally use
+      gate/up/down).  Legacy LayerNorm models (GPT-2 / NeoX / J / BLOOM /
+      MPT / OPT / Falcon / Phi-1/2) end up here and are correctly
+      classified as non-gated.
+    """
     a = (activation or "").lower()
-    return "glu" in a or a in {"silu", "swish"}
+    if "glu" in a or a in {"silu", "swish", "gelu_pytorch_tanh"}:
+        return True
+    return norm_kind == "rmsnorm"
 
 
 def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | None:
@@ -500,3 +515,4 @@ def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
         if layer_types[j] == target_type:
             return j
     return None
+

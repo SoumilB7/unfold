@@ -62,7 +62,7 @@ def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
         "layer_groups":   [build_layer_group(g, raw, evidence) for g in groups],
     }
 
-    external = build_external_pathways(extras)
+    external = list(build_external_pathways(extras))
     if external:
         out["external_pathways"] = external
 
