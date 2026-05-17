@@ -13,7 +13,13 @@ HF_TOKEN_ENV_VARS = (
 )
 
 
-def config_to_ir(cfg_or_id: Any, token: Any = None) -> ModelIR:
+def config_to_ir(
+    cfg_or_id: Any,
+    token: Any = None,
+    *,
+    inspect_code: bool = False,
+    code_source: str = "local",
+) -> ModelIR:
     """Parse anything HF-shaped into an IR.
 
     Accepts:
@@ -27,6 +33,14 @@ def config_to_ir(cfg_or_id: Any, token: Any = None) -> ModelIR:
         Optional Hugging Face token used only when loading a config by model ID.
         If omitted, ``HF_TOKEN`` and legacy Hugging Face token env vars are used
         when present.
+    inspect_code
+        If True, statically inspect HF modeling source and attach the evidence
+        report to ``ir.extras["code_evidence"]``. This never executes model
+        code.
+    code_source
+        Source for code inspection: ``"local"`` (installed transformers),
+        ``"path"``, ``"hub"``, ``"auto"``, or a local file/directory path. Hub
+        inspection downloads source files only and should be requested explicitly.
     """
     cfg = _coerce(cfg_or_id, token=token)
     adapter = find_adapter(cfg)
@@ -39,7 +53,20 @@ def config_to_ir(cfg_or_id: Any, token: Any = None) -> ModelIR:
             f"No adapter found for architecture {arches}. "
             "Pass a dict-like config or contribute an adapter."
         )
-    return adapter.parse(cfg)
+    ir = adapter.parse(cfg)
+    if inspect_code:
+        _attach_code_evidence(ir, cfg, token=token, source=code_source)
+    return ir
+
+
+def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: str = "local") -> None:
+    from .evidence import inspect_model_code, validate_ir_with_evidence
+
+    evidence = inspect_model_code(cfg, source=source, token=token)
+    ir.extras["code_evidence"] = evidence.to_dict()
+    for warning in validate_ir_with_evidence(ir, evidence):
+        if warning not in ir.warnings:
+            ir.warnings.append(warning)
 
 
 def _coerce(cfg_or_id, token: Any = None):
