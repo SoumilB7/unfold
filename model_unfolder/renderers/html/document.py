@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .cards import _build_inspect_cards, _build_nested_inspect_panels
+from .evidence import _code_evidence_section
 from .interactions import _click_script
 from .metadata import _block_lookup, _group_label, _make_info, _meta_for
 from .sections import _details_section, _header, _stats_banner
@@ -154,6 +155,7 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
     else:
         map_sub = f"{n_groups} layer types across {n_layers} layers"
     layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
+    evidence_section = _code_evidence_section(ir)
 
     return f"""
 <div id="{_attr(mount_id)}" class="uf-root">
@@ -169,6 +171,7 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
 {inspect_panel}
 {nested_inspect_panels}
 {layer_map_section}
+{evidence_section}
 </div>
 {_click_script(mount_id)}
 </div>

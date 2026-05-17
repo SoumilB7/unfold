@@ -282,6 +282,81 @@ def _style(mount_id: str) -> str:
   max-width:100%;
   height:auto;
 }}
+#{mount_id} .uf-evidence {{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:6px;
+}}
+#{mount_id} .uf-evidence-summary {{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:{C['muted']};
+  font-size:11px;
+  font-family:{FONT_MONO};
+}}
+#{mount_id} .uf-evidence-summary span {{
+  padding:5px 8px;
+  background:{C['bg_card']};
+  border:0.5px solid {C['border']};
+  border-radius:6px;
+}}
+#{mount_id} .uf-evidence-grid {{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}}
+#{mount_id} .uf-evidence-row {{
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+}}
+#{mount_id} .uf-evidence-kind {{
+  color:{C['text']};
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding-top:5px;
+}}
+#{mount_id} .uf-evidence-chips {{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}}
+#{mount_id} .uf-evidence-chip {{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  background:{C['bg_card']};
+  border:0.5px solid {C['border']};
+  border-radius:6px;
+  color:{C['badge_text']};
+  font-size:11px;
+  font-weight:600;
+}}
+#{mount_id} .uf-evidence-chip-muted {{
+  color:{C['muted']};
+  font-family:{FONT_MONO};
+  font-weight:500;
+}}
+#{mount_id} .uf-evidence-warnings {{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}}
+#{mount_id} .uf-evidence-warning {{
+  padding:7px 9px;
+  background:#FFFBEB;
+  border:0.5px solid #FCD34D;
+  border-radius:7px;
+  color:#92400E;
+  font-size:11px;
+  line-height:1.35;
+}}
 {_attention_styles(mount_id)}
 @keyframes uf-fade {{
   from {{ opacity:0; transform:translateY(2px); }}

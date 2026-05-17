@@ -20,6 +20,7 @@ from .common import (
     gqa_grouping_panel,
     input_to_block,
     kv_cache_badge,
+    kv_cache_port_hint,
     output_stem,
     placed_figure,
     queries_per_kv_group,
@@ -76,6 +77,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     kv_head_label = f"{num_kv_heads} head" if num_kv_heads == 1 else f"{num_kv_heads} heads"
     k_proj = _rect_block(body, info, shadow_id, "k_proj", cx - proj_w / 2, proj_y, proj_w, proj_h, ["Linear (K)", kv_head_label], font_size=15)
     v_proj = _rect_block(body, info, shadow_id, "v_proj", w - 78 - proj_w, proj_y, proj_w, proj_h, ["Linear (V)", kv_head_label], font_size=15)
+    kv_cache_port_hint(body, [k_proj, v_proj])
 
     branch_x, branch_y = cx, 792
     if is_sliding:

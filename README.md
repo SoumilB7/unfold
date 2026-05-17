@@ -71,7 +71,7 @@ No extra config in `model_unfolder` itself.
 ```python
 diagram = unfold(cfg)
 diagram.save("model.html")   # standalone interactive HTML
-diagram.save("model.json")   # IR (no rendering)
+diagram.save("model.json")   # expanded architecture JSON (no rendering)
 diagram.param_count()        # {"total": ..., "active": ..., "per_layer": [...]}
 diagram.to_ir()              # full IR dict
 ```

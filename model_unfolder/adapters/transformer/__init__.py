@@ -1,5 +1,8 @@
-"""Transformer-family adapters and reusable block vocabularies."""
+"""Transformer-LLM adapter.
 
-from . import families
+There is exactly one parser (``parser.py``); see its module docstring for
+the principle (config-driven, no per-family code).
+"""
+from . import parser
 
-ADAPTERS = families.ADAPTERS
+ADAPTERS = [parser]

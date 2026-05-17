@@ -16,7 +16,7 @@ from ...svg import (
 )
 from ...theme import C, GAP
 from ...utils import _fmt_int
-from .common import input_to_block, output_stem, sdpa_dot_operator, sdpa_fraction_block
+from .common import input_to_block, kv_cache_port_hint, output_stem, sdpa_dot_operator, sdpa_fraction_block
 from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
 
 
@@ -72,6 +72,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     q_proj = _rect_block(parts, info, shadow_id, "q_proj", 78, proj_y, proj_w, proj_h, "Linear (Q)")
     k_proj = _rect_block(parts, info, shadow_id, "k_proj", cx - proj_w / 2, proj_y, proj_w, proj_h, "Linear (K)")
     v_proj = _rect_block(parts, info, shadow_id, "v_proj", w - 78 - proj_w, proj_y, proj_w, proj_h, "Linear (V)")
+    kv_cache_port_hint(parts, [k_proj, v_proj])
 
     branch_x, branch_y = cx, 792
     if is_sliding:

@@ -93,7 +93,8 @@ def _nested_panel(ir: dict, info: dict, mount_id: str, children: list[dict]) -> 
         if not child_id:
             continue
         svg = sub_block_detail_svg(ir, info, mount_id, child)
-        panels.append(_nested_card(child_id, child.get("title", child_id), child.get("description", ""), svg))
+        title = child.get("title") or child.get("label") or child_id
+        panels.append(_nested_card(child_id, title, child.get("description", ""), svg))
     return "".join(panels)
 
 
