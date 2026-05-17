@@ -33,7 +33,14 @@ __all__ = [
 ]
 
 
-def unfold(cfg_or_id, token=None, *, inspect_code=False, code_source="local") -> Diagram:
+def unfold(
+    cfg_or_id,
+    token=None,
+    *,
+    inspect_code: bool = False,
+    code_source: str = "local",
+    return_json: bool = False,
+):
     """Unfold a transformer into a renderable architecture diagram.
 
     Parameters
@@ -52,11 +59,16 @@ def unfold(cfg_or_id, token=None, *, inspect_code=False, code_source="local") ->
     code_source
         Source for code inspection: ``"local"`` (installed transformers),
         ``"path"``, ``"hub"``, ``"auto"``, or a local file/directory path.
+    return_json
+        If True, return the expanded architecture JSON dict instead of the
+        renderable ``Diagram``.  The JSON uses stable structural fields for
+        dimensions, projections, layer groups, operation graphs, cache behavior,
+        and trace paths instead of renderer labels/descriptions.
 
     Returns
     -------
-    Diagram
-        Renders inline in Jupyter; otherwise call ``.save()`` or ``.to_html()``.
+    Diagram | dict
+        ``Diagram`` by default; ``dict`` when ``return_json=True``.
     """
     ir = config_to_ir(
         cfg_or_id,
@@ -64,7 +76,8 @@ def unfold(cfg_or_id, token=None, *, inspect_code=False, code_source="local") ->
         inspect_code=inspect_code,
         code_source=code_source,
     )
-    return Diagram(ir)
+    diagram = Diagram(ir)
+    return diagram.to_json() if return_json else diagram
 
 
 # friendly alias

@@ -55,10 +55,11 @@ def _code_evidence_section(ir: dict) -> str:
     if not evidence:
         return ""
 
+    provenance = evidence.get("provenance") or {}
     components = evidence.get("components") or {}
     warnings = evidence.get("warnings") or []
-    files = evidence.get("files") or []
-    source = evidence.get("source") or "source"
+    files = evidence.get("files") or provenance.get("files") or []
+    source = evidence.get("source") or provenance.get("source") or "source"
     confidence = evidence.get("confidence")
     confidence_text = f"{float(confidence):.2f}" if isinstance(confidence, (int, float)) else "?"
 

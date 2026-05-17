@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import uuid
+from .expanded import build_expanded
 from .ir import ModelIR
 from .html_renderer import render_document, render_fragment
 from .params import estimate_params, humanize
@@ -22,6 +23,7 @@ class Diagram:
         self._params = estimate_params(ir)
         self._ir_cache: dict | None = None
         self._html_cache: dict[bool, str] = {}
+        self._json_cache: dict | None = None
 
     def to_ir(self) -> dict:
         """Return the underlying IR (plus param estimates) as a plain dict."""
@@ -39,6 +41,22 @@ class Diagram:
         }
         self._ir_cache = d
         return d
+
+    def to_json(self) -> dict:
+        """Return the traceable expanded architecture schema as a dict.
+
+        Unlike :meth:`to_ir`, this view avoids renderer labels/descriptions and
+        emits stable JSON objects for dimensions, layer groups, projections,
+        operation graphs, cache behavior, and trace paths into the parsed IR or
+        static code-evidence scan.
+        """
+        if self._json_cache is None:
+            self._json_cache = build_expanded(self.ir, self._params)
+        return self._json_cache
+
+    def to_json_string(self, indent: int = 2) -> str:
+        """Return the expanded JSON as a formatted string."""
+        return json.dumps(self.to_json(), indent=indent, default=str)
 
     def param_count(self) -> dict:
         """Return parameter-count estimates: total / active / per-layer breakdown."""
@@ -68,7 +86,7 @@ class Diagram:
         """Save the diagram to disk.
 
         - ``.html`` — interactive standalone document
-        - ``.json`` — the underlying IR (no rendering)
+        - ``.json`` — expanded architecture schema (no rendering)
         """
         ext = os.path.splitext(path)[1].lower()
         if ext == ".html":
@@ -76,7 +94,7 @@ class Diagram:
                 f.write(self.to_html(standalone=True))
         elif ext == ".json":
             with open(path, "w", encoding="utf-8") as f:
-                json.dump(self.to_ir(), f, indent=2)
+                f.write(self.to_json_string(indent=2))
         else:
             raise ValueError(
                 f"Unsupported extension {ext!r}. Use .html or .json."

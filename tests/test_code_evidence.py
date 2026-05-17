@@ -127,7 +127,7 @@ class FakeMLP:
     ir = config_to_ir(LLAMA_TINY_CONFIG, inspect_code=True, code_source=str(tmp_path))
 
     assert "code_evidence" in ir.extras
-    assert ir.extras["code_evidence"]["source"] == "path"
+    assert ir.extras["code_evidence"]["provenance"]["source"] == "path"
     assert "grouped_kv_attention" in ir.extras["code_evidence"]["components"]["attention"]
 
     diagram = unfold(LLAMA_TINY_CONFIG, inspect_code=True, code_source=str(tmp_path))
