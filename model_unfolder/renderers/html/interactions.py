@@ -109,16 +109,21 @@ def _click_script(mount_id: str) -> str:
     }});
   }});
 
-  panels.slice(1).forEach(function(panel, panelOffset) {{
-    var index = panelOffset + 1;
-    sourceNodesFor(index).forEach(function(n) {{
-      n.style.cursor = 'pointer';
-      n.addEventListener('click', function(e) {{
-        e.stopPropagation();
-        if (n.classList.contains('uf-nested-selected')) {{ showPanel(index, 'default'); }}
-        else {{ showPanel(index, n.getAttribute('data-id')); }}
-      }});
-    }});
+  root.querySelectorAll('.uf-card-svg .uf-node').forEach(function(n) {{
+    n.style.cursor = 'pointer';
+  }});
+
+  root.addEventListener('click', function(e) {{
+    var node = e.target.closest ? e.target.closest('.uf-card-svg .uf-node') : null;
+    if (!node || !root.contains(node)) return;
+
+    var sourcePanel = node.closest('.uf-inspect-panel');
+    var index = panels.indexOf(sourcePanel) + 1;
+    if (index <= 0 || index >= panels.length) return;
+
+    e.stopPropagation();
+    if (node.classList.contains('uf-nested-selected')) {{ showPanel(index, 'default'); }}
+    else {{ showPanel(index, node.getAttribute('data-id')); }}
   }});
 }})();
 </script>

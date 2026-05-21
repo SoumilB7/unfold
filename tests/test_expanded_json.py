@@ -1,4 +1,5 @@
 """Expanded architecture JSON tests."""
+from copy import deepcopy
 import json
 import os
 import sys
@@ -151,12 +152,17 @@ def test_expanded_json_carries_structured_multimodal_inputs():
     encoded = json.dumps(data["modalities"])
 
     vision = data["modalities"]["inputs"]["vision"]
-    assert vision["kind"] == "vision"
+    assert vision["kind"] == "image_to_soft_visual_tokens"
     assert vision["input"] == {
         "kind": "image_pixels",
         "shape": ["batch", "images", "channels", "height", "width"],
         "image_size": 896,
         "patch_size": 16,
+    }
+    assert vision["embedding"] == {
+        "kind": "patch_embedding",
+        "patch_size": 16,
+        "out_features": 32,
     }
     assert vision["encoder"]["kind"] == "gemma4_vision"
     assert vision["encoder"]["hidden_size"] == 32
@@ -168,10 +174,31 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "count_options": [70, 140, 280, 560, 1120],
         "width": 64,
     }
+    assert [step["operation"] for step in vision["pipeline"]] == [
+        "input",
+        "patch_embedding",
+        "encode",
+        "project_to_text_width",
+        "emit_soft_token_stream",
+    ]
+    assert vision["pipeline"][-1] == {
+        "id": "soft_visual_tokens",
+        "operation": "emit_soft_token_stream",
+        "kind": "soft_visual_tokens",
+        "count": 280,
+        "width": 64,
+    }
 
     fusion = data["modalities"]["fusion"]
     assert fusion["kind"] == "placeholder_replace"
+    assert fusion["operation"] == "scatter_soft_tokens_into_placeholder_slots"
     assert fusion["placeholder"] == {"kind": "image_placeholder", "token_id": 262144}
+    assert fusion["mechanism"] == {
+        "kind": "scatter",
+        "source": "modalities.inputs.vision.tokens",
+        "into": "io.token_embedding",
+        "at": {"kind": "image_placeholder", "token_id": 262144},
+    }
     assert fusion["target"] == "stack.input_embeddings"
     assert data["io"]["stack_input"] == {
         "kind": "mixed_embeddings",
@@ -179,6 +206,75 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "source": "modalities.fusion",
         "trace": {"ir_path": "extras.modalities.fusion"},
     }
+
+    assert "description" not in encoded
+    assert "label" not in encoded
+    assert "title" not in encoded
+
+
+def test_expanded_json_carries_structured_audio_inputs():
+    cfg = deepcopy(GEMMA4_VISION_TINY_CONFIG)
+    cfg.update({
+        "audio_token_id": 258881,
+        "boa_token_id": 256000,
+        "eoa_token_id": 258883,
+        "audio_seq_length": 750,
+        "audio_ms_per_token": 40,
+        "audio_config": {
+            "architectures": ["Gemma4AudioModel"],
+            "model_type": "gemma4_audio",
+            "hidden_size": 1024,
+            "num_hidden_layers": 12,
+            "num_attention_heads": 8,
+            "output_proj_dims": 64,
+            "feature_size": 128,
+        },
+    })
+
+    data = unfold(cfg, return_json=True)
+    encoded = json.dumps(data["modalities"])
+
+    audio = data["modalities"]["inputs"]["audio"]
+    assert audio["kind"] == "audio_to_soft_tokens"
+    assert audio["input"] == {
+        "kind": "audio_features",
+        "shape": ["batch", "segments", "frames", "features"],
+        "feature_size": 128,
+    }
+    assert audio["encoder"]["kind"] == "gemma4_audio"
+    assert audio["encoder"]["hidden_size"] == 1024
+    assert audio["encoder"]["num_layers"] == 12
+    assert audio["projector"] == {
+        "kind": "linear_projector",
+        "in_features": 1024,
+        "out_features": 64,
+    }
+    assert audio["tokens"] == {
+        "kind": "soft_audio_tokens",
+        "count": 750,
+        "ms_per_token": 40,
+        "width": 64,
+    }
+    assert [step["operation"] for step in audio["pipeline"]] == [
+        "input",
+        "encode",
+        "project_to_text_width",
+        "emit_soft_token_stream",
+    ]
+
+    fusion = data["modalities"]["fusion"]
+    assert fusion["placeholders"]["audio"] == {
+        "kind": "audio_placeholder",
+        "token_id": 258881,
+        "begin_token_id": 256000,
+        "end_token_id": 258883,
+    }
+    assert fusion["mechanism"]["kind"] == "scatter_many"
+    assert any(
+        route["source"] == "modalities.inputs.audio.tokens"
+        and route["at"]["kind"] == "audio_placeholder"
+        for route in fusion["mechanism"]["routes"]
+    )
 
     assert "description" not in encoded
     assert "label" not in encoded

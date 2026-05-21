@@ -34,9 +34,11 @@ def _normalise_path(path: dict) -> dict[str, Any]:
     return _clean({
         "kind": kind,
         "input": path.get("input"),
+        "embedding": path.get("embedding"),
         "encoder": path.get("encoder"),
         "projector": path.get("projector"),
         "tokens": path.get("tokens"),
+        "pipeline": path.get("pipeline"),
         "trace": path.get("trace"),
     })
 
@@ -44,9 +46,12 @@ def _normalise_path(path: dict) -> dict[str, Any]:
 def _normalise_fusion(fusion: dict) -> dict[str, Any]:
     return _clean({
         "kind": fusion.get("kind"),
+        "operation": fusion.get("operation"),
         "sources": fusion.get("sources"),
         "target": fusion.get("target"),
         "placeholder": fusion.get("placeholder"),
+        "placeholders": fusion.get("placeholders"),
+        "mechanism": fusion.get("mechanism"),
         "output": fusion.get("output"),
         "trace": fusion.get("trace"),
     })

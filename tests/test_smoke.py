@@ -296,19 +296,35 @@ def _gemma4_e2b_vision_config():
     cfg.update(
         {
             "_name_or_path": "google/gemma-4-E2B",
-            "image_token_id": 262144,
+            "image_token_id": 258880,
+            "audio_token_id": 258881,
+            "boi_token_id": 255999,
+            "boa_token_id": 256000,
+            "eoi_token_id": 258882,
+            "eoa_token_id": 258883,
             "image_seq_length": 280,
+            "audio_seq_length": 750,
+            "audio_ms_per_token": 40,
             "image_token_count_options": [70, 140, 280, 560, 1120],
             "projector_hidden_act": "gelu_pytorch_tanh",
             "text_config": text_cfg,
             "vision_config": {
                 "architectures": ["Gemma4VisionModel"],
                 "model_type": "gemma4_vision",
-                "hidden_size": 1152,
-                "num_hidden_layers": 27,
-                "num_attention_heads": 16,
+                "hidden_size": 768,
+                "num_hidden_layers": 16,
+                "num_attention_heads": 12,
                 "image_size": 896,
                 "patch_size": 16,
+            },
+            "audio_config": {
+                "architectures": ["Gemma4AudioModel"],
+                "model_type": "gemma4_audio",
+                "hidden_size": 1024,
+                "num_hidden_layers": 12,
+                "num_attention_heads": 8,
+                "output_proj_dims": 1536,
+                "feature_size": 128,
             },
         }
     )
@@ -448,26 +464,50 @@ def test_gemma4_multimodal_fusion_render():
     d = unfold(_gemma4_e2b_vision_config())
     ir = d.to_ir()
     assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
+    assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
 
     html = d.to_html(standalone=True)
-    assert "Vision input" in html
-    assert "Vision pathway" in html
+    assert "Vision input" not in html
+    assert "Soft visual tokens" in html
+    assert "Soft audio tokens" in html
+    assert "Vision -&gt; tokens" in html
+    assert "Audio -&gt; tokens" in html
     assert "Multimodal fusion" in html
     assert "Visual tokens" in html
-    assert "scatter vision features into image-token slots" in html
-    assert "Text embeddings with image slots" in html
+    assert "Audio tokens" in html
+    assert "scatter modality features into token slots" in html
+    assert "Text embeddings with modality slots" in html
     assert "Decoder stack input" in html
     assert "BOI" in html
+    assert "BOA" in html
     assert "EOI" in html
+    assert "EOA" in html
     assert "&lt;image&gt; x 280" in html
+    assert "&lt;audio&gt; x 750" in html
+    assert "AUD x 750" in html
     assert "280 x 1,536" in html
     assert 'data-card-id="vision_path"' in html
+    assert 'data-card-id="audio_path"' in html
+    assert 'data-card-id="vision_pixels"' in html
+    assert 'data-card-id="vision_patches"' in html
+    assert 'data-card-id="vision_encoder"' in html
+    assert 'data-card-id="vision_projector"' in html
+    assert 'data-card-id="visual_tokens"' in html
+    assert 'data-card-id="audio_features"' in html
+    assert 'data-card-id="audio_encoder"' in html
+    assert 'data-card-id="audio_projector"' in html
+    assert 'data-card-id="audio_tokens"' in html
     assert 'data-card-id="fusion"' in html
     assert 'data-card-id="stack_input"' in html
     assert 'data-id="fusion_image_slots"' in html
     assert 'data-id="fusion_vision_tokens"' in html
+    assert 'data-id="fusion_audio_slots"' in html
+    assert 'data-id="fusion_audio_tokens"' in html
     assert 'data-card-id="fusion_image_slots"' in html
+    assert 'data-card-id="fusion_audio_tokens"' in html
     assert 'data-card-id="fusion_mixed_stream"' in html
 
 

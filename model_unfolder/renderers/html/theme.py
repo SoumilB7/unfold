@@ -6,6 +6,7 @@ FONT_HEAD = '"Caveat","Patrick Hand","Comic Sans MS",cursive'
 FONT_BODY = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif'
 FONT_MONO = 'ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace'
 GAP = 6
+BLOCK_LABEL_FONT_SIZE = 20
 
 C = {
     "bg_outer": "#E1F5EE",

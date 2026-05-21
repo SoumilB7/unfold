@@ -5,7 +5,7 @@ from .attention import attention_card, attention_card_css, build_attention_view
 from .attention_types import build_mla_kv_cache_view, build_mla_query_path_view
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
-from .modalities import build_multimodal_fusion_view, build_vision_path_view
+from .modalities import build_audio_path_view, build_multimodal_fusion_view, build_vision_path_view
 from .per_layer_embedding import build_per_layer_embedding_view
 
 
@@ -26,6 +26,8 @@ def block_detail_svg(ir: dict, info: dict, mount_id: str, block: dict) -> str | 
         return build_per_layer_embedding_view(ir, info, mount_id, block)
     if block.get("detail_view") == "vision_path":
         return build_vision_path_view(ir, info, mount_id, block)
+    if block.get("detail_view") == "audio_path":
+        return build_audio_path_view(ir, info, mount_id, block)
     if block.get("detail_view") == "multimodal_fusion":
         return build_multimodal_fusion_view(ir, info, mount_id, block)
 

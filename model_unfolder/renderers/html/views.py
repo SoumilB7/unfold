@@ -94,8 +94,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     inner_y = 200
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
-    has_vision_fusion = "vision" in (modalities.get("inputs") or {}) and modalities.get("fusion")
-    h = inner_y + inner_h + (292 if has_vision_fusion else 232)
+    modality_inputs = modalities.get("inputs") or {}
+    has_modality_fusion = bool(modality_inputs) and bool(modalities.get("fusion"))
+    has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
+    h = inner_y + inner_h + (360 if has_audio_fusion else 292 if has_modality_fusion else 232)
     w = 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
@@ -104,9 +106,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     # --- 2. Model-level scaffold (positions tracked by total height h) ---
-    if has_vision_fusion:
+    if has_modality_fusion:
         tok_text, embed, stack_input = _draw_multimodal_input_scaffold(
-            parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h,
+            parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h, modalities,
         )
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
@@ -148,7 +150,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     # --- 4. Linear chain arrows ---
     chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
-    if not has_vision_fusion:
+    if not has_modality_fusion:
         chain.insert(0, tok_text)
     for src, dst in zip(chain, chain[1:]):
         parts.append(_v_line(src, dst, arrow_id))
@@ -210,13 +212,29 @@ def _draw_multimodal_input_scaffold(
     inner_y: float,
     inner_h: float,
     h: float,
+    modalities: dict,
 ) -> tuple[dict, dict, dict]:
-    """Draw text + vision inputs entering a model-level fusion node."""
+    """Draw text and modality soft tokens entering model-level fusion."""
+    inputs = modalities.get("inputs") or {}
+    has_vision = "vision" in inputs
+    has_audio = "audio" in inputs
     fusion_y = inner_y + inner_h + 34
     embed_y = fusion_y + 88
     tok_y = embed_y + 66
-    text_x = cx - 145
-    vision_x = cx + 160
+    both_modalities = has_audio and has_vision
+    if both_modalities:
+        text_x = cx
+        vision_x = cx - 215
+        audio_x = cx + 215
+        text_w = 230
+        route_w = 170
+        modality_y = embed_y
+    else:
+        text_x = cx - 155
+        modality_x = cx + 155
+        text_w = 250
+        route_w = 210
+        modality_y = embed_y
 
     tok_text = _rect_block(
         parts, info, shadow_id, "tok_text",
@@ -225,13 +243,8 @@ def _draw_multimodal_input_scaffold(
     )
     embed = _rect_block(
         parts, info, shadow_id, "embed",
-        text_x - 125, embed_y, 250, 44,
+        text_x - text_w / 2, embed_y, text_w, 44,
         _block_label(info, "embed", "Token Embedding"), font_size=16,
-    )
-    vision = _rect_block(
-        parts, info, shadow_id, "vision_path",
-        vision_x - 105, embed_y, 210, 44,
-        _block_label(info, "vision_path", "Vision pathway"), font_size=16,
     )
     fusion = _rect_block(
         parts, info, shadow_id, "fusion",
@@ -241,11 +254,37 @@ def _draw_multimodal_input_scaffold(
 
     parts.append(_v_line(tok_text, embed, arrow_id))
     parts.append(_block_top_to_block_bottom(
-        embed["cx"], embed["top"], fusion["cx"] - 56, fusion["bottom"] + GAP, arrow_id,
+        embed["cx"], embed["top"],
+        fusion["cx"] if both_modalities else fusion["cx"] - 56,
+        fusion["bottom"] + GAP,
+        arrow_id,
     ))
-    parts.append(_block_top_to_block_bottom(
-        vision["cx"], vision["top"], fusion["cx"] + 56, fusion["bottom"] + GAP, arrow_id,
-    ))
+    if has_vision:
+        x = vision_x if both_modalities else modality_x
+        vision = _rect_block(
+            parts, info, shadow_id, "vision_path",
+            x - route_w / 2, modality_y, route_w, 44,
+            _block_label(info, "vision_path", "Vision -> tokens"), font_size=16,
+        )
+        parts.append(_block_top_to_block_bottom(
+            vision["cx"], vision["top"],
+            fusion["cx"] - 86 if both_modalities else fusion["cx"] + 56,
+            fusion["bottom"] + GAP,
+            arrow_id,
+        ))
+    if has_audio:
+        x = audio_x if both_modalities else modality_x
+        audio = _rect_block(
+            parts, info, shadow_id, "audio_path",
+            x - route_w / 2, modality_y, route_w, 44,
+            _block_label(info, "audio_path", "Audio -> tokens"), font_size=16,
+        )
+        parts.append(_block_top_to_block_bottom(
+            audio["cx"], audio["top"],
+            fusion["cx"] + 86 if both_modalities else fusion["cx"] + 56,
+            fusion["bottom"] + GAP,
+            arrow_id,
+        ))
     return tok_text, embed, fusion
 
 

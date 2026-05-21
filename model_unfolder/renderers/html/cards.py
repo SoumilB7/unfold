@@ -20,7 +20,7 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     for node_id in ("tok_text", "embed"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
-    for node_id in ("vision_path", "fusion"):
+    for node_id in ("vision_path", "audio_path", "fusion"):
         block = info.get("blocks", {}).get(node_id)
         if not block:
             continue

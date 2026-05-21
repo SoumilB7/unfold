@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .theme import C, FONT_HEAD, GAP
+from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, GAP
 from .utils import _attr, _html, _num
 
 SVG_FONT_BOOST = 2
@@ -89,10 +89,10 @@ def _rect_block(
     w: float,
     h: float,
     label: str | list[str],
-    font_size: int = 18,
+    font_size: int | None = None,
 ) -> dict:
     lines = label if isinstance(label, list) else [label]
-    label_font_size = font_size + BLOCK_LABEL_FONT_BOOST
+    label_font_size = BLOCK_LABEL_FONT_SIZE if font_size is None else font_size + BLOCK_LABEL_FONT_BOOST
     line_h = label_font_size + SVG_FONT_BOOST + 2
     start_y = y + h / 2 - ((len(lines) - 1) * line_h) / 2
 
