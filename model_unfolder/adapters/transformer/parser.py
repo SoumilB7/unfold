@@ -42,6 +42,7 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
     per_layer_embedding_extras,
 )
+from .special_parts.modalities import multimodal_extras
 
 
 # ---------------------------------------------------------------------------
@@ -312,6 +313,7 @@ def parse(cfg: Any) -> ModelIR:
         hidden_size,
         tie_word_embeddings,
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
+        multimodal_extras(cfg, text_cfg, hidden_size),
     )
 
     if use_parallel_residual:
@@ -515,4 +517,3 @@ def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
         if layer_types[j] == target_type:
             return j
     return None
-

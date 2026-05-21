@@ -276,6 +276,45 @@ def _gemma4_e4b_config():
     return cfg
 
 
+def _gemma4_e2b_vision_config():
+    cfg = dict(GEMMA4_31B_CONFIG)
+    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
+    text_cfg.update(
+        {
+            "hidden_size": 1536,
+            "intermediate_size": 6144,
+            "num_hidden_layers": 4,
+            "num_attention_heads": 8,
+            "num_key_value_heads": 1,
+            "num_global_key_value_heads": 1,
+            "head_dim": 256,
+            "global_head_dim": 256,
+            "layer_types": ["sliding_attention", "sliding_attention", "sliding_attention", "full_attention"],
+            "max_position_embeddings": 131072,
+        }
+    )
+    cfg.update(
+        {
+            "_name_or_path": "google/gemma-4-E2B",
+            "image_token_id": 262144,
+            "image_seq_length": 280,
+            "image_token_count_options": [70, 140, 280, 560, 1120],
+            "projector_hidden_act": "gelu_pytorch_tanh",
+            "text_config": text_cfg,
+            "vision_config": {
+                "architectures": ["Gemma4VisionModel"],
+                "model_type": "gemma4_vision",
+                "hidden_size": 1152,
+                "num_hidden_layers": 27,
+                "num_attention_heads": 16,
+                "image_size": 896,
+                "patch_size": 16,
+            },
+        }
+    )
+    return cfg
+
+
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
@@ -403,6 +442,33 @@ def test_gemma4_ple_uses_reusable_part_contract():
     assert 'data-card-id="per_layer_input"' in html
     assert "per_layer_input[L]" in html
     assert "gelu_pytorch_tanh" not in html.lower()
+
+
+def test_gemma4_multimodal_fusion_render():
+    d = unfold(_gemma4_e2b_vision_config())
+    ir = d.to_ir()
+    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
+    assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
+
+    html = d.to_html(standalone=True)
+    assert "Vision input" in html
+    assert "Vision pathway" in html
+    assert "Multimodal fusion" in html
+    assert "Visual tokens" in html
+    assert "scatter vision features into image-token slots" in html
+    assert "Text embeddings with image slots" in html
+    assert "Decoder stack input" in html
+    assert "BOI" in html
+    assert "EOI" in html
+    assert "&lt;image&gt; x 280" in html
+    assert "280 x 1,536" in html
+    assert 'data-card-id="vision_path"' in html
+    assert 'data-card-id="fusion"' in html
+    assert 'data-card-id="stack_input"' in html
+    assert 'data-id="fusion_image_slots"' in html
+    assert 'data-id="fusion_vision_tokens"' in html
+    assert 'data-card-id="fusion_image_slots"' in html
+    assert 'data-card-id="fusion_mixed_stream"' in html
 
 
 def test_llama3():

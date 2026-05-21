@@ -17,6 +17,7 @@ Module split (one concern per file):
 * :mod:`block_graph`    — generic block-level DAG (one node per IR block)
 * :mod:`layer_group`    — assemble all of the above for one group
 * :mod:`pathways`       — external pathways (PLE etc.)
+* :mod:`modalities`     — model-level image/audio input pathways and fusion
 * :mod:`code_evidence`  — normalise the optional code-evidence section
 * :mod:`utils`          — drop-none, shape, index-range helpers
 
@@ -34,6 +35,7 @@ from .sections import build_model, build_dimensions, build_parameters, build_io
 from .stack import build_stack
 from .layer_group import build_layer_group
 from .pathways import build_external_pathways
+from .modalities import build_modalities
 from .code_evidence import normalise_code_evidence
 
 
@@ -65,6 +67,10 @@ def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
     external = list(build_external_pathways(extras))
     if external:
         out["external_pathways"] = external
+
+    modalities = build_modalities(extras)
+    if modalities:
+        out["modalities"] = modalities
 
     edges = raw.get("cross_layer_edges") or []
     if edges:

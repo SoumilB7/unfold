@@ -277,11 +277,23 @@ def _block_top_to_block_bottom(x1: float, y1: float, x2: float, y2: float, arrow
     """Route a block output into a block above it.
 
     Use this when the source point is the top edge of a block.  The line leaves
-    vertically first, then turns, so arrows do not appear to start from the
-    middle side of the source block.  Split-dot fan-outs should keep using
-    ``_elbow_hv``.
+    vertically first, runs across under the target, then enters the target from
+    below on a vertical final segment.  That avoids the recurring "side-bottom"
+    arrowhead that happens when a vertical-horizontal elbow terminates at a
+    block's bottom edge.  Split-dot fan-outs should keep using ``_elbow_hv``.
     """
-    return _elbow_vh(x1, y1, x2, y2, arrow_id)
+    if abs(x2 - x1) < 1 or abs(y2 - y1) < 1:
+        d = f"M {_num(x1)} {_num(y1)} L {_num(x2)} {_num(y2)}"
+    else:
+        clear = min(32, max(14, abs(y2 - y1) / 2))
+        lane_y = y2 + clear if y1 > y2 else y2 - clear
+        d = (
+            f"M {_num(x1)} {_num(y1)} "
+            f"L {_num(x1)} {_num(lane_y)} "
+            f"L {_num(x2)} {_num(lane_y)} "
+            f"L {_num(x2)} {_num(y2)}"
+        )
+    return _path(d, arrow_id)
 
 
 def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> str:

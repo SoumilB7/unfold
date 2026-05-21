@@ -20,6 +20,17 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     for node_id in ("tok_text", "embed"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
+    for node_id in ("vision_path", "fusion"):
+        block = info.get("blocks", {}).get(node_id)
+        if not block:
+            continue
+        svg = block_detail_svg(ir, info, mount_id, block)
+        title, desc = _meta(info, node_id)
+        if svg:
+            panels.append(_rich_card(node_id, title, desc, svg))
+        else:
+            panels.append(_simple_card(node_id, title, desc))
+
     for block in layer_blocks:
         kind = block.get("kind")
         node_id = block["id"]
@@ -147,6 +158,9 @@ def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
 
 def _sub_inspect_children(info: dict) -> list[dict]:
     children: list[dict] = []
+    for block in info.get("blocks", {}).values():
+        if block.get("role") in {"modality_input", "fusion"}:
+            children.extend(block.get("children") or [])
     for block in (info["dominant"]["spec"].get("blocks") or []):
         children.extend(block.get("children") or [])
     return children

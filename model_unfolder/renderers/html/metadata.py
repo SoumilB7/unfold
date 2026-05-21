@@ -143,6 +143,7 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
     for block in render.get("model_blocks", []):
         if block.get("id"):
             blocks[block["id"]] = block
+    blocks.update(_multimodal_block_lookup(ir))
     for block in spec.get("blocks", []):
         if block.get("id"):
             blocks[block["id"]] = block
@@ -156,6 +157,125 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
             if child.get("id"):
                 blocks[child["id"]] = child
     return blocks
+
+
+def _multimodal_block_lookup(ir: dict) -> dict:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    inputs = modalities.get("inputs") or {}
+    fusion = modalities.get("fusion") or {}
+    blocks: dict[str, dict] = {}
+
+    if "vision" in inputs:
+        vision = inputs["vision"]
+        encoder = vision.get("encoder") or {}
+        tokens = vision.get("tokens") or {}
+        blocks["vision_path"] = {
+            "id": "vision_path",
+            "role": "modality_input",
+            "kind": "vision",
+            "label": "Vision pathway",
+            "title": "Vision pathway",
+            "description": _vision_description(encoder, tokens),
+            "detail_view": "vision_path",
+        }
+
+    if fusion:
+        vision = inputs.get("vision") or {}
+        blocks["fusion"] = {
+            "id": "fusion",
+            "role": "fusion",
+            "kind": "fusion",
+            "label": "Multimodal fusion",
+            "title": "Multimodal fusion",
+            "description": _fusion_description(fusion),
+            "detail_view": "multimodal_fusion",
+            "children": _fusion_children(fusion, vision),
+        }
+    return blocks
+
+
+def _vision_description(encoder: dict, tokens: dict) -> str:
+    kind = (encoder.get("kind") or "vision encoder").replace("_", " ")
+    count = tokens.get("count")
+    width = tokens.get("width")
+    bits = [kind]
+    if count:
+        bits.append(f"{_fmt_int(count)} visual tokens")
+    if width:
+        bits.append(f"width {_fmt_int(width)}")
+    return "; ".join(bits)
+
+
+def _fusion_description(fusion: dict) -> str:
+    kind = (fusion.get("kind") or "fusion").replace("_", " ")
+    output = fusion.get("output") or {}
+    width = output.get("width")
+    if width:
+        return f"{kind}; feeds decoder stack at width {_fmt_int(width)}"
+    return kind
+
+
+def _fusion_children(fusion: dict, vision: dict) -> list[dict]:
+    tokens = vision.get("tokens") or {}
+    count = tokens.get("count")
+    width = tokens.get("width") or (fusion.get("output") or {}).get("width")
+    image_span = f"<image> x {_fmt_int(count)}" if count else "<image> slots"
+    visual_span = (
+        f"{_fmt_int(count)} visual features"
+        if count and not width
+        else f"{_fmt_int(count)} x {_fmt_int(width)} visual features" if count and width
+        else "projected visual features"
+    )
+    return [
+        {
+            "id": "embed",
+            "title": "Text embeddings with image slots",
+            "description": "Token embeddings are prepared with reserved image-token positions in the sequence.",
+        },
+        {
+            "id": "vision_path",
+            "title": "Soft visual tokens",
+            "description": f"{visual_span}; produced by the vision pathway before fusion.",
+        },
+        {
+            "id": "stack_input",
+            "title": "Decoder stack input",
+            "description": "The fused sequence passed to the decoder stack after visual features are scattered into image-token slots.",
+        },
+        {
+            "id": "fusion_text_tokens",
+            "title": "Text token embeddings",
+            "description": "Normal token embeddings surrounding the image span.",
+        },
+        {
+            "id": "fusion_boi",
+            "title": "Begin-image token",
+            "description": "BOI marks the start of the image span and stays in the text stream.",
+        },
+        {
+            "id": "fusion_image_slots",
+            "title": "Image-token slots",
+            "description": (
+                f"The processor expands the image marker into {image_span}; "
+                "these placeholder slots are where vision features are scattered."
+            ),
+        },
+        {
+            "id": "fusion_vision_tokens",
+            "title": "Vision feature sequence",
+            "description": f"{visual_span}; one feature is placed into each image-token slot.",
+        },
+        {
+            "id": "fusion_eoi",
+            "title": "End-image token",
+            "description": "EOI marks the end of the image span and stays in the text stream.",
+        },
+        {
+            "id": "fusion_mixed_stream",
+            "title": "Mixed decoder input",
+            "description": "The decoder receives one sequence: text/control embeddings plus visual features in the image slots.",
+        },
+    ]
 
 
 def _block_label(info: dict, node_id: str, default):
@@ -265,4 +385,7 @@ def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
         badges.append({"text": f"{len(info['groups'])} layer types", "title": ""})
     if is_sliding(attention):
         badges.append({"text": mask_chip(attention), "title": mask_title(attention)})
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    if (modalities.get("inputs") or {}).get("vision"):
+        badges.append({"text": "Vision input", "title": "Image pathway fused before the decoder stack"})
     return badges

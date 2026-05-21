@@ -4,6 +4,7 @@ from __future__ import annotations
 from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
+    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -33,6 +34,8 @@ _KIND_LAYOUT = {
     "attention":    {"shape": "rect",   "w": 230, "h": 60, "font": 17},
     "ffn":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
     "ple":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
+    "vision":       {"shape": "rect",   "w": 210, "h": 46, "font": 15},
+    "fusion":       {"shape": "rect",   "w": 230, "h": 50, "font": 15},
     "residual_add": {"shape": "circle", "w": 28,  "h": 28, "sym": "+"},
     "gate_mul":     {"shape": "circle", "w": 28,  "h": 28, "sym": "×"},
 }
@@ -90,7 +93,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     inner_h = max(490, stack_h + 2 * inner_padding)
 
     inner_y = 200
-    h = inner_y + inner_h + 232  # 232 = embed + tok_text + bottom padding
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    has_vision_fusion = "vision" in (modalities.get("inputs") or {}) and modalities.get("fusion")
+    h = inner_y + inner_h + (292 if has_vision_fusion else 232)
     w = 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
@@ -99,12 +104,18 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     # --- 2. Model-level scaffold (positions tracked by total height h) ---
-    tok_text = _rect_block(parts, info, shadow_id, "tok_text",
-                           cx - 110, h - 100, 220, 44,
-                           _block_label(info, "tok_text", "Tokenized text"), font_size=17)
-    embed = _rect_block(parts, info, shadow_id, "embed",
-                        cx - 130, h - 168, 260, 44,
-                        _block_label(info, "embed", "Token Embedding layer"), font_size=17)
+    if has_vision_fusion:
+        tok_text, embed, stack_input = _draw_multimodal_input_scaffold(
+            parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h,
+        )
+    else:
+        tok_text = _rect_block(parts, info, shadow_id, "tok_text",
+                               cx - 110, h - 100, 220, 44,
+                               _block_label(info, "tok_text", "Tokenized text"), font_size=17)
+        embed = _rect_block(parts, info, shadow_id, "embed",
+                            cx - 130, h - 168, 260, 44,
+                            _block_label(info, "embed", "Token Embedding layer"), font_size=17)
+        stack_input = embed
     final_rms = _rect_block(parts, info, shadow_id, "final_rms",
                             cx - 90, 140, 180, 36,
                             _block_label(info, "final_rms", "Final RMSNorm"), font_size=16)
@@ -136,7 +147,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         y_cursor = top - _BLOCK_GAP
 
     # --- 4. Linear chain arrows ---
-    chain = [tok_text, embed] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
+    chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
+    if not has_vision_fusion:
+        chain.insert(0, tok_text)
     for src, dst in zip(chain, chain[1:]):
         parts.append(_v_line(src, dst, arrow_id))
 
@@ -186,6 +199,54 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     ))
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
+
+
+def _draw_multimodal_input_scaffold(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    arrow_id: str,
+    cx: float,
+    inner_y: float,
+    inner_h: float,
+    h: float,
+) -> tuple[dict, dict, dict]:
+    """Draw text + vision inputs entering a model-level fusion node."""
+    fusion_y = inner_y + inner_h + 34
+    embed_y = fusion_y + 88
+    tok_y = embed_y + 66
+    text_x = cx - 145
+    vision_x = cx + 160
+
+    tok_text = _rect_block(
+        parts, info, shadow_id, "tok_text",
+        text_x - 105, tok_y, 210, 42,
+        _block_label(info, "tok_text", "Tokenized text"), font_size=16,
+    )
+    embed = _rect_block(
+        parts, info, shadow_id, "embed",
+        text_x - 125, embed_y, 250, 44,
+        _block_label(info, "embed", "Token Embedding"), font_size=16,
+    )
+    vision = _rect_block(
+        parts, info, shadow_id, "vision_path",
+        vision_x - 105, embed_y, 210, 44,
+        _block_label(info, "vision_path", "Vision pathway"), font_size=16,
+    )
+    fusion = _rect_block(
+        parts, info, shadow_id, "fusion",
+        cx - 125, fusion_y, 250, 50,
+        _block_label(info, "fusion", "Multimodal fusion"), font_size=16,
+    )
+
+    parts.append(_v_line(tok_text, embed, arrow_id))
+    parts.append(_block_top_to_block_bottom(
+        embed["cx"], embed["top"], fusion["cx"] - 56, fusion["bottom"] + GAP, arrow_id,
+    ))
+    parts.append(_block_top_to_block_bottom(
+        vision["cx"], vision["top"], fusion["cx"] + 56, fusion["bottom"] + GAP, arrow_id,
+    ))
+    return tok_text, embed, fusion
 
 
 def _layer_stack_height(layer_blocks: list[dict]) -> int:

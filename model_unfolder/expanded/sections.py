@@ -38,6 +38,7 @@ def build_io(raw: dict) -> dict[str, Any]:
     """Tokens → embedding → stack → final norm → LM head."""
     hidden = raw.get("hidden_size")
     vocab  = raw.get("vocab_size")
+    fusion = (((raw.get("extras") or {}).get("modalities") or {}).get("fusion") or {})
 
     out: dict[str, Any] = {
         "input": {
@@ -54,6 +55,13 @@ def build_io(raw: dict) -> dict[str, Any]:
             "trace":         {"ir_path": "extras.render.model_blocks.embed"},
         }),
     }
+    if fusion:
+        out["stack_input"] = drop_none({
+            "kind":          (fusion.get("output") or {}).get("kind"),
+            "width":         (fusion.get("output") or {}).get("width") or hidden,
+            "source":        "modalities.fusion",
+            "trace":         {"ir_path": "extras.modalities.fusion"},
+        })
     out["final_norm"] = drop_none({
         "operation":        "norm",
         "kind":             _final_norm_kind(raw),

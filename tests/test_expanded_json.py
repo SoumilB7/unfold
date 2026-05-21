@@ -23,6 +23,38 @@ LLAMA_TINY_CONFIG = {
     "hidden_act": "silu",
 }
 
+GEMMA4_VISION_TINY_CONFIG = {
+    "architectures": ["Gemma4ForConditionalGeneration"],
+    "model_type": "gemma4",
+    "_name_or_path": "google/gemma-4-e2b",
+    "image_token_id": 262144,
+    "image_seq_length": 280,
+    "image_token_count_options": [70, 140, 280, 560, 1120],
+    "projector_hidden_act": "gelu_pytorch_tanh",
+    "text_config": {
+        "architectures": ["Gemma4ForCausalLM"],
+        "model_type": "gemma4_text",
+        "vocab_size": 262208,
+        "hidden_size": 64,
+        "intermediate_size": 256,
+        "num_hidden_layers": 2,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 1,
+        "max_position_embeddings": 1024,
+        "tie_word_embeddings": True,
+        "hidden_activation": "gelu_pytorch_tanh",
+    },
+    "vision_config": {
+        "architectures": ["Gemma4VisionModel"],
+        "model_type": "gemma4_vision",
+        "hidden_size": 32,
+        "num_hidden_layers": 3,
+        "num_attention_heads": 4,
+        "image_size": 896,
+        "patch_size": 16,
+    },
+}
+
 
 def test_expanded_json_is_structural_not_renderer_copy():
     data = unfold(LLAMA_TINY_CONFIG, return_json=True)
@@ -112,3 +144,42 @@ class FakeMLP:
     assert "grouped_kv_attention" in evidence["detections"]["attention"]
     assert evidence["detections"]["attention"]["grouped_kv_attention"]["locations"][0]["class"] == "FakeAttention"
     assert data["layer_groups"][0]["attention"]["trace"]["code_finding_ids"]
+
+
+def test_expanded_json_carries_structured_multimodal_inputs():
+    data = unfold(GEMMA4_VISION_TINY_CONFIG, return_json=True)
+    encoded = json.dumps(data["modalities"])
+
+    vision = data["modalities"]["inputs"]["vision"]
+    assert vision["kind"] == "vision"
+    assert vision["input"] == {
+        "kind": "image_pixels",
+        "shape": ["batch", "images", "channels", "height", "width"],
+        "image_size": 896,
+        "patch_size": 16,
+    }
+    assert vision["encoder"]["kind"] == "gemma4_vision"
+    assert vision["encoder"]["hidden_size"] == 32
+    assert vision["encoder"]["position_encoding"] == {"kind": "learned_2d_plus_rope_2d"}
+    assert vision["projector"]["out_features"] == 64
+    assert vision["tokens"] == {
+        "kind": "soft_visual_tokens",
+        "count": 280,
+        "count_options": [70, 140, 280, 560, 1120],
+        "width": 64,
+    }
+
+    fusion = data["modalities"]["fusion"]
+    assert fusion["kind"] == "placeholder_replace"
+    assert fusion["placeholder"] == {"kind": "image_placeholder", "token_id": 262144}
+    assert fusion["target"] == "stack.input_embeddings"
+    assert data["io"]["stack_input"] == {
+        "kind": "mixed_embeddings",
+        "width": 64,
+        "source": "modalities.fusion",
+        "trace": {"ir_path": "extras.modalities.fusion"},
+    }
+
+    assert "description" not in encoded
+    assert "label" not in encoded
+    assert "title" not in encoded
