@@ -91,11 +91,45 @@ def _unwrap_text(cfg: Any) -> Any:
         sub = _g(cfg, key)
         if sub is None:
             continue
-        if isinstance(sub, dict) and sub.get("num_hidden_layers"):
-            return sub
-        if not isinstance(sub, dict) and hasattr(sub, "num_hidden_layers"):
-            return sub
+        if isinstance(sub, dict):
+            if _has_transformer_shape(sub):
+                return sub
+            completed = _complete_config_from_transformers_registry(sub)
+            if _has_transformer_shape(completed):
+                return completed
+        if not isinstance(sub, dict):
+            if _has_transformer_shape(sub):
+                return sub
     return cfg
+
+
+def _complete_config_from_transformers_registry(text_cfg: dict) -> dict:
+    """Materialize sparse nested configs through HF's generic config registry."""
+    model_type = str(text_cfg.get("model_type") or "").lower()
+    if not model_type:
+        return text_cfg
+
+    try:
+        from transformers import CONFIG_MAPPING
+    except Exception:
+        return text_cfg
+
+    try:
+        config_cls = CONFIG_MAPPING[model_type]
+        completed = config_cls(**text_cfg)
+    except Exception:
+        return text_cfg
+
+    if hasattr(completed, "to_dict"):
+        return completed.to_dict()
+    return text_cfg
+
+
+def _has_transformer_shape(cfg: Any) -> bool:
+    return any(
+        _resolve(cfg, field) is not None
+        for field in ("num_hidden_layers", "hidden_size", "num_attention_heads")
+    )
 
 
 def _nested(cfg: Any, key: str) -> Any:

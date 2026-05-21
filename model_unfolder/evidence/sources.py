@@ -128,19 +128,6 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             warnings=("Could not infer model_type for installed Transformers source lookup.",),
         )
 
-    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
-    if family_dir is None:
-        return SourceBundle(
-            source="local",
-            model_type=model_type,
-            architecture=architecture,
-            model_id=model_id,
-            warnings=(
-                f"Static code evidence is scoped to transformer LLMs; "
-                f"model_type={model_type!r} is out of scope (SSM/recurrent/hybrid families excluded).",
-            ),
-        )
-
     try:
         import transformers
     except ImportError:
@@ -152,7 +139,23 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             warnings=("transformers is not installed; cannot inspect local modeling source.",),
         )
 
-    root = Path(transformers.__file__).resolve().parent / "models" / family_dir
+    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
+    models_root = Path(transformers.__file__).resolve().parent / "models"
+    if family_dir is None:
+        family_dir = _direct_transformers_family_dir(models_root, model_type)
+    if family_dir is None:
+        return SourceBundle(
+            source="local",
+            model_type=model_type,
+            architecture=architecture,
+            model_id=model_id,
+            warnings=(
+                f"No installed Transformers source directory for model_type={model_type!r}. "
+                "Use code_source='hub' or pass a local modeling file/directory for code evidence.",
+            ),
+        )
+
+    root = models_root / family_dir
     if not root.exists():
         return SourceBundle(
             source="local",
@@ -170,6 +173,20 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         model_id=model_id,
         warnings=() if files else (f"No modeling*.py files found for model_type={model_type!r}.",),
     )
+
+
+def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:
+    """Use the installed Transformers family directory when it matches directly.
+
+    The explicit map above covers families whose model_type differs from the
+    package directory (for example ``gpt_j`` -> ``gptj``). Many newer wrappers
+    use the model_type as the directory name, so this keeps multimodal additions
+    like qwen2_audio from needing one-off source-map entries.
+    """
+    for candidate in (model_type, model_type.replace("-", "_")):
+        if candidate and (models_root / candidate).exists():
+            return candidate
+    return None
 
 
 def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:

@@ -331,6 +331,39 @@ def _gemma4_e2b_vision_config():
     return cfg
 
 
+QWEN2_AUDIO_SPARSE_CONFIG = {
+    "architectures": ["Qwen2AudioForConditionalGeneration"],
+    "model_type": "qwen2_audio",
+    "_name_or_path": "Qwen/Qwen2-Audio-7B",
+    "audio_token_index": 151646,
+    "vocab_size": 156032,
+    "audio_config": {
+        "model_type": "qwen2_audio_encoder",
+        "num_mel_bins": 128,
+        "encoder_layers": 32,
+        "encoder_attention_heads": 20,
+        "encoder_ffn_dim": 5120,
+        "d_model": 1280,
+        "activation_function": "gelu",
+        "scale_embedding": False,
+        "max_source_positions": 1500,
+    },
+    "text_config": {
+        "bos_token_id": 151643,
+        "eos_token_id": 151645,
+        "intermediate_size": 11008,
+        "max_position_embeddings": 8192,
+        "model_type": "qwen2",
+        "rope_theta": 10000,
+        "rms_norm_eps": 1e-5,
+        "sliding_window": 32768,
+        "torch_dtype": "bfloat16",
+        "use_mrope": False,
+        "vocab_size": 156032,
+    },
+}
+
+
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
@@ -509,6 +542,44 @@ def test_gemma4_multimodal_fusion_render():
     assert 'data-card-id="fusion_image_slots"' in html
     assert 'data-card-id="fusion_audio_tokens"' in html
     assert 'data-card-id="fusion_mixed_stream"' in html
+
+
+def test_qwen2_audio_sparse_text_config_is_completed():
+    d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
+    ir = d.to_ir()
+
+    assert ir["warnings"] == []
+    assert ir["name"] == "Qwen2-Audio-7B"
+    assert ir["hidden_size"] == 4096
+    assert ir["vocab_size"] == 156032
+    assert len(ir["layers"]) == 32
+    assert ir["layers"][0]["attention"]["kind"] == "mha"
+    assert ir["layers"][0]["attention"]["num_heads"] == 32
+    assert ir["layers"][0]["ffn"]["intermediate_size"] == 11008
+
+    audio = ir["extras"]["modalities"]["inputs"]["audio"]
+    assert audio["input"]["feature_size"] == 128
+    assert audio["encoder"]["hidden_size"] == 1280
+    assert audio["encoder"]["num_layers"] == 32
+    assert audio["encoder"]["num_attention_heads"] == 20
+    assert ir["extras"]["modalities"]["fusion"]["placeholders"]["audio"]["token_id"] == 151646
+
+    html = d.to_html(standalone=True)
+    assert "partial config" not in html
+    assert "Audio -&gt; tokens" in html
+
+
+def test_qwen2_audio_code_evidence_does_not_mark_config_partial():
+    d = unfold(QWEN2_AUDIO_SPARSE_CONFIG, inspect_code=True)
+    ir = d.to_ir()
+
+    assert ir["warnings"] == []
+    assert ir["extras"]["code_evidence"]["provenance"]["model_type"] == "qwen2_audio"
+    assert ir["extras"]["code_evidence"]["provenance"]["files"]
+
+    html = d.to_html(standalone=True)
+    assert "partial config" not in html
+    assert "CODE EVIDENCE" in html
 
 
 def test_llama3():

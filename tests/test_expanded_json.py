@@ -57,6 +57,32 @@ GEMMA4_VISION_TINY_CONFIG = {
 }
 
 
+QWEN2_AUDIO_SPARSE_CONFIG = {
+    "architectures": ["Qwen2AudioForConditionalGeneration"],
+    "model_type": "qwen2_audio",
+    "_name_or_path": "Qwen/Qwen2-Audio-7B",
+    "audio_token_index": 151646,
+    "vocab_size": 156032,
+    "audio_config": {
+        "model_type": "qwen2_audio_encoder",
+        "num_mel_bins": 128,
+        "encoder_layers": 32,
+        "encoder_attention_heads": 20,
+        "encoder_ffn_dim": 5120,
+        "d_model": 1280,
+    },
+    "text_config": {
+        "intermediate_size": 11008,
+        "max_position_embeddings": 8192,
+        "model_type": "qwen2",
+        "rope_theta": 10000,
+        "rms_norm_eps": 1e-5,
+        "sliding_window": 32768,
+        "vocab_size": 156032,
+    },
+}
+
+
 def test_expanded_json_is_structural_not_renderer_copy():
     data = unfold(LLAMA_TINY_CONFIG, return_json=True)
     encoded = json.dumps(data)
@@ -279,3 +305,18 @@ def test_expanded_json_carries_structured_audio_inputs():
     assert "description" not in encoded
     assert "label" not in encoded
     assert "title" not in encoded
+
+
+def test_expanded_json_completes_qwen2_audio_sparse_text_config():
+    data = unfold(QWEN2_AUDIO_SPARSE_CONFIG, return_json=True)
+
+    assert data["dimensions"]["hidden_size"] == 4096
+    assert data["stack"]["num_layers"] == 32
+    assert data["layer_groups"][0]["attention"]["kind"] == "mha"
+    assert data["layer_groups"][0]["ffn"]["intermediate_size"] == 11008
+
+    audio = data["modalities"]["inputs"]["audio"]
+    assert audio["encoder"]["hidden_size"] == 1280
+    assert audio["encoder"]["num_layers"] == 32
+    assert audio["encoder"]["num_attention_heads"] == 20
+    assert data["modalities"]["fusion"]["placeholders"]["audio"]["token_id"] == 151646

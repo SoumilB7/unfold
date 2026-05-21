@@ -63,8 +63,26 @@ def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: s
     from .evidence import inspect_model_code, validate_ir_with_evidence
 
     evidence = inspect_model_code(cfg, source=source, token=token)
-    ir.extras["code_evidence"] = evidence.to_dict()
-    for warning in validate_ir_with_evidence(ir, evidence):
+    evidence_dict = evidence.to_dict()
+    evidence_warnings = set(evidence.warnings or ())
+    validation_warnings = validate_ir_with_evidence(ir, evidence)
+
+    if validation_warnings:
+        combined = list(evidence_dict.get("warnings") or [])
+        for warning in validation_warnings:
+            if warning not in combined:
+                combined.append(warning)
+        evidence_dict["warnings"] = combined
+
+    ir.extras["code_evidence"] = evidence_dict
+
+    # Source-scan warnings are advisory and already live in the Code Evidence
+    # panel. Only promote true code/config mismatch warnings to the global IR
+    # warning list, otherwise the header mislabels source coverage as a partial
+    # config.
+    for warning in validation_warnings:
+        if warning in evidence_warnings:
+            continue
         if warning not in ir.warnings:
             ir.warnings.append(warning)
 

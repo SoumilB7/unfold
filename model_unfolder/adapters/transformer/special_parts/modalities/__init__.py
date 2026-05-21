@@ -125,8 +125,8 @@ def _vision_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
 
 def _audio_path(cfg: Any, audio_cfg: Any, text_hidden_size: int) -> dict:
     hidden_size = _first(audio_cfg, "hidden_size", "conf_hidden_size", "d_model", "encoder_dim")
-    num_layers = _first(audio_cfg, "num_hidden_layers", "conf_num_hidden_layers", "num_layers", "depth")
-    num_heads = _first(audio_cfg, "num_attention_heads", "conf_num_attention_heads", "num_heads")
+    num_layers = _first(audio_cfg, "num_hidden_layers", "conf_num_hidden_layers", "encoder_layers", "num_layers", "depth")
+    num_heads = _first(audio_cfg, "num_attention_heads", "conf_num_attention_heads", "encoder_attention_heads", "num_heads")
     feature_size = _first(audio_cfg, "input_feat_size", "feature_size", "num_mel_bins")
     projector_out = text_hidden_size or _first(audio_cfg, "output_proj_dims", "projection_dim")
     projector_kind = _audio_projector_kind(audio_cfg)
@@ -193,6 +193,7 @@ def _audio_path(cfg: Any, audio_cfg: Any, text_hidden_size: int) -> dict:
             "config_paths": _present_paths(cfg, audio_cfg, [
                 ("audio_config", audio_cfg),
                 ("audio_token_id", cfg),
+                ("audio_token_index", cfg),
                 ("audio_soft_tokens_per_image", cfg),
                 ("audio_ms_per_token", cfg),
                 ("boa_token_id", cfg),
@@ -230,6 +231,7 @@ def _fusion(cfg: Any, text_cfg: Any, modalities: dict[str, Any], text_hidden_siz
                 ("image_token_index", cfg),
                 ("image_seq_length", cfg),
                 ("audio_token_id", cfg),
+                ("audio_token_index", cfg),
                 ("audio_soft_tokens_per_image", cfg),
                 ("audio_ms_per_token", cfg),
                 ("boa_token_id", cfg),
