@@ -143,6 +143,7 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
     for block in render.get("model_blocks", []):
         if block.get("id"):
             blocks[block["id"]] = block
+    blocks.update(_multimodal_block_lookup(ir))
     for block in spec.get("blocks", []):
         if block.get("id"):
             blocks[block["id"]] = block
@@ -156,6 +157,341 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
             if child.get("id"):
                 blocks[child["id"]] = child
     return blocks
+
+
+def _multimodal_block_lookup(ir: dict) -> dict:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    inputs = modalities.get("inputs") or {}
+    fusion = modalities.get("fusion") or {}
+    blocks: dict[str, dict] = {}
+
+    if "vision" in inputs:
+        vision = inputs["vision"]
+        blocks["vision_path"] = {
+            "id": "vision_path",
+            "role": "modality_input",
+            "kind": "image_to_soft_visual_tokens",
+            "label": "Vision -> tokens",
+            "title": "Vision to soft tokens",
+            "description": _vision_description(vision),
+            "detail_view": "vision_path",
+            "children": _vision_children(vision),
+        }
+
+    if "audio" in inputs:
+        audio = inputs["audio"]
+        blocks["audio_path"] = {
+            "id": "audio_path",
+            "role": "modality_input",
+            "kind": "audio_to_soft_tokens",
+            "label": "Audio -> tokens",
+            "title": "Audio to soft tokens",
+            "description": _audio_description(audio),
+            "detail_view": "audio_path",
+            "children": _audio_children(audio),
+        }
+
+    if fusion:
+        blocks["fusion"] = {
+            "id": "fusion",
+            "role": "fusion",
+            "kind": "fusion",
+            "label": "Multimodal fusion",
+            "title": "Multimodal fusion",
+            "description": _fusion_description(fusion),
+            "detail_view": "multimodal_fusion",
+            "children": _fusion_children(fusion, inputs),
+        }
+    return blocks
+
+
+def _vision_description(vision: dict) -> str:
+    embedding = vision.get("embedding") or {}
+    encoder = vision.get("encoder") or {}
+    projector = vision.get("projector") or {}
+    tokens = vision.get("tokens") or {}
+    kind = (encoder.get("kind") or "vision encoder").replace("_", " ")
+    count = tokens.get("count")
+    width = tokens.get("width")
+    bits = [kind]
+    if embedding.get("patch_size"):
+        bits.append(f"{_fmt_int(embedding.get('patch_size'))}x{_fmt_int(embedding.get('patch_size'))} patches")
+    if projector.get("out_features"):
+        bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
+    if count:
+        bits.append(f"{_fmt_int(count)} visual tokens")
+    if width:
+        bits.append(f"width {_fmt_int(width)}")
+    return "; ".join(bits)
+
+
+def _vision_children(vision: dict) -> list[dict]:
+    input_spec = vision.get("input") or {}
+    embedding = vision.get("embedding") or {}
+    encoder = vision.get("encoder") or {}
+    projector = vision.get("projector") or {}
+    tokens = vision.get("tokens") or {}
+
+    image_size = input_spec.get("image_size")
+    patch_size = input_spec.get("patch_size") or embedding.get("patch_size")
+    encoder_bits = [
+        str(encoder.get("kind") or "vision encoder").replace("_", " "),
+    ]
+    if encoder.get("num_layers"):
+        encoder_bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
+    if encoder.get("num_attention_heads"):
+        encoder_bits.append(f"{_fmt_int(encoder.get('num_attention_heads'))} heads")
+    if encoder.get("hidden_size"):
+        encoder_bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    if encoder.get("position_encoding"):
+        pos_kind = (encoder.get("position_encoding") or {}).get("kind")
+        if pos_kind:
+            encoder_bits.append(str(pos_kind).replace("_", " "))
+
+    projector_desc = _projection_desc(projector)
+    token_count = tokens.get("count")
+    token_width = tokens.get("width")
+
+    return [
+        {
+            "id": "vision_pixels",
+            "title": "Image pixels",
+            "description": _join_desc([
+                "Raw image tensor before the vision tower",
+                f"image size {_fmt_int(image_size)}" if image_size else "",
+                "shape [batch, images, channels, height, width]",
+            ]),
+        },
+        {
+            "id": "vision_patches",
+            "title": "Patch embedding",
+            "description": _join_desc([
+                f"Split image into {_fmt_int(patch_size)}x{_fmt_int(patch_size)} patches" if patch_size else "Split image into patches",
+                f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
+            ]),
+        },
+        {
+            "id": "vision_encoder",
+            "title": "Vision encoder",
+            "description": "; ".join(bit for bit in encoder_bits if bit),
+        },
+        {
+            "id": "vision_projector",
+            "title": "Linear projection to text width",
+            "description": projector_desc,
+        },
+        {
+            "id": "visual_tokens",
+            "title": "Soft visual tokens",
+            "description": _join_desc([
+                f"{_fmt_int(token_count)} tokens" if token_count else "Soft visual token stream",
+                f"width {_fmt_int(token_width)}" if token_width else "",
+                "these are fused into the decoder input, not raw pixels",
+            ]),
+        },
+    ]
+
+
+def _audio_description(audio: dict) -> str:
+    encoder = audio.get("encoder") or {}
+    projector = audio.get("projector") or {}
+    tokens = audio.get("tokens") or {}
+    kind = (encoder.get("kind") or "audio encoder").replace("_", " ")
+    bits = [kind]
+    if projector.get("out_features"):
+        bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
+    if tokens.get("count"):
+        bits.append(f"{_fmt_int(tokens.get('count'))} audio tokens")
+    if tokens.get("ms_per_token"):
+        bits.append(f"{_fmt_int(tokens.get('ms_per_token'))} ms/token")
+    if tokens.get("width"):
+        bits.append(f"width {_fmt_int(tokens.get('width'))}")
+    return "; ".join(bits)
+
+
+def _audio_children(audio: dict) -> list[dict]:
+    input_spec = audio.get("input") or {}
+    encoder = audio.get("encoder") or {}
+    projector = audio.get("projector") or {}
+    tokens = audio.get("tokens") or {}
+    encoder_bits = [str(encoder.get("kind") or "audio encoder").replace("_", " ")]
+    if encoder.get("num_layers"):
+        encoder_bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
+    if encoder.get("num_attention_heads"):
+        encoder_bits.append(f"{_fmt_int(encoder.get('num_attention_heads'))} heads")
+    if encoder.get("hidden_size"):
+        encoder_bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    return [
+        {
+            "id": "audio_features",
+            "title": "Audio features",
+            "description": _join_desc([
+                "Processor output before the audio tower",
+                f"feature size {_fmt_int(input_spec.get('feature_size'))}" if input_spec.get("feature_size") else "",
+                "shape [batch, segments, frames, features]",
+            ]),
+        },
+        {
+            "id": "audio_encoder",
+            "title": "Audio encoder",
+            "description": "; ".join(bit for bit in encoder_bits if bit),
+        },
+        {
+            "id": "audio_projector",
+            "title": "Linear",
+            "description": _projection_desc(projector),
+        },
+        {
+            "id": "audio_tokens",
+            "title": "Soft audio tokens",
+            "description": _join_desc([
+                f"{_fmt_int(tokens.get('count'))} tokens" if tokens.get("count") else "Variable soft audio token stream",
+                f"{_fmt_int(tokens.get('ms_per_token'))} ms/token" if tokens.get("ms_per_token") else "",
+                f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
+                "these are fused into the decoder input, not raw waveform samples",
+            ]),
+        },
+    ]
+
+
+def _projection_desc(projector: dict) -> str:
+    raw_kind = str(projector.get("kind") or "linear_projector")
+    kind = "Linear" if raw_kind == "linear_projector" else raw_kind.replace("_", " ")
+    in_features = projector.get("in_features")
+    out_features = projector.get("out_features")
+    activation = projector.get("activation")
+    bits = [kind]
+    if in_features and out_features:
+        bits.append(f"{_fmt_int(in_features)} -> {_fmt_int(out_features)}")
+    if activation:
+        bits.append(f"activation {activation}")
+    return "; ".join(bits)
+
+
+def _join_desc(bits: list[str]) -> str:
+    return "; ".join(bit for bit in bits if bit)
+
+
+def _fusion_description(fusion: dict) -> str:
+    kind = (fusion.get("kind") or "fusion").replace("_", " ")
+    output = fusion.get("output") or {}
+    width = output.get("width")
+    if width:
+        return f"{kind}; feeds decoder stack at width {_fmt_int(width)}"
+    return kind
+
+
+def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
+    vision = inputs.get("vision") or {}
+    audio = inputs.get("audio") or {}
+    tokens = vision.get("tokens") or {}
+    audio_tokens = audio.get("tokens") or {}
+    count = tokens.get("count")
+    audio_count = audio_tokens.get("count")
+    width = tokens.get("width") or audio_tokens.get("width") or (fusion.get("output") or {}).get("width")
+    image_span = f"<image> x {_fmt_int(count)}" if count else "<image> slots"
+    audio_span = (
+        f"<audio> x {_fmt_int(audio_count)}"
+        if audio_count
+        else f"<audio> every {_fmt_int(audio_tokens.get('ms_per_token'))} ms" if audio_tokens.get("ms_per_token")
+        else "<audio> slots"
+    )
+    visual_span = (
+        f"{_fmt_int(count)} visual features"
+        if count and not width
+        else f"{_fmt_int(count)} x {_fmt_int(width)} visual features" if count and width
+        else "projected visual features"
+    )
+    audio_span_desc = (
+        f"{_fmt_int(audio_count)} audio features"
+        if audio_count and not width
+        else f"{_fmt_int(audio_count)} x {_fmt_int(width)} audio features" if audio_count and width
+        else f"one token every {_fmt_int(audio_tokens.get('ms_per_token'))} ms" if audio_tokens.get("ms_per_token")
+        else "projected audio features"
+    )
+    children = [
+        {
+            "id": "embed",
+            "title": "Text embeddings with modality slots",
+            "description": "Token embeddings are prepared with reserved image/audio positions in the sequence.",
+        },
+        {
+            "id": "stack_input",
+            "title": "Decoder stack input",
+            "description": "The fused sequence passed to the decoder stack after modality features are scattered into reserved token slots.",
+        },
+        {
+            "id": "fusion_text_tokens",
+            "title": "Text token embeddings",
+            "description": "Normal token embeddings surrounding the image span.",
+        },
+        {
+            "id": "fusion_boi",
+            "title": "Begin-image token",
+            "description": "BOI marks the start of the image span and stays in the text stream.",
+        },
+        {
+            "id": "fusion_image_slots",
+            "title": "Image-token slots",
+            "description": (
+                f"The processor expands the image marker into {image_span}; "
+                "these placeholder slots are where vision features are scattered."
+            ),
+        },
+        {
+            "id": "fusion_vision_tokens",
+            "title": "Vision feature sequence",
+            "description": f"{visual_span}; one feature is placed into each image-token slot.",
+        },
+        {
+            "id": "fusion_eoi",
+            "title": "End-image token",
+            "description": "EOI marks the end of the image span and stays in the text stream.",
+        },
+        {
+            "id": "fusion_mixed_stream",
+            "title": "Mixed decoder input",
+            "description": "The decoder receives one sequence: text/control embeddings plus visual and audio features in reserved slots.",
+        },
+    ]
+    if vision:
+        children.insert(1, {
+            "id": "vision_path",
+            "title": "Soft visual tokens",
+            "description": f"{visual_span}; produced by the vision pathway before fusion.",
+        })
+    if audio:
+        children.insert(2 if vision else 1, {
+            "id": "audio_path",
+            "title": "Soft audio tokens",
+            "description": f"{audio_span_desc}; produced by the audio pathway before fusion.",
+        })
+        children.extend([
+            {
+                "id": "fusion_boa",
+                "title": "Begin-audio token",
+                "description": "BOA marks the start of the audio span and stays in the text stream.",
+            },
+            {
+                "id": "fusion_audio_slots",
+                "title": "Audio-token slots",
+                "description": (
+                    f"The processor expands the audio marker into {audio_span}; "
+                    "these placeholder slots are where audio features are scattered."
+                ),
+            },
+            {
+                "id": "fusion_audio_tokens",
+                "title": "Audio feature sequence",
+                "description": f"{audio_span_desc}; one feature is placed into each audio-token slot.",
+            },
+            {
+                "id": "fusion_eoa",
+                "title": "End-audio token",
+                "description": "EOA marks the end of the audio span and stays in the text stream.",
+            },
+        ])
+    return children
 
 
 def _block_label(info: dict, node_id: str, default):
@@ -265,4 +601,16 @@ def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
         badges.append({"text": f"{len(info['groups'])} layer types", "title": ""})
     if is_sliding(attention):
         badges.append({"text": mask_chip(attention), "title": mask_title(attention)})
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    inputs = modalities.get("inputs") or {}
+    if inputs.get("vision"):
+        badges.append({
+            "text": "Soft visual tokens",
+            "title": "Image pixels are encoded and projected into soft tokens before decoder fusion",
+        })
+    if inputs.get("audio"):
+        badges.append({
+            "text": "Soft audio tokens",
+            "title": "Audio features are encoded and linearly projected into soft tokens before decoder fusion",
+        })
     return badges

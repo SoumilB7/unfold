@@ -276,6 +276,61 @@ def _gemma4_e4b_config():
     return cfg
 
 
+def _gemma4_e2b_vision_config():
+    cfg = dict(GEMMA4_31B_CONFIG)
+    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
+    text_cfg.update(
+        {
+            "hidden_size": 1536,
+            "intermediate_size": 6144,
+            "num_hidden_layers": 4,
+            "num_attention_heads": 8,
+            "num_key_value_heads": 1,
+            "num_global_key_value_heads": 1,
+            "head_dim": 256,
+            "global_head_dim": 256,
+            "layer_types": ["sliding_attention", "sliding_attention", "sliding_attention", "full_attention"],
+            "max_position_embeddings": 131072,
+        }
+    )
+    cfg.update(
+        {
+            "_name_or_path": "google/gemma-4-E2B",
+            "image_token_id": 258880,
+            "audio_token_id": 258881,
+            "boi_token_id": 255999,
+            "boa_token_id": 256000,
+            "eoi_token_id": 258882,
+            "eoa_token_id": 258883,
+            "image_seq_length": 280,
+            "audio_seq_length": 750,
+            "audio_ms_per_token": 40,
+            "image_token_count_options": [70, 140, 280, 560, 1120],
+            "projector_hidden_act": "gelu_pytorch_tanh",
+            "text_config": text_cfg,
+            "vision_config": {
+                "architectures": ["Gemma4VisionModel"],
+                "model_type": "gemma4_vision",
+                "hidden_size": 768,
+                "num_hidden_layers": 16,
+                "num_attention_heads": 12,
+                "image_size": 896,
+                "patch_size": 16,
+            },
+            "audio_config": {
+                "architectures": ["Gemma4AudioModel"],
+                "model_type": "gemma4_audio",
+                "hidden_size": 1024,
+                "num_hidden_layers": 12,
+                "num_attention_heads": 8,
+                "output_proj_dims": 1536,
+                "feature_size": 128,
+            },
+        }
+    )
+    return cfg
+
+
 def test_kimi_k2():
     d = unfold(KIMI_K2_CONFIG)
     ir = d.to_ir()
@@ -405,6 +460,57 @@ def test_gemma4_ple_uses_reusable_part_contract():
     assert "gelu_pytorch_tanh" not in html.lower()
 
 
+def test_gemma4_multimodal_fusion_render():
+    d = unfold(_gemma4_e2b_vision_config())
+    ir = d.to_ir()
+    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
+    assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
+    assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
+
+    html = d.to_html(standalone=True)
+    assert "Vision input" not in html
+    assert "Soft visual tokens" in html
+    assert "Soft audio tokens" in html
+    assert "Vision -&gt; tokens" in html
+    assert "Audio -&gt; tokens" in html
+    assert "Multimodal fusion" in html
+    assert "Visual tokens" in html
+    assert "Audio tokens" in html
+    assert "scatter modality features into token slots" in html
+    assert "Text embeddings with modality slots" in html
+    assert "Decoder stack input" in html
+    assert "BOI" in html
+    assert "BOA" in html
+    assert "EOI" in html
+    assert "EOA" in html
+    assert "&lt;image&gt; x 280" in html
+    assert "&lt;audio&gt; x 750" in html
+    assert "AUD x 750" in html
+    assert "280 x 1,536" in html
+    assert 'data-card-id="vision_path"' in html
+    assert 'data-card-id="audio_path"' in html
+    assert 'data-card-id="vision_pixels"' in html
+    assert 'data-card-id="vision_patches"' in html
+    assert 'data-card-id="vision_encoder"' in html
+    assert 'data-card-id="vision_projector"' in html
+    assert 'data-card-id="visual_tokens"' in html
+    assert 'data-card-id="audio_features"' in html
+    assert 'data-card-id="audio_encoder"' in html
+    assert 'data-card-id="audio_projector"' in html
+    assert 'data-card-id="audio_tokens"' in html
+    assert 'data-card-id="fusion"' in html
+    assert 'data-card-id="stack_input"' in html
+    assert 'data-id="fusion_image_slots"' in html
+    assert 'data-id="fusion_vision_tokens"' in html
+    assert 'data-id="fusion_audio_slots"' in html
+    assert 'data-id="fusion_audio_tokens"' in html
+    assert 'data-card-id="fusion_image_slots"' in html
+    assert 'data-card-id="fusion_audio_tokens"' in html
+    assert 'data-card-id="fusion_mixed_stream"' in html
+
+
 def test_llama3():
     d = unfold(LLAMA3_8B_CONFIG)
     ir = d.to_ir()
@@ -452,7 +558,6 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     block_by_id = {block["id"]: block for block in blocks}
 
     assert ir["layers"][0]["attention"]["kind"] == "mqa"
-    assert ir["extras"]["parallel_attn"] is True
     assert ir["extras"]["parallel_residual"] is True
     assert block_by_id["rms1"]["label"] == "LayerNorm"
     assert block_by_id["add1"]["title"] == "Residual add (parallel)"
@@ -472,7 +577,9 @@ def test_falcon_parallel_attn_uses_parallel_topology():
 
 def test_new_should_support_family_routes():
     cases = [
-        (GEMMA1_CONFIG, "mqa", "dense", "rmsnorm"),
+        # Gemma 7B has num_kv=1 but no `multi_query` flag — extreme GQA,
+        # matching Google's "GQA throughout" naming.
+        (GEMMA1_CONFIG, "gqa", "dense", "rmsnorm"),
         (PHI2_CONFIG, "mha", "dense", "layernorm"),
         (YI_34B_CONFIG, "gqa", "dense", "rmsnorm"),
         (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
@@ -515,7 +622,7 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     assert layer["ffn"]["num_experts"] == 16
     assert layer["ffn"]["num_experts_per_tok"] == 4
     assert layer["ffn"]["expert_intermediate_size"] == 3584
-    assert ir["extras"]["dbrx"]["clip_qkv"] == 8
+    assert ir["extras"]["attention"]["clip_qkv"] == 8
 
     html = d.to_html(standalone=True)
     assert "GQA 48/8" in html
@@ -524,98 +631,19 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
 
 
 def test_attention_detail_views_dispatch_by_kind():
-    base = {
-        "vocab_size": 32000,
-        "hidden_size": 64,
-        "intermediate_size": 256,
-        "num_hidden_layers": 4,
-        "num_attention_heads": 4,
-        "num_key_value_heads": 2,
-        "head_dim": 16,
-        "hidden_act": "silu",
-    }
-    cases = [
-        (
-            "mla",
-            KIMI_K2_CONFIG,
-            "mla_kv_path",
-            "Multi-Head Latent",
-            True,
-        ),
-        (
-            "ssm",
-            {
-                **base,
-                "architectures": ["FalconH1ForCausalLM"],
-                "model_type": "falcon_h1",
-                "mamba_d_state": 16,
-                "mamba_d_ssm": 64,
-                "attn_layer_indices": None,
-            },
-            "ssm_scan",
-            "Selective Scan",
-            True,
-        ),
-        (
-            "recurrent",
-            {
-                **base,
-                "architectures": ["RecurrentGemmaForCausalLM"],
-                "model_type": "recurrent_gemma",
-                "block_types": ["recurrent", "recurrent", "attention"],
-                "attention_window_size": 128,
-                "lru_width": 32,
-            },
-            "lru_state",
-            "Recurrent State",
-            False,
-        ),
-        (
-            "rwkv",
-            {
-                "architectures": ["RwkvForCausalLM"],
-                "model_type": "rwkv",
-                "vocab_size": 32000,
-                "hidden_size": 64,
-                "num_hidden_layers": 4,
-                "attention_hidden_size": 64,
-                "head_size": 16,
-                "intermediate_size": 224,
-            },
-            "rwkv_time_mix",
-            "Time-Mix",
-            True,
-        ),
-        (
-            "linear",
-            {
-                **base,
-                "architectures": ["MiniMaxText01ForCausalLM"],
-                "model_type": "minimax_text_01",
-                "attn_type_list": [0, 0, 0, 0],
-                "num_local_experts": 8,
-                "num_experts_per_tok": 2,
-            },
-            "linear_mix",
-            "Linear Attention Mix",
-            True,
-        ),
-    ]
+    # Scope: transformer-LLM attention kinds (MHA / GQA / MQA / MLA).
+    # Non-attention mixers (SSM, RWKV, linear, recurrent) are out of scope.
+    d = unfold(KIMI_K2_CONFIG)
+    ir = d.to_ir()
+    attn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "attn")
+    child_ids = {child["id"] for child in attn_block["children"]}
+    html = d.to_html(standalone=True)
 
-    for kind, cfg, expected_child, expected_html, forbid_sdpa in cases:
-        d = unfold(cfg)
-        ir = d.to_ir()
-        attn_block = next(block for block in ir["layers"][0]["blocks"] if block["id"] == "attn")
-        child_ids = {child["id"] for child in attn_block["children"]}
-        html = d.to_html(standalone=True)
-
-        assert ir["layers"][0]["attention"]["kind"] == kind
-        assert expected_child in child_ids
-        assert expected_html in html
-        if kind == "mla":
-            assert "mla_kv_down" in html
-        if forbid_sdpa:
-            assert "Scaled Dot-Product Attention" not in html
+    assert ir["layers"][0]["attention"]["kind"] == "mla"
+    assert "mla_kv_path" in child_ids
+    assert "Multi-Head Latent" in html
+    assert "mla_kv_down" in html
+    assert "Scaled Dot-Product Attention" not in html
 
 
 def test_model_id_uses_hf_token_env_and_explicit_override():

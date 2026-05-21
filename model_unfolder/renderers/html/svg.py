@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .theme import C, FONT_HEAD, GAP
+from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, GAP
 from .utils import _attr, _html, _num
 
 SVG_FONT_BOOST = 2
@@ -89,10 +89,10 @@ def _rect_block(
     w: float,
     h: float,
     label: str | list[str],
-    font_size: int = 18,
+    font_size: int | None = None,
 ) -> dict:
     lines = label if isinstance(label, list) else [label]
-    label_font_size = font_size + BLOCK_LABEL_FONT_BOOST
+    label_font_size = BLOCK_LABEL_FONT_SIZE if font_size is None else font_size + BLOCK_LABEL_FONT_BOOST
     line_h = label_font_size + SVG_FONT_BOOST + 2
     start_y = y + h / 2 - ((len(lines) - 1) * line_h) / 2
 
@@ -277,11 +277,23 @@ def _block_top_to_block_bottom(x1: float, y1: float, x2: float, y2: float, arrow
     """Route a block output into a block above it.
 
     Use this when the source point is the top edge of a block.  The line leaves
-    vertically first, then turns, so arrows do not appear to start from the
-    middle side of the source block.  Split-dot fan-outs should keep using
-    ``_elbow_hv``.
+    vertically first, runs across under the target, then enters the target from
+    below on a vertical final segment.  That avoids the recurring "side-bottom"
+    arrowhead that happens when a vertical-horizontal elbow terminates at a
+    block's bottom edge.  Split-dot fan-outs should keep using ``_elbow_hv``.
     """
-    return _elbow_vh(x1, y1, x2, y2, arrow_id)
+    if abs(x2 - x1) < 1 or abs(y2 - y1) < 1:
+        d = f"M {_num(x1)} {_num(y1)} L {_num(x2)} {_num(y2)}"
+    else:
+        clear = min(32, max(14, abs(y2 - y1) / 2))
+        lane_y = y2 + clear if y1 > y2 else y2 - clear
+        d = (
+            f"M {_num(x1)} {_num(y1)} "
+            f"L {_num(x1)} {_num(lane_y)} "
+            f"L {_num(x2)} {_num(lane_y)} "
+            f"L {_num(x2)} {_num(y2)}"
+        )
+    return _path(d, arrow_id)
 
 
 def _residual_loop_right(src: dict, dst: dict, lane: float, arrow_id: str) -> str:

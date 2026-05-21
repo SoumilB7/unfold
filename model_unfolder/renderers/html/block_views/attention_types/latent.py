@@ -14,7 +14,7 @@ from ...svg import (
 )
 from ...theme import C, GAP
 from ...utils import _fmt_int
-from .common import output_stem, sdpa_dot_operator, sdpa_fraction_block
+from .common import cache_read_write_ports, output_stem, sdpa_dot_operator, sdpa_fraction_block
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
@@ -60,6 +60,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
         ["KV cache path", f"cache rank {kv_rank}"],
         font_size=16,
     )
+    cache_read_write_ports(parts, kv_path, write_side="bottom", read_side="top")
 
     parts.append(_v_line(scaled_scores, softmax, arrow_id))
     parts.append(_v_line(softmax, value_dot, arrow_id))
@@ -139,6 +140,7 @@ def build_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) -> str
     k_rope_apply = _rect_block(parts, info, shadow_id, "mla_k_rope_apply", 500, 250, 190, 50, ["apply RoPE", "K side"], font_size=15)
     kv_up = _rect_block(parts, info, shadow_id, "mla_kv_up", 180, 405, 210, 56, "KV expansion", font_size=16)
     latent_cache = _rect_block(parts, info, shadow_id, "mla_cache", 175, 526, 220, 56, ["latent cache c_t", "stored"], font_size=15)
+    cache_read_write_ports(parts, latent_cache, write_side="bottom", read_side="top")
     k_rope = _rect_block(parts, info, shadow_id, "mla_k_rope", 500, 526, 190, 50, ["K RoPE", f"dim {rope_dim}"], font_size=15)
     kv_down = _rect_block(parts, info, shadow_id, "mla_kv_down", cx - 115, 642, 230, 56, ["KV compression", f"rank {kv_rank}"], font_size=15)
 

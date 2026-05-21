@@ -19,6 +19,7 @@ from ...utils import _fmt_int
 from .common import (
     input_to_block,
     kv_cache_badge,
+    kv_cache_port_hint,
     mqa_shared_kv_node,
     output_stem,
     sdpa_dot_operator,
@@ -73,6 +74,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     q_proj = _rect_block(body, info, shadow_id, "q_proj", 78, proj_y, proj_w, proj_h, ["Linear (Q)", f"{num_heads} heads"], font_size=15)
     k_proj = _rect_block(body, info, shadow_id, "k_proj", cx - proj_w / 2, proj_y, proj_w, proj_h, ["Linear (K)", "1 head"], font_size=15)
     v_proj = _rect_block(body, info, shadow_id, "v_proj", w - 78 - proj_w, proj_y, proj_w, proj_h, ["Linear (V)", "1 head"], font_size=15)
+    kv_cache_port_hint(body, [k_proj, v_proj])
 
     branch_x, branch_y = cx, 834
     body.append(_branch_dot(branch_x, branch_y))
