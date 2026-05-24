@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ..svg import (
+    _block_top_to_block_bottom,
     _defs,
     _ids,
     _rect_block,
@@ -17,6 +18,10 @@ from ..utils import _fmt_int
 
 def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
     """Vision encoder -> linear projection -> soft visual tokens."""
+    vision = _vision(ir)
+    tokens = vision.get("tokens") or {}
+    cross_attention_vision = tokens.get("kind") == "vision_cross_attention_states"
+    grid_vision = tokens.get("kind") == "grid_visual_tokens"
     w, h = 720, 560
     arrow_id, shadow_id = _ids(mount_id, "vision-path")
     parts = [_defs(arrow_id, shadow_id)]
@@ -35,11 +40,11 @@ def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) ->
     )
     proj = _rect_block(
         parts, info, shadow_id, "vision_projector", cx - 135, 166, 270, 48,
-        "Linear",
+        "Patch merger" if grid_vision else "Linear",
     )
     soft = _rect_block(
         parts, info, shadow_id, "visual_tokens", cx - 145, 70, 290, 48,
-        "Soft visual tokens",
+        "Cross-attn states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
     )
 
     for src, dst in ((pixels, patches), (patches, enc), (enc, proj), (proj, soft)):
@@ -52,6 +57,52 @@ def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) ->
     }))
 
     return _svg(w, h, f"{ir.get('name', 'model')} vision pathway", parts)
+
+
+def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
+    """Video frames -> visual encoder -> grid-aware video token stream."""
+    video = _video(ir)
+    grid = ((video.get("tokens") or {}).get("grid") or {})
+    w, h = 720, 560
+    arrow_id, shadow_id = _ids(mount_id, "video-path")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    cx = w / 2
+    frames = _rect_block(parts, info, shadow_id, "video_frames", cx - 110, 460, 220, 44, "Video frames")
+    patches = _rect_block(
+        parts, info, shadow_id, "video_patches", cx - 130, 364, 260, 44,
+        "Temporal patches",
+    )
+    enc = _rect_block(
+        parts, info, shadow_id, "video_encoder", cx - 150, 262, 300, 54,
+        "Vision encoder",
+    )
+    proj = _rect_block(
+        parts, info, shadow_id, "video_projector", cx - 135, 166, 270, 48,
+        "Patch merger",
+    )
+    tokens = _rect_block(
+        parts, info, shadow_id, "video_tokens", cx - 145, 70, 290, 48,
+        "Video grid tokens",
+    )
+
+    for src, dst in ((frames, patches), (patches, enc), (enc, proj), (proj, tokens)):
+        parts.append(_v_line(src, dst, arrow_id))
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": tokens["top"],
+        "x2": cx, "y2": tokens["top"] - 32,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    if grid.get("runtime_input"):
+        parts.append(_svg_text(
+            cx, 490,
+            f"runtime grid: {grid['runtime_input']}",
+            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
+        ))
+
+    return _svg(w, h, f"{ir.get('name', 'model')} video pathway", parts)
 
 
 def build_audio_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
@@ -91,11 +142,19 @@ def build_audio_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
 
 def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
     """Show modality soft tokens replacing placeholder slots in the text stream."""
+    fusion = _fusion(ir)
+    if fusion.get("kind") == "cross_attention":
+        return _build_cross_attention_fusion_view(ir, info, mount_id, fusion)
+    if fusion.get("kind") == "unified_multimodal_stream":
+        return _build_unified_stream_view(ir, info, mount_id, fusion)
+
     vision_spec = _vision(ir)
+    video_spec = _video(ir)
     audio_spec = _audio(ir)
     has_vision = bool(vision_spec)
+    has_video = bool(video_spec)
     has_audio = bool(audio_spec)
-    both_modalities = has_vision and has_audio
+    both_modalities = sum(bool(v) for v in (vision_spec, video_spec, audio_spec)) > 1
 
     w = 860 if both_modalities else 760
     h = 700 if both_modalities else 670 if has_audio else 600
@@ -103,7 +162,6 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
 
-    fusion = _fusion(ir)
     cx = w / 2
     surface = {
         "left": 70 if both_modalities else 58,
@@ -128,7 +186,7 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
         "Decoder input",
     )
     modality_blocks: list[dict] = []
-    if both_modalities:
+    if has_vision and has_audio:
         modality_blocks.append(_rect_block(
             parts, info, shadow_id, "vision_path",
             cx - 105, input_y, 210, 50,
@@ -139,11 +197,28 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
             w - 308, input_y, 210, 50,
             "Audio tokens",
         ))
+    elif has_vision and has_video:
+        modality_blocks.append(_rect_block(
+            parts, info, shadow_id, "vision_path",
+            cx - 250, input_y, 210, 50,
+            "Image grid tokens",
+        ))
+        modality_blocks.append(_rect_block(
+            parts, info, shadow_id, "video_path",
+            cx + 40, input_y, 210, 50,
+            "Video grid tokens",
+        ))
     elif has_vision:
         modality_blocks.append(_rect_block(
             parts, info, shadow_id, "vision_path",
             405, input_y, 250, 50,
             "Visual tokens",
+        ))
+    elif has_video:
+        modality_blocks.append(_rect_block(
+            parts, info, shadow_id, "video_path",
+            405, input_y, 250, 50,
+            "Video tokens",
         ))
     elif has_audio:
         modality_blocks.append(_rect_block(
@@ -176,6 +251,103 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
     return _svg(w, h, f"{ir.get('name', 'model')} multimodal fusion", parts)
 
 
+def _build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict) -> str:
+    """Show Qwen-style unified text/image/video stream with grid positions."""
+    vision = _vision(ir)
+    video = _video(ir)
+    has_video = bool(video)
+    w, h = (860, 660) if has_video else (800, 620)
+    arrow_id, shadow_id = _ids(mount_id, "unified-multimodal-stream")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    cx = w / 2
+    stack = _rect_block(parts, info, shadow_id, "stack_input", cx - 145, 70, 290, 50, "Decoder input")
+    surface = {
+        "left": 74,
+        "top": 160,
+        "right": w - 74,
+        "bottom": 440 if has_video else 400,
+        "cx": cx,
+    }
+    _unified_surface(parts, fusion, surface, vision, video)
+    text = _rect_block(parts, info, shadow_id, "embed", 92, h - 112, 220, 50, "Text embeddings")
+    visual = _rect_block(parts, info, shadow_id, "vision_path", cx - 110, h - 112, 220, 50, "Image grid tokens")
+    modality_blocks = [text, visual]
+    if has_video:
+        video_block = _rect_block(parts, info, shadow_id, "video_path", w - 312, h - 112, 220, 50, "Video grid tokens")
+        modality_blocks.append(video_block)
+
+    for block in modality_blocks:
+        parts.append(_svg_tag("line", {
+            "x1": block["cx"], "y1": block["top"],
+            "x2": block["cx"], "y2": surface["bottom"] + GAP,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": surface["top"],
+        "x2": cx, "y2": stack["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    return _svg(w, h, f"{ir.get('name', 'model')} unified multimodal stream", parts)
+
+
+def _build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusion: dict) -> str:
+    """Show Mllama-style visual context conditioning selected decoder layers."""
+    w, h = 760, 560
+    arrow_id, shadow_id = _ids(mount_id, "cross-attention-fusion")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+
+    cx = w / 2
+    text = _rect_block(parts, info, shadow_id, "embed", 86, 404, 220, 50, "Text embeddings")
+    vision = _rect_block(parts, info, shadow_id, "vision_path", 454, 404, 220, 50, "Vision context")
+    adapter = _rect_block(
+        parts, info, shadow_id, "cross_attention_adapter",
+        cx - 145, 246, 290, 58,
+        ["Cross-attention", "adapter layers"],
+    )
+    out = _rect_block(parts, info, shadow_id, "stack_input", cx - 145, 88, 290, 52, "Decoder hidden states")
+
+    mechanism = fusion.get("mechanism") or {}
+    layers = mechanism.get("layers") or []
+    if layers:
+        layer_label = ", ".join(f"L{idx}" for idx in layers[:6])
+        if len(layers) > 6:
+            layer_label += ", ..."
+        parts.append(_svg_text(
+            cx, 226, layer_label,
+            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 12},
+        ))
+
+    parts.append(_block_top_to_block_bottom(
+        text["cx"], text["top"],
+        adapter["cx"] - 64, adapter["bottom"] + GAP,
+        arrow_id,
+    ))
+    parts.append(_block_top_to_block_bottom(
+        vision["cx"], vision["top"],
+        adapter["cx"] + 64, adapter["bottom"] + GAP,
+        arrow_id,
+    ))
+    parts.append(_v_line(adapter, out, arrow_id))
+    parts.append(_svg_tag("line", {
+        "x1": out["cx"], "y1": out["top"],
+        "x2": out["cx"], "y2": out["top"] - 34,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+
+    parts.append(_svg_text(
+        cx, 482,
+        "vision states stay separate; decoder layers read them with cross-attention",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 12},
+    ))
+    return _svg(w, h, f"{ir.get('name', 'model')} cross-attention adapter", parts)
+
+
 def _vision(ir: dict) -> dict:
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     return ((modalities.get("inputs") or {}).get("vision") or {})
@@ -184,6 +356,11 @@ def _vision(ir: dict) -> dict:
 def _audio(ir: dict) -> dict:
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     return ((modalities.get("inputs") or {}).get("audio") or {})
+
+
+def _video(ir: dict) -> dict:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    return ((modalities.get("inputs") or {}).get("video") or {})
 
 
 def _fusion(ir: dict) -> dict:
@@ -365,3 +542,75 @@ def _slot(
         parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
     else:
         parts.extend(children)
+
+
+def _unified_surface(parts: list[str], fusion: dict, box: dict, vision: dict, video: dict) -> None:
+    """Draw dynamic grid-token interleaving for Qwen-style multimodal streams."""
+    parts.append(_svg_tag("rect", {
+        "x": box["left"], "y": box["top"],
+        "width": box["right"] - box["left"],
+        "height": box["bottom"] - box["top"],
+        "rx": 15, "ry": 15,
+        "fill": C["bg_card"],
+        "stroke": C["border"],
+        "stroke-width": 0.8,
+    }))
+    parts.append(_svg_text(
+        box["cx"], box["top"] + 28,
+        "interleave text with grid-aware visual tokens",
+        {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
+    ))
+
+    left = box["left"] + 104
+    row_text = box["top"] + 64
+    row_grid = box["top"] + 124
+    row_pos = box["top"] + 184
+    row_stream = box["top"] + 244
+    if not video:
+        row_stream = box["top"] + 224
+
+    _row_label(parts, box["left"] + 38, row_text + 14, "input")
+    _slot(parts, left, row_text, 46, "tok", node_id="unified_text_tokens")
+    _slot(parts, left + 56, row_text, 46, "tok", node_id="unified_text_tokens")
+    _slot(parts, left + 112, row_text, 52, "VS", node_id="unified_vision_markers")
+    _slot(parts, left + 174, row_text, 110, "IMG", emphasis=True, node_id="unified_image_token")
+    _slot(parts, left + 294, row_text, 52, "VE", node_id="unified_vision_markers")
+    if video:
+        _slot(parts, left + 356, row_text, 110, "VID", emphasis=True, node_id="unified_video_token")
+        _slot(parts, left + 476, row_text, 46, "tok", node_id="unified_text_tokens")
+    else:
+        _slot(parts, left + 356, row_text, 46, "tok", node_id="unified_text_tokens")
+
+    _row_label(parts, box["left"] + 38, row_grid + 14, "grid")
+    grid = ((vision.get("tokens") or {}).get("grid") or {})
+    _slot(parts, left + 174, row_grid, 110, grid.get("runtime_input") or "image_grid", emphasis=True, node_id="unified_image_grid")
+    _slot(parts, left + 294, row_grid, 58, "T,H,W", node_id="unified_image_grid")
+    if video:
+        video_grid = ((video.get("tokens") or {}).get("grid") or {})
+        _slot(parts, left + 356, row_grid, 110, video_grid.get("runtime_input") or "video_grid", emphasis=True, node_id="unified_video_grid")
+        _slot(parts, left + 476, row_grid, 58, "T,H,W", node_id="unified_video_grid")
+
+    _row_label(parts, box["left"] + 38, row_pos + 14, "pos")
+    _slot(parts, left, row_pos, 108, "1D text pos", node_id="unified_text_position")
+    _slot(parts, left + 174, row_pos, 174, "M-RoPE visual pos", emphasis=True, node_id="unified_mrope")
+    if video:
+        _slot(parts, left + 356, row_pos, 174, "M-RoPE video pos", emphasis=True, node_id="unified_mrope")
+
+    _row_label(parts, box["left"] + 38, row_stream + 14, "stream")
+    _slot(parts, left, row_stream, 46, "tok", node_id="unified_stream")
+    _slot(parts, left + 56, row_stream, 46, "tok", node_id="unified_stream")
+    _slot(parts, left + 112, row_stream, 52, "VS", node_id="unified_vision_markers")
+    _slot(parts, left + 174, row_stream, 42, "v0", emphasis=True, node_id="unified_stream")
+    _slot(parts, left + 224, row_stream, 42, "v1", emphasis=True, node_id="unified_stream")
+    _slot(parts, left + 274, row_stream, 42, "...", node_id="unified_stream")
+    _slot(parts, left + 324, row_stream, 52, "VE", node_id="unified_vision_markers")
+    if video:
+        _slot(parts, left + 386, row_stream, 42, "f0", emphasis=True, node_id="unified_stream")
+        _slot(parts, left + 436, row_stream, 42, "f1", emphasis=True, node_id="unified_stream")
+        _slot(parts, left + 486, row_stream, 42, "...", node_id="unified_stream")
+        _slot(parts, left + 536, row_stream, 46, "tok", node_id="unified_stream")
+    else:
+        _slot(parts, left + 386, row_stream, 46, "tok", node_id="unified_stream")
+
+    # The grid row already carries image_grid_thw/video_grid_thw. Keeping a
+    # second caption here tends to collide with the stream row in narrow cards.

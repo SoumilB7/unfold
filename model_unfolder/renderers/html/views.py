@@ -65,13 +65,19 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     chain_blocks = [b for b in layer_blocks if not b.get("lane")]
     side_blocks = [b for b in layer_blocks if b.get("lane")]
 
-    inner_x, inner_w = 110, 500
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    modality_inputs = modalities.get("inputs") or {}
+    fusion_spec = modalities.get("fusion") or {}
+    has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
+    has_cross_attention_fusion = has_modality_fusion and fusion_spec.get("kind") == "cross_attention"
+
+    inner_x, inner_w = (230, 500) if has_cross_attention_fusion else (110, 500)
 
     # Default chain center.  Auto-shift right when a side_align="tap" block on
     # the left lane would overlap the widest chain block at the default cx.
     # This handles parallel-residual architectures (e.g. GPT-NeoX / GPT-J) where
     # FFN and Attention share the same y-row without any renderer special-casing.
-    cx = 360
+    cx = 480 if has_cross_attention_fusion else 360
     _tap_left = [
         b for b in side_blocks
         if b.get("side_align") == "tap" and b.get("lane") == "left"
@@ -93,12 +99,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     inner_h = max(490, stack_h + 2 * inner_padding)
 
     inner_y = 200
-    modalities = ((ir.get("extras") or {}).get("modalities") or {})
-    modality_inputs = modalities.get("inputs") or {}
-    has_modality_fusion = bool(modality_inputs) and bool(modalities.get("fusion"))
+    modality_count = len(modality_inputs)
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
     h = inner_y + inner_h + (360 if has_audio_fusion else 292 if has_modality_fusion else 232)
-    w = 720
+    w = 960 if has_cross_attention_fusion or modality_count >= 3 else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
     parts = [_defs(arrow_id, shadow_id)]
@@ -216,25 +220,42 @@ def _draw_multimodal_input_scaffold(
 ) -> tuple[dict, dict, dict]:
     """Draw text and modality soft tokens entering model-level fusion."""
     inputs = modalities.get("inputs") or {}
+    fusion_spec = modalities.get("fusion") or {}
+    if fusion_spec.get("kind") == "cross_attention":
+        return _draw_cross_attention_input_scaffold(
+            parts, info, shadow_id, arrow_id, cx, inner_y, inner_h,
+        )
+
     has_vision = "vision" in inputs
+    has_video = "video" in inputs
     has_audio = "audio" in inputs
     fusion_y = inner_y + inner_h + 34
     embed_y = fusion_y + 88
     tok_y = embed_y + 66
-    both_modalities = has_audio and has_vision
-    if both_modalities:
-        text_x = cx
-        vision_x = cx - 215
-        audio_x = cx + 215
+    route_specs = []
+    if has_vision:
+        route_specs.append(("vision_path", _block_label(info, "vision_path", "Vision -> tokens")))
+    if has_video:
+        route_specs.append(("video_path", _block_label(info, "video_path", "Video -> tokens")))
+    if has_audio:
+        route_specs.append(("audio_path", _block_label(info, "audio_path", "Audio -> tokens")))
+    multi_route = len(route_specs) > 1
+    if multi_route:
+        text_x = cx if len(route_specs) == 2 else cx - 300
         text_w = 230
         route_w = 170
         modality_y = embed_y
+        if len(route_specs) == 2:
+            route_centers = [cx - 215, cx + 215]
+        else:
+            route_centers = [cx - 70, cx + 150, cx + 370]
     else:
         text_x = cx - 155
         modality_x = cx + 155
         text_w = 250
         route_w = 210
         modality_y = embed_y
+        route_centers = [modality_x]
 
     tok_text = _rect_block(
         parts, info, shadow_id, "tok_text",
@@ -255,37 +276,92 @@ def _draw_multimodal_input_scaffold(
     parts.append(_v_line(tok_text, embed, arrow_id))
     parts.append(_block_top_to_block_bottom(
         embed["cx"], embed["top"],
-        fusion["cx"] if both_modalities else fusion["cx"] - 56,
+        fusion["cx"] if multi_route else fusion["cx"] - 56,
         fusion["bottom"] + GAP,
         arrow_id,
     ))
-    if has_vision:
-        x = vision_x if both_modalities else modality_x
-        vision = _rect_block(
-            parts, info, shadow_id, "vision_path",
+    route_targets = (
+        [fusion["cx"] - 96, fusion["cx"] + 96] if len(route_specs) == 2
+        else [fusion["cx"] - 112, fusion["cx"], fusion["cx"] + 112] if len(route_specs) >= 3
+        else [fusion["cx"] + 56]
+    )
+    for (node_id, label), x, target_x in zip(route_specs, route_centers, route_targets):
+        route = _rect_block(
+            parts, info, shadow_id, node_id,
             x - route_w / 2, modality_y, route_w, 44,
-            _block_label(info, "vision_path", "Vision -> tokens"), font_size=16,
+            label, font_size=16,
         )
         parts.append(_block_top_to_block_bottom(
-            vision["cx"], vision["top"],
-            fusion["cx"] - 86 if both_modalities else fusion["cx"] + 56,
-            fusion["bottom"] + GAP,
-            arrow_id,
-        ))
-    if has_audio:
-        x = audio_x if both_modalities else modality_x
-        audio = _rect_block(
-            parts, info, shadow_id, "audio_path",
-            x - route_w / 2, modality_y, route_w, 44,
-            _block_label(info, "audio_path", "Audio -> tokens"), font_size=16,
-        )
-        parts.append(_block_top_to_block_bottom(
-            audio["cx"], audio["top"],
-            fusion["cx"] + 86 if both_modalities else fusion["cx"] + 56,
+            route["cx"], route["top"],
+            target_x,
             fusion["bottom"] + GAP,
             arrow_id,
         ))
     return tok_text, embed, fusion
+
+
+def _draw_cross_attention_input_scaffold(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    arrow_id: str,
+    cx: float,
+    inner_y: float,
+    inner_h: float,
+) -> tuple[dict, dict, dict]:
+    """Draw Mllama-style visual context as a side stream into decoder layers."""
+    embed_y = inner_y + inner_h + 132
+    tok_y = embed_y + 66
+    stack_side_y = inner_y + inner_h - 110
+    adapter_y = embed_y - 78
+    vision_y = adapter_y + 96
+    side_cx = 220
+    adapter_w = 270
+    vision_w = 230
+
+    tok_text = _rect_block(
+        parts, info, shadow_id, "tok_text",
+        cx - 105, tok_y, 210, 42,
+        _block_label(info, "tok_text", "Tokenized text"), font_size=16,
+    )
+    embed = _rect_block(
+        parts, info, shadow_id, "embed",
+        cx - 125, embed_y, 250, 44,
+        _block_label(info, "embed", "Token Embedding"), font_size=16,
+    )
+    vision = _rect_block(
+        parts, info, shadow_id, "vision_path",
+        side_cx - vision_w / 2, vision_y, vision_w, 46,
+        _block_label(info, "vision_path", "Vision context"), font_size=17,
+    )
+    adapter = _rect_block(
+        parts, info, shadow_id, "fusion",
+        side_cx - adapter_w / 2, adapter_y, adapter_w, 54,
+        _block_label(info, "fusion", "Cross-attention adapter"), font_size=17,
+    )
+
+    parts.append(_v_line(tok_text, embed, arrow_id))
+    parts.append(_v_line(vision, adapter, arrow_id))
+
+    # Text still enters the decoder stack directly.  The visual stream enters
+    # selected decoder layers from the side, matching Mllama's cross-attention
+    # adapter rather than a pre-stack token replacement.
+    target_x = cx - 122
+    target_y = stack_side_y - 48
+    parts.append(_svg_tag("path", {
+        "d": (
+            f"M {adapter['cx']} {adapter['top']} "
+            f"L {adapter['cx']} {target_y} "
+            f"L {target_x} {target_y}"
+        ),
+        "stroke": C["arrow"],
+        "stroke-width": 1.6,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})",
+        "fill": "none",
+    }))
+    return tok_text, embed, embed
 
 
 def _layer_stack_height(layer_blocks: list[dict]) -> int:

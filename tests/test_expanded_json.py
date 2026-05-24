@@ -83,6 +83,72 @@ QWEN2_AUDIO_SPARSE_CONFIG = {
 }
 
 
+MLLAMA_VISION_TINY_CONFIG = {
+    "architectures": ["MllamaForConditionalGeneration"],
+    "model_type": "mllama",
+    "_name_or_path": "meta-llama/Llama-3.2-11B-Vision",
+    "image_token_index": 128256,
+    "vision_config": {
+        "model_type": "mllama_vision_model",
+        "hidden_size": 1280,
+        "vision_output_dim": 7680,
+        "num_hidden_layers": 32,
+        "num_global_layers": 8,
+        "attention_heads": 16,
+        "image_size": 448,
+        "patch_size": 14,
+        "max_num_tiles": 4,
+    },
+    "text_config": {
+        "model_type": "mllama_text_model",
+        "vocab_size": 128256,
+        "hidden_size": 4096,
+        "intermediate_size": 14336,
+        "num_hidden_layers": 40,
+        "num_attention_heads": 32,
+        "num_key_value_heads": 8,
+        "cross_attention_layers": [3, 8, 13, 18, 23, 28, 33, 38],
+        "max_position_embeddings": 131072,
+        "hidden_act": "silu",
+    },
+}
+
+
+QWEN2_VL_TINY_CONFIG = {
+    "architectures": ["Qwen2VLForConditionalGeneration"],
+    "model_type": "qwen2_vl",
+    "_name_or_path": "Qwen/Qwen2-VL-7B-Instruct",
+    "image_token_id": 151655,
+    "video_token_id": 151656,
+    "vision_start_token_id": 151652,
+    "vision_end_token_id": 151653,
+    "text_config": {
+        "architectures": ["Qwen2VLForCausalLM"],
+        "model_type": "qwen2_vl_text",
+        "vocab_size": 152064,
+        "hidden_size": 64,
+        "intermediate_size": 256,
+        "num_hidden_layers": 2,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 1,
+        "max_position_embeddings": 32768,
+        "hidden_act": "silu",
+        "rope_scaling": {"type": "mrope"},
+    },
+    "vision_config": {
+        "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+        "model_type": "qwen2_vl",
+        "embed_dim": 32,
+        "hidden_size": 64,
+        "num_hidden_layers": 3,
+        "num_attention_heads": 4,
+        "patch_size": 14,
+        "temporal_patch_size": 2,
+        "spatial_merge_size": 2,
+    },
+}
+
+
 def test_expanded_json_is_structural_not_renderer_copy():
     data = unfold(LLAMA_TINY_CONFIG, return_json=True)
     encoded = json.dumps(data)
@@ -320,3 +386,121 @@ def test_expanded_json_completes_qwen2_audio_sparse_text_config():
     assert audio["encoder"]["num_layers"] == 32
     assert audio["encoder"]["num_attention_heads"] == 20
     assert data["modalities"]["fusion"]["placeholders"]["audio"]["token_id"] == 151646
+
+
+def test_expanded_json_supports_mllama_cross_attention_vision():
+    data = unfold(MLLAMA_VISION_TINY_CONFIG, return_json=True)
+
+    vision = data["modalities"]["inputs"]["vision"]
+    assert vision["kind"] == "image_to_cross_attention_states"
+    assert vision["encoder"]["kind"] == "mllama_vision_model"
+    assert vision["encoder"]["num_attention_heads"] == 16
+    assert vision["projector"] == {
+        "kind": "linear_projector",
+        "in_features": 7680,
+        "out_features": 4096,
+    }
+    assert vision["tokens"] == {
+        "kind": "vision_cross_attention_states",
+        "count": 1025,
+        "width": 4096,
+    }
+    assert [step["operation"] for step in vision["pipeline"]] == [
+        "input",
+        "patch_embedding",
+        "encode",
+        "project_to_decoder_width",
+        "emit_cross_attention_states",
+    ]
+
+    fusion = data["modalities"]["fusion"]
+    assert fusion["kind"] == "cross_attention"
+    assert fusion["operation"] == "condition_decoder_hidden_states"
+    assert fusion["target"] == "decoder.cross_attention_layers"
+    assert fusion["mechanism"] == {
+        "kind": "cross_attention",
+        "sources": ["vision"],
+        "layers": [3, 8, 13, 18, 23, 28, 33, 38],
+        "num_layers": 8,
+    }
+
+
+def test_expanded_json_supports_qwen_style_unified_grid_stream():
+    data = unfold(QWEN2_VL_TINY_CONFIG, return_json=True)
+    encoded = json.dumps(data["modalities"])
+
+    vision = data["modalities"]["inputs"]["vision"]
+    assert vision["kind"] == "image_to_grid_tokens"
+    assert vision["encoder"]["kind"] == "qwen_vl_vision_transformer"
+    assert vision["embedding"]["out_features"] == 32
+    assert vision["encoder"]["hidden_size"] == 32
+    assert vision["encoder"]["position_encoding"] == {"kind": "multimodal_rope"}
+    assert vision["projector"] == {
+        "kind": "patch_merger",
+        "in_features": 128,
+        "out_features": 64,
+    }
+    assert vision["tokens"] == {
+        "kind": "grid_visual_tokens",
+        "width": 64,
+        "grid": {
+            "kind": "dynamic_thw_grid",
+            "runtime_input": "image_grid_thw",
+            "axes": ["time", "height", "width"],
+            "patch_size": 14,
+            "temporal_patch_size": 2,
+            "spatial_merge_size": 2,
+            "position_encoding": "multimodal_rope",
+        },
+    }
+    assert vision["pipeline"][-1]["operation"] == "emit_grid_token_stream"
+
+    video = data["modalities"]["inputs"]["video"]
+    assert video["kind"] == "video_to_grid_tokens"
+    assert video["embedding"]["out_features"] == 32
+    assert video["encoder"]["hidden_size"] == 32
+    assert video["projector"] == {
+        "kind": "patch_merger",
+        "in_features": 128,
+        "out_features": 64,
+    }
+    assert video["tokens"] == {
+        "kind": "grid_video_tokens",
+        "width": 64,
+        "grid": {
+            "kind": "dynamic_thw_grid",
+            "runtime_input": "video_grid_thw",
+            "axes": ["time", "height", "width"],
+            "patch_size": 14,
+            "temporal_patch_size": 2,
+            "spatial_merge_size": 2,
+            "position_encoding": "multimodal_rope",
+        },
+    }
+
+    fusion = data["modalities"]["fusion"]
+    assert fusion["kind"] == "unified_multimodal_stream"
+    assert fusion["operation"] == "interleave_modal_tokens"
+    assert fusion["target"] == "stack.input_embeddings"
+    assert fusion["mechanism"] == {
+        "kind": "interleave_grid_streams",
+        "sources": ["vision", "video"],
+        "position_encoding": "multimodal_rope",
+        "runtime_grid_inputs": ["image_grid_thw", "video_grid_thw"],
+    }
+    assert fusion["placeholders"]["image"] == {
+        "kind": "image_placeholder",
+        "token_id": 151655,
+        "begin_token_id": 151652,
+        "end_token_id": 151653,
+    }
+    assert fusion["placeholders"]["video"] == {
+        "kind": "video_placeholder",
+        "token_id": 151656,
+        "begin_token_id": 151652,
+        "end_token_id": 151653,
+    }
+
+    assert "description" not in encoded
+    assert "label" not in encoded
+    assert "title" not in encoded
