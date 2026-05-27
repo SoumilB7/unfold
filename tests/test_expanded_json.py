@@ -504,3 +504,27 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert "description" not in encoded
     assert "label" not in encoded
     assert "title" not in encoded
+
+
+def test_multimodal_detection_uses_structural_fields_without_family_model_type():
+    qwen_like = deepcopy(QWEN2_VL_TINY_CONFIG)
+    qwen_like.pop("model_type", None)
+    qwen_like["architectures"] = []
+    qwen_like["vision_config"].pop("model_type", None)
+    qwen_like["vision_config"]["architectures"] = []
+
+    qwen_data = unfold(qwen_like, return_json=True)
+    assert qwen_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_grid_tokens"
+    assert qwen_data["modalities"]["inputs"]["vision"]["tokens"]["grid"]["runtime_input"] == "image_grid_thw"
+    assert qwen_data["modalities"]["inputs"]["video"]["kind"] == "video_to_grid_tokens"
+    assert qwen_data["modalities"]["fusion"]["kind"] == "unified_multimodal_stream"
+
+    mllama_like = deepcopy(MLLAMA_VISION_TINY_CONFIG)
+    mllama_like.pop("model_type", None)
+    mllama_like["architectures"] = []
+    mllama_like["vision_config"].pop("model_type", None)
+
+    mllama_data = unfold(mllama_like, return_json=True)
+    assert mllama_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_cross_attention_states"
+    assert mllama_data["modalities"]["inputs"]["vision"]["tokens"]["count"] == 1025
+    assert mllama_data["modalities"]["fusion"]["kind"] == "cross_attention"

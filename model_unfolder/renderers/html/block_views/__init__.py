@@ -7,41 +7,14 @@ from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import build_audio_path_view, build_multimodal_fusion_view, build_video_path_view, build_vision_path_view
 from .per_layer_embedding import build_per_layer_embedding_view
+from .registry import render_block_detail, render_sub_block_detail
 
 
 def block_detail_svg(ir: dict, info: dict, mount_id: str, block: dict) -> str | None:
     """Return a rich SVG for a clicked architecture block, when one exists."""
-    if block.get("kind") == "attention":
-        return build_attention_view(ir, info, mount_id)
-
-    if block.get("kind") == "ffn":
-        ffn = info["dominant"]["spec"]["ffn"]
-        if ffn.get("kind") == "moe":
-            return build_moe_view(ir, info, mount_id)
-        if block.get("detail_view") == "dense_ffn" or not ffn.get("gated", True):
-            return build_dense_ffn_view(ir, info, mount_id)
-        return build_ffn_view(ir, info, mount_id)
-
-    if block.get("detail_view") == "per_layer_embedding":
-        return build_per_layer_embedding_view(ir, info, mount_id, block)
-    if block.get("detail_view") == "vision_path":
-        return build_vision_path_view(ir, info, mount_id, block)
-    if block.get("detail_view") == "audio_path":
-        return build_audio_path_view(ir, info, mount_id, block)
-    if block.get("detail_view") == "video_path":
-        return build_video_path_view(ir, info, mount_id, block)
-    if block.get("detail_view") == "multimodal_fusion":
-        return build_multimodal_fusion_view(ir, info, mount_id, block)
-
-    return None
+    return render_block_detail(ir, info, mount_id, block)
 
 
 def sub_block_detail_svg(ir: dict, info: dict, mount_id: str, child: dict) -> str | None:
     """Return a rich SVG for a clicked node inside a detail view."""
-    if child.get("detail_view") == "mla_query_path":
-        return build_mla_query_path_view(ir, info, mount_id, child)
-    if child.get("detail_view") == "mla_kv_cache_path":
-        return build_mla_kv_cache_view(ir, info, mount_id, child)
-    if child.get("detail_view") == "moe_expert":
-        return build_moe_expert_view(ir, info, mount_id, child)
-    return None
+    return render_sub_block_detail(ir, info, mount_id, child)
