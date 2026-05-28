@@ -1,15 +1,12 @@
 """Video pathway detail SVG."""
 from __future__ import annotations
 
-from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _svg_text, _v_line
-from ...theme import C, FONT_MONO
-from .common import video_input
+from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _v_line
+from ...theme import C
 
 
 def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
     """Video frames -> visual encoder -> grid-aware video token stream."""
-    video = video_input(ir)
-    grid = ((video.get("tokens") or {}).get("grid") or {})
     w, h = 720, 560
     arrow_id, shadow_id = _ids(mount_id, "video-path")
     parts = [_defs(arrow_id, shadow_id)]
@@ -30,12 +27,4 @@ def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
-    if grid.get("runtime_input"):
-        parts.append(_svg_text(
-            cx, 490,
-            f"runtime grid: {grid['runtime_input']}",
-            {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-        ))
-
     return _svg(w, h, f"{ir.get('name', 'model')} video pathway", parts)
-

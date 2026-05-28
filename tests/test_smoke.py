@@ -544,6 +544,21 @@ def test_gemma4_multimodal_fusion_render():
     assert 'data-card-id="fusion_mixed_stream"' in html
 
 
+def test_gemma4_video_token_does_not_create_grid_video_path():
+    cfg = _gemma4_e2b_vision_config()
+    cfg.update({"video_token_id": 258884, "video_seq_length": 64})
+
+    d = unfold(cfg)
+    modalities = d.to_ir()["extras"]["modalities"]["inputs"]
+    assert "vision" in modalities
+    assert "audio" in modalities
+    assert "video" not in modalities
+
+    html = d.to_html(standalone=True)
+    assert "Video -&gt; grid" not in html
+    assert 'data-card-id="video_path"' not in html
+
+
 def test_qwen2_audio_sparse_text_config_is_completed():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
     ir = d.to_ir()

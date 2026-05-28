@@ -34,8 +34,6 @@ def is_unified_grid_stream(cfg: Any, vision_cfg: Any | None = None) -> bool:
         "multimodal_rope",
     }:
         return True
-    if first(cfg, "vision_start_token_id", "vision_end_token_id") is not None and has_video_input(cfg):
-        return True
     if vision_cfg is not None and first(vision_cfg, "spatial_merge_size", "temporal_patch_size") is not None:
         return True
     return model_family_hint(cfg) == "qwen_vl"
@@ -179,4 +177,3 @@ def model_family_hint(cfg: Any) -> str | None:
     if mt == "pixtral" or "pixtral" in arch:
         return "pixtral"
     return None
-

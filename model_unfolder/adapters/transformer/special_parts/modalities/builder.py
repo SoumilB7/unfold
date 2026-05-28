@@ -5,9 +5,10 @@ from typing import Any
 
 from .accessors import nested
 from .audio import audio_path
+from .detect import has_video_input, is_unified_grid_stream
 from .fusion import fusion_path
 from .schema import multimodal_payload
-from .vision import has_video_input, video_path, vision_path
+from .vision import video_path, vision_path
 
 
 def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | None:
@@ -18,7 +19,7 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
     modalities: dict[str, Any] = {}
     if vision_cfg is not None:
         modalities["vision"] = vision_path(cfg, text_cfg, vision_cfg, text_hidden_size)
-        if has_video_input(cfg):
+        if has_video_input(cfg) and is_unified_grid_stream(cfg, vision_cfg):
             modalities["video"] = video_path(cfg, vision_cfg, text_hidden_size)
     if audio_cfg is not None:
         modalities["audio"] = audio_path(cfg, audio_cfg, text_hidden_size)
@@ -30,4 +31,3 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
 
 
 __all__ = ["multimodal_extras"]
-

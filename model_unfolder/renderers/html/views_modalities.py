@@ -40,14 +40,26 @@ def draw_multimodal_input_scaffold(
         route_specs.append(("audio_path", _block_label(info, "audio_path", "Audio -> tokens")))
     multi_route = len(route_specs) > 1
     if multi_route:
-        text_x = cx if len(route_specs) == 2 else cx - 300
         text_w = 230
-        route_w = 170
         modality_y = embed_y
+        route_ys: list[float]
         if len(route_specs) == 2:
+            text_x = cx
+            route_w = 170
             route_centers = [cx - 215, cx + 215]
+            route_ys = [modality_y, modality_y]
         else:
-            route_centers = [cx - 70, cx + 150, cx + 370]
+            text_x = cx
+            route_w = 170
+            if len(route_specs) == 3:
+                route_centers = [cx - 300, cx + 210, cx + 350]
+                route_ys = [embed_y, embed_y, tok_y]
+            else:
+                span_left = cx - 345
+                span_right = cx + 350
+                step = (span_right - span_left) / max(1, len(route_specs) - 1)
+                route_centers = [span_left + i * step for i in range(len(route_specs))]
+                route_ys = [modality_y for _ in route_specs]
     else:
         text_x = cx - 155
         modality_x = cx + 155
@@ -55,6 +67,7 @@ def draw_multimodal_input_scaffold(
         route_w = 210
         modality_y = embed_y
         route_centers = [modality_x]
+        route_ys = [modality_y]
 
     tok_text = _rect_block(
         parts, info, shadow_id, "tok_text",
@@ -79,15 +92,22 @@ def draw_multimodal_input_scaffold(
         fusion["bottom"] + GAP,
         arrow_id,
     ))
-    route_targets = (
-        [fusion["cx"] - 96, fusion["cx"] + 96] if len(route_specs) == 2
-        else [fusion["cx"] - 112, fusion["cx"], fusion["cx"] + 112] if len(route_specs) >= 3
-        else [fusion["cx"] + 56]
-    )
-    for (node_id, label), x, target_x in zip(route_specs, route_centers, route_targets):
+    if len(route_specs) == 2:
+        route_targets = [fusion["cx"] - 96, fusion["cx"] + 96]
+    elif len(route_specs) == 3:
+        route_targets = [fusion["cx"] - 112, fusion["cx"], fusion["cx"] + 112]
+    elif len(route_specs) > 3:
+        span_left = fusion["cx"] - 132
+        span_right = fusion["cx"] + 132
+        step = (span_right - span_left) / max(1, len(route_specs) - 1)
+        route_targets = [span_left + i * step for i in range(len(route_specs))]
+    else:
+        route_targets = [fusion["cx"] + 56]
+
+    for (node_id, label), x, y, target_x in zip(route_specs, route_centers, route_ys, route_targets):
         route = _rect_block(
             parts, info, shadow_id, node_id,
-            x - route_w / 2, modality_y, route_w, 44,
+            x - route_w / 2, y, route_w, 44,
             label, font_size=16,
         )
         parts.append(_block_top_to_block_bottom(
@@ -158,4 +178,3 @@ def draw_cross_attention_input_scaffold(
         "fill": "none",
     }))
     return tok_text, embed, embed
-

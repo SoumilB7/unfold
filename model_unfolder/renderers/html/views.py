@@ -72,13 +72,15 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
     has_cross_attention_fusion = has_modality_fusion and fusion_spec.get("kind") == "cross_attention"
 
-    inner_x, inner_w = (230, 500) if has_cross_attention_fusion else (110, 500)
+    modality_count = len(modality_inputs)
+    has_wide_modality_scaffold = has_modality_fusion and modality_count >= 3
+    inner_x, inner_w = (230, 500) if (has_cross_attention_fusion or has_wide_modality_scaffold) else (110, 500)
 
     # Default chain center.  Auto-shift right when a side_align="tap" block on
     # the left lane would overlap the widest chain block at the default cx.
     # This handles parallel-residual architectures (e.g. GPT-NeoX / GPT-J) where
     # FFN and Attention share the same y-row without any renderer special-casing.
-    cx = 480 if has_cross_attention_fusion else 360
+    cx = 480 if (has_cross_attention_fusion or has_wide_modality_scaffold) else 360
     _tap_left = [
         b for b in side_blocks
         if b.get("side_align") == "tap" and b.get("lane") == "left"
@@ -100,7 +102,6 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     inner_h = max(490, stack_h + 2 * inner_padding)
 
     inner_y = 200
-    modality_count = len(modality_inputs)
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
     h = inner_y + inner_h + (360 if has_audio_fusion else 292 if has_modality_fusion else 232)
     w = 960 if has_cross_attention_fusion or modality_count >= 3 else 720
