@@ -87,8 +87,12 @@ def _vision_description(vision: dict) -> str:
     count = tokens.get("count")
     width = tokens.get("width")
     bits = [kind]
-    if embedding.get("patch_size"):
-        bits.append(f"{_fmt_int(embedding.get('patch_size'))}x{_fmt_int(embedding.get('patch_size'))} patches")
+    patch_desc = _patch_grid_desc(
+        (vision.get("input") or {}).get("image_size"),
+        embedding.get("patch_size") or (vision.get("input") or {}).get("patch_size"),
+    )
+    if patch_desc:
+        bits.append(patch_desc)
     if grid_vision and grid.get("runtime_input"):
         bits.append(f"dynamic {grid.get('runtime_input')}")
     if grid_vision and grid.get("spatial_merge_size"):
@@ -129,12 +133,16 @@ def _vision_children(vision: dict) -> list[dict]:
         pos_kind = (encoder.get("position_encoding") or {}).get("kind")
         if pos_kind:
             encoder_bits.append(str(pos_kind).replace("_", " "))
+    encoder_bits.append("separate vision tower")
 
     projector_desc = _projection_desc(projector)
     token_count = tokens.get("count")
     token_width = tokens.get("width")
     cross_attention_vision = tokens.get("kind") == "vision_cross_attention_states"
     grid_vision = tokens.get("kind") == "grid_visual_tokens"
+    vision_heads = encoder.get("num_attention_heads")
+    vision_hidden = encoder.get("hidden_size")
+    vision_head_dim = _head_dim(vision_heads, vision_hidden)
 
     return [
         {
@@ -150,14 +158,156 @@ def _vision_children(vision: dict) -> list[dict]:
             "id": "vision_patches",
             "title": "Patch embedding",
             "description": _join_desc([
-                f"Split image into {_fmt_int(patch_size)}x{_fmt_int(patch_size)} patches" if patch_size else "Split image into patches",
+                f"Split image into {_patch_grid_desc(image_size, patch_size)}" if patch_size else "Split image into patches",
                 f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
             ]),
+            "detail_view": "vision_patch_embedding",
+            "children": [
+                {
+                    "id": "vision_pixels",
+                    "title": "Image pixels",
+                    "description": _join_desc([
+                        "Raw image tensor before patch embedding",
+                        f"image size {_fmt_int(image_size)}" if image_size else "",
+                    ]),
+                },
+                {
+                    "id": "vision_patch_flatten",
+                    "title": "Flatten patches",
+                    "description": "Each image patch is flattened into a vector before projection.",
+                },
+                {
+                    "id": "vision_patch_project",
+                    "title": "Patch projection",
+                    "description": _join_desc([
+                        "Conv/linear patch projection",
+                        f"output dim {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
+                    ]),
+                },
+                {
+                    "id": "vision_patch_tokens",
+                    "title": "Patch tokens",
+                    "description": _join_desc([
+                        "One token per image patch",
+                        f"width {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
+                    ]),
+                },
+            ],
         },
         {
             "id": "vision_encoder",
             "title": "Vision encoder",
             "description": "; ".join(bit for bit in encoder_bits if bit),
+            "detail_view": "vision_encoder",
+            "children": [
+                {
+                    "id": "vision_position",
+                    "title": "Vision positions",
+                    "description": _join_desc([
+                        "Position information is added before the visual transformer stack",
+                        str((encoder.get("position_encoding") or {}).get("kind")).replace("_", " ")
+                        if (encoder.get("position_encoding") or {}).get("kind") else "",
+                    ]),
+                },
+                {
+                    "id": "vision_encoder_norm1",
+                    "title": "Pre-attention norm",
+                    "description": "Normalization inside each repeated vision encoder layer.",
+                },
+                {
+                    "id": "vision_encoder_attn",
+                    "title": "Vision self-attention",
+                    "description": _join_desc([
+                        "Self-attention over image patch tokens",
+                        f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
+                        f"hidden {_fmt_int(encoder.get('hidden_size'))}" if encoder.get("hidden_size") else "",
+                    ]),
+                    "detail_view": "vision_self_attention",
+                    "children": [
+                        {
+                            "id": "vision_attn_q",
+                            "title": "Query projection",
+                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                        },
+                        {
+                            "id": "vision_attn_k",
+                            "title": "Key projection",
+                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                        },
+                        {
+                            "id": "vision_attn_v",
+                            "title": "Value projection",
+                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                        },
+                        {
+                            "id": "vision_attn_scaled",
+                            "title": "Scaled attention scores",
+                            "description": "Per head: QK^T / sqrt(dim).",
+                        },
+                        {
+                            "id": "vision_attn_softmax",
+                            "title": "Softmax weights",
+                            "description": "Normalize each patch query over all visual patch keys.",
+                        },
+                        {
+                            "id": "vision_attn_values",
+                            "title": "Apply values",
+                            "description": "Attention weights multiply V to produce visual context per head.",
+                        },
+                        {
+                            "id": "vision_attn_concat",
+                            "title": "Concatenate heads",
+                            "description": _join_desc([
+                                f"{_fmt_int(vision_heads)} heads" if vision_heads else "",
+                                f"back to hidden {_fmt_int(vision_hidden)}" if vision_hidden else "",
+                            ]),
+                        },
+                        {
+                            "id": "vision_attn_out",
+                            "title": "Output projection",
+                            "description": _linear_desc(vision_hidden, vision_hidden, None, None),
+                        },
+                    ],
+                },
+                {
+                    "id": "vision_encoder_norm2",
+                    "title": "Pre-MLP norm",
+                    "description": "Second normalization inside each repeated vision encoder layer.",
+                },
+                {
+                    "id": "vision_encoder_mlp",
+                    "title": "Vision MLP",
+                    "description": "Feed-forward sublayer inside each repeated vision encoder block.",
+                    "detail_view": "vision_mlp",
+                    "children": [
+                        {
+                            "id": "vision_mlp_input",
+                            "title": "Patch states",
+                            "description": "Visual patch states entering the MLP sublayer.",
+                        },
+                        {
+                            "id": "vision_mlp_fc1",
+                            "title": "Input projection",
+                            "description": _linear_desc(vision_hidden, encoder.get("intermediate_size"), None, None),
+                        },
+                        {
+                            "id": "vision_mlp_activation",
+                            "title": "Activation",
+                            "description": "Element-wise non-linearity inside the vision MLP.",
+                        },
+                        {
+                            "id": "vision_mlp_fc2",
+                            "title": "Output projection",
+                            "description": _linear_desc(encoder.get("intermediate_size"), vision_hidden, None, None),
+                        },
+                    ],
+                },
+                {
+                    "id": "vision_encoded_states",
+                    "title": "Encoded image states",
+                    "description": "Image patch states after the vision encoder stack.",
+                },
+            ],
         },
         {
             "id": "vision_projector",
@@ -318,6 +468,37 @@ def _video_children(video: dict) -> list[dict]:
             ]),
         },
     ]
+
+
+def _patch_grid_desc(image_size: int | None, patch_size: int | None) -> str:
+    if image_size and patch_size and image_size % patch_size == 0:
+        side = image_size // patch_size
+        return f"{_fmt_int(side)}x{_fmt_int(side)} patches ({_fmt_int(patch_size)}px each)"
+    if patch_size:
+        return f"{_fmt_int(patch_size)}px patches"
+    return ""
+
+
+def _head_dim(heads: int | None, hidden: int | None) -> int | None:
+    if heads and hidden and hidden % heads == 0:
+        return hidden // heads
+    return None
+
+
+def _linear_desc(
+    in_features: int | None,
+    out_features: int | None,
+    heads: int | None,
+    head_dim: int | None,
+) -> str:
+    bits = ["Linear"]
+    if in_features and out_features:
+        bits.append(f"{_fmt_int(in_features)} -> {_fmt_int(out_features)}")
+    if heads and head_dim:
+        bits.append(f"{_fmt_int(heads)} heads x {_fmt_int(head_dim)} dims")
+    elif heads:
+        bits.append(f"{_fmt_int(heads)} heads")
+    return "; ".join(bits)
 
 
 def _projection_desc(projector: dict) -> str:

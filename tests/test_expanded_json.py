@@ -446,6 +446,12 @@ def test_mllama_cross_attention_is_layer_variant_only():
     assert "GQA XAttn" in html
     assert "Cross-Attention" in html
     assert "cross_attention_states" in html
+    assert "Projected image states" in html
+    assert "Flatten patches" in html
+    assert "Vision self-attention" in html
+    assert "vision_attn_scaled" in html
+    assert "vision_mlp_fc1" in html
+    assert "separate vision tower" in html
     assert "Vision context" not in html
 
 
