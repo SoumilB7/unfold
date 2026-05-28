@@ -9,6 +9,8 @@ from ..common import format_dim as _fmt
 def attention_label(attention: AttentionSpec) -> list[str]:
     kind = attention.kind
     prefix = _attention_mask_prefix(attention)
+    if attention.cross_attention:
+        return _prefixed_label(prefix, "Vision", "Cross-Attention")
     if kind == "mla":
         return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":
@@ -37,6 +39,13 @@ def attention_label(attention: AttentionSpec) -> list[str]:
 
 
 def attention_title(attention: AttentionSpec) -> str:
+    if attention.cross_attention:
+        base = {
+            "gqa": "Grouped-query cross-attention",
+            "mqa": "Multi-query cross-attention",
+            "mha": "Multi-head cross-attention",
+        }.get(attention.kind, "Cross-attention")
+        return _prefixed_title(_attention_mask_title_prefix(attention), base)
     if attention.kind == "mqa":
         base = "Multi-query attention"
     else:
@@ -60,6 +69,12 @@ def attention_title(attention: AttentionSpec) -> str:
 
 
 def describe_attention(attention: AttentionSpec) -> str:
+    if attention.cross_attention:
+        kv_heads = attention.num_kv_heads or attention.num_heads
+        return _with_attention_window(attention, (
+            f"Cross-attention; decoder hidden states produce Q; cross_attention_states produce K/V; "
+            f"{attention.num_heads} Q / {kv_heads} KV heads; head dim {_fmt(attention.head_dim)}"
+        ))
     if attention.kind == "mla":
         text = (
             f"Multi-head latent attention; {attention.num_heads} heads; "

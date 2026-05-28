@@ -27,6 +27,7 @@ class AttentionSpec:
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
+    cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
 
 
 @dataclass
@@ -59,6 +60,7 @@ class LayerSpec:
         return (
             a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
             a.qk_norm, a.shared, a.no_rope,
+            a.cross_attention,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
             any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
@@ -137,6 +139,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "qk_norm": a.qk_norm,
         "shared": a.shared,
         "no_rope": a.no_rope,
+        "cross_attention": a.cross_attention,
     }
 
 

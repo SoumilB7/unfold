@@ -28,7 +28,7 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     d_k = _fmt(head_dim) if head_dim else "d_k"
     if attention.kind in {"mha", "gqa", "mqa"}:
         return _sdpa_detailed_child_blocks(
-            attention.kind,
+            attention,
             hidden,
             q_out,
             kv_out,
@@ -75,7 +75,7 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
 
 
 def _sdpa_detailed_child_blocks(
-    kind: str,
+    attention: AttentionSpec,
     hidden: str,
     q_out: str,
     kv_out: str,
@@ -84,10 +84,19 @@ def _sdpa_detailed_child_blocks(
     d_k: str,
     q_per_group: int | None,
 ) -> list[dict]:
+    kind = attention.kind
+    cross_attention = attention.cross_attention
     kv_label = "1 shared K/V head" if kind == "mqa" else f"{num_kv_heads} KV-heads"
     scaled_title = "Scaled attention scores"
     scaled_desc = "Per head: QK^T / sqrt(dim); dot-product scores scaled for numerical stability"
-    if kind == "gqa":
+    if cross_attention:
+        scaled_title = "Cross-attention scores"
+        group = f"; each vision KV head serves {q_per_group} query heads" if q_per_group else ""
+        scaled_desc = (
+            f"Decoder query heads attend over cross_attention_states: {num_heads} Q heads through "
+            f"{num_kv_heads} vision K/V heads{group}; scores use QK^T / sqrt(dim)"
+        )
+    elif kind == "gqa":
         scaled_title = "Grouped scaled dot-product attention"
         group = f"; each KV head serves {q_per_group} query heads" if q_per_group else ""
         scaled_desc = (
@@ -105,22 +114,34 @@ def _sdpa_detailed_child_blocks(
         {
             "id": "q_proj",
             "title": "Query projection",
-            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+            "description": (
+                f"Linear over decoder hidden states; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)"
+                if cross_attention
+                else f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)"
+            ),
         },
         {
             "id": "k_proj",
             "title": "Key projection",
             "description": (
-                f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
-                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                f"Linear over cross_attention_states; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)."
+                if cross_attention
+                else (
+                    f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
+                    "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                )
             ),
         },
         {
             "id": "v_proj",
             "title": "Value projection",
             "description": (
-                f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
-                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                f"Linear over cross_attention_states; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)."
+                if cross_attention
+                else (
+                    f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
+                    "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                )
             ),
         },
         {

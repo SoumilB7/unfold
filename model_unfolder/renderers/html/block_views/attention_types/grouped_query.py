@@ -17,7 +17,9 @@ from ...svg import (
 from ...theme import C, GAP
 from ...utils import _fmt_int
 from .common import (
+    cross_context_to_kv_inputs,
     gqa_grouping_panel,
+    has_cross_attention_context,
     input_to_block,
     kv_cache_badge,
     kv_cache_port_hint,
@@ -33,8 +35,11 @@ from .sliding_window import canvas_height, is_sliding_window, sliding_window_inp
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Detail view for grouped-query attention."""
     attn = info["dominant"]["spec"].get("attention") or {}
+    has_cross_context = has_cross_attention_context(info)
     is_sliding = is_sliding_window(attn)
     w, h = 820, canvas_height(attn, 880)
+    if has_cross_context:
+        h += 90
     arrow_id, shadow_id = _ids(mount_id, "gqa-attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
@@ -80,18 +85,21 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     kv_cache_port_hint(body, [k_proj, v_proj])
 
     branch_x, branch_y = cx, 792
-    if is_sliding:
-        sliding_window_input(body, arrow_id, branch_x, branch_y, attn.get("window_size"))
+    if has_cross_context:
+        cross_context_to_kv_inputs(body, info, shadow_id, arrow_id, q_proj, k_proj, v_proj, branch_y)
     else:
-        body.append(_svg_tag("line", {
-            "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y,
-            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-            "fill": "none",
-        }))
-    body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
-    body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
-    body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
-    body.append(_branch_dot(branch_x, branch_y))
+        if is_sliding:
+            sliding_window_input(body, arrow_id, branch_x, branch_y, attn.get("window_size"))
+        else:
+            body.append(_svg_tag("line", {
+                "x1": branch_x, "y1": branch_y + 34, "x2": branch_x, "y2": branch_y,
+                "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+                "fill": "none",
+            }))
+        body.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+        body.append(_elbow_hv(branch_x, branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
+        body.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+        body.append(_branch_dot(branch_x, branch_y))
 
     body.append(input_to_block(q_proj["cx"], q_proj["top"], scaled_scores["left"] + 92, scaled_scores["bottom"], arrow_id))
     body.append(_v_seg(k_proj["cx"], k_proj["top"], scaled_scores["bottom"], arrow_id))

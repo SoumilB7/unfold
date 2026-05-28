@@ -282,6 +282,7 @@ def parse(cfg: Any) -> ModelIR:
 
         attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
         is_nope   = bool(no_rope_interval > 1 and i % no_rope_interval == 0)
+        is_cross_attn_layer = has_cross_attention_side_state and i in cross_attn_layer_set
 
         kv_source: int | None = None
         if i >= first_shared_layer:
@@ -304,6 +305,7 @@ def parse(cfg: Any) -> ModelIR:
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
             no_rope=is_nope,
+            cross_attention=is_cross_attn_layer,
         )
 
         is_dense_at_layer = _is_dense_at_layer(
@@ -334,8 +336,8 @@ def parse(cfg: Any) -> ModelIR:
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
-        if has_cross_attention_side_state and i in cross_attn_layer_set:
-            extra_blocks.append(_cross_attention_adapter_block(cross_attn_layer_set))
+        if is_cross_attn_layer:
+            extra_blocks.append(_cross_attention_states_side_block())
 
         if use_parallel_residual:
             layers.append(parallel_decoder_layer(i, attn, ffn, hidden_size, norm_kind=norm_kind))
@@ -564,32 +566,22 @@ def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
     return None
 
 
-def _cross_attention_adapter_block(layer_indices: set[int]) -> dict:
-    """Layer-local side block for decoder layers that read vision states."""
-    layers = sorted(layer_indices)
-    if layers:
-        layer_label = ", ".join(f"L{i}" for i in layers[:6])
-        if len(layers) > 6:
-            layer_label += ", ..."
-        layer_desc = f"active on {layer_label}"
-    else:
-        layer_desc = "active on selected decoder layers"
+def _cross_attention_states_side_block() -> dict:
+    """Layer-local projected image states read by cross-attention layers."""
     return {
-        "id": "cross_attention_adapter",
-        "role": "fusion",
-        "kind": "fusion",
+        "id": "cross_attention_states",
+        "role": "vision",
+        "kind": "vision",
         "lane": "external_left",
         "feeds": "attn",
-        "source_id": "vision_path",
-        "source_label": "Vision context",
-        "label": "Cross-attention adapter",
-        "title": "Cross-attention adapter",
+        "offset_y": 0,
+        "label": ["Projected image", "states"],
+        "title": "cross_attention_states",
         "description": (
-            "Vision states stay separate; this decoder layer reads them with "
-            f"cross-attention; {layer_desc}."
+            "vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
         ),
-        "detail_view": "multimodal_fusion",
-        "w": 270,
-        "h": 54,
-        "font": 16,
+        "detail_view": "vision_path",
+        "w": 250,
+        "h": 50,
+        "font": 15,
     }

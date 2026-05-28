@@ -186,7 +186,7 @@ def _group_label(group: dict, info: dict | None = None) -> str:
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
     bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")
-    if _has_cross_attention_adapter(group["spec"]):
+    if _has_cross_attention_adapter(group["spec"]) and not attn.get("cross_attention"):
         bits.append("Vision XAttn")
     return f"{' · '.join(bits)}  ({_indices_summary(group, info)})"
 
@@ -231,6 +231,7 @@ def _signature(layer: dict) -> str:
             attention.get("qk_norm"),
             attention.get("shared"),
             attention.get("no_rope"),
+            attention.get("cross_attention"),
             ffn.get("kind"),
             ffn.get("num_experts"),
             layer.get("norm_kind"),
@@ -241,6 +242,8 @@ def _signature(layer: dict) -> str:
 
 
 def _has_cross_attention_adapter(layer: dict) -> bool:
+    if (layer.get("attention") or {}).get("cross_attention"):
+        return True
     return any(
         block.get("id") == "cross_attention_adapter"
         for block in layer.get("blocks", []) or []

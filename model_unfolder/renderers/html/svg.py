@@ -22,8 +22,8 @@ def _defs(arrow_id: str, shadow_id: str) -> str:
             "viewBox": "0 0 10 10",
             "refX": 8,
             "refY": 5,
-            "markerWidth": 6,
-            "markerHeight": 6,
+            "markerWidth": 7,
+            "markerHeight": 7,
             "orient": "auto-start-reverse",
         },
         _svg_tag(
@@ -31,8 +31,8 @@ def _defs(arrow_id: str, shadow_id: str) -> str:
             {
                 "d": "M2 1L8 5L2 9",
                 "fill": "none",
-                "stroke": "context-stroke",
-                "stroke-width": 1.5,
+                "stroke": C["arrow"],
+                "stroke-width": 1.7,
                 "stroke-linecap": "round",
                 "stroke-linejoin": "round",
             },

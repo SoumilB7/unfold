@@ -20,12 +20,12 @@ def _multimodal_block_lookup(ir: dict) -> dict:
             "role": "modality_input",
             "kind": vision.get("kind") or "image_to_soft_visual_tokens",
             "label": (
-                "Vision context" if cross_attention_vision
+                "Image -> states" if cross_attention_vision
                 else "Vision -> grid" if grid_vision
                 else "Vision -> tokens"
             ),
             "title": (
-                "Vision to cross-attention states" if cross_attention_vision
+                "Image to projected states" if cross_attention_vision
                 else "Vision to grid tokens" if grid_vision
                 else "Vision to soft tokens"
             ),
@@ -66,8 +66,8 @@ def _multimodal_block_lookup(ir: dict) -> dict:
             "id": "fusion",
             "role": "fusion",
             "kind": "fusion",
-            "label": "Cross-attention adapter" if cross_attention else "Multimodal fusion",
-            "title": "Vision cross-attention adapter" if cross_attention else "Multimodal fusion",
+            "label": "Vision cross-attention" if cross_attention else "Multimodal fusion",
+            "title": "Vision cross-attention" if cross_attention else "Multimodal fusion",
             "description": _fusion_description(fusion),
             "detail_view": "multimodal_fusion",
             "children": _fusion_children(fusion, inputs),
@@ -99,7 +99,7 @@ def _vision_description(vision: dict) -> str:
             if grid_vision else f"projected to width {_fmt_int(projector.get('out_features'))}"
         )
     if count:
-        bits.append(f"{_fmt_int(count)} {'vision context tokens' if cross_attention_vision else 'visual tokens'}")
+        bits.append(f"{_fmt_int(count)} {'cross_attention_states' if cross_attention_vision else 'visual tokens'}")
     if grid_vision:
         bits.append("M-RoPE grid positions")
     if width:
@@ -170,7 +170,7 @@ def _vision_children(vision: dict) -> list[dict]:
         },
         {
             "id": "visual_tokens",
-            "title": "Cross-attention states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
+            "title": "cross_attention_states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
             "description": _join_desc([
                 (
                     f"{_fmt_int(token_count)} tokens per tile"
@@ -179,12 +179,12 @@ def _vision_children(vision: dict) -> list[dict]:
                     if grid_vision
                     else f"{_fmt_int(token_count)} tokens"
                     if token_count
-                    else "Vision context stream"
+                    else "Projected image-state stream"
                     if cross_attention_vision
                     else "Soft visual token stream"
                 ),
                 f"width {_fmt_int(token_width)}" if token_width else "",
-                "decoder cross-attention reads these states; they are not scattered into text token slots"
+                "selected decoder cross-attention layers read these states as K/V; they are not scattered into text token slots"
                 if cross_attention_vision
                 else "these are fused into the decoder input, not raw pixels",
             ]),
@@ -348,10 +348,10 @@ def _fusion_description(fusion: dict) -> str:
     if fusion.get("kind") == "cross_attention":
         mechanism = fusion.get("mechanism") or {}
         n_layers = mechanism.get("num_layers")
-        bits = ["cross attention", "vision states condition selected decoder layers"]
+        bits = ["cross attention", "projected image states condition selected decoder layers"]
         if n_layers:
             bits.append(f"{_fmt_int(n_layers)} cross-attention layers")
-        bits.append("vision states stay separate")
+        bits.append("projected image states stay separate")
         if width:
             bits.append(f"decoder width {_fmt_int(width)}")
         return "; ".join(bits)
@@ -371,35 +371,34 @@ def _fusion_description(fusion: dict) -> str:
 
 def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
     if fusion.get("kind") == "cross_attention":
-        mechanism = fusion.get("mechanism") or {}
-        layers = mechanism.get("layers") or []
-        layers_desc = (
-            "layers " + ", ".join(f"L{idx}" for idx in layers[:8]) + ("..." if len(layers) > 8 else "")
-            if layers else "selected decoder layers"
-        )
         return [
             {
                 "id": "embed",
-                "title": "Text hidden states",
-                "description": "The normal token embedding stream continues through decoder self-attention layers.",
+                "title": "hidden_states",
+                "description": "The main decoder stream supplies Q to selected cross-attention layers.",
             },
             {
                 "id": "vision_path",
-                "title": "Vision context states",
-                "description": "Projected image encoder states stay on a side stream for decoder cross-attention.",
+                "title": "Image to projected states",
+                "description": "Image pixels are encoded and projected to decoder width before cross-attention reads them.",
+            },
+            {
+                "id": "cross_attention_states",
+                "title": "cross_attention_states",
+                "description": "Projected image encoder states stay separate from the token stream and supply K/V to selected decoder cross-attention layers.",
             },
             {
                 "id": "cross_attention_adapter",
-                "title": "Cross-attention adapter layers",
+                "title": "Cross-attention layers",
                 "description": (
-                    f"Vision states stay separate; {layers_desc} read them with "
+                    "Projected image states stay separate; selected decoder layers read them with "
                     "cross-attention instead of inserting them as replacement text embeddings."
                 ),
             },
             {
                 "id": "stack_input",
-                "title": "Conditioned decoder states",
-                "description": "Decoder hidden states after the cross-attention adapter layers blend in visual context.",
+                "title": "updated hidden_states",
+                "description": "Decoder hidden states after selected cross-attention layers have read projected image states.",
             },
         ]
     if fusion.get("kind") == "unified_multimodal_stream":
@@ -617,7 +616,7 @@ def _modality_badges(ir: dict) -> list[dict[str, str]]:
             })
         elif vision_tokens.get("kind") == "vision_cross_attention_states":
             badges.append({
-                "text": "Vision context",
+                "text": "Projected image states",
                 "title": "Image encoder states condition selected decoder layers through cross-attention",
             })
         else:

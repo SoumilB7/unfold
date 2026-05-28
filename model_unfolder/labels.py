@@ -90,6 +90,8 @@ def mask_chip(attention: dict) -> str:
 
 def kind_short(attention: dict) -> str:
     short = _KIND_SHORT.get(attention.get("kind", ""), "MHA")
+    if attention.get("cross_attention"):
+        short = f"{short} XAttn"
     tags = []
     if attention.get("qk_norm"):
         tags.append("QK-Norm")
@@ -102,6 +104,12 @@ def kind_short(attention: dict) -> str:
 
 def kind_long(attention: dict) -> str:
     base = _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
+    if attention.get("cross_attention"):
+        base = {
+            "gqa": "Grouped-query cross-attention",
+            "mqa": "Multi-query cross-attention",
+            "mha": "Multi-head cross-attention",
+        }.get(attention.get("kind", ""), "Cross-attention")
     extras = []
     if attention.get("qk_norm"):
         extras.append("per-head Q/K normalisation")
@@ -143,7 +151,15 @@ def activation_label(name: str | None) -> str:
 def describe_attention(attention: dict) -> str:
     """Multi-clause human description suitable for tooltips and cards."""
     kind = attention.get("kind")
-    if kind == "mla":
+    if attention.get("cross_attention"):
+        kv_heads = attention.get("num_kv_heads") or attention.get("num_heads")
+        text = (
+            "Cross-attention; decoder hidden states produce Q; "
+            "cross_attention_states produce K/V; "
+            f"{attention.get('num_heads')} Q / {kv_heads} KV heads; "
+            f"head dim {_fmt_int(attention.get('head_dim'))}"
+        )
+    elif kind == "mla":
         text = (
             f"Multi-head latent attention; {attention.get('num_heads')} heads; "
             f"KV LoRA {_fmt_int(attention.get('kv_lora_rank'))}"

@@ -425,27 +425,28 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     }
 
 
-def test_mllama_cross_attention_adapter_is_layer_variant_only():
+def test_mllama_cross_attention_is_layer_variant_only():
     diagram = unfold(MLLAMA_VISION_TINY_CONFIG)
     ir = diagram.to_ir()
 
-    assert not any(
-        block.get("id") == "cross_attention_adapter"
-        for block in ir["layers"][0]["blocks"]
-    )
-    assert any(
-        block.get("id") == "cross_attention_adapter"
-        for block in ir["layers"][3]["blocks"]
-    )
+    assert not ir["layers"][0]["attention"]["cross_attention"]
+    assert ir["layers"][3]["attention"]["cross_attention"]
+    assert not any(block.get("id") == "cross_attention_states" for block in ir["layers"][0]["blocks"])
+    layer3_blocks = ir["layers"][3]["blocks"]
+    assert not any(block.get("id") == "vision_path" for block in layer3_blocks)
+    side_states = next(block for block in layer3_blocks if block.get("id") == "cross_attention_states")
+    assert side_states["title"] == "cross_attention_states"
+    assert side_states["detail_view"] == "vision_path"
     assert [
         i for i, layer in enumerate(ir["layers"])
-        if any(block.get("id") == "cross_attention_adapter" for block in layer["blocks"])
+        if layer["attention"]["cross_attention"]
     ] == [3, 8, 13, 18, 23, 28, 33, 38]
 
     html = diagram.to_html(standalone=False)
-    assert "Vision XAttn" in html
-    assert "Cross-attention adapter" in html
-    assert "Vision states stay separate" in html
+    assert "GQA XAttn" in html
+    assert "Cross-Attention" in html
+    assert "cross_attention_states" in html
+    assert "Vision context" not in html
 
 
 def test_expanded_json_supports_qwen_style_unified_grid_stream():

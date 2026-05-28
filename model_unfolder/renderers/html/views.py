@@ -71,7 +71,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
     has_cross_attention_fusion = has_modality_fusion and fusion_spec.get("kind") == "cross_attention"
-    has_external_side_stream = any(block.get("source_id") for block in side_blocks)
+    has_external_side_stream = any(str(block.get("lane", "")).startswith("external") for block in side_blocks)
 
     modality_count = len(modality_inputs)
     has_wide_modality_scaffold = has_modality_fusion and modality_count >= 3
@@ -255,7 +255,7 @@ def _draw_side_block(
 
     feeds_geom = block_pos.get(feeds_id) if feeds_id else None
     tap_geom = block_pos.get(tap_id) if tap_id else None
-    if feeds_geom and block.get("source_id"):
+    if feeds_geom and str(block.get("lane", "")).startswith("external"):
         _draw_external_side_block(
             parts, info, shadow_id, block, feeds_geom,
             inner_x, inner_w, arrow_id, block_pos,
@@ -365,19 +365,20 @@ def _draw_external_side_block(
         route_x = (geom["left"] + target_x) / 2 if geom["left"] > target_x else target_x + 44
 
     source_id = block.get("source_id")
-    source_w = block.get("source_w") or 230
-    source_h = block.get("source_h") or 46
-    source_gap = block.get("source_gap") or 56
-    source_x = geom["cx"] - source_w / 2
-    source_top = geom["bottom"] + source_gap
-    source = _rect_block(
-        parts, info, shadow_id, source_id,
-        source_x, source_top, source_w, source_h,
-        _block_label(info, source_id, block.get("source_label", source_id)),
-        font_size=font_size,
-    )
-    block_pos[source_id] = source
-    parts.append(_v_line(source, geom, arrow_id))
+    if source_id:
+        source_w = block.get("source_w") or 230
+        source_h = block.get("source_h") or 46
+        source_gap = block.get("source_gap") or 56
+        source_x = geom["cx"] - source_w / 2
+        source_top = geom["bottom"] + source_gap
+        source = _rect_block(
+            parts, info, shadow_id, source_id,
+            source_x, source_top, source_w, source_h,
+            _block_label(info, source_id, block.get("source_label", source_id)),
+            font_size=font_size,
+        )
+        block_pos[source_id] = source
+        parts.append(_v_line(source, geom, arrow_id))
 
     # Route out with a visible 90-degree turn so the adapter reads as an
     # external conditioning path, not another central-chain block.

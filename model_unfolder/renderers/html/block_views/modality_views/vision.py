@@ -1,7 +1,7 @@
 """Vision pathway detail SVG."""
 from __future__ import annotations
 
-from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _v_line
+from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag
 from ...theme import C
 from .common import vision_input
 
@@ -27,17 +27,33 @@ def build_vision_path_view(ir: dict, info: dict, mount_id: str, _block: dict) ->
     )
     soft = _rect_block(
         parts, info, shadow_id, "visual_tokens", cx - 145, 70, 290, 48,
-        "Cross-attn states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
+        ["Projected image", "states"] if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
     )
 
     for src, dst in ((pixels, patches), (patches, enc), (enc, proj), (proj, soft)):
-        parts.append(_v_line(src, dst, arrow_id))
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": soft["top"],
-        "x2": cx, "y2": soft["top"] - 32,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
+        _up_arrow(parts, src["cx"], src["top"], dst["bottom"] + 13)
+    _up_arrow(parts, cx, soft["top"], soft["top"] - 36)
 
     return _svg(w, h, f"{ir.get('name', 'model')} vision pathway", parts)
 
+
+def _up_arrow(parts: list[str], x: float, y1: float, y2: float) -> None:
+    """Draw a vertical arrowhead explicitly; notebook SVG markers can be faint."""
+    parts.append(_svg_tag("line", {
+        "x1": x,
+        "y1": y1,
+        "x2": x,
+        "y2": y2,
+        "stroke": C["arrow"],
+        "stroke-width": 1.8,
+        "stroke-linecap": "round",
+        "fill": "none",
+    }))
+    parts.append(_svg_tag("path", {
+        "d": f"M {x - 5.5} {y2 + 7} L {x} {y2} L {x + 5.5} {y2 + 7}",
+        "fill": "none",
+        "stroke": C["arrow"],
+        "stroke-width": 1.8,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+    }))

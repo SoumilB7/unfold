@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from ...svg import (
+    _branch_dot,
     _defs,
+    _elbow_hv,
     _ids,
     _rect_block,
     _region_rect,
@@ -26,6 +28,62 @@ def queries_per_kv_group(num_heads: int, num_kv_heads: int) -> int | None:
     if num_heads % num_kv_heads:
         return None
     return num_heads // num_kv_heads
+
+
+def has_cross_attention_context(info: dict) -> bool:
+    """Whether this layer variant reads external vision states in attention."""
+    if (info.get("dominant", {}).get("spec", {}).get("attention") or {}).get("cross_attention"):
+        return True
+    return any(
+        block.get("id") in {"cross_attention_adapter", "cross_attention_states"}
+        for block in (info.get("dominant", {}).get("spec", {}).get("blocks") or [])
+    )
+
+
+def cross_context_to_kv_inputs(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    arrow_id: str,
+    q_proj: dict,
+    k_proj: dict,
+    v_proj: dict,
+    branch_y: float,
+) -> None:
+    """Show cross-attention input: Q from decoder, K/V from vision states."""
+    q_input_y = branch_y + 82
+    parts.append(_svg_tag("line", {
+        "x1": q_proj["cx"], "y1": q_input_y,
+        "x2": q_proj["cx"], "y2": q_proj["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+
+    vision_w = 250
+    vision_cx = (k_proj["cx"] + v_proj["cx"]) / 2
+    vision = _rect_block(
+        parts,
+        info,
+        shadow_id,
+        "cross_attention_states",
+        vision_cx - vision_w / 2,
+        branch_y + 30,
+        vision_w,
+        46,
+        ["Projected image", "states"],
+        font_size=15,
+    )
+    vision_branch_x = vision["cx"]
+    vision_branch_y = branch_y
+    parts.append(_svg_tag("line", {
+        "x1": vision["cx"], "y1": vision["top"],
+        "x2": vision_branch_x, "y2": vision_branch_y,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "fill": "none",
+    }))
+    parts.append(_elbow_hv(vision_branch_x, vision_branch_y, k_proj["cx"], k_proj["bottom"] + GAP, arrow_id))
+    parts.append(_elbow_hv(vision_branch_x, vision_branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+    parts.append(_branch_dot(vision_branch_x, vision_branch_y))
 
 
 def gqa_grouping_panel(

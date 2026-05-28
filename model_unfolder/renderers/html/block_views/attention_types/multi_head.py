@@ -16,15 +16,26 @@ from ...svg import (
 )
 from ...theme import C, GAP
 from ...utils import _fmt_int
-from .common import input_to_block, kv_cache_port_hint, output_stem, sdpa_dot_operator, sdpa_fraction_block
+from .common import (
+    cross_context_to_kv_inputs,
+    has_cross_attention_context,
+    input_to_block,
+    kv_cache_port_hint,
+    output_stem,
+    sdpa_dot_operator,
+    sdpa_fraction_block,
+)
 from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Rich SVG detail view for standard MHA / SDPA attention blocks."""
     attn = info["dominant"]["spec"].get("attention") or {}
+    has_cross_context = has_cross_attention_context(info)
     is_sliding = is_sliding_window(attn)
     w, h = 820, canvas_height(attn, 880)
+    if has_cross_context:
+        h += 90
     arrow_id, shadow_id = _ids(mount_id, "attn")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
@@ -75,18 +86,21 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     kv_cache_port_hint(parts, [k_proj, v_proj])
 
     branch_x, branch_y = cx, 792
-    if is_sliding:
-        sliding_window_input(parts, arrow_id, branch_x, branch_y, attn.get("window_size"))
+    if has_cross_context:
+        cross_context_to_kv_inputs(parts, info, shadow_id, arrow_id, q_proj, k_proj, v_proj, branch_y)
     else:
-        parts.append(_svg_tag("line", {
-            "x1": branch_x, "y1": branch_y + 42, "x2": branch_x, "y2": branch_y,
-            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-            "fill": "none",
-        }))
-    parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
-    parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
-    parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
-    parts.append(_branch_dot(branch_x, branch_y))
+        if is_sliding:
+            sliding_window_input(parts, arrow_id, branch_x, branch_y, attn.get("window_size"))
+        else:
+            parts.append(_svg_tag("line", {
+                "x1": branch_x, "y1": branch_y + 42, "x2": branch_x, "y2": branch_y,
+                "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+                "fill": "none",
+            }))
+        parts.append(_elbow_hv(branch_x, branch_y, q_proj["cx"], q_proj["bottom"] + GAP, arrow_id))
+        parts.append(_v_seg(branch_x, branch_y, k_proj["bottom"] + GAP, arrow_id))
+        parts.append(_elbow_hv(branch_x, branch_y, v_proj["cx"], v_proj["bottom"] + GAP, arrow_id))
+        parts.append(_branch_dot(branch_x, branch_y))
 
     parts.append(input_to_block(q_proj["cx"], q_proj["top"], scaled_scores["left"] + 92, scaled_scores["bottom"], arrow_id))
     parts.append(_v_seg(k_proj["cx"], k_proj["top"], scaled_scores["bottom"], arrow_id))
