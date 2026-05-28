@@ -26,6 +26,7 @@ Detection is config-driven:
 * ``num_local_experts`` / ``n_routed_experts``   → MoE FFN
 * ``n_shared_experts`` / ``num_shared_experts``  → shared experts
 * ``clip_qkv``                                   → attention extras
+* ``cross_attention_layers``                     → vision side-attention layers
 
 Warnings policy: warn only for *specific* config problems (missing
 critical field, unrecognized layer_type value, …).  Never warn just
@@ -43,6 +44,7 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_extras,
 )
 from .special_parts.modalities import multimodal_extras
+from .special_parts.modalities.detect import cross_attention_layers as _cross_attention_layers
 
 
 # ---------------------------------------------------------------------------
@@ -252,6 +254,13 @@ def parse(cfg: Any) -> ModelIR:
     ple_dim   = _g(text_cfg, "hidden_size_per_layer_input") or 0
     ple_vocab = _g(text_cfg, "vocab_size_per_layer_input") or get("vocab_size", 0)
 
+    # ---- Decoder layers that read external modality states through cross-attention ----
+    cross_attn_layer_set = set(_cross_attention_layers(cfg, text_cfg) or [])
+    has_cross_attention_side_state = bool(
+        cross_attn_layer_set
+        and (_g(cfg, "vision_config") is not None or _g(cfg, "vision_model_config") is not None)
+    )
+
     # ---- Walk the layer stack ----
     unknown_layer_types: set[str] = set()
     cross_layer_edges: list[CrossLayerEdge] = []
@@ -325,6 +334,8 @@ def parse(cfg: Any) -> ModelIR:
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
+        if has_cross_attention_side_state and i in cross_attn_layer_set:
+            extra_blocks.append(_cross_attention_adapter_block(cross_attn_layer_set))
 
         if use_parallel_residual:
             layers.append(parallel_decoder_layer(i, attn, ffn, hidden_size, norm_kind=norm_kind))
@@ -551,3 +562,34 @@ def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
         if layer_types[j] == target_type:
             return j
     return None
+
+
+def _cross_attention_adapter_block(layer_indices: set[int]) -> dict:
+    """Layer-local side block for decoder layers that read vision states."""
+    layers = sorted(layer_indices)
+    if layers:
+        layer_label = ", ".join(f"L{i}" for i in layers[:6])
+        if len(layers) > 6:
+            layer_label += ", ..."
+        layer_desc = f"active on {layer_label}"
+    else:
+        layer_desc = "active on selected decoder layers"
+    return {
+        "id": "cross_attention_adapter",
+        "role": "fusion",
+        "kind": "fusion",
+        "lane": "external_left",
+        "feeds": "attn",
+        "source_id": "vision_path",
+        "source_label": "Vision context",
+        "label": "Cross-attention adapter",
+        "title": "Cross-attention adapter",
+        "description": (
+            "Vision states stay separate; this decoder layer reads them with "
+            f"cross-attention; {layer_desc}."
+        ),
+        "detail_view": "multimodal_fusion",
+        "w": 270,
+        "h": 54,
+        "font": 16,
+    }

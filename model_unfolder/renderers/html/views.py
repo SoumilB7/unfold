@@ -71,16 +71,18 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
     has_cross_attention_fusion = has_modality_fusion and fusion_spec.get("kind") == "cross_attention"
+    has_external_side_stream = any(block.get("source_id") for block in side_blocks)
 
     modality_count = len(modality_inputs)
     has_wide_modality_scaffold = has_modality_fusion and modality_count >= 3
-    inner_x, inner_w = (230, 500) if (has_cross_attention_fusion or has_wide_modality_scaffold) else (110, 500)
+    needs_wide_arch = has_external_side_stream or has_wide_modality_scaffold
+    inner_x, inner_w = (230, 500) if needs_wide_arch else (110, 500)
 
     # Default chain center.  Auto-shift right when a side_align="tap" block on
     # the left lane would overlap the widest chain block at the default cx.
     # This handles parallel-residual architectures (e.g. GPT-NeoX / GPT-J) where
     # FFN and Attention share the same y-row without any renderer special-casing.
-    cx = 480 if (has_cross_attention_fusion or has_wide_modality_scaffold) else 360
+    cx = 480 if needs_wide_arch else 360
     _tap_left = [
         b for b in side_blocks
         if b.get("side_align") == "tap" and b.get("lane") == "left"
@@ -103,8 +105,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     inner_y = 200
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
-    h = inner_y + inner_h + (360 if has_audio_fusion else 292 if has_modality_fusion else 232)
-    w = 960 if has_cross_attention_fusion or modality_count >= 3 else 720
+    if has_modality_fusion and not has_cross_attention_fusion:
+        h = inner_y + inner_h + (360 if has_audio_fusion else 292)
+    else:
+        h = inner_y + inner_h + 232
+    w = 960 if needs_wide_arch else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
     parts = [_defs(arrow_id, shadow_id)]
@@ -137,14 +142,16 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     y_cursor = inner_y + inner_h - free / 2
     for block in chain_blocks:
         layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-        block_h = layout["h"]
+        block_w = block.get("w") or layout["w"]
+        block_h = block.get("h") or layout["h"]
+        font_size = block.get("font") or layout.get("font", 16)
         top = y_cursor - block_h
         if layout["shape"] == "rect":
             geom = _rect_block(
                 parts, info, shadow_id, block["id"],
-                cx - layout["w"] / 2, top, layout["w"], block_h,
+                cx - block_w / 2, top, block_w, block_h,
                 _block_label(info, block["id"], block.get("label")),
-                font_size=layout["font"],
+                font_size=font_size,
             )
         else:
             geom = _plus_block(
@@ -212,7 +219,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 def _layer_stack_height(layer_blocks: list[dict]) -> int:
     if not layer_blocks:
         return 0
-    total = sum(_KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"] for b in layer_blocks)
+    total = sum(
+        b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
+        for b in layer_blocks
+    )
     total += _BLOCK_GAP * (len(layer_blocks) - 1)
     return total
 
@@ -236,14 +246,22 @@ def _draw_side_block(
     horizontal arrow into the ``feeds`` target.
     """
     layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-    block_w = layout["w"]
-    block_h = layout["h"]
+    block_w = block.get("w") or layout["w"]
+    block_h = block.get("h") or layout["h"]
+    font_size = block.get("font") or layout.get("font", 16)
     lane = block.get("lane", "left")
     feeds_id = block.get("feeds")
     tap_id = block.get("tap_from")
 
     feeds_geom = block_pos.get(feeds_id) if feeds_id else None
     tap_geom = block_pos.get(tap_id) if tap_id else None
+    if feeds_geom and block.get("source_id"):
+        _draw_external_side_block(
+            parts, info, shadow_id, block, feeds_geom,
+            inner_x, inner_w, arrow_id, block_pos,
+            block_w, block_h, font_size,
+        )
+        return
     if not feeds_geom or not tap_geom:
         return  # mis-declared; nothing to anchor to
 
@@ -264,7 +282,7 @@ def _draw_side_block(
         parts, info, shadow_id, block["id"],
         block_x, top, block_w, block_h,
         _block_label(info, block["id"], block.get("label")),
-        font_size=layout["font"],
+        font_size=font_size,
     )
     block_pos[block["id"]] = geom
 
@@ -307,6 +325,77 @@ def _draw_side_block(
             "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
             "marker-end": f"url(#{arrow_id})", "fill": "none",
         }))
+
+
+def _draw_external_side_block(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    block: dict,
+    feeds_geom: dict,
+    inner_x: float,
+    _inner_w: float,
+    arrow_id: str,
+    block_pos: dict,
+    block_w: float,
+    block_h: float,
+    font_size: int,
+) -> None:
+    """Draw a layer-local side stream, e.g. vision states into cross-attention."""
+    lane = block.get("lane", "external_left")
+    if lane.endswith("left"):
+        block_x = max(56, inner_x - block_w - 34)
+        target_x = feeds_geom["left"] - GAP
+    else:
+        block_x = inner_x + _inner_w + 34
+        target_x = feeds_geom["right"] + GAP
+
+    cy = feeds_geom["cy"] + float(block.get("offset_y", 28))
+    top = cy - block_h / 2
+    geom = _rect_block(
+        parts, info, shadow_id, block["id"],
+        block_x, top, block_w, block_h,
+        _block_label(info, block["id"], block.get("label")),
+        font_size=font_size,
+    )
+    block_pos[block["id"]] = geom
+    if lane.endswith("left"):
+        route_x = (geom["right"] + target_x) / 2 if geom["right"] < target_x else target_x - 44
+    else:
+        route_x = (geom["left"] + target_x) / 2 if geom["left"] > target_x else target_x + 44
+
+    source_id = block.get("source_id")
+    source_w = block.get("source_w") or 230
+    source_h = block.get("source_h") or 46
+    source_gap = block.get("source_gap") or 56
+    source_x = geom["cx"] - source_w / 2
+    source_top = geom["bottom"] + source_gap
+    source = _rect_block(
+        parts, info, shadow_id, source_id,
+        source_x, source_top, source_w, source_h,
+        _block_label(info, source_id, block.get("source_label", source_id)),
+        font_size=font_size,
+    )
+    block_pos[source_id] = source
+    parts.append(_v_line(source, geom, arrow_id))
+
+    # Route out with a visible 90-degree turn so the adapter reads as an
+    # external conditioning path, not another central-chain block.
+    x_start = geom["right"] if lane.endswith("left") else geom["left"]
+    parts.append(_svg_tag("path", {
+        "d": (
+            f"M {x_start} {geom['cy']} "
+            f"L {route_x} {geom['cy']} "
+            f"L {route_x} {feeds_geom['cy']} "
+            f"L {target_x} {feeds_geom['cy']}"
+        ),
+        "stroke": C["arrow"],
+        "stroke-width": 1.6,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})",
+        "fill": "none",
+    }))
 
 
 def _mark_branch_tap(

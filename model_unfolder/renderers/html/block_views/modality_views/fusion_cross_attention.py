@@ -53,10 +53,4 @@ def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusio
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
 
-    parts.append(_svg_text(
-        cx, 482,
-        "vision states stay separate; decoder layers read them with cross-attention",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 12},
-    ))
     return _svg(w, h, f"{ir.get('name', 'model')} cross-attention adapter", parts)
-

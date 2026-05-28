@@ -186,6 +186,8 @@ def _group_label(group: dict, info: dict | None = None) -> str:
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
     bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")
+    if _has_cross_attention_adapter(group["spec"]):
+        bits.append("Vision XAttn")
     return f"{' · '.join(bits)}  ({_indices_summary(group, info)})"
 
 
@@ -233,7 +235,15 @@ def _signature(layer: dict) -> str:
             ffn.get("num_experts"),
             layer.get("norm_kind"),
             layer.get("norm_placement"),
+            _has_cross_attention_adapter(layer),
         )
+    )
+
+
+def _has_cross_attention_adapter(layer: dict) -> bool:
+    return any(
+        block.get("id") == "cross_attention_adapter"
+        for block in layer.get("blocks", []) or []
     )
 
 

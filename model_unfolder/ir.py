@@ -61,6 +61,7 @@ class LayerSpec:
             a.qk_norm, a.shared, a.no_rope,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
+            any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
         )
 
 

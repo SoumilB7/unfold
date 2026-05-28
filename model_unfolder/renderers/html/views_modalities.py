@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from .metadata import _block_label
-from .svg import _block_top_to_block_bottom, _rect_block, _svg_tag, _v_line
-from .theme import C, GAP
+from .svg import _block_top_to_block_bottom, _rect_block, _v_line
+from .theme import GAP
 
 
 def draw_multimodal_input_scaffold(
@@ -128,15 +128,9 @@ def draw_cross_attention_input_scaffold(
     inner_y: float,
     inner_h: float,
 ) -> tuple[dict, dict, dict]:
-    """Draw visual context as a side stream into decoder cross-attention."""
-    embed_y = inner_y + inner_h + 132
+    """Draw the text stream; vision side states appear only on cross-attn variants."""
+    embed_y = inner_y + inner_h + 64
     tok_y = embed_y + 66
-    stack_side_y = inner_y + inner_h - 110
-    adapter_y = embed_y - 78
-    vision_y = adapter_y + 96
-    side_cx = 220
-    adapter_w = 270
-    vision_w = 230
 
     tok_text = _rect_block(
         parts, info, shadow_id, "tok_text",
@@ -148,33 +142,6 @@ def draw_cross_attention_input_scaffold(
         cx - 125, embed_y, 250, 44,
         _block_label(info, "embed", "Token Embedding"), font_size=16,
     )
-    vision = _rect_block(
-        parts, info, shadow_id, "vision_path",
-        side_cx - vision_w / 2, vision_y, vision_w, 46,
-        _block_label(info, "vision_path", "Vision context"), font_size=17,
-    )
-    adapter = _rect_block(
-        parts, info, shadow_id, "fusion",
-        side_cx - adapter_w / 2, adapter_y, adapter_w, 54,
-        _block_label(info, "fusion", "Cross-attention adapter"), font_size=17,
-    )
 
     parts.append(_v_line(tok_text, embed, arrow_id))
-    parts.append(_v_line(vision, adapter, arrow_id))
-
-    target_x = cx - 122
-    target_y = stack_side_y - 48
-    parts.append(_svg_tag("path", {
-        "d": (
-            f"M {adapter['cx']} {adapter['top']} "
-            f"L {adapter['cx']} {target_y} "
-            f"L {target_x} {target_y}"
-        ),
-        "stroke": C["arrow"],
-        "stroke-width": 1.6,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})",
-        "fill": "none",
-    }))
     return tok_text, embed, embed

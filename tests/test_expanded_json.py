@@ -425,6 +425,29 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     }
 
 
+def test_mllama_cross_attention_adapter_is_layer_variant_only():
+    diagram = unfold(MLLAMA_VISION_TINY_CONFIG)
+    ir = diagram.to_ir()
+
+    assert not any(
+        block.get("id") == "cross_attention_adapter"
+        for block in ir["layers"][0]["blocks"]
+    )
+    assert any(
+        block.get("id") == "cross_attention_adapter"
+        for block in ir["layers"][3]["blocks"]
+    )
+    assert [
+        i for i, layer in enumerate(ir["layers"])
+        if any(block.get("id") == "cross_attention_adapter" for block in layer["blocks"])
+    ] == [3, 8, 13, 18, 23, 28, 33, 38]
+
+    html = diagram.to_html(standalone=False)
+    assert "Vision XAttn" in html
+    assert "Cross-attention adapter" in html
+    assert "Vision states stay separate" in html
+
+
 def test_expanded_json_supports_qwen_style_unified_grid_stream():
     data = unfold(QWEN2_VL_TINY_CONFIG, return_json=True)
     encoded = json.dumps(data["modalities"])

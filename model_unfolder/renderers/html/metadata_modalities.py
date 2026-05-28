@@ -351,6 +351,7 @@ def _fusion_description(fusion: dict) -> str:
         bits = ["cross attention", "vision states condition selected decoder layers"]
         if n_layers:
             bits.append(f"{_fmt_int(n_layers)} cross-attention layers")
+        bits.append("vision states stay separate")
         if width:
             bits.append(f"decoder width {_fmt_int(width)}")
         return "; ".join(bits)
@@ -390,7 +391,10 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
             {
                 "id": "cross_attention_adapter",
                 "title": "Cross-attention adapter layers",
-                "description": f"Vision context is read by {layers_desc}; it is not inserted as replacement text embeddings.",
+                "description": (
+                    f"Vision states stay separate; {layers_desc} read them with "
+                    "cross-attention instead of inserting them as replacement text embeddings."
+                ),
             },
             {
                 "id": "stack_input",
