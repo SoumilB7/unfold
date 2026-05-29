@@ -1,15 +1,13 @@
 """RWKV token-mixing detail view."""
 from __future__ import annotations
 
+from ...stack_view import fit_svg, point
 from ...svg import (
     _block_top_to_block_bottom,
     _branch_dot,
-    _defs,
     _elbow_hv,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _svg_text,
     _v_line,
@@ -21,10 +19,9 @@ from .common import output_stem
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 600, 560
+    w = 600  # internal layout grid; canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "rwkv")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     hidden = _fmt_int(ir.get("hidden_size"))
     cx = w / 2
@@ -41,7 +38,8 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
-    parts.append(_svg_text(branch_x, h - 26, f"in ({hidden})", {
+    in_label_y = branch_y + 54
+    parts.append(_svg_text(branch_x, in_label_y, f"in ({hidden})", {
         "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11,
     }))
     for node in (receptance, key, value):
@@ -52,4 +50,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_v_line(time_mix, out, arrow_id))
     output_stem(parts, cx, out, arrow_id, hidden)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} RWKV token mixing", parts)
+    regions = [out, time_mix, receptance, key, value,
+               point(cx, out["top"] - 50), point(cx, in_label_y + 12)]
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   f"{ir.get('name', 'model')} RWKV token mixing", min_width=w)

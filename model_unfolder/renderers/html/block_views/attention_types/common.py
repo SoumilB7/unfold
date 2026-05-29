@@ -3,23 +3,16 @@ from __future__ import annotations
 
 from ...svg import (
     _branch_dot,
-    _defs,
     _elbow_hv,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _svg_text,
     _v_line,
 )
+from ...stack_view import fit_svg, point
 from ...theme import C, FONT_HEAD, FONT_MONO, GAP
 from ...utils import _fmt_int
-
-
-DETAIL_PLACEMENT = {
-    "gqa": {"dx": 0, "dy": 8},
-}
 
 
 def queries_per_kv_group(num_heads: int, num_kv_heads: int) -> int | None:
@@ -461,35 +454,6 @@ def _cache_port(
     return "".join(port)
 
 
-def dynamic_region_rect(
-    geoms: list[dict | None],
-    svg_w: int,
-    svg_h: int,
-    *,
-    pad_x: float,
-    pad_y: float,
-) -> str:
-    real_geoms = [g for g in geoms if g]
-    if not real_geoms:
-        return _region_rect(40, 30, svg_w - 80, svg_h - 60, C["bg_outer"])
-    left = max(10, min(g["left"] for g in real_geoms) - pad_x)
-    right = min(svg_w - 10, max(g["right"] for g in real_geoms) + pad_x)
-    top = max(18, min(g["top"] for g in real_geoms) - pad_y)
-    bottom = min(svg_h - 18, max(g["bottom"] for g in real_geoms) + pad_y)
-    return _region_rect(left, top, right - left, bottom - top, C["bg_outer"])
-
-
-def placed_figure(parts: list[str], key: str) -> str:
-    """Nudge a whole hand-drawn figure without changing its internal geometry."""
-    placement = DETAIL_PLACEMENT.get(key, {})
-    dx = placement.get("dx", 0)
-    dy = placement.get("dy", 0)
-    body = "".join(parts)
-    if not dx and not dy:
-        return body
-    return _svg_tag("g", {"transform": f"translate({dx} {dy})"}, body)
-
-
 def vertical_attention_stack(
     ir: dict,
     info: dict,
@@ -500,10 +464,9 @@ def vertical_attention_stack(
     *,
     h: int = 590,
 ) -> str:
-    w = 560
+    w = 560  # internal layout grid (block width / step spacing); canvas auto-fits
     arrow_id, shadow_id = _ids(mount_id, view)
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     hidden = _fmt_int(ir.get("hidden_size"))
     cx = w / 2
@@ -526,6 +489,7 @@ def vertical_attention_stack(
         parts.append(_v_line(src, dst, arrow_id))
 
     input_node = geoms[-1]
+    in_label_y = input_node["bottom"] + 20
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": input_node["bottom"] + 38,
         "x2": cx, "y2": input_node["bottom"] + GAP,
@@ -533,13 +497,14 @@ def vertical_attention_stack(
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
     parts.append(_svg_text(
-        cx, h - 34,
+        cx, in_label_y,
         f"in ({hidden})",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
     output_stem(parts, cx, geoms[0], arrow_id, hidden)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} {title}", parts)
+    regions = [*geoms, point(cx, geoms[0]["top"] - 50), point(cx, input_node["bottom"] + 44)]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} {title}", min_width=w)
 
 
 def output_stem(

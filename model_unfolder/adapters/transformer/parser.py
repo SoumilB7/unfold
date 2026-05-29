@@ -576,9 +576,9 @@ def _cross_attention_states_side_block() -> dict:
         "feeds": "attn",
         "offset_y": 0,
         "label": ["Projected image", "states"],
-        "title": "cross_attention_states",
+        "title": "Projected image states",
         "description": (
-            "vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
+            "cross_attention_states: vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
         ),
         "detail_view": "vision_path",
         "w": 250,

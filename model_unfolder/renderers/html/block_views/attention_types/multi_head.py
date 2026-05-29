@@ -1,15 +1,13 @@
 """Plain multi-head scaled dot-product attention detail view."""
 from __future__ import annotations
 
+from ...stack_view import fit_svg, point
 from ...svg import (
     _branch_dot,
-    _defs,
     _elbow_vh,
     _elbow_hv,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _v_line,
     _v_seg,
@@ -25,7 +23,7 @@ from .common import (
     sdpa_dot_operator,
     sdpa_fraction_block,
 )
-from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
+from .sliding_window import is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
@@ -33,12 +31,9 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     attn = info["dominant"]["spec"].get("attention") or {}
     has_cross_context = has_cross_attention_context(info)
     is_sliding = is_sliding_window(attn)
-    w, h = 820, canvas_height(attn, 880)
-    if has_cross_context:
-        h += 90
+    w = 820  # internal layout grid (Q/K/V spread); canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "attn")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     hidden_sz = ir.get("hidden_size") or 0
     num_heads = attn.get("num_heads") or 0
@@ -107,4 +102,7 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_elbow_vh(v_proj["cx"], v_proj["top"], value_dot["right"] + GAP, value_dot["cy"], arrow_id))
     output_stem(parts, cx, o_proj, arrow_id, _fmt_int(hidden_sz), show_label=False)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} attention", parts)
+    bottom_extent = branch_y + (95 if has_cross_context else 90 if is_sliding else 50)
+    regions = [o_proj, concat, value_dot, softmax, scaled_scores, q_proj, k_proj, v_proj,
+               point(cx, o_proj["top"] - 40), point(cx, bottom_extent)]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} attention", min_width=w)

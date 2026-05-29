@@ -1,7 +1,8 @@
 """Placeholder-replacement modality fusion detail SVG."""
 from __future__ import annotations
 
-from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _svg_text
+from ...stack_view import fit_svg
+from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C, FONT_HEAD, GAP
 from ...utils import _fmt_int
 from .common import audio_input, fusion_spec, row_label, slot, video_input, vision_input
@@ -25,11 +26,11 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
     has_audio = bool(audio_spec)
     both_modalities = sum(bool(v) for v in (vision_spec, video_spec, audio_spec)) > 1
 
+    # internal layout grid (drives surface width / slot spread); canvas auto-fits
     w = 860 if both_modalities else 760
     h = 700 if both_modalities else 670 if has_audio else 600
     arrow_id, shadow_id = _ids(mount_id, "multimodal-fusion")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     cx = w / 2
     surface = {
@@ -85,7 +86,13 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
 
-    return _svg(w, h, f"{ir.get('name', 'model')} multimodal fusion", parts)
+    surface_region = {
+        "left": surface["left"], "right": surface["right"],
+        "top": surface["top"], "bottom": surface["bottom"],
+    }
+    regions = [stack, text, surface_region, *modality_blocks]
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   f"{ir.get('name', 'model')} multimodal fusion", min_width=w)
 
 
 def fusion_surface(parts: list[str], fusion: dict, box: dict, vision: dict, audio: dict) -> None:

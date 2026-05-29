@@ -1,15 +1,13 @@
 """Grouped-query attention detail view."""
 from __future__ import annotations
 
+from ...stack_view import fit_svg, point
 from ...svg import (
     _branch_dot,
-    _defs,
     _elbow_hv,
     _elbow_vh,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _v_line,
     _v_seg,
@@ -24,12 +22,11 @@ from .common import (
     kv_cache_badge,
     kv_cache_port_hint,
     output_stem,
-    placed_figure,
     queries_per_kv_group,
     sdpa_dot_operator,
     sdpa_fraction_block,
 )
-from .sliding_window import canvas_height, is_sliding_window, sliding_window_input
+from .sliding_window import is_sliding_window, sliding_window_input
 
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
@@ -37,12 +34,8 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     attn = info["dominant"]["spec"].get("attention") or {}
     has_cross_context = has_cross_attention_context(info)
     is_sliding = is_sliding_window(attn)
-    w, h = 820, canvas_height(attn, 880)
-    if has_cross_context:
-        h += 90
+    w = 820  # internal layout grid (Q/K/V spread); canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "gqa-attn")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
     body: list[str] = []
 
     hidden_sz = ir.get("hidden_size") or 0
@@ -109,5 +102,8 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     if q_per_group and q_per_group > 1:
         kv_cache_badge(body, w - 218, 58, f"KV cache {q_per_group}x smaller", "than full MHA")
 
-    parts.append(placed_figure(body, "gqa"))
-    return _svg(w, h, f"{ir.get('name', 'model')} grouped-query attention", parts)
+    bottom_extent = branch_y + (95 if has_cross_context else 90 if is_sliding else 50)
+    regions = [o_proj, concat, value_dot, softmax, scaled_scores, q_proj, k_proj, v_proj,
+               point(cx, o_proj["top"] - 40), point(cx, bottom_extent)]
+    return fit_svg(arrow_id, shadow_id, body, regions,
+                   f"{ir.get('name', 'model')} grouped-query attention", min_width=w)

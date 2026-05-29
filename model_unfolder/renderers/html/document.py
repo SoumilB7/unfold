@@ -1,6 +1,5 @@
 """Top-level HTML document and fragment rendering."""
 from __future__ import annotations
-
 from .cards import _build_inspect_cards, _build_nested_inspect_panels
 from .evidence import _code_evidence_section
 from .interactions import _click_script

@@ -1,7 +1,8 @@
 """Qwen-style unified multimodal stream detail SVG."""
 from __future__ import annotations
 
-from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _svg_text
+from ...stack_view import fit_svg, point
+from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C, FONT_HEAD, GAP
 from .common import row_label, slot, video_input, vision_input
 
@@ -11,10 +12,10 @@ def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict)
     vision = vision_input(ir)
     video = video_input(ir)
     has_video = bool(video)
+    # internal layout grid (drives the interleave surface width); canvas auto-fits
     w, h = (860, 660) if has_video else (800, 620)
     arrow_id, shadow_id = _ids(mount_id, "unified-multimodal-stream")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     cx = w / 2
     stack = _rect_block(parts, info, shadow_id, "stack_input", cx - 145, 70, 290, 50, "Decoder input")
@@ -46,7 +47,13 @@ def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict)
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
-    return _svg(w, h, f"{ir.get('name', 'model')} unified multimodal stream", parts)
+
+    surface_region = {
+        "left": surface["left"], "right": surface["right"],
+        "top": surface["top"], "bottom": surface["bottom"],
+    }
+    regions = [stack, surface_region, *modality_blocks]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} unified multimodal stream")
 
 
 def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, video: dict) -> None:

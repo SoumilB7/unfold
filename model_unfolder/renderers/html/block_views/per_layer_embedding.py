@@ -2,13 +2,11 @@
 from __future__ import annotations
 
 from ..metadata import _block_label
+from ..stack_view import fit_svg, point
 from ..svg import (
-    _defs,
     _ids,
     _plus_block,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _svg_text,
     _v_line,
@@ -23,40 +21,39 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
     The adapter declares the child node ids and dimensions in ``block['detail']``.
     Any model family with the same part emits the same block contract.
     """
-    w, h = 720, 660
     detail = block.get("detail") or {}
     view_id = detail.get("view_id") or block.get("id") or "ple"
     arrow_id, shadow_id = _ids(mount_id, view_id)
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     ids = _node_ids(block)
     hidden_size = detail.get("hidden_size") or ir.get("hidden_size")
     embedding_dim = detail.get("embedding_dim") or (
         ((ir.get("extras") or {}).get("per_layer_embeddings") or {}).get("hidden")
     )
-    cx = 300
+    cx = 0  # fit_svg translates + centres content; absolute centre is irrelevant
+    base = 660  # vertical layout origin (canvas auto-fits, not this value)
     y_shift = -24
 
     gate = _rect_block(
         parts, info, shadow_id, ids["gate"],
-        cx - 110, h - 160 + y_shift, 220, 50,
+        cx - 110, base - 160 + y_shift, 220, 50,
         _label(info, block, ids["gate"], "Linear (gate)"),
     )
     act = _rect_block(
         parts, info, shadow_id, ids["activation"],
-        cx - 90, h - 250 + y_shift, 180, 44,
+        cx - 90, base - 250 + y_shift, 180, 44,
         _label(info, block, ids["activation"], "Activation"),
     )
-    mul = _plus_block(parts, info, shadow_id, ids["multiply"], cx, h - 320 + y_shift, "×")
+    mul = _plus_block(parts, info, shadow_id, ids["multiply"], cx, base - 320 + y_shift, "×")
     proj = _rect_block(
         parts, info, shadow_id, ids["projection"],
-        cx - 110, h - 410 + y_shift, 220, 50,
+        cx - 110, base - 410 + y_shift, 220, 50,
         _label(info, block, ids["projection"], "Linear (up)"),
     )
     norm = _rect_block(
         parts, info, shadow_id, ids["norm"],
-        cx - 90, h - 500 + y_shift, 180, 44,
+        cx - 90, base - 500 + y_shift, 180, 44,
         _label(info, block, ids["norm"], "RMSNorm"),
     )
 
@@ -91,7 +88,7 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
         parts,
         shadow_id,
         detail.get("pathway_id") or "per_layer_input",
-        382,
+        cx + 82,
         mul["cy"] - 21,
         178,
         42,
@@ -123,7 +120,16 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
          "font-family": FONT_MONO, "font-size": 10},
     ))
 
-    return _svg(w, h, f"{ir.get('name', 'model')} per-layer embeddings block", parts)
+    regions = [
+        gate, act, mul, proj, norm, external,
+        point(cx, norm["top"] - 58),          # out-label above norm
+        point(cx, gate["bottom"] + 64),       # in-label below gate
+        point(external["cx"], external["bottom"] + 22),  # "(outside stack)" label
+    ]
+    return fit_svg(
+        arrow_id, shadow_id, parts, regions,
+        f"{ir.get('name', 'model')} per-layer embeddings block",
+    )
 
 
 def _node_ids(block: dict) -> dict[str, str]:
