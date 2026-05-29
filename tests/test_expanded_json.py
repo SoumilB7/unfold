@@ -255,6 +255,12 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "kind": "patch_embedding",
         "patch_size": 16,
         "out_features": 32,
+        "grid": {
+            "kind": "static_patch_grid",
+            "patch": {"h": 16, "w": 16},
+            "input": {"h": 896, "w": 896},
+            "tiles": {"h": 56, "w": 56},
+        },
     }
     assert vision["encoder"]["kind"] == "gemma4_vision"
     assert vision["encoder"]["hidden_size"] == 32
@@ -558,3 +564,59 @@ def test_multimodal_detection_uses_structural_fields_without_family_model_type()
     assert mllama_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_cross_attention_states"
     assert mllama_data["modalities"]["inputs"]["vision"]["tokens"]["count"] == 1025
     assert mllama_data["modalities"]["fusion"]["kind"] == "cross_attention"
+
+
+def test_dynamic_resolution_vision_emits_dynamic_patch_grid():
+    """A Qwen2-VL-style tower has no fixed image_size; grid must be dynamic."""
+    cfg = {
+        "architectures": ["Qwen2VLForConditionalGeneration"],
+        "model_type": "qwen2_vl",
+        "_name_or_path": "Qwen/Qwen2-VL-7B-Instruct",
+        "vocab_size": 152064,
+        "image_token_id": 151655,
+        "text_config": {
+            "model_type": "qwen2",
+            "hidden_size": 64,
+            "intermediate_size": 256,
+            "num_hidden_layers": 2,
+            "num_attention_heads": 4,
+            "num_key_value_heads": 2,
+            "vocab_size": 152064,
+            "rms_norm_eps": 1e-6,
+        },
+        "vision_config": {
+            "model_type": "qwen2_vl_vision",
+            "embed_dim": 80,
+            "patch_size": 14,
+            "temporal_patch_size": 2,
+            "spatial_merge_size": 2,
+            "depth": 2,
+            "num_heads": 4,
+        },
+    }
+    grid = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]["embedding"]["grid"]
+    assert grid == {
+        "kind": "dynamic_patch_grid",
+        "patch": {"h": 14, "w": 14, "t": 2},
+        "spatial_merge_size": 2,
+    }
+
+
+def test_non_square_patch_grid_keeps_both_axes():
+    cfg = dict(LLAMA_TINY_CONFIG)
+    cfg.update({
+        "architectures": ["LlavaForConditionalGeneration"],
+        "model_type": "llava",
+        "vision_config": {
+            "model_type": "clip_vision_model",
+            "hidden_size": 32,
+            "image_size": 448,
+            "patch_size_h": 14,
+            "patch_size_w": 16,
+            "num_hidden_layers": 2,
+            "num_attention_heads": 4,
+        },
+    })
+    grid = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]["embedding"]["grid"]
+    assert grid["patch"] == {"h": 14, "w": 16}
+    assert grid["tiles"] == {"h": 32, "w": 28}

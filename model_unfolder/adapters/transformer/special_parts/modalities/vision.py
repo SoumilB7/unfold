@@ -62,6 +62,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
             "kind": "patch_embedding",
             "patch_size": patch_size,
             "out_features": hidden_size,
+            "grid": patch_grid_geometry(vision_cfg),
         }),
         "encoder": drop_none({
             "kind": encoder_kind,
@@ -160,6 +161,7 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
             "patch_size": patch_size,
             "temporal_patch_size": first(vision_cfg, "temporal_patch_size"),
             "out_features": hidden_size,
+            "grid": patch_grid_geometry(vision_cfg),
         }),
         "encoder": drop_none({
             "kind": encoder_kind,
@@ -342,6 +344,59 @@ def token_count_options(cfg: Any) -> list[int] | None:
         if isinstance(value, (list, tuple)) and value:
             return [int(v) for v in value if v is not None]
     return None
+
+
+def patch_grid_geometry(vision_cfg: Any) -> dict | None:
+    """Normalized patch-grid geometry as a single object.
+
+    Models the patch layout as dims, not scalars, so square, non-square
+    (``patch_size_h`` != ``patch_size_w``), dynamic-resolution (no fixed
+    ``image_size``), temporal (video), and patch-merged towers all flow
+    through one shape that the renderer formats without per-model branches::
+
+        {
+          "kind": "static_patch_grid" | "dynamic_patch_grid",
+          "patch": {"h": 14, "w": 14, "t": 2?},   # t only for temporal
+          "input": {"h": 448, "w": 448} | absent,  # absent => dynamic
+          "tiles": {"h": 32, "w": 32} | absent,    # floor-div, when computable
+          "spatial_merge_size": 2?,
+        }
+    """
+    img_h, img_w = _hw(first(vision_cfg, "image_size", "input_size"))
+    patch_h = as_int(first(vision_cfg, "patch_size", "patch_size_h"))
+    patch_w = as_int(first(vision_cfg, "patch_size_w")) or patch_h
+    temporal = as_int(first(vision_cfg, "temporal_patch_size"))
+    merge = as_int(first(vision_cfg, "spatial_merge_size"))
+
+    if patch_h is None and patch_w is None and img_h is None:
+        return None
+
+    dynamic = img_h is None
+    tiles = None
+    if not dynamic and patch_h and patch_w and img_w is not None:
+        if img_h % patch_h == 0 and img_w % patch_w == 0:
+            tiles = {"h": img_h // patch_h, "w": img_w // patch_w}
+
+    return drop_none({
+        "kind": "dynamic_patch_grid" if dynamic else "static_patch_grid",
+        "patch": drop_none({"h": patch_h, "w": patch_w, "t": temporal}),
+        "input": None if dynamic else drop_none({"h": img_h, "w": img_w}),
+        "tiles": tiles,
+        "spatial_merge_size": merge,
+    })
+
+
+def _hw(value: Any) -> tuple[int | None, int | None]:
+    """Split a size config value into (height, width); scalars mean square."""
+    if isinstance(value, (list, tuple)):
+        if len(value) >= 2:
+            return as_int(value[0]), as_int(value[1])
+        if len(value) == 1:
+            v = as_int(value[0])
+            return v, v
+        return None, None
+    v = as_int(value)
+    return v, v
 
 
 def grid_spec(cfg: Any, vision_cfg: Any, modality: str) -> dict | None:

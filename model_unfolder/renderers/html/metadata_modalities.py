@@ -1,6 +1,7 @@
 """Multimodal block metadata and detail-card children."""
 from __future__ import annotations
 
+from .patch_grid import coerce_grid, grid_card_phrase
 from .utils import _fmt_int
 
 
@@ -87,10 +88,12 @@ def _vision_description(vision: dict) -> str:
     count = tokens.get("count")
     width = tokens.get("width")
     bits = [kind]
-    patch_desc = _patch_grid_desc(
+    grid_geom = coerce_grid(
+        embedding.get("grid"),
         (vision.get("input") or {}).get("image_size"),
         embedding.get("patch_size") or (vision.get("input") or {}).get("patch_size"),
     )
+    patch_desc = grid_card_phrase(grid_geom)
     if patch_desc:
         bits.append(patch_desc)
     if grid_vision and grid.get("runtime_input"):
@@ -120,6 +123,7 @@ def _vision_children(vision: dict) -> list[dict]:
 
     image_size = input_spec.get("image_size")
     patch_size = input_spec.get("patch_size") or embedding.get("patch_size")
+    grid_phrase = grid_card_phrase(coerce_grid(embedding.get("grid"), image_size, patch_size))
     encoder_bits = [
         str(encoder.get("kind") or "vision encoder").replace("_", " "),
     ]
@@ -158,7 +162,7 @@ def _vision_children(vision: dict) -> list[dict]:
             "id": "vision_patches",
             "title": "Patch embedding",
             "description": _join_desc([
-                f"Split image into {_patch_grid_desc(image_size, patch_size)}" if patch_size else "Split image into patches",
+                f"Split image into {grid_phrase}" if grid_phrase else "Split image into patches",
                 f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
             ]),
             "detail_view": "vision_patch_embedding",
@@ -468,15 +472,6 @@ def _video_children(video: dict) -> list[dict]:
             ]),
         },
     ]
-
-
-def _patch_grid_desc(image_size: int | None, patch_size: int | None) -> str:
-    if image_size and patch_size and image_size % patch_size == 0:
-        side = image_size // patch_size
-        return f"{_fmt_int(side)}x{_fmt_int(side)} patches ({_fmt_int(patch_size)}px each)"
-    if patch_size:
-        return f"{_fmt_int(patch_size)}px patches"
-    return ""
 
 
 def _head_dim(heads: int | None, hidden: int | None) -> int | None:

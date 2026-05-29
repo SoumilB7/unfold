@@ -4,6 +4,7 @@ from __future__ import annotations
 from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _svg_text
 from ...theme import C
 from ...utils import _fmt_int
+from ...patch_grid import coerce_grid, grid_subtitle, grid_title
 from .common import vision_input
 
 
@@ -14,6 +15,7 @@ def build_patch_embedding_view(ir: dict, info: dict, mount_id: str, _child: dict
     embedding = vision.get("embedding") or {}
     patch = input_spec.get("patch_size") or embedding.get("patch_size")
     image_size = input_spec.get("image_size")
+    grid_geom = coerce_grid(embedding.get("grid"), image_size, patch)
     out = embedding.get("out_features")
 
     w, h = 760, 620
@@ -23,7 +25,7 @@ def build_patch_embedding_view(ir: dict, info: dict, mount_id: str, _child: dict
 
     cx = w / 2
     pixels = _rect_block(parts, info, shadow_id, "vision_pixels", cx - 115, 536, 230, 46, "Image pixels")
-    grid = _patch_grid(parts, cx, 346, patch, image_size)
+    grid = _patch_grid(parts, cx, 346, grid_geom)
     flatten = _rect_block(parts, info, shadow_id, "vision_patch_flatten", cx - 125, 270, 250, 46, "Flatten patches")
     project = _rect_block(parts, info, shadow_id, "vision_patch_project", cx - 150, 180, 300, 52, _projection_label(out))
     tokens = _rect_block(parts, info, shadow_id, "vision_patch_tokens", cx - 130, 88, 260, 46, "Patch tokens")
@@ -238,8 +240,13 @@ def _head_dim(heads: int | None, hidden: int | None) -> int | None:
     return None
 
 
-def _patch_grid(parts: list[str], cx: float, y: float, patch: int | None, image_size: int | None) -> dict:
-    """Draw a compact patch grid without turning every tile into a node."""
+def _patch_grid(parts: list[str], cx: float, y: float, grid: dict | None) -> dict:
+    """Draw a compact patch grid without turning every tile into a node.
+
+    The decorative 5x3 tiles are a fixed icon; the title/subtitle come from
+    the normalized ``grid`` geometry object so non-square / dynamic / temporal
+    layouts all render through one path.
+    """
     cell = 24
     gap = 6
     cols = 5
@@ -262,7 +269,7 @@ def _patch_grid(parts: list[str], cx: float, y: float, patch: int | None, image_
         "stroke": C["border"],
         "stroke-width": 0.7,
     }))
-    parts.append(_svg_text(cx, y + 22, _patch_grid_title(patch, image_size), {
+    parts.append(_svg_text(cx, y + 22, grid_title(grid), {
         "text-anchor": "middle",
         "fill": C["text"],
         "font-family": "ui-monospace, \"JetBrains Mono\", \"SF Mono\", Menlo, monospace",
@@ -283,7 +290,7 @@ def _patch_grid(parts: list[str], cx: float, y: float, patch: int | None, image_
                 "stroke": "#1F9E78" if emphasis else C["border"],
                 "stroke-width": 0.8,
             }))
-    parts.append(_svg_text(cx, y + panel_h - 17, _patch_grid_subtitle(patch, image_size), {
+    parts.append(_svg_text(cx, y + panel_h - 17, grid_subtitle(grid), {
         "text-anchor": "middle",
         "fill": C["muted"],
         "font-family": "ui-monospace, \"JetBrains Mono\", \"SF Mono\", Menlo, monospace",
@@ -377,22 +384,6 @@ def _projection_label(out_features: int | None):
     if out_features:
         return ["Linear / Conv2d", f"to {_fmt_int(out_features)}d"]
     return ["Linear / Conv2d", "projection"]
-
-
-def _patch_grid_title(patch: int | None, image_size: int | None) -> str:
-    if patch and image_size and image_size % patch == 0:
-        side = image_size // patch
-        return f"{_fmt_int(side)}x{_fmt_int(side)} patch grid"
-    return "patch grid"
-
-
-def _patch_grid_subtitle(patch: int | None, image_size: int | None) -> str:
-    bits = []
-    if patch:
-        bits.append(f"{_fmt_int(patch)}px patch")
-    if image_size:
-        bits.append(f"{_fmt_int(image_size)}px image")
-    return " from ".join(bits) if bits else "image split into patch tiles"
 
 
 def _attention_label(heads: int | None, hidden: int | None):
