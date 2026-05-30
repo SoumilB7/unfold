@@ -53,6 +53,12 @@ GEMMA4_VISION_TINY_CONFIG = {
         "num_attention_heads": 4,
         "image_size": 896,
         "patch_size": 16,
+        # Real gemma-4 vision structure: learned 2D positions + 2D RoPE, and a
+        # k×k average pool that reduces the token count after the encoder.
+        "position_embedding_size": 256,
+        "rope_parameters": {"rope_theta": 100.0, "rope_type": "default"},
+        "pooling_kernel_size": 3,
+        "global_head_dim": 8,
     },
 }
 
@@ -264,7 +270,18 @@ def test_expanded_json_carries_structured_multimodal_inputs():
     }
     assert vision["encoder"]["kind"] == "gemma4_vision"
     assert vision["encoder"]["hidden_size"] == 32
-    assert vision["encoder"]["position_encoding"] == {"kind": "learned_2d_plus_rope_2d"}
+    # Position encoding is derived structurally (learned table + 2D RoPE), no family hint.
+    assert vision["encoder"]["position_encoding"] == {
+        "kind": "learned_2d_plus_rope_2d",
+        "rope": {"rope_theta": 100.0, "rope_type": "default"},
+    }
+    assert vision["encoder"]["global_head_dim"] == 8
+    # k=3 average pool surfaces as a post-encoder token-reduction section + stage.
+    assert vision["reduction"] == {
+        "kind": "token_pooling",
+        "kernel_size": 3,
+        "reduces_tokens_by": 9,
+    }
     assert vision["projector"]["out_features"] == 64
     assert vision["tokens"] == {
         "kind": "soft_visual_tokens",
@@ -276,6 +293,7 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "input",
         "patch_embedding",
         "encode",
+        "pool_tokens",
         "project_to_text_width",
         "emit_soft_token_stream",
     ]
@@ -401,6 +419,11 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     assert vision["kind"] == "image_to_cross_attention_states"
     assert vision["encoder"]["kind"] == "mllama_vision_model"
     assert vision["encoder"]["num_attention_heads"] == 16
+    # Structural: local+global layer split and the wide concatenated output.
+    assert vision["encoder"]["num_global_layers"] == 8
+    assert vision["encoder"]["output_dim"] == 7680
+    # max_num_tiles -> an image-tiling section + stage (image split into N tiles).
+    assert vision["tiling"] == {"kind": "image_tiling", "max_tiles": 4}
     assert vision["projector"] == {
         "kind": "linear_projector",
         "in_features": 7680,
@@ -413,6 +436,7 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     }
     assert [step["operation"] for step in vision["pipeline"]] == [
         "input",
+        "tile_image",
         "patch_embedding",
         "encode",
         "project_to_decoder_width",
