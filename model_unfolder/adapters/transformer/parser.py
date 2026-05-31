@@ -37,6 +37,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from . import debug
 from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
@@ -68,9 +69,15 @@ _HEAVILY_COMPRESSED_LABELS = {"heavily_compressed_attention", "hierarchical_comp
 
 def _resolve(cfg: Any, canonical: str, default=None):
     """Try every known alias for a field, return the first hit."""
-    for alias in _ALIASES.get(canonical, [canonical]):
+    aliases = _ALIASES.get(canonical, [canonical])
+    for alias in aliases:
         val = _g(cfg, alias)
         if val is not None:
+            # The field is handled — treat all its spellings as parsed so a
+            # redundant sibling alias also present in the config (e.g. both
+            # num_experts and n_routed_experts) isn't flagged as unparsed.
+            for a in aliases:
+                debug.note_access(a)
             return val
     return default
 
@@ -137,6 +144,7 @@ def matches(_cfg: Any) -> bool:
 
 
 def parse(cfg: Any) -> ModelIR:
+    debug.reset()  # start a fresh field-access record for this parse
     warnings: list[str] = []
     model_type = (_g(cfg, "model_type") or "unknown").lower()
     arch_name  = architecture_name(cfg, model_type)
@@ -440,7 +448,7 @@ def parse(cfg: Any) -> ModelIR:
         if val:
             extras[flag] = val
 
-    return ModelIR(
+    ir = ModelIR(
         name=model_name(cfg, arch_name),
         architecture=arch_name,
         vocab_size=vocab_size,
@@ -452,6 +460,15 @@ def parse(cfg: Any) -> ModelIR:
         extras=extras,
         warnings=warnings,
     )
+
+    # Centralized diagnostics (toggle in adapters/transformer/debug.py), emitted
+    # after every field access so the unparsed report is accurate:
+    #   * config fields the parser never read, and
+    #   * the reasons this config came out partial.
+    debug.report_unparsed([cfg, text_cfg, attn_cfg, ffn_cfg], model=ir.name)
+    debug.report_partial(warnings, model=ir.name)
+
+    return ir
 
 
 # ---------------------------------------------------------------------------

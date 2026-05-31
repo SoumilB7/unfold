@@ -1,0 +1,83 @@
+# Config fields that are NOT architectural — the debug diagnostic skips these
+# when reporting "config field(s) not parsed".  Edit this file to quiet a field
+# (move it here) or to start surfacing one (delete it).  No code change needed.
+#
+# Block style (`- item`) so each group can be commented; the lightweight
+# built-in loader handles it even without PyYAML installed.
+
+# Exact key names to ignore.
+keys:
+  # --- identity / dtype / generic ---
+  - model_type
+  - architectures
+  - transformers_version
+  - torch_dtype
+  - dtype
+  - _name_or_path
+  - name_or_path
+  - use_cache
+  - return_dict
+  - output_attentions
+  - output_hidden_states
+  - initializer_range
+  - _attn_implementation
+  - _attn_implementation_autoset
+  - pretraining_tp
+  # --- dropout ---
+  - attention_dropout
+  - hidden_dropout
+  - classifier_dropout
+  - resid_pdrop
+  - embd_pdrop
+  - attn_pdrop
+  - dropout
+  # --- HF/training/serving plumbing ---
+  - auto_map
+  - id2label
+  - label2id
+  - is_encoder_decoder
+  - problem_type
+  - chunk_size_feed_forward
+  - ep_size
+  - tie_encoder_decoder
+  - cross_attention_hidden_size
+  - finetuning_task
+  - task_specific_params
+  - is_decoder
+  - add_cross_attention
+  - pruned_heads
+  - tf_legacy_loss
+  - torchscript
+  - use_bfloat16
+  - tokenizer_class
+  # --- HF GenerationConfig defaults dumped into config.json (decoding, not shape) ---
+  - do_sample
+  - temperature
+  - top_p
+  - typical_p
+  - repetition_penalty
+  - no_repeat_ngram_size
+  - encoder_no_repeat_ngram_size
+  - num_beams
+  - num_beam_groups
+  - num_return_sequences
+  - length_penalty
+  - early_stopping
+  - max_length
+  - min_length
+  - diversity_penalty
+  - bad_words_ids
+  - begin_suppress_tokens
+  - suppress_tokens
+  - forced_bos_token_id
+  - forced_eos_token_id
+  - remove_invalid_values
+  - exponential_decay_length_penalty
+  - return_dict_in_generate
+  - output_scores
+  - prefix
+
+# Key-name suffixes to ignore (special-token ids are never architectural).
+suffixes:
+  - _token_id
+  - _token_ids

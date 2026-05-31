@@ -3,9 +3,16 @@ from __future__ import annotations
 
 from typing import Any
 
+from . import debug
+
 
 def get_config_value(cfg: Any, name: str, default=None):
-    """Get a config value from a dict or a HuggingFace config object."""
+    """Get a config value from a dict or a HuggingFace config object.
+
+    Every field lookup funnels through here, so this is where we record the
+    access for the unparsed-fields diagnostic (see :mod:`.debug`).
+    """
+    debug.note_access(name)
     if isinstance(cfg, dict):
         return cfg.get(name, default)
     return getattr(cfg, name, default)
