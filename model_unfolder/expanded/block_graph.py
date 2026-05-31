@@ -31,7 +31,7 @@ def _block_node(block: dict, path: str) -> dict[str, Any]:
         "id":          block.get("id"),
         "role":        block.get("role"),
         "kind":        block.get("kind"),
-        "detail_view": block.get("detail_view"),
+        "view": block.get("view"),
         "children": [
             _block_node(c, f"{path}.children[{i}]")
             for i, c in enumerate(block.get("children") or [])

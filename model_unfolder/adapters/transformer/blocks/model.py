@@ -17,8 +17,7 @@ def mtp_head_block(
     hidden_size: int,
     vocab_size: int,
     tie_word_embeddings: bool,
-    attn_children: list | None = None,
-    ffn_children: list | None = None,
+    block_children: list | None = None,
 ) -> dict:
     """Model-level Multi-Token Prediction head stack (DeepSeek-V3 style).
 
@@ -46,7 +45,7 @@ def mtp_head_block(
             f"transformer block, then reuses the shared output head{shared}. Trains the trunk "
             "for multi-step lookahead; usable as a self-speculative draft at inference."
         ),
-        "detail_view": "mtp_head",
+        "view": "mtp_head",
         "detail": {
             "num_modules": num_modules,
             "hidden_size": hidden_size,
@@ -64,23 +63,13 @@ def mtp_head_block(
              "description": f"Concat [norm(hidden); norm(embedding)] -> {wide}"},
             {"id": "mtp_proj", "title": "Projection (eh_proj)",
              "description": f"Linear; {wide} -> {hidden}"},
+            # The transformer block IS a decoder layer — reuse the real,
+            # self-describing layer blocks (attention, FFN/MoE, norms, …) so the
+            # central router renders each with no MTP-specific wiring.
             {"id": "mtp_block", "title": "Transformer block",
-             "description": "One decoder block — same attention + FFN/MoE shape as the main stack",
-             "detail_view": "mtp_transformer_block",
-             "children": [
-                 {"id": "mtp_block_norm1", "title": "Pre-attention norm",
-                  "description": "RMSNorm before the MTP block's attention sublayer"},
-                 {"id": "mtp_block_attn", "title": "Attention",
-                  "description": "Same attention as the main decoder layers, over the MTP module's sequence",
-                  "detail_view": "attention",
-                  "children": list(attn_children or [])},
-                 {"id": "mtp_block_norm2", "title": "Pre-FFN norm",
-                  "description": "RMSNorm before the MTP block's feed-forward sublayer"},
-                 {"id": "mtp_block_ffn", "title": "Feed-forward / MoE",
-                  "description": "Same FFN/MoE as the main decoder layers",
-                  "detail_view": "ffn",
-                  "children": list(ffn_children or [])},
-             ]},
+             "description": "One decoder block — the same attention + FFN/MoE blocks as the main stack",
+             "view": "mtp_transformer_block",
+             "children": list(block_children or [])},
             {"id": "mtp_head", "title": "Shared output head",
              "description": f"{hidden} -> {vocab}{shared}; predicts token t+k+1"},
         ],

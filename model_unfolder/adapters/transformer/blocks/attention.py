@@ -316,7 +316,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
                 "Builds Q by projecting the hidden state, splitting content and positional slices, "
                 "applying RoPE to the positional slice, then concatenating them"
             ),
-            "detail_view": "mla_query_path",
+            "view": "mla_query_path",
             "children": query_children,
         },
         {
@@ -327,7 +327,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
                 f"Compresses hidden state into rank {kv_rank} latent cache, expands K/V content, "
                 "and combines K noPE with a RoPE key side-channel. Cache ports mark the latent write/read point."
             ),
-            "detail_view": "mla_kv_cache_path",
+            "view": "mla_kv_cache_path",
             "children": kv_children,
         },
         {

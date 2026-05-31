@@ -5,7 +5,7 @@ from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
 from .attention import attention_child_blocks
 from .descriptions import attention_label, attention_title, describe_attention, describe_ffn
-from .feed_forward import ffn_child_blocks, ffn_detail_view
+from .feed_forward import ffn_child_blocks, ffn_view
 
 
 def decoder_layer_blocks(
@@ -90,7 +90,7 @@ def _attention_block(attention: AttentionSpec, hidden_size: int) -> dict:
         "label": attention_label(attention),
         "title": attention_title(attention),
         "description": describe_attention(attention),
-        "detail_view": "attention",
+        "view": "attention",
         "children": attention_child_blocks(attention, hidden_size),
     }
 
@@ -103,7 +103,7 @@ def _ffn_block(ffn: FFNSpec, hidden_size: int) -> dict:
         "label": "MoE" if ffn.kind == "moe" else "Feed-Forward",
         "title": "Mixture of experts" if ffn.kind == "moe" else "Feed-forward",
         "description": describe_ffn(ffn),
-        "detail_view": ffn_detail_view(ffn),
+        "view": ffn_view(ffn),
         "children": ffn_child_blocks(ffn, hidden_size),
     }
 

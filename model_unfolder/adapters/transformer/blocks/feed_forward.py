@@ -6,7 +6,7 @@ from ....labels import activation_label
 from ..common import format_dim as _fmt
 
 
-def ffn_detail_view(ffn: FFNSpec) -> str:
+def ffn_view(ffn: FFNSpec) -> str:
     if ffn.kind == "moe":
         return "moe"
     return "gated_ffn" if ffn.gated else "dense_ffn"
@@ -104,28 +104,28 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
             "id": "expert_1",
             "title": "Expert FFN",
             "description": expert_desc,
-            "detail_view": "moe_expert",
+            "view": "moe_expert",
             "children": expert_children,
         },
         {
             "id": "expert_k",
             "title": "Expert FFN",
             "description": expert_desc,
-            "detail_view": "moe_expert",
+            "view": "moe_expert",
             "children": expert_children,
         },
         {
             "id": "expert_kp1",
             "title": "Expert FFN",
             "description": expert_desc,
-            "detail_view": "moe_expert",
+            "view": "moe_expert",
             "children": expert_children,
         },
         {
             "id": "expert_n",
             "title": "Expert FFN",
             "description": expert_desc,
-            "detail_view": "moe_expert",
+            "view": "moe_expert",
             "children": expert_children,
         },
         {

@@ -37,6 +37,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -51,29 +52,12 @@ from .special_parts.modalities.detect import cross_attention_layers as _cross_at
 
 # ---------------------------------------------------------------------------
 # Field aliases: every canonical field has a list of names we look up in order.
-# Add a new alias whenever you encounter a new config dialect — that is the
-# only kind of per-family handling that exists.
+# The table itself is *data*, loaded from ``everchanging/aliases.json`` so a new
+# config dialect is supported by editing JSON — no code change here.  Adding a
+# new alias is the only kind of per-family handling that exists.
 # ---------------------------------------------------------------------------
 
-_ALIASES: dict[str, list[str]] = {
-    "num_hidden_layers":       ["num_hidden_layers", "n_layers", "num_layers", "n_layer", "num_blocks", "n_blocks"],
-    "num_attention_heads":     ["num_attention_heads", "n_heads", "num_heads", "n_head", "num_q_heads"],
-    "num_key_value_heads":     ["num_key_value_heads", "n_kv_heads", "num_kv_heads", "num_key_heads", "kv_n_heads"],
-    "hidden_size":             ["hidden_size", "d_model", "n_embd", "model_dim", "embed_dim", "dim"],
-    "intermediate_size":       ["intermediate_size", "ffn_dim", "mlp_dim", "inner_dim", "ffn_hidden_size", "feed_forward_proj_dim", "n_inner"],
-    "hidden_act":              ["hidden_act", "activation_function", "hidden_activation", "act_fn", "activation", "activation_type"],
-    "vocab_size":              ["vocab_size", "n_vocab", "padded_vocab_size"],
-    "max_position_embeddings": ["max_position_embeddings", "max_seq_len", "n_positions", "context_length", "max_seq_length", "seq_length", "max_sequence_length"],
-    "sliding_window":          ["sliding_window", "attention_window", "window_size"],
-    "num_experts":             ["num_local_experts", "num_experts", "n_routed_experts", "n_experts", "moe_num_experts"],
-    "num_experts_per_tok":     ["num_experts_per_tok", "top_k_experts", "top_k", "num_selected_experts", "num_experts_per_token", "moe_top_k"],
-    "num_shared_experts":      ["num_shared_experts", "n_shared_experts"],
-    "moe_intermediate_size":   ["moe_intermediate_size", "expert_intermediate_size", "expert_hidden_size"],
-    "head_dim":                ["head_dim", "d_head", "head_size", "kv_channels"],
-    "tie_word_embeddings":     ["tie_word_embeddings", "tie_embeddings", "tie_word_embedding_weights"],
-    "norm_type":               ["norm_type"],   # OLMo-style ("layer_norm" | "rms_norm")
-    "mlp_ratio":               ["mlp_ratio"],   # OLMo-style: intermediate = hidden_size * mlp_ratio
-}
+_ALIASES: dict[str, list[str]] = load_aliases()
 
 
 _SLIDING_LABELS = {"sliding_attention", "sliding"}
@@ -378,17 +362,14 @@ def parse(cfg: Any) -> ModelIR:
             "shares_embedding": True,
             "shares_output_head": True,
         }
-        # The MTP block's attention + FFN are the same as a main decoder layer,
-        # so they reuse those drill-downs (no separate views). Pass a
-        # representative layer's attention/FFN children for the deeper levels.
+        # The MTP transformer block is a decoder layer, so hand it a
+        # representative layer's own blocks; the router renders each (attention,
+        # FFN/MoE, …) wherever it appears — no MTP-specific plumbing.
         rep_blocks = layers[-1].blocks if layers else []
-        rep_attn = next((b for b in rep_blocks if b.get("id") == "attn"), None)
-        rep_ffn = next((b for b in rep_blocks if b.get("id") == "ffn"), None)
         extras["render"]["model_blocks"].append(
             mtp_head_block(
                 mtp_modules, hidden_size, vocab_size, tie_word_embeddings,
-                attn_children=(rep_attn or {}).get("children"),
-                ffn_children=(rep_ffn or {}).get("children"),
+                block_children=rep_blocks,
             )
         )
 
@@ -609,7 +590,7 @@ def _cross_attention_states_side_block() -> dict:
         "description": (
             "cross_attention_states: vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
         ),
-        "detail_view": "vision_path",
+        "view": "vision_path",
         "w": 250,
         "h": 50,
         "font": 15,

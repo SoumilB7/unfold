@@ -413,7 +413,7 @@ def test_mtp_head_detected_and_rendered():
 
     assert ir["extras"]["mtp"]["num_modules"] == 1
     mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
-    assert mtp["role"] == "mtp" and mtp["detail_view"] == "mtp_head"
+    assert mtp["role"] == "mtp" and mtp["view"] == "mtp_head"
 
     # Surfaced in the prose-free expanded schema too.
     assert d.to_json()["multi_token_prediction"]["num_modules"] == 1
@@ -423,20 +423,21 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
-    # The transformer block opens into its own tower (like the vision encoder),
-    # with the model's real attention/FFN labels and clickable sublayers.
+    # The transformer block opens into its own tower (like the vision encoder).
     assert "separate tower" in html
     assert "Multi-Head Latent" in html
-    for cid in ("mtp_block_norm1", "mtp_block_attn", "mtp_block_norm2", "mtp_block_ffn"):
-        assert f'data-card-id="{cid}"' in html
 
-    # The block's attention reuses the main MLA drill-down (no separate view),
-    # so its internals are reachable one level deeper.
+    # The block REUSES the real decoder-layer blocks as its children (no
+    # synthesized internals, no per-block plumbing), so they route through the
+    # central router into the same MLA / MoE drill-downs as the main stack.
     mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
     tblock = next(c for c in mtp["children"] if c["id"] == "mtp_block")
-    attn = next(c for c in tblock["children"] if c["id"] == "mtp_block_attn")
-    assert attn["detail_view"] == "attention"
-    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn["children"]}
+    child_kinds = {c.get("kind") for c in tblock["children"]}
+    assert {"attention", "ffn", "norm"} <= child_kinds
+    attn = next(c for c in tblock["children"] if c.get("kind") == "attention")
+    assert attn["view"] == "attention"
+    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn.get("children", [])}
+    # the reused attention's drill-downs are present as cards
     assert 'data-card-id="mla_query_path"' in html
 
     # The module count is surfaced when > 1.
@@ -522,7 +523,7 @@ def test_gemma4_ple_uses_reusable_part_contract():
     blocks = ir["layers"][0]["blocks"]
     ple = next(block for block in blocks if block["id"] == "ple")
 
-    assert ple["detail_view"] == "per_layer_embedding"
+    assert ple["view"] == "per_layer_embedding"
     assert ple["detail"]["view"] == "per_layer_embedding"
     assert ple["detail"]["nodes"]["multiply"] == "ple_mul"
     assert ir["extras"]["per_layer_embeddings"]["hidden"] == 1024
@@ -668,7 +669,7 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     child_ids = {child["id"] for child in ffn_block["children"]}
 
     assert ir["layers"][0]["ffn"]["gated"] is False
-    assert ffn_block["detail_view"] == "dense_ffn"
+    assert ffn_block["view"] == "dense_ffn"
     assert {"up_proj", "silu", "down_proj"} <= child_ids
     assert "gate_proj" not in child_ids
     assert "mul" not in child_ids
