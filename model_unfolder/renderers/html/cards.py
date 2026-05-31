@@ -55,6 +55,15 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     for node_id in ("final_rms", "lm_head"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
+    mtp_block = info.get("blocks", {}).get("mtp")
+    if mtp_block:
+        svg = block_detail_svg(ir, info, mount_id, mtp_block)
+        title, desc = _meta(info, "mtp")
+        if svg:
+            panels.append(_rich_card("mtp", title, desc, svg))
+        else:
+            panels.append(_simple_card("mtp", title, desc))
+
     return "".join(panels)
 
 

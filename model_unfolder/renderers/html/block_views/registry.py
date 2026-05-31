@@ -14,6 +14,7 @@ from .modality_views.vision_details import (
     build_vision_mlp_view,
     build_vision_self_attention_view,
 )
+from .mtp_head import build_mtp_head_view
 from .per_layer_embedding import build_per_layer_embedding_view
 
 BlockRenderer = Callable[[dict, dict, str, dict], str | None]
@@ -56,6 +57,7 @@ BLOCK_DETAIL_VIEWS: dict[str | None, BlockRenderer] = {
     "audio_path": build_audio_path_view,
     "video_path": build_video_path_view,
     "multimodal_fusion": build_multimodal_fusion_view,
+    "mtp_head": build_mtp_head_view,
 }
 
 SUB_BLOCK_DETAIL_VIEWS: dict[str | None, BlockRenderer] = {

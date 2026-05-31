@@ -144,6 +144,23 @@ Dispatched in `attention_child_blocks(...)`.
 |---|---|---|
 | Projected image states | `cross_attention_states` | model_unfolder/adapters/transformer/parser.py |
 
+## 6b. Multi-Token Prediction (MTP) head (DeepSeek-V3 style)
+
+Detected from `num_nextn_predict_layers` / `num_mtp_layers`; drawn as a stacked-card glyph above `lm_head`.
+
+| Block | id | Defined in |
+|---|---|---|
+| MTP head (stack) | `mtp` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Hidden-state norm | `mtp_hnorm` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Next-token embedding | `mtp_emb` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Embedding norm | `mtp_enorm` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Concatenate | `mtp_concat` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Projection (eh_proj) | `mtp_proj` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Transformer block | `mtp_block` | model_unfolder/adapters/transformer/blocks/model.py |
+| ↳ Shared output head | `mtp_head` | model_unfolder/adapters/transformer/blocks/model.py |
+
+(Drawing: `_draw_mtp_head` in model_unfolder/renderers/html/views.py)
+
 ## 7. Multimodal model-level blocks (clickable pathways)
 
 Built in `_MODALITY_BLOCK_SPECS`; structural path data comes from the modality builders.
@@ -204,6 +221,7 @@ Routing table: [block_views/registry.py](../model_unfolder/renderers/html/block_
 | `vision_encoder` | `build_vision_encoder_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
 | `vision_self_attention` | `build_vision_self_attention_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
 | `vision_mlp` | `build_vision_mlp_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `mtp_head` | `build_mtp_head_view` | model_unfolder/renderers/html/block_views/mtp_head.py |
 
 ---
 

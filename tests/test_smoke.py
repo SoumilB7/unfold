@@ -407,6 +407,33 @@ def test_deepseek_v3_phase_change():
     print(f"DeepSeek-V3 phase change OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")
 
 
+def test_mtp_head_detected_and_rendered():
+    d = unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 1})
+    ir = d.to_ir()
+
+    assert ir["extras"]["mtp"]["num_modules"] == 1
+    mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
+    assert mtp["role"] == "mtp" and mtp["detail_view"] == "mtp_head"
+
+    # Surfaced in the prose-free expanded schema too.
+    assert d.to_json()["multi_token_prediction"]["num_modules"] == 1
+
+    html = d.to_html(standalone=True)
+    assert "MTP head" in html
+    assert 'data-card-id="mtp"' in html
+    assert "eh_proj" in html  # detail-view internals rendered
+
+    # The module count is surfaced when > 1.
+    assert "MTP head x2" in unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 2}).to_html()
+
+
+def test_models_without_mtp_have_no_mtp_block():
+    ir = unfold(LLAMA3_8B_CONFIG).to_ir()
+    assert "mtp" not in ir["extras"]
+    assert all(b["id"] != "mtp" for b in ir["extras"]["render"]["model_blocks"])
+    assert "MTP head" not in unfold(LLAMA3_8B_CONFIG).to_html()
+
+
 def test_gemma4_31b():
     d = unfold(GEMMA4_31B_CONFIG)
     ir = d.to_ir()
@@ -827,6 +854,8 @@ def _restore_env(name, value):
 if __name__ == "__main__":
     test_kimi_k2()
     test_deepseek_v3_phase_change()
+    test_mtp_head_detected_and_rendered()
+    test_models_without_mtp_have_no_mtp_block()
     test_gemma4_31b()
     test_gemma4_ple_uses_reusable_part_contract()
     test_llama3()
