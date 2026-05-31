@@ -168,7 +168,7 @@ def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
 def _sub_inspect_children(info: dict) -> list[dict]:
     children: list[dict] = []
     for block in info.get("blocks", {}).values():
-        if block.get("role") in {"modality_input", "fusion"}:
+        if block.get("role") in {"modality_input", "fusion", "mtp"}:
             children.extend(block.get("children") or [])
     for block in (info["dominant"]["spec"].get("blocks") or []):
         children.extend(block.get("children") or [])

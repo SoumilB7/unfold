@@ -423,6 +423,22 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
+    # The transformer block opens into its own tower (like the vision encoder),
+    # with the model's real attention/FFN labels and clickable sublayers.
+    assert "separate tower" in html
+    assert "Multi-Head Latent" in html
+    for cid in ("mtp_block_norm1", "mtp_block_attn", "mtp_block_norm2", "mtp_block_ffn"):
+        assert f'data-card-id="{cid}"' in html
+
+    # The block's attention reuses the main MLA drill-down (no separate view),
+    # so its internals are reachable one level deeper.
+    mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
+    tblock = next(c for c in mtp["children"] if c["id"] == "mtp_block")
+    attn = next(c for c in tblock["children"] if c["id"] == "mtp_block_attn")
+    assert attn["detail_view"] == "attention"
+    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn["children"]}
+    assert 'data-card-id="mla_query_path"' in html
+
     # The module count is surfaced when > 1.
     assert "MTP head x2" in unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 2}).to_html()
 

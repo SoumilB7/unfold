@@ -378,8 +378,18 @@ def parse(cfg: Any) -> ModelIR:
             "shares_embedding": True,
             "shares_output_head": True,
         }
+        # The MTP block's attention + FFN are the same as a main decoder layer,
+        # so they reuse those drill-downs (no separate views). Pass a
+        # representative layer's attention/FFN children for the deeper levels.
+        rep_blocks = layers[-1].blocks if layers else []
+        rep_attn = next((b for b in rep_blocks if b.get("id") == "attn"), None)
+        rep_ffn = next((b for b in rep_blocks if b.get("id") == "ffn"), None)
         extras["render"]["model_blocks"].append(
-            mtp_head_block(mtp_modules, hidden_size, vocab_size, tie_word_embeddings)
+            mtp_head_block(
+                mtp_modules, hidden_size, vocab_size, tie_word_embeddings,
+                attn_children=(rep_attn or {}).get("children"),
+                ffn_children=(rep_ffn or {}).get("children"),
+            )
         )
 
     if use_parallel_residual:
