@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .accessors import architecture, as_int, drop_none, first, present_paths
+from .accessors import architecture, as_int, drop_none, first, nested, present_paths
 from .detect import (
     has_cross_attention_adapter,
     has_video_input,
@@ -24,7 +24,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
     num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
     num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
-    token_count = visual_token_count(cfg, vision_cfg, cross_attn)
+    # A perceiver resampler emits a fixed number of latent tokens regardless of
+    # the patch count, so that count wins when present.
+    token_count = perceiver_latents(cfg) or visual_token_count(cfg, vision_cfg, cross_attn)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
@@ -55,8 +57,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
 
     # --- Structural vision features, all config-driven (no family names) ---
     tiling = image_tiling(cfg, vision_cfg)
-    reduction = token_reduction(vision_cfg)
+    reduction = token_reduction(cfg, vision_cfg)
     multilayer = multilayer_features(vision_cfg)
+    features = feature_selection(cfg)
     encoder_fields = drop_none({
         "architecture": architecture(vision_cfg),
         "hidden_size": hidden_size,
@@ -68,6 +71,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "global_head_dim": first(vision_cfg, "global_head_dim"),
         "activation": first(vision_cfg, "hidden_act", "hidden_activation"),
         "patch_size": patch_size,
+        # Which encoder output the connector reads (single layer + CLS policy).
+        "feature_layer": (features or {}).get("layer"),
+        "feature_select_strategy": (features or {}).get("select_strategy"),
         # Concatenated multi-layer features (e.g. mllama) widen the output.
         "intermediate_layers_indices": (multilayer or {}).get("layers"),
         "output_dim": (multilayer or {}).get("output_dim")
@@ -83,8 +89,13 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     if tiling:
         stages.append(
             Stage("tiling", "vision_tiles", "tile_image", "image_tiling",
-                  {"max_tiles": tiling.get("max_tiles"), "aspect_ratios": tiling.get("aspect_ratios")},
-                  step_fields={"max_tiles": tiling.get("max_tiles")})
+                  {"mode": tiling.get("mode"), "max_tiles": tiling.get("max_tiles"),
+                   "aspect_ratios": tiling.get("aspect_ratios"),
+                   "num_layouts": tiling.get("num_layouts"),
+                   "aspect_ratio_policy": tiling.get("aspect_ratio_policy")},
+                  step_fields=drop_none({"mode": tiling.get("mode"),
+                                         "max_tiles": tiling.get("max_tiles"),
+                                         "num_layouts": tiling.get("num_layouts")}))
         )
     stages.append(
         Stage("embedding", "patch_embedding", "patch_embedding", "patch_embedding",
@@ -103,7 +114,8 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         )
     stages.append(
         Stage("projector", "projector", projection_operation, projector_kind_value,
-              {"in_features": projector_in, "out_features": projector_out, "activation": projector_activation})
+              drop_none({"in_features": projector_in, "out_features": projector_out,
+                         "activation": projector_activation, "num_latents": perceiver_latents(cfg)}))
     )
     stages.append(
         Stage("tokens", token_node_id, final_operation, token_kind,
@@ -256,53 +268,85 @@ def vision_position_encoding(cfg: Any, vision_cfg: Any) -> dict | None:
 
 
 def image_tiling(cfg: Any, vision_cfg: Any) -> dict | None:
-    """Detect image tiling (mllama, LLaVA-NeXT) from config.
+    """Detect how a high-res image is split before encoding.
 
-    Signal: ``max_num_tiles`` (the image is split into up to N fixed-size tiles,
-    each encoded independently).  ``supported_aspect_ratios`` lists the tile
-    layouts.  Absent -> the model encodes the image as a single field.
+    Two modes, both config-driven:
+
+    * ``fixed_tiles`` — ``max_num_tiles`` (mllama): up to N fixed-size tiles,
+      each encoded independently; ``supported_aspect_ratios`` lists the layouts.
+    * ``anyres`` — ``image_grid_pinpoints`` (LLaVA-NeXT / OneVision): the image
+      is resized to the best-fitting grid from a list of candidate resolutions.
+
+    Absent -> the model encodes the image as a single field.
     """
-    max_tiles = as_int(first(vision_cfg, "max_num_tiles", "max_image_tiles")) or as_int(
-        first(cfg, "max_num_tiles", "image_grid_pinpoints")
-    )
-    if not max_tiles:
-        return None
-    return drop_none({
-        "max_tiles": max_tiles,
-        "aspect_ratios": first(vision_cfg, "supported_aspect_ratios"),
-    })
+    max_tiles = as_int(first(vision_cfg, "max_num_tiles", "max_image_tiles"))
+    if max_tiles:
+        return drop_none({
+            "mode": "fixed_tiles",
+            "max_tiles": max_tiles,
+            "aspect_ratios": first(vision_cfg, "supported_aspect_ratios"),
+        })
+    pinpoints = first(cfg, "image_grid_pinpoints")
+    if pinpoints:
+        return drop_none({
+            "mode": "anyres",
+            "num_layouts": len(pinpoints) if isinstance(pinpoints, (list, tuple)) else None,
+            "aspect_ratio_policy": first(cfg, "vision_aspect_ratio"),
+        })
+    return None
 
 
-def token_reduction(vision_cfg: Any) -> dict | None:
+def token_reduction(cfg: Any, vision_cfg: Any) -> dict | None:
     """Detect a post-encoder token-reduction step from config.
 
-    Signal: ``pooling_kernel_size`` (e.g. Gemma 4 average-pools the patch grid
-    by k×k, cutting the token count by k²).  ``spatial_merge_size`` is *not*
-    reported here — for grid streams it is already surfaced on the grid and the
-    patch-merger projector.
+    Two reduction families, both before the projector:
+
+    * ``pooling_kernel_size`` -> k×k average pool (Gemma 4), cuts tokens by k²
+    * ``downsample_ratio`` (InternVL, e.g. 0.5) or ``scale_factor`` (Idefics3 /
+      SmolVLM, e.g. 3) -> pixel-shuffle / space-to-depth, cuts tokens by 1/r²
+
+    ``spatial_merge_size`` is *not* reported here — for grid streams it is
+    already surfaced on the grid and the patch-merger projector.
     """
     pool = as_int(first(vision_cfg, "pooling_kernel_size", "pool_kernel_size"))
-    if not pool:
-        return None
-    return {
-        "operation": "pool_tokens",
-        "kind": "token_pooling",
-        "fields": {"kernel_size": pool, "reduces_tokens_by": pool * pool},
-    }
+    if pool:
+        return {
+            "operation": "pool_tokens",
+            "kind": "token_pooling",
+            "fields": {"kernel_size": pool, "reduces_tokens_by": pool * pool},
+        }
+    ratio = first(cfg, "downsample_ratio")
+    if ratio:
+        try:
+            factor = round((1.0 / float(ratio)) ** 2)
+        except (TypeError, ValueError, ZeroDivisionError):
+            factor = None
+        return {
+            "operation": "pixel_shuffle",
+            "kind": "pixel_shuffle",
+            "fields": drop_none({"downsample_ratio": ratio, "reduces_tokens_by": factor}),
+        }
+    scale = as_int(first(cfg, "scale_factor", "pixel_shuffle_factor"))
+    if scale:
+        return {
+            "operation": "pixel_shuffle",
+            "kind": "pixel_shuffle",
+            "fields": {"scale_factor": scale, "reduces_tokens_by": scale * scale},
+        }
+    return None
 
 
 def multilayer_features(vision_cfg: Any) -> dict | None:
-    """Detect multi-layer feature extraction from config.
+    """Detect *multi-layer* feature concatenation from config.
 
-    Signal: ``intermediate_layers_indices`` / ``vision_feature_layer(s)`` — the
-    encoder concatenates hidden states from several layers (e.g. mllama joins
-    layers [3,7,15,23,30]+final, which is why ``vision_output_dim`` >> hidden).
+    Signal: ``intermediate_layers_indices`` or a list-valued
+    ``vision_feature_layers`` — the encoder concatenates hidden states from
+    several layers (mllama joins [3,7,15,23,30]+final, hence
+    ``vision_output_dim`` >> hidden).  A single ``vision_feature_layer`` (LLaVA)
+    is *not* a concat — that is handled by :func:`feature_selection`.
     """
     layers = first(vision_cfg, "intermediate_layers_indices", "vision_feature_layers")
-    if layers is None:
-        single = first(vision_cfg, "vision_feature_layer")
-        layers = single if isinstance(single, (list, tuple)) else ([single] if single is not None else None)
-    if not layers:
+    if not isinstance(layers, (list, tuple)) or len(layers) <= 1:
         return None
     return drop_none({
         "layers": list(layers),
@@ -310,9 +354,32 @@ def multilayer_features(vision_cfg: Any) -> dict | None:
     })
 
 
+def feature_selection(cfg: Any) -> dict | None:
+    """Which encoder output the connector consumes (LLaVA-style).
+
+    * ``vision_feature_layer`` — single hidden-state layer (e.g. -2 = penultimate)
+    * ``vision_feature_select_strategy`` — ``"default"`` drops the CLS token,
+      ``"full"`` keeps every patch token
+    """
+    layer = first(cfg, "vision_feature_layer")
+    strategy = first(cfg, "vision_feature_select_strategy")
+    if layer is None and strategy is None:
+        return None
+    if isinstance(layer, (list, tuple)):  # a list is multi-layer concat, not single select
+        layer = None
+    return drop_none({"layer": layer, "select_strategy": strategy})
+
+
 def projector_kind(cfg: Any) -> str:
-    """Return projector kind from structural config fields."""
+    """Classify the vision connector from structural config fields.
+
+    Priority reflects how distinctive each mechanism is:
+    perceiver resampler -> patch merger (grid) -> declared projector type ->
+    MLP (has an activation) -> plain linear.
+    """
     vision_cfg = first(cfg, "vision_config", "vision_model_config")
+    if first(cfg, "perceiver_config", "use_resampler", "resampler_config") is not None:
+        return "perceiver_resampler"
     if is_unified_grid_stream(cfg, vision_cfg):
         return "patch_merger"
     raw = first(cfg, "mm_projector_type", "projector_type", "multi_modal_projector_type")
@@ -321,6 +388,12 @@ def projector_kind(cfg: Any) -> str:
     if first(cfg, "projector_hidden_act", "mm_projector_act"):
         return "mlp_projector"
     return "linear_projector"
+
+
+def perceiver_latents(cfg: Any) -> int | None:
+    """Fixed query/token count for a perceiver-resampler connector (Idefics2)."""
+    pc = nested(cfg, "perceiver_config") or nested(cfg, "resampler_config") or {}
+    return as_int(first(pc, "resampler_n_latents", "n_latents", "num_latents", "num_queries"))
 
 
 def visual_token_count(cfg: Any, vision_cfg: Any, cross_attn: bool = False) -> int | None:

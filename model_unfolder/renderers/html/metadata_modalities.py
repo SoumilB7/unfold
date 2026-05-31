@@ -9,32 +9,42 @@ def _tiling_children(tiling: dict) -> list[dict]:
     """Inspect card for the image-tiling stage, when the tower tiles images."""
     if not tiling:
         return []
-    max_tiles = tiling.get("max_tiles")
-    ratios = tiling.get("aspect_ratios")
-    return [{
-        "id": "vision_tiles",
-        "title": "Image tiling",
-        "description": _join_desc([
+    if tiling.get("mode") == "anyres":
+        n = tiling.get("num_layouts")
+        policy = tiling.get("aspect_ratio_policy")
+        desc = _join_desc([
+            "Any-resolution: image resized to the best-fitting grid of candidate resolutions, then tiled",
+            f"{_fmt_int(n)} candidate layouts" if n else "",
+            f"policy {policy}" if policy else "",
+        ])
+    else:
+        max_tiles = tiling.get("max_tiles")
+        ratios = tiling.get("aspect_ratios")
+        desc = _join_desc([
             f"Image split into up to {_fmt_int(max_tiles)} fixed-size tiles, each encoded separately"
             if max_tiles else "Image split into fixed-size tiles, each encoded separately",
             f"{len(ratios)} supported aspect-ratio layouts" if isinstance(ratios, (list, tuple)) else "",
-        ]),
-    }]
+        ])
+    return [{"id": "vision_tiles", "title": "Image tiling", "description": desc}]
 
 
 def _reduction_children(reduction: dict) -> list[dict]:
-    """Inspect card for the post-encoder token-reduction stage (pooling)."""
+    """Inspect card for the post-encoder token-reduction stage."""
     if not reduction:
         return []
-    k = reduction.get("kernel_size")
     factor = reduction.get("reduces_tokens_by")
+    if reduction.get("kind") == "pixel_shuffle":
+        title = "Pixel shuffle"
+        head = "Pixel-shuffle (space-to-depth): neighbouring patch tokens are folded into the channel dim"
+    else:
+        k = reduction.get("kernel_size")
+        title = "Token pooling"
+        head = (f"Average-pool the patch grid by {_fmt_int(k)}x{_fmt_int(k)}"
+                if k else "Average-pool the patch grid")
     return [{
         "id": "vision_token_reduce",
-        "title": "Token pooling",
-        "description": _join_desc([
-            f"Average-pool the patch grid by {_fmt_int(k)}x{_fmt_int(k)}" if k else "Average-pool the patch grid",
-            f"reduces token count by {_fmt_int(factor)}x" if factor else "",
-        ]),
+        "title": title,
+        "description": _join_desc([head, f"reduces token count by {_fmt_int(factor)}x" if factor else ""]),
     }]
 
 
@@ -145,8 +155,15 @@ def _vision_description(vision: dict) -> str:
     if pos_kind:
         bits.append(str(pos_kind).replace("_", " "))
     reduction = vision.get("reduction") or {}
-    if reduction.get("kernel_size"):
+    if reduction.get("kind") == "pixel_shuffle":
+        f = reduction.get("reduces_tokens_by")
+        bits.append(f"pixel shuffle /{_fmt_int(f)}" if f else "pixel shuffle")
+    elif reduction.get("kernel_size"):
         bits.append(f"pool {_fmt_int(reduction.get('kernel_size'))}x{_fmt_int(reduction.get('kernel_size'))}")
+    connector_kind = (projector.get("kind") or "")
+    if connector_kind in {"perceiver_resampler"}:
+        n = projector.get("num_latents")
+        bits.append(f"perceiver resampler ({_fmt_int(n)} latents)" if n else "perceiver resampler")
     if grid_vision and grid.get("runtime_input"):
         bits.append(f"dynamic {grid.get('runtime_input')}")
     if grid_vision and grid.get("spatial_merge_size"):
@@ -192,6 +209,12 @@ def _vision_children(vision: dict) -> list[dict]:
     layer_indices = encoder.get("intermediate_layers_indices")
     if layer_indices:
         encoder_bits.append(f"concat layers {layer_indices}")
+    elif encoder.get("feature_layer") is not None:
+        sel = encoder.get("feature_select_strategy")
+        encoder_bits.append(
+            f"feature layer {encoder.get('feature_layer')}"
+            + (f" ({sel})" if sel else "")
+        )
     if encoder.get("output_dim") and encoder.get("output_dim") != encoder.get("hidden_size"):
         encoder_bits.append(f"output dim {_fmt_int(encoder.get('output_dim'))}")
     if encoder.get("position_encoding"):
@@ -381,7 +404,8 @@ def _vision_children(vision: dict) -> list[dict]:
         {
             "id": "vision_projector",
             "title": (
-                "Linear projection to decoder width" if cross_attention_vision
+                "Perceiver resampler" if projector.get("kind") == "perceiver_resampler"
+                else "Linear projection to decoder width" if cross_attention_vision
                 else "Patch merger" if grid_vision
                 else "Linear projection to text width"
             ),
