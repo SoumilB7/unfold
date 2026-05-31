@@ -1,10 +1,11 @@
 """Drill-down SVGs for vision pathway internals."""
 from __future__ import annotations
 
-from ...svg import _defs, _ids, _rect_block, _region_rect, _svg, _svg_tag, _svg_text
+from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C
 from ...utils import _fmt_int
 from ...patch_grid import coerce_grid, grid_subtitle, grid_title
+from ...stack_view import StackView, fit_svg, point
 from .common import vision_input
 
 
@@ -18,25 +19,13 @@ def build_patch_embedding_view(ir: dict, info: dict, mount_id: str, _child: dict
     grid_geom = coerce_grid(embedding.get("grid"), image_size, patch)
     out = embedding.get("out_features")
 
-    w, h = 760, 620
-    arrow_id, shadow_id = _ids(mount_id, "vision-patch-embedding")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    cx = w / 2
-    pixels = _rect_block(parts, info, shadow_id, "vision_pixels", cx - 115, 536, 230, 46, "Image pixels")
-    grid = _patch_grid(parts, cx, 346, grid_geom)
-    flatten = _rect_block(parts, info, shadow_id, "vision_patch_flatten", cx - 125, 270, 250, 46, "Flatten patches")
-    project = _rect_block(parts, info, shadow_id, "vision_patch_project", cx - 150, 180, 300, 52, _projection_label(out))
-    tokens = _rect_block(parts, info, shadow_id, "vision_patch_tokens", cx - 130, 88, 260, 46, "Patch tokens")
-
-    _up_arrow(parts, pixels["cx"], pixels["top"], grid["bottom"] + 16)
-    _up_arrow(parts, grid["cx"], grid["top"], flatten["bottom"] + 12)
-    _up_arrow(parts, flatten["cx"], flatten["top"], project["bottom"] + 12)
-    _up_arrow(parts, project["cx"], project["top"], tokens["bottom"] + 12)
-    _up_arrow(parts, tokens["cx"], tokens["top"], tokens["top"] - 36)
-
-    return _svg(w, h, f"{ir.get('name', 'model')} patch embedding", parts)
+    view = StackView(info, mount_id, "vision-patch-embedding", f"{ir.get('name', 'model')} patch embedding")
+    view.block("vision_pixels", "Image pixels", w=230)
+    view.panel(lambda parts, cx, top: _patch_grid(parts, cx, top, grid_geom), w=304, h=150)
+    view.block("vision_patch_flatten", "Flatten patches", w=250)
+    view.block("vision_patch_project", _projection_label(out), w=300, h=52)
+    view.block("vision_patch_tokens", "Patch tokens", w=260)
+    return view.render()
 
 
 def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
@@ -48,13 +37,11 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
     hidden = encoder.get("hidden_size")
     pos = (encoder.get("position_encoding") or {}).get("kind")
 
-    w, h = 820, 900
     arrow_id, shadow_id = _ids(mount_id, "vision-encoder")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
-    cx = w / 2
-    _tower_badge(parts, 604, 50)
+    cx = 0  # fit_svg translates + centres content
+    _tower_badge(parts, cx + 194, 50)
     patch_tokens = _rect_block(parts, info, shadow_id, "vision_patch_tokens", cx - 140, 800, 280, 48, "Patch tokens")
     pos_block = _rect_block(parts, info, shadow_id, "vision_position", cx - 160, 690, 320, 52, _pos_label(pos))
     stack = _encoder_stack(parts, info, shadow_id, cx, 170, layers, heads, hidden)
@@ -65,7 +52,12 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
     _up_arrow(parts, stack["cx"], stack["top"], encoded["bottom"] + 12)
     _up_arrow(parts, encoded["cx"], encoded["top"], encoded["top"] - 34)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} vision encoder", parts)
+    regions = [
+        patch_tokens, pos_block, stack, encoded,
+        point(cx + 194 + 158, 78),            # tower badge right edge
+        point(cx, encoded["top"] - 34),       # terminal arrow tip
+    ]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} vision encoder")
 
 
 def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
@@ -75,21 +67,19 @@ def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child
     hidden = encoder.get("hidden_size")
     head_dim = _head_dim(heads, hidden)
 
-    w, h = 820, 760
     arrow_id, shadow_id = _ids(mount_id, "vision-self-attention")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
-    cx = w / 2
+    cx = 0  # fit_svg translates + centres content
     out = _rect_block(parts, info, shadow_id, "vision_attn_out", cx - 105, 70, 210, 50, "Linear (out)")
     concat = _rect_block(parts, info, shadow_id, "vision_attn_concat", cx - 120, 154, 240, 56, _concat_label(heads, head_dim), font_size=16)
     apply_v = _dot_node(parts, "vision_attn_values", cx, 270, shadow_id)
     softmax = _rect_block(parts, info, shadow_id, "vision_attn_softmax", cx - 100, 338, 200, 52, "Softmax")
     scaled = _fraction_block(parts, info, shadow_id, "vision_attn_scaled", cx - 150, 446, 300, 84)
 
-    q_proj = _rect_block(parts, info, shadow_id, "vision_attn_q", 80, 606, 190, 52, "Linear (Q)")
-    k_proj = _rect_block(parts, info, shadow_id, "vision_attn_k", 315, 606, 190, 52, "Linear (K)")
-    v_proj = _rect_block(parts, info, shadow_id, "vision_attn_v", 550, 606, 190, 52, "Linear (V)")
+    q_proj = _rect_block(parts, info, shadow_id, "vision_attn_q", cx - 330, 606, 190, 52, "Linear (Q)")
+    k_proj = _rect_block(parts, info, shadow_id, "vision_attn_k", cx - 95, 606, 190, 52, "Linear (K)")
+    v_proj = _rect_block(parts, info, shadow_id, "vision_attn_v", cx + 140, 606, 190, 52, "Linear (V)")
 
     _up_arrow(parts, cx, 724, 692)
     _branch_to_three(parts, cx, 692, [q_proj, k_proj, v_proj], arrow_id)
@@ -102,7 +92,12 @@ def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child
     _up_arrow(parts, concat["cx"], concat["top"], out["bottom"] + 12)
     _up_arrow(parts, out["cx"], out["top"], out["top"] - 34)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} vision self-attention", parts)
+    regions = [
+        out, concat, apply_v, softmax, scaled, q_proj, k_proj, v_proj,
+        point(cx, out["top"] - 34),   # terminal arrow tip
+        point(cx, 724),               # input arrow tail
+    ]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} vision self-attention")
 
 
 def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
@@ -111,23 +106,12 @@ def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> 
     hidden = encoder.get("hidden_size")
     intermediate = encoder.get("intermediate_size")
 
-    w, h = 720, 500
-    arrow_id, shadow_id = _ids(mount_id, "vision-mlp")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
-
-    cx = w / 2
-    in_block = _rect_block(parts, info, shadow_id, "vision_mlp_input", cx - 125, 390, 250, 46, "Patch states")
-    fc1 = _rect_block(parts, info, shadow_id, "vision_mlp_fc1", cx - 150, 282, 300, 52, _mlp_linear_label("Linear (in)", hidden, intermediate))
-    act = _rect_block(parts, info, shadow_id, "vision_mlp_activation", cx - 105, 190, 210, 46, "Activation")
-    fc2 = _rect_block(parts, info, shadow_id, "vision_mlp_fc2", cx - 150, 98, 300, 52, _mlp_linear_label("Linear (out)", intermediate, hidden))
-
-    _up_arrow(parts, in_block["cx"], in_block["top"], fc1["bottom"] + 12)
-    _up_arrow(parts, fc1["cx"], fc1["top"], act["bottom"] + 12)
-    _up_arrow(parts, act["cx"], act["top"], fc2["bottom"] + 12)
-    _up_arrow(parts, fc2["cx"], fc2["top"], fc2["top"] - 34)
-
-    return _svg(w, h, f"{ir.get('name', 'model')} vision MLP", parts)
+    view = StackView(info, mount_id, "vision-mlp", f"{ir.get('name', 'model')} vision MLP")
+    view.block("vision_mlp_input", "Patch states", w=250)
+    view.block("vision_mlp_fc1", _mlp_linear_label("Linear (in)", hidden, intermediate), w=300, h=52)
+    view.block("vision_mlp_activation", "Activation", w=210)
+    view.block("vision_mlp_fc2", _mlp_linear_label("Linear (out)", intermediate, hidden), w=300, h=52)
+    return view.render()
 
 
 def _tower_badge(parts: list[str], x: float, y: float) -> None:

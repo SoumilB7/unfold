@@ -14,6 +14,7 @@ from .modality_views.vision_details import (
     build_vision_mlp_view,
     build_vision_self_attention_view,
 )
+from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
 from .per_layer_embedding import build_per_layer_embedding_view
 
 BlockRenderer = Callable[[dict, dict, str, dict], str | None]
@@ -56,9 +57,15 @@ BLOCK_DETAIL_VIEWS: dict[str | None, BlockRenderer] = {
     "audio_path": build_audio_path_view,
     "video_path": build_video_path_view,
     "multimodal_fusion": build_multimodal_fusion_view,
+    "mtp_head": build_mtp_head_view,
 }
 
 SUB_BLOCK_DETAIL_VIEWS: dict[str | None, BlockRenderer] = {
+    # Reuse the main attention / FFN drill-downs for sub-blocks that re-use the
+    # decoder's blocks (e.g. the MTP block's attention + FFN are the same MLA +
+    # MoE blocks as the main stack).
+    "attention": lambda ir, info, mount_id, _child: build_attention_view(ir, info, mount_id),
+    "ffn": lambda ir, info, mount_id, child: _render_ffn_detail(ir, info, mount_id, child),
     "mla_query_path": build_mla_query_path_view,
     "mla_kv_cache_path": build_mla_kv_cache_view,
     "moe_expert": build_moe_expert_view,
@@ -66,4 +73,5 @@ SUB_BLOCK_DETAIL_VIEWS: dict[str | None, BlockRenderer] = {
     "vision_encoder": build_vision_encoder_view,
     "vision_self_attention": build_vision_self_attention_view,
     "vision_mlp": build_vision_mlp_view,
+    "mtp_transformer_block": build_mtp_transformer_block_view,
 }

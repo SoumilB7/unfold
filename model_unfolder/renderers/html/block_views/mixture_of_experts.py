@@ -2,15 +2,13 @@
 from __future__ import annotations
 
 from ....labels import activation_label
+from ..stack_view import fit_svg, point
 from ..svg import (
-    _defs,
     _elbow_hv,
     _elbow_vh,
     _ids,
     _plus_block,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _v_line,
     _v_seg,
@@ -19,10 +17,9 @@ from ..theme import C, GAP
 
 
 def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
-    w, h = 720, 620
+    w, h = 720, 620  # internal layout grid; the canvas itself auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "moe")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     ffn = info["dominant"]["spec"]["ffn"]
     cx = w / 2
@@ -73,15 +70,16 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
 
-    return _svg(w, h, f"{ir.get('name', 'model')} mixture of experts", parts)
+    regions = [router, sum_node, *experts,
+               point(sum_node["cx"], sum_node["top"] - 36), point(cx, router["bottom"] + 36)]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} mixture of experts")
 
 
 def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Third-level view for the FFN that lives inside one MoE expert."""
-    w, h = 720, 560
+    w, h = 720, 560  # internal layout grid; the canvas itself auto-fits below
     arrow_id, shadow_id = _ids(mount_id, child.get("id", "expert"))
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
     ffn = info["dominant"]["spec"]["ffn"]
     cx = w / 2
@@ -114,4 +112,6 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
 
-    return _svg(w, h, f"{ir.get('name', 'model')} MoE expert feed-forward", parts)
+    regions = [down_proj, mul_node, gate_proj, act, up_proj,
+               point(cx, down_proj["top"] - 32), point(cx, branch_y + 36)]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} MoE expert feed-forward")

@@ -34,8 +34,10 @@ def _normalise_path(path: dict) -> dict[str, Any]:
     return _clean({
         "kind": kind,
         "input": path.get("input"),
+        "tiling": path.get("tiling"),        # image split into fixed tiles (mllama)
         "embedding": path.get("embedding"),
         "encoder": path.get("encoder"),
+        "reduction": path.get("reduction"),  # post-encoder token pooling (gemma 4)
         "projector": path.get("projector"),
         "tokens": path.get("tokens"),
         "pipeline": path.get("pipeline"),

@@ -10,10 +10,6 @@ def is_sliding_window(attn: dict) -> bool:
     return attn.get("mask") == "sliding"
 
 
-def canvas_height(attn: dict, base_height: int, *, extra_height: int = 50) -> int:
-    return base_height + extra_height if is_sliding_window(attn) else base_height
-
-
 def sliding_window_input(parts: list[str], arrow_id: str, cx: float, branch_y: float, window_size: int | None) -> None:
     """Show full context with only the local sliding window feeding the split."""
     cell_w = 22

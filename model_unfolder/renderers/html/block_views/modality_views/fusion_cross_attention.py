@@ -1,13 +1,11 @@
 """Cross-attention modality fusion detail SVG."""
 from __future__ import annotations
 
+from ...stack_view import fit_svg, point
 from ...svg import (
-    _defs,
     _elbow_hv,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _v_line,
 )
@@ -16,12 +14,10 @@ from ...theme import C, GAP
 
 def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusion: dict) -> str:
     """Show projected image states conditioning selected decoder layers."""
-    w, h = 820, 560
     arrow_id, shadow_id = _ids(mount_id, "cross-attention-fusion")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_outer"]))
+    parts: list[str] = []
 
-    cx = w / 2 + 20
+    cx = 430  # internal layout centre; the canvas auto-fits below
     hidden = _rect_block(parts, info, shadow_id, "embed", cx - 150, 406, 300, 52, "hidden_states")
     vision = _rect_block(
         parts, info, shadow_id, "cross_attention_states",
@@ -46,4 +42,5 @@ def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusio
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
 
-    return _svg(w, h, f"{ir.get('name', 'model')} cross-attention layers", parts)
+    regions = [hidden, vision, adapter, out, point(out["cx"], out["top"] - 34)]
+    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} cross-attention layers")

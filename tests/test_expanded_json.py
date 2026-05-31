@@ -53,6 +53,12 @@ GEMMA4_VISION_TINY_CONFIG = {
         "num_attention_heads": 4,
         "image_size": 896,
         "patch_size": 16,
+        # Real gemma-4 vision structure: learned 2D positions + 2D RoPE, and a
+        # k×k average pool that reduces the token count after the encoder.
+        "position_embedding_size": 256,
+        "rope_parameters": {"rope_theta": 100.0, "rope_type": "default"},
+        "pooling_kernel_size": 3,
+        "global_head_dim": 8,
     },
 }
 
@@ -264,7 +270,18 @@ def test_expanded_json_carries_structured_multimodal_inputs():
     }
     assert vision["encoder"]["kind"] == "gemma4_vision"
     assert vision["encoder"]["hidden_size"] == 32
-    assert vision["encoder"]["position_encoding"] == {"kind": "learned_2d_plus_rope_2d"}
+    # Position encoding is derived structurally (learned table + 2D RoPE), no family hint.
+    assert vision["encoder"]["position_encoding"] == {
+        "kind": "learned_2d_plus_rope_2d",
+        "rope": {"rope_theta": 100.0, "rope_type": "default"},
+    }
+    assert vision["encoder"]["global_head_dim"] == 8
+    # k=3 average pool surfaces as a post-encoder token-reduction section + stage.
+    assert vision["reduction"] == {
+        "kind": "token_pooling",
+        "kernel_size": 3,
+        "reduces_tokens_by": 9,
+    }
     assert vision["projector"]["out_features"] == 64
     assert vision["tokens"] == {
         "kind": "soft_visual_tokens",
@@ -276,6 +293,7 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "input",
         "patch_embedding",
         "encode",
+        "pool_tokens",
         "project_to_text_width",
         "emit_soft_token_stream",
     ]
@@ -401,6 +419,11 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     assert vision["kind"] == "image_to_cross_attention_states"
     assert vision["encoder"]["kind"] == "mllama_vision_model"
     assert vision["encoder"]["num_attention_heads"] == 16
+    # Structural: local+global layer split and the wide concatenated output.
+    assert vision["encoder"]["num_global_layers"] == 8
+    assert vision["encoder"]["output_dim"] == 7680
+    # max_num_tiles -> an image-tiling section + stage (image split into N tiles).
+    assert vision["tiling"] == {"kind": "image_tiling", "mode": "fixed_tiles", "max_tiles": 4}
     assert vision["projector"] == {
         "kind": "linear_projector",
         "in_features": 7680,
@@ -413,6 +436,7 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     }
     assert [step["operation"] for step in vision["pipeline"]] == [
         "input",
+        "tile_image",
         "patch_embedding",
         "encode",
         "project_to_decoder_width",
@@ -441,7 +465,10 @@ def test_mllama_cross_attention_is_layer_variant_only():
     layer3_blocks = ir["layers"][3]["blocks"]
     assert not any(block.get("id") == "vision_path" for block in layer3_blocks)
     side_states = next(block for block in layer3_blocks if block.get("id") == "cross_attention_states")
-    assert side_states["title"] == "cross_attention_states"
+    # Inspect title matches the block's visible label; the raw tensor name
+    # lives in the description (and stays the node id).
+    assert side_states["title"] == "Projected image states"
+    assert "cross_attention_states" in side_states["description"]
     assert side_states["detail_view"] == "vision_path"
     assert [
         i for i, layer in enumerate(ir["layers"])
@@ -620,3 +647,67 @@ def test_non_square_patch_grid_keeps_both_axes():
     grid = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]["embedding"]["grid"]
     assert grid["patch"] == {"h": 14, "w": 16}
     assert grid["tiles"] == {"h": 32, "w": 28}
+
+
+def test_vision_pixel_shuffle_connector_internvl_style():
+    """InternVL: downsample_ratio -> a pixel-shuffle token-reduction stage."""
+    cfg = {
+        "architectures": ["InternVLForConditionalGeneration"], "model_type": "internvl",
+        "image_token_id": 151667, "downsample_ratio": 0.5,
+        "vision_feature_layer": -1, "vision_feature_select_strategy": "default",
+        "projector_hidden_act": "gelu",
+        "vision_config": {"model_type": "internvl_vision", "hidden_size": 64, "num_hidden_layers": 4,
+                          "num_attention_heads": 4, "patch_size": 14, "image_size": 448, "intermediate_size": 256},
+        "text_config": {"model_type": "qwen2", "hidden_size": 128, "intermediate_size": 512,
+                        "num_hidden_layers": 2, "num_attention_heads": 4, "num_key_value_heads": 2,
+                        "vocab_size": 1000, "rms_norm_eps": 1e-6},
+    }
+    v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
+    assert v["reduction"] == {"kind": "pixel_shuffle", "downsample_ratio": 0.5, "reduces_tokens_by": 4}
+    assert v["encoder"]["feature_layer"] == -1
+    assert v["encoder"]["feature_select_strategy"] == "default"
+    assert v["projector"]["kind"] == "mlp_projector"
+    assert [s["operation"] for s in v["pipeline"]] == [
+        "input", "patch_embedding", "encode", "pixel_shuffle", "project_to_text_width", "emit_soft_token_stream",
+    ]
+
+
+def test_vision_perceiver_resampler_idefics2_style():
+    """Idefics2: perceiver_config -> a resampler connector emitting fixed latents."""
+    cfg = {
+        "architectures": ["Idefics2ForConditionalGeneration"], "model_type": "idefics2",
+        "image_token_id": 32001,
+        "perceiver_config": {"model_type": "idefics2", "resampler_n_latents": 64},
+        "vision_config": {"model_type": "idefics2", "hidden_size": 64, "num_hidden_layers": 4,
+                          "num_attention_heads": 4, "patch_size": 14, "image_size": 980, "intermediate_size": 256},
+        "text_config": {"model_type": "mistral", "hidden_size": 128, "intermediate_size": 512,
+                        "num_hidden_layers": 2, "num_attention_heads": 4, "num_key_value_heads": 2,
+                        "vocab_size": 1000, "rms_norm_eps": 1e-6},
+    }
+    v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
+    assert v["projector"]["kind"] == "perceiver_resampler"
+    assert v["projector"]["num_latents"] == 64
+    # the resampler emits a fixed token count, not the input patch count
+    assert v["tokens"]["count"] == 64
+
+
+def test_vision_anyres_tiling_llava_onevision_style():
+    """LLaVA-OneVision: image_grid_pinpoints -> any-res tiling + 'full' feature select."""
+    cfg = {
+        "architectures": ["LlavaOnevisionForConditionalGeneration"], "model_type": "llava_onevision",
+        "image_token_index": 151646, "vision_feature_layer": -1, "vision_feature_select_strategy": "full",
+        "image_grid_pinpoints": [[384, 384], [384, 768], [768, 384]], "vision_aspect_ratio": "anyres_max_9",
+        "projector_hidden_act": "gelu",
+        "vision_config": {"model_type": "siglip_vision_model", "hidden_size": 64, "num_hidden_layers": 4,
+                          "num_attention_heads": 4, "patch_size": 14, "image_size": 384, "intermediate_size": 256},
+        "text_config": {"model_type": "qwen2", "hidden_size": 128, "intermediate_size": 512,
+                        "num_hidden_layers": 2, "num_attention_heads": 4, "num_key_value_heads": 2,
+                        "vocab_size": 1000, "rms_norm_eps": 1e-6},
+    }
+    v = unfold(cfg, return_json=True)["modalities"]["inputs"]["vision"]
+    assert v["tiling"] == {"kind": "image_tiling", "mode": "anyres", "num_layouts": 3,
+                           "aspect_ratio_policy": "anyres_max_9"}
+    assert v["encoder"]["feature_select_strategy"] == "full"
+    assert [s["operation"] for s in v["pipeline"]] == [
+        "input", "tile_image", "patch_embedding", "encode", "project_to_text_width", "emit_soft_token_stream",
+    ]

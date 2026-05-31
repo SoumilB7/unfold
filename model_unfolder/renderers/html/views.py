@@ -103,7 +103,12 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     stack_h = _layer_stack_height(chain_blocks)
     inner_h = max(490, stack_h + 2 * inner_padding)
 
-    inner_y = 200
+    # Multi-Token Prediction heads draw as a stack above lm_head; reserve top
+    # headroom by pushing the fixed top anchors (and total height) down.
+    mtp = (ir.get("extras") or {}).get("mtp")
+    mtp_pad = 108 if mtp else 0
+
+    inner_y = 200 + mtp_pad
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
     if has_modality_fusion and not has_cross_attention_fusion:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292)
@@ -130,10 +135,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                             _block_label(info, "embed", "Token Embedding layer"), font_size=17)
         stack_input = embed
     final_rms = _rect_block(parts, info, shadow_id, "final_rms",
-                            cx - 90, 140, 180, 36,
+                            cx - 90, 140 + mtp_pad, 180, 36,
                             _block_label(info, "final_rms", "Final RMSNorm"), font_size=16)
     lm_head = _rect_block(parts, info, shadow_id, "lm_head",
-                          cx - 130, 70, 260, 44,
+                          cx - 130, 70 + mtp_pad, 260, 44,
                           _block_label(info, "lm_head", "Linear output layer"), font_size=17)
 
     # --- 3. Layer body (data-driven, stacked bottom-up) ---
@@ -168,12 +173,15 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     for src, dst in zip(chain, chain[1:]):
         parts.append(_v_line(src, dst, arrow_id))
 
-    # Output arrow above lm_head.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": lm_head["top"], "x2": cx, "y2": lm_head["top"] - 32,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
+    # Output arrow above lm_head — or the MTP head stack when present.
+    if mtp:
+        _draw_mtp_head(parts, info, shadow_id, arrow_id, lm_head, mtp)
+    else:
+        parts.append(_svg_tag("line", {
+            "x1": cx, "y1": lm_head["top"], "x2": cx, "y2": lm_head["top"] - 32,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
 
     # --- 5. Residual loops (declared via residual_from) ---
     chain_ids = [b["id"] for b in chain_blocks]
@@ -214,6 +222,52 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     ))
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
+
+
+def _draw_mtp_head(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    arrow_id: str,
+    lm_head: dict,
+    mtp: dict,
+) -> None:
+    """Draw the Multi-Token Prediction head as a small stacked-card glyph above
+    lm_head, fed from the shared trunk output and emitting the final logits."""
+    n = mtp.get("num_modules") or 1
+    cx = lm_head["cx"]
+    w, h = 224, 46
+    bottom = lm_head["top"] - 38
+    top = bottom - h
+
+    # Decorative offset cards behind the front one imply a stack of N modules.
+    for off in (12, 6):
+        parts.append(_svg_tag("rect", {
+            "x": cx - w / 2 + off, "y": top - off, "width": w, "height": h,
+            "rx": 11, "ry": 11, "fill": C["block"], "opacity": 0.45,
+            "stroke": C["block_alt"], "stroke-width": 0.6,
+        }))
+
+    label = _block_label(info, "mtp", f"MTP head x{n}" if n > 1 else "MTP head")
+    geom = _rect_block(parts, info, shadow_id, "mtp", cx - w / 2, top, w, h, label, font_size=15)
+
+    # Shared trunk output -> MTP, then MTP -> logits.
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": lm_head["top"], "x2": cx, "y2": geom["bottom"] + 4,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": geom["top"], "x2": cx, "y2": geom["top"] - 30,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+    parts.append(_svg_text(
+        geom["right"] + 12, geom["cy"],
+        f"+{n} future token{'s' if n != 1 else ''}",
+        {"dominant-baseline": "central", "fill": C["muted"],
+         "font-family": FONT_MONO, "font-size": 10},
+    ))
 
 
 def _layer_stack_height(layer_blocks: list[dict]) -> int:

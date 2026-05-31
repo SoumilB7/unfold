@@ -55,6 +55,15 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     for node_id in ("final_rms", "lm_head"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
+    mtp_block = info.get("blocks", {}).get("mtp")
+    if mtp_block:
+        svg = block_detail_svg(ir, info, mount_id, mtp_block)
+        title, desc = _meta(info, "mtp")
+        if svg:
+            panels.append(_rich_card("mtp", title, desc, svg))
+        else:
+            panels.append(_simple_card("mtp", title, desc))
+
     return "".join(panels)
 
 
@@ -159,7 +168,7 @@ def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
 def _sub_inspect_children(info: dict) -> list[dict]:
     children: list[dict] = []
     for block in info.get("blocks", {}).values():
-        if block.get("role") in {"modality_input", "fusion"}:
+        if block.get("role") in {"modality_input", "fusion", "mtp"}:
             children.extend(block.get("children") or [])
     for block in (info["dominant"]["spec"].get("blocks") or []):
         children.extend(block.get("children") or [])

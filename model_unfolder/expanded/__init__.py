@@ -72,6 +72,10 @@ def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
     if modalities:
         out["modalities"] = modalities
 
+    mtp = extras.get("mtp")
+    if mtp:
+        out["multi_token_prediction"] = mtp
+
     edges = raw.get("cross_layer_edges") or []
     if edges:
         out["cross_layer_edges"] = edges

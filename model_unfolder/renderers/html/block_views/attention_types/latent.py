@@ -1,14 +1,12 @@
 """Latent-attention detail view."""
 from __future__ import annotations
 
+from ...stack_view import fit_svg, point
 from ...svg import (
     _branch_dot,
-    _defs,
     _elbow_hv,
     _ids,
     _rect_block,
-    _region_rect,
-    _svg,
     _svg_tag,
     _v_line,
 )
@@ -19,10 +17,9 @@ from .common import cache_read_write_ports, output_stem, sdpa_dot_operator, sdpa
 
 def build(ir: dict, info: dict, mount_id: str) -> str:
     """Readable top-level view for Multi-head Latent Attention."""
-    w, h = 840, 760
+    w = 840  # internal layout grid; canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "mla")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 12, w - 80, h - 42, C["bg_outer"]))
+    parts: list[str] = []
 
     attn = info["dominant"]["spec"].get("attention") or {}
     hidden = _fmt_int(ir.get("hidden_size"))
@@ -82,15 +79,17 @@ def build(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_branch_dot(branch_x, branch_y))
     output_stem(parts, cx, o_proj, arrow_id, hidden, show_label=False)
 
-    return _svg(w, h, f"{ir.get('name', 'model')} multi-head latent attention", parts)
+    regions = [o_proj, concat, value_dot, softmax, scaled_scores, query_path, kv_path,
+               point(cx, o_proj["top"] - 40), point(cx, branch_y + 40)]
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   f"{ir.get('name', 'model')} multi-head latent attention", min_width=w)
 
 
 def build_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Subdiagram for the MLA query path."""
-    w, h = 720, 540
+    w = 720  # internal layout grid; canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "mla-query")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 12, w - 80, h - 42, C["bg_outer"]))
+    parts: list[str] = []
 
     attn = info["dominant"]["spec"].get("attention") or {}
     hidden = _fmt_int(ir.get("hidden_size"))
@@ -116,17 +115,21 @@ def build_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
     parts.append(_branch_to_block_bottom(q_proj["cx"], split_y, q_nope["cx"], q_nope["bottom"] + GAP, arrow_id))
     parts.append(_branch_to_block_bottom(q_proj["cx"], split_y, q_rope["cx"], q_rope["bottom"] + GAP, arrow_id))
 
-    parts.append(_input_stem(cx, h - 34, q_proj["bottom"] + GAP, arrow_id))
+    input_bottom = q_proj["bottom"] + 56
+    parts.append(_input_stem(cx, input_bottom, q_proj["bottom"] + GAP, arrow_id))
     output_stem(parts, cx, q_concat, arrow_id, hidden, show_label=False)
-    return _svg(w, h, f"{ir.get('name', 'model')} MLA query path", parts)
+
+    regions = [q_concat, q_nope, q_rope_apply, q_rope, q_proj,
+               point(cx, q_concat["top"] - 40), point(cx, input_bottom)]
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   f"{ir.get('name', 'model')} MLA query path", min_width=w)
 
 
 def build_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Subdiagram for the MLA compressed K/V cache path."""
-    w, h = 920, 760
+    w = 920  # internal layout grid; canvas auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "mla-kv")
-    parts = [_defs(arrow_id, shadow_id)]
-    parts.append(_region_rect(40, 12, w - 80, h - 42, C["bg_outer"]))
+    parts: list[str] = []
 
     attn = info["dominant"]["spec"].get("attention") or {}
     hidden = _fmt_int(ir.get("hidden_size"))
@@ -162,10 +165,15 @@ def build_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) -> str
     parts.append(_branch_to_block_bottom(kv_down["cx"], kv_down_split_y, latent_cache["cx"], latent_cache["bottom"] + GAP, arrow_id))
     parts.append(_branch_to_block_bottom(kv_down["cx"], kv_down_split_y, k_rope["cx"], k_rope["bottom"] + GAP, arrow_id))
 
-    parts.append(_input_stem(cx, h - 34, kv_down["bottom"] + GAP, arrow_id))
+    input_bottom = kv_down["bottom"] + 56
+    parts.append(_input_stem(cx, input_bottom, kv_down["bottom"] + GAP, arrow_id))
     output_stem(parts, k_concat["cx"], k_concat, arrow_id, hidden, show_label=False)
     output_stem(parts, v_values["cx"], v_values, arrow_id, hidden, show_label=False)
-    return _svg(w, h, f"{ir.get('name', 'model')} MLA KV cache path", parts)
+
+    regions = [k_concat, v_values, k_nope, k_rope_apply, kv_up, latent_cache, k_rope, kv_down,
+               point(cx, k_concat["top"] - 40), point(cx, input_bottom)]
+    return fit_svg(arrow_id, shadow_id, parts, regions,
+                   f"{ir.get('name', 'model')} MLA KV cache path", min_width=w)
 
 
 def _stem_to_split(x: float, y1: float, y2: float) -> str:

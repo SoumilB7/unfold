@@ -39,7 +39,7 @@ from .descriptions import (
 )
 from .feed_forward import ffn_child_blocks, ffn_detail_view
 from .layers import decoder_layer_blocks, parallel_decoder_layer_blocks
-from .model import decoder_model_blocks, decoder_only_render_spec
+from .model import decoder_model_blocks, decoder_only_render_spec, mtp_head_block
 
 __all__ = [
     "attention_child_blocks",
@@ -52,5 +52,6 @@ __all__ = [
     "describe_ffn",
     "ffn_child_blocks",
     "ffn_detail_view",
+    "mtp_head_block",
     "parallel_decoder_layer_blocks",
 ]

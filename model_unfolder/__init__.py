@@ -16,7 +16,7 @@ from .parser import config_to_ir
 from .ir import ModelIR, LayerSpec, AttentionSpec, FFNSpec, CrossLayerEdge
 from .params import estimate_params
 
-__version__ = "0.2.2"
+__version__ = "0.2.10"
 
 __all__ = [
     "unfold",

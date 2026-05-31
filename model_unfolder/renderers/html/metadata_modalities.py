@@ -5,60 +5,112 @@ from .patch_grid import coerce_grid, grid_card_phrase
 from .utils import _fmt_int
 
 
+def _tiling_children(tiling: dict) -> list[dict]:
+    """Inspect card for the image-tiling stage, when the tower tiles images."""
+    if not tiling:
+        return []
+    if tiling.get("mode") == "anyres":
+        n = tiling.get("num_layouts")
+        policy = tiling.get("aspect_ratio_policy")
+        desc = _join_desc([
+            "Any-resolution: image resized to the best-fitting grid of candidate resolutions, then tiled",
+            f"{_fmt_int(n)} candidate layouts" if n else "",
+            f"policy {policy}" if policy else "",
+        ])
+    else:
+        max_tiles = tiling.get("max_tiles")
+        ratios = tiling.get("aspect_ratios")
+        desc = _join_desc([
+            f"Image split into up to {_fmt_int(max_tiles)} fixed-size tiles, each encoded separately"
+            if max_tiles else "Image split into fixed-size tiles, each encoded separately",
+            f"{len(ratios)} supported aspect-ratio layouts" if isinstance(ratios, (list, tuple)) else "",
+        ])
+    return [{"id": "vision_tiles", "title": "Image tiling", "description": desc}]
+
+
+def _reduction_children(reduction: dict) -> list[dict]:
+    """Inspect card for the post-encoder token-reduction stage."""
+    if not reduction:
+        return []
+    factor = reduction.get("reduces_tokens_by")
+    if reduction.get("kind") == "pixel_shuffle":
+        title = "Pixel shuffle"
+        head = "Pixel-shuffle (space-to-depth): neighbouring patch tokens are folded into the channel dim"
+    else:
+        k = reduction.get("kernel_size")
+        title = "Token pooling"
+        head = (f"Average-pool the patch grid by {_fmt_int(k)}x{_fmt_int(k)}"
+                if k else "Average-pool the patch grid")
+    return [{
+        "id": "vision_token_reduce",
+        "title": title,
+        "description": _join_desc([head, f"reduces token count by {_fmt_int(factor)}x" if factor else ""]),
+    }]
+
+
+def _vision_label(path: dict) -> str:
+    token_kind = (path.get("tokens") or {}).get("kind")
+    if token_kind == "vision_cross_attention_states":
+        return "Image -> states"
+    if token_kind == "grid_visual_tokens":
+        return "Vision -> grid"
+    return "Vision -> tokens"
+
+
+def _vision_title(path: dict) -> str:
+    token_kind = (path.get("tokens") or {}).get("kind")
+    if token_kind == "vision_cross_attention_states":
+        return "Image to projected states"
+    if token_kind == "grid_visual_tokens":
+        return "Vision to grid tokens"
+    return "Vision to soft tokens"
+
+
+# One render-spec per modality, mirroring the parser-side MODALITY_REGISTRY.
+# Adding a modality block is a single entry here; the lookup loop never names
+# a specific modality. (key, block_id, detail_view, kind, label, title,
+# describe, children) — callables receive the modality's path dict.
+_MODALITY_BLOCK_SPECS = (
+    {
+        "key": "vision", "block_id": "vision_path", "detail_view": "vision_path",
+        "kind": lambda p: p.get("kind") or "image_to_soft_visual_tokens",
+        "label": _vision_label, "title": _vision_title,
+        "describe": lambda p: _vision_description(p), "children": lambda p: _vision_children(p),
+    },
+    {
+        "key": "audio", "block_id": "audio_path", "detail_view": "audio_path",
+        "kind": lambda p: "audio_to_soft_tokens",
+        "label": lambda p: "Audio -> tokens", "title": lambda p: "Audio to soft tokens",
+        "describe": lambda p: _audio_description(p), "children": lambda p: _audio_children(p),
+    },
+    {
+        "key": "video", "block_id": "video_path", "detail_view": "video_path",
+        "kind": lambda p: "video_to_grid_tokens",
+        "label": lambda p: "Video -> grid", "title": lambda p: "Video to grid tokens",
+        "describe": lambda p: _video_description(p), "children": lambda p: _video_children(p),
+    },
+)
+
+
 def _multimodal_block_lookup(ir: dict) -> dict:
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     inputs = modalities.get("inputs") or {}
     fusion = modalities.get("fusion") or {}
     blocks: dict[str, dict] = {}
 
-    if "vision" in inputs:
-        vision = inputs["vision"]
-        token_kind = (vision.get("tokens") or {}).get("kind")
-        cross_attention_vision = token_kind == "vision_cross_attention_states"
-        grid_vision = token_kind == "grid_visual_tokens"
-        blocks["vision_path"] = {
-            "id": "vision_path",
+    for spec in _MODALITY_BLOCK_SPECS:
+        path = inputs.get(spec["key"])
+        if not path:
+            continue
+        blocks[spec["block_id"]] = {
+            "id": spec["block_id"],
             "role": "modality_input",
-            "kind": vision.get("kind") or "image_to_soft_visual_tokens",
-            "label": (
-                "Image -> states" if cross_attention_vision
-                else "Vision -> grid" if grid_vision
-                else "Vision -> tokens"
-            ),
-            "title": (
-                "Image to projected states" if cross_attention_vision
-                else "Vision to grid tokens" if grid_vision
-                else "Vision to soft tokens"
-            ),
-            "description": _vision_description(vision),
-            "detail_view": "vision_path",
-            "children": _vision_children(vision),
-        }
-
-    if "audio" in inputs:
-        audio = inputs["audio"]
-        blocks["audio_path"] = {
-            "id": "audio_path",
-            "role": "modality_input",
-            "kind": "audio_to_soft_tokens",
-            "label": "Audio -> tokens",
-            "title": "Audio to soft tokens",
-            "description": _audio_description(audio),
-            "detail_view": "audio_path",
-            "children": _audio_children(audio),
-        }
-
-    if "video" in inputs:
-        video = inputs["video"]
-        blocks["video_path"] = {
-            "id": "video_path",
-            "role": "modality_input",
-            "kind": "video_to_grid_tokens",
-            "label": "Video -> grid",
-            "title": "Video to grid tokens",
-            "description": _video_description(video),
-            "detail_view": "video_path",
-            "children": _video_children(video),
+            "kind": spec["kind"](path),
+            "label": spec["label"](path),
+            "title": spec["title"](path),
+            "description": spec["describe"](path),
+            "detail_view": spec["detail_view"],
+            "children": spec["children"](path),
         }
 
     if fusion:
@@ -96,6 +148,22 @@ def _vision_description(vision: dict) -> str:
     patch_desc = grid_card_phrase(grid_geom)
     if patch_desc:
         bits.append(patch_desc)
+    tiling = vision.get("tiling") or {}
+    if tiling.get("max_tiles"):
+        bits.append(f"tiled up to {_fmt_int(tiling.get('max_tiles'))}")
+    pos_kind = (encoder.get("position_encoding") or {}).get("kind")
+    if pos_kind:
+        bits.append(str(pos_kind).replace("_", " "))
+    reduction = vision.get("reduction") or {}
+    if reduction.get("kind") == "pixel_shuffle":
+        f = reduction.get("reduces_tokens_by")
+        bits.append(f"pixel shuffle /{_fmt_int(f)}" if f else "pixel shuffle")
+    elif reduction.get("kernel_size"):
+        bits.append(f"pool {_fmt_int(reduction.get('kernel_size'))}x{_fmt_int(reduction.get('kernel_size'))}")
+    connector_kind = (projector.get("kind") or "")
+    if connector_kind in {"perceiver_resampler"}:
+        n = projector.get("num_latents")
+        bits.append(f"perceiver resampler ({_fmt_int(n)} latents)" if n else "perceiver resampler")
     if grid_vision and grid.get("runtime_input"):
         bits.append(f"dynamic {grid.get('runtime_input')}")
     if grid_vision and grid.get("spatial_merge_size"):
@@ -128,17 +196,35 @@ def _vision_children(vision: dict) -> list[dict]:
         str(encoder.get("kind") or "vision encoder").replace("_", " "),
     ]
     if encoder.get("num_layers"):
-        encoder_bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
+        n_global = encoder.get("num_global_layers")
+        if n_global:
+            local = encoder.get("num_layers")
+            encoder_bits.append(f"{_fmt_int(local)} local + {_fmt_int(n_global)} global layers")
+        else:
+            encoder_bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
     if encoder.get("num_attention_heads"):
         encoder_bits.append(f"{_fmt_int(encoder.get('num_attention_heads'))} heads")
     if encoder.get("hidden_size"):
         encoder_bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    layer_indices = encoder.get("intermediate_layers_indices")
+    if layer_indices:
+        encoder_bits.append(f"concat layers {layer_indices}")
+    elif encoder.get("feature_layer") is not None:
+        sel = encoder.get("feature_select_strategy")
+        encoder_bits.append(
+            f"feature layer {encoder.get('feature_layer')}"
+            + (f" ({sel})" if sel else "")
+        )
+    if encoder.get("output_dim") and encoder.get("output_dim") != encoder.get("hidden_size"):
+        encoder_bits.append(f"output dim {_fmt_int(encoder.get('output_dim'))}")
     if encoder.get("position_encoding"):
         pos_kind = (encoder.get("position_encoding") or {}).get("kind")
         if pos_kind:
             encoder_bits.append(str(pos_kind).replace("_", " "))
     encoder_bits.append("separate vision tower")
 
+    tiling = vision.get("tiling") or {}
+    reduction = vision.get("reduction") or {}
     projector_desc = _projection_desc(projector)
     token_count = tokens.get("count")
     token_width = tokens.get("width")
@@ -158,6 +244,7 @@ def _vision_children(vision: dict) -> list[dict]:
                 "shape [batch, images, channels, height, width]",
             ]),
         },
+        *_tiling_children(tiling),
         {
             "id": "vision_patches",
             "title": "Patch embedding",
@@ -313,10 +400,12 @@ def _vision_children(vision: dict) -> list[dict]:
                 },
             ],
         },
+        *_reduction_children(reduction),
         {
             "id": "vision_projector",
             "title": (
-                "Linear projection to decoder width" if cross_attention_vision
+                "Perceiver resampler" if projector.get("kind") == "perceiver_resampler"
+                else "Linear projection to decoder width" if cross_attention_vision
                 else "Patch merger" if grid_vision
                 else "Linear projection to text width"
             ),

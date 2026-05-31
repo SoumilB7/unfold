@@ -27,6 +27,7 @@ Detection is config-driven:
 * ``n_shared_experts`` / ``num_shared_experts``  → shared experts
 * ``clip_qkv``                                   → attention extras
 * ``cross_attention_layers``                     → vision side-attention layers
+* ``num_nextn_predict_layers`` / ``num_mtp_layers`` → Multi-Token Prediction head stack
 
 Warnings policy: warn only for *specific* config problems (missing
 critical field, unrecognized layer_type value, …).  Never warn just
@@ -38,6 +39,7 @@ from typing import Any
 
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
+from .blocks import mtp_head_block
 from .common import architecture_name, get_config_value as _g, model_name
 from .special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
@@ -363,6 +365,33 @@ def parse(cfg: Any) -> ModelIR:
         multimodal_extras(cfg, text_cfg, hidden_size),
     )
 
+    # ---- Multi-Token Prediction heads (DeepSeek-V3 style next-token modules) ----
+    mtp_modules = _g(text_cfg, "num_nextn_predict_layers") or _g(text_cfg, "num_mtp_layers")
+    try:
+        mtp_modules = int(mtp_modules) if mtp_modules else 0
+    except (TypeError, ValueError):
+        mtp_modules = 0
+    if mtp_modules > 0:
+        extras["mtp"] = {
+            "num_modules": mtp_modules,
+            "predicts_extra_tokens": mtp_modules,
+            "shares_embedding": True,
+            "shares_output_head": True,
+        }
+        # The MTP block's attention + FFN are the same as a main decoder layer,
+        # so they reuse those drill-downs (no separate views). Pass a
+        # representative layer's attention/FFN children for the deeper levels.
+        rep_blocks = layers[-1].blocks if layers else []
+        rep_attn = next((b for b in rep_blocks if b.get("id") == "attn"), None)
+        rep_ffn = next((b for b in rep_blocks if b.get("id") == "ffn"), None)
+        extras["render"]["model_blocks"].append(
+            mtp_head_block(
+                mtp_modules, hidden_size, vocab_size, tie_word_embeddings,
+                attn_children=(rep_attn or {}).get("children"),
+                ffn_children=(rep_ffn or {}).get("children"),
+            )
+        )
+
     if use_parallel_residual:
         extras["parallel_residual"] = True
     if moe_active:
@@ -576,9 +605,9 @@ def _cross_attention_states_side_block() -> dict:
         "feeds": "attn",
         "offset_y": 0,
         "label": ["Projected image", "states"],
-        "title": "cross_attention_states",
+        "title": "Projected image states",
         "description": (
-            "vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
+            "cross_attention_states: vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
         ),
         "detail_view": "vision_path",
         "w": 250,

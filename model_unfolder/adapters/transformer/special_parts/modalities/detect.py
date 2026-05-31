@@ -152,16 +152,6 @@ def audio_family_hint(cfg: Any, audio_cfg: Any) -> str | None:
     return None
 
 
-def position_encoding_hint(cfg: Any) -> dict | None:
-    """Return known multimodal position encoding hints."""
-    hint = model_family_hint(cfg)
-    if hint == "gemma4":
-        return {"kind": "learned_2d_plus_rope_2d"}
-    if hint == "qwen_vl":
-        return {"kind": "multimodal_rope"}
-    return None
-
-
 def model_family_hint(cfg: Any) -> str | None:
     """Return a normalized model-family hint for compatibility fallbacks."""
     mt = model_type(cfg)
