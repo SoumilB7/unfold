@@ -182,7 +182,7 @@ def _group_label(group: dict, info: dict | None = None) -> str:
     bits = []
     # Tag mixed sliding/global stacks (Gemma 4) so each pill is unambiguous;
     # plain causal stacks (Llama, DeepSeek) skip the tag.
-    if attn.get("mask") in ("sliding", "global"):
+    if attn.get("mask") and attn.get("mask") != "causal":
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
     bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")

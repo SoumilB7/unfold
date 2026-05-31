@@ -62,6 +62,8 @@ _ALIASES: dict[str, list[str]] = load_aliases()
 
 _SLIDING_LABELS = {"sliding_attention", "sliding"}
 _FULL_LABELS    = {"full_attention", "full", "global", "global_attention", "causal", ""}
+_COMPRESSED_SPARSE_LABELS = {"compressed_sparse_attention", "compressed_sparse", "csa"}
+_HEAVILY_COMPRESSED_LABELS = {"heavily_compressed_attention", "hierarchical_compressed_attention", "hca"}
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
@@ -177,6 +179,9 @@ def parse(cfg: Any) -> ModelIR:
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
     layer_types  = _g(text_cfg, "layer_types") or []
+    compress_ratios = _g(text_cfg, "compress_ratios") or []
+    if not layer_types and compress_ratios:
+        layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"))
     norm_placement = "pre"
 
@@ -192,7 +197,7 @@ def parse(cfg: Any) -> ModelIR:
     # ---- Attention shape ----
     q_lora_rank  = _g(text_cfg, "q_lora_rank")
     kv_lora_rank = _g(text_cfg, "kv_lora_rank")
-    is_mla       = bool(q_lora_rank or kv_lora_rank)
+    is_mla       = bool(kv_lora_rank)
     has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
     if has_multi_query_flag:
         num_kv_heads = 1
@@ -257,6 +262,7 @@ def parse(cfg: Any) -> ModelIR:
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types,
         )
+        compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
         # Per-layer dual KV: full layers in a sliding stack use the global counts.
         if is_full_in_sliding_stack:
@@ -292,6 +298,8 @@ def parse(cfg: Any) -> ModelIR:
             qk_norm=use_qk_norm,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
+            compress_ratio=compress_ratio,
+            index_topk=_g(text_cfg, "index_topk") if mask == "compressed_sparse" else None,
         )
 
         is_dense_at_layer = _is_dense_at_layer(
@@ -459,12 +467,24 @@ def _is_full_label(lt: str) -> bool:
     return lt in _FULL_LABELS
 
 
+def _is_compressed_sparse_label(lt: str) -> bool:
+    return lt in _COMPRESSED_SPARSE_LABELS
+
+
+def _is_heavily_compressed_label(lt: str) -> bool:
+    return lt in _HEAVILY_COMPRESSED_LABELS
+
+
 def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown):
     """Resolve (mask, window, is_full_in_sliding_stack) for a single layer."""
     if layer_types and i < len(layer_types):
         lt = layer_types[i]
         if _is_sliding_label(lt):
             return "sliding", sliding_window, False
+        if _is_compressed_sparse_label(lt):
+            return "compressed_sparse", None, False
+        if _is_heavily_compressed_label(lt):
+            return "heavily_compressed", None, False
         if _is_full_label(lt):
             mask = "global" if has_sliding_in_stack else "causal"
             return mask, None, has_sliding_in_stack
@@ -480,6 +500,51 @@ def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_slid
     if sliding_window:
         return "sliding", sliding_window, False
     return "causal", None, False
+
+
+def _layer_types_from_compress_ratios(compress_ratios: Any, num_layers: int) -> list[str]:
+    """DeepSeek-V4 style compress ratios are structural layer-type data.
+
+    Public configs declare ``compress_ratio=0`` for SWA, ``4`` for compressed
+    sparse attention (CSA), and ``128`` for hierarchical compressed attention
+    (HCA).  Preserve unknown positive ratios as compressed sparse variants
+    rather than warning as an unknown mask.
+    """
+    if not isinstance(compress_ratios, (list, tuple)):
+        return []
+    values = list(compress_ratios)
+    if num_layers and len(values) > num_layers:
+        values = values[:num_layers]
+    out: list[str] = []
+    for raw in values:
+        try:
+            ratio = int(raw)
+        except (TypeError, ValueError):
+            out.append(str(raw))
+            continue
+        if ratio == 0:
+            out.append("sliding_attention")
+        elif ratio == 128:
+            out.append("heavily_compressed_attention")
+        else:
+            out.append("compressed_sparse_attention")
+    return out
+
+
+def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[str]) -> int | None:
+    if isinstance(compress_ratios, (list, tuple)) and i < len(compress_ratios):
+        try:
+            ratio = int(compress_ratios[i])
+        except (TypeError, ValueError):
+            ratio = 0
+        return ratio or None
+    if layer_types and i < len(layer_types):
+        lt = layer_types[i]
+        if _is_compressed_sparse_label(lt):
+            return 4
+        if _is_heavily_compressed_label(lt):
+            return 128
+    return None
 
 
 def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int) -> bool:

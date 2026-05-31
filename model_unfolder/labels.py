@@ -17,18 +17,24 @@ _MASK_SHORT = {
     "global": "full",
     "causal": "causal",
     "chunked": "chunked",
+    "compressed_sparse": "CSA",
+    "heavily_compressed": "HCA",
 }
 _MASK_LONG = {
     "sliding": "Sliding-window",
     "global": "Full / global",
     "causal": "Causal",
     "chunked": "Chunked",
+    "compressed_sparse": "Compressed sparse",
+    "heavily_compressed": "Hierarchical compressed",
 }
 _MASK_TITLE = {
     "sliding": "Sliding-window attention",
     "global": "Full-context attention",
     "causal": "Causal attention",
     "chunked": "Chunked attention",
+    "compressed_sparse": "Compressed sparse attention",
+    "heavily_compressed": "Hierarchical compressed attention",
 }
 
 _KIND_SHORT = {
@@ -83,6 +89,9 @@ def mask_chip(attention: dict) -> str:
     """One-line chip; for sliding includes the window size: ``"SWA 1,024"``."""
     label = mask_short(attention)
     window = attention.get("window_size")
+    ratio = attention.get("compress_ratio")
+    if ratio and attention.get("mask") in {"compressed_sparse", "heavily_compressed"}:
+        return f"{label} r{_fmt_int(ratio)}"
     if window and is_sliding(attention):
         return f"{label} {_fmt_int(window)}"
     return label
@@ -194,6 +203,12 @@ def describe_attention(attention: dict) -> str:
         )
     if is_sliding(attention) and attention.get("window_size"):
         text += f"; sliding window {_fmt_int(attention.get('window_size'))}"
+    if attention.get("mask") == "compressed_sparse":
+        text += f"; CSA compress ratio {_fmt_int(attention.get('compress_ratio'))}"
+        if attention.get("index_topk"):
+            text += f"; index top-k {_fmt_int(attention.get('index_topk'))}"
+    if attention.get("mask") == "heavily_compressed":
+        text += f"; HCA compress ratio {_fmt_int(attention.get('compress_ratio'))}"
     # Surface structural flags as annotations
     extras = []
     if attention.get("qk_norm"):
