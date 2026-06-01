@@ -484,6 +484,70 @@ def test_gemma4_31b():
     print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
 
 
+def test_sliding_window_toggle_and_split():
+    """AP-1: respect use_sliding_window and the Qwen max_window_layers split."""
+    base = dict(
+        model_type="qwen2", num_hidden_layers=6, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5,
+    )
+
+    # Window declared but explicitly disabled -> every layer is full attention.
+    ir = unfold({**base, "sliding_window": 4096, "use_sliding_window": False}).to_ir()
+    assert all(l["attention"]["mask"] == "causal" for l in ir["layers"])
+    assert "sliding_window" not in ir.get("extras", {})
+
+    # Mistral-style: window set, no toggle flag -> all layers slide (preserved).
+    ir = unfold({**base, "sliding_window": 4096}).to_ir()
+    assert all(l["attention"]["mask"] == "sliding" for l in ir["layers"])
+    assert all(l["attention"]["window_size"] == 4096 for l in ir["layers"])
+
+    # Enabled with a split: bottom max_window_layers full, the rest slide.
+    ir = unfold({**base, "sliding_window": 4096,
+                 "use_sliding_window": True, "max_window_layers": 2}).to_ir()
+    masks = [l["attention"]["mask"] for l in ir["layers"]]
+    assert masks == ["global", "global", "sliding", "sliding", "sliding", "sliding"]
+
+
+def test_qwen3_moe_dense_sparse_pattern():
+    """AP-2: decoder_sparse_step + mlp_only_layers decide dense-vs-MoE layers."""
+    base = dict(
+        model_type="qwen3_moe", num_hidden_layers=6, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, moe_intermediate_size=64,
+        vocab_size=100, rms_norm_eps=1e-5, num_experts=8, num_experts_per_tok=2,
+    )
+
+    def kinds(**over):
+        ir = unfold({**base, **over}).to_ir()
+        return [l["ffn"]["kind"] for l in ir["layers"]]
+
+    # step=1 -> every layer MoE (Qwen3-30B-A3B shape).
+    assert kinds(decoder_sparse_step=1) == ["moe"] * 6
+    # step=2 -> MoE only where (i + 1) % 2 == 0.
+    assert kinds(decoder_sparse_step=2) == ["dense", "moe"] * 3
+    # mlp_only_layers force those indices dense even on the sparse step.
+    assert kinds(decoder_sparse_step=1, mlp_only_layers=[0, 2]) == \
+        ["dense", "moe", "dense", "moe", "moe", "moe"]
+
+
+def test_omni_nested_thinker_text_config_unwrapped():
+    """AP-3: an LM nested under thinker_config.text_config is unwrapped, not dropped."""
+    inner = dict(
+        model_type="qwen3_moe", num_hidden_layers=4, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5,
+    )
+    cfg = {
+        "model_type": "qwen3_omni_moe",
+        "thinker_config": {"model_type": "thinker", "text_config": inner,
+                           "vision_config": {}, "audio_config": {}},
+    }
+    ir = unfold(cfg).to_ir()
+    assert len(ir["layers"]) == 4
+    assert ir["layers"][0]["attention"]["num_heads"] == 8
+    assert not ir.get("warnings")
+
+
 def test_single_kv_gemma4_stays_gqa_view():
     cfg = dict(GEMMA4_31B_CONFIG)
     text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])

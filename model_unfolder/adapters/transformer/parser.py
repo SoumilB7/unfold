@@ -82,9 +82,22 @@ def _resolve(cfg: Any, canonical: str, default=None):
     return default
 
 
-def _unwrap_text(cfg: Any) -> Any:
-    """If a multimodal wrapper hides the LM config under a sub-key, unwrap it."""
-    for key in ("text_config", "language_config", "llm_config", "text_model_config"):
+_TEXT_WRAPPER_KEYS = (
+    "text_config", "language_config", "llm_config", "text_model_config",
+    "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
+)
+
+
+def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
+    """If a multimodal wrapper hides the LM config under a sub-key, unwrap it.
+
+    Handles one further level of nesting (e.g. Qwen3-Omni's
+    ``thinker_config.text_config``) by recursing into a wrapper that doesn't
+    itself carry transformer shape.
+    """
+    if _depth > 3:
+        return cfg
+    for key in _TEXT_WRAPPER_KEYS:
         sub = _g(cfg, key)
         if sub is None:
             continue
@@ -94,9 +107,12 @@ def _unwrap_text(cfg: Any) -> Any:
             completed = _complete_config_from_transformers_registry(sub)
             if _has_transformer_shape(completed):
                 return completed
-        if not isinstance(sub, dict):
-            if _has_transformer_shape(sub):
-                return sub
+            # Wrapper that itself nests the LM deeper (Omni thinker_config).
+            nested = _unwrap_text(sub, _depth + 1)
+            if nested is not sub and _has_transformer_shape(nested):
+                return nested
+        elif _has_transformer_shape(sub):
+            return sub
     return cfg
 
 
@@ -186,6 +202,15 @@ def parse(cfg: Any) -> ModelIR:
             activation_raw = nested_act.get("name")
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
+    # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
+    # A config may declare a window size but turn SWA *off* (use_sliding_window
+    # = False); honor that, otherwise we'd draw sliding attention on what is
+    # really a full-attention model.  When absent (Mistral), the window applies.
+    use_sliding_window = _g(text_cfg, "use_sliding_window")
+    max_window_layers  = _g(text_cfg, "max_window_layers")
+    if use_sliding_window is False:
+        sliding_window = None
+        max_window_layers = None
     layer_types  = _g(text_cfg, "layer_types") or []
     compress_ratios = _g(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
@@ -212,9 +237,15 @@ def parse(cfg: Any) -> ModelIR:
     # Determine if the stack mixes sliding + full layers — affects mask labeling
     # (a full layer in a sliding stack is labeled "global", not "causal").
     sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
+    # Qwen splits the stack: the bottom ``max_window_layers`` use full attention
+    # and the rest slide — so a partial split also makes this a mixed stack.
+    has_max_window_split = bool(
+        sliding_window and max_window_layers and 0 < max_window_layers < num_layers
+    )
     has_sliding_in_stack = (
         any(_is_sliding_label(lt) for lt in layer_types)
         or bool(sliding_window_pattern and sliding_window)
+        or has_max_window_split
     )
 
     # ---- Position encoding ----
@@ -237,13 +268,19 @@ def parse(cfg: Any) -> ModelIR:
     moe_intermediate_size = get("moe_intermediate_size", 0)
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
-    moe_every_layer     = moe_active and not any([
-        _g(text_cfg, "first_k_dense_replace"),
-        _g(text_cfg, "interleave_moe_layer_step"),
-    ])
     first_k_dense       = _g(text_cfg, "first_k_dense_replace") or 0
     moe_layer_freq      = _g(text_cfg, "moe_layer_freq") or 1
     interleave_moe_step = _g(text_cfg, "interleave_moe_layer_step") or 0
+    # Qwen3-MoE: MoE applies every ``decoder_sparse_step`` layers, except the
+    # explicit ``mlp_only_layers`` which stay dense.
+    decoder_sparse_step = _g(text_cfg, "decoder_sparse_step") or 0
+    mlp_only_layers     = set(_g(text_cfg, "mlp_only_layers") or [])
+    moe_every_layer     = moe_active and not any([
+        first_k_dense,
+        interleave_moe_step,
+        decoder_sparse_step and decoder_sparse_step > 1,
+        mlp_only_layers,
+    ])
 
     # ---- Cross-layer KV sharing (the last N layers reuse K/V from earlier) ----
     num_kv_shared_layers   = _g(text_cfg, "num_kv_shared_layers") or 0
@@ -268,7 +305,7 @@ def parse(cfg: Any) -> ModelIR:
     for i in range(num_layers):
         mask, window, is_full_in_sliding_stack = _layer_mask(
             i, layer_types, sliding_window, sliding_window_pattern,
-            has_sliding_in_stack, unknown_layer_types,
+            has_sliding_in_stack, unknown_layer_types, max_window_layers,
         )
         compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
@@ -316,6 +353,8 @@ def parse(cfg: Any) -> ModelIR:
             first_k_dense=first_k_dense,
             interleave_moe_step=interleave_moe_step,
             moe_layer_freq=moe_layer_freq,
+            decoder_sparse_step=decoder_sparse_step,
+            mlp_only_layers=mlp_only_layers,
         )
 
         if moe_active and not is_dense_at_layer:
@@ -389,6 +428,11 @@ def parse(cfg: Any) -> ModelIR:
             )
         )
 
+    if sliding_window:
+        extras["sliding_window"] = {
+            "window": sliding_window,
+            "first_full_layers": max_window_layers or 0,
+        }
     if use_parallel_residual:
         extras["parallel_residual"] = True
     if moe_active:
@@ -492,7 +536,7 @@ def _is_heavily_compressed_label(lt: str) -> bool:
     return lt in _HEAVILY_COMPRESSED_LABELS
 
 
-def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown):
+def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown, max_window_layers=None):
     """Resolve (mask, window, is_full_in_sliding_stack) for a single layer."""
     if layer_types and i < len(layer_types):
         lt = layer_types[i]
@@ -515,6 +559,10 @@ def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_slid
             return "global", None, True
         return "sliding", sliding_window, False
     if sliding_window:
+        # Qwen: the bottom ``max_window_layers`` layers use full attention; the
+        # rest slide.  (HF: SWA applies only where layer_idx >= max_window_layers.)
+        if max_window_layers and i < max_window_layers:
+            return ("global" if has_sliding_in_stack else "causal"), None, has_sliding_in_stack
         return "sliding", sliding_window, False
     return "causal", None, False
 
@@ -564,7 +612,7 @@ def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[st
     return None
 
 
-def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int) -> bool:
+def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int, decoder_sparse_step: int = 0, mlp_only_layers=()) -> bool:
     """Is layer ``i`` a dense FFN (vs MoE) given the config flags?"""
     if not moe_active:
         return True
@@ -573,6 +621,12 @@ def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interlea
     if interleave_moe_step and (i % interleave_moe_step == 0):
         return True
     if moe_layer_freq and moe_layer_freq > 1 and (i % moe_layer_freq != 0):
+        return True
+    # Qwen3-MoE: dense when explicitly listed, or when this layer isn't on the
+    # sparse step (HF: MoE iff (i + 1) % decoder_sparse_step == 0).
+    if mlp_only_layers and i in mlp_only_layers:
+        return True
+    if decoder_sparse_step and decoder_sparse_step > 1 and ((i + 1) % decoder_sparse_step != 0):
         return True
     return False
 
