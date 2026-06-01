@@ -133,6 +133,48 @@ def kind_long(attention: dict) -> str:
     return f"{base}; {'; '.join(extras)}" if extras else base
 
 
+def moe_router_lines(ffn: dict) -> list[str]:
+    """Multi-line router-block label: the routing recipe, only what's declared.
+
+    Line 1 is the title; the rest read gating · top-k, group-limited routing,
+    and any renormalize / routed-scale step.
+    """
+    r = ffn.get("routing") or {}
+    n, k = ffn.get("num_experts"), ffn.get("num_experts_per_tok")
+    sel = f"top-{k} of {n}" if (k and n) else f"top-{k or 'k'}"
+    lines = ["Router", f"{r.get('scoring_func') or 'softmax'} gating · {sel}"]
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        grp = f"keep {r['topk_group']}/{r['n_group']} groups"
+        if r.get("topk_method"):
+            grp += f" · {r['topk_method']}"
+        lines.append(grp)
+    tail = []
+    if r.get("norm_topk_prob"):
+        tail.append("renormalized")
+    if r.get("routed_scaling_factor"):
+        tail.append(f"routed ×{r['routed_scaling_factor']}")
+    if tail:
+        lines.append(" · ".join(tail))
+    return lines
+
+
+def moe_router_detail(ffn: dict) -> str:
+    """Longer router tooltip describing the gating and selection behaviour."""
+    r = ffn.get("routing") or {}
+    bits = []
+    if r.get("scoring_func"):
+        bits.append(f"{r['scoring_func']} gating")
+    if r.get("topk_method"):
+        bits.append(f"{r['topk_method']} selection")
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        bits.append(f"group-limited: top-{r['topk_group']} of {r['n_group']} groups")
+    if r.get("norm_topk_prob"):
+        bits.append("normalized top-k weights")
+    if r.get("routed_scaling_factor"):
+        bits.append(f"routed output ×{r['routed_scaling_factor']}")
+    return "; ".join(bits)
+
+
 def is_sliding(attention: dict) -> bool:
     return attention.get("mask") == "sliding"
 

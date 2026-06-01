@@ -582,6 +582,36 @@ def test_compress_rates_alias_derives_csa_hca_masks():
     assert masks == ["sliding", "compressed_sparse", "heavily_compressed", "compressed_sparse"]
 
 
+def test_moe_routing_detail():
+    """AP-7: surface gating / grouped routing / top-k renorm / scale on the router."""
+    cfg = dict(
+        model_type="deepseek_v3", num_hidden_layers=3, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
+        kv_lora_rank=64, q_lora_rank=96, n_routed_experts=64, num_experts_per_tok=8,
+        first_k_dense_replace=1,
+        scoring_func="sigmoid", topk_method="noaux_tc", n_group=8, topk_group=4,
+        norm_topk_prob=True, routed_scaling_factor=2.5,
+    )
+    d = unfold(cfg)
+    ffn = next(l["ffn"] for l in d.to_ir()["layers"] if l["ffn"]["kind"] == "moe")
+    assert ffn["routing"] == {
+        "scoring_func": "sigmoid", "topk_method": "noaux_tc",
+        "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
+        "routed_scaling_factor": 2.5,
+    }
+    from model_unfolder.labels import moe_router_lines
+    lines = moe_router_lines(ffn)
+    assert lines[0] == "Router"
+    assert "sigmoid gating · top-8 of 64" in lines[1]
+    assert any("keep 4/8 groups" in ln for ln in lines)
+
+    # n_group == 1 is "no grouping" -> no group line.
+    ir = unfold({**cfg, "n_group": 1, "topk_group": 1}).to_ir()
+    ffn = next(l["ffn"] for l in ir["layers"] if l["ffn"]["kind"] == "moe")
+    assert not any("groups" in ln for ln in moe_router_lines(ffn))
+
+
 def test_single_kv_gemma4_stays_gqa_view():
     cfg = dict(GEMMA4_31B_CONFIG)
     text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])

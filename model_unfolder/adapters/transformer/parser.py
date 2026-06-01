@@ -286,8 +286,12 @@ def parse(cfg: Any) -> ModelIR:
         decoder_sparse_step and decoder_sparse_step > 1,
         mlp_only_layers,
     ])
+    # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
+    # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
+    moe_routing = _moe_routing(text_cfg) if moe_active else None
 
-    # ---- Cross-layer KV sharing (the last N layers reuse K/V from earlier) ----
+    # ---- Cross-layer KV
+    #  sharing (the last N layers reuse K/V from earlier) ----
     num_kv_shared_layers   = _g(text_cfg, "num_kv_shared_layers") or 0
     first_shared_layer     = (num_layers - num_kv_shared_layers) if num_kv_shared_layers else num_layers
 
@@ -373,6 +377,7 @@ def parse(cfg: Any) -> ModelIR:
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
                 expert_intermediate_size=moe_intermediate_size or intermediate_size,
+                routing=moe_routing,
             )
         else:
             ffn = FFNSpec(
@@ -448,6 +453,8 @@ def parse(cfg: Any) -> ModelIR:
             "num_shared_experts": num_shared_experts,
             "every_layer": moe_every_layer,
         }
+        if moe_routing:
+            extras["moe"]["routing"] = moe_routing
     if no_rope_interval:
         extras["irope"] = {"no_rope_interval": no_rope_interval}
     if num_kv_shared_layers:
@@ -622,6 +629,24 @@ def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[st
         if _is_heavily_compressed_label(lt):
             return 128
     return None
+
+
+def _moe_routing(cfg: Any) -> dict | None:
+    """Collect the MoE router knobs that decide *how* experts get picked.
+
+    Returns only the fields the config actually declares (DeepSeek/Kimi/GLM use
+    the full set; Qwen3-MoE just ``norm_topk_prob``), or ``None`` when none are.
+    """
+    routing = {
+        "scoring_func":          _g(cfg, "scoring_func"),          # sigmoid | softmax
+        "topk_method":           _g(cfg, "topk_method"),           # noaux_tc, group_limited_greedy, ...
+        "n_group":               _g(cfg, "n_group"),               # expert groups (node-limited routing)
+        "topk_group":            _g(cfg, "topk_group"),            # groups kept per token
+        "norm_topk_prob":        _g(cfg, "norm_topk_prob"),        # renormalize the top-k gate weights
+        "routed_scaling_factor": _g(cfg, "routed_scaling_factor"),  # scale on routed-expert output
+    }
+    routing = {k: v for k, v in routing.items() if v is not None}
+    return routing or None
 
 
 def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int, decoder_sparse_step: int = 0, mlp_only_layers=()) -> bool:

@@ -44,6 +44,7 @@ class FFNSpec:
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: int = 0
     expert_intermediate_size: Optional[int] = None
+    routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
 
 
 @dataclass
@@ -159,6 +160,7 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "num_experts_per_tok": f.num_experts_per_tok,
         "num_shared_experts": f.num_shared_experts,
         "expert_intermediate_size": f.expert_intermediate_size,
+        "routing": f.routing,
     }
 
 

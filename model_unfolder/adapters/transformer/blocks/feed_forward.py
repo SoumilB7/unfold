@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ....ir import FFNSpec
-from ....labels import activation_label
+from ....labels import activation_label, moe_router_detail
 from ..common import format_dim as _fmt
 
 
@@ -83,6 +83,11 @@ def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[di
     ]
 
 
+def _ffn_routing_dict(ffn: FFNSpec) -> dict:
+    """Adapt the FFNSpec to the dict shape the routing label helpers read."""
+    return {"routing": ffn.routing}
+
+
 def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
@@ -94,11 +99,15 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
         f"only top-{n_active} of {n_experts} active per token"
         + (f"; plus {n_shared} shared expert(s) always active" if n_shared else "")
     )
+    router_detail = moe_router_detail(_ffn_routing_dict(ffn))
+    router_desc = f"Linear; {hidden} -> {n_experts} (selects top-{n_active} experts per token)"
+    if router_detail:
+        router_desc += f"; {router_detail}"
     return [
         {
             "id": "router",
             "title": "Router",
-            "description": f"Linear; {hidden} -> {n_experts} (selects top-{n_active} experts per token)",
+            "description": router_desc,
         },
         {
             "id": "expert_1",
