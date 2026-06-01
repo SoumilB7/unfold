@@ -104,6 +104,8 @@ def kind_short(attention: dict) -> str:
     tags = []
     if attention.get("qk_norm"):
         tags.append("QK-Norm")
+    if attention.get("bias"):
+        tags.append("+bias")
     if attention.get("shared"):
         tags.append("Shared")
     if attention.get("no_rope"):
@@ -122,6 +124,8 @@ def kind_long(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("per-head Q/K normalisation")
+    if attention.get("bias"):
+        extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
     if attention.get("no_rope"):
@@ -213,6 +217,8 @@ def describe_attention(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("QK-Norm")
+    if attention.get("bias"):
+        extras.append("+bias")
     if attention.get("shared"):
         extras.append("weight-shared")
     if attention.get("no_rope"):

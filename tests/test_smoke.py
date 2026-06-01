@@ -6,6 +6,7 @@ import types
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import unfold
+from model_unfolder.adapters.transformer.parser import parse
 
 KIMI_K2_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -546,6 +547,39 @@ def test_omni_nested_thinker_text_config_unwrapped():
     assert len(ir["layers"]) == 4
     assert ir["layers"][0]["attention"]["num_heads"] == 8
     assert not ir.get("warnings")
+
+
+def test_attention_bias_and_rope_theta():
+    """AP-4/AP-5: read attention_bias onto the spec, surface rope_theta always."""
+    base = dict(
+        model_type="qwen2", num_hidden_layers=2, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5, rope_theta=1000000,
+    )
+
+    # attention_bias=True -> per-layer spec flag + "+bias" in the label.
+    d = unfold({**base, "attention_bias": True})
+    assert all(l["attention"]["bias"] for l in d.to_ir()["layers"])
+    assert "+bias" in d.to_html()
+
+    # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
+    assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
+
+    # attention_bias absent/False -> not flagged.
+    assert not any(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
+    assert not any(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+
+
+def test_compress_rates_alias_derives_csa_hca_masks():
+    """DeepSeek-V4 'compress_rates' is an alias of compress_ratios (0/4/128 -> SWA/CSA/HCA)."""
+    cfg = dict(
+        model_type="deepseek_v4", num_hidden_layers=4, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        vocab_size=1000, rms_norm_eps=1e-6, kv_lora_rank=64, q_lora_rank=96,
+        compress_rates=[0, 4, 128, 4],
+    )
+    masks = [l["attention"]["mask"] for l in unfold(cfg).to_ir()["layers"]]
+    assert masks == ["sliding", "compressed_sparse", "heavily_compressed", "compressed_sparse"]
 
 
 def test_single_kv_gemma4_stays_gqa_view():

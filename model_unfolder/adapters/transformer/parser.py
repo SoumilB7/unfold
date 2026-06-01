@@ -212,7 +212,9 @@ def parse(cfg: Any) -> ModelIR:
         sliding_window = None
         max_window_layers = None
     layer_types  = _g(text_cfg, "layer_types") or []
-    compress_ratios = _g(text_cfg, "compress_ratios") or []
+    # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
+    # are picked up — see everchanging/aliases.yaml.
+    compress_ratios = _resolve(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"))
@@ -257,6 +259,9 @@ def parse(cfg: Any) -> ModelIR:
 
     # ---- QK-Norm ----
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
+
+    # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
+    use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
 
     # ---- Layer topology ----
     use_parallel_residual = bool(_g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn"))
@@ -341,6 +346,7 @@ def parse(cfg: Any) -> ModelIR:
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
+            bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
             compress_ratio=compress_ratio,
@@ -460,6 +466,12 @@ def parse(cfg: Any) -> ModelIR:
             "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
+
+    # RoPE base frequency — present on most rotary models even without a scaling
+    # dict (the block above only fires when one is declared); surface it always.
+    rope_theta = _g(text_cfg, "rope_theta") or _g(attn_cfg, "rope_theta")
+    if rope_theta is not None:
+        extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
 
     # Logit / query softcap (Gemma 2/3 style) — info-only annotation.
     for cap_key in ("attn_logit_softcapping", "final_logit_softcapping", "query_pre_attn_scalar"):

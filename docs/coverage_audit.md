@@ -4,7 +4,7 @@ _Generated 2026-06-01 by `scripts/coverage_audit.py`._
 
 - Models attempted: **49**
 - Parsed: **35**  ·  Gated/inaccessible: **13**  ·  Errored: **1**
-- Distinct unparsed config fields: **37**
+- Distinct unparsed config fields: **35**
 
 ## Config fields we don't parse
 
@@ -12,8 +12,6 @@ Architectural-looking keys present in configs that no parser code reads. Sorted 
 
 | Field | # models | Models |
 | --- | --- | --- |
-| `attention_bias` | 22 | Qwen3-0.6B, Qwen3-8B, Qwen3-30B-A3B, Qwen3-235B-A22B, Qwen3-Coder-30B-A3B-Instruct, Qwen3-VL-235B-A22B-Instruct, Qwen3-Omni-30B-A3B-Instruct, DeepSeek-V2, DeepSeek-V3, DeepSeek-R1, DeepSeek-V3.1-Terminus, DeepSeek-V3.2-Exp, gpt-oss-20b, gpt-oss-120b, Kimi-K2-Instruct, Kimi-K2-Thinking, GLM-4.5, GLM-4.6, Phi-3-mini-4k-instruct, Phi-3.5-MoE-instruct, phi-4, phi-4-multimodal-instruct |
-| `rope_theta` | 22 | CodeLlama-34b-hf, Mistral-7B-v0.1, Mixtral-8x7B-v0.1, Mixtral-8x22B-v0.1, Mistral-Small-24B-Instruct-2501, Ministral-8B-Instruct-2410, Magistral-Small-2506, Qwen2.5-72B, QwQ-32B, Qwen3-0.6B, Qwen3-8B, Qwen3-30B-A3B, Qwen3-235B-A22B, Qwen3-Coder-30B-A3B-Instruct, Qwen3-Omni-30B-A3B-Instruct, deepseek-llm-67b-chat, DeepSeek-R1-Distill-Qwen-32B, GLM-4.5, GLM-4.6, phi-2, Phi-3-mini-4k-instruct, phi-4 |
 | `norm_topk_prob` | 14 | Qwen3-30B-A3B, Qwen3-235B-A22B, Qwen3-Coder-30B-A3B-Instruct, Qwen3-VL-235B-A22B-Instruct, Qwen3-Omni-30B-A3B-Instruct, DeepSeek-V2, DeepSeek-V3, DeepSeek-R1, DeepSeek-V3.1-Terminus, DeepSeek-V3.2-Exp, Kimi-K2-Instruct, Kimi-K2-Thinking, GLM-4.5, GLM-4.6 |
 | `n_group` | 9 | DeepSeek-V2, DeepSeek-V3, DeepSeek-R1, DeepSeek-V3.1-Terminus, DeepSeek-V3.2-Exp, Kimi-K2-Instruct, Kimi-K2-Thinking, GLM-4.5, GLM-4.6 |
 | `output_router_logits` | 9 | Mixtral-8x7B-v0.1, Mixtral-8x22B-v0.1, Qwen3-30B-A3B, Qwen3-235B-A22B, Qwen3-Coder-30B-A3B-Instruct, Qwen3-Omni-30B-A3B-Instruct, gpt-oss-20b, gpt-oss-120b, Phi-3.5-MoE-instruct |
@@ -60,53 +58,53 @@ _None — every parsed model produced a complete structure._
 | --- | --- | --- | --- |
 | meta-llama/Llama-2-7b-hf | — | gated | — |
 | meta-llama/Llama-2-70b-hf | — | gated | — |
-| codellama/CodeLlama-34b-hf | llama | ok | `rope_theta` |
+| codellama/CodeLlama-34b-hf | llama | ok | — |
 | meta-llama/Meta-Llama-3-8B | — | gated | — |
 | meta-llama/Llama-3.1-8B | — | gated | — |
 | meta-llama/Llama-3.2-1B | — | gated | — |
 | meta-llama/Llama-3.2-11B-Vision | — | gated | — |
 | meta-llama/Llama-4-Scout-17B-16E-Instruct | — | gated | — |
 | meta-llama/Llama-4-Maverick-17B-128E-Instruct | — | gated | — |
-| mistralai/Mistral-7B-v0.1 | mistral | ok | `rope_theta` |
-| mistralai/Mixtral-8x7B-v0.1 | mixtral | ok | `output_router_logits`, `rope_theta`, `router_aux_loss_coef` |
-| mistralai/Mixtral-8x22B-v0.1 | mixtral | ok | `output_router_logits`, `rope_theta`, `router_aux_loss_coef` |
-| mistralai/Mistral-Small-24B-Instruct-2501 | mistral | ok | `rope_theta` |
+| mistralai/Mistral-7B-v0.1 | mistral | ok | — |
+| mistralai/Mixtral-8x7B-v0.1 | mixtral | ok | `output_router_logits`, `router_aux_loss_coef` |
+| mistralai/Mixtral-8x22B-v0.1 | mixtral | ok | `output_router_logits`, `router_aux_loss_coef` |
+| mistralai/Mistral-Small-24B-Instruct-2501 | mistral | ok | — |
 | mistralai/Pixtral-12B-2409 | — | http_404 | — |
-| mistralai/Ministral-8B-Instruct-2410 | mistral | ok | `rope_theta` |
-| mistralai/Magistral-Small-2506 | mistral | ok | `rope_theta` |
-| Qwen/Qwen2.5-72B | qwen2 | ok | `rope_theta` |
+| mistralai/Ministral-8B-Instruct-2410 | mistral | ok | — |
+| mistralai/Magistral-Small-2506 | mistral | ok | — |
+| Qwen/Qwen2.5-72B | qwen2 | ok | — |
 | Qwen/Qwen2-VL-7B-Instruct | qwen2_vl | ok | — |
-| Qwen/QwQ-32B | qwen2 | ok | `rope_theta` |
-| Qwen/Qwen3-0.6B | qwen3 | ok | `attention_bias`, `rope_theta` |
-| Qwen/Qwen3-8B | qwen3 | ok | `attention_bias`, `rope_theta` |
-| Qwen/Qwen3-30B-A3B | qwen3_moe | ok | `attention_bias`, `norm_topk_prob`, `output_router_logits`, `rope_theta`, `router_aux_loss_coef` |
-| Qwen/Qwen3-235B-A22B | qwen3_moe | ok | `attention_bias`, `norm_topk_prob`, `output_router_logits`, `rope_theta`, `router_aux_loss_coef` |
-| Qwen/Qwen3-Coder-30B-A3B-Instruct | qwen3_moe | ok | `attention_bias`, `norm_topk_prob`, `output_router_logits`, `rope_theta`, `router_aux_loss_coef` |
-| Qwen/Qwen3-VL-235B-A22B-Instruct | qwen3_vl_moe | ok | `attention_bias`, `norm_topk_prob` |
-| Qwen/Qwen3-Omni-30B-A3B-Instruct | qwen3_omni_moe | ok | `attention_bias`, `code2wav_config`, `enable_audio_output`, `norm_topk_prob`, `output_router_logits`, `rope_theta`, `router_aux_loss_coef`, `shared_expert_intermediate_size`, `talker_config` |
+| Qwen/QwQ-32B | qwen2 | ok | — |
+| Qwen/Qwen3-0.6B | qwen3 | ok | — |
+| Qwen/Qwen3-8B | qwen3 | ok | — |
+| Qwen/Qwen3-30B-A3B | qwen3_moe | ok | `norm_topk_prob`, `output_router_logits`, `router_aux_loss_coef` |
+| Qwen/Qwen3-235B-A22B | qwen3_moe | ok | `norm_topk_prob`, `output_router_logits`, `router_aux_loss_coef` |
+| Qwen/Qwen3-Coder-30B-A3B-Instruct | qwen3_moe | ok | `norm_topk_prob`, `output_router_logits`, `router_aux_loss_coef` |
+| Qwen/Qwen3-VL-235B-A22B-Instruct | qwen3_vl_moe | ok | `norm_topk_prob` |
+| Qwen/Qwen3-Omni-30B-A3B-Instruct | qwen3_omni_moe | ok | `code2wav_config`, `enable_audio_output`, `norm_topk_prob`, `output_router_logits`, `router_aux_loss_coef`, `shared_expert_intermediate_size`, `talker_config` |
 | google/gemma-7b | — | gated | — |
 | google/gemma-2-27b | — | gated | — |
 | google/gemma-3-4b-it | — | gated | — |
 | google/gemma-3-27b-it | — | gated | — |
 | google/recurrentgemma-2b | — | gated | — |
-| deepseek-ai/deepseek-llm-67b-chat | llama | ok | `rope_theta` |
-| deepseek-ai/DeepSeek-V2 | deepseek_v2 | ok | `attention_bias`, `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
-| deepseek-ai/DeepSeek-V3 | deepseek_v3 | ok | `attention_bias`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
-| deepseek-ai/DeepSeek-R1 | deepseek_v3 | ok | `attention_bias`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
-| deepseek-ai/DeepSeek-R1-Distill-Qwen-32B | qwen2 | ok | `rope_theta` |
-| deepseek-ai/DeepSeek-V3.1-Terminus | deepseek_v3 | ok | `attention_bias`, `attn_module_list_cfg`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
-| deepseek-ai/DeepSeek-V3.2-Exp | deepseek_v32 | ok | `attention_bias`, `index_head_dim`, `index_n_heads`, `index_topk`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
-| openai/gpt-oss-20b | gpt_oss | ok | `attention_bias`, `initial_context_length`, `output_router_logits`, `quantization_config`, `router_aux_loss_coef`, `swiglu_limit` |
-| openai/gpt-oss-120b | gpt_oss | ok | `attention_bias`, `initial_context_length`, `output_router_logits`, `quantization_config`, `router_aux_loss_coef`, `swiglu_limit` |
-| moonshotai/Kimi-K2-Instruct | kimi_k2 | ok | `attention_bias`, `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
-| moonshotai/Kimi-K2-Thinking | kimi_k2 | ok | `attention_bias`, `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
-| zai-org/GLM-4.5 | glm4_moe | ok | `attention_bias`, `n_group`, `norm_topk_prob`, `rope_theta`, `routed_scaling_factor`, `topk_group` |
-| zai-org/GLM-4.6 | glm4_moe | ok | `attention_bias`, `n_group`, `norm_topk_prob`, `rope_theta`, `routed_scaling_factor`, `topk_group` |
-| microsoft/phi-2 | phi | ok | `rope_theta` |
-| microsoft/Phi-3-mini-4k-instruct | phi3 | ok | `attention_bias`, `original_max_position_embeddings`, `rope_theta` |
-| microsoft/Phi-3.5-MoE-instruct | phimoe | ok | `attention_bias`, `input_jitter_noise`, `lm_head_bias`, `original_max_position_embeddings`, `output_router_logits`, `router_aux_loss_coef`, `router_jitter_noise` |
-| microsoft/phi-4 | phi3 | ok | `attention_bias`, `original_max_position_embeddings`, `rope_theta` |
-| microsoft/phi-4-multimodal-instruct | phi4mm | ok | `attention_bias`, `audio_processor`, `embd_layer`, `full_attn_mod`, `interpolate_factor`, `lm_head_bias`, `mlp_bias`, `original_max_position_embeddings`, `speech_lora`, `vision_lora` |
+| deepseek-ai/deepseek-llm-67b-chat | llama | ok | — |
+| deepseek-ai/DeepSeek-V2 | deepseek_v2 | ok | `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
+| deepseek-ai/DeepSeek-V3 | deepseek_v3 | ok | `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
+| deepseek-ai/DeepSeek-R1 | deepseek_v3 | ok | `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
+| deepseek-ai/DeepSeek-R1-Distill-Qwen-32B | qwen2 | ok | — |
+| deepseek-ai/DeepSeek-V3.1-Terminus | deepseek_v3 | ok | `attn_module_list_cfg`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
+| deepseek-ai/DeepSeek-V3.2-Exp | deepseek_v32 | ok | `index_head_dim`, `index_n_heads`, `index_topk`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `topk_group`, `topk_method`, `v_head_dim` |
+| openai/gpt-oss-20b | gpt_oss | ok | `initial_context_length`, `output_router_logits`, `quantization_config`, `router_aux_loss_coef`, `swiglu_limit` |
+| openai/gpt-oss-120b | gpt_oss | ok | `initial_context_length`, `output_router_logits`, `quantization_config`, `router_aux_loss_coef`, `swiglu_limit` |
+| moonshotai/Kimi-K2-Instruct | kimi_k2 | ok | `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
+| moonshotai/Kimi-K2-Thinking | kimi_k2 | ok | `aux_loss_alpha`, `n_group`, `norm_topk_prob`, `qk_nope_head_dim`, `qk_rope_head_dim`, `quantization_config`, `routed_scaling_factor`, `scoring_func`, `seq_aux`, `topk_group`, `topk_method`, `v_head_dim` |
+| zai-org/GLM-4.5 | glm4_moe | ok | `n_group`, `norm_topk_prob`, `routed_scaling_factor`, `topk_group` |
+| zai-org/GLM-4.6 | glm4_moe | ok | `n_group`, `norm_topk_prob`, `routed_scaling_factor`, `topk_group` |
+| microsoft/phi-2 | phi | ok | — |
+| microsoft/Phi-3-mini-4k-instruct | phi3 | ok | `original_max_position_embeddings` |
+| microsoft/Phi-3.5-MoE-instruct | phimoe | ok | `input_jitter_noise`, `lm_head_bias`, `original_max_position_embeddings`, `output_router_logits`, `router_aux_loss_coef`, `router_jitter_noise` |
+| microsoft/phi-4 | phi3 | ok | `original_max_position_embeddings` |
+| microsoft/phi-4-multimodal-instruct | phi4mm | ok | `audio_processor`, `embd_layer`, `full_attn_mod`, `interpolate_factor`, `lm_head_bias`, `mlp_bias`, `original_max_position_embeddings`, `speech_lora`, `vision_lora` |
 
 ## Not audited
 

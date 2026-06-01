@@ -37,6 +37,7 @@ def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: d
     }
     out.update(drop_none({
         "qk_norm":         attn.get("qk_norm") or None,
+        "bias":            attn.get("bias") or None,
         "shared":          attn.get("shared") or None,
         "no_rope":         attn.get("no_rope") or None,
         "kv_source_layer": attn.get("kv_source_layer"),
