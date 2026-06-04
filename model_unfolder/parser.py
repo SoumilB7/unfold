@@ -4,6 +4,13 @@ import os
 from typing import Any
 from .ir import ModelIR
 from .adapters import find_adapter
+from .adapters.transformer.debug import report_error as _report_error
+from .errors import (
+    ConfigParseError,
+    ModelAccessError,
+    ModelNotFoundError,
+    UnfoldError,
+)
 
 
 HF_TOKEN_ENV_VARS = (
@@ -49,14 +56,39 @@ def config_to_ir(
             cfg.get("architectures") if isinstance(cfg, dict)
             else getattr(cfg, "architectures", None)
         )
-        raise ValueError(
-            f"No adapter found for architecture {arches}. "
-            "Pass a dict-like config or contribute an adapter."
+        err = ModelNotFoundError(
+            f"No adapter recognized architecture {arches}. If this is a new "
+            "architecture, update transformers (`pip install -U transformers`); "
+            "otherwise pass a dict-like config or contribute an adapter."
         )
+        _report_error("ModelNotFoundError", str(err))
+        raise err
     ir = adapter.parse(cfg)
+    _ensure_parsable(ir, cfg_or_id)
     if inspect_code:
         _attach_code_evidence(ir, cfg, token=token, source=code_source)
     return ir
+
+
+def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
+    """Hard-fail when the parse is fundamentally broken (not merely partial).
+
+    A model with no layers can't be drawn at all — that's a parse error, not a
+    "partial config" warning.  Missing-but-recoverable fields stay warnings.
+    """
+    if ir.layers:
+        return
+    label = ref if isinstance(ref, str) else (
+        (ref.get("model_type") if isinstance(ref, dict) else None) or "the config"
+    )
+    err = ConfigParseError(
+        f"Loaded {label!r} but couldn't parse a usable model — no transformer "
+        "layers were found (missing num_hidden_layers and all known aliases, or "
+        "this isn't a decoder transformer config). If it's a brand-new "
+        "architecture, updating transformers may help."
+    )
+    _report_error("ConfigParseError", str(err))
+    raise err
 
 
 def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: str = "local") -> None:
@@ -107,19 +139,63 @@ def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
     try:
         return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=False)
     except Exception as e:
-        if _should_retry_with_remote_code(e):
-            return _from_pretrained(auto_config, model_id, auth_token, trust_remote_code=True)
-        if _should_fallback_to_raw_json(e):
-            # Some models (e.g. old state-spaces/mamba-*) predate the transformers
-            # model_type registry — download config.json directly as a plain dict.
-            return _load_raw_config_json(model_id, auth_token)
-        raise
+        # We never execute repo-shipped custom code and never prompt the user
+        # for it — a config diagram only needs config.json. So when a repo
+        # requires trust_remote_code, or predates the transformers model_type
+        # registry (e.g. old state-spaces/mamba-*), download the plain
+        # config.json directly instead of running anything.
+        if _should_retry_with_remote_code(e) or _should_fallback_to_raw_json(e):
+            try:
+                return _load_raw_config_json(model_id, auth_token)
+            except ImportError:
+                raise  # missing huggingface_hub — a dependency error, keep as-is
+            except Exception as e2:
+                raise _classify_load_error(model_id, e2) from e2
+        raise _classify_load_error(model_id, e) from e
+
+
+def _classify_load_error(model_id: str, error: Exception) -> UnfoldError:
+    """Map a raw transformers/hub failure onto a typed, actionable error."""
+    msg = str(error).lower()
+    if _is_access_error(msg):
+        err: UnfoldError = ModelAccessError(
+            f"Can't access '{model_id}' — it looks gated or private. Pass a Hugging "
+            "Face token with access (token=... or set HF_TOKEN) and accept the "
+            "model's license on its Hugging Face page."
+        )
+    elif _is_not_found_error(msg):
+        err = ModelNotFoundError(
+            f"Couldn't find or recognize '{model_id}'. Check the model id; if it's a "
+            "newly released architecture, update transformers "
+            "(`pip install -U transformers`) — your installed version may not know it yet."
+        )
+    else:
+        err = UnfoldError(f"Failed to load '{model_id}': {error}")
+    _report_error(type(err).__name__, str(err), cause=error)
+    return err
+
+
+def _is_access_error(msg: str) -> bool:
+    return any(m in msg for m in (
+        "401", "403", "unauthorized", "forbidden", "authentication",
+        "authorization", "gated", "private", "restricted",
+        "access to this", "you don't have access", "awaiting a review",
+    ))
+
+
+def _is_not_found_error(msg: str) -> bool:
+    return any(m in msg for m in (
+        "404", "not found", "does not exist", "doesn't exist", "no such",
+        "repository not found", "unrecognized model", "model_type",
+        "couldn't find", "cannot find", "can't load",
+    ))
 
 
 def _from_pretrained(auto_config: Any, model_id: str, auth_token: Any, *, trust_remote_code: bool):
-    kwargs = {}
-    if trust_remote_code:
-        kwargs["trust_remote_code"] = True
+    # Always pass trust_remote_code explicitly. Leaving it unset makes
+    # transformers fall back to an interactive "run custom code? [y/N]" prompt;
+    # passing False makes it raise cleanly instead, which we catch and handle.
+    kwargs = {"trust_remote_code": trust_remote_code}
     if auth_token is None:
         return auto_config.from_pretrained(model_id, **kwargs)
 

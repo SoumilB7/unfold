@@ -15,6 +15,12 @@ from .evidence import inspect_model_code
 from .parser import config_to_ir
 from .ir import ModelIR, LayerSpec, AttentionSpec, FFNSpec, CrossLayerEdge
 from .params import estimate_params
+from .errors import (
+    UnfoldError,
+    ModelNotFoundError,
+    ModelAccessError,
+    ConfigParseError,
+)
 
 __version__ = "0.2.11"
 
@@ -30,6 +36,10 @@ __all__ = [
     "config_to_ir",
     "inspect_model_code",
     "estimate_params",
+    "UnfoldError",
+    "ModelNotFoundError",
+    "ModelAccessError",
+    "ConfigParseError",
 ]
 
 
