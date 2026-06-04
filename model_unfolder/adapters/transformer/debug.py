@@ -78,6 +78,19 @@ def report_partial(warnings: list[str], *, model: str = "") -> None:
         _emit(f"    ⚠ {w}")
 
 
+def report_error(kind: str, message: str, *, cause: BaseException | None = None) -> None:
+    """Print a hard error encounter (load/parse failure) when debug is on.
+
+    The typed exception is raised regardless; this only surfaces the *why* —
+    including the underlying cause — so it's visible while debugging.
+    """
+    if not DEBUG:
+        return
+    _emit(f"{_prefix('')}ERROR [{kind}] {message}")
+    if cause is not None:
+        _emit(f"    ↳ cause: {type(cause).__name__}: {cause}")
+
+
 # --- internals ------------------------------------------------------------
 
 def _config_keys(cfg: Any) -> set[str]:
@@ -101,4 +114,4 @@ def _emit(msg: str) -> None:
     print(msg, file=sys.stderr)
 
 
-__all__ = ["DEBUG", "reset", "note_access", "report_unparsed", "report_partial"]
+__all__ = ["DEBUG", "reset", "note_access", "report_unparsed", "report_partial", "report_error"]

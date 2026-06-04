@@ -928,7 +928,7 @@ def test_model_id_uses_hf_token_env_and_explicit_override():
         _restore_env("HF_TOKEN", old_token)
 
     assert calls[0][0] == "meta-llama/Meta-Llama-3-8B"
-    assert "trust_remote_code" not in calls[0][1]
+    assert calls[0][1]["trust_remote_code"] is False  # always explicit, never prompts
     assert calls[0][1]["token"] == "hf_env_token"
     assert calls[1][1]["token"] == "hf_call_token"
 
@@ -951,27 +951,76 @@ def test_model_id_falls_back_to_legacy_hf_auth_kwarg():
 
     assert calls[0]["token"] == "hf_call_token"
     assert calls[1]["use_auth_token"] == "hf_call_token"
-    assert "trust_remote_code" not in calls[1]
+    assert calls[1]["trust_remote_code"] is False
 
 
-def test_model_id_uses_remote_code_only_when_required():
+def test_model_id_custom_code_falls_back_to_raw_config_json():
+    """Custom-code repos must NEVER prompt or run remote code — fall back to config.json."""
     calls = []
 
     class FakeAutoConfig:
         @staticmethod
         def from_pretrained(model_id, **kwargs):
             calls.append(dict(kwargs))
-            if not kwargs.get("trust_remote_code"):
-                raise ValueError("set trust_remote_code=True to execute the configuration file")
-            return LLAMA3_8B_CONFIG
+            raise ValueError(
+                "Loading custom/model requires you to execute the configuration "
+                "file; set trust_remote_code=True"
+            )
 
-    _with_fake_transformers(
-        FakeAutoConfig,
-        lambda: unfold("custom/model"),
+    import json
+    import tempfile
+
+    cfg = {
+        "model_type": "custom_moe", "num_hidden_layers": 2, "hidden_size": 64,
+        "num_attention_heads": 8, "intermediate_size": 128, "vocab_size": 100,
+        "rms_norm_eps": 1e-5,
+    }
+    tmpdir = tempfile.mkdtemp()
+    cfg_path = os.path.join(tmpdir, "config.json")
+    with open(cfg_path, "w") as f:
+        json.dump(cfg, f)
+
+    fake_hub = types.ModuleType("huggingface_hub")
+    fake_hub.hf_hub_download = lambda **kw: cfg_path
+    sys.modules["huggingface_hub"] = fake_hub
+    try:
+        d = _with_fake_transformers(FakeAutoConfig, lambda: unfold("custom/model"))
+    finally:
+        sys.modules.pop("huggingface_hub", None)
+
+    # Exactly one attempt, explicitly False — no prompt, no retry-with-True.
+    assert len(calls) == 1
+    assert calls[0]["trust_remote_code"] is False
+    assert len(d.to_ir()["layers"]) == 2
+
+
+def test_typed_errors_for_access_notfound_and_parse():
+    """Load/parse failures surface as the right typed UnfoldError subclass."""
+    import pytest
+    from model_unfolder import (
+        ConfigParseError,
+        ModelAccessError,
+        ModelNotFoundError,
     )
 
-    assert "trust_remote_code" not in calls[0]
-    assert calls[1]["trust_remote_code"] is True
+    class Gated:
+        @staticmethod
+        def from_pretrained(model_id, **kwargs):
+            raise OSError("401 Client Error. Access to model X is restricted and gated.")
+
+    class Missing:
+        @staticmethod
+        def from_pretrained(model_id, **kwargs):
+            raise OSError("404 Client Error. Repository Not Found for url ...")
+
+    with pytest.raises(ModelAccessError):
+        _with_fake_transformers(Gated, lambda: unfold("meta-llama/Llama-2-7b-hf"))
+    with pytest.raises(ModelNotFoundError):
+        _with_fake_transformers(Missing, lambda: unfold("nope/does-not-exist"))
+
+    # A loaded-but-broken config (no layers) is a hard ConfigParseError.
+    with pytest.raises(ConfigParseError):
+        unfold({"model_type": "mystery", "some_blob": 123})
 
 
 def _with_fake_transformers(auto_config, fn):
@@ -1008,5 +1057,5 @@ if __name__ == "__main__":
     test_dbrx_nested_config_routes_to_gqa_moe()
     test_model_id_uses_hf_token_env_and_explicit_override()
     test_model_id_falls_back_to_legacy_hf_auth_kwarg()
-    test_model_id_uses_remote_code_only_when_required()
+    test_model_id_custom_code_falls_back_to_raw_config_json()
     print("\nAll smoke tests passed.")
