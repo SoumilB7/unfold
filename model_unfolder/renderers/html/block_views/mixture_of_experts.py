@@ -1,7 +1,7 @@
 """Detail SVGs for mixture-of-experts blocks."""
 from __future__ import annotations
 
-from ....labels import activation_label
+from ....labels import activation_label, moe_router_lines
 from ..stack_view import fit_svg, point
 from ..svg import (
     _elbow_hv,
@@ -24,7 +24,12 @@ def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
     ffn = info["dominant"]["spec"]["ffn"]
     cx = w / 2
     router_w = 540
-    router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 200, router_w, 50, "Router")
+    # The router carries the routing recipe (gating fn, group-limited routing,
+    # top-k, renorm/scale) on its label — the dispatch itself (router → experts
+    # → weighted sum) is what this whole view already draws.
+    router_label = moe_router_lines(ffn)
+    router_h = max(50, 18 * len(router_label) + 26)
+    router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 200, router_w, router_h, router_label, font_size=14)
     sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 100)
 
     expert_w, expert_h = 116, 54

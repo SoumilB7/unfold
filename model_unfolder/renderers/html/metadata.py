@@ -19,7 +19,14 @@ from ...labels import (
     mask_chip,
     mask_short,
     mask_title,
+    moe_router_detail,
 )
+
+
+def _describe_router(ffn: dict) -> str:
+    base = f"Routes tokens to top-{ffn.get('num_experts_per_tok') or 'k'} of {ffn.get('num_experts') or 'N'} experts"
+    detail = moe_router_detail(ffn)
+    return f"{base}; {detail}" if detail else base
 from .metadata_modalities import _modality_badges, _multimodal_block_lookup
 from .utils import _fmt_int
 
@@ -121,7 +128,7 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
             "LM head",
             f"{hidden} -> {vocab}" + (" (tied)" if ir.get("tie_word_embeddings") else ""),
         ),
-        "router": ("Router", f"Routes tokens to top-{ffn.get('num_experts_per_tok') or 'k'} experts"),
+        "router": ("Router", _describe_router(ffn)),
         "add_moe": ("Weighted sum", "Combines selected expert outputs"),
         "expert_1": ("Expert", _describe_ffn(ffn)),
         "expert_k": ("Expert", _describe_ffn(ffn)),
@@ -182,7 +189,7 @@ def _group_label(group: dict, info: dict | None = None) -> str:
     bits = []
     # Tag mixed sliding/global stacks (Gemma 4) so each pill is unambiguous;
     # plain causal stacks (Llama, DeepSeek) skip the tag.
-    if attn.get("mask") in ("sliding", "global"):
+    if attn.get("mask") and attn.get("mask") != "causal":
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
     bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")

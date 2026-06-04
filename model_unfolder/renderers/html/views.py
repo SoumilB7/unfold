@@ -474,9 +474,11 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     ]
     has_kv_share = bool(kv_shared_indices)
     n_legend_rows = len(info["groups"]) + (1 if has_kv_share else 0)
-    # Reserve extra room for the optional "KV CACHE" sub-strip and its annotation.
-    extra = 56 if has_kv_share else 0
-    h = max(240, 160 + extra + 22 * n_legend_rows)
+    # Legend rows start below the strip (strip_y 90 + strip_h 36 + 44 = 170) and
+    # step 20px each (kv-share shifts them +8).  Size the card so the last row and
+    # its text descender stay inside the rounded border (bottom edge is h - 30).
+    legend_bottom = 170 + 20 * max(n_legend_rows - 1, 0) + (8 if has_kv_share else 0)
+    h = max(240, legend_bottom + 50)
     arrow_id, shadow_id = _ids(mount_id, "map")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_hatch_pattern(mount_id))

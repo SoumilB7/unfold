@@ -17,18 +17,24 @@ _MASK_SHORT = {
     "global": "full",
     "causal": "causal",
     "chunked": "chunked",
+    "compressed_sparse": "CSA",
+    "heavily_compressed": "HCA",
 }
 _MASK_LONG = {
     "sliding": "Sliding-window",
     "global": "Full / global",
     "causal": "Causal",
     "chunked": "Chunked",
+    "compressed_sparse": "Compressed sparse",
+    "heavily_compressed": "Hierarchical compressed",
 }
 _MASK_TITLE = {
     "sliding": "Sliding-window attention",
     "global": "Full-context attention",
     "causal": "Causal attention",
     "chunked": "Chunked attention",
+    "compressed_sparse": "Compressed sparse attention",
+    "heavily_compressed": "Hierarchical compressed attention",
 }
 
 _KIND_SHORT = {
@@ -83,6 +89,9 @@ def mask_chip(attention: dict) -> str:
     """One-line chip; for sliding includes the window size: ``"SWA 1,024"``."""
     label = mask_short(attention)
     window = attention.get("window_size")
+    ratio = attention.get("compress_ratio")
+    if ratio and attention.get("mask") in {"compressed_sparse", "heavily_compressed"}:
+        return f"{label} r{_fmt_int(ratio)}"
     if window and is_sliding(attention):
         return f"{label} {_fmt_int(window)}"
     return label
@@ -95,6 +104,8 @@ def kind_short(attention: dict) -> str:
     tags = []
     if attention.get("qk_norm"):
         tags.append("QK-Norm")
+    if attention.get("bias"):
+        tags.append("+bias")
     if attention.get("shared"):
         tags.append("Shared")
     if attention.get("no_rope"):
@@ -113,11 +124,55 @@ def kind_long(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("per-head Q/K normalisation")
+    if attention.get("bias"):
+        extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
     if attention.get("no_rope"):
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
+
+
+def moe_router_lines(ffn: dict) -> list[str]:
+    """Multi-line router-block label: the routing recipe, only what's declared.
+
+    Line 1 is the title; the rest read gating · top-k, group-limited routing,
+    and any renormalize / routed-scale step.
+    """
+    r = ffn.get("routing") or {}
+    n, k = ffn.get("num_experts"), ffn.get("num_experts_per_tok")
+    sel = f"top-{k} of {n}" if (k and n) else f"top-{k or 'k'}"
+    lines = ["Router", f"{r.get('scoring_func') or 'softmax'} gating · {sel}"]
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        grp = f"keep {r['topk_group']}/{r['n_group']} groups"
+        if r.get("topk_method"):
+            grp += f" · {r['topk_method']}"
+        lines.append(grp)
+    tail = []
+    if r.get("norm_topk_prob"):
+        tail.append("renormalized")
+    if r.get("routed_scaling_factor"):
+        tail.append(f"routed ×{r['routed_scaling_factor']}")
+    if tail:
+        lines.append(" · ".join(tail))
+    return lines
+
+
+def moe_router_detail(ffn: dict) -> str:
+    """Longer router tooltip describing the gating and selection behaviour."""
+    r = ffn.get("routing") or {}
+    bits = []
+    if r.get("scoring_func"):
+        bits.append(f"{r['scoring_func']} gating")
+    if r.get("topk_method"):
+        bits.append(f"{r['topk_method']} selection")
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        bits.append(f"group-limited: top-{r['topk_group']} of {r['n_group']} groups")
+    if r.get("norm_topk_prob"):
+        bits.append("normalized top-k weights")
+    if r.get("routed_scaling_factor"):
+        bits.append(f"routed output ×{r['routed_scaling_factor']}")
+    return "; ".join(bits)
 
 
 def is_sliding(attention: dict) -> bool:
@@ -194,10 +249,18 @@ def describe_attention(attention: dict) -> str:
         )
     if is_sliding(attention) and attention.get("window_size"):
         text += f"; sliding window {_fmt_int(attention.get('window_size'))}"
+    if attention.get("mask") == "compressed_sparse":
+        text += f"; CSA compress ratio {_fmt_int(attention.get('compress_ratio'))}"
+        if attention.get("index_topk"):
+            text += f"; index top-k {_fmt_int(attention.get('index_topk'))}"
+    if attention.get("mask") == "heavily_compressed":
+        text += f"; HCA compress ratio {_fmt_int(attention.get('compress_ratio'))}"
     # Surface structural flags as annotations
     extras = []
     if attention.get("qk_norm"):
         extras.append("QK-Norm")
+    if attention.get("bias"):
+        extras.append("+bias")
     if attention.get("shared"):
         extras.append("weight-shared")
     if attention.get("no_rope"):

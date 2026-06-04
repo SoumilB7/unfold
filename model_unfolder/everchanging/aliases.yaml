@@ -1,0 +1,26 @@
+# Field aliases — canonical field name -> the config key spellings the parser
+# tries, in order.  Edit this file to support a new config dialect: add a new
+# spelling to an existing list, or add a whole new canonical field.  No code
+# change is needed.
+#
+# Keep values in flow style ([a, b, c]) so the lightweight built-in loader works
+# even without PyYAML installed.
+
+num_hidden_layers: [num_hidden_layers, n_layers, num_layers, n_layer, num_blocks, n_blocks]
+num_attention_heads: [num_attention_heads, n_heads, num_heads, n_head, num_q_heads]
+num_key_value_heads: [num_key_value_heads, n_kv_heads, num_kv_heads, num_key_heads, kv_n_heads]
+hidden_size: [hidden_size, d_model, n_embd, model_dim, embed_dim, dim]
+intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim, ffn_hidden_size, feed_forward_proj_dim, n_inner]
+hidden_act: [hidden_act, activation_function, hidden_activation, act_fn, activation, activation_type]
+vocab_size: [vocab_size, n_vocab, padded_vocab_size]
+max_position_embeddings: [max_position_embeddings, max_seq_len, n_positions, context_length, max_seq_length, seq_length, max_sequence_length]
+sliding_window: [sliding_window, attention_window, window_size]
+num_experts: [num_local_experts, num_experts, n_routed_experts, n_experts, moe_num_experts]
+num_experts_per_tok: [num_experts_per_tok, top_k_experts, top_k, num_selected_experts, num_experts_per_token, moe_top_k, experts_per_token]
+num_shared_experts: [num_shared_experts, n_shared_experts]
+moe_intermediate_size: [moe_intermediate_size, expert_intermediate_size, expert_hidden_size]
+head_dim: [head_dim, d_head, head_size, kv_channels]
+tie_word_embeddings: [tie_word_embeddings, tie_embeddings, tie_word_embedding_weights]
+norm_type: [norm_type]
+mlp_ratio: [mlp_ratio]
+compress_ratios: [compress_ratios, compress_rates]

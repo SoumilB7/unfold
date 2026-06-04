@@ -469,7 +469,7 @@ def test_mllama_cross_attention_is_layer_variant_only():
     # lives in the description (and stays the node id).
     assert side_states["title"] == "Projected image states"
     assert "cross_attention_states" in side_states["description"]
-    assert side_states["detail_view"] == "vision_path"
+    assert side_states["view"] == "vision_path"
     assert [
         i for i, layer in enumerate(ir["layers"])
         if layer["attention"]["cross_attention"]

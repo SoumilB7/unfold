@@ -80,16 +80,20 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
     return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} MTP head")
 
 
-def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
+def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """The MTP module's transformer block, drawn as its own tower.
 
-    It is one decoder block of the same shape as the main stack, so the
-    attention and FFN labels are pulled from the dominant layer's blocks
-    (e.g. Multi-Head Latent Attention + MoE for DeepSeek-V3)."""
-    spec = (info.get("dominant") or {}).get("spec") or {}
-    layer_blocks = spec.get("blocks") or []
-    attn_label = next((b.get("label") for b in layer_blocks if b.get("id") == "attn"), None) or "Attention"
-    ffn_label = next((b.get("label") for b in layer_blocks if b.get("id") == "ffn"), None) or "Feed-Forward"
+    It *is* a decoder layer, so it reuses the real layer blocks handed to it as
+    ``block['children']`` — the attention/FFN render through the same router and
+    drill into the same MLA / MoE views as the main stack."""
+    children = block.get("children") or []
+    norms = [c for c in children if c.get("kind") == "norm"]
+    cn1 = norms[0] if norms else {}
+    cn2 = norms[1] if len(norms) > 1 else {}
+    ca = next((c for c in children if c.get("kind") == "attention"), {})
+    cf = next((c for c in children if c.get("kind") == "ffn"), {})
+    attn_label = ca.get("label") or "Attention"
+    ffn_label = cf.get("label") or "Feed-Forward"
 
     arrow_id, shadow_id = _ids(mount_id, "mtp-transformer-block")
     parts: list[str] = []
@@ -104,11 +108,13 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, _child
     _tower_badge(parts, region["right"] - 168, region["top"] + 16)
 
     # Uniform 30px gaps between sublayers, balanced 34px margins inside the tower.
-    norm1 = _rect_block(parts, info, shadow_id, "mtp_block_norm1", cx - 105, 438, 210, 42, "RMSNorm", font_size=16)
-    attn  = _rect_block(parts, info, shadow_id, "mtp_block_attn", cx - 175, 348, 350, 60, attn_label, font_size=16)
+    # ids/labels come from the reused decoder-layer blocks so clicks route through
+    # the central router into the real MLA / MoE drill-downs.
+    norm1 = _rect_block(parts, info, shadow_id, cn1.get("id", "mtp_block_norm1"), cx - 105, 438, 210, 42, cn1.get("label") or "RMSNorm", font_size=16)
+    attn  = _rect_block(parts, info, shadow_id, ca.get("id", "mtp_block_attn"), cx - 175, 348, 350, 60, attn_label, font_size=16)
     add1  = _plain_plus(parts, cx, 304)
-    norm2 = _rect_block(parts, info, shadow_id, "mtp_block_norm2", cx - 105, 218, 210, 42, "RMSNorm", font_size=16)
-    ffn   = _rect_block(parts, info, shadow_id, "mtp_block_ffn", cx - 120, 132, 240, 56, ffn_label, font_size=16)
+    norm2 = _rect_block(parts, info, shadow_id, cn2.get("id", "mtp_block_norm2"), cx - 105, 218, 210, 42, cn2.get("label") or "RMSNorm", font_size=16)
+    ffn   = _rect_block(parts, info, shadow_id, cf.get("id", "mtp_block_ffn"), cx - 120, 132, 240, 56, ffn_label, font_size=16)
     add2  = _plain_plus(parts, cx, 88)
 
     _up_arrow(parts, cx, region["bottom"], norm1["bottom"] + 12)

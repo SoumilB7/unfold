@@ -68,23 +68,23 @@ def _vision_title(path: dict) -> str:
 
 # One render-spec per modality, mirroring the parser-side MODALITY_REGISTRY.
 # Adding a modality block is a single entry here; the lookup loop never names
-# a specific modality. (key, block_id, detail_view, kind, label, title,
+# a specific modality. (key, block_id, view, kind, label, title,
 # describe, children) — callables receive the modality's path dict.
 _MODALITY_BLOCK_SPECS = (
     {
-        "key": "vision", "block_id": "vision_path", "detail_view": "vision_path",
+        "key": "vision", "block_id": "vision_path", "view": "vision_path",
         "kind": lambda p: p.get("kind") or "image_to_soft_visual_tokens",
         "label": _vision_label, "title": _vision_title,
         "describe": lambda p: _vision_description(p), "children": lambda p: _vision_children(p),
     },
     {
-        "key": "audio", "block_id": "audio_path", "detail_view": "audio_path",
+        "key": "audio", "block_id": "audio_path", "view": "audio_path",
         "kind": lambda p: "audio_to_soft_tokens",
         "label": lambda p: "Audio -> tokens", "title": lambda p: "Audio to soft tokens",
         "describe": lambda p: _audio_description(p), "children": lambda p: _audio_children(p),
     },
     {
-        "key": "video", "block_id": "video_path", "detail_view": "video_path",
+        "key": "video", "block_id": "video_path", "view": "video_path",
         "kind": lambda p: "video_to_grid_tokens",
         "label": lambda p: "Video -> grid", "title": lambda p: "Video to grid tokens",
         "describe": lambda p: _video_description(p), "children": lambda p: _video_children(p),
@@ -109,7 +109,7 @@ def _multimodal_block_lookup(ir: dict) -> dict:
             "label": spec["label"](path),
             "title": spec["title"](path),
             "description": spec["describe"](path),
-            "detail_view": spec["detail_view"],
+            "view": spec["view"],
             "children": spec["children"](path),
         }
 
@@ -122,7 +122,7 @@ def _multimodal_block_lookup(ir: dict) -> dict:
             "label": "Vision cross-attention" if cross_attention else "Multimodal fusion",
             "title": "Vision cross-attention" if cross_attention else "Multimodal fusion",
             "description": _fusion_description(fusion),
-            "detail_view": "multimodal_fusion",
+            "view": "multimodal_fusion",
             "children": _fusion_children(fusion, inputs),
         }
     return blocks
@@ -252,7 +252,7 @@ def _vision_children(vision: dict) -> list[dict]:
                 f"Split image into {grid_phrase}" if grid_phrase else "Split image into patches",
                 f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
             ]),
-            "detail_view": "vision_patch_embedding",
+            "view": "vision_patch_embedding",
             "children": [
                 {
                     "id": "vision_pixels",
@@ -289,7 +289,7 @@ def _vision_children(vision: dict) -> list[dict]:
             "id": "vision_encoder",
             "title": "Vision encoder",
             "description": "; ".join(bit for bit in encoder_bits if bit),
-            "detail_view": "vision_encoder",
+            "view": "vision_encoder",
             "children": [
                 {
                     "id": "vision_position",
@@ -313,7 +313,7 @@ def _vision_children(vision: dict) -> list[dict]:
                         f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
                         f"hidden {_fmt_int(encoder.get('hidden_size'))}" if encoder.get("hidden_size") else "",
                     ]),
-                    "detail_view": "vision_self_attention",
+                    "view": "vision_self_attention",
                     "children": [
                         {
                             "id": "vision_attn_q",
@@ -369,7 +369,7 @@ def _vision_children(vision: dict) -> list[dict]:
                     "id": "vision_encoder_mlp",
                     "title": "Vision MLP",
                     "description": "Feed-forward sublayer inside each repeated vision encoder block.",
-                    "detail_view": "vision_mlp",
+                    "view": "vision_mlp",
                     "children": [
                         {
                             "id": "vision_mlp_input",

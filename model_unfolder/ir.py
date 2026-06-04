@@ -25,9 +25,12 @@ class AttentionSpec:
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
+    bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
+    compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
+    index_topk: Optional[int] = None        # CSA indexer fan-in, when declared
 
 
 @dataclass
@@ -41,6 +44,7 @@ class FFNSpec:
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: int = 0
     expert_intermediate_size: Optional[int] = None
+    routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
 
 
 @dataclass
@@ -137,9 +141,12 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "window_size": a.window_size,
         "kv_source_layer": a.kv_source_layer,
         "qk_norm": a.qk_norm,
+        "bias": a.bias,
         "shared": a.shared,
         "no_rope": a.no_rope,
         "cross_attention": a.cross_attention,
+        "compress_ratio": a.compress_ratio,
+        "index_topk": a.index_topk,
     }
 
 
@@ -153,6 +160,7 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "num_experts_per_tok": f.num_experts_per_tok,
         "num_shared_experts": f.num_shared_experts,
         "expert_intermediate_size": f.expert_intermediate_size,
+        "routing": f.routing,
     }
 
 

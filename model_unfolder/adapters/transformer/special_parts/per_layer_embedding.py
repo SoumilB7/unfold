@@ -99,7 +99,7 @@ def per_layer_embedding_blocks(
                 f"Per-layer gate-and-project; {hidden} -> {emb} -> {hidden}. "
                 "Multiplied by a per-layer vector built outside the stack."
             ),
-            "detail_view": "per_layer_embedding",
+            "view": "per_layer_embedding",
             "detail": {
                 "view": "per_layer_embedding",
                 "view_id": block_id,

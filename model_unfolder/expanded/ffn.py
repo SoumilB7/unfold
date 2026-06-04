@@ -23,8 +23,10 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
     if kind == "moe":
         n = ffn.get("num_experts")
         k = ffn.get("num_experts_per_tok")
+        routing = ffn.get("routing") or {}
         out["router"]  = drop_none({"num_experts": n, "top_k": k,
-                                    "active_fraction": (k / n) if n and k else None})
+                                    "active_fraction": (k / n) if n and k else None,
+                                    **routing})
         out["experts"] = drop_none({"count": n,
                                     "shared": ffn.get("num_shared_experts") or 0,
                                     "expert_intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")})

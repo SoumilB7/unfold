@@ -6,6 +6,7 @@ import types
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import unfold
+from model_unfolder.adapters.transformer.parser import parse
 
 KIMI_K2_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -413,7 +414,7 @@ def test_mtp_head_detected_and_rendered():
 
     assert ir["extras"]["mtp"]["num_modules"] == 1
     mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
-    assert mtp["role"] == "mtp" and mtp["detail_view"] == "mtp_head"
+    assert mtp["role"] == "mtp" and mtp["view"] == "mtp_head"
 
     # Surfaced in the prose-free expanded schema too.
     assert d.to_json()["multi_token_prediction"]["num_modules"] == 1
@@ -423,20 +424,21 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
-    # The transformer block opens into its own tower (like the vision encoder),
-    # with the model's real attention/FFN labels and clickable sublayers.
+    # The transformer block opens into its own tower (like the vision encoder).
     assert "separate tower" in html
     assert "Multi-Head Latent" in html
-    for cid in ("mtp_block_norm1", "mtp_block_attn", "mtp_block_norm2", "mtp_block_ffn"):
-        assert f'data-card-id="{cid}"' in html
 
-    # The block's attention reuses the main MLA drill-down (no separate view),
-    # so its internals are reachable one level deeper.
+    # The block REUSES the real decoder-layer blocks as its children (no
+    # synthesized internals, no per-block plumbing), so they route through the
+    # central router into the same MLA / MoE drill-downs as the main stack.
     mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
     tblock = next(c for c in mtp["children"] if c["id"] == "mtp_block")
-    attn = next(c for c in tblock["children"] if c["id"] == "mtp_block_attn")
-    assert attn["detail_view"] == "attention"
-    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn["children"]}
+    child_kinds = {c.get("kind") for c in tblock["children"]}
+    assert {"attention", "ffn", "norm"} <= child_kinds
+    attn = next(c for c in tblock["children"] if c.get("kind") == "attention")
+    assert attn["view"] == "attention"
+    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn.get("children", [])}
+    # the reused attention's drill-downs are present as cards
     assert 'data-card-id="mla_query_path"' in html
 
     # The module count is surfaced when > 1.
@@ -483,6 +485,133 @@ def test_gemma4_31b():
     print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
 
 
+def test_sliding_window_toggle_and_split():
+    """AP-1: respect use_sliding_window and the Qwen max_window_layers split."""
+    base = dict(
+        model_type="qwen2", num_hidden_layers=6, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5,
+    )
+
+    # Window declared but explicitly disabled -> every layer is full attention.
+    ir = unfold({**base, "sliding_window": 4096, "use_sliding_window": False}).to_ir()
+    assert all(l["attention"]["mask"] == "causal" for l in ir["layers"])
+    assert "sliding_window" not in ir.get("extras", {})
+
+    # Mistral-style: window set, no toggle flag -> all layers slide (preserved).
+    ir = unfold({**base, "sliding_window": 4096}).to_ir()
+    assert all(l["attention"]["mask"] == "sliding" for l in ir["layers"])
+    assert all(l["attention"]["window_size"] == 4096 for l in ir["layers"])
+
+    # Enabled with a split: bottom max_window_layers full, the rest slide.
+    ir = unfold({**base, "sliding_window": 4096,
+                 "use_sliding_window": True, "max_window_layers": 2}).to_ir()
+    masks = [l["attention"]["mask"] for l in ir["layers"]]
+    assert masks == ["global", "global", "sliding", "sliding", "sliding", "sliding"]
+
+
+def test_qwen3_moe_dense_sparse_pattern():
+    """AP-2: decoder_sparse_step + mlp_only_layers decide dense-vs-MoE layers."""
+    base = dict(
+        model_type="qwen3_moe", num_hidden_layers=6, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, moe_intermediate_size=64,
+        vocab_size=100, rms_norm_eps=1e-5, num_experts=8, num_experts_per_tok=2,
+    )
+
+    def kinds(**over):
+        ir = unfold({**base, **over}).to_ir()
+        return [l["ffn"]["kind"] for l in ir["layers"]]
+
+    # step=1 -> every layer MoE (Qwen3-30B-A3B shape).
+    assert kinds(decoder_sparse_step=1) == ["moe"] * 6
+    # step=2 -> MoE only where (i + 1) % 2 == 0.
+    assert kinds(decoder_sparse_step=2) == ["dense", "moe"] * 3
+    # mlp_only_layers force those indices dense even on the sparse step.
+    assert kinds(decoder_sparse_step=1, mlp_only_layers=[0, 2]) == \
+        ["dense", "moe", "dense", "moe", "moe", "moe"]
+
+
+def test_omni_nested_thinker_text_config_unwrapped():
+    """AP-3: an LM nested under thinker_config.text_config is unwrapped, not dropped."""
+    inner = dict(
+        model_type="qwen3_moe", num_hidden_layers=4, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5,
+    )
+    cfg = {
+        "model_type": "qwen3_omni_moe",
+        "thinker_config": {"model_type": "thinker", "text_config": inner,
+                           "vision_config": {}, "audio_config": {}},
+    }
+    ir = unfold(cfg).to_ir()
+    assert len(ir["layers"]) == 4
+    assert ir["layers"][0]["attention"]["num_heads"] == 8
+    assert not ir.get("warnings")
+
+
+def test_attention_bias_and_rope_theta():
+    """AP-4/AP-5: read attention_bias onto the spec, surface rope_theta always."""
+    base = dict(
+        model_type="qwen2", num_hidden_layers=2, hidden_size=64,
+        num_attention_heads=8, intermediate_size=128, vocab_size=100,
+        rms_norm_eps=1e-5, rope_theta=1000000,
+    )
+
+    # attention_bias=True -> per-layer spec flag + "+bias" in the label.
+    d = unfold({**base, "attention_bias": True})
+    assert all(l["attention"]["bias"] for l in d.to_ir()["layers"])
+    assert "+bias" in d.to_html()
+
+    # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
+    assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
+
+    # attention_bias absent/False -> not flagged.
+    assert not any(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
+    assert not any(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+
+
+def test_compress_rates_alias_derives_csa_hca_masks():
+    """DeepSeek-V4 'compress_rates' is an alias of compress_ratios (0/4/128 -> SWA/CSA/HCA)."""
+    cfg = dict(
+        model_type="deepseek_v4", num_hidden_layers=4, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        vocab_size=1000, rms_norm_eps=1e-6, kv_lora_rank=64, q_lora_rank=96,
+        compress_rates=[0, 4, 128, 4],
+    )
+    masks = [l["attention"]["mask"] for l in unfold(cfg).to_ir()["layers"]]
+    assert masks == ["sliding", "compressed_sparse", "heavily_compressed", "compressed_sparse"]
+
+
+def test_moe_routing_detail():
+    """AP-7: surface gating / grouped routing / top-k renorm / scale on the router."""
+    cfg = dict(
+        model_type="deepseek_v3", num_hidden_layers=3, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
+        kv_lora_rank=64, q_lora_rank=96, n_routed_experts=64, num_experts_per_tok=8,
+        first_k_dense_replace=1,
+        scoring_func="sigmoid", topk_method="noaux_tc", n_group=8, topk_group=4,
+        norm_topk_prob=True, routed_scaling_factor=2.5,
+    )
+    d = unfold(cfg)
+    ffn = next(l["ffn"] for l in d.to_ir()["layers"] if l["ffn"]["kind"] == "moe")
+    assert ffn["routing"] == {
+        "scoring_func": "sigmoid", "topk_method": "noaux_tc",
+        "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
+        "routed_scaling_factor": 2.5,
+    }
+    from model_unfolder.labels import moe_router_lines
+    lines = moe_router_lines(ffn)
+    assert lines[0] == "Router"
+    assert "sigmoid gating · top-8 of 64" in lines[1]
+    assert any("keep 4/8 groups" in ln for ln in lines)
+
+    # n_group == 1 is "no grouping" -> no group line.
+    ir = unfold({**cfg, "n_group": 1, "topk_group": 1}).to_ir()
+    ffn = next(l["ffn"] for l in ir["layers"] if l["ffn"]["kind"] == "moe")
+    assert not any("groups" in ln for ln in moe_router_lines(ffn))
+
+
 def test_single_kv_gemma4_stays_gqa_view():
     cfg = dict(GEMMA4_31B_CONFIG)
     text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
@@ -522,7 +651,7 @@ def test_gemma4_ple_uses_reusable_part_contract():
     blocks = ir["layers"][0]["blocks"]
     ple = next(block for block in blocks if block["id"] == "ple")
 
-    assert ple["detail_view"] == "per_layer_embedding"
+    assert ple["view"] == "per_layer_embedding"
     assert ple["detail"]["view"] == "per_layer_embedding"
     assert ple["detail"]["nodes"]["multiply"] == "ple_mul"
     assert ir["extras"]["per_layer_embeddings"]["hidden"] == 1024
@@ -668,7 +797,7 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     child_ids = {child["id"] for child in ffn_block["children"]}
 
     assert ir["layers"][0]["ffn"]["gated"] is False
-    assert ffn_block["detail_view"] == "dense_ffn"
+    assert ffn_block["view"] == "dense_ffn"
     assert {"up_proj", "silu", "down_proj"} <= child_ids
     assert "gate_proj" not in child_ids
     assert "mul" not in child_ids

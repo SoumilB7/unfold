@@ -37,6 +37,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from . import debug
+from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -51,47 +53,51 @@ from .special_parts.modalities.detect import cross_attention_layers as _cross_at
 
 # ---------------------------------------------------------------------------
 # Field aliases: every canonical field has a list of names we look up in order.
-# Add a new alias whenever you encounter a new config dialect — that is the
-# only kind of per-family handling that exists.
+# The table itself is *data*, loaded from ``everchanging/aliases.json`` so a new
+# config dialect is supported by editing JSON — no code change here.  Adding a
+# new alias is the only kind of per-family handling that exists.
 # ---------------------------------------------------------------------------
 
-_ALIASES: dict[str, list[str]] = {
-    "num_hidden_layers":       ["num_hidden_layers", "n_layers", "num_layers", "n_layer", "num_blocks", "n_blocks"],
-    "num_attention_heads":     ["num_attention_heads", "n_heads", "num_heads", "n_head", "num_q_heads"],
-    "num_key_value_heads":     ["num_key_value_heads", "n_kv_heads", "num_kv_heads", "num_key_heads", "kv_n_heads"],
-    "hidden_size":             ["hidden_size", "d_model", "n_embd", "model_dim", "embed_dim", "dim"],
-    "intermediate_size":       ["intermediate_size", "ffn_dim", "mlp_dim", "inner_dim", "ffn_hidden_size", "feed_forward_proj_dim", "n_inner"],
-    "hidden_act":              ["hidden_act", "activation_function", "hidden_activation", "act_fn", "activation", "activation_type"],
-    "vocab_size":              ["vocab_size", "n_vocab", "padded_vocab_size"],
-    "max_position_embeddings": ["max_position_embeddings", "max_seq_len", "n_positions", "context_length", "max_seq_length", "seq_length", "max_sequence_length"],
-    "sliding_window":          ["sliding_window", "attention_window", "window_size"],
-    "num_experts":             ["num_local_experts", "num_experts", "n_routed_experts", "n_experts", "moe_num_experts"],
-    "num_experts_per_tok":     ["num_experts_per_tok", "top_k_experts", "top_k", "num_selected_experts", "num_experts_per_token", "moe_top_k"],
-    "num_shared_experts":      ["num_shared_experts", "n_shared_experts"],
-    "moe_intermediate_size":   ["moe_intermediate_size", "expert_intermediate_size", "expert_hidden_size"],
-    "head_dim":                ["head_dim", "d_head", "head_size", "kv_channels"],
-    "tie_word_embeddings":     ["tie_word_embeddings", "tie_embeddings", "tie_word_embedding_weights"],
-    "norm_type":               ["norm_type"],   # OLMo-style ("layer_norm" | "rms_norm")
-    "mlp_ratio":               ["mlp_ratio"],   # OLMo-style: intermediate = hidden_size * mlp_ratio
-}
+_ALIASES: dict[str, list[str]] = load_aliases()
 
 
 _SLIDING_LABELS = {"sliding_attention", "sliding"}
 _FULL_LABELS    = {"full_attention", "full", "global", "global_attention", "causal", ""}
+_COMPRESSED_SPARSE_LABELS = {"compressed_sparse_attention", "compressed_sparse", "csa"}
+_HEAVILY_COMPRESSED_LABELS = {"heavily_compressed_attention", "hierarchical_compressed_attention", "hca"}
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
     """Try every known alias for a field, return the first hit."""
-    for alias in _ALIASES.get(canonical, [canonical]):
+    aliases = _ALIASES.get(canonical, [canonical])
+    for alias in aliases:
         val = _g(cfg, alias)
         if val is not None:
+            # The field is handled — treat all its spellings as parsed so a
+            # redundant sibling alias also present in the config (e.g. both
+            # num_experts and n_routed_experts) isn't flagged as unparsed.
+            for a in aliases:
+                debug.note_access(a)
             return val
     return default
 
 
-def _unwrap_text(cfg: Any) -> Any:
-    """If a multimodal wrapper hides the LM config under a sub-key, unwrap it."""
-    for key in ("text_config", "language_config", "llm_config", "text_model_config"):
+_TEXT_WRAPPER_KEYS = (
+    "text_config", "language_config", "llm_config", "text_model_config",
+    "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
+)
+
+
+def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
+    """If a multimodal wrapper hides the LM config under a sub-key, unwrap it.
+
+    Handles one further level of nesting (e.g. Qwen3-Omni's
+    ``thinker_config.text_config``) by recursing into a wrapper that doesn't
+    itself carry transformer shape.
+    """
+    if _depth > 3:
+        return cfg
+    for key in _TEXT_WRAPPER_KEYS:
         sub = _g(cfg, key)
         if sub is None:
             continue
@@ -101,9 +107,12 @@ def _unwrap_text(cfg: Any) -> Any:
             completed = _complete_config_from_transformers_registry(sub)
             if _has_transformer_shape(completed):
                 return completed
-        if not isinstance(sub, dict):
-            if _has_transformer_shape(sub):
-                return sub
+            # Wrapper that itself nests the LM deeper (Omni thinker_config).
+            nested = _unwrap_text(sub, _depth + 1)
+            if nested is not sub and _has_transformer_shape(nested):
+                return nested
+        elif _has_transformer_shape(sub):
+            return sub
     return cfg
 
 
@@ -151,6 +160,7 @@ def matches(_cfg: Any) -> bool:
 
 
 def parse(cfg: Any) -> ModelIR:
+    debug.reset()  # start a fresh field-access record for this parse
     warnings: list[str] = []
     model_type = (_g(cfg, "model_type") or "unknown").lower()
     arch_name  = architecture_name(cfg, model_type)
@@ -192,7 +202,21 @@ def parse(cfg: Any) -> ModelIR:
             activation_raw = nested_act.get("name")
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
+    # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
+    # A config may declare a window size but turn SWA *off* (use_sliding_window
+    # = False); honor that, otherwise we'd draw sliding attention on what is
+    # really a full-attention model.  When absent (Mistral), the window applies.
+    use_sliding_window = _g(text_cfg, "use_sliding_window")
+    max_window_layers  = _g(text_cfg, "max_window_layers")
+    if use_sliding_window is False:
+        sliding_window = None
+        max_window_layers = None
     layer_types  = _g(text_cfg, "layer_types") or []
+    # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
+    # are picked up — see everchanging/aliases.yaml.
+    compress_ratios = _resolve(text_cfg, "compress_ratios") or []
+    if not layer_types and compress_ratios:
+        layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"))
     norm_placement = "pre"
 
@@ -208,16 +232,22 @@ def parse(cfg: Any) -> ModelIR:
     # ---- Attention shape ----
     q_lora_rank  = _g(text_cfg, "q_lora_rank")
     kv_lora_rank = _g(text_cfg, "kv_lora_rank")
-    is_mla       = bool(q_lora_rank or kv_lora_rank)
+    is_mla       = bool(kv_lora_rank)
     has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
     if has_multi_query_flag:
         num_kv_heads = 1
     # Determine if the stack mixes sliding + full layers — affects mask labeling
     # (a full layer in a sliding stack is labeled "global", not "causal").
     sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
+    # Qwen splits the stack: the bottom ``max_window_layers`` use full attention
+    # and the rest slide — so a partial split also makes this a mixed stack.
+    has_max_window_split = bool(
+        sliding_window and max_window_layers and 0 < max_window_layers < num_layers
+    )
     has_sliding_in_stack = (
         any(_is_sliding_label(lt) for lt in layer_types)
         or bool(sliding_window_pattern and sliding_window)
+        or has_max_window_split
     )
 
     # ---- Position encoding ----
@@ -230,6 +260,9 @@ def parse(cfg: Any) -> ModelIR:
     # ---- QK-Norm ----
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
 
+    # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
+    use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
+
     # ---- Layer topology ----
     use_parallel_residual = bool(_g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn"))
 
@@ -240,15 +273,25 @@ def parse(cfg: Any) -> ModelIR:
     moe_intermediate_size = get("moe_intermediate_size", 0)
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
-    moe_every_layer     = moe_active and not any([
-        _g(text_cfg, "first_k_dense_replace"),
-        _g(text_cfg, "interleave_moe_layer_step"),
-    ])
     first_k_dense       = _g(text_cfg, "first_k_dense_replace") or 0
     moe_layer_freq      = _g(text_cfg, "moe_layer_freq") or 1
     interleave_moe_step = _g(text_cfg, "interleave_moe_layer_step") or 0
+    # Qwen3-MoE: MoE applies every ``decoder_sparse_step`` layers, except the
+    # explicit ``mlp_only_layers`` which stay dense.
+    decoder_sparse_step = _g(text_cfg, "decoder_sparse_step") or 0
+    mlp_only_layers     = set(_g(text_cfg, "mlp_only_layers") or [])
+    moe_every_layer     = moe_active and not any([
+        first_k_dense,
+        interleave_moe_step,
+        decoder_sparse_step and decoder_sparse_step > 1,
+        mlp_only_layers,
+    ])
+    # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
+    # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
+    moe_routing = _moe_routing(text_cfg) if moe_active else None
 
-    # ---- Cross-layer KV sharing (the last N layers reuse K/V from earlier) ----
+    # ---- Cross-layer KV
+    #  sharing (the last N layers reuse K/V from earlier) ----
     num_kv_shared_layers   = _g(text_cfg, "num_kv_shared_layers") or 0
     first_shared_layer     = (num_layers - num_kv_shared_layers) if num_kv_shared_layers else num_layers
 
@@ -271,8 +314,9 @@ def parse(cfg: Any) -> ModelIR:
     for i in range(num_layers):
         mask, window, is_full_in_sliding_stack = _layer_mask(
             i, layer_types, sliding_window, sliding_window_pattern,
-            has_sliding_in_stack, unknown_layer_types,
+            has_sliding_in_stack, unknown_layer_types, max_window_layers,
         )
+        compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
         # Per-layer dual KV: full layers in a sliding stack use the global counts.
         if is_full_in_sliding_stack:
@@ -306,8 +350,11 @@ def parse(cfg: Any) -> ModelIR:
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
+            bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
+            compress_ratio=compress_ratio,
+            index_topk=_g(text_cfg, "index_topk") if mask == "compressed_sparse" else None,
         )
 
         is_dense_at_layer = _is_dense_at_layer(
@@ -316,6 +363,8 @@ def parse(cfg: Any) -> ModelIR:
             first_k_dense=first_k_dense,
             interleave_moe_step=interleave_moe_step,
             moe_layer_freq=moe_layer_freq,
+            decoder_sparse_step=decoder_sparse_step,
+            mlp_only_layers=mlp_only_layers,
         )
 
         if moe_active and not is_dense_at_layer:
@@ -328,6 +377,7 @@ def parse(cfg: Any) -> ModelIR:
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
                 expert_intermediate_size=moe_intermediate_size or intermediate_size,
+                routing=moe_routing,
             )
         else:
             ffn = FFNSpec(
@@ -378,20 +428,22 @@ def parse(cfg: Any) -> ModelIR:
             "shares_embedding": True,
             "shares_output_head": True,
         }
-        # The MTP block's attention + FFN are the same as a main decoder layer,
-        # so they reuse those drill-downs (no separate views). Pass a
-        # representative layer's attention/FFN children for the deeper levels.
+        # The MTP transformer block is a decoder layer, so hand it a
+        # representative layer's own blocks; the router renders each (attention,
+        # FFN/MoE, …) wherever it appears — no MTP-specific plumbing.
         rep_blocks = layers[-1].blocks if layers else []
-        rep_attn = next((b for b in rep_blocks if b.get("id") == "attn"), None)
-        rep_ffn = next((b for b in rep_blocks if b.get("id") == "ffn"), None)
         extras["render"]["model_blocks"].append(
             mtp_head_block(
                 mtp_modules, hidden_size, vocab_size, tie_word_embeddings,
-                attn_children=(rep_attn or {}).get("children"),
-                ffn_children=(rep_ffn or {}).get("children"),
+                block_children=rep_blocks,
             )
         )
 
+    if sliding_window:
+        extras["sliding_window"] = {
+            "window": sliding_window,
+            "first_full_layers": max_window_layers or 0,
+        }
     if use_parallel_residual:
         extras["parallel_residual"] = True
     if moe_active:
@@ -401,6 +453,8 @@ def parse(cfg: Any) -> ModelIR:
             "num_shared_experts": num_shared_experts,
             "every_layer": moe_every_layer,
         }
+        if moe_routing:
+            extras["moe"]["routing"] = moe_routing
     if no_rope_interval:
         extras["irope"] = {"no_rope_interval": no_rope_interval}
     if num_kv_shared_layers:
@@ -419,6 +473,12 @@ def parse(cfg: Any) -> ModelIR:
             "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
+
+    # RoPE base frequency — present on most rotary models even without a scaling
+    # dict (the block above only fires when one is declared); surface it always.
+    rope_theta = _g(text_cfg, "rope_theta") or _g(attn_cfg, "rope_theta")
+    if rope_theta is not None:
+        extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
 
     # Logit / query softcap (Gemma 2/3 style) — info-only annotation.
     for cap_key in ("attn_logit_softcapping", "final_logit_softcapping", "query_pre_attn_scalar"):
@@ -451,7 +511,7 @@ def parse(cfg: Any) -> ModelIR:
         if val:
             extras[flag] = val
 
-    return ModelIR(
+    ir = ModelIR(
         name=model_name(cfg, arch_name),
         architecture=arch_name,
         vocab_size=vocab_size,
@@ -463,6 +523,15 @@ def parse(cfg: Any) -> ModelIR:
         extras=extras,
         warnings=warnings,
     )
+
+    # Centralized diagnostics (toggle in adapters/transformer/debug.py), emitted
+    # after every field access so the unparsed report is accurate:
+    #   * config fields the parser never read, and
+    #   * the reasons this config came out partial.
+    debug.report_unparsed([cfg, text_cfg, attn_cfg, ffn_cfg], model=ir.name)
+    debug.report_partial(warnings, model=ir.name)
+
+    return ir
 
 
 # ---------------------------------------------------------------------------
@@ -478,12 +547,24 @@ def _is_full_label(lt: str) -> bool:
     return lt in _FULL_LABELS
 
 
-def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown):
+def _is_compressed_sparse_label(lt: str) -> bool:
+    return lt in _COMPRESSED_SPARSE_LABELS
+
+
+def _is_heavily_compressed_label(lt: str) -> bool:
+    return lt in _HEAVILY_COMPRESSED_LABELS
+
+
+def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown, max_window_layers=None):
     """Resolve (mask, window, is_full_in_sliding_stack) for a single layer."""
     if layer_types and i < len(layer_types):
         lt = layer_types[i]
         if _is_sliding_label(lt):
             return "sliding", sliding_window, False
+        if _is_compressed_sparse_label(lt):
+            return "compressed_sparse", None, False
+        if _is_heavily_compressed_label(lt):
+            return "heavily_compressed", None, False
         if _is_full_label(lt):
             mask = "global" if has_sliding_in_stack else "causal"
             return mask, None, has_sliding_in_stack
@@ -497,11 +578,78 @@ def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_slid
             return "global", None, True
         return "sliding", sliding_window, False
     if sliding_window:
+        # Qwen: the bottom ``max_window_layers`` layers use full attention; the
+        # rest slide.  (HF: SWA applies only where layer_idx >= max_window_layers.)
+        if max_window_layers and i < max_window_layers:
+            return ("global" if has_sliding_in_stack else "causal"), None, has_sliding_in_stack
         return "sliding", sliding_window, False
     return "causal", None, False
 
 
-def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int) -> bool:
+def _layer_types_from_compress_ratios(compress_ratios: Any, num_layers: int) -> list[str]:
+    """DeepSeek-V4 style compress ratios are structural layer-type data.
+
+    Public configs declare ``compress_ratio=0`` for SWA, ``4`` for compressed
+    sparse attention (CSA), and ``128`` for hierarchical compressed attention
+    (HCA).  Preserve unknown positive ratios as compressed sparse variants
+    rather than warning as an unknown mask.
+    """
+    if not isinstance(compress_ratios, (list, tuple)):
+        return []
+    values = list(compress_ratios)
+    if num_layers and len(values) > num_layers:
+        values = values[:num_layers]
+    out: list[str] = []
+    for raw in values:
+        try:
+            ratio = int(raw)
+        except (TypeError, ValueError):
+            out.append(str(raw))
+            continue
+        if ratio == 0:
+            out.append("sliding_attention")
+        elif ratio == 128:
+            out.append("heavily_compressed_attention")
+        else:
+            out.append("compressed_sparse_attention")
+    return out
+
+
+def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[str]) -> int | None:
+    if isinstance(compress_ratios, (list, tuple)) and i < len(compress_ratios):
+        try:
+            ratio = int(compress_ratios[i])
+        except (TypeError, ValueError):
+            ratio = 0
+        return ratio or None
+    if layer_types and i < len(layer_types):
+        lt = layer_types[i]
+        if _is_compressed_sparse_label(lt):
+            return 4
+        if _is_heavily_compressed_label(lt):
+            return 128
+    return None
+
+
+def _moe_routing(cfg: Any) -> dict | None:
+    """Collect the MoE router knobs that decide *how* experts get picked.
+
+    Returns only the fields the config actually declares (DeepSeek/Kimi/GLM use
+    the full set; Qwen3-MoE just ``norm_topk_prob``), or ``None`` when none are.
+    """
+    routing = {
+        "scoring_func":          _g(cfg, "scoring_func"),          # sigmoid | softmax
+        "topk_method":           _g(cfg, "topk_method"),           # noaux_tc, group_limited_greedy, ...
+        "n_group":               _g(cfg, "n_group"),               # expert groups (node-limited routing)
+        "topk_group":            _g(cfg, "topk_group"),            # groups kept per token
+        "norm_topk_prob":        _g(cfg, "norm_topk_prob"),        # renormalize the top-k gate weights
+        "routed_scaling_factor": _g(cfg, "routed_scaling_factor"),  # scale on routed-expert output
+    }
+    routing = {k: v for k, v in routing.items() if v is not None}
+    return routing or None
+
+
+def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int, decoder_sparse_step: int = 0, mlp_only_layers=()) -> bool:
     """Is layer ``i`` a dense FFN (vs MoE) given the config flags?"""
     if not moe_active:
         return True
@@ -510,6 +658,12 @@ def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interlea
     if interleave_moe_step and (i % interleave_moe_step == 0):
         return True
     if moe_layer_freq and moe_layer_freq > 1 and (i % moe_layer_freq != 0):
+        return True
+    # Qwen3-MoE: dense when explicitly listed, or when this layer isn't on the
+    # sparse step (HF: MoE iff (i + 1) % decoder_sparse_step == 0).
+    if mlp_only_layers and i in mlp_only_layers:
+        return True
+    if decoder_sparse_step and decoder_sparse_step > 1 and ((i + 1) % decoder_sparse_step != 0):
         return True
     return False
 
@@ -609,7 +763,7 @@ def _cross_attention_states_side_block() -> dict:
         "description": (
             "cross_attention_states: vision_model(pixel_values) -> multi_modal_projector; this tensor supplies K/V to the selected decoder cross-attention layer."
         ),
-        "detail_view": "vision_path",
+        "view": "vision_path",
         "w": 250,
         "h": 50,
         "font": 15,

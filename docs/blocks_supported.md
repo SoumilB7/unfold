@@ -4,10 +4,10 @@ Every clickable thing in a diagram is a **block**. There are two layers:
 
 1. **IR blocks** — emitted by the adapter into `LayerSpec.blocks` / `extras`. Each
    carries `id`, `role`, `kind`, label/title/description, and (when it can be
-   expanded) a `detail_view` + `children`. Defined under
+   expanded) a `view` + `children`. Defined under
    `model_unfolder/adapters/...`.
 2. **Detail views** ("opening architectures") — the SVG drawn when a block is
-   clicked. Routed by `detail_view` in
+   clicked. Routed by a block's `view` key through the single recursive router in
    [block_views/registry.py](../model_unfolder/renderers/html/block_views/registry.py).
    Defined under `model_unfolder/renderers/html/block_views/...`.
 
@@ -165,7 +165,7 @@ Detected from `num_nextn_predict_layers` / `num_mtp_layers`; drawn as a stacked-
 
 Built in `_MODALITY_BLOCK_SPECS`; structural path data comes from the modality builders.
 
-| Block | id / detail_view | Defined in |
+| Block | id / view | Defined in |
 |---|---|---|
 | Vision → tokens | `vision_path` | model_unfolder/renderers/html/metadata_modalities.py |
 | Audio → tokens | `audio_path` | model_unfolder/renderers/html/metadata_modalities.py |
@@ -190,10 +190,10 @@ Built in `_MODALITY_BLOCK_SPECS`; structural path data comes from the modality b
 
 ## Detail views ("opening architectures")
 
-When a block with a `detail_view` is clicked, this renderer draws the expansion.
+When a block with a `view` is clicked, the single recursive router draws the expansion.
 Routing table: [block_views/registry.py](../model_unfolder/renderers/html/block_views/registry.py).
 
-| `detail_view` | Builder | Defined in |
+| `view` | Builder | Defined in |
 |---|---|---|
 | `attention` (router) | `build_attention_view` → dispatch by kind | model_unfolder/renderers/html/block_views/attention.py |
 | ↳ MHA / SDPA (default) | `build` | model_unfolder/renderers/html/block_views/attention_types/multi_head.py |

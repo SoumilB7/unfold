@@ -30,3 +30,6 @@ dev = ["pytest>=7", "transformers>=4.40"]
 
 [tool.setuptools.packages.find]
 include = ["model_unfolder*"]
+
+[tool.setuptools.package-data]
+"model_unfolder.everchanging" = ["*.yaml", "*.yml"]
