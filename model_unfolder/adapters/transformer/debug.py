@@ -26,10 +26,10 @@ from typing import Any
 from ...everchanging import load_ignored_fields
 
 # --- the one switch -------------------------------------------------------
-# Flip to False here to silence all parse-time diagnostics, or set the env var
-# MODEL_UNFOLDER_DEBUG to one of the falsey values below.
-DEBUG: bool = os.environ.get("MODEL_UNFOLDER_DEBUG", "1").lower() not in (
-    "0", "false", "no", "off", "",
+# Off by default. Turn the parse-time diagnostics back on by setting DEBUG = True
+# here, or by exporting MODEL_UNFOLDER_DEBUG=1 (any of 1/true/yes/on).
+DEBUG: bool = os.environ.get("MODEL_UNFOLDER_DEBUG", "0").lower() in (
+    "1", "true", "yes", "on",
 )
 
 # Non-architectural config vocabulary lives as editable data in
