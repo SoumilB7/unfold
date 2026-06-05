@@ -16,20 +16,25 @@ def _attn_params(a: AttentionSpec, hidden: int) -> int:
     nkv = a.num_kv_heads or nq
 
     if a.kind == "mla":
-        # Q path: optional LoRA down then up to (nope+rope)*nq
-        q_out = nq * head_dim
+        # MLA splits each head into a non-positional (nope) part and a rotary
+        # (rope) part for Q/K, with V its own width.  These dims are what make
+        # the count correct — falling back to head_dim (hidden/num_heads) badly
+        # undercounts (DeepSeek heads are 192/128 wide, not hidden/num_heads).
+        qk_rope = a.qk_rope_head_dim or a.rope_dim or 0
+        qk_nope = a.qk_nope_head_dim or max(head_dim - qk_rope, 0) or head_dim
+        qk_head = qk_nope + qk_rope          # Q/K per-head width
+        v_head = a.v_head_dim or head_dim    # V per-head width
+        # Q path: hidden -> [q_lora] -> nq*qk_head  (LoRA down/up when present)
         if a.q_lora_rank:
-            q = h * a.q_lora_rank + a.q_lora_rank * q_out
+            q = h * a.q_lora_rank + a.q_lora_rank * (nq * qk_head)
         else:
-            q = h * q_out
-        # KV path: hidden -> (kv_lora_rank + rope_dim), then up to nq*(nope+v)
+            q = h * (nq * qk_head)
+        # KV path: hidden -> (kv_lora + rope), then kv_lora -> nq*(nope + v)
         kv_lora = a.kv_lora_rank or 0
-        rope = a.rope_dim or 0
-        kv_down = h * (kv_lora + rope)
-        kv_up = kv_lora * (nq * head_dim * 2)  # K nope + V — rough
-        kv = kv_down + kv_up
-        out = nq * head_dim * h
-        return q + kv + out
+        kv_a = h * (kv_lora + qk_rope)
+        kv_b = kv_lora * (nq * (qk_nope + v_head))
+        out = (nq * v_head) * h
+        return q + kv_a + kv_b + out
 
     qkv = h * (nq + 2 * nkv) * head_dim
     out = nq * head_dim * h

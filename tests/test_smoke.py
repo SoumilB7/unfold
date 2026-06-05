@@ -904,6 +904,28 @@ def test_attention_detail_views_dispatch_by_kind():
     assert "Scaled Dot-Product Attention" not in html
 
 
+def test_param_counts_match_published_within_tolerance():
+    """MLA head geometry must be read so total/active params are accurate.
+
+    Regression for the bug where MLA used head_dim = hidden/num_heads (≈56 for
+    DeepSeek) instead of qk_nope+qk_rope (192) / v_head_dim (128), undercounting
+    every attention layer and pushing active params ~15% low.
+    """
+    # (config, published_total_B, published_active_B)
+    cases = [
+        (DEEPSEEK_V3_CONFIG, 671, 37),
+        (KIMI_K2_CONFIG, 1000, 32),  # Kimi-K2: ~1T total / 32B active
+    ]
+    for cfg, pub_total, pub_active in cases:
+        p = unfold(cfg).to_ir()["params"]
+        total_b = p["total"] / 1e9
+        active_b = p["active"] / 1e9
+        assert abs(total_b - pub_total) / pub_total < 0.05, \
+            f"total {total_b:.1f}B vs published {pub_total}B"
+        assert abs(active_b - pub_active) / pub_active < 0.08, \
+            f"active {active_b:.1f}B vs published {pub_active}B"
+
+
 def test_model_id_uses_hf_token_env_and_explicit_override():
     calls = []
 

@@ -21,6 +21,11 @@ class AttentionSpec:
     kv_lora_rank: Optional[int] = None
     q_lora_rank: Optional[int] = None
     rope_dim: Optional[int] = None
+    # MLA decoupled head geometry (DeepSeek/Kimi): Q/K split into nope+rope, V
+    # has its own width. Needed for an accurate MLA parameter count.
+    qk_nope_head_dim: Optional[int] = None
+    qk_rope_head_dim: Optional[int] = None
+    v_head_dim: Optional[int] = None
     mask: str = "causal"            # "causal" | "sliding" | "chunked" | "global"
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
@@ -140,6 +145,9 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "mask": a.mask,
         "window_size": a.window_size,
         "kv_source_layer": a.kv_source_layer,
+        "qk_nope_head_dim": a.qk_nope_head_dim,
+        "qk_rope_head_dim": a.qk_rope_head_dim,
+        "v_head_dim": a.v_head_dim,
         "qk_norm": a.qk_norm,
         "bias": a.bias,
         "shared": a.shared,

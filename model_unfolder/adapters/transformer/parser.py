@@ -233,6 +233,11 @@ def parse(cfg: Any) -> ModelIR:
     q_lora_rank  = _g(text_cfg, "q_lora_rank")
     kv_lora_rank = _g(text_cfg, "kv_lora_rank")
     is_mla       = bool(kv_lora_rank)
+    # MLA decoupled head geometry — Q/K split into nope + rope, V its own width
+    # (DeepSeek/Kimi). Needed for an accurate MLA parameter count.
+    qk_nope_head_dim = _g(text_cfg, "qk_nope_head_dim")
+    qk_rope_head_dim = _g(text_cfg, "qk_rope_head_dim")
+    v_head_dim_cfg   = _g(text_cfg, "v_head_dim")
     has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
     if has_multi_query_flag:
         num_kv_heads = 1
@@ -345,6 +350,9 @@ def parse(cfg: Any) -> ModelIR:
             head_dim=layer_head_dim,
             kv_lora_rank=kv_lora_rank if is_mla else None,
             q_lora_rank=q_lora_rank if is_mla else None,
+            qk_nope_head_dim=qk_nope_head_dim if is_mla else None,
+            qk_rope_head_dim=qk_rope_head_dim if is_mla else None,
+            v_head_dim=v_head_dim_cfg if is_mla else None,
             rope_dim=rope_dim_value,
             mask=mask,
             window_size=window,
