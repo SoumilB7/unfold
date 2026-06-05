@@ -1,6 +1,8 @@
 """Reusable FFN-family child block declarations."""
 from __future__ import annotations
 
+from ....block_schema import Block
+
 from ....ir import FFNSpec
 from ....labels import activation_label, moe_router_detail
 from ..common import format_dim as _fmt
@@ -12,7 +14,7 @@ def ffn_view(ffn: FFNSpec) -> str:
     return "gated_ffn" if ffn.gated else "dense_ffn"
 
 
-def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[dict]:
+def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
@@ -25,7 +27,7 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[dict]:
     return children
 
 
-def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[dict]:
+def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
     return [
         {
             "id": "up_proj",
@@ -48,7 +50,7 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[di
     ]
 
 
-def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[dict]:
+def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
     return [
         {
             "id": "gate_proj",
@@ -88,7 +90,7 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
     return {"routing": ffn.routing}
 
 
-def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
+def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
@@ -145,7 +147,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[dict]:
     ]
 
 
-def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[dict]:
+def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
     return [
         {
             "id": "expert_gate_proj",

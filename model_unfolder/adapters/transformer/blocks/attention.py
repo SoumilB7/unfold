@@ -1,11 +1,13 @@
 """Reusable attention-family child block declarations."""
 from __future__ import annotations
 
+from ....block_schema import Block
+
 from ....ir import AttentionSpec
 from ..common import format_dim as _fmt
 
 
-def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     builders = {
         "mla": _mla_child_blocks,
         "ssm": _ssm_child_blocks,
@@ -17,7 +19,7 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[d
     return builder(attention, hidden_size)
 
 
-def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     num_heads = attention.num_heads or 0
     num_kv_heads = attention.num_kv_heads or num_heads
@@ -83,7 +85,7 @@ def _sdpa_detailed_child_blocks(
     num_kv_heads: int,
     d_k: str,
     q_per_group: int | None,
-) -> list[dict]:
+) -> list[Block]:
     kind = attention.kind
     cross_attention = attention.cross_attention
     kv_label = "1 shared K/V head" if kind == "mqa" else f"{num_kv_heads} KV-heads"
@@ -210,7 +212,7 @@ def _sdpa_operation_meta(
     )
 
 
-def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     q_rank = _fmt(attention.q_lora_rank) if attention.q_lora_rank else "direct"
     kv_rank = _fmt(attention.kv_lora_rank)
@@ -363,7 +365,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
     ]
 
 
-def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     state = _fmt(attention.head_dim)
     return [
@@ -400,7 +402,7 @@ def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
     ]
 
 
-def _recurrent_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _recurrent_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     width = _fmt(attention.head_dim)
     return [
@@ -431,7 +433,7 @@ def _recurrent_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[
     ]
 
 
-def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     heads = attention.num_heads or 0
     return [
@@ -468,7 +470,7 @@ def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]
     ]
 
 
-def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[dict]:
+def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     num_heads = attention.num_heads or 0
     num_kv_heads = attention.num_kv_heads or num_heads

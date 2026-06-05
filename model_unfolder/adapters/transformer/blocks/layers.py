@@ -1,6 +1,7 @@
 """Reusable decoder-layer topology declarations."""
 from __future__ import annotations
 
+from ....block_schema import Block
 from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
 from .attention import attention_child_blocks
@@ -10,7 +11,7 @@ from .feed_forward import ffn_child_blocks, ffn_view
 
 def decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
-) -> list[dict]:
+) -> list[Block]:
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     return [
@@ -41,7 +42,7 @@ def decoder_layer_blocks(
 
 def parallel_decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
-) -> list[dict]:
+) -> list[Block]:
     """Blocks for parallel residual topology (GPT-NeoX / GPT-J / Falcon).
 
     Attention and FFN share a single input norm. Their outputs are summed into
@@ -82,7 +83,7 @@ def parallel_decoder_layer_blocks(
     ]
 
 
-def _attention_block(attention: AttentionSpec, hidden_size: int) -> dict:
+def _attention_block(attention: AttentionSpec, hidden_size: int) -> Block:
     return {
         "id": "attn",
         "role": "attention",
@@ -95,7 +96,7 @@ def _attention_block(attention: AttentionSpec, hidden_size: int) -> dict:
     }
 
 
-def _ffn_block(ffn: FFNSpec, hidden_size: int) -> dict:
+def _ffn_block(ffn: FFNSpec, hidden_size: int) -> Block:
     return {
         "id": "ffn",
         "role": "ffn",
@@ -108,7 +109,7 @@ def _ffn_block(ffn: FFNSpec, hidden_size: int) -> dict:
     }
 
 
-def _norm_block(block_id: str, label: str, title: str, description: str) -> dict:
+def _norm_block(block_id: str, label: str, title: str, description: str) -> Block:
     return {
         "id": block_id,
         "role": "norm",

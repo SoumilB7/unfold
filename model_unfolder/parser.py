@@ -65,9 +65,21 @@ def config_to_ir(
         raise err
     ir = adapter.parse(cfg)
     _ensure_parsable(ir, cfg_or_id)
+    _debug_validate_blocks(ir)
     if inspect_code:
         _attach_code_evidence(ir, cfg, token=token, source=code_source)
     return ir
+
+
+def _debug_validate_blocks(ir: ModelIR) -> None:
+    """When debug is on, surface any block-schema problems (unregistered view,
+    unknown key, id collisions). Off by default — this is a developer aid."""
+    from .adapters.transformer import debug
+    if not debug.DEBUG:
+        return
+    from .block_schema import validate_block_tree
+    for problem in validate_block_tree(ir):
+        _report_error("BlockSchema", problem)
 
 
 def _ensure_parsable(ir: ModelIR, ref: Any) -> None:

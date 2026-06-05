@@ -1,6 +1,8 @@
 """Model-level transformer block declarations."""
 from __future__ import annotations
 
+from ....block_schema import Block
+
 from ..common import format_dim as _fmt
 
 
@@ -18,7 +20,7 @@ def mtp_head_block(
     vocab_size: int,
     tie_word_embeddings: bool,
     block_children: list | None = None,
-) -> dict:
+) -> Block:
     """Model-level Multi-Token Prediction head stack (DeepSeek-V3 style).
 
     ``num_nextn_predict_layers`` sequential modules, each predicting one extra
@@ -76,7 +78,7 @@ def mtp_head_block(
     }
 
 
-def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> list[dict]:
+def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
     tied = " (tied with output)" if tie_word_embeddings else ""
