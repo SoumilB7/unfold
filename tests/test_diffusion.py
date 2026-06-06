@@ -11,11 +11,13 @@ from model_unfolder.adapters.transformer import parser as transformer
 from model_unfolder.block_schema import validate_block_tree, validate_click_coupling
 
 
-# Real FLUX.1-dev transformer/config.json values.
+# Real FLUX.1-dev transformer/config.json values (+ pipeline wiring the by-ID
+# loader merges in: text encoders, scheduler, scheduler config).
 FLUX = {
     "_class_name": "FluxTransformer2DModel",
     "_diffusers_version": "0.30.0",
     "attention_head_dim": 128,
+    "axes_dims_rope": [16, 56, 56],
     "guidance_embeds": True,
     "in_channels": 64,
     "joint_attention_dim": 4096,
@@ -24,6 +26,10 @@ FLUX = {
     "num_single_layers": 38,
     "patch_size": 1,
     "pooled_projection_dim": 768,
+    "scheduler": ["diffusers", "FlowMatchEulerDiscreteScheduler"],
+    "text_encoder": ["transformers", "CLIPTextModel"],
+    "text_encoder_2": ["transformers", "T5EncoderModel"],
+    "_scheduler_config": {"num_train_timesteps": 1000, "shift": 3.0},
 }
 
 # Real PixArt-alpha transformer config (single-stream, cross-attention to text).
@@ -66,11 +72,13 @@ def test_flux_layer_count_and_geometry():
     assert ir.hidden_size == 24 * 128 == 3072
     # No token vocabulary in a denoiser.
     assert ir.vocab_size == 0
-    # DiT attention is full multi-head self-attention without rotary.
+    # DiT attention is full bidirectional multi-head attention with axial RoPE.
     attn = ir.layers[0].attention
     assert attn.kind == "mha"
     assert attn.num_kv_heads == attn.num_heads == 24
-    assert attn.no_rope is True
+    assert attn.mask == "full"
+    assert attn.no_rope is False
+    assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
     # DiT FFN is a non-gated GELU-family MLP.
     assert ir.layers[0].ffn.gated is False
 

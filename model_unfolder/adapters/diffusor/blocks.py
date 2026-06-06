@@ -41,6 +41,21 @@ def diffusion_render_spec(geom: dict) -> dict:
     }
 
 
+def _wrap_two_lines(text: str) -> list[str]:
+    """Split a short label into ~two balanced lines on word boundaries."""
+    words = text.split()
+    if len(words) <= 1:
+        return [text]
+    best, best_gap = 1, 10**9
+    full = len(text)
+    for i in range(1, len(words)):
+        left = len(" ".join(words[:i]))
+        gap = abs(left - (full - left))
+        if gap < best_gap:
+            best, best_gap = i, gap
+    return [" ".join(words[:best]), " ".join(words[best:])]
+
+
 def diffusion_loop_blocks(geom: dict) -> list[Block]:
     """The sampling-loop nodes — the hero view. The ``denoiser`` node opens the
     DiT network (``model_blocks``) as its drill-down."""
@@ -68,12 +83,6 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         p for p in (
             f"{double} MM-DiT dual-stream" if double else "",
             f"{single} single-stream" if single else "",
-        ) if p
-    ) or "transformer"
-    denoiser_sub = " + ".join(
-        p for p in (
-            f"{double} MM-DiT" if double else "",
-            f"{single} single" if single else "",
         ) if p
     ) or "transformer"
 
@@ -132,7 +141,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "id": "denoiser",
             "role": "attention",
             "kind": "denoiser",
-            "label": ["DiT Denoiser", f"{denoiser_sub} blocks"],
+            "label": ["DiT Denoiser"],
             "title": "DiT denoiser",
             "description": (
                 f"The network applied at every step: a {depth_phrase} diffusion "
@@ -145,7 +154,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "id": "scheduler",
             "role": "norm",
             "kind": "scheduler",
-            "label": [scheduler, "scheduler"] if scheduler else ["Scheduler", "step"],
+            "label": _wrap_two_lines(scheduler) if scheduler else ["Scheduler", "step"],
             "title": f"Scheduler — {scheduler}" if scheduler else "Scheduler step",
             "description": (
                 f"{scheduler or 'The sampler'} combines the predicted noise with "

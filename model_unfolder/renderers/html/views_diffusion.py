@@ -163,25 +163,6 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
         "rx": 20, "ry": 20, "fill": C["bg_inner"], "opacity": 0.55,
         "stroke": C["block"], "stroke-width": 1.1, "stroke-dasharray": "6 5",
     }))
-    # Recursion badge: the real scheduler drives the loop (named from config),
-    # repeated once per sampling step.  No invented step count.
-    badge = f"⟳  {scheduler}" if scheduler else "⟳  per sampling step"
-    badge_w = max(118, 11 * len(badge))
-    parts.append(_svg_tag("rect", {
-        "x": loop_x + loop_w - badge_w - 12, "y": loop_y + 12, "width": badge_w, "height": 28,
-        "rx": 14, "ry": 14, "fill": "rgba(255,255,255,0.8)",
-        "stroke": C["border"], "stroke-width": 0.6,
-    }))
-    parts.append(_svg_text(
-        loop_x + loop_w - badge_w / 2 - 12, loop_y + 27, badge,
-        {"text-anchor": "middle", "dominant-baseline": "central",
-         "fill": C["text"], "font-family": FONT_HEAD, "font-size": 17},
-    ))
-    parts.append(_svg_text(
-        loop_x + 18, loop_y + loop_h - 14, "iterate over N sampling steps  ·  t : noise → clean",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 11},
-    ))
 
     # --- Nodes ---
     image = _rect_block(parts, info, shadow_id, "image",
@@ -190,7 +171,8 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                       cx - 96, 116, 192, 46, label("vae_decode", "VAE decode"), font_size=16)
 
     # Denoiser — the hero. Faint offset cards behind imply an expandable stack.
-    den_x, den_y, den_w, den_h = cx - 152, 224, 304, 104
+    # Pushed down a touch so the badge band above it stays clear.
+    den_x, den_y, den_w, den_h = cx - 152, 240, 304, 100
     for off in (12, 6):
         parts.append(_svg_tag("rect", {
             "x": den_x + off, "y": den_y - off, "width": den_w, "height": den_h,
@@ -199,17 +181,11 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
         }))
     denoiser = _rect_block(parts, info, shadow_id, "denoiser",
                            den_x, den_y, den_w, den_h,
-                           label("denoiser", ["Transformer", "Denoiser (DiT)"]), font_size=19)
-    parts.append(_svg_text(
-        denoiser["cx"], denoiser["bottom"] - 15, "click to open ▾",
-        {"text-anchor": "middle", "dominant-baseline": "central",
-         "fill": C["text_block"], "font-family": FONT_MONO, "font-size": 11,
-         "opacity": 0.85, "pointer-events": "none"},
-    ))
+                           "DiT Denoiser", font_size=20)
 
     scheduler = _rect_block(parts, info, shadow_id, "scheduler",
-                            sched_cx - 72, 250, 144, 64,
-                            label("scheduler", ["Scheduler", "step"]), font_size=16)
+                            sched_cx - 78, den_y + 6, 156, den_h - 12,
+                            label("scheduler", ["Scheduler", "step"]), font_size=15)
 
     timestep = _rect_block(parts, info, shadow_id, "timestep",
                            150 - 86, 432, 172, 52, label("timestep", "Timestep t"), font_size=15)
