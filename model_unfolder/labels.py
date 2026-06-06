@@ -15,6 +15,7 @@ from __future__ import annotations
 _MASK_SHORT = {
     "sliding": "SWA",
     "global": "full",
+    "full": "full",
     "causal": "causal",
     "chunked": "chunked",
     "compressed_sparse": "CSA",
@@ -23,6 +24,7 @@ _MASK_SHORT = {
 _MASK_LONG = {
     "sliding": "Sliding-window",
     "global": "Full / global",
+    "full": "Full (bidirectional)",
     "causal": "Causal",
     "chunked": "Chunked",
     "compressed_sparse": "Compressed sparse",
@@ -31,6 +33,7 @@ _MASK_LONG = {
 _MASK_TITLE = {
     "sliding": "Sliding-window attention",
     "global": "Full-context attention",
+    "full": "Full bidirectional attention (no causal mask)",
     "causal": "Causal attention",
     "chunked": "Chunked attention",
     "compressed_sparse": "Compressed sparse attention",
@@ -98,6 +101,11 @@ def mask_chip(attention: dict) -> str:
 
 
 def kind_short(attention: dict) -> str:
+    variant = attention.get("variant")
+    if variant and variant.get("short"):
+        # Variant is self-describing (e.g. "Joint Attn · MM-DiT"); it already
+        # encodes everything, so don't also append the auto QK/bias/NoPE tags.
+        return f"{variant['short']} · {variant['tag']}" if variant.get("tag") else variant["short"]
     short = _KIND_SHORT.get(attention.get("kind", ""), "MHA")
     if attention.get("cross_attention"):
         short = f"{short} XAttn"
@@ -114,6 +122,9 @@ def kind_short(attention: dict) -> str:
 
 
 def kind_long(attention: dict) -> str:
+    variant = attention.get("variant")
+    if variant and (variant.get("title") or variant.get("short")):
+        return variant.get("title") or variant["short"]
     base = _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
     if attention.get("cross_attention"):
         base = {
@@ -205,6 +216,9 @@ def activation_label(name: str | None) -> str:
 
 def describe_attention(attention: dict) -> str:
     """Multi-clause human description suitable for tooltips and cards."""
+    variant = attention.get("variant")
+    if variant and variant.get("desc"):
+        return variant["desc"]
     kind = attention.get("kind")
     if attention.get("cross_attention"):
         kv_heads = attention.get("num_kv_heads") or attention.get("num_heads")

@@ -36,6 +36,10 @@ class AttentionSpec:
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
     index_topk: Optional[int] = None        # CSA indexer fan-in, when declared
+    # Self-describing label override for attention variants the generic kind/mask
+    # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
+    # joint attention). Keys: short, tag, label (list[str]), title, desc.
+    variant: Optional[dict] = None
 
 
 @dataclass
@@ -72,6 +76,10 @@ class LayerSpec:
             a.cross_attention,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
+            # Parallel-residual topology (a side-lane FFN) is a structural
+            # difference the spec fields above don't capture — it distinguishes
+            # e.g. Flux double-stream (sequential) from single-stream (parallel).
+            any(block.get("lane") for block in self.blocks),
             any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
         )
 
@@ -155,6 +163,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "cross_attention": a.cross_attention,
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
+        "variant": a.variant,
     }
 
 

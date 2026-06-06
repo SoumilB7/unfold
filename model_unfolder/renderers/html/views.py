@@ -484,9 +484,10 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_hatch_pattern(mount_id))
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_card"], stroke=C["border"], stroke_width=0.5))
 
-    # Green-family palette so the layer map shares the diagram's theme.
-    # Ordered dark → light so consecutive groups read like a gradient step.
-    palette = ["#0F6E56", "#1F9E78", "#5BB89A", "#0A4F3F", "#7FCFB4", "#0E5C48", "#A0E3CD"]
+    # Theme gradient (dark → light) so the layer map shares the diagram's colour
+    # family — teal for transformers, blue for diffusion. Driven by the active
+    # palette, not hardcoded, so a new theme recolours the map for free.
+    palette = C.get("map_palette") or [C["block"], C["block_alt"]]
     sig_to_color = {group["sig"]: palette[i % len(palette)] for i, group in enumerate(info["groups"])}
 
     strip_x, strip_y, strip_w, strip_h = 80, 90, w - 160, 36

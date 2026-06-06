@@ -6,7 +6,7 @@ from .interactions import _click_script
 from .metadata import _block_lookup, _group_label, _make_info, _meta_for
 from .sections import _details_section, _header, _stats_banner
 from .styles import _style
-from .theme import C, FONT_IMPORT, FONT_LINK
+from .theme import C, FONT_IMPORT, FONT_LINK, use_theme
 from .utils import _attr, _html
 from .views import _build_architecture_view, _build_layer_map
 
@@ -20,7 +20,22 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
     parallel vs sequential), one arch panel is emitted per (group × variant)
     combination.  All panels share the same DOM tree, hidden via CSS and
     toggled by radio buttons in a pill bar.  Pure-CSS toggle, no JS.
+
+    The diagram is themed by ``extras["render"]["theme"]`` (e.g. ``"blue"`` for
+    diffusion); the whole fragment is built under that palette and restored after.
     """
+    render = (ir.get("extras") or {}).get("render") or {}
+    with use_theme(render.get("theme")):
+        # Diffusion models render as a sampling loop (the hero) with the DiT
+        # denoiser drilling out of it — a different top-level topology than the
+        # transformer layer stack, so it has its own fragment builder.
+        if render.get("family") == "diffusion":
+            from .views_diffusion import render_diffusion_fragment
+            return render_diffusion_fragment(ir, mount_id, include_font_import)
+        return _render_fragment_body(ir, mount_id, include_font_import)
+
+
+def _render_fragment_body(ir: dict, mount_id: str, include_font_import: bool) -> str:
     info = _make_info(ir)
     groups = info["groups"]
     dominant_idx = groups.index(info["dominant"]) if groups else 0

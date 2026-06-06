@@ -157,6 +157,13 @@ def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
         # registry (e.g. old state-spaces/mamba-*), download the plain
         # config.json directly instead of running anything.
         if _should_retry_with_remote_code(e) or _should_fallback_to_raw_json(e):
+            # Diffusion pipelines (Flux/SD3/PixArt) have no transformers-style
+            # root config.json — they're described by model_index.json with the
+            # denoiser in a transformer/ subfolder. Routed internally so the one
+            # unfold() entry point handles them transparently.
+            diffusion = _load_diffusion_config(model_id, auth_token)
+            if diffusion is not None:
+                return diffusion
             try:
                 return _load_raw_config_json(model_id, auth_token)
             except ImportError:
@@ -164,6 +171,12 @@ def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
             except Exception as e2:
                 raise _classify_load_error(model_id, e2) from e2
         raise _classify_load_error(model_id, e) from e
+
+
+def _load_diffusion_config(model_id: str, auth_token: Any):
+    """Try to load a diffusers pipeline's denoiser config; None if not one."""
+    from .adapters.diffusor.loader import load_diffusion_config_by_id
+    return load_diffusion_config_by_id(model_id, auth_token)
 
 
 def _classify_load_error(model_id: str, error: Exception) -> UnfoldError:

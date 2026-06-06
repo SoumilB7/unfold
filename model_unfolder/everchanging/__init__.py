@@ -33,8 +33,13 @@ def _load(filename: str) -> dict:
 
 
 def load_aliases() -> dict[str, list[str]]:
-    """Load the field-alias table from ``aliases.yaml``."""
+    """Load the transformer field-alias table from ``aliases.yaml``."""
     return _load("aliases.yaml")
+
+
+def load_diffusion_aliases() -> dict[str, list[str]]:
+    """Load the diffusion (DiT/MMDiT) field-alias table from ``diffusion_aliases.yaml``."""
+    return _load("diffusion_aliases.yaml")
 
 
 def load_ignored_fields() -> dict[str, list[str]]:
@@ -82,4 +87,4 @@ def _unquote(token: str) -> str:
     return token
 
 
-__all__ = ["load_aliases", "load_ignored_fields"]
+__all__ = ["load_aliases", "load_diffusion_aliases", "load_ignored_fields"]
