@@ -264,6 +264,19 @@ def _has_cross_attention_adapter(layer: dict) -> bool:
 
 def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
     badges: list[dict[str, str]] = []
+    # UNet denoisers have no flat layer stack (no dominant layer); badge the
+    # U-net shape instead.
+    unet = (ir.get("extras") or {}).get("unet")
+    if unet or not info.get("dominant"):
+        if unet:
+            n = len(unet.get("down") or [])
+            badges.append({"text": "Conv U-Net", "title": "Convolutional U-net denoiser"})
+            if n:
+                badges.append({"text": f"{n} resolution stages", "title": ""})
+            if unet.get("cross_attention_dim"):
+                badges.append({"text": "Cross-attn", "title": f"Cross-attention to text (dim {unet['cross_attention_dim']})"})
+        return badges + _modality_badges(ir)
+
     attention = info["dominant"]["spec"]["attention"]
     ffn = info["dominant"]["spec"]["ffn"]
     kind = attention.get("kind", "")

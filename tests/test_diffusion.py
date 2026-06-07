@@ -269,6 +269,52 @@ def test_diffusion_blocks_and_clicks_valid(cfg):
     assert validate_click_coupling(html) == []
 
 
+# Real SDXL-base UNet config shape (+ pipeline wiring).
+SDXL_UNET = {
+    "_class_name": "UNet2DConditionModel", "_repo_id": "stabilityai/stable-diffusion-xl-base-1.0",
+    "in_channels": 4, "out_channels": 4, "block_out_channels": [320, 640, 1280],
+    "layers_per_block": 2, "cross_attention_dim": 2048, "transformer_layers_per_block": [1, 2, 10],
+    "down_block_types": ["DownBlock2D", "CrossAttnDownBlock2D", "CrossAttnDownBlock2D"],
+    "up_block_types": ["CrossAttnUpBlock2D", "CrossAttnUpBlock2D", "UpBlock2D"],
+    "mid_block_type": "UNetMidBlock2DCrossAttn", "addition_embed_type": "text_time",
+    "scheduler": ["diffusers", "EulerDiscreteScheduler"], "_scheduler_config": {"num_train_timesteps": 1000},
+    "text_encoder": ["transformers", "CLIPTextModel"], "text_encoder_2": ["transformers", "CLIPTextModelWithProjection"],
+}
+
+
+def test_unet_is_claimed_by_diffusor_not_transformer():
+    assert diffusor.matches(SDXL_UNET) is True
+    assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
+
+
+def test_unet_structure_parsed():
+    ir = config_to_ir(SDXL_UNET)
+    u = ir.extras["unet"]
+    assert ir.num_layers == 0                       # no flat transformer stack
+    assert ir.hidden_size == 1280                    # widest stage
+    assert [d["channels"] for d in u["down"]] == [320, 640, 1280]
+    # First down stage is a plain DownBlock2D (no cross-attention); the rest have it.
+    assert u["down"][0]["attn"] is False and u["down"][1]["attn"] is True
+    # transformer_layers_per_block carried through.
+    assert u["down"][2]["transformers"] == 10
+    assert u["downscale"] == 4                        # 3 stages -> 2**2
+    assert u["cross_attention_dim"] == 2048
+
+
+def test_unet_renders_loop_and_ushape(monkeypatch):
+    ir = config_to_ir(SDXL_UNET)
+    assert validate_block_tree(ir) == []
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert validate_click_coupling(html) == []
+    assert "SAMPLING LOOP" in html                    # hero loop reused
+    assert "U-Net" in html                            # denoiser node label
+    assert "Conv U-Net" in html                       # header badge
+    assert "skip connections" in html                 # the U-shape view
+    assert "DENOISER LAYER MAP" not in html           # no flat layer map for UNet
+    # Name from the model tag.
+    assert ir.name == "stable-diffusion-xl-base-1.0"
+
+
 def test_dit_dialect_field_aliases():
     """DiT variants with different field spellings parse correctly:
     AuraFlow's num_mmdit_layers/num_single_dit_layers, and Hunyuan-DiT declaring

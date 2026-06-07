@@ -48,13 +48,15 @@ from .views import _build_architecture_view, _build_layer_map, _is_resolved_diff
 def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool) -> str:
     from .theme import FONT_IMPORT  # local: keep import surface with the others
 
-    info = _make_info(ir)
+    # A UNet denoiser has no flat transformer-layer stack — its architecture is
+    # the U-shape drawn in the denoiser card, so the DiT layer-map / per-layer
+    # card machinery is skipped.
+    is_unet = bool((ir.get("extras") or {}).get("unet"))
+    info = _make_info(ir) if ir.get("layers") else _stub_info()
 
     loop_svg = _build_loop_view(ir, info, mount_id)
     loop_cards = _build_loop_cards(ir, info, mount_id)          # panel[0]  (L2)
-    dit_cards = _build_inspect_cards(ir, info, mount_id)        # panel[1]  (L3) — DiT blocks
-    loop_child_cards = _build_loop_child_cards(ir, info, mount_id)
-    dit_nested = _build_nested_inspect_panels(ir, info, mount_id)  # panel[2+] (L4+)
+    loop_child_cards = _build_loop_child_cards(ir, info, mount_id)  # VAE children
 
     style = _style(mount_id)
 
@@ -73,23 +75,28 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
         '<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2">'
         f'{loop_cards}</div>'
     )
-    nested_levels = [dit_cards + loop_child_cards] + dit_nested
+
+    if is_unet:
+        # UNet: the denoiser view is a leaf; only the VAE-decoder children need a
+        # deeper panel.  No DiT cards, no per-layer map.
+        nested_levels = [loop_child_cards] if loop_child_cards else []
+        layer_map_section = ""
+    else:
+        dit_cards = _build_inspect_cards(ir, info, mount_id)        # panel[1] (L3)
+        dit_nested = _build_nested_inspect_panels(ir, info, mount_id)  # panel[2+] (L4+)
+        nested_levels = [dit_cards + loop_child_cards] + dit_nested
+        map_svg = _build_layer_map(ir, info, mount_id)
+        n_layers = len(ir.get("layers", []))
+        n_groups = len(info["groups"])
+        map_sub = ("Denoiser layers · all structurally identical" if n_groups <= 1
+                   else f"Denoiser · {n_groups} block types across {n_layers} layers")
+        layer_map_section = _details_section("DENOISER LAYER MAP", map_sub, map_svg)
+
     nested_panels = "".join(
         f'<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" '
         f'data-depth="{i + 3}">{level}</div>'
         for i, level in enumerate(nested_levels)
     )
-
-    # The layer map describes the DENOISER's own stack (now split into double- vs
-    # single-stream groups), so label it as such.
-    map_svg = _build_layer_map(ir, info, mount_id)
-    n_layers = len(ir.get("layers", []))
-    n_groups = len(info["groups"])
-    if n_groups <= 1:
-        map_sub = "Denoiser layers · all structurally identical"
-    else:
-        map_sub = f"Denoiser · {n_groups} block types across {n_layers} layers"
-    layer_map_section = _details_section("DENOISER LAYER MAP", map_sub, map_svg)
     evidence_section = _code_evidence_section(ir)
 
     return f"""
@@ -112,11 +119,18 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
 """
 
 
+def _stub_info() -> dict:
+    """Minimal info for diffusion models with no flat layer stack (UNet)."""
+    return {"groups": [], "blocks": {}, "meta": {}, "dominant": None, "layer_sigs": []}
+
+
 def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
-    """L2 cards for the loop nodes; the denoiser card embeds the DiT architecture."""
-    loop_blocks = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks") or []
+    """L2 cards for the loop nodes; the denoiser card embeds its architecture —
+    the DiT stack, or the UNet U-shape (per ``render.denoiser_view``)."""
+    render = (ir.get("extras") or {}).get("render") or {}
+    loop_blocks = render.get("loop_blocks") or []
+    denoiser_view = render.get("denoiser_view", "dit")
     cards = [_hint_card("default", "Click a block — open the Denoiser to see its architecture")]
-    dit_svg = _build_architecture_view(ir, info, mount_id)
     for block in loop_blocks:
         bid = block.get("id")
         if not bid:
@@ -124,7 +138,11 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
         title = block.get("title") or bid
         desc = block.get("description", "")
         if bid == "denoiser":
-            cards.append(_rich_card(bid, title, desc, dit_svg))
+            if denoiser_view == "unet":
+                svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
+            else:
+                svg = _build_architecture_view(ir, info, mount_id)
+            cards.append(_rich_card(bid, title, desc, svg) if svg else _simple_card(bid, title, desc))
         elif block.get("view"):
             # e.g. the VAE decoder — render its own drill-down view as the card.
             svg = block_detail_svg(ir, info, mount_id, block)

@@ -34,6 +34,7 @@ from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, parallel_decoder_layer
 from ..transformer.common import architecture_name, get_config_value as _g, model_name
 from .blocks import diffusion_render_spec
+from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
 
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
@@ -58,6 +59,44 @@ def _resolve(cfg: Any, canonical: str, default=None):
 # Adapter interface
 # ---------------------------------------------------------------------------
 
+def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
+    """Build the IR for a UNet denoiser: no flat layer stack — the U-net
+    structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
+    unet = parse_unet(cfg)
+    boc = unet["block_out_channels"]
+    if not boc:
+        warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
+    hidden = max(boc) if boc else 0
+    text_encoders = _detect_text_encoders(cfg)
+    geom = unet_geom(cfg, unet, text_encoders=text_encoders, scheduler_geom=_scheduler_geom(cfg))
+    geom["vae"] = _vae_geom(cfg)
+
+    extras: dict = {"render": unet_render_spec(geom), "unet": unet}
+    meta = {k: v for k, v in {
+        "unet_stages": len(boc) or None,
+        "in_channels": unet["in_channels"],
+        "cross_attention_dim": unet["cross_attention_dim"],
+        "downscale": unet["downscale"],
+        "text_encoders": text_encoders or None,
+        "scheduler": geom.get("scheduler"),
+        "scheduler_train_timesteps": geom.get("scheduler_train_timesteps"),
+    }.items() if v is not None}
+    if meta:
+        extras["diffusion"] = meta
+
+    return ModelIR(
+        name=_diffusion_name(cfg, arch_name),
+        architecture=arch_name,
+        vocab_size=0,
+        hidden_size=hidden,           # widest stage — for the "Hidden" stat
+        max_position_embeddings=None,
+        tie_word_embeddings=True,
+        layers=[],                    # a U-net has no flat transformer-layer stack
+        extras=extras,
+        warnings=warnings,
+    )
+
+
 def _diffusion_name(cfg: Any, arch_name: str) -> str:
     """Prefer the model *tag* (repo id) for the display name, e.g.
     ``black-forest-labs/FLUX.1-dev`` -> ``FLUX.1-dev`` — not the denoiser
@@ -72,7 +111,8 @@ def _diffusion_name(cfg: Any, arch_name: str) -> str:
 
 
 def matches(cfg: Any) -> bool:
-    """True only for diffusion-transformer configs (or DiT pipelines).
+    """True for diffusion denoiser configs — DiT/MMDiT transformers OR UNets (or
+    a diffusers pipeline index pointing at either).
 
     Must be precise: this adapter is registered before the catch-all transformer
     adapter, so it may only claim genuine diffusion configs.
@@ -82,8 +122,10 @@ def matches(cfg: Any) -> bool:
         return False
     if any(marker in cls for marker in _DIT_CLASS_MARKERS):
         return True
-    # A diffusers pipeline index (model_index.json) with a transformer denoiser.
-    if cls.endswith("Pipeline") and _g(cfg, "transformer") is not None:
+    if is_unet(cfg):                       # UNet2DConditionModel (SD1.5/SD2/SDXL/...)
+        return True
+    # A diffusers pipeline index (model_index.json) with a transformer/unet denoiser.
+    if cls.endswith("Pipeline") and (_g(cfg, "transformer") is not None or _g(cfg, "unet") is not None):
         return True
     return False
 
@@ -92,6 +134,11 @@ def parse(cfg: Any) -> ModelIR:
     warnings: list[str] = []
     cls = _g(cfg, "_class_name") or "diffusion"
     arch_name = architecture_name(cfg, cls)
+
+    # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
+    # U-net, not a transformer stack — so they get their own structure + view.
+    if is_unet(cfg):
+        return _parse_unet_model(cfg, arch_name, warnings)
 
     # ---- Denoiser geometry ----
     num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)

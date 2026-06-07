@@ -39,3 +39,14 @@ sample_size: [sample_size]
 intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim]
 mlp_ratio: [mlp_ratio]
 hidden_act: [hidden_act, activation_fn, act_fn]
+
+# --- UNet (SD1.5 / SD2 / SDXL / Kandinsky, UNet2DConditionModel) ---
+# Conv U-net resolution stages: channels per stage + the block-type lists that
+# say which stages have cross-attention, plus ResNet / transformer depth.
+block_out_channels: [block_out_channels]
+down_block_types: [down_block_types]
+up_block_types: [up_block_types]
+mid_block_type: [mid_block_type]
+layers_per_block: [layers_per_block]
+transformer_layers_per_block: [transformer_layers_per_block]
+addition_embed_type: [addition_embed_type]

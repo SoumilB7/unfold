@@ -90,6 +90,10 @@ def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
     """
     if ir.layers:
         return
+    # A UNet diffusion denoiser has no flat transformer-layer stack — its
+    # structure lives in extras["unet"] and is drawn by the UNet view.
+    if (ir.extras or {}).get("unet"):
+        return
     label = ref if isinstance(ref, str) else (
         (ref.get("model_type") if isinstance(ref, dict) else None) or "the config"
     )

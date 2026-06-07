@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="generator" content="Unfold">
+<title>stable-diffusion-v1-5 - unfolded</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&amp;display=swap">
+<style>
+  body { margin: 0; padding: 32px 24px; background: #F8FAFC; min-height: 100vh; }
+  .uf-frame { max-width: 820px; margin: 0 auto; }
+</style>
+</head>
+<body>
+  <div class="uf-frame">
+<div id="uf-fa07c3c250" class="uf-root">
+<style>
+
+
+#uf-fa07c3c250 {
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color:#04342C;
+  max-width:720px;
+}
+#uf-fa07c3c250 .uf-card {
+  background:#FFFFFF;
+  border:1.5px solid #0F6E56;
+  border-radius:14px;
+  padding:20px 22px 18px;
+  box-shadow:0 1px 3px rgba(15,23,42,0.05);
+}
+#uf-fa07c3c250 .uf-header {
+  margin-bottom:14px;
+}
+#uf-fa07c3c250 .uf-name {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:26px;
+  line-height:1;
+  color:#04342C;
+}
+#uf-fa07c3c250 .uf-arch {
+  color:#5F7C73;
+  font-size:11px;
+  margin-top:3px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-fa07c3c250 .uf-badges {
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:6px;
+}
+#uf-fa07c3c250 .uf-badge {
+  display:inline-flex;
+  align-items:center;
+  height:22px;
+  padding:0 9px;
+  background:#D6F1E4;
+  color:#0E5C48;
+  border-radius:11px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+#uf-fa07c3c250 .uf-badge-warn {
+  background:#FEF3C7;
+  color:#92400E;
+  border:1px solid #FCD34D;
+  cursor:default;
+}
+#uf-fa07c3c250 .uf-stats {
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:1px;
+  background:#B6DDCB;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+#uf-fa07c3c250 .uf-stat {
+  padding:8px 12px;
+  background:#FFFFFF;
+}
+#uf-fa07c3c250 .uf-stat-key {
+  font-size:9.5px;
+  letter-spacing:0.12em;
+  color:#5F7C73;
+  font-weight:600;
+}
+#uf-fa07c3c250 .uf-stat-val {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:19px;
+  color:#04342C;
+  margin-top:2px;
+  line-height:1.05;
+}
+#uf-fa07c3c250 .uf-section {
+  margin-top:14px;
+}
+#uf-fa07c3c250 .uf-section-head {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 12px;
+  background:#D6F1E4;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  cursor:default;
+  user-select:none;
+  list-style:none;
+}
+#uf-fa07c3c250 .uf-section-collapsible > summary.uf-section-head {
+  cursor:pointer;
+  transition:background .15s;
+}
+#uf-fa07c3c250 .uf-section-collapsible > summary.uf-section-head:hover {
+  background:#C8E9D7;
+}
+#uf-fa07c3c250 .uf-section-head::-webkit-details-marker,
+#uf-fa07c3c250 summary.uf-section-head::-webkit-details-marker {
+  display:none;
+}
+#uf-fa07c3c250 .uf-section-label {
+  font-size:10.5px;
+  letter-spacing:0.14em;
+  font-weight:700;
+  color:#04342C;
+}
+#uf-fa07c3c250 .uf-section-sub {
+  font-size:11px;
+  color:#5F7C73;
+}
+#uf-fa07c3c250 .uf-chevron {
+  margin-left:auto;
+  font-size:18px;
+  color:#5F7C73;
+  transition:transform .15s ease;
+  transform:rotate(0deg);
+}
+#uf-fa07c3c250 details.uf-section[open] .uf-chevron {
+  transform:rotate(90deg);
+}
+#uf-fa07c3c250 .uf-section-body {
+  background:#F4FBF8;
+  border:0.5px solid #B6DDCB;
+  border-radius:10px;
+  padding:6px;
+  margin-top:6px;
+  animation:uf-fade .25s ease-out;
+}
+#uf-fa07c3c250 .uf-section-body svg {
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+#uf-fa07c3c250 .uf-node rect,
+#uf-fa07c3c250 .uf-node circle {
+  transition:filter .15s, stroke .15s, stroke-width .15s;
+}
+#uf-fa07c3c250 .uf-section-arch .uf-node {
+  cursor:pointer;
+}
+#uf-fa07c3c250 .uf-section-arch .uf-node:hover rect,
+#uf-fa07c3c250 .uf-section-arch .uf-node:hover circle {
+  filter:brightness(1.1) drop-shadow(0 2px 4px rgba(0,0,0,.18));
+}
+#uf-fa07c3c250 .uf-node.uf-selected rect,
+#uf-fa07c3c250 .uf-node.uf-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-fa07c3c250 .uf-group-radio {
+  position:absolute;
+  width:0;height:0;
+  opacity:0;
+  pointer-events:none;
+}
+#uf-fa07c3c250 .uf-group-toggle {
+  display:inline-flex;
+  gap:3px;
+  padding:3px;
+  margin-bottom:8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  flex-wrap:wrap;
+}
+#uf-fa07c3c250 .uf-group-pill {
+  padding:5px 11px;
+  font-size:11px;
+  font-weight:600;
+  color:#5F7C73;
+  cursor:pointer;
+  border-radius:5px;
+  transition:background .15s,color .15s;
+  white-space:nowrap;
+  user-select:none;
+}
+#uf-fa07c3c250 .uf-group-pill:hover {
+  background:#D6F1E4;
+  color:#04342C;
+}
+#uf-fa07c3c250 .uf-arch-variant,
+#uf-fa07c3c250 .uf-l2-variant,
+#uf-fa07c3c250 .uf-nested-variant { display:none; }
+#uf-fa07c3c250 .uf-inspect-panel {
+  background:rgba(244,251,248,0.55);
+  border:0.5px solid #B6DDCB;
+  border-radius:9px;
+  animation:uf-fade .2s ease-out;
+}
+#uf-fa07c3c250 .uf-inspect {
+  display:none;
+  margin-top:10px;
+}
+#uf-fa07c3c250 .uf-section-arch[open] ~ .uf-inspect {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#uf-fa07c3c250 .uf-panel-hint,
+#uf-fa07c3c250 .uf-panel-compact {
+  min-height:64px;
+  padding:10px 12px;
+}
+#uf-fa07c3c250 .uf-panel-list {
+  min-height:96px;
+  padding:12px;
+}
+#uf-fa07c3c250 .uf-panel-diagram-compact {
+  min-height:0;
+  padding:12px 10px 14px;
+}
+#uf-fa07c3c250 .uf-panel-diagram {
+  min-height:0;
+  padding:14px 12px 16px;
+}
+#uf-fa07c3c250 .uf-panel-diagram-tall {
+  min-height:0;
+  padding:16px 14px 18px;
+}
+#uf-fa07c3c250 .uf-card-detail {
+  display:none;
+  width:100%;
+  animation:uf-fade .2s ease-out;
+}
+#uf-fa07c3c250 .uf-card-default {
+  display:block;
+}
+#uf-fa07c3c250 .uf-card-hint {
+  font-size:11px;
+  color:#5F7C73;
+  font-style:italic;
+  text-align:center;
+  padding:0;
+}
+#uf-fa07c3c250 .uf-nested-inspect {
+  display:none;
+  margin-top:8px;
+}
+#uf-fa07c3c250 .uf-section-arch[open] ~ .uf-nested-inspect.uf-nested-active {
+  display:block;
+}
+#uf-fa07c3c250 .uf-node.uf-nested-selected rect,
+#uf-fa07c3c250 .uf-node.uf-nested-selected circle {
+  stroke:#FACC15;
+  stroke-width:2.5;
+}
+#uf-fa07c3c250 .uf-card-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:20px;
+  color:#04342C;
+  line-height:1.1;
+}
+#uf-fa07c3c250 .uf-card-desc {
+  font-size:13px;
+  color:#5F7C73;
+  margin-top:4px;
+  line-height:1.45;
+}
+#uf-fa07c3c250 .uf-card-svg {
+  margin-top:10px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:8px;
+  padding:8px 6px 10px;
+}
+#uf-fa07c3c250 .uf-card-svg svg {
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+}
+#uf-fa07c3c250 .uf-evidence {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:6px;
+}
+#uf-fa07c3c250 .uf-evidence-summary {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  color:#5F7C73;
+  font-size:11px;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+#uf-fa07c3c250 .uf-evidence-summary span {
+  padding:5px 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+}
+#uf-fa07c3c250 .uf-evidence-grid {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+#uf-fa07c3c250 .uf-evidence-row {
+  display:grid;
+  grid-template-columns:82px minmax(0,1fr);
+  align-items:start;
+  gap:8px;
+}
+#uf-fa07c3c250 .uf-evidence-kind {
+  color:#04342C;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding-top:5px;
+}
+#uf-fa07c3c250 .uf-evidence-chips {
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+#uf-fa07c3c250 .uf-evidence-chip {
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:0 8px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-radius:6px;
+  color:#0E5C48;
+  font-size:11px;
+  font-weight:600;
+}
+#uf-fa07c3c250 .uf-evidence-chip-muted {
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-weight:500;
+}
+#uf-fa07c3c250 .uf-evidence-warnings {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+#uf-fa07c3c250 .uf-evidence-warning {
+  padding:7px 9px;
+  background:#FFFBEB;
+  border:0.5px solid #FCD34D;
+  border-radius:7px;
+  color:#92400E;
+  font-size:11px;
+  line-height:1.35;
+}
+
+#uf-fa07c3c250 .uf-attn-rows {
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#uf-fa07c3c250 .uf-attn-row {
+  padding:9px 12px;
+  background:#FFFFFF;
+  border:0.5px solid #B6DDCB;
+  border-left:3px solid #0F6E56;
+  border-radius:8px;
+}
+#uf-fa07c3c250 .uf-attn-row-title {
+  font-family:"Caveat","Patrick Hand","Comic Sans MS",cursive;
+  font-size:16px;
+  color:#04342C;
+  line-height:1.15;
+}
+#uf-fa07c3c250 .uf-attn-row-detail {
+  margin-top:3px;
+  font-size:12px;
+  color:#5F7C73;
+  font-family:ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@keyframes uf-fade {
+  from { opacity:0; transform:translateY(2px); }
+  to   { opacity:1; transform:none; }
+}
+
+</style>
+<div class="uf-card">
+
+<div class="uf-header">
+  <div class="uf-name">stable-diffusion-v1-5</div>
+  <div class="uf-arch">UNet2DConditionModel</div>
+  <div class="uf-badges"><span class="uf-badge" title="Convolutional U-net denoiser">Conv U-Net</span><span class="uf-badge" title="">4 resolution stages</span><span class="uf-badge" title="Cross-attention to text (dim 768)">Cross-attn</span></div>
+</div>
+
+<div class="uf-stats"><div class="uf-stat"><div class="uf-stat-key">LAYERS</div><div class="uf-stat-val">0</div></div><div class="uf-stat"><div class="uf-stat-key">HIDDEN</div><div class="uf-stat-val">1,280</div></div><div class="uf-stat"><div class="uf-stat-key">TIMESTEPS</div><div class="uf-stat-val">1,000</div></div><div class="uf-stat"><div class="uf-stat-key">LATENT</div><div class="uf-stat-val">4 ch</div></div><div class="uf-stat"><div class="uf-stat-key">PARAMS</div><div class="uf-stat-val">1.28K</div></div></div>
+<details class="uf-section uf-section-arch uf-section-collapsible" open><summary class="uf-section-head"><span class="uf-section-label">SAMPLING LOOP</span><span class="uf-section-sub">Denoiser applied iteratively · click it to open its architecture</span><span class="uf-chevron" aria-hidden="true">›</span></summary><div class="uf-section-body"><svg width="100%" viewBox="0 0 720 700" role="img" aria-label="stable-diffusion-v1-5 sampling loop" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-fa07c3c250-loop-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-fa07c3c250-loop-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="28" y="22" width="664" height="656" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><rect x="108" y="190" width="570" height="206" rx="20" ry="20" fill="#9FE1CB" opacity="0.55" stroke="#0F6E56" stroke-width="1.1" stroke-dasharray="6 5"/><g class="uf-node" data-id="image"><rect x="214" y="40" width="156" height="44" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="22" pointer-events="none" x="292" y="62">Image</text></g><g class="uf-node" data-id="vae_decode"><rect x="196" y="116" width="192" height="46" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="21" pointer-events="none" x="292" y="139">VAE decode</text></g><rect x="153" y="237" width="296" height="96" rx="13" ry="13" fill="#0F6E56" opacity="0.4" stroke="#0E5C48" stroke-width="0.6"/><rect x="148" y="242" width="296" height="96" rx="13" ry="13" fill="#0F6E56" opacity="0.4" stroke="#0E5C48" stroke-width="0.6"/><g class="uf-node" data-id="denoiser"><rect x="144" y="246" width="296" height="96" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="25" pointer-events="none" x="292" y="294">DiT Denoiser</text></g><g class="uf-node" data-id="scheduler"><rect x="516" y="252" width="156" height="84" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="594" y="294">PNDM</text></g><g class="uf-node" data-id="timestep"><rect x="34" y="456" width="168" height="52" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="118" y="482">Timestep t</text></g><g class="uf-node" data-id="noise"><rect x="208" y="572" width="168" height="58" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="23" pointer-events="none" x="292" y="601">Noise</text></g><rect x="120" y="568" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.2" stroke="#0F6E56" stroke-width="0.15"/><rect x="132" y="568" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.35" stroke="#0F6E56" stroke-width="0.15"/><rect x="144" y="568" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.45" stroke="#0F6E56" stroke-width="0.15"/><rect x="156" y="568" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.34" stroke="#0F6E56" stroke-width="0.15"/><rect x="168" y="568" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.22" stroke="#0F6E56" stroke-width="0.15"/><rect x="120" y="580" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.34" stroke="#0F6E56" stroke-width="0.15"/><rect x="132" y="580" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.58" stroke="#0F6E56" stroke-width="0.15"/><rect x="144" y="580" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.72" stroke="#0F6E56" stroke-width="0.15"/><rect x="156" y="580" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.56" stroke="#0F6E56" stroke-width="0.15"/><rect x="168" y="580" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.36" stroke="#0F6E56" stroke-width="0.15"/><rect x="120" y="592" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.44" stroke="#0F6E56" stroke-width="0.15"/><rect x="132" y="592" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.75" stroke="#0F6E56" stroke-width="0.15"/><rect x="144" y="592" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.95" stroke="#0F6E56" stroke-width="0.15"/><rect x="156" y="592" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.78" stroke="#0F6E56" stroke-width="0.15"/><rect x="168" y="592" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.46" stroke="#0F6E56" stroke-width="0.15"/><rect x="120" y="604" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.32" stroke="#0F6E56" stroke-width="0.15"/><rect x="132" y="604" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.55" stroke="#0F6E56" stroke-width="0.15"/><rect x="144" y="604" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.74" stroke="#0F6E56" stroke-width="0.15"/><rect x="156" y="604" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.59" stroke="#0F6E56" stroke-width="0.15"/><rect x="168" y="604" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.38" stroke="#0F6E56" stroke-width="0.15"/><rect x="120" y="616" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.22" stroke="#0F6E56" stroke-width="0.15"/><rect x="132" y="616" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.36" stroke="#0F6E56" stroke-width="0.15"/><rect x="144" y="616" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.48" stroke="#0F6E56" stroke-width="0.15"/><rect x="156" y="616" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.37" stroke="#0F6E56" stroke-width="0.15"/><rect x="168" y="616" width="10" height="10" rx="2.2" ry="2.2" fill="#0F6E56" opacity="0.24" stroke="#0F6E56" stroke-width="0.15"/><rect x="118" y="566" width="60" height="60" rx="4" ry="4" fill="none" stroke="#B6DDCB" stroke-width="0.9"/><g class="uf-node" data-id="encoder_0"><rect x="300" y="456" width="142" height="52" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="371" y="482">CLIP</text></g><g class="uf-node" data-id="prompt"><rect x="301" y="572" width="140" height="48" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-loop-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="20" pointer-events="none" x="371" y="596">Text prompt</text></g><path d="M 371.00 572.00 L 371.00 552.00 L 371.00 552.00 L 371.00 514.00" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-fa07c3c250-loop-arrow)"/><path d="M 371.00 456.00 L 371.00 386.00 L 320.00 386.00 L 320.00 348.00" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-fa07c3c250-loop-arrow)"/><line x1="292" y1="572" x2="292" y2="348" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-loop-arrow)" fill="none"/><path d="M 118.00 456.00 L 118.00 386.00 L 180.00 386.00 L 180.00 348.00" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-fa07c3c250-loop-arrow)"/><line x1="442" y1="277" x2="510" y2="277" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-loop-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="14" x="478" y="265">ε̂</text><line x1="514" y1="311" x2="446" y2="311" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-loop-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="478" y="324">z₋₁</text><line x1="292" y1="246" x2="292" y2="168" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-loop-arrow)" fill="none"/><line x1="292" y1="116" x2="292" y2="90" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-loop-arrow)" fill="none"/></svg></div></details>
+<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2"><div class="uf-card-detail uf-card-hint uf-card-default" data-card-id="default" data-card-size="hint">Click a block — open the Denoiser to see its architecture</div><div class="uf-card-detail uf-card-noise" data-card-id="noise" data-card-size="compact"><div class="uf-card-title">Initial noise</div><div class="uf-card-desc">z_T: random Gaussian latent, shape [4 channels], sampled in the VAE latent space. (Image-to-image instead starts from an encoded input image.) This is the latent the loop iteratively denoises.</div></div><div class="uf-card-detail uf-card-timestep" data-card-id="timestep" data-card-size="compact"><div class="uf-card-title">Timestep</div><div class="uf-card-desc">The current step's noise level t (decreasing T -&gt; 0). Embedded and fed to every block as AdaLN modulation.</div></div><div class="uf-card-detail uf-card-prompt" data-card-id="prompt" data-card-size="compact"><div class="uf-card-title">Text prompt</div><div class="uf-card-desc">The conditioning prompt, encoded by 1 text encoder (CLIP).</div></div><div class="uf-card-detail uf-card-encoder_0" data-card-id="encoder_0" data-card-size="compact"><div class="uf-card-title">CLIP text encoder</div><div class="uf-card-desc">CLIP: produces a pooled prompt vector, used as global conditioning (AdaLN modulation). Frozen; run once and reused every sampling step.</div></div><div class="uf-card-detail uf-card-denoiser" data-card-id="denoiser" data-card-size="diagram" data-svg-width="720" data-svg-height="578"><div class="uf-card-title">U-Net denoiser</div><div class="uf-card-desc">The network applied at every step: a 4-stage convolutional U-net (down → mid → up with skip connections) that takes the latent z_t (+ timestep + text conditioning) and predicts the noise. Click to open its architecture.</div><div class="uf-card-svg"><svg width="100%" viewBox="0 0 720 578" role="img" aria-label="stable-diffusion-v1-5 U-net denoiser" xmlns="http://www.w3.org/2000/svg"><defs><marker id="uf-fa07c3c250-unet-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker><filter id="uf-fa07c3c250-unet-shadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="1"/><feOffset dx="0" dy="1" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="16" y="16" width="688" height="546" rx="18" ry="18" fill="#E1F5EE" stroke="none" stroke-width="0"/><g transform="translate(-3.0,22)"><rect x="97" y="22" width="162" height="44" rx="11" ry="11" fill="#9FE1CB" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="178" y="40">Conv in</text><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="178" y="58">4 → 320 ch</text><rect x="467" y="22" width="162" height="44" rx="11" ry="11" fill="#9FE1CB" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#04342C" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="548" y="40">Conv out</text><text text-anchor="middle" dominant-baseline="central" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="548" y="58">→ 4 ch</text><rect x="97" y="98" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="178" y="116">320 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="178" y="134">2× ResNet  ·  +XAttn</text><rect x="467" y="98" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="548" y="116">320 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="548" y="134">3× ResNet  ·  +XAttn</text><rect x="97" y="178" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="178" y="196">640 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="178" y="214">2× ResNet  ·  +XAttn</text><rect x="467" y="178" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="548" y="196">640 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="548" y="214">3× ResNet  ·  +XAttn</text><rect x="97" y="258" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="178" y="276">1280 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="178" y="294">2× ResNet  ·  +XAttn</text><rect x="467" y="258" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="548" y="276">1280 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="548" y="294">3× ResNet  ·  +XAttn</text><rect x="97" y="338" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="178" y="356">1280 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="178" y="374">2× ResNet</text><rect x="467" y="338" width="162" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="548" y="356">1280 ch</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="548" y="374">3× ResNet</text><rect x="262" y="418" width="202" height="50" rx="11" ry="11" fill="#0F6E56" stroke="#0E5C48" stroke-width="0.6" filter="url(#uf-fa07c3c250-unet-shadow)"/><text text-anchor="middle" dominant-baseline="central" fill="#FFFFFF" font-family="&quot;Caveat&quot;,&quot;Patrick Hand&quot;,&quot;Comic Sans MS&quot;,cursive" font-size="19" pointer-events="none" x="363" y="436">Mid block</text><text text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.84)" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="12.5" pointer-events="none" x="363" y="454">1280 ch · ResNet+Attn</text><path d="M 259.0 123.0 L 467.0 123.0" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><path d="M 259.0 203.0 L 467.0 203.0" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><path d="M 259.0 283.0 L 467.0 283.0" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><path d="M 259.0 363.0 L 467.0 363.0" fill="none" stroke="#0F6E56" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="363" y="111">skip connections</text><line x1="178" y1="66" x2="178" y2="92" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><line x1="178" y1="148" x2="178" y2="172" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="83" y="163">↓2</text><line x1="178" y1="228" x2="178" y2="252" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="83" y="243">↓2</text><line x1="178" y1="308" x2="178" y2="332" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="83" y="323">↓2</text><path d="M 178.0 388.0 L 178.0 443.0 L 256.0 443.0" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><path d="M 464.0 443.0 L 548.0 443.0 L 548.0 394.0" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#uf-fa07c3c250-unet-arrow)"/><line x1="548" y1="338" x2="548" y2="314" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="643" y="323">↑2</text><line x1="548" y1="258" x2="548" y2="234" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="643" y="243">↑2</text><line x1="548" y1="178" x2="548" y2="154" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="643" y="163">↑2</text><line x1="548" y1="98" x2="548" y2="72" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" marker-end="url(#uf-fa07c3c250-unet-arrow)" fill="none"/><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="363" y="494">timestep → every ResNet   ·   latent 8× downscaled</text><text text-anchor="middle" fill="#5F7C73" font-family="ui-monospace, &quot;JetBrains Mono&quot;, &quot;SF Mono&quot;, Menlo, monospace" font-size="13" x="363" y="512">text conditioning (dim 768) → cross-attention stages</text></g></svg></div></div><div class="uf-card-detail uf-card-scheduler" data-card-id="scheduler" data-card-size="compact"><div class="uf-card-title">Scheduler — PNDM</div><div class="uf-card-desc">PNDM combines the predicted noise with z_t to produce z_{t-1}, one step toward a clean latent. 1,000 training timesteps. The loop repeats for N sampling steps (N chosen at inference, typically ~20-50 — it is not a config field).</div></div><div class="uf-card-detail uf-card-vae_decode" data-card-id="vae_decode" data-card-size="compact"><div class="uf-card-title">VAE decoder</div><div class="uf-card-desc">Once the loop reaches z_0 (clean latent), the VAE decoder maps it from latent space back to a full-resolution pixel image.</div></div><div class="uf-card-detail uf-card-image" data-card-id="image" data-card-size="compact"><div class="uf-card-title">Output image</div><div class="uf-card-desc">The generated image in pixel space.</div></div></div>
+
+
+
+</div>
+
+<script>
+(function() {
+  var root = document.getElementById('uf-fa07c3c250');
+  if (!root) return;
+
+  var l1 = root.querySelectorAll('.uf-section-arch .uf-node');
+  if (!l1.length) l1 = root.querySelectorAll('.uf-section-body .uf-node');
+  var panels = Array.prototype.slice.call(root.querySelectorAll('.uf-inspect-panel'));
+  var panelSizes = [
+    'uf-panel-hint',
+    'uf-panel-compact',
+    'uf-panel-list',
+    'uf-panel-diagram-compact',
+    'uf-panel-diagram',
+    'uf-panel-diagram-tall'
+  ];
+
+  function sourcePanelFor(index) {
+    return index === 0 ? root.querySelector('.uf-section-arch') : panels[index - 1];
+  }
+
+  function sourceNodesFor(index) {
+    var source = sourcePanelFor(index);
+    if (!source) return [];
+    if (index === 0) return Array.prototype.slice.call(l1);
+    return Array.prototype.slice.call(source.querySelectorAll('.uf-card-svg .uf-node'));
+  }
+
+  function selectedClassFor(index) {
+    return index === 0 ? 'uf-selected' : 'uf-nested-selected';
+  }
+
+  function setPanelSize(panel, card) {
+    if (!panel) return;
+    panelSizes.forEach(function(cls) { panel.classList.remove(cls); });
+    var size = card && card.getAttribute('data-card-size') ? card.getAttribute('data-card-size') : 'compact';
+    panel.classList.add('uf-panel-' + size);
+    if (card && card.getAttribute('data-svg-width')) {
+      panel.style.setProperty('--uf-card-svg-width', card.getAttribute('data-svg-width'));
+      panel.style.setProperty('--uf-card-svg-height', card.getAttribute('data-svg-height') || '');
+    } else {
+      panel.style.removeProperty('--uf-card-svg-width');
+      panel.style.removeProperty('--uf-card-svg-height');
+    }
+  }
+
+  function clearPanelsFrom(index) {
+    for (var i = index; i < panels.length; i++) {
+      if (i > 0) panels[i].classList.remove('uf-nested-active');
+      panels[i].querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+        p.style.display = 'none';
+      });
+      setPanelSize(panels[i], null);
+      sourceNodesFor(i).forEach(function(n) {
+        n.classList.remove(selectedClassFor(i));
+      });
+    }
+  }
+
+  function showPanel(index, id) {
+    clearPanelsFrom(index + 1);
+    var panel = panels[index];
+    if (!panel) return;
+
+    var selectedClass = selectedClassFor(index);
+    sourceNodesFor(index).forEach(function(n) {
+      if (n.getAttribute('data-id') === id) n.classList.add(selectedClass);
+      else n.classList.remove(selectedClass);
+    });
+
+    var found = false;
+    var activeCard = null;
+    panel.querySelectorAll('.uf-card-detail[data-card-id]').forEach(function(p) {
+      var active = p.getAttribute('data-card-id') === id;
+      p.style.display = active ? 'block' : 'none';
+      if (active) {
+        found = true;
+        if (!activeCard) activeCard = p;
+      }
+    });
+
+    if (id === 'default' || !found) {
+      if (index > 0) panel.classList.remove('uf-nested-active');
+      if (!found) {
+        sourceNodesFor(index).forEach(function(n) {
+          n.classList.remove(selectedClass);
+        });
+      }
+      setPanelSize(panel, activeCard);
+    } else {
+      if (index > 0) panel.classList.add('uf-nested-active');
+      setPanelSize(panel, activeCard);
+    }
+  }
+
+  l1.forEach(function(n) {
+    n.style.cursor = 'pointer';
+    n.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (n.classList.contains('uf-selected')) { showPanel(0, 'default'); }
+      else { showPanel(0, n.getAttribute('data-id')); }
+    });
+  });
+
+  root.querySelectorAll('.uf-card-svg .uf-node').forEach(function(n) {
+    n.style.cursor = 'pointer';
+  });
+
+  root.addEventListener('click', function(e) {
+    var node = e.target.closest ? e.target.closest('.uf-card-svg .uf-node') : null;
+    if (!node || !root.contains(node)) return;
+
+    var sourcePanel = node.closest('.uf-inspect-panel');
+    var index = panels.indexOf(sourcePanel) + 1;
+    if (index <= 0 || index >= panels.length) return;
+
+    e.stopPropagation();
+    if (node.classList.contains('uf-nested-selected')) { showPanel(index, 'default'); }
+    else { showPanel(index, node.getAttribute('data-id')); }
+  });
+})();
+</script>
+
+</div>
+</div>
+</body>
+</html>

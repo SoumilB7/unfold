@@ -134,9 +134,9 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "role": "attention",
             "kind": "denoiser",
             "diffusion_stage": "denoiser",
-            "label": ["DiT Denoiser"],
-            "title": "DiT denoiser",
-            "description": (
+            "label": geom.get("denoiser_label") or ["DiT Denoiser"],
+            "title": geom.get("denoiser_title") or "DiT denoiser",
+            "description": geom.get("denoiser_desc") or (
                 f"The network applied at every step: a {depth_phrase} diffusion "
                 "transformer that takes the current latent z_t (+ timestep + text "
                 "conditioning) and predicts the noise to remove. Click to open its "
