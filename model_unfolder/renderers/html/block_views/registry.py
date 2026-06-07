@@ -35,6 +35,7 @@ from .modality_views.vision_details import (
 )
 from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
 from .per_layer_embedding import build_per_layer_embedding_view
+from .text_encoder import build_text_encoder_view
 from .unet import build_unet_view
 from .vae import build_vae_decoder_block_view, build_vae_decoder_view
 
@@ -119,6 +120,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "mtp_head": _from_block(build_mtp_head_view),
     "vae_decoder": _from_block(build_vae_decoder_view),
     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
+    "text_encoder": _from_block(build_text_encoder_view),
     "unet": _from_block(build_unet_view),
     # Sub-block drill-downs.
     "mla_query_path": _from_block(build_mla_query_path_view),

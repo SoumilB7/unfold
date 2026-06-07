@@ -75,6 +75,18 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
         if isinstance(vae, dict):
             cfg.setdefault("_vae_config", vae)
 
+    # Pull each text encoder's own config so the encoder view can show real
+    # depth/width/heads instead of a schematic "× N layers".  Best-effort.
+    enc_cfgs: dict[str, Any] = {}
+    for key in ("text_encoder", "text_encoder_2", "text_encoder_3"):
+        if not isinstance(index.get(key), (list, tuple)):
+            continue
+        ec = _download_json(hf_hub_download, model_id, "config.json", token, subfolder=key)
+        if isinstance(ec, dict):
+            enc_cfgs[key] = ec
+    if enc_cfgs:
+        cfg.setdefault("_text_encoder_configs", enc_cfgs)
+
     cfg.setdefault("_pipeline_class_name", index.get("_class_name"))
     cfg.setdefault("_name_or_path", model_id)
     # The repo id IS the model tag the user typed — used for the display name

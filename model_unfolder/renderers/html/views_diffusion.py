@@ -20,6 +20,7 @@ from .cards import (
     _hint_card,
     _rich_card,
     _simple_card,
+    _unique_children,
 )
 from .evidence import _code_evidence_section
 from .interactions import _click_script
@@ -56,7 +57,9 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
 
     loop_svg = _build_loop_view(ir, info, mount_id)
     loop_cards = _build_loop_cards(ir, info, mount_id)          # panel[0]  (L2)
-    loop_child_cards = _build_loop_child_cards(ir, info, mount_id)  # VAE children
+    # Descendant levels below the loop blocks: [0] = VAE decoder stages, [1] =
+    # the ResNet ops inside a stage, ... — one nested panel per level.
+    loop_levels = _build_loop_descendant_levels(ir, info, mount_id)
 
     style = _style(mount_id)
 
@@ -77,14 +80,16 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     )
 
     if is_unet:
-        # UNet: the denoiser view is a leaf; only the VAE-decoder children need a
-        # deeper panel.  No DiT cards, no per-layer map.
-        nested_levels = [loop_child_cards] if loop_child_cards else []
+        # UNet: the denoiser view is a leaf; only the VAE-decoder descendants need
+        # deeper panels.  No DiT cards, no per-layer map.
+        nested_levels = list(loop_levels)
         layer_map_section = ""
     else:
         dit_cards = _build_inspect_cards(ir, info, mount_id)        # panel[1] (L3)
         dit_nested = _build_nested_inspect_panels(ir, info, mount_id)  # panel[2+] (L4+)
-        nested_levels = [dit_cards + loop_child_cards] + dit_nested
+        # Merge level-wise: the DiT layer drill-downs and the loop's VAE
+        # descendants share panels at matching depths.
+        nested_levels = _merge_levels([dit_cards] + dit_nested, loop_levels)
         map_svg = _build_layer_map(ir, info, mount_id)
         n_layers = len(ir.get("layers", []))
         n_groups = len(info["groups"])
@@ -153,21 +158,49 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
     return "".join(cards)
 
 
-def _build_loop_child_cards(ir: dict, info: dict, mount_id: str) -> str:
+def _build_loop_descendant_levels(ir: dict, info: dict, mount_id: str) -> list[str]:
+    """One cards-string per depth below the loop blocks.
+
+    Level 0 is the loop blocks' direct children (e.g. the VAE decoder's up
+    stages); level 1 is *their* children (e.g. the ResNet ops inside a stage);
+    and so on.  Each level becomes one nested inspect panel, so a node clicked in
+    level *k*'s card opens level *k+1*."""
     loop_blocks = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks") or []
-    cards: list[str] = []
-    seen: set[str] = set()
+    current: list[dict] = []
     for block in loop_blocks:
-        for child in block.get("children") or []:
-            cid = child.get("id")
-            if not cid or cid in seen:
-                continue
-            seen.add(cid)
-            title = child.get("title") or child.get("label") or cid
-            desc = child.get("description", "")
-            svg = block_detail_svg(ir, info, mount_id, child)
-            cards.append(_rich_card(cid, title, desc, svg) if svg else _simple_card(cid, title, desc))
+        current.extend(block.get("children") or [])
+
+    levels: list[str] = []
+    while current:
+        current = _unique_children(current)
+        levels.append(_cards_for_children(ir, info, mount_id, current))
+        nxt: list[dict] = []
+        for child in current:
+            nxt.extend(child.get("children") or [])
+        current = nxt
+    return levels
+
+
+def _cards_for_children(ir: dict, info: dict, mount_id: str, children: list[dict]) -> str:
+    cards: list[str] = []
+    for child in children:
+        cid = child.get("id")
+        if not cid:
+            continue
+        title = child.get("title") or child.get("label") or cid
+        desc = child.get("description", "")
+        svg = block_detail_svg(ir, info, mount_id, child)
+        cards.append(_rich_card(cid, title, desc, svg) if svg else _simple_card(cid, title, desc))
     return "".join(cards)
+
+
+def _merge_levels(a: list[str], b: list[str]) -> list[str]:
+    """Concatenate two lists of per-level cards-strings level-by-level, so cards
+    that belong at the same drill depth land in the same panel."""
+    return [
+        (a[i] if i < len(a) else "") + (b[i] if i < len(b) else "")
+        for i in range(max(len(a), len(b)))
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -240,8 +273,13 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                            34, 456, 168, 52, label("timestep", "Timestep t"), font_size=15,
                            resolved=resolved("timestep"))
 
+    # With many bottom inputs (noise + timestep + 2+ encoders = 4+), the noise
+    # column crowds the text-prompt source; nudge it left for even spacing.  Its
+    # arrow stays vertical and still lands inside the (wide) denoiser bottom.
+    n_inputs = 2 + sum(1 for bid in blocks if bid.startswith("encoder_"))
+    noise_dx = -44 if n_inputs >= 4 else 0
     noise = _rect_block(parts, info, shadow_id, "noise",
-                        cx - 84, 572, 168, 58, label("noise", "Noise"), font_size=18,
+                        cx - 84 + noise_dx, 572, 168, 58, label("noise", "Noise"), font_size=18,
                         resolved=resolved("noise"))
     _latent_grid(parts, noise["left"] - 88, noise["cy"] - 33)
 

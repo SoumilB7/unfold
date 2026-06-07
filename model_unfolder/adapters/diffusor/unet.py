@@ -13,6 +13,7 @@ from typing import Any
 
 from ..transformer.common import get_config_value as _g
 from .blocks import diffusion_loop_blocks
+from .compound import unet_mid_stage, unet_resolution_stage
 
 
 def is_unet(cfg: Any) -> bool:
@@ -45,22 +46,37 @@ def parse_unet(cfg: Any) -> dict:
 
     down = []
     for i, c in enumerate(boc):
-        a = has_attn(at(down_types, i, ""))
-        down.append({
-            "channels": c, "resnets": int(at(lpb, i, 2)),
-            "attn": a, "transformers": int(at(tlpb, i, 1)) if a else 0,
-            "sample": i < n - 1,            # downsample on every stage but the last
-        })
-    mid = {"channels": boc[-1] if boc else None, "attn": has_attn(mid_type), "resnets": 2}
+        stage_type = at(down_types, i, "")
+        a = has_attn(stage_type)
+        down.append(unet_resolution_stage(
+            direction="down",
+            stage_type=stage_type,
+            channels=c,
+            resnets=int(at(lpb, i, 2)),
+            attn=a,
+            transformers=int(at(tlpb, i, 1)) if a else 0,
+            sample=i < n - 1,            # downsample on every stage but the last
+        ))
+    mid = unet_mid_stage(
+        stage_type=mid_type,
+        channels=boc[-1] if boc else None,
+        attn=has_attn(mid_type),
+        resnets=2,
+    )
     up = []
     for j in range(n):                       # up processing order; channels reversed
         c = boc[n - 1 - j]
-        a = has_attn(at(up_types, j, ""))
-        up.append({
-            "channels": c, "resnets": int(at(lpb, n - 1 - j, 2)) + 1,
-            "attn": a, "transformers": int(at(tlpb, n - 1 - j, 1)) if a else 0,
-            "sample": j < n - 1,            # upsample on every stage but the last
-        })
+        stage_type = at(up_types, j, "")
+        a = has_attn(stage_type)
+        up.append(unet_resolution_stage(
+            direction="up",
+            stage_type=stage_type,
+            channels=c,
+            resnets=int(at(lpb, n - 1 - j, 2)) + 1,
+            attn=a,
+            transformers=int(at(tlpb, n - 1 - j, 1)) if a else 0,
+            sample=j < n - 1,            # upsample on every stage but the last
+        ))
 
     cad = _g(cfg, "cross_attention_dim")
     if isinstance(cad, (list, tuple)):

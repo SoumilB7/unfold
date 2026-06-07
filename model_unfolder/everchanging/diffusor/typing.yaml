@@ -70,6 +70,24 @@ block_ids:
   - ffn
   - add2
 
+# Compound stage kinds approved for diffusion-family detail views.
+#
+# These are higher-level than `diffusion_stage`: they describe a meaningful
+# architecture region that may contain several primitive ops. If a parsed region
+# carries an unknown `diffusion_part_kind`, the view renders it pale with the
+# same label so new/custom modules stay visible but not silently blessed.
+part_kinds:
+  - conv_in
+  - conv_out
+  - down_stage
+  - mid_stage
+  - up_stage
+  - latent_stage
+  - image_stage
+  - output_head
+  - resnet_cell
+  - sample_step
+
 # `_class_name` substrings that mark a diffusion-transformer backbone (detection).
 dit_class_markers:
   - Transformer2DModel

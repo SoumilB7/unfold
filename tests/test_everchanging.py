@@ -9,7 +9,7 @@ import builtins
 import pytest
 
 from model_unfolder import everchanging as ec
-from model_unfolder.block_schema import DIFFUSION_STAGES, TRANSFORMER_STAGES
+from model_unfolder.block_schema import DIFFUSION_PART_KINDS, DIFFUSION_STAGES, TRANSFORMER_STAGES
 
 
 def test_transformer_vocab_loads():
@@ -21,7 +21,7 @@ def test_transformer_vocab_loads():
 def test_diffusor_vocab_loads():
     assert "num_layers" in ec.load_diffusion_aliases()
     typing = ec.load_diffusion_typing()
-    assert typing["stages"] and typing["block_ids"] and typing["dit_class_markers"]
+    assert typing["stages"] and typing["block_ids"] and typing["part_kinds"] and typing["dit_class_markers"]
     assert ec.load_diffusion_text_encoders().get("CLIPTextModel") == "CLIP"
 
 
@@ -46,6 +46,15 @@ def test_diffusion_stage_taxonomy_is_exhaustive():
         "cross_attention", "resnet", "upsample", "decoder_block", "conv_out",
     ):
         assert stage in DIFFUSION_STAGES, stage
+
+
+def test_diffusion_part_kind_taxonomy_is_exhaustive():
+    for kind in (
+        "conv_in", "conv_out", "down_stage", "mid_stage", "up_stage",
+        "latent_stage", "image_stage", "output_head", "resnet_cell",
+        "sample_step",
+    ):
+        assert kind in DIFFUSION_PART_KINDS, kind
 
 
 def test_loaders_work_without_pyyaml(monkeypatch):

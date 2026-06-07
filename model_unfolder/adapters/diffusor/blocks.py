@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from ...block_schema import Block
 from ..transformer.common import format_dim as _fmt
+from .compound import vae_up_stage
 
 
 def diffusion_render_spec(geom: dict) -> dict:
@@ -128,7 +129,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + ". Embedded and fed to every block as AdaLN modulation."
             ),
         },
-        *_text_conditioning_blocks(encoders, text_dim, geom.get("pooled_projection_dim")),
+        *_text_conditioning_blocks(
+            encoders, text_dim, geom.get("pooled_projection_dim"),
+            geom.get("text_encoder_specs") or [],
+        ),
         {
             "id": "denoiser",
             "role": "attention",
@@ -214,20 +218,25 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     for idx, c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
         upsamples = idx > 1
+        stage = vae_up_stage(channels=c, resnets=resnets, upsamples=upsamples)
         children.append({
             "id": f"vae_decoder_block_{block_no}",
-            "title": f"Decoder block {block_no}",
+            "title": f"Up stage {block_no}",
             "description": (
-                f"{_fmt(c)} channels; {resnets} ResNet block"
+                f"VAE decoder resolution stage: {_fmt(c)} channels; {resnets} ResNet block"
                 f"{'s' if resnets != 1 else ''}"
                 + ("; upsamples spatial size by 2" if upsamples else "")
             ),
+            "diffusion_part_kind": "up_stage",
+            "components": stage["components"],
             "view": "vae_decoder_block",
             "detail": {
+                **stage,
                 "channels": c,
                 "resnets": resnets,
                 "upsamples": upsamples,
             },
+            "children": _vae_resnet_ops(upsamples),
         })
     if channels:
         children.append({
@@ -246,10 +255,159 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     return children
 
 
-def _text_conditioning_blocks(encoders: list, text_dim, pooled) -> list[Block]:
+def _vae_resnet_ops(upsamples: bool) -> list[Block]:
+    """Description cards for the ops inside one VAE decoder ResNet stage.
+
+    Drilled into from the block view's op boxes.  The two GroupNorm+SiLU boxes
+    share one id (and one description), as do the two Conv 3x3 boxes — clicking
+    either opens the same card.  No layer-shape numbers are asserted here; only
+    what the op *does*.
+    """
+    ops: list[Block] = [
+        {
+            "id": "vae_op_norm",
+            "title": "GroupNorm + SiLU",
+            "description": (
+                "Group normalization followed by a SiLU (swish) activation, applied "
+                "before each convolution in the residual cell. Normalizes feature "
+                "statistics so the conv sees a well-scaled signal."
+            ),
+        },
+        {
+            "id": "vae_op_conv",
+            "title": "Conv 3x3",
+            "description": (
+                "A 3x3 convolution (stride 1, padding 1): mixes each position with its "
+                "spatial neighbours. The feature-transforming workhorse of the cell; the "
+                "stack runs GroupNorm+SiLU -> Conv 3x3 twice."
+            ),
+        },
+        {
+            "id": "vae_op_residual",
+            "title": "Residual add",
+            "description": (
+                "Adds the block input back onto the convolved output (an identity skip, "
+                "or a 1x1 conv when the channel count changes) so the cell learns a "
+                "residual and gradients flow cleanly through depth."
+            ),
+        },
+    ]
+    if upsamples:
+        ops.append({
+            "id": "vae_op_upsample",
+            "title": "Upsample",
+            "description": (
+                "Doubles spatial resolution (H x W -> 2H x 2W) by nearest-neighbour "
+                "interpolation, then a 3x3 conv to smooth interpolation artifacts. Runs "
+                "once after the ResNet stack, stepping the latent toward image size."
+            ),
+        })
+    return ops
+
+
+def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None = None) -> list[Block]:
+    """Description cards for the ops inside one text-encoder layer cell.
+
+    Drilled into from the encoder view's op boxes.  Descriptions stay structural
+    (what the op does) plus the well-established CLIP/T5 distinctions, and fold in
+    the encoder's *real* dims (hidden, heads, FFN, vocab) when the loader fetched
+    its config (``spec``) — nothing is invented when a field is absent.
+
+    Ids are namespaced by ``prefix`` (the encoder's block id) so each encoder's
+    ops map to its own cards — CLIP and T5 differ (bidirectional vs masked,
+    LayerNorm vs RMSNorm), so they must not share a card.
+    """
+    spec = spec or {}
+    hidden, heads, ffn = spec.get("hidden"), spec.get("heads"), spec.get("ffn")
+    vocab, max_pos, act = spec.get("vocab"), spec.get("max_pos"), spec.get("activation")
+    upper = enc.upper()
+    is_t5 = "T5" in upper
+    is_clip = "CLIP" in upper
+    norm = "RMSNorm" if is_t5 else "LayerNorm"
+
+    if is_t5:
+        embed_desc = (
+            "Maps each token id to a vector. T5 adds no absolute positional "
+            "embedding — position is injected as a relative position bias inside "
+            "the attention scores."
+        )
+        attn_extra = " T5 attention is bidirectional (every token sees every other)."
+    elif is_clip:
+        embed_desc = (
+            "Maps each token id to a learned vector and adds a learned positional "
+            "embedding for its place in the sequence."
+        )
+        attn_extra = " CLIP's text transformer uses left-to-right masking (each token attends only to earlier tokens)."
+    else:
+        embed_desc = "Maps each token id to a vector and adds positional information."
+        attn_extra = ""
+    if vocab:
+        embed_desc += f" Vocabulary {_fmt(vocab)}"
+        embed_desc += f", embedding dim {_fmt(hidden)}." if hidden else "."
+    if max_pos and not is_t5:
+        embed_desc += f" Max sequence length {_fmt(max_pos)}."
+
+    attn_desc = (
+        "Each token attends to the others in the prompt, mixing context across the "
+        "sequence so every position is contextualised." + attn_extra
+    )
+    if heads:
+        head_dim = (hidden // heads) if (hidden and heads and hidden % heads == 0) else None
+        attn_desc += f" {heads} heads" + (f" × {head_dim}-d each" if head_dim else "") + "."
+
+    ffn_desc = (
+        "A position-wise two-layer MLP applied to each token independently, "
+        "expanding then projecting back — the per-token non-linear transform."
+    )
+    if hidden and ffn:
+        ffn_desc += f" {_fmt(hidden)} → {_fmt(ffn)} → {_fmt(hidden)}"
+        ffn_desc += f", {act} activation." if act else "."
+    elif act:
+        ffn_desc += f" {act} activation."
+
+    return [
+        {
+            "id": f"{prefix}_op_embed",
+            "title": "Token + positional embedding" if not is_t5 else "Token embedding",
+            "description": embed_desc,
+        },
+        {
+            "id": f"{prefix}_op_selfattn",
+            "title": "Multi-head self-attention",
+            "description": attn_desc,
+        },
+        {
+            "id": f"{prefix}_op_ffn",
+            "title": "Feed-forward (FFN)",
+            "description": ffn_desc,
+        },
+        {
+            "id": f"{prefix}_op_norm",
+            "title": norm,
+            "description": (
+                f"{norm} normalizes each token's features before the sublayer "
+                "(pre-norm). Keeps activation scales stable so the network trains "
+                f"deeply. Both sublayers in every layer are {norm}-normalized."
+            ),
+        },
+        {
+            "id": f"{prefix}_op_add",
+            "title": "Residual add",
+            "description": (
+                "Adds the sublayer input back onto its output (x + sublayer(norm(x))). "
+                "Every attention and feed-forward sublayer is wrapped in this residual "
+                "so signals and gradients flow cleanly through depth."
+            ),
+        },
+    ]
+
+
+def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None) -> list[Block]:
     """One block per real text encoder (+ a shared prompt source), so the diagram
     shows the actual number of encoders (Flux: CLIP + T5; SD3: CLIP-L + CLIP-G + T5)
-    instead of a single combined block."""
+    instead of a single combined block.  ``specs`` (aligned with ``encoders``)
+    carries each encoder's real config dims when the loader fetched them."""
+    specs = specs or []
     if not encoders:
         return [{
             "id": "text_encoder",
@@ -262,6 +420,10 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled) -> list[Block]:
                 "The prompt, encoded into a conditioning embedding consumed by the "
                 "denoiser's attention. Computed once and reused every step."
             ),
+            "view": "text_encoder",
+            "detail": {"name": "Text encoder", "text_dim": text_dim, "pooled": pooled,
+                       "node_prefix": "text_encoder"},
+            "children": _text_encoder_ops("text encoder", text_dim, pooled, "text_encoder"),
         }]
     blocks: list[Block] = [{
         "id": "prompt",
@@ -276,6 +438,12 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled) -> list[Block]:
         ),
     }]
     for i, enc in enumerate(encoders):
+        spec = specs[i] if i < len(specs) else {}
+        detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
+                  "node_prefix": f"encoder_{i}"}
+        for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos"):
+            if spec.get(k) is not None:
+                detail[k] = spec[k]
         blocks.append({
             "id": f"encoder_{i}",
             "role": "embedding",
@@ -284,6 +452,9 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled) -> list[Block]:
             "label": enc,
             "title": f"{enc} text encoder",
             "description": _encoder_desc(enc, text_dim, pooled),
+            "view": "text_encoder",
+            "detail": detail,
+            "children": _text_encoder_ops(enc, text_dim, pooled, f"encoder_{i}", spec),
         })
     return blocks
 

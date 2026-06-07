@@ -70,6 +70,7 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
     text_encoders = _detect_text_encoders(cfg)
     geom = unet_geom(cfg, unet, text_encoders=text_encoders, scheduler_geom=_scheduler_geom(cfg))
     geom["vae"] = _vae_geom(cfg)
+    geom["text_encoder_specs"] = _text_encoder_specs(cfg)
 
     extras: dict = {"render": unet_render_spec(geom), "unet": unet}
     meta = {k: v for k, v in {
@@ -183,6 +184,7 @@ def parse(cfg: Any) -> ModelIR:
         "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
+        "text_encoder_specs": _text_encoder_specs(cfg),
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
         "vae": _vae_geom(cfg),
@@ -403,19 +405,58 @@ def _vae_geom(cfg: Any) -> dict | None:
 
 
 def _detect_text_encoders(cfg: Any) -> list[str]:
-    """Friendly text-encoder names from a diffusers pipeline index, if present.
+    """Friendly text-encoder names from a diffusers pipeline index, if present."""
+    return [s["name"] for s in _text_encoder_specs(cfg)]
+
+
+def _text_encoder_specs(cfg: Any) -> list[dict]:
+    """One spec per text encoder: its friendly name plus the real depth/width/
+    heads/FFN parsed from its own ``config.json`` *when the loader fetched it*
+    (stashed under ``_text_encoder_configs``).  Numeric fields are simply absent
+    when no encoder config was available — the view never invents them.
 
     ``model_index.json`` lists each component as ``["diffusers", "ClassName"]``;
     a bare transformer component config has none, so this returns ``[]`` and the
     skeleton falls back to a generic "Text encoder" stage.
     """
-    names: list[str] = []
+    enc_cfgs = _g(cfg, "_text_encoder_configs")
+    enc_cfgs = enc_cfgs if isinstance(enc_cfgs, dict) else {}
+    specs: list[dict] = []
+    seen: set[str] = set()
     for key in ("text_encoder", "text_encoder_2", "text_encoder_3"):
         entry = _g(cfg, key)
         cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
         if not isinstance(cls, str):
             continue
         friendly = _ENCODER_NAMES.get(cls) or cls.replace("Model", "").replace("Encoder", "")
-        if friendly and friendly not in names:
-            names.append(friendly)
-    return names
+        if not friendly or friendly in seen:
+            continue
+        seen.add(friendly)
+        spec = {"name": friendly}
+        sub = enc_cfgs.get(key)
+        if isinstance(sub, dict):
+            spec.update(_normalize_encoder_config(sub))
+        specs.append(spec)
+    return specs
+
+
+def _normalize_encoder_config(c: dict) -> dict:
+    """Map CLIP- and T5-style config keys onto one neutral schema.  Only keys
+    actually present in the config survive (no defaults invented)."""
+    def pick(*keys):
+        for k in keys:
+            v = c.get(k)
+            if v is not None:
+                return v
+        return None
+
+    fields = {
+        "layers": pick("num_hidden_layers", "num_layers"),
+        "hidden": pick("hidden_size", "d_model"),
+        "heads": pick("num_attention_heads", "num_heads"),
+        "ffn": pick("intermediate_size", "d_ff"),
+        "activation": pick("hidden_act", "dense_act_fn", "activation_function"),
+        "vocab": pick("vocab_size"),
+        "max_pos": pick("max_position_embeddings"),
+    }
+    return {k: v for k, v in fields.items() if v is not None}

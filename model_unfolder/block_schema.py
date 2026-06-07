@@ -39,12 +39,14 @@ class Block(TypedDict, total=False):
     role: str                     # semantic slot: attention/ffn/norm/residual/…
     kind: str                     # glyph hint: attention/residual_add/embedding/…
     diffusion_stage: str          # approved diffusion slot/stage, when applicable
+    diffusion_part_kind: str      # approved compound diffusion region, when applicable
     label: "str | list[str]"      # on-block text (one line, or stacked lines)
     title: str                    # card heading
     description: str              # card body
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
+    components: list[dict]        # typed sub-facts inside a compound stage
     # --- layout hints (renderer geometry; non-default topologies) ---
     lane: str                     # side lane placement (parallel/PLE/cross-attn)
     tap_from: str                 # block id this one taps its input from
@@ -82,6 +84,7 @@ KNOWN_ROLES: frozenset[str] = frozenset({
 _diffusion_typing = load_diffusion_typing()
 DIFFUSION_STAGES: frozenset[str] = frozenset(_diffusion_typing["stages"])
 DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset(_diffusion_typing["block_ids"])
+DIFFUSION_PART_KINDS: frozenset[str] = frozenset(_diffusion_typing["part_kinds"])
 
 #: APPROVED transformer block stages — the known decoder-only-transformer block
 #: taxonomy (data in ``everchanging/transformer/typing.yaml``).  Documented now;
@@ -213,6 +216,7 @@ __all__ = [
     "KNOWN_ROLES",
     "DIFFUSION_STAGES",
     "DIFFUSION_BLOCK_IDS",
+    "DIFFUSION_PART_KINDS",
     "TRANSFORMER_STAGES",
     "iter_block_tree",
     "validate_block_tree",

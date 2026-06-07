@@ -2,27 +2,28 @@
 
 Opened from the loop's ``vae_decode`` node.  Two levels:
 
-* :func:`build_vae_decoder_view` — the decoder as a *resolution funnel*: each
-  stage widens toward the image (spatial doubles on every upsample) while the
-  channel count drops, so the upscaling is legible at a glance.  Each decoder
-  stage is clickable and drills into...
+* :func:`build_vae_decoder_view` — the decoder as a straight stage pipeline,
+  latent → up stages → output head → image.  Boxes are uniform width; channel
+  counts live in each stage's sub-label.  Each decoder stage is clickable and
+  drills into...
 * :func:`build_vae_decoder_block_view` — ...one decoder block's ResNet stack: the
   real residual structure (GroupNorm → SiLU → Conv 3×3, twice, + skip) with a
-  ``×N`` depth-stack and the optional ×2 upsample.
+  ``×N`` depth-stack and the optional upsample op.
 
-Everything (channels, ResNet count, upsample factor) is read from the VAE config
-the loader fetched — nothing invented.  Internal op rects are non-interactive
+Everything (channels, ResNet count) is read from the VAE config the loader
+fetched — nothing invented.  Internal op rects are non-interactive
 (no ``data-id``) so a leaf view has no dangling click targets.
 """
 from __future__ import annotations
 
+from ....block_schema import DIFFUSION_PART_KINDS
 from ..stack_view import fit_svg, point
 from ..svg import _ids, _svg_tag, _svg_text, _v_line
 from ..theme import C, FONT_HEAD, FONT_MONO
 
 
 # ---------------------------------------------------------------------------
-# Level 1 — the decoder as a resolution funnel
+# Level 1 — the decoder as a straight stage pipeline
 # ---------------------------------------------------------------------------
 
 def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -32,54 +33,55 @@ def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
     resnets = (d.get("layers_per_block") or 1) + 1
     out_ch = d.get("out_channels") or 3
     latent = d.get("latent_channels")
-    scale = 2 ** (len(channels) - 1) if channels else None
 
     arrow_id, shadow_id = _ids(mount_id, "vae")
     parts: list[str] = []
     regions: list[dict] = []
     cx, h, gap = 0.0, 58.0, 40.0
 
-    # Stage descriptors, bottom (latent) -> top (image).  ``level`` is the spatial
-    # scale (each upsample +1); width grows with it to form the funnel.
+    # Stage descriptors, bottom (latent) -> top (image).  A straight pipeline;
+    # channel counts live in each box's sub-label.
     stages: list[dict] = [{
         "id": "vae_clean_latent", "title": "Clean latent",
         "sub": (f"{latent} ch · latent res" if latent else "latent resolution"),
-        "level": 0, "accent": True, "up": False,
+        "accent": True, "diffusion_part_kind": "latent_stage",
     }]
-    level = 0
     for idx, c in enumerate(reversed(channels), start=1):
-        up = idx > 1
-        if up:
-            level += 1
         block_no = len(channels) - idx + 1
+        node_id = f"vae_decoder_block_{block_no}"
+        child = children.get(node_id, {})
+        detail = child.get("detail") or {}
         stages.append({
-            "id": f"vae_decoder_block_{block_no}",
-            "title": f"Decoder block {block_no}",
-            "sub": None,
-            "level": level, "accent": False, "up": up,
+            "id": node_id,
+            "title": f"Up stage {block_no}",
+            "sub": _component_sub(detail or child),
+            "accent": False,
+            "diffusion_part_kind": child.get("diffusion_part_kind") or detail.get("diffusion_part_kind"),
         })
-    top = level
     stages.append({
         "id": "vae_output_head", "title": "Output head",
-        "sub": f"conv 3×3 → {out_ch} ch", "level": top, "accent": False, "up": False,
+        "sub": f"conv 3×3 → {out_ch} ch", "accent": False,
+        "diffusion_part_kind": "output_head",
     })
     stages.append({
         "id": "vae_image", "title": "Image",
-        "sub": (f"{out_ch}ch RGB · {scale}× upscaled" if scale else f"{out_ch} ch"),
-        "level": top, "accent": True, "up": False,
+        "sub": (f"{out_ch} ch RGB" if out_ch else "RGB"),
+        "accent": True, "diffusion_part_kind": "image_stage",
     })
 
-    def width(level: int, accent: bool) -> float:
-        return 150.0 + level * 42.0 + (14.0 if accent else 0.0)
+    # Every stage is the same width — the decoder is a straight channel pipeline,
+    # not a size funnel.  Channel counts live in each box's sub-label.
+    STAGE_W = 240.0
 
     # Draw top -> bottom (image first), then connect bottom -> top.
     geoms: dict[str, dict] = {}
     y = 0.0
     for st in reversed(stages):
         title = children.get(st["id"], {}).get("title") or st["title"]
-        g = _stage_block(parts, cx, y, width(st["level"], st["accent"]), h,
+        g = _stage_block(parts, cx, y, STAGE_W, h,
                          title, shadow_id, sub=st["sub"],
-                         accent=st["accent"], node_id=st["id"])
+                         accent=st["accent"], node_id=st["id"],
+                         resolved=st.get("diffusion_part_kind") in DIFFUSION_PART_KINDS)
         geoms[st["id"]] = g
         regions.append(g)
         y += h + gap
@@ -88,19 +90,6 @@ def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
     for src, dst in zip(chain, chain[1:]):
         parts.append(_v_line(src, dst, arrow_id))
 
-    # ×2 markers on the arrow feeding each upsampling stage.
-    for st in stages:
-        if st["up"]:
-            g = geoms[st["id"]]
-            ly = g["bottom"] + gap / 2
-            parts.append(_svg_text(
-                g["right"] + 18, ly, "↑ 2×",
-                {"dominant-baseline": "central", "fill": C["muted"],
-                 "font-family": FONT_MONO, "font-size": 12}))
-            regions.append(point(g["right"] + 56, ly))
-
-    # A faint side axis cueing the funnel direction.
-    regions.append(point(0, -8))
     return fit_svg(arrow_id, shadow_id, parts, regions,
                    f"{ir.get('name', 'model')} VAE decoder", min_width=600, pad=44)
 
@@ -110,6 +99,11 @@ def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
 # ---------------------------------------------------------------------------
 
 def build_vae_decoder_block_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+    """One decoder block's residual cell: input → (GroupNorm+SiLU → Conv 3×3) ×2
+    → ⊕, with a skip bypass; the cell repeats ``N`` times, then optional upsample.
+
+    Main path runs dead-centre; the skip arcs up the right; spacing is uniform.
+    """
     d = block.get("detail") or {}
     channels = d.get("channels")
     resnets = d.get("resnets") or 1
@@ -120,93 +114,88 @@ def build_vae_decoder_block_view(ir: dict, info: dict, mount_id: str, block: dic
     parts: list[str] = []
     regions: list[dict] = []
     cx = 0.0
-    h_acc, h_op, gap = 50.0, 42.0, 30.0
-    h_up = 54.0
-    grp_w = 470.0
-    grp_h = 318.0
-    main_x = cx - 70.0
-    skip_x = cx + 170.0
+    opw, oph = 196.0, 44.0          # inner op boxes
+    accw, acch = 216.0, 48.0        # input / output bookends
+    upw, uph = 204.0, 46.0          # upsample
+    cell_gap, edge_gap = 24.0, 34.0
+    skip_lane = cx + 142.0
 
+    # --- vertical layout (top -> bottom), each value is a box TOP y ---
     y = 0.0
-    y_out = y; y += h_acc + gap
+    out_y = y; y += acch + edge_gap
+    up_y = None
     if upsamples:
-        y_up = y; y += h_up + gap
-    grp_top = y; y += grp_h + gap
-    y_in = y; y += h_acc
+        up_y = y; y += uph + edge_gap
+    plus_top = y; plus_cy = y + 15; y += 30 + cell_gap
+    conv2_y = y; y += oph + cell_gap
+    n2_y = y; y += oph + cell_gap
+    conv1_y = y; y += oph + cell_gap
+    n1_y = y; y += oph + edge_gap
+    inp_y = y; y += acch
 
-    out = _stage_block(parts, cx, y_out, 230, h_acc, "Block output", shadow_id,
-                       sub=(f"{ch} · 2× spatial" if (ch and upsamples) else ch), accent=True)
-    regions.append(out)
-    if upsamples:
-        up = _stage_block(parts, cx, y_up, 224, h_up, "Upsample", shadow_id,
-                          sub="nearest 2×, then conv")
-        regions.append(up)
-
-    # Flat repeat container: the VAE decoder block contains several ordinary
-    # residual cells, but it is not a third spatial dimension.
+    # --- "repeat × N" container around the residual cell (⊕ down to n1) ---
+    grp_top = plus_top - 18
+    grp_bot = n1_y + oph + 18
+    grp_left = cx - opw / 2 - 30
+    grp_right = skip_lane + 96
     parts.append(_svg_tag("rect", {
-        "x": cx - grp_w / 2, "y": grp_top, "width": grp_w, "height": grp_h,
-        "rx": 18, "ry": 18, "fill": C["bg_inner"], "opacity": 0.55,
+        "x": grp_left, "y": grp_top, "width": grp_right - grp_left, "height": grp_bot - grp_top,
+        "rx": 18, "ry": 18, "fill": C["bg_inner"], "opacity": 0.5,
         "stroke": C["block"], "stroke-width": 1.0, "stroke-dasharray": "5 4"}))
-    # The container is wider than the inner op boxes — register its corners so
-    # fit_svg's bounding box includes it (otherwise its edges get clipped).
-    regions.append(point(cx - grp_w / 2, grp_top))
-    regions.append(point(cx + grp_w / 2, grp_top + grp_h))
+    regions += [point(grp_left, grp_top), point(grp_right, grp_bot)]
+    badge_cx = grp_left + 64
     parts.append(_svg_tag("rect", {
-        "x": cx + grp_w / 2 - 118, "y": grp_top + 14, "width": 96, "height": 28,
-        "rx": 14, "ry": 14, "fill": C["bg_outer"], "stroke": C["border"],
-        "stroke-width": 0.7}))
-    parts.append(_svg_text(
-        cx + grp_w / 2 - 70, grp_top + 28, f"repeat × {resnets}",
-        {"text-anchor": "middle", "dominant-baseline": "central", "fill": C["text"],
-         "font-family": FONT_HEAD, "font-size": 17}))
+        "x": badge_cx - 52, "y": grp_top + 12, "width": 104, "height": 26,
+        "rx": 13, "ry": 13, "fill": C["bg_outer"], "stroke": C["border"], "stroke-width": 0.7}))
+    parts.append(_svg_text(badge_cx, grp_top + 25, f"repeat × {resnets}",
+                           {"text-anchor": "middle", "dominant-baseline": "central",
+                            "fill": C["text"], "font-family": FONT_HEAD, "font-size": 15}))
 
-    split = {"cx": cx, "cy": grp_top + grp_h - 30, "left": cx - 3.2, "right": cx + 3.2,
-             "top": grp_top + grp_h - 33.2, "bottom": grp_top + grp_h - 26.8}
-    # The merge sits ABOVE the top Conv box (which starts at grp_top+36), so it
-    # isn't hidden behind it.
-    plus = _plain_plus(parts, cx, grp_top + 18)
-    regions.append(plus)
+    # --- boxes (all centred on cx) ---
+    out = _stage_block(parts, cx, out_y, accw, acch, "Block output", shadow_id,
+                       sub=ch, accent=True)
+    regions.append(out)
+    up = None
+    if upsamples:
+        up = _stage_block(parts, cx, up_y, upw, uph, "Upsample", shadow_id,
+                          sub="nearest 2× → conv", node_id="vae_op_upsample")
+        regions.append(up)
+    plus = _plain_plus(parts, cx, plus_cy, node_id="vae_op_residual")
+    conv2 = _stage_block(parts, cx, conv2_y, opw, oph, "Conv 3×3", shadow_id, node_id="vae_op_conv")
+    n2 = _stage_block(parts, cx, n2_y, opw, oph, "GroupNorm + SiLU", shadow_id, node_id="vae_op_norm")
+    conv1 = _stage_block(parts, cx, conv1_y, opw, oph, "Conv 3×3", shadow_id, node_id="vae_op_conv")
+    n1 = _stage_block(parts, cx, n1_y, opw, oph, "GroupNorm + SiLU", shadow_id, node_id="vae_op_norm")
+    inp = _stage_block(parts, cx, inp_y, accw, acch, "Block input", shadow_id, sub=ch, accent=True)
+    regions += [plus, conv2, n2, conv1, n1, inp]
 
-    n1 = _stage_block(parts, main_x, grp_top + 220, 178, h_op, "GroupNorm + SiLU", shadow_id)
-    conv1 = _stage_block(parts, main_x, grp_top + 156, 178, h_op, "Conv 3×3", shadow_id)
-    n2 = _stage_block(parts, main_x, grp_top + 96, 178, h_op, "GroupNorm + SiLU", shadow_id)
-    conv2 = _stage_block(parts, main_x, grp_top + 36, 178, h_op, "Conv 3×3", shadow_id)
-    skip = _stage_block(parts, skip_x, grp_top + 142, 142, 46, "Skip path", shadow_id,
-                        sub="identity / 1×1")
-    regions += [n1, conv1, n2, conv2, skip]
-
-    inp = _stage_block(parts, cx, y_in, 230, h_acc, "Block input", shadow_id, sub=ch, accent=True)
-    regions.append(inp)
-
-    # Flow: input enters the repeated residual stack, splits into main and skip
-    # branches, rejoins at +, then optional upsample and output.
-    parts.append(_v_line(inp, split, arrow_id))
-    parts.append(_svg_tag("circle", {
-        "cx": split["cx"], "cy": split["cy"], "r": 3.4, "fill": C["arrow"]}))
-    for dst in (n1, skip):
-        parts.append(_svg_tag("path", {
-            "d": (f"M {split['cx']} {split['cy']} L {dst['cx']} {split['cy']} "
-                  f"L {dst['cx']} {dst['bottom'] + 6}"),
-            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-            "stroke-linecap": "round", "stroke-linejoin": "round",
-            "marker-end": f"url(#{arrow_id})"}))
+    # --- flow: input → split → main path ↑ → ⊕ ; skip arcs up the right ---
+    split_cy = (grp_bot + inp_y) / 2
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": inp["top"], "x2": cx, "y2": n1["bottom"] + 6,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+    parts.append(_svg_tag("circle", {"cx": cx, "cy": split_cy, "r": 3.6, "fill": C["arrow"]}))
     for src, dst in ((n1, conv1), (conv1, n2), (n2, conv2)):
         parts.append(_v_line(src, dst, arrow_id))
+    # conv2 → ⊕ (straight up, centred)
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": conv2["top"], "x2": cx, "y2": plus["bottom"] + 4,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+    # skip: split → right → up → into ⊕ from the right
     parts.append(_svg_tag("path", {
-        "d": (f"M {conv2['cx']} {conv2['top']} L {conv2['cx']} {plus['cy']} "
-              f"L {plus['left'] - 5} {plus['cy']}"),
-        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round",
+        "d": (f"M {cx} {split_cy} L {skip_lane} {split_cy} "
+              f"L {skip_lane} {plus_cy} L {plus['right'] + 5} {plus_cy}"),
+        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.5,
+        "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-dasharray": "5 4",
         "marker-end": f"url(#{arrow_id})"}))
-    parts.append(_svg_tag("path", {
-        "d": (f"M {skip['left']} {skip['cy']} L {plus['right'] + 42} {skip['cy']} "
-              f"L {plus['right'] + 42} {plus['cy']} L {plus['right'] + 5} {plus['cy']}"),
-        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})"}))
+    parts.append(_svg_text(skip_lane + 10, (split_cy + plus_cy) / 2 - 7, "skip",
+                           {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 11}))
+    parts.append(_svg_text(skip_lane + 10, (split_cy + plus_cy) / 2 + 9, "identity / 1×1",
+                           {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 10}))
 
-    if upsamples:
+    # --- ⊕ → (upsample) → output ---
+    if up is not None:
         parts.append(_v_line(plus, up, arrow_id))
         parts.append(_v_line(up, out, arrow_id))
     else:
@@ -214,22 +203,27 @@ def build_vae_decoder_block_view(ir: dict, info: dict, mount_id: str, block: dic
 
     return fit_svg(arrow_id, shadow_id, parts, regions,
                    f"{ir.get('name', 'model')} {block.get('title') or 'VAE decoder block'}",
-                   min_width=640, pad=44)
+                   min_width=560, pad=44)
 
 
 # ---------------------------------------------------------------------------
 # primitives
 # ---------------------------------------------------------------------------
 
-def _plain_plus(parts: list[str], cx: float, cy: float, r: float = 15.0) -> dict:
-    parts.append(_svg_tag("circle", {
+def _plain_plus(parts: list[str], cx: float, cy: float, r: float = 15.0,
+                *, node_id: str | None = None) -> dict:
+    glyph = [_svg_tag("circle", {
         "cx": cx, "cy": cy, "r": r, "fill": C["block"],
-        "stroke": C["block_alt"], "stroke-width": 0.6}))
+        "stroke": C["block_alt"], "stroke-width": 0.6})]
     arm = 5
     for x1, y1, x2, y2 in ((cx - arm, cy, cx + arm, cy), (cx, cy - arm, cx, cy + arm)):
-        parts.append(_svg_tag("line", {
+        glyph.append(_svg_tag("line", {
             "x1": x1, "y1": y1, "x2": x2, "y2": y2, "stroke": C["text_block"],
-            "stroke-width": 2.2, "stroke-linecap": "round"}))
+            "stroke-width": 2.2, "stroke-linecap": "round", "pointer-events": "none"}))
+    if node_id:
+        parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(glyph)))
+    else:
+        parts.extend(glyph)
     return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r,
             "cx": cx, "cy": cy, "w": 2 * r, "h": 2 * r, "r": r}
 
@@ -246,14 +240,17 @@ def _stage_block(
     node_id: str | None = None,
     sub: str | None = None,
     accent=False,
+    resolved=True,
 ) -> dict:
-    fill = C["bg_inner"] if accent else C["block"]
-    main_color = C["text"] if accent else C["text_block"]
-    sub_color = C["muted"] if accent else "rgba(255,255,255,0.84)"
+    fill = C["bg_inner"] if accent else C["block"] if resolved else C["badge_bg"]
+    main_color = C["text"] if accent or not resolved else C["text_block"]
+    sub_color = C["muted"] if accent or not resolved else "rgba(255,255,255,0.84)"
+    stroke = C["block_alt"] if resolved else C["border"]
+    stroke_width = 0.6 if resolved else 1.0
     x = cx - w / 2
     children = [_svg_tag("rect", {
         "x": x, "y": y, "width": w, "height": h, "rx": 11, "ry": 11,
-        "fill": fill, "stroke": C["block_alt"], "stroke-width": 0.6,
+        "fill": fill, "stroke": stroke, "stroke-width": stroke_width,
         "filter": f"url(#{shadow_id})",
     })]
     children.append(_svg_text(
@@ -293,3 +290,16 @@ def _stage_block(
         "w": w,
         "h": h,
     }
+
+
+def _component_sub(stage: dict) -> str | None:
+    # Channels + ResNet count only; the upsample op is a separate box in the
+    # block drill-down, not a chip here.
+    labels: list[str] = []
+    for comp in stage.get("components") or []:
+        kind = comp.get("kind")
+        if kind == "channels":
+            labels.append(f"{int(comp['value']):,} ch")
+        elif kind == "resnet_stack":
+            labels.append(f"{int(comp.get('count') or 1)}× ResNet")
+    return " · ".join(labels) if labels else None

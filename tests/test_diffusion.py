@@ -38,6 +38,19 @@ FLUX = {
         "layers_per_block": 2,
         "scaling_factor": 0.3611,
     },
+    # Real text-encoder configs the by-ID loader pulls from text_encoder/ and
+    # text_encoder_2/ (CLIP ViT-L/14 + T5-v1.1-XXL encoder).
+    "_text_encoder_configs": {
+        "text_encoder": {
+            "_class_name": "CLIPTextModel", "num_hidden_layers": 12, "hidden_size": 768,
+            "num_attention_heads": 12, "intermediate_size": 3072, "hidden_act": "quick_gelu",
+            "max_position_embeddings": 77, "vocab_size": 49408,
+        },
+        "text_encoder_2": {
+            "_class_name": "T5EncoderModel", "num_layers": 24, "d_model": 4096,
+            "num_heads": 64, "d_ff": 10240, "dense_act_fn": "gelu_new", "vocab_size": 32128,
+        },
+    },
 }
 
 # Real PixArt-alpha transformer config (single-stream, cross-attention to text).
@@ -237,6 +250,43 @@ def test_text_encoders_render_as_separate_blocks():
         assert f'data-id="{nid}"' in html and f'data-card-id="{nid}"' in html
 
 
+def test_text_encoder_breaks_into_drillable_ops():
+    """Clicking an encoder opens its transformer-layer cell; each op (embedding,
+    self-attention, FFN, add & norm) is a clickable node with a matching card,
+    namespaced per encoder so CLIP and T5 don't share a card."""
+    html = unfold(FLUX).to_html(standalone=True)
+    for op in ("embed", "norm", "selfattn", "ffn", "add"):
+        for enc in ("encoder_0", "encoder_1"):
+            assert f'data-id="{enc}_op_{op}"' in html
+            assert f'data-card-id="{enc}_op_{op}"' in html
+
+
+def test_text_encoder_shows_real_config_dims():
+    """When the loader fetched the encoders' configs, the view shows their real
+    depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
+    specs = diffusor._text_encoder_specs(FLUX)
+    assert specs == [
+        {"name": "CLIP", "layers": 12, "hidden": 768, "heads": 12, "ffn": 3072,
+         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77},
+        {"name": "T5", "layers": 24, "hidden": 4096, "heads": 64, "ffn": 10240,
+         "activation": "gelu_new", "vocab": 32128},
+    ]
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "× 12 layers" in html and "× 24 layers" in html   # real depths
+    assert "12 heads" in html and "64 heads" in html
+    assert "768 → 3,072" in html and "4,096 → 10,240" in html
+
+
+def test_text_encoder_falls_back_when_no_config():
+    """Without fetched encoder configs, the view stays honest: schematic '× N
+    layers', no invented numbers."""
+    flux_no_enc = {k: v for k, v in FLUX.items() if k != "_text_encoder_configs"}
+    specs = diffusor._text_encoder_specs(flux_no_enc)
+    assert specs == [{"name": "CLIP"}, {"name": "T5"}]
+    html = unfold(flux_no_enc).to_html(standalone=True)
+    assert "× N layers" in html
+
+
 def test_vae_decoder_has_a_drill_view():
     """VAE decode opens its own view, built from the real VAE config (channels,
     upsampling) the loader fetched."""
@@ -246,7 +296,7 @@ def test_vae_decoder_has_a_drill_view():
     assert vae_block["detail"]["block_out_channels"] == [128, 256, 512, 512]
     html = unfold(FLUX).to_html(standalone=True)
     # Real decoder stages drawn compactly: 8x upscale (3 doublings), 128->3 output head.
-    assert "Decoder block" in html and "Output image head" in html
+    assert "Up stage" in html and "Output image head" in html
     assert "8× upscaled" in html
     assert "z₀ (clean)" not in html      # the removed loop-arrow label stays gone
 
@@ -287,6 +337,30 @@ def test_unet_is_claimed_by_diffusor_not_transformer():
     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
 
 
+def test_unet_stage_part_kinds_resolve_for_all_block_variants():
+    """Every down/up stage of a real UNet is a recognised part_kind (solid), even
+    the Resnet*sample / Simple* block variants (DeepFloyd / Kandinsky) — they're
+    classified by position, so none render pale."""
+    from model_unfolder.block_schema import DIFFUSION_PART_KINDS
+    DEEPFLOYD = {
+        "_class_name": "UNet2DConditionModel", "in_channels": 3, "out_channels": 6,
+        "block_out_channels": [320, 640, 1280, 1280], "layers_per_block": 3,
+        "cross_attention_dim": 4096,
+        "down_block_types": ["ResnetDownsampleBlock2D", "SimpleCrossAttnDownBlock2D",
+                             "SimpleCrossAttnDownBlock2D", "SimpleCrossAttnDownBlock2D"],
+        "up_block_types": ["SimpleCrossAttnUpBlock2D", "SimpleCrossAttnUpBlock2D",
+                           "SimpleCrossAttnUpBlock2D", "ResnetUpsampleBlock2D"],
+        "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+    }
+    ir = config_to_ir(DEEPFLOYD)
+    u = ir.extras["unet"]
+    for st in u["down"] + u["up"]:
+        assert st.get("diffusion_part_kind") in DIFFUSION_PART_KINDS, st["stage_type"]
+    # The Resnet*sample stages have no cross-attention (resnet-only).
+    assert u["down"][0]["attn"] is False
+    assert u["up"][-1]["attn"] is False
+
+
 def test_unet_structure_parsed():
     ir = config_to_ir(SDXL_UNET)
     u = ir.extras["unet"]
@@ -299,6 +373,10 @@ def test_unet_structure_parsed():
     assert u["down"][2]["transformers"] == 10
     assert u["downscale"] == 4                        # 3 stages -> 2**2
     assert u["cross_attention_dim"] == 2048
+    assert u["down"][0]["diffusion_part_kind"] == "down_stage"
+    assert u["mid"]["diffusion_part_kind"] == "mid_stage"
+    assert u["up"][0]["diffusion_part_kind"] == "up_stage"
+    assert {"kind": "resnet_stack", "count": 2} in u["down"][0]["components"]
 
 
 def test_unet_renders_loop_and_ushape(monkeypatch):
@@ -310,9 +388,23 @@ def test_unet_renders_loop_and_ushape(monkeypatch):
     assert "U-Net" in html                            # denoiser node label
     assert "Conv U-Net" in html                       # header badge
     assert "skip connections" in html                 # the U-shape view
+    assert "Down stage" in html and "Up stage" in html and "Mid stage" in html
     assert "DENOISER LAYER MAP" not in html           # no flat layer map for UNet
     # Name from the model tag.
     assert ir.name == "stable-diffusion-xl-base-1.0"
+
+
+def test_unet_custom_stage_is_visible_but_unapproved():
+    cfg = {
+        **SDXL_UNET,
+        "down_block_types": ["DownBlock2D", "CustomMagicDown", "CrossAttnDownBlock2D"],
+    }
+    ir = config_to_ir(cfg)
+    custom = ir.extras["unet"]["down"][1]
+    assert custom.get("custom_label") == "CustomMagicDown"
+    assert "diffusion_part_kind" not in custom
+    html = unfold(cfg).to_html(standalone=True)
+    assert "CustomMagicDown" in html
 
 
 def test_dit_dialect_field_aliases():

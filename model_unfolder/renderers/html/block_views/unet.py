@@ -11,6 +11,7 @@ non-interactive (a leaf view) — no dangling click targets.
 """
 from __future__ import annotations
 
+from ....block_schema import DIFFUSION_PART_KINDS
 from ..stack_view import fit_svg, point
 from ..svg import _ids, _path, _svg_tag, _svg_text, _v_seg
 from ..theme import C, FONT_HEAD, FONT_MONO
@@ -30,16 +31,18 @@ def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     arrow_id, shadow_id = _ids(mount_id, "unet")
     parts: list[str] = []
     regions: list[dict] = []
-    LX, RX = 178.0, 548.0
-    sw, sh, row_gap, y0 = 162.0, 50.0, 80.0, 98.0
+    LX, RX = 188.0, 588.0
+    sw, sh, row_gap, y0 = 200.0, 58.0, 88.0, 98.0
 
-    def stage(cx: float, y: float, st: dict) -> dict:
-        ch = st.get("channels")
-        sub = f"{st.get('resnets')}× ResNet"
-        if st.get("attn"):
-            t = st.get("transformers") or 1
-            sub += f"  ·  XAttn×{t}" if t > 1 else "  ·  +XAttn"
-        return _box(parts, cx, y, sw, sh, f"{ch} ch" if ch else "stage", sub, shadow_id)
+    def stage(cx: float, y: float, st: dict, default_kind: str) -> dict:
+        resolved = st.get("diffusion_part_kind") in DIFFUSION_PART_KINDS
+        return _box(
+            parts, cx, y, sw, sh,
+            _stage_title(st, default_kind),
+            " · ".join(_stage_chips(st)),
+            shadow_id,
+            resolved=resolved,
+        )
 
     conv_in = _box(parts, LX, 22, sw, 44, "Conv in",
                    (f"{in_ch} → {boc[0]} ch" if (in_ch and boc) else None), shadow_id, accent=True)
@@ -52,14 +55,16 @@ def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     down_g, up_g = [], []
     for i in range(n):
         y = y0 + i * row_gap
-        down_g.append(stage(LX, y, down[i]))
-        up_g.append(stage(RX, y, up[n - 1 - i]))
+        down_g.append(stage(LX, y, down[i], "down_stage"))
+        up_g.append(stage(RX, y, up[n - 1 - i], "up_stage"))
     regions += down_g + up_g
 
     mid_cx, mid_y = (LX + RX) / 2, y0 + n * row_gap
-    mid_g = _box(parts, mid_cx, mid_y, sw + 40, sh, "Mid block",
-                 (f"{mid.get('channels')} ch · ResNet+Attn" if mid.get("channels") else "ResNet+Attn"),
-                 shadow_id)
+    mid_g = _box(
+        parts, mid_cx, mid_y, sw + 44, sh, _stage_title(mid, "mid_stage"),
+        " · ".join(_stage_chips(mid)), shadow_id,
+        resolved=mid.get("diffusion_part_kind") in DIFFUSION_PART_KINDS,
+    )
     regions.append(mid_g)
 
     # --- skip connections (equal-resolution stages across the U) ---
@@ -112,14 +117,55 @@ def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
                    f"{ir.get('name', 'model')} U-net denoiser", min_width=720, pad=44)
 
 
-def _box(parts, cx, y, w, h, main, sub, shadow_id, *, accent=False) -> dict:
-    fill = C["bg_inner"] if accent else C["block"]
-    main_color = C["text"] if accent else C["text_block"]
-    sub_color = C["muted"] if accent else "rgba(255,255,255,0.84)"
+def _stage_title(st: dict, default_kind: str) -> str:
+    if st.get("custom_label"):
+        return str(st["custom_label"])
+    kind = st.get("diffusion_part_kind") or default_kind
+    return {
+        "down_stage": "Down stage",
+        "mid_stage": "Mid stage",
+        "up_stage": "Up stage",
+    }.get(kind, "Stage")
+
+
+def _stage_chips(st: dict) -> list[str]:
+    """Compact component chips for a stage box.  The ↓2/↑2 sampling is drawn on
+    the connecting arrows, so it's omitted here to keep the chip line short."""
+    labels: list[str] = []
+    components = st.get("components") or []
+    if not components:
+        ch = st.get("channels")
+        if ch:
+            labels.append(f"{int(ch):,} ch")
+        if st.get("resnets"):
+            labels.append(f"{st['resnets']}× ResNet")
+        if st.get("attn"):
+            t = st.get("transformers") or 1
+            labels.append(f"×Attn×{t}" if t > 1 else "×Attn")
+        return labels
+    for comp in components:
+        kind = comp.get("kind")
+        if kind == "channels":
+            labels.append(f"{int(comp['value']):,} ch")
+        elif kind == "resnet_stack":
+            labels.append(f"{int(comp.get('count') or 1)}× ResNet")
+        elif kind == "cross_attention":
+            count = int(comp.get("count") or 1)
+            labels.append(f"×Attn×{count}" if count > 1 else "×Attn")
+        # downsample / upsample are shown on the flow arrows (↓2 / ↑2), not chipped
+    return labels
+
+
+def _box(parts, cx, y, w, h, main, sub, shadow_id, *, accent=False, resolved=True) -> dict:
+    fill = C["bg_inner"] if accent else C["block"] if resolved else C["badge_bg"]
+    main_color = C["text"] if accent or not resolved else C["text_block"]
+    sub_color = C["muted"] if accent or not resolved else "rgba(255,255,255,0.84)"
+    stroke = C["block_alt"] if resolved else C["border"]
+    stroke_width = 0.6 if resolved else 1.0
     x = cx - w / 2
     parts.append(_svg_tag("rect", {
         "x": x, "y": y, "width": w, "height": h, "rx": 11, "ry": 11,
-        "fill": fill, "stroke": C["block_alt"], "stroke-width": 0.6,
+        "fill": fill, "stroke": stroke, "stroke-width": stroke_width,
         "filter": f"url(#{shadow_id})"}))
     parts.append(_svg_text(cx, y + (18 if sub else h / 2), main,
                            {"text-anchor": "middle", "dominant-baseline": "central",
@@ -128,7 +174,7 @@ def _box(parts, cx, y, w, h, main, sub, shadow_id, *, accent=False) -> dict:
     if sub:
         parts.append(_svg_text(cx, y + 36, sub,
                                {"text-anchor": "middle", "dominant-baseline": "central",
-                                "fill": sub_color, "font-family": FONT_MONO, "font-size": 10.5,
+                                "fill": sub_color, "font-family": FONT_MONO, "font-size": 10,
                                 "pointer-events": "none"}))
     return {"left": x, "right": x + w, "top": y, "bottom": y + h,
             "cx": cx, "cy": y + h / 2, "w": w, "h": h}
