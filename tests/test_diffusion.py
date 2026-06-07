@@ -136,6 +136,20 @@ def test_diffusion_model_blocks_are_typed():
     assert side_blocks["text_cond"]["diffusion_stage"] == "text_conditioning"
 
 
+def test_diffusion_name_from_model_tag_and_stats():
+    """Header name comes from the model tag (repo id), and the stats banner shows
+    diffusion-specific cells (Timesteps, Latent) instead of Vocab / Context."""
+    cfg = {**FLUX, "_repo_id": "black-forest-labs/FLUX.1-dev"}
+    ir = config_to_ir(cfg)
+    assert ir.name == "FLUX.1-dev"           # not "transformer" / the component path
+    html = unfold(cfg).to_html(standalone=True)
+    assert "TIMESTEPS" in html and "1,000" in html
+    assert "LATENT" in html and "64 ch" in html
+    assert "VOCAB" not in html and "CONTEXT" not in html
+    # Transformers keep Vocab / Context.
+    assert "VOCAB" in unfold(LLAMA).to_html(standalone=True)
+
+
 def test_loop_blocks_are_typed_with_approved_stages():
     """Every sampling-loop node carries an approved diffusion_stage, so the hero
     view is under the same type guard as the denoiser."""
@@ -253,6 +267,24 @@ def test_diffusion_blocks_and_clicks_valid(cfg):
     assert validate_block_tree(ir) == []
     html = unfold(cfg).to_html(standalone=True)
     assert validate_click_coupling(html) == []
+
+
+def test_dit_dialect_field_aliases():
+    """DiT variants with different field spellings parse correctly:
+    AuraFlow's num_mmdit_layers/num_single_dit_layers, and Hunyuan-DiT declaring
+    hidden_size directly (no per-head attention_head_dim)."""
+    aura = config_to_ir({
+        "_class_name": "AuraFlowTransformer2DModel", "num_mmdit_layers": 4,
+        "num_single_dit_layers": 32, "attention_head_dim": 256,
+        "num_attention_heads": 8, "joint_attention_dim": 2048, "in_channels": 4,
+    })
+    assert aura.num_layers == 36 and aura.hidden_size == 8 * 256
+
+    hunyuan = config_to_ir({
+        "_class_name": "HunyuanDiT2DModel", "num_layers": 40,
+        "num_attention_heads": 16, "hidden_size": 1408, "cross_attention_dim": 1024,
+    })
+    assert hunyuan.num_layers == 40 and hunyuan.hidden_size == 1408
 
 
 def test_pixart_single_stream_only():

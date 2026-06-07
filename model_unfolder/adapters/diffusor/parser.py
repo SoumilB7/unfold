@@ -13,7 +13,8 @@ estimator.  What it adds is diffusion-specific:
 * the model-level pipeline skeleton (text encoder -> denoiser -> VAE) instead of
   token-embedding/LM-head bookends.
 
-Field vocabulary is data, not code: see ``everchanging/diffusion_aliases.yaml``.
+Field vocabulary is data, not code: see ``everchanging/diffusor/`` (aliases,
+typing, text_encoders).
 The diagram is themed blue via ``extras["render"]["theme"]``.
 
 Scope (v1): the DiT *denoiser* is detailed per-layer; text encoder(s) and VAE are
@@ -24,7 +25,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from ...everchanging import load_diffusion_aliases
+from ...everchanging import (
+    load_diffusion_aliases,
+    load_diffusion_text_encoders,
+    load_diffusion_typing,
+)
 from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, parallel_decoder_layer
 from ..transformer.common import architecture_name, get_config_value as _g, model_name
@@ -33,16 +38,11 @@ from .blocks import diffusion_render_spec
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
 
-#: ``_class_name`` substrings that mark a diffusion *transformer* backbone.
-_DIT_CLASS_MARKERS = ("Transformer2DModel", "Transformer2D", "DiTTransformer", "DiT")
-
-#: diffusers text-encoder class name -> friendly family label.
-_ENCODER_NAMES = {
-    "CLIPTextModel": "CLIP",
-    "CLIPTextModelWithProjection": "CLIP",
-    "T5EncoderModel": "T5",
-    "T5EncoderModelWithProjection": "T5",
-}
+#: Detection + labelling vocabulary — data, edited in ``everchanging/diffusor/``.
+#: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
+#: diffusers text-encoder class name -> friendly family label map.
+_DIT_CLASS_MARKERS = tuple(load_diffusion_typing()["dit_class_markers"])
+_ENCODER_NAMES = load_diffusion_text_encoders()
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
@@ -57,6 +57,19 @@ def _resolve(cfg: Any, canonical: str, default=None):
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
+
+def _diffusion_name(cfg: Any, arch_name: str) -> str:
+    """Prefer the model *tag* (repo id) for the display name, e.g.
+    ``black-forest-labs/FLUX.1-dev`` -> ``FLUX.1-dev`` — not the denoiser
+    component's own ``_name_or_path`` (which is just ``.../transformer``)."""
+    repo = _g(cfg, "_repo_id")
+    if isinstance(repo, str) and repo.strip():
+        return repo.strip("/").split("/")[-1]
+    pipe = _g(cfg, "_pipeline_class_name")
+    if isinstance(pipe, str) and pipe:
+        return pipe
+    return model_name(cfg, arch_name)
+
 
 def matches(cfg: Any) -> bool:
     """True only for diffusion-transformer configs (or DiT pipelines).
@@ -85,7 +98,12 @@ def parse(cfg: Any) -> ModelIR:
     num_single   = int(_resolve(cfg, "num_single_layers", 0) or 0)
     num_heads    = int(_resolve(cfg, "num_attention_heads", 0) or 0)
     head_dim     = int(_resolve(cfg, "attention_head_dim", 0) or 0)
-    hidden_size  = num_heads * head_dim
+    # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
+    # hidden_size directly without a per-head dim — derive the head dim from it.
+    hidden_decl  = int(_resolve(cfg, "hidden_size", 0) or 0)
+    if not head_dim and hidden_decl and num_heads:
+        head_dim = hidden_decl // num_heads
+    hidden_size  = num_heads * head_dim or hidden_decl
 
     intermediate_size = int(_resolve(cfg, "intermediate_size", 0) or 0)
     if not intermediate_size and hidden_size:
@@ -192,7 +210,7 @@ def parse(cfg: Any) -> ModelIR:
         extras["diffusion"] = diffusion_meta
 
     return ModelIR(
-        name=model_name(cfg, arch_name),
+        name=_diffusion_name(cfg, arch_name),
         architecture=arch_name,
         vocab_size=0,                  # no token vocabulary in a denoiser
         hidden_size=hidden_size,

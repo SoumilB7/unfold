@@ -25,6 +25,8 @@ from __future__ import annotations
 import re
 from typing import Any, Iterator, Optional, TypedDict
 
+from .everchanging import load_diffusion_typing, load_transformer_typing
+
 
 class Block(TypedDict, total=False):
     """One node in the render tree.  ``id`` is the only required key.
@@ -71,22 +73,21 @@ KNOWN_ROLES: frozenset[str] = frozenset({
 #: set render as solid, first-class blocks.  A block whose stage is missing or
 #: NOT in this set renders pale/light (same label) to flag that its place in the
 #: diagram is *not decided yet* — a guardrail so a new adapter fact can't quietly
-#: become a real block.  To bless a new slot, add its stage here on purpose.
-DIFFUSION_STAGES: frozenset[str] = frozenset({
-    # Sampling-loop (hero view) stages.
-    "noise_input", "timestep", "prompt", "text_encoder",
-    "denoiser", "scheduler", "vae_decode", "image_output",
-    # Denoiser (DiT block) stages.
-    "latent_input", "patchify", "output_projection", "unpatchify",
-    "timestep_conditioning", "text_conditioning",
-})
-
-#: Block ids that are legitimately solid inside a DiT block without carrying a
+#: become a real block.  The set is *data*, edited in
+#: ``everchanging/diffusor/typing.yaml`` — bless a new slot there, not here.
+#:
+#: ``DIFFUSION_BLOCK_IDS`` are ids legitimately solid inside a DiT block without a
 #: ``diffusion_stage`` — they come from the reused transformer ``decoder_layer``
 #: assembly (norm / attention / residual-add / FFN), not the diffusion adapter.
-DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset({
-    "rms1", "attn", "add1", "rms2", "ffn", "add2",
-})
+_diffusion_typing = load_diffusion_typing()
+DIFFUSION_STAGES: frozenset[str] = frozenset(_diffusion_typing["stages"])
+DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset(_diffusion_typing["block_ids"])
+
+#: APPROVED transformer block stages — the known decoder-only-transformer block
+#: taxonomy (data in ``everchanging/transformer/typing.yaml``).  Documented now;
+#: the transformer renderer doesn't draw pale-when-unapproved yet (only diffusion
+#: does), but this is the single place to bless transformer stages when it does.
+TRANSFORMER_STAGES: frozenset[str] = frozenset(load_transformer_typing()["stages"])
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +213,7 @@ __all__ = [
     "KNOWN_ROLES",
     "DIFFUSION_STAGES",
     "DIFFUSION_BLOCK_IDS",
+    "TRANSFORMER_STAGES",
     "iter_block_tree",
     "validate_block_tree",
     "validate_click_coupling",

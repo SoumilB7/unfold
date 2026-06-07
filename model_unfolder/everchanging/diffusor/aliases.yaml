@@ -7,13 +7,16 @@
 # Flow style ([a, b, c]) so the built-in loader works without PyYAML.
 
 # Denoiser depth.  Flux splits depth into double-stream (num_layers) + single-
-# stream (num_single_layers); both are read.
-num_layers: [num_layers, num_hidden_layers, depth, num_blocks]
-num_single_layers: [num_single_layers, num_single_blocks]
+# stream (num_single_layers).  AuraFlow spells these num_mmdit_layers /
+# num_single_dit_layers.  Both halves are read.
+num_layers: [num_layers, num_hidden_layers, num_mmdit_layers, depth, num_blocks]
+num_single_layers: [num_single_layers, num_single_dit_layers, num_single_blocks]
 
-# Attention shape.  DiT hidden size = num_attention_heads * attention_head_dim.
+# Attention shape.  DiT hidden = num_attention_heads * attention_head_dim; some
+# (Hunyuan-DiT) instead declare hidden_size directly and the head dim is derived.
 num_attention_heads: [num_attention_heads, num_heads, n_heads]
 attention_head_dim: [attention_head_dim, head_dim, attention_dim_head]
+hidden_size: [hidden_size, inner_dim, d_model, dim]
 
 # Positional encoding: Flux applies axial RoPE over the joint sequence; the
 # per-axis dims sum to the head dim. Presence of this field => RoPE (not NoPE).

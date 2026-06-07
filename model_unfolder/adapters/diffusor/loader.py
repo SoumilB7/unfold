@@ -77,6 +77,9 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
 
     cfg.setdefault("_pipeline_class_name", index.get("_class_name"))
     cfg.setdefault("_name_or_path", model_id)
+    # The repo id IS the model tag the user typed — used for the display name
+    # (the component's own _name_or_path is just ".../transformer").
+    cfg["_repo_id"] = model_id
     return cfg
 
 
