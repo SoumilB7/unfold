@@ -11,7 +11,7 @@ collapsed stages.
 
 Blocks reuse the renderer's existing ``kind`` glyphs (source/embedding/norm/
 output) so the skeleton draws with no renderer change — the diffusion semantics
-live in the labels, titles, and descriptions.
+live in approved ``diffusion_stage`` tags plus titles and descriptions.
 """
 from __future__ import annotations
 
@@ -35,7 +35,9 @@ def diffusion_render_spec(geom: dict) -> dict:
     return {
         "family": "diffusion",
         "layout": "dit_pipeline",
-        "theme": "blue",
+        # Green (the LLM default) for now — the blue palette is still defined in
+        # theme.py and selectable here later if we want a distinct diffusion look.
+        "theme": "teal",
         "model_blocks": diffusion_model_blocks(geom),
         "loop_blocks": diffusion_loop_blocks(geom),
     }
@@ -64,9 +66,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     patch = geom.get("patch_size") or 1
     text_dim = geom.get("joint_attention_dim") or geom.get("cross_attention_dim")
     guidance = geom.get("guidance_embeds")
-    scheduler = geom.get("scheduler")
     encoders = geom.get("text_encoders") or []
-    enc_label = " + ".join(encoders) if encoders else "Text encoder"
 
     # Latent grid shape, when derivable: channels x (sample/patch) tokens per side.
     if in_ch and sample:
@@ -99,23 +99,27 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         sched_bits.append(f"timestep shift {sched_shift}")
     sched_detail = "; ".join(sched_bits)
 
+    vae = geom.get("vae")
     return [
         {
             "id": "noise",
             "role": "input",
             "kind": "source",
-            "label": ["Noise", "z_T"],
-            "title": "Initial noise (z_T)",
+            "diffusion_stage": "noise_input",
+            "label": "Noise",
+            "title": "Initial noise",
             "description": (
-                f"Random Gaussian latent, shape [{latent_shape}], sampled in the "
-                "VAE latent space. (Image-to-image instead starts from an encoded "
-                "input image.) This is the latent the loop iteratively denoises."
+                f"z_T: random Gaussian latent, shape [{latent_shape}], sampled in "
+                "the VAE latent space. (Image-to-image instead starts from an "
+                "encoded input image.) This is the latent the loop iteratively "
+                "denoises."
             ),
         },
         {
             "id": "timestep",
             "role": "input",
             "kind": "source",
+            "diffusion_stage": "timestep",
             "label": ["Timestep t", "(+ guidance)" if guidance else ""],
             "title": "Timestep" + (" + guidance" if guidance else ""),
             "description": (
@@ -124,23 +128,12 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + ". Embedded and fed to every block as AdaLN modulation."
             ),
         },
-        {
-            "id": "text_encoder",
-            "role": "embedding",
-            "kind": "embedding",
-            "label": [f"Prompt -> {enc_label}"] if encoders else ["Text prompt", "-> encoder"],
-            "title": "Text conditioning",
-            "description": (
-                f"The prompt, encoded by {enc_label}"
-                + (f" into a sequence of width {_fmt(text_dim)}" if text_dim else "")
-                + ", conditions the denoiser (cross / joint attention). Computed "
-                "once and reused every step."
-            ),
-        },
+        *_text_conditioning_blocks(encoders, text_dim, geom.get("pooled_projection_dim")),
         {
             "id": "denoiser",
             "role": "attention",
             "kind": "denoiser",
+            "diffusion_stage": "denoiser",
             "label": ["DiT Denoiser"],
             "title": "DiT denoiser",
             "description": (
@@ -154,6 +147,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "id": "scheduler",
             "role": "norm",
             "kind": "scheduler",
+            "diffusion_stage": "scheduler",
             "label": _wrap_two_lines(scheduler) if scheduler else ["Scheduler", "step"],
             "title": f"Scheduler — {scheduler}" if scheduler else "Scheduler step",
             "description": (
@@ -168,22 +162,149 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "id": "vae_decode",
             "role": "output",
             "kind": "output",
+            "diffusion_stage": "vae_decode",
             "label": "VAE decode",
             "title": "VAE decoder",
             "description": (
                 "Once the loop reaches z_0 (clean latent), the VAE decoder maps it "
                 "from latent space back to a full-resolution pixel image."
+                + (" Click to open its architecture." if vae else "")
+            ),
+            **(
+                {
+                    "view": "vae_decoder",
+                    "detail": vae,
+                    "children": _vae_decoder_children(vae),
+                }
+                if vae else {}
             ),
         },
         {
             "id": "image",
             "role": "output",
             "kind": "source",
+            "diffusion_stage": "image_output",
             "label": "Image",
             "title": "Output image",
             "description": "The generated image in pixel space.",
         },
     ]
+
+
+def _vae_decoder_children(vae: dict | None) -> list[Block]:
+    if not isinstance(vae, dict):
+        return []
+    channels = [c for c in (vae.get("block_out_channels") or []) if isinstance(c, int)]
+    latent = vae.get("latent_channels")
+    out_ch = vae.get("out_channels") or 3
+    lpb = vae.get("layers_per_block")
+    resnets = (lpb or 1) + 1
+    scale = 2 ** (len(channels) - 1) if channels else None
+
+    children: list[Block] = [
+        {
+            "id": "vae_clean_latent",
+            "title": "Clean latent",
+            "description": (
+                "z_0 after the denoising loop"
+                + (f"; {latent} latent channels" if latent else "")
+            ),
+        },
+    ]
+    for idx, c in enumerate(reversed(channels), start=1):
+        block_no = len(channels) - idx + 1
+        upsamples = idx > 1
+        children.append({
+            "id": f"vae_decoder_block_{block_no}",
+            "title": f"Decoder block {block_no}",
+            "description": (
+                f"{_fmt(c)} channels; {resnets} ResNet block"
+                f"{'s' if resnets != 1 else ''}"
+                + ("; upsamples spatial size by 2" if upsamples else "")
+            ),
+            "view": "vae_decoder_block",
+            "detail": {
+                "channels": c,
+                "resnets": resnets,
+                "upsamples": upsamples,
+            },
+        })
+    if channels:
+        children.append({
+            "id": "vae_output_head",
+            "title": "Output image head",
+            "description": f"Final convolution maps {_fmt(channels[0])} channels to {out_ch} output channel(s).",
+        })
+    children.append({
+        "id": "vae_image",
+        "title": "Image",
+        "description": (
+            ("RGB image" if out_ch == 3 else f"{out_ch} channel output")
+            + (f"; {scale}× upscaled from the latent grid" if scale else "")
+        ),
+    })
+    return children
+
+
+def _text_conditioning_blocks(encoders: list, text_dim, pooled) -> list[Block]:
+    """One block per real text encoder (+ a shared prompt source), so the diagram
+    shows the actual number of encoders (Flux: CLIP + T5; SD3: CLIP-L + CLIP-G + T5)
+    instead of a single combined block."""
+    if not encoders:
+        return [{
+            "id": "text_encoder",
+            "role": "embedding",
+            "kind": "embedding",
+            "diffusion_stage": "text_encoder",
+            "label": ["Text prompt", "-> encoder"],
+            "title": "Text conditioning",
+            "description": (
+                "The prompt, encoded into a conditioning embedding consumed by the "
+                "denoiser's attention. Computed once and reused every step."
+            ),
+        }]
+    blocks: list[Block] = [{
+        "id": "prompt",
+        "role": "input",
+        "kind": "source",
+        "diffusion_stage": "prompt",
+        "label": "Text prompt",
+        "title": "Text prompt",
+        "description": (
+            f"The conditioning prompt, encoded by {len(encoders)} text "
+            f"encoder{'s' if len(encoders) != 1 else ''} ({', '.join(encoders)})."
+        ),
+    }]
+    for i, enc in enumerate(encoders):
+        blocks.append({
+            "id": f"encoder_{i}",
+            "role": "embedding",
+            "kind": "embedding",
+            "diffusion_stage": "text_encoder",
+            "label": enc,
+            "title": f"{enc} text encoder",
+            "description": _encoder_desc(enc, text_dim, pooled),
+        })
+    return blocks
+
+
+def _encoder_desc(enc: str, text_dim, pooled) -> str:
+    name = enc.upper()
+    if "T5" in name:
+        role = (
+            "produces the prompt token sequence"
+            + (f" (width {_fmt(text_dim)})" if text_dim else "")
+            + ", consumed by the denoiser's joint/cross attention"
+        )
+    elif "CLIP" in name:
+        role = (
+            "produces a pooled prompt vector"
+            + (f" ({_fmt(pooled)})" if pooled else "")
+            + ", used as global conditioning (AdaLN modulation)"
+        )
+    else:
+        role = "encodes the prompt into a conditioning embedding"
+    return f"{enc}: {role}. Frozen; run once and reused every sampling step."
 
 
 def diffusion_model_blocks(geom: dict) -> list[Block]:
@@ -195,7 +316,7 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
     surrounding pipeline (text encoder, timestep conditioning, VAE) into their
     descriptions + the pipeline-context cards below.  So the drawn flow reads:
 
-        Noisy latent -> Patchify -> [ DiT x N ] -> AdaLN-Out -> Unpatchify/VAE
+        Noisy latent -> Patchify -> [ DiT x N ] -> Output projection -> Unpatchify/VAE
 
     (The text-encoder and VAE stages get their own drawn lanes in a later pass;
     here they are connected as pipeline-context cards so nothing is lost.)
@@ -214,7 +335,8 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "id": "tok_text",
             "role": "input",
             "kind": "source",
-            "label": ["Noisy latent", "z_t"],
+            "diffusion_stage": "latent_input",
+            "label": "Noisy latent",
             "title": "Noisy latent (z_t)",
             "description": (
                 "VAE-space latent at timestep t"
@@ -231,6 +353,7 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "id": "embed",
             "role": "embedding",
             "kind": "embedding",
+            "diffusion_stage": "patchify",
             "label": "Patchify",
             "title": "Patch embedding",
             "description": (
@@ -244,7 +367,8 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "id": "final_rms",
             "role": "norm",
             "kind": "norm",
-            "label": ["AdaLN-Out", "+ Linear"],
+            "diffusion_stage": "output_projection",
+            "label": "Output projection",
             "title": "Final modulation + projection",
             "description": (
                 "AdaLayerNorm-Out conditioned on the timestep vector, then a linear "
@@ -255,7 +379,8 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "id": "lm_head",
             "role": "output",
             "kind": "output",
-            "label": ["Unpatchify", "-> noise eps"],
+            "diffusion_stage": "unpatchify",
+            "label": "Unpatchify",
             "title": "Unpatchify -> predicted noise",
             "description": (
                 "Reassemble predicted patches into the latent grid: the denoiser's "

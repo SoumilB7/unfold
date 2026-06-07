@@ -69,6 +69,12 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
         if isinstance(sched, dict):
             cfg.setdefault("_scheduler_config", sched)
 
+    # Pull the VAE's config so the VAE-decoder view shows real channels/stages.
+    if isinstance(index.get("vae"), (list, tuple)):
+        vae = _download_json(hf_hub_download, model_id, "config.json", token, subfolder="vae")
+        if isinstance(vae, dict):
+            cfg.setdefault("_vae_config", vae)
+
     cfg.setdefault("_pipeline_class_name", index.get("_class_name"))
     cfg.setdefault("_name_or_path", model_id)
     return cfg

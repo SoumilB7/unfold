@@ -1,4 +1,4 @@
-"""Diffusion (DiT/MMDiT) adapter — detection, IR shape, blue theme, render health.
+"""Diffusion (DiT/MMDiT) adapter — detection, IR shape, theme, render health.
 
 These use real, public diffusers config values (FLUX.1-dev transformer,
 PixArt-alpha transformer) as plain dicts — no network, no model code executed.
@@ -30,6 +30,14 @@ FLUX = {
     "text_encoder": ["transformers", "CLIPTextModel"],
     "text_encoder_2": ["transformers", "T5EncoderModel"],
     "_scheduler_config": {"num_train_timesteps": 1000, "shift": 3.0},
+    "_vae_config": {
+        "_class_name": "AutoencoderKL",
+        "block_out_channels": [128, 256, 512, 512],
+        "latent_channels": 16,
+        "out_channels": 3,
+        "layers_per_block": 2,
+        "scaling_factor": 0.3611,
+    },
 }
 
 # Real PixArt-alpha transformer config (single-stream, cross-attention to text).
@@ -83,29 +91,77 @@ def test_flux_layer_count_and_geometry():
     assert ir.layers[0].ffn.gated is False
 
 
-def test_diffusion_render_spec_is_blue():
+def test_diffusion_render_spec_theme():
     ir = config_to_ir(FLUX)
     render = ir.extras["render"]
     assert render["family"] == "diffusion"
-    assert render["theme"] == "blue"
+    # Green (teal) for now — same family theme as LLMs.
+    assert render["theme"] == "teal"
 
 
-def test_blue_theme_applied_and_does_not_leak_to_transformer():
+def test_diffusion_renders_in_the_green_llm_theme():
     diffusion_html = unfold(FLUX).to_html(standalone=True)
-    assert "#1E5FB0" in diffusion_html        # blue block colour present
-    assert "#0F6E56" not in diffusion_html     # teal block colour absent
-
-    # A transformer rendered after a diffusion render must be teal again
-    # (use_theme restores the palette).
+    assert "#0F6E56" in diffusion_html         # teal/green block colour present
+    assert "#1E5FB0" not in diffusion_html      # blue palette not used for now
+    # Same palette as a transformer.
     transformer_html = unfold(LLAMA).to_html(standalone=True)
     assert "#0F6E56" in transformer_html
-    assert "#1E5FB0" not in transformer_html
 
 
 def test_denoiser_skeleton_is_drawn():
     html = unfold(FLUX).to_html(standalone=True)
-    for label in ("Noisy latent", "Patchify", "AdaLN-Out", "Unpatchify", "VAE decode"):
+    for label in ("Noisy latent", "Patchify", "Output projection", "Unpatchify", "VAE decode"):
         assert label in html, f"skeleton stage {label!r} not drawn"
+    assert "AdaLN-Out" not in html
+    assert "-&gt; noise eps" not in html
+
+
+def test_diffusion_model_blocks_are_typed():
+    ir = config_to_ir(FLUX)
+    blocks = {
+        block["id"]: block
+        for block in ir.extras["render"]["model_blocks"]
+    }
+    assert blocks["tok_text"]["diffusion_stage"] == "latent_input"
+    assert blocks["embed"]["diffusion_stage"] == "patchify"
+    assert blocks["final_rms"]["diffusion_stage"] == "output_projection"
+    assert blocks["lm_head"]["diffusion_stage"] == "unpatchify"
+
+    side_blocks = {
+        block["id"]: block
+        for block in ir.layers[0].blocks
+        if block.get("lane")
+    }
+    assert side_blocks["adaln_cond"]["diffusion_stage"] == "timestep_conditioning"
+    assert side_blocks["text_cond"]["diffusion_stage"] == "text_conditioning"
+
+
+def test_loop_blocks_are_typed_with_approved_stages():
+    """Every sampling-loop node carries an approved diffusion_stage, so the hero
+    view is under the same type guard as the denoiser."""
+    from model_unfolder.block_schema import DIFFUSION_STAGES
+    ir = config_to_ir(FLUX)
+    loop = {b["id"]: b for b in ir.extras["render"]["loop_blocks"]}
+    expected = {
+        "noise": "noise_input", "timestep": "timestep", "prompt": "prompt",
+        "encoder_0": "text_encoder", "encoder_1": "text_encoder",
+        "denoiser": "denoiser", "scheduler": "scheduler",
+        "vae_decode": "vae_decode", "image": "image_output",
+    }
+    for bid, stage in expected.items():
+        assert loop[bid]["diffusion_stage"] == stage, bid
+        assert stage in DIFFUSION_STAGES, stage
+
+
+def test_unknown_diffusion_blocks_render_unresolved():
+    from model_unfolder.renderers.html.views import _is_resolved_diffusion_block
+
+    info = {"blocks": {}}
+    assert _is_resolved_diffusion_block(True, info, "embed", {"diffusion_stage": "patchify"})
+    assert not _is_resolved_diffusion_block(True, info, "new_slot", {"diffusion_stage": "not_approved"})
+    assert not _is_resolved_diffusion_block(True, info, "new_slot", {"kind": "linear", "label": "New slot"})
+    # An unapproved stage on a loop node renders pale (unresolved) in the hero view.
+    assert not _is_resolved_diffusion_block(True, info, "scheduler", {"diffusion_stage": "made_up"})
 
 
 def test_main_view_is_the_sampling_loop():
@@ -151,6 +207,34 @@ def test_denoiser_drills_into_the_dit_stack():
     # Three drill depths exist: L2 loop, L3 DiT blocks, L4 internals.
     depths = sorted(set(re.findall(r'data-depth="(\d+)"', html)))
     assert depths == ["2", "3", "4"]
+
+
+def test_text_encoders_render_as_separate_blocks():
+    """The conditioning shows one block per real encoder (Flux: CLIP + T5) fed by
+    a shared prompt — not a single combined 'CLIP + T5' block."""
+    ir = config_to_ir(FLUX)
+    loop_ids = [b["id"] for b in ir.extras["render"]["loop_blocks"]]
+    assert "prompt" in loop_ids
+    assert "encoder_0" in loop_ids and "encoder_1" in loop_ids
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "CLIP" in html and "T5" in html
+    # Each encoder is a clickable node with a backing card.
+    for nid in ("prompt", "encoder_0", "encoder_1"):
+        assert f'data-id="{nid}"' in html and f'data-card-id="{nid}"' in html
+
+
+def test_vae_decoder_has_a_drill_view():
+    """VAE decode opens its own view, built from the real VAE config (channels,
+    upsampling) the loader fetched."""
+    ir = config_to_ir(FLUX)
+    vae_block = next(b for b in ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode")
+    assert vae_block.get("view") == "vae_decoder"
+    assert vae_block["detail"]["block_out_channels"] == [128, 256, 512, 512]
+    html = unfold(FLUX).to_html(standalone=True)
+    # Real decoder stages drawn compactly: 8x upscale (3 doublings), 128->3 output head.
+    assert "Decoder block" in html and "Output image head" in html
+    assert "8× upscaled" in html
+    assert "z₀ (clean)" not in html      # the removed loop-arrow label stays gone
 
 
 def test_flux_splits_double_and_single_stream_groups():
@@ -223,7 +307,7 @@ def test_diffusion_loader_merges_pipeline_and_denoiser(tmp_path, monkeypatch):
 
     ir = config_to_ir(merged)
     assert ir.num_layers == 57
-    assert ir.extras["render"]["theme"] == "blue"
+    assert ir.extras["render"]["theme"] == "teal"
     assert ir.extras["diffusion"]["text_encoders"] == ["CLIP", "T5"]
 
 

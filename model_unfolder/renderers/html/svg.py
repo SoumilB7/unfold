@@ -90,11 +90,17 @@ def _rect_block(
     h: float,
     label: str | list[str],
     font_size: int | None = None,
+    *,
+    resolved: bool = True,
 ) -> dict:
     lines = label if isinstance(label, list) else [label]
     label_font_size = BLOCK_LABEL_FONT_SIZE if font_size is None else font_size + BLOCK_LABEL_FONT_BOOST
     line_h = label_font_size + SVG_FONT_BOOST + 2
     start_y = y + h / 2 - ((len(lines) - 1) * line_h) / 2
+    fill = C["block"] if resolved else C["badge_bg"]
+    stroke = C["block_alt"] if resolved else C["border"]
+    text_fill = C["text_block"] if resolved else C["text"]
+    stroke_width = 0.6 if resolved else 1.0
 
     children = [_node_title(info, node_id)]
     children.append(
@@ -107,9 +113,9 @@ def _rect_block(
                 "height": h,
                 "rx": 11,
                 "ry": 11,
-                "fill": C["block"],
-                "stroke": C["block_alt"],
-                "stroke-width": 0.6,
+                "fill": fill,
+                "stroke": stroke,
+                "stroke-width": stroke_width,
                 "filter": f"url(#{shadow_id})",
             },
         )
@@ -123,7 +129,7 @@ def _rect_block(
                 {
                     "text-anchor": "middle",
                     "dominant-baseline": "central",
-                    "fill": C["text_block"],
+                    "fill": text_fill,
                     "font-family": FONT_HEAD,
                     "font-size": label_font_size,
                     "pointer-events": "none",

@@ -79,7 +79,10 @@ class LayerSpec:
             # Parallel-residual topology (a side-lane FFN) is a structural
             # difference the spec fields above don't capture — it distinguishes
             # e.g. Flux double-stream (sequential) from single-stream (parallel).
-            any(block.get("lane") for block in self.blocks),
+            # External lanes (conditioning side-rails) are NOT topology and are
+            # identical across block types, so they're excluded here.
+            any(b.get("lane") and not str(b.get("lane")).startswith("external")
+                for b in self.blocks),
             any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
         )
 

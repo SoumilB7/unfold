@@ -120,6 +120,7 @@ def parse(cfg: Any) -> ModelIR:
         "text_encoders": _detect_text_encoders(cfg),
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
+        "vae": _vae_geom(cfg),
         **_scheduler_geom(cfg),
     }
 
@@ -147,6 +148,12 @@ def parse(cfg: Any) -> ModelIR:
     double_variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
     single_variant = _stream_variant("single-stream", rope_note, dual=False)
 
+    # Conditioning enters each block at two distinct points: the timestep (+ the
+    # CLIP pooled vector) modulates the norm via AdaLN; the text token sequence
+    # enters the attention.  Attach them as external side-rails so the denoiser
+    # view shows WHERE each of the loop's conditioning inputs plugs in.
+    has_text = bool(geom["joint_attention_dim"] or geom["cross_attention_dim"] or geom["text_encoders"])
+
     layers = []
     idx = 0
     for _ in range(num_layers):
@@ -163,6 +170,9 @@ def parse(cfg: Any) -> ModelIR:
             hidden_size, norm_kind="layernorm",
         ))
         idx += 1
+
+    for layer in layers:
+        layer.blocks.extend(_conditioning_side_blocks(has_text, bool(geom["guidance_embeds"])))
 
     extras: dict = {"render": diffusion_render_spec(geom)}
     diffusion_meta = {k: v for k, v in {
@@ -212,6 +222,48 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
         no_rope=rope_dim is None,
         variant=variant,
     )
+
+
+def _conditioning_side_blocks(has_text: bool, guidance: bool) -> list[dict]:
+    """External side-rails marking where each conditioning input enters a block:
+    timestep -> AdaLN at the norm; text token sequence -> the attention."""
+    blocks: list[dict] = [{
+        "id": "adaln_cond",
+        "role": "norm",
+        "kind": "adaln",
+        "diffusion_stage": "timestep_conditioning",
+        "lane": "external_bottom_left",
+        "feeds": "rms1",
+        "offset_y": 0,
+        "label": ["Timestep" + (" + guidance" if guidance else ""), "conditioning"],
+        "title": "Timestep conditioning (AdaLN)",
+        "description": (
+            "The timestep embedding"
+            + (" and the CLIP pooled text vector" if has_text else "")
+            + " produce per-block shift / scale / gate (AdaLN-Zero): they modulate "
+            "this block's LayerNorm and gate its output before the residual add."
+        ),
+        "w": 190, "h": 52, "font": 14,
+    }]
+    if has_text:
+        blocks.append({
+            "id": "text_cond",
+            "role": "attention",
+            "kind": "conditioning",
+            "diffusion_stage": "text_conditioning",
+            "lane": "external_bottom_right",
+            "feeds": "attn",
+            "offset_y": 0,
+            "label": ["Text tokens", "conditioning"],
+            "title": "Text conditioning (attention)",
+            "description": (
+                "The encoded prompt (e.g. the T5 token sequence) is attended jointly "
+                "with the image tokens — it supplies the extra K/V (and, in "
+                "single-stream, concatenated Q) to this block's attention."
+            ),
+            "w": 190, "h": 52, "font": 14,
+        })
+    return blocks
 
 
 def _stream_variant(tag: str, rope_note: str, *, dual: bool) -> dict:
@@ -265,6 +317,24 @@ def _scheduler_geom(cfg: Any) -> dict:
         out["scheduler_train_timesteps"] = sched_cfg.get("num_train_timesteps")
         out["scheduler_shift"] = sched_cfg.get("shift")
     return out
+
+
+def _vae_geom(cfg: Any) -> dict | None:
+    """Structural facts from the VAE's own config (when the loader fetched it),
+    for the VAE-decoder drill view: channel stages, latent depth, upsampling."""
+    vcfg = _g(cfg, "_vae_config")
+    if not isinstance(vcfg, dict):
+        return None
+    boc = vcfg.get("block_out_channels")
+    out = {
+        "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
+        "latent_channels": vcfg.get("latent_channels"),
+        "out_channels": vcfg.get("out_channels"),
+        "layers_per_block": vcfg.get("layers_per_block"),
+        "scaling_factor": vcfg.get("scaling_factor"),
+        "class": vcfg.get("_class_name"),
+    }
+    return {k: v for k, v in out.items() if v is not None} or None
 
 
 def _detect_text_encoders(cfg: Any) -> list[str]:

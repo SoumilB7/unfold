@@ -36,6 +36,7 @@ class Block(TypedDict, total=False):
     id: str                       # REQUIRED — node ↔ card link
     role: str                     # semantic slot: attention/ffn/norm/residual/…
     kind: str                     # glyph hint: attention/residual_add/embedding/…
+    diffusion_stage: str          # approved diffusion slot/stage, when applicable
     label: "str | list[str]"      # on-block text (one line, or stacked lines)
     title: str                    # card heading
     description: str              # card body
@@ -63,6 +64,28 @@ KNOWN_BLOCK_KEYS: frozenset[str] = frozenset(Block.__annotations__)
 KNOWN_ROLES: frozenset[str] = frozenset({
     "input", "embedding", "norm", "attention", "ffn", "residual",
     "output", "mtp", "ple", "vision", "audio", "video",
+})
+
+#: APPROVED diffusion block stages — the static type for diffusion diagrams.
+#: A diffusion block tags itself with ``diffusion_stage``; only stages in this
+#: set render as solid, first-class blocks.  A block whose stage is missing or
+#: NOT in this set renders pale/light (same label) to flag that its place in the
+#: diagram is *not decided yet* — a guardrail so a new adapter fact can't quietly
+#: become a real block.  To bless a new slot, add its stage here on purpose.
+DIFFUSION_STAGES: frozenset[str] = frozenset({
+    # Sampling-loop (hero view) stages.
+    "noise_input", "timestep", "prompt", "text_encoder",
+    "denoiser", "scheduler", "vae_decode", "image_output",
+    # Denoiser (DiT block) stages.
+    "latent_input", "patchify", "output_projection", "unpatchify",
+    "timestep_conditioning", "text_conditioning",
+})
+
+#: Block ids that are legitimately solid inside a DiT block without carrying a
+#: ``diffusion_stage`` — they come from the reused transformer ``decoder_layer``
+#: assembly (norm / attention / residual-add / FFN), not the diffusion adapter.
+DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset({
+    "rms1", "attn", "add1", "rms2", "ffn", "add2",
 })
 
 
@@ -187,6 +210,8 @@ __all__ = [
     "Block",
     "KNOWN_BLOCK_KEYS",
     "KNOWN_ROLES",
+    "DIFFUSION_STAGES",
+    "DIFFUSION_BLOCK_IDS",
     "iter_block_tree",
     "validate_block_tree",
     "validate_click_coupling",
