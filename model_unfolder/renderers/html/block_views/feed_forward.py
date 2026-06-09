@@ -13,11 +13,12 @@ from ..svg import (
 )
 from ..stack_view import StackView, fit_svg, point
 from ..theme import C, GAP
+from .block_facts import ffn_from_block
 
 
-def build_dense_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
+def build_dense_ffn_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
     """Detail view for a plain two-matrix MLP: Linear -> activation -> Linear."""
-    ffn = info["dominant"]["spec"]["ffn"]
+    ffn = ffn_from_block(block, info)
     act_name = activation_label(ffn.get("activation") or "gelu")
 
     view = StackView(
@@ -31,12 +32,12 @@ def build_dense_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
     return view.render()
 
 
-def build_ffn_view(ir: dict, info: dict, mount_id: str) -> str:
+def build_ffn_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
     """Detail view for a gated FFN: gate path x up path -> down projection."""
     arrow_id, shadow_id = _ids(mount_id, "ffn")
     parts: list[str] = []
 
-    ffn = info["dominant"]["spec"]["ffn"]
+    ffn = ffn_from_block(block, info)
     cx = 0  # fit_svg translates content into view; absolute centre is irrelevant
     act_name = activation_label(ffn.get("activation") or "silu")
 

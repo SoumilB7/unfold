@@ -18,6 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .attention import build_attention_view
+from .block_facts import ffn_from_block, info_with_block_fact
 from .attention_types import build_mla_kv_cache_view, build_mla_query_path_view
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
@@ -94,23 +95,28 @@ def _from_block(fn: Callable[[dict, dict, str, dict], "str | None"]) -> ViewFn:
 
 def _render_ffn_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """Pick the right FFN detail variant for dense / gated / MoE blocks."""
-    ffn = info["dominant"]["spec"]["ffn"]
+    ffn = ffn_from_block(block, info)
     if ffn.get("kind") == "moe":
-        return build_moe_view(ir, info, mount_id)
+        return build_moe_view(ir, info, mount_id, block)
     if view_key(block) == "dense_ffn" or not ffn.get("gated", True):
-        return build_dense_ffn_view(ir, info, mount_id)
-    return build_ffn_view(ir, info, mount_id)
+        return build_dense_ffn_view(ir, info, mount_id, block)
+    return build_ffn_view(ir, info, mount_id, block)
+
+
+def _render_attention_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+    """Render attention from clicked-block facts, not the dominant group."""
+    return build_attention_view(ir, info_with_block_fact(info, block, "attention"), mount_id)
 
 
 VIEW_REGISTRY: dict[str | None, ViewFn] = {
     # Attention — the MLA/SDPA/SSM/… split happens inside build_attention_view.
-    "attention": _from_dominant(build_attention_view),
+    "attention": _from_block(_render_attention_detail),
     # FFN families.  "ffn" is the generic reuse key (decides by dominant); the
     # moe/gated/dense keys are what ``ffn_view`` stamps on layer blocks.
     "ffn": _from_block(_render_ffn_detail),
-    "moe": _from_dominant(build_moe_view),
-    "gated_ffn": _from_dominant(build_ffn_view),
-    "dense_ffn": _from_dominant(build_dense_ffn_view),
+    "moe": _from_block(build_moe_view),
+    "gated_ffn": _from_block(build_ffn_view),
+    "dense_ffn": _from_block(build_dense_ffn_view),
     # Model-level / path / tower / merge layouts.
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),

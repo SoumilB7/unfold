@@ -14,14 +14,15 @@ from ..svg import (
     _v_seg,
 )
 from ..theme import C, GAP
+from .block_facts import ffn_from_block
 
 
-def build_moe_view(ir: dict, info: dict, mount_id: str) -> str:
+def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
     w, h = 720, 620  # internal layout grid; the canvas itself auto-fits below
     arrow_id, shadow_id = _ids(mount_id, "moe")
     parts: list[str] = []
 
-    ffn = info["dominant"]["spec"]["ffn"]
+    ffn = ffn_from_block(block, info)
     cx = w / 2
     router_w = 540
     # The router carries the routing recipe (gating fn, group-limited routing,
@@ -86,7 +87,7 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
     arrow_id, shadow_id = _ids(mount_id, child.get("id", "expert"))
     parts: list[str] = []
 
-    ffn = info["dominant"]["spec"]["ffn"]
+    ffn = ffn_from_block(child, info)
     cx = w / 2
     act_name = activation_label(ffn.get("activation") or "silu")
 

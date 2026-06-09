@@ -14,6 +14,21 @@ def ffn_view(ffn: FFNSpec) -> str:
     return "gated_ffn" if ffn.gated else "dense_ffn"
 
 
+def ffn_detail(ffn: FFNSpec) -> dict:
+    """Serializable FFN facts for block-local detail rendering."""
+    return {
+        "kind": ffn.kind,
+        "activation": ffn.activation,
+        "intermediate_size": ffn.intermediate_size,
+        "gated": ffn.gated,
+        "num_experts": ffn.num_experts,
+        "num_experts_per_tok": ffn.num_experts_per_tok,
+        "num_shared_experts": ffn.num_shared_experts,
+        "expert_intermediate_size": ffn.expert_intermediate_size,
+        "routing": ffn.routing,
+    }
+
+
 def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
@@ -116,6 +131,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "title": "Expert FFN",
             "description": expert_desc,
             "view": "moe_expert",
+            "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
         },
         {
@@ -123,6 +139,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "title": "Expert FFN",
             "description": expert_desc,
             "view": "moe_expert",
+            "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
         },
         {
@@ -130,6 +147,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "title": "Expert FFN",
             "description": expert_desc,
             "view": "moe_expert",
+            "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
         },
         {
@@ -137,6 +155,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "title": "Expert FFN",
             "description": expert_desc,
             "view": "moe_expert",
+            "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
         },
         {
@@ -175,3 +194,4 @@ def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[B
             "description": f"Linear; {inter} -> {hidden}",
         },
     ]
+

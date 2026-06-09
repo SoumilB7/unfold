@@ -95,3 +95,57 @@ def test_known_keys_cover_the_real_tree():
     for _scope, block in iter_block_tree(ir):
         used |= set(block)
     assert used <= KNOWN_BLOCK_KEYS, f"render tree uses keys not in schema: {sorted(used - KNOWN_BLOCK_KEYS)}"
+
+
+def test_ffn_detail_view_uses_clicked_block_not_dominant_group():
+    """Dense/gated/MoE detail views must not drift to info['dominant'].
+
+    The deliberately mismatched contexts below reproduce the old failure mode:
+    a clicked FFN could render as whichever layer type happened to be dominant.
+    """
+    from model_unfolder.renderers.html.block_views.registry import render_block_detail
+    from model_unfolder.renderers.html.metadata import _make_info
+
+    dense_ir = parse(dict(
+        model_type="phi", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
+    )).to_dict()
+    moe_ir = parse(CORPUS["moe_mla"]).to_dict()
+
+    dense_block = next(b for b in dense_ir["layers"][0]["blocks"] if b["id"] == "ffn")
+    moe_block = next(b for b in moe_ir["layers"][1]["blocks"] if b["id"] == "ffn")
+
+    dense_in_moe_context = render_block_detail(dense_ir, _make_info(moe_ir), "ffn-dense", dense_block)
+    assert "Linear (in)" in dense_in_moe_context
+    assert "Linear (gate)" not in dense_in_moe_context
+    assert "Expert 1" not in dense_in_moe_context
+
+    moe_in_dense_context = render_block_detail(moe_ir, _make_info(dense_ir), "ffn-moe", moe_block)
+    assert "Expert 1" in moe_in_dense_context
+    assert "Router" in moe_in_dense_context
+    assert "Linear (in)" not in moe_in_dense_context
+
+
+def test_attention_detail_view_uses_clicked_block_not_dominant_group():
+    from model_unfolder.renderers.html.block_views.registry import render_block_detail
+    from model_unfolder.renderers.html.metadata import _make_info
+
+    mha_ir = parse(dict(
+        model_type="phi", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
+    )).to_dict()
+    gqa_ir = parse(dict(
+        model_type="m", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5,
+    )).to_dict()
+
+    mha_block = next(b for b in mha_ir["layers"][0]["blocks"] if b["id"] == "attn")
+    gqa_block = next(b for b in gqa_ir["layers"][0]["blocks"] if b["id"] == "attn")
+
+    mha_in_gqa_context = render_block_detail(mha_ir, _make_info(gqa_ir), "attn-mha", mha_block)
+    assert "grouped-query attention" not in mha_in_gqa_context
+    assert "gqa-attn-arrow" not in mha_in_gqa_context
+
+    gqa_in_mha_context = render_block_detail(gqa_ir, _make_info(mha_ir), "attn-gqa", gqa_block)
+    assert "grouped-query attention" in gqa_in_mha_context
+    assert "gqa-attn-arrow" in gqa_in_mha_context

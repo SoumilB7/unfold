@@ -7,6 +7,33 @@ from ....ir import AttentionSpec
 from ..common import format_dim as _fmt
 
 
+def attention_detail(attention: AttentionSpec) -> dict:
+    """Serializable attention facts for block-local detail rendering."""
+    return {
+        "kind": attention.kind,
+        "num_heads": attention.num_heads,
+        "num_kv_heads": attention.num_kv_heads,
+        "head_dim": attention.head_dim,
+        "kv_lora_rank": attention.kv_lora_rank,
+        "q_lora_rank": attention.q_lora_rank,
+        "rope_dim": attention.rope_dim,
+        "qk_nope_head_dim": attention.qk_nope_head_dim,
+        "qk_rope_head_dim": attention.qk_rope_head_dim,
+        "v_head_dim": attention.v_head_dim,
+        "mask": attention.mask,
+        "window_size": attention.window_size,
+        "kv_source_layer": attention.kv_source_layer,
+        "qk_norm": attention.qk_norm,
+        "bias": attention.bias,
+        "shared": attention.shared,
+        "no_rope": attention.no_rope,
+        "cross_attention": attention.cross_attention,
+        "compress_ratio": attention.compress_ratio,
+        "index_topk": attention.index_topk,
+        "variant": attention.variant,
+    }
+
+
 def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     builders = {
         "mla": _mla_child_blocks,

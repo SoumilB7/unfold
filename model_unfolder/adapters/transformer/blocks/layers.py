@@ -4,9 +4,9 @@ from __future__ import annotations
 from ....block_schema import Block
 from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
-from .attention import attention_child_blocks
+from .attention import attention_child_blocks, attention_detail
 from .descriptions import attention_label, attention_title, describe_attention, describe_ffn
-from .feed_forward import ffn_child_blocks, ffn_view
+from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 
 
 def decoder_layer_blocks(
@@ -92,6 +92,7 @@ def _attention_block(attention: AttentionSpec, hidden_size: int) -> Block:
         "title": attention_title(attention),
         "description": describe_attention(attention),
         "view": "attention",
+        "detail": {"attention": attention_detail(attention)},
         "children": attention_child_blocks(attention, hidden_size),
     }
 
@@ -105,6 +106,7 @@ def _ffn_block(ffn: FFNSpec, hidden_size: int) -> Block:
         "title": "Mixture of experts" if ffn.kind == "moe" else "Feed-forward",
         "description": describe_ffn(ffn),
         "view": ffn_view(ffn),
+        "detail": {"ffn": ffn_detail(ffn)},
         "children": ffn_child_blocks(ffn, hidden_size),
     }
 

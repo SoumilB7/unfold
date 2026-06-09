@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, GAP
+from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, FONT_MONO, GAP
 from .utils import _attr, _html, _num
 
 SVG_FONT_BOOST = 2
@@ -92,15 +92,35 @@ def _rect_block(
     font_size: int | None = None,
     *,
     resolved: bool = True,
+    sub: str | None = None,
+    accent: bool = False,
+    clickable: bool = True,
 ) -> dict:
+    """A rounded, clickable block.
+
+    ``sub`` adds a second, smaller mono line beneath the heading (dims like
+    ``768 → 3,072``); ``accent`` paints it as an input/output bookend (lighter
+    fill).  Both are optional so this one primitive replaces the per-view
+    ``_box`` re-implementations.
+    """
     lines = label if isinstance(label, list) else [label]
     label_font_size = BLOCK_LABEL_FONT_SIZE if font_size is None else font_size + BLOCK_LABEL_FONT_BOOST
     line_h = label_font_size + SVG_FONT_BOOST + 2
-    start_y = y + h / 2 - ((len(lines) - 1) * line_h) / 2
-    fill = C["block"] if resolved else C["badge_bg"]
-    stroke = C["block_alt"] if resolved else C["border"]
-    text_fill = C["text_block"] if resolved else C["text"]
-    stroke_width = 0.6 if resolved else 1.0
+    # When a sub line is present the heading sits a touch high so both fit.
+    head_cy = (y + h / 2 - 9) if sub else (y + h / 2)
+    start_y = head_cy - ((len(lines) - 1) * line_h) / 2
+    if accent:
+        fill, stroke = C["bg_inner"], C["block_alt"]
+        text_fill = C["text"]
+        stroke_width = 0.6
+    elif resolved:
+        fill, stroke = C["block"], C["block_alt"]
+        text_fill = C["text_block"]
+        stroke_width = 0.6
+    else:
+        fill, stroke = C["badge_bg"], C["border"]
+        text_fill = C["text"]
+        stroke_width = 1.0
 
     children = [_node_title(info, node_id)]
     children.append(
@@ -136,7 +156,26 @@ def _rect_block(
                 },
             )
         )
-    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    if sub:
+        children.append(
+            _svg_text(
+                x + w / 2,
+                y + h / 2 + 13,
+                sub,
+                {
+                    "text-anchor": "middle",
+                    "dominant-baseline": "central",
+                    "fill": C["muted"] if accent else "rgba(255,255,255,0.84)",
+                    "font-family": FONT_MONO,
+                    "font-size": 11,
+                    "pointer-events": "none",
+                },
+            )
+        )
+    if clickable:
+        parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    else:
+        parts.extend(children)
     return {
         "left": x,
         "right": x + w,
