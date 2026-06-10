@@ -478,6 +478,7 @@ def _audio_children(audio: dict) -> list[dict]:
             "id": "audio_encoder",
             "title": "Audio encoder",
             "description": "; ".join(bit for bit in encoder_bits if bit),
+            "view": "audio_encoder",
         },
         {
             "id": "audio_projector",
@@ -545,6 +546,7 @@ def _video_children(video: dict) -> list[dict]:
                 f"{_fmt_int(encoder.get('num_layers'))} layers" if encoder.get("num_layers") else "",
                 f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
             ]),
+            "view": "video_encoder",
         },
         {
             "id": "video_projector",

@@ -119,6 +119,11 @@ def render_graph(
         gx0, gx1 = cx - half, cx + half
         gy0 = min(m["top"] for m in members) - _GROUP_PAD - _GROUP_HEADER
         gy1 = max(m["bottom"] for m in members) + _GROUP_PAD
+        # a residual that taps the bottom member starts on its input stem,
+        # below the block — the frame must cover the tap, not clip the loop
+        for (s, _d) in res_lane:
+            if s in member_set and s in geom:
+                gy1 = max(gy1, geom[s]["bottom"] + GAP + 16 + 12)
         # the same solid cell frame the main architecture view draws
         parts.append(_svg_tag("rect", {
             "x": gx0, "y": gy0, "width": gx1 - gx0, "height": gy1 - gy0,

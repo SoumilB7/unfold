@@ -40,6 +40,22 @@ def test_custom_tower_renders_with_no_view_code():
         assert marker in svg
 
 
+def test_audio_and_video_encoders_open_honest_towers():
+    """Encoders known only by depth/width/heads get the backbone with a
+    norm-free cell — no fabricated norm placement."""
+    from model_unfolder.renderers.html.block_views.modality_views.audio import encoder_tower_spec
+
+    spec = encoder_tower_spec(
+        {"hidden_size": 1024, "num_layers": 12, "num_attention_heads": 8},
+        source_label="Audio features", output_label="Encoded audio states")
+    g = tower_graph(spec)
+    assert g.groups[0].repeat == 12
+    kinds = {n.id: n.kind for n in g.nodes}
+    assert kinds["enc_attn"] == "attention" and kinds["enc_ffn"] == "ffn"
+    assert "norm" not in set(kinds.values())
+    assert {"audio_encoder", "video_encoder"} <= set(VIEW_REGISTRY)
+
+
 def test_all_three_builtin_towers_route_through_the_backbone():
     import inspect
     from model_unfolder.renderers.html.block_views import text_encoder, mtp_head

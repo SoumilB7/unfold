@@ -31,6 +31,8 @@ from .modalities import (
     build_video_path_view,
     build_vision_path_view,
 )
+from .modality_views.audio import build_audio_encoder_view
+from .modality_views.video import build_video_encoder_view
 from .modality_views.vision_details import (
     build_patch_embedding_view,
     build_vision_encoder_view,
@@ -125,7 +127,9 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),
     "audio_path": _from_block(build_audio_path_view),
+    "audio_encoder": _from_block(build_audio_encoder_view),
     "video_path": _from_block(build_video_path_view),
+    "video_encoder": _from_block(build_video_encoder_view),
     "multimodal_fusion": _from_block(build_multimodal_fusion_view),
     "mtp_head": _from_block(build_mtp_head_view),
     "vae_decoder": _from_block(build_vae_decoder_view),
