@@ -109,7 +109,7 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
             Edge(norm1_id, "mtp_block_add1", "residual"),
             Edge(norm2_id, "mtp_block_add2", "residual"),
         ],
-        groups=[Group(cell, label="separate tower")],
+        groups=[Group(cell, label="decoder layer")],
     )
     return render_graph(graph, info, mount_id, "mtp-transformer-block",
                         f"{ir.get('name', 'model')} MTP transformer block")

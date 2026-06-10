@@ -92,13 +92,31 @@ def render_graph(
     max_right = max((g["right"] for g in geom.values()), default=cx)
     lane = max_right + _LANE_GAP
 
+    # Residual loops get a *tight* lane each: just past the widest node in the
+    # span they bypass, not past the whole graph — so a wide source/output
+    # block elsewhere can't push every loop (and the repeat-frame with it)
+    # far out to the right.
+    flow_idx = {nid: i for i, nid in enumerate(graph.flow)}
+    res_lane: dict[tuple[str, str], float] = {}
+    for e in graph.residuals():
+        if e.src in geom and e.dst in geom:
+            i0, i1 = sorted((flow_idx.get(e.src, 0), flow_idx.get(e.dst, 0)))
+            span = [geom[n] for n in graph.flow[i0:i1 + 1] if n in geom]
+            res_lane[(e.src, e.dst)] = max(g["right"] for g in span) + _LANE_GAP
+
     # --- 2. repeat-frames (behind the nodes) ---
     for group in graph.groups:
         members = [geom[m] for m in group.members if m in geom]
         if not members:
             continue
+        member_set = set(group.members)
+        loop_lanes = [x for (s, d), x in res_lane.items()
+                      if s in member_set and d in member_set]
         gx0 = min(m["left"] for m in members) - _GROUP_PAD
-        gx1 = max(lane, max(m["right"] for m in members)) + _GROUP_PAD
+        gx1 = max([*loop_lanes, max(m["right"] for m in members)]) + _GROUP_PAD
+        # symmetric about the column so the cell reads centred, not leaning
+        half = max(cx - gx0, gx1 - cx)
+        gx0, gx1 = cx - half, cx + half
         gy0 = min(m["top"] for m in members) - _GROUP_PAD - _GROUP_HEADER
         gy1 = max(m["bottom"] for m in members) + _GROUP_PAD
         parts.append(_svg_tag("rect", {
@@ -123,10 +141,11 @@ def render_graph(
     for par in graph.parallels:
         _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx)
 
-    # --- 6. residual side-loops ---
+    # --- 6. residual side-loops (each on its own tight lane) ---
     for edge in graph.residuals():
         if edge.src in geom and edge.dst in geom:
-            parts.append(_residual_loop_right(geom[edge.src], geom[edge.dst], lane, arrow_id))
+            loop_lane = res_lane.get((edge.src, edge.dst), lane)
+            parts.append(_residual_loop_right(geom[edge.src], geom[edge.dst], loop_lane, arrow_id))
 
     # --- 7. downstream note ---
     if graph.note:

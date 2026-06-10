@@ -77,7 +77,6 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
             Edge("vision_encoder_norm2", "vision_add2", "residual"),
         ],
         groups=[Group(cell, repeat=layers)],
-        note="separate tower",
     )
     return render_graph(graph, info, mount_id, "vision-encoder",
                         f"{ir.get('name', 'model')} vision encoder")

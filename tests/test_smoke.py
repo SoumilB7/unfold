@@ -425,7 +425,7 @@ def test_mtp_head_detected_and_rendered():
     assert "eh_proj" in html  # detail-view internals rendered
 
     # The transformer block opens into its own tower (like the vision encoder).
-    assert "separate tower" in html
+    assert "decoder layer" in html
     assert "Multi-Head Latent" in html
 
     # The block REUSES the real decoder-layer blocks as its children (no
