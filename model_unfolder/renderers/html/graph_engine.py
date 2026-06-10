@@ -23,6 +23,7 @@ from .svg import (
     _elbow_vh,
     _formula_block,
     _ids,
+    _merge_up_route,
     _plus_block,
     _rect_block,
     _residual_loop_right,
@@ -40,8 +41,8 @@ _GROUP_HEADER = 30.0      # extra room above a group's top member for its badge
 _LANE_GAP = 46.0          # offset of the residual lane past the widest node
 _BRANCH_GAP = 36.0        # horizontal gap between parallel lanes
 _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
-_BRANCH_STUB = 34.0       # split-dot → lane-bottom rise
-_MERGE_STUB = 34.0        # lane-top → merge-node rise
+_BRANCH_STUB = 48.0       # split-dot → lane-bottom rise
+_MERGE_STUB = 46.0        # lane-top → merge-node rise
 
 
 def render_graph(
@@ -265,13 +266,26 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
             d_g = geom.get(dst_id)
             if d_g is None:
                 continue
-            if lane_x < d_g["left"]:
-                target_x = d_g["left"] - GAP
-            elif lane_x > d_g["right"]:
-                target_x = d_g["right"] + GAP
+            d_node = by_id.get(dst_id)
+            rect_dst = d_node is not None and d_node.glyph().shape != "circle"
+            if dst_id == par.dst and rect_dst:
+                # Merge into the bottom edge at an inset entry point — never
+                # poke a rect's side at mid-height.
+                entry_x = (d_g["cx"] if d_g["w"] < 60
+                           else min(max(lane_x, d_g["left"] + 26), d_g["right"] - 26))
+                entry_y = d_g["bottom"] + GAP
+                lane_y = (top_g["top"] + entry_y) / 2
+                parts.append(_merge_up_route(lane_x, top_g["top"], entry_x, entry_y, lane_y, arrow_id))
             else:
-                target_x = d_g["cx"]
-            parts.append(_elbow_vh(lane_x, top_g["top"], target_x, d_g["cy"], arrow_id))
+                # A circle (⊕/⊗/⊙) or a target further up the spine: enter the
+                # nearest side at its centre height.
+                if lane_x < d_g["left"]:
+                    target_x = d_g["left"] - GAP
+                elif lane_x > d_g["right"]:
+                    target_x = d_g["right"] + GAP
+                else:
+                    target_x = d_g["cx"]
+                parts.append(_elbow_vh(lane_x, top_g["top"], target_x, d_g["cy"], arrow_id))
 
     _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
                        lanes, xs, lane_geoms, by_id, geom, lane_bottom)

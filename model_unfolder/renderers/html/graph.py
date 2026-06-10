@@ -104,7 +104,19 @@ class Node:
         return self.w if self.w is not None else self.glyph().w
 
     def height(self) -> float:
-        return self.h if self.h is not None else self.glyph().h
+        """Glyph height, grown to fit the text stack so a multi-line heading
+        plus a dims sub-line never overflows the block (mirrors the renderer's
+        text metrics: label font = font+3 boost, line = label font + 4)."""
+        if self.h is not None:
+            return self.h
+        glyph = self.glyph()
+        if glyph.shape != "rect":
+            return glyph.h
+        heading = self.heading()
+        n_lines = len(heading) if isinstance(heading, list) else 1
+        line_h = self.font_size() + 3 + 4
+        needed = 16 + n_lines * line_h + (16 if self.sub else 0)
+        return max(glyph.h, needed)
 
 
 @dataclass

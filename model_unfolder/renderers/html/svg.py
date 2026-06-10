@@ -106,9 +106,12 @@ def _rect_block(
     lines = label if isinstance(label, list) else [label]
     label_font_size = BLOCK_LABEL_FONT_SIZE if font_size is None else font_size + BLOCK_LABEL_FONT_BOOST
     line_h = label_font_size + SVG_FONT_BOOST + 2
-    # When a sub line is present the heading sits a touch high so both fit.
-    head_cy = (y + h / 2 - 9) if sub else (y + h / 2)
-    start_y = head_cy - ((len(lines) - 1) * line_h) / 2
+    # Centre the WHOLE text stack (all heading lines + the optional sub line),
+    # so a two-line heading and a dims line never overlap.
+    sub_h = 16 if sub else 0
+    stack_top = y + h / 2 - (len(lines) * line_h + sub_h) / 2
+    start_y = stack_top + line_h / 2
+    sub_cy = stack_top + len(lines) * line_h + sub_h / 2 + 1
     if accent:
         fill, stroke = C["bg_inner"], C["block_alt"]
         text_fill = C["text"]
@@ -160,7 +163,7 @@ def _rect_block(
         children.append(
             _svg_text(
                 x + w / 2,
-                y + h / 2 + 13,
+                sub_cy,
                 sub,
                 {
                     "text-anchor": "middle",
@@ -508,6 +511,26 @@ def _elbow_hv(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
             f"Q {_num(x2)} {_num(y1)} {_num(x2)} {_num(y1 + sy * r)} "
             f"L {_num(x2)} {_num(y2)}"
         )
+    return _path(d, arrow_id)
+
+
+def _merge_up_route(x1: float, y1: float, x2: float, entry_y: float, lane_y: float, arrow_id: str) -> str:
+    """Route a lane's top up into the *bottom edge* of a merge block: rise from
+    the lane, run horizontally just below the block, then rise into the bottom
+    at an inset entry point.  Radii self-clamp to the available room, so the
+    route stays valid however tight the layout gets."""
+    if abs(x2 - x1) < 1:
+        return _v_seg(x1, y1, entry_y, arrow_id)
+    sx = 1 if x2 > x1 else -1
+    r = max(2.0, min(10.0, (y1 - lane_y) / 2, (lane_y - entry_y) / 2, abs(x2 - x1) / 2))
+    d = (
+        f"M {_num(x1)} {_num(y1)} "
+        f"L {_num(x1)} {_num(lane_y + r)} "
+        f"Q {_num(x1)} {_num(lane_y)} {_num(x1 + sx * r)} {_num(lane_y)} "
+        f"L {_num(x2 - sx * r)} {_num(lane_y)} "
+        f"Q {_num(x2)} {_num(lane_y)} {_num(x2)} {_num(lane_y - r)} "
+        f"L {_num(x2)} {_num(entry_y)}"
+    )
     return _path(d, arrow_id)
 
 
