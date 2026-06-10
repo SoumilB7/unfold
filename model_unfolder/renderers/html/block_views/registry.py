@@ -110,8 +110,14 @@ def _render_ffn_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
 
 
 def _render_attention_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """Render attention from clicked-block facts, not the dominant group."""
-    return build_attention_view(ir, info_with_block_fact(info, block, "attention"), mount_id)
+    """Render attention from clicked-block facts, not the dominant group.
+
+    Ops are click-drill targets only when the block declares child cards for
+    them; a block without children renders the same view as a leaf."""
+    return build_attention_view(
+        ir, info_with_block_fact(info, block, "attention"), mount_id,
+        clickable=bool(block.get("children")),
+    )
 
 
 VIEW_REGISTRY: dict[str | None, ViewFn] = {

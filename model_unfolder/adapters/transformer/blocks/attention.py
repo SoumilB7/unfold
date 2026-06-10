@@ -4,7 +4,7 @@ from __future__ import annotations
 from ....block_schema import Block
 
 from ....ir import AttentionSpec
-from ....labels import CACHE_PORT_NOTE
+from ....labels import CACHE_PORT_FACT
 from ..common import format_dim as _fmt
 
 
@@ -79,14 +79,14 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": f"Linear projection producing the keys. {CACHE_PORT_NOTE}",
-            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
+            "description": "Linear projection producing the keys.",
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}", CACHE_PORT_FACT],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": f"Linear projection producing the values. {CACHE_PORT_NOTE}",
-            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
+            "description": "Linear projection producing the values.",
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}", CACHE_PORT_FACT],
         },
         {
             "id": "qkv_dot",
@@ -138,7 +138,7 @@ def _sdpa_detailed_child_blocks(
 
     q_src = "decoder hidden states" if cross_attention else "the hidden state"
     kv_src = "the projected image states" if cross_attention else "the hidden state"
-    cache_note = "" if cross_attention else f" {CACHE_PORT_NOTE}"
+    cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
     return [
         {
             "id": "q_proj",
@@ -149,14 +149,14 @@ def _sdpa_detailed_child_blocks(
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": f"Linear over {kv_src} producing the keys.{cache_note}",
-            "facts": [f"{hidden} → {kv_out}", kv_chip],
+            "description": f"Linear over {kv_src} producing the keys.",
+            "facts": [f"{hidden} → {kv_out}", kv_chip, *cache_facts],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": f"Linear over {kv_src} producing the values.{cache_note}",
-            "facts": [f"{hidden} → {kv_out}", kv_chip],
+            "description": f"Linear over {kv_src} producing the values.",
+            "facts": [f"{hidden} → {kv_out}", kv_chip, *cache_facts],
         },
         {
             "id": "scaled_scores",
@@ -285,10 +285,8 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_cache",
             "label": "latent cache c_t",
             "title": "Stored latent cache",
-            "description": (
-                f"Compressed K/V latent stored in the cache instead of full K and V heads. {CACHE_PORT_NOTE}"
-            ),
-            "facts": [f"rank {kv_rank}"],
+            "description": "Compressed K/V latent stored in the cache instead of full K and V heads.",
+            "facts": [f"rank {kv_rank}", CACHE_PORT_FACT],
         },
         {
             "id": "mla_kv_up",
@@ -348,9 +346,9 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "title": "MLA K/V cache path",
             "description": (
                 "Compresses the hidden state into the latent cache, expands K/V content, "
-                f"and combines K noPE with a RoPE key side-channel. {CACHE_PORT_NOTE}"
+                "and combines K noPE with a RoPE key side-channel."
             ),
-            "facts": [f"cache rank {kv_rank}"],
+            "facts": [f"cache rank {kv_rank}", CACHE_PORT_FACT],
             "view": "mla_kv_cache_path",
             "children": kv_children,
         },

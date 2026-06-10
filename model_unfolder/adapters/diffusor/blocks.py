@@ -209,10 +209,8 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
         {
             "id": "vae_clean_latent",
             "title": "Clean latent",
-            "description": (
-                "z_0 after the denoising loop"
-                + (f"; {latent} latent channels" if latent else "")
-            ),
+            "description": "z_0 after the denoising loop.",
+            "facts": [f for f in (f"{latent} ch" if latent else "", "latent res") if f],
         },
     ]
     for idx, c in enumerate(reversed(channels), start=1):
@@ -222,11 +220,12 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
         children.append({
             "id": f"vae_decoder_block_{block_no}",
             "title": f"Up stage {block_no}",
-            "description": (
-                f"VAE decoder resolution stage: {_fmt(c)} channels; {resnets} ResNet block"
-                f"{'s' if resnets != 1 else ''}"
-                + ("; upsamples spatial size by 2" if upsamples else "")
-            ),
+            "description": "VAE decoder resolution stage.",
+            "facts": [f for f in (
+                f"{_fmt(c)} ch",
+                f"{resnets}× ResNet",
+                "↑2× spatial" if upsamples else "",
+            ) if f],
             "diffusion_part_kind": "up_stage",
             "components": stage["components"],
             "view": "vae_decoder_block",
@@ -242,15 +241,17 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
         children.append({
             "id": "vae_output_head",
             "title": "Output image head",
-            "description": f"Final convolution maps {_fmt(channels[0])} channels to {out_ch} output channel(s).",
+            "description": "Final convolution maps decoder channels to the output image channels.",
+            "facts": [f"conv 3×3", f"{_fmt(channels[0])} → {out_ch} ch"],
         })
     children.append({
         "id": "vae_image",
         "title": "Image",
-        "description": (
-            ("RGB image" if out_ch == 3 else f"{out_ch} channel output")
-            + (f"; {scale}× upscaled from the latent grid" if scale else "")
-        ),
+        "description": "The decoded image in pixel space.",
+        "facts": [f for f in (
+            "RGB" if out_ch == 3 else f"{out_ch} ch",
+            f"{scale}× upscaled" if scale else "",
+        ) if f],
     })
     return children
 
@@ -387,6 +388,17 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "title": "Multi-head self-attention",
             "description": attn_desc,
             "facts": attn_facts,
+            # Opens the ONE shared attention view, parameterised by this
+            # encoder's own facts — same view the decoder/DiT attention opens.
+            "view": "attention",
+            "detail": {"attention": {
+                "kind": ("gqa" if (spec.get("kv_heads") and spec.get("kv_heads") != heads) else "mha"),
+                "num_heads": heads,
+                "num_kv_heads": spec.get("kv_heads") or heads,
+                "head_dim": spec.get("head_dim") or head_dim,
+                "hidden": hidden,
+                "cached": False,
+            }},
         },
         {
             "id": f"{prefix}_op_ffn",

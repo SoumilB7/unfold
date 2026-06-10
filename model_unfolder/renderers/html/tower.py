@@ -55,7 +55,10 @@ def tower_graph(spec: dict) -> Graph:
             label=block.get("label"),
             sub=block.get("sub"),
             target=block.get("target"),
+            resolved=block.get("resolved", True),
             static=block.get("static", False) if static is None else static,
+            w=block.get("w"),
+            h=block.get("h"),
         ))
         flow.append(node_id)
         if block.get("residual_from"):

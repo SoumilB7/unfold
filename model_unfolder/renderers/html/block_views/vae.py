@@ -17,7 +17,9 @@ fetched — nothing invented.  Internal op rects are non-interactive
 from __future__ import annotations
 
 from ....block_schema import DIFFUSION_PART_KINDS
+from ..graph_engine import render_graph
 from ..stack_view import fit_svg, point
+from ..tower import tower_graph
 from ..svg import _ids, _svg_tag, _svg_text, _v_line
 from ..theme import C, FONT_HEAD, FONT_MONO
 
@@ -27,71 +29,37 @@ from ..theme import C, FONT_HEAD, FONT_MONO
 # ---------------------------------------------------------------------------
 
 def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+    """The decoder as a stage pipeline on the ONE tower backbone: in-port →
+    up stages → output head → bare exit arrow.  Stage names only on blocks —
+    channels / ResNet counts are fact chips on the stage cards."""
     d = block.get("detail") or {}
     channels = [c for c in (d.get("block_out_channels") or []) if isinstance(c, int)]
     children = {c.get("id"): c for c in (block.get("children") or [])}
-    resnets = (d.get("layers_per_block") or 1) + 1
-    out_ch = d.get("out_channels") or 3
     latent = d.get("latent_channels")
 
-    arrow_id, shadow_id = _ids(mount_id, "vae")
-    parts: list[str] = []
-    regions: list[dict] = []
-    cx, h, gap = 0.0, 58.0, 40.0
-
-    # Stage descriptors, bottom (latent) -> top (image).  A straight pipeline;
-    # channel counts live in each box's sub-label.
-    stages: list[dict] = [{
-        "id": "vae_clean_latent", "title": "Clean latent",
-        "sub": (f"{latent} ch · latent res" if latent else "latent resolution"),
-        "accent": True, "diffusion_part_kind": "latent_stage",
-    }]
-    for idx, c in enumerate(reversed(channels), start=1):
+    pre: list[dict] = []
+    for idx, _c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
         node_id = f"vae_decoder_block_{block_no}"
         child = children.get(node_id, {})
-        detail = child.get("detail") or {}
-        stages.append({
-            "id": node_id,
-            "title": f"Up stage {block_no}",
-            "sub": _component_sub(detail or child),
-            "accent": False,
-            "diffusion_part_kind": child.get("diffusion_part_kind") or detail.get("diffusion_part_kind"),
+        part_kind = child.get("diffusion_part_kind") or (child.get("detail") or {}).get("diffusion_part_kind")
+        pre.append({
+            "id": node_id, "kind": "embedding",
+            "label": child.get("title") or f"Up stage {block_no}",
+            "resolved": part_kind in DIFFUSION_PART_KINDS,
+            "w": 240, "h": 58,
         })
-    stages.append({
-        "id": "vae_output_head", "title": "Output head",
-        "sub": f"conv 3×3 → {out_ch} ch", "accent": False,
-        "diffusion_part_kind": "output_head",
+    pre.append({"id": "vae_output_head", "kind": "embedding", "label": "Output head",
+                "w": 240, "h": 58})
+
+    graph = tower_graph({
+        "source": {"id": "vae_clean_latent",
+                   "label": (f"in ({latent} ch · latent res)" if latent else "in (latent)")},
+        "pre": pre,
+        "output": {"id": "vae_image"},
     })
-    stages.append({
-        "id": "vae_image", "title": "Image",
-        "sub": (f"{out_ch} ch RGB" if out_ch else "RGB"),
-        "accent": True, "diffusion_part_kind": "image_stage",
-    })
-
-    # Every stage is the same width — the decoder is a straight channel pipeline,
-    # not a size funnel.  Channel counts live in each box's sub-label.
-    STAGE_W = 240.0
-
-    # Draw top -> bottom (image first), then connect bottom -> top.
-    geoms: dict[str, dict] = {}
-    y = 0.0
-    for st in reversed(stages):
-        title = children.get(st["id"], {}).get("title") or st["title"]
-        g = _stage_block(parts, cx, y, STAGE_W, h,
-                         title, shadow_id, sub=st["sub"],
-                         accent=st["accent"], node_id=st["id"],
-                         resolved=st.get("diffusion_part_kind") in DIFFUSION_PART_KINDS)
-        geoms[st["id"]] = g
-        regions.append(g)
-        y += h + gap
-
-    chain = [geoms[st["id"]] for st in stages]
-    for src, dst in zip(chain, chain[1:]):
-        parts.append(_v_line(src, dst, arrow_id))
-
-    return fit_svg(arrow_id, shadow_id, parts, regions,
-                   f"{ir.get('name', 'model')} VAE decoder", min_width=600, pad=44)
+    return render_graph(graph, info, mount_id, "vae",
+                        f"{ir.get('name', 'model')} VAE decoder", min_width=600)
 
 
 # ---------------------------------------------------------------------------
@@ -292,14 +260,3 @@ def _stage_block(
     }
 
 
-def _component_sub(stage: dict) -> str | None:
-    # Channels + ResNet count only; the upsample op is a separate box in the
-    # block drill-down, not a chip here.
-    labels: list[str] = []
-    for comp in stage.get("components") or []:
-        kind = comp.get("kind")
-        if kind == "channels":
-            labels.append(f"{int(comp['value']):,} ch")
-        elif kind == "resnet_stack":
-            labels.append(f"{int(comp.get('count') or 1)}× ResNet")
-    return " · ".join(labels) if labels else None

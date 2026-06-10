@@ -191,22 +191,34 @@ def parse(cfg: Any) -> ModelIR:
         **_scheduler_geom(cfg),
     }
 
-    # Positional encoding: Flux applies axial RoPE (axes_dims_rope sum to the
-    # head dim).  Its presence means the blocks ARE rotary — not NoPE.
+    # Positional encoding — rotary comes in three config dialects, all of which
+    # mean the blocks are NOT NoPE: Flux-style axial RoPE (axes_dims_rope sums
+    # to the head dim), multimodal 3D RoPE (mrope_section lists per-axis
+    # half-dims, so the rotary span is twice their sum), or a bare rope_theta.
     axes_dims_rope = _resolve(cfg, "axes_dims_rope")
+    mrope_section = _resolve(cfg, "mrope_section")
+    rope_theta = _resolve(cfg, "rope_theta")
     rope_dim = None
     if isinstance(axes_dims_rope, (list, tuple)):
         try:
             rope_dim = sum(int(x) for x in axes_dims_rope)
         except (TypeError, ValueError):
             rope_dim = None
-    has_rope = rope_dim is not None
-    rope_note = (
-        f"Axial rotary position embedding (axes {axes_dims_rope})."
-        if isinstance(axes_dims_rope, (list, tuple)) else
-        ("Rotary position embedding." if has_rope else
-         "Position comes from the patch embedding (no rotary).")
-    )
+    elif isinstance(mrope_section, (list, tuple)):
+        try:
+            span = 2 * sum(int(x) for x in mrope_section)
+            rope_dim = span if (not head_dim or span <= head_dim) else sum(int(x) for x in mrope_section)
+        except (TypeError, ValueError):
+            rope_dim = None
+    has_rope = rope_dim is not None or rope_theta is not None
+    if isinstance(axes_dims_rope, (list, tuple)):
+        rope_note = f"Axial rotary position embedding (axes {axes_dims_rope})."
+    elif isinstance(mrope_section, (list, tuple)):
+        rope_note = f"Multimodal 3D rotary position embedding (sections {list(mrope_section)})."
+    elif has_rope:
+        rope_note = "Rotary position embedding."
+    else:
+        rope_note = "Position comes from the patch embedding (no rotary)."
 
     # ---- Denoiser layer stack ----
     # MM-DiT double-stream blocks: image and text keep SEPARATE Q/K/V and MLP,
@@ -471,6 +483,8 @@ def _normalize_encoder_config(c: dict) -> dict:
         "layers": pick("num_hidden_layers", "num_layers"),
         "hidden": pick("hidden_size", "d_model"),
         "heads": pick("num_attention_heads", "num_heads"),
+        "kv_heads": pick("num_key_value_heads"),
+        "head_dim": pick("head_dim", "attention_head_dim"),
         "ffn": pick("intermediate_size", "d_ff"),
         "activation": activation,
         "vocab": pick("vocab_size"),

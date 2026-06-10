@@ -36,12 +36,20 @@ _VIEW_KEYS = {
 }
 
 
-def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
-    """Detail view for the active attention-like block, whatever its family."""
+def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool = True) -> str:
+    """Detail view for the active attention-like block, whatever its family.
+
+    ``clickable=False`` renders a leaf (ops are not drill targets) — used when
+    the clicked block declares no child cards, e.g. a text-encoder tower's
+    attention summarised from its own fetched config.
+    """
     attn = info["dominant"]["spec"].get("attention") or {}
     kind = attn.get("kind")
-    region = attention_region(attn, ir.get("hidden_size"))
-    graph = region_to_graph(region, clickable=True)
+    # The fact dict's own width wins — a tower's attention must not inherit
+    # the host model's hidden size (the DiT's 4,608 is not Qwen3VL's 4,096).
+    hidden = attn.get("hidden") or ir.get("hidden_size")
+    region = attention_region(attn, hidden)
+    graph = region_to_graph(region, clickable=clickable, out_label=None)
     _apply_presentation(graph, attn)
     title = _TITLES.get(kind, "attention")
     key = _VIEW_KEYS.get(kind, "attn")

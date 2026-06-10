@@ -21,6 +21,8 @@ hidden_size: [hidden_size, inner_dim, d_model, dim]
 # Positional encoding: Flux applies axial RoPE over the joint sequence; the
 # per-axis dims sum to the head dim. Presence of this field => RoPE (not NoPE).
 axes_dims_rope: [axes_dims_rope, axes_dim, rope_axes_dim]
+mrope_section: [mrope_section, rope_sections]
+rope_theta: [rope_theta]
 
 # Conditioning / stream dims.
 joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)

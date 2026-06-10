@@ -214,11 +214,8 @@ def activation_label(name: str | None) -> str:
     return key.replace("_", " ").title() if key else "Activation"
 
 
-#: One sentence, used verbatim by every card whose block draws cache ports.
-CACHE_PORT_NOTE = (
-    "The two corner marks are KV-cache ports: arrowhead = written to the "
-    "cache, blunt tail = read back at each step."
-)
+#: One chip, used verbatim by every card whose block draws cache ports.
+CACHE_PORT_FACT = "cache ports: ⌃ write · ⊥ read"
 
 
 def describe_attention(attention: dict) -> str:
@@ -378,10 +375,12 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
 
 
 def _head_facts(attention: dict, facts: list[str]) -> None:
-    if attention.get("num_heads"):
-        facts.append(f"{attention.get('num_heads')} Q heads")
-    if attention.get("num_kv_heads"):
-        facts.append(f"{attention.get('num_kv_heads')} KV heads")
+    q, kv = attention.get("num_heads"), attention.get("num_kv_heads")
+    if q and (not kv or kv == q):
+        facts.append(f"{q} heads")
+    elif q:
+        facts.append(f"{q} Q heads")
+        facts.append(f"{kv} KV heads")
     _dim_fact(attention, facts)
 
 
