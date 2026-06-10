@@ -24,7 +24,7 @@ keys are decided by the *projections*, not stored here.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 #: The stable alphabet.  Regions compose these; they are never themselves an op.
 #: ``attention_core`` is the token-mixing kernel (SDPA scores, a selective scan,
@@ -403,3 +403,14 @@ def _linear_attention_region(attn: dict, hidden: int | None) -> Region:
 
 def _chain(ids: list[str]) -> list[Edge]:
     return [Edge(a, b) for a, b in zip(ids, ids[1:])]
+
+
+def rename_ops(region: Region, mapping: dict[str, str]) -> Region:
+    """Clone a region with op ids renamed.
+
+    Lets one canonical template serve several card namespaces (the gated MLP
+    inside an MoE expert uses ``expert_*`` card ids) without re-authoring it.
+    """
+    ops = [replace(op, id=mapping.get(op.id, op.id), meta=dict(op.meta)) for op in region.ops]
+    edges = [Edge(mapping.get(e.src, e.src), mapping.get(e.dst, e.dst)) for e in region.edges]
+    return replace(region, ops=ops, edges=edges)
