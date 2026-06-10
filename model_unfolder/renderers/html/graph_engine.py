@@ -18,7 +18,6 @@ from .stack_view import fit_svg, point
 from .svg import (
     _branch_dot,
     _cache_io_ports,
-    _cache_rw_ports,
     _elbow_hv,
     _elbow_vh,
     _formula_block,
@@ -70,6 +69,10 @@ def render_graph(
     par_by_pair = {(p.src, p.dst): p for p in graph.parallels}
     flow_set = set(graph.flow)
     par_height = {(p.src, p.dst): _parallel_height(p, by_id, flow_set) for p in graph.parallels}
+    # nodes whose outgoing stem carries a side-lane tap dot need a longer stem,
+    # or the dot crowds the arrowhead entering the node above
+    tap_srcs = {lane.src for p in graph.parallels for lane in p.norm_lanes()
+                if lane.src is not None and lane.src in flow_set}
 
     order_top_down = list(reversed(order_bottom_up))
     geom: dict[str, dict] = {}
@@ -87,6 +90,8 @@ def render_graph(
                     gap += _GROUP_HEADER
                 if node.id in bottom_members:
                     gap += 30                              # air between frame edge and the block below
+                if nxt.id in tap_srcs:
+                    gap += 20                              # room for the tap dot on the stem
             y += gap
 
     max_right = max((g["right"] for g in geom.values()), default=cx)
@@ -208,9 +213,8 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
                     resolved=node.resolved, sub=node.sub, accent=node.glyph().accent,
                     clickable=not node.static)
-        if node.kind == "cache":
-            _cache_rw_ports(parts, g, write_side="bottom", read_side="top")
-        elif node.cache_ports:
+        if node.kind == "cache" or node.cache_ports:
+            # one convention everywhere: the port pair sits bottom-right
             _cache_io_ports(parts, g["left"], g["top"], g["w"], g["h"])
 
 

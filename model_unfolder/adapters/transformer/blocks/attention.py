@@ -4,6 +4,7 @@ from __future__ import annotations
 from ....block_schema import Block
 
 from ....ir import AttentionSpec
+from ....labels import CACHE_PORT_NOTE
 from ..common import format_dim as _fmt
 
 
@@ -78,19 +79,13 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": (
-                "Linear projection producing the keys. Cache ports show K/V "
-                "write/read during generation: arrowhead for write, blunt tail for read."
-            ),
+            "description": f"Linear projection producing the keys. {CACHE_PORT_NOTE}",
             "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": (
-                "Linear projection producing the values. Cache ports show K/V "
-                "write/read during generation: arrowhead for write, blunt tail for read."
-            ),
+            "description": f"Linear projection producing the values. {CACHE_PORT_NOTE}",
             "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
         },
         {
@@ -143,10 +138,7 @@ def _sdpa_detailed_child_blocks(
 
     q_src = "decoder hidden states" if cross_attention else "the hidden state"
     kv_src = "the projected image states" if cross_attention else "the hidden state"
-    cache_note = (
-        "" if cross_attention else
-        " Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
-    )
+    cache_note = "" if cross_attention else f" {CACHE_PORT_NOTE}"
     return [
         {
             "id": "q_proj",
@@ -294,8 +286,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "latent cache c_t",
             "title": "Stored latent cache",
             "description": (
-                "Compressed K/V latent stored in the cache instead of full K and V heads. "
-                "Cache ports show write from compression and read back into K/V expansion."
+                f"Compressed K/V latent stored in the cache instead of full K and V heads. {CACHE_PORT_NOTE}"
             ),
             "facts": [f"rank {kv_rank}"],
         },
@@ -357,7 +348,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "title": "MLA K/V cache path",
             "description": (
                 "Compresses the hidden state into the latent cache, expands K/V content, "
-                "and combines K noPE with a RoPE key side-channel. Cache ports mark the latent write/read point."
+                f"and combines K noPE with a RoPE key side-channel. {CACHE_PORT_NOTE}"
             ),
             "facts": [f"cache rank {kv_rank}"],
             "view": "mla_kv_cache_path",
