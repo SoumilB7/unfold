@@ -142,6 +142,24 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     return fallback
 
 
+def _ensure_declared_op_cards(block: dict) -> None:
+    """Cards are the third projection of a declared region: any block with
+    ``view:"ops"`` gets its per-op inspect cards derived from the same op list
+    that draws the SVG — authored child cards (if any) win untouched."""
+    if block.get("view") != "ops" or block.get("children"):
+        return
+    declared = (block.get("detail") or {}).get("ops")
+    if not declared:
+        return
+    from ...labels import cards_from_region
+    from ...opgraph import ops_region
+    try:
+        region = ops_region(declared, rid=block.get("id") or "ops")
+    except ValueError:
+        return
+    block["children"] = cards_from_region(region)
+
+
 def _block_lookup(ir: dict, spec: dict) -> dict:
     """Return render blocks keyed by node id for one layer variant."""
     blocks = {}
@@ -162,6 +180,17 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
         for child in pathway.get("construction") or []:
             if child.get("id"):
                 blocks[child["id"]] = child
+    # Normalize every reachable card (declared-ops blocks get derived op
+    # cards) and register nested children for click lookup — a worklist, so
+    # children discovered along the way are normalized too.
+    queue = list(blocks.values())
+    while queue:
+        block = queue.pop()
+        _ensure_declared_op_cards(block)
+        for child in block.get("children") or []:
+            if child.get("id") and child["id"] not in blocks:
+                blocks[child["id"]] = child
+                queue.append(child)
     return blocks
 
 

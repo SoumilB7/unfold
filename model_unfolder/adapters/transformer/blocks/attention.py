@@ -231,9 +231,17 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
     hidden = _fmt(hidden_size)
     q_rank = _fmt(attention.q_lora_rank) if attention.q_lora_rank else "direct"
     kv_rank = _fmt(attention.kv_lora_rank)
-    rope = _fmt(attention.rope_dim)
     num_heads = attention.num_heads or 0
     head_dim = attention.head_dim or 0
+    # Per-head slice widths — straight from the config (DeepSeek/Kimi declare
+    # them); the noPE width falls back to head_dim minus the RoPE width.
+    rope_v = attention.rope_dim or attention.qk_rope_head_dim or 0
+    rope = _fmt(rope_v) if rope_v else "?"
+    nope_v = attention.qk_nope_head_dim or ((head_dim - rope_v) if (head_dim and rope_v) else None)
+    v_v = attention.v_head_dim or nope_v
+    nope_fact = [f"dim {_fmt(nope_v)} / head"] if nope_v else []
+    concat_fact = ([f"head dim {_fmt(nope_v + rope_v)} = {_fmt(nope_v)} + {_fmt(rope_v)}"]
+                   if (nope_v and rope_v) else [])
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
     query_children = [
         {
@@ -252,25 +260,28 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "Q noPE",
             "title": "Query content slice",
             "description": "Query content component that does not receive rotary position encoding",
+            "facts": nope_fact,
         },
         {
             "id": "mla_q_rope",
             "label": "Q RoPE",
             "title": "Query positional slice",
             "description": "Query positional component prepared for rotary position encoding.",
-            "facts": [f"dim {rope}"],
+            "facts": [f"dim {rope} / head"],
         },
         {
             "id": "mla_q_rope_apply",
             "label": "Apply RoPE",
             "title": "Apply RoPE to query",
             "description": "Applies rotary position encoding to the query positional slice",
+            "facts": [f"dim {rope}"] if rope_v else [],
         },
         {
             "id": "mla_q_concat",
             "label": "Q concat",
             "title": "Final MLA query",
             "description": "Concatenates Q noPE with RoPE-encoded Q RoPE before score computation",
+            "facts": concat_fact,
         },
     ]
     kv_children = [
@@ -293,38 +304,43 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "KV expand",
             "title": "K/V head expansion",
             "description": "Expands the cached latent c_t into K noPE content and V values.",
-            "facts": [f"{num_heads} heads"],
+            "facts": [f"{num_heads} heads"]
+                + ([f"{_fmt(nope_v)} + {_fmt(v_v)} per head"] if (nope_v and v_v) else []),
         },
         {
             "id": "mla_k_nope",
             "label": "K noPE",
             "title": "Latent key content",
             "description": "Key content expanded from the compressed K/V latent; concatenated with the RoPE key before scoring",
+            "facts": nope_fact,
         },
         {
             "id": "mla_k_rope",
             "label": "K RoPE",
             "title": "Key positional slice",
             "description": "Key positional component produced alongside the latent cache.",
-            "facts": [f"dim {rope}"],
+            "facts": [f"dim {rope} · shared across heads"],
         },
         {
             "id": "mla_k_rope_apply",
             "label": "Apply RoPE",
             "title": "Apply RoPE to key",
             "description": "Applies rotary position encoding to the key positional slice",
+            "facts": [f"dim {rope}"] if rope_v else [],
         },
         {
             "id": "mla_k_merge",
             "label": "K concat",
             "title": "Composed MLA key",
             "description": "Concatenates K noPE with the RoPE key side-channel before QK^T score computation",
+            "facts": concat_fact,
         },
         {
             "id": "mla_v",
             "label": "V values",
             "title": "Latent value heads",
             "description": "Value heads expanded from the compressed K/V latent; consumed after softmax",
+            "facts": ([f"dim {_fmt(v_v)} / head"] if v_v else []) + [f"{num_heads} heads"],
         },
     ]
     return [

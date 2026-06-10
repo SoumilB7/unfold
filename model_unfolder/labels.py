@@ -486,3 +486,80 @@ def _prefixed_label(prefix: str, first: str, second: str) -> list[str]:
 
 def _prefixed_title(prefix: str, title: str) -> str:
     return f"{prefix} {title}" if prefix else title
+
+
+# ---------------------------------------------------------------------------
+# Op-card vocabulary — cards as the THIRD projection of a canonical region.
+# The SVG and the JSON already project from the op graph; this derives the
+# inspect card for any op, so no view ever hand-writes per-node descriptions
+# again.  Authors may still override per card (their dicts win by id).
+# ---------------------------------------------------------------------------
+
+_OP_TITLES = {
+    "linear": "Linear",
+    "activation": "Activation",
+    "elementwise": "Element-wise op",
+    "norm": "Normalization",
+    "route": "Router",
+    "attention_core": "Attention core",
+    "conv": "Convolution",
+    "concat": "Concatenate",
+    "slice": "Split",
+    "rope": "Rotary embedding",
+    "cache": "Cache",
+    "subgraph": "Sub-block",
+    "opaque": "Custom block",
+}
+
+_OP_SENTENCES = {
+    "linear": "Linear projection (a learned weight matrix applied to every position).",
+    "activation": "Element-wise non-linearity.",
+    "elementwise": "Combines its input lanes element by element.",
+    "norm": "Keeps activation scales stable for the next op.",
+    "route": "Scores the options per token and keeps the top-k.",
+    "attention_core": "The token-mixing kernel — positions exchange information here.",
+    "conv": "Convolution over the spatial/temporal grid.",
+    "concat": "Joins tensor lanes along the feature dimension.",
+    "slice": "Splits the tensor into named lanes.",
+    "rope": "Applies rotary position encoding to this lane.",
+    "cache": "Stored tensor reused across steps (write on entry, read on reuse).",
+    "subgraph": "Compound block with its own internal structure.",
+    "opaque": "Internals not declared by the config — drawn as one honest block.",
+}
+
+_ELEMENTWISE_TITLES = {"mul": "Gate product", "add": "Add", "sum": "Weighted sum"}
+
+
+def op_card(op) -> dict:
+    """Inspect-card dict derived from one canonical op.
+
+    Duck-typed over :class:`model_unfolder.opgraph.Op` (``id``/``kind``/
+    ``label``/``in_features``/``out_features``/``fn``/``meta``).  ``meta`` may
+    carry ``desc`` to override the kind sentence.
+    """
+    kind = op.kind
+    title = op.label or _OP_TITLES.get(kind, kind)
+    if kind == "activation" and op.fn and not op.label:
+        title = activation_label(op.fn)
+    elif kind == "elementwise" and op.fn and not op.label:
+        title = _ELEMENTWISE_TITLES.get(op.fn, title)
+    elif kind == "opaque":
+        title = (op.meta or {}).get("class_name") or op.label or title
+    facts = []
+    if op.in_features and op.out_features:
+        facts.append(f"{_fmt_int(op.in_features)} → {_fmt_int(op.out_features)}")
+    if op.fn and kind in ("activation", "attention_core"):
+        facts.append(str(op.fn))
+    return {
+        "id": op.id,
+        "title": title,
+        "description": (op.meta or {}).get("desc") or _OP_SENTENCES.get(kind, ""),
+        "facts": facts,
+    }
+
+
+def cards_from_region(region) -> list[dict]:
+    """Derive the inspect cards for every drawable op in a region — the
+    automatic companion to the rendered SVG, so click targets always have a
+    card without any per-view authoring."""
+    return [op_card(o) for o in region.ops if o.kind not in ("input", "output")]

@@ -139,3 +139,40 @@ def test_no_structural_card_renders_as_prose():
             if dims.search(text) and acts.search(text) and not card.get("view"):
                 offenders.append((card.get("id"), text[:80]))
     assert not offenders, f"structural cards with no view: {offenders}"
+
+
+def test_every_declared_op_gets_a_derived_card_automatically():
+    """Cards are the THIRD projection of the region: a new ops view needs no
+    hand-written per-node descriptions — title/sentence/chips derive from the
+    same op list that draws the SVG, and the nodes become click targets."""
+    html = unfold(PIXTRAL_STYLE).to_html(standalone=True)
+    for i in range(3):
+        assert f'data-id="vision_projector_op{i}"' in html      # clickable node
+        assert f'data-card-id="vision_projector_op{i}"' in html  # derived card
+    assert "Element-wise non-linearity." in html                 # kind vocabulary
+
+
+def test_op_card_vocabulary_derives_titles_and_facts():
+    from model_unfolder.labels import cards_from_region, op_card
+    from model_unfolder.opgraph import Op
+
+    linear = op_card(Op("x", "linear", "Linear", in_features=1024, out_features=5120))
+    assert linear["description"] and linear["facts"] == ["1,024 → 5,120"]
+    act = op_card(Op("a", "activation", fn="gelu"))
+    assert act["title"] == "GELU" and act["facts"] == ["gelu"]
+    opaque = op_card(Op("o", "opaque", meta={"class_name": "MyBlock"}))
+    assert opaque["title"] == "MyBlock"
+    region = ops_region([{"kind": "linear"}, {"kind": "norm"}], rid="z")
+    assert [c["id"] for c in cards_from_region(region)] == ["z_op0", "z_op1"]
+    assert all(c["description"] for c in cards_from_region(region))
+
+
+def test_authored_children_win_over_derived_cards():
+    """The derivation is a floor, not a cage: a block that already declares
+    children keeps them untouched."""
+    from model_unfolder.renderers.html.metadata import _ensure_declared_op_cards
+    block = {"id": "p", "view": "ops",
+             "detail": {"ops": [{"kind": "linear"}]},
+             "children": [{"id": "custom", "title": "Mine", "description": "kept"}]}
+    _ensure_declared_op_cards(block)
+    assert [c["id"] for c in block["children"]] == ["custom"]

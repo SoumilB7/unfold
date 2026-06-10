@@ -19,7 +19,10 @@ def build_declared_ops_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     rid = block.get("id") or "ops"
     title = block.get("title") or block.get("label") or "declared ops"
     region = ops_region(declared, rid=rid, label=title)
+    # Op nodes are drill targets whenever cards exist for them — and they
+    # always do: the lookup derives per-op cards from this same region.
     return render_graph(
-        region_to_graph(region), info, mount_id, f"ops_{rid}",
+        region_to_graph(region, clickable=bool(block.get("children"))),
+        info, mount_id, f"ops_{rid}",
         f"{ir.get('name', 'model')} {title}", min_width=640,
     )
