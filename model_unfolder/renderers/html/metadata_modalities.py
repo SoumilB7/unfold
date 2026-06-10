@@ -1,6 +1,7 @@
 """Multimodal block metadata and detail-card children."""
 from __future__ import annotations
 
+from ...labels import attention_summary, kind_long
 from .patch_grid import coerce_grid, grid_card_phrase
 from .utils import _fmt_int
 
@@ -16,25 +17,26 @@ def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
     kv = encoder.get("num_key_value_heads")
     head_dim = encoder.get("head_dim") or (
         hidden // heads if (hidden and heads and hidden % heads == 0) else None)
-    facts = [f for f in (
-        f"{_fmt_int(heads)} heads" if not kv else f"{_fmt_int(heads)} Q / {_fmt_int(kv)} KV heads",
-        f"head dim {_fmt_int(head_dim)}" if head_dim else "",
-        f"hidden {_fmt_int(hidden)}" if hidden else "",
-    ) if f]
+    # ONE source: this dict feeds the embedded view AND (via the central
+    # vocabulary) the title + chips, so they cannot disagree.
+    attn = {
+        "kind": ("gqa" if (kv and kv != heads) else "mha"),
+        "num_heads": heads,
+        "num_kv_heads": kv or heads,
+        "head_dim": head_dim,
+        "hidden": hidden,
+        "cached": False,
+    }
+    facts = attention_summary(attn)[1]
+    if hidden:
+        facts = facts + [f"hidden {_fmt_int(hidden)}"]
     return [{
         "id": f"{prefix}_attn",
-        "title": "Self-attention",
+        "title": kind_long(attn).replace(" attention", " self-attention"),
         "description": "Self-attention over the encoder's token sequence.",
         "facts": facts,
         "view": "attention",
-        "detail": {"attention": {
-            "kind": ("gqa" if (kv and kv != heads) else "mha"),
-            "num_heads": heads,
-            "num_kv_heads": kv or heads,
-            "head_dim": head_dim,
-            "hidden": hidden,
-            "cached": False,
-        }},
+        "detail": {"attention": attn},
     }]
 
 
@@ -258,7 +260,6 @@ def _vision_children(vision: dict) -> list[dict]:
 
     tiling = vision.get("tiling") or {}
     reduction = vision.get("reduction") or {}
-    projector_desc = _projection_desc(projector)
     token_count = tokens.get("count")
     token_width = tokens.get("width")
     cross_attention_vision = tokens.get("kind") == "vision_cross_attention_states"
@@ -439,13 +440,8 @@ def _vision_children(vision: dict) -> list[dict]:
         *_reduction_children(reduction),
         {
             "id": "vision_projector",
-            "title": (
-                "Perceiver resampler" if projector.get("kind") == "perceiver_resampler"
-                else "Linear projection to decoder width" if cross_attention_vision
-                else "Patch merger" if grid_vision
-                else "Linear projection to text width"
-            ),
-            "description": projector_desc,
+            **_projector_card_fields(projector),
+            **({"title": "Linear projection to decoder width"} if cross_attention_vision else {}),
         },
         {
             "id": "visual_tokens",
@@ -520,8 +516,7 @@ def _audio_children(audio: dict) -> list[dict]:
         },
         {
             "id": "audio_projector",
-            "title": "Linear",
-            "description": _projection_desc(projector),
+            **_projector_card_fields(projector),
         },
         {
             "id": "audio_tokens",
@@ -589,8 +584,7 @@ def _video_children(video: dict) -> list[dict]:
         },
         {
             "id": "video_projector",
-            "title": "Patch merger",
-            "description": _projection_desc(projector),
+            **_projector_card_fields(projector),
         },
         {
             "id": "video_tokens",
@@ -626,21 +620,69 @@ def _linear_desc(
     return "; ".join(bits)
 
 
-def _projection_desc(projector: dict) -> str:
-    raw_kind = str(projector.get("kind") or "linear_projector")
-    kind = {
-        "linear_projector": "Linear",
-        "patch_merger": "Patch merger",
-    }.get(raw_kind, raw_kind.replace("_", " "))
-    in_features = projector.get("in_features")
-    out_features = projector.get("out_features")
-    activation = projector.get("activation")
-    bits = [kind]
-    if in_features and out_features:
-        bits.append(f"{_fmt_int(in_features)} -> {_fmt_int(out_features)}")
-    if activation:
-        bits.append(f"activation {activation}")
-    return "; ".join(bits)
+_PROJECTOR_TITLES = {
+    "perceiver_resampler": "Perceiver resampler",
+    "patch_merger": "Patch merger",
+    "mlp_projector": "MLP projector",
+    "linear_projector": "Linear projection",
+}
+
+_PROJECTOR_DESCS = {
+    "perceiver_resampler": "A fixed set of learned latent queries cross-attends over the encoder states, resampling them to a fixed token count.",
+    "patch_merger": "Merges neighbouring patch tokens and projects the merged vector to the decoder's width.",
+    "mlp_projector": "A small MLP that projects encoder features into the decoder's embedding space.",
+    "linear_projector": "A single linear map from the encoder's width into the decoder's embedding space.",
+}
+
+
+def _projector_ops(projector: dict) -> list[dict]:
+    """The connector's structure, declared in the op alphabet — only from
+    facts the parser actually extracted (no dims known → no ops, prose card)."""
+    kind = str(projector.get("kind") or "linear_projector")
+    inn, out = projector.get("in_features"), projector.get("out_features")
+    act = projector.get("activation")
+    if not (inn and out):
+        return []
+    if kind == "mlp_projector" and act:
+        return [
+            {"kind": "linear", "label": "Linear", "in": inn, "out": out},
+            {"kind": "activation", "fn": act},
+            {"kind": "linear", "label": "Linear", "in": out, "out": out},
+        ]
+    if kind == "patch_merger":
+        return [
+            {"kind": "concat", "label": "Concat neighbouring patches"},
+            {"kind": "linear", "label": "Linear", "in": inn, "out": out},
+        ]
+    if kind == "perceiver_resampler":
+        return [{"kind": "attention_core", "label": "Latent cross-attention",
+                 "fn": "cross_attention", "in": inn, "out": out}]
+    if kind in ("linear_projector", "linear"):
+        return [{"kind": "linear", "label": "Linear", "in": inn, "out": out}]
+    return []
+
+
+def _projector_card_fields(projector: dict) -> dict:
+    """Title, sentence, chips, and — when the dims are known — the declared-ops
+    view for a modality connector.  ONE source: the same facts feed the chips
+    and the diagram, so they cannot disagree."""
+    kind = str(projector.get("kind") or "linear_projector")
+    inn, out = projector.get("in_features"), projector.get("out_features")
+    facts = [f for f in (
+        f"{_fmt_int(inn)} \u2192 {_fmt_int(out)}" if (inn and out) else "",
+        str(projector.get("activation") or ""),
+        f"{_fmt_int(projector.get('num_latents'))} latent queries" if projector.get("num_latents") else "",
+    ) if f]
+    fields = {
+        "title": _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
+        "description": _PROJECTOR_DESCS.get(kind, "Projects encoder features into the decoder's embedding space."),
+        "facts": facts,
+    }
+    ops = _projector_ops(projector)
+    if ops:
+        fields["view"] = "ops"
+        fields["detail"] = {"ops": ops}
+    return fields
 
 
 def _join_desc(bits: list[str]) -> str:

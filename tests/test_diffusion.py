@@ -267,9 +267,11 @@ def test_text_encoder_shows_real_config_dims():
     depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
     specs = diffusor._text_encoder_specs(FLUX)
     assert specs == [
-        {"name": "CLIP", "layers": 12, "hidden": 768, "heads": 12, "ffn": 3072,
+        {"name": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
+         "kv_heads": 12, "head_dim": 64, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
-        {"name": "T5", "layers": 24, "hidden": 4096, "heads": 64, "ffn": 10240,
+        {"name": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
+         "kv_heads": 64, "head_dim": 64, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
     html = unfold(FLUX).to_html(standalone=True)

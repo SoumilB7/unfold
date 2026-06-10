@@ -23,6 +23,7 @@ from .attention import (
     build_mla_query_path_view,
 )
 from .block_facts import ffn_from_block, info_with_block_fact
+from .declared_ops import build_declared_ops_view
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import (
@@ -140,6 +141,10 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     # Generic custom tower: any adapter block with view:"tower" + detail.tower
     # renders through the one tower backbone — no per-tower view code.
     "tower": _from_block(build_tower_view),
+    # Universal declarer: view:"ops" + detail.ops (op-alphabet chain) renders
+    # through the canonical region pipeline — the floor under every card that
+    # isn't a named template, so "prose-only structural card" can't recur.
+    "ops": _from_block(build_declared_ops_view),
     # Sub-block drill-downs.
     "mla_query_path": _from_block(build_mla_query_path_view),
     "mla_kv_cache_path": _from_block(build_mla_kv_cache_view),

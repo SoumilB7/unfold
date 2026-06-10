@@ -399,3 +399,60 @@ def rename_ops(region: Region, mapping: dict[str, str]) -> Region:
     ops = [replace(op, id=mapping.get(op.id, op.id), meta=dict(op.meta)) for op in region.ops]
     edges = [Edge(mapping.get(e.src, e.src), mapping.get(e.dst, e.dst)) for e in region.edges]
     return replace(region, ops=ops, edges=edges)
+
+
+# ---------------------------------------------------------------------------
+# Declared ops — the universal card declarer
+# ---------------------------------------------------------------------------
+
+def ops_region(declared: list[dict], *, rid: str = "ops", label: str = "ops") -> Region:
+    """Build a Region from a card-*declared* op list — structure as data.
+
+    This is the floor under every card that isn't one of the named templates
+    (attention / FFN / tower): instead of writing prose, a bespoke view, or a
+    hand-drawn SVG, the card author declares the block's internals in the op
+    alphabet and the ONE renderer draws it::
+
+        {"view": "ops", "detail": {"ops": [
+            {"kind": "linear",     "label": "Linear", "in": 1024, "out": 5120},
+            {"kind": "activation", "fn": "gelu"},
+            {"kind": "linear",     "label": "Linear", "in": 5120, "out": 5120},
+        ]}}
+
+    Each entry: ``kind`` (required, from :data:`OP_KINDS`), and optionally
+    ``id``, ``label``, ``in``/``out`` (feature widths), ``fn`` (activation /
+    elementwise op), ``formula``/``meta`` extras, and ``from`` (an upstream op
+    id or list of ids — flow defaults to the previous op, so plain chains need
+    no wiring and branches/merges declare only their joins).
+
+    A typo'd kind raises immediately — a declarer mistake must fail the build,
+    never silently render a wrong diagram.
+    """
+    if not declared:
+        raise ValueError(f"ops_region({rid!r}): empty op list")
+    allowed = OP_KINDS - {"input", "output", "subgraph"}
+    ops: list[Op] = [Op("hidden", "input", out_features=declared[0].get("in"))]
+    edges: list[Edge] = []
+    prev = "hidden"
+    for i, d in enumerate(declared):
+        kind = d.get("kind")
+        if kind not in allowed:
+            raise ValueError(
+                f"ops_region({rid!r}): op {i} has kind {kind!r}; "
+                f"expected one of {sorted(allowed)}")
+        oid = d.get("id") or f"{rid}_op{i}"
+        meta = dict(d.get("meta") or {})
+        if d.get("formula"):
+            meta["formula"] = d["formula"]
+        ops.append(Op(oid, kind, d.get("label"),
+                      in_features=d.get("in"), out_features=d.get("out"),
+                      fn=d.get("fn"), meta=meta))
+        srcs = d.get("from")
+        srcs = [srcs] if isinstance(srcs, str) else (srcs or [prev])
+        edges.extend(Edge(s, oid) for s in srcs)
+        prev = oid
+    known = {o.id for o in ops}
+    for e in edges:
+        if e.src not in known:
+            raise ValueError(f"ops_region({rid!r}): edge from unknown op {e.src!r}")
+    return Region(rid, "ops", label, ops, edges, template="declared", source="config")

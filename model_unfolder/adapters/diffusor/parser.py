@@ -471,8 +471,20 @@ def _normalize_encoder_config(c: dict) -> dict:
         return {}
     layer = ir.layers[0]
     attn, ffn = layer.attention, layer.ffn
-    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-        str(getattr(layer, "norm_kind", "") or "").lower())
+
+    # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
+    # config is silent — right for decoder LLMs, invented facts for encoders.
+    # Carry norm/gated only when the config gives an explicit signal.
+    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
+    def _has(*keys):
+        return any(k in src for src in (c, inner) for k in keys)
+    norm = None
+    if _has("norm_type", "rms_norm_eps", "layer_norm_eps", "layer_norm_epsilon"):
+        norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+            str(getattr(layer, "norm_kind", "") or "").lower())
+    act = (ffn.activation or "").lower()
+    gated_explicit = (_has("is_gated_act", "feed_forward_proj")
+                      or "glu" in act or act in ("silu", "swish", "gelu_pytorch_tanh"))
     fields = {
         "layers": len(ir.layers),
         "hidden": ir.hidden_size,
@@ -487,5 +499,5 @@ def _normalize_encoder_config(c: dict) -> dict:
         "norm": norm,
     }
     out = {k: v for k, v in fields.items() if v}
-    out["gated"] = bool(ffn.gated)
+    out["gated"] = bool(ffn.gated) if gated_explicit else False
     return out
