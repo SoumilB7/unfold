@@ -23,6 +23,6 @@ def build_video_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) 
     """The video pathway's visual tower — same backbone, facts from the video
     modality's encoder record."""
     encoder = (video_input(ir).get("encoder") or {})
-    spec = encoder_tower_spec(encoder)
+    spec = encoder_tower_spec(encoder, prefix="video_enc")
     return render_graph(tower_graph(spec), info, mount_id, "video-encoder",
                         f"{ir.get('name', 'model')} video encoder")

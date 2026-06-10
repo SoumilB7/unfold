@@ -23,25 +23,30 @@ def build_audio_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) 
     through.  The cell shows only what the config declares (depth, width,
     heads); norm placement isn't claimed because it isn't known."""
     encoder = (audio_input(ir).get("encoder") or {})
-    spec = encoder_tower_spec(encoder)
+    spec = encoder_tower_spec(encoder, prefix="audio_enc")
     return render_graph(tower_graph(spec), info, mount_id, "audio-encoder",
                         f"{ir.get('name', 'model')} audio encoder")
 
 
-def encoder_tower_spec(encoder: dict) -> dict:
+def encoder_tower_spec(encoder: dict, *, prefix: str = "enc") -> dict:
     """A minimal honest tower for an encoder known only by depth/width/heads:
-    attention + feed-forward repeated, bare in/out ports.  Nodes are static —
-    the config declares no finer internals to drill into."""
+    attention + feed-forward repeated, bare in/out ports.
+
+    The attention node is a drill target when the config declares heads — its
+    card (declared per modality in ``metadata_modalities``) opens the ONE
+    canonical attention view.  The FFN stays static: no inner width is
+    recorded, so there is nothing honest to draw."""
     hidden = encoder.get("hidden_size")
+    has_attn_facts = bool(encoder.get("num_attention_heads"))
     return {
-        "source": {"id": "enc_in",
+        "source": {"id": f"{prefix}_in",
                    "label": (f"in ({_fmt_int(hidden)})" if hidden else None)},
         "cell": [
-            {"id": "enc_attn", "kind": "attention", "label": "Self-attention",
-             "static": True},
-            {"id": "enc_ffn", "kind": "ffn", "label": "Feed-forward",
+            {"id": f"{prefix}_attn", "kind": "attention", "label": "Self-attention",
+             "static": not has_attn_facts},
+            {"id": f"{prefix}_ffn", "kind": "ffn", "label": "Feed-forward",
              "static": True},
         ],
         "repeat": encoder.get("num_layers"),
-        "output": {"id": "enc_out"},
+        "output": {"id": f"{prefix}_out"},
     }
