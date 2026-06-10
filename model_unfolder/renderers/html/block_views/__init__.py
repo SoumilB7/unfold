@@ -1,8 +1,13 @@
 """Reusable rich block detail views for the HTML renderer."""
 from __future__ import annotations
 
-from .attention import attention_card, attention_card_css, build_attention_view
-from .attention_types import build_mla_kv_cache_view, build_mla_query_path_view
+from .attention import (
+    attention_card,
+    attention_card_css,
+    build_attention_view,
+    build_mla_kv_cache_view,
+    build_mla_query_path_view,
+)
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import build_audio_path_view, build_multimodal_fusion_view, build_video_path_view, build_vision_path_view

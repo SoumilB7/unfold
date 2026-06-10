@@ -220,6 +220,11 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
     elif sym in ("×", "x", "*"):
         children.append(_svg_tag("line", {"x1": cx - arm, "y1": cy - arm, "x2": cx + arm, "y2": cy + arm, **stroke_attrs}))
         children.append(_svg_tag("line", {"x1": cx - arm, "y1": cy + arm, "x2": cx + arm, "y2": cy - arm, **stroke_attrs}))
+    elif sym in ("dot", "⊙"):
+        children.append(_svg_tag("circle", {
+            "cx": cx, "cy": cy, "r": 5, "fill": "none",
+            "stroke": C["text_block"], "stroke-width": 2, "pointer-events": "none",
+        }))
     else:
         children.append(_svg_text(
             cx,
@@ -244,6 +249,191 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
 def _node_title(info: dict, node_id: str) -> str:
     # Tooltips intentionally disabled — block details live in the inspect panel.
     return ""
+
+
+def _formula_block(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    node_id: str,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    *,
+    numerator: str = "Q K^T",
+    denominator: str = "sqrt(dim)",
+    clickable: bool = True,
+) -> dict:
+    """Green fraction block (numerator over a rule over denominator) — the
+    scaled-score step of SDPA-style attention."""
+    children = [
+        _node_title(info, node_id),
+        _svg_tag("rect", {
+            "x": x, "y": y, "width": w, "height": h, "rx": 11, "ry": 11,
+            "fill": C["block"], "stroke": C["block_alt"], "stroke-width": 0.6,
+            "filter": f"url(#{shadow_id})",
+        }),
+        _svg_text(x + w / 2, y + h * 0.32, numerator, {
+            "text-anchor": "middle", "dominant-baseline": "central",
+            "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 22,
+            "pointer-events": "none",
+        }),
+        _svg_tag("line", {
+            "x1": x + 72, "y1": y + h * 0.52, "x2": x + w - 72, "y2": y + h * 0.52,
+            "stroke": C["text_block"], "stroke-width": 1.7,
+            "stroke-linecap": "round", "pointer-events": "none",
+        }),
+        _svg_text(x + w / 2, y + h * 0.73, denominator, {
+            "text-anchor": "middle", "dominant-baseline": "central",
+            "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 19,
+            "pointer-events": "none",
+        }),
+    ]
+    if clickable:
+        parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    else:
+        parts.extend(children)
+    return {"left": x, "right": x + w, "top": y, "bottom": y + h,
+            "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
+
+
+def _window_strip(
+    parts: list[str],
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    window_size: int | None,
+) -> dict:
+    """Token-context strip with the local sliding window highlighted — drawn as
+    the *input* node of a sliding-window attention graph."""
+    cell_w, cell_h, gap = 22, 18, 4
+    n_cells, active_start, active_count = 15, 8, 5
+    strip_w = n_cells * cell_w + (n_cells - 1) * gap
+    active_w = active_count * cell_w + (active_count - 1) * gap
+    strip_x = x + (w - strip_w) / 2
+    strip_y = y + 4
+    active_x = strip_x + active_start * (cell_w + gap)
+
+    for idx in range(n_cells):
+        is_active = active_start <= idx < active_start + active_count
+        parts.append(_svg_tag("rect", {
+            "x": strip_x + idx * (cell_w + gap), "y": strip_y,
+            "width": cell_w, "height": cell_h, "rx": 4, "ry": 4,
+            "fill": C["badge_bg"] if is_active else C["bg_card"],
+            "stroke": C["block"] if is_active else C["border"],
+            "stroke-width": 1 if is_active else 0.8,
+            "opacity": 1 if is_active else 0.82,
+        }))
+    parts.append(_svg_tag("rect", {
+        "x": active_x - 4, "y": strip_y - 4,
+        "width": active_w + 8, "height": cell_h + 8, "rx": 7, "ry": 7,
+        "fill": "none", "stroke": C["block"], "stroke-width": 1,
+        "stroke-dasharray": "4 3",
+    }))
+    parts.append(_svg_text(
+        x + w / 2, strip_y + cell_h + 18,
+        f"local window {window_size:,}" if window_size else "local window",
+        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
+    ))
+    return {"left": x, "right": x + w, "top": y, "bottom": y + h,
+            "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
+
+
+def _cache_rw_ports(
+    parts: list[str],
+    node: dict,
+    *,
+    write_side: str = "bottom",
+    read_side: str = "top",
+) -> None:
+    """Punched ports on a cache node, placed where cache write/read happen."""
+    write = _edge_port_center(node, write_side, "write")
+    read = _edge_port_center(node, read_side, "read")
+    ports = [
+        _cache_port(write[0], write[1], 5.2, "head"),
+        _cache_port(read[0], read[1], 5.2, "tail"),
+    ]
+    parts.append(_svg_tag("g", {
+        "class": "uf-cache-ports", "pointer-events": "none", "aria-hidden": "true",
+    }, "".join(ports)))
+
+
+def _cache_io_ports(
+    parts: list[str],
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    *,
+    compact: bool = False,
+) -> None:
+    """Write/read port pair in a block's lower-right corner — marks a tensor the
+    KV cache stores (arrowhead = write, blunt tail = read)."""
+    radius = 3.7 if compact else 5.2
+    gap = 9 if compact else 13
+    pad_right = 11 if compact else 17
+    cy = y + h - (8 if compact else 10)
+    head_cx = x + w - pad_right - gap
+    tail_cx = x + w - pad_right
+    stroke_w = 1.25 if compact else 1.45
+    ports = [
+        _cache_port(head_cx, cy, radius, "head", stroke_width=stroke_w),
+        _cache_port(tail_cx, cy, radius, "tail", stroke_width=stroke_w),
+    ]
+    parts.append(_svg_tag("g", {
+        "class": "uf-cache-ports", "pointer-events": "none", "aria-hidden": "true",
+    }, "".join(ports)))
+
+
+def _edge_port_center(node: dict, side: str, role: str) -> tuple[float, float]:
+    x, y, w, h = node["left"], node["top"], node["w"], node["h"]
+    inset = 17
+    x_pos = x + w - inset
+    if side == "top":
+        return x_pos, y + 10
+    if side == "bottom":
+        return x_pos, y + h - 10
+    y_pos = y + h - (18 if role == "write" else 34)
+    if side == "left":
+        return x + 10, y_pos
+    return x + w - 10, y_pos
+
+
+def _cache_port(
+    cx: float,
+    cy: float,
+    radius: float,
+    kind: str,
+    *,
+    stroke_width: float = 1.45,
+) -> str:
+    port = [_svg_tag("circle", {
+        "cx": cx, "cy": cy, "r": radius,
+        "fill": C["bg_outer"], "stroke": C["border"], "stroke-width": 0.7,
+        "pointer-events": "none",
+    })]
+    if kind == "head":
+        port.append(_svg_tag("path", {
+            "d": f"M {cx - radius * 0.52:g} {cy + radius * 0.22:g} L {cx:g} {cy - radius * 0.48:g} L {cx + radius * 0.52:g} {cy + radius * 0.22:g}",
+            "fill": "none", "stroke": C["arrow"], "stroke-width": stroke_width,
+            "stroke-linecap": "round", "stroke-linejoin": "round",
+            "pointer-events": "none",
+        }))
+    else:
+        port.append(_svg_tag("line", {
+            "x1": cx, "y1": cy - radius * 0.5, "x2": cx, "y2": cy + radius * 0.42,
+            "stroke": C["arrow"], "stroke-width": stroke_width,
+            "stroke-linecap": "round", "pointer-events": "none",
+        }))
+        port.append(_svg_tag("line", {
+            "x1": cx - radius * 0.45, "y1": cy + radius * 0.42,
+            "x2": cx + radius * 0.45, "y2": cy + radius * 0.42,
+            "stroke": C["arrow"], "stroke-width": stroke_width,
+            "stroke-linecap": "round", "pointer-events": "none",
+        }))
+    return "".join(port)
 
 
 def _v_line(src: dict, dst: dict, arrow_id: str) -> str:

@@ -1,39 +1,136 @@
-"""Attention detail-card dispatcher and grouped attention summary cards."""
+"""Attention detail views — projections of the ONE canonical attention region.
+
+Every token-mixing family (MHA/GQA/MQA, MLA and its query/KV drill-downs, SSM,
+LRU, RWKV, linear attention) is resolved once by
+:func:`...opgraph.attention_region`; this module renders that region through the
+shared graph engine and adds only presentation: the per-kind title, the sliding
+-window input strip, and the KV-sharing aside.  The SVG here and the JSON in
+``expanded/attention.py`` are two projections of the *same* graph — there is no
+second place an attention block's shape is authored.
+"""
 from __future__ import annotations
 
 from ....labels import describe_attention, kv_shared, mask_long
+from ....opgraph import attention_region, mla_kv_region, mla_query_region
+from ..graph_engine import render_graph
 from ..utils import _html
-from .attention_types import (
-    build_gqa_attention_view,
-    build_linear_attention_view,
-    build_mla_attention_view,
-    build_mqa_attention_view,
-    build_recurrent_view,
-    build_rwkv_view,
-    build_sdpa_attention_view,
-    build_ssm_view,
-)
+from ..op_render import region_to_graph
+
+_TITLES = {
+    "gqa": "grouped-query attention",
+    "mqa": "multi-query attention",
+    "mla": "multi-head latent attention",
+    "ssm": "selective state-space block",
+    "recurrent": "linear recurrent unit",
+    "rwkv": "RWKV token mixing",
+    "linear": "linear attention",
+}
+_VIEW_KEYS = {
+    "gqa": "gqa-attn",
+    "mqa": "mqa-attn",
+    "mla": "mla",
+    "ssm": "ssm",
+    "recurrent": "recurrent",
+    "rwkv": "rwkv",
+    "linear": "linear-attn",
+}
 
 
 def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
-    """Rich SVG detail view for the active attention-like block."""
+    """Detail view for the active attention-like block, whatever its family."""
     attn = info["dominant"]["spec"].get("attention") or {}
     kind = attn.get("kind")
-    if kind == "mla":
-        return build_mla_attention_view(ir, info, mount_id)
-    if kind == "mqa":
-        return build_mqa_attention_view(ir, info, mount_id)
-    if kind == "gqa":
-        return build_gqa_attention_view(ir, info, mount_id)
-    if kind == "ssm":
-        return build_ssm_view(ir, info, mount_id)
-    if kind == "recurrent":
-        return build_recurrent_view(ir, info, mount_id)
-    if kind == "rwkv":
-        return build_rwkv_view(ir, info, mount_id)
-    if kind == "linear":
-        return build_linear_attention_view(ir, info, mount_id)
-    return build_sdpa_attention_view(ir, info, mount_id)
+    region = attention_region(attn, ir.get("hidden_size"))
+    graph = region_to_graph(region, clickable=True)
+    _apply_presentation(graph, attn)
+    title = _TITLES.get(kind, "attention")
+    key = _VIEW_KEYS.get(kind, "attn")
+    return render_graph(
+        graph, info, mount_id, key,
+        f"{ir.get('name', 'model')} {title}", min_width=640,
+    )
+
+
+def build_mla_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
+    """Drill-down: the MLA query path, from the same canonical region family."""
+    attn = info["dominant"]["spec"].get("attention") or {}
+    region = mla_query_region(attn, ir.get("hidden_size"))
+    graph = region_to_graph(region, clickable=True, out_label="→ scores (Q)")
+    return render_graph(
+        graph, info, mount_id, "mla-query",
+        f"{ir.get('name', 'model')} MLA query path", min_width=640,
+    )
+
+
+def build_mla_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
+    """Drill-down: the MLA compressed K/V cache path."""
+    attn = info["dominant"]["spec"].get("attention") or {}
+    region = mla_kv_region(attn, ir.get("hidden_size"))
+    graph = region_to_graph(region, clickable=True, out_label="→ scores (K)")
+    return render_graph(
+        graph, info, mount_id, "mla-kv",
+        f"{ir.get('name', 'model')} MLA KV cache path", min_width=720,
+    )
+
+
+# ---------------------------------------------------------------------------
+# presentation: input strip + KV-sharing aside (facts, no geometry)
+# ---------------------------------------------------------------------------
+
+
+def _apply_presentation(graph, attn: dict) -> None:
+    if attn.get("mask") == "sliding":
+        for node in graph.nodes:
+            if node.id == "hidden":
+                node.kind = "context_window"
+                node.label = None
+                node.sub = None
+                node.meta = {"window_size": attn.get("window_size")}
+    graph.aside = _kv_sharing_aside(attn)
+
+
+def _kv_sharing_aside(attn: dict) -> list[str] | None:
+    kind = attn.get("kind")
+    heads = attn.get("num_heads") or 0
+    kv_heads = attn.get("num_kv_heads") or heads
+    if kind == "mqa" and heads > 1:
+        return [
+            "Shared K/V cache",
+            f"1 K + 1 V reused by {heads} Q",
+            "",
+            f"KV cache {heads}x smaller",
+            "than full MHA",
+        ]
+    if kind != "gqa" or not heads or not kv_heads or heads % kv_heads:
+        return None
+    per_group = heads // kv_heads
+    rows = ["KV sharing pattern", *_gqa_rows(heads, kv_heads, per_group)]
+    if per_group > 1:
+        rows += ["", f"KV cache {per_group}x smaller", "than full MHA"]
+    return rows
+
+
+def _gqa_rows(heads: int, kv_heads: int, per_group: int) -> list[str]:
+    def q_range(group: int) -> str:
+        start = group * per_group
+        end = min(start + per_group - 1, heads - 1)
+        return f"Q{start}" if start == end else f"Q{start}-Q{end}"
+
+    if kv_heads == 1:
+        return [f"{q_range(0)} use KV0"]
+    if kv_heads == 2:
+        return [f"{q_range(0)} use KV0", f"{q_range(1)} use KV1"]
+    return [
+        f"{q_range(0)} use KV0",
+        f"{q_range(1)} use KV1",
+        "...",
+        f"{q_range(kv_heads - 1)} use KV{kv_heads - 1}",
+    ]
+
+
+# ---------------------------------------------------------------------------
+# inspect cards (prose, unchanged)
+# ---------------------------------------------------------------------------
 
 
 def attention_card(ir: dict, info: dict, meta_for: callable) -> str:

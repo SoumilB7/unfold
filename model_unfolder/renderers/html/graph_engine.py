@@ -17,8 +17,11 @@ from .graph import Graph, Parallel
 from .stack_view import fit_svg, point
 from .svg import (
     _branch_dot,
+    _cache_io_ports,
+    _cache_rw_ports,
     _elbow_hv,
     _elbow_vh,
+    _formula_block,
     _ids,
     _plus_block,
     _rect_block,
@@ -26,6 +29,8 @@ from .svg import (
     _svg_tag,
     _svg_text,
     _v_line,
+    _v_seg,
+    _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
 
@@ -62,7 +67,8 @@ def render_graph(
     top_members = {g.members[-1] for g in graph.groups if g.members}
     bottom_members = {g.members[0] for g in graph.groups if g.members}
     par_by_pair = {(p.src, p.dst): p for p in graph.parallels}
-    par_height = {(p.src, p.dst): _parallel_height(p, by_id) for p in graph.parallels}
+    flow_set = set(graph.flow)
+    par_height = {(p.src, p.dst): _parallel_height(p, by_id, flow_set) for p in graph.parallels}
 
     order_top_down = list(reversed(order_bottom_up))
     geom: dict[str, dict] = {}
@@ -129,20 +135,40 @@ def render_graph(
             "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11}))
         regions.append(point(cx, ny - 6))
 
+    # --- 8. aside fact panel (heading + mono rows, top-right of the column) ---
+    if graph.aside:
+        aside_x = max(lane, max((r.get("right", cx) for r in regions), default=cx)) + 18
+        aside_top = min((g["top"] for g in geom.values()), default=0.0)
+        regions.append(_draw_aside(parts, aside_x, aside_top, graph.aside))
+
     return fit_svg(arrow_id, shadow_id, parts, regions, title, min_width=min_width, pad=pad)
 
 
 # ---------------------------------------------------------------------------
 
 def _draw_node(parts, info, shadow_id, node, g) -> None:
-    if node.glyph().shape == "circle":
+    shape = node.glyph().shape
+    if shape == "circle":
         _plus_block(parts, info, shadow_id, node.data_id(), g["cx"], g["cy"],
                     sym=node.glyph().sym, clickable=not node.static)
+    elif shape == "formula":
+        _formula_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
+                       g["w"], g["h"],
+                       numerator=node.meta.get("numerator", "Q K^T"),
+                       denominator=node.meta.get("denominator", "sqrt(dim)"),
+                       clickable=not node.static)
+    elif shape == "window":
+        _window_strip(parts, g["left"], g["top"], g["w"], g["h"],
+                      node.meta.get("window_size"))
     else:
         _rect_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
                     resolved=node.resolved, sub=node.sub, accent=node.glyph().accent,
                     clickable=not node.static)
+        if node.kind == "cache":
+            _cache_rw_ports(parts, g, write_side="bottom", read_side="top")
+        elif node.cache_ports:
+            _cache_io_ports(parts, g["left"], g["top"], g["w"], g["h"])
 
 
 def _lane_height(lane_ids: list[str], by_id: dict) -> float:
@@ -152,34 +178,52 @@ def _lane_height(lane_ids: list[str], by_id: dict) -> float:
     return sum(n.height() for n in nodes) + _INTRA_GAP * (len(nodes) - 1)
 
 
-def _parallel_height(par: Parallel, by_id: dict) -> float:
-    tallest = max((_lane_height(l, by_id) for l in par.lanes), default=0.0)
-    return tallest + _BRANCH_STUB + _MERGE_STUB
+def _parallel_height(par: Parallel, by_id: dict, flow: set | None = None) -> float:
+    tallest = max((_lane_height(l.ids, by_id) for l in par.norm_lanes()), default=0.0)
+    return tallest + _BRANCH_STUB + _MERGE_STUB + _ext_source_extra(par, by_id, flow or set())
+
+
+def _ext_source_extra(par: Parallel, by_id: dict, flow: set) -> float:
+    """Extra vertical band for off-flow side sources drawn below the lanes."""
+    ext = [by_id[l.src] for l in par.norm_lanes()
+           if l.src is not None and l.src not in flow and l.src in by_id]
+    return (max(n.height() for n in ext) + 40.0) if ext else 0.0
 
 
 def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx) -> None:
-    """Split below ``dst`` into lanes that climb and merge back into ``dst``."""
+    """Split below ``dst`` into lanes that climb and merge back into ``dst``.
+
+    Lanes may also tap a *named* source (a lower spine node, or an off-flow side
+    block like cross-attention's image states), merge into spine nodes *above*
+    ``dst`` (attention's V joining at ⊙), or exit upward as labelled outputs.
+    """
     if par.src not in geom or par.dst not in geom:
         return
     src_g, dst_g = geom[par.src], geom[par.dst]
+    lanes = par.norm_lanes()
     split_y = src_g["top"] - 16
-    parts.append(_branch_dot(cx, split_y))
+    if any(lane.src is None for lane in lanes):
+        parts.append(_branch_dot(cx, split_y))
 
     # Width-aware horizontal spread: lay lanes side by side (centred on cx) using
     # each lane's widest node, so 2 wide FFN columns and 4 narrow experts both fit.
-    lane_w = [max((by_id[i].width() for i in ids if i in by_id), default=120.0)
-              for ids in par.lanes]
+    lane_w = [max((by_id[i].width() for i in lane.ids if i in by_id), default=120.0)
+              for lane in lanes]
     total = sum(lane_w) + _BRANCH_GAP * (len(lane_w) - 1)
     edge = cx - total / 2
     xs = []
     for w in lane_w:
         xs.append(edge + w / 2)
         edge += w + _BRANCH_GAP
-    lane_bottom = src_g["top"] - _BRANCH_STUB        # bottom edge of each lane's first node
+    # Off-flow side sources get their own band between ``src`` and the lanes.
+    ext_extra = _ext_source_extra(par, by_id, set(geom))
+    lane_bottom = src_g["top"] - _BRANCH_STUB - ext_extra   # lanes' first-node bottom edge
 
-    for lane_x, lane_ids in zip(xs, par.lanes):
-        nodes = [by_id[i] for i in lane_ids if i in by_id]
+    lane_geoms: list[list[dict]] = []
+    for lane_x, lane in zip(xs, lanes):
+        nodes = [by_id[i] for i in lane.ids if i in by_id]
         if not nodes:
+            lane_geoms.append([])
             continue
         # stack bottom -> top
         lane_geom = []
@@ -190,20 +234,96 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
             _draw_node(parts, info, shadow_id, node, g)
             regions.append(g)
             edge_bottom = g["top"] - _INTRA_GAP
-        # branch: split dot -> first (bottom) node
-        parts.append(_elbow_hv(cx, split_y, lane_x, lane_geom[0]["bottom"] + GAP, arrow_id))
+        lane_geoms.append(lane_geom)
+
+        # branch: this lane's source -> first (bottom) node
+        if lane.src is None:
+            parts.append(_elbow_hv(cx, split_y, lane_x, lane_geom[0]["bottom"] + GAP, arrow_id))
+        elif lane.src in geom:
+            # tap a lower spine node: dot on its outgoing stem, elbow to the lane
+            tap_g = geom[lane.src]
+            tap_y = tap_g["top"] - 16
+            parts.append(_branch_dot(tap_g["cx"], tap_y))
+            parts.append(_elbow_hv(tap_g["cx"], tap_y, lane_x, lane_geom[0]["bottom"] + GAP, arrow_id))
+        # off-flow side sources are drawn once for all their lanes below
+
         # internal flow
         for lower, upper in zip(lane_geom, lane_geom[1:]):
             parts.append(_v_line(lower, upper, arrow_id))
-        # merge: top node -> dst (into its near side)
+
+        # merge / output: top node -> each target (or out of the diagram)
         top_g = lane_geom[-1]
-        if lane_x < cx:
-            target_x = dst_g["cx"] - dst_g["w"] / 2 - GAP
-        elif lane_x > cx:
-            target_x = dst_g["cx"] + dst_g["w"] / 2 + GAP
-        else:
-            target_x = dst_g["cx"]
-        parts.append(_elbow_vh(lane_x, top_g["top"], target_x, dst_g["cy"], arrow_id))
+        if lane.dst is not None and not lane.dst:
+            parts.append(_v_seg(lane_x, top_g["top"], top_g["top"] - 30, arrow_id))
+            if lane.out_label:
+                parts.append(_svg_text(lane_x, top_g["top"] - 42, lane.out_label, {
+                    "text-anchor": "middle", "fill": C["muted"],
+                    "font-family": FONT_MONO, "font-size": 11}))
+            regions.append(point(lane_x, top_g["top"] - 50))
+            continue
+        for dst_id in (lane.dst or [par.dst]):
+            d_g = geom.get(dst_id)
+            if d_g is None:
+                continue
+            if lane_x < d_g["left"]:
+                target_x = d_g["left"] - GAP
+            elif lane_x > d_g["right"]:
+                target_x = d_g["right"] + GAP
+            else:
+                target_x = d_g["cx"]
+            parts.append(_elbow_vh(lane_x, top_g["top"], target_x, d_g["cy"], arrow_id))
+
+    _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
+                       lanes, xs, lane_geoms, by_id, geom, lane_bottom)
+
+
+def _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
+                       lanes, xs, lane_geoms, by_id, geom, lane_bottom) -> None:
+    """Draw each off-flow lane source once, centred under the lanes it feeds,
+    in the reserved band between the spine source and the lane bottoms."""
+    by_src: dict[str, list[int]] = {}
+    for i, lane in enumerate(lanes):
+        if lane.src is not None and lane.src not in geom and lane.src in by_id:
+            by_src.setdefault(lane.src, []).append(i)
+    for src_id, lane_idx in by_src.items():
+        node = by_id[src_id]
+        block_cx = sum(xs[i] for i in lane_idx) / len(lane_idx)
+        g = _geom(block_cx, lane_bottom + 34, node.width(), node.height())
+        _draw_node(parts, info, shadow_id, node, g)
+        regions.append(g)
+        dot_y = g["top"] - 12
+        parts.append(_svg_tag("line", {
+            "x1": g["cx"], "y1": g["top"], "x2": g["cx"], "y2": dot_y,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none"}))
+        parts.append(_branch_dot(g["cx"], dot_y))
+        for i in lane_idx:
+            if lane_geoms[i]:
+                parts.append(_elbow_hv(g["cx"], dot_y, xs[i],
+                                       lane_geoms[i][0]["bottom"] + GAP, arrow_id))
+
+
+def _draw_aside(parts: list[str], x: float, y: float, lines: list[str]) -> dict:
+    """A compact fact card: heading + mono rows (blank string = spacer)."""
+    row_h, pad_x, pad_y = 17.0, 16.0, 14.0
+    width = max(150.0, max((10.0 + 6.6 * len(t) for t in lines), default=0.0) + 2 * pad_x)
+    height = pad_y * 2 + 22 + sum((6.0 if not t else row_h) for t in lines[1:])
+    parts.append(_svg_tag("rect", {
+        "x": x, "y": y, "width": width, "height": height, "rx": 14, "ry": 14,
+        "fill": C["bg_card"], "stroke": C["border"], "stroke-width": 0.7}))
+    parts.append(_svg_text(x + pad_x, y + pad_y + 8, lines[0], {
+        "fill": C["text"], "font-family": FONT_MONO, "font-size": 11,
+        "font-weight": 700, "letter-spacing": "0.08em"}))
+    row_y = y + pad_y + 26
+    for text in lines[1:]:
+        if not text:
+            row_y += 6.0
+            continue
+        parts.append(_svg_text(x + pad_x, row_y + 6, text, {
+            "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10}))
+        row_y += row_h
+    return {"left": x, "right": x + width, "top": y, "bottom": y + height,
+            "cx": x + width / 2, "cy": y + height / 2, "w": width, "h": height}
 
 
 def _geom(cx: float, top: float, w: float, h: float) -> dict:

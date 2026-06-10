@@ -8,12 +8,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..opgraph import Region, ffn_region
-from .ops import edges_from_nodes, linear, node
+from ..opgraph import ffn_region
+from .ops import edges_from_nodes, node
+from .region import region_to_json as _region_to_json
 from .utils import drop_none
-
-_JSON_OP = {"input": "input", "linear": "linear", "activation": "activation",
-            "route": "top_k_router", "opaque": "opaque"}
 
 
 def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
@@ -63,28 +61,6 @@ def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
         ]
         return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
     return _region_to_json(ffn_region(ffn, hidden))
-
-
-def _region_to_json(region: Region) -> dict[str, Any]:
-    """Project the canonical op-graph onto the JSON node/edge schema."""
-    nodes: list[dict[str, Any]] = []
-    for op in region.ops:
-        operation = _JSON_OP.get(op.kind, op.kind)
-        fields: dict[str, Any] = {}
-        if op.kind == "linear":
-            fields["parameters"] = linear(op.in_features, op.out_features)
-        elif op.kind == "activation":
-            fields["function"] = op.fn
-        elif op.kind == "input":
-            fields["width"] = op.out_features
-        elif op.kind == "elementwise":
-            operation = "elementwise_multiply" if op.fn == "mul" else "weighted_sum" if op.fn == "add" else "elementwise"
-        elif op.kind == "opaque":
-            fields["class_name"] = op.meta.get("class_name")
-        inputs = region.inputs_of(op.id)
-        nodes.append(node(op.id, operation, inputs=inputs or None, outputs=[op.id], **fields))
-    edges = [{"from": e.src, "to": e.dst} for e in region.edges]
-    return {"nodes": nodes, "edges": edges}
 
 
 # ---------- evidence linking ----------

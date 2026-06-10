@@ -17,9 +17,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .attention import build_attention_view
+from .attention import (
+    build_attention_view,
+    build_mla_kv_cache_view,
+    build_mla_query_path_view,
+)
 from .block_facts import ffn_from_block, info_with_block_fact
-from .attention_types import build_mla_kv_cache_view, build_mla_query_path_view
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import (

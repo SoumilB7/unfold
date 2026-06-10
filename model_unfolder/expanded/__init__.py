@@ -39,7 +39,7 @@ from .modalities import build_modalities
 from .code_evidence import normalise_code_evidence
 
 
-SCHEMA_VERSION = "3.0"
+SCHEMA_VERSION = "3.1"
 
 
 def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:

@@ -159,7 +159,7 @@ def test_expanded_json_is_structural_not_renderer_copy():
     data = unfold(LLAMA_TINY_CONFIG, return_json=True)
     encoded = json.dumps(data)
 
-    assert data["schema_version"] == "3.0"
+    assert data["schema_version"] == "3.1"
     assert data["format"] == "model_unfolder.expanded"
     assert data["model"] == {
         "name": "Meta-Llama-3-8B",

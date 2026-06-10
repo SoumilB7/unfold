@@ -1,12 +1,21 @@
 """The canonical op-graph: one Region resolved once, projected to render + JSON.
 
-These guard the IR-level unification — that a gated/dense/custom FFN is described
-in exactly one place (``opgraph.ffn_region``) and that both the HTML renderer and
-the JSON exporter project from that same region rather than re-deriving it.
+These guard the IR-level unification — that a gated/dense/custom FFN and every
+attention family are described in exactly one place (``opgraph.ffn_region`` /
+``opgraph.attention_region``) and that both the HTML renderer and the JSON
+exporter project from that same region rather than re-deriving it.
 """
 from model_unfolder.expanded.ffn import _region_to_json
-from model_unfolder.opgraph import ffn_region
+from model_unfolder.expanded.region import region_to_json
+from model_unfolder.opgraph import (
+    attention_region,
+    ffn_region,
+    mla_kv_region,
+    mla_query_region,
+)
 from model_unfolder.renderers.html.op_render import region_to_graph
+
+GQA = {"kind": "gqa", "num_heads": 32, "num_kv_heads": 8, "head_dim": 128}
 
 
 def test_gated_ffn_resolves_to_a_gated_region():
@@ -50,3 +59,88 @@ def test_custom_ffn_json_is_one_opaque_node():
     nodes = _region_to_json(r)["nodes"]
     assert [n["operation"] for n in nodes] == ["opaque"]
     assert nodes[0]["class_name"] == "MyMLP"
+
+
+# ---------------------------------------------------------------------------
+# attention regions
+# ---------------------------------------------------------------------------
+
+
+def test_gqa_attention_region_is_a_multi_merge_dag():
+    r = attention_region(GQA, 4096)
+    assert r.template == "gqa" and r.resolved
+    # two merge points: Q,K meet at the scores; softmax,V meet at apply-V.
+    assert set(r.merges()) == {"scaled_scores", "attn_apply_v"}
+    # op ids ARE the inspect-card ids — one identity for structure and clicks.
+    assert {"q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
+            "attn_apply_v", "concat_heads", "o_proj"} <= {o.id for o in r.ops}
+
+
+def test_attention_lanes_and_spine_are_derived_from_edges():
+    g = region_to_graph(attention_region(GQA, 4096), clickable=True)
+    assert g.flow[:2] == ["hidden", "scaled_scores"]          # spine jumps to the join
+    lanes = g.parallels[0].norm_lanes()
+    assert [lane.ids for lane in lanes] == [["q_proj"], ["k_proj"], ["v_proj"]]
+    assert lanes[2].dst == ["attn_apply_v"]                   # V merges above the join
+
+
+def test_cross_attention_kv_lanes_take_a_side_source():
+    r = attention_region(dict(GQA, cross_attention=True), 4096)
+    g = region_to_graph(r, clickable=True)
+    lanes = g.parallels[0].norm_lanes()
+    srcs = {tuple(lane.ids): lane.src for lane in lanes}
+    assert srcs[("q_proj",)] is None                          # Q taps decoder hidden
+    assert srcs[("k_proj",)] == srcs[("v_proj",)] == "cross_attention_states"
+
+
+def test_mla_region_nests_the_two_path_subgraphs():
+    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
+            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+    r = attention_region(attn, 7168)
+    kinds = {o.id: o.kind for o in r.ops}
+    assert kinds["mla_query_path"] == kinds["mla_kv_path"] == "subgraph"
+    # the drill regions carry the same card-id namespace
+    assert {"mla_q", "mla_q_nope", "mla_q_rope", "mla_q_concat"} <= {
+        o.id for o in mla_query_region(attn, 7168).ops}
+    assert {"mla_kv_down", "mla_cache", "mla_kv_up", "mla_k_merge", "mla_v"} <= {
+        o.id for o in mla_kv_region(attn, 7168).ops}
+
+
+def test_mla_kv_path_v_exits_as_a_labelled_output_lane():
+    attn = {"kind": "mla", "kv_lora_rank": 512, "rope_dim": 64}
+    g = region_to_graph(mla_kv_region(attn, 7168), clickable=True)
+    # spine runs through compression -> latent cache -> expansion -> K concat
+    assert g.flow[:5] == ["hidden", "mla_kv_down", "mla_cache", "mla_kv_up", "mla_k_merge"]
+    lanes = g.parallels[0].norm_lanes()
+    v = next(lane for lane in lanes if lane.ids == ["mla_v"])
+    assert v.dst == [] and v.out_label == "V"
+    rope = next(lane for lane in lanes if lane.ids == ["mla_k_rope", "mla_k_rope_apply"])
+    assert rope.src == "mla_kv_down"                          # taps before the cache
+
+
+def test_ssm_region_is_an_honest_chain_not_a_fabricated_qkv():
+    r = attention_region({"kind": "ssm", "head_dim": 16}, 768)
+    assert [o.id for o in r.ops] == ["hidden", "ssm_in_proj", "ssm_conv",
+                                     "ssm_scan", "ssm_gate", "ssm_out_proj"]
+    assert r.merges() == []
+
+
+def test_unknown_attention_kind_is_one_honest_opaque_node():
+    r = attention_region({"kind": "brand_new_mixer", "class_name": "MyMixer"}, 1024)
+    assert r.template == "opaque" and r.resolved is False
+    assert [o.kind for o in r.ops] == ["opaque"]
+
+
+def test_attention_render_and_json_project_from_the_same_region():
+    """The whole point, again: render and JSON consume ONE region."""
+    region = attention_region(GQA, 4096)
+    rename = {"scaled_scores": "scores", "attn_softmax": "softmax",
+              "attn_apply_v": "context"}
+    json_nodes = {n["id"]: n for n in region_to_json(region, rename=rename)["nodes"]}
+    graph_ids = {n.id for n in region_to_graph(region, clickable=True).nodes}
+    # same structure, two namings: the schema's public ids map 1:1 onto the
+    # region/card ids the renderer draws.
+    assert {"q_proj", "k_proj", "v_proj", "o_proj"} <= set(json_nodes) & graph_ids
+    assert json_nodes["scores"]["operation"] == "scaled_dot_product"
+    assert json_nodes["scores"]["formula"] == "QK^T/sqrt(dim)"
+    assert {"scaled_scores", "attn_softmax", "attn_apply_v"} <= graph_ids
