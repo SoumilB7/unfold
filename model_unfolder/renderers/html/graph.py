@@ -196,7 +196,8 @@ class Graph:
     groups: list[Group] = field(default_factory=list)
     parallels: list[Parallel] = field(default_factory=list)
     note: str | None = None                  # one-line caption above the top node
-    aside: list[str] | None = None           # side fact panel (first line = heading)
+    # side fact panel: {"title": str, "rows": [(strong, sub) | "..."], "footer": [str]}
+    aside: dict | None = None
 
     def by_id(self) -> dict[str, Node]:
         return {n.id: n for n in self.nodes}

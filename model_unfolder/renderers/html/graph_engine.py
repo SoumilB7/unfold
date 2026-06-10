@@ -174,10 +174,11 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     elif shape == "port":
         heading = node.heading()
         text = heading if isinstance(heading, str) else " ".join(heading)
-        parts.append(_svg_text(g["cx"], g["cy"], text, {
-            "text-anchor": "middle", "dominant-baseline": "central",
-            "fill": C["muted"], "font-family": FONT_MONO,
-            "font-size": node.font_size()}))
+        if text:                       # an unlabelled port is a bare exit arrow
+            parts.append(_svg_text(g["cx"], g["cy"], text, {
+                "text-anchor": "middle", "dominant-baseline": "central",
+                "fill": C["muted"], "font-family": FONT_MONO,
+                "font-size": node.font_size()}))
     else:
         _rect_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
@@ -342,31 +343,71 @@ def _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
                                        lane_geoms[i][0]["bottom"] + GAP, arrow_id))
 
 
-def _aside_size(lines: list[str]) -> tuple[float, float]:
-    row_h, pad_x, pad_y = 17.0, 16.0, 14.0
-    width = max(150.0, max((10.0 + 6.6 * len(t) for t in lines), default=0.0) + 2 * pad_x)
-    height = pad_y * 2 + 22 + sum((6.0 if not t else row_h) for t in lines[1:])
-    return width, height
+_ASIDE_PAD = 16.0
+_ASIDE_CHIP_H = 30.0
+_ASIDE_CHIP_GAP = 7.0
+_ASIDE_DOTS_H = 14.0
 
 
-def _draw_aside(parts: list[str], x: float, y: float, lines: list[str],
+def _aside_size(aside: dict) -> tuple[float, float]:
+    rows = aside.get("rows") or []
+    footer = aside.get("footer") or []
+    widths = [10.0 + 7.4 * len(aside.get("title", ""))]
+    widths += [44.0 + 6.4 * (len(r[0]) + len(r[1])) for r in rows if r != "..."]
+    widths += [6.4 * len(t) for t in footer]
+    width = max(176.0, max(widths, default=0.0) + 2 * _ASIDE_PAD)
+    rows_h = sum(_ASIDE_DOTS_H if r == "..." else _ASIDE_CHIP_H + _ASIDE_CHIP_GAP for r in rows)
+    footer_h = (10.0 + 16.0 * len(footer)) if footer else 0.0
+    return width, _ASIDE_PAD + 24.0 + rows_h + footer_h + _ASIDE_PAD - (
+        _ASIDE_CHIP_GAP if rows and rows[-1] != "..." else 0.0)
+
+
+def _draw_aside(parts: list[str], x: float, y: float, aside: dict,
                 width: float, height: float) -> dict:
-    """A compact fact card: heading + mono rows (blank string = spacer)."""
-    row_h, pad_x, pad_y = 17.0, 16.0, 14.0
+    """The side fact card: a heading, one badge chip per mapping row
+    (strong text left, detail right), and a divided footer for the takeaway."""
     parts.append(_svg_tag("rect", {
         "x": x, "y": y, "width": width, "height": height, "rx": 14, "ry": 14,
         "fill": C["bg_card"], "stroke": C["border"], "stroke-width": 0.7}))
-    parts.append(_svg_text(x + pad_x, y + pad_y + 8, lines[0], {
-        "fill": C["text"], "font-family": FONT_MONO, "font-size": 11,
+    parts.append(_svg_text(x + _ASIDE_PAD, y + _ASIDE_PAD + 6, aside.get("title", ""), {
+        "fill": C["text"], "font-family": FONT_MONO, "font-size": 10,
         "font-weight": 700, "letter-spacing": "0.08em"}))
-    row_y = y + pad_y + 26
-    for text in lines[1:]:
-        if not text:
-            row_y += 6.0
+
+    row_y = y + _ASIDE_PAD + 22.0
+    chip_w = width - 2 * _ASIDE_PAD
+    for row in aside.get("rows") or []:
+        if row == "...":
+            parts.append(_svg_text(x + width / 2, row_y + 4, "···", {
+                "text-anchor": "middle", "fill": C["muted"],
+                "font-family": FONT_MONO, "font-size": 10}))
+            row_y += _ASIDE_DOTS_H
             continue
-        parts.append(_svg_text(x + pad_x, row_y + 6, text, {
-            "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10}))
-        row_y += row_h
+        strong, sub = row
+        parts.append(_svg_tag("rect", {
+            "x": x + _ASIDE_PAD, "y": row_y, "width": chip_w, "height": _ASIDE_CHIP_H,
+            "rx": 9, "ry": 9, "fill": C["badge_bg"],
+            "stroke": C["border"], "stroke-width": 0.7}))
+        parts.append(_svg_text(x + _ASIDE_PAD + 12, row_y + _ASIDE_CHIP_H / 2, strong, {
+            "dominant-baseline": "central", "fill": C["text"],
+            "font-family": FONT_MONO, "font-size": 10, "font-weight": 700}))
+        parts.append(_svg_text(x + _ASIDE_PAD + chip_w - 12, row_y + _ASIDE_CHIP_H / 2, sub, {
+            "text-anchor": "end", "dominant-baseline": "central", "fill": C["muted"],
+            "font-family": FONT_MONO, "font-size": 9.5}))
+        row_y += _ASIDE_CHIP_H + _ASIDE_CHIP_GAP
+
+    footer = aside.get("footer") or []
+    if footer:
+        row_y += 2.0
+        parts.append(_svg_tag("line", {
+            "x1": x + _ASIDE_PAD, "y1": row_y, "x2": x + width - _ASIDE_PAD, "y2": row_y,
+            "stroke": C["border"], "stroke-width": 0.7}))
+        row_y += 8.0
+        for i, text in enumerate(footer):
+            parts.append(_svg_text(x + _ASIDE_PAD, row_y + 8, text, {
+                "fill": C["text"] if i == 0 else C["muted"],
+                "font-family": FONT_MONO, "font-size": 10,
+                "font-weight": 700 if i == 0 else None}))
+            row_y += 16.0
     return {"left": x, "right": x + width, "top": y, "bottom": y + height,
             "cx": x + width / 2, "cy": y + height / 2, "w": width, "h": height}
 

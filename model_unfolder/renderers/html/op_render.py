@@ -28,7 +28,7 @@ def region_to_graph(
     region: Region,
     *,
     clickable: bool = False,
-    out_label: str = "→ residual",
+    out_label: str | None = "→ residual",
     ports: bool = False,
 ) -> Graph:
     """Lay a region out as flow + parallels.
@@ -160,7 +160,10 @@ def region_to_graph(
     nodes = [_node_for(o, region, clickable, primary, ports) for o in region.ops]
 
     # A presentation-only output anchor so the block reads as in→…→out.
-    nodes.append(Node("region_out", "port" if ports else "output", out_label, static=True))
+    # With ports, ``out_label=None`` leaves a bare exit arrow (the port node
+    # keeps the geometry the arrow needs but paints no caption).
+    nodes.append(Node("region_out", "port" if ports else "output",
+                      out_label if ports else (out_label or "Output"), static=True))
     flow = [*flow, "region_out"]
 
     return Graph(nodes=nodes, flow=flow, parallels=parallels)

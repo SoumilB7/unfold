@@ -41,7 +41,7 @@ def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     attn = info["dominant"]["spec"].get("attention") or {}
     kind = attn.get("kind")
     region = attention_region(attn, ir.get("hidden_size"))
-    graph = region_to_graph(region, clickable=True, ports=True)
+    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
     _apply_presentation(graph, attn)
     title = _TITLES.get(kind, "attention")
     key = _VIEW_KEYS.get(kind, "attn")
@@ -89,42 +89,40 @@ def _apply_presentation(graph, attn: dict) -> None:
     graph.aside = _kv_sharing_aside(attn)
 
 
-def _kv_sharing_aside(attn: dict) -> list[str] | None:
+def _kv_sharing_aside(attn: dict) -> dict | None:
     kind = attn.get("kind")
     heads = attn.get("num_heads") or 0
     kv_heads = attn.get("num_kv_heads") or heads
     if kind == "mqa" and heads > 1:
-        return [
-            "Shared K/V cache",
-            f"1 K + 1 V reused by {heads} Q",
-            "",
-            f"KV cache {heads}x smaller",
-            "than full MHA",
-        ]
+        return {
+            "title": "Shared K/V cache",
+            "rows": [("1 K + 1 V", f"reused by {heads} Q")],
+            "footer": [f"KV cache {heads}x smaller", "than full MHA"],
+        }
     if kind != "gqa" or not heads or not kv_heads or heads % kv_heads:
         return None
     per_group = heads // kv_heads
-    rows = ["KV sharing pattern", *_gqa_rows(heads, kv_heads, per_group)]
+    aside = {"title": "KV sharing pattern", "rows": _gqa_rows(heads, kv_heads, per_group)}
     if per_group > 1:
-        rows += ["", f"KV cache {per_group}x smaller", "than full MHA"]
-    return rows
+        aside["footer"] = [f"KV cache {per_group}x smaller", "than full MHA"]
+    return aside
 
 
-def _gqa_rows(heads: int, kv_heads: int, per_group: int) -> list[str]:
+def _gqa_rows(heads: int, kv_heads: int, per_group: int) -> list:
     def q_range(group: int) -> str:
         start = group * per_group
         end = min(start + per_group - 1, heads - 1)
         return f"Q{start}" if start == end else f"Q{start}-Q{end}"
 
     if kv_heads == 1:
-        return [f"{q_range(0)} use KV0"]
+        return [(q_range(0), "use KV0")]
     if kv_heads == 2:
-        return [f"{q_range(0)} use KV0", f"{q_range(1)} use KV1"]
+        return [(q_range(0), "use KV0"), (q_range(1), "use KV1")]
     return [
-        f"{q_range(0)} use KV0",
-        f"{q_range(1)} use KV1",
+        (q_range(0), "use KV0"),
+        (q_range(1), "use KV1"),
         "...",
-        f"{q_range(kv_heads - 1)} use KV{kv_heads - 1}",
+        (q_range(kv_heads - 1), f"use KV{kv_heads - 1}"),
     ]
 
 

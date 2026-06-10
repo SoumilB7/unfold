@@ -828,7 +828,8 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     html = d.to_html(standalone=True)
     assert "Multi-Query SDPA" in html
     assert "Shared K/V cache" in html
-    assert "1 K + 1 V reused by 71 Q" in html
+    # the aside chip splits the fact into a strong half and a detail half
+    assert "1 K + 1 V" in html and "reused by 71 Q" in html
     assert "KV cache 71x smaller" in html
     assert "Multi-query scaled dot-product attention" in html
 
