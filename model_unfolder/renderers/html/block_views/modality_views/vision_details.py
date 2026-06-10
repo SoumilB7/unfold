@@ -73,7 +73,7 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
              "residual_from": "vision_encoder_norm2"},
         ],
         "repeat": layers,
-        "output": {"id": "vision_encoded_states", "label": "Encoded image states"},
+        "output": {"id": "vision_encoded_states", "static": True},
     })
     return render_graph(graph, info, mount_id, "vision-encoder",
                         f"{ir.get('name', 'model')} vision encoder")
@@ -115,7 +115,7 @@ def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child
         ),
         _VISION_ATTN_IDS,
     )
-    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
+    graph = region_to_graph(region, clickable=True)
     return render_graph(graph, info, mount_id, "vision-self-attention",
                         f"{ir.get('name', 'model')} vision self-attention", min_width=640)
 
@@ -132,7 +132,7 @@ def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> 
         ),
         _VISION_MLP_IDS,
     )
-    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
+    graph = region_to_graph(region, clickable=True)
     return render_graph(graph, info, mount_id, "vision-mlp",
                         f"{ir.get('name', 'model')} vision MLP", min_width=560)
 

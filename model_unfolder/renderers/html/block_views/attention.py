@@ -41,7 +41,7 @@ def build_attention_view(ir: dict, info: dict, mount_id: str) -> str:
     attn = info["dominant"]["spec"].get("attention") or {}
     kind = attn.get("kind")
     region = attention_region(attn, ir.get("hidden_size"))
-    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
+    graph = region_to_graph(region, clickable=True)
     _apply_presentation(graph, attn)
     title = _TITLES.get(kind, "attention")
     key = _VIEW_KEYS.get(kind, "attn")
@@ -55,7 +55,7 @@ def build_mla_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) 
     """Drill-down: the MLA query path, from the same canonical region family."""
     attn = info["dominant"]["spec"].get("attention") or {}
     region = mla_query_region(attn, ir.get("hidden_size"))
-    graph = region_to_graph(region, clickable=True, out_label="→ scores (Q)", ports=True)
+    graph = region_to_graph(region, clickable=True, out_label="→ scores (Q)")
     return render_graph(
         graph, info, mount_id, "mla-query",
         f"{ir.get('name', 'model')} MLA query path", min_width=640,
@@ -66,7 +66,7 @@ def build_mla_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) ->
     """Drill-down: the MLA compressed K/V cache path."""
     attn = info["dominant"]["spec"].get("attention") or {}
     region = mla_kv_region(attn, ir.get("hidden_size"))
-    graph = region_to_graph(region, clickable=True, out_label="→ scores (K)", ports=True)
+    graph = region_to_graph(region, clickable=True, out_label="→ scores (K)")
     return render_graph(
         graph, info, mount_id, "mla-kv",
         f"{ir.get('name', 'model')} MLA KV cache path", min_width=720,

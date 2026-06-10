@@ -273,7 +273,7 @@ def test_text_encoder_shows_real_config_dims():
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
     html = unfold(FLUX).to_html(standalone=True)
-    assert "× 12 layers" in html and "× 24 layers" in html   # real depths
+    assert "× 12" in html and "× 24" in html   # real depths
     assert "12 heads" in html and "64 heads" in html
     assert "768 → 3,072" in html and "4,096 → 10,240" in html
 
@@ -285,7 +285,7 @@ def test_text_encoder_falls_back_when_no_config():
     specs = diffusor._text_encoder_specs(flux_no_enc)
     assert specs == [{"name": "CLIP"}, {"name": "T5"}]
     html = unfold(flux_no_enc).to_html(standalone=True)
-    assert "× N layers" in html
+    assert "× N" in html
 
 
 def test_vae_decoder_has_a_drill_view():

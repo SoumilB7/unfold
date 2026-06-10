@@ -36,7 +36,7 @@ def test_custom_tower_renders_with_no_view_code():
     """An adapter that emits view:'tower' + detail.tower gets the backbone."""
     assert "tower" in VIEW_REGISTRY
     svg = render_graph(tower_graph(SPEC), {}, "t0", "tower-test", "custom tower")
-    for marker in ("Custom mixer", "Embed", "× 24 layers", "Custom output"):
+    for marker in ("Custom mixer", "Embed", "× 24", "Custom output"):
         assert marker in svg
 
 
@@ -46,8 +46,7 @@ def test_audio_and_video_encoders_open_honest_towers():
     from model_unfolder.renderers.html.block_views.modality_views.audio import encoder_tower_spec
 
     spec = encoder_tower_spec(
-        {"hidden_size": 1024, "num_layers": 12, "num_attention_heads": 8},
-        source_label="Audio features", output_label="Encoded audio states")
+        {"hidden_size": 1024, "num_layers": 12, "num_attention_heads": 8})
     g = tower_graph(spec)
     assert g.groups[0].repeat == 12
     kinds = {n.id: n.kind for n in g.nodes}

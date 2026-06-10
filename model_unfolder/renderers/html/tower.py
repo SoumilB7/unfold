@@ -62,10 +62,12 @@ def tower_graph(spec: dict) -> Graph:
             edges.append(Edge(block["residual_from"], node_id, "residual"))
         return node_id
 
+    # In/out are bare ports: a small mono caption below (when given) and a
+    # headless exit arrow above — never source/output bookend blocks.
     source = spec.get("source")
     if source:
         add({**source, "id": source.get("id", "tower_in")},
-            default_kind="source", static=source.get("static", True))
+            default_kind="port", static=source.get("static", True))
     for block in spec.get("pre") or []:
         add(block)
     cell_ids = [add(block) for block in spec.get("cell") or []]
@@ -73,7 +75,8 @@ def tower_graph(spec: dict) -> Graph:
         add(block)
     output = spec.get("output")
     if output:
-        add({**output, "id": output.get("id", "tower_out")}, default_kind="output")
+        add({**output, "id": output.get("id", "tower_out")},
+            default_kind="port", static=output.get("static", True))
 
     groups = []
     if cell_ids:

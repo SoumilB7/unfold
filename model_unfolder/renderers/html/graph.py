@@ -139,8 +139,8 @@ class Group:
         if self.label:
             return self.label
         if self.repeat:
-            return f"× {self.repeat:,} layers"
-        return "× N layers"
+            return f"× {self.repeat:,}"
+        return "× N"
 
 
 @dataclass

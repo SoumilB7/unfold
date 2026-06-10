@@ -26,22 +26,23 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
 
     experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
                ("expert_kp1", "Expert k+1"), ("expert_n", f"Expert {last}")]
-    sub = None
+    note = None
     if n_total:
-        sub = f"top-{k} of {n_total} active" if k else f"{n_total} experts"
+        note = f"top-{k} of {n_total} experts active" if k else f"{n_total} experts"
 
     nodes = [
-        Node("moe_hidden", "source", "Hidden states",
-             sub=(f"{hidden:,}-d" if hidden else None), static=True),
+        Node("moe_hidden", "port",
+             (f"in ({hidden:,})" if hidden else "in"), static=True),
         Node("router", "router", router_lines, h=max(54, 18 * len(router_lines) + 26)),
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
         Node("add_moe", "residual_add"),
-        Node("moe_out", "output", "→ residual", sub=sub, static=True),
+        Node("moe_out", "port", static=True),
     ]
     graph = Graph(
         nodes=nodes,
         flow=["moe_hidden", "router", "add_moe", "moe_out"],
         parallels=[Parallel("router", "add_moe", [[nid] for nid, _ in experts])],
+        note=note,
     )
     return render_graph(graph, info, mount_id, "moe",
                         f"{ir.get('name', 'model')} mixture of experts", min_width=720)

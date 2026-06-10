@@ -28,8 +28,7 @@ def region_to_graph(
     region: Region,
     *,
     clickable: bool = False,
-    out_label: str | None = "→ residual",
-    ports: bool = False,
+    out_label: str | None = None,
 ) -> Graph:
     """Lay a region out as flow + parallels.
 
@@ -37,9 +36,9 @@ def region_to_graph(
     op ids are also inspect-card ids, as in the attention family); the default
     keeps ops static for leaf views like the FFN.
 
-    ``ports=True`` renders the in/out anchors as bare mono captions on the flow
-    stem ("in (4,608)" / "→ residual") instead of full source/output blocks —
-    for drill views where those blocks would only restate the obvious.
+    The in/out anchors are always bare ports: a small mono ``in (4,608)``
+    caption below, and a headless exit arrow above (captioned only when
+    ``out_label`` says something, e.g. the MLA drills' "→ scores (Q)").
     """
     by_op = region.by_id()
     succ: dict[str, list[str]] = {}
@@ -157,13 +156,11 @@ def region_to_graph(
         flow.append(join)
         cur = join
 
-    nodes = [_node_for(o, region, clickable, primary, ports) for o in region.ops]
+    nodes = [_node_for(o, region, clickable, primary) for o in region.ops]
 
-    # A presentation-only output anchor so the block reads as in→…→out.
-    # With ports, ``out_label=None`` leaves a bare exit arrow (the port node
-    # keeps the geometry the arrow needs but paints no caption).
-    nodes.append(Node("region_out", "port" if ports else "output",
-                      out_label if ports else (out_label or "Output"), static=True))
+    # A presentation-only exit anchor: ``out_label=None`` leaves a bare arrow
+    # (the port node keeps the geometry the arrow needs but paints no caption).
+    nodes.append(Node("region_out", "port", out_label, static=True))
     flow = [*flow, "region_out"]
 
     return Graph(nodes=nodes, flow=flow, parallels=parallels)
@@ -174,18 +171,14 @@ def _lane_out_label(lane: Lane, by_op: dict[str, Op]) -> str | None:
     return (top.meta or {}).get("out_label") if top else None
 
 
-def _node_for(op: Op, region: Region, clickable: bool, primary: str, ports: bool) -> Node:
+def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     dims = (f"{op.in_features:,} → {op.out_features:,}"
             if (op.in_features and op.out_features) else None)
     static = not clickable
     if op.kind == "input":
         if op.id == primary:
-            if ports:
-                label = f"in ({op.out_features:,})" if op.out_features else "in"
-                return Node(op.id, "port", label, static=True)
-            return Node(op.id, "source", op.label or "Hidden states",
-                        sub=(f"{op.out_features:,}-d" if op.out_features else None),
-                        static=True)
+            label = f"in ({op.out_features:,})" if op.out_features else "in"
+            return Node(op.id, "port", label, static=True)
         return Node(op.id, "source", op.label, w=250, h=46, static=static)
     if op.kind == "linear":
         return Node(op.id, "linear", op.label or "Linear", sub=dims, static=static,

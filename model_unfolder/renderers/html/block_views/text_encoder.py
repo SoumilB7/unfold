@@ -48,7 +48,7 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
         note = "→ denoiser conditioning"
 
     graph = tower_graph({
-        "source": {"id": f"{pfx}_tokens", "label": "Prompt tokens", "sub": "tokenized text"},
+        "source": {"id": f"{pfx}_tokens", "label": "in (prompt tokens)"},
         "pre": [
             {"id": f"{pfx}_op_embed", "kind": "embedding", "label": embed_main, "sub": embed_sub},
         ],
@@ -67,7 +67,7 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
              "residual_from": f"{pfx}_op_norm2", "target": f"{pfx}_op_add"},
         ],
         "repeat": layers,
-        "output": {"id": f"{pfx}_out", "label": out_main, "sub": out_sub, "static": True},
+        "output": {"id": f"{pfx}_out", "label": out_sub, "static": True},
         "note": note,
     })
     return render_graph(graph, info, mount_id, "txtenc", f"{name} text encoder")
