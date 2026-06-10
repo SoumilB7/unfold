@@ -210,7 +210,8 @@ Routing table: [block_views/registry.py](../model_unfolder/renderers/html/block_
 | ↳ fusion: cross-attention | `build_cross_attention_fusion_view` | model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py |
 | ↳ fusion: unified grid stream | `build_unified_stream_view` | model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py |
 | `vision_patch_embedding` | `build_patch_embedding_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
-| `vision_encoder` | `build_vision_encoder_view` (declarative cell Graph) | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `vision_encoder` | `build_vision_encoder_view` → tower backbone | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `tower` (generic custom tower) | `build_tower_view` — adapter emits `view: "tower"` + a `detail.tower` spec; no renderer code needed | model_unfolder/renderers/html/tower.py |
 | `vision_self_attention` | `build_vision_self_attention_view` → `opgraph.attention_region` (renamed) | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
 | `vision_mlp` | `build_vision_mlp_view` → `opgraph.ffn_region` (renamed) | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
 | `mtp_head` | `build_mtp_head_view` | model_unfolder/renderers/html/block_views/mtp_head.py |
