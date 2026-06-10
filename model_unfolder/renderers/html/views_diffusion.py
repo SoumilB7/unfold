@@ -251,15 +251,9 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                       cx - 96, 116, 192, 46, label("vae_decode", "VAE decode"), font_size=16,
                       resolved=resolved("vae_decode"))
 
-    # Denoiser — the hero. Two subtle offset cards imply "same network repeated"
-    # without crowding the scheduler lane.
+    # Denoiser — the hero, a standard block (the dashed recursion frame and the
+    # scheduler cycle already say "applied repeatedly").
     den_x, den_y, den_w, den_h = cx - 148, 246, 296, 96
-    for off in (9, 4):
-        parts.append(_svg_tag("rect", {
-            "x": den_x + off, "y": den_y - off, "width": den_w, "height": den_h,
-            "rx": 13, "ry": 13, "fill": C["block"], "opacity": 0.4,
-            "stroke": C["block_alt"], "stroke-width": 0.6,
-        }))
     denoiser = _rect_block(parts, info, shadow_id, "denoiser",
                            den_x, den_y, den_w, den_h,
                            "DiT Denoiser", font_size=20, resolved=resolved("denoiser"))
@@ -273,19 +267,22 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                            34, 456, 168, 52, label("timestep", "Timestep t"), font_size=15,
                            resolved=resolved("timestep"))
 
-    # With many bottom inputs (noise + timestep + 2+ encoders = 4+), the noise
-    # column crowds the text-prompt source; nudge it left for even spacing.  Its
-    # arrow stays vertical and still lands inside the (wide) denoiser bottom.
-    n_inputs = 2 + sum(1 for bid in blocks if bid.startswith("encoder_"))
-    noise_dx = -44 if n_inputs >= 4 else 0
+    # The conditioning column's geometry decides where Noise can sit: the
+    # prompt source shares Noise's row, so Noise shifts left exactly far enough
+    # that the two can never overlap (one rule, any encoder count).
+    layout = _conditioning_layout(blocks)
+    noise_cx = cx
+    if layout is not None:
+        prompt_left = layout["prompt_cx"] - 70
+        noise_cx = min(cx, prompt_left - 18 - 84)
     noise = _rect_block(parts, info, shadow_id, "noise",
-                        cx - 84 + noise_dx, 572, 168, 58, label("noise", "Noise"), font_size=18,
+                        noise_cx - 84, 572, 168, 58, label("noise", "Noise"), font_size=18,
                         resolved=resolved("noise"))
     _latent_grid(parts, noise["left"] - 88, noise["cy"] - 33)
 
     # Text conditioning: one block per real encoder (+ a shared prompt source),
     # drawn on the right and feeding the denoiser.
-    _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, denoiser)
+    _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, denoiser, layout)
 
     # --- Flow arrows: latent + timestep converge into the denoiser bottom ---
     parts.append(_v_line(noise, denoiser, arrow_id))
@@ -311,7 +308,25 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     return _svg(w, h, f"{ir.get('name', 'model')} sampling loop", parts)
 
 
-def _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, denoiser):
+def _conditioning_layout(blocks) -> dict | None:
+    """Geometry of the conditioning column: encoder row centres + the prompt
+    source's x.  Computed up front so the Noise block (which shares the prompt
+    source's row) can be placed without ever overlapping it."""
+    enc_ids = sorted(bid for bid in blocks if bid.startswith("encoder_"))
+    if not enc_ids:
+        return None
+    n = len(enc_ids)
+    row_x0, row_x1 = 300, 692
+    ew = min(142, int((row_x1 - row_x0 - (n - 1) * 18) / n))
+    total = n * ew + (n - 1) * 18
+    # centre the row in its band so one lone encoder doesn't hug the left edge
+    start = row_x0 + max(0.0, (row_x1 - row_x0 - total) / 2)
+    centers = [start + i * (ew + 18) + ew / 2 for i in range(n)]
+    return {"enc_ids": enc_ids, "centers": centers, "ew": ew,
+            "prompt_cx": sum(centers) / n}
+
+
+def _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, denoiser, layout):
     """Draw the prompt source + one block per text encoder, feeding the denoiser.
 
     Encoders are the loop blocks with ids ``encoder_0..N``; ``prompt`` is their
@@ -320,8 +335,7 @@ def _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, den
     def _resolved(bid):
         return _is_resolved_diffusion_block(True, info, bid, blocks.get(bid))
 
-    enc_ids = sorted(bid for bid in blocks if bid.startswith("encoder_"))
-    if not enc_ids:
+    if layout is None:
         te = _rect_block(parts, info, shadow_id, "text_encoder",
                          326, 456, 224, 52,
                          label("text_encoder", ["Text prompt", "-> encoder"]), font_size=15,
@@ -330,11 +344,8 @@ def _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, den
             te["cx"], te["top"], denoiser["cx"] + 104, denoiser["bottom"] + GAP, arrow_id))
         return
 
-    n = len(enc_ids)
-    row_x0, row_x1, row_y = 300, 692, 456
-    ew = min(142, int((row_x1 - row_x0 - (n - 1) * 18) / n))
-    centers = [row_x0 + i * (ew + 18) + ew / 2 for i in range(n)]
-
+    enc_ids, centers, ew = layout["enc_ids"], layout["centers"], layout["ew"]
+    row_y = 456
     encoders = []
     for bid, ccx in zip(enc_ids, centers):
         encoders.append(_rect_block(parts, info, shadow_id, bid,
@@ -342,9 +353,8 @@ def _draw_text_conditioning(parts, info, shadow_id, arrow_id, label, blocks, den
                                     resolved=_resolved(bid)))
 
     # Shared prompt source below the encoder row, centered under them.
-    prompt_cx = sum(centers) / n
     prompt = _rect_block(parts, info, shadow_id, "prompt",
-                         prompt_cx - 70, 572, 140, 48, label("prompt", "Text prompt"), font_size=15,
+                         layout["prompt_cx"] - 70, 572, 140, 48, label("prompt", "Text prompt"), font_size=15,
                          resolved=_resolved("prompt"))
 
     # Prompt fans up into each encoder through one bus with an explicit split dot.

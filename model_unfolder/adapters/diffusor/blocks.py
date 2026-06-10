@@ -323,7 +323,10 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     upper = enc.upper()
     is_t5 = "T5" in upper
     is_clip = "CLIP" in upper
-    norm = "RMSNorm" if is_t5 else "LayerNorm"
+    # Norm kind comes from the encoder's own config when fetched; the CLIP/T5
+    # conventions are only the fallback for the two classic families.
+    norm = spec.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
+    is_lm_style = bool(spec.get("norm") == "RMSNorm" and not is_t5)
 
     if is_t5:
         embed_desc = (
@@ -338,6 +341,12 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "embedding for its place in the sequence."
         )
         attn_extra = " CLIP's text transformer uses left-to-right masking (each token attends only to earlier tokens)."
+    elif is_lm_style:
+        embed_desc = (
+            "Maps each token id to a vector. Position is injected by rotary "
+            "embeddings inside attention, not added here."
+        )
+        attn_extra = ""
     else:
         embed_desc = "Maps each token id to a vector and adds positional information."
         attn_extra = ""
@@ -368,7 +377,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     return [
         {
             "id": f"{prefix}_op_embed",
-            "title": "Token + positional embedding" if not is_t5 else "Token embedding",
+            "title": "Token embedding" if (is_t5 or is_lm_style) else "Token + positional embedding",
             "description": embed_desc,
         },
         {
@@ -451,7 +460,8 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
         spec = specs[i] if i < len(specs) else {}
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
                   "node_prefix": f"encoder_{i}"}
-        for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos"):
+        for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos",
+                  "norm", "gated"):
             if spec.get(k) is not None:
                 detail[k] = spec[k]
         blocks.append({

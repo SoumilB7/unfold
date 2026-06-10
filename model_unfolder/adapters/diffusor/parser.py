@@ -441,26 +441,41 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
 
 
 def _normalize_encoder_config(c: dict) -> dict:
-    """Map CLIP- and T5-style config keys onto one neutral schema.  Only keys
-    actually present in the config survive (no defaults invented)."""
+    """Map CLIP-, T5- and LM-style config keys onto one neutral schema.  Only
+    keys actually present in the config survive (no defaults invented).
+
+    LM-style encoders (Qwen-VL and friends pressed into prompt-encoding duty)
+    nest the language model under ``text_config`` — shape is read from wherever
+    it lives, outer config first."""
+    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
+
     def pick(*keys):
-        for k in keys:
-            v = c.get(k)
-            if v is not None:
-                return v
+        for src in (c, inner):
+            for k in keys:
+                v = src.get(k)
+                if v is not None:
+                    return v
         return None
 
     # T5-v1.1 uses a gated FFN (``feed_forward_proj: "gated-gelu"`` / ``is_gated_act``);
-    # CLIP and T5-v1.0 use a plain MLP.  Carry it so the FFN view picks the right shape.
-    gated = bool(c.get("is_gated_act")) or str(c.get("feed_forward_proj", "")).startswith("gated")
+    # LM-style encoders with silu/swiglu activations are gated SwiGLU MLPs;
+    # CLIP and T5-v1.0 use a plain MLP.  Carried so the FFN view picks the shape.
+    activation = pick("hidden_act", "dense_act_fn", "activation_function")
+    gated = (bool(pick("is_gated_act"))
+             or str(pick("feed_forward_proj") or "").startswith("gated")
+             or activation in ("silu", "swiglu"))
+    norm = ("RMSNorm" if pick("rms_norm_eps") is not None
+            else "LayerNorm" if pick("layer_norm_eps", "layer_norm_epsilon") is not None
+            else None)
     fields = {
         "layers": pick("num_hidden_layers", "num_layers"),
         "hidden": pick("hidden_size", "d_model"),
         "heads": pick("num_attention_heads", "num_heads"),
         "ffn": pick("intermediate_size", "d_ff"),
-        "activation": pick("hidden_act", "dense_act_fn", "activation_function"),
+        "activation": activation,
         "vocab": pick("vocab_size"),
         "max_pos": pick("max_position_embeddings"),
+        "norm": norm,
     }
     out = {k: v for k, v in fields.items() if v is not None}
     out["gated"] = gated

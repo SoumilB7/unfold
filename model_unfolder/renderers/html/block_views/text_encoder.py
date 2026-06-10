@@ -30,8 +30,11 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     upper = name.upper()
     is_clip, is_t5 = "CLIP" in upper, "T5" in upper
 
-    norm = "RMSNorm" if is_t5 else "LayerNorm"
-    embed_main = "Token embedding" if is_t5 else "Token + positional embedding"
+    # The encoder's own config wins (Qwen-VL-style LM encoders are RMSNorm +
+    # rotary); the CLIP/T5 conventions are only the fallback.
+    norm = d.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
+    no_learned_pos = is_t5 or (d.get("norm") == "RMSNorm" and not is_t5)
+    embed_main = "Token embedding" if no_learned_pos else "Token + positional embedding"
     embed_sub = " · ".join(s for s in (
         f"{_n(vocab)} vocab" if vocab else "", f"{_n(hidden)}-d" if hidden else "") if s) or None
     if is_clip:
