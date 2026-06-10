@@ -1,7 +1,11 @@
-"""Video pathway detail SVG."""
+"""Video pathway detail SVGs."""
 from __future__ import annotations
 
+from ...graph_engine import render_graph
 from ...stack_view import StackView
+from ...tower import tower_graph
+from .audio import encoder_tower_spec
+from .common import video_input
 
 
 def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
@@ -13,3 +17,12 @@ def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
     view.block("video_projector", "Patch merger", w=270, h=48)
     view.block("video_tokens", "Video grid tokens", w=290, h=48)
     return view.render()
+
+
+def build_video_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
+    """The video pathway's visual tower — same backbone, facts from the video
+    modality's encoder record."""
+    encoder = (video_input(ir).get("encoder") or {})
+    spec = encoder_tower_spec(encoder, prefix="video_enc")
+    return render_graph(tower_graph(spec), info, mount_id, "video-encoder",
+                        f"{ir.get('name', 'model')} video encoder")

@@ -52,13 +52,17 @@ def _stats_banner(ir: dict) -> str:
         if params.get("is_sparse")
         else params.get("total_h", "?")
     )
-    items = [
-        ("Layers", str(len(ir.get("layers", [])))),
-        ("Hidden", _fmt_int(ir.get("hidden_size"))),
-        ("Vocab", _fmt_int(ir.get("vocab_size"))),
-        ("Context", _fmt_int(ir.get("max_position_embeddings")) if ir.get("max_position_embeddings") else "-"),
-        ("Params", param_text or "?"),
-    ]
+    extras = ir.get("extras") or {}
+    if (extras.get("render") or {}).get("family") == "diffusion":
+        items = _diffusion_stats(ir, extras, param_text)
+    else:
+        items = [
+            ("Layers", str(len(ir.get("layers", [])))),
+            ("Hidden", _fmt_int(ir.get("hidden_size"))),
+            ("Vocab", _fmt_int(ir.get("vocab_size"))),
+            ("Context", _fmt_int(ir.get("max_position_embeddings")) if ir.get("max_position_embeddings") else "-"),
+            ("Params", param_text or "?"),
+        ]
     cells = []
     for key, value in items:
         cells.append(
@@ -68,3 +72,18 @@ def _stats_banner(ir: dict) -> str:
             "</div>"
         )
     return f'<div class="uf-stats">{"".join(cells)}</div>'
+
+
+def _diffusion_stats(ir: dict, extras: dict, param_text: str) -> list[tuple[str, str]]:
+    """Diffusion replaces the (meaningless) Vocab / Context cells with the
+    denoising schedule length and the latent channels it operates on."""
+    meta = extras.get("diffusion") or {}
+    timesteps = meta.get("scheduler_train_timesteps")
+    latent = meta.get("in_channels")
+    return [
+        ("Layers", str(len(ir.get("layers", [])))),
+        ("Hidden", _fmt_int(ir.get("hidden_size"))),
+        ("Timesteps", _fmt_int(timesteps) if timesteps else "-"),
+        ("Latent", f"{_fmt_int(latent)} ch" if latent else "-"),
+        ("Params", param_text or "?"),
+    ]

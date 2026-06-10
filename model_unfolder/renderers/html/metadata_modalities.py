@@ -5,6 +5,39 @@ from .patch_grid import coerce_grid, grid_card_phrase
 from .utils import _fmt_int
 
 
+def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
+    """The attention-view declarer for a facts-only encoder tower: one child
+    card whose ``view``/``detail.attention`` open the canonical attention view
+    at the encoder's own dimensions.  Emitted only when heads are declared."""
+    heads = encoder.get("num_attention_heads")
+    if not heads:
+        return []
+    hidden = encoder.get("hidden_size")
+    kv = encoder.get("num_key_value_heads")
+    head_dim = encoder.get("head_dim") or (
+        hidden // heads if (hidden and heads and hidden % heads == 0) else None)
+    facts = [f for f in (
+        f"{_fmt_int(heads)} heads" if not kv else f"{_fmt_int(heads)} Q / {_fmt_int(kv)} KV heads",
+        f"head dim {_fmt_int(head_dim)}" if head_dim else "",
+        f"hidden {_fmt_int(hidden)}" if hidden else "",
+    ) if f]
+    return [{
+        "id": f"{prefix}_attn",
+        "title": "Self-attention",
+        "description": "Self-attention over the encoder's token sequence.",
+        "facts": facts,
+        "view": "attention",
+        "detail": {"attention": {
+            "kind": ("gqa" if (kv and kv != heads) else "mha"),
+            "num_heads": heads,
+            "num_kv_heads": kv or heads,
+            "head_dim": head_dim,
+            "hidden": hidden,
+            "cached": False,
+        }},
+    }]
+
+
 def _tiling_children(tiling: dict) -> list[dict]:
     """Inspect card for the image-tiling stage, when the tower tiles images."""
     if not tiling:
@@ -288,7 +321,8 @@ def _vision_children(vision: dict) -> list[dict]:
         {
             "id": "vision_encoder",
             "title": "Vision encoder",
-            "description": "; ".join(bit for bit in encoder_bits if bit),
+            "description": f"{encoder_bits[0]} — a separate vision tower.",
+            "facts": [bit for bit in encoder_bits[1:] if bit and bit != "separate vision tower"],
             "view": "vision_encoder",
             "children": [
                 {
@@ -308,11 +342,11 @@ def _vision_children(vision: dict) -> list[dict]:
                 {
                     "id": "vision_encoder_attn",
                     "title": "Vision self-attention",
-                    "description": _join_desc([
-                        "Self-attention over image patch tokens",
+                    "description": "Self-attention over image patch tokens.",
+                    "facts": [f for f in (
                         f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
                         f"hidden {_fmt_int(encoder.get('hidden_size'))}" if encoder.get("hidden_size") else "",
-                    ]),
+                    ) if f],
                     "view": "vision_self_attention",
                     "children": [
                         {
@@ -379,7 +413,8 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_mlp_fc1",
                             "title": "Input projection",
-                            "description": _linear_desc(vision_hidden, encoder.get("intermediate_size"), None, None),
+                            "description": "Linear into the MLP's inner width.",
+                            "facts": [f"{_fmt_int(vision_hidden)} → {_fmt_int(encoder.get('intermediate_size'))}"],
                         },
                         {
                             "id": "vision_mlp_activation",
@@ -389,7 +424,8 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_mlp_fc2",
                             "title": "Output projection",
-                            "description": _linear_desc(encoder.get("intermediate_size"), vision_hidden, None, None),
+                            "description": "Linear back to the encoder width.",
+                            "facts": [f"{_fmt_int(encoder.get('intermediate_size'))} → {_fmt_int(vision_hidden)}"],
                         },
                     ],
                 },
@@ -477,7 +513,10 @@ def _audio_children(audio: dict) -> list[dict]:
         {
             "id": "audio_encoder",
             "title": "Audio encoder",
-            "description": "; ".join(bit for bit in encoder_bits if bit),
+            "description": f"{encoder_bits[0]} — a separate audio tower.",
+            "facts": [bit for bit in encoder_bits[1:] if bit],
+            "view": "audio_encoder",
+            "children": _encoder_attention_child("audio_enc", encoder),
         },
         {
             "id": "audio_projector",
@@ -540,11 +579,13 @@ def _video_children(video: dict) -> list[dict]:
         {
             "id": "video_encoder",
             "title": "Vision encoder",
-            "description": _join_desc([
-                str(encoder.get("kind") or "vision encoder").replace("_", " "),
+            "description": f"{str(encoder.get('kind') or 'vision encoder').replace('_', ' ')} — the visual tower the video frames share.",
+            "facts": [f for f in (
                 f"{_fmt_int(encoder.get('num_layers'))} layers" if encoder.get("num_layers") else "",
                 f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
-            ]),
+            ) if f],
+            "view": "video_encoder",
+            "children": _encoder_attention_child("video_enc", encoder),
         },
         {
             "id": "video_projector",

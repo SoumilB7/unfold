@@ -1,0 +1,68 @@
+# Transformer block typing — the APPROVED static type for transformer diagrams.
+#
+# Mirrors diffusor/typing.yaml: a block tags itself with a stage; only stages
+# listed here are first-class.  This list is meant to be EXHAUSTIVE for the
+# decoder-only transformer families we draw (Llama/GQA/MoE/MLA/SSM/RWKV/recurrent/
+# parallel-residual/sliding-window/MTP/PLE/multimodal) — the full known taxonomy
+# is blessed here on purpose, so genuinely-new or mistyped stages still get
+# flagged.  Add a stage only when it's a real, recognised transformer building block.
+#
+# NOTE: the renderer does not yet draw transformer blocks pale-when-unapproved
+# (only diffusion does); this file currently documents the taxonomy and is the
+# single place to bless stages when that guard is turned on for transformers.
+#
+# Block style (one `- item` per line) so the built-in loader works without PyYAML.
+
+stages:
+  # ── Model bookends ───────────────────────────────────────────────
+  - input_tokens           # tokenized input ids
+  - token_embedding        # token embedding lookup
+  - position_embedding     # learned absolute position embedding
+  - final_norm             # final pre-head normalization
+  - lm_head                # output projection to vocab logits
+  - mtp_head               # multi-token-prediction head(s) (DeepSeek-V3 style)
+
+  # ── Decoder layer ────────────────────────────────────────────────
+  - norm                   # RMSNorm / LayerNorm (pre / post / sandwich)
+  - attention              # attention block
+  - residual               # residual add
+  - feed_forward           # dense MLP
+  - moe                    # mixture-of-experts FFN
+  - router                 # MoE gating / router
+  - expert                 # a routed expert
+  - shared_expert          # always-on shared expert
+
+  # ── Attention internals ──────────────────────────────────────────
+  - q_proj                 # query projection
+  - k_proj                 # key projection
+  - v_proj                 # value projection
+  - o_proj                 # output projection
+  - rope                   # rotary position embedding
+  - qk_norm                # per-head Q/K normalization
+  - attention_scores       # scaled dot-product scores + softmax
+  - kv_cache               # key/value cache read/write
+  - q_lora                 # MLA query LoRA (down/up) projection
+  - kv_lora                # MLA key/value LoRA (latent) projection
+
+  # ── FFN internals ────────────────────────────────────────────────
+  - gate_proj              # gate projection (gated MLP)
+  - up_proj                # up projection
+  - down_proj              # down projection
+  - activation             # non-linearity (SiLU / GELU / ...)
+  - gate_mul               # gate × up element-wise product
+
+  # ── Alternative token mixers ─────────────────────────────────────
+  - ssm                    # selective state-space mixer (Mamba)
+  - recurrent              # linear recurrent unit (LRU)
+  - rwkv                   # RWKV token mixing
+  - linear_attention       # linear attention
+  - cross_attention        # cross-attention to external / modality states
+
+  # ── Side pathways / multimodal ───────────────────────────────────
+  - per_layer_embedding    # per-layer input embedding (Gemma 3n PLE)
+  - vision_encoder         # vision tower
+  - audio_encoder          # audio tower
+  - video_encoder          # video tower
+  - patch_embedding        # vision / audio patch embedding
+  - modality_projector     # modality -> LM hidden-state projection
+  - multimodal_fusion      # fuse modality tokens with the text stream

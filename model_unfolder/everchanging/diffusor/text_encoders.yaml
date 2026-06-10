@@ -1,0 +1,8 @@
+# Diffusers text-encoder class name -> friendly family label.
+#
+# Flat `ClassName: label` pairs (the whole file is the map).  Add a row to give a
+# new text-encoder family a friendly name in the diagram — no code change needed.
+CLIPTextModel: CLIP
+CLIPTextModelWithProjection: CLIP
+T5EncoderModel: T5
+T5EncoderModelWithProjection: T5

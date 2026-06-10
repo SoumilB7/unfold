@@ -1,0 +1,54 @@
+# Diffusion (DiT / MMDiT) field aliases — canonical field name -> the config key
+# spellings the diffusor parser tries, in order.  Kept separate from the
+# transformer aliases.yaml because diffusers configs use their own vocabulary
+# (FluxTransformer2DModel, SD3Transformer2DModel, PixArtTransformer2DModel, ...).
+#
+# Edit this file to support a new diffusion config dialect — no code change.
+# Flow style ([a, b, c]) so the built-in loader works without PyYAML.
+
+# Denoiser depth.  Flux splits depth into double-stream (num_layers) + single-
+# stream (num_single_layers).  AuraFlow spells these num_mmdit_layers /
+# num_single_dit_layers.  Both halves are read.
+num_layers: [num_layers, num_hidden_layers, num_mmdit_layers, depth, num_blocks]
+num_single_layers: [num_single_layers, num_single_dit_layers, num_single_blocks]
+
+# Attention shape.  DiT hidden = num_attention_heads * attention_head_dim; some
+# (Hunyuan-DiT) instead declare hidden_size directly and the head dim is derived.
+num_attention_heads: [num_attention_heads, num_heads, n_heads]
+attention_head_dim: [attention_head_dim, head_dim, attention_dim_head]
+hidden_size: [hidden_size, inner_dim, d_model, dim]
+
+# Positional encoding: Flux applies axial RoPE over the joint sequence; the
+# per-axis dims sum to the head dim. Presence of this field => RoPE (not NoPE).
+axes_dims_rope: [axes_dims_rope, axes_dim, rope_axes_dim]
+mrope_section: [mrope_section, rope_sections]
+rope_theta: [rope_theta]
+
+# Conditioning / stream dims.
+joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)
+cross_attention_dim: [cross_attention_dim]           # cross-attn text width (PixArt)
+caption_projection_dim: [caption_projection_dim, caption_channels]
+pooled_projection_dim: [pooled_projection_dim]
+guidance_embeds: [guidance_embeds]
+
+# Latent / patchify geometry.
+in_channels: [in_channels, latent_channels]
+out_channels: [out_channels]
+patch_size: [patch_size]
+sample_size: [sample_size]
+
+# FFN width (when declared explicitly; otherwise derived from mlp_ratio * hidden).
+intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim]
+mlp_ratio: [mlp_ratio]
+hidden_act: [hidden_act, activation_fn, act_fn]
+
+# --- UNet (SD1.5 / SD2 / SDXL / Kandinsky, UNet2DConditionModel) ---
+# Conv U-net resolution stages: channels per stage + the block-type lists that
+# say which stages have cross-attention, plus ResNet / transformer depth.
+block_out_channels: [block_out_channels]
+down_block_types: [down_block_types]
+up_block_types: [up_block_types]
+mid_block_type: [mid_block_type]
+layers_per_block: [layers_per_block]
+transformer_layers_per_block: [transformer_layers_per_block]
+addition_embed_type: [addition_embed_type]

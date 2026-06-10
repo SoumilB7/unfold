@@ -1,0 +1,96 @@
+# Diffusion block typing — the APPROVED static type for diffusion diagrams.
+#
+# A diffusion block tags itself with `diffusion_stage`.  Only stages listed under
+# `stages` render as solid, first-class blocks; anything else renders pale (label
+# only) to flag that its place in the diagram is NOT decided yet.
+#
+# This list is meant to be EXHAUSTIVE for the diffusion families we draw
+# (DiT / MMDiT pipelines + their VAE) — the full known taxonomy is blessed here
+# on purpose, so genuinely-new or mistyped stages still get flagged.  Add a stage
+# only when it's a real, recognised diffusion building block.
+#
+# Block style (one `- item` per line) so the built-in loader works without PyYAML.
+
+stages:
+  # ── Pipeline inputs ──────────────────────────────────────────────
+  - noise_input            # initial Gaussian noise z_T (text-to-image)
+  - image_input            # input image latent (image-to-image / inpaint)
+  - mask_input             # inpainting mask
+  - prompt                 # text prompt
+  - timestep               # diffusion timestep t
+  - guidance               # guidance / CFG scale (or distilled guidance embed)
+
+  # ── Conditioning encoders / adapters ─────────────────────────────
+  - text_encoder           # CLIP / T5 text encoder(s)
+  - pooled_embed           # pooled text vector (CLIP pooled) — global conditioning
+  - controlnet             # ControlNet structural conditioning
+  - ip_adapter             # image-prompt (IP-Adapter) conditioning
+
+  # ── Pipeline stages ──────────────────────────────────────────────
+  - vae_encode             # image -> latent (image-to-image)
+  - denoiser               # the denoising network, applied each step
+  - scheduler              # sampler / scheduler step (z_t -> z_{t-1})
+  - vae_decode             # latent -> pixel image
+  - image_output           # final image
+
+  # ── Denoiser (DiT / MMDiT) boundary ──────────────────────────────
+  - latent_input           # latent (+ conditioning) fed to the denoiser
+  - patchify               # patch embedding (latent patches -> tokens)
+  - pos_embed              # positional embedding (axial RoPE / learned)
+  - timestep_conditioning  # AdaLN modulation from the timestep (+ pooled vector)
+  - text_conditioning      # text tokens entering (joint / cross) attention
+  - output_projection      # final AdaLN-out + linear projection
+  - unpatchify             # reassemble predicted patches -> latent
+
+  # ── Denoiser block internals ─────────────────────────────────────
+  - norm                   # block normalization (LayerNorm / AdaLN)
+  - attention              # self / joint attention
+  - cross_attention        # cross-attention to text (PixArt-style)
+  - feed_forward           # MLP / feed-forward
+  - residual               # residual add
+
+  # ── VAE internals (decoder; the encoder mirrors it for image-to-image)
+  - conv_in                # input convolution
+  - resnet                 # ResNet block
+  - downsample             # spatial downsample (encoder)
+  - upsample               # spatial upsample (decoder)
+  - mid_block              # mid block (ResNet + attention)
+  - decoder_block          # decoder resolution stage
+  - encoder_block          # encoder resolution stage
+  - conv_out               # output convolution -> pixels
+
+# Block ids that are legitimately solid inside a DiT block without carrying a
+# `diffusion_stage` — they come from the reused transformer decoder_layer
+# assembly (norm / attention / residual-add / FFN), not the diffusion adapter.
+block_ids:
+  - rms1
+  - attn
+  - add1
+  - rms2
+  - ffn
+  - add2
+
+# Compound stage kinds approved for diffusion-family detail views.
+#
+# These are higher-level than `diffusion_stage`: they describe a meaningful
+# architecture region that may contain several primitive ops. If a parsed region
+# carries an unknown `diffusion_part_kind`, the view renders it pale with the
+# same label so new/custom modules stay visible but not silently blessed.
+part_kinds:
+  - conv_in
+  - conv_out
+  - down_stage
+  - mid_stage
+  - up_stage
+  - latent_stage
+  - image_stage
+  - output_head
+  - resnet_cell
+  - sample_step
+
+# `_class_name` substrings that mark a diffusion-transformer backbone (detection).
+dit_class_markers:
+  - Transformer2DModel
+  - Transformer2D
+  - DiTTransformer
+  - DiT

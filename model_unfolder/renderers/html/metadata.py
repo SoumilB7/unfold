@@ -11,22 +11,16 @@ from __future__ import annotations
 
 from ...labels import (
     activation_label,
-    describe_attention as _describe_attention,
-    describe_ffn as _describe_ffn,
+    attention_summary as _attention_summary,
+    ffn_summary as _ffn_summary,
     is_sliding,
     kind_long,
     kind_short,
     mask_chip,
     mask_short,
     mask_title,
-    moe_router_detail,
+    router_facts as _router_facts,
 )
-
-
-def _describe_router(ffn: dict) -> str:
-    base = f"Routes tokens to top-{ffn.get('num_experts_per_tok') or 'k'} of {ffn.get('num_experts') or 'N'} experts"
-    detail = moe_router_detail(ffn)
-    return f"{base}; {detail}" if detail else base
 from .metadata_modalities import _modality_badges, _multimodal_block_lookup
 from .utils import _fmt_int
 
@@ -111,34 +105,38 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     hidden = _fmt_int(ir.get("hidden_size"))
     vocab = _fmt_int(ir.get("vocab_size"))
     activation = activation_label(ffn.get("activation") or "silu")
+    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
+    tied = bool(ir.get("tie_word_embeddings"))
+    attn_desc, attn_facts = _attention_summary(attention)
+    ffn_desc, ffn_facts = _ffn_summary(ffn)
+    expert = ("One expert — a dense FFN; only the routed tokens pass through it.",
+              [f"{hidden} → {inter} → {hidden}", activation])
     fallback = {
-        "tok_text": ("Tokenized text", "Input token IDs; shape [batch, seq_len]"),
-        "embed": (
-            "Token embedding",
-            f"{vocab} x {hidden}" + (" (tied with output)" if ir.get("tie_word_embeddings") else ""),
-        ),
-        "rms1": ("Pre-attention norm", f"RMSNorm; dim {hidden}"),
-        "attn": ("Attention", _describe_attention(attention)),
-        "add1": ("Residual add", "block input + attention output"),
-        "rms2": ("Pre-FFN norm", f"RMSNorm; dim {hidden}"),
-        "ffn": ("Mixture of experts" if ffn.get("kind") == "moe" else "Feed-forward", _describe_ffn(ffn)),
-        "add2": ("Residual add", "post-attention + FFN output"),
-        "final_rms": ("Final norm", f"RMSNorm; dim {hidden}"),
-        "lm_head": (
-            "LM head",
-            f"{hidden} -> {vocab}" + (" (tied)" if ir.get("tie_word_embeddings") else ""),
-        ),
-        "router": ("Router", _describe_router(ffn)),
-        "add_moe": ("Weighted sum", "Combines selected expert outputs"),
-        "expert_1": ("Expert", _describe_ffn(ffn)),
-        "expert_k": ("Expert", _describe_ffn(ffn)),
-        "expert_kp1": ("Expert", _describe_ffn(ffn)),
-        "expert_n": ("Expert", _describe_ffn(ffn)),
-        "down_proj": ("Down projection", f"intermediate -> hidden ({hidden})"),
-        "mul": ("Gate product", "activation(gate) x up projection"),
-        "silu": ("Activation", activation),
-        "up_proj": ("Up projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
-        "gate_proj": ("Gate projection", f"hidden -> {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"),
+        "tok_text": ("Tokenized text", "Input token IDs.", ["shape [batch, seq_len]"]),
+        "embed": ("Token embedding",
+                  "Maps each token id to its vector" + (" — weights tied with the output head." if tied else "."),
+                  [f"{vocab} vocab", f"{hidden}-d"]),
+        "rms1": ("Pre-attention norm", "RMSNorm keeps activation scales stable before attention.", [f"dim {hidden}"]),
+        "attn": ("Attention", attn_desc, attn_facts),
+        "add1": ("Residual add", "block input + attention output", []),
+        "rms2": ("Pre-FFN norm", "RMSNorm keeps activation scales stable before the FFN.", [f"dim {hidden}"]),
+        "ffn": ("Mixture of experts" if ffn.get("kind") == "moe" else "Feed-forward", ffn_desc, ffn_facts),
+        "add2": ("Residual add", "post-attention + FFN output", []),
+        "final_rms": ("Final norm", "RMSNorm over the last hidden state before the output head.", [f"dim {hidden}"]),
+        "lm_head": ("LM head",
+                    "Projects the final hidden state into vocabulary logits" + (" — weights tied with the embedding." if tied else "."),
+                    [f"{hidden} → {vocab}"]),
+        "router": ("Router", "Scores every expert per token and keeps the top-k.", _router_facts(ffn)),
+        "add_moe": ("Weighted sum", "Combines selected expert outputs, weighted by router probabilities.", []),
+        "expert_1": ("Expert", *expert),
+        "expert_k": ("Expert", *expert),
+        "expert_kp1": ("Expert", *expert),
+        "expert_n": ("Expert", *expert),
+        "down_proj": ("Down projection", "Linear back to the residual width.", [f"{inter} → {hidden}"]),
+        "mul": ("Gate product", "activation(gate) × up projection", []),
+        "silu": ("Activation", "Element-wise non-linearity.", [activation]),
+        "up_proj": ("Up projection", "Linear into the FFN's inner width.", [f"{hidden} → {inter}"]),
+        "gate_proj": ("Gate projection", "Linear producing the gate path.", [f"{hidden} → {inter}"]),
     }
     fallback.update(_block_meta(blocks if blocks is not None else _block_lookup(ir, spec)))
     return fallback
@@ -178,7 +176,7 @@ def _block_meta(blocks: dict) -> dict:
         title = block.get("title")
         desc = block.get("description")
         if title and desc:
-            meta[node_id] = (title, desc)
+            meta[node_id] = (title, desc, block.get("facts") or [])
     return meta
 
 
@@ -243,6 +241,11 @@ def _signature(layer: dict) -> str:
             ffn.get("num_experts"),
             layer.get("norm_kind"),
             layer.get("norm_placement"),
+            # Parallel-residual topology (a side-lane FFN) is structural — it
+            # separates e.g. Flux double-stream (sequential) from single-stream.
+            # External lanes (conditioning side-rails) aren't topology — exclude.
+            any(b.get("lane") and not str(b.get("lane")).startswith("external")
+                for b in layer.get("blocks", []) or []),
             _has_cross_attention_adapter(layer),
         )
     )
@@ -259,6 +262,19 @@ def _has_cross_attention_adapter(layer: dict) -> bool:
 
 def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
     badges: list[dict[str, str]] = []
+    # UNet denoisers have no flat layer stack (no dominant layer); badge the
+    # U-net shape instead.
+    unet = (ir.get("extras") or {}).get("unet")
+    if unet or not info.get("dominant"):
+        if unet:
+            n = len(unet.get("down") or [])
+            badges.append({"text": "Conv U-Net", "title": "Convolutional U-net denoiser"})
+            if n:
+                badges.append({"text": f"{n} resolution stages", "title": ""})
+            if unet.get("cross_attention_dim"):
+                badges.append({"text": "Cross-attn", "title": f"Cross-attention to text (dim {unet['cross_attention_dim']})"})
+        return badges + _modality_badges(ir)
+
     attention = info["dominant"]["spec"]["attention"]
     ffn = info["dominant"]["spec"]["ffn"]
     kind = attention.get("kind", "")

@@ -7,6 +7,8 @@ from ..common import format_dim as _fmt
 
 
 def attention_label(attention: AttentionSpec) -> list[str]:
+    if attention.variant and attention.variant.get("label"):
+        return list(attention.variant["label"])
     kind = attention.kind
     prefix = _attention_mask_prefix(attention)
     if attention.cross_attention:
@@ -39,6 +41,8 @@ def attention_label(attention: AttentionSpec) -> list[str]:
 
 
 def attention_title(attention: AttentionSpec) -> str:
+    if attention.variant and attention.variant.get("title"):
+        return attention.variant["title"]
     if attention.cross_attention:
         base = {
             "gqa": "Grouped-query cross-attention",
@@ -69,6 +73,8 @@ def attention_title(attention: AttentionSpec) -> str:
 
 
 def describe_attention(attention: AttentionSpec) -> str:
+    if attention.variant and attention.variant.get("desc"):
+        return attention.variant["desc"]
     if attention.cross_attention:
         kv_heads = attention.num_kv_heads or attention.num_heads
         return _with_attention_window(attention, (

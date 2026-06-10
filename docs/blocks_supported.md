@@ -195,17 +195,9 @@ Routing table: [block_views/registry.py](../model_unfolder/renderers/html/block_
 
 | `view` | Builder | Defined in |
 |---|---|---|
-| `attention` (router) | `build_attention_view` → dispatch by kind | model_unfolder/renderers/html/block_views/attention.py |
-| ↳ MHA / SDPA (default) | `build` | model_unfolder/renderers/html/block_views/attention_types/multi_head.py |
-| ↳ GQA | `build` | model_unfolder/renderers/html/block_views/attention_types/grouped_query.py |
-| ↳ MQA | `build` | model_unfolder/renderers/html/block_views/attention_types/multi_query.py |
-| ↳ MLA | `build` | model_unfolder/renderers/html/block_views/attention_types/latent.py |
-| ↳ SSM | `build_ssm` | model_unfolder/renderers/html/block_views/attention_types/state_space.py |
-| ↳ Recurrent / LRU | `build_recurrent` | model_unfolder/renderers/html/block_views/attention_types/state_space.py |
-| ↳ RWKV | `build` | model_unfolder/renderers/html/block_views/attention_types/rwkv.py |
-| ↳ Linear attention | `build` | model_unfolder/renderers/html/block_views/attention_types/linear.py |
-| `mla_query_path` | `build_query_path_view` | model_unfolder/renderers/html/block_views/attention_types/latent.py |
-| `mla_kv_cache_path` | `build_kv_cache_view` | model_unfolder/renderers/html/block_views/attention_types/latent.py |
+| `attention` (all kinds: MHA/GQA/MQA/MLA/SSM/LRU/RWKV/linear) | `build_attention_view` → `opgraph.attention_region` → graph engine | model_unfolder/renderers/html/block_views/attention.py |
+| `mla_query_path` | `build_mla_query_path_view` → `opgraph.mla_query_region` | model_unfolder/renderers/html/block_views/attention.py |
+| `mla_kv_cache_path` | `build_mla_kv_cache_view` → `opgraph.mla_kv_region` | model_unfolder/renderers/html/block_views/attention.py |
 | `gated_ffn` | `build_ffn_view` | model_unfolder/renderers/html/block_views/feed_forward.py |
 | `dense_ffn` | `build_dense_ffn_view` | model_unfolder/renderers/html/block_views/feed_forward.py |
 | `moe` | `build_moe_view` | model_unfolder/renderers/html/block_views/mixture_of_experts.py |
@@ -218,9 +210,10 @@ Routing table: [block_views/registry.py](../model_unfolder/renderers/html/block_
 | ↳ fusion: cross-attention | `build_cross_attention_fusion_view` | model_unfolder/renderers/html/block_views/modality_views/fusion_cross_attention.py |
 | ↳ fusion: unified grid stream | `build_unified_stream_view` | model_unfolder/renderers/html/block_views/modality_views/fusion_grid.py |
 | `vision_patch_embedding` | `build_patch_embedding_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
-| `vision_encoder` | `build_vision_encoder_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
-| `vision_self_attention` | `build_vision_self_attention_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
-| `vision_mlp` | `build_vision_mlp_view` | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `vision_encoder` | `build_vision_encoder_view` → tower backbone | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `tower` (generic custom tower) | `build_tower_view` — adapter emits `view: "tower"` + a `detail.tower` spec; no renderer code needed | model_unfolder/renderers/html/tower.py |
+| `vision_self_attention` | `build_vision_self_attention_view` → `opgraph.attention_region` (renamed) | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
+| `vision_mlp` | `build_vision_mlp_view` → `opgraph.ffn_region` (renamed) | model_unfolder/renderers/html/block_views/modality_views/vision_details.py |
 | `mtp_head` | `build_mtp_head_view` | model_unfolder/renderers/html/block_views/mtp_head.py |
 
 ---

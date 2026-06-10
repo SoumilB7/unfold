@@ -69,6 +69,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "num_global_layers": first(vision_cfg, "num_global_layers"),
         "num_channels": first(vision_cfg, "num_channels"),
         "global_head_dim": first(vision_cfg, "global_head_dim"),
+        "intermediate_size": first(vision_cfg, "intermediate_size", "mlp_dim"),
         "activation": first(vision_cfg, "hidden_act", "hidden_activation"),
         "patch_size": patch_size,
         # Which encoder output the connector reads (single layer + CLS policy).

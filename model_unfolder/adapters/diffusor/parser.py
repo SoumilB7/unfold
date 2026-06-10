@@ -1,0 +1,496 @@
+"""The diffusion (DiT / MMDiT) parser.
+
+Diffusion *transformers* — Flux, Stable Diffusion 3, PixArt, plain DiT — are
+transformer stacks with extra conditioning (a timestep embedding that modulates
+every block via AdaLN, and a text-conditioning stream).  So this adapter reuses
+the transformer machinery wholesale: the same ``ModelIR``/``LayerSpec``, the same
+``decoder_layer`` block assembly, the same attention/FFN views, the same param
+estimator.  What it adds is diffusion-specific:
+
+* detection from the diffusers ``_class_name`` signal (distinct from the
+  transformers ``architectures``/``model_type`` that the transformer adapter keys
+  on), and
+* the model-level pipeline skeleton (text encoder -> denoiser -> VAE) instead of
+  token-embedding/LM-head bookends.
+
+Field vocabulary is data, not code: see ``everchanging/diffusor/`` (aliases,
+typing, text_encoders).
+The diagram is themed blue via ``extras["render"]["theme"]``.
+
+Scope (v1): the DiT *denoiser* is detailed per-layer; text encoder(s) and VAE are
+shown as collapsed pipeline stages.  UNet diffusion (SD1.5/XL) is intentionally
+not matched here.
+"""
+from __future__ import annotations
+
+from typing import Any
+
+from ...everchanging import (
+    load_diffusion_aliases,
+    load_diffusion_text_encoders,
+    load_diffusion_typing,
+)
+from ...ir import AttentionSpec, FFNSpec, ModelIR
+from ..transformer.assembly import decoder_layer, parallel_decoder_layer
+from ..transformer.common import architecture_name, get_config_value as _g, model_name
+from .blocks import diffusion_render_spec
+from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
+
+
+_ALIASES: dict[str, list[str]] = load_diffusion_aliases()
+
+#: Detection + labelling vocabulary — data, edited in ``everchanging/diffusor/``.
+#: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
+#: diffusers text-encoder class name -> friendly family label map.
+_DIT_CLASS_MARKERS = tuple(load_diffusion_typing()["dit_class_markers"])
+_ENCODER_NAMES = load_diffusion_text_encoders()
+
+
+def _resolve(cfg: Any, canonical: str, default=None):
+    """First hit among a canonical field's known spellings (see aliases YAML)."""
+    for alias in _ALIASES.get(canonical, [canonical]):
+        val = _g(cfg, alias)
+        if val is not None:
+            return val
+    return default
+
+
+# ---------------------------------------------------------------------------
+# Adapter interface
+# ---------------------------------------------------------------------------
+
+def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
+    """Build the IR for a UNet denoiser: no flat layer stack — the U-net
+    structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
+    unet = parse_unet(cfg)
+    boc = unet["block_out_channels"]
+    if not boc:
+        warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
+    hidden = max(boc) if boc else 0
+    text_encoders = _detect_text_encoders(cfg)
+    geom = unet_geom(cfg, unet, text_encoders=text_encoders, scheduler_geom=_scheduler_geom(cfg))
+    geom["vae"] = _vae_geom(cfg)
+    geom["text_encoder_specs"] = _text_encoder_specs(cfg)
+
+    extras: dict = {"render": unet_render_spec(geom), "unet": unet}
+    meta = {k: v for k, v in {
+        "unet_stages": len(boc) or None,
+        "in_channels": unet["in_channels"],
+        "cross_attention_dim": unet["cross_attention_dim"],
+        "downscale": unet["downscale"],
+        "text_encoders": text_encoders or None,
+        "scheduler": geom.get("scheduler"),
+        "scheduler_train_timesteps": geom.get("scheduler_train_timesteps"),
+    }.items() if v is not None}
+    if meta:
+        extras["diffusion"] = meta
+
+    return ModelIR(
+        name=_diffusion_name(cfg, arch_name),
+        architecture=arch_name,
+        vocab_size=0,
+        hidden_size=hidden,           # widest stage — for the "Hidden" stat
+        max_position_embeddings=None,
+        tie_word_embeddings=True,
+        layers=[],                    # a U-net has no flat transformer-layer stack
+        extras=extras,
+        warnings=warnings,
+    )
+
+
+def _diffusion_name(cfg: Any, arch_name: str) -> str:
+    """Prefer the model *tag* (repo id) for the display name, e.g.
+    ``black-forest-labs/FLUX.1-dev`` -> ``FLUX.1-dev`` — not the denoiser
+    component's own ``_name_or_path`` (which is just ``.../transformer``)."""
+    repo = _g(cfg, "_repo_id")
+    if isinstance(repo, str) and repo.strip():
+        return repo.strip("/").split("/")[-1]
+    pipe = _g(cfg, "_pipeline_class_name")
+    if isinstance(pipe, str) and pipe:
+        return pipe
+    return model_name(cfg, arch_name)
+
+
+def matches(cfg: Any) -> bool:
+    """True for diffusion denoiser configs — DiT/MMDiT transformers OR UNets (or
+    a diffusers pipeline index pointing at either).
+
+    Must be precise: this adapter is registered before the catch-all transformer
+    adapter, so it may only claim genuine diffusion configs.
+    """
+    cls = _g(cfg, "_class_name")
+    if not isinstance(cls, str) or not cls:
+        return False
+    if any(marker in cls for marker in _DIT_CLASS_MARKERS):
+        return True
+    if is_unet(cfg):                       # UNet2DConditionModel (SD1.5/SD2/SDXL/...)
+        return True
+    # A diffusers pipeline index (model_index.json) with a transformer/unet denoiser.
+    if cls.endswith("Pipeline") and (_g(cfg, "transformer") is not None or _g(cfg, "unet") is not None):
+        return True
+    return False
+
+
+def parse(cfg: Any) -> ModelIR:
+    warnings: list[str] = []
+    cls = _g(cfg, "_class_name") or "diffusion"
+    arch_name = architecture_name(cfg, cls)
+
+    # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
+    # U-net, not a transformer stack — so they get their own structure + view.
+    if is_unet(cfg):
+        return _parse_unet_model(cfg, arch_name, warnings)
+
+    # ---- Denoiser geometry ----
+    num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)
+    num_single   = int(_resolve(cfg, "num_single_layers", 0) or 0)
+    num_heads    = int(_resolve(cfg, "num_attention_heads", 0) or 0)
+    head_dim     = int(_resolve(cfg, "attention_head_dim", 0) or 0)
+    # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
+    # hidden_size directly without a per-head dim — derive the head dim from it.
+    hidden_decl  = int(_resolve(cfg, "hidden_size", 0) or 0)
+    if not head_dim and hidden_decl and num_heads:
+        head_dim = hidden_decl // num_heads
+    hidden_size  = num_heads * head_dim or hidden_decl
+
+    intermediate_size = int(_resolve(cfg, "intermediate_size", 0) or 0)
+    if not intermediate_size and hidden_size:
+        # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
+        mlp_ratio = float(_resolve(cfg, "mlp_ratio", 4.0) or 4.0)
+        intermediate_size = int(hidden_size * mlp_ratio)
+    activation = str(_resolve(cfg, "hidden_act", "gelu") or "gelu").lower()
+
+    if not num_layers and not num_single:
+        warnings.append(
+            "Diffusion config has no num_layers / num_single_layers — denoiser "
+            "depth unknown. Pass the transformer component's config.json for detail."
+        )
+    if not hidden_size:
+        warnings.append(
+            "Diffusion config missing num_attention_heads x attention_head_dim — "
+            "geometry will be incomplete."
+        )
+
+    geom = {
+        "hidden_size": hidden_size,
+        "num_attention_heads": num_heads,
+        "attention_head_dim": head_dim,
+        "in_channels": _resolve(cfg, "in_channels"),
+        "out_channels": _resolve(cfg, "out_channels"),
+        "patch_size": _resolve(cfg, "patch_size"),
+        "sample_size": _resolve(cfg, "sample_size"),
+        "pooled_projection_dim": _resolve(cfg, "pooled_projection_dim"),
+        "joint_attention_dim": _resolve(cfg, "joint_attention_dim"),
+        "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
+        "guidance_embeds": _g(cfg, "guidance_embeds"),
+        "text_encoders": _detect_text_encoders(cfg),
+        "text_encoder_specs": _text_encoder_specs(cfg),
+        "double_stream_layers": num_layers or None,
+        "single_stream_layers": num_single or None,
+        "vae": _vae_geom(cfg),
+        **_scheduler_geom(cfg),
+    }
+
+    # Positional encoding — rotary comes in three config dialects, all of which
+    # mean the blocks are NOT NoPE: Flux-style axial RoPE (axes_dims_rope sums
+    # to the head dim), multimodal 3D RoPE (mrope_section lists per-axis
+    # half-dims, so the rotary span is twice their sum), or a bare rope_theta.
+    axes_dims_rope = _resolve(cfg, "axes_dims_rope")
+    mrope_section = _resolve(cfg, "mrope_section")
+    rope_theta = _resolve(cfg, "rope_theta")
+    rope_dim = None
+    if isinstance(axes_dims_rope, (list, tuple)):
+        try:
+            rope_dim = sum(int(x) for x in axes_dims_rope)
+        except (TypeError, ValueError):
+            rope_dim = None
+    elif isinstance(mrope_section, (list, tuple)):
+        try:
+            span = 2 * sum(int(x) for x in mrope_section)
+            rope_dim = span if (not head_dim or span <= head_dim) else sum(int(x) for x in mrope_section)
+        except (TypeError, ValueError):
+            rope_dim = None
+    has_rope = rope_dim is not None or rope_theta is not None
+    if isinstance(axes_dims_rope, (list, tuple)):
+        rope_note = f"Axial rotary position embedding (axes {axes_dims_rope})."
+    elif isinstance(mrope_section, (list, tuple)):
+        rope_note = f"Multimodal 3D rotary position embedding (sections {list(mrope_section)})."
+    elif has_rope:
+        rope_note = "Rotary position embedding."
+    else:
+        rope_note = "Position comes from the patch embedding (no rotary)."
+
+    # ---- Denoiser layer stack ----
+    # MM-DiT double-stream blocks: image and text keep SEPARATE Q/K/V and MLP,
+    # joined only in a full (bidirectional) joint attention.  Single-stream
+    # blocks share one set of projections and run attention + MLP in parallel.
+    double_variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
+    single_variant = _stream_variant("single-stream", rope_note, dual=False)
+
+    # Conditioning enters each block at two distinct points: the timestep (+ the
+    # CLIP pooled vector) modulates the norm via AdaLN; the text token sequence
+    # enters the attention.  Attach them as external side-rails so the denoiser
+    # view shows WHERE each of the loop's conditioning inputs plugs in.
+    has_text = bool(geom["joint_attention_dim"] or geom["cross_attention_dim"] or geom["text_encoders"])
+
+    layers = []
+    idx = 0
+    for _ in range(num_layers):
+        layers.append(decoder_layer(
+            idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
+            _dit_ffn(activation, intermediate_size),
+            hidden_size, norm_kind="layernorm",
+        ))
+        idx += 1
+    for _ in range(num_single):
+        layers.append(parallel_decoder_layer(
+            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant),
+            _dit_ffn(activation, intermediate_size),
+            hidden_size, norm_kind="layernorm",
+        ))
+        idx += 1
+
+    for layer in layers:
+        layer.blocks.extend(_conditioning_side_blocks(has_text, bool(geom["guidance_embeds"])))
+
+    extras: dict = {"render": diffusion_render_spec(geom)}
+    diffusion_meta = {k: v for k, v in {
+        "double_stream_layers": num_layers or None,
+        "single_stream_layers": num_single or None,
+        "in_channels": geom["in_channels"],
+        "patch_size": geom["patch_size"],
+        "joint_attention_dim": geom["joint_attention_dim"],
+        "cross_attention_dim": geom["cross_attention_dim"],
+        "pooled_projection_dim": geom["pooled_projection_dim"],
+        "guidance_embeds": geom["guidance_embeds"],
+        "text_encoders": geom["text_encoders"] or None,
+        "scheduler": geom.get("scheduler"),
+        "scheduler_train_timesteps": geom.get("scheduler_train_timesteps"),
+    }.items() if v is not None}
+    if diffusion_meta:
+        extras["diffusion"] = diffusion_meta
+
+    return ModelIR(
+        name=_diffusion_name(cfg, arch_name),
+        architecture=arch_name,
+        vocab_size=0,                  # no token vocabulary in a denoiser
+        hidden_size=hidden_size,
+        max_position_embeddings=None,
+        tie_word_embeddings=True,      # no LM head — keeps the param estimate honest
+        layers=layers,
+        extras=extras,
+        warnings=warnings,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Spec builders
+# ---------------------------------------------------------------------------
+
+def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> AttentionSpec:
+    # DiT attention is FULL bidirectional multi-head attention (no causal mask;
+    # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
+    # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
+    return AttentionSpec(
+        kind="mha",
+        num_heads=num_heads,
+        num_kv_heads=num_heads,
+        head_dim=head_dim or None,
+        mask="full",
+        rope_dim=rope_dim,
+        no_rope=rope_dim is None,
+        variant=variant,
+    )
+
+
+def _conditioning_side_blocks(has_text: bool, guidance: bool) -> list[dict]:
+    """External side-rails marking where each conditioning input enters a block:
+    timestep -> AdaLN at the norm; text token sequence -> the attention."""
+    blocks: list[dict] = [{
+        "id": "adaln_cond",
+        "role": "norm",
+        "kind": "adaln",
+        "diffusion_stage": "timestep_conditioning",
+        "lane": "external_bottom_left",
+        "feeds": "rms1",
+        "offset_y": 0,
+        "label": ["Timestep" + (" + guidance" if guidance else ""), "conditioning"],
+        "title": "Timestep conditioning (AdaLN)",
+        "description": (
+            "The timestep embedding"
+            + (" and the CLIP pooled text vector" if has_text else "")
+            + " produce per-block shift / scale / gate (AdaLN-Zero): they modulate "
+            "this block's LayerNorm and gate its output before the residual add."
+        ),
+        "w": 190, "h": 52, "font": 14,
+    }]
+    if has_text:
+        blocks.append({
+            "id": "text_cond",
+            "role": "attention",
+            "kind": "conditioning",
+            "diffusion_stage": "text_conditioning",
+            "lane": "external_bottom_right",
+            "feeds": "attn",
+            "offset_y": 0,
+            "label": ["Text tokens", "conditioning"],
+            "title": "Text conditioning (attention)",
+            "description": (
+                "The encoded prompt (e.g. the T5 token sequence) is attended jointly "
+                "with the image tokens — it supplies the extra K/V (and, in "
+                "single-stream, concatenated Q) to this block's attention."
+            ),
+            "w": 190, "h": 52, "font": 14,
+        })
+    return blocks
+
+
+def _stream_variant(tag: str, rope_note: str, *, dual: bool) -> dict:
+    """Self-describing label set for a DiT block's joint attention."""
+    if dual:
+        body = (
+            "Full bidirectional attention over the concatenated image + text "
+            "tokens. The two streams keep separate Q/K/V and separate MLPs "
+            "(dual-stream MM-DiT); only the attention is joint. "
+        )
+    else:
+        body = (
+            "Full bidirectional attention over one concatenated image + text "
+            "stream with shared Q/K/V; attention and MLP run in parallel on the "
+            "same input (single-stream). "
+        )
+    return {
+        "short": "Joint Attn",
+        "tag": tag,
+        "label": ["Joint Attention", f"({tag})"],
+        "title": f"Joint attention — {tag}",
+        "desc": body + "Modulated by the timestep via AdaLN. " + rope_note,
+    }
+
+
+def _dit_ffn(activation: str, intermediate_size: int) -> FFNSpec:
+    # Standard (non-gated) MLP with a GELU-family activation.
+    return FFNSpec(
+        kind="dense",
+        activation=activation,
+        intermediate_size=intermediate_size,
+        gated=False,
+    )
+
+
+def _scheduler_geom(cfg: Any) -> dict:
+    """Scheduler facts for the loop: friendly name (from the pipeline index) and
+    real config values (from the merged scheduler/config.json, when fetched)."""
+    out: dict = {}
+    entry = _g(cfg, "scheduler")
+    cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
+    if isinstance(cls, str):
+        bare = cls.replace("DiscreteScheduler", "").replace("Scheduler", "") or cls
+        # Split CamelCase for readability: "FlowMatchEuler" -> "FlowMatch Euler".
+        import re
+        out["scheduler"] = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", bare)
+        out["scheduler_class"] = cls
+        out["scheduler_flow_matching"] = "FlowMatch" in cls
+    sched_cfg = _g(cfg, "_scheduler_config")
+    if isinstance(sched_cfg, dict):
+        out["scheduler_train_timesteps"] = sched_cfg.get("num_train_timesteps")
+        out["scheduler_shift"] = sched_cfg.get("shift")
+    return out
+
+
+def _vae_geom(cfg: Any) -> dict | None:
+    """Structural facts from the VAE's own config (when the loader fetched it),
+    for the VAE-decoder drill view: channel stages, latent depth, upsampling."""
+    vcfg = _g(cfg, "_vae_config")
+    if not isinstance(vcfg, dict):
+        return None
+    boc = vcfg.get("block_out_channels")
+    out = {
+        "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
+        "latent_channels": vcfg.get("latent_channels"),
+        "out_channels": vcfg.get("out_channels"),
+        "layers_per_block": vcfg.get("layers_per_block"),
+        "scaling_factor": vcfg.get("scaling_factor"),
+        "class": vcfg.get("_class_name"),
+    }
+    return {k: v for k, v in out.items() if v is not None} or None
+
+
+def _detect_text_encoders(cfg: Any) -> list[str]:
+    """Friendly text-encoder names from a diffusers pipeline index, if present."""
+    return [s["name"] for s in _text_encoder_specs(cfg)]
+
+
+def _text_encoder_specs(cfg: Any) -> list[dict]:
+    """One spec per text encoder: its friendly name plus the real depth/width/
+    heads/FFN parsed from its own ``config.json`` *when the loader fetched it*
+    (stashed under ``_text_encoder_configs``).  Numeric fields are simply absent
+    when no encoder config was available — the view never invents them.
+
+    ``model_index.json`` lists each component as ``["diffusers", "ClassName"]``;
+    a bare transformer component config has none, so this returns ``[]`` and the
+    skeleton falls back to a generic "Text encoder" stage.
+    """
+    enc_cfgs = _g(cfg, "_text_encoder_configs")
+    enc_cfgs = enc_cfgs if isinstance(enc_cfgs, dict) else {}
+    specs: list[dict] = []
+    seen: set[str] = set()
+    for key in ("text_encoder", "text_encoder_2", "text_encoder_3"):
+        entry = _g(cfg, key)
+        cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
+        if not isinstance(cls, str):
+            continue
+        friendly = _ENCODER_NAMES.get(cls) or cls.replace("Model", "").replace("Encoder", "")
+        if not friendly or friendly in seen:
+            continue
+        seen.add(friendly)
+        spec = {"name": friendly}
+        sub = enc_cfgs.get(key)
+        if isinstance(sub, dict):
+            spec.update(_normalize_encoder_config(sub))
+        specs.append(spec)
+    return specs
+
+
+def _normalize_encoder_config(c: dict) -> dict:
+    """Map CLIP-, T5- and LM-style config keys onto one neutral schema.  Only
+    keys actually present in the config survive (no defaults invented).
+
+    LM-style encoders (Qwen-VL and friends pressed into prompt-encoding duty)
+    nest the language model under ``text_config`` — shape is read from wherever
+    it lives, outer config first."""
+    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
+
+    def pick(*keys):
+        for src in (c, inner):
+            for k in keys:
+                v = src.get(k)
+                if v is not None:
+                    return v
+        return None
+
+    # T5-v1.1 uses a gated FFN (``feed_forward_proj: "gated-gelu"`` / ``is_gated_act``);
+    # LM-style encoders with silu/swiglu activations are gated SwiGLU MLPs;
+    # CLIP and T5-v1.0 use a plain MLP.  Carried so the FFN view picks the shape.
+    activation = pick("hidden_act", "dense_act_fn", "activation_function")
+    gated = (bool(pick("is_gated_act"))
+             or str(pick("feed_forward_proj") or "").startswith("gated")
+             or activation in ("silu", "swiglu"))
+    norm = ("RMSNorm" if pick("rms_norm_eps") is not None
+            else "LayerNorm" if pick("layer_norm_eps", "layer_norm_epsilon") is not None
+            else None)
+    fields = {
+        "layers": pick("num_hidden_layers", "num_layers"),
+        "hidden": pick("hidden_size", "d_model"),
+        "heads": pick("num_attention_heads", "num_heads"),
+        "kv_heads": pick("num_key_value_heads"),
+        "head_dim": pick("head_dim", "attention_head_dim"),
+        "ffn": pick("intermediate_size", "d_ff"),
+        "activation": activation,
+        "vocab": pick("vocab_size"),
+        "max_pos": pick("max_position_embeddings"),
+        "norm": norm,
+    }
+    out = {k: v for k, v in fields.items() if v is not None}
+    out["gated"] = gated
+    return out

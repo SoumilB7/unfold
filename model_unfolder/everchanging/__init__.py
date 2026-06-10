@@ -1,17 +1,24 @@
 """User-editable config vocabulary — *data, not code*.
 
-Files in this folder are loaded at runtime so new config dialects can be
-supported by editing YAML, with the parser code left untouched.  Anything that
-is config-variable vocabulary — aliases, ignore lists, word types — lives here
-as YAML, never hardcoded in the parser or renderers.
+Files here are loaded at runtime so new config dialects can be supported by
+editing YAML, with the parser/renderer code left untouched.  Anything that is
+config-variable vocabulary — aliases, ignore lists, word types, approved block
+typing — lives here as YAML, never hardcoded.
 
-* ``aliases.yaml`` — canonical field name -> list of config key spellings the
-  parser tries, in order.  Add a spelling, or a whole new field.
-* ``ignored_fields.yaml`` — config keys / suffixes that are *not* architectural,
-  skipped by the unparsed-field diagnostic.
+Organised by **domain** (one folder per adapter family), so it scales as new
+families are added — drop a folder + YAML, no code change beyond a thin loader::
+
+    everchanging/
+      transformer/
+        aliases.yaml          canonical field -> config key spellings (in order)
+        ignored_fields.yaml   non-architectural keys/suffixes (unparsed diagnostic)
+      diffusor/
+        aliases.yaml          DiT/MMDiT field aliases
+        typing.yaml           APPROVED block stages / ids / DiT detection markers
+        text_encoders.yaml    text-encoder class name -> friendly label
 
 Loading prefers PyYAML when installed; otherwise a tiny built-in reader handles
-both the flow-style (``key: [a, b, c]``) and block-style (``key:`` + ``- item``)
+the flow-style (``key: [a, b, c]``) and block-style (``key:`` + ``- item``)
 formats the shipped files use, so the package keeps working with no third-party
 dependency.
 """
@@ -22,9 +29,9 @@ from pathlib import Path
 _DIR = Path(__file__).resolve().parent
 
 
-def _load(filename: str) -> dict:
-    """Load a YAML data file from this folder (PyYAML if present, else built-in)."""
-    text = (_DIR / filename).read_text(encoding="utf-8")
+def load(domain: str, name: str) -> dict:
+    """Load ``everchanging/<domain>/<name>.yaml`` (e.g. ``load("transformer", "aliases")``)."""
+    text = (_DIR / domain / f"{name}.yaml").read_text(encoding="utf-8")
     try:
         import yaml  # optional; not a hard dependency
     except ImportError:
@@ -32,15 +39,51 @@ def _load(filename: str) -> dict:
     return yaml.safe_load(text) or {}
 
 
+# --- transformer domain -----------------------------------------------------
+
 def load_aliases() -> dict[str, list[str]]:
-    """Load the field-alias table from ``aliases.yaml``."""
-    return _load("aliases.yaml")
+    """Transformer field-alias table (``transformer/aliases.yaml``)."""
+    return load("transformer", "aliases")
 
 
 def load_ignored_fields() -> dict[str, list[str]]:
-    """Load non-architectural config keys/suffixes from ``ignored_fields.yaml``."""
-    data = _load("ignored_fields.yaml")
+    """Non-architectural config keys/suffixes (``transformer/ignored_fields.yaml``)."""
+    data = load("transformer", "ignored_fields")
     return {"keys": data.get("keys") or [], "suffixes": data.get("suffixes") or []}
+
+
+def load_transformer_typing() -> dict[str, list[str]]:
+    """APPROVED transformer block stages (``transformer/typing.yaml``) — the known
+    decoder-only-transformer block taxonomy."""
+    data = load("transformer", "typing")
+    return {"stages": data.get("stages") or []}
+
+
+# --- diffusor domain --------------------------------------------------------
+
+def load_diffusion_aliases() -> dict[str, list[str]]:
+    """Diffusion (DiT/MMDiT) field-alias table (``diffusor/aliases.yaml``)."""
+    return load("diffusor", "aliases")
+
+
+def load_diffusion_typing() -> dict[str, list[str]]:
+    """APPROVED diffusion block typing (``diffusor/typing.yaml``): ``stages``
+    (blessed diffusion_stage values), ``block_ids`` (reused transformer-layer
+    ids), ``part_kinds`` (compound detail-view regions), and
+    ``dit_class_markers`` (detection substrings)."""
+    data = load("diffusor", "typing")
+    return {
+        "stages": data.get("stages") or [],
+        "block_ids": data.get("block_ids") or [],
+        "part_kinds": data.get("part_kinds") or [],
+        "dit_class_markers": data.get("dit_class_markers") or [],
+    }
+
+
+def load_diffusion_text_encoders() -> dict[str, str]:
+    """Text-encoder class name -> friendly label (``diffusor/text_encoders.yaml``;
+    the whole file is the flat map)."""
+    return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
 
 
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:
@@ -82,4 +125,12 @@ def _unquote(token: str) -> str:
     return token
 
 
-__all__ = ["load_aliases", "load_ignored_fields"]
+__all__ = [
+    "load",
+    "load_aliases",
+    "load_ignored_fields",
+    "load_transformer_typing",
+    "load_diffusion_aliases",
+    "load_diffusion_typing",
+    "load_diffusion_text_encoders",
+]

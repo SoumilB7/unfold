@@ -25,6 +25,8 @@ from __future__ import annotations
 import re
 from typing import Any, Iterator, Optional, TypedDict
 
+from .everchanging import load_diffusion_typing, load_transformer_typing
+
 
 class Block(TypedDict, total=False):
     """One node in the render tree.  ``id`` is the only required key.
@@ -36,12 +38,16 @@ class Block(TypedDict, total=False):
     id: str                       # REQUIRED — node ↔ card link
     role: str                     # semantic slot: attention/ffn/norm/residual/…
     kind: str                     # glyph hint: attention/residual_add/embedding/…
+    diffusion_stage: str          # approved diffusion slot/stage, when applicable
+    diffusion_part_kind: str      # approved compound diffusion region, when applicable
     label: "str | list[str]"      # on-block text (one line, or stacked lines)
     title: str                    # card heading
-    description: str              # card body
+    description: str              # card body — explanation prose, no numbers
+    facts: "list[str]"            # numeric/spec chips ("32 heads", "4,096 → 12,288")
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
+    components: list[dict]        # typed sub-facts inside a compound stage
     # --- layout hints (renderer geometry; non-default topologies) ---
     lane: str                     # side lane placement (parallel/PLE/cross-attn)
     tap_from: str                 # block id this one taps its input from
@@ -64,6 +70,28 @@ KNOWN_ROLES: frozenset[str] = frozenset({
     "input", "embedding", "norm", "attention", "ffn", "residual",
     "output", "mtp", "ple", "vision", "audio", "video",
 })
+
+#: APPROVED diffusion block stages — the static type for diffusion diagrams.
+#: A diffusion block tags itself with ``diffusion_stage``; only stages in this
+#: set render as solid, first-class blocks.  A block whose stage is missing or
+#: NOT in this set renders pale/light (same label) to flag that its place in the
+#: diagram is *not decided yet* — a guardrail so a new adapter fact can't quietly
+#: become a real block.  The set is *data*, edited in
+#: ``everchanging/diffusor/typing.yaml`` — bless a new slot there, not here.
+#:
+#: ``DIFFUSION_BLOCK_IDS`` are ids legitimately solid inside a DiT block without a
+#: ``diffusion_stage`` — they come from the reused transformer ``decoder_layer``
+#: assembly (norm / attention / residual-add / FFN), not the diffusion adapter.
+_diffusion_typing = load_diffusion_typing()
+DIFFUSION_STAGES: frozenset[str] = frozenset(_diffusion_typing["stages"])
+DIFFUSION_BLOCK_IDS: frozenset[str] = frozenset(_diffusion_typing["block_ids"])
+DIFFUSION_PART_KINDS: frozenset[str] = frozenset(_diffusion_typing["part_kinds"])
+
+#: APPROVED transformer block stages — the known decoder-only-transformer block
+#: taxonomy (data in ``everchanging/transformer/typing.yaml``).  Documented now;
+#: the transformer renderer doesn't draw pale-when-unapproved yet (only diffusion
+#: does), but this is the single place to bless transformer stages when it does.
+TRANSFORMER_STAGES: frozenset[str] = frozenset(load_transformer_typing()["stages"])
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +215,10 @@ __all__ = [
     "Block",
     "KNOWN_BLOCK_KEYS",
     "KNOWN_ROLES",
+    "DIFFUSION_STAGES",
+    "DIFFUSION_BLOCK_IDS",
+    "DIFFUSION_PART_KINDS",
+    "TRANSFORMER_STAGES",
     "iter_block_tree",
     "validate_block_tree",
     "validate_click_coupling",

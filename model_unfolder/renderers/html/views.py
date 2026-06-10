@@ -1,6 +1,7 @@
 """Top-level SVG views for architecture and layer maps."""
 from __future__ import annotations
 
+from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
@@ -44,6 +45,27 @@ _BLOCK_GAP = 32  # vertical gap between consecutive layer-body blocks
 # Larger than the arrow padding (`GAP` ×2) so the chain arrow has a visible
 # stem between blocks rather than collapsing to just an arrowhead.
 
+def _is_diffusion_architecture(ir: dict) -> bool:
+    return ((ir.get("extras") or {}).get("render") or {}).get("family") == "diffusion"
+
+
+def _is_resolved_diffusion_block(is_diffusion: bool, info: dict, node_id: str, block: dict | None = None) -> bool:
+    """Only approved diffusion slots render as solid architecture blocks.
+
+    Unknown diffusion nodes are still drawn and clickable, but pale, so a new
+    adapter fact cannot quietly become a first-class block until we bless its
+    stage or slot here.
+    """
+    if not is_diffusion:
+        return True
+    data = dict(info.get("blocks", {}).get(node_id, {}))
+    if block:
+        data.update(block)
+    stage = data.get("diffusion_stage")
+    if stage is not None:
+        return stage in DIFFUSION_STAGES
+    return node_id in DIFFUSION_BLOCK_IDS
+
 
 def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     """Data-driven decoder architecture view.
@@ -58,6 +80,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     The view grows from the block list, so side-path models get extra vertical
     space while compact decoder-only models keep the same vocabulary.
     """
+    is_diffusion = _is_diffusion_architecture(ir)
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
 
@@ -99,9 +122,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         cx = max(cx, side_right + 20 + chain_half_w)
 
     # --- 1. Compute heights from the chain block list ---
+    # Size the shaded region to the content (chain height + padding).  The floor
+    # only matters for short stacks (parallel-residual layers — e.g. GPT-NeoX, the
+    # DiT single-stream block — have ~3 chain blocks); keep it modest so the box
+    # hugs the content instead of leaving a large empty lower half.  Sequential
+    # decoder layers (~6 blocks) are content-driven and unaffected.
     inner_padding = 60
     stack_h = _layer_stack_height(chain_blocks)
-    inner_h = max(490, stack_h + 2 * inner_padding)
+    inner_h = max(340, stack_h + 2 * inner_padding)
 
     # Multi-Token Prediction heads draw as a stack above lm_head; reserve top
     # headroom by pushing the fixed top anchors (and total height) down.
@@ -129,17 +157,21 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
-                               _block_label(info, "tok_text", "Tokenized text"), font_size=17)
+                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
+                               resolved=_is_resolved_diffusion_block(is_diffusion, info, "tok_text"))
         embed = _rect_block(parts, info, shadow_id, "embed",
                             cx - 130, h - 168, 260, 44,
-                            _block_label(info, "embed", "Token Embedding layer"), font_size=17)
+                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
+                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "embed"))
         stack_input = embed
     final_rms = _rect_block(parts, info, shadow_id, "final_rms",
                             cx - 90, 140 + mtp_pad, 180, 36,
-                            _block_label(info, "final_rms", "Final RMSNorm"), font_size=16)
+                            _block_label(info, "final_rms", "Final RMSNorm"), font_size=16,
+                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "final_rms"))
     lm_head = _rect_block(parts, info, shadow_id, "lm_head",
                           cx - 130, 70 + mtp_pad, 260, 44,
-                          _block_label(info, "lm_head", "Linear output layer"), font_size=17)
+                          _block_label(info, "lm_head", "Linear output layer"), font_size=17,
+                          resolved=_is_resolved_diffusion_block(is_diffusion, info, "lm_head"))
 
     # --- 3. Layer body (data-driven, stacked bottom-up) ---
     block_pos: dict[str, dict] = {}
@@ -157,6 +189,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                 cx - block_w / 2, top, block_w, block_h,
                 _block_label(info, block["id"], block.get("label")),
                 font_size=font_size,
+                resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
             )
         else:
             geom = _plus_block(
@@ -201,11 +234,15 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             _mark_branch_tap(parts, branch_taps, _input_tap(src_geom))
 
     # --- 6. Side blocks — placed off the central column ---
+    # Bottom-origin side blocks sit on the input row (aligned with the embed/
+    # Patchify block) so the inputs read as one tier.
+    input_cy = embed["cy"] if isinstance(embed, dict) else (inner_y + inner_h + 86)
     for block in side_blocks:
         _draw_side_block(
             parts, info, shadow_id,
             block, block_pos,
-            inner_x, inner_w, arrow_id, branch_taps,
+            inner_x, inner_w, inner_y, inner_h, input_cy, stack_input, arrow_id, branch_taps,
+            is_diffusion,
         )
 
     # --- 7. × N badge over the inner region ---
@@ -289,8 +326,13 @@ def _draw_side_block(
     block_pos: dict,
     inner_x: float,
     inner_w: float,
+    inner_y: float,
+    inner_h: float,
+    input_cy: float,
+    input_geom: dict,
     arrow_id: str,
     branch_taps: set[tuple[float, float]],
+    is_diffusion: bool = False,
 ) -> None:
     """Render a block that lives OFF the central chain.
 
@@ -309,11 +351,20 @@ def _draw_side_block(
 
     feeds_geom = block_pos.get(feeds_id) if feeds_id else None
     tap_geom = block_pos.get(tap_id) if tap_id else None
+    # Bottom-origin side block (e.g. diffusion conditioning): drawn at the bottom
+    # like the other inputs, with the arrow bending up into its target.
+    if feeds_geom and str(lane).startswith("external_bottom"):
+        _draw_bottom_side_block(
+            parts, info, shadow_id, block, feeds_geom,
+            inner_x, inner_w, input_cy, input_geom, arrow_id,
+            block_w, block_h, font_size, is_diffusion,
+        )
+        return
     if feeds_geom and str(block.get("lane", "")).startswith("external"):
         _draw_external_side_block(
             parts, info, shadow_id, block, feeds_geom,
             inner_x, inner_w, arrow_id, block_pos,
-            block_w, block_h, font_size,
+            block_w, block_h, font_size, is_diffusion,
         )
         return
     if not feeds_geom or not tap_geom:
@@ -337,6 +388,7 @@ def _draw_side_block(
         block_x, top, block_w, block_h,
         _block_label(info, block["id"], block.get("label")),
         font_size=font_size,
+        resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
     )
     block_pos[block["id"]] = geom
 
@@ -381,6 +433,60 @@ def _draw_side_block(
         }))
 
 
+def _draw_bottom_side_block(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    block: dict,
+    feeds_geom: dict,
+    inner_x: float,
+    inner_w: float,
+    input_cy: float,
+    input_geom: dict,
+    arrow_id: str,
+    block_w: float,
+    block_h: float,
+    font_size: int,
+    is_diffusion: bool = False,
+) -> None:
+    """A side input drawn at the BOTTOM (aligned with the main input row), routed
+    up the outside of the inner region and bent into the target's near edge.
+
+    Used for conditioning rails (timestep -> AdaLN, text -> attention): they read
+    as inputs entering from below, not as states floating in from the sides.
+    """
+    lane = str(block.get("lane", "external_bottom_left"))
+    left = lane.endswith("left")
+    block_y = input_cy - block_h / 2
+    # Wide DiT views reserve exactly one side lane on each side of the inner
+    # stack.  A pure "outside the inner region" placement leaves 190px-wide
+    # conditioning blocks kissing or exceeding the outer frame, so allow a small
+    # overlap into the inner tint while preserving a visible margin to the card.
+    outer_left = 40
+    outer_right = inner_x + inner_w + (inner_x - outer_left)
+    side_overlap = 12
+    side_margin = 52
+    clear_main = 22
+    if left:
+        block_x = max(outer_left + side_margin, inner_x - block_w + side_overlap)
+        target_x = feeds_geom["left"] - GAP
+    else:
+        right_margin = 18
+        ideal_x = max(inner_x + inner_w - side_overlap, input_geom["right"] + clear_main)
+        block_x = min(ideal_x, outer_right - block_w - right_margin)
+        target_x = feeds_geom["right"] + GAP
+
+    geom = _rect_block(
+        parts, info, shadow_id, block["id"],
+        block_x, block_y, block_w, block_h,
+        _block_label(info, block["id"], block.get("label")),
+        font_size=font_size,
+        resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
+    )
+    # Up the outside, then a single bend horizontally into the target edge.
+    parts.append(_elbow_vh(geom["cx"], geom["top"], target_x, feeds_geom["cy"], arrow_id))
+
+
 def _draw_external_side_block(
     parts: list[str],
     info: dict,
@@ -394,6 +500,7 @@ def _draw_external_side_block(
     block_w: float,
     block_h: float,
     font_size: int,
+    is_diffusion: bool = False,
 ) -> None:
     """Draw a layer-local side stream, e.g. vision states into cross-attention."""
     lane = block.get("lane", "external_left")
@@ -411,6 +518,7 @@ def _draw_external_side_block(
         block_x, top, block_w, block_h,
         _block_label(info, block["id"], block.get("label")),
         font_size=font_size,
+        resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
     )
     block_pos[block["id"]] = geom
     if lane.endswith("left"):
@@ -430,6 +538,7 @@ def _draw_external_side_block(
             source_x, source_top, source_w, source_h,
             _block_label(info, source_id, block.get("source_label", source_id)),
             font_size=font_size,
+            resolved=_is_resolved_diffusion_block(is_diffusion, info, source_id, {"id": source_id}),
         )
         block_pos[source_id] = source
         parts.append(_v_line(source, geom, arrow_id))
@@ -484,9 +593,10 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_hatch_pattern(mount_id))
     parts.append(_region_rect(40, 30, w - 80, h - 60, C["bg_card"], stroke=C["border"], stroke_width=0.5))
 
-    # Green-family palette so the layer map shares the diagram's theme.
-    # Ordered dark → light so consecutive groups read like a gradient step.
-    palette = ["#0F6E56", "#1F9E78", "#5BB89A", "#0A4F3F", "#7FCFB4", "#0E5C48", "#A0E3CD"]
+    # Theme gradient (dark → light) so the layer map shares the diagram's colour
+    # family — teal for transformers, blue for diffusion. Driven by the active
+    # palette, not hardcoded, so a new theme recolours the map for free.
+    palette = C.get("map_palette") or [C["block"], C["block_alt"]]
     sig_to_color = {group["sig"]: palette[i % len(palette)] for i, group in enumerate(info["groups"])}
 
     strip_x, strip_y, strip_w, strip_h = 80, 90, w - 160, 36

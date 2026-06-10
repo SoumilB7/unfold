@@ -1,8 +1,15 @@
 """Attention spec + operation graph.
 
+The operation graph is **not** authored here — it is projected from the one
+canonical :func:`...opgraph.attention_region`, the same region the HTML
+renderer draws (MLA's query/KV drill regions are embedded as nested
+``subgraph`` graphs).  The schema keeps its published node names
+(``scores``/``softmax``/``context``) via an explicit rename of the region's
+ids, and the kv-cache node is spliced into the dataflow for cached SDPA kinds.
+
 Schema (per the test contract):
 
-* ``kind``                — gqa / mha / mqa / mla
+* ``kind``                — gqa / mha / mqa / mla / ssm / recurrent / rwkv / linear
 * ``heads``               — query / key_value / kv_groups / head_dim
                             + query_width / key_value_width / residual_width
                             (and ``expanded_attention_width`` when q*hd != hidden)
@@ -16,7 +23,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from .ops import linear, node, edges_from_nodes
+from ..opgraph import attention_region, mla_kv_region, mla_query_region
+from .ops import linear, node
+from .region import region_to_json
 from .utils import drop_none
 
 
@@ -109,55 +118,59 @@ def _cache(attn: dict) -> dict[str, Any]:
     return {"enabled": False}
 
 
-# ---------- operation graph ----------
+# ---------- operation graph (projected from the canonical region) ----------
+
+#: region op ids -> the schema's published node names.  The region keeps ONE id
+#: set (also the render/card coupling); the schema contract keeps its names.
+_PUBLIC_IDS = {
+    "scaled_scores": "scores",
+    "attn_softmax": "softmax",
+    "attn_apply_v": "context",
+}
+
+_CACHED_SDPA_KINDS = {"mha", "gqa", "mqa", None}
 
 
 def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
-    if attn.get("kind") == "mla":
-        nodes = _mla_nodes(attn, hidden, heads)
-    else:
-        nodes = _sdpa_nodes(attn, hidden, heads)
-    return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
+    region = attention_region(attn, hidden)
+    kind = attn.get("kind")
+    if kind == "mla":
+        # Embed the canonical query/KV drill regions in their subgraph ops —
+        # the same regions the renderer's drill-down views draw.
+        nested = {"mla_query_path": mla_query_region(attn, hidden),
+                  "mla_kv_path": mla_kv_region(attn, hidden)}
+        for op in region.ops:
+            if op.id in nested:
+                op.meta["region"] = nested[op.id]
+    graph = region_to_json(region, rename=_PUBLIC_IDS)
+    if kind in _CACHED_SDPA_KINDS:
+        _splice_kv_cache(graph, attn)
+    return graph
 
 
-def _sdpa_nodes(attn: dict, hidden: int | None, heads: dict) -> list[dict[str, Any]]:
-    q_w  = heads.get("query_width")
-    kv_w = heads.get("key_value_width")
-    return [
-        node("hidden",    "input",              width=hidden),
-        node("q_proj",    "linear",             inputs=["hidden"], outputs=["q"],     parameters=linear(hidden, q_w)),
-        node("k_proj",    "linear",             inputs=["hidden"], outputs=["key"],   parameters=linear(hidden, kv_w)),
-        node("v_proj",    "linear",             inputs=["hidden"], outputs=["value"], parameters=linear(hidden, kv_w)),
-        node("kv_cache",  "cache",              inputs=["key", "value"], outputs=["key_cached", "value_cached"], stores=["key", "value"]),
-        node("scores",    "scaled_dot_product", inputs=["q", "key_cached"], outputs=["scores"], formula="QK^T/sqrt(dim)"),
-        node("softmax",   "softmax",            inputs=["scores"], outputs=["weights"]),
-        node("context",   "matmul",             inputs=["weights", "value_cached"], outputs=["context"]),
-        node("concat_heads", "reshape_concat",  inputs=["context"], outputs=["attention_out"], width=q_w),
-        node("o_proj",    "linear",             inputs=["attention_out"], outputs=["residual_delta"], parameters=linear(q_w, hidden)),
-    ]
-
-
-def _mla_nodes(attn: dict, hidden: int | None, heads: dict) -> list[dict[str, Any]]:
-    q_w     = heads.get("query_width")
-    q_rank  = attn.get("q_lora_rank")
-    kv_rank = attn.get("kv_lora_rank")
-    rope    = attn.get("rope_dim")
-    return [
-        node("hidden",     "input",              width=hidden),
-        node("q_lora_down","linear",             inputs=["hidden"],         outputs=["q_latent"],         parameters=linear(hidden, q_rank)),
-        node("q_lora_up",  "linear",             inputs=["q_latent"],       outputs=["q_nope", "q_rope"], parameters=linear(q_rank, q_w)),
-        node("q_rope",     "rope",               inputs=["q_rope"],         outputs=["q_rope_encoded"],   width=rope),
-        node("q_concat",   "concat",             inputs=["q_nope", "q_rope_encoded"], outputs=["q"]),
-        node("kv_compress","linear",             inputs=["hidden"],         outputs=["kv_latent"],        parameters=linear(hidden, kv_rank)),
-        node("kv_cache",   "cache",              inputs=["kv_latent"],      outputs=["kv_latent_cached"], stores=["kv_latent"]),
-        node("kv_expand",  "linear",             inputs=["kv_latent_cached"], outputs=["k_nope", "value"], parameters=linear(kv_rank, q_w)),
-        node("k_rope",     "rope",               inputs=["kv_latent_cached"], outputs=["k_rope_encoded"], width=rope),
-        node("k_concat",   "concat",             inputs=["k_nope", "k_rope_encoded"], outputs=["key"]),
-        node("scores",     "scaled_dot_product", inputs=["q", "key"],       outputs=["scores"], formula="QK^T/sqrt(dim)"),
-        node("softmax",    "softmax",            inputs=["scores"],         outputs=["weights"]),
-        node("context",    "matmul",             inputs=["weights", "value"], outputs=["context"]),
-        node("concat_heads", "reshape_concat",   inputs=["context"],        outputs=["attention_out"], width=q_w),
-        node("output_projection", "linear",      inputs=["attention_out"],  outputs=["residual_delta"], parameters=linear(q_w, hidden)),
+def _splice_kv_cache(graph: dict[str, Any], attn: dict) -> None:
+    """Insert the kv-cache node into the K/V dataflow (write after the
+    projections, read by scores and context) — a cache-semantics enrichment of
+    the projected structure, not a second authoring of it."""
+    nodes = graph["nodes"]
+    ids = {n["id"] for n in nodes}
+    if not {"k_proj", "v_proj", "scores", "context"} <= ids:
+        return
+    cache = node("kv_cache", "cache", inputs=["k_proj", "v_proj"],
+                 outputs=["kv_cache"], stores=["key", "value"],
+                 kv_heads=attn.get("num_kv_heads"))
+    at = next(i for i, n in enumerate(nodes) if n["id"] == "v_proj") + 1
+    nodes.insert(at, cache)
+    for n in nodes:
+        if n["id"] in {"scores", "context"} and n.get("inputs"):
+            n["inputs"] = ["kv_cache" if i in {"k_proj", "v_proj"} else i
+                           for i in n["inputs"]]
+    graph["edges"] = [
+        e for e in graph["edges"]
+        if not (e["from"] in {"k_proj", "v_proj"} and e["to"] in {"scores", "context"})
+    ] + [
+        {"from": "k_proj", "to": "kv_cache"}, {"from": "v_proj", "to": "kv_cache"},
+        {"from": "kv_cache", "to": "scores"}, {"from": "kv_cache", "to": "context"},
     ]
 
 
