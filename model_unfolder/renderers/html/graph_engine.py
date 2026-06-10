@@ -161,6 +161,13 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     elif shape == "window":
         _window_strip(parts, g["left"], g["top"], g["w"], g["h"],
                       node.meta.get("window_size"))
+    elif shape == "port":
+        heading = node.heading()
+        text = heading if isinstance(heading, str) else " ".join(heading)
+        parts.append(_svg_text(g["cx"], g["cy"], text, {
+            "text-anchor": "middle", "dominant-baseline": "central",
+            "fill": C["muted"], "font-family": FONT_MONO,
+            "font-size": node.font_size()}))
     else:
         _rect_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                     g["w"], g["h"], node.heading(), font_size=node.font_size(),
@@ -204,6 +211,12 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     lanes = par.norm_lanes()
     split_y = src_g["top"] - 16
     if any(lane.src is None for lane in lanes):
+        # the stem that carries the source up into the split dot — without it
+        # the fan-out floats disconnected above its source
+        parts.append(_svg_tag("line", {
+            "x1": cx, "y1": src_g["top"], "x2": cx, "y2": split_y,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none"}))
         parts.append(_branch_dot(cx, split_y))
 
     # Width-aware horizontal spread: lay lanes side by side (centred on cx) using

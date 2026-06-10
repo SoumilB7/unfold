@@ -68,6 +68,9 @@ KIND: dict[str, Glyph] = {
     "conv":         Glyph("rect", 200, 50, 15, label="Conv"),
     "subgraph":     Glyph("rect", 250, 58, 16, label="Path"),
     "context_window": Glyph("window", 396, 64, label="Context window", accent=True),
+    # a bare in/out anchor: just a small mono caption on the flow stem, for
+    # views where a full source/output block would only restate the obvious
+    "port":         Glyph("port", 150, 18, 11),
 }
 
 
