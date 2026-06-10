@@ -23,6 +23,7 @@ from .cards import (
     _unique_children,
 )
 from .evidence import _code_evidence_section
+from .graph_engine import _badge
 from .interactions import _click_script
 from .metadata import _make_info
 from .sections import _details_section, _header, _stats_banner
@@ -231,7 +232,7 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     diffusion = (ir.get("extras") or {}).get("diffusion") or {}
     scheduler = diffusion.get("scheduler")
 
-    w, h = 720, 700
+    w, h = 760, 700
     cx = 292          # main latent column
     sched_cx = 594    # scheduler column (to the right)
 
@@ -239,13 +240,17 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(28, 22, w - 56, h - 44, C["bg_outer"]))
 
-    # --- Recursion region behind the denoiser + scheduler ---
-    loop_x, loop_y, loop_w, loop_h = 108, 190, 570, 206
+    # --- Recursion region behind the denoiser + scheduler: the SAME solid
+    # cell frame + white repeat pill the engine draws for "× N layers" — one
+    # visual language for "this part runs repeatedly".  The step count is a
+    # runtime choice (never in the config), so the pill states the loop's
+    # honest terminating fact instead: it repeats until t reaches 0.
+    loop_x, loop_y, loop_w, loop_h = 108, 190, 590, 206
     parts.append(_svg_tag("rect", {
         "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
-        "rx": 20, "ry": 20, "fill": C["bg_inner"], "opacity": 0.55,
-        "stroke": C["block"], "stroke-width": 1.1, "stroke-dasharray": "6 5",
+        "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
     }))
+    _badge(parts, loop_x + loop_w, loop_y + 12, "↺ t → 0")
 
     # --- Nodes ---
     image = _rect_block(parts, info, shadow_id, "image",

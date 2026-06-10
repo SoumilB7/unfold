@@ -198,6 +198,7 @@ def test_main_view_is_the_sampling_loop():
     assert "SAMPLING LOOP" in html
     assert "sampling step" in html       # honest loop framing (no invented step count)
     assert "× T steps" not in html        # the old placeholder is gone
+    assert "↺ t → 0" in html             # the loop frame's repeat pill (engine style)
     # The denoiser is a clickable loop node with a backing card.
     assert 'data-id="denoiser"' in html
     assert 'data-card-id="denoiser"' in html
