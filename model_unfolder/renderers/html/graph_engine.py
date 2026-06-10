@@ -36,8 +36,8 @@ from .svg import (
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
-_GROUP_PAD = 20.0         # padding between a repeat-frame and its members
-_GROUP_HEADER = 30.0      # extra room above a group's top member for its badge
+_GROUP_PAD = 26.0         # padding between a repeat-frame and its members
+_GROUP_HEADER = 44.0      # extra room above a group's top member for its badge
 _LANE_GAP = 46.0          # offset of the residual lane past the widest node
 _BRANCH_GAP = 36.0        # horizontal gap between parallel lanes
 _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
@@ -86,7 +86,7 @@ def render_graph(
                 if nxt.id in top_members:
                     gap += _GROUP_HEADER
                 if node.id in bottom_members:
-                    gap += 8
+                    gap += 30                              # air between frame edge and the block below
             y += gap
 
     max_right = max((g["right"] for g in geom.values()), default=cx)
@@ -123,7 +123,7 @@ def render_graph(
         # below the block — the frame must cover the tap, not clip the loop
         for (s, _d) in res_lane:
             if s in member_set and s in geom:
-                gy1 = max(gy1, geom[s]["bottom"] + GAP + 16 + 12)
+                gy1 = max(gy1, geom[s]["bottom"] + GAP + 16 + 22)
         # the same solid cell frame the main architecture view draws
         parts.append(_svg_tag("rect", {
             "x": gx0, "y": gy0, "width": gx1 - gx0, "height": gy1 - gy0,
