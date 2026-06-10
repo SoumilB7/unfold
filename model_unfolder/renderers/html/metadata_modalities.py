@@ -288,7 +288,8 @@ def _vision_children(vision: dict) -> list[dict]:
         {
             "id": "vision_encoder",
             "title": "Vision encoder",
-            "description": "; ".join(bit for bit in encoder_bits if bit),
+            "description": f"{encoder_bits[0]} — a separate vision tower.",
+            "facts": [bit for bit in encoder_bits[1:] if bit and bit != "separate vision tower"],
             "view": "vision_encoder",
             "children": [
                 {
@@ -308,11 +309,11 @@ def _vision_children(vision: dict) -> list[dict]:
                 {
                     "id": "vision_encoder_attn",
                     "title": "Vision self-attention",
-                    "description": _join_desc([
-                        "Self-attention over image patch tokens",
+                    "description": "Self-attention over image patch tokens.",
+                    "facts": [f for f in (
                         f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
                         f"hidden {_fmt_int(encoder.get('hidden_size'))}" if encoder.get("hidden_size") else "",
-                    ]),
+                    ) if f],
                     "view": "vision_self_attention",
                     "children": [
                         {
@@ -379,7 +380,8 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_mlp_fc1",
                             "title": "Input projection",
-                            "description": _linear_desc(vision_hidden, encoder.get("intermediate_size"), None, None),
+                            "description": "Linear into the MLP's inner width.",
+                            "facts": [f"{_fmt_int(vision_hidden)} → {_fmt_int(encoder.get('intermediate_size'))}"],
                         },
                         {
                             "id": "vision_mlp_activation",
@@ -389,7 +391,8 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_mlp_fc2",
                             "title": "Output projection",
-                            "description": _linear_desc(encoder.get("intermediate_size"), vision_hidden, None, None),
+                            "description": "Linear back to the encoder width.",
+                            "facts": [f"{_fmt_int(encoder.get('intermediate_size'))} → {_fmt_int(vision_hidden)}"],
                         },
                     ],
                 },
@@ -477,7 +480,8 @@ def _audio_children(audio: dict) -> list[dict]:
         {
             "id": "audio_encoder",
             "title": "Audio encoder",
-            "description": "; ".join(bit for bit in encoder_bits if bit),
+            "description": f"{encoder_bits[0]} — a separate audio tower.",
+            "facts": [bit for bit in encoder_bits[1:] if bit],
             "view": "audio_encoder",
         },
         {
@@ -541,11 +545,11 @@ def _video_children(video: dict) -> list[dict]:
         {
             "id": "video_encoder",
             "title": "Vision encoder",
-            "description": _join_desc([
-                str(encoder.get("kind") or "vision encoder").replace("_", " "),
+            "description": f"{str(encoder.get('kind') or 'vision encoder').replace('_', ' ')} — the visual tower the video frames share.",
+            "facts": [f for f in (
                 f"{_fmt_int(encoder.get('num_layers'))} layers" if encoder.get("num_layers") else "",
                 f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
-            ]),
+            ) if f],
             "view": "video_encoder",
         },
         {

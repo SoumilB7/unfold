@@ -142,19 +142,21 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
             continue
         title = block.get("title") or bid
         desc = block.get("description", "")
+        facts = block.get("facts")
         if bid == "denoiser":
             if denoiser_view == "unet":
                 svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
             else:
                 svg = _build_architecture_view(ir, info, mount_id)
-            cards.append(_rich_card(bid, title, desc, svg) if svg else _simple_card(bid, title, desc))
+            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
+                         else _simple_card(bid, title, desc, facts))
         elif block.get("view"):
             # e.g. the VAE decoder — render its own drill-down view as the card.
             svg = block_detail_svg(ir, info, mount_id, block)
-            cards.append(_rich_card(bid, title, desc, svg) if svg
-                         else _simple_card(bid, title, desc))
+            cards.append(_rich_card(bid, title, desc, svg, facts) if svg
+                         else _simple_card(bid, title, desc, facts))
         else:
-            cards.append(_simple_card(bid, title, desc))
+            cards.append(_simple_card(bid, title, desc, facts))
     return "".join(cards)
 
 
@@ -189,8 +191,10 @@ def _cards_for_children(ir: dict, info: dict, mount_id: str, children: list[dict
             continue
         title = child.get("title") or child.get("label") or cid
         desc = child.get("description", "")
+        facts = child.get("facts")
         svg = block_detail_svg(ir, info, mount_id, child)
-        cards.append(_rich_card(cid, title, desc, svg) if svg else _simple_card(cid, title, desc))
+        cards.append(_rich_card(cid, title, desc, svg, facts) if svg
+                     else _simple_card(cid, title, desc, facts))
     return "".join(cards)
 
 

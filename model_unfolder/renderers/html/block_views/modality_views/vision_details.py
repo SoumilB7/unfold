@@ -55,20 +55,16 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
 
     graph = tower_graph({
         "pre": [
-            {"id": "vision_patch_tokens", "kind": "embedding", "label": "Patch tokens",
-             "sub": (f"{_fmt_int(hidden)}-d" if hidden else None)},
+            {"id": "vision_patch_tokens", "kind": "embedding", "label": "Patch tokens"},
             {"id": "vision_position", "kind": "embedding", "label": _pos_label(pos)},
         ],
         "cell": [
             {"id": "vision_encoder_norm1", "kind": "norm", "label": "LayerNorm"},
-            {"id": "vision_encoder_attn", "kind": "attention", "label": "Self-attention",
-             "sub": _attention_sub(heads, hidden)},
+            {"id": "vision_encoder_attn", "kind": "attention", "label": "Self-attention"},
             {"id": "vision_add1", "kind": "residual_add", "static": True,
              "residual_from": "vision_encoder_norm1"},
             {"id": "vision_encoder_norm2", "kind": "norm", "label": "LayerNorm"},
-            {"id": "vision_encoder_mlp", "kind": "ffn", "label": "MLP",
-             "sub": (f"{_fmt_int(hidden)} → {_fmt_int(intermediate)}"
-                     if (hidden and intermediate) else None)},
+            {"id": "vision_encoder_mlp", "kind": "ffn", "label": "MLP"},
             {"id": "vision_add2", "kind": "residual_add", "static": True,
              "residual_from": "vision_encoder_norm2"},
         ],

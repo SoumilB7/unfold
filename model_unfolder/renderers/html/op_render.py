@@ -172,8 +172,6 @@ def _lane_out_label(lane: Lane, by_op: dict[str, Op]) -> str | None:
 
 
 def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
-    dims = (f"{op.in_features:,} → {op.out_features:,}"
-            if (op.in_features and op.out_features) else None)
     static = not clickable
     if op.kind == "input":
         if op.id == primary:
@@ -181,7 +179,7 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
             return Node(op.id, "port", label, static=True)
         return Node(op.id, "source", op.label, w=250, h=46, static=static)
     if op.kind == "linear":
-        return Node(op.id, "linear", op.label or "Linear", sub=dims, static=static,
+        return Node(op.id, "linear", op.label or "Linear", static=static,
                     cache_ports=bool(op.meta.get("cached")))
     if op.kind == "activation":
         label = op.label if op.label is not None else activation_label(op.fn or "silu")
@@ -198,6 +196,6 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "route":
         return Node(op.id, "router", op.label or "Router")
     if op.kind == "opaque":
-        return Node(op.id, "opaque", op.label or "Custom block", sub=dims,
+        return Node(op.id, "opaque", op.label or "Custom block",
                     resolved=region.resolved, static=region.resolved is False)
     return Node(op.id, "norm", op.label or op.kind, static=static)

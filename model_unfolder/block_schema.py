@@ -42,7 +42,8 @@ class Block(TypedDict, total=False):
     diffusion_part_kind: str      # approved compound diffusion region, when applicable
     label: "str | list[str]"      # on-block text (one line, or stacked lines)
     title: str                    # card heading
-    description: str              # card body
+    description: str              # card body — explanation prose, no numbers
+    facts: "list[str]"            # numeric/spec chips ("32 heads", "4,096 → 12,288")
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)

@@ -72,23 +72,26 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
         {
             "id": "q_proj",
             "title": "Query projection",
-            "description": f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)",
+            "description": "Linear projection producing the per-head queries.",
+            "facts": [f"{hidden} → {q_out}", f"{num_heads} heads × {d_k}"],
         },
         {
             "id": "k_proj",
             "title": "Key projection",
             "description": (
-                f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims). "
-                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                "Linear projection producing the keys. Cache ports show K/V "
+                "write/read during generation: arrowhead for write, blunt tail for read."
             ),
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
             "description": (
-                f"Linear; {hidden} -> {kv_out}  ({num_kv_heads} KV-heads x {d_k} dims). "
-                "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+                "Linear projection producing the values. Cache ports show K/V "
+                "write/read during generation: arrowhead for write, blunt tail for read."
             ),
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}"],
         },
         {
             "id": "qkv_dot",
@@ -98,7 +101,8 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
         {
             "id": "o_proj",
             "title": "Output projection",
-            "description": f"Linear; {q_out} -> {hidden}  (recombines all {num_heads} heads)",
+            "description": "Linear recombining every head back into the residual width.",
+            "facts": [f"{q_out} → {hidden}"],
         },
     ]
 
@@ -115,68 +119,58 @@ def _sdpa_detailed_child_blocks(
 ) -> list[Block]:
     kind = attention.kind
     cross_attention = attention.cross_attention
-    kv_label = "1 shared K/V head" if kind == "mqa" else f"{num_kv_heads} KV-heads"
+    kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads × {d_k}"
+    group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
     scaled_title = "Scaled attention scores"
-    scaled_desc = "Per head: QK^T / sqrt(dim); dot-product scores scaled for numerical stability"
+    scaled_desc = "Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability."
     if cross_attention:
         scaled_title = "Cross-attention scores"
-        group = f"; each vision KV head serves {q_per_group} query heads" if q_per_group else ""
         scaled_desc = (
-            f"Decoder query heads attend over cross_attention_states: {num_heads} Q heads through "
-            f"{num_kv_heads} vision K/V heads{group}; scores use QK^T / sqrt(dim)"
+            "Decoder query heads attend over the projected image states; "
+            "scores use QK^T / sqrt(dim)."
         )
     elif kind == "gqa":
         scaled_title = "Grouped scaled dot-product attention"
-        group = f"; each KV head serves {q_per_group} query heads" if q_per_group else ""
         scaled_desc = (
-            f"Grouped SDPA scores: {num_heads} query heads attend through "
-            f"{num_kv_heads} shared K/V heads{group}; scores use QK^T / sqrt(dim)"
+            "Query heads attend through a smaller set of shared K/V heads; "
+            "scores use QK^T / sqrt(dim)."
         )
     elif kind == "mqa":
         scaled_title = "Multi-query scaled dot-product attention"
         scaled_desc = (
-            f"Multi-Query SDPA scores: {num_heads} query heads share one K/V stream; "
-            "scores use QK^T / sqrt(dim)"
+            "All query heads share one K/V stream; scores use QK^T / sqrt(dim)."
         )
 
+    q_src = "decoder hidden states" if cross_attention else "the hidden state"
+    kv_src = "the projected image states" if cross_attention else "the hidden state"
+    cache_note = (
+        "" if cross_attention else
+        " Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
+    )
     return [
         {
             "id": "q_proj",
             "title": "Query projection",
-            "description": (
-                f"Linear over decoder hidden states; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)"
-                if cross_attention
-                else f"Linear; {hidden} -> {q_out}  ({num_heads} heads x {d_k} dims)"
-            ),
+            "description": f"Linear over {q_src} producing the per-head queries.",
+            "facts": [f"{hidden} → {q_out}", f"{num_heads} heads × {d_k}"],
         },
         {
             "id": "k_proj",
             "title": "Key projection",
-            "description": (
-                f"Linear over cross_attention_states; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)."
-                if cross_attention
-                else (
-                    f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
-                    "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
-                )
-            ),
+            "description": f"Linear over {kv_src} producing the keys.{cache_note}",
+            "facts": [f"{hidden} → {kv_out}", kv_chip],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
-            "description": (
-                f"Linear over cross_attention_states; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims)."
-                if cross_attention
-                else (
-                    f"Linear; {hidden} -> {kv_out}  ({kv_label} x {d_k} dims). "
-                    "Cache ports show K/V write/read during generation: arrowhead for write, blunt tail for read."
-                )
-            ),
+            "description": f"Linear over {kv_src} producing the values.{cache_note}",
+            "facts": [f"{hidden} → {kv_out}", kv_chip],
         },
         {
             "id": "scaled_scores",
             "title": scaled_title,
             "description": scaled_desc,
+            "facts": [f"{num_heads} Q heads", kv_chip, *group_fact],
         },
         {
             "id": "attn_softmax",
@@ -191,12 +185,14 @@ def _sdpa_detailed_child_blocks(
         {
             "id": "concat_heads",
             "title": "Concatenate heads",
-            "description": f"Stack all {num_heads} per-head context vectors back into width {q_out}",
+            "description": "Stack the per-head context vectors back into one width.",
+            "facts": [f"{num_heads} × {d_k}", f"→ {q_out}"],
         },
         {
             "id": "o_proj",
             "title": "Output projection",
-            "description": f"Linear; {q_out} -> {hidden}  (mixes information across heads)",
+            "description": "Linear mixing information across heads, back to the residual width.",
+            "facts": [f"{q_out} → {hidden}"],
         },
     ]
 
@@ -253,10 +249,11 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "Q projection",
             "title": "Query projection",
             "description": (
-                f"Projects hidden states into query latent space through LoRA rank {q_rank}"
+                "Projects hidden states into query latent space through a low-rank bottleneck."
                 if attention.q_lora_rank
-                else f"Projects hidden states directly into query heads; {hidden} -> {q_out}"
+                else "Projects hidden states directly into query heads."
             ),
+            "facts": ([f"rank {q_rank}"] if attention.q_lora_rank else []) + [f"{hidden} → {q_out}"],
         },
         {
             "id": "mla_q_nope",
@@ -268,7 +265,8 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_q_rope",
             "label": "Q RoPE",
             "title": "Query positional slice",
-            "description": f"Query positional component prepared for rotary position encoding; dim {rope}",
+            "description": "Query positional component prepared for rotary position encoding.",
+            "facts": [f"dim {rope}"],
         },
         {
             "id": "mla_q_rope_apply",
@@ -288,22 +286,25 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_kv_down",
             "label": "KV compress",
             "title": "K/V latent compression",
-            "description": f"Compresses the token state into the shared latent K/V cache; {hidden} -> rank {kv_rank}",
+            "description": "Compresses the token state into the shared latent K/V cache.",
+            "facts": [f"{hidden} → rank {kv_rank}"],
         },
         {
             "id": "mla_cache",
             "label": "latent cache c_t",
             "title": "Stored latent cache",
             "description": (
-                f"Compressed K/V latent stored in the cache instead of full K and V heads; rank {kv_rank}. "
+                "Compressed K/V latent stored in the cache instead of full K and V heads. "
                 "Cache ports show write from compression and read back into K/V expansion."
             ),
+            "facts": [f"rank {kv_rank}"],
         },
         {
             "id": "mla_kv_up",
             "label": "KV expand",
             "title": "K/V head expansion",
-            "description": f"Expands cached latent c_t into K noPE content and V values for {num_heads} query heads",
+            "description": "Expands the cached latent c_t into K noPE content and V values.",
+            "facts": [f"{num_heads} heads"],
         },
         {
             "id": "mla_k_nope",
@@ -315,7 +316,8 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_k_rope",
             "label": "K RoPE",
             "title": "Key positional slice",
-            "description": f"Key positional component produced alongside the latent cache; dim {rope}",
+            "description": "Key positional component produced alongside the latent cache.",
+            "facts": [f"dim {rope}"],
         },
         {
             "id": "mla_k_rope_apply",
@@ -345,6 +347,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
                 "Builds Q by projecting the hidden state, splitting content and positional slices, "
                 "applying RoPE to the positional slice, then concatenating them"
             ),
+            "facts": ([f"rank {q_rank}"] if attention.q_lora_rank else []),
             "view": "mla_query_path",
             "children": query_children,
         },
@@ -353,9 +356,10 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "KV cache path",
             "title": "MLA K/V cache path",
             "description": (
-                f"Compresses hidden state into rank {kv_rank} latent cache, expands K/V content, "
+                "Compresses the hidden state into the latent cache, expands K/V content, "
                 "and combines K noPE with a RoPE key side-channel. Cache ports mark the latent write/read point."
             ),
+            "facts": [f"cache rank {kv_rank}"],
             "view": "mla_kv_cache_path",
             "children": kv_children,
         },
@@ -381,13 +385,15 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "concat_heads",
             "label": "Concat heads",
             "title": "Concatenate latent heads",
-            "description": f"Stack all {num_heads} context heads back into width {q_out}",
+            "description": "Stack the per-head context vectors back into one width.",
+            "facts": [f"{num_heads} heads", f"→ {q_out}"],
         },
         {
             "id": "o_proj",
             "label": "Linear (out)",
             "title": "Output projection",
-            "description": f"Linear; {q_out} -> {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{q_out} → {hidden}"],
         },
     ]
 
@@ -400,7 +406,8 @@ def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "ssm_in_proj",
             "label": "Input projection",
             "title": "SSM input projection",
-            "description": f"Project hidden activations into SSM channels; hidden {hidden}",
+            "description": "Project hidden activations into SSM channels.",
+            "facts": [f"hidden {hidden}"],
         },
         {
             "id": "ssm_conv",
@@ -412,7 +419,8 @@ def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "ssm_scan",
             "label": "Selective scan",
             "title": "Selective state-space scan",
-            "description": f"Token recurrence with state dimension {state}",
+            "description": "Token recurrence over the sequence.",
+            "facts": [f"state dim {state}"],
         },
         {
             "id": "ssm_gate",
@@ -424,7 +432,8 @@ def _ssm_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "ssm_out_proj",
             "label": "Output projection",
             "title": "SSM output projection",
-            "description": f"Project SSM channels back to hidden dim {hidden}",
+            "description": "Project SSM channels back to the residual width.",
+            "facts": [f"→ {hidden}"],
         },
     ]
 
@@ -437,13 +446,15 @@ def _recurrent_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[
             "id": "lru_in_proj",
             "label": "Input projection",
             "title": "LRU input projection",
-            "description": f"Linear; hidden {hidden} -> recurrent width {width}",
+            "description": "Linear into the recurrent width.",
+            "facts": [f"{hidden} → {width}"],
         },
         {
             "id": "lru_state",
             "label": "Recurrent state",
             "title": "Linear recurrent state",
-            "description": f"State update over sequence positions; width {width}",
+            "description": "State update over sequence positions.",
+            "facts": [f"width {width}"],
         },
         {
             "id": "lru_gate",
@@ -455,7 +466,8 @@ def _recurrent_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[
             "id": "lru_out_proj",
             "label": "Output projection",
             "title": "LRU output projection",
-            "description": f"Linear; recurrent width {width} -> hidden {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{width} → {hidden}"],
         },
     ]
 
@@ -468,13 +480,15 @@ def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
             "id": "rwkv_receptance",
             "label": "Receptance",
             "title": "Receptance gate",
-            "description": f"Token-wise gate over hidden dim {hidden}",
+            "description": "Token-wise gate over the hidden state.",
+            "facts": [f"dim {hidden}"],
         },
         {
             "id": "rwkv_key",
             "label": "Key",
             "title": "RWKV key projection",
-            "description": f"Key-like channel mixing over {heads} recurrent heads",
+            "description": "Key-like channel mixing over the recurrent heads.",
+            "facts": [f"{heads} heads"],
         },
         {
             "id": "rwkv_value",
@@ -492,7 +506,8 @@ def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
             "id": "rwkv_out",
             "label": "Output projection",
             "title": "RWKV output projection",
-            "description": f"Project mixed channels back to hidden dim {hidden}",
+            "description": "Project mixed channels back to the residual width.",
+            "facts": [f"→ {hidden}"],
         },
     ]
 
@@ -509,19 +524,22 @@ def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -
             "id": "q_proj",
             "label": "Linear (Q)",
             "title": "Query projection",
-            "description": f"Linear; {hidden} -> {q_out}",
+            "description": "Linear projection producing the queries.",
+            "facts": [f"{hidden} → {q_out}"],
         },
         {
             "id": "k_proj",
             "label": "Linear (K)",
             "title": "Key projection",
-            "description": f"Linear; {hidden} -> {kv_out}",
+            "description": "Linear projection producing the keys.",
+            "facts": [f"{hidden} → {kv_out}"],
         },
         {
             "id": "v_proj",
             "label": "Linear (V)",
             "title": "Value projection",
-            "description": f"Linear; {hidden} -> {kv_out}",
+            "description": "Linear projection producing the values.",
+            "facts": [f"{hidden} → {kv_out}"],
         },
         {
             "id": "kernel_map",
@@ -539,6 +557,7 @@ def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -
             "id": "o_proj",
             "label": "Linear (out)",
             "title": "Output projection",
-            "description": f"Linear; {q_out} -> {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{q_out} → {hidden}"],
         },
     ]

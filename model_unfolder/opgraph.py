@@ -202,16 +202,13 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
 
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out."""
-    d_k = f"{head_dim:,}" if head_dim else "d_k"
     ops = [
         Op("scaled_scores", "attention_core", fn="scaled_dot_product",
            meta={"numerator": "Q K^T", "denominator": "sqrt(dim)",
                  "formula": "QK^T/sqrt(dim)"}),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
-        Op("concat_heads", "concat",
-           ["Concat heads", f"{heads:,} x {d_k}"] if heads else "Concat heads",
-           out_features=q_w),
+        Op("concat_heads", "concat", "Concat heads", out_features=q_w),
         Op("o_proj", "linear", "Linear (out)", in_features=q_w, out_features=hidden),
     ]
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),
@@ -224,17 +221,13 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
     cross = bool(attn.get("cross_attention"))
 
-    q_label = ["Linear (Q)", f"{heads:,} heads"] if (heads and kind != "mha") else "Linear (Q)"
-    kv_sub = ("1 head" if kv_heads == 1 else f"{kv_heads:,} heads") if (kv_heads and kind != "mha") else None
 
     ops = [
         Op("hidden", "input", out_features=hidden),
-        Op("q_proj", "linear", q_label, in_features=hidden, out_features=q_w),
-        Op("k_proj", "linear", ["Linear (K)", kv_sub] if kv_sub else "Linear (K)",
-           in_features=hidden, out_features=kv_w,
+        Op("q_proj", "linear", "Linear (Q)", in_features=hidden, out_features=q_w),
+        Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
            meta={"cached": bool(attn.get("cached", not cross))}),
-        Op("v_proj", "linear", ["Linear (V)", kv_sub] if kv_sub else "Linear (V)",
-           in_features=hidden, out_features=kv_w,
+        Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
            meta={"cached": bool(attn.get("cached", not cross))}),
     ]
     kv_src = "hidden"
@@ -262,11 +255,9 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
     kv_rank = attn.get("kv_lora_rank")
     ops = [
         Op("hidden", "input", out_features=hidden),
-        Op("mla_query_path", "subgraph",
-           ["Query path", f"rank {q_rank:,}" if q_rank else "direct"],
+        Op("mla_query_path", "subgraph", "Query path",
            in_features=hidden, out_features=q_w),
-        Op("mla_kv_path", "subgraph",
-           ["KV cache path", f"cache rank {kv_rank:,}" if kv_rank else "latent"],
+        Op("mla_kv_path", "subgraph", "KV cache path",
            in_features=hidden, meta={"cached": True}),
     ]
     core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
@@ -287,11 +278,10 @@ def mla_query_region(attn: dict, hidden: int | None) -> Region:
     _, _, _, q_w, _ = _head_geometry(attn, hidden)
     ops = [
         Op("hidden", "input", out_features=hidden),
-        Op("mla_q", "linear",
-           ["Query projection", f"rank {q_rank:,}" if q_rank else "direct"],
+        Op("mla_q", "linear", "Query projection",
            in_features=hidden, out_features=q_w, meta={"lora_rank": q_rank}),
         Op("mla_q_nope", "slice", "Q noPE"),
-        Op("mla_q_rope", "slice", ["Q RoPE", f"dim {rope:,}"] if rope else "Q RoPE"),
+        Op("mla_q_rope", "slice", "Q RoPE"),
         Op("mla_q_rope_apply", "rope", ["apply RoPE", "Q side"]),
         Op("mla_q_concat", "concat", ["Q concat", "NoPE + RoPE"]),
     ]
@@ -311,15 +301,14 @@ def mla_kv_region(attn: dict, hidden: int | None) -> Region:
     rope = attn.get("rope_dim")
     ops = [
         Op("hidden", "input", out_features=hidden),
-        Op("mla_kv_down", "linear",
-           ["KV compression", f"rank {kv_rank:,}" if kv_rank else "latent"],
+        Op("mla_kv_down", "linear", "KV compression",
            in_features=hidden, out_features=kv_rank),
         Op("mla_cache", "cache", ["latent cache c_t", "stored"],
            meta={"stores": ["kv_latent"]}),
         Op("mla_kv_up", "linear", "KV expansion", in_features=kv_rank),
         Op("mla_k_nope", "slice", "K noPE"),
         Op("mla_v", "slice", ["V", "from latent"], meta={"out_label": "V"}),
-        Op("mla_k_rope", "slice", ["K RoPE", f"dim {rope:,}"] if rope else "K RoPE"),
+        Op("mla_k_rope", "slice", "K RoPE"),
         Op("mla_k_rope_apply", "rope", ["apply RoPE", "K side"]),
         Op("mla_k_merge", "concat", ["K concat", "NoPE + RoPE"]),
     ]
@@ -339,9 +328,7 @@ def _ssm_region(attn: dict, hidden: int | None) -> Region:
         Op("hidden", "input", out_features=hidden),
         Op("ssm_in_proj", "linear", "Input projection", in_features=hidden),
         Op("ssm_conv", "conv", "Local Conv"),
-        Op("ssm_scan", "attention_core",
-           ["Selective Scan", f"state dim {state:,}" if state else "selective recurrence"],
-           fn="selective_scan"),
+        Op("ssm_scan", "attention_core", "Selective Scan", fn="selective_scan"),
         Op("ssm_gate", "elementwise", "Gate", fn="mul"),
         Op("ssm_out_proj", "linear", "Output projection", out_features=hidden),
     ]
@@ -354,9 +341,7 @@ def _recurrent_region(attn: dict, hidden: int | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("lru_in_proj", "linear", "Input projection", in_features=hidden, out_features=width),
-        Op("lru_state", "attention_core",
-           ["Recurrent State", f"width {width:,}" if width else "linear recurrence"],
-           fn="linear_recurrence"),
+        Op("lru_state", "attention_core", "Recurrent State", fn="linear_recurrence"),
         Op("lru_gate", "elementwise", "Gate", fn="mul"),
         Op("lru_out_proj", "linear", "Output projection", in_features=width, out_features=hidden),
     ]
@@ -370,8 +355,7 @@ def _rwkv_region(attn: dict, hidden: int | None) -> Region:
         Op("rwkv_receptance", "linear", "Receptance", in_features=hidden),
         Op("rwkv_key", "linear", "Key", in_features=hidden),
         Op("rwkv_value", "linear", "Value", in_features=hidden),
-        Op("rwkv_time_mix", "attention_core", ["Time-Mix", "linear recurrence"],
-           fn="time_mix"),
+        Op("rwkv_time_mix", "attention_core", "Time-Mix", fn="time_mix"),
         Op("rwkv_out", "linear", "Output projection", out_features=hidden),
     ]
     edges = [
@@ -390,8 +374,7 @@ def _linear_attention_region(attn: dict, hidden: int | None) -> Region:
         Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w),
         Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w),
         Op("kernel_map", "activation", "Kernel feature map", fn="kernel_feature_map"),
-        Op("linear_mix", "attention_core",
-           ["Linear Attention Mix", "prefix/state accumulation"], fn="linear_attention"),
+        Op("linear_mix", "attention_core", "Linear Attention Mix", fn="linear_attention"),
         Op("o_proj", "linear", "Linear (out)", in_features=q_w, out_features=hidden),
     ]
     edges = [

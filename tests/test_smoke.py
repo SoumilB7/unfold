@@ -637,12 +637,12 @@ def test_single_kv_gemma4_stays_gqa_view():
 
     html = d.to_html(standalone=True)
     assert "Grouped-query attention" in html
-    assert "Grouped SDPA" in html
+    assert "Grouped scaled dot-product attention" in html
     assert "GQA 8/1" in html
     assert "Q0-Q7" in html
     assert "use KV0" in html
     assert "Multi-query attention" not in html
-    assert "Multi-Query SDPA" not in html
+    assert "Multi-query scaled dot-product attention" not in html
 
 
 def test_gemma4_ple_uses_reusable_part_contract():
@@ -780,7 +780,7 @@ def test_llama3():
     assert ir["params"]["is_sparse"] is False
 
     html = d.to_html(standalone=True)
-    assert "Grouped SDPA" in html
+    assert "Grouped scaled dot-product attention" in html
     assert "KV sharing pattern" in html
     assert "Q0-Q3" in html
     assert "use KV0" in html
@@ -826,7 +826,7 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     assert "add2" not in block_by_id
 
     html = d.to_html(standalone=True)
-    assert "Multi-Query SDPA" in html
+    assert "Multi-query scaled dot-product attention" in html
     assert "Shared K/V cache" in html
     # the aside chip splits the fact into a strong half and a detail half
     assert "1 K + 1 V" in html and "reused by 71 Q" in html

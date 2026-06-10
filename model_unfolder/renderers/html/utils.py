@@ -26,3 +26,11 @@ def _html(value: Any) -> str:
 
 def _attr(value: Any) -> str:
     return escape(str(value), quote=True)
+
+
+def facts_html(facts) -> str:
+    """The one chips row every inspect card uses for its numeric/spec facts."""
+    if not facts:
+        return ""
+    chips = "".join(f'<span class="uf-fact">{_html(f)}</span>' for f in facts if f)
+    return f'<div class="uf-card-facts">{chips}</div>' if chips else ""

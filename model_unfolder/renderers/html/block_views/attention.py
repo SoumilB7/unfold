@@ -13,7 +13,7 @@ from __future__ import annotations
 from ....labels import describe_attention, kv_shared, mask_long
 from ....opgraph import attention_region, mla_kv_region, mla_query_region
 from ..graph_engine import render_graph
-from ..utils import _html
+from ..utils import _html, facts_html
 from ..op_render import region_to_graph
 
 _TITLES = {
@@ -137,11 +137,14 @@ def attention_card(ir: dict, info: dict, meta_for: callable) -> str:
         g for g in info.get("groups", []) if g.get("spec", {}).get("attention")
     ]
     if len(attn_groups) <= 1:
-        title, desc = meta_for("attn")
+        entry = meta_for("attn")
+        title, desc = entry[0], entry[1]
+        facts = list(entry[2]) if len(entry) >= 3 else []
         return (
             '<div class="uf-card-detail uf-card-attn" data-card-id="attn" data-card-size="compact">'
             f'<div class="uf-card-title">{_html(title)}</div>'
             f'<div class="uf-card-desc">{_html(desc)}</div>'
+            f"{facts_html(facts)}"
             "</div>"
         )
 

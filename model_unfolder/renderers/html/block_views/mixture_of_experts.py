@@ -8,7 +8,6 @@ region the top-level FFN view and the JSON expert template project from.
 """
 from __future__ import annotations
 
-from ....labels import moe_router_lines
 from ....opgraph import ffn_region, rename_ops
 from ..graph import Graph, Node, Parallel
 from ..graph_engine import render_graph
@@ -22,7 +21,6 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
     last = str(n_total) if n_total else "N"
-    router_lines = moe_router_lines(ffn)
 
     experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
                ("expert_kp1", "Expert k+1"), ("expert_n", f"Expert {last}")]
@@ -33,7 +31,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     nodes = [
         Node("moe_hidden", "port",
              (f"in ({hidden:,})" if hidden else "in"), static=True),
-        Node("router", "router", router_lines, h=max(54, 18 * len(router_lines) + 26)),
+        Node("router", "router", "Router"),
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
         Node("add_moe", "residual_add"),
         Node("moe_out", "port", static=True),

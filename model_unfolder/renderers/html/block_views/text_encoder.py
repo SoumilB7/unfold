@@ -53,24 +53,22 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     graph = tower_graph({
         "source": {"id": f"{pfx}_tokens", "label": "in (prompt tokens)"},
         "pre": [
-            {"id": f"{pfx}_op_embed", "kind": "embedding", "label": embed_main, "sub": embed_sub},
+            {"id": f"{pfx}_op_embed", "kind": "embedding", "label": embed_main},
         ],
         "cell": [
             {"id": f"{pfx}_op_norm", "kind": "norm", "label": norm},
             {"id": f"{pfx}_op_selfattn", "kind": "attention",
-             "label": "Multi-head self-attention",
-             "sub": (f"{heads} heads" if heads else None)},
+             "label": "Multi-head self-attention"},
             {"id": f"{pfx}_op_add", "kind": "residual_add",
              "residual_from": f"{pfx}_op_norm"},
             {"id": f"{pfx}_op_norm2", "kind": "norm", "label": norm,
              "target": f"{pfx}_op_norm"},
-            {"id": f"{pfx}_op_ffn", "kind": "ffn", "label": "Feed-forward (FFN)",
-             "sub": (f"{_n(hidden)} → {_n(ffn)}" if (hidden and ffn) else None)},
+            {"id": f"{pfx}_op_ffn", "kind": "ffn", "label": "Feed-forward (FFN)"},
             {"id": f"{pfx}_op_add2", "kind": "residual_add",
              "residual_from": f"{pfx}_op_norm2", "target": f"{pfx}_op_add"},
         ],
         "repeat": layers,
-        "output": {"id": f"{pfx}_out", "label": out_sub, "static": True},
+        "output": {"id": f"{pfx}_out", "static": True},
         "note": note,
     })
     return render_graph(graph, info, mount_id, "txtenc", f"{name} text encoder")

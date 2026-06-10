@@ -298,6 +298,136 @@ def describe_ffn(ffn: dict) -> str:
     return f"{gated}FFN; {activation_label(ffn.get('activation'))}; hidden {_fmt_int(ffn.get('intermediate_size'))}"
 
 
+# ---------------------------------------------------------------------------
+# Card summaries — explanation prose + fact chips, kept separate.
+# The diagram shows structure; the numbers live here as data.
+# ---------------------------------------------------------------------------
+
+
+def attention_summary(attention: dict) -> tuple[str, list[str]]:
+    """(explanation sentence, fact chips) for an attention/token-mixing block."""
+    kind = attention.get("kind")
+    facts: list[str] = []
+    variant = attention.get("variant")
+    if variant and variant.get("desc"):
+        desc = variant["desc"]
+        _head_facts(attention, facts)
+    elif attention.get("cross_attention"):
+        desc = ("Cross-attention — decoder hidden states produce the queries; "
+                "the projected image states produce K and V.")
+        kv = attention.get("num_kv_heads") or attention.get("num_heads")
+        facts += [f"{attention.get('num_heads')} Q heads", f"{kv} KV heads"]
+        _dim_fact(attention, facts)
+    elif kind == "mla":
+        desc = ("Multi-head latent attention — K/V are stored as one compressed "
+                "latent and expanded per head at read time.")
+        facts.append(f"{attention.get('num_heads')} heads")
+        if attention.get("kv_lora_rank"):
+            facts.append(f"KV rank {_fmt_int(attention.get('kv_lora_rank'))}")
+        if attention.get("q_lora_rank"):
+            facts.append(f"Q rank {_fmt_int(attention.get('q_lora_rank'))}")
+    elif kind == "mqa":
+        desc = "Multi-query attention — every query head reads one shared K/V head."
+        facts += [f"{attention.get('num_heads')} Q heads", "1 KV head"]
+        _dim_fact(attention, facts)
+    elif kind == "gqa":
+        desc = "Grouped-query attention — query heads share a smaller set of K/V heads."
+        facts += [f"{attention.get('num_heads')} Q heads",
+                  f"{attention.get('num_kv_heads')} KV heads"]
+        _dim_fact(attention, facts)
+    elif kind == "ssm":
+        desc = "Selective state-space mixer (Mamba) — a recurrence replaces attention."
+        if attention.get("head_dim"):
+            facts.append(f"state dim {_fmt_int(attention.get('head_dim'))}")
+    elif kind == "recurrent":
+        desc = "Linear recurrent unit — a gated recurrence replaces attention."
+        if attention.get("head_dim"):
+            facts.append(f"width {_fmt_int(attention.get('head_dim'))}")
+    elif kind == "rwkv":
+        desc = "RWKV token-mixing — a time-decay recurrence replaces attention."
+        if attention.get("num_heads"):
+            facts.append(f"{attention.get('num_heads')} heads")
+    elif kind == "linear":
+        desc = "Linear attention — kernelized scores accumulate in linear time."
+        _head_facts(attention, facts)
+    else:
+        desc = "Multi-head self-attention — every head attends over the sequence."
+        facts.append(f"{attention.get('num_heads')} heads")
+        _dim_fact(attention, facts)
+
+    if is_sliding(attention) and attention.get("window_size"):
+        facts.append(f"window {_fmt_int(attention.get('window_size'))}")
+    if attention.get("mask") == "compressed_sparse":
+        facts.append(f"CSA ratio {_fmt_int(attention.get('compress_ratio'))}")
+        if attention.get("index_topk"):
+            facts.append(f"index top-{_fmt_int(attention.get('index_topk'))}")
+    if attention.get("mask") == "heavily_compressed":
+        facts.append(f"HCA ratio {_fmt_int(attention.get('compress_ratio'))}")
+    for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
+                       ("shared", "weight-shared"), ("no_rope", "NoPE")):
+        if attention.get(flag):
+            facts.append(chip)
+    return desc, facts
+
+
+def _head_facts(attention: dict, facts: list[str]) -> None:
+    if attention.get("num_heads"):
+        facts.append(f"{attention.get('num_heads')} Q heads")
+    if attention.get("num_kv_heads"):
+        facts.append(f"{attention.get('num_kv_heads')} KV heads")
+    _dim_fact(attention, facts)
+
+
+def _dim_fact(attention: dict, facts: list[str]) -> None:
+    if attention.get("head_dim"):
+        facts.append(f"head dim {_fmt_int(attention.get('head_dim'))}")
+
+
+def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
+    """(explanation sentence, fact chips) for an FFN / MoE block."""
+    if ffn.get("kind") == "moe":
+        desc = ("Mixture of experts — the router sends each token through a few "
+                "expert FFNs instead of one dense MLP.")
+        facts = [f"{_fmt_int(ffn.get('num_experts'))} experts"]
+        if ffn.get("num_experts_per_tok"):
+            chip = f"top-{ffn.get('num_experts_per_tok')}"
+            if ffn.get("num_shared_experts"):
+                chip += f" + {ffn.get('num_shared_experts')} shared"
+            facts.append(chip)
+        if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
+            facts.append(f"{100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active")
+        facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
+        return desc, facts
+    if ffn.get("gated"):
+        desc = ("Gated MLP — a gate path modulates the up projection before "
+                "projecting back down.")
+    else:
+        desc = "Two-layer MLP — expand, apply the non-linearity, project back."
+    return desc, [activation_label(ffn.get("activation")),
+                  f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
+
+
+def router_facts(ffn: dict) -> list[str]:
+    """Fact chips for an MoE router (selection knobs the config declares)."""
+    facts = []
+    if ffn.get("num_experts"):
+        facts.append(f"{_fmt_int(ffn.get('num_experts'))} experts")
+    if ffn.get("num_experts_per_tok"):
+        facts.append(f"top-{ffn.get('num_experts_per_tok')}")
+    routing = ffn.get("routing") or {}
+    if routing.get("scoring_func"):
+        facts.append(str(routing["scoring_func"]))
+    if routing.get("n_group"):
+        facts.append(f"{routing['n_group']} groups")
+    if routing.get("topk_group"):
+        facts.append(f"top-{routing['topk_group']} groups")
+    if routing.get("norm_topk_prob"):
+        facts.append("renormalized")
+    if routing.get("routed_scaling_factor"):
+        facts.append(f"scale {routing['routed_scaling_factor']}")
+    return facts
+
+
 def _fmt_int(value) -> str:
     if value is None:
         return "?"

@@ -33,16 +33,12 @@ def encoder_tower_spec(encoder: dict) -> dict:
     attention + feed-forward repeated, bare in/out ports.  Nodes are static —
     the config declares no finer internals to drill into."""
     hidden = encoder.get("hidden_size")
-    heads = encoder.get("num_attention_heads")
-    attn_sub = " · ".join(s for s in (
-        f"{_fmt_int(heads)} heads" if heads else "",
-        f"{_fmt_int(hidden)}d" if hidden else "") if s) or None
     return {
         "source": {"id": "enc_in",
                    "label": (f"in ({_fmt_int(hidden)})" if hidden else None)},
         "cell": [
             {"id": "enc_attn", "kind": "attention", "label": "Self-attention",
-             "sub": attn_sub, "static": True},
+             "static": True},
             {"id": "enc_ffn", "kind": "ffn", "label": "Feed-forward",
              "static": True},
         ],

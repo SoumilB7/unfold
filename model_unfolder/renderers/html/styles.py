@@ -269,6 +269,22 @@ def _style(mount_id: str) -> str:
   margin-top:4px;
   line-height:1.45;
 }}
+#{mount_id} .uf-card-facts {{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}}
+#{mount_id} .uf-fact {{
+  font-family:{FONT_MONO};
+  font-size:11px;
+  color:{C['text']};
+  background:{C['badge_bg']};
+  border:0.5px solid {C['border']};
+  border-radius:999px;
+  padding:3px 10px;
+  white-space:nowrap;
+}}
 #{mount_id} .uf-card-svg {{
   margin-top:10px;
   background:{C['bg_card']};

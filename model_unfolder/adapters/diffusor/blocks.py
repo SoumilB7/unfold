@@ -350,45 +350,49 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     else:
         embed_desc = "Maps each token id to a vector and adds positional information."
         attn_extra = ""
-    if vocab:
-        embed_desc += f" Vocabulary {_fmt(vocab)}"
-        embed_desc += f", embedding dim {_fmt(hidden)}." if hidden else "."
-    if max_pos and not is_t5:
-        embed_desc += f" Max sequence length {_fmt(max_pos)}."
+    embed_facts = [f for f in (
+        f"{_fmt(vocab)} vocab" if vocab else "",
+        f"{_fmt(hidden)}-d" if hidden else "",
+        f"max seq {_fmt(max_pos)}" if (max_pos and not is_t5) else "",
+    ) if f]
 
     attn_desc = (
         "Each token attends to the others in the prompt, mixing context across the "
         "sequence so every position is contextualised." + attn_extra
     )
-    if heads:
-        head_dim = (hidden // heads) if (hidden and heads and hidden % heads == 0) else None
-        attn_desc += f" {heads} heads" + (f" × {head_dim}-d each" if head_dim else "") + "."
+    head_dim = (hidden // heads) if (hidden and heads and hidden % heads == 0) else None
+    attn_facts = [f for f in (
+        f"{heads} heads" if heads else "",
+        f"head dim {_fmt(head_dim)}" if head_dim else "",
+    ) if f]
 
     ffn_desc = (
         "A position-wise two-layer MLP applied to each token independently, "
         "expanding then projecting back — the per-token non-linear transform."
     )
-    if hidden and ffn:
-        ffn_desc += f" {_fmt(hidden)} → {_fmt(ffn)} → {_fmt(hidden)}"
-        ffn_desc += f", {act} activation." if act else "."
-    elif act:
-        ffn_desc += f" {act} activation."
+    ffn_facts = [f for f in (
+        f"{_fmt(hidden)} → {_fmt(ffn)} → {_fmt(hidden)}" if (hidden and ffn) else "",
+        str(act) if act else "",
+    ) if f]
 
     return [
         {
             "id": f"{prefix}_op_embed",
             "title": "Token embedding" if (is_t5 or is_lm_style) else "Token + positional embedding",
             "description": embed_desc,
+            "facts": embed_facts,
         },
         {
             "id": f"{prefix}_op_selfattn",
             "title": "Multi-head self-attention",
             "description": attn_desc,
+            "facts": attn_facts,
         },
         {
             "id": f"{prefix}_op_ffn",
             "title": "Feed-forward (FFN)",
             "description": ffn_desc,
+            "facts": ffn_facts,
             # Opens the ONE shared FFN view, parameterised by this encoder's own
             # facts — same view the denoiser/LLM FFN opens.
             "view": "ffn",
