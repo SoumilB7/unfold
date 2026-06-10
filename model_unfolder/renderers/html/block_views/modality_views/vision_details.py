@@ -1,11 +1,26 @@
-"""Drill-down SVGs for vision pathway internals."""
+"""Drill-down views for vision pathway internals.
+
+The encoder cell, its self-attention, and its MLP are *projections of the same
+canonical structures* the rest of the renderer uses: the cell is a declarative
+:class:`~...graph.Graph` (like the text encoder), the self-attention renders
+:func:`....opgraph.attention_region` and the MLP :func:`....opgraph.ffn_region`,
+both renamed into the ``vision_*`` card namespace via ``rename_ops`` — a ViT's
+attention is not authored a second time just because it lives in a tower.
+
+Only the patch-embedding view keeps bespoke art (the pixel→patch grid is unique
+pedagogy, not a duplicated structure).
+"""
 from __future__ import annotations
 
-from ...svg import _ids, _rect_block, _svg_tag, _svg_text
-from ...theme import C
-from ...utils import _fmt_int
+from .....opgraph import attention_region, ffn_region, rename_ops
+from ...graph import Edge, Graph, Group, Node
+from ...graph_engine import render_graph
+from ...op_render import region_to_graph
 from ...patch_grid import coerce_grid, grid_subtitle, grid_title
-from ...stack_view import StackView, fit_svg, point
+from ...stack_view import StackView
+from ...svg import _svg_tag, _svg_text
+from ...theme import C, FONT_MONO
+from ...utils import _fmt_int
 from .common import vision_input
 
 
@@ -29,199 +44,137 @@ def build_patch_embedding_view(ir: dict, info: dict, mount_id: str, _child: dict
 
 
 def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
-    """Show the ViT-style encoder stack inside the vision pathway."""
-    vision = vision_input(ir)
-    encoder = vision.get("encoder") or {}
+    """The ViT-style encoder: a pre-norm cell repeated × N, declared as data."""
+    encoder = (vision_input(ir).get("encoder") or {})
     layers = encoder.get("num_layers")
     heads = encoder.get("num_attention_heads")
     hidden = encoder.get("hidden_size")
+    intermediate = encoder.get("intermediate_size")
     pos = (encoder.get("position_encoding") or {}).get("kind")
 
-    arrow_id, shadow_id = _ids(mount_id, "vision-encoder")
-    parts: list[str] = []
-
-    cx = 0  # fit_svg translates + centres content
-    _tower_badge(parts, cx + 194, 50)
-    patch_tokens = _rect_block(parts, info, shadow_id, "vision_patch_tokens", cx - 140, 800, 280, 48, "Patch tokens")
-    pos_block = _rect_block(parts, info, shadow_id, "vision_position", cx - 160, 690, 320, 52, _pos_label(pos))
-    stack = _encoder_stack(parts, info, shadow_id, cx, 170, layers, heads, hidden)
-    encoded = _rect_block(parts, info, shadow_id, "vision_encoded_states", cx - 175, 72, 350, 54, "Encoded image states")
-
-    _up_arrow(parts, patch_tokens["cx"], patch_tokens["top"], pos_block["bottom"] + 12)
-    _v_stem(parts, pos_block["cx"], pos_block["top"], stack["bottom"])
-    _up_arrow(parts, stack["cx"], stack["top"], encoded["bottom"] + 12)
-    _up_arrow(parts, encoded["cx"], encoded["top"], encoded["top"] - 34)
-
-    regions = [
-        patch_tokens, pos_block, stack, encoded,
-        point(cx + 194 + 158, 78),            # tower badge right edge
-        point(cx, encoded["top"] - 34),       # terminal arrow tip
+    nodes = [
+        Node("vision_patch_tokens", "embedding", "Patch tokens",
+             sub=(f"{_fmt_int(hidden)}-d" if hidden else None)),
+        Node("vision_position", "embedding", _pos_label(pos)),
+        Node("vision_encoder_norm1", "norm", "LayerNorm"),
+        Node("vision_encoder_attn", "attention", "Self-attention",
+             sub=_attention_sub(heads, hidden)),
+        Node("vision_add1", "residual_add", static=True),
+        Node("vision_encoder_norm2", "norm", "LayerNorm"),
+        Node("vision_encoder_mlp", "ffn", "MLP",
+             sub=(f"{_fmt_int(hidden)} → {_fmt_int(intermediate)}"
+                  if (hidden and intermediate) else None)),
+        Node("vision_add2", "residual_add", static=True),
+        Node("vision_encoded_states", "output", "Encoded image states"),
     ]
-    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} vision encoder")
+    cell = ["vision_encoder_norm1", "vision_encoder_attn", "vision_add1",
+            "vision_encoder_norm2", "vision_encoder_mlp", "vision_add2"]
+    graph = Graph(
+        nodes=nodes,
+        flow=[n.id for n in nodes],
+        edges=[
+            Edge("vision_encoder_norm1", "vision_add1", "residual"),
+            Edge("vision_encoder_norm2", "vision_add2", "residual"),
+        ],
+        groups=[Group(cell, repeat=layers)],
+        note="separate tower",
+    )
+    return render_graph(graph, info, mount_id, "vision-encoder",
+                        f"{ir.get('name', 'model')} vision encoder")
+
+
+#: canonical SDPA op ids -> the vision tower's card namespace.
+_VISION_ATTN_IDS = {
+    "q_proj": "vision_attn_q",
+    "k_proj": "vision_attn_k",
+    "v_proj": "vision_attn_v",
+    "scaled_scores": "vision_attn_scaled",
+    "attn_softmax": "vision_attn_softmax",
+    "attn_apply_v": "vision_attn_values",
+    "concat_heads": "vision_attn_concat",
+    "o_proj": "vision_attn_out",
+}
+
+#: canonical FFN op ids -> the vision MLP's card namespace.
+_VISION_MLP_IDS = {
+    "hidden": "vision_mlp_input",
+    "up_proj": "vision_mlp_fc1",
+    "activation": "vision_mlp_activation",
+    "down_proj": "vision_mlp_fc2",
+}
 
 
 def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
-    """Show the self-attention sublayer inside one vision encoder block."""
+    """The self-attention sublayer — the ONE canonical SDPA region, renamed
+    into the vision card namespace.  Encoders attend bidirectionally and keep
+    no KV cache, so the region is built uncached."""
     encoder = (vision_input(ir).get("encoder") or {})
     heads = encoder.get("num_attention_heads")
     hidden = encoder.get("hidden_size")
-    head_dim = _head_dim(heads, hidden)
-
-    arrow_id, shadow_id = _ids(mount_id, "vision-self-attention")
-    parts: list[str] = []
-
-    cx = 0  # fit_svg translates + centres content
-    out = _rect_block(parts, info, shadow_id, "vision_attn_out", cx - 105, 70, 210, 50, "Linear (out)")
-    concat = _rect_block(parts, info, shadow_id, "vision_attn_concat", cx - 120, 154, 240, 56, _concat_label(heads, head_dim), font_size=16)
-    apply_v = _dot_node(parts, "vision_attn_values", cx, 270, shadow_id)
-    softmax = _rect_block(parts, info, shadow_id, "vision_attn_softmax", cx - 100, 338, 200, 52, "Softmax")
-    scaled = _fraction_block(parts, info, shadow_id, "vision_attn_scaled", cx - 150, 446, 300, 84)
-
-    q_proj = _rect_block(parts, info, shadow_id, "vision_attn_q", cx - 330, 606, 190, 52, "Linear (Q)")
-    k_proj = _rect_block(parts, info, shadow_id, "vision_attn_k", cx - 95, 606, 190, 52, "Linear (K)")
-    v_proj = _rect_block(parts, info, shadow_id, "vision_attn_v", cx + 140, 606, 190, 52, "Linear (V)")
-
-    _up_arrow(parts, cx, 724, 692)
-    _branch_to_three(parts, cx, 692, [q_proj, k_proj, v_proj], arrow_id)
-    _marker_path(parts, f"M {q_proj['cx']} {q_proj['top']} L {q_proj['cx']} 548 Q {q_proj['cx']} 538 {q_proj['cx'] + 10} 538 L {scaled['left'] + 48} 538 Q {scaled['left'] + 58} 538 {scaled['left'] + 58} 548 L {scaled['left'] + 58} {scaled['bottom'] + 8}", arrow_id)
-    _marker_path(parts, f"M {k_proj['cx']} {k_proj['top']} L {k_proj['cx']} {scaled['bottom'] + 8}", arrow_id)
-    _marker_path(parts, f"M {v_proj['cx']} {v_proj['top']} L {v_proj['cx']} 280 Q {v_proj['cx']} 270 {v_proj['cx'] - 10} 270 L {apply_v['right'] + 8} 270", arrow_id)
-    _up_arrow(parts, scaled["cx"], scaled["top"], softmax["bottom"] + 12)
-    _up_arrow(parts, softmax["cx"], softmax["top"], apply_v["bottom"] + 12)
-    _up_arrow(parts, apply_v["cx"], apply_v["top"], concat["bottom"] + 12)
-    _up_arrow(parts, concat["cx"], concat["top"], out["bottom"] + 12)
-    _up_arrow(parts, out["cx"], out["top"], out["top"] - 34)
-
-    regions = [
-        out, concat, apply_v, softmax, scaled, q_proj, k_proj, v_proj,
-        point(cx, out["top"] - 34),   # terminal arrow tip
-        point(cx, 724),               # input arrow tail
-    ]
-    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} vision self-attention")
+    region = rename_ops(
+        attention_region(
+            {"kind": "mha", "num_heads": heads,
+             "head_dim": _head_dim(heads, hidden), "cached": False},
+            hidden,
+        ),
+        _VISION_ATTN_IDS,
+    )
+    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
+    return render_graph(graph, info, mount_id, "vision-self-attention",
+                        f"{ir.get('name', 'model')} vision self-attention", min_width=640)
 
 
 def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
-    """Show the feed-forward sublayer inside one vision encoder block."""
+    """The feed-forward sublayer — the ONE canonical FFN region, renamed."""
     encoder = (vision_input(ir).get("encoder") or {})
-    hidden = encoder.get("hidden_size")
-    intermediate = encoder.get("intermediate_size")
-
-    view = StackView(info, mount_id, "vision-mlp", f"{ir.get('name', 'model')} vision MLP")
-    view.block("vision_mlp_input", "Patch states", w=250)
-    view.block("vision_mlp_fc1", _mlp_linear_label("Linear (in)", hidden, intermediate), w=300, h=52)
-    view.block("vision_mlp_activation", "Activation", w=210)
-    view.block("vision_mlp_fc2", _mlp_linear_label("Linear (out)", intermediate, hidden), w=300, h=52)
-    return view.render()
-
-
-def _tower_badge(parts: list[str], x: float, y: float) -> None:
-    parts.append(_svg_tag("rect", {
-        "x": x,
-        "y": y,
-        "width": 158,
-        "height": 28,
-        "rx": 14,
-        "ry": 14,
-        "fill": "rgba(255,255,255,0.72)",
-        "stroke": C["border"],
-        "stroke-width": 0.6,
-    }))
-    parts.append(_svg_text(x + 79, y + 14, "separate tower", {
-        "text-anchor": "middle",
-        "dominant-baseline": "central",
-        "fill": C["text"],
-        "font-family": "ui-monospace, \"JetBrains Mono\", \"SF Mono\", Menlo, monospace",
-        "font-size": 11,
-        "font-weight": 700,
-    }))
+    region = rename_ops(
+        ffn_region(
+            {"kind": "dense", "gated": False,
+             "activation": encoder.get("activation"),
+             "intermediate_size": encoder.get("intermediate_size")},
+            encoder.get("hidden_size"),
+        ),
+        _VISION_MLP_IDS,
+    )
+    graph = region_to_graph(region, clickable=True, ports=True, out_label=None)
+    return render_graph(graph, info, mount_id, "vision-mlp",
+                        f"{ir.get('name', 'model')} vision MLP", min_width=560)
 
 
-def _dot_node(parts: list[str], node_id: str, cx: float, cy: float, shadow_id: str) -> dict:
-    r = 16
-    children = [
-        _svg_tag("circle", {
-            "cx": cx,
-            "cy": cy,
-            "r": r,
-            "fill": C["block"],
-            "stroke": C["block_alt"],
-            "stroke-width": 0.6,
-            "filter": f"url(#{shadow_id})",
-        }),
-        _svg_tag("circle", {
-            "cx": cx,
-            "cy": cy,
-            "r": 5,
-            "fill": "none",
-            "stroke": C["text_block"],
-            "stroke-width": 2,
-            "pointer-events": "none",
-        }),
-    ]
-    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
-    return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}
+# ---------------------------------------------------------------------------
+# labels / facts
+# ---------------------------------------------------------------------------
 
 
-def _fraction_block(parts: list[str], info: dict, shadow_id: str, node_id: str, x: float, y: float, w: float, h: float) -> dict:
-    block = _rect_block(parts, info, shadow_id, node_id, x, y, w, h, ["Q K^T", "sqrt(dim)"], font_size=18)
-    parts.append(_svg_tag("line", {
-        "x1": x + 72,
-        "y1": y + h / 2 + 1,
-        "x2": x + w - 72,
-        "y2": y + h / 2 + 1,
-        "stroke": C["text_block"],
-        "stroke-width": 1.7,
-        "stroke-linecap": "round",
-        "pointer-events": "none",
-    }))
-    return block
-
-
-def _branch_to_three(parts: list[str], x: float, y: float, blocks: list[dict], arrow_id: str) -> None:
-    parts.append(_svg_tag("circle", {"cx": x, "cy": y, "r": 3.2, "fill": C["arrow"]}))
-    for block in blocks:
-        if block["cx"] == x:
-            _marker_path(parts, f"M {x} {y} L {block['cx']} {block['top'] - 8}", arrow_id)
-        else:
-            turn_y = y
-            _marker_path(
-                parts,
-                f"M {x} {turn_y} L {block['cx']} {turn_y} Q {block['cx']} {turn_y} {block['cx']} {turn_y - 10} "
-                f"L {block['cx']} {block['top'] - 8}",
-                arrow_id,
-            )
-
-
-def _marker_path(parts: list[str], d: str, arrow_id: str) -> None:
-    parts.append(_svg_tag("path", {
-        "d": d,
-        "fill": "none",
-        "stroke": C["arrow"],
-        "stroke-width": 1.6,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})",
-    }))
-
-
-def _concat_label(heads: int | None, head_dim: int | None):
-    if heads and head_dim:
-        return ["Concat heads", f"{_fmt_int(heads)} x {_fmt_int(head_dim)}"]
+def _attention_sub(heads: int | None, hidden: int | None) -> str | None:
+    if heads and hidden:
+        return f"{_fmt_int(heads)} heads · {_fmt_int(hidden)}d"
     if heads:
-        return ["Concat heads", f"{_fmt_int(heads)} heads"]
-    return "Concat heads"
+        return f"{_fmt_int(heads)} heads"
+    return None
 
 
-def _mlp_linear_label(name: str, in_dim: int | None, out_dim: int | None):
-    if in_dim and out_dim:
-        return [name, f"{_fmt_int(in_dim)} -> {_fmt_int(out_dim)}"]
-    return name
+def _projection_label(out_features: int | None):
+    if out_features:
+        return ["Linear / Conv2d", f"to {_fmt_int(out_features)}d"]
+    return ["Linear / Conv2d", "projection"]
+
+
+def _pos_label(pos: str | None):
+    if pos:
+        return ["Add positions", str(pos).replace("_", " ")]
+    return "Add position embeddings"
 
 
 def _head_dim(heads: int | None, hidden: int | None) -> int | None:
     if heads and hidden and hidden % heads == 0:
         return hidden // heads
     return None
+
+
+# ---------------------------------------------------------------------------
+# patch-grid pedagogy (unique to this view, not a duplicated structure)
+# ---------------------------------------------------------------------------
 
 
 def _patch_grid(parts: list[str], cx: float, y: float, grid: dict | None) -> dict:
@@ -236,29 +189,19 @@ def _patch_grid(parts: list[str], cx: float, y: float, grid: dict | None) -> dic
     cols = 5
     rows = 3
     grid_w = cols * cell + (cols - 1) * gap
-    grid_h = rows * cell + (rows - 1) * gap
     panel_w = 304
     panel_h = 150
     x = cx - panel_w / 2
     x0 = cx - grid_w / 2
     tile_y = y + 38
     parts.append(_svg_tag("rect", {
-        "x": x,
-        "y": y,
-        "width": panel_w,
-        "height": panel_h,
-        "rx": 12,
-        "ry": 12,
-        "fill": "#FFFFFF",
-        "stroke": C["border"],
-        "stroke-width": 0.7,
+        "x": x, "y": y, "width": panel_w, "height": panel_h,
+        "rx": 12, "ry": 12, "fill": "#FFFFFF",
+        "stroke": C["border"], "stroke-width": 0.7,
     }))
     parts.append(_svg_text(cx, y + 22, grid_title(grid), {
-        "text-anchor": "middle",
-        "fill": C["text"],
-        "font-family": "ui-monospace, \"JetBrains Mono\", \"SF Mono\", Menlo, monospace",
-        "font-size": 11,
-        "font-weight": 700,
+        "text-anchor": "middle", "fill": C["text"],
+        "font-family": FONT_MONO, "font-size": 11, "font-weight": 700,
     }))
     for row in range(rows):
         for col in range(cols):
@@ -266,204 +209,16 @@ def _patch_grid(parts: list[str], cx: float, y: float, grid: dict | None) -> dic
             parts.append(_svg_tag("rect", {
                 "x": x0 + col * (cell + gap),
                 "y": tile_y + row * (cell + gap),
-                "width": cell,
-                "height": cell,
-                "rx": 5,
-                "ry": 5,
+                "width": cell, "height": cell, "rx": 5, "ry": 5,
                 "fill": C["badge_bg"] if emphasis else "#F4FBF8",
                 "stroke": "#1F9E78" if emphasis else C["border"],
                 "stroke-width": 0.8,
             }))
     parts.append(_svg_text(cx, y + panel_h - 17, grid_subtitle(grid), {
-        "text-anchor": "middle",
-        "fill": C["muted"],
-        "font-family": "ui-monospace, \"JetBrains Mono\", \"SF Mono\", Menlo, monospace",
-        "font-size": 10,
+        "text-anchor": "middle", "fill": C["muted"],
+        "font-family": FONT_MONO, "font-size": 10,
     }))
     return {
-        "left": x,
-        "right": x + panel_w,
-        "top": y,
-        "bottom": y + panel_h,
-        "cx": cx,
-        "cy": y + panel_h / 2,
-        "w": panel_w,
-        "h": panel_h,
+        "left": x, "right": x + panel_w, "top": y, "bottom": y + panel_h,
+        "cx": cx, "cy": y + panel_h / 2, "w": panel_w, "h": panel_h,
     }
-
-
-def _encoder_stack(
-    parts: list[str],
-    info: dict,
-    shadow_id: str,
-    cx: float,
-    y: float,
-    layers: int | None,
-    heads: int | None,
-    hidden: int | None,
-) -> dict:
-    """Draw one repeated pre-norm ViT encoder block."""
-    label = f"x {_fmt_int(layers)}" if layers else "repeat"
-    region = {
-        "left": cx - 280,
-        "right": cx + 280,
-        "top": y,
-        "bottom": y + 470,
-        "cx": cx,
-        "cy": y + 235,
-        "w": 560,
-        "h": 470,
-    }
-    parts.append(_svg_tag("rect", {
-        "x": region["left"],
-        "y": region["top"],
-        "width": region["w"],
-        "height": region["h"],
-        "rx": 18,
-        "ry": 18,
-        "fill": "#9FE1CB",
-        "stroke": "none",
-    }))
-    parts.append(_svg_tag("rect", {
-        "x": region["right"] - 70,
-        "y": region["top"] + 18,
-        "width": 52,
-        "height": 24,
-        "rx": 12,
-        "ry": 12,
-        "fill": "rgba(255,255,255,0.72)",
-        "stroke": C["border"],
-        "stroke-width": 0.5,
-    }))
-    parts.append(_svg_text(region["right"] - 44, region["top"] + 30, label, {
-        "text-anchor": "middle",
-        "dominant-baseline": "central",
-        "fill": C["text"],
-        "font-family": "\"Caveat\",\"Patrick Hand\",\"Comic Sans MS\",cursive",
-        "font-size": 20,
-    }))
-
-    norm1 = _rect_block(parts, info, shadow_id, "vision_encoder_norm1", cx - 105, y + 390, 210, 42, "LayerNorm", font_size=16)
-    attn = _rect_block(parts, info, shadow_id, "vision_encoder_attn", cx - 170, y + 300, 340, 60, _attention_label(heads, hidden), font_size=16)
-    add1 = _plain_plus(parts, cx, y + 252)
-    norm2 = _rect_block(parts, info, shadow_id, "vision_encoder_norm2", cx - 105, y + 182, 210, 42, "LayerNorm", font_size=16)
-    mlp = _rect_block(parts, info, shadow_id, "vision_encoder_mlp", cx - 120, y + 104, 240, 52, "MLP", font_size=16)
-    add2 = _plain_plus(parts, cx, y + 56)
-
-    _up_arrow(parts, cx, region["bottom"], norm1["bottom"] + 12)
-    _up_arrow(parts, norm1["cx"], norm1["top"], attn["bottom"] + 12)
-    _up_arrow(parts, attn["cx"], attn["top"], add1["bottom"] + 12)
-    _up_arrow(parts, add1["cx"], add1["top"], norm2["bottom"] + 12)
-    _up_arrow(parts, norm2["cx"], norm2["top"], mlp["bottom"] + 12)
-    _up_arrow(parts, mlp["cx"], mlp["top"], add2["bottom"] + 12)
-    _v_stem(parts, add2["cx"], add2["top"], region["top"])
-
-    _residual_to_plus(parts, cx, norm1["bottom"] + 16, region["right"] - 58, add1)
-    _residual_to_plus(parts, cx, add1["top"] - 18, region["right"] - 90, add2)
-
-    return region
-
-
-def _projection_label(out_features: int | None):
-    if out_features:
-        return ["Linear / Conv2d", f"to {_fmt_int(out_features)}d"]
-    return ["Linear / Conv2d", "projection"]
-
-
-def _attention_label(heads: int | None, hidden: int | None):
-    if heads and hidden:
-        return ["Self-attention", f"{_fmt_int(heads)} heads · {_fmt_int(hidden)}d"]
-    if heads:
-        return ["Self-attention", f"{_fmt_int(heads)} heads"]
-    return "Self-attention"
-
-
-def _pos_label(pos: str | None):
-    if pos:
-        return ["Add positions", str(pos).replace("_", " ")]
-    return "Add position embeddings"
-
-
-def _plain_plus(parts: list[str], cx: float, cy: float) -> dict:
-    r = 14
-    parts.append(_svg_tag("circle", {
-        "cx": cx,
-        "cy": cy,
-        "r": r,
-        "fill": C["block"],
-        "stroke": C["block_alt"],
-        "stroke-width": 0.6,
-    }))
-    attrs = {
-        "stroke": C["text_block"],
-        "stroke-width": 2.2,
-        "stroke-linecap": "round",
-        "pointer-events": "none",
-    }
-    parts.append(_svg_tag("line", {"x1": cx - 5, "y1": cy, "x2": cx + 5, "y2": cy, **attrs}))
-    parts.append(_svg_tag("line", {"x1": cx, "y1": cy - 5, "x2": cx, "y2": cy + 5, **attrs}))
-    return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}
-
-
-def _residual_to_plus(parts: list[str], start_x: float, start_y: float, lane_x: float, plus: dict) -> None:
-    r = 10
-    end_x = plus["right"] + 7
-    end_y = plus["cy"]
-    d = (
-        f"M {start_x} {start_y} "
-        f"L {lane_x - r} {start_y} "
-        f"Q {lane_x} {start_y} {lane_x} {start_y - r} "
-        f"L {lane_x} {end_y + r} "
-        f"Q {lane_x} {end_y} {lane_x - r} {end_y} "
-        f"L {end_x} {end_y}"
-    )
-    parts.append(_svg_tag("path", {
-        "d": d,
-        "fill": "none",
-        "stroke": C["arrow"],
-        "stroke-width": 1.4,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-    }))
-    parts.append(_svg_tag("path", {
-        "d": f"M {end_x + 6} {end_y - 5.5} L {end_x} {end_y} L {end_x + 6} {end_y + 5.5}",
-        "fill": "none",
-        "stroke": C["arrow"],
-        "stroke-width": 1.6,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-    }))
-
-
-def _v_stem(parts: list[str], x: float, y1: float, y2: float) -> None:
-    parts.append(_svg_tag("line", {
-        "x1": x,
-        "y1": y1,
-        "x2": x,
-        "y2": y2,
-        "stroke": C["arrow"],
-        "stroke-width": 1.8,
-        "stroke-linecap": "round",
-        "fill": "none",
-    }))
-
-
-def _up_arrow(parts: list[str], x: float, y1: float, y2: float) -> None:
-    parts.append(_svg_tag("line", {
-        "x1": x,
-        "y1": y1,
-        "x2": x,
-        "y2": y2,
-        "stroke": C["arrow"],
-        "stroke-width": 1.8,
-        "stroke-linecap": "round",
-        "fill": "none",
-    }))
-    parts.append(_svg_tag("path", {
-        "d": f"M {x - 5.5} {y2 + 7} L {x} {y2} L {x + 5.5} {y2 + 7}",
-        "fill": "none",
-        "stroke": C["arrow"],
-        "stroke-width": 1.8,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-    }))

@@ -1,17 +1,12 @@
 """Detail SVG for the Multi-Token Prediction (MTP) head stack."""
 from __future__ import annotations
 
+from ..graph import Edge, Graph, Group, Node
+from ..graph_engine import render_graph
 from ..metadata import _block_label
 from ..stack_view import fit_svg, point
 from ..svg import _elbow_vh, _ids, _rect_block, _svg_tag, _svg_text, _v_line
 from ..theme import C, FONT_MONO
-from .modality_views.vision_details import (
-    _plain_plus,
-    _residual_to_plus,
-    _tower_badge,
-    _up_arrow,
-    _v_stem,
-)
 
 
 def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -81,62 +76,40 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
 
 
 def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """The MTP module's transformer block, drawn as its own tower.
+    """The MTP module's transformer block — the same declarative pre-norm cell
+    the text and vision encoders use, laid out by the shared engine.
 
-    It *is* a decoder layer, so it reuses the real layer blocks handed to it as
-    ``block['children']`` — the attention/FFN render through the same router and
-    drill into the same MLA / MoE views as the main stack."""
+    It *is* a decoder layer, so node ids/labels come from the real layer blocks
+    handed to it as ``block['children']`` — the attention/FFN render through the
+    same router and drill into the same MLA / MoE views as the main stack."""
     children = block.get("children") or []
     norms = [c for c in children if c.get("kind") == "norm"]
     cn1 = norms[0] if norms else {}
     cn2 = norms[1] if len(norms) > 1 else {}
     ca = next((c for c in children if c.get("kind") == "attention"), {})
     cf = next((c for c in children if c.get("kind") == "ffn"), {})
-    attn_label = ca.get("label") or "Attention"
-    ffn_label = cf.get("label") or "Feed-Forward"
 
-    arrow_id, shadow_id = _ids(mount_id, "mtp-transformer-block")
-    parts: list[str] = []
-    cx = 0
-
-    region = {"left": cx - 230, "right": cx + 230, "top": 40, "bottom": 514,
-              "w": 460, "h": 474, "cx": cx, "cy": 277}
-    parts.append(_svg_tag("rect", {
-        "x": region["left"], "y": region["top"], "width": region["w"], "height": region["h"],
-        "rx": 18, "ry": 18, "fill": "#9FE1CB", "stroke": "none",
-    }))
-    _tower_badge(parts, region["right"] - 168, region["top"] + 16)
-
-    # Uniform 30px gaps between sublayers, balanced 34px margins inside the tower.
-    # ids/labels come from the reused decoder-layer blocks so clicks route through
-    # the central router into the real MLA / MoE drill-downs.
-    norm1 = _rect_block(parts, info, shadow_id, cn1.get("id", "mtp_block_norm1"), cx - 105, 438, 210, 42, cn1.get("label") or "RMSNorm", font_size=16)
-    attn  = _rect_block(parts, info, shadow_id, ca.get("id", "mtp_block_attn"), cx - 175, 348, 350, 60, attn_label, font_size=16)
-    add1  = _plain_plus(parts, cx, 304)
-    norm2 = _rect_block(parts, info, shadow_id, cn2.get("id", "mtp_block_norm2"), cx - 105, 218, 210, 42, cn2.get("label") or "RMSNorm", font_size=16)
-    ffn   = _rect_block(parts, info, shadow_id, cf.get("id", "mtp_block_ffn"), cx - 120, 132, 240, 56, ffn_label, font_size=16)
-    add2  = _plain_plus(parts, cx, 88)
-
-    _up_arrow(parts, cx, region["bottom"], norm1["bottom"] + 12)
-    _up_arrow(parts, norm1["cx"], norm1["top"], attn["bottom"] + 12)
-    _up_arrow(parts, attn["cx"], attn["top"], add1["bottom"] + 12)
-    _up_arrow(parts, add1["cx"], add1["top"], norm2["bottom"] + 12)
-    _up_arrow(parts, norm2["cx"], norm2["top"], ffn["bottom"] + 12)
-    _up_arrow(parts, ffn["cx"], ffn["top"], add2["bottom"] + 12)
-    _v_stem(parts, add2["cx"], add2["top"], region["top"])
-    _up_arrow(parts, cx, region["top"], region["top"] - 34)
-
-    _residual_to_plus(parts, cx, norm1["bottom"] + 16, region["right"] - 40, add1)
-    _residual_to_plus(parts, cx, add1["top"] - 16, region["right"] - 72, add2)
-
-    parts.append(_svg_text(cx, region["bottom"] + 22, "from eh_proj  (d)",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10}))
-    parts.append(_svg_text(cx, region["top"] - 44, "to shared output head",
-        {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 10}))
-
-    regions = [
-        region, norm1, attn, add1, norm2, ffn, add2,
-        point(cx, region["top"] - 48),
-        point(cx, region["bottom"] + 30),
+    norm1_id = cn1.get("id", "mtp_block_norm1")
+    norm2_id = cn2.get("id", "mtp_block_norm2")
+    nodes = [
+        Node("mtp_block_in", "port", "from eh_proj  (d)", static=True),
+        Node(norm1_id, "norm", cn1.get("label") or "RMSNorm"),
+        Node(ca.get("id", "mtp_block_attn"), "attention", ca.get("label") or "Attention"),
+        Node("mtp_block_add1", "residual_add", static=True),
+        Node(norm2_id, "norm", cn2.get("label") or "RMSNorm"),
+        Node(cf.get("id", "mtp_block_ffn"), "ffn", cf.get("label") or "Feed-Forward"),
+        Node("mtp_block_add2", "residual_add", static=True),
+        Node("mtp_block_out", "port", "to shared output head", static=True),
     ]
-    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} MTP transformer block")
+    cell = [n.id for n in nodes[1:-1]]
+    graph = Graph(
+        nodes=nodes,
+        flow=[n.id for n in nodes],
+        edges=[
+            Edge(norm1_id, "mtp_block_add1", "residual"),
+            Edge(norm2_id, "mtp_block_add2", "residual"),
+        ],
+        groups=[Group(cell, label="separate tower")],
+    )
+    return render_graph(graph, info, mount_id, "mtp-transformer-block",
+                        f"{ir.get('name', 'model')} MTP transformer block")

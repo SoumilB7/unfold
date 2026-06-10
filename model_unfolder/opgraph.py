@@ -231,9 +231,11 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         Op("hidden", "input", out_features=hidden),
         Op("q_proj", "linear", q_label, in_features=hidden, out_features=q_w),
         Op("k_proj", "linear", ["Linear (K)", kv_sub] if kv_sub else "Linear (K)",
-           in_features=hidden, out_features=kv_w, meta={"cached": not cross}),
+           in_features=hidden, out_features=kv_w,
+           meta={"cached": bool(attn.get("cached", not cross))}),
         Op("v_proj", "linear", ["Linear (V)", kv_sub] if kv_sub else "Linear (V)",
-           in_features=hidden, out_features=kv_w, meta={"cached": not cross}),
+           in_features=hidden, out_features=kv_w,
+           meta={"cached": bool(attn.get("cached", not cross))}),
     ]
     kv_src = "hidden"
     if cross:
