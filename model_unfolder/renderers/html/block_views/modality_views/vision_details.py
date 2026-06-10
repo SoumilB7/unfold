@@ -137,15 +137,6 @@ def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> 
 # labels / facts
 # ---------------------------------------------------------------------------
 
-
-def _attention_sub(heads: int | None, hidden: int | None) -> str | None:
-    if heads and hidden:
-        return f"{_fmt_int(heads)} heads · {_fmt_int(hidden)}d"
-    if heads:
-        return f"{_fmt_int(heads)} heads"
-    return None
-
-
 def _projection_label(out_features: int | None):
     if out_features:
         return ["Linear / Conv2d", f"to {_fmt_int(out_features)}d"]

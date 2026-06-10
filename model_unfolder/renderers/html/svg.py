@@ -343,26 +343,6 @@ def _window_strip(
     return {"left": x, "right": x + w, "top": y, "bottom": y + h,
             "cx": x + w / 2, "cy": y + h / 2, "w": w, "h": h}
 
-
-def _cache_rw_ports(
-    parts: list[str],
-    node: dict,
-    *,
-    write_side: str = "bottom",
-    read_side: str = "top",
-) -> None:
-    """Punched ports on a cache node, placed where cache write/read happen."""
-    write = _edge_port_center(node, write_side, "write")
-    read = _edge_port_center(node, read_side, "read")
-    ports = [
-        _cache_port(write[0], write[1], 5.2, "head"),
-        _cache_port(read[0], read[1], 5.2, "tail"),
-    ]
-    parts.append(_svg_tag("g", {
-        "class": "uf-cache-ports", "pointer-events": "none", "aria-hidden": "true",
-    }, "".join(ports)))
-
-
 def _cache_io_ports(
     parts: list[str],
     x: float,
@@ -388,21 +368,6 @@ def _cache_io_ports(
     parts.append(_svg_tag("g", {
         "class": "uf-cache-ports", "pointer-events": "none", "aria-hidden": "true",
     }, "".join(ports)))
-
-
-def _edge_port_center(node: dict, side: str, role: str) -> tuple[float, float]:
-    x, y, w, h = node["left"], node["top"], node["w"], node["h"]
-    inset = 17
-    x_pos = x + w - inset
-    if side == "top":
-        return x_pos, y + 10
-    if side == "bottom":
-        return x_pos, y + h - 10
-    y_pos = y + h - (18 if role == "write" else 34)
-    if side == "left":
-        return x + 10, y_pos
-    return x + w - 10, y_pos
-
 
 def _cache_port(
     cx: float,

@@ -7,11 +7,6 @@ from copy import copy
 def ffn_from_block(block: dict | None, info: dict) -> dict:
     return _fact_from_block(block, info, "ffn")
 
-
-def attention_from_block(block: dict | None, info: dict) -> dict:
-    return _fact_from_block(block, info, "attention")
-
-
 def info_with_block_fact(info: dict, block: dict | None, fact_key: str) -> dict:
     """Return ``info`` scoped so dominant spec reads resolve to clicked block facts.
 

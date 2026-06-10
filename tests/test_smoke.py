@@ -600,16 +600,15 @@ def test_moe_routing_detail():
         "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
         "routed_scaling_factor": 2.5,
     }
-    from model_unfolder.labels import moe_router_lines
-    lines = moe_router_lines(ffn)
-    assert lines[0] == "Router"
-    assert "sigmoid gating · top-8 of 64" in lines[1]
-    assert any("keep 4/8 groups" in ln for ln in lines)
+    from model_unfolder.labels import router_facts
+    facts = router_facts(ffn)
+    assert "64 experts" in facts and "top-8" in facts and "sigmoid" in facts
+    assert "keep 4/8 groups" in facts
 
-    # n_group == 1 is "no grouping" -> no group line.
+    # n_group == 1 is "no grouping" -> no group chip.
     ir = unfold({**cfg, "n_group": 1, "topk_group": 1}).to_ir()
     ffn = next(l["ffn"] for l in ir["layers"] if l["ffn"]["kind"] == "moe")
-    assert not any("groups" in ln for ln in moe_router_lines(ffn))
+    assert not any("groups" in f for f in router_facts(ffn))
 
 
 def test_single_kv_gemma4_stays_gqa_view():

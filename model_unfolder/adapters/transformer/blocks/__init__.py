@@ -10,7 +10,6 @@ The package is split by responsibility:
 * ``layers``: sequential and parallel decoder-layer topology.
 * ``attention``: reusable attention/SSM/recurrent child block contracts.
 * ``feed_forward``: dense, gated, and MoE FFN child block contracts.
-* ``descriptions``: labels, titles, and short metadata strings.
 
 Each block carries two orthogonal tags:
 
@@ -30,13 +29,8 @@ Edges between blocks travel on the destination side as plain string fields:
 """
 from __future__ import annotations
 
+from ....labels import attention_label, attention_title
 from .attention import attention_child_blocks
-from .descriptions import (
-    attention_label,
-    attention_title,
-    describe_attention,
-    describe_ffn,
-)
 from .feed_forward import ffn_child_blocks, ffn_view
 from .layers import decoder_layer_blocks, parallel_decoder_layer_blocks
 from .model import decoder_model_blocks, decoder_only_render_spec, mtp_head_block
@@ -48,8 +42,6 @@ __all__ = [
     "decoder_layer_blocks",
     "decoder_model_blocks",
     "decoder_only_render_spec",
-    "describe_attention",
-    "describe_ffn",
     "ffn_child_blocks",
     "ffn_view",
     "mtp_head_block",

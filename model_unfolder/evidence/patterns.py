@@ -103,11 +103,6 @@ def _class_findings(cls: ClassEvidence) -> list[CodeFinding]:
 def _is_attention_class(name: str) -> bool:
     return "attn" in name or "attention" in name or "selfattention" in name
 
-
-def _is_layer_class(name: str) -> bool:
-    return "decoderlayer" in name or "layer" in name and "decoder" in name or name.endswith("block")
-
-
 def _detect_attention_shape(cls, fields, calls, refs, name, add) -> None:
     if not _is_attention_class(name):
         return
@@ -368,11 +363,6 @@ def _has_moe(fields: set[str], name: str) -> bool:
 
 def _present(values: set[str], *names: str) -> tuple[str, ...]:
     return tuple(name for name in names if name in values)
-
-
-def _matching(values: set[str], needle: str) -> tuple[str, ...]:
-    return tuple(sorted(value for value in values if needle in value.lower()))
-
 
 def _interesting_classes(classes: tuple[ClassEvidence, ...]) -> tuple[ClassEvidence, ...]:
     interesting = []

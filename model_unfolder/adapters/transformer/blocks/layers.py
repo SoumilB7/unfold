@@ -5,8 +5,7 @@ from ....block_schema import Block
 from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
 from .attention import attention_child_blocks, attention_detail
-from ....labels import attention_summary, ffn_summary
-from .descriptions import attention_label, attention_title, describe_attention, describe_ffn
+from ....labels import attention_label, attention_summary, attention_title, ffn_summary
 from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 
 

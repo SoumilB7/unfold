@@ -12,6 +12,11 @@ renderer, a future text/markdown renderer, or notebook utilities.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .ir import AttentionSpec
+
 _MASK_SHORT = {
     "sliding": "SWA",
     "global": "full",
@@ -143,32 +148,6 @@ def kind_long(attention: dict) -> str:
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
 
-
-def moe_router_lines(ffn: dict) -> list[str]:
-    """Multi-line router-block label: the routing recipe, only what's declared.
-
-    Line 1 is the title; the rest read gating · top-k, group-limited routing,
-    and any renormalize / routed-scale step.
-    """
-    r = ffn.get("routing") or {}
-    n, k = ffn.get("num_experts"), ffn.get("num_experts_per_tok")
-    sel = f"top-{k} of {n}" if (k and n) else f"top-{k or 'k'}"
-    lines = ["Router", f"{r.get('scoring_func') or 'softmax'} gating · {sel}"]
-    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
-        grp = f"keep {r['topk_group']}/{r['n_group']} groups"
-        if r.get("topk_method"):
-            grp += f" · {r['topk_method']}"
-        lines.append(grp)
-    tail = []
-    if r.get("norm_topk_prob"):
-        tail.append("renormalized")
-    if r.get("routed_scaling_factor"):
-        tail.append(f"routed ×{r['routed_scaling_factor']}")
-    if tail:
-        lines.append(" · ".join(tail))
-    return lines
-
-
 def moe_router_detail(ffn: dict) -> str:
     """Longer router tooltip describing the gating and selection behaviour."""
     r = ffn.get("routing") or {}
@@ -188,11 +167,6 @@ def moe_router_detail(ffn: dict) -> str:
 
 def is_sliding(attention: dict) -> bool:
     return attention.get("mask") == "sliding"
-
-
-def is_global(attention: dict) -> bool:
-    return attention.get("mask") == "global"
-
 
 def kv_shared(attention: dict) -> bool:
     """True when this layer reuses K/V from an earlier layer (Gemma 4 small)."""
@@ -286,20 +260,6 @@ def describe_attention(attention: dict) -> str:
     if extras:
         text += "; " + ", ".join(extras)
     return text
-
-
-def describe_ffn(ffn: dict) -> str:
-    """Multi-clause human description of an FFN / MoE block."""
-    if ffn.get("kind") == "moe":
-        text = f"MoE; {_fmt_int(ffn.get('num_experts'))} experts; top-{ffn.get('num_experts_per_tok')}"
-        if ffn.get("num_shared_experts"):
-            text += f" + {ffn.get('num_shared_experts')} shared"
-        if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
-            text += f"; {100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active"
-        text += f"; expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}"
-        return text
-    gated = "gated " if ffn.get("gated") else ""
-    return f"{gated}FFN; {activation_label(ffn.get('activation'))}; hidden {_fmt_int(ffn.get('intermediate_size'))}"
 
 
 # ---------------------------------------------------------------------------
@@ -423,10 +383,8 @@ def router_facts(ffn: dict) -> list[str]:
     routing = ffn.get("routing") or {}
     if routing.get("scoring_func"):
         facts.append(str(routing["scoring_func"]))
-    if routing.get("n_group"):
-        facts.append(f"{routing['n_group']} groups")
-    if routing.get("topk_group"):
-        facts.append(f"top-{routing['topk_group']} groups")
+    if (routing.get("n_group") or 0) > 1 and routing.get("topk_group"):
+        facts.append(f"keep {routing['topk_group']}/{routing['n_group']} groups")
     if routing.get("norm_topk_prob"):
         facts.append("renormalized")
     if routing.get("routed_scaling_factor"):
@@ -441,3 +399,90 @@ def _fmt_int(value) -> str:
         return f"{int(value):,}"
     except (TypeError, ValueError):
         return str(value)
+
+# ---------------------------------------------------------------------------
+# Spec-typed block vocabulary (operates on AttentionSpec attributes — the
+# adapter side authors labels/titles straight from the typed spec).
+# ---------------------------------------------------------------------------
+
+
+def attention_label(attention: AttentionSpec) -> list[str]:
+    if attention.variant and attention.variant.get("label"):
+        return list(attention.variant["label"])
+    kind = attention.kind
+    prefix = _attention_mask_prefix(attention)
+    if attention.cross_attention:
+        return _prefixed_label(prefix, "Vision", "Cross-Attention")
+    if kind == "mla":
+        return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
+    if kind == "mqa":
+        return _prefixed_label(prefix, "Multi-Query", "Attention")
+    if kind == "gqa":
+        tag = "(QK-Norm)" if attention.qk_norm else "Attention"
+        return _prefixed_label(prefix, "Grouped-Query", tag)
+    if kind == "ssm":
+        shared_tag = "(Shared)" if attention.shared else "Block"
+        return ["Selective SSM", shared_tag]
+    if kind == "recurrent":
+        return ["Linear Recurrent", "Unit (LRU)"]
+    if kind == "rwkv":
+        return ["RWKV", "Token-Mixing"]
+    if kind == "linear":
+        return ["Linear", "Attention"]
+
+    tags = []
+    if attention.qk_norm:
+        tags.append("QK-Norm")
+    if attention.no_rope:
+        tags.append("NoPE")
+    if tags:
+        return ["Multi-Head Attn", f"({', '.join(tags)})"]
+    return ["Multi-Head", "Attention"]
+
+
+def attention_title(attention: AttentionSpec) -> str:
+    if attention.variant and attention.variant.get("title"):
+        return attention.variant["title"]
+    if attention.cross_attention:
+        base = {
+            "gqa": "Grouped-query cross-attention",
+            "mqa": "Multi-query cross-attention",
+            "mha": "Multi-head cross-attention",
+        }.get(attention.kind, "Cross-attention")
+        return _prefixed_title(_attention_mask_title_prefix(attention), base)
+    if attention.kind == "mqa":
+        base = "Multi-query attention"
+    else:
+        base = {
+            "mla": "Multi-head latent attention",
+            "gqa": "Grouped-query attention",
+            "ssm": "Selective state-space model (Mamba)",
+            "recurrent": "Linear Recurrent Unit (LRU)",
+            "rwkv": "RWKV token-mixing",
+            "linear": "Linear attention",
+        }.get(attention.kind, "Attention")
+    base = _prefixed_title(_attention_mask_title_prefix(attention), base)
+    extras = []
+    if attention.qk_norm:
+        extras.append("QK-Norm")
+    if attention.shared:
+        extras.append("weight-shared")
+    if attention.no_rope:
+        extras.append("NoPE")
+    return f"{base} ({', '.join(extras)})" if extras else base
+
+
+def _attention_mask_prefix(attention: AttentionSpec) -> str:
+    return "SW" if attention.mask == "sliding" else ""
+
+
+def _attention_mask_title_prefix(attention: AttentionSpec) -> str:
+    return "Sliding-window" if attention.mask == "sliding" else ""
+
+
+def _prefixed_label(prefix: str, first: str, second: str) -> list[str]:
+    return [f"{prefix} · {first}", second] if prefix else [first, second]
+
+
+def _prefixed_title(prefix: str, title: str) -> str:
+    return f"{prefix} {title}" if prefix else title

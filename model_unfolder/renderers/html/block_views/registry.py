@@ -89,11 +89,6 @@ def render_sub_block_detail(ir: dict, info: dict, mount_id: str, child: dict) ->
 # view builders, which still take (ir, info, mount_id[, block]).  Step 1 keeps
 # them as-is; a later step migrates them to read the block instead of dominant.
 
-def _from_dominant(fn: Callable[[dict, dict, str], "str | None"]) -> ViewFn:
-    """Wrap a view that renders from ``info['dominant']`` (ignores the block)."""
-    return lambda ctx, _block: fn(ctx.ir, ctx.info, ctx.mount_id)
-
-
 def _from_block(fn: Callable[[dict, dict, str, dict], "str | None"]) -> ViewFn:
     """Wrap a view that consumes the clicked block / child."""
     return lambda ctx, block: fn(ctx.ir, ctx.info, ctx.mount_id, block)
