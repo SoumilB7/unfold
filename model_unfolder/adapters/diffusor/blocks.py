@@ -16,6 +16,7 @@ live in approved ``diffusion_stage`` tags plus titles and descriptions.
 from __future__ import annotations
 
 from ...block_schema import Block
+from ...labels import attention_summary, kind_long
 from ..transformer.common import format_dim as _fmt
 from .compound import vae_up_stage
 
@@ -361,11 +362,22 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
         "Each token attends to the others in the prompt, mixing context across the "
         "sequence so every position is contextualised." + attn_extra
     )
-    head_dim = (hidden // heads) if (hidden and heads and hidden % heads == 0) else None
-    attn_facts = [f for f in (
-        f"{heads} heads" if heads else "",
-        f"head dim {_fmt(head_dim)}" if head_dim else "",
-    ) if f]
+    head_dim = spec.get("head_dim") or (
+        (hidden // heads) if (hidden and heads and hidden % heads == 0) else None)
+    # ONE source for the attention facts: the detail dict feeds the embedded
+    # canonical view AND (via the central vocabulary) the title + chips, so the
+    # header can never disagree with the diagram (Qwen3VL GQA vs "multi-head").
+    attn_detail = {
+        "kind": spec.get("kind") or (
+            "gqa" if (spec.get("kv_heads") and spec.get("kv_heads") != heads) else "mha"),
+        "num_heads": heads,
+        "num_kv_heads": spec.get("kv_heads") or heads,
+        "head_dim": head_dim,
+        "hidden": hidden,
+        "cached": False,
+    }
+    attn_title = kind_long(attn_detail).replace(" attention", " self-attention")
+    attn_facts = attention_summary(attn_detail)[1] if heads else []
 
     ffn_desc = (
         "A position-wise two-layer MLP applied to each token independently, "
@@ -385,20 +397,13 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
         },
         {
             "id": f"{prefix}_op_selfattn",
-            "title": "Multi-head self-attention",
+            "title": attn_title,
             "description": attn_desc,
             "facts": attn_facts,
             # Opens the ONE shared attention view, parameterised by this
             # encoder's own facts — same view the decoder/DiT attention opens.
             "view": "attention",
-            "detail": {"attention": {
-                "kind": ("gqa" if (spec.get("kv_heads") and spec.get("kv_heads") != heads) else "mha"),
-                "num_heads": heads,
-                "num_kv_heads": spec.get("kv_heads") or heads,
-                "head_dim": spec.get("head_dim") or head_dim,
-                "hidden": hidden,
-                "cached": False,
-            }},
+            "detail": {"attention": attn_detail},
         },
         {
             "id": f"{prefix}_op_ffn",

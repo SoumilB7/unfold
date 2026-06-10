@@ -453,44 +453,39 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
 
 
 def _normalize_encoder_config(c: dict) -> dict:
-    """Map CLIP-, T5- and LM-style config keys onto one neutral schema.  Only
-    keys actually present in the config survive (no defaults invented).
+    """Read an encoder's shape off the ONE universal transformer adapter.
 
-    LM-style encoders (Qwen-VL and friends pressed into prompt-encoding duty)
-    nest the language model under ``text_config`` — shape is read from wherever
-    it lives, outer config first."""
-    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
+    A pipeline's text-encoder config *is* a transformers config (CLIP, T5,
+    Qwen-VL pressed into prompt-encoding duty), so it goes through the same
+    parser that handles those models standalone — every dialect, nested
+    ``text_config``, GQA, norm kind — and the neutral spec is projected from
+    the resulting IR.  No second field-extraction vocabulary lives here.
+    """
+    from ..transformer.parser import parse as _parse_transformer
 
-    def pick(*keys):
-        for src in (c, inner):
-            for k in keys:
-                v = src.get(k)
-                if v is not None:
-                    return v
-        return None
-
-    # T5-v1.1 uses a gated FFN (``feed_forward_proj: "gated-gelu"`` / ``is_gated_act``);
-    # LM-style encoders with silu/swiglu activations are gated SwiGLU MLPs;
-    # CLIP and T5-v1.0 use a plain MLP.  Carried so the FFN view picks the shape.
-    activation = pick("hidden_act", "dense_act_fn", "activation_function")
-    gated = (bool(pick("is_gated_act"))
-             or str(pick("feed_forward_proj") or "").startswith("gated")
-             or activation in ("silu", "swiglu"))
-    norm = ("RMSNorm" if pick("rms_norm_eps") is not None
-            else "LayerNorm" if pick("layer_norm_eps", "layer_norm_epsilon") is not None
-            else None)
+    try:
+        ir = _parse_transformer(c)
+    except Exception:
+        return {}
+    if not ir.layers:
+        return {}
+    layer = ir.layers[0]
+    attn, ffn = layer.attention, layer.ffn
+    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+        str(getattr(layer, "norm_kind", "") or "").lower())
     fields = {
-        "layers": pick("num_hidden_layers", "num_layers"),
-        "hidden": pick("hidden_size", "d_model"),
-        "heads": pick("num_attention_heads", "num_heads"),
-        "kv_heads": pick("num_key_value_heads"),
-        "head_dim": pick("head_dim", "attention_head_dim"),
-        "ffn": pick("intermediate_size", "d_ff"),
-        "activation": activation,
-        "vocab": pick("vocab_size"),
-        "max_pos": pick("max_position_embeddings"),
+        "layers": len(ir.layers),
+        "hidden": ir.hidden_size,
+        "kind": attn.kind,
+        "heads": attn.num_heads,
+        "kv_heads": attn.num_kv_heads,
+        "head_dim": attn.head_dim,
+        "ffn": ffn.intermediate_size,
+        "activation": ffn.activation,
+        "vocab": ir.vocab_size,
+        "max_pos": ir.max_position_embeddings,
         "norm": norm,
     }
-    out = {k: v for k, v in fields.items() if v is not None}
-    out["gated"] = gated
+    out = {k: v for k, v in fields.items() if v}
+    out["gated"] = bool(ffn.gated)
     return out
