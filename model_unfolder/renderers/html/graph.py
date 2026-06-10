@@ -53,6 +53,9 @@ KIND: dict[str, Glyph] = {
     "ffn":          Glyph("rect", 264, 52, 16, label="Feed-forward (FFN)"),
     "linear":       Glyph("rect", 200, 50, 15, label="Linear"),
     "activation":   Glyph("rect", 180, 44, 15, label="Activation"),
+    "router":       Glyph("rect", 520, 50, 14, label="Router"),
+    "expert":       Glyph("rect", 120, 54, 15, label="Expert"),
+    "opaque":       Glyph("rect", 256, 56, 15, label="Custom block"),
     "residual_add": Glyph("circle", 28, 28, sym="+", label="Residual add"),
     "gate_mul":     Glyph("circle", 28, 28, sym="×", label="Multiply"),
 }
@@ -71,12 +74,16 @@ class Node:
     static: bool = False                    # decorative bookend — not a click-drill target
     w: float | None = None                  # size overrides (else from KIND)
     h: float | None = None
+    font: int | None = None                 # font override (else from KIND)
 
     def data_id(self) -> str:
         return self.target or self.id
 
     def glyph(self) -> Glyph:
         return KIND.get(self.kind, KIND["norm"])
+
+    def font_size(self) -> int:
+        return self.font if self.font is not None else self.glyph().font
 
     def heading(self) -> str | list[str]:
         return self.label if self.label is not None else self.glyph().label
@@ -110,6 +117,22 @@ class Group:
 
 
 @dataclass
+class Parallel:
+    """Branch-and-merge: ``src`` splits into parallel ``lanes`` that converge into
+    a merge node ``dst`` (e.g. a gated FFN's gate ∥ up → ⊗, or attention's Q/K/V).
+
+    ``src`` and ``dst`` are flow nodes (``src`` below, ``dst`` above); each lane is
+    its own bottom→top mini-column of node ids that live in ``Graph.nodes`` but
+    NOT in ``Graph.flow``.  The engine reserves the vertical span between src and
+    dst for the lanes and draws the split dot + branch/merge elbows.
+    """
+
+    src: str
+    dst: str
+    lanes: list[list[str]]
+
+
+@dataclass
 class Graph:
     """Nodes + the bottom→top ``flow`` order + residual edges + repeat groups."""
 
@@ -117,6 +140,7 @@ class Graph:
     flow: list[str]                          # node ids, bottom (input) → top (output)
     edges: list[Edge] = field(default_factory=list)
     groups: list[Group] = field(default_factory=list)
+    parallels: list[Parallel] = field(default_factory=list)
     note: str | None = None                  # one-line caption above the top node
 
     def by_id(self) -> dict[str, Node]:

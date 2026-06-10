@@ -450,6 +450,9 @@ def _normalize_encoder_config(c: dict) -> dict:
                 return v
         return None
 
+    # T5-v1.1 uses a gated FFN (``feed_forward_proj: "gated-gelu"`` / ``is_gated_act``);
+    # CLIP and T5-v1.0 use a plain MLP.  Carry it so the FFN view picks the right shape.
+    gated = bool(c.get("is_gated_act")) or str(c.get("feed_forward_proj", "")).startswith("gated")
     fields = {
         "layers": pick("num_hidden_layers", "num_layers"),
         "hidden": pick("hidden_size", "d_model"),
@@ -459,4 +462,6 @@ def _normalize_encoder_config(c: dict) -> dict:
         "vocab": pick("vocab_size"),
         "max_pos": pick("max_position_embeddings"),
     }
-    return {k: v for k, v in fields.items() if v is not None}
+    out = {k: v for k, v in fields.items() if v is not None}
+    out["gated"] = gated
+    return out

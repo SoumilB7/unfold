@@ -188,7 +188,7 @@ def _rect_block(
     }
 
 
-def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: float, cy: float, sym: str = "+") -> dict:
+def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: float, cy: float, sym: str = "+", *, clickable: bool = True) -> dict:
     r = 14
     children = [
         _node_title(info, node_id),
@@ -234,7 +234,10 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
                 "pointer-events": "none",
             },
         ))
-    parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    if clickable:
+        parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
+    else:
+        parts.extend(children)
     return {"left": cx - r, "right": cx + r, "top": cy - r, "bottom": cy + r, "cx": cx, "cy": cy, "r": r}
 
 

@@ -49,6 +49,7 @@ FLUX = {
         "text_encoder_2": {
             "_class_name": "T5EncoderModel", "num_layers": 24, "d_model": 4096,
             "num_heads": 64, "d_ff": 10240, "dense_act_fn": "gelu_new", "vocab_size": 32128,
+            "is_gated_act": True, "feed_forward_proj": "gated-gelu",
         },
     },
 }
@@ -267,9 +268,9 @@ def test_text_encoder_shows_real_config_dims():
     specs = diffusor._text_encoder_specs(FLUX)
     assert specs == [
         {"name": "CLIP", "layers": 12, "hidden": 768, "heads": 12, "ffn": 3072,
-         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77},
+         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
         {"name": "T5", "layers": 24, "hidden": 4096, "heads": 64, "ffn": 10240,
-         "activation": "gelu_new", "vocab": 32128},
+         "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
     html = unfold(FLUX).to_html(standalone=True)
     assert "× 12 layers" in html and "× 24 layers" in html   # real depths

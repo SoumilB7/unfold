@@ -1,7 +1,15 @@
-"""Detail SVGs for mixture-of-experts blocks."""
+"""Detail SVGs for mixture-of-experts blocks.
+
+``build_moe_view`` (router → experts → weighted sum) is a :class:`~..graph.Graph`
+laid out by the shared engine — the same branch/merge primitive a gated FFN uses.
+``build_moe_expert_view`` (the gated FFN inside one expert) is still hand-drawn
+pending an FFN-template prefix parameter.
+"""
 from __future__ import annotations
 
 from ....labels import activation_label, moe_router_lines
+from ..graph import Graph, Node, Parallel
+from ..graph_engine import render_graph
 from ..stack_view import fit_svg, point
 from ..svg import (
     _elbow_hv,
@@ -11,74 +19,40 @@ from ..svg import (
     _rect_block,
     _svg_tag,
     _v_line,
-    _v_seg,
 )
 from ..theme import C, GAP
 from .block_facts import ffn_from_block
 
 
 def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
-    w, h = 720, 620  # internal layout grid; the canvas itself auto-fits below
-    arrow_id, shadow_id = _ids(mount_id, "moe")
-    parts: list[str] = []
-
     ffn = ffn_from_block(block, info)
-    cx = w / 2
-    router_w = 540
-    # The router carries the routing recipe (gating fn, group-limited routing,
-    # top-k, renorm/scale) on its label — the dispatch itself (router → experts
-    # → weighted sum) is what this whole view already draws.
-    router_label = moe_router_lines(ffn)
-    router_h = max(50, 18 * len(router_label) + 26)
-    router = _rect_block(parts, info, shadow_id, "router", (w - router_w) / 2, h - 200, router_w, router_h, router_label, font_size=14)
-    sum_node = _plus_block(parts, info, shadow_id, "add_moe", cx, 100)
-
-    expert_w, expert_h = 116, 54
-    expert_y = 235
+    hidden = ir.get("hidden_size")
     n_total = ffn.get("num_experts")
-    last_label = str(n_total) if n_total else "N"
-    side_pad = 60
-    gap = (w - 2 * side_pad - 4 * expert_w) / 3
-    slots = [
-        (side_pad + 0 * (expert_w + gap), "Expert 1", "expert_1"),
-        (side_pad + 1 * (expert_w + gap), "Expert k", "expert_k"),
-        (side_pad + 2 * (expert_w + gap), "Expert k+1", "expert_kp1"),
-        (side_pad + 3 * (expert_w + gap), f"Expert {last_label}", "expert_n"),
+    k = ffn.get("num_experts_per_tok")
+    last = str(n_total) if n_total else "N"
+    router_lines = moe_router_lines(ffn)
+
+    experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
+               ("expert_kp1", "Expert k+1"), ("expert_n", f"Expert {last}")]
+    sub = None
+    if n_total:
+        sub = f"top-{k} of {n_total} active" if k else f"{n_total} experts"
+
+    nodes = [
+        Node("moe_hidden", "source", "Hidden states",
+             sub=(f"{hidden:,}-d" if hidden else None), static=True),
+        Node("router", "router", router_lines, h=max(54, 18 * len(router_lines) + 26)),
+        *[Node(nid, "expert", lbl) for nid, lbl in experts],
+        Node("add_moe", "residual_add"),
+        Node("moe_out", "output", "→ residual", sub=sub, static=True),
     ]
-    experts = [
-        _rect_block(parts, info, shadow_id, node_id, x, expert_y, expert_w, expert_h, label, font_size=15)
-        for x, label, node_id in slots
-    ]
-
-    dots_x = (experts[1]["right"] + experts[2]["left"]) / 2
-    dots_y = expert_y + expert_h / 2
-    for i in range(-2, 3):
-        parts.append(_svg_tag("circle", {"cx": dots_x + i * 7, "cy": dots_y, "r": 2.5, "fill": C["muted"]}))
-
-    for expert in experts:
-        parts.append(_v_seg(expert["cx"], router["top"], expert["bottom"] + GAP, arrow_id))
-
-    for expert in experts:
-        target_x = sum_node["cx"] + (-sum_node["r"] - GAP if expert["cx"] < sum_node["cx"] else sum_node["r"] + GAP)
-        parts.append(_elbow_vh(expert["cx"], expert["top"], target_x, sum_node["cy"], arrow_id))
-
-    parts.append(_svg_tag("line", {
-        "x1": sum_node["cx"], "y1": sum_node["top"],
-        "x2": sum_node["cx"], "y2": sum_node["top"] - 36,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": router["bottom"] + 36,
-        "x2": cx, "y2": router["bottom"] + GAP,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none",
-    }))
-
-    regions = [router, sum_node, *experts,
-               point(sum_node["cx"], sum_node["top"] - 36), point(cx, router["bottom"] + 36)]
-    return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} mixture of experts")
+    graph = Graph(
+        nodes=nodes,
+        flow=["moe_hidden", "router", "add_moe", "moe_out"],
+        parallels=[Parallel("router", "add_moe", [[nid] for nid, _ in experts])],
+    )
+    return render_graph(graph, info, mount_id, "moe",
+                        f"{ir.get('name', 'model')} mixture of experts", min_width=720)
 
 
 def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:

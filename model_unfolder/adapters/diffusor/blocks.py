@@ -380,6 +380,16 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "id": f"{prefix}_op_ffn",
             "title": "Feed-forward (FFN)",
             "description": ffn_desc,
+            # Opens the ONE shared FFN view, parameterised by this encoder's own
+            # facts — same view the denoiser/LLM FFN opens.
+            "view": "ffn",
+            "detail": {"ffn": {
+                "kind": "dense",
+                "gated": bool(spec.get("gated")),
+                "activation": spec.get("activation"),
+                "intermediate_size": ffn,
+                "hidden": hidden,
+            }},
         },
         {
             "id": f"{prefix}_op_norm",

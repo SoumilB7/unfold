@@ -1,10 +1,19 @@
-"""FFN spec + operation graph (dense / gated / MoE)."""
+"""FFN spec + operation graph (dense / gated / MoE).
+
+The operation graph is **not** authored here — it is projected from the one
+canonical :func:`...opgraph.ffn_region`, the same region the HTML renderer draws.
+This module only maps that region onto the JSON node schema.
+"""
 from __future__ import annotations
 
 from typing import Any
 
-from .ops import linear, node, edges_from_nodes
+from ..opgraph import Region, ffn_region
+from .ops import edges_from_nodes, linear, node
 from .utils import drop_none
+
+_JSON_OP = {"input": "input", "linear": "linear", "activation": "activation",
+            "route": "top_k_router", "opaque": "opaque"}
 
 
 def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
@@ -39,33 +48,43 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
 def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
     intermediate = ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")
     if ffn.get("kind") == "moe":
+        # MoE keeps its router/template framing, but the expert's internals are
+        # the same canonical region the renderer draws.
+        expert = ffn_region(
+            {"kind": "dense", "gated": bool(ffn.get("gated", True)),
+             "activation": ffn.get("activation"), "intermediate_size": intermediate},
+            hidden,
+        )
         nodes = [
-            node("hidden",          "input",           width=hidden),
-            node("router",          "top_k_router",    inputs=["hidden"], outputs=["expert_indices", "expert_weights"], top_k=ffn.get("num_experts_per_tok")),
-            node("expert_template", "ffn_template",    inputs=["hidden"], outputs=["expert_output"], graph=_dense_nodes(ffn, hidden, intermediate)),
-            node("weighted_sum",    "weighted_sum",    inputs=["expert_output", "expert_weights"], outputs=["residual_delta"]),
+            node("hidden",          "input",        width=hidden),
+            node("router",          "top_k_router", inputs=["hidden"], outputs=["expert_indices", "expert_weights"], top_k=ffn.get("num_experts_per_tok")),
+            node("expert_template", "ffn_template", inputs=["hidden"], outputs=["expert_output"], graph=_region_to_json(expert)),
+            node("weighted_sum",    "weighted_sum", inputs=["expert_output", "expert_weights"], outputs=["residual_delta"]),
         ]
-    else:
-        nodes = _dense_nodes(ffn, hidden, intermediate)
-    return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
+        return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
+    return _region_to_json(ffn_region(ffn, hidden))
 
 
-def _dense_nodes(ffn: dict, hidden: int | None, intermediate: int | None) -> list[dict[str, Any]]:
-    if ffn.get("gated"):
-        return [
-            node("hidden",     "input",                  width=hidden),
-            node("gate_proj",  "linear",                 inputs=["hidden"], outputs=["gate"], parameters=linear(hidden, intermediate)),
-            node("up_proj",    "linear",                 inputs=["hidden"], outputs=["up"],   parameters=linear(hidden, intermediate)),
-            node("activation", "activation",             inputs=["gate"],   outputs=["gate_act"], function=ffn.get("activation")),
-            node("multiply",   "elementwise_multiply",   inputs=["gate_act", "up"], outputs=["intermediate"], width=intermediate),
-            node("down_proj",  "linear",                 inputs=["intermediate"], outputs=["residual_delta"], parameters=linear(intermediate, hidden)),
-        ]
-    return [
-        node("hidden",     "input",      width=hidden),
-        node("up_proj",    "linear",     inputs=["hidden"],          outputs=["intermediate"],    parameters=linear(hidden, intermediate)),
-        node("activation", "activation", inputs=["intermediate"],    outputs=["intermediate_act"], function=ffn.get("activation")),
-        node("down_proj",  "linear",     inputs=["intermediate_act"], outputs=["residual_delta"], parameters=linear(intermediate, hidden)),
-    ]
+def _region_to_json(region: Region) -> dict[str, Any]:
+    """Project the canonical op-graph onto the JSON node/edge schema."""
+    nodes: list[dict[str, Any]] = []
+    for op in region.ops:
+        operation = _JSON_OP.get(op.kind, op.kind)
+        fields: dict[str, Any] = {}
+        if op.kind == "linear":
+            fields["parameters"] = linear(op.in_features, op.out_features)
+        elif op.kind == "activation":
+            fields["function"] = op.fn
+        elif op.kind == "input":
+            fields["width"] = op.out_features
+        elif op.kind == "elementwise":
+            operation = "elementwise_multiply" if op.fn == "mul" else "weighted_sum" if op.fn == "add" else "elementwise"
+        elif op.kind == "opaque":
+            fields["class_name"] = op.meta.get("class_name")
+        inputs = region.inputs_of(op.id)
+        nodes.append(node(op.id, operation, inputs=inputs or None, outputs=[op.id], **fields))
+    edges = [{"from": e.src, "to": e.dst} for e in region.edges]
+    return {"nodes": nodes, "edges": edges}
 
 
 # ---------- evidence linking ----------
