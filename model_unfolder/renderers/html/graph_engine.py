@@ -136,11 +136,21 @@ def render_graph(
             "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11}))
         regions.append(point(cx, ny - 6))
 
-    # --- 8. aside fact panel (heading + mono rows, top-right of the column) ---
+    # --- 8. aside fact panel (heading + mono rows) ---
+    # Tucked beside the rows it actually overlaps (the upper spine is narrow),
+    # not past the graph's full width — so it fills the empty corner instead of
+    # widening the canvas and shrinking the diagram.
     if graph.aside:
-        aside_x = max(lane, max((r.get("right", cx) for r in regions), default=cx)) + 18
+        aside_w, aside_h = _aside_size(graph.aside)
         aside_top = min((g["top"] for g in geom.values()), default=0.0)
-        regions.append(_draw_aside(parts, aside_x, aside_top, graph.aside))
+        band_right = max(
+            (r["right"] for r in regions
+             if r.get("bottom", 0) > aside_top and r.get("top", 0) < aside_top + aside_h),
+            default=cx,
+        )
+        if graph.residuals():
+            band_right = max(band_right, lane)
+        regions.append(_draw_aside(parts, band_right + 18, aside_top, graph.aside, aside_w, aside_h))
 
     return fit_svg(arrow_id, shadow_id, parts, regions, title, min_width=min_width, pad=pad)
 
@@ -283,11 +293,13 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
             rect_dst = d_node is not None and d_node.glyph().shape != "circle"
             if dst_id == par.dst and rect_dst:
                 # Merge into the bottom edge at an inset entry point — never
-                # poke a rect's side at mid-height.
+                # poke a rect's side at mid-height.  The horizontal run stays in
+                # the merge-stub band just below ``dst``, ABOVE every lane's top,
+                # so it can't cut through a taller neighbouring lane.
                 entry_x = (d_g["cx"] if d_g["w"] < 60
                            else min(max(lane_x, d_g["left"] + 26), d_g["right"] - 26))
                 entry_y = d_g["bottom"] + GAP
-                lane_y = (top_g["top"] + entry_y) / 2
+                lane_y = min(d_g["bottom"] + 26, (top_g["top"] + entry_y) / 2)
                 parts.append(_merge_up_route(lane_x, top_g["top"], entry_x, entry_y, lane_y, arrow_id))
             else:
                 # A circle (⊕/⊗/⊙) or a target further up the spine: enter the
@@ -330,11 +342,17 @@ def _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
                                        lane_geoms[i][0]["bottom"] + GAP, arrow_id))
 
 
-def _draw_aside(parts: list[str], x: float, y: float, lines: list[str]) -> dict:
-    """A compact fact card: heading + mono rows (blank string = spacer)."""
+def _aside_size(lines: list[str]) -> tuple[float, float]:
     row_h, pad_x, pad_y = 17.0, 16.0, 14.0
     width = max(150.0, max((10.0 + 6.6 * len(t) for t in lines), default=0.0) + 2 * pad_x)
     height = pad_y * 2 + 22 + sum((6.0 if not t else row_h) for t in lines[1:])
+    return width, height
+
+
+def _draw_aside(parts: list[str], x: float, y: float, lines: list[str],
+                width: float, height: float) -> dict:
+    """A compact fact card: heading + mono rows (blank string = spacer)."""
+    row_h, pad_x, pad_y = 17.0, 16.0, 14.0
     parts.append(_svg_tag("rect", {
         "x": x, "y": y, "width": width, "height": height, "rx": 14, "ry": 14,
         "fill": C["bg_card"], "stroke": C["border"], "stroke-width": 0.7}))

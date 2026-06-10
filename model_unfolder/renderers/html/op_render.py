@@ -141,7 +141,18 @@ def region_to_graph(
                 lane.dst = None                            # the common case
             if lane.dst == []:
                 lane.out_label = _lane_out_label(lane, by_op)
-        lanes.sort(key=lambda lane: lane.dst is not None and not lane.dst)
+        # Slot order decides left→right placement: spine-tap lanes take the
+        # left edge (their elbow climbs from a lower spine node and would cut
+        # straight through the spine if placed centre), shared/side-source
+        # lanes fill the middle, output lanes exit on the right.
+        input_ids = {o.id for o in region.ops if o.kind == "input"}
+        def _slot(lane: Lane) -> int:
+            if lane.dst is not None and not lane.dst:
+                return 2                                   # output lane → right
+            if lane.src is not None and lane.src not in input_ids:
+                return 0                                   # spine tap → left
+            return 1
+        lanes.sort(key=_slot)
         parallels.append(Parallel(cur, join, lanes))
         flow.append(join)
         cur = join
