@@ -13,9 +13,9 @@ pedagogy, not a duplicated structure).
 from __future__ import annotations
 
 from .....opgraph import attention_region, ffn_region, rename_ops
-from ...graph import Edge, Graph, Group, Node
 from ...graph_engine import render_graph
 from ...op_render import region_to_graph
+from ...tower import tower_graph
 from ...patch_grid import coerce_grid, grid_subtitle, grid_title
 from ...stack_view import StackView
 from ...svg import _svg_tag, _svg_text
@@ -44,7 +44,8 @@ def build_patch_embedding_view(ir: dict, info: dict, mount_id: str, _child: dict
 
 
 def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
-    """The ViT-style encoder: a pre-norm cell repeated × N, declared as data."""
+    """The ViT-style encoder — the same tower backbone the main model and every
+    other transformer tower render through."""
     encoder = (vision_input(ir).get("encoder") or {})
     layers = encoder.get("num_layers")
     heads = encoder.get("num_attention_heads")
@@ -52,32 +53,28 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
     intermediate = encoder.get("intermediate_size")
     pos = (encoder.get("position_encoding") or {}).get("kind")
 
-    nodes = [
-        Node("vision_patch_tokens", "embedding", "Patch tokens",
-             sub=(f"{_fmt_int(hidden)}-d" if hidden else None)),
-        Node("vision_position", "embedding", _pos_label(pos)),
-        Node("vision_encoder_norm1", "norm", "LayerNorm"),
-        Node("vision_encoder_attn", "attention", "Self-attention",
-             sub=_attention_sub(heads, hidden)),
-        Node("vision_add1", "residual_add", static=True),
-        Node("vision_encoder_norm2", "norm", "LayerNorm"),
-        Node("vision_encoder_mlp", "ffn", "MLP",
-             sub=(f"{_fmt_int(hidden)} → {_fmt_int(intermediate)}"
-                  if (hidden and intermediate) else None)),
-        Node("vision_add2", "residual_add", static=True),
-        Node("vision_encoded_states", "output", "Encoded image states"),
-    ]
-    cell = ["vision_encoder_norm1", "vision_encoder_attn", "vision_add1",
-            "vision_encoder_norm2", "vision_encoder_mlp", "vision_add2"]
-    graph = Graph(
-        nodes=nodes,
-        flow=[n.id for n in nodes],
-        edges=[
-            Edge("vision_encoder_norm1", "vision_add1", "residual"),
-            Edge("vision_encoder_norm2", "vision_add2", "residual"),
+    graph = tower_graph({
+        "pre": [
+            {"id": "vision_patch_tokens", "kind": "embedding", "label": "Patch tokens",
+             "sub": (f"{_fmt_int(hidden)}-d" if hidden else None)},
+            {"id": "vision_position", "kind": "embedding", "label": _pos_label(pos)},
         ],
-        groups=[Group(cell, repeat=layers)],
-    )
+        "cell": [
+            {"id": "vision_encoder_norm1", "kind": "norm", "label": "LayerNorm"},
+            {"id": "vision_encoder_attn", "kind": "attention", "label": "Self-attention",
+             "sub": _attention_sub(heads, hidden)},
+            {"id": "vision_add1", "kind": "residual_add", "static": True,
+             "residual_from": "vision_encoder_norm1"},
+            {"id": "vision_encoder_norm2", "kind": "norm", "label": "LayerNorm"},
+            {"id": "vision_encoder_mlp", "kind": "ffn", "label": "MLP",
+             "sub": (f"{_fmt_int(hidden)} → {_fmt_int(intermediate)}"
+                     if (hidden and intermediate) else None)},
+            {"id": "vision_add2", "kind": "residual_add", "static": True,
+             "residual_from": "vision_encoder_norm2"},
+        ],
+        "repeat": layers,
+        "output": {"id": "vision_encoded_states", "label": "Encoded image states"},
+    })
     return render_graph(graph, info, mount_id, "vision-encoder",
                         f"{ir.get('name', 'model')} vision encoder")
 

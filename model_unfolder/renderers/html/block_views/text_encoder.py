@@ -5,11 +5,10 @@ Opened from the sampling loop's per-encoder node (``encoder_0``, ``encoder_1``,
 ``config.json`` when it can, so the view shows real depth/width/heads and falls
 back to a schematic ``× N`` otherwise.
 
-This view is now *data*: it builds a :class:`~..graph.Graph` describing the
-classic pre-norm Transformer cell (``Norm → sublayer → ⊕`` ×2) repeated ``N``
-times, and hands it to :func:`~..graph_engine.render_graph`.  The engine owns all
-geometry — the residual loops, the repeat-frame, the ``× N`` badge — so there is
-no hand-drawn layout here and nothing for the next architecture to re-invent.
+This view is now *data*: it declares a tower spec (source → embedding →
+pre-norm cell ×N → output) and hands it to the ONE tower backbone
+(:func:`~..tower.tower_graph`) every transformer tower renders through — the
+same backbone, residual loops, cell frame and ``× N`` badge as the main model.
 
 Op node ids are namespaced per encoder (``encoder_0_op_selfattn`` …) so CLIP and
 T5 don't share a drill card — see ``_text_encoder_ops`` in
@@ -17,8 +16,8 @@ T5 don't share a drill card — see ``_text_encoder_ops`` in
 """
 from __future__ import annotations
 
-from ..graph import Edge, Graph, Group, Node
 from ..graph_engine import render_graph
+from ..tower import tower_graph
 
 
 def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -48,32 +47,29 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
         out_sub = f"width {_n(text_dim)}" if text_dim else "conditioning embedding"
         note = "→ denoiser conditioning"
 
-    nodes = [
-        Node(f"{pfx}_tokens", "source", "Prompt tokens", sub="tokenized text", static=True),
-        Node(f"{pfx}_op_embed", "embedding", embed_main, sub=embed_sub),
-        Node(f"{pfx}_op_norm", "norm", norm),
-        Node(f"{pfx}_op_selfattn", "attention", "Multi-head self-attention",
-             sub=(f"{heads} heads" if heads else None)),
-        Node(f"{pfx}_op_add", "residual_add"),
-        Node(f"{pfx}_op_norm2", "norm", norm, target=f"{pfx}_op_norm"),
-        Node(f"{pfx}_op_ffn", "ffn", "Feed-forward (FFN)",
-             sub=(f"{_n(hidden)} → {_n(ffn)}" if (hidden and ffn) else None)),
-        Node(f"{pfx}_op_add2", "residual_add", target=f"{pfx}_op_add"),
-        Node(f"{pfx}_out", "output", out_main, sub=out_sub, static=True),
-    ]
-    flow = [n.id for n in nodes]
-    cell = [f"{pfx}_op_norm", f"{pfx}_op_selfattn", f"{pfx}_op_add",
-            f"{pfx}_op_norm2", f"{pfx}_op_ffn", f"{pfx}_op_add2"]
-    graph = Graph(
-        nodes=nodes,
-        flow=flow,
-        edges=[
-            Edge(f"{pfx}_op_norm", f"{pfx}_op_add", "residual"),
-            Edge(f"{pfx}_op_norm2", f"{pfx}_op_add2", "residual"),
+    graph = tower_graph({
+        "source": {"id": f"{pfx}_tokens", "label": "Prompt tokens", "sub": "tokenized text"},
+        "pre": [
+            {"id": f"{pfx}_op_embed", "kind": "embedding", "label": embed_main, "sub": embed_sub},
         ],
-        groups=[Group(cell, repeat=layers, label=(f"× {layers} layers" if layers else "× N layers"))],
-        note=note,
-    )
+        "cell": [
+            {"id": f"{pfx}_op_norm", "kind": "norm", "label": norm},
+            {"id": f"{pfx}_op_selfattn", "kind": "attention",
+             "label": "Multi-head self-attention",
+             "sub": (f"{heads} heads" if heads else None)},
+            {"id": f"{pfx}_op_add", "kind": "residual_add",
+             "residual_from": f"{pfx}_op_norm"},
+            {"id": f"{pfx}_op_norm2", "kind": "norm", "label": norm,
+             "target": f"{pfx}_op_norm"},
+            {"id": f"{pfx}_op_ffn", "kind": "ffn", "label": "Feed-forward (FFN)",
+             "sub": (f"{_n(hidden)} → {_n(ffn)}" if (hidden and ffn) else None)},
+            {"id": f"{pfx}_op_add2", "kind": "residual_add",
+             "residual_from": f"{pfx}_op_norm2", "target": f"{pfx}_op_add"},
+        ],
+        "repeat": layers,
+        "output": {"id": f"{pfx}_out", "label": out_main, "sub": out_sub, "static": True},
+        "note": note,
+    })
     return render_graph(graph, info, mount_id, "txtenc", f"{name} text encoder")
 
 

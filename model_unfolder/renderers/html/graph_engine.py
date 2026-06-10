@@ -119,12 +119,12 @@ def render_graph(
         gx0, gx1 = cx - half, cx + half
         gy0 = min(m["top"] for m in members) - _GROUP_PAD - _GROUP_HEADER
         gy1 = max(m["bottom"] for m in members) + _GROUP_PAD
+        # the same solid cell frame the main architecture view draws
         parts.append(_svg_tag("rect", {
             "x": gx0, "y": gy0, "width": gx1 - gx0, "height": gy1 - gy0,
-            "rx": 18, "ry": 18, "fill": C["bg_inner"], "opacity": 0.5,
-            "stroke": C["block"], "stroke-width": 1.0, "stroke-dasharray": "5 4"}))
+            "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none"}))
         regions += [point(gx0, gy0), point(gx1, gy1)]
-        _badge(parts, gx0 + 12, gy0 + 5, group.badge())
+        _badge(parts, gx1, gy0 + 12, group.badge())
 
     # --- 3. flow nodes ---
     for node in order_bottom_up:
@@ -437,11 +437,14 @@ def _geom(cx: float, top: float, w: float, h: float) -> dict:
             "cx": cx, "cy": top + h / 2, "w": w, "h": h}
 
 
-def _badge(parts: list[str], x: float, y: float, text: str) -> None:
-    w = max(120.0, 12.0 + 7.4 * len(text))
+def _badge(parts: list[str], right: float, y: float, text: str) -> None:
+    """The white repeat pill, top-right of the cell frame — same styling as the
+    main architecture view's ``× N`` badge."""
+    w = max(66.0, 18.0 + 8.2 * len(text))
+    x = right - w - 12
     parts.append(_svg_tag("rect", {
         "x": x, "y": y, "width": w, "height": 26, "rx": 13, "ry": 13,
-        "fill": C["bg_outer"], "stroke": C["border"], "stroke-width": 0.7}))
+        "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5}))
     parts.append(_svg_text(x + w / 2, y + 13, text, {
         "text-anchor": "middle", "dominant-baseline": "central",
-        "fill": C["text"], "font-family": FONT_HEAD, "font-size": 15}))
+        "fill": C["text"], "font-family": FONT_HEAD, "font-size": 17}))

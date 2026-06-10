@@ -1,9 +1,9 @@
 """Detail SVG for the Multi-Token Prediction (MTP) head stack."""
 from __future__ import annotations
 
-from ..graph import Edge, Graph, Group, Node
 from ..graph_engine import render_graph
 from ..metadata import _block_label
+from ..tower import tower_graph
 from ..stack_view import fit_svg, point
 from ..svg import _elbow_vh, _ids, _rect_block, _svg_tag, _svg_text, _v_line
 from ..theme import C, FONT_MONO
@@ -91,25 +91,23 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
 
     norm1_id = cn1.get("id", "mtp_block_norm1")
     norm2_id = cn2.get("id", "mtp_block_norm2")
-    nodes = [
-        Node("mtp_block_in", "port", "from eh_proj  (d)", static=True),
-        Node(norm1_id, "norm", cn1.get("label") or "RMSNorm"),
-        Node(ca.get("id", "mtp_block_attn"), "attention", ca.get("label") or "Attention"),
-        Node("mtp_block_add1", "residual_add", static=True),
-        Node(norm2_id, "norm", cn2.get("label") or "RMSNorm"),
-        Node(cf.get("id", "mtp_block_ffn"), "ffn", cf.get("label") or "Feed-Forward"),
-        Node("mtp_block_add2", "residual_add", static=True),
-        Node("mtp_block_out", "port", "to shared output head", static=True),
-    ]
-    cell = [n.id for n in nodes[1:-1]]
-    graph = Graph(
-        nodes=nodes,
-        flow=[n.id for n in nodes],
-        edges=[
-            Edge(norm1_id, "mtp_block_add1", "residual"),
-            Edge(norm2_id, "mtp_block_add2", "residual"),
+    graph = tower_graph({
+        "source": {"id": "mtp_block_in", "kind": "port", "label": "from eh_proj  (d)"},
+        "cell": [
+            {"id": norm1_id, "kind": "norm", "label": cn1.get("label") or "RMSNorm"},
+            {"id": ca.get("id", "mtp_block_attn"), "kind": "attention",
+             "label": ca.get("label") or "Attention"},
+            {"id": "mtp_block_add1", "kind": "residual_add", "static": True,
+             "residual_from": norm1_id},
+            {"id": norm2_id, "kind": "norm", "label": cn2.get("label") or "RMSNorm"},
+            {"id": cf.get("id", "mtp_block_ffn"), "kind": "ffn",
+             "label": cf.get("label") or "Feed-Forward"},
+            {"id": "mtp_block_add2", "kind": "residual_add", "static": True,
+             "residual_from": norm2_id},
         ],
-        groups=[Group(cell, label="decoder layer")],
-    )
+        "repeat_label": "decoder layer",
+        "output": {"id": "mtp_block_out", "kind": "port",
+                   "label": "to shared output head", "static": True},
+    })
     return render_graph(graph, info, mount_id, "mtp-transformer-block",
                         f"{ir.get('name', 'model')} MTP transformer block")
