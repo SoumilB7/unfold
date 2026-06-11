@@ -59,3 +59,11 @@ latent_channels: [latent_channels, z_dim]
 # DiT MoE spellings (HiDream-I1 routes its block FFNs through experts).
 num_experts: [num_routed_experts, num_experts, n_routed_experts]
 num_experts_per_tok: [num_activated_experts, num_experts_per_tok, top_k]
+# Video latent geometry (only CogVideoX/Allegro declare it; absent fields
+# simply don't render — nothing is invented for Wan/Mochi/LTX/HunyuanVideo).
+sample_height: [sample_height]
+sample_width: [sample_width]
+sample_frames: [sample_frames]
+sample_size_t: [sample_size_t]
+patch_size_t: [patch_size_t]
+temporal_compression_ratio: [temporal_compression_ratio]

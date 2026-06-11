@@ -592,3 +592,15 @@ def test_swiglu_video_dit_ffn_is_gated():
                activation_fn="swiglu")
     ffn = unfold(cfg).to_ir()["layers"][0]["ffn"]
     assert ffn["gated"] is True
+
+
+def test_video_latent_shape_uses_declared_temporal_geometry():
+    """CogVideoX declares sample_frames + temporal_compression_ratio: the z_T
+    shape gains the frames axis ((49-1)/4+1 = 13 latent frames).  Models that
+    declare nothing temporal keep the plain channel note — never invented."""
+    cfg = dict(COGVIDEO_STYLE, sample_height=60, sample_width=90,
+               sample_frames=49, temporal_compression_ratio=4)
+    html = unfold(cfg).to_html(standalone=True)
+    assert "16 x 13 x 30 x 45" in html
+    html_wan = unfold(WAN_STYLE).to_html(standalone=True)
+    assert "shape [16 channels]" in html_wan

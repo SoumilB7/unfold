@@ -74,8 +74,19 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     encoders = geom.get("text_encoders") or []
 
     # Latent grid shape, when derivable: channels x (sample/patch) tokens per
-    # side.  Video DiTs (Allegro) declare a non-square [h, w] sample size.
-    if in_ch and isinstance(sample, (list, tuple)):
+    # side.  Video DiTs that declare temporal geometry (CogVideoX, Allegro) get
+    # the frames axis: T x H x W token grid; latent frames come from a declared
+    # sample_size_t, or (sample_frames - 1) / temporal_compression + 1.
+    fh, fw = geom.get("sample_height"), geom.get("sample_width")
+    frames_t = geom.get("sample_size_t")
+    if frames_t is None and geom.get("sample_frames") and geom.get("temporal_compression_ratio"):
+        frames_t = (int(geom["sample_frames"]) - 1) // int(geom["temporal_compression_ratio"]) + 1
+    if in_ch and fh and fw:
+        pt = geom.get("patch_size_t") or 1
+        dims = ([str(int(frames_t) // int(pt))] if frames_t else []) + [
+            str(int(fh) // int(patch)), str(int(fw) // int(patch))]
+        latent_shape = " x ".join([_fmt(in_ch), *dims])
+    elif in_ch and isinstance(sample, (list, tuple)):
         sides = [int(x) // int(patch) if patch else int(x) for x in sample if isinstance(x, int)]
         latent_shape = " x ".join([_fmt(in_ch), *map(str, sides)])
     elif in_ch and sample:
