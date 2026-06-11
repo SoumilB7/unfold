@@ -49,8 +49,11 @@ def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
             "resolved": part_kind in DIFFUSION_PART_KINDS,
             "w": 240, "h": 58,
         })
-    pre.append({"id": "vae_output_head", "kind": "embedding", "label": "Output head",
-                "w": 240, "h": 58})
+    if channels:
+        # Same condition as the card author — a node must never be clickable
+        # without a card behind it.
+        pre.append({"id": "vae_output_head", "kind": "embedding", "label": "Output head",
+                    "w": 240, "h": 58})
 
     graph = tower_graph({
         "source": {"id": "vae_clean_latent",

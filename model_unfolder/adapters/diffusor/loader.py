@@ -17,8 +17,7 @@ import json
 from typing import Any
 
 #: Pipeline component keys that may hold the denoiser, in preference order.
-#: UNet (``"unet"``) is intentionally absent — UNet diffusion isn't supported yet.
-_DENOISER_KEYS = ("transformer",)
+_DENOISER_KEYS = ("transformer", "unet")
 
 
 def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None:

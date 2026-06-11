@@ -92,5 +92,7 @@ part_kinds:
 dit_class_markers:
   - Transformer2DModel
   - Transformer2D
+  - Transformer3DModel        # video DiTs: CogVideoX/Mochi/LTX/HunyuanVideo/Wan/Allegro
+  - Transformer3D
   - DiTTransformer
   - DiT

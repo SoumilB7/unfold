@@ -501,3 +501,94 @@ def test_diffusion_loader_returns_none_for_non_diffusion(tmp_path, monkeypatch):
 if __name__ == "__main__":
     import sys
     sys.exit(pytest.main([__file__, "-v"]))
+
+
+# ---------------------------------------------------------------------------
+# DiT coverage audit classes (2026-06: video DiTs, UNet-by-id, MoE-DiT,
+# non-KL VAEs, conditioning-style variants) — synthetic configs, no network.
+# ---------------------------------------------------------------------------
+
+WAN_STYLE = {
+    "_class_name": "WanTransformer3DModel", "_diffusers_version": "0.33.0",
+    "dim": 1536, "ffn_dim": 8960, "num_heads": 12, "num_layers": 30,
+    "attention_head_dim": 128, "text_dim": 4096, "freq_dim": 256,
+    "in_channels": 16, "out_channels": 16, "patch_size": [1, 2, 2],
+    "scheduler": ["diffusers", "FlowMatchEulerDiscreteScheduler"],
+    "text_encoder": ["transformers", "UMT5EncoderModel"],
+}
+
+COGVIDEO_STYLE = {
+    "_class_name": "CogVideoXTransformer3DModel", "_diffusers_version": "0.31.0",
+    "num_attention_heads": 48, "attention_head_dim": 64, "num_layers": 42,
+    "text_embed_dim": 4096, "time_embed_dim": 512, "in_channels": 16,
+    "patch_size": 2, "activation_fn": "gelu-approximate",
+}
+
+
+def test_video_dit_detected_and_honest():
+    """Transformer3DModel classes are diffusion denoisers — never the LLM
+    adapter (the Wan misparse: hidden 0, no loop, fake decoder)."""
+    d = unfold(WAN_STYLE)
+    ir = d.to_ir()
+    assert (ir["extras"].get("render") or {}).get("family") == "diffusion"
+    assert ir["hidden_size"] == 1536                      # dim spelling
+    assert ir["layers"][0]["ffn"]["intermediate_size"] == 8960   # ffn_dim
+    html = d.to_html(standalone=True)
+    assert "Text Cross-Attn" in html                      # cross-attn DiT, not MM-DiT
+    assert "MM-DiT" not in html
+    assert ">Frames<" in html                             # video output, not "Image"
+    assert validate_click_coupling(html) is None or validate_click_coupling(html) == []
+
+
+def test_concat_joint_video_dit_is_not_called_dual_stream():
+    """text_embed_dim-style joint sequences (CogVideoX/Mochi) share Q/K/V —
+    'joint', honestly, but never the dual-stream MM-DiT claim."""
+    html = unfold(COGVIDEO_STYLE).to_html(standalone=True)
+    assert "Joint attention — concatenated text + latent sequence" in html
+    assert "MM-DiT" not in html
+
+
+def test_unet_is_a_loadable_denoiser_key():
+    """UNet pipelines (SD1.5/SDXL/Kandinsky) load by id — the by-id loader must
+    accept 'unet' as a denoiser component, not only 'transformer'."""
+    from model_unfolder.adapters.diffusor.loader import _DENOISER_KEYS
+    assert "unet" in _DENOISER_KEYS
+
+
+def test_moe_dit_routes_experts_not_dense():
+    """HiDream-I1 style: num_routed_experts/num_activated_experts in a DiT
+    block ⇒ MoE FFN with router — never silently flattened to dense."""
+    cfg = {"_class_name": "HiDreamImageTransformer2DModel",
+           "num_layers": 4, "num_attention_heads": 20, "attention_head_dim": 128,
+           "num_routed_experts": 4, "num_activated_experts": 2,
+           "joint_attention_dim": 4096}
+    ir = unfold(cfg).to_ir()
+    ffn = ir["layers"][0]["ffn"]
+    assert ffn["kind"] == "moe" and ffn["num_experts"] == 4
+    assert ffn["num_experts_per_tok"] == 2
+
+
+def test_non_kl_vae_stays_honest():
+    """DC-AE (Sana) spells channels decoder_block_out_channels and mixes block
+    types per stage: stages render with channel chips but NO invented
+    'N× ResNet' claim and no dead output-head click."""
+    cfg = dict(FLUX)
+    cfg["_vae_config"] = {
+        "_class_name": "AutoencoderDC",
+        "decoder_block_out_channels": [128, 256, 512, 512, 1024, 1024],
+        "latent_channels": 32,
+    }
+    html = unfold(cfg).to_html(standalone=True)
+    assert validate_click_coupling(html) is None or validate_click_coupling(html) == []
+    i = html.find('data-card-id="vae_decoder_block_1"')
+    assert i > 0
+    assert "× ResNet" not in html[i:i + 600]
+
+
+def test_swiglu_video_dit_ffn_is_gated():
+    """Mochi declares activation_fn swiglu — the FFN is gated, drawn with the
+    gate path, not a plain MLP."""
+    cfg = dict(COGVIDEO_STYLE, _class_name="MochiTransformer3DModel",
+               activation_fn="swiglu")
+    ffn = unfold(cfg).to_ir()["layers"][0]["ffn"]
+    assert ffn["gated"] is True

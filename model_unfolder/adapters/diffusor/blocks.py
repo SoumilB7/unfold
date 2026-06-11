@@ -66,12 +66,19 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     in_ch = geom.get("in_channels")
     sample = geom.get("sample_size")
     patch = geom.get("patch_size") or 1
-    text_dim = geom.get("joint_attention_dim") or geom.get("cross_attention_dim")
+    if isinstance(patch, (list, tuple)):       # video DiTs: [t, h, w]
+        patch = patch[-1] or 1
+    text_dim = (geom.get("joint_attention_dim") or geom.get("cross_attention_dim")
+                or geom.get("text_embed_dim"))
     guidance = geom.get("guidance_embeds")
     encoders = geom.get("text_encoders") or []
 
-    # Latent grid shape, when derivable: channels x (sample/patch) tokens per side.
-    if in_ch and sample:
+    # Latent grid shape, when derivable: channels x (sample/patch) tokens per
+    # side.  Video DiTs (Allegro) declare a non-square [h, w] sample size.
+    if in_ch and isinstance(sample, (list, tuple)):
+        sides = [int(x) // int(patch) if patch else int(x) for x in sample if isinstance(x, int)]
+        latent_shape = " x ".join([_fmt(in_ch), *map(str, sides)])
+    elif in_ch and sample:
         side = int(sample) // int(patch) if patch else int(sample)
         latent_shape = f"{_fmt(in_ch)} x {side} x {side}"
     elif in_ch:
@@ -81,9 +88,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
 
     double = geom.get("double_stream_layers")
     single = geom.get("single_stream_layers")
+    style = geom.get("denoiser_style") or "transformer"
     depth_phrase = ", ".join(
         p for p in (
-            f"{double} MM-DiT dual-stream" if double else "",
+            f"{double} {style}" if double else "",
             f"{single} single-stream" if single else "",
         ) if p
     ) or "transformer"
@@ -189,9 +197,11 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "role": "output",
             "kind": "source",
             "diffusion_stage": "image_output",
-            "label": "Image",
-            "title": "Output image",
-            "description": "The generated image in pixel space.",
+            "label": "Frames" if geom.get("video") else "Image",
+            "title": "Output frames" if geom.get("video") else "Output image",
+            "description": ("The generated video frames in pixel space."
+                            if geom.get("video") else
+                            "The generated image in pixel space."),
         },
     ]
 
@@ -203,7 +213,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     latent = vae.get("latent_channels")
     out_ch = vae.get("out_channels") or 3
     lpb = vae.get("layers_per_block")
-    resnets = (lpb or 1) + 1
+    resnets = (lpb + 1) if isinstance(lpb, int) else None
     scale = 2 ** (len(channels) - 1) if channels else None
 
     children: list[Block] = [
@@ -217,27 +227,29 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     for idx, c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
         upsamples = idx > 1
-        stage = vae_up_stage(channels=c, resnets=resnets, upsamples=upsamples)
-        children.append({
+        card = {
             "id": f"vae_decoder_block_{block_no}",
             "title": f"Up stage {block_no}",
             "description": "VAE decoder resolution stage.",
             "facts": [f for f in (
                 f"{_fmt(c)} ch",
-                f"{resnets}× ResNet",
+                f"{resnets}× ResNet" if resnets else "",
                 "↑2× spatial" if upsamples else "",
             ) if f],
             "diffusion_part_kind": "up_stage",
-            "components": stage["components"],
-            "view": "vae_decoder_block",
-            "detail": {
-                **stage,
-                "channels": c,
-                "resnets": resnets,
-                "upsamples": upsamples,
-            },
-            "children": _vae_resnet_ops(upsamples),
-        })
+        }
+        if resnets:
+            # The ResNet-stack drill only exists when the config declares the
+            # per-stage depth (KL-style layers_per_block / num_res_blocks);
+            # DC-AE mixes block types per stage, so no stack is fabricated.
+            stage = vae_up_stage(channels=c, resnets=resnets, upsamples=upsamples)
+            card.update({
+                "components": stage["components"],
+                "view": "vae_decoder_block",
+                "detail": {**stage, "channels": c, "resnets": resnets, "upsamples": upsamples},
+                "children": _vae_resnet_ops(upsamples),
+            })
+        children.append(card)
     if channels:
         children.append({
             "id": "vae_output_head",

@@ -182,6 +182,8 @@ def parse(cfg: Any) -> ModelIR:
         "pooled_projection_dim": _resolve(cfg, "pooled_projection_dim"),
         "joint_attention_dim": _resolve(cfg, "joint_attention_dim"),
         "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
+        "text_embed_dim": _resolve(cfg, "text_embed_dim"),
+        "video": "3D" in str(cls),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
         "text_encoder_specs": _text_encoder_specs(cfg),
@@ -221,31 +223,46 @@ def parse(cfg: Any) -> ModelIR:
         rope_note = "Position comes from the patch embedding (no rotary)."
 
     # ---- Denoiser layer stack ----
-    # MM-DiT double-stream blocks: image and text keep SEPARATE Q/K/V and MLP,
-    # joined only in a full (bidirectional) joint attention.  Single-stream
-    # blocks share one set of projections and run attention + MLP in parallel.
-    double_variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
+    # The block's attention topology comes from the config's conditioning
+    # style — never assumed:
+    #   * joint_attention_dim or a single-stream split => MM-DiT dual-stream
+    #     (SD3 / Flux / HunyuanVideo): separate Q/K/V + MLP per stream;
+    #   * text_embed_dim => one concatenated text+latent sequence with shared
+    #     projections (CogVideoX / Mochi);
+    #   * cross_attention_dim only => a cross-attention DiT (PixArt /
+    #     Hunyuan-DiT / Wan / LTX / Allegro): self-attention + text cross-attn;
+    #   * none => a class-conditional DiT, plain self-attention.
+    if geom["joint_attention_dim"] or num_single:
+        double_variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
+    elif geom["text_embed_dim"]:
+        double_variant = _concat_joint_variant(rope_note)
+    elif geom["cross_attention_dim"]:
+        double_variant = _cross_dit_variant(rope_note)
+    else:
+        double_variant = _plain_dit_variant(rope_note)
     single_variant = _stream_variant("single-stream", rope_note, dual=False)
+    geom["denoiser_style"] = double_variant["tag"]
 
     # Conditioning enters each block at two distinct points: the timestep (+ the
     # CLIP pooled vector) modulates the norm via AdaLN; the text token sequence
     # enters the attention.  Attach them as external side-rails so the denoiser
     # view shows WHERE each of the loop's conditioning inputs plugs in.
-    has_text = bool(geom["joint_attention_dim"] or geom["cross_attention_dim"] or geom["text_encoders"])
+    has_text = bool(geom["joint_attention_dim"] or geom["cross_attention_dim"]
+                    or geom["text_embed_dim"] or geom["text_encoders"])
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         layers.append(decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
-            _dit_ffn(activation, intermediate_size),
+            _dit_ffn(activation, intermediate_size, cfg),
             hidden_size, norm_kind="layernorm",
         ))
         idx += 1
     for _ in range(num_single):
         layers.append(parallel_decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant),
-            _dit_ffn(activation, intermediate_size),
+            _dit_ffn(activation, intermediate_size, cfg),
             hidden_size, norm_kind="layernorm",
         ))
         idx += 1
@@ -368,13 +385,75 @@ def _stream_variant(tag: str, rope_note: str, *, dual: bool) -> dict:
     }
 
 
-def _dit_ffn(activation: str, intermediate_size: int) -> FFNSpec:
-    # Standard (non-gated) MLP with a GELU-family activation.
+def _concat_joint_variant(rope_note: str) -> dict:
+    """Joint attention over one concatenated text+latent sequence with SHARED
+    projections (CogVideoX, Mochi) — joint, but not dual-stream MM-DiT."""
+    return {
+        "short": "Joint Attn",
+        "tag": "text + latent",
+        "label": ["Joint Attention", "(text + latent)"],
+        "title": "Joint attention — concatenated text + latent sequence",
+        "desc": (
+            "Text tokens and latent patch tokens are concatenated into one "
+            "sequence and attend jointly with shared Q/K/V (full bidirectional "
+            "attention). Modulated by the timestep via AdaLN. " + rope_note
+        ),
+    }
+
+
+def _cross_dit_variant(rope_note: str) -> dict:
+    """Cross-attention DiT block (PixArt / Hunyuan-DiT / Wan / LTX / Allegro):
+    latent tokens self-attend, then read the text through cross-attention."""
+    return {
+        "short": "Self + XAttn",
+        "tag": "self + cross-attention",
+        "label": ["Self-Attention", "+ Text Cross-Attn"],
+        "title": "DiT block — self-attention + text cross-attention",
+        "desc": (
+            "Latent patch tokens attend to each other (full bidirectional "
+            "self-attention), then a separate cross-attention sublayer reads "
+            "the encoded text tokens as K/V. Modulated by the timestep via "
+            "AdaLN. " + rope_note
+        ),
+    }
+
+
+def _plain_dit_variant(rope_note: str) -> dict:
+    """Class-conditional DiT (the original): self-attention only — all
+    conditioning enters through AdaLN."""
+    return {
+        "short": "Self-Attn",
+        "tag": "DiT",
+        "label": ["Self-Attention", "(DiT)"],
+        "title": "DiT self-attention",
+        "desc": (
+            "Full bidirectional self-attention over the latent patch tokens. "
+            "Conditioning (class / timestep) enters only through AdaLN "
+            "modulation. " + rope_note
+        ),
+    }
+
+
+def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None) -> FFNSpec:
+    # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
+    # facts/views the LLM side uses, never silently flattened to dense.
+    num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
+    if num_experts > 1:
+        return FFNSpec(
+            kind="moe",
+            activation=activation,
+            intermediate_size=intermediate_size,
+            gated=False,
+            num_experts=num_experts,
+            num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
+        )
+    # Gated only when the activation says so (Mochi: swiglu); otherwise the
+    # standard non-gated MLP with a GELU-family activation.
     return FFNSpec(
         kind="dense",
         activation=activation,
         intermediate_size=intermediate_size,
-        gated=False,
+        gated="glu" in (activation or ""),
     )
 
 
@@ -404,12 +483,27 @@ def _vae_geom(cfg: Any) -> dict | None:
     vcfg = _g(cfg, "_vae_config")
     if not isinstance(vcfg, dict):
         return None
-    boc = vcfg.get("block_out_channels")
+
+    def _v(canonical):
+        for alias in _ALIASES.get(canonical, [canonical]):
+            if vcfg.get(alias) is not None:
+                return vcfg[alias]
+        return None
+
+    boc = _v("block_out_channels")
+    if not isinstance(boc, (list, tuple)):
+        # Wan/Qwen 3D-causal VAEs parameterize stages as base_dim × dim_mult.
+        base, mult = vcfg.get("base_dim"), vcfg.get("dim_mult")
+        if isinstance(base, int) and isinstance(mult, (list, tuple)):
+            boc = [base * m for m in mult if isinstance(m, int)]
+    lpb = _v("layers_per_block")
     out = {
         "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
-        "latent_channels": vcfg.get("latent_channels"),
+        "latent_channels": _v("latent_channels"),
         "out_channels": vcfg.get("out_channels"),
-        "layers_per_block": vcfg.get("layers_per_block"),
+        # Per-stage depth must be a declared scalar — DC-AE's per-stage *lists*
+        # mix block types (ResBlock/EViT), so a single count would be invented.
+        "layers_per_block": lpb if isinstance(lpb, int) else None,
         "scaling_factor": vcfg.get("scaling_factor"),
         "class": vcfg.get("_class_name"),
     }

@@ -284,6 +284,10 @@ def _should_fallback_to_raw_json(error: Exception) -> bool:
             "model_type",
             "unrecognized model",
             "should have a",
+            # A broken/foreign ROOT config.json (HunyuanVideo ships one that
+            # isn't valid JSON) — the repo may still be a diffusers pipeline
+            # described by model_index.json, so fall through and try that.
+            "not a valid json",
         )
     )
 

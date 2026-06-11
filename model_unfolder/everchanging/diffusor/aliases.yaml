@@ -26,7 +26,8 @@ rope_theta: [rope_theta]
 
 # Conditioning / stream dims.
 joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)
-cross_attention_dim: [cross_attention_dim]           # cross-attn text width (PixArt)
+text_embed_dim: [text_embed_dim]                     # concatenated-joint text width (CogVideoX/Mochi/HunyuanVideo)
+cross_attention_dim: [cross_attention_dim, text_dim]  # cross-attn text width (PixArt; Wan spells it text_dim)
 caption_projection_dim: [caption_projection_dim, caption_channels]
 pooled_projection_dim: [pooled_projection_dim]
 guidance_embeds: [guidance_embeds]
@@ -45,10 +46,16 @@ hidden_act: [hidden_act, activation_fn, act_fn]
 # --- UNet (SD1.5 / SD2 / SDXL / Kandinsky, UNet2DConditionModel) ---
 # Conv U-net resolution stages: channels per stage + the block-type lists that
 # say which stages have cross-attention, plus ResNet / transformer depth.
-block_out_channels: [block_out_channels]
+block_out_channels: [block_out_channels, decoder_block_out_channels]
 down_block_types: [down_block_types]
 up_block_types: [up_block_types]
 mid_block_type: [mid_block_type]
-layers_per_block: [layers_per_block]
+layers_per_block: [layers_per_block, num_res_blocks]
 transformer_layers_per_block: [transformer_layers_per_block]
 addition_embed_type: [addition_embed_type]
+# (VAE spellings folded into block_out_channels / layers_per_block above;
+# DC-AE prefixes decoder_, Wan/Qwen 3D VAEs say z_dim / num_res_blocks.)
+latent_channels: [latent_channels, z_dim]
+# DiT MoE spellings (HiDream-I1 routes its block FFNs through experts).
+num_experts: [num_routed_experts, num_experts, n_routed_experts]
+num_experts_per_tok: [num_activated_experts, num_experts_per_tok, top_k]
