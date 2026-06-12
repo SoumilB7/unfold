@@ -51,7 +51,8 @@ def per_layer_embedding_blocks(
             "id": ids["gate"],
             "label": "Linear (gate)",
             "title": "Per-layer input gate",
-            "description": f"Linear; {hidden} -> {emb}",
+            "description": "Linear projection.",
+            "facts": [f"{hidden} \u2192 {emb}"],
         },
         {
             "id": ids["activation"],
@@ -78,7 +79,8 @@ def per_layer_embedding_blocks(
             "id": ids["projection"],
             "label": "Linear (up)",
             "title": "Per-layer projection",
-            "description": f"Linear; {emb} -> {hidden}",
+            "description": "Linear projection.",
+            "facts": [f"{emb} \u2192 {hidden}"],
         },
         {
             "id": ids["norm"],
@@ -96,7 +98,7 @@ def per_layer_embedding_blocks(
             "label": "PLE",
             "title": "Per-Layer Embeddings",
             "description": (
-                f"Per-layer gate-and-project; {hidden} -> {emb} -> {hidden}. "
+                f"Per-layer gate-and-project ({hidden} \u2192 {emb} \u2192 {hidden}). "
                 "Multiplied by a per-layer vector built outside the stack."
             ),
             "view": "per_layer_embedding",
@@ -159,13 +161,15 @@ def per_layer_embedding_pathway(
                 "id": f"{block_id}_lookup",
                 "label": "embed_tokens_per_layer",
                 "kind": "embedding",
-                "description": f"Lookup; {vocab} -> {layers} x {emb}",
+                "description": "Embedding lookup.",
+                "facts": [f"{vocab} \u2192 {layers} \u00d7 {emb}"],
             },
             {
                 "id": f"{block_id}_proj_in",
                 "label": "per_layer_model_projection",
                 "kind": "linear",
-                "description": f"Linear; {hidden} -> {layers} x {emb}",
+                "description": "Linear projection.",
+                "facts": [f"{hidden} \u2192 {layers} \u00d7 {emb}"],
             },
             {
                 "id": f"{block_id}_combine",

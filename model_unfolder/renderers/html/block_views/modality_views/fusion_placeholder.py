@@ -130,8 +130,8 @@ def fusion_surface(parts: list[str], fusion: dict, box: dict, vision: dict, audi
     audio_tokens = (audio.get("tokens") or {})
     token_count = vision_tokens.get("count")
     audio_count = audio_tokens.get("count")
-    image_label = f"IMG x {_fmt_int(token_count) if token_count else 'n'}"
-    audio_label = f"AUD x {_fmt_int(audio_count) if audio_count else 't'}"
+    image_label = f"IMG \u00d7 {_fmt_int(token_count) if token_count else 'n'}"
+    audio_label = f"AUD \u00d7 {_fmt_int(audio_count) if audio_count else 't'}"
     last_visual = f"v{int(token_count) - 1}" if token_count else "vN"
     both_modalities = has_vision and has_audio
 

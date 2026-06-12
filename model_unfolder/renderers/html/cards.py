@@ -214,7 +214,7 @@ def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
             {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},
             {
                 "id": "silu",
-                "title": f"{activation} activation",
+                "title": activation,
                 "description": "Element-wise non-linearity after the input projection",
             },
             {"id": "down_proj", "title": "Output projection", "description": f"Linear · {inter} → {h}"},
@@ -229,8 +229,8 @@ def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
         {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
         {
             "id": "silu",
-            "title": f"{activation} activation",
-            "description": "Element-wise non-linearity applied to the gate path",
+            "title": activation,
+            "description": "Element-wise non-linearity applied to the gate path.",
         },
         {
             "id": "mul",

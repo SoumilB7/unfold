@@ -44,7 +44,7 @@ def grid_title(grid: dict | None) -> str:
         return "patch grid"
     tiles = grid.get("tiles") or {}
     if tiles.get("h") and tiles.get("w"):
-        dims = f"{_fmt_int(tiles['h'])}x{_fmt_int(tiles['w'])}"
+        dims = f"{_fmt_int(tiles['h'])}×{_fmt_int(tiles['w'])}"
         t = (grid.get("patch") or {}).get("t")
         if t:
             dims += f"x{_fmt_int(t)}"
@@ -67,7 +67,7 @@ def grid_subtitle(grid: dict | None) -> str:
         line = patch_str or image_str or "image split into patch tiles"
     merge = grid.get("spatial_merge_size")
     if merge:
-        line += f" · {_fmt_int(merge)}x{_fmt_int(merge)} merge"
+        line += f" · {_fmt_int(merge)}×{_fmt_int(merge)} merge"
     return line
 
 
@@ -82,12 +82,12 @@ def grid_card_phrase(grid: dict | None) -> str | None:
     p = grid.get("patch") or {}
     ph, pw = p.get("h"), p.get("w")
     if ph and pw:
-        patch_px = f"{_fmt_int(ph)}px each" if ph == pw else f"{_fmt_int(ph)}x{_fmt_int(pw)}px each"
+        patch_px = f"{_fmt_int(ph)}px each" if ph == pw else f"{_fmt_int(ph)}×{_fmt_int(pw)}px each"
     else:
         patch_px = None
     tiles = grid.get("tiles") or {}
     if tiles.get("h") and tiles.get("w"):
-        dims = f"{_fmt_int(tiles['h'])}x{_fmt_int(tiles['w'])}"
+        dims = f"{_fmt_int(tiles['h'])}×{_fmt_int(tiles['w'])}"
         return f"{dims} patches ({patch_px})" if patch_px else f"{dims} patches"
     if grid.get("kind") == "dynamic_patch_grid":
         return f"patches ({patch_px}); grid size varies with input" if patch_px else "patches; grid size varies with input"
@@ -100,11 +100,11 @@ def _patch_phrase(grid: dict) -> str | None:
     if not ph and not pw:
         return None
     if ph and pw and ph != pw:
-        s = f"{_fmt_int(ph)}x{_fmt_int(pw)}px patch"
+        s = f"{_fmt_int(ph)}×{_fmt_int(pw)}px patch"
     else:
         s = f"{_fmt_int(ph or pw)}px patch"
     if t:
-        s += f" x {_fmt_int(t)} frames"
+        s += f" \u00d7 {_fmt_int(t)} frames"
     return s
 
 
@@ -112,7 +112,7 @@ def _image_phrase(grid: dict) -> str | None:
     inp = grid.get("input") or {}
     ih, iw = inp.get("h"), inp.get("w")
     if ih and iw:
-        return f"{_fmt_int(ih)}px image" if ih == iw else f"{_fmt_int(ih)}x{_fmt_int(iw)}px image"
+        return f"{_fmt_int(ih)}px image" if ih == iw else f"{_fmt_int(ih)}×{_fmt_int(iw)}px image"
     if grid.get("kind") == "dynamic_patch_grid":
         return "grid size varies with input"
     return None

@@ -74,7 +74,7 @@ def _reduction_children(reduction: dict) -> list[dict]:
     else:
         k = reduction.get("kernel_size")
         title = "Token pooling"
-        head = (f"Average-pool the patch grid by {_fmt_int(k)}x{_fmt_int(k)}"
+        head = (f"Average-pool the patch grid by {_fmt_int(k)}×{_fmt_int(k)}"
                 if k else "Average-pool the patch grid")
     return [{
         "id": "vision_token_reduce",
@@ -86,10 +86,10 @@ def _reduction_children(reduction: dict) -> list[dict]:
 def _vision_label(path: dict) -> str:
     token_kind = (path.get("tokens") or {}).get("kind")
     if token_kind == "vision_cross_attention_states":
-        return "Image -> states"
+        return "Image \u2192 states"
     if token_kind == "grid_visual_tokens":
-        return "Vision -> grid"
-    return "Vision -> tokens"
+        return "Vision \u2192 grid"
+    return "Vision \u2192 tokens"
 
 
 def _vision_title(path: dict) -> str:
@@ -115,13 +115,13 @@ _MODALITY_BLOCK_SPECS = (
     {
         "key": "audio", "block_id": "audio_path", "view": "audio_path",
         "kind": lambda p: "audio_to_soft_tokens",
-        "label": lambda p: "Audio -> tokens", "title": lambda p: "Audio to soft tokens",
+        "label": lambda p: "Audio \u2192 tokens", "title": lambda p: "Audio to soft tokens",
         "describe": lambda p: _audio_description(p), "children": lambda p: _audio_children(p),
     },
     {
         "key": "video", "block_id": "video_path", "view": "video_path",
         "kind": lambda p: "video_to_grid_tokens",
-        "label": lambda p: "Video -> grid", "title": lambda p: "Video to grid tokens",
+        "label": lambda p: "Video \u2192 grid", "title": lambda p: "Video to grid tokens",
         "describe": lambda p: _video_description(p), "children": lambda p: _video_children(p),
     },
 )
@@ -137,13 +137,15 @@ def _multimodal_block_lookup(ir: dict) -> dict:
         path = inputs.get(spec["key"])
         if not path:
             continue
+        desc, facts = spec["describe"](path)
         blocks[spec["block_id"]] = {
             "id": spec["block_id"],
             "role": "modality_input",
             "kind": spec["kind"](path),
             "label": spec["label"](path),
             "title": spec["title"](path),
-            "description": spec["describe"](path),
+            "description": desc,
+            "facts": facts,
             "view": spec["view"],
             "children": spec["children"](path),
         }
@@ -156,14 +158,15 @@ def _multimodal_block_lookup(ir: dict) -> dict:
             "kind": "fusion",
             "label": "Vision cross-attention" if cross_attention else "Multimodal fusion",
             "title": "Vision cross-attention" if cross_attention else "Multimodal fusion",
-            "description": _fusion_description(fusion),
+            "description": _fusion_description(fusion)[0],
+            "facts": _fusion_description(fusion)[1],
             "view": "multimodal_fusion",
             "children": _fusion_children(fusion, inputs),
         }
     return blocks
 
 
-def _vision_description(vision: dict) -> str:
+def _vision_description(vision: dict) -> tuple[str, list[str]]:
     embedding = vision.get("embedding") or {}
     encoder = vision.get("encoder") or {}
     projector = vision.get("projector") or {}
@@ -194,7 +197,7 @@ def _vision_description(vision: dict) -> str:
         f = reduction.get("reduces_tokens_by")
         bits.append(f"pixel shuffle /{_fmt_int(f)}" if f else "pixel shuffle")
     elif reduction.get("kernel_size"):
-        bits.append(f"pool {_fmt_int(reduction.get('kernel_size'))}x{_fmt_int(reduction.get('kernel_size'))}")
+        bits.append(f"pool {_fmt_int(reduction.get('kernel_size'))}\u00d7{_fmt_int(reduction.get('kernel_size'))}")
     connector_kind = (projector.get("kind") or "")
     if connector_kind in {"perceiver_resampler"}:
         n = projector.get("num_latents")
@@ -202,7 +205,7 @@ def _vision_description(vision: dict) -> str:
     if grid_vision and grid.get("runtime_input"):
         bits.append(f"dynamic {grid.get('runtime_input')}")
     if grid_vision and grid.get("spatial_merge_size"):
-        bits.append(f"patch merger {_fmt_int(grid.get('spatial_merge_size'))}x{_fmt_int(grid.get('spatial_merge_size'))}")
+        bits.append(f"patch merger {_fmt_int(grid.get('spatial_merge_size'))}\u00d7{_fmt_int(grid.get('spatial_merge_size'))}")
     if projector.get("out_features"):
         bits.append(
             f"merged to width {_fmt_int(projector.get('out_features'))}"
@@ -214,7 +217,12 @@ def _vision_description(vision: dict) -> str:
         bits.append("M-RoPE grid positions")
     if width:
         bits.append(f"width {_fmt_int(width)}")
-    return "; ".join(bits)
+    action = ("projects image states that selected decoder layers read through cross-attention"
+              if cross_attention_vision else
+              "turns image pixels into grid-aware visual tokens for the decoder"
+              if grid_vision else
+              "turns image pixels into soft visual tokens for the decoder")
+    return f"The {bits[0]} {action}.", bits[1:]
 
 
 def _vision_children(vision: dict) -> list[dict]:
@@ -272,29 +280,28 @@ def _vision_children(vision: dict) -> list[dict]:
         {
             "id": "vision_pixels",
             "title": "Image pixels",
-            "description": _join_desc([
-                "Raw image tensor before the vision tower",
+            "description": "Raw image tensor before the vision tower.",
+            "facts": [f for f in (
                 f"image size {_fmt_int(image_size)}" if image_size else "",
                 "shape [batch, images, channels, height, width]",
-            ]),
+            ) if f],
         },
         *_tiling_children(tiling),
         {
             "id": "vision_patches",
             "title": "Patch embedding",
-            "description": _join_desc([
-                f"Split image into {grid_phrase}" if grid_phrase else "Split image into patches",
-                f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
-            ]),
+            "description": "Splits the image into patches and projects each one to the encoder width.",
+            "facts": [f for f in (
+                grid_phrase or "",
+                f"\u2192 {_fmt_int(embedding.get('out_features'))} per patch" if embedding.get("out_features") else "",
+            ) if f],
             "view": "vision_patch_embedding",
             "children": [
                 {
                     "id": "vision_pixels",
                     "title": "Image pixels",
-                    "description": _join_desc([
-                        "Raw image tensor before patch embedding",
-                        f"image size {_fmt_int(image_size)}" if image_size else "",
-                    ]),
+                    "description": "Raw image tensor before patch embedding.",
+                    "facts": [f"image size {_fmt_int(image_size)}"] if image_size else [],
                 },
                 {
                     "id": "vision_patch_flatten",
@@ -304,18 +311,14 @@ def _vision_children(vision: dict) -> list[dict]:
                 {
                     "id": "vision_patch_project",
                     "title": "Patch projection",
-                    "description": _join_desc([
-                        "Conv/linear patch projection",
-                        f"output dim {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
-                    ]),
+                    "description": "Conv/linear projection of each flattened patch into the encoder width.",
+                    "facts": [f"output dim {_fmt_int(embedding.get('out_features'))}"] if embedding.get("out_features") else [],
                 },
                 {
                     "id": "vision_patch_tokens",
                     "title": "Patch tokens",
-                    "description": _join_desc([
-                        "One token per image patch",
-                        f"width {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
-                    ]),
+                    "description": "One token per image patch.",
+                    "facts": [f"width {_fmt_int(embedding.get('out_features'))}"] if embedding.get("out_features") else [],
                 },
             ],
         },
@@ -329,11 +332,9 @@ def _vision_children(vision: dict) -> list[dict]:
                 {
                     "id": "vision_position",
                     "title": "Vision positions",
-                    "description": _join_desc([
-                        "Position information is added before the visual transformer stack",
-                        str((encoder.get("position_encoding") or {}).get("kind")).replace("_", " ")
-                        if (encoder.get("position_encoding") or {}).get("kind") else "",
-                    ]),
+                    "description": "Position information is added before the visual transformer stack.",
+                    "facts": [str((encoder.get("position_encoding") or {}).get("kind")).replace("_", " ")]
+                        if (encoder.get("position_encoding") or {}).get("kind") else [],
                 },
                 {
                     "id": "vision_encoder_norm1",
@@ -353,17 +354,17 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_attn_q",
                             "title": "Query projection",
-                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                            **_linear_card(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
                         },
                         {
                             "id": "vision_attn_k",
                             "title": "Key projection",
-                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                            **_linear_card(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
                         },
                         {
                             "id": "vision_attn_v",
                             "title": "Value projection",
-                            "description": _linear_desc(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
+                            **_linear_card(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
                         },
                         {
                             "id": "vision_attn_scaled",
@@ -383,15 +384,16 @@ def _vision_children(vision: dict) -> list[dict]:
                         {
                             "id": "vision_attn_concat",
                             "title": "Concatenate heads",
-                            "description": _join_desc([
+                            "description": "Head outputs are concatenated back to the encoder width.",
+                            "facts": [f for f in (
                                 f"{_fmt_int(vision_heads)} heads" if vision_heads else "",
-                                f"back to hidden {_fmt_int(vision_hidden)}" if vision_hidden else "",
-                            ]),
+                                f"hidden {_fmt_int(vision_hidden)}" if vision_hidden else "",
+                            ) if f],
                         },
                         {
                             "id": "vision_attn_out",
                             "title": "Output projection",
-                            "description": _linear_desc(vision_hidden, vision_hidden, None, None),
+                            **_linear_card(vision_hidden, vision_hidden, None, None),
                         },
                     ],
                 },
@@ -446,28 +448,23 @@ def _vision_children(vision: dict) -> list[dict]:
         {
             "id": "visual_tokens",
             "title": "cross_attention_states" if cross_attention_vision else "Grid visual tokens" if grid_vision else "Soft visual tokens",
-            "description": _join_desc([
-                (
-                    f"{_fmt_int(token_count)} tokens per tile"
-                    if token_count and cross_attention_vision
-                    else "Dynamic THW grid visual tokens"
-                    if grid_vision
-                    else f"{_fmt_int(token_count)} tokens"
-                    if token_count
-                    else "Projected image-state stream"
-                    if cross_attention_vision
-                    else "Soft visual token stream"
-                ),
-                f"width {_fmt_int(token_width)}" if token_width else "",
-                "selected decoder cross-attention layers read these states as K/V; they are not scattered into text token slots"
+            "description": (
+                "Selected decoder cross-attention layers read these states as K/V; "
+                "they are not scattered into text token slots."
                 if cross_attention_vision
-                else "these are fused into the decoder input, not raw pixels",
-            ]),
+                else "These are fused into the decoder input \u2014 not raw pixels."
+            ),
+            "facts": [f for f in (
+                (f"{_fmt_int(token_count)} tokens per tile" if (token_count and cross_attention_vision)
+                 else "dynamic THW grid" if grid_vision
+                 else f"{_fmt_int(token_count)} tokens" if token_count else ""),
+                f"width {_fmt_int(token_width)}" if token_width else "",
+            ) if f],
         },
     ]
 
 
-def _audio_description(audio: dict) -> str:
+def _audio_description(audio: dict) -> tuple[str, list[str]]:
     encoder = audio.get("encoder") or {}
     projector = audio.get("projector") or {}
     tokens = audio.get("tokens") or {}
@@ -481,7 +478,7 @@ def _audio_description(audio: dict) -> str:
         bits.append(f"{_fmt_int(tokens.get('ms_per_token'))} ms/token")
     if tokens.get("width"):
         bits.append(f"width {_fmt_int(tokens.get('width'))}")
-    return "; ".join(bits)
+    return f"The {bits[0]} turns raw audio into soft tokens for the decoder.", bits[1:]
 
 
 def _audio_children(audio: dict) -> list[dict]:
@@ -500,11 +497,11 @@ def _audio_children(audio: dict) -> list[dict]:
         {
             "id": "audio_features",
             "title": "Audio features",
-            "description": _join_desc([
-                "Processor output before the audio tower",
+            "description": "Processor output before the audio tower.",
+            "facts": [f for f in (
                 f"feature size {_fmt_int(input_spec.get('feature_size'))}" if input_spec.get("feature_size") else "",
                 "shape [batch, segments, frames, features]",
-            ]),
+            ) if f],
         },
         {
             "id": "audio_encoder",
@@ -521,17 +518,17 @@ def _audio_children(audio: dict) -> list[dict]:
         {
             "id": "audio_tokens",
             "title": "Soft audio tokens",
-            "description": _join_desc([
-                f"{_fmt_int(tokens.get('count'))} tokens" if tokens.get("count") else "Variable soft audio token stream",
+            "description": "These are fused into the decoder input \u2014 not raw waveform samples.",
+            "facts": [f for f in (
+                f"{_fmt_int(tokens.get('count'))} tokens" if tokens.get("count") else "variable token count",
                 f"{_fmt_int(tokens.get('ms_per_token'))} ms/token" if tokens.get("ms_per_token") else "",
                 f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
-                "these are fused into the decoder input, not raw waveform samples",
-            ]),
+            ) if f],
         },
     ]
 
 
-def _video_description(video: dict) -> str:
+def _video_description(video: dict) -> tuple[str, list[str]]:
     encoder = video.get("encoder") or {}
     projector = video.get("projector") or {}
     tokens = video.get("tokens") or {}
@@ -540,10 +537,10 @@ def _video_description(video: dict) -> str:
     if grid.get("runtime_input"):
         bits.append(f"dynamic {grid.get('runtime_input')}")
     if grid.get("spatial_merge_size"):
-        bits.append(f"merge {_fmt_int(grid.get('spatial_merge_size'))}x{_fmt_int(grid.get('spatial_merge_size'))}")
+        bits.append(f"merge {_fmt_int(grid.get('spatial_merge_size'))}\u00d7{_fmt_int(grid.get('spatial_merge_size'))}")
     if projector.get("out_features"):
         bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
-    return "; ".join(bits)
+    return f"The {bits[0]} turns video frames into grid-aware tokens for the decoder.", bits[1:]
 
 
 def _video_children(video: dict) -> list[dict]:
@@ -557,10 +554,8 @@ def _video_children(video: dict) -> list[dict]:
         {
             "id": "video_frames",
             "title": "Video frames",
-            "description": _join_desc([
-                "Frame tensor before the visual tower",
-                "shape [batch, videos, frames, channels, height, width]",
-            ]),
+            "description": "Frame tensor before the visual tower.",
+            "facts": ["shape [batch, videos, frames, channels, height, width]"],
         },
         {
             "id": "video_patches",
@@ -604,20 +599,20 @@ def _head_dim(heads: int | None, hidden: int | None) -> int | None:
     return None
 
 
-def _linear_desc(
+def _linear_card(
     in_features: int | None,
     out_features: int | None,
     heads: int | None,
     head_dim: int | None,
-) -> str:
-    bits = ["Linear"]
-    if in_features and out_features:
-        bits.append(f"{_fmt_int(in_features)} -> {_fmt_int(out_features)}")
-    if heads and head_dim:
-        bits.append(f"{_fmt_int(heads)} heads x {_fmt_int(head_dim)} dims")
-    elif heads:
-        bits.append(f"{_fmt_int(heads)} heads")
-    return "; ".join(bits)
+) -> dict:
+    """Sentence + atomic chips for a linear-projection op card (house style:
+    prose describes, chips carry the numbers)."""
+    facts = [f for f in (
+        f"{_fmt_int(in_features)} \u2192 {_fmt_int(out_features)}" if (in_features and out_features) else "",
+        f"{_fmt_int(heads)} heads" if heads else "",
+        f"head dim {_fmt_int(head_dim)}" if head_dim else "",
+    ) if f]
+    return {"description": "Linear projection.", "facts": facts}
 
 
 _PROJECTOR_TITLES = {
@@ -689,32 +684,31 @@ def _join_desc(bits: list[str]) -> str:
     return "; ".join(bit for bit in bits if bit)
 
 
-def _fusion_description(fusion: dict) -> str:
+def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
     kind = (fusion.get("kind") or "fusion").replace("_", " ")
     output = fusion.get("output") or {}
     width = output.get("width")
     if fusion.get("kind") == "cross_attention":
         mechanism = fusion.get("mechanism") or {}
         n_layers = mechanism.get("num_layers")
-        bits = ["cross attention", "projected image states condition selected decoder layers"]
-        if n_layers:
-            bits.append(f"{_fmt_int(n_layers)} cross-attention layers")
-        bits.append("projected image states stay separate")
-        if width:
-            bits.append(f"decoder width {_fmt_int(width)}")
-        return "; ".join(bits)
+        facts = [f for f in (
+            f"{_fmt_int(n_layers)} cross-attention layers" if n_layers else "",
+            f"decoder width {_fmt_int(width)}" if width else "",
+        ) if f]
+        return ("Projected image states condition selected decoder layers through "
+                "cross-attention \u2014 they stay a separate stream.", facts)
     if fusion.get("kind") == "unified_multimodal_stream":
         mechanism = fusion.get("mechanism") or {}
         runtime = mechanism.get("runtime_grid_inputs") or []
-        bits = ["unified multimodal stream", "grid-aware visual tokens"]
-        if runtime:
-            bits.append(", ".join(runtime))
-        if width:
-            bits.append(f"decoder width {_fmt_int(width)}")
-        return "; ".join(bits)
-    if width:
-        return f"{kind}; feeds decoder stack at width {_fmt_int(width)}"
-    return kind
+        facts = [f for f in (
+            "grid-aware visual tokens",
+            ", ".join(runtime) if runtime else "",
+            f"decoder width {_fmt_int(width)}" if width else "",
+        ) if f]
+        return ("Text and visual tokens merge into one decoder stream with "
+                "grid-aware positions.", facts)
+    return (f"{kind.capitalize()} \u2014 the merged stream feeds the decoder stack.",
+            [f"width {_fmt_int(width)}"] if width else [])
 
 
 def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
@@ -759,9 +753,9 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
     count = tokens.get("count")
     audio_count = audio_tokens.get("count")
     width = tokens.get("width") or audio_tokens.get("width") or (fusion.get("output") or {}).get("width")
-    image_span = f"<image> x {_fmt_int(count)}" if count else "<image> slots"
+    image_span = f"<image> \u00d7 {_fmt_int(count)}" if count else "<image> slots"
     audio_span = (
-        f"<audio> x {_fmt_int(audio_count)}"
+        f"<audio> \u00d7 {_fmt_int(audio_count)}"
         if audio_count
         else f"<audio> every {_fmt_int(audio_tokens.get('ms_per_token'))} ms" if audio_tokens.get("ms_per_token")
         else "<audio> slots"
@@ -769,13 +763,13 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
     visual_span = (
         f"{_fmt_int(count)} visual features"
         if count and not width
-        else f"{_fmt_int(count)} x {_fmt_int(width)} visual features" if count and width
+        else f"{_fmt_int(count)} \u00d7 {_fmt_int(width)} visual features" if count and width
         else "projected visual features"
     )
     audio_span_desc = (
         f"{_fmt_int(audio_count)} audio features"
         if audio_count and not width
-        else f"{_fmt_int(audio_count)} x {_fmt_int(width)} audio features" if audio_count and width
+        else f"{_fmt_int(audio_count)} × {_fmt_int(width)} audio features" if audio_count and width
         else f"one token every {_fmt_int(audio_tokens.get('ms_per_token'))} ms" if audio_tokens.get("ms_per_token")
         else "projected audio features"
     )
@@ -888,10 +882,8 @@ def _unified_fusion_children(fusion: dict, inputs: dict) -> list[dict]:
         {
             "id": "stack_input",
             "title": "Decoder input",
-            "description": _join_desc([
-                "One decoder stream containing text and multimodal tokens",
-                f"width {_fmt_int(width)}" if width else "",
-            ]),
+            "description": "One decoder stream containing text and multimodal tokens.",
+            "facts": [f"width {_fmt_int(width)}"] if width else [],
         },
         {
             "id": "unified_text_tokens",
@@ -936,10 +928,8 @@ def _unified_fusion_children(fusion: dict, inputs: dict) -> list[dict]:
         {
             "id": "unified_stream",
             "title": "Unified decoder stream",
-            "description": _join_desc([
-                "The decoder receives one interleaved token stream",
-                "runtime grids: " + ", ".join(runtime) if runtime else "",
-            ]),
+            "description": "The decoder receives one interleaved token stream.",
+            "facts": ["runtime grids: " + ", ".join(runtime)] if runtime else [],
         },
     ]
     if "video" not in inputs:

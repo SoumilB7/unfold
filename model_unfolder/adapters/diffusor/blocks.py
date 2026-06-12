@@ -85,13 +85,13 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         pt = geom.get("patch_size_t") or 1
         dims = ([str(int(frames_t) // int(pt))] if frames_t else []) + [
             str(int(fh) // int(patch)), str(int(fw) // int(patch))]
-        latent_shape = " x ".join([_fmt(in_ch), *dims])
+        latent_shape = " \u00d7 ".join([_fmt(in_ch), *dims])
     elif in_ch and isinstance(sample, (list, tuple)):
         sides = [int(x) // int(patch) if patch else int(x) for x in sample if isinstance(x, int)]
-        latent_shape = " x ".join([_fmt(in_ch), *map(str, sides)])
+        latent_shape = " \u00d7 ".join([_fmt(in_ch), *map(str, sides)])
     elif in_ch and sample:
         side = int(sample) // int(patch) if patch else int(sample)
-        latent_shape = f"{_fmt(in_ch)} x {side} x {side}"
+        latent_shape = f"{_fmt(in_ch)} × {side} x {side}"
     elif in_ch:
         latent_shape = f"{_fmt(in_ch)} channels"
     else:
@@ -343,36 +343,31 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
 def _vae_resnet_ops(upsamples: bool) -> list[Block]:
     """Description cards for the ops inside one VAE decoder ResNet stage.
 
-    Drilled into from the block view's op boxes.  The two GroupNorm+SiLU boxes
-    share one id (and one description), as do the two Conv 3x3 boxes — clicking
-    either opens the same card.  No layer-shape numbers are asserted here; only
-    what the op *does*.
+    Ids are unique per node (the tower draws each op as its own block); the two
+    GroupNorm+SiLU cards share prose, as do the two Conv 3\u00d73 cards. No
+    layer-shape numbers are asserted here; only what the op *does*.
     """
+    norm_desc = (
+        "Group normalization followed by a SiLU (swish) activation, applied "
+        "before each convolution in the residual cell. Normalizes feature "
+        "statistics so the conv sees a well-scaled signal."
+    )
+    conv_desc = (
+        "A 3\u00d73 convolution (stride 1, padding 1): mixes each position with its "
+        "spatial neighbours. The feature-transforming workhorse of the cell; the "
+        "stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice."
+    )
     ops: list[Block] = [
-        {
-            "id": "vae_op_norm",
-            "title": "GroupNorm + SiLU",
-            "description": (
-                "Group normalization followed by a SiLU (swish) activation, applied "
-                "before each convolution in the residual cell. Normalizes feature "
-                "statistics so the conv sees a well-scaled signal."
-            ),
-        },
-        {
-            "id": "vae_op_conv",
-            "title": "Conv 3x3",
-            "description": (
-                "A 3x3 convolution (stride 1, padding 1): mixes each position with its "
-                "spatial neighbours. The feature-transforming workhorse of the cell; the "
-                "stack runs GroupNorm+SiLU -> Conv 3x3 twice."
-            ),
-        },
+        {"id": "vae_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "vae_op_conv1", "title": "Conv 3\u00d73", "description": conv_desc},
+        {"id": "vae_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "vae_op_conv2", "title": "Conv 3\u00d73", "description": conv_desc},
         {
             "id": "vae_op_residual",
             "title": "Residual add",
             "description": (
                 "Adds the block input back onto the convolved output (an identity skip, "
-                "or a 1x1 conv when the channel count changes) so the cell learns a "
+                "or a 1\u00d71 conv when the channel count changes) so the cell learns a "
                 "residual and gradients flow cleanly through depth."
             ),
         },
@@ -382,13 +377,12 @@ def _vae_resnet_ops(upsamples: bool) -> list[Block]:
             "id": "vae_op_upsample",
             "title": "Upsample",
             "description": (
-                "Doubles spatial resolution (H x W -> 2H x 2W) by nearest-neighbour "
-                "interpolation, then a 3x3 conv to smooth interpolation artifacts. Runs "
+                "Doubles spatial resolution (H \u00d7 W \u2192 2H \u00d7 2W) by nearest-neighbour "
+                "interpolation, then a 3\u00d73 conv to smooth interpolation artifacts. Runs "
                 "once after the ResNet stack, stepping the latent toward image size."
             ),
         })
     return ops
-
 
 def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None = None) -> list[Block]:
     """Description cards for the ops inside one text-encoder layer cell.
@@ -490,7 +484,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
         },
         {
             "id": f"{prefix}_op_ffn",
-            "title": "Feed-forward (FFN)",
+            "title": "Feed-forward",
             "description": ffn_desc,
             "facts": ffn_facts,
             # Opens the ONE shared FFN view, parameterised by this encoder's own
@@ -652,7 +646,7 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "label": "Patchify",
             "title": "Patch embedding",
             "description": (
-                f"Linear/conv patchify (patch {patch}x{patch}) projecting latent "
+                f"Linear/conv patchify (patch {patch}\u00d7{patch}) projecting latent "
                 f"patches to {hidden}-d tokens; positional embedding added"
                 + (f". Pooled text vector ({_fmt(pooled)}) joins the timestep "
                    "conditioning." if pooled else ".")
@@ -676,7 +670,7 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "kind": "output",
             "diffusion_stage": "unpatchify",
             "label": "Unpatchify",
-            "title": "Unpatchify -> predicted noise",
+            "title": "Unpatchify \u2192 predicted noise",
             "description": (
                 "Reassemble predicted patches into the latent grid: the denoiser's "
                 "output for this step — the noise (or velocity) eps(z_t, t) to "

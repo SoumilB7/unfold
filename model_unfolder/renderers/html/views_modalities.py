@@ -33,11 +33,11 @@ def draw_multimodal_input_scaffold(
     tok_y = embed_y + 66
     route_specs = []
     if has_vision:
-        route_specs.append(("vision_path", _block_label(info, "vision_path", "Vision -> tokens")))
+        route_specs.append(("vision_path", _block_label(info, "vision_path", "Vision \u2192 tokens")))
     if has_video:
-        route_specs.append(("video_path", _block_label(info, "video_path", "Video -> tokens")))
+        route_specs.append(("video_path", _block_label(info, "video_path", "Video \u2192 tokens")))
     if has_audio:
-        route_specs.append(("audio_path", _block_label(info, "audio_path", "Audio -> tokens")))
+        route_specs.append(("audio_path", _block_label(info, "audio_path", "Audio \u2192 tokens")))
     multi_route = len(route_specs) > 1
     if multi_route:
         text_w = 230

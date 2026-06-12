@@ -601,7 +601,7 @@ def test_video_latent_shape_uses_declared_temporal_geometry():
     cfg = dict(COGVIDEO_STYLE, sample_height=60, sample_width=90,
                sample_frames=49, temporal_compression_ratio=4)
     html = unfold(cfg).to_html(standalone=True)
-    assert "16 x 13 x 30 x 45" in html
+    assert "16 × 13 × 30 × 45" in html
     html_wan = unfold(WAN_STYLE).to_html(standalone=True)
     assert "shape [16 channels]" in html_wan
 

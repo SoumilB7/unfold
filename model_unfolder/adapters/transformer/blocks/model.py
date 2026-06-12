@@ -58,7 +58,8 @@ def mtp_head_block(
             {"id": "mtp_hnorm", "title": "Hidden-state norm",
              "description": f"RMSNorm on the previous depth's hidden state; dim {hidden}"},
             {"id": "mtp_emb", "title": "Next-token embedding",
-             "description": f"Shared token embedding of token t+k; {vocab} x {hidden}"},
+             "description": "Shared token embedding of token t+k.",
+             "facts": [f"{vocab} vocab", f"{hidden}-d"]},
             {"id": "mtp_enorm", "title": "Embedding norm",
              "description": f"RMSNorm on the next-token embedding; dim {hidden}"},
             {"id": "mtp_concat", "title": "Concatenate",
@@ -89,7 +90,8 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "kind": "source",
             "label": "Tokenized text",
             "title": "Tokenized text",
-            "description": "Input token IDs; shape [batch, seq_len]",
+            "description": "Input token IDs.",
+            "facts": ["shape [batch, seq_len]"],
         },
         {
             "id": "embed",
@@ -97,7 +99,9 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "kind": "embedding",
             "label": "Token Embedding layer",
             "title": "Token embedding",
-            "description": f"{vocab} x {hidden}{tied}",
+            "description": "Maps each token id to its vector"
+                           + (" — weights tied with the output head." if tie_word_embeddings else "."),
+            "facts": [f"{vocab} vocab", f"{hidden}-d"],
         },
         {
             "id": "final_rms",
@@ -105,7 +109,8 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "kind": "norm",
             "label": "Final RMSNorm",
             "title": "Final norm",
-            "description": f"RMSNorm; dim {hidden}",
+            "description": "RMSNorm over the last hidden state before the output head.",
+            "facts": [f"dim {hidden}"],
         },
         {
             "id": "lm_head",
@@ -113,6 +118,8 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "kind": "output",
             "label": "Linear output layer",
             "title": "LM head",
-            "description": f"{hidden} -> {vocab}" + (" (tied)" if tie_word_embeddings else ""),
+            "description": "Projects the final hidden state into vocabulary logits"
+                           + (" — weights tied with the embedding." if tie_word_embeddings else "."),
+            "facts": [f"{hidden} \u2192 {vocab}"],
         },
     ]

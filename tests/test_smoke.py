@@ -677,8 +677,8 @@ def test_gemma4_multimodal_fusion_render():
     assert "Vision input" not in html
     assert "Soft visual tokens" in html
     assert "Soft audio tokens" in html
-    assert "Vision -&gt; tokens" in html
-    assert "Audio -&gt; tokens" in html
+    assert "Vision → tokens" in html
+    assert "Audio → tokens" in html
     assert "Multimodal fusion" in html
     assert "Visual tokens" in html
     assert "Audio tokens" in html
@@ -689,10 +689,10 @@ def test_gemma4_multimodal_fusion_render():
     assert "BOA" in html
     assert "EOI" in html
     assert "EOA" in html
-    assert "&lt;image&gt; x 280" in html
-    assert "&lt;audio&gt; x 750" in html
-    assert "AUD x 750" in html
-    assert "280 x 1,536" in html
+    assert "&lt;image&gt; × 280" in html
+    assert "&lt;audio&gt; × 750" in html
+    assert "AUD × 750" in html
+    assert "280 × 1,536" in html
     assert 'data-card-id="vision_path"' in html
     assert 'data-card-id="audio_path"' in html
     assert 'data-card-id="vision_pixels"' in html
@@ -752,7 +752,7 @@ def test_qwen2_audio_sparse_text_config_is_completed():
 
     html = d.to_html(standalone=True)
     assert "partial config" not in html
-    assert "Audio -&gt; tokens" in html
+    assert "Audio → tokens" in html
 
 
 def test_qwen2_audio_code_evidence_does_not_mark_config_partial():

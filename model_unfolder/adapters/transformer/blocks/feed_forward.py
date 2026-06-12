@@ -48,19 +48,21 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "id": "up_proj",
             "label": "Linear (in)",
             "title": "Input projection",
-            "description": f"Linear; {hidden} -> {inter}",
+            "description": "Linear into the FFN's inner width.",
+            "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
             "id": "silu",
             "label": activation,
-            "title": f"{activation} activation",
-            "description": "Element-wise non-linearity applied after the input projection",
+            "title": activation,
+            "description": "Element-wise non-linearity applied after the input projection.",
         },
         {
             "id": "down_proj",
             "label": "Linear (out)",
             "title": "Output projection",
-            "description": f"Linear; {inter} -> {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{inter} \u2192 {hidden}"],
         },
     ]
 
@@ -71,31 +73,34 @@ def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "id": "gate_proj",
             "label": "Linear (gate)",
             "title": "Gate projection",
-            "description": f"Linear; {hidden} -> {inter} (gated path through {activation})",
+            "description": f"Linear producing the gate path (through {activation}).",
+            "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
             "id": "up_proj",
             "label": "Linear (up)",
             "title": "Up projection",
-            "description": f"Linear; {hidden} -> {inter}",
+            "description": "Linear into the FFN's inner width.",
+            "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
             "id": "silu",
             "label": activation,
-            "title": f"{activation} activation",
-            "description": "Element-wise non-linearity applied to the gate path",
+            "title": activation,
+            "description": "Element-wise non-linearity applied to the gate path.",
         },
         {
             "id": "mul",
             "label": "x",
-            "title": "Element-wise multiply",
-            "description": f"{activation}(gate) x up; combines the gated and ungated paths",
+            "title": "Gate product",
+            "description": f"{activation}(gate) \u00d7 up \u2014 combines the gated and ungated paths.",
         },
         {
             "id": "down_proj",
             "label": "Linear (down)",
             "title": "Down projection",
-            "description": f"Linear; {inter} -> {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{inter} \u2192 {hidden}"],
         },
     ]
 
@@ -112,24 +117,28 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     activation = activation_label(ffn.activation)
     expert_children = _moe_expert_child_blocks(hidden, inter, activation)
     expert_desc = (
-        f"Dense FFN; {hidden} -> {inter} -> {hidden}; "
-        f"only top-{n_active} of {n_experts} active per token"
-        + (f"; plus {n_shared} shared expert(s) always active" if n_shared else "")
+        "One dense FFN expert \u2014 only the routed tokens pass through it"
+        + (f"; {n_shared} shared expert(s) are always active" if n_shared else "")
+        + "."
     )
+    expert_facts = [f"{hidden} \u2192 {inter} \u2192 {hidden}", f"top-{n_active} of {n_experts}"]
     router_detail = moe_router_detail(_ffn_routing_dict(ffn))
-    router_desc = f"Linear; {hidden} -> {n_experts} (selects top-{n_active} experts per token)"
+    router_desc = "Scores every expert per token and keeps the top-k."
     if router_detail:
-        router_desc += f"; {router_detail}"
+        router_desc = f"Scores every expert per token and keeps the top-k \u2014 {router_detail}."
+    router_facts = [f"{hidden} \u2192 {n_experts}", f"top-{n_active}"]
     return [
         {
             "id": "router",
             "title": "Router",
             "description": router_desc,
+            "facts": router_facts,
         },
         {
             "id": "expert_1",
             "title": "Expert FFN",
             "description": expert_desc,
+            "facts": expert_facts,
             "view": "moe_expert",
             "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
@@ -138,6 +147,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "id": "expert_k",
             "title": "Expert FFN",
             "description": expert_desc,
+            "facts": expert_facts,
             "view": "moe_expert",
             "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
@@ -146,6 +156,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "id": "expert_kp1",
             "title": "Expert FFN",
             "description": expert_desc,
+            "facts": expert_facts,
             "view": "moe_expert",
             "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
@@ -154,6 +165,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "id": "expert_n",
             "title": "Expert FFN",
             "description": expert_desc,
+            "facts": expert_facts,
             "view": "moe_expert",
             "detail": {"ffn": ffn_detail(ffn)},
             "children": expert_children,
@@ -161,7 +173,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         {
             "id": "add_moe",
             "title": "Weighted sum",
-            "description": f"Combines top-{n_active} expert outputs weighted by router probabilities",
+            "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities.",
         },
     ]
 
@@ -171,27 +183,30 @@ def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[B
         {
             "id": "expert_gate_proj",
             "title": "Expert gate projection",
-            "description": f"Linear; {hidden} -> {inter} (expert gated path)",
+            "description": "Linear producing this expert's gate path.",
+            "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
             "id": "expert_act",
-            "title": f"{activation} activation",
-            "description": "Element-wise non-linearity applied to the expert gate path",
+            "title": activation,
+            "description": "Element-wise non-linearity applied to the expert gate path.",
         },
         {
             "id": "expert_up_proj",
             "title": "Expert up projection",
-            "description": f"Linear; {hidden} -> {inter} (expert value path)",
+            "description": "Linear into this expert's inner width.",
+            "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
             "id": "expert_mul",
             "title": "Expert multiply",
-            "description": f"{activation}(gate) x up; combines this expert's two paths",
+            "description": f"{activation}(gate) \u00d7 up \u2014 combines this expert's two paths.",
         },
         {
             "id": "expert_down_proj",
             "title": "Expert down projection",
-            "description": f"Linear; {inter} -> {hidden}",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{inter} \u2192 {hidden}"],
         },
     ]
 

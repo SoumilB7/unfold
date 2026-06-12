@@ -15,7 +15,9 @@ def decoder_layer_blocks(
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     return [
-        _norm_block("rms1", norm_label, "Pre-attention norm", f"{norm_label}; dim {hidden}"),
+        _norm_block("rms1", norm_label, "Pre-attention norm",
+                    f"{norm_label} keeps activation scales stable before attention.",
+                    facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
         {
             "id": "add1",
@@ -26,7 +28,9 @@ def decoder_layer_blocks(
             "title": "Residual add",
             "description": "block input + attention output",
         },
-        _norm_block("rms2", norm_label, "Pre-FFN norm", f"{norm_label}; dim {hidden}"),
+        _norm_block("rms2", norm_label, "Pre-FFN norm",
+                    f"{norm_label} keeps activation scales stable before the FFN.",
+                    facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
         {
             "id": "add2",
@@ -67,7 +71,8 @@ def parallel_decoder_layer_blocks(
             "rms1",
             norm_label,
             "Pre-block norm (shared)",
-            f"{norm_label}; dim {hidden}; shared input to both attention and FFN",
+            f"One shared {norm_label} feeding both attention and the FFN.",
+            facts=[f"dim {hidden}"],
         ),
         _attention_block(attention, hidden_size),
         {
@@ -115,7 +120,8 @@ def _ffn_block(ffn: FFNSpec, hidden_size: int) -> Block:
     }
 
 
-def _norm_block(block_id: str, label: str, title: str, description: str) -> Block:
+def _norm_block(block_id: str, label: str, title: str, description: str,
+                facts: list[str] | None = None) -> Block:
     return {
         "id": block_id,
         "role": "norm",
@@ -123,6 +129,7 @@ def _norm_block(block_id: str, label: str, title: str, description: str) -> Bloc
         "label": label,
         "title": title,
         "description": description,
+        "facts": facts or [],
     }
 
 

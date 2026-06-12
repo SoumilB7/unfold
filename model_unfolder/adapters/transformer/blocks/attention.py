@@ -74,19 +74,19 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
             "id": "q_proj",
             "title": "Query projection",
             "description": "Linear projection producing the per-head queries.",
-            "facts": [f"{hidden} → {q_out}", f"{num_heads} heads × {d_k}"],
+            "facts": [f"{hidden} → {q_out}", f"{num_heads} Q heads", f"head dim {d_k}"],
         },
         {
             "id": "k_proj",
             "title": "Key projection",
             "description": "Linear projection producing the keys.",
-            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}", CACHE_PORT_FACT],
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads", CACHE_PORT_FACT],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
             "description": "Linear projection producing the values.",
-            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads × {d_k}", CACHE_PORT_FACT],
+            "facts": [f"{hidden} → {kv_out}", f"{num_kv_heads} KV heads", CACHE_PORT_FACT],
         },
         {
             "id": "qkv_dot",
@@ -114,7 +114,7 @@ def _sdpa_detailed_child_blocks(
 ) -> list[Block]:
     kind = attention.kind
     cross_attention = attention.cross_attention
-    kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads × {d_k}"
+    kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads"
     group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
     scaled_title = "Scaled attention scores"
     scaled_desc = "Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability."
@@ -144,7 +144,7 @@ def _sdpa_detailed_child_blocks(
             "id": "q_proj",
             "title": "Query projection",
             "description": f"Linear over {q_src} producing the per-head queries.",
-            "facts": [f"{hidden} → {q_out}", f"{num_heads} heads × {d_k}"],
+            "facts": [f"{hidden} → {q_out}", f"{num_heads} Q heads", f"head dim {d_k}"],
         },
         {
             "id": "k_proj",
@@ -167,12 +167,12 @@ def _sdpa_detailed_child_blocks(
         {
             "id": "attn_softmax",
             "title": "Softmax weights",
-            "description": "Normalize each query row into attention weights over source tokens",
+            "description": "Normalize each query row into attention weights over source tokens.",
         },
         {
             "id": "attn_apply_v",
             "title": "Apply values",
-            "description": "Multiply attention weights by V to produce one context vector per head",
+            "description": "Multiply attention weights by V to produce one context vector per head.",
         },
         {
             "id": "concat_heads",
@@ -239,7 +239,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
     rope = _fmt(rope_v) if rope_v else "?"
     nope_v = attention.qk_nope_head_dim or ((head_dim - rope_v) if (head_dim and rope_v) else None)
     v_v = attention.v_head_dim or nope_v
-    nope_fact = [f"dim {_fmt(nope_v)} / head"] if nope_v else []
+    nope_fact = [f"{_fmt(nope_v)} per head"] if nope_v else []
     concat_fact = ([f"head dim {_fmt(nope_v + rope_v)} = {_fmt(nope_v)} + {_fmt(rope_v)}"]
                    if (nope_v and rope_v) else [])
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
@@ -259,7 +259,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_q_nope",
             "label": "Q noPE",
             "title": "Query content slice",
-            "description": "Query content component that does not receive rotary position encoding",
+            "description": "Query content component that does not receive rotary position encoding.",
             "facts": nope_fact,
         },
         {
@@ -267,20 +267,20 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "Q RoPE",
             "title": "Query positional slice",
             "description": "Query positional component prepared for rotary position encoding.",
-            "facts": [f"dim {rope} / head"],
+            "facts": [f"{rope} per head"],
         },
         {
             "id": "mla_q_rope_apply",
             "label": "Apply RoPE",
             "title": "Apply RoPE to query",
-            "description": "Applies rotary position encoding to the query positional slice",
-            "facts": [f"dim {rope}"] if rope_v else [],
+            "description": "Applies rotary position encoding to the query positional slice.",
+            "facts": [f"{rope} per head"] if rope_v else [],
         },
         {
             "id": "mla_q_concat",
             "label": "Q concat",
             "title": "Final MLA query",
-            "description": "Concatenates Q noPE with RoPE-encoded Q RoPE before score computation",
+            "description": "Concatenates Q noPE with RoPE-encoded Q RoPE before score computation.",
             "facts": concat_fact,
         },
     ]
@@ -311,7 +311,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_k_nope",
             "label": "K noPE",
             "title": "Latent key content",
-            "description": "Key content expanded from the compressed K/V latent; concatenated with the RoPE key before scoring",
+            "description": "Key content expanded from the compressed K/V latent; concatenated with the RoPE key before scoring.",
             "facts": nope_fact,
         },
         {
@@ -319,28 +319,28 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "label": "K RoPE",
             "title": "Key positional slice",
             "description": "Key positional component produced alongside the latent cache.",
-            "facts": [f"dim {rope} · shared across heads"],
+            "facts": [f"{rope} shared across heads"],
         },
         {
             "id": "mla_k_rope_apply",
             "label": "Apply RoPE",
             "title": "Apply RoPE to key",
-            "description": "Applies rotary position encoding to the key positional slice",
-            "facts": [f"dim {rope}"] if rope_v else [],
+            "description": "Applies rotary position encoding to the key positional slice.",
+            "facts": [f"{rope} per head"] if rope_v else [],
         },
         {
             "id": "mla_k_merge",
             "label": "K concat",
             "title": "Composed MLA key",
-            "description": "Concatenates K noPE with the RoPE key side-channel before QK^T score computation",
+            "description": "Concatenates K noPE with the RoPE key side-channel before QK^T score computation.",
             "facts": concat_fact,
         },
         {
             "id": "mla_v",
             "label": "V values",
             "title": "Latent value heads",
-            "description": "Value heads expanded from the compressed K/V latent; consumed after softmax",
-            "facts": ([f"dim {_fmt(v_v)} / head"] if v_v else []) + [f"{num_heads} heads"],
+            "description": "Value heads expanded from the compressed K/V latent; consumed after softmax.",
+            "facts": ([f"{_fmt(v_v)} per head"] if v_v else []) + [f"{num_heads} heads"],
         },
     ]
     return [
@@ -350,7 +350,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "title": "MLA query path",
             "description": (
                 "Builds Q by projecting the hidden state, splitting content and positional slices, "
-                "applying RoPE to the positional slice, then concatenating them"
+                "applying RoPE to the positional slice, then concatenating them."
             ),
             "facts": ([f"rank {q_rank}"] if attention.q_lora_rank else []),
             "view": "mla_query_path",
@@ -378,13 +378,13 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "attn_softmax",
             "label": "Softmax",
             "title": "Softmax weights",
-            "description": "Normalize latent attention scores over source positions",
+            "description": "Normalize latent attention scores over source positions.",
         },
         {
             "id": "attn_apply_v",
             "label": "Apply V",
             "title": "Apply latent values",
-            "description": "Multiply softmax weights by V expanded from the compressed K/V latent",
+            "description": "Multiply softmax weights by V expanded from the compressed K/V latent.",
         },
         {
             "id": "concat_heads",

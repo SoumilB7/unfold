@@ -34,7 +34,8 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     # rotary); the CLIP/T5 conventions are only the fallback.
     norm = d.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
     no_learned_pos = is_t5 or (d.get("norm") == "RMSNorm" and not is_t5)
-    embed_main = "Token embedding" if no_learned_pos else "Token + positional embedding"
+    embed_main = ("Token embedding" if no_learned_pos
+                  else ["Token + positional", "embedding"])   # two lines — fits the node
     embed_sub = " · ".join(s for s in (
         f"{_n(vocab)} vocab" if vocab else "", f"{_n(hidden)}-d" if hidden else "") if s) or None
     if is_clip:
