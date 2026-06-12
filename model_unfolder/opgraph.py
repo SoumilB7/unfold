@@ -430,7 +430,7 @@ def ops_region(declared: list[dict], *, rid: str = "ops", label: str = "ops") ->
     """
     if not declared:
         raise ValueError(f"ops_region({rid!r}): empty op list")
-    allowed = OP_KINDS - {"input", "output", "subgraph"}
+    allowed = OP_KINDS - {"output", "subgraph"}
     ops: list[Op] = [Op("hidden", "input", out_features=declared[0].get("in"))]
     edges: list[Edge] = []
     prev = "hidden"
@@ -442,6 +442,12 @@ def ops_region(declared: list[dict], *, rid: str = "ops", label: str = "ops") ->
                 f"expected one of {sorted(allowed)}")
         oid = d.get("id") or f"{rid}_op{i}"
         meta = dict(d.get("meta") or {})
+        if kind == "input":
+            # An extra declared source (a scheduler's incoming prediction, a
+            # cross-stream feed): wired only by `from` references on other
+            # ops — it never advances the implicit chain.
+            ops.append(Op(oid, "input", d.get("label"), meta=meta))
+            continue
         if d.get("formula"):
             meta["formula"] = d["formula"]
         ops.append(Op(oid, kind, d.get("label"),

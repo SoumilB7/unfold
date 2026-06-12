@@ -604,3 +604,46 @@ def test_video_latent_shape_uses_declared_temporal_geometry():
     assert "16 x 13 x 30 x 45" in html
     html_wan = unfold(WAN_STYLE).to_html(standalone=True)
     assert "shape [16 channels]" in html_wan
+
+
+def test_scheduler_step_is_a_declared_ops_view():
+    """The scheduler block opens the update rule as declared ops: the
+    denoiser's prediction enters as a side source, scaled and combined with
+    z_t — with derived cards for every step (third projection)."""
+    html = unfold(FLUX).to_html(standalone=True)          # FlowMatchEuler ⇒ flow family
+    for cid in ("sched_pred", "sched_scale", "sched_step"):
+        assert f'data-card-id="{cid}"' in html
+    assert "from denoiser" in html
+    assert "flow matching" in html                        # declared-facts chip
+    # epsilon family from a declared prediction_type
+    cfg = dict(COGVIDEO_STYLE,
+               scheduler=["diffusers", "DDIMScheduler"],
+               _scheduler_config={"num_train_timesteps": 1000, "prediction_type": "epsilon"})
+    html2 = unfold(cfg).to_html(standalone=True)
+    assert 'data-card-id="sched_step"' in html2
+    assert "Removes the scaled noise estimate" in html2
+
+
+def test_scheduler_display_names_handle_acronym_runs():
+    """CogVideoXDDIMScheduler must not camel-split into 'Cog Video XDDIM' —
+    oddballs live in typing.yaml's scheduler_display overrides."""
+    from model_unfolder.adapters.diffusor.parser import _scheduler_geom
+    assert _scheduler_geom({"scheduler": ["diffusers", "CogVideoXDDIMScheduler"]})["scheduler"] == "CogVideoX DDIM"
+    assert _scheduler_geom({"scheduler": ["diffusers", "FlowMatchEulerDiscreteScheduler"]})["scheduler"] == "Flow Match Euler"
+    assert _scheduler_geom({"scheduler": ["diffusers", "UniPCMultistepScheduler"]})["scheduler"] == "UniPC Multistep"
+
+
+def test_ops_region_declared_side_inputs():
+    """A declared {"kind": "input"} op is a side source: wired only by `from`,
+    never advancing the implicit chain — and it gets a derived card."""
+    from model_unfolder.labels import cards_from_region
+    from model_unfolder.opgraph import ops_region
+    r = ops_region([
+        {"id": "pred", "kind": "input", "label": "prediction"},
+        {"id": "scale", "kind": "elementwise", "fn": "mul", "from": ["pred"]},
+        {"id": "step", "kind": "elementwise", "fn": "add", "from": ["hidden", "scale"]},
+    ], rid="s")
+    assert r.merges() == ["step"]
+    assert [(e.src, e.dst) for e in r.edges] == [("pred", "scale"), ("hidden", "step"), ("scale", "step")]
+    ids = [c["id"] for c in cards_from_region(r)]
+    assert ids == ["pred", "scale", "step"]               # side input has a card; hidden doesn't

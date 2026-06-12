@@ -164,7 +164,7 @@ def _block_lookup(ir: dict, spec: dict) -> dict:
     """Return render blocks keyed by node id for one layer variant."""
     blocks = {}
     render = (ir.get("extras") or {}).get("render") or {}
-    for block in render.get("model_blocks", []):
+    for block in [*render.get("model_blocks", []), *render.get("loop_blocks", [])]:
         if block.get("id"):
             blocks[block["id"]] = block
     blocks.update(_multimodal_block_lookup(ir))

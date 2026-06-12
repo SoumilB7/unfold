@@ -111,14 +111,13 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     sched_train = geom.get("scheduler_train_timesteps")
     sched_shift = geom.get("scheduler_shift")
     is_flow = geom.get("scheduler_flow_matching")
-    sched_bits = []
-    if is_flow:
-        sched_bits.append("flow-matching (rectified-flow) sampler")
-    if sched_train:
-        sched_bits.append(f"{_fmt(sched_train)} training timesteps")
-    if sched_shift is not None:
-        sched_bits.append(f"timestep shift {sched_shift}")
-    sched_detail = "; ".join(sched_bits)
+    sched_facts = [f for f in (
+        "flow matching" if is_flow else str(geom.get("scheduler_prediction_type") or ""),
+        f"{_fmt(sched_train)} train timesteps" if sched_train else "",
+        f"shift {sched_shift}" if sched_shift is not None else "",
+        str(geom.get("scheduler_beta_schedule") or ""),
+        str(geom.get("scheduler_timestep_spacing") or ""),
+    ) if f]
 
     vae = geom.get("vae")
     return [
@@ -175,12 +174,13 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "label": _wrap_two_lines(scheduler) if scheduler else ["Scheduler", "step"],
             "title": f"Scheduler — {scheduler}" if scheduler else "Scheduler step",
             "description": (
-                f"{scheduler or 'The sampler'} combines the predicted noise with "
-                "z_t to produce z_{t-1}, one step toward a clean latent"
-                + (f". {sched_detail.capitalize()}" if sched_detail else "")
-                + ". The loop repeats for N sampling steps (N chosen at inference, "
+                f"{scheduler or 'The sampler'} combines the denoiser's prediction "
+                "with z_t to produce z_{t-1}, one step toward a clean latent. "
+                "The loop repeats for N sampling steps (N chosen at inference, "
                 "typically ~20-50 — it is not a config field)."
             ),
+            "facts": sched_facts,
+            **_scheduler_step_view(geom),
         },
         {
             "id": "vae_decode",
@@ -215,6 +215,66 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                             "The generated image in pixel space."),
         },
     ]
+
+
+def _scheduler_step_view(geom: dict) -> dict:
+    """The scheduler's update rule, declared in the op alphabet: the denoiser's
+    prediction enters as a side source, is scaled by the step size, and is
+    combined with z_t to give z_{t-1}.  The family comes from the DECLARED
+    config — the flow-matching class flag or prediction_type — never assumed;
+    an unknown scheduler keeps the prose card.
+
+    One declaration, three projections: this same op list draws the step
+    diagram, derives the per-op cards, and exports to JSON.
+    """
+    pred = str(geom.get("scheduler_prediction_type") or "").lower()
+    # Wan pairs a UniPC sampler with prediction_type "flow_prediction" — the
+    # flow family declared through the prediction field instead of the class.
+    is_flow = geom.get("scheduler_flow_matching") or pred == "flow_prediction"
+    if is_flow:
+        sym, what = "v\u0302", "velocity"
+        scale_label, scale_desc = "\u0394\u03c3 \u00b7 v\u0302", (
+            "Scales the predicted velocity by the step size \u0394\u03c3 = "
+            "\u03c3_{t-1} \u2212 \u03c3_t \u2014 the distance to the next "
+            "flow-matching timestep.")
+        step_label, step_desc = "z_t + \u0394\u03c3\u00b7v\u0302", (
+            "Euler step along the predicted flow: the scaled velocity is added "
+            "to the current latent, moving it one step toward the clean image.")
+    elif pred == "v_prediction":
+        sym, what = "v\u0302", "velocity"
+        scale_label, scale_desc = "scale v\u0302", (
+            "Converts the v-prediction into the noise/sample split for this "
+            "timestep (v combines \u03b5 and z_0 at an angle set by t).")
+        step_label, step_desc = "step z_t \u2192 z_{t-1}", (
+            "Combines the converted prediction with z_t to take one denoising "
+            "step toward the clean latent.")
+    elif pred in ("epsilon", ""):
+        if not (geom.get("scheduler") and (pred or geom.get("scheduler_train_timesteps"))):
+            return {}                 # scheduler undeclared — honest prose card
+        sym, what = "\u03b5\u0302", "noise"
+        scale_label, scale_desc = "\u03c3_t \u00b7 \u03b5\u0302", (
+            "Scales the predicted noise by this timestep's noise level "
+            "\u03c3_t.")
+        step_label, step_desc = "z_t \u2212 \u03c3_t\u00b7\u03b5\u0302", (
+            "Removes the scaled noise estimate from the current latent \u2014 "
+            "one denoising step toward z_0.")
+    else:
+        return {}                      # unrecognised prediction type — no fabrication
+    return {
+        "view": "ops",
+        "detail": {"ops": [
+            {"id": "sched_pred", "kind": "input",
+             "label": [f"{sym} {what}", "from denoiser"],
+             "meta": {"desc": f"The denoiser's predicted {what} for this timestep, "
+                              "handed to the scheduler each step."}},
+            {"id": "sched_scale", "kind": "elementwise", "fn": "mul",
+             "label": scale_label, "from": ["sched_pred"],
+             "meta": {"desc": scale_desc}},
+            {"id": "sched_step", "kind": "elementwise", "fn": "add",
+             "label": step_label, "from": ["hidden", "sched_scale"],
+             "meta": {"desc": step_desc}},
+        ]},
+    }
 
 
 def _vae_decoder_children(vae: dict | None) -> list[Block]:

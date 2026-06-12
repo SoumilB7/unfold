@@ -43,6 +43,10 @@ _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
 #: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
 #: diffusers text-encoder class name -> friendly family label map.
 _DIT_CLASS_MARKERS = tuple(load_diffusion_typing()["dit_class_markers"])
+_SCHEDULER_DISPLAY = dict(
+    pair.split("=", 1) for pair in load_diffusion_typing().get("scheduler_display", [])
+    if isinstance(pair, str) and "=" in pair
+)
 _ENCODER_NAMES = load_diffusion_text_encoders()
 
 
@@ -471,15 +475,28 @@ def _scheduler_geom(cfg: Any) -> dict:
     cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
     if isinstance(cls, str):
         bare = cls.replace("DiscreteScheduler", "").replace("Scheduler", "") or cls
-        # Split CamelCase for readability: "FlowMatchEuler" -> "FlowMatch Euler".
-        import re
-        out["scheduler"] = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", bare)
+        display = _SCHEDULER_DISPLAY.get(bare)
+        if not display:
+            # Split CamelCase for readability ("FlowMatchEuler" -> "Flow Match
+            # Euler", "DPMSolver" -> "DPM Solver"); acronym oddballs that the
+            # rules can't get right live in typing.yaml's scheduler_display.
+            import re
+            display = re.sub(r"(?<=[a-z])(?=[A-Z])", " ", bare)
+            display = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", " ", display)
+        out["scheduler"] = display
         out["scheduler_class"] = cls
         out["scheduler_flow_matching"] = "FlowMatch" in cls
     sched_cfg = _g(cfg, "_scheduler_config")
     if isinstance(sched_cfg, dict):
-        out["scheduler_train_timesteps"] = sched_cfg.get("num_train_timesteps")
-        out["scheduler_shift"] = sched_cfg.get("shift")
+        for key, field in (
+            ("scheduler_train_timesteps", "num_train_timesteps"),
+            ("scheduler_shift", "shift"),
+            ("scheduler_prediction_type", "prediction_type"),
+            ("scheduler_beta_schedule", "beta_schedule"),
+            ("scheduler_timestep_spacing", "timestep_spacing"),
+        ):
+            if sched_cfg.get(field) is not None:
+                out[key] = sched_cfg[field]
     return out
 
 

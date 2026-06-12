@@ -509,6 +509,7 @@ _OP_TITLES = {
     "cache": "Cache",
     "subgraph": "Sub-block",
     "opaque": "Custom block",
+    "input": "Input",
 }
 
 _OP_SENTENCES = {
@@ -525,6 +526,7 @@ _OP_SENTENCES = {
     "cache": "Stored tensor reused across steps (write on entry, read on reuse).",
     "subgraph": "Compound block with its own internal structure.",
     "opaque": "Internals not declared by the config — drawn as one honest block.",
+    "input": "External input feeding this block.",
 }
 
 _ELEMENTWISE_TITLES = {"mul": "Gate product", "add": "Add", "sum": "Weighted sum"}
@@ -562,4 +564,5 @@ def cards_from_region(region) -> list[dict]:
     """Derive the inspect cards for every drawable op in a region — the
     automatic companion to the rendered SVG, so click targets always have a
     card without any per-view authoring."""
-    return [op_card(o) for o in region.ops if o.kind not in ("input", "output")]
+    return [op_card(o) for o in region.ops
+            if o.kind != "output" and not (o.kind == "input" and o.id == "hidden")]

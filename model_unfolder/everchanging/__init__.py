@@ -69,14 +69,16 @@ def load_diffusion_aliases() -> dict[str, list[str]]:
 def load_diffusion_typing() -> dict[str, list[str]]:
     """APPROVED diffusion block typing (``diffusor/typing.yaml``): ``stages``
     (blessed diffusion_stage values), ``block_ids`` (reused transformer-layer
-    ids), ``part_kinds`` (compound detail-view regions), and
-    ``dit_class_markers`` (detection substrings)."""
+    ids), ``part_kinds`` (compound detail-view regions),
+    ``dit_class_markers`` (detection substrings), and ``scheduler_display``
+    ("Class=Display" name overrides)."""
     data = load("diffusor", "typing")
     return {
         "stages": data.get("stages") or [],
         "block_ids": data.get("block_ids") or [],
         "part_kinds": data.get("part_kinds") or [],
         "dit_class_markers": data.get("dit_class_markers") or [],
+        "scheduler_display": data.get("scheduler_display") or [],
     }
 
 

@@ -96,3 +96,15 @@ dit_class_markers:
   - Transformer3D
   - DiTTransformer
   - DiT
+
+# Scheduler class -> display name, for names CamelCase splitting can't get
+# right (acronym runs). "Class=Display" pairs; bare class name sans the
+# Scheduler/DiscreteScheduler suffix.
+scheduler_display:
+  - "CogVideoXDDIM=CogVideoX DDIM"
+  - "CogVideoXDPM=CogVideoX DPM-Solver"
+  - "DPMSolverMultistep=DPM-Solver++ Multistep"
+  - "UniPCMultistep=UniPC Multistep"
+  - "PNDM=PNDM"
+  - "DDIM=DDIM"
+  - "DDPM=DDPM"
