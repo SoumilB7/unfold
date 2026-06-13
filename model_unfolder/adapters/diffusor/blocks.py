@@ -153,6 +153,23 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             geom.get("text_encoder_specs") or [],
         ),
         {
+            "id": "latent",
+            "role": "input",
+            "kind": "latent",
+            "label": "latent",
+            "title": "Latent state (z_t)",
+            "description": (
+                "The working latent — a single slot the loop reads and rewrites "
+                "each step. It is seeded once from the initial noise (z_T), "
+                "overwritten every step by the scheduler's output (z_{t-1}), and "
+                "read by the denoiser as the current z_t. 'z_t' and 'z_{t-1}' are "
+                "this same slot at consecutive steps, not separate tensors — the "
+                "two arrows feeding it are two writers at different times, not a "
+                "sum."
+            ),
+            "facts": [latent_shape] if latent_shape else None,
+        },
+        {
             "id": "denoiser",
             "role": "attention",
             "kind": "denoiser",

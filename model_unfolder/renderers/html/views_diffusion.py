@@ -290,10 +290,11 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                         resolved=resolved("noise"))
     _latent_grid(parts, noise["left"] - 88, noise["cy"] - 33)
     # The latent state cell — the slot every step reads from and writes back to.
-    # Non-clickable: it's a wire/register, not a drillable compute step.
+    # A clickable loop node: its card explains the seed-once / overwrite-each-step
+    # register semantics behind the two writers.
     latent = _rect_block(parts, info, shadow_id, "latent",
-                         buf_x, buf_y, buf_w, buf_h, "latent", font_size=15,
-                         resolved=True, clickable=False)
+                         buf_x, buf_y, buf_w, buf_h, label("latent", "latent"),
+                         font_size=15, resolved=True)
 
     # --- Conditioning stack on the left (text encoders + timestep), each
     # entering the denoiser's left edge — every step receives them. ---
