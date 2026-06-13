@@ -248,14 +248,23 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     parts.append(_region_rect(28, 22, w - 56, h - 44, C["bg_outer"]))
 
     den_x, den_y, den_w, den_h = cx - 130, 246, 260, 96
-    rail_y = den_y + den_h + 40         # the z_{t-1} return rail
+    # The latent lives in an explicit state cell on the denoiser's input. It has
+    # two writers at *different times* — Noise seeds it once, the scheduler
+    # overwrites it every step — and one reader, the denoiser. Drawing it as a
+    # named slot (not a bare vertex where lines meet) is what stops "two arrows
+    # in" from reading as a sum: a register with two writers and one reader is
+    # unambiguous; a junction is not.
+    buf_w, buf_h = 116, 40
+    buf_x, buf_y = cx - buf_w / 2, den_y + den_h + 24
+    buf_cy, buf_bottom = buf_y + buf_h / 2, buf_y + buf_h
+    rail_y = buf_cy                     # the z_{t-1} return rail meets the cell
 
     # --- The loop frame: the SAME solid cell frame + white repeat pill the
     # engine draws for "× N layers" — one visual language for "this part runs
     # repeatedly".  The step count is a runtime choice (never in the config),
     # so the pill states the loop's honest terminating fact: t reaches 0.
     loop_x, loop_y = den_x - 36, 190
-    loop_w, loop_h = (sched_cx + 75 + 26) - loop_x, (rail_y + 26) - 190
+    loop_w, loop_h = (sched_cx + 75 + 26) - loop_x, (buf_bottom + 14) - loop_y
     parts.append(_svg_tag("rect", {
         "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
         "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
@@ -280,38 +289,48 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                         cx - 84, 488, 168, 58, label("noise", "Noise"), font_size=18,
                         resolved=resolved("noise"))
     _latent_grid(parts, noise["left"] - 88, noise["cy"] - 33)
+    # The latent state cell — the slot every step reads from and writes back to.
+    # Non-clickable: it's a wire/register, not a drillable compute step.
+    latent = _rect_block(parts, info, shadow_id, "latent",
+                         buf_x, buf_y, buf_w, buf_h, "latent", font_size=15,
+                         resolved=True, clickable=False)
 
     # --- Conditioning stack on the left (text encoders + timestep), each
     # entering the denoiser's left edge — every step receives them. ---
     _draw_conditioning_stack(parts, info, shadow_id, arrow_id, label, blocks, denoiser)
 
-    # --- The latent circuit ---
+    # --- The latent circuit: the cell is written twice (seeded once, then
+    # overwritten each step) and read once per step by the denoiser. ---
     mono = {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 12}
-    # z_T enters ONCE: Noise rises into the junction on the return rail.
+    # Seed write: Noise rises into the cell's BOTTOM edge — once, from outside
+    # the loop frame (so the seed visibly enters the recursion a single time).
     parts.append(_svg_tag("line", {
-        "x1": cx, "y1": noise["top"], "x2": cx, "y2": rail_y,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round", "fill": "none"}))
-    parts.append(_svg_text(cx + 12, (noise["top"] + loop_y + loop_h) / 2, "z_T",
+        "x1": cx, "y1": noise["top"], "x2": cx, "y2": latent["bottom"] + 4,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+    parts.append(_svg_text(cx + 12, (noise["top"] + latent["bottom"]) / 2, "z_T · once",
                            {**mono, "text-anchor": "start"}))
     # ε̂ forward: denoiser -> scheduler.
     eps_y = den_y + 26
     parts.append(_h_arrow(denoiser["right"] + 2, scheduler["left"] - 8, eps_y, arrow_id))
     parts.append(_svg_text((denoiser["right"] + scheduler["left"]) / 2, eps_y - 12, "ε̂",
                            {**mono, "text-anchor": "middle"}))
-    # Return rail: scheduler bottom -> down -> left -> junction.
+    # Each-step write: scheduler output returns and overwrites the cell's RIGHT
+    # edge — a different writer, a different edge, a different time than the seed.
     parts.append(_svg_tag("path", {
-        "d": (f"M {sched_cx} {scheduler['bottom']} L {sched_cx} {rail_y} L {cx} {rail_y}"),
+        "d": (f"M {sched_cx} {scheduler['bottom']} L {sched_cx} {rail_y} "
+              f"L {latent['right'] + 4} {rail_y}"),
         "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round"}))
-    parts.append(_svg_text((cx + sched_cx) / 2, rail_y - 9, "z_t-1",
+        "stroke-linecap": "round", "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})"}))
+    parts.append(_svg_text((latent["right"] + sched_cx) / 2, rail_y - 9, "z_t-1 · each step",
                            {**mono, "text-anchor": "middle", "font-size": 11}))
-    _junction_dot_into(parts, cx, rail_y)
-    # One arrow continues into the denoiser: whatever circulates is z_t.
+    # Read: the denoiser reads the current latent off the cell's TOP edge.
     parts.append(_svg_tag("line", {
-        "x1": cx, "y1": rail_y, "x2": cx, "y2": denoiser["bottom"] + 4,
+        "x1": cx, "y1": latent["top"], "x2": cx, "y2": denoiser["bottom"] + 4,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
         "marker-end": f"url(#{arrow_id})", "fill": "none"}))
-    parts.append(_svg_text(cx + 12, (rail_y + denoiser["bottom"]) / 2, "z_t",
+    parts.append(_svg_text(cx + 12, (latent["top"] + denoiser["bottom"]) / 2, "z_t",
                            {**mono, "text-anchor": "start", "font-size": 11}))
 
     # --- Out of the loop, once: clean latent -> VAE -> image. ---
@@ -399,10 +418,6 @@ def _draw_conditioning_stack(parts, info, shadow_id, arrow_id, label, blocks, de
             "x1": bus_x, "y1": enc["cy"], "x2": enc["left"] - 4, "y2": enc["cy"],
             "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
             "marker-end": f"url(#{arrow_id})", "fill": "none"}))
-
-
-def _junction_dot_into(parts: list[str], x: float, y: float) -> None:
-    parts.append(_junction_dot(x, y))
 
 
 def _h_arrow(x1: float, x2: float, y: float, arrow_id: str) -> str:
