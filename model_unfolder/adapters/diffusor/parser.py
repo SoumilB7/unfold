@@ -32,7 +32,7 @@ from ...everchanging import (
 )
 from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, parallel_decoder_layer
-from ..transformer.common import architecture_name, get_config_value as _g, model_name
+from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
 from .blocks import diffusion_render_spec
 from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
 
@@ -162,14 +162,16 @@ def parse(cfg: Any) -> ModelIR:
         # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
         mlp_ratio = float(_resolve(cfg, "mlp_ratio", 4.0) or 4.0)
         intermediate_size = int(hidden_size * mlp_ratio)
-    # Read the activation from any key a DiT might use; only when NONE is
-    # declared do we fall back to the GELU convention — and we flag that fallback
-    # so the diagram/JSON never presents the default as a config fact.
+    # Read the activation from any key a DiT might use.  We do NOT fall back to a
+    # convention: when no activation is declared the FFN's inner structure
+    # (activation AND gating) is simply not a config fact — ``_dit_ffn`` renders it
+    # honestly as undeclared rather than asserting a GELU/non-gated default.
     declared_act = next((_resolve(cfg, k, None) for k in
                          ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
                          if _resolve(cfg, k, None)), None)
-    activation_assumed = declared_act is None
-    activation = str(declared_act or "gelu").lower()
+    # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
+    # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
+    norm_kind = _dit_norm_kind(cfg)
 
     if not num_layers and not num_single:
         warnings.append(
@@ -183,6 +185,7 @@ def parse(cfg: Any) -> ModelIR:
         )
 
     geom = {
+        "denoiser_family": "dit",
         "hidden_size": hidden_size,
         "num_attention_heads": num_heads,
         "attention_head_dim": head_dim,
@@ -254,44 +257,31 @@ def parse(cfg: Any) -> ModelIR:
     #   * cross_attention_dim only => a cross-attention DiT (PixArt /
     #     Hunyuan-DiT / Wan / LTX / Allegro): self-attention + text cross-attn;
     #   * none => a class-conditional DiT, plain self-attention.
-    if geom["joint_attention_dim"] or num_single:
-        double_variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
-    elif geom["text_embed_dim"]:
-        double_variant = _concat_joint_variant(rope_note)
-    elif geom["cross_attention_dim"]:
-        double_variant = _cross_dit_variant(rope_note)
-    else:
-        double_variant = _plain_dit_variant(rope_note)
-    single_variant = _stream_variant("single-stream", rope_note, dual=False)
+    # Conditioning topology is DERIVED from which conditioning-dim fields the
+    # config declares (a presence-set), not a fixed priority cascade — so a new
+    # combination falls out of the same rules instead of needing a new branch.
+    cond = _conditioning(geom, num_single, rope_note)
+    double_variant = cond["variant"]
+    single_variant = cond["single_variant"]
+    text_in_attention = cond["text_in_attention"]
+    pooled_in_adaln = cond["pooled_in_adaln"]
     geom["denoiser_style"] = double_variant["tag"]
-
-    # Conditioning enters each block at distinct points; the side-rails must show
-    # only the ones the config actually supports:
-    #   * the timestep always modulates the norm via AdaLN; a *pooled* text
-    #     embedding joins it ONLY when a pooled projection is declared (Flux/SD3);
-    #   * the text token SEQUENCE enters the attention ONLY when the config
-    #     signals attention consumes text — a joint / cross / text-embed dim, or a
-    #     dual/single-stream split.  A text *encoder* alone does NOT mean text
-    #     reaches attention (it may condition purely through AdaLN, as in a plain
-    #     class-conditional DiT) — so it must not, by itself, draw that rail.
-    text_in_attention = bool(geom["joint_attention_dim"] or num_single
-                             or geom["text_embed_dim"] or geom["cross_attention_dim"])
-    pooled_in_adaln = bool(geom["pooled_projection_dim"])
+    geom["pre_block_text_fusion"] = cond["pre_block_fusion"]
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         layers.append(decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
-            _dit_ffn(activation, intermediate_size, cfg, activation_assumed),
-            hidden_size, norm_kind="layernorm",
+            _dit_ffn(declared_act, intermediate_size, cfg),
+            hidden_size, norm_kind=norm_kind,
         ))
         idx += 1
     for _ in range(num_single):
         layers.append(parallel_decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant),
-            _dit_ffn(activation, intermediate_size, cfg, activation_assumed),
-            hidden_size, norm_kind="layernorm",
+            _dit_ffn(declared_act, intermediate_size, cfg),
+            hidden_size, norm_kind=norm_kind,
         ))
         idx += 1
 
@@ -380,7 +370,7 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
             "The timestep embedding"
             + (" and a pooled text embedding" if pooled_in_adaln else "")
             + " produce per-block shift / scale / gate (AdaLN-Zero): they modulate "
-            "this block's LayerNorm and gate its output before the residual add."
+            "this block's normalization and gate its output before the residual add."
         ),
         "facts": [f"AdaLN dim {int(adaln_dim):,}"] if adaln_dim else None,
         "w": 190, "h": 52, "font": 14,
@@ -462,46 +452,136 @@ def _cross_dit_variant(rope_note: str) -> dict:
     }
 
 
-def _plain_dit_variant(rope_note: str) -> dict:
-    """Class-conditional DiT (the original): self-attention only — all
-    conditioning enters through AdaLN."""
+def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
+                       pooled_in_adaln: bool = False, llm_features_dim=None) -> dict:
+    """Self-attention DiT block.  Conditioning is described from what the config
+    actually declares, never assumed:
+
+    * ``pre_block_fusion`` (``llm_features_dim``, e.g. Ideogram-4): text features
+      are linearly projected and added to the latent BEFORE the stack — so the
+      blocks see text as part of their input, NOT through attention or AdaLN;
+    * ``pooled_in_adaln``: a pooled text vector joins the timestep in AdaLN;
+    * neither: the original class-conditional DiT — conditioning is AdaLN only.
+    """
+    base = "Full bidirectional self-attention over the latent patch tokens. "
+    if pre_block_fusion:
+        dim = f" ({_fmt(llm_features_dim)}-d)" if llm_features_dim else ""
+        cond = (
+            f"Text conditioning is fused once before the stack: the text "
+            f"features{dim} are linearly projected to the model width and added "
+            f"to the latent tokens, so each block sees it as part of its input "
+            f"rather than through attention. The timestep modulates every block "
+            f"via AdaLN."
+        )
+    elif pooled_in_adaln:
+        cond = ("Conditioning (a pooled text vector together with the timestep) "
+                "enters only through AdaLN modulation.")
+    else:
+        cond = ("Conditioning (class / timestep) enters only through AdaLN "
+                "modulation.")
     return {
         "short": "Self-Attn",
         "tag": "DiT",
         "label": ["Self-Attention", "(DiT)"],
         "title": "DiT self-attention",
-        "desc": (
-            "Full bidirectional self-attention over the latent patch tokens. "
-            "Conditioning (class / timestep) enters only through AdaLN "
-            "modulation. " + rope_note
-        ),
+        "desc": base + cond + " " + rope_note,
     }
 
 
-def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None,
-             activation_assumed: bool = False) -> FFNSpec:
+def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None) -> FFNSpec:
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
     if num_experts > 1:
         return FFNSpec(
             kind="moe",
-            activation=activation,
-            activation_assumed=activation_assumed,
+            activation=(str(declared_activation).lower() if declared_activation else None),
+            activation_assumed=declared_activation is None,
             intermediate_size=intermediate_size,
             gated=False,
             num_experts=num_experts,
             num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
-    # Gated only when the activation says so (Mochi: swiglu); otherwise the
-    # standard non-gated MLP with a GELU-family activation.
+    if declared_activation is None:
+        # Honest-unknown: no activation is declared, so the gating (gate-or-not,
+        # i.e. 2 vs 3 projections) is not a config fact either — it lives in the
+        # block class. ``gated=None`` makes the renderer draw the FFN honestly as
+        # "inner structure not declared" instead of asserting a non-gated GELU MLP.
+        return FFNSpec(
+            kind="dense",
+            activation=None,
+            activation_assumed=True,
+            intermediate_size=intermediate_size,
+            gated=None,
+        )
+    # A declared activation IS a gating fact in diffusers: the activation_fn name
+    # fully specifies the FFN — a "*glu" name (geglu / swiglu) is gated; a plain
+    # name (gelu / gelu-approximate / silu) is the non-gated two-layer MLP.
+    act = str(declared_activation).lower()
     return FFNSpec(
         kind="dense",
-        activation=activation,
-        activation_assumed=activation_assumed,
+        activation=act,
+        activation_assumed=False,
         intermediate_size=intermediate_size,
-        gated="glu" in (activation or ""),
+        gated="glu" in act,
     )
+
+
+def _dit_norm_kind(cfg: Any) -> str:
+    """Norm type ONLY when the config gives an explicit signal; else ``"unknown"``.
+
+    diffusers DiT configs usually don't state the norm type (it lives in the
+    block class), and a bare ``norm_eps`` is shared by both RMSNorm and LayerNorm
+    models — so it is NOT a signal.  We assert a kind only on an unambiguous
+    field, never a silent default."""
+    nt = _g(cfg, "norm_type") or _g(cfg, "norm_layer")
+    if isinstance(nt, str):
+        low = nt.lower()
+        if "rms" in low:
+            return "rmsnorm"
+        if "layer" in low:
+            return "layernorm"
+    if _g(cfg, "rms_norm_eps") is not None:
+        return "rmsnorm"
+    if _g(cfg, "layer_norm_eps") is not None or _g(cfg, "layer_norm_epsilon") is not None:
+        return "layernorm"
+    return "unknown"
+
+
+def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
+    """Derive the block's conditioning topology from WHICH conditioning-dim fields
+    the config declares — a presence-set, not a fixed priority cascade.
+
+    The attention *body* is a real structural difference, so it is chosen by the
+    strongest text-in-attention signal (joint / concat / cross / none).  Pre-block
+    text fusion (``llm_features_dim``) is ORTHOGONAL — the text is projected and
+    added to the latent before the stack, never entering attention — so a
+    fusion-only model stays plain self-attention with a corrected description."""
+    has_joint  = bool(geom.get("joint_attention_dim")) or bool(num_single)
+    has_concat = bool(geom.get("text_embed_dim"))
+    has_cross  = bool(geom.get("cross_attention_dim"))
+    has_fusion = bool(geom.get("llm_features_dim"))
+    has_pooled = bool(geom.get("pooled_projection_dim"))
+
+    if has_joint:
+        variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
+    elif has_concat:
+        variant = _concat_joint_variant(rope_note)
+    elif has_cross:
+        variant = _cross_dit_variant(rope_note)
+    else:
+        variant = _plain_dit_variant(
+            rope_note, pre_block_fusion=has_fusion, pooled_in_adaln=has_pooled,
+            llm_features_dim=geom.get("llm_features_dim"))
+    return {
+        "variant": variant,
+        "single_variant": _stream_variant("single-stream", rope_note, dual=False),
+        # A text *encoder* alone does NOT mean text reaches attention; only a
+        # joint / concat / cross dim does. Pre-block fusion is NOT in-attention.
+        "text_in_attention": has_joint or has_concat or has_cross,
+        "pooled_in_adaln": has_pooled,
+        "pre_block_fusion": has_fusion,
+    }
 
 
 def _scheduler_geom(cfg: Any) -> dict:
@@ -589,22 +669,41 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
     enc_cfgs = _g(cfg, "_text_encoder_configs")
     enc_cfgs = enc_cfgs if isinstance(enc_cfgs, dict) else {}
     specs: list[dict] = []
-    seen: set[str] = set()
     for key in ("text_encoder", "text_encoder_2", "text_encoder_3"):
         entry = _g(cfg, key)
         cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
         if not isinstance(cls, str):
             continue
         friendly = _ENCODER_NAMES.get(cls) or cls.replace("Model", "").replace("Encoder", "")
-        if not friendly or friendly in seen:
+        if not friendly:
             continue
-        seen.add(friendly)
+        # Keep EVERY declared encoder slot — never dedup by family name. SDXL is
+        # CLIP-L + OpenCLIP-bigG (both map to "CLIP"); SD3 is CLIP-L + CLIP-G + T5.
+        # Folding same-family encoders into one drops a real, distinct encoder —
+        # and the fact that their outputs concatenate into the cross-attn width.
         spec = {"name": friendly}
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
             spec.update(_normalize_encoder_config(sub))
         specs.append(spec)
+    _uniquify_encoder_names(specs)
     return specs
+
+
+def _uniquify_encoder_names(specs: list[dict]) -> None:
+    """Disambiguate encoders that share a family name (SDXL: CLIP + CLIP) so each
+    box reads distinctly — by hidden width when the loader fetched it, else a
+    1-based ordinal.  Singletons keep their clean family name."""
+    from collections import Counter
+    counts = Counter(s["name"] for s in specs)
+    nth: dict[str, int] = {}
+    for s in specs:
+        name = s["name"]
+        if counts[name] <= 1:
+            continue
+        nth[name] = nth.get(name, 0) + 1
+        hid = s.get("hidden")
+        s["name"] = f"{name} ({_fmt(hid)}-d)" if hid else f"{name} {nth[name]}"
 
 
 def _normalize_encoder_config(c: dict) -> dict:

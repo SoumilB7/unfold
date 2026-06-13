@@ -65,6 +65,9 @@ def parse_unet(cfg: Any) -> dict:
         channels=boc[-1] if boc else None,
         attn=has_attn(mid_type),
         resnets=2,
+        # diffusers' UNetMidBlock2DCrossAttn uses transformer_layers_per_block[-1]
+        # for its single Transformer2D's depth (SDXL: 10) — not the default 1.
+        transformers=int(at(tlpb, n - 1, 1)) if has_attn(mid_type) else 0,
     )
     up = []
     for j in range(n):                       # up processing order; channels reversed
@@ -123,12 +126,22 @@ def parse_unet(cfg: Any) -> dict:
 def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict) -> dict:
     """Loop-view geometry for a UNet denoiser (the denoiser node label/desc)."""
     n = len(unet["block_out_channels"])
+    # SDXL-style micro-conditioning: pooled text + size/crop/target ("time_ids")
+    # embeddings are projected and ADDED to the timestep embedding. Surfaced only
+    # when the config declares addition_embed_type = text_time.
+    aet = _g(cfg, "addition_embed_type")
+    added_cond = ({"type": aet,
+                   "proj_in": _g(cfg, "projection_class_embeddings_input_dim"),
+                   "time_embed_dim": _g(cfg, "addition_time_embed_dim")}
+                  if aet == "text_time" else None)
     return {
+        "denoiser_family": "unet",
         "in_channels": unet["in_channels"],
         "cross_attention_dim": unet["cross_attention_dim"],
         "joint_attention_dim": None,
         "pooled_projection_dim": None,
         "guidance_embeds": None,
+        "added_cond": added_cond,
         "text_encoders": text_encoders,
         "denoiser_label": ["U-Net", "Denoiser"],
         "denoiser_title": "U-Net denoiser",
@@ -161,8 +174,10 @@ def _stage_facts(st: dict) -> list[str]:
         elif kind == "resnet_stack":
             facts.append(f"{int(comp.get('count') or 1)}× ResNet")
         elif kind == "cross_attention":
+            # ``count`` is the Transformer2D DEPTH (transformer_layers_per_block),
+            # not the number of transformer blocks \u2014 so label it as depth.
             c = int(comp.get("count") or 1)
-            facts.append(f"{c}\u00d7 Transformer" if c > 1 else "Transformer")
+            facts.append(f"{c}-layer Transformer" if c > 1 else "Transformer")
         elif kind == "downsample":
             facts.append("downsample 2×")
         elif kind == "upsample":
@@ -276,16 +291,17 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
         "facts": [f"{in_ch} → {boc[0]} ch"] if (in_ch and boc) else None,
     }]
     for st in down:
-        ch, rn, attn = st.get("channels"), st.get("resnets"), st.get("attn")
+        ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
         cards.append({
             "id": st["id"], "title": "Down stage",
             "description": (
                 f"Down-path resolution stage: {rn} residual (ResNet) block(s) at "
                 f"{ch:,} channels"
-                + (", each followed by a text cross-attention transformer" if attn else "")
+                + (f", each followed by a {t}-layer text cross-attention Transformer2D" if attn else "")
                 + (". Halves the spatial resolution into the next stage."
                    if st.get("sample") else ". The lowest down-path resolution.")
-                + " Declared by down_block_types / block_out_channels / layers_per_block."),
+                + " Declared by down_block_types / block_out_channels / layers_per_block"
+                + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "down"),
             "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim")),
@@ -297,23 +313,26 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
             "description": (
                 f"Bottleneck stage at the lowest resolution: {mid.get('resnets')} "
                 f"ResNet block(s) at {ch:,} channels"
-                + (" with self/cross-attention" if mid.get("attn") else "")
-                + ". Declared by mid_block_type." if ch else "U-net bottleneck stage."),
+                + (f" with a {mid.get('transformers')}-layer text cross-attention "
+                   "Transformer2D between them" if mid.get("attn") else "")
+                + ". Declared by mid_block_type / transformer_layers_per_block."
+                if ch else "U-net bottleneck stage."),
             "facts": _stage_facts(mid) or None,
             "view": "unet_stage", "detail": _stage_detail(mid, None),
             "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim")),
         })
     for st in up:
-        ch, rn, attn = st.get("channels"), st.get("resnets"), st.get("attn")
+        ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
         cards.append({
             "id": st["id"], "title": "Up stage",
             "description": (
                 f"Up-path resolution stage: concatenates the skip connection from "
                 f"the matching down stage, then {rn} residual (ResNet) block(s) at "
                 f"{ch:,} channels"
-                + (", each with a text cross-attention transformer" if attn else "")
+                + (f", each with a {t}-layer text cross-attention Transformer2D" if attn else "")
                 + (". Doubles the spatial resolution." if st.get("sample") else ".")
-                + " Declared by up_block_types / block_out_channels / layers_per_block."),
+                + " Declared by up_block_types / block_out_channels / layers_per_block"
+                + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
             "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim")),

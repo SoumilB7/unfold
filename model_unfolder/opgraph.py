@@ -98,6 +98,13 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     if kind == "moe":
         return _moe_region(ffn, hidden, inter)
 
+    # Honest-unknown: the config declares the block IS a feed-forward and how wide
+    # its inner projection is, but NOT whether it gates (2 vs 3 projections) or
+    # which activation it uses — those live in the model code.  Draw one honest
+    # block with the widths we know, never a fabricated gate-or-not shape.
+    if ffn.get("gated") is None and kind in (None, "dense", "mlp", "ffn"):
+        return _undeclared_ffn(hidden, inter)
+
     # A recognised dense/gated MLP: build from config (tier 1).
     if kind in (None, "dense", "mlp", "ffn") and inter is not None:
         gated = bool(ffn.get("gated", True))
@@ -133,6 +140,25 @@ def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
     edges = [Edge("hidden", "up_proj"), Edge("up_proj", "activation"),
              Edge("activation", "down_proj")]
     return Region("ffn", "ffn", "MLP", ops, edges, template="dense_mlp")
+
+
+def _undeclared_ffn(hidden: int | None, inter: int | None) -> Region:
+    """A feed-forward whose inner structure the config does not declare.
+
+    We know it expands the residual width to an inner width and projects back; we
+    do NOT know the gating (2 vs 3 projections) or the activation.  So it is one
+    honest ``opaque`` block carrying the widths — ``resolved=False`` renders it
+    pale, the visual signal for "config-incomplete, not fabricated"."""
+    desc = (
+        "Position-wise feed-forward: expands to an inner width and projects back. "
+        "The config does not declare the inner structure (whether it gates) or the "
+        "activation — those live in the model's code, not its config."
+    )
+    op = Op("block", "opaque", "Feed-forward",
+            in_features=hidden, out_features=hidden,
+            meta={"intermediate_size": inter, "desc": desc})
+    return Region("ffn", "ffn", "Feed-forward", [op], [],
+                  template="undeclared", source="opaque", resolved=False)
 
 
 def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:

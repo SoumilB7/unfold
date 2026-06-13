@@ -16,12 +16,17 @@ from .utils import drop_none
 
 def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
     kind = ffn.get("kind")
+    # gated is tri-state: True / False are declared facts; None means the config
+    # does not declare the inner structure.  Keep that distinction in the JSON
+    # (gated=null + structure_declared=false) rather than collapsing None to false.
+    declared = ffn.get("gated") is not None or kind == "moe"
     out: dict[str, Any] = {
         "kind":              kind,
         "activation":        ffn.get("activation"),
         "activation_assumed": ffn.get("activation_assumed") or None,
         "intermediate_size": ffn.get("intermediate_size"),
-        "gated":             bool(ffn.get("gated")),
+        "gated":             bool(ffn.get("gated")) if declared else None,
+        "structure_declared": None if declared else False,
         "operation_graph":   _operation_graph(ffn, hidden),
         "trace": {
             "ir_path":          f"{group_path}.ffn",
@@ -70,6 +75,8 @@ def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
 def _evidence_values(ffn: dict) -> list[str]:
     if ffn.get("kind") == "moe":
         return ["mixture_of_experts"]
+    if ffn.get("gated") is None:
+        return []   # inner structure undeclared — claim no specific FFN evidence
     return ["gated_dense_ffn" if ffn.get("gated") else "plain_dense_ffn"]
 
 

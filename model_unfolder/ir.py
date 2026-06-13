@@ -48,7 +48,11 @@ class FFNSpec:
     kind: str                       # "dense" | "moe"
     activation: str                 # "silu" | "gelu" | "relu" | "geglu" | "swiglu"
     intermediate_size: int
-    gated: bool = True              # SwiGLU/GeGLU style gated MLP
+    gated: Optional[bool] = True    # SwiGLU/GeGLU style gated MLP. None ⇒ the
+                                    # config does not declare the FFN's inner
+                                    # structure (gate-or-not lives in the model
+                                    # code, not the config) — render/JSON must say
+                                    # so, never assert a shape it can't see.
     activation_assumed: bool = False  # True ⇒ config declared no activation; the
                                       # value is a convention (DiT default), not a
                                       # config fact — render/JSON must say so
@@ -65,7 +69,8 @@ class LayerSpec:
     index: int
     attention: AttentionSpec
     ffn: FFNSpec
-    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm"
+    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm" | "unknown" (config
+                                    # gives no norm-type signal — don't assert one)
     norm_placement: str = "pre"     # "pre" | "post" | "double"
     blocks: list = field(default_factory=list)
 

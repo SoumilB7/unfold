@@ -101,8 +101,11 @@ def test_flux_layer_count_and_geometry():
     assert attn.mask == "full"
     assert attn.no_rope is False
     assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
-    # DiT FFN is a non-gated GELU-family MLP.
-    assert ir.layers[0].ffn.gated is False
+    # Flux declares no activation_fn, so the FFN's inner structure (gating +
+    # activation) is NOT a config fact — rendered honest-unknown, never a guessed
+    # non-gated GELU MLP.
+    assert ir.layers[0].ffn.gated is None
+    assert ir.layers[0].ffn.activation_assumed is True
 
 
 def test_diffusion_render_spec_theme():
@@ -339,6 +342,30 @@ SDXL_UNET = {
 def test_unet_is_claimed_by_diffusor_not_transformer():
     assert diffusor.matches(SDXL_UNET) is True
     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
+
+
+def test_sdxl_unet_conditioning_is_honest():
+    """SDXL conformance pins:
+    * BOTH text encoders survive (CLIP-L + OpenCLIP-bigG), never folded into one;
+    * conditioning is described with the UNet mechanism (additive into ResNets,
+      cross-attention for text) — NEVER 'AdaLN modulation' (a DiT mechanism);
+    * the text_time micro-conditioning (pooled + size/crop/target) is surfaced;
+    * the mid block reports its real Transformer2D depth (transformer_layers_per_block[-1]).
+    """
+    ir = config_to_ir(SDXL_UNET)
+    encoders = ir.extras["diffusion"]["text_encoders"]
+    assert len(encoders) == 2                      # dual encoders, not collapsed
+
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert "encoded by 2 text encoder" in html
+    # UNet mechanism, never AdaLN asserted as the mechanism.
+    assert "as AdaLN modulation" not in html
+    assert "additively, not through AdaLN" in html
+    assert "cross-attention K/V" in html
+    # SDXL micro-conditioning (addition_embed_type = text_time) surfaced.
+    assert "addition_embed_type = text_time" in html
+    # Mid block transformer depth is the real 10, not a hardcoded 1.
+    assert ir.extras["unet"]["mid"]["transformers"] == 10
 
 
 def test_unet_stage_part_kinds_resolve_for_all_block_variants():
@@ -721,20 +748,28 @@ def test_diffusion_json_does_not_leak_llm_io_fields():
     assert ld["io"]["input"]["kind"] == "token_ids"
 
 
-def test_dit_ffn_activation_marked_assumed_when_undeclared():
-    """When the DiT config declares no activation, the GELU default must be
-    flagged as a convention (not a config fact) in BOTH the JSON and the card.
-    A real LLM (which declares hidden_act) must NOT be flagged. Pins WEAK-3."""
+def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
+    """When the DiT config declares no activation, the FFN's inner structure
+    (activation AND gating) is not a config fact — so it is rendered honestly as
+    undeclared (gated=null, structure_declared=false), never a fabricated
+    non-gated GELU MLP.  A real LLM (which declares its activation) is unaffected.
+    Pins WEAK-3 / honest-unknown."""
     f = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
-    assert f["activation"] == "gelu" and f["activation_assumed"] is True
-    # the rendered activation card says so
+    assert f.get("activation") is None          # no fabricated default
+    assert f.get("gated") is None               # gating undeclared
+    assert f.get("structure_declared") is False
+    assert f.get("activation_assumed") is True
+    # the rendered FFN card says the structure isn't declared, asserts no shape
     import re
     html = unfold(FLUX).to_html(standalone=True)
-    m = re.search(r'data-card-id="silu"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert m and "config declares no activation" in m.group(1)
-    # LLAMA declares its activation — no assumed flag.
+    m = re.search(r'data-card-id="block"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert m and "does not declare" in m.group(1)
+    # (Flux's CLIP/T5 text encoders legitimately declare GELU — that's their own
+    # config fact and is unaffected; only the DiT block FFN is honest-unknown.)
+    # LLAMA declares its activation — gating/activation are real facts, not flagged.
     lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
     assert lf["activation"] == "silu" and "activation_assumed" not in lf
+    assert lf["gated"] is True
 
 
 # Ideogram-4-style DiT: custom class, LLM-feature conditioning, an AdaLN dim, a
@@ -761,8 +796,17 @@ def test_ideogram_style_dit_captures_declared_facts():
     side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
     assert "text_cond" not in side                       # no attention-text dim
     assert "AdaLN dim 512" in (side["adaln_cond"].get("facts") or [])
-    # WEAK-3: undeclared activation flagged assumed.
+    # WEAK-3: undeclared activation flagged assumed, gating undeclared (honest).
     assert ir.layers[0].ffn.activation_assumed is True
+    assert ir.layers[0].ffn.gated is None
+    # Norm kind is not declared (only a bare norm_eps) — don't assert RMS/Layer.
+    assert ir.layers[0].norm_kind == "unknown"
+    # FAIL-1/GAP-4: llm_features_dim is recognized as PRE-BLOCK text fusion, so
+    # the attention description says text is fused before the stack — never the
+    # wrong "class / timestep enters only through AdaLN".
+    desc = ir.layers[0].attention.variant["desc"]
+    assert "fused once before the stack" in desc
+    assert "class / timestep) enters only" not in desc
 
 
 def test_unet_hero_denoiser_labeled_unet_not_dit():
@@ -852,8 +896,10 @@ def test_unet_stage_drills_into_resnet_and_transformer_reusing_openers():
     assert "feed-forward block" in html
     assert validate_click_coupling(html) == []
 
-    # The transformer DEPTH chip says "Transformer", not "cross-attn ×N".
-    assert "10× Transformer" in html and "cross-attn ×10" not in html
+    # The transformer DEPTH chip is labelled as depth (a Transformer2D of depth
+    # 10), not as a count of transformer blocks ("10× Transformer") nor "cross-attn ×N".
+    assert "10-layer Transformer" in html
+    assert "10× Transformer" not in html and "cross-attn ×10" not in html
 
     usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
     assert usvg.count("stroke-dasharray") == 0          # no dotted skips
