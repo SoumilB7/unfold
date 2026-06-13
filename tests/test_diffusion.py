@@ -831,28 +831,29 @@ def test_unet_hero_loop_has_arrows():
     assert hero.count("marker-end") >= 8         # noise→latent→denoiser⟳sched→vae→image + cond
 
 
-def test_unet_stage_drills_into_real_op_blocks_and_skips_merge_solid():
-    """Each U-net stage drills (B.1) into the SAME residual-cell pattern as the
-    VAE block view: real clickable op nodes (GroupNorm+SiLU, Conv 3×3, ⊕, and the
-    cross-attention Transformer) each backed by a described card — NOT static text
-    blobs. Skips merge at a concat connector and no skip is dotted."""
+def test_unet_stage_drills_into_resnet_and_transformer_reusing_openers():
+    """A stage drills into a ResNet block and a Transformer block (B.1). The
+    ResNet block opens its residual cell; the Transformer block opens
+    self-attention / cross-attention / feed-forward — each REUSING the canonical
+    attention / FFN opener (not a bespoke leaf). Skips merge solid."""
     import re
     d = unfold(SDXL_UNET)
     html = d.to_html(standalone=True)
-    den = [b for b in ((d.to_ir()["extras"] or {}).get("render") or {})["loop_blocks"]
-           if b["id"] == "denoiser"][0]
-    stages = [c for c in den["children"] if c["id"] not in ("unet_conv_in", "unet_conv_out")]
-    assert stages and all(c.get("view") == "unet_stage" for c in stages)   # B.1 expandable
-    assert all(c.get("children") for c in stages)                          # real op blocks
 
-    # The op nodes are real clickable blocks (not crammed text) and each resolves
-    # to a card — the proper block-declaration pattern, no orphans.
-    op_nodes = set(re.findall(r'data-id="(unet_op_[^"]+)"', html))
-    op_cards = set(re.findall(r'data-card-id="(unet_op_[^"]+)"', html))
-    assert {"unet_op_norm1", "unet_op_conv1", "unet_op_residual",
-            "unet_op_crossattn"} <= op_nodes
-    assert op_nodes <= op_cards
+    # ResNet block + Transformer block are real clickable, carded nodes.
+    nodes = set(re.findall(r'data-id="([^"]+)"', html))
+    cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+    for nid in ("unet_resnet", "unet_transformer", "unet_selfattn",
+                "unet_crossattn", "unet_ff", "unet_op_norm1", "unet_op_residual"):
+        assert nid in nodes and nid in cards, nid
+
+    # self/cross-attn reuse the ATTENTION opener; FF reuses the FFN opener.
+    assert html.count('aria-label="stable-diffusion-xl-base-1.0 attention"') >= 2
+    assert "feed-forward block" in html
     assert validate_click_coupling(html) == []
+
+    # The transformer DEPTH chip says "Transformer", not "cross-attn ×N".
+    assert "10× Transformer" in html and "cross-attn ×10" not in html
 
     usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
     assert usvg.count("stroke-dasharray") == 0          # no dotted skips

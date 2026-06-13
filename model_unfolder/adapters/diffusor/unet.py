@@ -11,6 +11,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...ir import AttentionSpec, FFNSpec
+from ..transformer.blocks.attention import attention_detail
+from ..transformer.blocks.feed_forward import ffn_detail, ffn_view
 from ..transformer.common import get_config_value as _g
 from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
 from .compound import unet_mid_stage, unet_resolution_stage
@@ -78,12 +81,30 @@ def parse_unet(cfg: Any) -> dict:
             sample=j < n - 1,            # upsample on every stage but the last
         ))
 
+    # Attention head geometry per stage (so the self/cross-attention drill reuses
+    # the canonical attention opener).  Diffusers is ambiguous: when
+    # num_attention_heads is unset, attention_head_dim is actually the head COUNT
+    # (SDXL: [5,10,20] heads over [320,640,1280] ch ⇒ head_dim 64).
+    nah, ahd = _g(cfg, "num_attention_heads"), _g(cfg, "attention_head_dim")
+
+    def heads_hd(i: int, channels):
+        h = at(nah, i, None) if nah is not None else None
+        a = at(ahd, i, None) if ahd is not None else None
+        if h:                                  # explicit head count; a = head dim
+            return int(h), (int(a) if a else (channels // int(h) if channels else None))
+        if a:                                  # legacy: attention_head_dim IS the count
+            return int(a), (channels // int(a) if channels else None)
+        return None, None
+
     # Stable node ids so the U-shape boxes are clickable and couple to cards.
     for i, st in enumerate(down):
         st["id"] = f"unet_down_{i}"
+        st["num_heads"], st["head_dim"] = heads_hd(i, st.get("channels"))
     for j, st in enumerate(up):
         st["id"] = f"unet_up_{j}"
+        st["num_heads"], st["head_dim"] = heads_hd(n - 1 - j, st.get("channels"))
     mid["id"] = "unet_mid"
+    mid["num_heads"], mid["head_dim"] = heads_hd(n - 1, mid.get("channels"))
 
     cad = _g(cfg, "cross_attention_dim")
     if isinstance(cad, (list, tuple)):
@@ -141,7 +162,7 @@ def _stage_facts(st: dict) -> list[str]:
             facts.append(f"{int(comp.get('count') or 1)}× ResNet")
         elif kind == "cross_attention":
             c = int(comp.get("count") or 1)
-            facts.append(f"cross-attn ×{c}" if c > 1 else "cross-attn")
+            facts.append(f"{c}\u00d7 Transformer" if c > 1 else "Transformer")
         elif kind == "downsample":
             facts.append("downsample 2×")
         elif kind == "upsample":
@@ -156,49 +177,85 @@ def _stage_detail(st: dict, direction) -> dict:
             "direction": direction, "sample": st.get("sample")}
 
 
-def _unet_stage_ops(st: dict, direction) -> list[dict]:
-    """Described cards for the ops the ``unet_stage`` view draws — one per
-    clickable node (so no op is a static text blob).  Ids match the view's tower
-    node ids; structurally identical ops share prose, as in the VAE block view."""
-    norm_desc = ("Group normalization then a SiLU (swish) activation, applied "
-                 "before each convolution in the residual cell so the conv sees a "
-                 "well-scaled signal.")
-    conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with "
-                 "its spatial neighbours — the feature-transforming workhorse; the "
-                 "cell runs GroupNorm+SiLU → Conv 3×3 twice.")
-    ops: list[dict] = [
+def _unet_resnet_ops() -> list[dict]:
+    """Cards for the ResNet residual cell — same shape as the VAE decoder block."""
+    norm_desc = ("Group normalization then a SiLU (swish) activation, applied before "
+                 "each convolution so the conv sees a well-scaled signal.")
+    conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with its "
+                 "spatial neighbours — the cell runs GroupNorm+SiLU → Conv 3×3 twice.")
+    return [
         {"id": "unet_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
         {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
         {"id": "unet_op_conv2", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_residual", "title": "Residual add",
-         "description": ("Adds the cell input back onto the convolved output (identity, "
-                         "or a 1×1 conv when channels change) so the block learns a "
-                         "residual and gradients flow through depth.")},
+         "description": ("Adds the cell input back onto the convolved output (identity, or "
+                         "a 1×1 conv when channels change) so the block learns a residual.")},
     ]
+
+
+def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
+    """The three sub-blocks of a Transformer2D layer — each REUSES the canonical
+    attention / feed-forward opener (the same view a transformer attention/FFN
+    block opens), instead of a bespoke leaf."""
+    nh, hd, ch = st.get("num_heads"), st.get("head_dim"), st.get("channels")
+    self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
+                              head_dim=hd, mask="full", no_rope=True)
+    ff_spec = FFNSpec(kind="dense", activation="gelu",
+                      intermediate_size=(ch * 4 if ch else 0), gated=True)
+    return [
+        {"id": "unet_selfattn", "title": "Self-attention",
+         "description": "Full bidirectional self-attention over the spatial latent tokens "
+                        "at this resolution. Click to open its Q/K/V structure.",
+         "view": "attention", "detail": {"attention": attention_detail(self_spec)}},
+        {"id": "unet_crossattn", "title": "Cross-attention (text)",
+         "description": ("Cross-attention: queries from the latent tokens, keys/values from "
+                         "the encoded text prompt"
+                         + (f" (dim {cross_dim})" if cross_dim else "")
+                         + " — where text conditioning enters the U-net."),
+         "view": "attention", "detail": {"attention": attention_detail(self_spec)}},
+        {"id": "unet_ff", "title": "Feed-forward",
+         "description": "Position-wise GEGLU feed-forward sublayer, applied after attention.",
+         "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)}},
+    ]
+
+
+def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
+    """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
+    for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
+    plus the resample.  Real nested blocks — not a flat op list."""
+    rn, t = st.get("resnets"), st.get("transformers")
+    children: list[dict] = [{
+        "id": "unet_resnet", "title": "ResNet block",
+        "description": ("A residual cell — GroupNorm+SiLU → Conv 3×3, twice, then a residual "
+                        "add (identity, or a 1×1 conv when channels change)."
+                        + (f" {rn} per stage (layers_per_block)." if rn else "")),
+        "view": "unet_resnet", "detail": {"channels": st.get("channels")},
+        "children": _unet_resnet_ops(),
+    }]
     if st.get("attn"):
-        ops += [
-            {"id": "unet_op_selfattn", "title": "Self-attention",
-             "description": "Full bidirectional self-attention over the spatial latent "
-                            "tokens at this resolution (the ResNet output, flattened)."},
-            {"id": "unet_op_crossattn", "title": "Cross-attention (text)",
-             "description": "Cross-attention whose queries are the latent tokens and whose "
-                            "keys/values are the encoded text prompt — this is where text "
-                            "conditioning enters the U-net."},
-            {"id": "unet_op_ff", "title": "Feed-forward",
-             "description": "The transformer block's position-wise feed-forward (GEGLU) "
-                            "sublayer, applied after attention."},
-        ]
+        nh = st.get("num_heads")
+        children.append({
+            "id": "unet_transformer", "title": "Transformer block",
+            "description": (f"A Transformer2D block — {t} layer(s), each running self-attention "
+                            "→ text cross-attention → feed-forward. Where text conditioning "
+                            "enters."),
+            "facts": [f for f in (f"{t}× layers" if t else "", f"{nh} heads" if nh else "") if f]
+                     or None,
+            "view": "unet_transformer",
+            "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
+                       "channels": st.get("channels"), "cross_dim": cross_dim},
+            "children": _unet_transformer_subblocks(st, cross_dim),
+        })
     if st.get("sample"):
         if direction == "down":
-            ops.append({"id": "unet_op_downsample", "title": "Downsample",
-                        "description": "Halves spatial resolution (H×W → H/2×W/2) with a "
-                                       "stride-2 convolution, moving to the next-coarser stage."})
+            children.append({"id": "unet_downsample", "title": "Downsample",
+                             "description": "Halves spatial resolution with a stride-2 convolution."})
         else:
-            ops.append({"id": "unet_op_upsample", "title": "Upsample",
-                        "description": "Doubles spatial resolution (H×W → 2H×2W) by "
-                                       "nearest-neighbour upsampling then a convolution."})
-    return ops
+            children.append({"id": "unet_upsample", "title": "Upsample",
+                             "description": "Doubles spatial resolution by nearest-neighbour "
+                                            "upsampling then a convolution."})
+    return children
 
 
 def unet_denoiser_children(unet: dict) -> list[dict]:
@@ -231,7 +288,7 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
                 + " Declared by down_block_types / block_out_channels / layers_per_block."),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "down"),
-            "children": _unet_stage_ops(st, "down"),
+            "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim")),
         })
     if mid:
         ch = mid.get("channels")
@@ -244,7 +301,7 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
                 + ". Declared by mid_block_type." if ch else "U-net bottleneck stage."),
             "facts": _stage_facts(mid) or None,
             "view": "unet_stage", "detail": _stage_detail(mid, None),
-            "children": _unet_stage_ops(mid, None),
+            "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim")),
         })
     for st in up:
         ch, rn, attn = st.get("channels"), st.get("resnets"), st.get("attn")
@@ -259,7 +316,7 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
                 + " Declared by up_block_types / block_out_channels / layers_per_block."),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
-            "children": _unet_stage_ops(st, "up"),
+            "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim")),
         })
     cards.append({
         "id": "unet_conv_out",

@@ -98,38 +98,26 @@ def build_unet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
 
 
 def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """One resolution stage's internals on the ONE tower backbone — the same
-    residual-cell pattern the VAE decoder block view uses: in → [GroupNorm+SiLU →
-    Conv 3×3, twice → ⊕ residual (+ a Transformer: self-attn → text cross-attn →
-    FF when the stage has cross-attention)] × N → optional 2× resample → out.
-
-    Every op is a REAL clickable node whose id matches a described card declared
-    in ``unet_denoiser_children`` (``_unet_stage_ops``) — not a static text blob.
-    The structural shape (kinds, the residual lane) lives here; the prose lives on
-    the cards.  Read from the stage's ``detail``; nothing invented."""
+    """A resolution stage: in → [ResNet block (+ Transformer block when the stage
+    has cross-attention)] × layers_per_block → optional 2× resample → out.  The
+    ResNet block and Transformer block are clickable and DRILL FURTHER (into the
+    residual cell, and into self→cross→FF × depth respectively)."""
     d = block.get("detail") or {}
     ch = d.get("channels")
     resnets = int(d.get("resnets") or 1)
     direction = d.get("direction")
-    op = {"w": 216, "h": 44}
+    op = {"w": 224, "h": 48}
 
-    cell = [
-        {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
-        {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
-        {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
-        {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
-        {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_op_norm1"},
-    ]
+    cell = [{"id": "unet_resnet", "kind": "norm", "label": "ResNet block", **op}]
     if d.get("attn"):
-        cell += [
-            {"id": "unet_op_selfattn", "kind": "attention", "label": "Self-attention", **op},
-            {"id": "unet_op_crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
-            {"id": "unet_op_ff", "kind": "ffn", "label": "Feed-forward", **op},
-        ]
-    post = ([{"id": f"unet_op_{'down' if direction == 'down' else 'up'}sample",
+        t = int(d.get("transformers") or 1)
+        cell.append({"id": "unet_transformer", "kind": "attention", "label": "Transformer block",
+                     "sub": f"×{t}: self-attn · cross-attn · FF", **op})
+    post = ([{"id": f"unet_{'down' if direction == 'down' else 'up'}sample",
               "kind": "embedding",
               "label": "Downsample" if direction == "down" else "Upsample",
-              "sub": "stride-2 conv" if direction == "down" else "nearest 2× → conv", **op}]
+              "sub": "stride-2 conv" if direction == "down" else "nearest 2× → conv",
+              "w": 224, "h": 46}]
             if d.get("sample") else [])
 
     graph = tower_graph({
@@ -142,6 +130,46 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     return render_graph(graph, info, mount_id, f"unetstage_{block.get('id') or 'x'}",
                         f"{ir.get('name', 'model')} {block.get('title') or 'U-net stage'}",
                         min_width=560)
+
+
+def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+    """One ResNet block — the residual cell, the SAME shape as the VAE decoder
+    block: in → GroupNorm+SiLU → Conv 3×3 → GroupNorm+SiLU → Conv 3×3 → ⊕ → out."""
+    ch = (block.get("detail") or {}).get("channels")
+    op = {"w": 216, "h": 44}
+    graph = tower_graph({
+        "source": {"id": "unet_res_in", "label": f"in ({ch:,} ch)" if ch else "in"},
+        "cell": [
+            {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
+            {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
+            {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
+            {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
+            {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_op_norm1"},
+        ],
+        "output": {"id": "unet_res_out"},
+    })
+    return render_graph(graph, info, mount_id, f"unetres_{block.get('id') or 'x'}",
+                        f"{ir.get('name', 'model')} ResNet block", min_width=520)
+
+
+def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
+    """One Transformer2D block: in → [Self-attention → Cross-attention (text) →
+    Feed-forward] × transformer_layers → out.  Each sub-block opens the canonical
+    attention / feed-forward view (the same opener a transformer layer uses)."""
+    t = int((block.get("detail") or {}).get("transformers") or 1)
+    op = {"w": 232, "h": 46}
+    graph = tower_graph({
+        "source": {"id": "unet_tf_in", "label": "in (latent tokens)"},
+        "cell": [
+            {"id": "unet_selfattn", "kind": "attention", "label": "Self-attention", **op},
+            {"id": "unet_crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
+            {"id": "unet_ff", "kind": "ffn", "label": "Feed-forward", **op},
+        ],
+        "repeat": t,
+        "output": {"id": "unet_tf_out"},
+    })
+    return render_graph(graph, info, mount_id, f"unettf_{block.get('id') or 'x'}",
+                        f"{ir.get('name', 'model')} Transformer block", min_width=540)
 
 
 def _stage_title(st: dict, default_kind: str) -> str:
