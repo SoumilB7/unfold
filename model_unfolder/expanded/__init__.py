@@ -37,9 +37,10 @@ from .layer_group import build_layer_group
 from .pathways import build_external_pathways
 from .modalities import build_modalities
 from .code_evidence import normalise_code_evidence
+from .loop import build_sampling_loop
 
 
-SCHEMA_VERSION = "3.1"
+SCHEMA_VERSION = "3.2"
 
 
 def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
@@ -63,6 +64,10 @@ def build_expanded(ir: ModelIR, params: dict | None = None) -> dict:
         "stack":          build_stack(layers, groups),
         "layer_groups":   [build_layer_group(g, raw, evidence) for g in groups],
     }
+
+    loop = build_sampling_loop(extras)
+    if loop:
+        out["sampling_loop"] = loop
 
     external = list(build_external_pathways(extras))
     if external:

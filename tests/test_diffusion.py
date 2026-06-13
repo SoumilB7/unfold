@@ -647,3 +647,32 @@ def test_ops_region_declared_side_inputs():
     assert [(e.src, e.dst) for e in r.edges] == [("pred", "scale"), ("hidden", "step"), ("scale", "step")]
     ids = [c["id"] for c in cards_from_region(r)]
     assert ids == ["pred", "scale", "step"]               # side input has a card; hidden doesn't
+
+
+def test_sampling_loop_json_matches_html_nodes():
+    """The JSON `sampling_loop` and the HTML loop view are two projections of ONE
+    declared edge set (adapters/diffusor/blocks.diffusion_loop_*), so their node
+    sets must be identical — the structural anti-drift gate."""
+    import re
+    d = unfold(FLUX)
+    j = d.to_json()["sampling_loop"]
+    json_nodes = {n["id"] for n in j["nodes"]}
+
+    html = d.to_html(standalone=True)
+    seg = html[html.index("SAMPLING LOOP"):]
+    loop_svg = re.search(r"<svg.*?</svg>", seg, re.S).group(0)
+    html_nodes = set(re.findall(r'data-id="([^"]+)"', loop_svg))
+
+    assert html_nodes == json_nodes, (
+        f"loop drift — only in HTML: {html_nodes - json_nodes}; "
+        f"only in JSON: {json_nodes - html_nodes}")
+
+    # Every edge endpoint is a real node; the recurrence has its one back-edge.
+    ids = json_nodes
+    for e in j["edges"]:
+        assert e["from"] in ids and e["to"] in ids, f"dangling edge {e}"
+    backs = [(e["from"], e["to"]) for e in j["edges"] if e.get("back_edge")]
+    assert backs == [("scheduler", "latent")], backs
+    # Fan-in (connectors) and fan-out (splitters) are derived, present, honest.
+    assert {c["at"] for c in j["connectors"]} == {"latent", "denoiser"}
+    assert {s["at"] for s in j["splitters"]} == {"denoiser", "prompt"}

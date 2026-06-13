@@ -42,6 +42,68 @@ def diffusion_render_spec(geom: dict) -> dict:
         "theme": "teal",
         "model_blocks": diffusion_model_blocks(geom),
         "loop_blocks": diffusion_loop_blocks(geom),
+        "loop_edges": diffusion_loop_edges(geom),
+        "loop_region": diffusion_loop_region(),
+    }
+
+
+def diffusion_loop_edges(geom: dict) -> list[dict]:
+    """The sampling-loop wiring, declared as DATA — the single author of the
+    loop topology.  Both the SVG (which draws each edge) and the JSON
+    ``sampling_loop`` projection consume this list, so the two physically cannot
+    drift: there is one edge set, not a hand-drawn one and a hand-written one.
+
+    Each edge is the structural fact only — ``from``/``to`` node ids, the
+    ``*_port`` it leaves/enters, its ``label``, ``when`` (``once`` vs
+    ``each_step``), and ``back_edge`` (loop-carried).  ``route``/``gap``/
+    ``lane_index`` are presentation hints the SVG reads and the JSON drops.
+    Connectors (fan-in) and splitters (fan-out) are NOT stored — they are
+    derived from edge multiplicity wherever they're needed.
+    """
+    encoders = geom.get("text_encoders") or []
+    cond_ids = ["timestep"] + (
+        [f"encoder_{i}" for i in range(len(encoders))] if encoders else ["text_encoder"]
+    )
+    edges: list[dict] = [
+        {"from": "noise", "to": "latent", "to_port": "bottom",
+         "label": "z_T · once", "when": "once", "route": "spine", "gap": 4},
+        {"from": "latent", "to": "denoiser", "to_port": "bottom",
+         "label": "z_t", "when": "each_step", "route": "spine", "gap": 4,
+         "label_size": 11},
+        {"from": "denoiser", "to": "scheduler", "from_port": "right", "to_port": "left",
+         "label": "ε̂", "when": "each_step", "route": "eps"},
+        {"from": "scheduler", "to": "latent", "from_port": "bottom", "to_port": "right",
+         "label": "z_t-1 · each step", "when": "each_step", "back_edge": True,
+         "route": "rail"},
+        {"from": "denoiser", "to": "vae_decode", "to_port": "bottom",
+         "label": "z_0", "when": "once", "route": "spine", "label_at": "frame_top",
+         "label_size": 11},
+        {"from": "vae_decode", "to": "image", "to_port": "bottom", "route": "spine"},
+    ]
+    # Conditioning enters the denoiser's LEFT edge — computed once, read every step.
+    edges += [
+        {"from": cid, "to": "denoiser", "to_port": "left",
+         "when": "each_step", "route": "lateral", "lane_index": i}
+        for i, cid in enumerate(cond_ids)
+    ]
+    # The prompt fans out to each encoder (a splitter; drawn as one bus).
+    if encoders:
+        edges += [{"from": "prompt", "to": f"encoder_{i}", "route": "prompt"}
+                  for i in range(len(encoders))]
+    return edges
+
+
+def diffusion_loop_region() -> dict:
+    """The repeating region: which loop nodes are iterated, and the loop-carried
+    back-edge that makes it a recurrence (z_{t-1} of one step becomes z_t of the
+    next).  ``repeat`` is honest prose — the step count N is a runtime choice,
+    never a config field."""
+    return {
+        "members": ["latent", "denoiser", "scheduler"],
+        "carried": [{"from": "scheduler", "to": "latent"}],
+        "entry": "noise",
+        "exit": {"from": "denoiser", "to": "vae_decode", "tensor": "z_0"},
+        "repeat": "until t = 0",
     }
 
 

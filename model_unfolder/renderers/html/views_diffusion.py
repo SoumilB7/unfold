@@ -36,7 +36,6 @@ from .svg import (
     _svg,
     _svg_tag,
     _svg_text,
-    _v_line,
 )
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
 from .utils import _attr, _html
@@ -213,10 +212,9 @@ def _merge_levels(a: list[str], b: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
-    blocks = {
-        b["id"]: b
-        for b in (((ir.get("extras") or {}).get("render") or {}).get("loop_blocks") or [])
-    }
+    render = (ir.get("extras") or {}).get("render") or {}
+    blocks = {b["id"]: b for b in (render.get("loop_blocks") or [])}
+    loop_edges = render.get("loop_edges") or []
 
     def label(bid: str, default: str):
         lab = (blocks.get(bid) or {}).get("label", default)
@@ -271,150 +269,179 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
     _badge(parts, loop_x + loop_w, loop_y + 12, "↺ t → 0")
 
-    # --- Spine nodes (bottom -> top: Noise, Denoiser, VAE, Image) ---
-    image = _rect_block(parts, info, shadow_id, "image",
-                        cx - 78, 40, 156, 44, label("image", "Image"), font_size=17,
-                        resolved=resolved("image"))
-    vae = _rect_block(parts, info, shadow_id, "vae_decode",
-                      cx - 96, 116, 192, 46, label("vae_decode", "VAE decode"), font_size=16,
-                      resolved=resolved("vae_decode"))
-    denoiser = _rect_block(parts, info, shadow_id, "denoiser",
-                           den_x, den_y, den_w, den_h,
-                           "DiT Denoiser", font_size=20, resolved=resolved("denoiser"))
-    scheduler = _rect_block(parts, info, shadow_id, "scheduler",
-                            sched_cx - 75, den_y + 6, 150, den_h - 12,
-                            label("scheduler", ["Scheduler", "step"]), font_size=15,
-                            resolved=resolved("scheduler"))
-    noise = _rect_block(parts, info, shadow_id, "noise",
-                        cx - 84, 488, 168, 58, label("noise", "Noise"), font_size=18,
-                        resolved=resolved("noise"))
-    _latent_grid(parts, noise["left"] - 88, noise["cy"] - 33)
+    # --- Nodes: positions are hand-authored (the latent spine vertical, the
+    # scheduler to its right, conditioning on the left); their boxes join `pos`
+    # so the declared edges can be wired to real geometry. ---
+    pos: dict[str, dict] = {}
+    pos["image"] = _rect_block(parts, info, shadow_id, "image",
+                               cx - 78, 40, 156, 44, label("image", "Image"), font_size=17,
+                               resolved=resolved("image"))
+    pos["vae_decode"] = _rect_block(parts, info, shadow_id, "vae_decode",
+                                    cx - 96, 116, 192, 46, label("vae_decode", "VAE decode"),
+                                    font_size=16, resolved=resolved("vae_decode"))
+    pos["denoiser"] = _rect_block(parts, info, shadow_id, "denoiser",
+                                  den_x, den_y, den_w, den_h,
+                                  "DiT Denoiser", font_size=20, resolved=resolved("denoiser"))
+    pos["scheduler"] = _rect_block(parts, info, shadow_id, "scheduler",
+                                   sched_cx - 75, den_y + 6, 150, den_h - 12,
+                                   label("scheduler", ["Scheduler", "step"]), font_size=15,
+                                   resolved=resolved("scheduler"))
+    pos["noise"] = _rect_block(parts, info, shadow_id, "noise",
+                               cx - 84, 488, 168, 58, label("noise", "Noise"), font_size=18,
+                               resolved=resolved("noise"))
+    _latent_grid(parts, pos["noise"]["left"] - 88, pos["noise"]["cy"] - 33)
     # The latent state cell — the slot every step reads from and writes back to.
-    # A clickable loop node: its card explains the seed-once / overwrite-each-step
-    # register semantics behind the two writers.
-    latent = _rect_block(parts, info, shadow_id, "latent",
-                         buf_x, buf_y, buf_w, buf_h, label("latent", "latent"),
-                         font_size=15, resolved=True)
+    pos["latent"] = _rect_block(parts, info, shadow_id, "latent",
+                                buf_x, buf_y, buf_w, buf_h, label("latent", "latent"),
+                                font_size=15, resolved=True)
+    _place_conditioning(parts, info, shadow_id, label, resolved, blocks, pos)
 
-    # --- Conditioning stack on the left (text encoders + timestep), each
-    # entering the denoiser's left edge — every step receives them. ---
-    _draw_conditioning_stack(parts, info, shadow_id, arrow_id, label, blocks, denoiser)
-
-    # --- The latent circuit: the cell is written twice (seeded once, then
-    # overwritten each step) and read once per step by the denoiser. ---
-    mono = {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 12}
-    # Seed write: Noise rises into the cell's BOTTOM edge — once, from outside
-    # the loop frame (so the seed visibly enters the recursion a single time).
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": noise["top"], "x2": cx, "y2": latent["bottom"] + 4,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
-    parts.append(_svg_text(cx + 12, (noise["top"] + latent["bottom"]) / 2, "z_T · once",
-                           {**mono, "text-anchor": "start"}))
-    # ε̂ forward: denoiser -> scheduler.
-    eps_y = den_y + 26
-    parts.append(_h_arrow(denoiser["right"] + 2, scheduler["left"] - 8, eps_y, arrow_id))
-    parts.append(_svg_text((denoiser["right"] + scheduler["left"]) / 2, eps_y - 12, "ε̂",
-                           {**mono, "text-anchor": "middle"}))
-    # Each-step write: scheduler output returns and overwrites the cell's RIGHT
-    # edge — a different writer, a different edge, a different time than the seed.
-    parts.append(_svg_tag("path", {
-        "d": (f"M {sched_cx} {scheduler['bottom']} L {sched_cx} {rail_y} "
-              f"L {latent['right'] + 4} {rail_y}"),
-        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})"}))
-    parts.append(_svg_text((latent["right"] + sched_cx) / 2, rail_y - 9, "z_t-1 · each step",
-                           {**mono, "text-anchor": "middle", "font-size": 11}))
-    # Read: the denoiser reads the current latent off the cell's TOP edge.
-    parts.append(_svg_tag("line", {
-        "x1": cx, "y1": latent["top"], "x2": cx, "y2": denoiser["bottom"] + 4,
-        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
-        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
-    parts.append(_svg_text(cx + 12, (latent["top"] + denoiser["bottom"]) / 2, "z_t",
-                           {**mono, "text-anchor": "start", "font-size": 11}))
-
-    # --- Out of the loop, once: clean latent -> VAE -> image. ---
-    parts.append(_v_line(denoiser, vae, arrow_id))
-    parts.append(_svg_text(cx + 12, (loop_y + vae["bottom"]) / 2 + 4, "z_0",
-                           {**mono, "text-anchor": "start", "font-size": 11}))
-    parts.append(_v_line(vae, image, arrow_id))
+    # --- Arrows: every connection is drawn from the DECLARED loop edges — the
+    # same list the JSON `sampling_loop` projects — so the diagram and the data
+    # cannot drift.  Routing is per-edge; the topology lives in the declaration.
+    _draw_loop_edges(parts, loop_edges, pos, cx, loop_y, arrow_id)
 
     return _svg(w, h, f"{ir.get('name', 'model')} sampling loop", parts)
 
 
-def _draw_conditioning_stack(parts, info, shadow_id, arrow_id, label, blocks, den):
-    """The conditioning sources as ONE left-hand stack — the timestep on top,
-    text encoder(s) beneath it, the prompt source directly under its
-    encoder(s).  The stack is vertically centred on the denoiser so each
-    source lines up with its entry point and the arrow runs STRAIGHT into the
-    denoiser's left edge; only oversized stacks fall back to nested elbows.
+def _place_conditioning(parts, info, shadow_id, label, resolved, blocks, pos):
+    """Position the conditioning sources — timestep on top, text encoder(s)
+    beneath it, the prompt directly under them — and add their boxes to ``pos``.
 
-    Latent flows vertically through the loop; conditioning enters laterally —
-    the two axes keep their meanings."""
-    def _resolved(bid):
-        return _is_resolved_diffusion_block(True, info, bid, blocks.get(bid))
-
+    Draws ONLY the node rects.  Their arrows (timestep/encoder → denoiser, and
+    the prompt's fan-out to the encoders) are declared loop edges drawn by
+    :func:`_draw_loop_edges`, so the wiring has a single author.  The stack is
+    centred on the denoiser so aligned sources get a straight arrow; latent
+    flows vertically, conditioning enters laterally — the two axes keep meaning."""
     enc_ids = sorted(bid for bid in blocks if bid.startswith("encoder_"))
-    entries: list[tuple[str, object, bool]] = [
-        ("timestep", label("timestep", "Timestep t"), _resolved("timestep"))]
+    entries: list[tuple[str, object]] = [("timestep", label("timestep", "Timestep t"))]
     if enc_ids:
-        entries += [(bid, label(bid, "Encoder"), _resolved(bid)) for bid in enc_ids]
+        entries += [(bid, label(bid, "Encoder")) for bid in enc_ids]
     else:
-        entries += [("text_encoder", label("text_encoder", ["Text prompt", "→ encoder"]),
-                     _resolved("text_encoder"))]
+        entries += [("text_encoder", label("text_encoder", ["Text prompt", "→ encoder"]))]
 
-    # Stack centred on the denoiser; sources whose centre fits the denoiser's
-    # left edge get a straight arrow, the rest a nested elbow.
+    den = pos["denoiser"]
     col_cx, bw, bh, gap = 130, 150, 44, 14
     n = len(entries)
     stack_h = n * bh + (n - 1) * gap
     stack_top = max(den["cy"] - stack_h / 2, 206)
-    srcs = []
-    for i, (bid, lab, res) in enumerate(entries):
+    for i, (bid, lab) in enumerate(entries):
         y = stack_top + i * (bh + gap)
-        srcs.append(_rect_block(parts, info, shadow_id, bid,
-                                col_cx - bw / 2, y, bw, bh, lab, font_size=14,
-                                resolved=res))
-
-    lo, hi = den["top"] + 18, den["bottom"] - 18
-    entry_ys = [min(max(src["cy"], lo), hi) for src in srcs]
-    for i, (src, ey) in enumerate(zip(srcs, entry_ys)):
-        if abs(ey - src["cy"]) < 0.5:
-            parts.append(_h_arrow(src["right"] + 2, den["left"] - 4, ey, arrow_id))
-        else:
-            lane = den["left"] - 30 + i * 7
-            parts.append(_svg_tag("path", {
-                "d": (f"M {src['right']} {src['cy']} L {lane} {src['cy']} "
-                      f"L {lane} {ey} L {den['left'] - 4} {ey}"),
-                "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-                "stroke-linecap": "round", "stroke-linejoin": "round",
-                "marker-end": f"url(#{arrow_id})"}))
-
-    # Prompt source directly under its encoder(s) — nothing sits between them.
+        pos[bid] = _rect_block(parts, info, shadow_id, bid,
+                               col_cx - bw / 2, y, bw, bh, lab, font_size=14,
+                               resolved=resolved(bid))
     if not enc_ids:
         return
-    enc_srcs = srcs[1:]
     prompt_y = stack_top + n * (bh + gap) + 10
-    prompt = _rect_block(parts, info, shadow_id, "prompt",
-                         col_cx - 68, prompt_y, 136, 46, label("prompt", "Text prompt"),
-                         font_size=14, resolved=_resolved("prompt"))
-    if len(enc_srcs) == 1:
+    pos["prompt"] = _rect_block(parts, info, shadow_id, "prompt",
+                                col_cx - 68, prompt_y, 136, 46, label("prompt", "Text prompt"),
+                                font_size=14, resolved=resolved("prompt"))
+
+
+def _draw_loop_edges(parts, loop_edges, pos, cx, loop_y, arrow_id):
+    """Draw each declared loop edge with its per-edge routing.  This is the ONLY
+    place loop arrows are drawn — the edge list (authored in the diffusor
+    adapter, also projected to JSON) is the single source of the topology."""
+    mono = {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 12}
+    prompt_targets: list[dict] = []
+    for e in loop_edges:
+        frm, to = pos.get(e.get("from")), pos.get(e.get("to"))
+        if frm is None or to is None:
+            continue
+        route = e.get("route")
+        if route == "spine":
+            _edge_spine(parts, e, frm, to, cx, loop_y, arrow_id, mono)
+        elif route == "eps":
+            _edge_eps(parts, frm, to, arrow_id, mono)
+        elif route == "rail":
+            _edge_rail(parts, e, frm, to, arrow_id, mono)
+        elif route == "lateral":
+            _edge_lateral(parts, e, frm, to, arrow_id)
+        elif route == "prompt":
+            prompt_targets.append(to)
+    if prompt_targets:
+        _draw_prompt_fanout(parts, pos["prompt"], prompt_targets, arrow_id)
+
+
+def _edge_spine(parts, e, frm, to, cx, loop_y, arrow_id, mono):
+    """A vertical latent-column edge: the source always sits below the target,
+    so it rises from the source's top into the target's bottom edge."""
+    gap = e.get("gap", 6)
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": frm["top"], "x2": cx, "y2": to["bottom"] + gap,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+    lab = e.get("label")
+    if lab:
+        # z_0 sits up near the loop-frame top, not at the segment midpoint.
+        ly = ((loop_y + to["bottom"]) / 2 + 4 if e.get("label_at") == "frame_top"
+              else (frm["top"] + to["bottom"]) / 2)
+        parts.append(_svg_text(cx + 12, ly, lab,
+                               {**mono, "text-anchor": "start",
+                                "font-size": e.get("label_size", 12)}))
+
+
+def _edge_eps(parts, frm, to, arrow_id, mono):
+    """Denoiser → scheduler: the predicted noise/velocity ε̂, an inset horizontal."""
+    eps_y = frm["top"] + 26
+    parts.append(_h_arrow(frm["right"] + 2, to["left"] - 8, eps_y, arrow_id))
+    parts.append(_svg_text((frm["right"] + to["left"]) / 2, eps_y - 12, "ε̂",
+                           {**mono, "text-anchor": "middle"}))
+
+
+def _edge_rail(parts, e, frm, to, arrow_id, mono):
+    """The loop-carried back-edge: scheduler output drops down and re-enters the
+    latent cell's right edge (z_{t-1} becoming the next step's z_t)."""
+    ry = to["cy"]
+    parts.append(_svg_tag("path", {
+        "d": (f"M {frm['cx']} {frm['bottom']} L {frm['cx']} {ry} "
+              f"L {to['right'] + 4} {ry}"),
+        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+        "stroke-linecap": "round", "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})"}))
+    lab = e.get("label")
+    if lab:
+        parts.append(_svg_text((to["right"] + frm["cx"]) / 2, ry - 9, lab,
+                               {**mono, "text-anchor": "middle", "font-size": 11}))
+
+
+def _edge_lateral(parts, e, frm, to, arrow_id):
+    """A conditioning source entering the denoiser's left edge: straight when the
+    source's centre lines up, else a nested elbow on its own lane."""
+    lo, hi = to["top"] + 18, to["bottom"] - 18
+    ey = min(max(frm["cy"], lo), hi)
+    if abs(ey - frm["cy"]) < 0.5:
+        parts.append(_h_arrow(frm["right"] + 2, to["left"] - 4, ey, arrow_id))
+    else:
+        lane = to["left"] - 30 + e.get("lane_index", 0) * 7
+        parts.append(_svg_tag("path", {
+            "d": (f"M {frm['right']} {frm['cy']} L {lane} {frm['cy']} "
+                  f"L {lane} {ey} L {to['left'] - 4} {ey}"),
+            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+            "stroke-linecap": "round", "stroke-linejoin": "round",
+            "marker-end": f"url(#{arrow_id})"}))
+
+
+def _draw_prompt_fanout(parts, prompt, encs, arrow_id):
+    """The prompt → encoder(s) splitter: a straight feed to a single encoder,
+    or a shared bus fanning out to several."""
+    if len(encs) == 1:
+        enc = encs[0]
         parts.append(_svg_tag("line", {
             "x1": prompt["cx"], "y1": prompt["top"], "x2": prompt["cx"],
-            "y2": enc_srcs[-1]["bottom"] + 4,
+            "y2": enc["bottom"] + 4,
             "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
             "marker-end": f"url(#{arrow_id})", "fill": "none"}))
         return
-    bus_x = col_cx - bw / 2 - 24
+    bus_x = encs[0]["left"] - 24
     split_y = prompt["top"] - 12
     parts.append(_svg_tag("path", {
         "d": (f"M {prompt['cx']} {prompt['top']} L {prompt['cx']} {split_y} "
-              f"L {bus_x} {split_y} L {bus_x} {enc_srcs[0]['cy']}"),
+              f"L {bus_x} {split_y} L {bus_x} {encs[0]['cy']}"),
         "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
         "stroke-linecap": "round", "stroke-linejoin": "round"}))
     parts.append(_junction_dot(prompt["cx"], split_y))
-    for enc in enc_srcs:
+    for enc in encs:
         parts.append(_svg_tag("line", {
             "x1": bus_x, "y1": enc["cy"], "x2": enc["left"] - 4, "y2": enc["cy"],
             "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
