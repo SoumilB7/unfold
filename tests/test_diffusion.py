@@ -676,3 +676,184 @@ def test_sampling_loop_json_matches_html_nodes():
     # Fan-in (connectors) and fan-out (splitters) are derived, present, honest.
     assert {c["at"] for c in j["connectors"]} == {"latent", "denoiser"}
     assert {s["at"] for s in j["splitters"]} == {"denoiser", "prompt"}
+
+
+def test_text_cond_rail_requires_attention_text_signal():
+    """The text->attention K/V side-rail must be drawn ONLY when the config says
+    attention consumes text (a joint/cross/text-embed dim or a stream split) — a
+    text *encoder* alone must not draw it (it may condition purely via AdaLN, as
+    in a plain class-conditional DiT). Pins the FAIL-1 fix for Ideogram4-style
+    DiTs whose conditioning is an LLM feature with no attention-text dim."""
+    from model_unfolder.adapters.diffusor.parser import _conditioning_side_blocks
+
+    ids = lambda blks: {b["id"] for b in blks}
+    # No attention-text signal: only the AdaLN rail, no text_cond.
+    plain = _conditioning_side_blocks(text_in_attention=False, pooled_in_adaln=False,
+                                      guidance=False)
+    assert ids(plain) == {"adaln_cond"}
+    assert "pooled text" not in plain[0]["description"]
+
+    # Attention consumes text: the text_cond rail appears.
+    joint = _conditioning_side_blocks(text_in_attention=True, pooled_in_adaln=True,
+                                      guidance=False)
+    assert ids(joint) == {"adaln_cond", "text_cond"}
+    assert "pooled text" in joint[0]["description"]
+
+
+def test_diffusion_json_does_not_leak_llm_io_fields():
+    """A denoiser has no token vocabulary or LM head; the expanded JSON's
+    dimensions + io must not leak vocab_size / tie_word_embeddings / token_ids /
+    token_embedding (the IR carries vocab_size=0 only for param honesty). Pins
+    the FAIL-2 fix."""
+    j = unfold(FLUX).to_json()
+    dims = j["dimensions"]
+    assert "vocab_size" not in dims and "tie_word_embeddings" not in dims
+    assert "in_channels" in dims and "hidden_size" in dims
+
+    io = j["io"]
+    assert io["input"]["kind"] == "noisy_latent"
+    assert "token_embedding" not in io and "lm_head" not in io
+    assert io["output"]["kind"] == "noise_prediction"
+
+    # A real LLM still reports the token fields — the branch is diffusion-only.
+    ld = unfold(LLAMA).to_json()
+    assert "vocab_size" in ld["dimensions"]
+    assert ld["io"]["input"]["kind"] == "token_ids"
+
+
+def test_dit_ffn_activation_marked_assumed_when_undeclared():
+    """When the DiT config declares no activation, the GELU default must be
+    flagged as a convention (not a config fact) in BOTH the JSON and the card.
+    A real LLM (which declares hidden_act) must NOT be flagged. Pins WEAK-3."""
+    f = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
+    assert f["activation"] == "gelu" and f["activation_assumed"] is True
+    # the rendered activation card says so
+    import re
+    html = unfold(FLUX).to_html(standalone=True)
+    m = re.search(r'data-card-id="silu"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert m and "config declares no activation" in m.group(1)
+    # LLAMA declares its activation — no assumed flag.
+    lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
+    assert lf["activation"] == "silu" and "activation_assumed" not in lf
+
+
+# Ideogram-4-style DiT: custom class, LLM-feature conditioning, an AdaLN dim, a
+# CFG twin, and NO declared activation / attention-text dim — exercises FAIL-1,
+# WEAK-3 and GAP-4 offline (no network).
+IDEO_STYLE = {
+    "_class_name": "Ideogram4Transformer2DModel",
+    "num_layers": 2, "num_attention_heads": 4, "attention_head_dim": 64,
+    "in_channels": 16, "intermediate_size": 256,
+    "adaln_dim": 512, "llm_features_dim": 53248,
+    "unconditional_transformer": ["diffusers", "Ideogram4Transformer2DModel"],
+}
+
+
+def test_ideogram_style_dit_captures_declared_facts():
+    """GAP-4: adaln_dim / llm_features_dim are captured; the CFG twin is warned
+    about; the AdaLN rail carries its dim — and (FAIL-1) no text->attention rail
+    appears without an attention-text signal."""
+    ir = config_to_ir(IDEO_STYLE)
+    diff = (ir.extras or {}).get("diffusion") or {}
+    assert diff["adaln_dim"] == 512 and diff["llm_features_dim"] == 53248
+    assert any("unconditional_transformer" in w for w in ir.warnings)
+
+    side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
+    assert "text_cond" not in side                       # no attention-text dim
+    assert "AdaLN dim 512" in (side["adaln_cond"].get("facts") or [])
+    # WEAK-3: undeclared activation flagged assumed.
+    assert ir.layers[0].ffn.activation_assumed is True
+
+
+def test_unet_hero_denoiser_labeled_unet_not_dit():
+    """The hero loop's denoiser label must come from the parsed loop block, not a
+    hardcoded 'DiT' — a UNet model (SDXL) must read 'U-Net Denoiser'. Pins the
+    SDXL-shows-DiT regression."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    seg = html[html.index("SAMPLING LOOP"):]
+    loop_svg = re.search(r"<svg.*?</svg>", seg, re.S).group(0)
+    texts = re.findall(r"<text[^>]*>(.*?)</text>", loop_svg)
+    assert "U-Net" in texts and "DiT Denoiser" not in texts
+    # A real DiT still reads DiT.
+    fseg = unfold(FLUX).to_html(standalone=True)
+    fsvg = re.search(r"<svg.*?</svg>", fseg[fseg.index("SAMPLING LOOP"):], re.S).group(0)
+    assert "DiT Denoiser" in re.findall(r"<text[^>]*>(.*?)</text>", fsvg)
+
+
+def test_unet_view_stages_clickable_carded_and_clean():
+    """The UNet U-shape passes the block gates: every stage box is a clickable
+    node with a backing card (B.4/B.2), numbers live on card chips not the box
+    (house style), skips use a concat connector, and conv-in/out are solid (no
+    light bookend). Pins the SDXL UNet-view rework."""
+    import re
+    d = unfold(SDXL_UNET)
+    html = d.to_html(standalone=True)
+    usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net[^"]*".*?</svg>', html, re.S).group(0)
+
+    node_ids = set(re.findall(r'data-id="(unet_[^"]+)"', usvg))
+    card_ids = set(re.findall(r'data-card-id="(unet_[^"]+)"', html))
+    assert node_ids and node_ids <= card_ids                 # B.4: every node carded
+    assert validate_click_coupling(html) == []
+
+    # House style: box labels are stage names only — no chips on the diagram.
+    box_labels = re.findall(r'Caveat[^>]*>([^<]+)</text>', usvg)
+    assert not any("ch" in l or "ResNet" in l for l in box_labels)
+    assert "Down stage" in box_labels and "Conv in" in box_labels
+
+    # Skips use a concat connector (circles); no cryptic ↓2/↑2 marks or "skip
+    # connections" caption on the diagram (the cards/description carry that).
+    assert usvg.count("<circle") >= 3
+    assert "↓2" not in usvg and "↑2" not in usvg and "skip connections" not in usvg
+
+    # No light-green accent on the conv bookends.
+    from model_unfolder.renderers.html.theme import C
+    assert C["bg_inner"] not in usvg
+
+    # B.2 + B.7: the cards describe each stage and cite their config signature.
+    den = [b for b in ((d.to_ir()["extras"] or {}).get("render") or {})["loop_blocks"]
+           if b["id"] == "denoiser"][0]
+    for c in den["children"]:
+        assert c.get("description")
+    joined = " ".join(c["description"] for c in den["children"])
+    assert "block_out_channels" in joined and "down_block_types" in joined
+
+
+def test_unet_hero_loop_has_arrows():
+    """Regression: the UNet render spec must carry the SAME declared loop_edges
+    as the DiT one, or the hero sampling loop draws no arrows."""
+    import re
+    d = unfold(SDXL_UNET)
+    render = (d.to_ir()["extras"] or {}).get("render") or {}
+    assert render.get("loop_edges") and render.get("loop_region")
+    html = d.to_html(standalone=True)
+    hero = re.search(r"<svg.*?</svg>", html[html.index("SAMPLING LOOP"):], re.S).group(0)
+    assert hero.count("marker-end") >= 8         # noise→latent→denoiser⟳sched→vae→image + cond
+
+
+def test_unet_stage_drills_into_real_op_blocks_and_skips_merge_solid():
+    """Each U-net stage drills (B.1) into the SAME residual-cell pattern as the
+    VAE block view: real clickable op nodes (GroupNorm+SiLU, Conv 3×3, ⊕, and the
+    cross-attention Transformer) each backed by a described card — NOT static text
+    blobs. Skips merge at a concat connector and no skip is dotted."""
+    import re
+    d = unfold(SDXL_UNET)
+    html = d.to_html(standalone=True)
+    den = [b for b in ((d.to_ir()["extras"] or {}).get("render") or {})["loop_blocks"]
+           if b["id"] == "denoiser"][0]
+    stages = [c for c in den["children"] if c["id"] not in ("unet_conv_in", "unet_conv_out")]
+    assert stages and all(c.get("view") == "unet_stage" for c in stages)   # B.1 expandable
+    assert all(c.get("children") for c in stages)                          # real op blocks
+
+    # The op nodes are real clickable blocks (not crammed text) and each resolves
+    # to a card — the proper block-declaration pattern, no orphans.
+    op_nodes = set(re.findall(r'data-id="(unet_op_[^"]+)"', html))
+    op_cards = set(re.findall(r'data-card-id="(unet_op_[^"]+)"', html))
+    assert {"unet_op_norm1", "unet_op_conv1", "unet_op_residual",
+            "unet_op_crossattn"} <= op_nodes
+    assert op_nodes <= op_cards
+    assert validate_click_coupling(html) == []
+
+    usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert usvg.count("stroke-dasharray") == 0          # no dotted skips
+    assert usvg.count("<circle") >= 3                   # one concat connector per up stage

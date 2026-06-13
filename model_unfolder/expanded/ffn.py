@@ -19,6 +19,7 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
     out: dict[str, Any] = {
         "kind":              kind,
         "activation":        ffn.get("activation"),
+        "activation_assumed": ffn.get("activation_assumed") or None,
         "intermediate_size": ffn.get("intermediate_size"),
         "gated":             bool(ffn.get("gated")),
         "operation_graph":   _operation_graph(ffn, hidden),

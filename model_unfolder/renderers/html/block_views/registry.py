@@ -44,7 +44,7 @@ from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
 from .per_layer_embedding import build_per_layer_embedding_view
 from .text_encoder import build_text_encoder_view
 from ..tower import build_tower_view
-from .unet import build_unet_view
+from .unet import build_unet_stage_view, build_unet_view
 from .vae import build_vae_decoder_block_view, build_vae_decoder_view
 
 
@@ -138,6 +138,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
     "text_encoder": _from_block(build_text_encoder_view),
     "unet": _from_block(build_unet_view),
+    "unet_stage": _from_block(build_unet_stage_view),
     # Generic custom tower: any adapter block with view:"tower" + detail.tower
     # renders through the one tower backbone — no per-tower view code.
     "tower": _from_block(build_tower_view),

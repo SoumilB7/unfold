@@ -177,6 +177,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         "flow matching" if is_flow else str(geom.get("scheduler_prediction_type") or ""),
         f"{_fmt(sched_train)} train timesteps" if sched_train else "",
         f"shift {sched_shift}" if sched_shift is not None else "",
+        "dynamic shifting" if geom.get("scheduler_dynamic_shifting") else "",
         str(geom.get("scheduler_beta_schedule") or ""),
         str(geom.get("scheduler_timestep_spacing") or ""),
     ) if f]
@@ -244,6 +245,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "conditioning) and predicts the noise to remove. Click to open its "
                 "architecture."
             ),
+            # A UNet denoiser declares its U-shape stages as cards, so every box
+            # in the U is clickable and described (a DiT declares none — its
+            # layers carry the cards).
+            **({"children": geom["denoiser_children"]} if geom.get("denoiser_children") else {}),
         },
         {
             "id": "scheduler",

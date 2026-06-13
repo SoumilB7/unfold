@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..transformer.common import get_config_value as _g
-from .blocks import diffusion_loop_blocks
+from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
 from .compound import unet_mid_stage, unet_resolution_stage
 
 
@@ -78,6 +78,13 @@ def parse_unet(cfg: Any) -> dict:
             sample=j < n - 1,            # upsample on every stage but the last
         ))
 
+    # Stable node ids so the U-shape boxes are clickable and couple to cards.
+    for i, st in enumerate(down):
+        st["id"] = f"unet_down_{i}"
+    for j, st in enumerate(up):
+        st["id"] = f"unet_up_{j}"
+    mid["id"] = "unet_mid"
+
     cad = _g(cfg, "cross_attention_dim")
     if isinstance(cad, (list, tuple)):
         cad = cad[0] if cad else None
@@ -107,11 +114,163 @@ def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict
         "denoiser_desc": (
             f"The network applied at every step: a {n}-stage convolutional U-net "
             "(down → mid → up with skip connections) that takes the latent z_t "
-            "(+ timestep + text conditioning) and predicts the noise. Click to "
-            "open its architecture."
+            "(+ timestep + text conditioning) and predicts the noise. Each down "
+            "stage halves the spatial resolution"
+            + (f" (the latent is {unet['downscale']}× downscaled at the bottleneck)"
+               if unet.get("downscale") else "")
+            + " and each up stage doubles it back; the timestep modulates every "
+            "ResNet"
+            + (f", and text conditioning (dim {unet['cross_attention_dim']}) enters "
+               "the cross-attention stages" if unet.get("cross_attention_dim") else "")
+            + ". Click to open its architecture."
         ),
+        "denoiser_children": unet_denoiser_children(unet),
         **scheduler_geom,
     }
+
+
+def _stage_facts(st: dict) -> list[str]:
+    """Numbers as card chips (never on the box): channels, ResNet count, cross-
+    attention depth, and the 2× resample."""
+    facts: list[str] = []
+    for comp in (st.get("components") or []):
+        kind = comp.get("kind")
+        if kind == "channels":
+            facts.append(f"{int(comp['value']):,} ch")
+        elif kind == "resnet_stack":
+            facts.append(f"{int(comp.get('count') or 1)}× ResNet")
+        elif kind == "cross_attention":
+            c = int(comp.get("count") or 1)
+            facts.append(f"cross-attn ×{c}" if c > 1 else "cross-attn")
+        elif kind == "downsample":
+            facts.append("downsample 2×")
+        elif kind == "upsample":
+            facts.append("upsample 2×")
+    return facts
+
+
+def _stage_detail(st: dict, direction) -> dict:
+    """The facts the stage drill-down (``unet_stage`` view) reads."""
+    return {"channels": st.get("channels"), "resnets": st.get("resnets"),
+            "attn": st.get("attn"), "transformers": st.get("transformers"),
+            "direction": direction, "sample": st.get("sample")}
+
+
+def _unet_stage_ops(st: dict, direction) -> list[dict]:
+    """Described cards for the ops the ``unet_stage`` view draws — one per
+    clickable node (so no op is a static text blob).  Ids match the view's tower
+    node ids; structurally identical ops share prose, as in the VAE block view."""
+    norm_desc = ("Group normalization then a SiLU (swish) activation, applied "
+                 "before each convolution in the residual cell so the conv sees a "
+                 "well-scaled signal.")
+    conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with "
+                 "its spatial neighbours — the feature-transforming workhorse; the "
+                 "cell runs GroupNorm+SiLU → Conv 3×3 twice.")
+    ops: list[dict] = [
+        {"id": "unet_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
+        {"id": "unet_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "unet_op_conv2", "title": "Conv 3×3", "description": conv_desc},
+        {"id": "unet_op_residual", "title": "Residual add",
+         "description": ("Adds the cell input back onto the convolved output (identity, "
+                         "or a 1×1 conv when channels change) so the block learns a "
+                         "residual and gradients flow through depth.")},
+    ]
+    if st.get("attn"):
+        ops += [
+            {"id": "unet_op_selfattn", "title": "Self-attention",
+             "description": "Full bidirectional self-attention over the spatial latent "
+                            "tokens at this resolution (the ResNet output, flattened)."},
+            {"id": "unet_op_crossattn", "title": "Cross-attention (text)",
+             "description": "Cross-attention whose queries are the latent tokens and whose "
+                            "keys/values are the encoded text prompt — this is where text "
+                            "conditioning enters the U-net."},
+            {"id": "unet_op_ff", "title": "Feed-forward",
+             "description": "The transformer block's position-wise feed-forward (GEGLU) "
+                            "sublayer, applied after attention."},
+        ]
+    if st.get("sample"):
+        if direction == "down":
+            ops.append({"id": "unet_op_downsample", "title": "Downsample",
+                        "description": "Halves spatial resolution (H×W → H/2×W/2) with a "
+                                       "stride-2 convolution, moving to the next-coarser stage."})
+        else:
+            ops.append({"id": "unet_op_upsample", "title": "Upsample",
+                        "description": "Doubles spatial resolution (H×W → 2H×2W) by "
+                                       "nearest-neighbour upsampling then a convolution."})
+    return ops
+
+
+def unet_denoiser_children(unet: dict) -> list[dict]:
+    """One card per U-net node — conv_in, each down/mid/up stage, conv_out — so
+    every clickable box in the U-shape resolves to a described card.  Numbers are
+    chips here; the box shows only the stage name.  Each description names the
+    config field it is read from (the block's code signature)."""
+    boc = unet.get("block_out_channels") or []
+    in_ch, out_ch = unet.get("in_channels"), unet.get("out_channels")
+    down, up, mid = unet.get("down") or [], unet.get("up") or [], unet.get("mid") or {}
+    cards: list[dict] = [{
+        "id": "unet_conv_in",
+        "title": "Conv in",
+        "description": (
+            f"Input 3×3 convolution: lifts the {in_ch}-channel noisy latent to "
+            f"{boc[0]} feature channels. Declared by in_channels / block_out_channels[0]."
+            if in_ch and boc else "Input convolution into the U-net's feature width."),
+        "facts": [f"{in_ch} → {boc[0]} ch"] if (in_ch and boc) else None,
+    }]
+    for st in down:
+        ch, rn, attn = st.get("channels"), st.get("resnets"), st.get("attn")
+        cards.append({
+            "id": st["id"], "title": "Down stage",
+            "description": (
+                f"Down-path resolution stage: {rn} residual (ResNet) block(s) at "
+                f"{ch:,} channels"
+                + (", each followed by a text cross-attention transformer" if attn else "")
+                + (". Halves the spatial resolution into the next stage."
+                   if st.get("sample") else ". The lowest down-path resolution.")
+                + " Declared by down_block_types / block_out_channels / layers_per_block."),
+            "facts": _stage_facts(st) or None,
+            "view": "unet_stage", "detail": _stage_detail(st, "down"),
+            "children": _unet_stage_ops(st, "down"),
+        })
+    if mid:
+        ch = mid.get("channels")
+        cards.append({
+            "id": "unet_mid", "title": "Mid stage",
+            "description": (
+                f"Bottleneck stage at the lowest resolution: {mid.get('resnets')} "
+                f"ResNet block(s) at {ch:,} channels"
+                + (" with self/cross-attention" if mid.get("attn") else "")
+                + ". Declared by mid_block_type." if ch else "U-net bottleneck stage."),
+            "facts": _stage_facts(mid) or None,
+            "view": "unet_stage", "detail": _stage_detail(mid, None),
+            "children": _unet_stage_ops(mid, None),
+        })
+    for st in up:
+        ch, rn, attn = st.get("channels"), st.get("resnets"), st.get("attn")
+        cards.append({
+            "id": st["id"], "title": "Up stage",
+            "description": (
+                f"Up-path resolution stage: concatenates the skip connection from "
+                f"the matching down stage, then {rn} residual (ResNet) block(s) at "
+                f"{ch:,} channels"
+                + (", each with a text cross-attention transformer" if attn else "")
+                + (". Doubles the spatial resolution." if st.get("sample") else ".")
+                + " Declared by up_block_types / block_out_channels / layers_per_block."),
+            "facts": _stage_facts(st) or None,
+            "view": "unet_stage", "detail": _stage_detail(st, "up"),
+            "children": _unet_stage_ops(st, "up"),
+        })
+    cards.append({
+        "id": "unet_conv_out",
+        "title": "Conv out",
+        "description": (
+            f"Output 3×3 convolution: projects features back to {out_ch} channels — "
+            "the predicted noise. Declared by out_channels."
+            if out_ch else "Output convolution to the predicted noise."),
+        "facts": [f"→ {out_ch} ch"] if out_ch else None,
+    })
+    return cards
 
 
 def unet_render_spec(geom: dict) -> dict:
@@ -122,5 +281,10 @@ def unet_render_spec(geom: dict) -> dict:
         "layout": "unet_pipeline",
         "theme": "teal",
         "denoiser_view": "unet",
+        # The sampling loop is identical for a UNet and a DiT (only the denoiser
+        # node's drill-down differs), so it reuses the SAME declared edges/region
+        # — without these the hero loop would draw no arrows.
         "loop_blocks": diffusion_loop_blocks(geom),
+        "loop_edges": diffusion_loop_edges(geom),
+        "loop_region": diffusion_loop_region(),
     }

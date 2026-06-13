@@ -162,7 +162,14 @@ def parse(cfg: Any) -> ModelIR:
         # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
         mlp_ratio = float(_resolve(cfg, "mlp_ratio", 4.0) or 4.0)
         intermediate_size = int(hidden_size * mlp_ratio)
-    activation = str(_resolve(cfg, "hidden_act", "gelu") or "gelu").lower()
+    # Read the activation from any key a DiT might use; only when NONE is
+    # declared do we fall back to the GELU convention — and we flag that fallback
+    # so the diagram/JSON never presents the default as a config fact.
+    declared_act = next((_resolve(cfg, k, None) for k in
+                         ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
+                         if _resolve(cfg, k, None)), None)
+    activation_assumed = declared_act is None
+    activation = str(declared_act or "gelu").lower()
 
     if not num_layers and not num_single:
         warnings.append(
@@ -193,6 +200,11 @@ def parse(cfg: Any) -> ModelIR:
         "joint_attention_dim": _resolve(cfg, "joint_attention_dim"),
         "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
         "text_embed_dim": _resolve(cfg, "text_embed_dim"),
+        # AdaLN modulation width, and the text-encoder feature width fed in as
+        # conditioning (e.g. Ideogram-4's Qwen3-VL llm_features_dim) — declared
+        # facts that must be captured, not dropped.
+        "adaln_dim": _resolve(cfg, "adaln_dim"),
+        "llm_features_dim": _resolve(cfg, "llm_features_dim"),
         "video": "3D" in str(cls),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
@@ -253,32 +265,49 @@ def parse(cfg: Any) -> ModelIR:
     single_variant = _stream_variant("single-stream", rope_note, dual=False)
     geom["denoiser_style"] = double_variant["tag"]
 
-    # Conditioning enters each block at two distinct points: the timestep (+ the
-    # CLIP pooled vector) modulates the norm via AdaLN; the text token sequence
-    # enters the attention.  Attach them as external side-rails so the denoiser
-    # view shows WHERE each of the loop's conditioning inputs plugs in.
-    has_text = bool(geom["joint_attention_dim"] or geom["cross_attention_dim"]
-                    or geom["text_embed_dim"] or geom["text_encoders"])
+    # Conditioning enters each block at distinct points; the side-rails must show
+    # only the ones the config actually supports:
+    #   * the timestep always modulates the norm via AdaLN; a *pooled* text
+    #     embedding joins it ONLY when a pooled projection is declared (Flux/SD3);
+    #   * the text token SEQUENCE enters the attention ONLY when the config
+    #     signals attention consumes text — a joint / cross / text-embed dim, or a
+    #     dual/single-stream split.  A text *encoder* alone does NOT mean text
+    #     reaches attention (it may condition purely through AdaLN, as in a plain
+    #     class-conditional DiT) — so it must not, by itself, draw that rail.
+    text_in_attention = bool(geom["joint_attention_dim"] or num_single
+                             or geom["text_embed_dim"] or geom["cross_attention_dim"])
+    pooled_in_adaln = bool(geom["pooled_projection_dim"])
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         layers.append(decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
-            _dit_ffn(activation, intermediate_size, cfg),
+            _dit_ffn(activation, intermediate_size, cfg, activation_assumed),
             hidden_size, norm_kind="layernorm",
         ))
         idx += 1
     for _ in range(num_single):
         layers.append(parallel_decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant),
-            _dit_ffn(activation, intermediate_size, cfg),
+            _dit_ffn(activation, intermediate_size, cfg, activation_assumed),
             hidden_size, norm_kind="layernorm",
         ))
         idx += 1
 
     for layer in layers:
-        layer.blocks.extend(_conditioning_side_blocks(has_text, bool(geom["guidance_embeds"])))
+        layer.blocks.extend(_conditioning_side_blocks(
+            text_in_attention, pooled_in_adaln, bool(geom["guidance_embeds"]),
+            geom["adaln_dim"]))
+
+    # A diffusers pipeline may ship a SECOND denoiser for classifier-free
+    # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
+    # conditional denoiser — say so rather than silently dropping the twin.
+    if _g(cfg, "unconditional_transformer") is not None:
+        warnings.append(
+            "Pipeline declares a separate `unconditional_transformer` (the CFG "
+            "twin) — the diagram shows the conditional denoiser; the twin shares "
+            "its architecture and is not drawn separately.")
 
     extras: dict = {"render": diffusion_render_spec(geom)}
     diffusion_meta = {k: v for k, v in {
@@ -286,6 +315,8 @@ def parse(cfg: Any) -> ModelIR:
         "single_stream_layers": num_single or None,
         "in_channels": geom["in_channels"],
         "patch_size": geom["patch_size"],
+        "adaln_dim": geom["adaln_dim"],
+        "llm_features_dim": geom["llm_features_dim"],
         "joint_attention_dim": geom["joint_attention_dim"],
         "cross_attention_dim": geom["cross_attention_dim"],
         "pooled_projection_dim": geom["pooled_projection_dim"],
@@ -330,9 +361,11 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
     )
 
 
-def _conditioning_side_blocks(has_text: bool, guidance: bool) -> list[dict]:
+def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
+                              guidance: bool, adaln_dim=None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
-    timestep -> AdaLN at the norm; text token sequence -> the attention."""
+    timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
+    config says attention consumes text, the text token sequence -> the attention."""
     blocks: list[dict] = [{
         "id": "adaln_cond",
         "role": "norm",
@@ -345,13 +378,14 @@ def _conditioning_side_blocks(has_text: bool, guidance: bool) -> list[dict]:
         "title": "Timestep conditioning (AdaLN)",
         "description": (
             "The timestep embedding"
-            + (" and the CLIP pooled text vector" if has_text else "")
+            + (" and a pooled text embedding" if pooled_in_adaln else "")
             + " produce per-block shift / scale / gate (AdaLN-Zero): they modulate "
             "this block's LayerNorm and gate its output before the residual add."
         ),
+        "facts": [f"AdaLN dim {int(adaln_dim):,}"] if adaln_dim else None,
         "w": 190, "h": 52, "font": 14,
     }]
-    if has_text:
+    if text_in_attention:
         blocks.append({
             "id": "text_cond",
             "role": "attention",
@@ -444,7 +478,8 @@ def _plain_dit_variant(rope_note: str) -> dict:
     }
 
 
-def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None) -> FFNSpec:
+def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None,
+             activation_assumed: bool = False) -> FFNSpec:
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
@@ -452,6 +487,7 @@ def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None) -> FFNSpe
         return FFNSpec(
             kind="moe",
             activation=activation,
+            activation_assumed=activation_assumed,
             intermediate_size=intermediate_size,
             gated=False,
             num_experts=num_experts,
@@ -462,6 +498,7 @@ def _dit_ffn(activation: str, intermediate_size: int, cfg: Any = None) -> FFNSpe
     return FFNSpec(
         kind="dense",
         activation=activation,
+        activation_assumed=activation_assumed,
         intermediate_size=intermediate_size,
         gated="glu" in (activation or ""),
     )
@@ -491,6 +528,7 @@ def _scheduler_geom(cfg: Any) -> dict:
         for key, field in (
             ("scheduler_train_timesteps", "num_train_timesteps"),
             ("scheduler_shift", "shift"),
+            ("scheduler_dynamic_shifting", "use_dynamic_shifting"),
             ("scheduler_prediction_type", "prediction_type"),
             ("scheduler_beta_schedule", "beta_schedule"),
             ("scheduler_timestep_spacing", "timestep_spacing"),

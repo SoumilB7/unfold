@@ -34,7 +34,7 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
     if ffn.kind != "moe" and not ffn.gated:
-        return _dense_ffn_child_blocks(hidden, inter, activation)
+        return _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
 
     children = _gated_ffn_child_blocks(hidden, inter, activation)
     if ffn.kind == "moe":
@@ -42,7 +42,16 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     return children
 
 
-def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
+def _act_sentence(where: str, assumed: bool) -> str:
+    base = f"Element-wise non-linearity applied {where}."
+    if assumed:
+        base += (" The config declares no activation \u2014 this is the standard "
+                 "DiT MLP default, not a config-stated fact.")
+    return base
+
+
+def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
+                            activation_assumed: bool = False) -> list[Block]:
     return [
         {
             "id": "up_proj",
@@ -55,7 +64,7 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "id": "silu",
             "label": activation,
             "title": activation,
-            "description": "Element-wise non-linearity applied after the input projection.",
+            "description": _act_sentence("after the input projection", activation_assumed),
         },
         {
             "id": "down_proj",
