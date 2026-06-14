@@ -72,9 +72,12 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
         warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
     hidden = max(boc) if boc else 0
     text_encoders = _detect_text_encoders(cfg)
-    geom = unet_geom(cfg, unet, text_encoders=text_encoders, scheduler_geom=_scheduler_geom(cfg))
+    text_encoder_specs = _text_encoder_specs(cfg)
+    geom = unet_geom(cfg, unet, text_encoders=text_encoders,
+                     scheduler_geom=_scheduler_geom(cfg),
+                     text_encoder_specs=text_encoder_specs)
     geom["vae"] = _vae_geom(cfg)
-    geom["text_encoder_specs"] = _text_encoder_specs(cfg)
+    geom["text_encoder_specs"] = text_encoder_specs
 
     extras: dict = {"render": unet_render_spec(geom), "unet": unet}
     meta = {k: v for k, v in {

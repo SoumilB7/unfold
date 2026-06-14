@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...ir import AttentionSpec, FFNSpec
-from ..transformer.blocks.attention import attention_detail
+from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.blocks.feed_forward import ffn_detail, ffn_view
 from ..transformer.common import get_config_value as _g
 from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
@@ -123,7 +123,8 @@ def parse_unet(cfg: Any) -> dict:
     }
 
 
-def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict) -> dict:
+def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict,
+              text_encoder_specs: list | None = None) -> dict:
     """Loop-view geometry for a UNet denoiser (the denoiser node label/desc)."""
     n = len(unet["block_out_channels"])
     # SDXL-style micro-conditioning: pooled text + size/crop/target ("time_ids")
@@ -158,7 +159,7 @@ def unet_geom(cfg: Any, unet: dict, *, text_encoders: list, scheduler_geom: dict
                "the cross-attention stages" if unet.get("cross_attention_dim") else "")
             + ". Click to open its architecture."
         ),
-        "denoiser_children": unet_denoiser_children(unet),
+        "denoiser_children": unet_denoiser_children(unet, text_encoder_specs),
         **scheduler_geom,
     }
 
@@ -216,19 +217,53 @@ def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
     nh, hd, ch = st.get("num_heads"), st.get("head_dim"), st.get("channels")
     self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
                               head_dim=hd, mask="full", no_rope=True)
+    # Cross-attention pulls K/V from the ENCODED TEXT, not the latent — give it a
+    # real cross spec so its drilled view shows the text states entering (distinct
+    # from self-attention), instead of an identical self-attention diagram.
+    cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
+                               head_dim=hd, mask="full", no_rope=True,
+                               cross_attention=True,
+                               cross_kv_source="encoded text prompt")
     ff_spec = FFNSpec(kind="dense", activation="gelu",
                       intermediate_size=(ch * 4 if ch else 0), gated=True)
+    hidden = ch or 0
+    # Each inner op (Q/K/V proj, scaled scores, softmax, apply-V, concat, output
+    # proj) is ATOMIC — it gets a description card, not a further view. Supplying
+    # them as children also makes the attention view's ops clickable (the view
+    # renders ops as drill targets only when the block declares child cards).
+    # Self- and cross-attention share these canonical SDPA op cards (same op ids):
+    # source-NEUTRAL wording (generic=True) keeps the shared card correct for both;
+    # the K/V-source difference is carried by cross-attention's own source node.
+    self_children = attention_child_blocks(self_spec, hidden, generic=True)
+    # Cross-attention adds ONLY its distinguishing node — the encoded-text K/V
+    # source — and reuses the shared SDPA op cards above by matching op ids.
+    cross_children = [{
+        "id": "cross_attention_states",
+        "title": "Encoded text (K/V)",
+        "description": (
+            "The encoded prompt supplies the keys and values here — the latent "
+            "tokens are the queries, this external text sequence is the K/V, which "
+            "is what makes it cross-attention"
+            + (f". The text encoders' features are concatenated to {cross_dim}-d "
+               "(see the 'Encoded text' source in the denoiser view for that "
+               "concatenation)" if cross_dim else "")
+            + "."),
+        "facts": [f"K/V from text ({cross_dim:,})"] if cross_dim else None,
+    }]
     return [
         {"id": "unet_selfattn", "title": "Self-attention",
          "description": "Full bidirectional self-attention over the spatial latent tokens "
                         "at this resolution. Click to open its Q/K/V structure.",
-         "view": "attention", "detail": {"attention": attention_detail(self_spec)}},
+         "view": "attention", "detail": {"attention": attention_detail(self_spec)},
+         "children": self_children},
         {"id": "unet_crossattn", "title": "Cross-attention (text)",
          "description": ("Cross-attention: queries from the latent tokens, keys/values from "
                          "the encoded text prompt"
                          + (f" (dim {cross_dim})" if cross_dim else "")
-                         + " — where text conditioning enters the U-net."),
-         "view": "attention", "detail": {"attention": attention_detail(self_spec)}},
+                         + " — where text conditioning enters the U-net. Click to see "
+                         "the text states feeding K/V."),
+         "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
+         "children": cross_children},
         {"id": "unet_ff", "title": "Feed-forward",
          "description": "Position-wise GEGLU feed-forward sublayer, applied after attention.",
          "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)}},
@@ -273,7 +308,7 @@ def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     return children
 
 
-def unet_denoiser_children(unet: dict) -> list[dict]:
+def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -> list[dict]:
     """One card per U-net node — conv_in, each down/mid/up stage, conv_out — so
     every clickable box in the U-shape resolves to a described card.  Numbers are
     chips here; the box shows only the stage name.  Each description names the
@@ -337,6 +372,58 @@ def unet_denoiser_children(unet: dict) -> list[dict]:
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
             "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim")),
         })
+    cad = unet.get("cross_attention_dim")
+    if cad and (any(s.get("attn") for s in down + up) or mid.get("attn")):
+        # The per-encoder widths (when the loader fetched their configs) let the
+        # drill view show HOW the encoders concatenate into the K/V width.
+        encoders = [
+            {"name": str(s.get("name") or "Text encoder").split(" (")[0],
+             "hidden": s.get("hidden")}
+            for s in (text_encoder_specs or [])
+        ]
+        n_enc = len(encoders)
+        sum_note = ""
+        widths = [e["hidden"] for e in encoders if e.get("hidden")]
+        if len(widths) >= 2 and sum(widths) == cad:
+            sum_note = " (" + " + ".join(f"{w:,}" for w in widths) + f" = {cad:,})"
+        card = {
+            "id": "unet_text_cond",
+            "title": "Text conditioning",
+            "description": (
+                "The encoded text prompt supplies the keys/values to EVERY "
+                "cross-attention stage — the down, mid and up CrossAttn blocks all "
+                f"read the same {cad}-d text states"
+                + (f", the {n_enc} text encoders' token features concatenated along "
+                   f"the feature axis{sum_note}" if n_enc >= 2
+                   else " (in SDXL, the two CLIP encoders' features concatenated)")
+                + ". The latent flows through the U vertically; this conditioning "
+                "enters each cross-attention stage from the side. Click to see how "
+                "the encoders combine. Declared by cross_attention_dim + the "
+                "CrossAttn* block types."),
+            "facts": [f"K/V dim {cad:,}"],
+        }
+        if encoders:
+            card["view"] = "encoded_text_concat"
+            card["detail"] = {"encoders": encoders, "cross_attention_dim": cad}
+        if len(encoders) >= 2:
+            # the clickable ‖ in the concat view drills into this card
+            card["children"] = [{
+                "id": "text_concat_op",
+                "title": "Concatenate (feature axis)",
+                "description": (
+                    "The encoders' per-token features are joined along the feature "
+                    "(channel) axis — stacked side by side into wider tokens, with "
+                    "no projection, no mixing and no added parameters"
+                    + (f". Here {' + '.join(f'{w:,}' for w in widths)} = {cad:,}"
+                       if len(widths) >= 2 and sum(widths) == cad
+                       else f", giving the {cad:,}-d conditioning")
+                    + ". That combined tensor is the keys/values every "
+                    "cross-attention stage reads. It is the same operation "
+                    "(torch.cat over the feature axis) as the U-net's skip "
+                    "connections — which is why both use the ‖ connector, not ⊕."),
+                "facts": [f"→ {cad:,}-d K/V"],
+            }]
+        cards.append(card)
     cards.append({
         "id": "unet_conv_out",
         "title": "Conv out",

@@ -361,6 +361,7 @@ def parse(cfg: Any) -> ModelIR:
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
+            cross_kv_source="projected image states" if is_cross_attn_layer else None,
             compress_ratio=compress_ratio,
             index_topk=_g(text_cfg, "index_topk") if mask == "compressed_sparse" else None,
         )

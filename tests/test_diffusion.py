@@ -809,6 +809,117 @@ def test_ideogram_style_dit_captures_declared_facts():
     assert "class / timestep) enters only" not in desc
 
 
+def test_unet_view_shows_text_conditioning_rail():
+    """The U-net denoiser diagram must SHOW the encoded text entering the
+    cross-attention stages — a 'Encoded text' source broadcasting into the
+    CrossAttn stages — not just the latent U-path.  A clickable, carded node."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert "Encoded text" in den                       # the text source is drawn
+    assert 'data-id="unet_text_cond"' in den           # clickable node
+    assert 'data-card-id="unet_text_cond"' in html     # backing card (coupling)
+    assert validate_click_coupling(html) == []
+
+
+def test_encoded_text_box_drills_into_the_concat_view():
+    """Clicking the 'Encoded text' source opens a view showing HOW the encoders
+    make the cross-attention K/V: each CLIP's width feeding one concat (‖) into the
+    2,048-d K/V (768 + 1,280 = 2,048).  This needs the per-encoder configs, which
+    the by-ID loader fetches — exercised here with the SDXL fixture's configs."""
+    cfg = dict(SDXL_UNET, _text_encoder_configs={
+        "text_encoder": {"_class_name": "CLIPTextModel", "num_hidden_layers": 12,
+                         "hidden_size": 768, "num_attention_heads": 12,
+                         "intermediate_size": 3072, "hidden_act": "quick_gelu",
+                         "max_position_embeddings": 77, "vocab_size": 49408},
+        "text_encoder_2": {"_class_name": "CLIPTextModelWithProjection",
+                           "num_hidden_layers": 32, "hidden_size": 1280,
+                           "num_attention_heads": 20, "intermediate_size": 5120,
+                           "hidden_act": "gelu", "max_position_embeddings": 77,
+                           "vocab_size": 49408, "projection_dim": 1280},
+    })
+    import re
+    d = unfold(cfg)
+    html = d.to_html(standalone=True)
+    i = html.find('data-card-id="unet_text_cond"')
+    assert i >= 0
+    seg = html[i:i + 8000]
+    assert "<svg" in seg                                  # the box opens a real view
+    assert "768-d" in seg and "1,280-d" in seg            # each encoder's width
+    assert "K/V (2,048)" in seg                           # the concatenated K/V width
+    assert "768 + 1,280 = 2,048" in html                  # the sum, in the op card prose
+    # the ‖ concat operator is itself clickable, drilling into a card for the op
+    assert 'data-id="text_concat_op"' in seg
+    assert 'data-card-id="text_concat_op"' in html
+    assert "torch.cat over the feature axis" in html
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_attention_inner_ops_are_described_and_clickable():
+    """Drilling into the UNet self/cross attention must give EVERY inner op a card
+    (a description) and make it clickable — Q/K/V projections, scaled scores,
+    softmax, apply-V, concat, output projection — plus cross-attention's distinct
+    encoded-text K/V source.  The shared SDPA op cards use neutral wording (correct
+    for both self and cross, which share op ids); the source difference is the
+    cross_attention_states node."""
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    for op in ("q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
+               "attn_apply_v", "concat_heads", "o_proj"):
+        assert f'data-id="{op}"' in html, f"{op} not clickable"
+        assert f'data-card-id="{op}"' in html, f"{op} has no card"
+    # cross-attention's distinguishing source node is described
+    assert 'data-card-id="cross_attention_states"' in html
+    assert "what makes it cross-attention" in html
+    # shared op cards are source-neutral (not baked to one side)
+    i = html.find('data-card-id="k_proj"')
+    assert "the input" in html[i:i + 400]
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_text_conditioning_propagates_through_drill_levels():
+    """The encoded text is shown entering at EVERY level it's relevant, not just
+    the deepest: the denoiser U (rail into cross-attn stages), the stage drill
+    (into the Transformer block), the Transformer-block drill (beside the
+    cross-attention sub-block), and the attention mechanism (the K/V node)."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def card(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        assert i >= 0, cid
+        nxt = html.find('data-card-id=', i + 10)
+        return html[i:(nxt if nxt > 0 else i + 9000)]
+
+    den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert "Encoded text" in den                       # L1: the U-view rail
+    assert "Encoded text" in card("unet_down_1")        # L2: stage → Transformer block
+    assert "Encoded text" in card("unet_transformer")   # L3: beside Cross-attention
+    assert "Encoded text" in card("unet_crossattn")     # L4: the attention K/V node
+    # The two-CLIP origin is visible (768 + 1,280 → 2,048 concatenated), so the
+    # single box doesn't read as "the second CLIP vanished".
+    assert "2× CLIP" in den
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_cross_attention_drill_shows_text_entering():
+    """Opening a UNet Transformer block's Cross-attention (text) must render
+    DIFFERENTLY from Self-attention: cross-attention pulls K/V from the encoded
+    text, so its drilled diagram shows an external 'Encoded text' node feeding
+    K/V — self-attention (K/V from the latent) does not.  Pins the bug where both
+    opened the identical self-attention view."""
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def card_seg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        assert i >= 0, cid
+        nxt = html.find('data-card-id=', i + 10)
+        return html[i:(nxt if nxt > 0 else i + 9000)]
+
+    self_seg, cross_seg = card_seg("unet_selfattn"), card_seg("unet_crossattn")
+    assert "Encoded text" in cross_seg          # external text K/V enters
+    assert "Encoded text" not in self_seg        # self-attention stays on the latent
+
+
 def test_unet_hero_denoiser_labeled_unet_not_dit():
     """The hero loop's denoiser label must come from the parsed loop block, not a
     hardcoded 'DiT' — a UNet model (SDXL) must read 'U-Net Denoiser'. Pins the

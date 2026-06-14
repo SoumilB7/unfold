@@ -29,13 +29,23 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "shared": attention.shared,
         "no_rope": attention.no_rope,
         "cross_attention": attention.cross_attention,
+        "cross_kv_source": attention.cross_kv_source,
         "compress_ratio": attention.compress_ratio,
         "index_topk": attention.index_topk,
         "variant": attention.variant,
     }
 
 
-def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
+def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
+                           generic: bool = False) -> list[Block]:
+    """Per-op description cards for an attention block.
+
+    ``generic=True`` produces source-neutral SDPA cards ("over the input" rather
+    than "over the hidden state" / "over the encoded text").  Use it when the SAME
+    op cards are shared by sibling self- and cross-attention blocks (UNet
+    Transformer2D): they share op ids, so a source-specific card on one would be
+    wrong on the other — the K/V source is carried by the cross-attention's own
+    ``cross_attention_states`` node instead."""
     builders = {
         "mla": _mla_child_blocks,
         "ssm": _ssm_child_blocks,
@@ -44,10 +54,12 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[B
         "linear": _linear_attention_child_blocks,
     }
     builder = builders.get(attention.kind, _sdpa_child_blocks)
+    if builder is _sdpa_child_blocks:
+        return _sdpa_child_blocks(attention, hidden_size, generic=generic)
     return builder(attention, hidden_size)
 
 
-def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
+def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
     hidden = _fmt(hidden_size)
     num_heads = attention.num_heads or 0
     num_kv_heads = attention.num_kv_heads or num_heads
@@ -66,6 +78,7 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
             num_kv_heads,
             d_k,
             q_per_group,
+            generic=generic,
         )
 
     attention_title, attention_desc = _sdpa_operation_meta(attention, num_heads, num_kv_heads, d_k, q_per_group)
@@ -111,9 +124,15 @@ def _sdpa_detailed_child_blocks(
     num_kv_heads: int,
     d_k: str,
     q_per_group: int | None,
+    *,
+    generic: bool = False,
 ) -> list[Block]:
     kind = attention.kind
-    cross_attention = attention.cross_attention
+    # generic mode: source-neutral wording shared by sibling self/cross blocks.
+    cross_attention = attention.cross_attention and not generic
+    cross_src = attention.cross_kv_source or "external encoder states"
+    is_text_cross = cross_attention and any(
+        w in cross_src.lower() for w in ("text", "prompt", "encoder", "caption"))
     kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads"
     group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
     scaled_title = "Scaled attention scores"
@@ -121,8 +140,8 @@ def _sdpa_detailed_child_blocks(
     if cross_attention:
         scaled_title = "Cross-attention scores"
         scaled_desc = (
-            "Decoder query heads attend over the projected image states; "
-            "scores use QK^T / sqrt(dim)."
+            f"Query heads attend over the {cross_src} (its K/V), not the latent "
+            "itself; scores use QK^T / sqrt(dim)."
         )
     elif kind == "gqa":
         scaled_title = "Grouped scaled dot-product attention"
@@ -136,9 +155,17 @@ def _sdpa_detailed_child_blocks(
             "All query heads share one K/V stream; scores use QK^T / sqrt(dim)."
         )
 
-    q_src = "decoder hidden states" if cross_attention else "the hidden state"
-    kv_src = "the projected image states" if cross_attention else "the hidden state"
-    cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
+    if generic:
+        # shared self/cross cards: name no specific source, and no causal cache
+        # (these ops are also used by full bidirectional image attention).
+        q_src = kv_src = "the input"
+        cache_facts: list[str] = []
+    else:
+        q_src = (("the latent query tokens" if is_text_cross else "decoder hidden states")
+                 if cross_attention else "the hidden state")
+        kv_src = f"the {cross_src}" if cross_attention else "the hidden state"
+        cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
+    cross_chip = ["from cross-attention source"] if cross_attention else []
     return [
         {
             "id": "q_proj",
@@ -150,13 +177,13 @@ def _sdpa_detailed_child_blocks(
             "id": "k_proj",
             "title": "Key projection",
             "description": f"Linear over {kv_src} producing the keys.",
-            "facts": [f"{hidden} → {kv_out}", kv_chip, *cache_facts],
+            "facts": [f"{hidden} → {kv_out}", kv_chip, *cross_chip, *cache_facts],
         },
         {
             "id": "v_proj",
             "title": "Value projection",
             "description": f"Linear over {kv_src} producing the values.",
-            "facts": [f"{hidden} → {kv_out}", kv_chip, *cache_facts],
+            "facts": [f"{hidden} → {kv_out}", kv_chip, *cross_chip, *cache_facts],
         },
         {
             "id": "scaled_scores",

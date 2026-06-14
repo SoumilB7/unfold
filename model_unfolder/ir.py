@@ -34,6 +34,10 @@ class AttentionSpec:
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
+    cross_kv_source: Optional[str] = None  # what supplies the external K/V when
+                                    # cross_attention is set — e.g. "encoded text
+                                    # prompt" (DiT/UNet) vs "projected image states"
+                                    # (vision). Drives the diagram's external node.
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
     index_topk: Optional[int] = None        # CSA indexer fan-in, when declared
     # Self-describing label override for attention variants the generic kind/mask
@@ -172,6 +176,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "shared": a.shared,
         "no_rope": a.no_rope,
         "cross_attention": a.cross_attention,
+        "cross_kv_source": a.cross_kv_source,
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
         "variant": a.variant,

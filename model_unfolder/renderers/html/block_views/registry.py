@@ -45,6 +45,7 @@ from .per_layer_embedding import build_per_layer_embedding_view
 from .text_encoder import build_text_encoder_view
 from ..tower import build_tower_view
 from .unet import (
+    build_encoded_text_concat_view,
     build_unet_resnet_view,
     build_unet_stage_view,
     build_unet_transformer_view,
@@ -143,6 +144,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
     "text_encoder": _from_block(build_text_encoder_view),
     "unet": _from_block(build_unet_view),
+    "encoded_text_concat": _from_block(build_encoded_text_concat_view),
     "unet_stage": _from_block(build_unet_stage_view),
     "unet_resnet": _from_block(build_unet_resnet_view),
     "unet_transformer": _from_block(build_unet_transformer_view),

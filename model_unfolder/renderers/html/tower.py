@@ -17,7 +17,7 @@ draws it with the same backbone as everything else.
 """
 from __future__ import annotations
 
-from .graph import Edge, Graph, Group, Node
+from .graph import Edge, Graph, Group, Node, SideInput
 from .graph_engine import render_graph
 
 #: tower block ``kind`` -> engine node kind (anything else falls back to norm).
@@ -81,12 +81,24 @@ def tower_graph(spec: dict) -> Graph:
         add({**output, "id": output.get("id", "tower_out")},
             default_kind="port", static=output.get("static", True))
 
+    # Lateral side inputs: an off-flow source block feeding one flow node from the
+    # side (e.g. encoded text → a UNet cross-attention). The node joins ``nodes``
+    # (so it has a glyph) but NOT ``flow`` — the engine places it beside its target.
+    side_inputs = []
+    for si in spec.get("side_inputs") or []:
+        nb = si["node"]
+        nodes.append(Node(
+            nb["id"], _KIND_TO_NODE.get(nb.get("kind"), "source"),
+            label=nb.get("label"), sub=nb.get("sub"),
+            static=nb.get("static", True), w=nb.get("w"), h=nb.get("h")))
+        side_inputs.append(SideInput(nb["id"], si["target"], si.get("side", "right")))
+
     groups = []
     if cell_ids:
         groups.append(Group(cell_ids, repeat=spec.get("repeat"),
                             label=spec.get("repeat_label")))
     return Graph(nodes=nodes, flow=flow, edges=edges, groups=groups,
-                 note=spec.get("note"))
+                 side_inputs=side_inputs, note=spec.get("note"))
 
 
 def build_tower_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:

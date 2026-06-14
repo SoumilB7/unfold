@@ -242,6 +242,18 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
     return ops, edges
 
 
+def _cross_kv_label(attn: dict) -> list[str]:
+    """Label for the external K/V node feeding a cross-attention block — named
+    from the declared source so the diagram shows WHAT enters: encoded text
+    (DiT/UNet) vs projected image states (vision)."""
+    src = str(attn.get("cross_kv_source") or "").lower()
+    if any(w in src for w in ("text", "prompt", "encoder", "caption")):
+        return ["Encoded text", "(K / V)"]
+    if not src:
+        return ["External states", "(K / V)"]
+    return [str(attn.get("cross_kv_source")), "(K / V)"]
+
+
 def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     kind = attn.get("kind") or "mha"
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
@@ -258,8 +270,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     ]
     kv_src = "hidden"
     if cross:
-        ops.append(Op("cross_attention_states", "input",
-                      ["Projected image", "states"]))
+        ops.append(Op("cross_attention_states", "input", _cross_kv_label(attn)))
         kv_src = "cross_attention_states"
     core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
     ops += core_ops
