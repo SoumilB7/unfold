@@ -210,10 +210,12 @@ def _unet_resnet_ops() -> list[dict]:
     ]
 
 
-def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
+def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> list[dict]:
     """The three sub-blocks of a Transformer2D layer — each REUSES the canonical
     attention / feed-forward opener (the same view a transformer attention/FFN
-    block opens), instead of a bespoke leaf."""
+    block opens), instead of a bespoke leaf.  Block ids are scoped by ``prefix``
+    (the stage id) so a stage's heads/width survive the per-depth card dedup; the
+    canonical SDPA op cards (q_proj …) stay shared and source/dim-neutral."""
     nh, hd, ch = st.get("num_heads"), st.get("head_dim"), st.get("channels")
     self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
                               head_dim=hd, mask="full", no_rope=True)
@@ -251,12 +253,12 @@ def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
         "facts": [f"K/V from text ({cross_dim:,})"] if cross_dim else None,
     }]
     return [
-        {"id": "unet_selfattn", "title": "Self-attention",
+        {"id": f"{prefix}__selfattn", "title": "Self-attention",
          "description": "Full bidirectional self-attention over the spatial latent tokens "
                         "at this resolution. Click to open its Q/K/V structure.",
          "view": "attention", "detail": {"attention": attention_detail(self_spec)},
          "children": self_children},
-        {"id": "unet_crossattn", "title": "Cross-attention (text)",
+        {"id": f"{prefix}__crossattn", "title": "Cross-attention (text)",
          "description": ("Cross-attention: queries from the latent tokens, keys/values from "
                          "the encoded text prompt"
                          + (f" (dim {cross_dim})" if cross_dim else "")
@@ -264,7 +266,7 @@ def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
                          "the text states feeding K/V."),
          "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
          "children": cross_children},
-        {"id": "unet_ff", "title": "Feed-forward",
+        {"id": f"{prefix}__ff", "title": "Feed-forward",
          "description": "Position-wise GEGLU feed-forward sublayer, applied after attention.",
          "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)}},
     ]
@@ -273,10 +275,17 @@ def _unet_transformer_subblocks(st: dict, cross_dim) -> list[dict]:
 def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
     for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
-    plus the resample.  Real nested blocks — not a flat op list."""
+    plus the resample.  Real nested blocks — not a flat op list.
+
+    Block ids are SCOPED by the stage id (``unet_down_1__resnet``): the same block
+    type recurs in every stage at different widths/heads, and the panel model
+    dedups cards by id — without scoping, all stages would collapse to the first
+    stage's card (e.g. every ResNet drill showing 320 ch).  Channel-agnostic leaf
+    ops (GroupNorm/Conv descriptions) stay shared."""
+    sid = st.get("id") or "unet_stage"
     rn, t = st.get("resnets"), st.get("transformers")
     children: list[dict] = [{
-        "id": "unet_resnet", "title": "ResNet block",
+        "id": f"{sid}__resnet", "title": "ResNet block",
         "description": ("A residual cell — GroupNorm+SiLU → Conv 3×3, twice, then a residual "
                         "add (identity, or a 1×1 conv when channels change)."
                         + (f" {rn} per stage (layers_per_block)." if rn else "")),
@@ -286,7 +295,7 @@ def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     if st.get("attn"):
         nh = st.get("num_heads")
         children.append({
-            "id": "unet_transformer", "title": "Transformer block",
+            "id": f"{sid}__transformer", "title": "Transformer block",
             "description": (f"A Transformer2D block — {t} layer(s), each running self-attention "
                             "→ text cross-attention → feed-forward. Where text conditioning "
                             "enters."),
@@ -294,15 +303,15 @@ def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
                      or None,
             "view": "unet_transformer",
             "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
-                       "channels": st.get("channels"), "cross_dim": cross_dim},
-            "children": _unet_transformer_subblocks(st, cross_dim),
+                       "channels": st.get("channels"), "cross_dim": cross_dim, "prefix": sid},
+            "children": _unet_transformer_subblocks(st, cross_dim, sid),
         })
     if st.get("sample"):
         if direction == "down":
-            children.append({"id": "unet_downsample", "title": "Downsample",
+            children.append({"id": f"{sid}__downsample", "title": "Downsample",
                              "description": "Halves spatial resolution with a stride-2 convolution."})
         else:
-            children.append({"id": "unet_upsample", "title": "Upsample",
+            children.append({"id": f"{sid}__upsample", "title": "Upsample",
                              "description": "Doubles spatial resolution by nearest-neighbour "
                                             "upsampling then a convolution."})
     return children

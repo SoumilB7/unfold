@@ -193,15 +193,19 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     resnets = int(d.get("resnets") or 1)
     direction = d.get("direction")
     op = {"w": 224, "h": 48}
+    # Node ids are scoped by the stage id so each stage drills into ITS OWN
+    # resnet / transformer cards (matching _unet_stage_children), not the first
+    # stage's deduped card.
+    sid = block.get("id") or "unet_stage"
 
     # Block NAME only — the per-block facts (transformer depth, self/cross/FF,
     # stride-2 conv) are chips/prose on each block's card, never a sub-caption on
     # the diagram block.
-    cell = [{"id": "unet_resnet", "kind": "norm", "label": "ResNet block", **op}]
+    cell = [{"id": f"{sid}__resnet", "kind": "norm", "label": "ResNet block", **op}]
     if d.get("attn"):
-        cell.append({"id": "unet_transformer", "kind": "attention",
+        cell.append({"id": f"{sid}__transformer", "kind": "attention",
                      "label": "Transformer block", **op})
-    post = ([{"id": f"unet_{'down' if direction == 'down' else 'up'}sample",
+    post = ([{"id": f"{sid}__{'down' if direction == 'down' else 'up'}sample",
               "kind": "embedding",
               "label": "Downsample" if direction == "down" else "Upsample",
               "w": 224, "h": 46}]
@@ -220,7 +224,7 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
         spec["side_inputs"] = [{
             "node": {"id": "unet_stage_text", "kind": "embedding",
                      "label": _text_source_label(ir), "w": 210},
-            "target": "unet_transformer",
+            "target": f"{sid}__transformer",
         }]
     graph = tower_graph(spec)
     return render_graph(graph, info, mount_id, f"unetstage_{block.get('id') or 'x'}",
@@ -233,9 +237,12 @@ def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
     block: in → GroupNorm+SiLU → Conv 3×3 → GroupNorm+SiLU → Conv 3×3 → ⊕ → out."""
     ch = (block.get("detail") or {}).get("channels")
     op = {"w": 216, "h": 44}
+    # A ResNet block is ONE residual cell, not a repeated stack (the per-stage
+    # repeat = layers_per_block is shown one level up, on the stage). So its ops
+    # are ``pre`` (a plain chain + residual loop), never a "× N" repeat-frame.
     graph = tower_graph({
         "source": {"id": "unet_res_in", "label": f"in ({ch:,} ch)" if ch else "in"},
-        "cell": [
+        "pre": [
             {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
             {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
             {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
@@ -252,14 +259,17 @@ def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict
     """One Transformer2D block: in → [Self-attention → Cross-attention (text) →
     Feed-forward] × transformer_layers → out.  Each sub-block opens the canonical
     attention / feed-forward view (the same opener a transformer layer uses)."""
-    t = int((block.get("detail") or {}).get("transformers") or 1)
+    d = block.get("detail") or {}
+    t = int(d.get("transformers") or 1)
+    # match the scoped sub-block ids built in _unet_transformer_subblocks
+    sid = d.get("prefix") or block.get("id") or "unet"
     op = {"w": 232, "h": 46}
     graph = tower_graph({
         "source": {"id": "unet_tf_in", "label": "in (latent tokens)"},
         "cell": [
-            {"id": "unet_selfattn", "kind": "attention", "label": "Self-attention", **op},
-            {"id": "unet_crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
-            {"id": "unet_ff", "kind": "ffn", "label": "Feed-forward", **op},
+            {"id": f"{sid}__selfattn", "kind": "attention", "label": "Self-attention", **op},
+            {"id": f"{sid}__crossattn", "kind": "attention", "label": "Cross-attention (text)", **op},
+            {"id": f"{sid}__ff", "kind": "ffn", "label": "Feed-forward", **op},
         ],
         "repeat": t,
         "output": {"id": "unet_tf_out"},
@@ -268,7 +278,7 @@ def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict
         "side_inputs": [{
             "node": {"id": "unet_tf_text", "kind": "embedding",
                      "label": _text_source_label(ir), "w": 210},
-            "target": "unet_crossattn",
+            "target": f"{sid}__crossattn",
         }],
     })
     return render_graph(graph, info, mount_id, f"unettf_{block.get('id') or 'x'}",

@@ -166,7 +166,7 @@ def _sdpa_detailed_child_blocks(
         kv_src = f"the {cross_src}" if cross_attention else "the hidden state"
         cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
     cross_chip = ["from cross-attention source"] if cross_attention else []
-    return [
+    cards = [
         {
             "id": "q_proj",
             "title": "Query projection",
@@ -214,6 +214,13 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if generic:
+        # These cards are SHARED across stages of different width (the panel dedups
+        # by id). Per-stage dims would be wrong on the shared card, so drop them —
+        # the widths/heads live on the (per-stage) attention block card + diagram.
+        for c in cards:
+            c.pop("facts", None)
+    return cards
 
 
 def _sdpa_operation_meta(

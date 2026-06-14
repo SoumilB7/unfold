@@ -855,6 +855,52 @@ def test_encoded_text_box_drills_into_the_concat_view():
     assert validate_click_coupling(html) == []
 
 
+def test_unet_stage_drills_show_per_stage_dims():
+    """Each stage's drill must show ITS OWN width/heads, not the first stage's.
+    Block ids are scoped per stage, so the panel's per-depth dedup can't collapse
+    every stage's ResNet/attention card into one (the '320 ch everywhere' bug)."""
+    import re
+    # SDXL's real per-stage head counts come from attention_head_dim = [5,10,20]
+    # (when num_attention_heads is unset, it IS the head count per stage).
+    cfg = dict(SDXL_UNET, attention_head_dim=[5, 10, 20])
+    html = unfold(cfg).to_html(standalone=True)
+
+    def view_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S) if i >= 0 else None
+        return m.group(0) if m else ""
+
+    # down 320 / 640 / 1,280; mid 1,280; up 1,280 / 640 / 320 — each its own card
+    for sid, ch in [("unet_down_0", 320), ("unet_down_1", 640), ("unet_down_2", 1280),
+                    ("unet_mid", 1280), ("unet_up_0", 1280), ("unet_up_2", 320)]:
+        assert f"in ({ch:,} ch)" in view_svg(f"{sid}__resnet"), (sid, ch)
+    # transformer head counts differ per stage (640→10 heads, 1,280→20 heads) —
+    # not collapsed to the first cross-attn stage's count
+    assert "10 heads" in html[html.find('data-card-id="unet_down_1__transformer"'):][:600]
+    assert "20 heads" in html[html.find('data-card-id="unet_down_2__transformer"'):][:600]
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_resnet_block_has_no_repeat_pill():
+    """A ResNet block is ONE residual cell, not a repeated stack — its view must
+    NOT show a '× N' / '× 1' repeat pill (the per-stage layers_per_block repeat is
+    shown one level up, on the stage). The stage view still shows its real pill,
+    and an unknown-count stack still legitimately reads '× N'."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def view_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S)
+        return m.group(0) if m else ""
+
+    rn = view_svg("unet_down_1__resnet")                  # ids are scoped per stage
+    assert "GroupNorm" in rn and "Conv 3" in rn          # ops still drawn
+    assert "× N" not in rn and "× 1" not in rn            # but no repeat pill
+    # the stage one level up keeps its REAL repeat (SDXL down_1 = 2 ResNet blocks)
+    assert "× 2" in view_svg("unet_down_1")
+
+
 def test_unet_attention_inner_ops_are_described_and_clickable():
     """Drilling into the UNet self/cross attention must give EVERY inner op a card
     (a description) and make it clickable — Q/K/V projections, scaled scores,
@@ -893,8 +939,8 @@ def test_unet_text_conditioning_propagates_through_drill_levels():
     den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
     assert "Encoded text" in den                       # L1: the U-view rail
     assert "Encoded text" in card("unet_down_1")        # L2: stage → Transformer block
-    assert "Encoded text" in card("unet_transformer")   # L3: beside Cross-attention
-    assert "Encoded text" in card("unet_crossattn")     # L4: the attention K/V node
+    assert "Encoded text" in card("unet_down_1__transformer")   # L3: beside Cross-attention
+    assert "Encoded text" in card("unet_down_1__crossattn")     # L4: the attention K/V node
     # The two-CLIP origin is visible (768 + 1,280 → 2,048 concatenated), so the
     # single box doesn't read as "the second CLIP vanished".
     assert "2× CLIP" in den
@@ -915,7 +961,8 @@ def test_unet_cross_attention_drill_shows_text_entering():
         nxt = html.find('data-card-id=', i + 10)
         return html[i:(nxt if nxt > 0 else i + 9000)]
 
-    self_seg, cross_seg = card_seg("unet_selfattn"), card_seg("unet_crossattn")
+    self_seg = card_seg("unet_down_1__selfattn")      # ids scoped per stage
+    cross_seg = card_seg("unet_down_1__crossattn")
     assert "Encoded text" in cross_seg          # external text K/V enters
     assert "Encoded text" not in self_seg        # self-attention stays on the latent
 
@@ -998,8 +1045,10 @@ def test_unet_stage_drills_into_resnet_and_transformer_reusing_openers():
     # ResNet block + Transformer block are real clickable, carded nodes.
     nodes = set(re.findall(r'data-id="([^"]+)"', html))
     cards = set(re.findall(r'data-card-id="([^"]+)"', html))
-    for nid in ("unet_resnet", "unet_transformer", "unet_selfattn",
-                "unet_crossattn", "unet_ff", "unet_op_norm1", "unet_op_residual"):
+    # stage-level blocks are scoped by stage id; the channel-agnostic resnet ops
+    # (GroupNorm/Conv/residual) stay shared (unscoped).
+    for nid in ("unet_down_1__resnet", "unet_down_1__transformer", "unet_down_1__selfattn",
+                "unet_down_1__crossattn", "unet_down_1__ff", "unet_op_norm1", "unet_op_residual"):
         assert nid in nodes and nid in cards, nid
 
     # self/cross-attn reuse the ATTENTION opener; FF reuses the FFN opener.
