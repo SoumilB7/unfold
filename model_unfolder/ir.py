@@ -34,6 +34,10 @@ class AttentionSpec:
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
+    cross_kv_source: Optional[str] = None  # what supplies the external K/V when
+                                    # cross_attention is set — e.g. "encoded text
+                                    # prompt" (DiT/UNet) vs "projected image states"
+                                    # (vision). Drives the diagram's external node.
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
     index_topk: Optional[int] = None        # CSA indexer fan-in, when declared
     # Self-describing label override for attention variants the generic kind/mask
@@ -48,7 +52,14 @@ class FFNSpec:
     kind: str                       # "dense" | "moe"
     activation: str                 # "silu" | "gelu" | "relu" | "geglu" | "swiglu"
     intermediate_size: int
-    gated: bool = True              # SwiGLU/GeGLU style gated MLP
+    gated: Optional[bool] = True    # SwiGLU/GeGLU style gated MLP. None ⇒ the
+                                    # config does not declare the FFN's inner
+                                    # structure (gate-or-not lives in the model
+                                    # code, not the config) — render/JSON must say
+                                    # so, never assert a shape it can't see.
+    activation_assumed: bool = False  # True ⇒ config declared no activation; the
+                                      # value is a convention (DiT default), not a
+                                      # config fact — render/JSON must say so
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: int = 0
@@ -62,7 +73,8 @@ class LayerSpec:
     index: int
     attention: AttentionSpec
     ffn: FFNSpec
-    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm"
+    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm" | "unknown" (config
+                                    # gives no norm-type signal — don't assert one)
     norm_placement: str = "pre"     # "pre" | "post" | "double"
     blocks: list = field(default_factory=list)
 
@@ -164,6 +176,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "shared": a.shared,
         "no_rope": a.no_rope,
         "cross_attention": a.cross_attention,
+        "cross_kv_source": a.cross_kv_source,
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
         "variant": a.variant,
@@ -174,6 +187,7 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
     return {
         "kind": f.kind,
         "activation": f.activation,
+        "activation_assumed": f.activation_assumed,
         "intermediate_size": f.intermediate_size,
         "gated": f.gated,
         "num_experts": f.num_experts,

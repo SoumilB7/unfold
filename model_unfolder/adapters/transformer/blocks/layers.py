@@ -16,7 +16,7 @@ def decoder_layer_blocks(
     norm_label = _norm_label(norm_kind)
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm",
-                    f"{norm_label} keeps activation scales stable before attention.",
+                    _norm_desc(norm_kind, "before attention"),
                     facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
         {
@@ -29,7 +29,7 @@ def decoder_layer_blocks(
             "description": "block input + attention output",
         },
         _norm_block("rms2", norm_label, "Pre-FFN norm",
-                    f"{norm_label} keeps activation scales stable before the FFN.",
+                    _norm_desc(norm_kind, "before the FFN"),
                     facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
         {
@@ -71,7 +71,7 @@ def parallel_decoder_layer_blocks(
             "rms1",
             norm_label,
             "Pre-block norm (shared)",
-            f"One shared {norm_label} feeding both attention and the FFN.",
+            _norm_desc(norm_kind, "feeding both attention and the FFN", shared=True),
             facts=[f"dim {hidden}"],
         ),
         _attention_block(attention, hidden_size),
@@ -134,4 +134,20 @@ def _norm_block(block_id: str, label: str, title: str, description: str,
 
 
 def _norm_label(norm_kind: str) -> str:
-    return "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    return {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(norm_kind, "Normalization")
+
+
+def _norm_desc(norm_kind: str, where: str, *, shared: bool = False) -> str:
+    """Honest norm-block prose. When the config gives no norm-type signal
+    (``norm_kind == 'unknown'``) we name no specific norm and say so, rather than
+    presenting a silent RMSNorm/LayerNorm default as a config fact."""
+    note = (" The config does not declare whether this is RMSNorm or LayerNorm "
+            "— that lives in the model's code.")
+    if norm_kind == "unknown":
+        if shared:
+            return f"One shared normalization {where}." + note
+        return f"Normalization keeps activation scales stable {where}." + note
+    label = _norm_label(norm_kind)
+    if shared:
+        return f"One shared {label} {where}."
+    return f"{label} keeps activation scales stable {where}."

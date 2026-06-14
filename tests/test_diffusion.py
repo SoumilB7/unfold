@@ -101,8 +101,11 @@ def test_flux_layer_count_and_geometry():
     assert attn.mask == "full"
     assert attn.no_rope is False
     assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
-    # DiT FFN is a non-gated GELU-family MLP.
-    assert ir.layers[0].ffn.gated is False
+    # Flux declares no activation_fn, so the FFN's inner structure (gating +
+    # activation) is NOT a config fact — rendered honest-unknown, never a guessed
+    # non-gated GELU MLP.
+    assert ir.layers[0].ffn.gated is None
+    assert ir.layers[0].ffn.activation_assumed is True
 
 
 def test_diffusion_render_spec_theme():
@@ -339,6 +342,30 @@ SDXL_UNET = {
 def test_unet_is_claimed_by_diffusor_not_transformer():
     assert diffusor.matches(SDXL_UNET) is True
     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
+
+
+def test_sdxl_unet_conditioning_is_honest():
+    """SDXL conformance pins:
+    * BOTH text encoders survive (CLIP-L + OpenCLIP-bigG), never folded into one;
+    * conditioning is described with the UNet mechanism (additive into ResNets,
+      cross-attention for text) — NEVER 'AdaLN modulation' (a DiT mechanism);
+    * the text_time micro-conditioning (pooled + size/crop/target) is surfaced;
+    * the mid block reports its real Transformer2D depth (transformer_layers_per_block[-1]).
+    """
+    ir = config_to_ir(SDXL_UNET)
+    encoders = ir.extras["diffusion"]["text_encoders"]
+    assert len(encoders) == 2                      # dual encoders, not collapsed
+
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert "encoded by 2 text encoder" in html
+    # UNet mechanism, never AdaLN asserted as the mechanism.
+    assert "as AdaLN modulation" not in html
+    assert "additively, not through AdaLN" in html
+    assert "cross-attention K/V" in html
+    # SDXL micro-conditioning (addition_embed_type = text_time) surfaced.
+    assert "addition_embed_type = text_time" in html
+    # Mid block transformer depth is the real 10, not a hardcoded 1.
+    assert ir.extras["unet"]["mid"]["transformers"] == 10
 
 
 def test_unet_stage_part_kinds_resolve_for_all_block_variants():
@@ -676,3 +703,413 @@ def test_sampling_loop_json_matches_html_nodes():
     # Fan-in (connectors) and fan-out (splitters) are derived, present, honest.
     assert {c["at"] for c in j["connectors"]} == {"latent", "denoiser"}
     assert {s["at"] for s in j["splitters"]} == {"denoiser", "prompt"}
+
+
+def test_text_cond_rail_requires_attention_text_signal():
+    """The text->attention K/V side-rail must be drawn ONLY when the config says
+    attention consumes text (a joint/cross/text-embed dim or a stream split) — a
+    text *encoder* alone must not draw it (it may condition purely via AdaLN, as
+    in a plain class-conditional DiT). Pins the FAIL-1 fix for Ideogram4-style
+    DiTs whose conditioning is an LLM feature with no attention-text dim."""
+    from model_unfolder.adapters.diffusor.parser import _conditioning_side_blocks
+
+    ids = lambda blks: {b["id"] for b in blks}
+    # No attention-text signal: only the AdaLN rail, no text_cond.
+    plain = _conditioning_side_blocks(text_in_attention=False, pooled_in_adaln=False,
+                                      guidance=False)
+    assert ids(plain) == {"adaln_cond"}
+    assert "pooled text" not in plain[0]["description"]
+
+    # Attention consumes text: the text_cond rail appears.
+    joint = _conditioning_side_blocks(text_in_attention=True, pooled_in_adaln=True,
+                                      guidance=False)
+    assert ids(joint) == {"adaln_cond", "text_cond"}
+    assert "pooled text" in joint[0]["description"]
+
+
+def test_diffusion_json_does_not_leak_llm_io_fields():
+    """A denoiser has no token vocabulary or LM head; the expanded JSON's
+    dimensions + io must not leak vocab_size / tie_word_embeddings / token_ids /
+    token_embedding (the IR carries vocab_size=0 only for param honesty). Pins
+    the FAIL-2 fix."""
+    j = unfold(FLUX).to_json()
+    dims = j["dimensions"]
+    assert "vocab_size" not in dims and "tie_word_embeddings" not in dims
+    assert "in_channels" in dims and "hidden_size" in dims
+
+    io = j["io"]
+    assert io["input"]["kind"] == "noisy_latent"
+    assert "token_embedding" not in io and "lm_head" not in io
+    assert io["output"]["kind"] == "noise_prediction"
+
+    # A real LLM still reports the token fields — the branch is diffusion-only.
+    ld = unfold(LLAMA).to_json()
+    assert "vocab_size" in ld["dimensions"]
+    assert ld["io"]["input"]["kind"] == "token_ids"
+
+
+def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
+    """When the DiT config declares no activation, the FFN's inner structure
+    (activation AND gating) is not a config fact — so it is rendered honestly as
+    undeclared (gated=null, structure_declared=false), never a fabricated
+    non-gated GELU MLP.  A real LLM (which declares its activation) is unaffected.
+    Pins WEAK-3 / honest-unknown."""
+    f = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
+    assert f.get("activation") is None          # no fabricated default
+    assert f.get("gated") is None               # gating undeclared
+    assert f.get("structure_declared") is False
+    assert f.get("activation_assumed") is True
+    # the rendered FFN card says the structure isn't declared, asserts no shape
+    import re
+    html = unfold(FLUX).to_html(standalone=True)
+    m = re.search(r'data-card-id="block"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert m and "does not declare" in m.group(1)
+    # (Flux's CLIP/T5 text encoders legitimately declare GELU — that's their own
+    # config fact and is unaffected; only the DiT block FFN is honest-unknown.)
+    # LLAMA declares its activation — gating/activation are real facts, not flagged.
+    lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
+    assert lf["activation"] == "silu" and "activation_assumed" not in lf
+    assert lf["gated"] is True
+
+
+# Ideogram-4-style DiT: custom class, LLM-feature conditioning, an AdaLN dim, a
+# CFG twin, and NO declared activation / attention-text dim — exercises FAIL-1,
+# WEAK-3 and GAP-4 offline (no network).
+IDEO_STYLE = {
+    "_class_name": "Ideogram4Transformer2DModel",
+    "num_layers": 2, "num_attention_heads": 4, "attention_head_dim": 64,
+    "in_channels": 16, "intermediate_size": 256,
+    "adaln_dim": 512, "llm_features_dim": 53248,
+    "unconditional_transformer": ["diffusers", "Ideogram4Transformer2DModel"],
+}
+
+
+def test_ideogram_style_dit_captures_declared_facts():
+    """GAP-4: adaln_dim / llm_features_dim are captured; the CFG twin is warned
+    about; the AdaLN rail carries its dim — and (FAIL-1) no text->attention rail
+    appears without an attention-text signal."""
+    ir = config_to_ir(IDEO_STYLE)
+    diff = (ir.extras or {}).get("diffusion") or {}
+    assert diff["adaln_dim"] == 512 and diff["llm_features_dim"] == 53248
+    assert any("unconditional_transformer" in w for w in ir.warnings)
+
+    side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
+    assert "text_cond" not in side                       # no attention-text dim
+    assert "AdaLN dim 512" in (side["adaln_cond"].get("facts") or [])
+    # WEAK-3: undeclared activation flagged assumed, gating undeclared (honest).
+    assert ir.layers[0].ffn.activation_assumed is True
+    assert ir.layers[0].ffn.gated is None
+    # Norm kind is not declared (only a bare norm_eps) — don't assert RMS/Layer.
+    assert ir.layers[0].norm_kind == "unknown"
+    # FAIL-1/GAP-4: llm_features_dim is recognized as PRE-BLOCK text fusion, so
+    # the attention description says text is fused before the stack — never the
+    # wrong "class / timestep enters only through AdaLN".
+    desc = ir.layers[0].attention.variant["desc"]
+    assert "fused once before the stack" in desc
+    assert "class / timestep) enters only" not in desc
+
+
+def test_unet_view_shows_text_conditioning_rail():
+    """The U-net denoiser diagram must SHOW the encoded text entering the
+    cross-attention stages — a 'Encoded text' source broadcasting into the
+    CrossAttn stages — not just the latent U-path.  A clickable, carded node."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert "Encoded text" in den                       # the text source is drawn
+    assert 'data-id="unet_text_cond"' in den           # clickable node
+    assert 'data-card-id="unet_text_cond"' in html     # backing card (coupling)
+    assert validate_click_coupling(html) == []
+
+
+def test_encoded_text_box_drills_into_the_concat_view():
+    """Clicking the 'Encoded text' source opens a view showing HOW the encoders
+    make the cross-attention K/V: each CLIP's width feeding one concat (‖) into the
+    2,048-d K/V (768 + 1,280 = 2,048).  This needs the per-encoder configs, which
+    the by-ID loader fetches — exercised here with the SDXL fixture's configs."""
+    cfg = dict(SDXL_UNET, _text_encoder_configs={
+        "text_encoder": {"_class_name": "CLIPTextModel", "num_hidden_layers": 12,
+                         "hidden_size": 768, "num_attention_heads": 12,
+                         "intermediate_size": 3072, "hidden_act": "quick_gelu",
+                         "max_position_embeddings": 77, "vocab_size": 49408},
+        "text_encoder_2": {"_class_name": "CLIPTextModelWithProjection",
+                           "num_hidden_layers": 32, "hidden_size": 1280,
+                           "num_attention_heads": 20, "intermediate_size": 5120,
+                           "hidden_act": "gelu", "max_position_embeddings": 77,
+                           "vocab_size": 49408, "projection_dim": 1280},
+    })
+    import re
+    d = unfold(cfg)
+    html = d.to_html(standalone=True)
+    i = html.find('data-card-id="unet_text_cond"')
+    assert i >= 0
+    seg = html[i:i + 8000]
+    assert "<svg" in seg                                  # the box opens a real view
+    assert "768-d" in seg and "1,280-d" in seg            # each encoder's width
+    assert "K/V (2,048)" in seg                           # the concatenated K/V width
+    assert "768 + 1,280 = 2,048" in html                  # the sum, in the op card prose
+    # the ‖ concat operator is itself clickable, drilling into a card for the op
+    assert 'data-id="text_concat_op"' in seg
+    assert 'data-card-id="text_concat_op"' in html
+    assert "torch.cat over the feature axis" in html
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_stage_drills_show_per_stage_dims():
+    """Each stage's drill must show ITS OWN width/heads, not the first stage's.
+    Block ids are scoped per stage, so the panel's per-depth dedup can't collapse
+    every stage's ResNet/attention card into one (the '320 ch everywhere' bug)."""
+    import re
+    # SDXL's real per-stage head counts come from attention_head_dim = [5,10,20]
+    # (when num_attention_heads is unset, it IS the head count per stage).
+    cfg = dict(SDXL_UNET, attention_head_dim=[5, 10, 20])
+    html = unfold(cfg).to_html(standalone=True)
+
+    def view_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S) if i >= 0 else None
+        return m.group(0) if m else ""
+
+    # down 320 / 640 / 1,280; up 1,280 / 640 / 320 — each its own card
+    for sid, ch in [("unet_down_0", 320), ("unet_down_1", 640), ("unet_down_2", 1280),
+                    ("unet_up_0", 1280), ("unet_up_2", 320)]:
+        assert f"in ({ch:,} ch)" in view_svg(f"{sid}__resnet"), (sid, ch)
+    # mid block: two resnets (pre/post), both at 1,280 ch
+    assert f"in (1,280 ch)" in view_svg("unet_mid__resnet_pre"), "unet_mid__resnet_pre"
+    assert f"in (1,280 ch)" in view_svg("unet_mid__resnet_post"), "unet_mid__resnet_post"
+    # transformer head counts differ per stage (640→10 heads, 1,280→20 heads) —
+    # not collapsed to the first cross-attn stage's count
+    assert "10 heads" in html[html.find('data-card-id="unet_down_1__transformer"'):][:600]
+    assert "20 heads" in html[html.find('data-card-id="unet_down_2__transformer"'):][:600]
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_resnet_block_has_no_repeat_pill():
+    """A ResNet block is ONE residual cell, not a repeated stack — its view must
+    NOT show a '× N' / '× 1' repeat pill (the per-stage layers_per_block repeat is
+    shown one level up, on the stage). The stage view still shows its real pill,
+    and an unknown-count stack still legitimately reads '× N'."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def view_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S)
+        return m.group(0) if m else ""
+
+    rn = view_svg("unet_down_1__resnet")                  # ids are scoped per stage
+    assert "GroupNorm" in rn and "Conv 3" in rn          # ops still drawn
+    assert "× N" not in rn and "× 1" not in rn            # but no repeat pill
+    # the stage one level up keeps its REAL repeat (SDXL down_1 = 2 ResNet blocks)
+    assert "× 2" in view_svg("unet_down_1")
+
+
+def test_unet_attention_inner_ops_are_described_and_clickable():
+    """Drilling into the UNet self/cross attention must give EVERY inner op a card
+    (a description) and make it clickable — Q/K/V projections, scaled scores,
+    softmax, apply-V, concat, output projection — plus cross-attention's distinct
+    encoded-text K/V source.  The shared SDPA op cards use neutral wording (correct
+    for both self and cross, which share op ids); the source difference is the
+    cross_attention_states node."""
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    for op in ("q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
+               "attn_apply_v", "concat_heads", "o_proj"):
+        assert f'data-id="{op}"' in html, f"{op} not clickable"
+        assert f'data-card-id="{op}"' in html, f"{op} has no card"
+    # cross-attention's distinguishing source node is described
+    assert 'data-card-id="cross_attention_states"' in html
+    assert "what makes it cross-attention" in html
+    # shared op cards are source-neutral (not baked to one side)
+    i = html.find('data-card-id="k_proj"')
+    assert "the input" in html[i:i + 400]
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_text_conditioning_propagates_through_drill_levels():
+    """The encoded text is shown entering at EVERY level it's relevant, not just
+    the deepest: the denoiser U (rail into cross-attn stages), the stage drill
+    (into the Transformer block), the Transformer-block drill (beside the
+    cross-attention sub-block), and the attention mechanism (the K/V node)."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def card(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        assert i >= 0, cid
+        nxt = html.find('data-card-id=', i + 10)
+        return html[i:(nxt if nxt > 0 else i + 9000)]
+
+    den = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert "Encoded text" in den                       # L1: the U-view rail
+    assert "Encoded text" in card("unet_down_1")        # L2: stage → Transformer block
+    assert "Encoded text" in card("unet_down_1__transformer")   # L3: beside Cross-attention
+    assert "Encoded text" in card("unet_down_1__crossattn")     # L4: the attention K/V node
+    # The two-CLIP origin is visible (768 + 1,280 → 2,048 concatenated), so the
+    # single box doesn't read as "the second CLIP vanished".
+    assert "2× CLIP" in den
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_cross_attention_drill_shows_text_entering():
+    """Opening a UNet Transformer block's Cross-attention (text) must render
+    DIFFERENTLY from Self-attention: cross-attention pulls K/V from the encoded
+    text, so its drilled diagram shows an external 'Encoded text' node feeding
+    K/V — self-attention (K/V from the latent) does not.  Pins the bug where both
+    opened the identical self-attention view."""
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+
+    def card_seg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        assert i >= 0, cid
+        nxt = html.find('data-card-id=', i + 10)
+        return html[i:(nxt if nxt > 0 else i + 9000)]
+
+    self_seg = card_seg("unet_down_1__selfattn")      # ids scoped per stage
+    cross_seg = card_seg("unet_down_1__crossattn")
+    assert "Encoded text" in cross_seg          # external text K/V enters
+    assert "Encoded text" not in self_seg        # self-attention stays on the latent
+
+
+def test_unet_hero_denoiser_labeled_unet_not_dit():
+    """The hero loop's denoiser label must come from the parsed loop block, not a
+    hardcoded 'DiT' — a UNet model (SDXL) must read 'U-Net Denoiser'. Pins the
+    SDXL-shows-DiT regression."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    seg = html[html.index("SAMPLING LOOP"):]
+    loop_svg = re.search(r"<svg.*?</svg>", seg, re.S).group(0)
+    texts = re.findall(r"<text[^>]*>(.*?)</text>", loop_svg)
+    assert "U-Net" in texts and "DiT Denoiser" not in texts
+    # A real DiT still reads DiT.
+    fseg = unfold(FLUX).to_html(standalone=True)
+    fsvg = re.search(r"<svg.*?</svg>", fseg[fseg.index("SAMPLING LOOP"):], re.S).group(0)
+    assert "DiT Denoiser" in re.findall(r"<text[^>]*>(.*?)</text>", fsvg)
+
+
+def test_unet_view_stages_clickable_carded_and_clean():
+    """The UNet U-shape passes the block gates: every stage box is a clickable
+    node with a backing card (B.4/B.2), numbers live on card chips not the box
+    (house style), skips use a concat connector, and conv-in/out are solid (no
+    light bookend). Pins the SDXL UNet-view rework."""
+    import re
+    d = unfold(SDXL_UNET)
+    html = d.to_html(standalone=True)
+    usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net[^"]*".*?</svg>', html, re.S).group(0)
+
+    node_ids = set(re.findall(r'data-id="(unet_[^"]+)"', usvg))
+    card_ids = set(re.findall(r'data-card-id="(unet_[^"]+)"', html))
+    assert node_ids and node_ids <= card_ids                 # B.4: every node carded
+    assert validate_click_coupling(html) == []
+
+    # House style: box labels are stage names only — no chips on the diagram.
+    box_labels = re.findall(r'Caveat[^>]*>([^<]+)</text>', usvg)
+    assert not any("ch" in l or "ResNet" in l for l in box_labels)
+    assert "Down stage" in box_labels and "Conv in" in box_labels
+
+    # Skips use a concat connector (circles); no cryptic ↓2/↑2 marks or "skip
+    # connections" caption on the diagram (the cards/description carry that).
+    assert usvg.count("<circle") >= 3
+    assert "↓2" not in usvg and "↑2" not in usvg and "skip connections" not in usvg
+
+    # No light-green accent on the conv bookends.
+    from model_unfolder.renderers.html.theme import C
+    assert C["bg_inner"] not in usvg
+
+    # B.2 + B.7: the cards describe each stage and cite their config signature.
+    den = [b for b in ((d.to_ir()["extras"] or {}).get("render") or {})["loop_blocks"]
+           if b["id"] == "denoiser"][0]
+    for c in den["children"]:
+        assert c.get("description")
+    joined = " ".join(c["description"] for c in den["children"])
+    assert "block_out_channels" in joined and "down_block_types" in joined
+
+
+def test_unet_hero_loop_has_arrows():
+    """Regression: the UNet render spec must carry the SAME declared loop_edges
+    as the DiT one, or the hero sampling loop draws no arrows."""
+    import re
+    d = unfold(SDXL_UNET)
+    render = (d.to_ir()["extras"] or {}).get("render") or {}
+    assert render.get("loop_edges") and render.get("loop_region")
+    html = d.to_html(standalone=True)
+    hero = re.search(r"<svg.*?</svg>", html[html.index("SAMPLING LOOP"):], re.S).group(0)
+    assert hero.count("marker-end") >= 8         # noise→latent→denoiser⟳sched→vae→image + cond
+
+
+def test_unet_stage_drills_into_resnet_and_transformer_reusing_openers():
+    """A stage drills into a ResNet block and a Transformer block (B.1). The
+    ResNet block opens its residual cell; the Transformer block opens
+    self-attention / cross-attention / feed-forward — each REUSING the canonical
+    attention / FFN opener (not a bespoke leaf). Skips merge solid."""
+    import re
+    d = unfold(SDXL_UNET)
+    html = d.to_html(standalone=True)
+
+    # ResNet block + Transformer block are real clickable, carded nodes.
+    nodes = set(re.findall(r'data-id="([^"]+)"', html))
+    cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+    # stage-level blocks are scoped by stage id; the channel-agnostic resnet ops
+    # (GroupNorm/Conv/temb-inject/residual) stay shared (unscoped).
+    for nid in ("unet_down_1__resnet", "unet_down_1__transformer", "unet_down_1__selfattn",
+                "unet_down_1__crossattn", "unet_down_1__ff",
+                "unet_op_norm1", "unet_op_temb", "unet_op_residual"):
+        assert nid in nodes and nid in cards, nid
+
+    # self/cross-attn reuse the ATTENTION opener; FF reuses the FFN opener.
+    assert html.count('aria-label="stable-diffusion-xl-base-1.0 attention"') >= 2
+    assert "feed-forward block" in html
+    assert validate_click_coupling(html) == []
+
+    # The transformer DEPTH chip is labelled as depth (a Transformer2D of depth
+    # 10), not as a count of transformer blocks ("10× Transformer") nor "cross-attn ×N".
+    assert "10-layer Transformer" in html
+    assert "10× Transformer" not in html and "cross-attn ×10" not in html
+
+    usvg = re.search(r'<svg[^>]*aria-label="[^"]*U-net denoiser".*?</svg>', html, re.S).group(0)
+    assert usvg.count("stroke-dasharray") == 0          # no dotted skips
+    assert usvg.count("<circle") >= 3                   # one concat connector per up stage
+
+
+def test_unet_mid_block_is_resnet_transformer_resnet_sandwich():
+    """UNetMidBlock2DCrossAttn.forward() is resnets[0] → attn[0] → resnets[1]:
+    a sandwich, not a paired loop.  The mid stage view must show two separate resnet
+    cards (pre/post) rather than a [ResNet, Transformer] × 2 repeat frame which would
+    imply a non-existent second Transformer."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    nodes = set(re.findall(r'data-id="([^"]+)"', html))
+    cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+    # Both pre and post resnets are present as separate carded nodes
+    assert "unet_mid__resnet_pre" in nodes and "unet_mid__resnet_pre" in cards
+    assert "unet_mid__resnet_post" in nodes and "unet_mid__resnet_post" in cards
+    assert "unet_mid__transformer" in nodes and "unet_mid__transformer" in cards
+    # NO paired-repeat pill: the mid view is a plain sequential chain
+    def mid_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S) if i >= 0 else None
+        return m.group(0) if m else ""
+    mid_stage_svg = mid_svg("unet_mid")
+    # No "× 2" frame in the mid stage view (sandwich is not a repeated pair)
+    assert "× 2" not in mid_stage_svg, "mid stage must not show a ×2 repeat badge"
+    assert validate_click_coupling(html) == []
+
+
+def test_unet_resnet_view_shows_timestep_injection_and_correct_residual():
+    """ResnetBlock2D.forward() injects temb between conv1 and norm2 (⊕ node), and
+    the residual bypass goes around the ENTIRE cell from the block's raw input.
+    Both must be present in the rendered ResNet drill view."""
+    import re
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    nodes = set(re.findall(r'data-id="([^"]+)"', html))
+    cards = set(re.findall(r'data-card-id="([^"]+)"', html))
+    # Temb injection node is drawn and carded
+    assert "unet_op_temb" in nodes, "⊕ timestep node must be drawn in ResNet drill"
+    assert "unet_op_temb" in cards, "⊕ timestep node must have a card"
+    # The ResNet drill SVG contains the ⊕ timestep label
+    def view_svg(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        m = re.search(r'<svg.*?</svg>', html[i:i + 9000], re.S) if i >= 0 else None
+        return m.group(0) if m else ""
+    rn = view_svg("unet_down_1__resnet")
+    assert "Timestep emb" in rn, "Timestep source must appear in ResNet drill"
+    assert validate_click_coupling(html) == []

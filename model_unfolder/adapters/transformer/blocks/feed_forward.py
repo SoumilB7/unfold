@@ -11,6 +11,10 @@ from ..common import format_dim as _fmt
 def ffn_view(ffn: FFNSpec) -> str:
     if ffn.kind == "moe":
         return "moe"
+    if ffn.gated is None:
+        # Inner structure undeclared — opens the same FFN view, which renders the
+        # honest opaque region resolved from the op-graph (no gate-or-not shape).
+        return "dense_ffn"
     return "gated_ffn" if ffn.gated else "dense_ffn"
 
 
@@ -33,8 +37,12 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
+    if ffn.kind != "moe" and ffn.gated is None:
+        # Inner structure undeclared: one honest node (id matches the op-graph's
+        # opaque region node, so the click target stays coupled to its card).
+        return _undeclared_ffn_child_blocks(hidden, inter)
     if ffn.kind != "moe" and not ffn.gated:
-        return _dense_ffn_child_blocks(hidden, inter, activation)
+        return _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
 
     children = _gated_ffn_child_blocks(hidden, inter, activation)
     if ffn.kind == "moe":
@@ -42,7 +50,33 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
     return children
 
 
-def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
+def _undeclared_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
+    return [
+        {
+            "id": "block",
+            "label": "Feed-forward",
+            "title": "Feed-forward (structure not declared)",
+            "description": (
+                "Expands the residual width to an inner width and projects back. "
+                "The config does not declare whether this FFN gates (2 vs 3 "
+                "projections) or which activation it uses — those live in the "
+                "model's code, not its config, so they are not drawn."
+            ),
+            "facts": [f"{hidden} → {inter} → {hidden}"],
+        },
+    ]
+
+
+def _act_sentence(where: str, assumed: bool) -> str:
+    base = f"Element-wise non-linearity applied {where}."
+    if assumed:
+        base += (" The config declares no activation \u2014 this is the standard "
+                 "DiT MLP default, not a config-stated fact.")
+    return base
+
+
+def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
+                            activation_assumed: bool = False) -> list[Block]:
     return [
         {
             "id": "up_proj",
@@ -55,7 +89,7 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "id": "silu",
             "label": activation,
             "title": activation,
-            "description": "Element-wise non-linearity applied after the input projection.",
+            "description": _act_sentence("after the input projection", activation_assumed),
         },
         {
             "id": "down_proj",

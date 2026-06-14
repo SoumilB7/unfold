@@ -37,6 +37,10 @@ from .theme import C, FONT_HEAD, FONT_MONO, GAP
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
 _GROUP_HEADER = 44.0      # extra room above a group's top member for its badge
+_GROUP_EXIT = 30.0        # air above a frame so the exit arrow pokes CLEAR of it
+                          # (mirror of the +30 below the frame) — the box already
+                          # eats _GROUP_PAD+_GROUP_HEADER above its top member, so
+                          # without this the arrowhead lands inside the frame
 _LANE_GAP = 46.0          # offset of the residual lane past the widest node
 _BRANCH_GAP = 36.0        # horizontal gap between parallel lanes
 _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
@@ -87,7 +91,7 @@ def render_graph(
                 gap = par_height[(nxt.id, node.id)]
             else:
                 if nxt.id in top_members:
-                    gap += _GROUP_HEADER
+                    gap += _GROUP_HEADER + _GROUP_EXIT
                 if node.id in bottom_members:
                     gap += 30                              # air between frame edge and the block below
                 if nxt.id in tap_srcs:
@@ -150,6 +154,9 @@ def render_graph(
     # --- 5. parallel branch/merge sections ---
     for par in graph.parallels:
         _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx)
+
+    # --- 5b. lateral side inputs (an off-flow source poking into one node) ---
+    _draw_side_inputs(parts, regions, info, shadow_id, arrow_id, graph, by_id, geom)
 
     # --- 6. residual side-loops (each on its own tight lane) ---
     for edge in graph.residuals():
@@ -343,6 +350,37 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
 
     _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
                        lanes, xs, lane_geoms, by_id, geom, lane_bottom)
+
+
+def _draw_side_inputs(parts, regions, info, shadow_id, arrow_id, graph, by_id, geom) -> None:
+    """Draw each lateral side input: a source block beside its target flow node,
+    with one arrow into the target's near edge.  Placed just outside the current
+    content (clearing the repeat-frame) so it reads as an external input entering
+    the cell — latent flows up the spine, this conditioning enters from the side."""
+    for si in graph.side_inputs:
+        node, tgt = by_id.get(si.node), geom.get(si.target)
+        if node is None or tgt is None:
+            continue
+        w, h = node.width(), node.height()
+        cy = tgt["cy"]
+        if si.side == "left":
+            left_edge = min((r["left"] for r in regions), default=0.0)
+            g = _geom(left_edge - 56 - w / 2, cy - h / 2, w, h)
+            _draw_node(parts, info, shadow_id, node, g)
+            regions.append(g)
+            parts.append(_svg_tag("line", {
+                "x1": g["right"], "y1": cy, "x2": tgt["left"] - 4, "y2": cy,
+                "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+                "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+        else:
+            right_edge = max((r["right"] for r in regions), default=0.0)
+            g = _geom(right_edge + 56 + w / 2, cy - h / 2, w, h)
+            _draw_node(parts, info, shadow_id, node, g)
+            regions.append(g)
+            parts.append(_svg_tag("line", {
+                "x1": g["left"], "y1": cy, "x2": tgt["right"] + 4, "y2": cy,
+                "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+                "marker-end": f"url(#{arrow_id})", "fill": "none"}))
 
 
 def _draw_side_sources(parts, regions, info, shadow_id, arrow_id,

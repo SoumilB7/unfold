@@ -29,6 +29,7 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     pfx = d.get("node_prefix") or block.get("id") or "encoder"
     upper = name.upper()
     is_clip, is_t5 = "CLIP" in upper, "T5" in upper
+    is_unet = d.get("denoiser_family") == "unet"
 
     # The encoder's own config wins (Qwen-VL-style LM encoders are RMSNorm +
     # rotary); the CLIP/T5 conventions are only the fallback.
@@ -38,7 +39,14 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
                   else ["Token + positional", "embedding"])   # two lines — fits the node
     embed_sub = " · ".join(s for s in (
         f"{_n(vocab)} vocab" if vocab else "", f"{_n(hidden)}-d" if hidden else "") if s) or None
-    if is_clip:
+    if is_unet:
+        # A UNet (SD/SDXL) consumes the encoder's TOKEN features through
+        # cross-attention — not a pooled vector through AdaLN (a DiT mechanism).
+        out_main = "Token sequence"
+        out_sub = (f"tokens × {_n(hidden)}-d" if hidden
+                   else "per-token features")
+        note = "→ cross-attention K/V"
+    elif is_clip:
         out_main = "Pooled embedding"
         out_sub = f"1 × {_n(pooled)}-d global vector" if pooled else "global prompt vector"
         note = "→ global AdaLN conditioning"
