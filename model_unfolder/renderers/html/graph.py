@@ -187,6 +187,19 @@ class Parallel:
 
 
 @dataclass
+class SideInput:
+    """An off-flow source that feeds ONE flow node from the side (a lateral input,
+    not a branch-and-merge): e.g. the encoded text entering a UNet Transformer
+    block / its cross-attention.  ``node`` is drawn as a block beside ``target``
+    (on ``side``) with a single arrow into the target's edge — distinct from a
+    :class:`Parallel`, which replaces the spine between two nodes."""
+
+    node: str          # off-flow node id (must be in Graph.nodes, not Graph.flow)
+    target: str        # the flow node it feeds
+    side: str = "right"  # "right" | "left"
+
+
+@dataclass
 class Graph:
     """Nodes + the bottom→top ``flow`` order + residual edges + repeat groups."""
 
@@ -195,6 +208,7 @@ class Graph:
     edges: list[Edge] = field(default_factory=list)
     groups: list[Group] = field(default_factory=list)
     parallels: list[Parallel] = field(default_factory=list)
+    side_inputs: list[SideInput] = field(default_factory=list)
     note: str | None = None                  # one-line caption above the top node
     # side fact panel: {"title": str, "rows": [(strong, sub) | "..."], "footer": [str]}
     aside: dict | None = None

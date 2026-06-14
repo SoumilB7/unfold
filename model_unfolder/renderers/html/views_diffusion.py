@@ -281,7 +281,8 @@ def _build_loop_view(ir: dict, info: dict, mount_id: str) -> str:
                                     font_size=16, resolved=resolved("vae_decode"))
     pos["denoiser"] = _rect_block(parts, info, shadow_id, "denoiser",
                                   den_x, den_y, den_w, den_h,
-                                  "DiT Denoiser", font_size=20, resolved=resolved("denoiser"))
+                                  label("denoiser", "DiT Denoiser"), font_size=20,
+                                  resolved=resolved("denoiser"))
     pos["scheduler"] = _rect_block(parts, info, shadow_id, "scheduler",
                                    sched_cx - 75, den_y + 6, 150, den_h - 12,
                                    label("scheduler", ["Scheduler", "step"]), font_size=15,

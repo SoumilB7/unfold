@@ -364,6 +364,13 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
             facts.append(f"{100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active")
         facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
         return desc, facts
+    if ffn.get("gated") is None:
+        # Config declares the FFN and its inner width, but not whether it gates
+        # or which activation it uses — say exactly that, assert no shape.
+        desc = ("Feed-forward — expands to an inner width and projects back. The "
+                "config does not declare the gating or activation (these live in "
+                "the model's code).")
+        return desc, [f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
     if ffn.get("gated"):
         desc = ("Gated MLP — a gate path modulates the up projection before "
                 "projecting back down.")

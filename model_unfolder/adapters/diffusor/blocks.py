@@ -122,6 +122,31 @@ def _wrap_two_lines(text: str) -> list[str]:
     return [" ".join(words[:best]), " ".join(words[best:])]
 
 
+def _timestep_mechanism(family: str | None) -> str:
+    """How the timestep conditions the denoiser — the mechanism differs by family:
+    a UNet projects-and-adds the time embedding inside each ResNet block; a DiT
+    modulates each block's norm via AdaLN.  Never assert one for the other."""
+    if family == "unet":
+        return ("Embedded, then projected and added inside every ResNet block "
+                "(and the mid block) — a U-net conditions on the noise level "
+                "additively, not through AdaLN.")
+    return "Embedded and fed to every block as AdaLN modulation."
+
+
+def _added_cond_sentence(added: dict | None) -> str:
+    """SDXL-style ``addition_embed_type='text_time'`` micro-conditioning: the
+    pooled text vector plus size/crop/target ('time_ids') embeddings are projected
+    and ADDED to the timestep embedding.  Stated only when the config declares it."""
+    if not isinstance(added, dict) or added.get("type") != "text_time":
+        return ""
+    proj = added.get("proj_in")
+    return (" SDXL also adds a micro-conditioning embedding — the pooled text "
+            "vector together with the image size / crop / target-size "
+            "('time_ids') embeddings"
+            + (f", projected from {_fmt(proj)}-d" if proj else "")
+            + " — to this timestep embedding (addition_embed_type = text_time).")
+
+
 def diffusion_loop_blocks(geom: dict) -> list[Block]:
     """The sampling-loop nodes — the hero view. The ``denoiser`` node opens the
     DiT network (``model_blocks``) as its drill-down."""
@@ -134,6 +159,8 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 or geom.get("text_embed_dim"))
     guidance = geom.get("guidance_embeds")
     encoders = geom.get("text_encoders") or []
+    family = geom.get("denoiser_family")
+    added = geom.get("added_cond")          # SDXL-style text_time micro-conditioning
 
     # Latent grid shape, when derivable: channels x (sample/patch) tokens per
     # side.  Video DiTs that declare temporal geometry (CogVideoX, Allegro) get
@@ -177,6 +204,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         "flow matching" if is_flow else str(geom.get("scheduler_prediction_type") or ""),
         f"{_fmt(sched_train)} train timesteps" if sched_train else "",
         f"shift {sched_shift}" if sched_shift is not None else "",
+        "dynamic shifting" if geom.get("scheduler_dynamic_shifting") else "",
         str(geom.get("scheduler_beta_schedule") or ""),
         str(geom.get("scheduler_timestep_spacing") or ""),
     ) if f]
@@ -207,12 +235,14 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "description": (
                 "The current step's noise level t (decreasing T -> 0)"
                 + (", plus a guidance scale" if guidance else "")
-                + ". Embedded and fed to every block as AdaLN modulation."
+                + ". " + _timestep_mechanism(family)
+                + _added_cond_sentence(added)
             ),
         },
         *_text_conditioning_blocks(
             encoders, text_dim, geom.get("pooled_projection_dim"),
-            geom.get("text_encoder_specs") or [],
+            geom.get("text_encoder_specs") or [], family=family,
+            cross_attention_dim=geom.get("cross_attention_dim"),
         ),
         {
             "id": "latent",
@@ -244,6 +274,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "conditioning) and predicts the noise to remove. Click to open its "
                 "architecture."
             ),
+            # A UNet denoiser declares its U-shape stages as cards, so every box
+            # in the U is clickable and described (a DiT declares none — its
+            # layers carry the cards).
+            **({"children": geom["denoiser_children"]} if geom.get("denoiser_children") else {}),
         },
         {
             "id": "scheduler",
@@ -598,11 +632,15 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     ]
 
 
-def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None) -> list[Block]:
+def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None,
+                              *, family: str | None = None,
+                              cross_attention_dim=None) -> list[Block]:
     """One block per real text encoder (+ a shared prompt source), so the diagram
-    shows the actual number of encoders (Flux: CLIP + T5; SD3: CLIP-L + CLIP-G + T5)
-    instead of a single combined block.  ``specs`` (aligned with ``encoders``)
-    carries each encoder's real config dims when the loader fetched them."""
+    shows the actual number of encoders (Flux: CLIP + T5; SDXL: CLIP-L + CLIP-G;
+    SD3: CLIP-L + CLIP-G + T5) instead of a single combined block.  ``specs``
+    (aligned with ``encoders``) carries each encoder's real config dims when the
+    loader fetched them; ``family`` ("unet" / "dit") selects the correct
+    conditioning-mechanism wording."""
     specs = specs or []
     if not encoders:
         return [{
@@ -618,7 +656,7 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
             ),
             "view": "text_encoder",
             "detail": {"name": "Text encoder", "text_dim": text_dim, "pooled": pooled,
-                       "node_prefix": "text_encoder"},
+                       "node_prefix": "text_encoder", "denoiser_family": family},
             "children": _text_encoder_ops("text encoder", text_dim, pooled, "text_encoder"),
         }]
     blocks: list[Block] = [{
@@ -631,12 +669,13 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
         "description": (
             f"The conditioning prompt, encoded by {len(encoders)} text "
             f"encoder{'s' if len(encoders) != 1 else ''} ({', '.join(encoders)})."
+            + _multi_encoder_concat_note(specs, cross_attention_dim, family)
         ),
     }]
     for i, enc in enumerate(encoders):
         spec = specs[i] if i < len(specs) else {}
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
-                  "node_prefix": f"encoder_{i}"}
+                  "node_prefix": f"encoder_{i}", "denoiser_family": family}
         for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos",
                   "norm", "gated"):
             if spec.get(k) is not None:
@@ -648,7 +687,7 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
             "diffusion_stage": "text_encoder",
             "label": enc,
             "title": f"{enc} text encoder",
-            "description": _encoder_desc(enc, text_dim, pooled),
+            "description": _encoder_desc(enc, text_dim, pooled, family),
             "view": "text_encoder",
             "detail": detail,
             "children": _text_encoder_ops(enc, text_dim, pooled, f"encoder_{i}", spec),
@@ -656,14 +695,38 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
     return blocks
 
 
-def _encoder_desc(enc: str, text_dim, pooled) -> str:
+def _multi_encoder_concat_note(specs: list, cross_attention_dim, family) -> str:
+    """When several encoders feed one denoiser, their token features are
+    concatenated along the feature axis into the cross-attention width (SDXL:
+    768 + 1280 = 2048).  Stated only when we can back it with the encoders' own
+    widths and the declared cross-attention dim."""
+    hiddens = [s.get("hidden") for s in specs if s.get("hidden")]
+    if len(hiddens) < 2 or not cross_attention_dim:
+        return ""
+    total = sum(int(h) for h in hiddens)
+    if total != int(cross_attention_dim):
+        return ""
+    parts = " + ".join(_fmt(h) for h in hiddens)
+    return (f" Their token features are concatenated along the feature axis "
+            f"({parts} = {_fmt(cross_attention_dim)}-d) into the cross-attention "
+            f"conditioning.")
+
+
+def _encoder_desc(enc: str, text_dim, pooled, family: str | None = None) -> str:
     name = enc.upper()
+    is_unet = family == "unet"
     if "T5" in name:
         role = (
             "produces the prompt token sequence"
             + (f" (width {_fmt(text_dim)})" if text_dim else "")
-            + ", consumed by the denoiser's joint/cross attention"
+            + (", consumed by the U-net's cross-attention" if is_unet
+               else ", consumed by the denoiser's joint/cross attention")
         )
+    elif "CLIP" in name and is_unet:
+        # In a UNet (SD/SDXL) CLIP supplies token-level features for cross-attention
+        # — NOT AdaLN. (SDXL's pooled vector feeds the added text_time conditioning,
+        # described on the timestep, not here.)
+        role = "produces token-level features for the U-net's cross-attention"
     elif "CLIP" in name:
         role = (
             "produces a pooled prompt vector"
@@ -697,6 +760,16 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
     guidance = geom.get("guidance_embeds")
     encoders = geom.get("text_encoders") or []
     enc_label = " + ".join(encoders) if encoders else "a text encoder"
+    # Pre-block text fusion (llm_features_dim, e.g. Ideogram-4): the text features
+    # are linearly projected and added to the latent BEFORE the first block — a
+    # config-declared pipeline step, surfaced here rather than silently dropped.
+    fusion_dim = geom.get("llm_features_dim") if geom.get("pre_block_text_fusion") else None
+    fusion_note = (
+        f" The prompt features ({_fmt(fusion_dim)}-d) are linearly projected to "
+        f"{hidden}-d and added to the latent tokens before the first block "
+        "(the text conditioning is fused into the input, not attended)."
+        if fusion_dim else ""
+    )
 
     blocks: list[Block] = [
         {
@@ -715,6 +788,7 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
                 + (" + guidance" if guidance else "")
                 + f" embedding that drives AdaLN modulation across the stack. The "
                 "denoiser predicts the noise/velocity to remove."
+                + fusion_note
             ),
         },
         {

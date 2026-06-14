@@ -49,8 +49,14 @@ def unet_resolution_stage(
     return data
 
 
-def unet_mid_stage(*, stage_type: Any, channels: int | None, resnets: int, attn: bool) -> dict:
-    """Facts for the U-Net bottleneck stage."""
+def unet_mid_stage(*, stage_type: Any, channels: int | None, resnets: int, attn: bool,
+                   transformers: int = 0) -> dict:
+    """Facts for the U-Net bottleneck stage.
+
+    ``transformers`` is the Transformer2D depth of the mid block's single
+    cross-attention module (``transformer_layers_per_block[-1]`` in diffusers) —
+    so the mid stage reports the same depth as the deepest down/up stage, not a
+    hardcoded 1."""
     type_name = stage_type if isinstance(stage_type, str) else ""
     known = (not type_name) or type_name.startswith("UNetMidBlock")
     data = {
@@ -58,11 +64,12 @@ def unet_mid_stage(*, stage_type: Any, channels: int | None, resnets: int, attn:
         "channels": channels,
         "resnets": resnets,
         "attn": attn,
+        "transformers": transformers,
         "components": _components(
             channels=channels,
             resnets=resnets,
             attention=attn,
-            transformers=1 if attn else 0,
+            transformers=transformers,
             sample_kind=None,
         ),
     }

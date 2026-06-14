@@ -177,7 +177,9 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         if op.id == primary:
             label = f"in ({op.out_features:,})" if op.out_features else "in"
             return Node(op.id, "port", label, static=True)
-        return Node(op.id, "source", op.label, w=250, h=46, static=static)
+        # A secondary input (cross-attention's text / image states) is drawn as a
+        # solid block like everything else — not the light accent bookend.
+        return Node(op.id, "embedding", op.label, w=250, h=46, static=static)
     if op.kind == "linear":
         return Node(op.id, "linear", op.label or "Linear", static=static,
                     cache_ports=bool(op.meta.get("cached")))
