@@ -194,7 +194,12 @@ def _stage_detail(st: dict, direction) -> dict:
 
 
 def _unet_resnet_ops() -> list[dict]:
-    """Cards for the ResNet residual cell — same shape as the VAE decoder block."""
+    """Cards for the ResNet residual cell.
+
+    The real ResnetBlock2D.forward() is:
+      norm1 + SiLU → conv1 → (⊕ timestep emb) → norm2 + SiLU → conv2 → (input ⊕ hidden)
+    The residual bypass goes around the ENTIRE cell (from the block's raw input), not
+    from norm1's output.  The timestep injection sits between conv1 and norm2."""
     norm_desc = ("Group normalization then a SiLU (swish) activation, applied before "
                  "each convolution so the conv sees a well-scaled signal.")
     conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with its "
@@ -202,11 +207,20 @@ def _unet_resnet_ops() -> list[dict]:
     return [
         {"id": "unet_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
         {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
+        {"id": "unet_op_temb", "title": "⊕ Timestep embedding",
+         "description": ("The linear-projected timestep embedding is added here "
+                         "(ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). "
+                         "This is the mechanism by which a UNet ResNet receives the current noise "
+                         "level — distinct from DiT/AdaLN, which gates normalization parameters. "
+                         "The projection adjusts the channel width to match the residual branch.")},
         {"id": "unet_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
         {"id": "unet_op_conv2", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_residual", "title": "Residual add",
-         "description": ("Adds the cell input back onto the convolved output (identity, or "
-                         "a 1×1 conv when channels change) so the block learns a residual.")},
+         "description": ("Adds the block's raw input back onto the convolved output — "
+                         "(input_tensor + hidden_states) / output_scale_factor. The bypass "
+                         "goes around the entire cell: norm1, SiLU, conv1, timestep injection, "
+                         "norm2, SiLU, conv2. When in/out channels differ a 1×1 conv adjusts "
+                         "the shortcut (conv_shortcut).")},
     ]
 
 
@@ -272,6 +286,38 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
     ]
 
 
+def _resnet_card(sid: str, st: dict, rn_label: str = "") -> dict:
+    """One ResNet block card, scoped by stage id.  Both the description and children
+    now name the timestep injection (the ⊕ between conv1 and norm2)."""
+    return {
+        "id": f"{sid}__resnet", "title": "ResNet block",
+        "description": ("GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 "
+                        "→ residual add (identity shortcut, or 1×1 conv when channels change). "
+                        "The timestep embedding is projected and added after the first conv, "
+                        "injecting the current noise level into the residual branch."
+                        + (f" {rn_label} per stage (layers_per_block)." if rn_label else "")),
+        "view": "unet_resnet", "detail": {"channels": st.get("channels")},
+        "children": _unet_resnet_ops(),
+    }
+
+
+def _transformer_card(sid: str, st: dict, t, cross_dim) -> dict:
+    """One Transformer2D block card, scoped by stage id."""
+    nh = st.get("num_heads")
+    return {
+        "id": f"{sid}__transformer", "title": "Transformer block",
+        "description": (f"A Transformer2D block — {t} layer(s), each running self-attention "
+                        "→ text cross-attention → feed-forward. Where text conditioning "
+                        "enters."),
+        "facts": [f for f in (f"{t}× layers" if t else "", f"{nh} heads" if nh else "") if f]
+                 or None,
+        "view": "unet_transformer",
+        "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
+                   "channels": st.get("channels"), "cross_dim": cross_dim, "prefix": sid},
+        "children": _unet_transformer_subblocks(st, cross_dim, sid),
+    }
+
+
 def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
     for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
@@ -281,31 +327,35 @@ def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     type recurs in every stage at different widths/heads, and the panel model
     dedups cards by id — without scoping, all stages would collapse to the first
     stage's card (e.g. every ResNet drill showing 320 ch).  Channel-agnostic leaf
-    ops (GroupNorm/Conv descriptions) stay shared."""
+    ops (GroupNorm/Conv descriptions) stay shared.
+
+    Mid block special case: UNetMidBlock2DCrossAttn forward is
+    ``resnets[0] → attn[0] → resnets[1]`` — a ResNet sandwich around the Transformer,
+    NOT a paired loop.  direction=None signals this; the children reflect the actual
+    sequential order with distinct pre/post resnet ids."""
     sid = st.get("id") or "unet_stage"
     rn, t = st.get("resnets"), st.get("transformers")
-    children: list[dict] = [{
-        "id": f"{sid}__resnet", "title": "ResNet block",
-        "description": ("A residual cell — GroupNorm+SiLU → Conv 3×3, twice, then a residual "
-                        "add (identity, or a 1×1 conv when channels change)."
-                        + (f" {rn} per stage (layers_per_block)." if rn else "")),
-        "view": "unet_resnet", "detail": {"channels": st.get("channels")},
-        "children": _unet_resnet_ops(),
-    }]
+
+    if direction is None and st.get("attn"):
+        # Mid block: ResNet₀ → Transformer → ResNet₁  (UNetMidBlock2DCrossAttn.forward)
+        return [
+            {**_resnet_card(sid, st), "id": f"{sid}__resnet_pre",
+             "title": "ResNet block (pre)",
+             "description": ("First ResNet of the bottleneck sandwich: runs before the "
+                             "Transformer2D. GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb "
+                             "→ GroupNorm+SiLU → Conv 3×3 → residual add.")},
+            _transformer_card(sid, st, t, cross_dim),
+            {**_resnet_card(sid, st), "id": f"{sid}__resnet_post",
+             "title": "ResNet block (post)",
+             "description": ("Second ResNet of the bottleneck sandwich: runs after the "
+                             "Transformer2D. Same cell as the first — GroupNorm+SiLU → "
+                             "Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 → "
+                             "residual add.")},
+        ]
+
+    children: list[dict] = [_resnet_card(sid, st, str(rn) if rn else "")]
     if st.get("attn"):
-        nh = st.get("num_heads")
-        children.append({
-            "id": f"{sid}__transformer", "title": "Transformer block",
-            "description": (f"A Transformer2D block — {t} layer(s), each running self-attention "
-                            "→ text cross-attention → feed-forward. Where text conditioning "
-                            "enters."),
-            "facts": [f for f in (f"{t}× layers" if t else "", f"{nh} heads" if nh else "") if f]
-                     or None,
-            "view": "unet_transformer",
-            "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
-                       "channels": st.get("channels"), "cross_dim": cross_dim, "prefix": sid},
-            "children": _unet_transformer_subblocks(st, cross_dim, sid),
-        })
+        children.append(_transformer_card(sid, st, t, cross_dim))
     if st.get("sample"):
         if direction == "down":
             children.append({"id": f"{sid}__downsample", "title": "Downsample",
@@ -437,10 +487,13 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
         "id": "unet_conv_out",
         "title": "Conv out",
         "description": (
-            f"Output 3×3 convolution: projects features back to {out_ch} channels — "
-            "the predicted noise. Declared by out_channels."
-            if out_ch else "Output convolution to the predicted noise."),
-        "facts": [f"→ {out_ch} ch"] if out_ch else None,
+            f"Output GroupNorm + SiLU + 3×3 convolution: normalises (conv_norm_out, GroupNorm "
+            f"over {boc[0] if boc else '?'} channels), activates (conv_act, SiLU), then projects "
+            f"back to {out_ch} channels — the predicted noise (ε̂). "
+            "Declared by out_channels / norm_num_groups."
+            if out_ch else "Output normalisation and convolution to the predicted noise."),
+        "facts": ([f"{boc[0]:,} → {out_ch} ch"] if (boc and out_ch) else
+                  [f"→ {out_ch} ch"] if out_ch else None),
     })
     return cards
 

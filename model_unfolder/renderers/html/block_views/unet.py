@@ -187,7 +187,11 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     """A resolution stage: in → [ResNet block (+ Transformer block when the stage
     has cross-attention)] × layers_per_block → optional 2× resample → out.  The
     ResNet block and Transformer block are clickable and DRILL FURTHER (into the
-    residual cell, and into self→cross→FF × depth respectively)."""
+    residual cell, and into self→cross→FF × depth respectively).
+
+    Mid block special case (direction=None): UNetMidBlock2DCrossAttn forward is
+    ResNet₀ → Transformer → ResNet₁ — a sandwich, not a paired repeat.  Drawn as
+    three sequential ``pre`` blocks, no ``× N`` frame."""
     d = block.get("detail") or {}
     ch = d.get("channels")
     resnets = int(d.get("resnets") or 1)
@@ -197,6 +201,29 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
     # resnet / transformer cards (matching _unet_stage_children), not the first
     # stage's deduped card.
     sid = block.get("id") or "unet_stage"
+
+    if direction is None and d.get("attn"):
+        # Mid block: ResNet₀ → Transformer → ResNet₁ (UNetMidBlock2DCrossAttn.forward)
+        # Shown as a sequential ``pre`` chain — no repeat frame, no ×N badge.
+        spec = {
+            "source": {"id": "unet_stage_in", "label": f"in ({ch:,} ch)" if ch else "in"},
+            "pre": [
+                {"id": f"{sid}__resnet_pre", "kind": "norm", "label": "ResNet block", **op},
+                {"id": f"{sid}__transformer", "kind": "attention",
+                 "label": "Transformer block", **op},
+                {"id": f"{sid}__resnet_post", "kind": "norm", "label": "ResNet block", **op},
+            ],
+            "output": {"id": "unet_stage_out"},
+            "side_inputs": [{
+                "node": {"id": "unet_stage_text", "kind": "embedding",
+                         "label": _text_source_label(ir), "w": 210},
+                "target": f"{sid}__transformer",
+            }],
+        }
+        graph = tower_graph(spec)
+        return render_graph(graph, info, mount_id, f"unetstage_{sid}",
+                            f"{ir.get('name', 'model')} {block.get('title') or 'U-net mid stage'}",
+                            min_width=560)
 
     # Block NAME only — the per-block facts (transformer depth, self/cross/FF,
     # stride-2 conv) are chips/prose on each block's card, never a sub-caption on
@@ -233,26 +260,39 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
 
 
 def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """One ResNet block — the residual cell, the SAME shape as the VAE decoder
-    block: in → GroupNorm+SiLU → Conv 3×3 → GroupNorm+SiLU → Conv 3×3 → ⊕ → out."""
+    """One ResNet block — the actual ResnetBlock2D.forward() cell:
+    in → GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 → ⊕ → out.
+
+    The residual bypass (shortcut) goes around the ENTIRE cell from the raw block
+    input — not from norm1.  The timestep embedding is injected between conv1 and
+    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN)."""
     ch = (block.get("detail") or {}).get("channels")
     op = {"w": 216, "h": 44}
     # A ResNet block is ONE residual cell, not a repeated stack (the per-stage
     # repeat = layers_per_block is shown one level up, on the stage). So its ops
     # are ``pre`` (a plain chain + residual loop), never a "× N" repeat-frame.
+    # residual_from "unet_res_in" (the block's input port): the shortcut bypasses
+    # norm1 + SiLU + conv1 + temb_inject + norm2 + SiLU + conv2 — the whole cell.
     graph = tower_graph({
         "source": {"id": "unet_res_in", "label": f"in ({ch:,} ch)" if ch else "in"},
         "pre": [
             {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
             {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
+            {"id": "unet_op_temb", "kind": "residual_add", "label": "⊕ Timestep emb"},
             {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
             {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
-            {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_op_norm1"},
+            {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_res_in"},
         ],
         "output": {"id": "unet_res_out"},
+        # The projected timestep embedding enters beside the injection node.
+        "side_inputs": [{
+            "node": {"id": "unet_res_temb", "kind": "source",
+                     "label": "Timestep emb", "w": 148},
+            "target": "unet_op_temb",
+        }],
     })
     return render_graph(graph, info, mount_id, f"unetres_{block.get('id') or 'x'}",
-                        f"{ir.get('name', 'model')} ResNet block", min_width=520)
+                        f"{ir.get('name', 'model')} ResNet block", min_width=540)
 
 
 def build_unet_transformer_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
