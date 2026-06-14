@@ -30,12 +30,14 @@ from .sections import _details_section, _header, _stats_banner
 from .styles import _style
 from .svg import (
     _defs,
+    _elbow_hv,
     _ids,
     _rect_block,
     _region_rect,
     _svg,
     _svg_tag,
     _svg_text,
+    _v_line,
 )
 from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
 from .utils import _attr, _html
@@ -483,3 +485,277 @@ def _latent_grid(parts: list[str], x0: float, y0: float, n: int = 5, cell: int =
         "x": x0 - 2, "y": y0 - 2, "width": n * cell, "height": n * cell,
         "rx": 4, "ry": 4, "fill": "none", "stroke": C["border"], "stroke-width": 0.9,
     }))
+
+
+# ---------------------------------------------------------------------------
+# Block diffusion fragment — DiffusionGemma generation loop
+#
+# Architecture: encoder (causal, one pass per canvas) → KV cache →
+#   denoising loop (bidirectional decoder × ≤48 steps, with entropy-bound
+#   accept/renoise and self-conditioning from prev step's logits).
+# ---------------------------------------------------------------------------
+
+def render_block_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool) -> str:
+    from .theme import FONT_IMPORT
+    info = _make_info(ir) if ir.get("layers") else _stub_info()
+
+    loop_svg = _build_block_diffusion_view(ir, info, mount_id)
+    loop_cards = _build_block_diffusion_loop_cards(ir, info, mount_id)
+
+    dit_cards = _build_inspect_cards(ir, info, mount_id)
+    dit_nested = _build_nested_inspect_panels(ir, info, mount_id)
+    loop_levels = _build_loop_descendant_levels(ir, info, mount_id)
+    nested_levels = _merge_levels([dit_cards] + dit_nested, loop_levels)
+
+    style = _style(mount_id)
+
+    arch_section = (
+        '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
+        '<summary class="uf-section-head">'
+        '<span class="uf-section-label">BLOCK DIFFUSION LOOP</span>'
+        '<span class="uf-section-sub">'
+        'Encoder fills KV cache · Decoder denoises canvas bidirectionally · '
+        'open Encoder or Decoder to see the shared transformer stack'
+        '</span>'
+        '<span class="uf-chevron" aria-hidden="true">›</span>'
+        '</summary>'
+        f'<div class="uf-section-body">{loop_svg}</div>'
+        '</details>'
+    )
+    inspect_panel = (
+        '<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2">'
+        f'{loop_cards}</div>'
+    )
+    nested_panels = "".join(
+        f'<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" '
+        f'data-depth="{i + 3}">{level}</div>'
+        for i, level in enumerate(nested_levels)
+    )
+
+    map_svg = _build_layer_map(ir, info, mount_id)
+    n_layers = len(ir.get("layers", []))
+    n_groups = len(info["groups"])
+    map_sub = (
+        f"Shared encoder/decoder stack · {n_groups} layer types across {n_layers} layers"
+        if n_groups > 1
+        else f"Shared encoder/decoder stack · {n_layers} layers, all identical"
+    )
+    layer_map_section = _details_section("SHARED ENCODER/DECODER LAYER MAP", map_sub, map_svg)
+    evidence_section = _code_evidence_section(ir)
+
+    return f"""
+<div id="{_attr(mount_id)}" class="uf-root">
+<style>
+{FONT_IMPORT if include_font_import else ""}
+{style}
+</style>
+<div class="uf-card">
+{_header(ir, info)}
+{_stats_banner(ir)}
+{arch_section}
+{inspect_panel}
+{nested_panels}
+{layer_map_section}
+{evidence_section}
+</div>
+{_click_script(mount_id)}
+</div>
+"""
+
+
+def _build_block_diffusion_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
+    """L2 cards for the block diffusion loop nodes.
+
+    Both the encoder and decoder cards embed the shared transformer architecture
+    view, since those two blocks run the same weights and the same per-layer
+    structure — clicking either lets the user drill into the 30-layer stack.
+    """
+    render = (ir.get("extras") or {}).get("render") or {}
+    loop_blocks = render.get("loop_blocks") or []
+    arch_embed_ids = {"bd_encoder", "bd_decoder"}
+
+    cards = [_hint_card(
+        "default",
+        "Click a block · open Encoder or Decoder to explore the shared transformer stack",
+    )]
+    for block in loop_blocks:
+        bid = block.get("id")
+        if not bid:
+            continue
+        title = block.get("title") or bid
+        desc = block.get("description", "")
+        facts = block.get("facts")
+        if bid in arch_embed_ids:
+            svg = _build_architecture_view(ir, info, mount_id)
+            cards.append(
+                _rich_card(bid, title, desc, svg, facts) if svg
+                else _simple_card(bid, title, desc, facts)
+            )
+        elif block.get("view"):
+            svg = block_detail_svg(ir, info, mount_id, block)
+            cards.append(
+                _rich_card(bid, title, desc, svg, facts) if svg
+                else _simple_card(bid, title, desc, facts)
+            )
+        else:
+            cards.append(_simple_card(bid, title, desc, facts))
+    return "".join(cards)
+
+
+def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
+    """Generation-loop SVG for DiffusionGemma.
+
+    Left column  : Prompt → Encoder (causal) → KV Cache
+    Right column (inside a "↺ up to 48 steps" loop frame):
+                   Canvas → Self-conditioning → Decoder (reads KV) →
+                   LM head · softcap → Accept/renoise
+    Output block : above the loop frame
+    Feedback arcs: dashed; logits from sampler back to self-cond, renoise back
+                   to canvas — both running along the right rail of the loop.
+    """
+    n_layers = len(ir.get("layers", []))
+    bd = ((ir.get("extras") or {}).get("block_diffusion")) or {}
+    canvas_len = bd.get("canvas_length", 256)
+
+    w, h = 760, 680
+    enc_cx = 148    # encoder column centre
+    den_cx = 478    # decoder/denoising chain centre
+
+    arrow_id, shadow_id = _ids(mount_id, "bdloop")
+    parts = [_defs(arrow_id, shadow_id)]
+    parts.append(_region_rect(28, 22, w - 56, h - 44, C["bg_outer"]))
+
+    # Denoising-loop frame
+    loop_x, loop_y, loop_w, loop_h = 268, 62, 418, 528
+    parts.append(_svg_tag("rect", {
+        "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
+        "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
+    }))
+    _badge(parts, loop_x + loop_w, loop_y + 14, "↺ up to 48 steps")
+
+    pos: dict[str, dict] = {}
+
+    # --- Encoder column (bottom to top) ---
+    pos["bd_prompt"] = _rect_block(
+        parts, info, shadow_id, "bd_prompt",
+        enc_cx - 74, 600, 148, 40, "Prompt tokens", font_size=15)
+    pos["bd_encoder"] = _rect_block(
+        parts, info, shadow_id, "bd_encoder",
+        enc_cx - 90, 482, 180, 58,
+        [f"Encoder  ×{n_layers}", "causal"], font_size=15)
+    pos["bd_kv_cache"] = _rect_block(
+        parts, info, shadow_id, "bd_kv_cache",
+        enc_cx - 68, 356, 136, 42, "KV Cache", font_size=15)
+
+    # --- Denoising chain (bottom to top, inside loop frame) ---
+    pos["bd_canvas"] = _rect_block(
+        parts, info, shadow_id, "bd_canvas",
+        den_cx - 82, 526, 164, 44,
+        [f"Canvas · {canvas_len} tokens", "init U(V)"], font_size=12)
+    pos["bd_self_cond"] = _rect_block(
+        parts, info, shadow_id, "bd_self_cond",
+        den_cx - 80, 436, 160, 40,
+        "Self-conditioning", font_size=14)
+    pos["bd_decoder"] = _rect_block(
+        parts, info, shadow_id, "bd_decoder",
+        den_cx - 110, 316, 220, 68,
+        [f"Decoder  ×{n_layers}", "bidirectional"], font_size=15)
+    pos["bd_lm_head"] = _rect_block(
+        parts, info, shadow_id, "bd_lm_head",
+        den_cx - 96, 214, 192, 44,
+        "LM head · softcap", font_size=14)
+    pos["bd_sampler"] = _rect_block(
+        parts, info, shadow_id, "bd_sampler",
+        den_cx - 100, 108, 200, 50,
+        ["Accept / renoise", "(entropy bound)"], font_size=13)
+
+    # --- Output (above loop frame) ---
+    pos["bd_output"] = _rect_block(
+        parts, info, shadow_id, "bd_output",
+        den_cx - 82, 14, 164, 42,
+        f"{canvas_len} tokens → output", font_size=13)
+
+    # --- Arrows: encoder column (bottom to top) ---
+    parts.append(_v_line(pos["bd_prompt"], pos["bd_encoder"], arrow_id))
+    parts.append(_v_line(pos["bd_encoder"], pos["bd_kv_cache"], arrow_id))
+
+    # KV cache → decoder: H-first elbow (same y level, tiny bend)
+    kv = pos["bd_kv_cache"]
+    dec = pos["bd_decoder"]
+    parts.append(_elbow_hv(
+        kv["right"] + GAP, kv["cy"],
+        dec["left"] - GAP, dec["cy"],
+        arrow_id,
+    ))
+    # Label on the KV→decoder arrow (above the connecting line)
+    mid_x = (kv["right"] + dec["left"]) / 2
+    parts.append(_svg_text(
+        mid_x, kv["cy"] - 11,
+        "read-only",
+        {"text-anchor": "middle", "fill": C["muted"],
+         "font-family": FONT_MONO, "font-size": 10},
+    ))
+
+    # --- Arrows: denoising chain (bottom to top) ---
+    parts.append(_v_line(pos["bd_canvas"], pos["bd_self_cond"], arrow_id))
+    parts.append(_v_line(pos["bd_self_cond"], pos["bd_decoder"], arrow_id))
+    parts.append(_v_line(pos["bd_decoder"], pos["bd_lm_head"], arrow_id))
+    parts.append(_v_line(pos["bd_lm_head"], pos["bd_sampler"], arrow_id))
+    # sampler → output  exits the loop frame
+    parts.append(_v_line(pos["bd_sampler"], pos["bd_output"], arrow_id))
+
+    # Arrow tip above output block
+    out = pos["bd_output"]
+    parts.append(_svg_tag("line", {
+        "x1": den_cx, "y1": out["top"], "x2": den_cx, "y2": out["top"] - 14,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+
+    # --- Feedback arcs along the right rail ---
+    # right rail: inside the loop frame, clear of the decoder column
+    right_rail = loop_x + loop_w - 28   # x=658
+    sam = pos["bd_sampler"]
+    sc  = pos["bd_self_cond"]
+    can = pos["bd_canvas"]
+
+    # Logits feedback: sampler.right → rail → down to self_cond.cy → left to self_cond.right
+    parts.append(_svg_tag("path", {
+        "d": (
+            f"M {sam['right'] + 5} {sam['cy']} "
+            f"L {right_rail} {sam['cy']} "
+            f"L {right_rail} {sc['cy']} "
+            f"L {sc['right'] + GAP} {sc['cy']}"
+        ),
+        "fill": "none", "stroke": C["muted"], "stroke-width": 1.4,
+        "stroke-dasharray": "4 3", "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})",
+    }))
+    parts.append(_svg_text(
+        right_rail - 4, (sam["cy"] + sc["cy"]) / 2,
+        "prev logits",
+        {"text-anchor": "end", "dominant-baseline": "central",
+         "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
+    ))
+
+    # Renoise feedback: continues down the rail from self_cond.cy to canvas.cy
+    parts.append(_svg_tag("path", {
+        "d": (
+            f"M {right_rail} {sc['cy']} "
+            f"L {right_rail} {can['cy']} "
+            f"L {can['right'] + GAP} {can['cy']}"
+        ),
+        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.4,
+        "stroke-dasharray": "4 3", "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "marker-end": f"url(#{arrow_id})",
+    }))
+    parts.append(_svg_text(
+        right_rail - 4, (sc["cy"] + can["cy"]) / 2,
+        "re-noise",
+        {"text-anchor": "end", "dominant-baseline": "central",
+         "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
+    ))
+
+    return _svg(w, h, f"{ir.get('name', 'model')} block diffusion loop", parts)

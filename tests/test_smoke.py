@@ -228,6 +228,38 @@ DBRX_CONFIG = {
 
 # Gemma 4 31B (dense) — alternates 5 sliding + 1 full across 60 layers, with
 # distinct head_dim and num_kv_heads on global vs sliding layers.
+DIFFUSION_GEMMA_LAYER_TYPES = [
+    "sliding_attention" if (i % 6) != 5 else "full_attention" for i in range(30)
+]
+DIFFUSION_GEMMA_CONFIG = {
+    "architectures": ["DiffusionGemmaForBlockDiffusion"],
+    "model_type": "diffusion_gemma",
+    "_name_or_path": "google/diffusiongemma-26B-A4B-it",
+    "canvas_length": 256,
+    "tie_word_embeddings": True,
+    "text_config": {
+        "model_type": "gemma4_text",
+        "vocab_size": 262144,
+        "hidden_size": 2816,
+        "intermediate_size": 2112,
+        "num_hidden_layers": 30,
+        "num_attention_heads": 16,
+        "num_key_value_heads": 8,
+        "num_global_key_value_heads": 2,
+        "head_dim": 256,
+        "global_head_dim": 512,
+        "sliding_window": 1024,
+        "max_position_embeddings": 262144,
+        "tie_word_embeddings": True,
+        "hidden_activation": "gelu_pytorch_tanh",
+        "layer_types": DIFFUSION_GEMMA_LAYER_TYPES,
+        "final_logit_softcapping": 30.0,
+        "num_experts": 128,
+        "num_experts_per_tok": 8,
+        "moe_intermediate_size": 704,
+    },
+}
+
 GEMMA4_31B_LAYER_TYPES = [
     "sliding_attention" if (i % 6) != 5 else "full_attention" for i in range(60)
 ]
@@ -483,6 +515,49 @@ def test_gemma4_31b():
     assert "<!doctype html>" in html.lower()
     assert "<svg" in html.lower()
     print(f"Gemma 4 31B OK  — ~{ir['params']['total_h']} params")
+
+
+def test_diffusion_gemma_block_diffusion():
+    """Gate A pin: DiffusionGemma gets the block-diffusion loop view, not decoder-only."""
+    d = unfold(DIFFUSION_GEMMA_CONFIG)
+    ir = d.to_ir()
+
+    # Basic IR shape — 30 shared encoder/decoder layers
+    assert ir["name"] == "diffusiongemma-26B-A4B-it"
+    assert len(ir["layers"]) == 30
+
+    # Render extras must declare block_diffusion layout
+    render = ir["extras"]["render"]
+    assert render["layout"] == "block_diffusion", "must route to block-diffusion view"
+    assert ir["extras"]["block_diffusion"]["canvas_length"] == 256
+
+    # All 8 loop blocks must be present with the right ids
+    expected_ids = {
+        "bd_prompt", "bd_encoder", "bd_kv_cache", "bd_canvas",
+        "bd_self_cond", "bd_decoder", "bd_lm_head", "bd_sampler", "bd_output",
+    }
+    loop_ids = {b["id"] for b in render["loop_blocks"]}
+    assert loop_ids == expected_ids, f"missing loop blocks: {expected_ids - loop_ids}"
+
+    # Every loop block must have a non-empty description (no bare undescribed blocks)
+    for block in render["loop_blocks"]:
+        assert block.get("description"), f"block {block['id']!r} has no description"
+
+    html = d.to_html()
+    # Loop view SVG must be present
+    assert "<svg" in html
+    # Key block ids must appear as data-id attributes (clickable in the diagram)
+    for bid in expected_ids:
+        assert f'data-id="{bid}"' in html, f"block {bid!r} not clickable in SVG"
+
+    # The section label announces the block diffusion loop
+    assert "BLOCK DIFFUSION LOOP" in html
+
+    # Softcap value from config is surfaced in the lm_head description
+    lm_block = next(b for b in render["loop_blocks"] if b["id"] == "bd_lm_head")
+    assert "30.0" in lm_block["description"], "softcap value not surfaced in lm_head card"
+
+    print(f"DiffusionGemma OK  — canvas={ir['extras']['block_diffusion']['canvas_length']}")
 
 
 def test_sliding_window_toggle_and_split():

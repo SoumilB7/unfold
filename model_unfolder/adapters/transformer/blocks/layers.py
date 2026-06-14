@@ -120,6 +120,110 @@ def _ffn_block(ffn: FFNSpec, hidden_size: int) -> Block:
     }
 
 
+def diffusion_gemma_layer_blocks(
+    attention: AttentionSpec,
+    ffn: FFNSpec,
+    hidden_size: int,
+    intermediate_size: int = 0,
+    norm_kind: str = "rmsnorm",
+) -> list[Block]:
+    """Per-layer block topology for DiffusionGemma.
+
+    Two structural departures from a standard decoder layer:
+    1. Post-attention norm: post_attention_layernorm is applied to the attn
+       OUTPUT (not input) before the first residual add.
+    2. Parallel FFN: Text4MLP (dense SwiGLU) and TextMoE both receive the same
+       pre_feedforward_layernorm output and their outputs are element-wise summed
+       before post_feedforward_layernorm.
+    Plus a per-layer learned scalar at the end.
+
+    Topology (HF forward pass — both encoder and decoder layers):
+      input_layernorm → self_attn → post_attention_layernorm → ⊕ (residual) →
+      pre_feedforward_layernorm → [mlp ∥ moe, sum] → post_feedforward_layernorm →
+      ⊕ (residual) → × layer_scalar
+    """
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+
+    moe_desc, moe_facts = ffn_summary(ffn_detail(ffn)), []
+    if isinstance(moe_desc, tuple):
+        moe_desc, moe_facts = moe_desc
+    else:
+        moe_desc = moe_desc if isinstance(moe_desc, str) else ""
+    dense_int_str = _fmt(intermediate_size) if intermediate_size else hidden
+    parallel_ffn = {
+        "id": "ffn",
+        "role": "ffn",
+        "kind": "ffn",
+        "label": ["Parallel FFN", "MLP + MoE"],
+        "title": "Parallel FFN: dense MLP + MoE",
+        "description": (
+            f"Text4MLP (dense SwiGLU, intermediate={dense_int_str}) and TextMoE "
+            f"run in parallel from the same pre-FFN norm output. "
+            f"Their outputs are element-wise summed before post_feedforward_layernorm. "
+            + moe_desc
+        ),
+        "facts": list(moe_facts) + ([f"dense: {dense_int_str}"] if intermediate_size else []),
+        "view": ffn_view(ffn),
+        "detail": {"ffn": ffn_detail(ffn)},
+        "children": ffn_child_blocks(ffn, hidden_size),
+    }
+
+    return [
+        _norm_block("rms1", norm_label, "Pre-attention norm (input_layernorm)",
+                    _norm_desc(norm_kind, "before attention"),
+                    facts=[f"dim {hidden}"]),
+        _attention_block(attention, hidden_size),
+        _norm_block(
+            "post_attn_ln", norm_label, "Post-attention norm",
+            f"{norm_label} applied to the attention OUTPUT before the first residual add. "
+            "HF: post_attention_layernorm in DiffusionGemmaDecoderTextLayer.",
+            facts=[f"dim {hidden}"],
+        ),
+        {
+            "id": "add1",
+            "role": "residual",
+            "kind": "residual_add",
+            "residual_from": "rms1",
+            "label": "+",
+            "title": "Residual add #1",
+            "description": "layer input + post_attention_layernorm(attn_output)",
+        },
+        _norm_block("rms2", norm_label, "Pre-FFN norm (pre_feedforward_layernorm)",
+                    _norm_desc(norm_kind, "before the parallel FFN"),
+                    facts=[f"dim {hidden}"]),
+        parallel_ffn,
+        _norm_block(
+            "post_ffn_ln", norm_label, "Post-FFN norm (post_feedforward_layernorm)",
+            f"{norm_label} applied to the sum of dense MLP and MoE outputs "
+            "before the second residual add.",
+            facts=[f"dim {hidden}"],
+        ),
+        {
+            "id": "add2",
+            "role": "residual",
+            "kind": "residual_add",
+            "residual_from": "add1",
+            "label": "+",
+            "title": "Residual add #2",
+            "description": "add1_output + post_ffn_ln(mlp_out + moe_out)",
+        },
+        {
+            "id": "layer_scalar",
+            "role": "scale",
+            "kind": "elementwise",
+            "label": "× layer_scalar",
+            "title": "Layer scalar (learned scale)",
+            "description": (
+                "Per-layer learned scalar that multiplies the entire layer output. "
+                "HF: hidden_states = hidden_states * self.layer_scalar. "
+                "Initialized to 1.0; learned during training to give each layer "
+                "independent output magnitude."
+            ),
+        },
+    ]
+
+
 def _norm_block(block_id: str, label: str, title: str, description: str,
                 facts: list[str] | None = None) -> Block:
     return {

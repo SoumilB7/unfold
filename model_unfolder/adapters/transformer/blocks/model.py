@@ -79,6 +79,233 @@ def mtp_head_block(
     }
 
 
+def block_diffusion_loop_blocks(
+    n_layers: int,
+    hidden_size: int,
+    vocab_size: int,
+    canvas_length: int,
+    final_logit_softcap: float | None = None,
+    ffn_intermediate_size: int = 0,
+) -> list[Block]:
+    """Loop-block declarations for the DiffusionGemma block diffusion view.
+
+    These describe the top-level generation flow: encoder (causal, fills KV
+    cache), denoising loop (canvas → self-cond → bidirectional decoder →
+    lm_head → accept/renoise → repeat), and output commit.  Numbers come from
+    config fields only — never invented.
+    """
+    hidden = _fmt(hidden_size)
+    vocab = _fmt(vocab_size)
+    cap = float(final_logit_softcap) if final_logit_softcap is not None else 30.0
+    sc_int = ffn_intermediate_size or hidden_size  # DiffusionGemmaSelfConditioning uses intermediate_size
+    return [
+        {
+            "id": "bd_prompt",
+            "title": "Prompt tokens",
+            "description": (
+                "Tokenized input sequence. The encoder processes it in one causal "
+                "forward pass to populate the KV cache; the decoder reads that cache "
+                "on every denoising step without re-running the encoder."
+            ),
+            "facts": [f"{vocab} vocab"],
+        },
+        {
+            "id": "bd_encoder",
+            "title": f"Encoder · {n_layers} causal layers",
+            "description": (
+                f"The full {n_layers}-layer transformer stack run with a causal "
+                "(left-to-right) attention mask.  Produces keys and values that are "
+                "stored in the KV cache.  Weights are shared with the decoder — "
+                "encoder and decoder are the same model, differing only in mask "
+                "and whether the self-conditioning module is active."
+            ),
+            "facts": [f"{n_layers} layers", f"{hidden}-d", "causal attn", "→ KV cache"],
+        },
+        {
+            "id": "bd_kv_cache",
+            "title": "Encoder KV Cache",
+            "description": (
+                "Stores all key and value projections from the encoder.  The decoder "
+                "concatenates its own canvas KV to these encoder entries at every "
+                "attention layer — canvas positions thus attend to the full prompt "
+                "context without re-running the encoder.  The cache is read-only from "
+                "the decoder's perspective."
+            ),
+            "facts": [f"{n_layers} layer entries", "read-only for decoder"],
+        },
+        {
+            "id": "bd_canvas",
+            "title": f"Canvas · {canvas_length} tokens",
+            "description": (
+                f"A block of {canvas_length} jointly-denoised token positions.  "
+                "Initialised with random IDs drawn uniformly from the vocabulary "
+                "(x_T ∈ U(V)).  The denoising loop refines this canvas over up to "
+                "48 steps; accepted tokens are progressively locked until the "
+                "canvas converges (stable + confident stopping criterion), then the "
+                "whole canvas is appended to the generated output."
+            ),
+            "facts": [f"{canvas_length} tokens", "init U(V)", "jointly refined"],
+        },
+        {
+            "id": "bd_self_cond",
+            "title": "Self-conditioning",
+            "description": (
+                "Adds a prev-step prior to the canvas before the decoder runs. "
+                "The soft embedding signal: softmax(prev_logits) @ embed_weight — "
+                "a probability-weighted average over all vocabulary embedding vectors. "
+                "A gated MLP (SwiGLU) projects the normed signal; its output is added "
+                "to the canvas embeddings (inputs_embeds), then a post-norm is applied. "
+                "At the first denoising step the signal is zeros. "
+                "Code: DiffusionGemmaSelfConditioning.forward()."
+            ),
+            "facts": [
+                f"{_fmt(hidden_size)} → {_fmt(sc_int)} → {_fmt(hidden_size)}",
+                "RMSNorm in + out",
+                "prev logits → soft embeds → ⊕",
+            ],
+            "view": "ops",
+            "detail": {"ops": [
+                # Side input: canvas token embeddings (inputs_embeds in the code)
+                {"kind": "input", "id": "sc_canvas",
+                 "label": ["Canvas embeddings", "(inputs_embeds)"]},
+                # Main path: soft_embeddings (hidden = the implicit first input)
+                #   → pre_norm → gated MLP → ⊕ canvas → post_norm
+                {"kind": "norm", "id": "sc_pre_norm",
+                 "label": "pre_norm (RMSNorm)",
+                 "in": hidden_size, "out": hidden_size},
+                # SwiGLU: gate_proj and up_proj in parallel from pre_norm
+                {"kind": "linear", "id": "sc_gate",
+                 "label": "gate_proj",
+                 "in": hidden_size, "out": sc_int},
+                {"kind": "linear", "id": "sc_up",
+                 "label": "up_proj",
+                 "in": hidden_size, "out": sc_int,
+                 "from": "sc_pre_norm"},
+                {"kind": "activation", "id": "sc_act",
+                 "label": "GELU (gate)", "fn": "gelu",
+                 "from": "sc_gate"},
+                {"kind": "elementwise", "id": "sc_gate_up",
+                 "label": "act(gate) × up", "fn": "mul",
+                 "from": ["sc_act", "sc_up"]},
+                {"kind": "linear", "id": "sc_down",
+                 "label": "down_proj",
+                 "in": sc_int, "out": hidden_size},
+                # ⊕ sc_signal + inputs_embeds
+                {"kind": "elementwise", "id": "sc_add",
+                 "label": "⊕  canvas embeds", "fn": "add",
+                 "from": ["sc_down", "sc_canvas"]},
+                # post_norm — no learned scale (with_scale=False in the code)
+                {"kind": "norm", "id": "sc_post_norm",
+                 "label": "post_norm (RMSNorm, no scale)",
+                 "in": hidden_size, "out": hidden_size},
+            ]},
+            "children": [
+                {"id": "sc_canvas", "title": "Canvas embeddings (inputs_embeds)",
+                 "description": (
+                     "The canvas token embedding vectors — shape [batch, canvas_len, hidden_size]. "
+                     "Side-channel input to self-conditioning; receives the ⊕ signal at sc_add."
+                 )},
+                {"id": "sc_pre_norm", "title": "pre_norm (RMSNorm)",
+                 "description": (
+                     f"RMSNorm applied to the soft embeddings before the gated MLP. "
+                     f"Normalises the prev-step signal to unit scale. dim {_fmt(hidden_size)}."
+                 )},
+                {"id": "sc_gate", "title": "gate_proj",
+                 "description": (
+                     f"Gate branch of SwiGLU: linear {_fmt(hidden_size)} → {_fmt(sc_int)}. "
+                     f"Passed through GELU; product with up_proj = the MLP output."
+                 )},
+                {"id": "sc_up", "title": "up_proj",
+                 "description": (
+                     f"Value branch of SwiGLU: linear {_fmt(hidden_size)} → {_fmt(sc_int)}, "
+                     f"parallel with gate_proj."
+                 )},
+                {"id": "sc_act", "title": "GELU (gate activation)",
+                 "description": "GELU applied to gate_proj output. Forms the gating weights."},
+                {"id": "sc_gate_up", "title": "act(gate) × up (SwiGLU product)",
+                 "description": (
+                     f"Element-wise product of GELU(gate_proj) and up_proj. "
+                     f"Shape [{_fmt(sc_int)}]. The SwiGLU gated activation."
+                 )},
+                {"id": "sc_down", "title": "down_proj",
+                 "description": (
+                     f"Projects from {_fmt(sc_int)} → {_fmt(hidden_size)}. "
+                     f"Produces the self-conditioning signal added to the canvas embeddings."
+                 )},
+                {"id": "sc_add", "title": "⊕ canvas embeds (residual add)",
+                 "description": (
+                     "Element-wise addition of down_proj(signal) and the original "
+                     "canvas embeddings (inputs_embeds). After this the decoder sees "
+                     "embeddings enriched with the prev-step prior."
+                 )},
+                {"id": "sc_post_norm", "title": "post_norm (RMSNorm, no learned scale)",
+                 "description": (
+                     f"RMSNorm after the residual add; with_scale=False in HF code — "
+                     f"no learned γ parameter. Stabilises the self-conditioned embedding "
+                     f"before the decoder stack. dim {_fmt(hidden_size)}."
+                 )},
+            ],
+        },
+        {
+            "id": "bd_decoder",
+            "title": f"Decoder · {n_layers} bidirectional layers",
+            "description": (
+                f"The same {n_layers}-layer transformer stack as the encoder, run "
+                f"with is_causal=False so all {canvas_length} canvas positions "
+                "attend to each other simultaneously.  At every layer the decoder "
+                "extends its own KV with the encoder KV cache — canvas positions "
+                "also attend to every prompt token.  Output is a sequence of "
+                f"{canvas_length} hidden states, one per canvas position."
+            ),
+            "facts": [
+                f"{n_layers} layers", f"{hidden}-d",
+                "bidir. within canvas", "reads encoder KV",
+            ],
+        },
+        {
+            "id": "bd_lm_head",
+            "title": "LM head · logit softcap",
+            "description": (
+                f"Linear projection from hidden dim to vocabulary logits, followed "
+                f"by Gemma4-style softcapping: logits = tanh(logits / {cap}) × {cap}. "
+                f"This bounds logit magnitude to ±{cap} without hard clipping, "
+                "keeping gradients healthy at the extremes of the distribution.  "
+                "Weights are tied with the token embedding table."
+            ),
+            "facts": [f"{hidden} → {vocab}", f"softcap ±{cap}"],
+        },
+        {
+            "id": "bd_sampler",
+            "title": "Accept / renoise (entropy bound)",
+            "description": (
+                "Implements the entropy-bound sampler that decides which canvas "
+                "tokens to commit this step.  Positions are accepted in increasing "
+                "entropy order until cumulative entropy exceeds the bound ε=0.1 — "
+                "these accepted positions are approximately mutually independent.  "
+                "Non-accepted tokens are re-randomised (renoised) with new uniform "
+                "samples so the decoder sees fresh uncertainty at those positions "
+                "next step.  The accepted logits are also saved as "
+                "self_conditioning_logits for the next denoising step."
+            ),
+            "facts": ["accepted → lock", "rest → renoise"],
+        },
+        {
+            "id": "bd_output",
+            "title": f"{canvas_length}-token canvas → output",
+            "description": (
+                f"When the stopping criterion fires (canvas stable for a threshold "
+                f"count of steps AND mean token entropy below confidence_threshold), "
+                f"the argmax of the final logits gives the committed {canvas_length} "
+                "tokens.  These are appended to the generated sequence.  Generation "
+                "then continues: the encoder processes the new context (including the "
+                "committed canvas) to produce fresh KV entries, and a new random "
+                "canvas begins the next denoising loop."
+            ),
+            "facts": [f"{canvas_length} tokens committed", "appended to sequence"],
+        },
+    ]
+
+
 def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)

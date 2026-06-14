@@ -424,6 +424,39 @@ def parse(cfg: Any) -> ModelIR:
         multimodal_extras(cfg, text_cfg, hidden_size),
     )
 
+    # ---- Block diffusion (DiffusionGemma) ----------------------------------------
+    # Top-level model_type is "diffusion_gemma"; the inner text_config is parsed as
+    # a normal transformer for the per-layer IR.  We then override:
+    #   1. The render layout (block_diffusion loop view).
+    #   2. Per-layer blocks: DiffusionGemma has post-attention norm, parallel
+    #      dense-MLP + MoE, post-FFN norm, and a per-layer learned scalar —
+    #      none of which the generic decoder_layer topology expresses.
+    #   3. qk_norm: Q/K/V norms are unconditional in __init__ (not a config flag).
+    if model_type == "diffusion_gemma":
+        from .blocks.model import block_diffusion_loop_blocks
+        from .blocks.layers import diffusion_gemma_layer_blocks
+        canvas_length = int(_g(cfg, "canvas_length") or 256)
+        final_softcap = get("final_logit_softcapping")
+        extras["render"]["layout"] = "block_diffusion"
+        extras["render"]["loop_blocks"] = block_diffusion_loop_blocks(
+            n_layers=num_layers,
+            hidden_size=hidden_size,
+            vocab_size=vocab_size,
+            canvas_length=canvas_length,
+            final_logit_softcap=final_softcap,
+            ffn_intermediate_size=intermediate_size,
+        )
+        extras["block_diffusion"] = {"canvas_length": canvas_length}
+        for layer in layers:
+            layer.attention.qk_norm = True
+            layer.blocks = diffusion_gemma_layer_blocks(
+                layer.attention,
+                layer.ffn,
+                hidden_size=hidden_size,
+                intermediate_size=intermediate_size,
+                norm_kind=norm_kind,
+            )
+
     # ---- Multi-Token Prediction heads (DeepSeek-V3 style next-token modules) ----
     mtp_modules = _g(text_cfg, "num_nextn_predict_layers") or _g(text_cfg, "num_mtp_layers")
     try:

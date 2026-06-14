@@ -32,6 +32,9 @@ def render_fragment(ir: dict, mount_id: str, include_font_import: bool = True) -
         if render.get("family") == "diffusion":
             from .views_diffusion import render_diffusion_fragment
             return render_diffusion_fragment(ir, mount_id, include_font_import)
+        if render.get("layout") == "block_diffusion":
+            from .views_diffusion import render_block_diffusion_fragment
+            return render_block_diffusion_fragment(ir, mount_id, include_font_import)
         return _render_fragment_body(ir, mount_id, include_font_import)
 
 
