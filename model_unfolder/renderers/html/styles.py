@@ -58,6 +58,12 @@ def _style(mount_id: str) -> str:
   border:1px solid #FCD34D;
   cursor:default;
 }}
+#{mount_id} .uf-badge-note {{
+  background:#EFF6FF;
+  color:#1E40AF;
+  border:1px solid #BFDBFE;
+  cursor:default;
+}}
 #{mount_id} .uf-stats {{
   display:grid;
   grid-template-columns:repeat(5,minmax(0,1fr));

@@ -27,12 +27,25 @@ def _header(ir: dict, info: dict) -> str:
             f'<span class="uf-badge" title="{_attr(title)}">{_html(badge["text"])}</span>'
         )
 
+    # Only genuine config GAPS warrant the "partial config" alarm.  By-design
+    # advisories (e.g. a CFG twin we deliberately don't draw twice) are notes —
+    # they render as a neutral ⓘ so a healthy, faithful parse isn't mislabelled.
     warnings = ir.get("warnings") or []
     if warnings:
         tooltip = " · ".join(warnings)
         badges.append(
             f'<span class="uf-badge uf-badge-warn" title="{_attr(tooltip)}">'
             "⚠ partial config"
+            "</span>"
+        )
+
+    notes = ir.get("notes") or []
+    if notes:
+        tooltip = " · ".join(notes)
+        label = "ⓘ note" if len(notes) == 1 else f"ⓘ {len(notes)} notes"
+        badges.append(
+            f'<span class="uf-badge uf-badge-note" title="{_attr(tooltip)}">'
+            f"{label}"
             "</span>"
         )
 

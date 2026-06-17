@@ -785,13 +785,17 @@ IDEO_STYLE = {
 
 
 def test_ideogram_style_dit_captures_declared_facts():
-    """GAP-4: adaln_dim / llm_features_dim are captured; the CFG twin is warned
-    about; the AdaLN rail carries its dim — and (FAIL-1) no text->attention rail
-    appears without an attention-text signal."""
+    """GAP-4: adaln_dim / llm_features_dim are captured; the CFG twin is a NOTE
+    (by-design advisory, not a config gap — must NOT raise "partial config"); the
+    AdaLN rail carries its dim — and (FAIL-1) no text->attention rail appears
+    without an attention-text signal."""
     ir = config_to_ir(IDEO_STYLE)
     diff = (ir.extras or {}).get("diffusion") or {}
     assert diff["adaln_dim"] == 512 and diff["llm_features_dim"] == 53248
-    assert any("unconditional_transformer" in w for w in ir.warnings)
+    # The CFG twin is advisory: it lives in notes, never in warnings, so a
+    # faithful parse isn't mislabelled "⚠ partial config".
+    assert any("unconditional_transformer" in n for n in ir.notes)
+    assert not any("unconditional_transformer" in w for w in ir.warnings)
 
     side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
     assert "text_cond" not in side                       # no attention-text dim

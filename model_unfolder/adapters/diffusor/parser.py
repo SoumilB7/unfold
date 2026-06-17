@@ -139,7 +139,8 @@ def matches(cfg: Any) -> bool:
 
 
 def parse(cfg: Any) -> ModelIR:
-    warnings: list[str] = []
+    warnings: list[str] = []   # config GAPS → "⚠ partial config"
+    notes: list[str] = []      # by-design advisories → neutral ⓘ (not a deficiency)
     cls = _g(cfg, "_class_name") or "diffusion"
     arch_name = architecture_name(cfg, cls)
 
@@ -296,8 +297,10 @@ def parse(cfg: Any) -> ModelIR:
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
     # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
     # conditional denoiser — say so rather than silently dropping the twin.
+    # This is a deliberate rendering choice, NOT a config gap → it's a note,
+    # so it doesn't mislabel a healthy parse as "⚠ partial config".
     if _g(cfg, "unconditional_transformer") is not None:
-        warnings.append(
+        notes.append(
             "Pipeline declares a separate `unconditional_transformer` (the CFG "
             "twin) — the diagram shows the conditional denoiser; the twin shares "
             "its architecture and is not drawn separately.")
@@ -331,6 +334,7 @@ def parse(cfg: Any) -> ModelIR:
         layers=layers,
         extras=extras,
         warnings=warnings,
+        notes=notes,
     )
 
 

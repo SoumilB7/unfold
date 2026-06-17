@@ -120,7 +120,8 @@ class ModelIR:
     layers: list                    # list[LayerSpec]
     cross_layer_edges: list = field(default_factory=list)
     extras: dict = field(default_factory=dict)
-    warnings: list = field(default_factory=list)  # adapter-emitted gaps / unknowns
+    warnings: list = field(default_factory=list)  # config GAPS / unknowns → "⚠ partial config"
+    notes: list = field(default_factory=list)     # by-design advisories (not deficiencies) → neutral ⓘ
 
     def to_dict(self) -> dict:
         # Avoid dataclasses.asdict here: it recursively deepcopy()s every
@@ -138,6 +139,7 @@ class ModelIR:
             "cross_layer_edges": [_cross_edge_to_dict(edge) for edge in self.cross_layer_edges],
             "extras": self.extras,
             "warnings": self.warnings,
+            "notes": self.notes,
         }
 
     @property
