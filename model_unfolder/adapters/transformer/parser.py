@@ -448,8 +448,16 @@ def parse(cfg: Any) -> ModelIR:
         )
         extras["block_diffusion"] = {"canvas_length": canvas_length}
         # `hidden_states * self.layer_scalar` is a Tier-3 layer property (one
-        # learned scalar), surfaced as a caption — never a block.
-        extras["render"]["layer_annotations"] = ["output × learned per-layer scalar"]
+        # learned scalar) — a block would be wrong (Gate C), and the frame caption
+        # wasn't worth the space, so it is intentionally not surfaced here.
+        # This single stack is run two ways with TIED weights (HF:
+        # encoder.language_model.layers ↔ decoder.layers): the encoder is causal,
+        # the decoder bidirectional.  Caption the × N frame so the shared dual
+        # role is clear when landing on this panel from either loop block.
+        extras["render"]["repeat_note"] = [
+            "shared by encoder (causal)",
+            "& decoder (bidirectional)",
+        ]
         for layer in layers:
             layer.attention.qk_norm = True
             layer.blocks = diffusion_gemma_layer_blocks(

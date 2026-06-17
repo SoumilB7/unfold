@@ -182,7 +182,7 @@ def _render_fragment_body(ir: dict, mount_id: str, include_font_import: bool) ->
 </style>
 {''.join(radios)}
 <div class="uf-card">
-{_header(ir, info)}
+{_header(ir, info, mount_id)}
 {_stats_banner(ir)}
 {arch_section}
 {inspect_panel}

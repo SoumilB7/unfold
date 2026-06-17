@@ -144,7 +144,6 @@ def diffusion_gemma_layer_blocks(
     """
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
-    parallel_ffn = _diffusion_gemma_ffn_block(ffn, hidden_size, intermediate_size)
 
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm (input_layernorm)",
@@ -170,7 +169,8 @@ def diffusion_gemma_layer_blocks(
         _norm_block("rms2", norm_label, "Pre-FFN norm (pre_feedforward_layernorm)",
                     _norm_desc(norm_kind, "before the parallel FFN"),
                     facts=[f"dim {hidden}"]),
-        parallel_ffn,
+        # Parallel FFN, divided inline: rms2 → (ffn_mlp ∥ ffn_moe) → ffn_merge ⊕
+        *_diffusion_gemma_ffn_blocks(ffn, hidden_size, intermediate_size),
         _norm_block(
             "post_ffn_ln", norm_label, "Post-FFN norm (post_feedforward_layernorm)",
             f"{norm_label} applied to the sum of dense MLP and MoE outputs "
@@ -202,16 +202,19 @@ def diffusion_gemma_layer_blocks(
 _MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe"}
 
 
-def _diffusion_gemma_ffn_block(ffn: FFNSpec, hidden_size: int, intermediate_size: int) -> Block:
-    """The layer's parallel feed-forward block: dense MLP ∥ routed MoE → ⊕.
+def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_size: int) -> list[Block]:
+    """The layer's parallel feed-forward, divided INLINE in the architecture:
+    ``rms2`` fans out to two side-by-side branches that converge at a ⊕ merge.
 
-    One layer-level block (clean central column) whose drill-down (the
-    ``parallel_ffn`` view) shows the branch-and-merge — the input splitting into
-    two lanes that sum.  Each lane is a real child card:
-      * ``ffn_mlp`` — the always-on dense SwiGLU MLP (Text4MLP), opens the gated
-        FFN view; its gate/up/act/mul/down ops are its children.
-      * ``ffn_moe`` — the routed MoE (TextMoE), opens the MoE view; its router /
-        experts / weighted-sum are its children.
+      * ``ffn_mlp`` — the always-on dense SwiGLU MLP (Text4MLP); left branch,
+        opens the gated FFN view (gate/up/act/mul/down children).
+      * ``ffn_moe`` — the routed MoE (TextMoE); right branch, opens the MoE view
+        (router / experts / weighted-sum children).
+      * ``ffn_merge`` — the additive ⊕ (mlp_out + moe_out); a Tier-2 connector
+        glyph (``static``: no card), feeding post_feedforward_layernorm.
+
+    ``branch_side`` marks a block as a parallel branch (drawn off the central
+    column, not in the chain); ``feeds`` names the merge it converges into.
     """
     dense = FFNSpec(
         kind="dense",
@@ -222,8 +225,13 @@ def _diffusion_gemma_ffn_block(ffn: FFNSpec, hidden_size: int, intermediate_size
     dense_desc, dense_facts = ffn_summary(ffn_detail(dense))
     moe_desc, moe_facts = ffn_summary(ffn_detail(ffn))
 
-    mlp_lane = {
+    mlp_branch = {
         "id": "ffn_mlp",
+        "role": "ffn",
+        "kind": "ffn",
+        "branch_side": "left",
+        "feeds": "ffn_merge",
+        "label": ["Dense MLP", "SwiGLU"],
         "title": "Dense MLP (Text4MLP)",
         "description": (
             "A standard gated SwiGLU MLP that runs on every token — the always-on "
@@ -234,36 +242,32 @@ def _diffusion_gemma_ffn_block(ffn: FFNSpec, hidden_size: int, intermediate_size
         "detail": {"ffn": ffn_detail(dense)},
         "children": ffn_child_blocks(dense, hidden_size),
     }
-    moe_lane = {
+    moe_branch = {
         "id": "ffn_moe",
+        "role": "ffn",
+        "kind": "ffn",
+        "branch_side": "right",
+        "feeds": "ffn_merge",
+        "label": "MoE",
         "title": "Mixture of experts (TextMoE)",
         "description": moe_desc,
         "facts": moe_facts,
         "view": "moe",
         "detail": {"ffn": ffn_detail(ffn)},
-        # Scope to the nodes the MoE view draws so the dense lane keeps its own
-        # gate_proj/up_proj/… cards (no id collision across the two lanes).
+        # Scope to the nodes the MoE view draws so the dense branch keeps its own
+        # gate_proj/up_proj/… cards (no id collision across the two branches).
         "children": [c for c in ffn_child_blocks(ffn, hidden_size) if c["id"] in _MOE_NODE_IDS],
     }
-    return {
-        "id": "ffn",
-        "role": "ffn",
-        "kind": "ffn",
-        "label": ["Feed-forward", "MLP ∥ MoE"],
-        "title": "Parallel feed-forward: dense MLP ∥ MoE",
-        "description": (
-            "Two feed-forward paths run in parallel on the same pre-FFN-norm "
-            "output: a dense SwiGLU MLP (Text4MLP, always active) and a routed "
-            "Mixture-of-Experts (TextMoE).  Their outputs are summed element-wise, "
-            "then post_feedforward_layernorm is applied.  Open either path below."
-        ),
-        "facts": moe_facts + dense_facts[-1:],
-        "view": "parallel_ffn",
-        "detail": {"ffn": ffn_detail(ffn)},
-        # The merge ⊕ is a Tier-2 connector glyph (static) in the view, so it
-        # needs no child card — only the two lanes are clickable blocks.
-        "children": [mlp_lane, moe_lane],
+    merge = {
+        "id": "ffn_merge",
+        "role": "residual",
+        "kind": "residual_add",
+        "static": True,  # Tier-2 connector: the additive ⊕ glyph, not a block
+        "label": "+",
+        "title": "Sum (dense MLP ⊕ MoE)",
+        "description": "Element-wise sum of the dense MLP and MoE outputs.",
     }
+    return [mlp_branch, moe_branch, merge]
 
 
 def _norm_block(block_id: str, label: str, title: str, description: str,

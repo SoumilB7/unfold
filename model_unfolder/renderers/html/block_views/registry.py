@@ -24,7 +24,7 @@ from .attention import (
 )
 from .block_facts import ffn_from_block, info_with_block_fact
 from .declared_ops import build_declared_ops_view
-from .feed_forward import build_dense_ffn_view, build_ffn_view, build_parallel_ffn_view
+from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import (
     build_audio_path_view,
@@ -41,6 +41,7 @@ from .modality_views.vision_details import (
     build_vision_self_attention_view,
 )
 from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
+from .self_conditioning import build_self_conditioning_view
 from .per_layer_embedding import build_per_layer_embedding_view
 from .text_encoder import build_text_encoder_view
 from ..tower import build_tower_view
@@ -131,8 +132,6 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "moe": _from_block(build_moe_view),
     "gated_ffn": _from_block(build_ffn_view),
     "dense_ffn": _from_block(build_dense_ffn_view),
-    # DiffusionGemma: dense MLP ∥ MoE branch-and-merge.
-    "parallel_ffn": _from_block(build_parallel_ffn_view),
     # Model-level / path / tower / merge layouts.
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),
@@ -142,6 +141,8 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "video_encoder": _from_block(build_video_encoder_view),
     "multimodal_fusion": _from_block(build_multimodal_fusion_view),
     "mtp_head": _from_block(build_mtp_head_view),
+    # DiffusionGemma self-conditioning: signal → gated MLP → ⊕ canvas → post-norm.
+    "self_conditioning": _from_block(build_self_conditioning_view),
     "vae_decoder": _from_block(build_vae_decoder_view),
     "vae_decoder_block": _from_block(build_vae_decoder_block_view),
     "text_encoder": _from_block(build_text_encoder_view),

@@ -113,7 +113,7 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
 {style}
 </style>
 <div class="uf-card">
-{_header(ir, info)}
+{_header(ir, info, mount_id)}
 {_stats_banner(ir)}
 {arch_section}
 {inspect_panel}
@@ -550,7 +550,7 @@ def render_block_diffusion_fragment(ir: dict, mount_id: str, include_font_import
 {style}
 </style>
 <div class="uf-card">
-{_header(ir, info)}
+{_header(ir, info, mount_id)}
 {_stats_banner(ir)}
 {arch_section}
 {inspect_panel}

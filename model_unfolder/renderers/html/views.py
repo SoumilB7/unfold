@@ -86,8 +86,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     # Side blocks live OFF the central column.  They share a row with the block
     # they feed but get their own offset x-position and explicit connections.
-    chain_blocks = [b for b in layer_blocks if not b.get("lane")]
+    # Branch blocks (``branch_side``) are a symmetric parallel split: two equal
+    # branches that fan out from one chain block and converge into a ⊕ merge.
+    chain_blocks = [b for b in layer_blocks if not b.get("lane") and not b.get("branch_side")]
     side_blocks = [b for b in layer_blocks if b.get("lane")]
+    branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     modality_inputs = modalities.get("inputs") or {}
@@ -128,7 +131,18 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # hugs the content instead of leaving a large empty lower half.  Sequential
     # decoder layers (~6 blocks) are content-driven and unaffected.
     inner_padding = 60
-    stack_h = _layer_stack_height(chain_blocks)
+    # A parallel branch split needs a reserved row (between its split source and
+    # its ⊕ merge) tall enough for the branches; the merge carries that as extra
+    # gap below it, so it counts toward both the stack height and the y-cursor.
+    merge_id = branch_blocks[0].get("feeds") if branch_blocks else None
+    branch_row_h = 0
+    if branch_blocks:
+        branch_h = max(
+            b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
+            for b in branch_blocks
+        )
+        branch_row_h = branch_h + 2 * _BLOCK_GAP
+    stack_h = _layer_stack_height(chain_blocks) + branch_row_h
     inner_h = max(340, stack_h + 2 * inner_padding)
 
     # Multi-Token Prediction heads draw as a stack above lm_head; reserve top
@@ -187,6 +201,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         # with no card.  The block-tier paradigm lives in the adapter (which
         # tags the block); the engine just honours the flag.
         clickable = not block.get("static")
+        # Reserve the parallel-branch row below the ⊕ merge (between it and the
+        # split source just under it), so the two branches have a clear band.
+        if branch_blocks and block["id"] == merge_id:
+            y_cursor -= branch_row_h
         top = y_cursor - block_h
         if layout["shape"] == "rect":
             geom = _rect_block(
@@ -210,8 +228,22 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
     if not has_modality_fusion:
         chain.insert(0, tok_text)
+    merge_geom = block_pos.get(merge_id) if merge_id else None
     for src, dst in zip(chain, chain[1:]):
+        # The split source → ⊕ merge segment is drawn by the branch fan-out/merge
+        # routing below (the flow goes THROUGH the two branches), not a direct line.
+        if merge_geom is not None and dst is merge_geom:
+            continue
         parts.append(_v_line(src, dst, arrow_id))
+
+    # --- 4b. Parallel branch split: source fans out to side-by-side branches
+    #     that converge into the ⊕ merge (DiffusionGemma's dense MLP ∥ MoE). ---
+    if branch_blocks and merge_geom is not None:
+        _draw_branch_split(
+            parts, info, shadow_id, arrow_id, cx,
+            chain_blocks, merge_id, merge_geom, branch_blocks,
+            is_diffusion, block_pos=block_pos,
+        )
 
     # Output arrow above lm_head — or the MTP head stack when present.
     if mtp:
@@ -264,6 +296,19 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         {"text-anchor": "middle", "dominant-baseline": "central",
          "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
     ))
+    # Optional caption under the × N badge — clarifies what the repeat means when
+    # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
+    # to the badge so it reads as a footnote to the repeat count.
+    repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
+    if repeat_note:
+        note_y = inner_y + 50
+        for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
+            parts.append(_svg_text(
+                inner_x + inner_w - 12, note_y, line,
+                {"text-anchor": "end", "fill": C["muted"],
+                 "font-family": FONT_MONO, "font-size": 10.5},
+            ))
+            note_y += 14
 
     # --- 7b. Layer-level annotations (Tier-3 properties of the layer) ---
     # A property that applies to the whole layer but isn't its own computation
@@ -272,8 +317,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # places them top-left, opposite the × N badge.
     annotations = ((ir.get("extras") or {}).get("render") or {}).get("layer_annotations") or []
     ann_y = inner_y + 13
+    ann_font = 11.5
     for ann in annotations:
-        chip_w = 18 + len(ann) * 6.4
+        # Pill must comfortably fit the mono text across fonts, so size it from a
+        # generous per-char width (≈0.62·font) + padding — never let text overflow.
+        chip_w = 24 + len(ann) * ann_font * 0.62
         parts.append(_svg_tag("rect", {
             "x": inner_x + 14, "y": ann_y,
             "width": chip_w, "height": 24, "rx": 12, "ry": 12,
@@ -282,11 +330,97 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         parts.append(_svg_text(
             inner_x + 14 + chip_w / 2, ann_y + 12, ann,
             {"text-anchor": "middle", "dominant-baseline": "central",
-             "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11.5},
+             "fill": C["muted"], "font-family": FONT_MONO, "font-size": ann_font},
         ))
         ann_y += 30
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
+
+
+def _draw_branch_split(
+    parts: list[str],
+    info: dict,
+    shadow_id: str,
+    arrow_id: str,
+    cx: float,
+    chain_blocks: list[dict],
+    merge_id: str,
+    merge_geom: dict,
+    branch_blocks: list[dict],
+    is_diffusion: bool,
+    *,
+    block_pos: dict,
+) -> None:
+    """A symmetric parallel split: the chain block below the ⊕ merge fans out to
+    two side-by-side branches that converge back into the merge.
+
+    The split source is the merge's chain predecessor (e.g. ``rms2``).  One
+    split dot on its output stem feeds both branch bottoms; each branch top rises
+    into the merge.  Branches sit symmetrically left/right of the spine in the
+    band reserved between the source and the merge.
+    """
+    chain_ids = [b["id"] for b in chain_blocks]
+    src_idx = chain_ids.index(merge_id) - 1
+    src_geom = block_pos[chain_ids[src_idx]]
+
+    row_cy = (src_geom["top"] + merge_geom["bottom"]) / 2
+    split_y = src_geom["top"] - GAP                  # split dot sits on the source's output stem
+    left = [b for b in branch_blocks if b.get("branch_side") == "left"]
+    right = [b for b in branch_blocks if b.get("branch_side") != "left"]
+    ordered = left + right
+    n = len(ordered)
+    # Centre the branch row on the spine; widest branch sets the column pitch.
+    col_w = max(b.get("w") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["w"] for b in ordered)
+    pitch = col_w + 44
+    start_x = cx - pitch * (n - 1) / 2
+
+    # Source output stem up to the split dot, then the dot.
+    parts.append(_svg_tag("line", {
+        "x1": cx, "y1": src_geom["top"], "x2": cx, "y2": split_y,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round", "fill": "none",
+    }))
+    parts.append(_branch_dot(cx, split_y))
+
+    branch_geoms: list[dict] = []
+    for i, block in enumerate(ordered):
+        b_w = block.get("w") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["w"]
+        b_h = block.get("h") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["h"]
+        b_cx = start_x + i * pitch
+        geom = _rect_block(
+            parts, info, shadow_id, block["id"],
+            b_cx - b_w / 2, row_cy - b_h / 2, b_w, b_h,
+            _block_label(info, block["id"], block.get("label")),
+            font_size=block.get("font") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"]).get("font", 16),
+            resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
+        )
+        block_pos[block["id"]] = geom
+        branch_geoms.append(geom)
+        # Fan out: split dot → horizontal → up into the branch bottom (arrowhead up).
+        parts.append(_elbow_hv(cx, split_y, geom["cx"], geom["bottom"] + GAP, arrow_id))
+
+    # Converge (mirror of the fan-out): each branch top rises and turns in to a
+    # shared rail just below the ⊕; one arrow then enters the merge.  The risers
+    # keep every branch CONNECTED to the merge — no floating rail.
+    r = 8
+    rail_y = merge_geom["bottom"] + 18
+    for geom in branch_geoms:
+        sx = 1 if merge_geom["cx"] >= geom["cx"] else -1
+        parts.append(_svg_tag("path", {
+            "d": (
+                f"M {geom['cx']} {geom['top']} "
+                f"L {geom['cx']} {rail_y + r} "
+                f"Q {geom['cx']} {rail_y} {geom['cx'] + sx * r} {rail_y} "
+                f"L {merge_geom['cx']} {rail_y}"
+            ),
+            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+            "stroke-linecap": "round", "stroke-linejoin": "round",
+        }))
+    parts.append(_svg_tag("line", {
+        "x1": merge_geom["cx"], "y1": rail_y,
+        "x2": merge_geom["cx"], "y2": merge_geom["bottom"] + GAP,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
 
 
 def _draw_mtp_head(

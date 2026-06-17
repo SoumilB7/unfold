@@ -564,37 +564,45 @@ def test_diffusion_gemma_block_diffusion():
 
 
 def test_diffusion_gemma_block_worthiness():
-    """Gate C pin: the per-layer view obeys the three-tier block paradigm.
+    """Gate C pin: the per-layer view obeys the three-tier block paradigm AND
+    divides the parallel FFN inline (no collapsed '∥' block).
 
-    Tier-1 blocks (attention, the parallel FFN, norms) are clickable; Tier-2
-    connectors (residual ⊕) are static glyphs with no card; the Tier-3 learned
-    layer scalar is an annotation, never a block.
+    Tier-1 blocks (attention, the two FFN branches, norms) are clickable; Tier-2
+    connectors (residual ⊕ and the FFN merge ⊕) are static glyphs with no card;
+    the Tier-3 learned layer scalar is an annotation, never a block.
     """
     d = unfold(DIFFUSION_GEMMA_CONFIG)
     ir = d.to_ir()
     blocks = {b["id"]: b for b in ir["layers"][0]["blocks"]}
 
-    # Tier-3: layer_scalar is NOT a block — it's a layer annotation caption.
+    # Tier-3: layer_scalar is NOT a block (Gate C) — and the frame caption was
+    # dropped as not worth the space, so it is not surfaced as an annotation either.
     assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
-    assert ir["extras"]["render"]["layer_annotations"] == ["output × learned per-layer scalar"]
+    assert not ir["extras"]["render"].get("layer_annotations"), "scalar caption was removed"
 
-    # Tier-2: residual adds are static connector glyphs (drawn, not clickable).
-    for add_id in ("add1", "add2"):
+    # Tier-2: residual adds AND the FFN merge are static connector glyphs.
+    for add_id in ("add1", "add2", "ffn_merge"):
         assert blocks[add_id]["kind"] == "residual_add"
         assert blocks[add_id]["static"] is True, f"{add_id} must be a static connector"
 
-    # Tier-1: the real computation blocks are present and clickable.
+    # The parallel FFN is divided inline: two branch blocks, no collapsed block.
+    assert "ffn" not in blocks, "the collapsed 'MLP ∥ MoE' block must be gone"
+    assert blocks["ffn_mlp"]["branch_side"] == "left" and blocks["ffn_mlp"]["feeds"] == "ffn_merge"
+    assert blocks["ffn_moe"]["branch_side"] == "right" and blocks["ffn_moe"]["feeds"] == "ffn_merge"
+    assert blocks["ffn_mlp"]["view"] and blocks["ffn_moe"]["view"] == "moe"  # each branch drills down
     assert blocks["attn"]["kind"] == "attention"
-    assert blocks["ffn"]["view"] == "parallel_ffn"
 
     html = d.to_html()
     # The connector glyphs are NOT clickable and have NO card.
-    for add_id in ("add1", "add2", "pf_add"):
+    for add_id in ("add1", "add2", "ffn_merge"):
         assert f'data-id="{add_id}"' not in html, f"{add_id} must not be clickable"
         assert f'data-card-id="{add_id}"' not in html, f"{add_id} must have no card"
-    # layer_scalar appears only as the annotation caption, never as a block/card.
+    # Both branches ARE clickable blocks inline in the architecture.
+    for bid in ("ffn_mlp", "ffn_moe"):
+        assert f'data-id="{bid}"' in html and f'data-card-id="{bid}"' in html
+    # layer_scalar is not surfaced anywhere — not a block, not a caption.
     assert 'data-id="layer_scalar"' not in html
-    assert "learned per-layer scalar" in html, "layer scalar annotation must render"
+    assert "learned per-layer scalar" not in html
     # Coupling stays clean with connectors demoted.
     from model_unfolder.block_schema import validate_click_coupling
     assert validate_click_coupling(html) == []

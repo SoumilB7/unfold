@@ -62,8 +62,24 @@ def _style(mount_id: str) -> str:
   background:#EFF6FF;
   color:#1E40AF;
   border:1px solid #BFDBFE;
-  cursor:default;
 }}
+/* The two message badges are <label>s toggling a hidden checkbox — clickable. */
+#{mount_id} .uf-badge-warn, #{mount_id} .uf-badge-note {{ cursor:pointer; }}
+/* Click-to-open message line at the top of the card (no hover, pure CSS). */
+#{mount_id} .uf-msg-bar {{
+  display:none;
+  margin:0 0 12px;
+  padding:9px 13px;
+  border-radius:9px;
+  font-family:{FONT_BODY};
+  font-size:12px;
+  line-height:1.45;
+}}
+#{mount_id} .uf-msg-bar-warn {{ background:#FEF3C7; color:#92400E; border:1px solid #FCD34D; }}
+#{mount_id} .uf-msg-bar-note {{ background:#EFF6FF; color:#1E40AF; border:1px solid #BFDBFE; }}
+#{mount_id} .uf-msg-line + .uf-msg-line {{ margin-top:5px; }}
+#{mount_id} #{mount_id}-msg-warn:checked ~ .uf-msg-bar-warn {{ display:block; }}
+#{mount_id} #{mount_id}-msg-note:checked ~ .uf-msg-bar-note {{ display:block; }}
 #{mount_id} .uf-stats {{
   display:grid;
   grid-template-columns:repeat(5,minmax(0,1fr));

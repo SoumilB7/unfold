@@ -163,52 +163,18 @@ def block_diffusion_loop_blocks(
                 "RMSNorm in + out",
                 "prev logits → soft embeds → ⊕",
             ],
-            "view": "ops",
-            "detail": {"ops": [
-                # Side input: canvas token embeddings (inputs_embeds in the code)
-                {"kind": "input", "id": "sc_canvas",
-                 "label": ["Canvas embeddings", "(inputs_embeds)"]},
-                # Main path: soft_embeddings (hidden = the implicit first input)
-                #   → pre_norm → gated MLP → ⊕ canvas → post_norm
-                {"kind": "norm", "id": "sc_pre_norm",
-                 "label": "pre_norm (RMSNorm)",
-                 "in": hidden_size, "out": hidden_size},
-                # SwiGLU: gate_proj and up_proj in parallel from pre_norm
-                {"kind": "linear", "id": "sc_gate",
-                 "label": "gate_proj",
-                 "in": hidden_size, "out": sc_int},
-                {"kind": "linear", "id": "sc_up",
-                 "label": "up_proj",
-                 "in": hidden_size, "out": sc_int,
-                 "from": "sc_pre_norm"},
-                {"kind": "activation", "id": "sc_act",
-                 "label": "GELU (gate)", "fn": "gelu",
-                 "from": "sc_gate"},
-                {"kind": "elementwise", "id": "sc_gate_up",
-                 "label": "act(gate) × up", "fn": "mul",
-                 "from": ["sc_act", "sc_up"]},
-                {"kind": "linear", "id": "sc_down",
-                 "label": "down_proj",
-                 "in": sc_int, "out": hidden_size},
-                # ⊕ sc_signal + inputs_embeds
-                {"kind": "elementwise", "id": "sc_add",
-                 "label": "⊕  canvas embeds", "fn": "add",
-                 "from": ["sc_down", "sc_canvas"]},
-                # post_norm — no learned scale (with_scale=False in the code)
-                {"kind": "norm", "id": "sc_post_norm",
-                 "label": "post_norm (RMSNorm, no scale)",
-                 "in": hidden_size, "out": hidden_size},
-            ]},
+            "view": "self_conditioning",
             "children": [
                 {"id": "sc_canvas", "title": "Canvas embeddings (inputs_embeds)",
                  "description": (
                      "The canvas token embedding vectors — shape [batch, canvas_len, hidden_size]. "
-                     "Side-channel input to self-conditioning; receives the ⊕ signal at sc_add."
+                     "The thing being enriched: it enters the ⊕ from the side and the sum is what "
+                     "the decoder sees this step."
                  )},
                 {"id": "sc_pre_norm", "title": "pre_norm (RMSNorm)",
                  "description": (
-                     f"RMSNorm applied to the soft embeddings before the gated MLP. "
-                     f"Normalises the prev-step signal to unit scale. dim {_fmt(hidden_size)}."
+                     f"RMSNorm applied to the prev-step soft embeddings before the gated MLP. "
+                     f"Normalises the self-conditioning signal to unit scale. dim {_fmt(hidden_size)}."
                  )},
                 {"id": "sc_gate", "title": "gate_proj",
                  "description": (
@@ -222,25 +188,14 @@ def block_diffusion_loop_blocks(
                  )},
                 {"id": "sc_act", "title": "GELU (gate activation)",
                  "description": "GELU applied to gate_proj output. Forms the gating weights."},
-                {"id": "sc_gate_up", "title": "act(gate) × up (SwiGLU product)",
-                 "description": (
-                     f"Element-wise product of GELU(gate_proj) and up_proj. "
-                     f"Shape [{_fmt(sc_int)}]. The SwiGLU gated activation."
-                 )},
                 {"id": "sc_down", "title": "down_proj",
                  "description": (
                      f"Projects from {_fmt(sc_int)} → {_fmt(hidden_size)}. "
                      f"Produces the self-conditioning signal added to the canvas embeddings."
                  )},
-                {"id": "sc_add", "title": "⊕ canvas embeds (residual add)",
-                 "description": (
-                     "Element-wise addition of down_proj(signal) and the original "
-                     "canvas embeddings (inputs_embeds). After this the decoder sees "
-                     "embeddings enriched with the prev-step prior."
-                 )},
                 {"id": "sc_post_norm", "title": "post_norm (RMSNorm, no learned scale)",
                  "description": (
-                     f"RMSNorm after the residual add; with_scale=False in HF code — "
+                     f"RMSNorm after the canvas add; with_scale=False in HF code — "
                      f"no learned γ parameter. Stabilises the self-conditioned embedding "
                      f"before the decoder stack. dim {_fmt(hidden_size)}."
                  )},

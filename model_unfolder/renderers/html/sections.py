@@ -19,37 +19,48 @@ def _details_section(label: str, sub: str, svg: str) -> str:
     )
 
 
-def _header(ir: dict, info: dict) -> str:
-    badges = []
-    for badge in _arch_badges(ir, info):
-        title = badge.get("title") or ""
-        badges.append(
-            f'<span class="uf-badge" title="{_attr(title)}">{_html(badge["text"])}</span>'
-        )
+def _msg_bar(css_class: str, messages: list[str]) -> str:
+    lines = "".join(f'<div class="uf-msg-line">{_html(m)}</div>' for m in messages)
+    return f'<div class="uf-msg-bar {css_class}">{lines}</div>'
 
-    # Only genuine config GAPS warrant the "partial config" alarm.  By-design
-    # advisories (e.g. a CFG twin we deliberately don't draw twice) are notes —
-    # they render as a neutral ⓘ so a healthy, faithful parse isn't mislabelled.
+
+def _header(ir: dict, info: dict, mount_id: str) -> str:
+    # No hover anywhere: badges carry no `title` tooltip.  The two message
+    # badges (config gaps, advisory notes) instead CLICK to open a full-width
+    # line at the top of the card — a pure-CSS checkbox toggle (label ↔ hidden
+    # checkbox ↔ `:checked ~` bar), consistent with the "JS only opens/closes"
+    # rule.  Arch badges are plain, non-interactive chips.
+    badges = [
+        f'<span class="uf-badge">{_html(badge["text"])}</span>'
+        for badge in _arch_badges(ir, info)
+    ]
+
+    toggles: list[str] = []
+    bars: list[str] = []
+    # Only genuine config GAPS warrant the "partial config" alarm; by-design
+    # advisories (e.g. a CFG twin we deliberately don't draw twice) are notes.
     warnings = ir.get("warnings") or []
     if warnings:
-        tooltip = " · ".join(warnings)
+        wid = f"{mount_id}-msg-warn"
+        toggles.append(f'<input type="checkbox" id="{_attr(wid)}" class="uf-msg-toggle" hidden>')
+        bars.append(_msg_bar("uf-msg-bar-warn", warnings))
         badges.append(
-            f'<span class="uf-badge uf-badge-warn" title="{_attr(tooltip)}">'
-            "⚠ partial config"
-            "</span>"
+            f'<label for="{_attr(wid)}" class="uf-badge uf-badge-warn">⚠ partial config</label>'
         )
 
     notes = ir.get("notes") or []
     if notes:
-        tooltip = " · ".join(notes)
+        nid = f"{mount_id}-msg-note"
         label = "ⓘ note" if len(notes) == 1 else f"ⓘ {len(notes)} notes"
+        toggles.append(f'<input type="checkbox" id="{_attr(nid)}" class="uf-msg-toggle" hidden>')
+        bars.append(_msg_bar("uf-msg-bar-note", notes))
         badges.append(
-            f'<span class="uf-badge uf-badge-note" title="{_attr(tooltip)}">'
-            f"{label}"
-            "</span>"
+            f'<label for="{_attr(nid)}" class="uf-badge uf-badge-note">{_html(label)}</label>'
         )
 
     return f"""
+{''.join(toggles)}
+{''.join(bars)}
 <div class="uf-header">
   <div class="uf-name">{_html(ir.get("name", "model"))}</div>
   <div class="uf-arch">{_html(ir.get("architecture", ""))}</div>
