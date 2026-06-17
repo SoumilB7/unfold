@@ -24,7 +24,7 @@ from .attention import (
 )
 from .block_facts import ffn_from_block, info_with_block_fact
 from .declared_ops import build_declared_ops_view
-from .feed_forward import build_dense_ffn_view, build_ffn_view
+from .feed_forward import build_dense_ffn_view, build_ffn_view, build_parallel_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .modalities import (
     build_audio_path_view,
@@ -131,6 +131,8 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "moe": _from_block(build_moe_view),
     "gated_ffn": _from_block(build_ffn_view),
     "dense_ffn": _from_block(build_dense_ffn_view),
+    # DiffusionGemma: dense MLP ∥ MoE branch-and-merge.
+    "parallel_ffn": _from_block(build_parallel_ffn_view),
     # Model-level / path / tower / merge layouts.
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),

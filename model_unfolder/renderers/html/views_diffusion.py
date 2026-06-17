@@ -602,29 +602,54 @@ def _build_block_diffusion_loop_cards(ir: dict, info: dict, mount_id: str) -> st
     return "".join(cards)
 
 
+def _kv_store_glyph(parts, info, shadow_id, node_id, x, y, w, h, label, font_size=14):
+    """A KV cache drawn as a STORE, not a compute block.
+
+    Two offset cards behind the front rect read as a stack of stored per-layer
+    entries — that distinct shape (plus its place off the denoising chain) is why
+    it doesn't look like a pipeline stage.  It's storage shared between the
+    encoder (writer, once) and the decoder (reader, every step); the directional
+    write arrow in and read arrow out carry that asymmetry.
+    """
+    for off in (10, 5):
+        parts.append(_svg_tag("rect", {
+            "x": x + off, "y": y - off, "width": w, "height": h,
+            "rx": 10, "ry": 10, "fill": C["block"], "opacity": 0.42,
+            "stroke": C["block_alt"], "stroke-width": 0.6,
+        }))
+    return _rect_block(parts, info, shadow_id, node_id, x, y, w, h, label, font_size=font_size)
+
+
 def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
     """Generation-loop SVG for DiffusionGemma.
 
-    Left column : Prompt (accent) → Encoder ×N → KV Cache
-    Loop frame  : Canvas → Self-cond → Decoder ← KV → LM head → Sampler
-    Above frame : 256 tokens → output (accent)
-    Loop-back   : ONE solid arc, Sampler right → right rail → Canvas right.
-                  Shows the next-step renoise; self-cond prev-logits in card.
+    What the arrows explain — two processes sharing one store:
+      * SETUP (once, outside the loop): Prompt → Encoder → writes the KV store.
+      * LOOP  (≤48 steps): Canvas → Self-cond → Decoder → LM head → Sampler,
+        with the Decoder READING the KV store each step, and the Sampler feeding
+        its result back to the Canvas (renoise) and Self-cond (prev logits).
+
+    The KV cache is a store glyph (stack + write/read ports), not a pipeline
+    block: the encoder writes it once, the decoder reads it every step — that
+    write-once / read-each-step asymmetry is the whole point.  The denoising
+    chain is laid out with a UNIFORM gap so every flow arrow is the same length.
+    No arrow carries a text label; the topology (and the cards) carry the meaning.
     """
     n_layers = len(ir.get("layers", []))
     bd = ((ir.get("extras") or {}).get("block_diffusion")) or {}
     canvas_len = bd.get("canvas_length", 256)
 
-    w, h = 760, 660
-    enc_cx = 148
-    den_cx = 462
+    w, h = 760, 620
+    enc_cx = 152    # encoder column centre-x (left, outside the loop)
+    den_cx = 478    # denoising chain centre-x (inside the loop)
+    gap = 36        # the ONE vertical gap → every chain arrow is identical
 
     arrow_id, shadow_id = _ids(mount_id, "bdloop")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(28, 22, w - 56, h - 44, C["bg_outer"]))
 
-    # Denoising-loop frame
-    loop_x, loop_y, loop_w, loop_h = 258, 58, 432, 524
+    # ── Loop frame ────────────────────────────────────────────────────
+    loop_x, loop_y, loop_w, loop_h = 300, 96, 360, 492
     parts.append(_svg_tag("rect", {
         "x": loop_x, "y": loop_y, "width": loop_w, "height": loop_h,
         "rx": 18, "ry": 18, "fill": C["bg_inner"], "stroke": "none",
@@ -633,100 +658,87 @@ def _build_block_diffusion_view(ir: dict, info: dict, mount_id: str) -> str:
 
     pos: dict[str, dict] = {}
 
-    # --- Encoder column (bottom to top) ---
-    pos["bd_prompt"] = _rect_block(
-        parts, info, shadow_id, "bd_prompt",
-        enc_cx - 72, 590, 144, 44, "Prompt tokens",
-        font_size=14, accent=True)
+    # ── Denoising chain: stacked bottom→top with a uniform gap, so the five
+    # flow arrows between them are all exactly `gap` long. ──
+    chain = [
+        ("bd_canvas", 176, 52, [f"Canvas · {canvas_len} tokens", "init U(V)"], 13),
+        ("bd_self_cond", 172, 46, "Self-conditioning", 14),
+        ("bd_decoder", 228, 74, [f"Decoder  ×{n_layers}", "bidirectional layers"], 15),
+        ("bd_lm_head", 196, 50, "LM head · softcap", 14),
+        ("bd_sampler", 204, 58, ["Accept / renoise", "(entropy bound)"], 13),
+    ]
+    bottom = loop_y + loop_h - 20   # canvas bottom edge
+    for bid, bw, bh, label, fs in chain:
+        top = bottom - bh
+        pos[bid] = _rect_block(parts, info, shadow_id, bid,
+                               den_cx - bw / 2, top, bw, bh, label, font_size=fs)
+        bottom = top - gap          # next block sits one uniform gap higher
+
+    dec = pos["bd_decoder"]
+
+    # ── Encoder column (left, outside the loop) — KV store level with decoder ──
+    pos["bd_kv_cache"] = _kv_store_glyph(
+        parts, info, shadow_id, "bd_kv_cache",
+        enc_cx - 62, dec["cy"] - 23, 124, 46, "KV Cache")
+    kv = pos["bd_kv_cache"]
     pos["bd_encoder"] = _rect_block(
         parts, info, shadow_id, "bd_encoder",
-        enc_cx - 88, 466, 176, 66,
+        enc_cx - 92, kv["bottom"] + gap, 184, 72,
         [f"Encoder  ×{n_layers}", "causal layers"], font_size=15)
-    pos["bd_kv_cache"] = _rect_block(
-        parts, info, shadow_id, "bd_kv_cache",
-        enc_cx - 68, 342, 136, 46, "KV Cache", font_size=15)
+    enc = pos["bd_encoder"]
+    pos["bd_prompt"] = _rect_block(
+        parts, info, shadow_id, "bd_prompt",
+        enc_cx - 78, enc["bottom"] + gap, 156, 42, "Prompt tokens", font_size=14)
 
-    # --- Denoising chain (bottom to top, inside loop frame) ---
-    pos["bd_canvas"] = _rect_block(
-        parts, info, shadow_id, "bd_canvas",
-        den_cx - 88, 512, 176, 52,
-        [f"Canvas · {canvas_len} tokens", "init U(V)"], font_size=13)
-    pos["bd_self_cond"] = _rect_block(
-        parts, info, shadow_id, "bd_self_cond",
-        den_cx - 84, 416, 168, 48,
-        "Self-conditioning", font_size=14)
-    pos["bd_decoder"] = _rect_block(
-        parts, info, shadow_id, "bd_decoder",
-        den_cx - 112, 296, 224, 74,
-        [f"Decoder  ×{n_layers}", "bidirectional layers"], font_size=15)
-    pos["bd_lm_head"] = _rect_block(
-        parts, info, shadow_id, "bd_lm_head",
-        den_cx - 96, 192, 192, 50,
-        "LM head · softcap", font_size=14)
-    pos["bd_sampler"] = _rect_block(
-        parts, info, shadow_id, "bd_sampler",
-        den_cx - 100, 94, 200, 56,
-        ["Accept / renoise", "(entropy bound)"], font_size=13)
+    # ── Setup arrows: Prompt → Encoder → (writes) KV store ──
+    parts.append(_v_line(pos["bd_prompt"], enc, arrow_id))
+    parts.append(_v_line(enc, kv, arrow_id))
 
-    # --- Output above loop frame (accent = bookend) ---
-    pos["bd_output"] = _rect_block(
-        parts, info, shadow_id, "bd_output",
-        den_cx - 82, 14, 164, 38,
-        f"{canvas_len} tokens → output", font_size=13,
-        accent=True)
-
-    # --- Encoder column arrows (bottom → top) ---
-    parts.append(_v_line(pos["bd_prompt"], pos["bd_encoder"], arrow_id))
-    parts.append(_v_line(pos["bd_encoder"], pos["bd_kv_cache"], arrow_id))
-
-    # KV cache → decoder: horizontal-first elbow with label
-    kv = pos["bd_kv_cache"]
-    dec = pos["bd_decoder"]
-    parts.append(_elbow_hv(
-        kv["right"] + GAP, kv["cy"],
-        dec["left"] - GAP, dec["cy"],
-        arrow_id,
-    ))
-    mid_x = (kv["right"] + dec["left"]) / 2
-    parts.append(_svg_text(
-        mid_x, kv["cy"] - 12,
-        "reads KV",
-        {"text-anchor": "middle", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 11},
-    ))
-
-    # --- Denoising chain arrows (bottom → top) ---
-    parts.append(_v_line(pos["bd_canvas"], pos["bd_self_cond"], arrow_id))
-    parts.append(_v_line(pos["bd_self_cond"], pos["bd_decoder"], arrow_id))
-    parts.append(_v_line(pos["bd_decoder"], pos["bd_lm_head"], arrow_id))
-    parts.append(_v_line(pos["bd_lm_head"], pos["bd_sampler"], arrow_id))
-    parts.append(_v_line(pos["bd_sampler"], pos["bd_output"], arrow_id))
-
-    # --- Loop-back arc: sampler → right rail → canvas (SOLID, no dashes) ---
-    # The Sampler renoises non-accepted tokens; the updated canvas feeds the
-    # next denoising step.  Self-conditioning (prev logits) is in the card.
-    right_rail = loop_x + loop_w - 28
-    sam = pos["bd_sampler"]
-    can = pos["bd_canvas"]
-    r = 10
-    parts.append(_svg_tag("path", {
-        "d": (
-            f"M {sam['right'] + 5} {sam['cy']} "
-            f"L {right_rail - r} {sam['cy']} "
-            f"Q {right_rail} {sam['cy']} {right_rail} {sam['cy'] + r} "
-            f"L {right_rail} {can['cy'] - r} "
-            f"Q {right_rail} {can['cy']} {right_rail - r} {can['cy']} "
-            f"L {can['right'] + GAP} {can['cy']}"
-        ),
-        "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
-        "stroke-linecap": "round", "stroke-linejoin": "round",
-        "marker-end": f"url(#{arrow_id})",
+    # ── KV store → Decoder: a level read into the loop (decoder.cy == kv.cy) ──
+    parts.append(_svg_tag("line", {
+        "x1": kv["right"] + 5, "y1": kv["cy"],
+        "x2": dec["left"] - GAP, "y2": dec["cy"],
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
-    parts.append(_svg_text(
-        right_rail - 8, (sam["cy"] + can["cy"]) / 2,
-        "renoise",
-        {"text-anchor": "end", "dominant-baseline": "central",
-         "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
-    ))
+
+    # ── Denoising chain flow arrows (all `gap` long) ──
+    for lo, hi in zip(chain, chain[1:]):
+        parts.append(_v_line(pos[lo[0]], pos[hi[0]], arrow_id))
+
+    # ── Output: the loop's committed result exits the top of the frame ──
+    sam = pos["bd_sampler"]
+    parts.append(_svg_tag("line", {
+        "x1": den_cx, "y1": sam["top"], "x2": den_cx, "y2": loop_y - 22,
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "marker-end": f"url(#{arrow_id})", "fill": "none",
+    }))
+
+    # ── Feedback: the Sampler's result seeds the next step.  Two nested arcs
+    # (no labels) both ORIGINATE at the Sampler and run the right rails down to
+    # the Canvas (renoise) and Self-cond (prev logits) — nested so they never
+    # cross, identical weight so the loop reads as one feedback mechanism. ──
+    sc, can = pos["bd_self_cond"], pos["bd_canvas"]
+    rail_inner, rail_outer = loop_x + loop_w - 46, loop_x + loop_w - 22
+    r = 10
+
+    def _feedback(y_exit, rail, dst):
+        return (
+            f"M {sam['right'] + 5} {y_exit} "
+            f"L {rail - r} {y_exit} Q {rail} {y_exit} {rail} {y_exit + r} "
+            f"L {rail} {dst['cy'] - r} Q {rail} {dst['cy']} {rail - r} {dst['cy']} "
+            f"L {dst['right'] + GAP} {dst['cy']}"
+        )
+
+    for y_exit, rail, dst in (
+        (sam["cy"] - 7, rail_inner, sc),    # → Self-conditioning (shorter, inner)
+        (sam["cy"] + 7, rail_outer, can),   # → Canvas (longer, outer)
+    ):
+        parts.append(_svg_tag("path", {
+            "d": _feedback(y_exit, rail, dst),
+            "fill": "none", "stroke": C["arrow"], "stroke-width": 1.6,
+            "stroke-linecap": "round", "stroke-linejoin": "round",
+            "marker-end": f"url(#{arrow_id})",
+        }))
 
     return _svg(w, h, f"{ir.get('name', 'model')} block diffusion loop", parts)

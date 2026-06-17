@@ -144,30 +144,7 @@ def diffusion_gemma_layer_blocks(
     """
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
-
-    moe_desc, moe_facts = ffn_summary(ffn_detail(ffn)), []
-    if isinstance(moe_desc, tuple):
-        moe_desc, moe_facts = moe_desc
-    else:
-        moe_desc = moe_desc if isinstance(moe_desc, str) else ""
-    dense_int_str = _fmt(intermediate_size) if intermediate_size else hidden
-    parallel_ffn = {
-        "id": "ffn",
-        "role": "ffn",
-        "kind": "ffn",
-        "label": ["Parallel FFN", "MLP + MoE"],
-        "title": "Parallel FFN: dense MLP + MoE",
-        "description": (
-            f"Text4MLP (dense SwiGLU, intermediate={dense_int_str}) and TextMoE "
-            f"run in parallel from the same pre-FFN norm output. "
-            f"Their outputs are element-wise summed before post_feedforward_layernorm. "
-            + moe_desc
-        ),
-        "facts": list(moe_facts) + ([f"dense: {dense_int_str}"] if intermediate_size else []),
-        "view": ffn_view(ffn),
-        "detail": {"ffn": ffn_detail(ffn)},
-        "children": ffn_child_blocks(ffn, hidden_size),
-    }
+    parallel_ffn = _diffusion_gemma_ffn_block(ffn, hidden_size, intermediate_size)
 
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm (input_layernorm)",
@@ -185,6 +162,7 @@ def diffusion_gemma_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
+            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
             "label": "+",
             "title": "Residual add #1",
             "description": "layer input + post_attention_layernorm(attn_output)",
@@ -203,25 +181,89 @@ def diffusion_gemma_layer_blocks(
             "id": "add2",
             "role": "residual",
             "kind": "residual_add",
-            "residual_from": "add1",
+            # HF: residual is saved before pre_feedforward_layernorm (== rms2's
+            # input == add1's output).  Tapping rms2's input stem nests cleanly
+            # above the add1 bypass — same pattern as a standard Gemma2 layer.
+            "residual_from": "rms2",
+            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
             "label": "+",
             "title": "Residual add #2",
-            "description": "add1_output + post_ffn_ln(mlp_out + moe_out)",
+            "description": "post-attention residual + post_ffn_ln(mlp_out + moe_out)",
         },
-        {
-            "id": "layer_scalar",
-            "role": "scale",
-            "kind": "elementwise",
-            "label": "× layer_scalar",
-            "title": "Layer scalar (learned scale)",
-            "description": (
-                "Per-layer learned scalar that multiplies the entire layer output. "
-                "HF: hidden_states = hidden_states * self.layer_scalar. "
-                "Initialized to 1.0; learned during training to give each layer "
-                "independent output magnitude."
-            ),
-        },
+        # NOTE: `hidden_states * self.layer_scalar` is a Tier-3 property of the
+        # layer (a single learned scalar), not a computational block — it is
+        # surfaced as a layer annotation in the parser, never as a box.
     ]
+
+
+#: The MoE-specific node ids the MoE view actually draws (router → experts →
+#: sum).  Used to scope the MoE lane's child cards so they don't collide with the
+#: dense MLP lane's gate_proj/up_proj/… cards.
+_MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe"}
+
+
+def _diffusion_gemma_ffn_block(ffn: FFNSpec, hidden_size: int, intermediate_size: int) -> Block:
+    """The layer's parallel feed-forward block: dense MLP ∥ routed MoE → ⊕.
+
+    One layer-level block (clean central column) whose drill-down (the
+    ``parallel_ffn`` view) shows the branch-and-merge — the input splitting into
+    two lanes that sum.  Each lane is a real child card:
+      * ``ffn_mlp`` — the always-on dense SwiGLU MLP (Text4MLP), opens the gated
+        FFN view; its gate/up/act/mul/down ops are its children.
+      * ``ffn_moe`` — the routed MoE (TextMoE), opens the MoE view; its router /
+        experts / weighted-sum are its children.
+    """
+    dense = FFNSpec(
+        kind="dense",
+        activation=ffn.activation,
+        intermediate_size=intermediate_size or hidden_size,
+        gated=True,  # Text4MLP is a Gemma SwiGLU MLP
+    )
+    dense_desc, dense_facts = ffn_summary(ffn_detail(dense))
+    moe_desc, moe_facts = ffn_summary(ffn_detail(ffn))
+
+    mlp_lane = {
+        "id": "ffn_mlp",
+        "title": "Dense MLP (Text4MLP)",
+        "description": (
+            "A standard gated SwiGLU MLP that runs on every token — the always-on "
+            "dense path. " + dense_desc
+        ),
+        "facts": dense_facts,
+        "view": ffn_view(dense),
+        "detail": {"ffn": ffn_detail(dense)},
+        "children": ffn_child_blocks(dense, hidden_size),
+    }
+    moe_lane = {
+        "id": "ffn_moe",
+        "title": "Mixture of experts (TextMoE)",
+        "description": moe_desc,
+        "facts": moe_facts,
+        "view": "moe",
+        "detail": {"ffn": ffn_detail(ffn)},
+        # Scope to the nodes the MoE view draws so the dense lane keeps its own
+        # gate_proj/up_proj/… cards (no id collision across the two lanes).
+        "children": [c for c in ffn_child_blocks(ffn, hidden_size) if c["id"] in _MOE_NODE_IDS],
+    }
+    return {
+        "id": "ffn",
+        "role": "ffn",
+        "kind": "ffn",
+        "label": ["Feed-forward", "MLP ∥ MoE"],
+        "title": "Parallel feed-forward: dense MLP ∥ MoE",
+        "description": (
+            "Two feed-forward paths run in parallel on the same pre-FFN-norm "
+            "output: a dense SwiGLU MLP (Text4MLP, always active) and a routed "
+            "Mixture-of-Experts (TextMoE).  Their outputs are summed element-wise, "
+            "then post_feedforward_layernorm is applied.  Open either path below."
+        ),
+        "facts": moe_facts + dense_facts[-1:],
+        "view": "parallel_ffn",
+        "detail": {"ffn": ffn_detail(ffn)},
+        # The merge ⊕ is a Tier-2 connector glyph (static) in the view, so it
+        # needs no child card — only the two lanes are clickable blocks.
+        "children": [mlp_lane, moe_lane],
+    }
 
 
 def _norm_block(block_id: str, label: str, title: str, description: str,

@@ -531,13 +531,16 @@ def test_diffusion_gemma_block_diffusion():
     assert render["layout"] == "block_diffusion", "must route to block-diffusion view"
     assert ir["extras"]["block_diffusion"]["canvas_length"] == 256
 
-    # All 8 loop blocks must be present with the right ids
+    # All loop blocks must be present with the right ids.  The committed output
+    # is the arrow leaving the loop (folded into the sampler card) — not a
+    # standalone "just there" output block.
     expected_ids = {
         "bd_prompt", "bd_encoder", "bd_kv_cache", "bd_canvas",
-        "bd_self_cond", "bd_decoder", "bd_lm_head", "bd_sampler", "bd_output",
+        "bd_self_cond", "bd_decoder", "bd_lm_head", "bd_sampler",
     }
     loop_ids = {b["id"] for b in render["loop_blocks"]}
-    assert loop_ids == expected_ids, f"missing loop blocks: {expected_ids - loop_ids}"
+    assert loop_ids == expected_ids, f"loop block mismatch: {loop_ids ^ expected_ids}"
+    assert "bd_output" not in loop_ids, "output must not be a standalone block"
 
     # Every loop block must have a non-empty description (no bare undescribed blocks)
     for block in render["loop_blocks"]:
@@ -558,6 +561,43 @@ def test_diffusion_gemma_block_diffusion():
     assert "30.0" in lm_block["description"], "softcap value not surfaced in lm_head card"
 
     print(f"DiffusionGemma OK  — canvas={ir['extras']['block_diffusion']['canvas_length']}")
+
+
+def test_diffusion_gemma_block_worthiness():
+    """Gate C pin: the per-layer view obeys the three-tier block paradigm.
+
+    Tier-1 blocks (attention, the parallel FFN, norms) are clickable; Tier-2
+    connectors (residual ⊕) are static glyphs with no card; the Tier-3 learned
+    layer scalar is an annotation, never a block.
+    """
+    d = unfold(DIFFUSION_GEMMA_CONFIG)
+    ir = d.to_ir()
+    blocks = {b["id"]: b for b in ir["layers"][0]["blocks"]}
+
+    # Tier-3: layer_scalar is NOT a block — it's a layer annotation caption.
+    assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
+    assert ir["extras"]["render"]["layer_annotations"] == ["output × learned per-layer scalar"]
+
+    # Tier-2: residual adds are static connector glyphs (drawn, not clickable).
+    for add_id in ("add1", "add2"):
+        assert blocks[add_id]["kind"] == "residual_add"
+        assert blocks[add_id]["static"] is True, f"{add_id} must be a static connector"
+
+    # Tier-1: the real computation blocks are present and clickable.
+    assert blocks["attn"]["kind"] == "attention"
+    assert blocks["ffn"]["view"] == "parallel_ffn"
+
+    html = d.to_html()
+    # The connector glyphs are NOT clickable and have NO card.
+    for add_id in ("add1", "add2", "pf_add"):
+        assert f'data-id="{add_id}"' not in html, f"{add_id} must not be clickable"
+        assert f'data-card-id="{add_id}"' not in html, f"{add_id} must have no card"
+    # layer_scalar appears only as the annotation caption, never as a block/card.
+    assert 'data-id="layer_scalar"' not in html
+    assert "learned per-layer scalar" in html, "layer scalar annotation must render"
+    # Coupling stays clean with connectors demoted.
+    from model_unfolder.block_schema import validate_click_coupling
+    assert validate_click_coupling(html) == []
 
 
 def test_sliding_window_toggle_and_split():

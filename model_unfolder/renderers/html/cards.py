@@ -34,6 +34,10 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     for block in layer_blocks:
         kind = block.get("kind")
         node_id = block["id"]
+        # Tier-2 connectors (static) are glyphs on the topology, not clickable
+        # blocks — they get no inspect card (mirrors their non-clickable render).
+        if block.get("static"):
+            continue
         if kind == "attention":
             svg = block_detail_svg(ir, info, mount_id, block)
             if svg:
@@ -110,7 +114,7 @@ def _nested_panel(ir: dict, info: dict, mount_id: str, children: list[dict]) -> 
     panels: list[str] = [_nested_card("default", "", "")]
     for child in _unique_children(children):
         child_id = child.get("id")
-        if not child_id:
+        if not child_id or child.get("static"):
             continue
         svg = sub_block_detail_svg(ir, info, mount_id, child)
         title = child.get("title") or child.get("label") or child_id

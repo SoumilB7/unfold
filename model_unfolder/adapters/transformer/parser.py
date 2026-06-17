@@ -447,6 +447,9 @@ def parse(cfg: Any) -> ModelIR:
             ffn_intermediate_size=intermediate_size,
         )
         extras["block_diffusion"] = {"canvas_length": canvas_length}
+        # `hidden_states * self.layer_scalar` is a Tier-3 layer property (one
+        # learned scalar), surfaced as a caption — never a block.
+        extras["render"]["layer_annotations"] = ["output × learned per-layer scalar"]
         for layer in layers:
             layer.attention.qk_norm = True
             layer.blocks = diffusion_gemma_layer_blocks(

@@ -182,6 +182,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         block_w = block.get("w") or layout["w"]
         block_h = block.get("h") or layout["h"]
         font_size = block.get("font") or layout.get("font", 16)
+        # Tier-2 connectors (residual ⊕, gate ×) are drawn as glyphs on the
+        # topology, not first-class blocks: `static` makes them non-clickable
+        # with no card.  The block-tier paradigm lives in the adapter (which
+        # tags the block); the engine just honours the flag.
+        clickable = not block.get("static")
         top = y_cursor - block_h
         if layout["shape"] == "rect":
             geom = _rect_block(
@@ -190,11 +195,13 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                 _block_label(info, block["id"], block.get("label")),
                 font_size=font_size,
                 resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
+                clickable=clickable,
             )
         else:
             geom = _plus_block(
                 parts, info, shadow_id, block["id"],
                 cx, top + block_h / 2, sym=layout.get("sym", "+"),
+                clickable=clickable,
             )
         block_pos[block["id"]] = geom
         y_cursor = top - _BLOCK_GAP
@@ -257,6 +264,27 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         {"text-anchor": "middle", "dominant-baseline": "central",
          "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
     ))
+
+    # --- 7b. Layer-level annotations (Tier-3 properties of the layer) ---
+    # A property that applies to the whole layer but isn't its own computation
+    # (e.g. a learned output scalar) is a small caption inside the frame — never
+    # a box.  Adapters declare them in render.layer_annotations; the engine just
+    # places them top-left, opposite the × N badge.
+    annotations = ((ir.get("extras") or {}).get("render") or {}).get("layer_annotations") or []
+    ann_y = inner_y + 13
+    for ann in annotations:
+        chip_w = 18 + len(ann) * 6.4
+        parts.append(_svg_tag("rect", {
+            "x": inner_x + 14, "y": ann_y,
+            "width": chip_w, "height": 24, "rx": 12, "ry": 12,
+            "fill": "rgba(255,255,255,0.55)", "stroke": C["border"], "stroke-width": 0.5,
+        }))
+        parts.append(_svg_text(
+            inner_x + 14 + chip_w / 2, ann_y + 12, ann,
+            {"text-anchor": "middle", "dominant-baseline": "central",
+             "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11.5},
+        ))
+        ann_y += 30
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
 

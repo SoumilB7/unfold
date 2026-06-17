@@ -278,30 +278,20 @@ def block_diffusion_loop_blocks(
             "id": "bd_sampler",
             "title": "Accept / renoise (entropy bound)",
             "description": (
-                "Implements the entropy-bound sampler that decides which canvas "
-                "tokens to commit this step.  Positions are accepted in increasing "
-                "entropy order until cumulative entropy exceeds the bound ε=0.1 — "
-                "these accepted positions are approximately mutually independent.  "
-                "Non-accepted tokens are re-randomised (renoised) with new uniform "
-                "samples so the decoder sees fresh uncertainty at those positions "
-                "next step.  The accepted logits are also saved as "
-                "self_conditioning_logits for the next denoising step."
+                "The entropy-bound sampler decides which canvas tokens to commit "
+                "this step.  Positions are accepted in increasing entropy order "
+                "until cumulative entropy exceeds the bound ε=0.1 — these accepted "
+                "positions are approximately mutually independent.  Non-accepted "
+                "tokens are re-randomised (renoised) with new uniform samples so the "
+                "decoder sees fresh uncertainty there next step; the accepted logits "
+                "are saved as self_conditioning_logits.  When the stopping criterion "
+                f"fires (canvas stable for a threshold count of steps AND mean token "
+                "entropy below confidence_threshold), the argmax of the final logits "
+                f"gives the committed {canvas_length} tokens, which leave the loop and "
+                "are appended to the generated sequence — then a fresh canvas begins "
+                "the next block."
             ),
-            "facts": ["accepted → lock", "rest → renoise"],
-        },
-        {
-            "id": "bd_output",
-            "title": f"{canvas_length}-token canvas → output",
-            "description": (
-                f"When the stopping criterion fires (canvas stable for a threshold "
-                f"count of steps AND mean token entropy below confidence_threshold), "
-                f"the argmax of the final logits gives the committed {canvas_length} "
-                "tokens.  These are appended to the generated sequence.  Generation "
-                "then continues: the encoder processes the new context (including the "
-                "committed canvas) to produce fresh KV entries, and a new random "
-                "canvas begins the next denoising loop."
-            ),
-            "facts": [f"{canvas_length} tokens committed", "appended to sequence"],
+            "facts": ["accepted → lock", "rest → renoise", f"converged → {canvas_length} out"],
         },
     ]
 
