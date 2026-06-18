@@ -32,6 +32,9 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "cross_kv_source": attention.cross_kv_source,
         "compress_ratio": attention.compress_ratio,
         "index_topk": attention.index_topk,
+        "index_n_heads": attention.index_n_heads,
+        "index_head_dim": attention.index_head_dim,
+        "mrope_section": attention.mrope_section,
         "variant": attention.variant,
     }
 
@@ -377,7 +380,25 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "facts": ([f"{_fmt(v_v)} per head"] if v_v else []) + [f"{num_heads} heads"],
         },
     ]
-    return [
+    indexer_block = []
+    if attention.index_n_heads:
+        # DeepSeek-V3.2 DSA: the lightning indexer is a real sub-module (its own
+        # heads/dim) — a Tier-1 drill-down, not just a chip.
+        indexer_block = [{
+            "id": "mla_indexer",
+            "label": ["Sparse indexer", "(DSA)"],
+            "title": "DeepSeek Sparse Attention indexer",
+            "description": (
+                "A lightweight scorer with its own small heads that scores every key "
+                "against the query and keeps only the top-k per query; the latent "
+                "attention then runs over that sparse subset of the context."
+            ),
+            "facts": [f"{_fmt(attention.index_n_heads)} indexer heads",
+                      f"head dim {_fmt(attention.index_head_dim)}",
+                      f"top-{_fmt(attention.index_topk)} keys"],
+            "view": "dsa_indexer",
+        }]
+    return indexer_block + [
         {
             "id": "mla_query_path",
             "label": "Query path",

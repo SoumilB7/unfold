@@ -76,6 +76,32 @@ keys:
   - return_dict_in_generate
   - output_scores
   - prefix
+  - cache_implementation
+  - output_past
+
+  # --- MoE training / aux-loss knobs (not inference architecture) ---
+  # How experts are *trained* to balance load, not how the network computes —
+  # the routing the diagram DOES draw (scoring/grouping/top-k) is read separately.
+  - output_router_logits
+  - router_aux_loss_coef
+  - router_jitter_noise
+  - input_jitter_noise
+  - aux_loss_alpha
+  - seq_aux
+
+  # --- text-encoder (T5/CLIP) internals merged in from diffusion component
+  # configs --- the diffusion adapter draws the encoder as a tower (depth/width),
+  # not its T5-specific internals, so these are noise on the denoiser diagnostic.
+  - d_kv
+  - dropout_rate
+  - feed_forward_proj
+  - is_gated_act
+  - num_decoder_layers
+  - relative_attention_num_buckets
+  - relative_attention_max_distance
+  - initializer_factor
+  - projection_dim
+  - scalable_attention
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:

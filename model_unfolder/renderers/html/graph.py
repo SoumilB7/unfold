@@ -54,7 +54,9 @@ KIND: dict[str, Glyph] = {
     "linear":       Glyph("rect", 200, 50, 15, label="Linear"),
     "activation":   Glyph("rect", 200, 46, 15, label="Activation"),
     "router":       Glyph("rect", 520, 50, 14, label="Router"),
+    "select":       Glyph("rect", 248, 46, 14, label="Select"),   # routing selection step (group-limit / top-k)
     "expert":       Glyph("rect", 120, 54, 15, label="Expert"),
+    "shared_expert":Glyph("rect", 150, 54, 14, label="Shared expert"),
     "opaque":       Glyph("rect", 256, 56, 15, label="Custom block"),
     "residual_add": Glyph("circle", 28, 28, sym="+", label="Residual add"),
     "gate_mul":     Glyph("circle", 28, 28, sym="×", label="Multiply"),

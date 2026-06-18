@@ -30,6 +30,7 @@ def ffn_detail(ffn: FFNSpec) -> dict:
         "num_shared_experts": ffn.num_shared_experts,
         "expert_intermediate_size": ffn.expert_intermediate_size,
         "routing": ffn.routing,
+        "activation_clip": ffn.activation_clip,
     }
 
 
@@ -161,12 +162,16 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     if router_detail:
         router_desc = f"Scores every expert per token and keeps the top-k \u2014 {router_detail}."
     router_facts = [f"{hidden} \u2192 {n_experts}", f"top-{n_active}"]
-    return [
+    blocks: list[Block] = [
         {
             "id": "router",
             "title": "Router",
             "description": router_desc,
             "facts": router_facts,
+            # Drill into the gating policy (score \u2192 [group-limit] \u2192 top-k \u2192
+            # [renorm] \u2192 [\u00d7scale]); built from the routing facts below.
+            "view": "moe_router",
+            "detail": {"ffn": ffn_detail(ffn)},
         },
         {
             "id": "expert_1",
@@ -206,10 +211,29 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         },
         {
             "id": "add_moe",
+            "kind": "residual_add",
+            "static": True,  # Tier-2 connector: the weighted-sum ⊕ glyph, not a block
             "title": "Weighted sum",
-            "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities.",
+            "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities"
+            + (", then adds the shared expert(s)." if n_shared else "."),
         },
     ]
+    if n_shared:
+        # The shared expert(s) run on EVERY token (no routing) and are summed with
+        # the routed output — a Tier-1 always-on FFN, not part of the gated set.
+        shared_inter = _fmt((ffn.expert_intermediate_size or ffn.intermediate_size or 0) * n_shared)
+        blocks.insert(-1, {
+            "id": "shared_expert",
+            "title": "Shared expert",
+            "description": (
+                f"A dense {activation} FFN that runs on every token (it bypasses the "
+                "router) and is added to the routed-expert sum — always-on capacity "
+                "shared across all tokens."
+            ),
+            "facts": [f"{hidden} → {shared_inter} → {hidden}",
+                      f"{n_shared} shared, always active"],
+        })
+    return blocks
 
 
 def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:

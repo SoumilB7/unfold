@@ -305,6 +305,19 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
         Edge("mla_kv_path", "attn_apply_v"),
         *core_edges,
     ]
+    # DeepSeek-V3.2 DSA: a lightweight indexer (its own heads/dim) scores all keys
+    # and selects the top-k for the scores to run over — a real sub-module, drawn
+    # as a third path feeding the scores.  Strictly gated on index_n_heads, so no
+    # other MLA model (V3 / Kimi / GLM) is touched.
+    if attn.get("index_n_heads"):
+        topk = attn.get("index_topk")
+        ops.insert(3, Op("mla_indexer", "subgraph",
+                         ["Sparse indexer", f"top-{topk}" if topk else "top-k"],
+                         in_features=hidden,
+                         meta={"index_n_heads": attn.get("index_n_heads"),
+                               "index_head_dim": attn.get("index_head_dim"),
+                               "index_topk": topk}))
+        edges += [Edge("hidden", "mla_indexer"), Edge("mla_indexer", "scaled_scores")]
     return Region("attention", "attention", "mla", ops, edges, template="mla")
 
 

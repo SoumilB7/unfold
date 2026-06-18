@@ -18,6 +18,16 @@ def test_transformer_vocab_loads():
     assert ec.load_transformer_typing()["stages"]
 
 
+def test_layer_type_labels_externalized_and_cover_modern_spellings():
+    labels = ec.load_layer_type_labels()
+    # All four mask groups present, loaded from YAML (not hardcoded in the parser).
+    assert set(labels) == {"full", "sliding", "compressed_sparse", "heavily_compressed"}
+    # The spellings whose absence used to produce false "treated as causal" warnings.
+    assert "attention" in labels["full"]                  # Nemotron-H / hybrid stacks
+    assert "deepseek_sparse_attention" in labels["full"]  # DeepSeek-V3.2 DSA
+    assert "" in labels["full"] and "sliding_attention" in labels["sliding"]
+
+
 def test_diffusor_vocab_loads():
     assert "num_layers" in ec.load_diffusion_aliases()
     typing = ec.load_diffusion_typing()

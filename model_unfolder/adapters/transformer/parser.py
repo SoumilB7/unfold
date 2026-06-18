@@ -38,7 +38,7 @@ from __future__ import annotations
 from typing import Any
 
 from . import debug
-from ...everchanging import load_aliases
+from ...everchanging import load_aliases, load_layer_type_labels
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -61,10 +61,13 @@ from .special_parts.modalities.detect import cross_attention_layers as _cross_at
 _ALIASES: dict[str, list[str]] = load_aliases()
 
 
-_SLIDING_LABELS = {"sliding_attention", "sliding"}
-_FULL_LABELS    = {"full_attention", "full", "global", "global_attention", "causal", ""}
-_COMPRESSED_SPARSE_LABELS = {"compressed_sparse_attention", "compressed_sparse", "csa"}
-_HEAVILY_COMPRESSED_LABELS = {"heavily_compressed_attention", "hierarchical_compressed_attention", "hca"}
+# Per-layer attention-type label vocabulary — data, not code (everchanging/
+# transformer/layer_types.yaml).  Add a new spelling there, not here.
+_LAYER_TYPE_LABELS = load_layer_type_labels()
+_SLIDING_LABELS = set(_LAYER_TYPE_LABELS["sliding"])
+_FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
+_COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
+_HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
@@ -261,6 +264,10 @@ def parse(cfg: Any) -> ModelIR:
     rotary_dim           = _g(text_cfg, "rotary_dim")
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
     rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
+    # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
+    # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
+    _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
+    mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
 
     # ---- QK-Norm ----
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
@@ -294,6 +301,8 @@ def parse(cfg: Any) -> ModelIR:
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
     moe_routing = _moe_routing(text_cfg) if moe_active else None
+    # gpt-oss clamps its SwiGLU activation to ±swiglu_limit — a Tier-3 property.
+    activation_clip = _g(text_cfg, "swiglu_limit")
 
     # ---- Cross-layer KV
     #  sharing (the last N layers reuse K/V from earlier) ----
@@ -363,7 +372,13 @@ def parse(cfg: Any) -> ModelIR:
             cross_attention=is_cross_attn_layer,
             cross_kv_source="projected image states" if is_cross_attn_layer else None,
             compress_ratio=compress_ratio,
-            index_topk=_g(text_cfg, "index_topk") if mask == "compressed_sparse" else None,
+            # Sparse-attention indexer fan-in. CSA declares it alongside a
+            # compress_ratio; DeepSeek-V3.2 DSA declares its own indexer geometry
+            # (index_n_heads/index_head_dim) — read both so neither is dropped.
+            index_topk=_g(text_cfg, "index_topk"),
+            index_n_heads=_g(text_cfg, "index_n_heads"),
+            index_head_dim=_g(text_cfg, "index_head_dim"),
+            mrope_section=mrope_section,
         )
 
         is_dense_at_layer = _is_dense_at_layer(
@@ -387,6 +402,7 @@ def parse(cfg: Any) -> ModelIR:
                 num_shared_experts=num_shared_experts,
                 expert_intermediate_size=moe_intermediate_size or intermediate_size,
                 routing=moe_routing,
+                activation_clip=activation_clip,
             )
         else:
             ffn = FFNSpec(
@@ -394,6 +410,7 @@ def parse(cfg: Any) -> ModelIR:
                 activation=activation,
                 intermediate_size=intermediate_size,
                 gated=_is_gated(activation, norm_kind),
+                activation_clip=activation_clip,
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []

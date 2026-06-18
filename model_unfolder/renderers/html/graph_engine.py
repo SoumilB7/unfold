@@ -170,7 +170,12 @@ def render_graph(
         ny = top["top"] - 20
         parts.append(_svg_text(cx, ny, graph.note, {
             "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11}))
-        regions.append(point(cx, ny - 6))
+        # Register the note's full horizontal extent (not just a point) so the
+        # canvas grows to contain it — otherwise a wide or off-centre note (e.g.
+        # when a side-input shifts the flow column) clips at the edge.
+        note_half = len(graph.note) * 3.4  # ≈ half a mono char (font 11) per char
+        regions.append({"left": cx - note_half, "right": cx + note_half,
+                        "top": ny - 12, "bottom": ny})
 
     # --- 8. aside fact panel (heading + mono rows) ---
     # Tucked beside the rows it actually overlaps (the upper spine is narrow),

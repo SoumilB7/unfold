@@ -247,6 +247,15 @@ def describe_attention(attention: dict) -> str:
             text += f"; index top-k {_fmt_int(attention.get('index_topk'))}"
     if attention.get("mask") == "heavily_compressed":
         text += f"; HCA compress ratio {_fmt_int(attention.get('compress_ratio'))}"
+    if attention.get("index_n_heads"):
+        # DeepSeek-V3.2 DSA: a separate lightweight indexer scores all keys and
+        # keeps the top-k per query for the (MLA) attention to attend over.
+        text += (
+            f"; DeepSeek Sparse Attention — a lightweight indexer "
+            f"({_fmt_int(attention.get('index_n_heads'))} heads × "
+            f"{_fmt_int(attention.get('index_head_dim'))}) keeps the top-"
+            f"{_fmt_int(attention.get('index_topk'))} keys per query"
+        )
     # Surface structural flags as annotations
     extras = []
     if attention.get("qk_norm"):
@@ -319,6 +328,17 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append(f"{attention.get('num_heads')} heads")
         _dim_fact(attention, facts)
 
+    if attention.get("index_n_heads"):
+        # DeepSeek-V3.2 DSA: a separate lightweight indexer scores all keys and
+        # keeps only the top-k per query, so the (MLA) attention runs sparsely.
+        desc += (" DeepSeek Sparse Attention adds a lightweight indexer that scores "
+                 "all keys and keeps only the top-k per query, so this attention runs "
+                 "over a sparse subset of the context.")
+
+    if attention.get("mrope_section"):
+        desc += (" Multimodal RoPE splits the rotary dimensions across temporal, "
+                 "height and width position axes (for interleaved text + image/video tokens).")
+
     if is_sliding(attention) and attention.get("window_size"):
         facts.append(f"window {_fmt_int(attention.get('window_size'))}")
     if attention.get("mask") == "compressed_sparse":
@@ -327,6 +347,11 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
             facts.append(f"index top-{_fmt_int(attention.get('index_topk'))}")
     if attention.get("mask") == "heavily_compressed":
         facts.append(f"HCA ratio {_fmt_int(attention.get('compress_ratio'))}")
+    if attention.get("index_n_heads"):
+        facts.append(f"DSA top-{_fmt_int(attention.get('index_topk'))} keys")
+        facts.append(f"indexer {_fmt_int(attention.get('index_n_heads'))}×{_fmt_int(attention.get('index_head_dim'))}")
+    if attention.get("mrope_section"):
+        facts.append("M-RoPE " + "/".join(str(s) for s in attention["mrope_section"]))
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
@@ -363,6 +388,8 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
         if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
             facts.append(f"{100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active")
         facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
+        if ffn.get("activation_clip"):
+            facts.append(f"clamped ±{ffn['activation_clip']:g}")
         return desc, facts
     if ffn.get("gated") is None:
         # Config declares the FFN and its inner width, but not whether it gates
@@ -376,8 +403,11 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
                 "projecting back down.")
     else:
         desc = "Two-layer MLP — expand, apply the non-linearity, project back."
-    return desc, [activation_label(ffn.get("activation")),
-                  f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
+    facts = [activation_label(ffn.get("activation")),
+             f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
+    if ffn.get("activation_clip"):
+        facts.append(f"clamped ±{ffn['activation_clip']:g}")
+    return desc, facts
 
 
 def router_facts(ffn: dict) -> list[str]:

@@ -48,7 +48,18 @@ class Block(TypedDict, total=False):
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
     components: list[dict]        # typed sub-facts inside a compound stage
+    # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
+    static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join
+                                  # (residual ⊕, gate ×, split, concat), NON-clickable,
+                                  # no card.  The renderer uses `clickable = not static`
+                                  # and the card builder skips static blocks.  A True
+                                  # here is the single switch that demotes a candidate
+                                  # from a box to wiring — the inverse of a Tier-1 block.
     # --- layout hints (renderer geometry; non-default topologies) ---
+    branch_side: str              # "left" | "right" — this block is a parallel branch
+                                  # drawn off the central column (not in the chain),
+                                  # converging into the `feeds` merge (e.g. dense MLP ∥
+                                  # MoE).  Distinct from `lane`, which is a side rail.
     lane: str                     # side lane placement (parallel/PLE/cross-attn)
     tap_from: str                 # block id this one taps its input from
     feeds: str                    # block id this one feeds into

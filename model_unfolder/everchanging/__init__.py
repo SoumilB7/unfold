@@ -59,6 +59,15 @@ def load_transformer_typing() -> dict[str, list[str]]:
     return {"stages": data.get("stages") or []}
 
 
+def load_layer_type_labels() -> dict[str, list[str]]:
+    """Per-layer attention-type label groups (``transformer/layer_types.yaml``):
+    the ``layer_types`` config spellings mapped to the mask the renderer draws
+    (``full`` / ``sliding`` / ``compressed_sparse``)."""
+    data = load("transformer", "layer_types")
+    return {k: data.get(k) or []
+            for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
+
+
 # --- diffusor domain --------------------------------------------------------
 
 def load_diffusion_aliases() -> dict[str, list[str]]:
@@ -132,6 +141,7 @@ __all__ = [
     "load_aliases",
     "load_ignored_fields",
     "load_transformer_typing",
+    "load_layer_type_labels",
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",

@@ -24,6 +24,7 @@ def decoder_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
+            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
             "label": "+",
             "title": "Residual add",
             "description": "block input + attention output",
@@ -37,6 +38,7 @@ def decoder_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms2",
+            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
             "label": "+",
             "title": "Residual add",
             "description": "post-attention + FFN output",
@@ -80,6 +82,7 @@ def parallel_decoder_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
+            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
             "label": "+",
             "title": "Residual add (parallel)",
             "description": "layer input + attention output + FFN output (one combined step)",
@@ -199,7 +202,7 @@ def diffusion_gemma_layer_blocks(
 #: The MoE-specific node ids the MoE view actually draws (router → experts →
 #: sum).  Used to scope the MoE lane's child cards so they don't collide with the
 #: dense MLP lane's gate_proj/up_proj/… cards.
-_MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe"}
+_MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe", "shared_expert"}
 
 
 def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_size: int) -> list[Block]:
