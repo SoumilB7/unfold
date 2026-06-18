@@ -462,6 +462,52 @@ def test_pixart_single_stream_only():
     assert ir.hidden_size == 16 * 72
 
 
+# --- Diffusion auto-depth harness: recursive denoiser conformance ------------
+# The package bakes every drill depth into the standalone HTML up front, so
+# click-coupling over the FULL html is the recursive-leaf guarantee (every
+# clickable node at every depth resolves to a card). This locks the structural
+# depth (cross-attn sublayer, AdaLN gates, VAE/encoder drills) across families.
+
+_AURAFLOW = {"_class_name": "AuraFlowTransformer2DModel", "num_mmdit_layers": 4,
+             "num_single_dit_layers": 32, "attention_head_dim": 256,
+             "num_attention_heads": 8, "joint_attention_dim": 2048, "in_channels": 4}
+_HUNYUANDIT = {"_class_name": "HunyuanDiT2DModel", "num_layers": 40,
+               "num_attention_heads": 16, "hidden_size": 1408, "cross_attention_dim": 1024}
+
+_DEPTH_FIXTURES = {"flux_mmdit": FLUX, "pixart_cross": PIXART, "sdxl_unet": SDXL_UNET,
+                   "auraflow": _AURAFLOW, "hunyuandit": _HUNYUANDIT}
+
+
+def _walk_blocks(blocks):
+    for b in blocks or []:
+        if isinstance(b, dict):
+            yield b
+            yield from _walk_blocks(b.get("children"))
+
+
+@pytest.mark.parametrize("name", sorted(_DEPTH_FIXTURES))
+def test_diffusion_recursive_depth_conforms(name):
+    cfg = _DEPTH_FIXTURES[name]
+    d = unfold(cfg)
+    ir = d.ir
+    # 1. recursion bottoms out: every block carries a registered view OR a
+    #    description (a leaf) — no bare, undrillable, undescribed block.
+    from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
+    render = (ir.extras or {}).get("render") or {}
+    trees = [getattr(L, "blocks", []) for L in ir.layers] + \
+            [render.get("model_blocks") or [], render.get("loop_blocks") or []]
+    for blocks in trees:
+        for b in _walk_blocks(blocks):
+            if b.get("static"):
+                continue
+            assert b.get("view") in VIEW_REGISTRY or b.get("description") or b.get("children"), \
+                f"{name}: block {b.get('id')!r} is a bare leaf (no view/description)"
+    # 2. recursive coupling: every clickable node at every drill depth → a card.
+    html = d.to_html(standalone=True)
+    assert validate_block_tree(ir) == []
+    assert validate_click_coupling(html) == []
+
+
 # Real FLUX.1-dev model_index.json wiring (the pipeline component map).
 FLUX_INDEX = {
     "_class_name": "FluxPipeline",
@@ -552,6 +598,29 @@ COGVIDEO_STYLE = {
 }
 
 
+def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
+    """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
+    self-attn → cross-attn(to text) → FFN — each AdaLN-gated where the source gates
+    (self + FFN). MM-DiT (joint) has NO separate cross-attention sublayer."""
+    d = unfold(PIXART)
+    ids = [b["id"] for b in d.ir.layers[0].blocks]
+    # the three-sublayer chain in order
+    assert ids[:11] == ["rms1", "attn", "gate_msa", "add1",
+                        "xattn_norm", "cross_attn", "add_xattn",
+                        "rms2", "ffn", "gate_mlp", "add2"]
+    cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
+    assert cross.get("view") == "cross_attention" and cross.get("diffusion_stage") == "cross_attention"
+    # AdaLN gates are Tier-2 static connectors on self-attn + FFN (not on cross-attn)
+    assert all(b.get("static") for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp"))
+    assert next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn").get("static")
+    html = d.to_html(standalone=True)
+    assert "Cross-attention to text" in html and validate_click_coupling(html) == []
+
+    # MM-DiT (joint_attention_dim) must NOT grow a cross-attention sublayer.
+    mmdit_ids = [b["id"] for b in unfold(FLUX).ir.layers[0].blocks]
+    assert "cross_attn" not in mmdit_ids
+
+
 def test_video_dit_detected_and_honest():
     """Transformer3DModel classes are diffusion denoisers — never the LLM
     adapter (the Wan misparse: hidden 0, no loop, fake decoder)."""
@@ -561,10 +630,13 @@ def test_video_dit_detected_and_honest():
     assert ir["hidden_size"] == 1536                      # dim spelling
     assert ir["layers"][0]["ffn"]["intermediate_size"] == 8960   # ffn_dim
     html = d.to_html(standalone=True)
-    assert "Text Cross-Attn" in html                      # cross-attn DiT, not MM-DiT
+    # cross-attn DiT: a SEPARATE cross-attention sublayer (self → cross → FFN), not MM-DiT
+    assert "Cross-Attention" in html and "Cross-attention to text" in html
+    block_ids = [b["id"] for b in d.ir.layers[0].blocks]
+    assert "cross_attn" in block_ids and "add_xattn" in block_ids
     assert "MM-DiT" not in html
     assert ">Frames<" in html                             # video output, not "Image"
-    assert validate_click_coupling(html) is None or validate_click_coupling(html) == []
+    assert validate_click_coupling(html) == []
 
 
 def test_concat_joint_video_dit_is_not_called_dual_stream():

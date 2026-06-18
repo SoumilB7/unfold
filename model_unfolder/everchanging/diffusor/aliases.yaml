@@ -27,7 +27,7 @@ rope_theta: [rope_theta]
 # Conditioning / stream dims.
 joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)
 text_embed_dim: [text_embed_dim]                     # concatenated-joint text width (CogVideoX/Mochi/HunyuanVideo)
-cross_attention_dim: [cross_attention_dim, text_dim]  # cross-attn text width (PixArt; Wan spells it text_dim)
+cross_attention_dim: [cross_attention_dim, text_dim, cap_feat_dim]  # cross-attn text width (PixArt; Wan: text_dim; Lumina: cap_feat_dim caption features)
 caption_projection_dim: [caption_projection_dim, caption_channels]
 pooled_projection_dim: [pooled_projection_dim]
 guidance_embeds: [guidance_embeds]

@@ -31,13 +31,12 @@ def _text_source_label(ir: dict):
     encoders, answering 'where did the second CLIP go?'."""
     extras = ir.get("extras") or {}
     encs = (extras.get("diffusion") or {}).get("text_encoders") or []
-    cad = (extras.get("unet") or {}).get("cross_attention_dim")
-    tail = f" → {cad:,}" if cad else ""
+    # The cross-attention width is a dim — it belongs on a card/chip, never on the
+    # block label (design policy). The label shows only the structural origin: the
+    # concatenation of N text encoders ("where did the second CLIP go?").
     if len(encs) >= 2:
         fam = "CLIP" if all("CLIP" in str(e) for e in encs) else "encoders"
-        return ["Encoded text", f"{len(encs)}× {fam}{tail}"]
-    if cad:
-        return ["Encoded text", f"{cad:,}-d"]
+        return ["Encoded text", f"{len(encs)}× {fam} (concat)"]
     return "Encoded text"
 
 

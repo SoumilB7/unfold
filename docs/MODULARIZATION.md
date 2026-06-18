@@ -162,6 +162,36 @@ Ordered by value. None are blocking; each is additive.
 
 ---
 
+## 4b. Diffusion modularization (DiT / MMDiT / UNet / VAE)
+
+The diffusion adapter is partitioned (`adapters/diffusor/`) but reuses the transformer
+IR / renderer / params, so the same standard and gates apply. The connection Sable
+(`docs/diffusion_connection_audit.md`) drove these, conformed against `diffusers` 0.38
+block `forward()`s and locked by an auto-depth harness:
+
+- **Standard §5.4** — diffusion-native structural rules (MM-DiT dual-stream = two lanes +
+  one joint attention; AdaLN modulation = Tier-2 `×` gate connectors; single-stream
+  concat→gated proj_out; cross-attn DiT sublayer; VAE `norm→SiLU→conv`).
+- **Cross-attention sublayer (DONE)** — the broadest fix: the cross-attn DiT class
+  (PixArt · Sana · Wan · CogVideoX-excluded(concat) · LTX · Allegro · Hunyuan-DiT · Lumina)
+  now renders the real **three sublayers** (`self-attn → cross-attn(to text) → FFN`), each
+  AdaLN-gated where the source gates, with the cross-attention a clickable solid block
+  (`view:"cross_attention"`). **Modular:** conditioning topology is a **presence-set** over
+  config dims — `joint_attention_dim` → dual-stream, `text_embed_dim` → concat-joint,
+  `cross_attention_dim` (alias `text_dim`/`cap_feat_dim`) → cross-attn — so a new family
+  with one of these dims falls out of the rules, no new branch. *(The "no missing out" pass
+  caught Lumina spelling its cross-attn width `cap_feat_dim` — fixed with one alias row.)*
+- **AdaLN `×` gates** — the universal DiT conditioning connector, on the DiT residuals.
+- **Auto-depth harness** — `test_diffusion_recursive_depth_conforms` walks every block to
+  its leaves and asserts recursive coupling across 5 families (FLUX/PixArt/SDXL/AuraFlow/
+  HunyuanDiT) — the diffusion analogue of the LLM connection-conformance.
+
+**Open (layout-heavy, deferred for pixel review):** the **dual-stream two-column** render
+(image ∥ text sharing one joint-attention node — a new layout primitive) and the
+**single-stream concat→proj_out**; today MM-DiT dual-stream is structurally annotated
+(rich variant + AdaLN gates) and the layer map shows both block types, but the second
+stream isn't drawn as its own column. See `docs/diffusion_connection_audit.md` §fix-shape.
+
 ## 5. How to extend without re-reading this
 
 - **New family →** run the **Sable** procedure (`BLOCK_STANDARD.md` §6): render

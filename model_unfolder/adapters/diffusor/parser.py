@@ -275,11 +275,20 @@ def parse(cfg: Any) -> ModelIR:
     layers = []
     idx = 0
     for _ in range(num_layers):
-        layers.append(decoder_layer(
+        layer = decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
             _dit_ffn(declared_act, intermediate_size, cfg),
             hidden_size, norm_kind=norm_kind,
-        ))
+        )
+        # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
+        # self-attention and the FFN — insert it before the AdaLN gates so each
+        # sublayer (self / cross / FFN) reads honestly.
+        if cond["cross_attn_sublayer"]:
+            layer.blocks = _insert_cross_attention(layer.blocks, num_heads, head_dim, norm_kind)
+        # DiT AdaLN-Zero: the timestep gates each sublayer output before its
+        # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
+        layer.blocks = _insert_adaln_gates(layer.blocks)
+        layers.append(layer)
         idx += 1
     for _ in range(num_single):
         layers.append(parallel_decoder_layer(
@@ -289,10 +298,13 @@ def parse(cfg: Any) -> ModelIR:
         ))
         idx += 1
 
+    # In a cross-attention DiT the text enters the dedicated cross-attention
+    # sublayer; otherwise it joins the (self/joint) attention.
+    text_target = "cross_attn" if cond["cross_attn_sublayer"] else "attn"
     for layer in layers:
         layer.blocks.extend(_conditioning_side_blocks(
             text_in_attention, pooled_in_adaln, bool(geom["guidance_embeds"]),
-            geom["adaln_dim"]))
+            geom["adaln_dim"], text_target=text_target))
 
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
     # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
@@ -358,8 +370,81 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
     )
 
 
+def _adaln_gate(gid: str, which: str) -> dict:
+    """A Tier-2 AdaLN gate (×) connector: the per-block gate from the timestep
+    that scales a sublayer's output before its residual add (AdaLN-Zero)."""
+    return {
+        "id": gid, "role": "residual", "kind": "gate_mul", "static": True,
+        "label": "×", "title": f"AdaLN gate ({which})",
+        "description": (
+            f"Scales the {which} output by the per-block AdaLN gate from the "
+            "timestep (AdaLN-Zero) before the residual add: h = h + gate · "
+            f"{which}(modulated norm)."
+        ),
+    }
+
+
+def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
+    """Insert the AdaLN gate (×) just before each residual ⊕, so the diagram shows
+    the timestep gating each sublayer output (the DiT conditioning mechanism) as a
+    drawn connector, not only as prose on the side rail."""
+    out: list[dict] = []
+    for b in blocks:
+        if b.get("id") == "add1":
+            out.append(_adaln_gate("gate_msa", "attention"))
+        elif b.get("id") == "add2":
+            out.append(_adaln_gate("gate_mlp", "feed-forward"))
+        out.append(b)
+    return out
+
+
+def _insert_cross_attention(blocks: list[dict], num_heads: int, head_dim, norm_kind: str) -> list[dict]:
+    """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
+    self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
+    Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Image tokens (Q) attend
+    to the encoded text (K/V) — a distinct sublayer the `forward` runs as `attn2`,
+    with its own residual.  Conformed to `SanaTransformerBlock` / `WanTransformerBlock`
+    / `PixArt` (`norm2 → attn2(encoder_hidden_states) → ⊕`)."""
+    norm_label = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(norm_kind, "Normalization")
+    heads_fact = f"{num_heads} heads" if num_heads else None
+    cross = [
+        {
+            "id": "xattn_norm", "role": "norm", "kind": "norm",
+            "diffusion_stage": "norm",
+            "label": norm_label, "title": "Pre-cross-attention norm",
+            "description": f"{norm_label} before the cross-attention sublayer.",
+        },
+        {
+            "id": "cross_attn", "role": "attention", "kind": "attention",
+            "diffusion_stage": "cross_attention",
+            "label": ["Cross-Attention", "(to text)"],
+            "title": "Cross-attention to text",
+            "description": (
+                "Image tokens form the queries; the encoded prompt (text-encoder K/V) "
+                "is attended — a separate sublayer (attn2) from self-attention, with its "
+                "own residual. This is how text conditions a cross-attention DiT."
+            ),
+            "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
+            "view": "cross_attention",
+        },
+        {
+            "id": "add_xattn", "role": "residual", "kind": "residual_add",
+            "diffusion_stage": "residual",
+            "residual_from": "xattn_norm", "static": True,
+            "label": "+", "title": "Residual add (cross-attention)",
+            "description": "self-attention output + cross-attention output",
+        },
+    ]
+    out: list[dict] = []
+    for b in blocks:
+        out.append(b)
+        if b.get("id") == "add1":          # right after the self-attention residual
+            out.extend(cross)
+    return out
+
+
 def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
-                              guidance: bool, adaln_dim=None) -> list[dict]:
+                              guidance: bool, adaln_dim=None, text_target: str = "attn") -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
     config says attention consumes text, the text token sequence -> the attention."""
@@ -389,7 +474,7 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
             "kind": "conditioning",
             "diffusion_stage": "text_conditioning",
             "lane": "external_bottom_right",
-            "feeds": "attn",
+            "feeds": text_target,
             "offset_y": 0,
             "label": ["Text tokens", "conditioning"],
             "title": "Text conditioning (attention)",
@@ -445,15 +530,17 @@ def _concat_joint_variant(rope_note: str) -> dict:
 def _cross_dit_variant(rope_note: str) -> dict:
     """Cross-attention DiT block (PixArt / Hunyuan-DiT / Wan / LTX / Allegro):
     latent tokens self-attend, then read the text through cross-attention."""
+    # The cross-attention is drawn as its OWN sublayer block, so this (the self-
+    # attention) is labelled plainly — not "+ cross-attn".
     return {
-        "short": "Self + XAttn",
-        "tag": "self + cross-attention",
-        "label": ["Self-Attention", "+ Text Cross-Attn"],
-        "title": "DiT block — self-attention + text cross-attention",
+        "short": "Self-Attn",
+        "tag": "self-attention",
+        "label": ["Self-Attention", "(image tokens)"],
+        "title": "Self-attention — cross-attention DiT",
         "desc": (
             "Latent patch tokens attend to each other (full bidirectional "
-            "self-attention), then a separate cross-attention sublayer reads "
-            "the encoded text tokens as K/V. Modulated by the timestep via "
+            "self-attention); the encoded text is read by the separate "
+            "cross-attention sublayer above. Modulated by the timestep via "
             "AdaLN. " + rope_note
         ),
     }
@@ -588,6 +675,10 @@ def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
         "text_in_attention": has_joint or has_concat or has_cross,
         "pooled_in_adaln": has_pooled,
         "pre_block_fusion": has_fusion,
+        # Cross-attention DiT (PixArt / Sana / Wan / CogVideoX / Mochi / LTX /
+        # Hunyuan-DiT / Lumina): a SEPARATE cross-attention sublayer (attn2: image Q,
+        # text K/V) sits between self-attention and the FFN — three sublayers, not two.
+        "cross_attn_sublayer": has_cross and not has_joint and not has_concat,
     }
 
 

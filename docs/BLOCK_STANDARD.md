@@ -271,6 +271,36 @@ The stages exist in the taxonomy for completeness; do not build views for them.
 | Spatial up/downsample | 1 (quiet) | stage block |
 | Skip-connection concat (UNet) | **2** | `static` `concat` glyph — **not** a box (use the existing concat, never a "skip connection" block) |
 
+### 5.4 DiT / MMDiT block — structural rules (the diffusion-native depth)
+
+The denoiser block is where diffusion departs most from an LLM layer, and where the
+diagram must be *structural*, not annotation-only (conformed against `FluxTransformerBlock`
+/ `JointTransformerBlock` / `PixArtTransformerBlock`):
+
+- **AdaLN modulation is a connector, not just a side note.** The timestep (`temb`,
+  optionally + pooled text) produces per-block **shift · scale · gate**. These are **drawn
+  connections**, not prose on a side block:
+  - **gate** (`gate_msa`, `gate_mlp`) → a **Tier-2 `gate_mul` `×` glyph** on the attention
+    output and the FFN output, *before* each residual `⊕` (`h = h + gate · sublayer(...)`).
+  - **shift / scale** → modulate the pre-sublayer norm; drawn as the `adaln_cond` side rail
+    feeding the norm (Tier-3 detail on the norm), with `×(1+scale)+shift` named in prose.
+  - The `adaln_cond` block is the **source** of these gates (a splitter — one temb feeds
+    every gate), tagged so its fan-out to the `×` glyphs reads as conditioning.
+- **MM-DiT double-stream = two lanes + one joint attention.** Image tokens and text tokens
+  are **two separate streams** (each its own norm · FFN · gated residuals) that meet **only
+  at the joint attention** (one attention node fed by both, returning to both). Draw it as
+  two columns sharing one `attention` node — **not** one stream with a "dual-stream" label.
+- **Single-stream = parallel attn ∥ MLP → concat → gated proj_out.** Not a plain combined
+  add: the attention and MLP run in parallel off one norm, their outputs **concat**, a
+  single `proj_out` projects, then the AdaLN `×gate` and the residual `⊕`.
+- **Cross-attention DiT** (PixArt / Hunyuan-DiT): a `cross_attention` sub-block to the
+  encoded-text K/V (reuse the transformer `cross_attention` + `encoded text` side source),
+  plus AdaLN-single (one shared modulation table).
+- **Patchify / unpatchify** are Tier-1 stage blocks; the **split** of patches and the axial
+  RoPE are wiring/Tier-3.
+- **VAE ResNet** must show the **nonlinearity** (SiLU) node between norm and conv
+  (`norm → SiLU → conv`), and the up/downsample *before* conv1 — matching `ResnetBlock2D`.
+
 ---
 
 ## 6. Rolling a family onto the standard (the Sable checklist)
