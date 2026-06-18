@@ -276,10 +276,23 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     ops += core_ops
     edges = [
         Edge("hidden", "q_proj"), Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj"),
-        Edge("q_proj", "scaled_scores"), Edge("k_proj", "scaled_scores"),
         Edge("v_proj", "attn_apply_v"),
         *core_edges,
     ]
+    # RoPE: the real forward rotates Q and K before the scores (apply_rotary_pos_emb).
+    # Show it on the Q and K lanes — unless the family doesn't use RoPE (ALiBi /
+    # learned absolute) or this specific layer is NoPE (Llama-4 interleaved NoPE).
+    if attn.get("rope", True) and not attn.get("no_rope") and not cross:
+        ops += [
+            Op("q_rope", "rope", ["apply RoPE", "Q"]),
+            Op("k_rope", "rope", ["apply RoPE", "K"]),
+        ]
+        edges += [
+            Edge("q_proj", "q_rope"), Edge("q_rope", "scaled_scores"),
+            Edge("k_proj", "k_rope"), Edge("k_rope", "scaled_scores"),
+        ]
+    else:
+        edges += [Edge("q_proj", "scaled_scores"), Edge("k_proj", "scaled_scores")]
     return Region("attention", "attention", kind, ops, edges, template=kind)
 
 

@@ -25,6 +25,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "window_size": attention.window_size,
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
+        "rope": attention.rope,
         "bias": attention.bias,
         "shared": attention.shared,
         "no_rope": attention.no_rope,
@@ -217,6 +218,15 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if attention.rope and not attention.no_rope and not cross_attention:
+        # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
+        # the two rope nodes the SDPA region now draws on the Q/K lanes.
+        cards += [
+            {"id": "q_rope", "title": "Apply RoPE (Q)",
+             "description": "Rotary position embedding applied to the query heads before the scores."},
+            {"id": "k_rope", "title": "Apply RoPE (K)",
+             "description": "Rotary position embedding applied to the key heads before the scores."},
+        ]
     if generic:
         # These cards are SHARED across stages of different width (the panel dedups
         # by id). Per-stage dims would be wrong on the shared card, so drop them —

@@ -38,7 +38,7 @@ from __future__ import annotations
 from typing import Any
 
 from . import debug
-from ...everchanging import load_aliases, load_layer_type_labels
+from ...everchanging import load_aliases, load_layer_type_labels, load_layer_topology
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -68,6 +68,10 @@ _SLIDING_LABELS = set(_LAYER_TYPE_LABELS["sliding"])
 _FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
 _COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
 _HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
+
+# Per-family macro-topology (post/sandwich norm, flag-less parallel residual) —
+# data, not code (everchanging/transformer/layer_topology.yaml).
+_LAYER_TOPOLOGY = load_layer_topology()
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
@@ -221,7 +225,18 @@ def parse(cfg: Any) -> ModelIR:
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"))
-    norm_placement = "pre"
+    # Norm placement (pre / post / double-sandwich) is architectural for a few
+    # families and carries no config flag — looked up by model_type from data.
+    _mt_candidates = {model_type, str(_g(text_cfg, "model_type") or "").lower()}
+    norm_placement = next(
+        (_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
+         if mt in _LAYER_TOPOLOGY["norm_placement"]),
+        "pre",
+    )
+    # RoPE is the default for decoder LLMs; ALiBi / learned-absolute families
+    # (BLOOM/MPT/GPT-2/OPT) don't apply it — drawing a RoPE step there would be
+    # fabricated wiring.
+    uses_rope = not (_mt_candidates & set(_LAYER_TOPOLOGY["no_rope"]))
 
     if not num_layers:
         warnings.append("Config missing num_hidden_layers (and aliases) — layer list will be empty.")
@@ -276,7 +291,12 @@ def parse(cfg: Any) -> ModelIR:
     use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
 
     # ---- Layer topology ----
-    use_parallel_residual = bool(_g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn"))
+    # Parallel residual is usually a config flag, but some families (Cohere) are
+    # architecturally parallel with no flag — recognised by model_type from data.
+    use_parallel_residual = bool(
+        _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
+        or _mt_candidates & set(_LAYER_TOPOLOGY["parallel_residual"])
+    )
 
     # ---- MoE ----
     num_experts         = get("num_experts", 0)
@@ -367,6 +387,7 @@ def parse(cfg: Any) -> ModelIR:
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
+            rope=uses_rope,
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,

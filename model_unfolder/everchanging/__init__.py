@@ -68,6 +68,23 @@ def load_layer_type_labels() -> dict[str, list[str]]:
             for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
 
 
+def load_layer_topology() -> dict:
+    """Per-family macro-topology (``transformer/layer_topology.yaml``): which
+    model_types use post/sandwich norm placement or flag-less parallel residual.
+
+    Returns ``{"norm_placement": {model_type: pre|post|double},
+    "parallel_residual": [model_type, ...]}``."""
+    data = load("transformer", "layer_topology")
+    placement: dict[str, str] = {}
+    for item in data.get("norm_placement") or []:
+        if isinstance(item, str) and "=" in item:
+            mt, _, place = item.partition("=")
+            placement[mt.strip()] = place.strip()
+    return {"norm_placement": placement,
+            "parallel_residual": list(data.get("parallel_residual") or []),
+            "no_rope": list(data.get("no_rope") or [])}
+
+
 # --- diffusor domain --------------------------------------------------------
 
 def load_diffusion_aliases() -> dict[str, list[str]]:
@@ -142,6 +159,7 @@ __all__ = [
     "load_ignored_fields",
     "load_transformer_typing",
     "load_layer_type_labels",
+    "load_layer_topology",
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",

@@ -10,39 +10,89 @@ from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 
 
 def decoder_layer_blocks(
-    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
+    norm_kind: str = "rmsnorm", norm_placement: str = "pre",
 ) -> list[Block]:
+    """Per-layer block topology for a sequential decoder layer.
+
+    ``norm_placement`` selects where the norms sit relative to each sublayer —
+    the real architectural axis that distinguishes families (verified against the
+    HF ``DecoderLayer.forward``):
+
+    * ``pre``    — norm on the sublayer INPUT  (Llama/Mistral/Qwen/…): ``r + sub(norm(h))``
+    * ``post``   — norm on the sublayer OUTPUT (OLMo-2):                ``r + norm(sub(h))``
+    * ``double`` — norm on BOTH ends (Gemma-2/3 sandwich):  ``r + post_ln(sub(pre_ln(h)))``
+    """
+    if norm_placement == "post":
+        return _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    if norm_placement == "double":
+        return _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    return _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+
+
+def _add_block(block_id: str, residual_from: str, title: str, description: str) -> Block:
+    """A Tier-2 residual ⊕ connector (a glyph on the join, no card)."""
+    return {
+        "id": block_id, "role": "residual", "kind": "residual_add",
+        "residual_from": residual_from, "static": True,
+        "label": "+", "title": title, "description": description,
+    }
+
+
+def _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm",
-                    _norm_desc(norm_kind, "before attention"),
-                    facts=[f"dim {hidden}"]),
+                    _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
-        {
-            "id": "add1",
-            "role": "residual",
-            "kind": "residual_add",
-            "residual_from": "rms1",
-            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
-            "label": "+",
-            "title": "Residual add",
-            "description": "block input + attention output",
-        },
+        _add_block("add1", "rms1", "Residual add", "block input + attention output"),
         _norm_block("rms2", norm_label, "Pre-FFN norm",
-                    _norm_desc(norm_kind, "before the FFN"),
-                    facts=[f"dim {hidden}"]),
+                    _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
-        {
-            "id": "add2",
-            "role": "residual",
-            "kind": "residual_add",
-            "residual_from": "rms2",
-            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
-            "label": "+",
-            "title": "Residual add",
-            "description": "post-attention + FFN output",
-        },
+        _add_block("add2", "rms2", "Residual add", "post-attention + FFN output"),
+    ]
+
+
+def _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
+    """OLMo-2 post-norm: each sublayer runs on the raw residual stream and its
+    OUTPUT is normed before the add (``r + norm(sub(h))``)."""
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+    return [
+        _attention_block(attention, hidden_size),
+        _norm_block("post_attn_ln", norm_label, "Post-attention norm",
+                    f"{norm_label} applied to the attention OUTPUT before the residual add "
+                    "(post-norm placement).", facts=[f"dim {hidden}"]),
+        _add_block("add1", "attn", "Residual add", "block input + normed attention output"),
+        _ffn_block(ffn, hidden_size),
+        _norm_block("post_ffn_ln", norm_label, "Post-FFN norm",
+                    f"{norm_label} applied to the FFN OUTPUT before the residual add "
+                    "(post-norm placement).", facts=[f"dim {hidden}"]),
+        _add_block("add2", "ffn", "Residual add", "post-attention residual + normed FFN output"),
+    ]
+
+
+def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
+    """Gemma-2/3 sandwich norm: a norm BEFORE and AFTER each sublayer
+    (``r + post_ln(sub(pre_ln(h)))``) — four norms per layer."""
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+    return [
+        _norm_block("rms1", norm_label, "Pre-attention norm (input_layernorm)",
+                    _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
+        _attention_block(attention, hidden_size),
+        _norm_block("post_attn_ln", norm_label, "Post-attention norm",
+                    f"{norm_label} applied to the attention OUTPUT before the first residual add "
+                    "(sandwich norm).", facts=[f"dim {hidden}"]),
+        _add_block("add1", "rms1", "Residual add", "block input + post-norm(attention output)"),
+        _norm_block("rms2", norm_label, "Pre-FFN norm (pre_feedforward_layernorm)",
+                    _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
+        _ffn_block(ffn, hidden_size),
+        _norm_block("post_ffn_ln", norm_label, "Post-FFN norm (post_feedforward_layernorm)",
+                    f"{norm_label} applied to the FFN OUTPUT before the second residual add "
+                    "(sandwich norm).", facts=[f"dim {hidden}"]),
+        _add_block("add2", "rms2", "Residual add", "post-attention residual + post-norm(FFN output)"),
     ]
 
 

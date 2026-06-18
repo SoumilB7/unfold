@@ -870,6 +870,40 @@ def test_dsa_indexer_is_a_clickable_subblock_only_when_declared():
     assert 'data-id="mla_indexer"' not in render_block_detail(ir2, info2, "a", attn2)
 
 
+def test_layer_norm_placement_matches_source_topology():
+    """Connection fidelity (Gate A.6): the per-layer norm/residual topology must
+    match the real HF DecoderLayer.forward for families that depart from the
+    default sequential pre-norm — Gemma sandwich, OLMo-2 post-norm, Cohere parallel."""
+    base = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
+                num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
+
+    def ids(cfg):
+        L = parse(cfg).layers[-1]
+        return L.norm_placement, [b["id"] for b in L.blocks], {b["id"]: b for b in L.blocks}
+
+    # Gemma-2/3 sandwich: input_ln → attn → post_attn_ln → ⊕ → pre_ffn_ln → ffn → post_ffn_ln → ⊕
+    pl, order, by = ids(dict(base, model_type="gemma2", sliding_window=512))
+    assert pl == "double"
+    assert order == ["rms1", "attn", "post_attn_ln", "add1", "rms2", "ffn", "post_ffn_ln", "add2"]
+    assert by["add1"]["residual_from"] == "rms1" and by["add1"]["static"]
+
+    # OLMo-2 post-norm: attn → post_attn_ln → ⊕ → ffn → post_ffn_ln → ⊕ (no pre-norms)
+    pl, order, by = ids(dict(base, model_type="olmo2"))
+    assert pl == "post"
+    assert order == ["attn", "post_attn_ln", "add1", "ffn", "post_ffn_ln", "add2"]
+    assert by["add1"]["residual_from"] == "attn"  # taps the sublayer input (= layer input)
+
+    # Cohere parallel (no config flag): one shared norm feeds attn ∥ ffn → one combined ⊕
+    pl, order, by = ids(dict(base, model_type="cohere"))
+    assert by["ffn"].get("lane") and by["ffn"].get("feeds") == "add1"
+    assert "add2" not in by  # single combined residual add
+
+    # Regression: a standard family stays sequential pre-norm.
+    pl, order, _ = ids(dict(base, model_type="llama"))
+    assert pl == "pre"
+    assert order == ["rms1", "attn", "add1", "rms2", "ffn", "add2"]
+
+
 def test_single_kv_gemma4_stays_gqa_view():
     cfg = dict(GEMMA4_31B_CONFIG)
     text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])

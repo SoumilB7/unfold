@@ -1,0 +1,36 @@
+# Per-layer macro-topology that is ARCHITECTURAL (baked into the modeling code),
+# not switched by a config flag — keyed by model_type.  This is how the parser
+# knows a family departs from the default sequential pre-norm decoder layer
+# WITHOUT a config signal to read.  Verified against each family's HF
+# `DecoderLayer.forward` (see docs/llm_connection_audit.md).
+#
+# A model_type absent here = the default: sequential, pre-norm.
+# Add a family by adding a row — no code change.
+#
+# Block style (one `- item` per line) so the built-in loader works without PyYAML.
+
+# Norm placement relative to each sublayer:
+#   pre    = norm on the sublayer INPUT   (default; Llama/Mistral/Qwen/…)
+#   post   = norm on the sublayer OUTPUT  (OLMo-2)
+#   double = norm on BOTH ends, "sandwich" (Gemma-2/3)
+norm_placement:
+  - "gemma2=double"
+  - "gemma3=double"
+  - "gemma3_text=double"
+  - "olmo2=post"
+
+# Architecturally parallel-residual families that carry NO use_parallel_residual /
+# parallel_attn config flag (attention ∥ FFN off one input norm, one combined add).
+parallel_residual:
+  - cohere
+  - cohere2
+
+# Families that do NOT apply rotary position embedding to Q/K — they use ALiBi
+# (BLOOM/MPT) or a learned absolute position table (GPT-2/OPT/GPT-Neo).  The
+# attention drill omits the RoPE step for these (it would be fabricated wiring).
+no_rope:
+  - bloom
+  - mpt
+  - gpt2
+  - gpt_neo
+  - opt
