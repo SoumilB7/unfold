@@ -373,20 +373,27 @@ def _scheduler_step_view(geom: dict) -> dict:
             "one denoising step toward z_0.")
     else:
         return {}                      # unrecognised prediction type — no fabrication
+    # Purpose-built graph view (NOT the declared-ops chain): the step combines the
+    # primary latent z_t with a side-scaled prediction, a merge the ops engine
+    # mis-lays out (floating/duplicated ⊕). The family-specific labels flow through
+    # ``detail.scheduler_step``; one declaration, the view + JSON read it.
     return {
-        "view": "ops",
-        "detail": {"ops": [
-            {"id": "sched_pred", "kind": "input",
-             "label": [f"{sym} {what}", "from denoiser"],
-             "meta": {"desc": f"The denoiser's predicted {what} for this timestep, "
-                              "handed to the scheduler each step."}},
-            {"id": "sched_scale", "kind": "elementwise", "fn": "mul",
-             "label": scale_label, "from": ["sched_pred"],
-             "meta": {"desc": scale_desc}},
-            {"id": "sched_step", "kind": "elementwise", "fn": "add",
-             "label": step_label, "from": ["hidden", "sched_scale"],
-             "meta": {"desc": step_desc}},
-        ]},
+        "view": "scheduler_step",
+        "detail": {"scheduler_step": {
+            "sym": sym, "what": what,
+            "scale_label": scale_label, "scale_desc": scale_desc,
+            "step_label": step_label, "step_desc": step_desc,
+        }},
+        # Cards for the clickable nodes in the step view (the ⊕ is a static connector).
+        "children": [
+            {"id": "sch_pred", "title": f"Predicted {what}",
+             "description": f"The denoiser's predicted {what} ({sym}) for this timestep, "
+                            "handed to the scheduler each step."},
+            {"id": "sch_scale", "title": scale_label, "description": scale_desc},
+            {"id": "sch_zt", "title": "Current latent z_t",
+             "description": "The latent being denoised — the loop-carried value the "
+                            "scheduler updates into z_{t-1}."},
+        ],
     }
 
 

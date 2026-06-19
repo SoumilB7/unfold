@@ -407,6 +407,15 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
                       f"head dim {_fmt(attention.index_head_dim)}",
                       f"top-{_fmt(attention.index_topk)} keys"],
             "view": "dsa_indexer",
+            "children": [
+                {"id": "dsa_proj", "title": "Indexer projections",
+                 "description": f"The indexer's own lightweight query/key projections "
+                                f"({_fmt(attention.index_n_heads)} heads × {_fmt(attention.index_head_dim)})."},
+                {"id": "dsa_score", "title": "Index scores",
+                 "description": "Scores every key against the query with the indexer heads (cheap, separate from the main attention)."},
+                {"id": "dsa_topk", "title": f"Keep top-{_fmt(attention.index_topk)}",
+                 "description": f"Selects the top-{_fmt(attention.index_topk)} keys per query; the latent attention runs only over those."},
+            ],
         }]
     return indexer_block + [
         {

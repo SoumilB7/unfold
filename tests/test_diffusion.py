@@ -705,22 +705,32 @@ def test_video_latent_shape_uses_declared_temporal_geometry():
     assert "shape [16 channels]" in html_wan
 
 
-def test_scheduler_step_is_a_declared_ops_view():
-    """The scheduler block opens the update rule as declared ops: the
-    denoiser's prediction enters as a side source, scaled and combined with
-    z_t — with derived cards for every step (third projection)."""
-    html = unfold(FLUX).to_html(standalone=True)          # FlowMatchEuler ⇒ flow family
-    for cid in ("sched_pred", "sched_scale", "sched_step"):
-        assert f'data-card-id="{cid}"' in html
-    assert "from denoiser" in html
-    assert "flow matching" in html                        # declared-facts chip
-    # epsilon family from a declared prediction_type
-    cfg = dict(COGVIDEO_STYLE,
-               scheduler=["diffusers", "DDIMScheduler"],
-               _scheduler_config={"num_train_timesteps": 1000, "prediction_type": "epsilon"})
-    html2 = unfold(cfg).to_html(standalone=True)
-    assert 'data-card-id="sched_step"' in html2
-    assert "Removes the scaled noise estimate" in html2
+def test_scheduler_step_renders_a_clean_combine_not_floating_ops():
+    """The scheduler step opens the update rule as a purpose-built graph: the
+    denoiser's prediction is scaled and combined with z_t into ONE ⊕ → z_{t-1}.
+    (Regression: the declared-ops chain floated/duplicated the ⊕ because the
+    combine merges the primary latent with a side-scaled input — same failure mode
+    the self-conditioning view hit.)"""
+    from model_unfolder.adapters.diffusor.parser import _scheduler_geom
+    from model_unfolder.adapters.diffusor.blocks import _scheduler_step_view
+
+    # flow-matching family (FLUX / FlowMatchEuler): velocity prediction, Euler step
+    sv = _scheduler_step_view({"scheduler": "Flow Match Euler", "scheduler_flow_matching": True})
+    assert sv["view"] == "scheduler_step"
+    s = sv["detail"]["scheduler_step"]
+    assert s["sym"] == "v̂" and "v̂" in s["step_label"] and "+" in s["step_label"]
+
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "from denoiser" in html and "current latent" in html
+    assert validate_click_coupling(html) == []            # no floating/orphan ⊕
+
+    # epsilon family from a declared prediction_type → z_t − σ_t·ε̂
+    eps = _scheduler_step_view({"scheduler": "DDIM", "scheduler_train_timesteps": 1000,
+                                "scheduler_prediction_type": "epsilon"})
+    assert eps["view"] == "scheduler_step"
+    assert eps["detail"]["scheduler_step"]["sym"] == "ε̂"
+    # an undeclared scheduler keeps the honest prose card (no fabricated step)
+    assert _scheduler_step_view({}) == {}
 
 
 def test_scheduler_display_names_handle_acronym_runs():

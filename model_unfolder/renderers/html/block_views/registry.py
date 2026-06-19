@@ -29,6 +29,7 @@ from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .moe_router import build_moe_router_view
 from .dsa_indexer import build_dsa_indexer_view
 from .cross_attention import build_cross_attention_view
+from .scheduler_step import build_scheduler_step_view
 from .modalities import (
     build_audio_path_view,
     build_multimodal_fusion_view,
@@ -139,6 +140,8 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "dsa_indexer": _from_block(build_dsa_indexer_view),
     # Cross-attention DiT sublayer: image Q attends encoded-text K/V.
     "cross_attention": _from_block(build_cross_attention_view),
+    # Scheduler/sampler step: prediction → scale → combine with z_t → z_{t-1}.
+    "scheduler_step": _from_block(build_scheduler_step_view),
     "gated_ffn": _from_block(build_ffn_view),
     "dense_ffn": _from_block(build_dense_ffn_view),
     # Model-level / path / tower / merge layouts.

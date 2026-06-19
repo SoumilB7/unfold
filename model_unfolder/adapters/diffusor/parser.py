@@ -302,9 +302,13 @@ def parse(cfg: Any) -> ModelIR:
     # sublayer; otherwise it joins the (self/joint) attention.
     text_target = "cross_attn" if cond["cross_attn_sublayer"] else "attn"
     for layer in layers:
+        # The AdaLN conditioning fans into the gate × it drives (gate_msa/gate_mlp)
+        # as well as the norm — so the × shows WHAT it multiplies by (the timestep
+        # gate), not a dangling input.
+        gate_ids = [b["id"] for b in layer.blocks if b.get("kind") == "gate_mul"]
         layer.blocks.extend(_conditioning_side_blocks(
             text_in_attention, pooled_in_adaln, bool(geom["guidance_embeds"]),
-            geom["adaln_dim"], text_target=text_target))
+            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
 
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
     # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
@@ -426,6 +430,18 @@ def _insert_cross_attention(blocks: list[dict], num_heads: int, head_dim, norm_k
             ),
             "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
             "view": "cross_attention",
+            "children": [
+                {"id": "xa_q", "title": "Query projection (image)",
+                 "description": "Linear over the image tokens producing the queries."},
+                {"id": "xa_k", "title": "Key projection (text)",
+                 "description": "Linear over the encoded text producing the keys the image queries score against."},
+                {"id": "xa_v", "title": "Value projection (text)",
+                 "description": "Linear over the encoded text producing the values mixed in after softmax."},
+                {"id": "xa_scores", "title": "Cross-attention scores",
+                 "description": "Q (image) · Kᵀ (text) / √d — how much each image token attends to each text token."},
+                {"id": "xa_softmax", "title": "Softmax",
+                 "description": "Normalizes the scores into attention weights over the text tokens."},
+            ],
         },
         {
             "id": "add_xattn", "role": "residual", "kind": "residual_add",
@@ -444,7 +460,8 @@ def _insert_cross_attention(blocks: list[dict], num_heads: int, head_dim, norm_k
 
 
 def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
-                              guidance: bool, adaln_dim=None, text_target: str = "attn") -> list[dict]:
+                              guidance: bool, adaln_dim=None, text_target: str = "attn",
+                              gate_ids: list[str] | None = None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
     config says attention consumes text, the text token sequence -> the attention."""
@@ -455,6 +472,9 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
         "diffusion_stage": "timestep_conditioning",
         "lane": "external_bottom_left",
         "feeds": "rms1",
+        # the gate × nodes this conditioning drives — drawn so each × shows it
+        # multiplies by the timestep's gate, not a dangling input.
+        "also_feeds": list(gate_ids or []),
         "offset_y": 0,
         "label": ["Timestep" + (" + guidance" if guidance else ""), "conditioning"],
         "title": "Timestep conditioning (AdaLN)",

@@ -145,6 +145,38 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
     return {"routing": ffn.routing}
 
 
+def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) -> list[Block]:
+    """Cards for the clickable gate-pipeline steps drawn by the moe_router view.
+    Declared for every possible step; the view draws only the ones the config
+    enables, and unused cards are harmless (never orphaned)."""
+    r = ffn.routing or {}
+    scoring = r.get("scoring_func") or "softmax"
+    cards = [
+        {"id": "g_gate", "title": "Gate projection",
+         "description": f"Linear projecting each token to one score per expert ({hidden} → {n_experts})."},
+        {"id": "g_score", "title": f"{scoring} score",
+         "description": f"{scoring} over the gate logits → an affinity per expert."},
+        {"id": "g_topk", "title": f"Select top-{n_active}",
+         "description": f"Routes each token to its top-{n_active} experts by score."},
+    ]
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        cards.append({"id": "g_group", "title": "Group-limit",
+                      "description": f"Group-limited routing: keep the top {r['topk_group']} of "
+                                     f"{r['n_group']} expert groups before the per-expert top-k."})
+    if r.get("norm_topk_prob"):
+        cards.append({"id": "g_norm", "title": "Renormalize weights",
+                      "description": "Renormalizes the selected experts' gate weights to sum to 1."})
+    if r.get("topk_method") == "noaux_tc":
+        cards.append({"id": "g_bias", "title": "Learned bias (load-balancing)",
+                      "description": "A learned per-expert bias added for SELECTION only "
+                                     "(aux-loss-free balancing); the mixing weights use the raw scores."})
+    if r.get("routed_scaling_factor"):
+        cards.append({"id": "g_scale", "title": f"× {r['routed_scaling_factor']} (routed scale)",
+                      "description": f"Scales the routed-expert gate weights by "
+                                     f"routed_scaling_factor = {r['routed_scaling_factor']}."})
+    return cards
+
+
 def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
@@ -172,6 +204,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             # [renorm] \u2192 [\u00d7scale]); built from the routing facts below.
             "view": "moe_router",
             "detail": {"ffn": ffn_detail(ffn)},
+            # Cards for the clickable gate steps (the \u00d7scale is a static connector).
+            "children": _moe_router_step_cards(ffn, hidden, n_experts, n_active),
         },
         {
             "id": "expert_1",

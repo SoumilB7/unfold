@@ -519,7 +519,7 @@ def _draw_side_block(
         _draw_bottom_side_block(
             parts, info, shadow_id, block, feeds_geom,
             inner_x, inner_w, input_cy, input_geom, arrow_id,
-            block_w, block_h, font_size, is_diffusion,
+            block_w, block_h, font_size, is_diffusion, block_pos,
         )
         return
     if feeds_geom and str(block.get("lane", "")).startswith("external"):
@@ -610,12 +610,16 @@ def _draw_bottom_side_block(
     block_h: float,
     font_size: int,
     is_diffusion: bool = False,
+    block_pos: dict | None = None,
 ) -> None:
     """A side input drawn at the BOTTOM (aligned with the main input row), routed
     up the outside of the inner region and bent into the target's near edge.
 
     Used for conditioning rails (timestep -> AdaLN, text -> attention): they read
     as inputs entering from below, not as states floating in from the sides.
+    ``also_feeds`` targets (e.g. the AdaLN gate × nodes this conditioning drives)
+    each get their own elbow on a staggered left lane, so a gate × visibly shows
+    the conditioning it multiplies by instead of a dangling input.
     """
     lane = str(block.get("lane", "external_bottom_left"))
     left = lane.endswith("left")
@@ -647,6 +651,14 @@ def _draw_bottom_side_block(
     )
     # Up the outside, then a single bend horizontally into the target edge.
     parts.append(_elbow_vh(geom["cx"], geom["top"], target_x, feeds_geom["cy"], arrow_id))
+    # Fan into the gate × nodes this conditioning drives (AdaLN gate_msa/gate_mlp):
+    # a shared trunk up the block's left, bending into each gate's left edge at the
+    # gate's height (mirror of the right-side residual loops) — so each × shows the
+    # timestep gate entering it instead of a dangling input.
+    also = [t for t in (block.get("also_feeds") or []) if block_pos and t in block_pos]
+    for tid in also:
+        g = block_pos[tid]
+        parts.append(_elbow_vh(geom["cx"], geom["top"], g["left"] - GAP, g["cy"], arrow_id))
 
 
 def _draw_external_side_block(

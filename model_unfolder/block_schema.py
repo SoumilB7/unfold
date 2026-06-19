@@ -63,6 +63,8 @@ class Block(TypedDict, total=False):
     lane: str                     # side lane placement (parallel/PLE/cross-attn)
     tap_from: str                 # block id this one taps its input from
     feeds: str                    # block id this one feeds into
+    also_feeds: "list[str]"       # additional block ids this side source fans into
+                                  # (e.g. AdaLN conditioning → each gate × it drives)
     side_align: str               # alignment of a side block against its tap
     residual_from: str            # for residual_add: the block the skip starts at
     offset_y: float

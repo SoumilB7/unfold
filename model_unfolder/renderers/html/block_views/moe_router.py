@@ -42,37 +42,35 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
     scale = r.get("routed_scaling_factor")
     bias_corrected = topk_method == "noaux_tc"
 
-    # This drill is a terminal EXPLANATION of the gate policy — its steps have no
-    # deeper structure to open, so every node is a static (non-clickable) glyph,
-    # the same convention leaf detail views use (the attention formula / rope nodes).
+    # The named gate steps are clickable (each opens its card); ports and the
+    # ×scale connector stay static.
     nodes: list[Node] = [Node("g_in", "port", ["token", "hidden"], static=True)]
     flow = ["g_in"]
 
     nodes.append(Node("g_gate", "linear",
-                      ["Gate", f"Linear → {n_exp} scores" if n_exp else "Linear → scores"],
-                      static=True))
+                      ["Gate", f"Linear → {n_exp} scores" if n_exp else "Linear → scores"]))
     flow.append("g_gate")
 
-    nodes.append(Node("g_score", "activation", f"{scoring} score", static=True))
+    nodes.append(Node("g_score", "activation", f"{scoring} score"))
     flow.append("g_score")
 
     if grouped:
         nodes.append(Node("g_group", "select",
-                          ["Group-limit", f"keep {topk_group} of {n_group} groups"],
-                          w=268, static=True))
+                          ["Group-limit", f"keep {topk_group} of {n_group} groups"], w=268))
         flow.append("g_group")
 
     select_target = "g_topk"
-    nodes.append(Node("g_topk", "select", f"select top-{k}" if k else "select top-k", static=True))
+    nodes.append(Node("g_topk", "select", f"select top-{k}" if k else "select top-k"))
     flow.append("g_topk")
 
     if norm:
-        nodes.append(Node("g_norm", "norm", "renormalize weights", static=True))
+        nodes.append(Node("g_norm", "norm", "renormalize weights"))
         flow.append("g_norm")
 
     if scale:
-        # × scalar — a Tier-2 connector glyph, not a step box.
-        nodes.append(Node("g_scale", "gate_mul", sub=f"× {scale}", static=True))
+        # Scale by a labelled constant — a clickable step box (× {const}), not a bare
+        # × glyph (whose constant wouldn't be visible).
+        nodes.append(Node("g_scale", "select", f"× {scale} (routed scale)"))
         flow.append("g_scale")
 
     nodes.append(Node("g_out", "port", "expert weights", static=True))
@@ -81,7 +79,7 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
     side_inputs: list[SideInput] = []
     note = None
     if bias_corrected:
-        nodes.append(Node("g_bias", "embedding", ["learned bias", "(load-balancing)"], static=True))
+        nodes.append(Node("g_bias", "embedding", ["learned bias", "(load-balancing)"]))
         # The bias steers SELECTION (group-limit when present, else top-k) only.
         side_inputs.append(SideInput("g_bias", "g_group" if grouped else select_target, side="left"))
         note = "aux-loss-free (noaux_tc): the bias steers selection; the weights use the raw scores"

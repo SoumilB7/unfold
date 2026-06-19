@@ -7,8 +7,8 @@ so the (MLA) attention runs over a sparse subset of the context instead of all o
 it.  (HF: ``DeepseekV32`` indexer; the geometry is ``index_n_heads`` ×
 ``index_head_dim``.)
 
-This is a terminal explanation of that module, built from the config's index_*
-facts — every node is a static glyph (the indexer has no deeper drill).
+Built from the config's index_* facts. The named steps (projections, scoring, top-k)
+are clickable with their own cards; only the ports and any connector glyph are static.
 """
 from __future__ import annotations
 
@@ -25,10 +25,9 @@ def build_dsa_indexer_view(ir: dict, info: dict, mount_id: str, child: dict | No
 
     nodes = [
         Node("dsa_in", "port", ["hidden", "(query + keys)"], static=True),
-        Node("dsa_proj", "linear", ["Indexer projections", geo], static=True),
-        Node("dsa_score", "select", ["Index scores", "every key vs query"],
-             static=True, w=260),
-        Node("dsa_topk", "select", f"keep top-{topk:,}" if topk else "keep top-k", static=True),
+        Node("dsa_proj", "linear", ["Indexer projections", geo]),
+        Node("dsa_score", "select", ["Index scores", "every key vs query"], w=260),
+        Node("dsa_topk", "select", f"keep top-{topk:,}" if topk else "keep top-k"),
         Node("dsa_out", "port", ["selected keys", "→ latent attention"], static=True),
     ]
     graph = Graph(
