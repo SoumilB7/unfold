@@ -1,6 +1,7 @@
 """Low-level SVG primitives and routing helpers."""
 from __future__ import annotations
 
+import itertools
 from typing import Any
 
 from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, FONT_MONO, GAP
@@ -9,9 +10,18 @@ from .utils import _attr, _html, _num
 SVG_FONT_BOOST = 2
 BLOCK_LABEL_FONT_BOOST = 3
 
+# Every diagram bakes its own <marker>/filter <defs> referenced by url(#id). Many
+# panels share a view_key (self- AND cross-attention both render as "attn"; repeated
+# layer-groups bake identical copies), so keying ids only by (mount, view) collided —
+# and in the browser url(#dup) binds to the FIRST match, which is a hidden drill panel,
+# so the arrowheads silently vanished (rsvg renders each svg isolated, hiding it). A
+# per-render counter makes each diagram's defs ids globally unique within the document.
+_ID_SEQ = itertools.count()
+
 
 def _ids(mount_id: str, view: str) -> tuple[str, str]:
-    return f"{mount_id}-{view}-arrow", f"{mount_id}-{view}-shadow"
+    n = next(_ID_SEQ)
+    return f"{mount_id}-{view}-{n}-arrow", f"{mount_id}-{view}-{n}-shadow"
 
 
 def _defs(arrow_id: str, shadow_id: str) -> str:

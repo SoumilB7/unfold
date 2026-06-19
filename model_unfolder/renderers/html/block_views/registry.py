@@ -28,7 +28,6 @@ from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .moe_router import build_moe_router_view
 from .dsa_indexer import build_dsa_indexer_view
-from .cross_attention import build_cross_attention_view
 from .scheduler_step import build_scheduler_step_view
 from .modalities import (
     build_audio_path_view,
@@ -138,8 +137,8 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "moe_router": _from_block(build_moe_router_view),
     # DeepSeek-V3.2 DSA lightning indexer: scores all keys → keeps top-k.
     "dsa_indexer": _from_block(build_dsa_indexer_view),
-    # Cross-attention DiT sublayer: image Q attends encoded-text K/V.
-    "cross_attention": _from_block(build_cross_attention_view),
+    # (Cross-attention DiT sublayer reuses the canonical "attention" view with a
+    #  cross_attention=True spec — image Q, encoded-text K/V — no bespoke view.)
     # Scheduler/sampler step: prediction → scale → combine with z_t → z_{t-1}.
     "scheduler_step": _from_block(build_scheduler_step_view),
     "gated_ffn": _from_block(build_ffn_view),

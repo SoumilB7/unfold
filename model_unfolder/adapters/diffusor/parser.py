@@ -30,8 +30,10 @@ from ...everchanging import (
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
+from dataclasses import replace as _replace
 from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, parallel_decoder_layer
+from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
 from .blocks import diffusion_render_spec
 from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
@@ -275,8 +277,9 @@ def parse(cfg: Any) -> ModelIR:
     layers = []
     idx = 0
     for _ in range(num_layers):
+        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant)
         layer = decoder_layer(
-            idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
+            idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg),
             hidden_size, norm_kind=norm_kind,
         )
@@ -284,7 +287,7 @@ def parse(cfg: Any) -> ModelIR:
         # self-attention and the FFN — insert it before the AdaLN gates so each
         # sublayer (self / cross / FFN) reads honestly.
         if cond["cross_attn_sublayer"]:
-            layer.blocks = _insert_cross_attention(layer.blocks, num_heads, head_dim, norm_kind)
+            layer.blocks = _insert_cross_attention(layer.blocks, attn_spec, hidden_size, norm_kind)
         # DiT AdaLN-Zero: the timestep gates each sublayer output before its
         # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
         layer.blocks = _insert_adaln_gates(layer.blocks)
@@ -370,6 +373,7 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
         mask="full",
         rope_dim=rope_dim,
         no_rope=rope_dim is None,
+        cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
         variant=variant,
     )
 
@@ -402,15 +406,45 @@ def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
     return out
 
 
-def _insert_cross_attention(blocks: list[dict], num_heads: int, head_dim, norm_kind: str) -> list[dict]:
+def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
+                            hidden_size: int, norm_kind: str) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
-    Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Image tokens (Q) attend
-    to the encoded text (K/V) — a distinct sublayer the `forward` runs as `attn2`,
-    with its own residual.  Conformed to `SanaTransformerBlock` / `WanTransformerBlock`
-    / `PixArt` (`norm2 → attn2(encoder_hidden_states) → ⊕`)."""
+    Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Conformed to
+    `SanaTransformerBlock` / `WanTransformerBlock` / `PixArt`
+    (`norm2 → attn2(encoder_hidden_states) → ⊕`).
+
+    The cross-attention drill is the SAME canonical attention view as self-
+    attention, **hybridised with the input change**: the image tokens are the
+    queries, the encoded text supplies K/V (`cross_attention=True`) — no bespoke
+    fork.  Self- and cross-attention share the canonical SDPA op cards (generic,
+    source-neutral, same op ids); the K/V-source difference is carried by cross-
+    attention's own `cross_attention_states` node.  This is exactly the UNet
+    Transformer2D pattern."""
     norm_label = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(norm_kind, "Normalization")
-    heads_fact = f"{num_heads} heads" if num_heads else None
+    heads_fact = f"{self_spec.num_heads} heads" if self_spec.num_heads else None
+    # Cross spec = the self spec, but K/V come from the text (no RoPE on the cross
+    # path, full bidirectional, non-cached) — the canonical region draws the text
+    # K/V source node and drops the cache/RoPE for it.
+    cross_spec = _replace(self_spec, cross_attention=True,
+                          cross_kv_source="encoded text prompt",
+                          no_rope=True, rope_dim=None, variant=None)
+    # Source-neutral SDPA op cards, shared by both sublayers (same op ids).
+    shared_children = attention_child_blocks(self_spec, hidden_size, generic=True)
+    for b in blocks:
+        if b.get("id") == "attn":
+            b["children"] = shared_children            # self-attn shares the generic cards
+    cross_children = shared_children + [{
+        "id": "cross_attention_states",
+        "title": "Encoded text (K/V)",
+        "description": (
+            "The encoded prompt supplies the keys and values here; the image tokens "
+            "are the queries. This external text K/V — a separate sublayer (attn2) "
+            "with its own residual — is what makes it cross-attention and how text "
+            "conditions the DiT."
+        ),
+        "facts": ["K/V from encoded text"],
+    }]
     cross = [
         {
             "id": "xattn_norm", "role": "norm", "kind": "norm",
@@ -429,19 +463,9 @@ def _insert_cross_attention(blocks: list[dict], num_heads: int, head_dim, norm_k
                 "own residual. This is how text conditions a cross-attention DiT."
             ),
             "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
-            "view": "cross_attention",
-            "children": [
-                {"id": "xa_q", "title": "Query projection (image)",
-                 "description": "Linear over the image tokens producing the queries."},
-                {"id": "xa_k", "title": "Key projection (text)",
-                 "description": "Linear over the encoded text producing the keys the image queries score against."},
-                {"id": "xa_v", "title": "Value projection (text)",
-                 "description": "Linear over the encoded text producing the values mixed in after softmax."},
-                {"id": "xa_scores", "title": "Cross-attention scores",
-                 "description": "Q (image) · Kᵀ (text) / √d — how much each image token attends to each text token."},
-                {"id": "xa_softmax", "title": "Softmax",
-                 "description": "Normalizes the scores into attention weights over the text tokens."},
-            ],
+            "view": "attention",
+            "detail": {"attention": attention_detail(cross_spec)},
+            "children": cross_children,
         },
         {
             "id": "add_xattn", "role": "residual", "kind": "residual_add",

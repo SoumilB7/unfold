@@ -29,6 +29,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "bias": attention.bias,
         "shared": attention.shared,
         "no_rope": attention.no_rope,
+        "cached": attention.cached,
         "cross_attention": attention.cross_attention,
         "cross_kv_source": attention.cross_kv_source,
         "compress_ratio": attention.compress_ratio,
@@ -168,7 +169,8 @@ def _sdpa_detailed_child_blocks(
         q_src = (("the latent query tokens" if is_text_cross else "decoder hidden states")
                  if cross_attention else "the hidden state")
         kv_src = f"the {cross_src}" if cross_attention else "the hidden state"
-        cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
+        # No cache ports for cross-attention or explicitly non-cached (diffusion/ViT) attention.
+        cache_facts = [] if (cross_attention or attention.cached is False) else [CACHE_PORT_FACT]
     cross_chip = ["from cross-attention source"] if cross_attention else []
     cards = [
         {

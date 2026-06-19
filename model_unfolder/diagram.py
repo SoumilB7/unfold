@@ -85,13 +85,16 @@ class Diagram:
         return svg_to_png(architecture_svg(self.to_html(standalone=True)), path,
                           scale=scale, background=background)
 
-    def save_images(self, outdir: str, *, scale: float = 2.0, background: str = "white") -> list[str]:
-        """Render the architecture view AND every drill view to PNGs in *outdir*.
+    def save_images(self, outdir: str | None = None, *, scale: float = 2.0,
+                    background: str = "white") -> list[str]:
+        """Render every DISTINCT diagram view (architecture + every drill, to the
+        leaves) to PNGs, plus a ``MANIFEST.txt``.
 
         Pixels are the only oracle that catches a dangling connector or an
-        unclickable block, so this is the norm for verifying output — one image
-        per baked view, named by the block/view it belongs to."""
-        from .preview import render_images
+        unclickable block, so this is the norm for verifying output. Defaults to
+        ``previews/individual_images/<model>/`` when *outdir* is omitted."""
+        from .preview import render_images, default_image_dir
+        outdir = outdir or default_image_dir(self.ir.name)
         return render_images(self, outdir, scale=scale, background=background)
 
     def _repr_html_(self) -> str:

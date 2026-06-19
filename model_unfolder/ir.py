@@ -35,6 +35,9 @@ class AttentionSpec:
     bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
+    cached: Optional[bool] = None   # whether K/V are written to an autoregressive cache;
+                                    # None → default (causal LMs cache, cross-attn doesn't);
+                                    # False → bidirectional/non-AR (diffusion DiT, ViT) — no cache ports
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
     cross_kv_source: Optional[str] = None  # what supplies the external K/V when
                                     # cross_attention is set — e.g. "encoded text

@@ -609,7 +609,15 @@ def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
                         "xattn_norm", "cross_attn", "add_xattn",
                         "rms2", "ffn", "gate_mlp", "add2"]
     cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
-    assert cross.get("view") == "cross_attention" and cross.get("diffusion_stage") == "cross_attention"
+    # The cross-attn drill is the CANONICAL attention view, hybridised with the input
+    # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.
+    assert cross.get("view") == "attention" and cross.get("diffusion_stage") == "cross_attention"
+    xattn = cross["detail"]["attention"]
+    assert xattn["cross_attention"] is True and xattn["cached"] is False
+    assert any(c["id"] == "cross_attention_states" for c in cross["children"])
+    # self- and cross-attention share the canonical SDPA op cards (same op ids).
+    self_attn = next(b for b in d.ir.layers[0].blocks if b["id"] == "attn")
+    assert {c["id"] for c in self_attn["children"]} >= {"q_proj", "k_proj", "scaled_scores", "o_proj"}
     # AdaLN gates are Tier-2 static connectors on self-attn + FFN (not on cross-attn)
     assert all(b.get("static") for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp"))
     assert next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn").get("static")

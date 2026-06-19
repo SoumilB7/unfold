@@ -102,7 +102,7 @@ def test_every_registered_view_is_exercised_and_couples():
 # Purpose-built graph drill-views (NOT the op-graph region path). These had the
 # recurring "all-static = unclickable blocks" bug; coupling can't see it (a static
 # node has no data-id to orphan), so clickability is pinned here.
-_AUTHORED_GRAPH_VIEWS = {"moe_router", "dsa_indexer", "cross_attention",
+_AUTHORED_GRAPH_VIEWS = {"moe_router", "dsa_indexer",
                          "scheduler_step", "self_conditioning"}
 
 
@@ -147,6 +147,28 @@ def test_authored_drill_views_are_clickable():
         f"authored views never exercised by the corpus: {sorted(_AUTHORED_GRAPH_VIEWS - set(clickable))}"
     for vk, nodes in clickable.items():
         assert nodes, f"{vk}: drill view has NO clickable node — unclickable blocks"
+
+
+def test_view_imaging_is_exhaustive_deduped_and_leaf_free():
+    """The Dable image pass must be exhaustive over DISTINCT diagrams and never
+    image a description-only leaf: every extracted view is a real <svg>, the
+    per-layer-group identical copies dedup down, and the canonical drills are
+    all present (so nothing distinct is silently dropped)."""
+    from model_unfolder.preview import svg_views, _visual_hash
+
+    html = unfold(CORPUS["moe_mla_mtp"]).to_html(standalone=True)
+    views = svg_views(html)
+    assert views, "no diagram views were extracted from the baked HTML"
+    assert all("<svg" in svg and svg.rstrip().endswith("</svg>") for _, svg in views), \
+        "a non-svg (leaf prose?) was captured as a diagram view"
+
+    distinct = {_visual_hash(svg) for _, svg in views}
+    assert len(distinct) < len(views), \
+        "expected identical per-layer-group copies to collapse under visual dedup"
+
+    labels = {label.split("/")[-1] for label, _ in views}
+    assert {"attn", "router", "expert_1", "mla_query_path"} <= labels, \
+        f"a canonical drill is missing from the image set: {sorted(labels)}"
 
 
 def test_fallback_views_have_dedicated_coverage():

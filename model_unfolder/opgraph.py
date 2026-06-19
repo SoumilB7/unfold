@@ -258,15 +258,19 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     kind = attn.get("kind") or "mha"
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
     cross = bool(attn.get("cross_attention"))
-
+    # Cache ports show only for autoregressive K/V. `cached` defaults to `not cross`
+    # (causal LMs cache, cross-attn doesn't); an explicit False (diffusion DiT / ViT —
+    # bidirectional, non-AR) suppresses them honestly.
+    _cached = attn.get("cached")
+    cached = (not cross) if _cached is None else bool(_cached)
 
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("q_proj", "linear", "Linear (Q)", in_features=hidden, out_features=q_w),
         Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
-           meta={"cached": bool(attn.get("cached", not cross))}),
+           meta={"cached": cached}),
         Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
-           meta={"cached": bool(attn.get("cached", not cross))}),
+           meta={"cached": cached}),
     ]
     kv_src = "hidden"
     if cross:
