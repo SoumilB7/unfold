@@ -133,9 +133,33 @@ def _visual_hash(svg: str) -> str:
     return hashlib.md5(s.encode("utf-8")).hexdigest()
 
 
-def svg_to_png(svg: str, path: str, *, scale: float = 2.0, background: str = "white") -> str:
-    """Convert one svg string to a PNG file via ``rsvg-convert``."""
+# Dable debug overlay: an amber border on every CLICKABLE block (the renderer
+# wraps those in `<g class="uf-node" data-id=…>`; static ports/glyphs aren't), so
+# you can spot at a glance which nodes open a card. IMAGE-ONLY — injected into the
+# extracted svg just before rasterizing, never into the shipped HTML. CSS in a
+# `<style>` beats the inline stroke (presentation attribute), so the block border
+# turns amber without touching anything else.
+_CLICKABLE_HIGHLIGHT = (
+    "<style>.uf-node rect,.uf-node circle,.uf-node ellipse"
+    "{stroke:#FFC400 !important;stroke-width:3.5 !important;}</style>"
+)
+
+
+def _with_clickable_highlight(svg: str) -> str:
+    open_end = svg.find(">", svg.find("<svg"))
+    if open_end < 0:
+        return svg
+    return svg[:open_end + 1] + _CLICKABLE_HIGHLIGHT + svg[open_end + 1:]
+
+
+def svg_to_png(svg: str, path: str, *, scale: float = 2.0, background: str = "white",
+               highlight_clickable: bool = False) -> str:
+    """Convert one svg string to a PNG file via ``rsvg-convert``.
+
+    ``highlight_clickable`` draws the Dable amber border on clickable blocks."""
     _ensure_rsvg()
+    if highlight_clickable:
+        svg = _with_clickable_highlight(svg)
     subprocess.run(
         ["rsvg-convert", "-b", background, "-z", str(scale), "-o", path],
         input=svg.encode("utf-8"), check=True,
@@ -143,14 +167,15 @@ def svg_to_png(svg: str, path: str, *, scale: float = 2.0, background: str = "wh
     return path
 
 
-def render_images(diagram, outdir: str, *, scale: float = 2.0,
-                  background: str = "white", dedup: bool = True) -> list[str]:
+def render_images(diagram, outdir: str, *, scale: float = 2.0, background: str = "white",
+                  dedup: bool = True, highlight_clickable: bool = True) -> list[str]:
     """Render every DISTINCT diagram view (architecture + every drill, to the
     leaves) to a PNG in *outdir*, plus a ``MANIFEST.txt``.
 
     With ``dedup`` (default) the per-layer-group duplicate copies collapse to one
     image each — exhaustive over distinct diagrams, nothing identical repeated.
-    Returns the written image paths."""
+    With ``highlight_clickable`` (default) clickable blocks get a Dable amber
+    border so they're spottable at a glance. Returns the written image paths."""
     _ensure_rsvg()
     os.makedirs(outdir, exist_ok=True)
     html = diagram.to_html(standalone=True)
@@ -177,7 +202,8 @@ def render_images(diagram, outdir: str, *, scale: float = 2.0,
         used[base] = n + 1
         name = base if not n else f"{base}__{n}"
         fname = f"{i:02d}__{name}.png"
-        svg_to_png(entry["svg"], os.path.join(outdir, fname), scale=scale, background=background)
+        svg_to_png(entry["svg"], os.path.join(outdir, fname), scale=scale,
+                   background=background, highlight_clickable=highlight_clickable)
         paths.append(os.path.join(outdir, fname))
         dup = f"   (+{len(entry['aliases'])} identical copies collapsed)" if entry["aliases"] else ""
         manifest.append(f"{fname}{dup}")
@@ -187,6 +213,9 @@ def render_images(diagram, outdir: str, *, scale: float = 2.0,
     with open(os.path.join(outdir, "MANIFEST.txt"), "w", encoding="utf-8") as f:
         f.write(f"# {len(distinct)} DISTINCT diagram views (architecture + every drill, to the leaves)\n")
         f.write(f"# {len(views)} baked svgs total — {collapsed} identical per-layer-group copies collapsed\n")
-        f.write(f"# {max(n_leaves, 0)} description-only leaf cards skipped (no diagram)\n\n")
+        f.write(f"# {max(n_leaves, 0)} description-only leaf cards skipped (no diagram)\n")
+        if highlight_clickable:
+            f.write("# amber border = clickable block (opens a card); no border = static port/glyph\n")
+        f.write("\n")
         f.write("\n".join(manifest) + "\n")
     return paths

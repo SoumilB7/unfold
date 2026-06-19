@@ -87,8 +87,15 @@ def resolve_source_files(target: Any, *, source: str = "local", token: Any = Non
 
     if source in {"local", "auto"}:
         local = _installed_transformers_bundle(target)
-        if local.files or source == "local":
+        if local.files:
             return local
+        # Diffusion DiT/UNet code lives in `diffusers`, not `transformers` — resolve
+        # the modeling file by the config's `_class_name` (FluxTransformer2DModel, …).
+        diff = _installed_diffusers_bundle(target)
+        if diff is not None and diff.files:
+            return diff
+        if source == "local":
+            return diff if (diff is not None and diff.warnings) else local
 
     if source in {"hub", "auto"}:
         return _hub_bundle(target, token=token)
@@ -172,6 +179,41 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         architecture=architecture,
         model_id=model_id,
         warnings=() if files else (f"No modeling*.py files found for model_type={model_type!r}.",),
+    )
+
+
+def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
+    """Resolve a diffusion model's modeling file in the installed ``diffusers``.
+
+    Diffusion configs name their class in ``_class_name`` (e.g.
+    ``FluxTransformer2DModel``); the file that defines it also defines the
+    transformer block, whose norm/attention instantiations are what we read.
+    Returns ``None`` when the target isn't a diffusion class or diffusers is
+    absent (so the caller falls back to the transformers bundle)."""
+    cls = _string_value(target, "_class_name")
+    if not cls or ("Transformer" not in cls and "UNet" not in cls):
+        return None
+    try:
+        import diffusers
+    except ImportError:
+        return None
+    import re
+    models_root = Path(diffusers.__file__).resolve().parent / "models"
+    if not models_root.exists():
+        return None
+    pat = re.compile(rf"^class {re.escape(cls)}\b", re.M)
+    model_id = _model_id(target)
+    for f in sorted(models_root.rglob("*.py")):
+        try:
+            text = f.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if pat.search(text):
+            return SourceBundle(source="local", files=(str(f),),
+                                architecture=cls, model_id=model_id)
+    return SourceBundle(
+        source="local", architecture=cls, model_id=model_id,
+        warnings=(f"No installed diffusers modeling file defines {cls!r}.",),
     )
 
 

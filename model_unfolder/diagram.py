@@ -79,23 +79,30 @@ class Diagram:
         self.to_html(standalone=True)
         return drain_wiring_log()
 
-    def to_png(self, path: str, *, scale: float = 2.0, background: str = "white") -> str:
-        """Render the top architecture view to a PNG image (needs ``rsvg-convert``)."""
+    def to_png(self, path: str, *, scale: float = 2.0, background: str = "white",
+               highlight_clickable: bool = True) -> str:
+        """Render the top architecture view to a PNG image (needs ``rsvg-convert``).
+
+        ``highlight_clickable`` (default) draws the Dable amber border on clickable
+        blocks; pass ``False`` for a clean image."""
         from .preview import architecture_svg, svg_to_png
         return svg_to_png(architecture_svg(self.to_html(standalone=True)), path,
-                          scale=scale, background=background)
+                          scale=scale, background=background,
+                          highlight_clickable=highlight_clickable)
 
     def save_images(self, outdir: str | None = None, *, scale: float = 2.0,
-                    background: str = "white") -> list[str]:
+                    background: str = "white", highlight_clickable: bool = True) -> list[str]:
         """Render every DISTINCT diagram view (architecture + every drill, to the
         leaves) to PNGs, plus a ``MANIFEST.txt``.
 
         Pixels are the only oracle that catches a dangling connector or an
-        unclickable block, so this is the norm for verifying output. Defaults to
-        ``previews/individual_images/<model>/`` when *outdir* is omitted."""
+        unclickable block, so this is the norm for verifying output. Clickable
+        blocks get a Dable amber border (``highlight_clickable``, default) so they
+        stand out. Defaults to ``previews/individual_images/<model>/``."""
         from .preview import render_images, default_image_dir
         outdir = outdir or default_image_dir(self.ir.name)
-        return render_images(self, outdir, scale=scale, background=background)
+        return render_images(self, outdir, scale=scale, background=background,
+                             highlight_clickable=highlight_clickable)
 
     def _repr_html_(self) -> str:
         """Jupyter calls this; returned HTML string is rendered inline."""

@@ -380,3 +380,52 @@ def _overall_confidence(findings: list[CodeFinding], bundle: SourceBundle) -> fl
     if bundle.warnings or not findings:
         return 0.0
     return round(sum(f.confidence for f in findings) / len(findings), 3)
+
+
+# ---------------------------------------------------------------------------
+# Diffusion DiT/UNet block norm — a code-only fact (diffusers states the norm
+# class in the block, never in config.json). Reads the norm CLASS the block
+# instantiates and resolves the base op (LayerNorm vs RMSNorm). AdaLN variants
+# (AdaLayerNormZero / *LayerNormZero / *Continuous / *Single / *Modulated) are
+# the DiT BLOCK norm and are LayerNorm-based; a bare RMSNorm in a DiT is usually
+# the QK-norm (a sub-norm), so it is preferred only when no LayerNorm-family norm
+# is present.
+# ---------------------------------------------------------------------------
+def _is_norm_class(name: str) -> bool:
+    return bool(name) and name[:1].isupper() and "Norm" in name
+
+
+def _is_adaln_class(name: str) -> bool:
+    return any(tok in name for tok in ("Ada", "Zero", "Continuous", "Single", "Modulated"))
+
+
+def diffusion_norm_from_classes(classes: tuple[ClassEvidence, ...]) -> tuple[str, str] | None:
+    """Return ``(base_kind, class_name)`` for the DiT block norm, or ``None``.
+
+    ``base_kind`` is ``"LayerNorm"`` or ``"RMSNorm"`` — the same label space the
+    config path uses — so a code-resolved norm reads identically to a config-
+    resolved one. ``class_name`` is the diffusers norm class (provenance)."""
+    used: dict[str, int] = {}
+    for cls in classes:
+        for name, n in (cls.calls or {}).items():
+            if _is_norm_class(name):
+                used[name] = used.get(name, 0) + n
+    if not used:
+        return None
+
+    def base_kind(name: str) -> str:
+        return "RMSNorm" if ("RMS" in name and "LayerNorm" not in name) else "LayerNorm"
+
+    ada = [n for n in used if _is_adaln_class(n)]
+    if ada:                                            # the adaptive block norm
+        best = max(ada, key=lambda n: used[n])
+        return (base_kind(best), best)
+    ln = [n for n in used if "LayerNorm" in n]
+    if ln:                                             # plain LayerNorm-family block norm
+        best = max(ln, key=lambda n: used[n])
+        return ("LayerNorm", best)
+    rms = [n for n in used if "RMS" in n]
+    if rms:                                            # RMSNorm only (no LayerNorm at all)
+        best = max(rms, key=lambda n: used[n])
+        return ("RMSNorm", best)
+    return None

@@ -622,6 +622,42 @@ def test_dit_norm_type_resolved_from_config_not_generic():
     assert any(b.get("label") == "Normalization" for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm")
 
 
+def test_clickable_highlight_is_image_only():
+    """The Dable amber-border overlay marks clickable blocks in the IMAGE pass only —
+    it is injected into the extracted svg before rasterizing and must NEVER appear in
+    the shipped HTML."""
+    from model_unfolder.preview import _with_clickable_highlight, _CLICKABLE_HIGHLIGHT
+    svg = '<svg viewBox="0 0 10 10"><g class="uf-node" data-id="x"><rect/></g></svg>'
+    out = _with_clickable_highlight(svg)
+    assert out.startswith("<svg") and _CLICKABLE_HIGHLIGHT in out, "overlay must inject into the svg"
+    # the shipped document never carries the overlay's amber stroke (it has its own
+    # .uf-node hover/select CSS — that's the real product, distinct from this overlay).
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "FFC400" not in html and _CLICKABLE_HIGHLIGHT not in html, "overlay leaked into shipped HTML"
+
+
+def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
+    """When the config is silent on the norm type (FLUX & most DiTs), `inspect_code`
+    reads it from the diffusers BLOCK class (AdaLayerNormZero → LayerNorm), tier-2 —
+    so the norm card stops saying 'Normalization' and is marked code-derived. Without
+    the flag it stays honest-'Normalization' (config-only)."""
+    silent = sorted({b["label"] for b in unfold(FLUX).ir.layers[0].blocks if b.get("kind") == "norm"})
+    assert silent == ["Normalization"], silent
+
+    import importlib.util
+    if importlib.util.find_spec("diffusers") is None:
+        return  # diffusers not installed — the code path can't run
+    from model_unfolder.evidence.sources import resolve_source_files
+    if not resolve_source_files(FLUX, source="local").files:
+        return  # installed diffusers doesn't define this class — skip
+
+    norms = [b for b in unfold(FLUX, inspect_code=True).ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert norms and all(b["label"] == "LayerNorm" for b in norms), \
+        f"inspect_code should resolve FLUX norm to LayerNorm, got {[(b['id'], b['label']) for b in norms]}"
+    assert any("read from the model code" in b.get("description", "") for b in norms), \
+        "a code-resolved norm must be marked as code-derived (tier-2), not config"
+
+
 def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
     self-attn → cross-attn(to text) → FFN — each AdaLN-gated where the source gates
