@@ -99,41 +99,34 @@ def test_every_registered_view_is_exercised_and_couples():
     )
 
 
-# Purpose-built graph drill-views (NOT the op-graph region path). These had a
-# recurring class of bug: every node made `static` (unclickable blocks), and
-# connectors (⊙ / ⊕) drawn without their second input wired (a dangling glyph).
-# Coupling can't see either (static = no data-id = no orphan), so they're pinned here.
+# Purpose-built graph drill-views (NOT the op-graph region path). These had the
+# recurring "all-static = unclickable blocks" bug; coupling can't see it (a static
+# node has no data-id to orphan), so clickability is pinned here.
 _AUTHORED_GRAPH_VIEWS = {"moe_router", "dsa_indexer", "cross_attention",
                          "scheduler_step", "self_conditioning"}
-# Connectors that ALWAYS combine two real tensor inputs (so <2 inputs = dangling).
-# gate_mul (×) is excluded: it may scale by a labelled constant (router ×scale).
-_TWO_INPUT_CONNECTORS = {"dot_product", "residual_add"}
 
 
-def test_authored_drill_views_are_clickable_and_connectors_wired():
+def test_no_dangling_connectors_anywhere():
+    """Dable's dangling flag, run across the whole corpus: NO graph — at any drill
+    depth, in any model — may draw a ⊕/×/⊙ with a missing input. (The detector
+    itself lives in renderers/html/graph.py and runs on every render.)"""
+    for name, cfg in CORPUS.items():
+        problems = unfold(cfg).wiring_problems()
+        assert not problems, f"{name}: dangling connector(s):\n  " + "\n  ".join(problems)
+
+
+def test_authored_drill_views_are_clickable():
+    """The hand-authored drill views must never be all-static (unclickable blocks):
+    every one must expose at least one clickable named node."""
     import sys
     import model_unfolder.renderers.html.graph_engine as ge
 
-    seen: dict[str, tuple] = {}
+    clickable: dict[str, list] = {}
 
     def _cap(graph, info, mount_id, view_key, title, **kw):
-        if view_key in _AUTHORED_GRAPH_VIEWS and view_key not in seen:
-            indeg = {n.id: 0 for n in graph.nodes}
-            for a, b in zip(graph.flow, graph.flow[1:]):
-                indeg[b] = indeg.get(b, 0) + 1
-            for e in graph.edges:                      # incl. residual skips
-                indeg[e.dst] = indeg.get(e.dst, 0) + 1
-            for p in graph.parallels:
-                for lane in p.lanes:
-                    dsts = (None if isinstance(lane, list) else lane.dst) or [p.dst]
-                    for d in dsts:
-                        indeg[d] = indeg.get(d, 0) + 1
-            for s in getattr(graph, "side_inputs", []):
-                indeg[s.target] = indeg.get(s.target, 0) + 1
-            clickable = [n.id for n in graph.nodes if not n.static and n.kind != "port"]
-            dangling = [n.id for n in graph.nodes
-                        if n.kind in _TWO_INPUT_CONNECTORS and indeg.get(n.id, 0) < 2]
-            seen[view_key] = (clickable, dangling)
+        if view_key in _AUTHORED_GRAPH_VIEWS:
+            clickable.setdefault(view_key, [n.id for n in graph.nodes
+                                           if not n.static and n.kind != "port"])
         return _orig(graph, info, mount_id, view_key, title, **kw)
 
     _orig = ge.render_graph
@@ -150,14 +143,10 @@ def test_authored_drill_views_are_clickable_and_connectors_wired():
         for m in patched:
             m.render_graph = _orig
 
-    assert _AUTHORED_GRAPH_VIEWS <= set(seen), \
-        f"authored views never exercised by the corpus: {sorted(_AUTHORED_GRAPH_VIEWS - set(seen))}"
-    for vk, (clickable, dangling) in seen.items():
-        assert clickable, f"{vk}: drill view has NO clickable node — unclickable blocks"
-        assert not dangling, (
-            f"{vk}: connector(s) drawn without a wired second input (a ⊙/⊕ that "
-            f"multiplies/adds with nothing visible): {dangling}"
-        )
+    assert _AUTHORED_GRAPH_VIEWS <= set(clickable), \
+        f"authored views never exercised by the corpus: {sorted(_AUTHORED_GRAPH_VIEWS - set(clickable))}"
+    for vk, nodes in clickable.items():
+        assert nodes, f"{vk}: drill view has NO clickable node — unclickable blocks"
 
 
 def test_fallback_views_have_dedicated_coverage():

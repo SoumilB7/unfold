@@ -67,6 +67,33 @@ class Diagram:
         """Adapter-emitted warnings — unknown model types, unrecognised layer types, etc."""
         return list(self.ir.warnings)
 
+    def wiring_problems(self) -> list[str]:
+        """Dable's dangling-connector flag — first-class, like click-coupling.
+
+        Re-renders every baked graph and returns one message per connector
+        (⊕ / × / ⊙) drawn with a missing input (empty list = clean). Treat a
+        non-empty result as a build-blocking bug, not a warning."""
+        from .renderers.html.graph_engine import reset_wiring_log, drain_wiring_log
+        reset_wiring_log()
+        self._html_cache.pop(True, None)         # force a fresh render so the detector runs
+        self.to_html(standalone=True)
+        return drain_wiring_log()
+
+    def to_png(self, path: str, *, scale: float = 2.0, background: str = "white") -> str:
+        """Render the top architecture view to a PNG image (needs ``rsvg-convert``)."""
+        from .preview import architecture_svg, svg_to_png
+        return svg_to_png(architecture_svg(self.to_html(standalone=True)), path,
+                          scale=scale, background=background)
+
+    def save_images(self, outdir: str, *, scale: float = 2.0, background: str = "white") -> list[str]:
+        """Render the architecture view AND every drill view to PNGs in *outdir*.
+
+        Pixels are the only oracle that catches a dangling connector or an
+        unclickable block, so this is the norm for verifying output — one image
+        per baked view, named by the block/view it belongs to."""
+        from .preview import render_images
+        return render_images(self, outdir, scale=scale, background=background)
+
     def _repr_html_(self) -> str:
         """Jupyter calls this; returned HTML string is rendered inline."""
         return self._html(standalone=False)

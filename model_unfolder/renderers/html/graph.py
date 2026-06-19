@@ -220,3 +220,73 @@ class Graph:
 
     def residuals(self) -> list[Edge]:
         return [e for e in self.edges if e.kind == "residual"]
+
+
+# ---------------------------------------------------------------------------
+# Dangling detector — the "Dable" flag.
+#
+# A connector glyph (⊕ residual, × gate, ⊙ apply-values) is, by definition, a
+# JOIN: it combines two real inputs.  Drawn with only one input wired, it
+# multiplies/adds with nothing — the recurring, silent bug class (the AdaLN ×
+# with no gate source, cross-attention's ⊙ with no V, the scheduler ⊕ that
+# floated).  Coupling can't see it (a static glyph has no card to orphan), so it
+# is its own first-class check, run on EVERY graph the renderer builds.
+# ---------------------------------------------------------------------------
+_CONNECTOR_KINDS = {"residual_add", "gate_mul", "dot_product", "concat"}
+#: Connectors that ALWAYS combine two real tensors → <2 inputs is always wrong.
+_STRICT_TWO_INPUT = {"residual_add", "dot_product"}
+_GLYPH_SYM = {"+": "⊕", "×": "×", "dot": "⊙"}
+
+
+def _has_constant_operand(node: Node) -> bool:
+    """A `×` may legitimately scale by a labelled constant (router
+    `× routed_scaling_factor`) — then one tensor input is fine, because the
+    other operand is the constant printed on the node."""
+    heading = node.label if node.label is not None else ""
+    text = " ".join(heading) if isinstance(heading, list) else str(heading)
+    text = f"{text} {node.sub or ''}"
+    return bool(node.sub) or any(ch.isdigit() for ch in text) or "scale" in text.lower()
+
+
+def wiring_problems(graph: "Graph") -> list[str]:
+    """Return one message per dangling connector in *graph* (empty = clean).
+
+    Counts each connector's DISTINCT inbound sources across the flow chain,
+    explicit edges (flow + residual), parallel-lane merges and side-inputs; a
+    ``residual_add``/``dot_product`` with <2, or a ``gate_mul`` with <2 and no
+    labelled constant, is dangling.  ``concat`` is exempt (it may be a unary
+    head-reshape) and left to the pixel pass."""
+    par_pairs = {(p.src, p.dst) for p in graph.parallels}
+    rel: set[tuple[str, str]] = set()
+    for a, b in zip(graph.flow, graph.flow[1:]):
+        if (a, b) not in par_pairs:          # a parallel handles its dst's inputs
+            rel.add((a, b))
+    for e in graph.edges:
+        rel.add((e.src, e.dst))
+    for p in graph.parallels:
+        for lane in p.norm_lanes():
+            top = lane.ids[-1] if lane.ids else (lane.src or p.src)
+            for d in (lane.dst if lane.dst is not None else [p.dst]):
+                if d and top:
+                    rel.add((top, d))
+    for s in graph.side_inputs:
+        rel.add((s.node, s.target))
+
+    indeg: dict[str, int] = {}
+    for _src, dst in rel:
+        indeg[dst] = indeg.get(dst, 0) + 1
+
+    problems: list[str] = []
+    for n in graph.nodes:
+        if n.kind not in _CONNECTOR_KINDS or indeg.get(n.id, 0) >= 2:
+            continue
+        if n.kind == "concat":
+            continue
+        if n.kind == "gate_mul" and _has_constant_operand(n):
+            continue
+        sym = _GLYPH_SYM.get(n.glyph().sym, n.glyph().sym)
+        problems.append(
+            f"dangling connector {n.id!r} ({sym}) has {indeg.get(n.id, 0)} input(s) — "
+            f"a {sym} must combine two visible inputs; wire its missing source"
+        )
+    return problems

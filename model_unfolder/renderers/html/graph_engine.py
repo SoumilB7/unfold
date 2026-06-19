@@ -13,7 +13,7 @@ they declare typed nodes instead of drawing rectangles).
 """
 from __future__ import annotations
 
-from .graph import Graph, Parallel
+from .graph import Graph, Parallel, wiring_problems
 from .stack_view import fit_svg, point
 from .svg import (
     _branch_dot,
@@ -47,6 +47,22 @@ _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
 _BRANCH_STUB = 48.0       # split-dot → lane-bottom rise
 _MERGE_STUB = 46.0        # lane-top → merge-node rise
 
+# --- Dable wiring log -------------------------------------------------------
+# Every graph render runs the dangling detector and appends any finding here.
+# A validator (Diagram.wiring_problems) clears, re-renders, and drains it — so
+# a dangling ⊕/×/⊙ is caught wherever it is drawn, not just in pinned tests.
+_WIRING_LOG: list[str] = []
+
+
+def reset_wiring_log() -> None:
+    _WIRING_LOG.clear()
+
+
+def drain_wiring_log() -> list[str]:
+    found = list(_WIRING_LOG)
+    _WIRING_LOG.clear()
+    return found
+
 
 def render_graph(
     graph: Graph,
@@ -59,6 +75,8 @@ def render_graph(
     pad: int = 46,
 ) -> str:
     by_id = graph.by_id()
+    for _p in wiring_problems(graph):           # Dable: flag dangling connectors
+        _WIRING_LOG.append(f"{view_key}: {_p}")
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []
     regions: list[dict] = []
