@@ -10,10 +10,10 @@ from .ir import ModelIR, AttentionSpec, FFNSpec
 
 
 def _attn_params(a: AttentionSpec, hidden: int) -> int:
-    h = hidden
-    head_dim = a.head_dim or (h // max(a.num_heads, 1))
-    nq = a.num_heads
-    nkv = a.num_kv_heads or nq
+    h = _as_count(hidden)
+    nq = _as_count(a.num_heads)
+    head_dim = _as_count(a.head_dim) or (h // max(nq, 1))
+    nkv = _as_count(a.num_kv_heads) or nq
 
     if a.kind == "mla":
         # MLA splits each head into a non-positional (nope) part and a rotary
@@ -41,19 +41,39 @@ def _attn_params(a: AttentionSpec, hidden: int) -> int:
     return qkv + out
 
 
+def _as_count(v, default: int = 0) -> int:
+    """Coerce a config count/size to an int for parameter estimation.
+
+    Some configs declare a per-layer/per-block LIST (or None) where a scalar is
+    expected (e.g. a heterogeneous MoE schedule).  Parameter counts are estimates,
+    so fall back to the first numeric element / the default rather than crashing —
+    the diagram still renders, with an approximate count, instead of failing.
+    """
+    if isinstance(v, bool):
+        return default
+    if isinstance(v, (int, float)):
+        return int(v)
+    if isinstance(v, (list, tuple)):
+        for x in v:
+            if isinstance(x, (int, float)) and not isinstance(x, bool):
+                return int(x)
+    return default
+
+
 def _ffn_params(f: FFNSpec, hidden: int) -> tuple:
     """Returns (total_params, active_params_per_token)."""
     g = 3 if f.gated else 2
+    hidden = _as_count(hidden)
     if f.kind == "moe":
-        per_expert = g * hidden * (f.expert_intermediate_size or f.intermediate_size)
-        n_routed = f.num_experts or 0
-        n_shared = f.num_shared_experts or 0
-        n_active = f.num_experts_per_tok or 0
+        per_expert = g * hidden * _as_count(f.expert_intermediate_size or f.intermediate_size)
+        n_routed = _as_count(f.num_experts)
+        n_shared = _as_count(f.num_shared_experts)
+        n_active = _as_count(f.num_experts_per_tok)
         router = hidden * n_routed
         total = per_expert * (n_routed + n_shared) + router
         active = per_expert * (n_active + n_shared) + router
         return total, active
-    p = g * hidden * f.intermediate_size
+    p = g * hidden * _as_count(f.intermediate_size)
     return p, p
 
 

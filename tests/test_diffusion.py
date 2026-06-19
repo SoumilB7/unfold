@@ -66,6 +66,9 @@ PIXART = {
     "patch_size": 2,
     "in_channels": 4,
     "sample_size": 128,
+    "norm_type": "ada_norm_single",
+    "norm_elementwise_affine": False,
+    "norm_eps": 1e-6,
 }
 
 LLAMA = {
@@ -462,6 +465,52 @@ def test_pixart_single_stream_only():
     assert ir.hidden_size == 16 * 72
 
 
+# --- Diffusion auto-depth harness: recursive denoiser conformance ------------
+# The package bakes every drill depth into the standalone HTML up front, so
+# click-coupling over the FULL html is the recursive-leaf guarantee (every
+# clickable node at every depth resolves to a card). This locks the structural
+# depth (cross-attn sublayer, AdaLN gates, VAE/encoder drills) across families.
+
+_AURAFLOW = {"_class_name": "AuraFlowTransformer2DModel", "num_mmdit_layers": 4,
+             "num_single_dit_layers": 32, "attention_head_dim": 256,
+             "num_attention_heads": 8, "joint_attention_dim": 2048, "in_channels": 4}
+_HUNYUANDIT = {"_class_name": "HunyuanDiT2DModel", "num_layers": 40,
+               "num_attention_heads": 16, "hidden_size": 1408, "cross_attention_dim": 1024}
+
+_DEPTH_FIXTURES = {"flux_mmdit": FLUX, "pixart_cross": PIXART, "sdxl_unet": SDXL_UNET,
+                   "auraflow": _AURAFLOW, "hunyuandit": _HUNYUANDIT}
+
+
+def _walk_blocks(blocks):
+    for b in blocks or []:
+        if isinstance(b, dict):
+            yield b
+            yield from _walk_blocks(b.get("children"))
+
+
+@pytest.mark.parametrize("name", sorted(_DEPTH_FIXTURES))
+def test_diffusion_recursive_depth_conforms(name):
+    cfg = _DEPTH_FIXTURES[name]
+    d = unfold(cfg)
+    ir = d.ir
+    # 1. recursion bottoms out: every block carries a registered view OR a
+    #    description (a leaf) — no bare, undrillable, undescribed block.
+    from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
+    render = (ir.extras or {}).get("render") or {}
+    trees = [getattr(L, "blocks", []) for L in ir.layers] + \
+            [render.get("model_blocks") or [], render.get("loop_blocks") or []]
+    for blocks in trees:
+        for b in _walk_blocks(blocks):
+            if b.get("static"):
+                continue
+            assert b.get("view") in VIEW_REGISTRY or b.get("description") or b.get("children"), \
+                f"{name}: block {b.get('id')!r} is a bare leaf (no view/description)"
+    # 2. recursive coupling: every clickable node at every drill depth → a card.
+    html = d.to_html(standalone=True)
+    assert validate_block_tree(ir) == []
+    assert validate_click_coupling(html) == []
+
+
 # Real FLUX.1-dev model_index.json wiring (the pipeline component map).
 FLUX_INDEX = {
     "_class_name": "FluxPipeline",
@@ -552,6 +601,100 @@ COGVIDEO_STYLE = {
 }
 
 
+def test_dit_norm_type_resolved_from_config_not_generic():
+    """A config-declared norm_type names the norm — never the generic 'Normalization'.
+    diffusers DiTs state AdaLN variants (ada_norm_single / ada_norm_zero / ...), which are
+    LayerNorm-based, so they resolve to LayerNorm (the adaptive modulation is shown by the
+    timestep wiring). A model that declares NOTHING stays honest-'Normalization'."""
+    blocks = unfold(PIXART).ir.layers[0].blocks
+    norms = [b for b in blocks if b.get("kind") == "norm"]
+    assert norms and all(b.get("label") == "LayerNorm" for b in norms), \
+        f"ada_norm_single must resolve to LayerNorm, got {[(b['id'], b.get('label')) for b in norms]}"
+    # the AdaLN modulation must be NAMED in the self-attn & FFN norm cards (the defining
+    # DiT mechanism); the cross-attn norm is noted as a plain norm.
+    by = {b["id"]: b for b in blocks}
+    assert all("AdaLN" in by[n]["description"] for n in ("rms1", "rms2"))
+    assert "plain norm" in by["xattn_norm"]["description"]
+    # rms_norm config → RMSNorm; an undeclared norm stays generic (honest-unknown).
+    rms = {**PIXART, "norm_type": "rms_norm"}
+    assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
+    bare = {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")}
+    assert any(b.get("label") == "Normalization" for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm")
+
+
+def test_clickable_highlight_is_image_only():
+    """The Dable amber-border overlay marks clickable blocks in the IMAGE pass only —
+    it is injected into the extracted svg before rasterizing and must NEVER appear in
+    the shipped HTML."""
+    from model_unfolder.preview import _with_clickable_highlight, _CLICKABLE_HIGHLIGHT
+    svg = '<svg viewBox="0 0 10 10"><g class="uf-node" data-id="x"><rect/></g></svg>'
+    out = _with_clickable_highlight(svg)
+    assert out.startswith("<svg") and _CLICKABLE_HIGHLIGHT in out, "overlay must inject into the svg"
+    # the shipped document never carries the overlay's amber stroke (it has its own
+    # .uf-node hover/select CSS — that's the real product, distinct from this overlay).
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "FFC400" not in html and _CLICKABLE_HIGHLIGHT not in html, "overlay leaked into shipped HTML"
+
+
+def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
+    """When the config is silent on the norm type (FLUX & most DiTs), `inspect_code`
+    reads it from the diffusers BLOCK class (AdaLayerNormZero → LayerNorm), tier-2 —
+    so the norm card stops saying 'Normalization' and is marked code-derived. Without
+    the flag it stays honest-'Normalization' (config-only)."""
+    silent = sorted({b["label"] for b in unfold(FLUX).ir.layers[0].blocks if b.get("kind") == "norm"})
+    assert silent == ["Normalization"], silent
+
+    import importlib.util
+    if importlib.util.find_spec("diffusers") is None:
+        return  # diffusers not installed — the code path can't run
+    from model_unfolder.evidence.sources import resolve_source_files
+    if not resolve_source_files(FLUX, source="local").files:
+        return  # installed diffusers doesn't define this class — skip
+
+    norms = [b for b in unfold(FLUX, inspect_code=True).ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert norms and all(b["label"] == "LayerNorm" for b in norms), \
+        f"inspect_code should resolve FLUX norm to LayerNorm, got {[(b['id'], b['label']) for b in norms]}"
+    assert any("read from the model code" in b.get("description", "") for b in norms), \
+        "a code-resolved norm must be marked as code-derived (tier-2), not config"
+
+
+def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
+    """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
+    self-attn → cross-attn(to text) → FFN — each AdaLN-gated where the source gates
+    (self + FFN). MM-DiT (joint) has NO separate cross-attention sublayer."""
+    d = unfold(PIXART)
+    ids = [b["id"] for b in d.ir.layers[0].blocks]
+    # the three-sublayer chain in order
+    assert ids[:11] == ["rms1", "attn", "gate_msa", "add1",
+                        "xattn_norm", "cross_attn", "add_xattn",
+                        "rms2", "ffn", "gate_mlp", "add2"]
+    cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
+    # The cross-attn drill is the CANONICAL attention view, hybridised with the input
+    # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.
+    assert cross.get("view") == "attention" and cross.get("diffusion_stage") == "cross_attention"
+    xattn = cross["detail"]["attention"]
+    assert xattn["cross_attention"] is True and xattn["cached"] is False
+    # cross-attn carries its OWN namespaced op cards (accurate dims), incl. the text K/V node.
+    cross_ids = {c["id"] for c in cross["children"]}
+    assert xattn["node_prefix"] == "x_" and "x_cross_attention_states" in cross_ids
+    assert {"x_q_proj", "x_k_proj", "x_scaled_scores", "x_o_proj"} <= cross_ids
+    # self-attention keeps its own specific (non-namespaced) cards, untouched.
+    self_attn = next(b for b in d.ir.layers[0].blocks if b["id"] == "attn")
+    assert {c["id"] for c in self_attn["children"]} >= {"q_proj", "k_proj", "scaled_scores", "o_proj"}
+    # AdaLN gates are Tier-2 connectors (× glyph) on self-attn + FFN (not on cross-attn) —
+    # glyphs, but now clickable with a describing card (not static).
+    gates = [b for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp")]
+    assert all(g["kind"] == "gate_mul" and not g.get("static") and g.get("description") for g in gates)
+    add_x = next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn")
+    assert add_x["kind"] == "residual_add" and not add_x.get("static") and add_x.get("description")
+    html = d.to_html(standalone=True)
+    assert "Cross-attention to text" in html and validate_click_coupling(html) == []
+
+    # MM-DiT (joint_attention_dim) must NOT grow a cross-attention sublayer.
+    mmdit_ids = [b["id"] for b in unfold(FLUX).ir.layers[0].blocks]
+    assert "cross_attn" not in mmdit_ids
+
+
 def test_video_dit_detected_and_honest():
     """Transformer3DModel classes are diffusion denoisers — never the LLM
     adapter (the Wan misparse: hidden 0, no loop, fake decoder)."""
@@ -561,10 +704,13 @@ def test_video_dit_detected_and_honest():
     assert ir["hidden_size"] == 1536                      # dim spelling
     assert ir["layers"][0]["ffn"]["intermediate_size"] == 8960   # ffn_dim
     html = d.to_html(standalone=True)
-    assert "Text Cross-Attn" in html                      # cross-attn DiT, not MM-DiT
+    # cross-attn DiT: a SEPARATE cross-attention sublayer (self → cross → FFN), not MM-DiT
+    assert "Cross-Attention" in html and "Cross-attention to text" in html
+    block_ids = [b["id"] for b in d.ir.layers[0].blocks]
+    assert "cross_attn" in block_ids and "add_xattn" in block_ids
     assert "MM-DiT" not in html
     assert ">Frames<" in html                             # video output, not "Image"
-    assert validate_click_coupling(html) is None or validate_click_coupling(html) == []
+    assert validate_click_coupling(html) == []
 
 
 def test_concat_joint_video_dit_is_not_called_dual_stream():
@@ -633,22 +779,32 @@ def test_video_latent_shape_uses_declared_temporal_geometry():
     assert "shape [16 channels]" in html_wan
 
 
-def test_scheduler_step_is_a_declared_ops_view():
-    """The scheduler block opens the update rule as declared ops: the
-    denoiser's prediction enters as a side source, scaled and combined with
-    z_t — with derived cards for every step (third projection)."""
-    html = unfold(FLUX).to_html(standalone=True)          # FlowMatchEuler ⇒ flow family
-    for cid in ("sched_pred", "sched_scale", "sched_step"):
-        assert f'data-card-id="{cid}"' in html
-    assert "from denoiser" in html
-    assert "flow matching" in html                        # declared-facts chip
-    # epsilon family from a declared prediction_type
-    cfg = dict(COGVIDEO_STYLE,
-               scheduler=["diffusers", "DDIMScheduler"],
-               _scheduler_config={"num_train_timesteps": 1000, "prediction_type": "epsilon"})
-    html2 = unfold(cfg).to_html(standalone=True)
-    assert 'data-card-id="sched_step"' in html2
-    assert "Removes the scaled noise estimate" in html2
+def test_scheduler_step_renders_a_clean_combine_not_floating_ops():
+    """The scheduler step opens the update rule as a purpose-built graph: the
+    denoiser's prediction is scaled and combined with z_t into ONE ⊕ → z_{t-1}.
+    (Regression: the declared-ops chain floated/duplicated the ⊕ because the
+    combine merges the primary latent with a side-scaled input — same failure mode
+    the self-conditioning view hit.)"""
+    from model_unfolder.adapters.diffusor.parser import _scheduler_geom
+    from model_unfolder.adapters.diffusor.blocks import _scheduler_step_view
+
+    # flow-matching family (FLUX / FlowMatchEuler): velocity prediction, Euler step
+    sv = _scheduler_step_view({"scheduler": "Flow Match Euler", "scheduler_flow_matching": True})
+    assert sv["view"] == "scheduler_step"
+    s = sv["detail"]["scheduler_step"]
+    assert s["sym"] == "v̂" and "v̂" in s["step_label"] and "+" in s["step_label"]
+
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "from denoiser" in html and "current latent" in html
+    assert validate_click_coupling(html) == []            # no floating/orphan ⊕
+
+    # epsilon family from a declared prediction_type → z_t − σ_t·ε̂
+    eps = _scheduler_step_view({"scheduler": "DDIM", "scheduler_train_timesteps": 1000,
+                                "scheduler_prediction_type": "epsilon"})
+    assert eps["view"] == "scheduler_step"
+    assert eps["detail"]["scheduler_step"]["sym"] == "ε̂"
+    # an undeclared scheduler keeps the honest prose card (no fabricated step)
+    assert _scheduler_step_view({}) == {}
 
 
 def test_scheduler_display_names_handle_acronym_runs():

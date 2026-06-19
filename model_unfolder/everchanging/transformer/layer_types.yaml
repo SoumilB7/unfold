@@ -1,0 +1,34 @@
+# Per-layer attention-type labels — the values a config's `layer_types` list (or
+# equivalent per-layer schedule) can hold, grouped by the mask the renderer draws.
+#
+# A value NOT listed here is reported as an unrecognized layer type (and drawn as
+# plain causal) — so teach the parser a new spelling by adding it here, no code
+# change.  `full` covers ordinary global/causal attention AND sparse variants
+# whose sparsity is surfaced some other way (DeepSeek-V3.2 DSA: the lightning
+# indexer is drawn as an attention annotation, the layer itself is causal).
+#
+# Block style (one `- item` per line) so the built-in loader works without PyYAML.
+
+full:
+  - full_attention
+  - full
+  - global
+  - global_attention
+  - causal
+  - attention                  # Nemotron-H / hybrid stacks label their attention layers plainly
+  - deepseek_sparse_attention  # DeepSeek-V3.2 DSA — causal attention + a sparse indexer (annotated)
+  - ""
+
+sliding:
+  - sliding_attention
+  - sliding
+
+compressed_sparse:
+  - compressed_sparse_attention
+  - compressed_sparse
+  - csa
+
+heavily_compressed:
+  - heavily_compressed_attention
+  - hierarchical_compressed_attention
+  - hca

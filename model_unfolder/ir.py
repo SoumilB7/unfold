@@ -30,16 +30,24 @@ class AttentionSpec:
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
+    rope: bool = True               # applies rotary position embedding to Q/K before scores
+                                    # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
     bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
+    cached: Optional[bool] = None   # whether K/V are written to an autoregressive cache;
+                                    # None → default (causal LMs cache, cross-attn doesn't);
+                                    # False → bidirectional/non-AR (diffusion DiT, ViT) — no cache ports
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
     cross_kv_source: Optional[str] = None  # what supplies the external K/V when
                                     # cross_attention is set — e.g. "encoded text
                                     # prompt" (DiT/UNet) vs "projected image states"
                                     # (vision). Drives the diagram's external node.
     compress_ratio: Optional[int] = None   # compressed sparse / hierarchical compressed attention
-    index_topk: Optional[int] = None        # CSA indexer fan-in, when declared
+    index_topk: Optional[int] = None        # sparse-attention indexer fan-in (keys kept per query)
+    index_n_heads: Optional[int] = None     # DeepSeek-V3.2 DSA lightning-indexer head count
+    index_head_dim: Optional[int] = None    # DeepSeek-V3.2 DSA lightning-indexer per-head width
+    mrope_section: Optional[list] = None    # Qwen-VL multimodal RoPE [temporal, height, width] split
     # Self-describing label override for attention variants the generic kind/mask
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
@@ -65,6 +73,8 @@ class FFNSpec:
     num_shared_experts: int = 0
     expert_intermediate_size: Optional[int] = None
     routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
+    activation_clip: Optional[float] = None  # clamp bound on the (Swi)GLU activation
+                                    # (gpt-oss ``swiglu_limit``) — a Tier-3 property
 
 
 @dataclass
@@ -174,6 +184,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "qk_rope_head_dim": a.qk_rope_head_dim,
         "v_head_dim": a.v_head_dim,
         "qk_norm": a.qk_norm,
+        "rope": a.rope,
         "bias": a.bias,
         "shared": a.shared,
         "no_rope": a.no_rope,
@@ -181,6 +192,9 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "cross_kv_source": a.cross_kv_source,
         "compress_ratio": a.compress_ratio,
         "index_topk": a.index_topk,
+        "index_n_heads": a.index_n_heads,
+        "index_head_dim": a.index_head_dim,
+        "mrope_section": a.mrope_section,
         "variant": a.variant,
     }
 
@@ -197,6 +211,7 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "num_shared_experts": f.num_shared_experts,
         "expert_intermediate_size": f.expert_intermediate_size,
         "routing": f.routing,
+        "activation_clip": f.activation_clip,
     }
 
 

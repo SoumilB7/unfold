@@ -42,6 +42,16 @@ CORPUS = {
     "mtp": dict(_BASE, num_nextn_predict_layers=2),
     "per_layer_embedding": dict(_BASE, hidden_size_per_layer_input=64, vocab_size_per_layer_input=1000),
     "sliding_window": dict(_BASE, sliding_window=1024, use_sliding_window=True, max_window_layers=1),
+    # Block-worthiness paradigm in anger: DiffusionGemma is the one family that
+    # exercises Tier-2 `static` connectors (⊕ merges) and inline parallel
+    # `branch_side` branches (dense MLP ∥ MoE).  Pinning it here means the schema
+    # must keep blessing the paradigm keys — they can't silently become "typos".
+    "block_paradigm": dict(
+        model_type="diffusion_gemma",
+        text_config=dict(
+            _BASE, n_routed_experts=8, num_experts_per_tok=2, moe_intermediate_size=128,
+        ),
+    ),
 }
 
 
@@ -142,10 +152,14 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
     mha_block = next(b for b in mha_ir["layers"][0]["blocks"] if b["id"] == "attn")
     gqa_block = next(b for b in gqa_ir["layers"][0]["blocks"] if b["id"] == "attn")
 
+    import re
+    # marker ids carry the view_key + a per-render uniqueness counter: "<mount>-<view>-<n>-arrow"
+    _gqa_marker = re.compile(r"gqa-attn-\d+-arrow")
+
     mha_in_gqa_context = render_block_detail(mha_ir, _make_info(gqa_ir), "attn-mha", mha_block)
     assert "grouped-query attention" not in mha_in_gqa_context
-    assert "gqa-attn-arrow" not in mha_in_gqa_context
+    assert not _gqa_marker.search(mha_in_gqa_context)
 
     gqa_in_mha_context = render_block_detail(gqa_ir, _make_info(mha_ir), "attn-gqa", gqa_block)
     assert "grouped-query attention" in gqa_in_mha_context
-    assert "gqa-attn-arrow" in gqa_in_mha_context
+    assert _gqa_marker.search(gqa_in_mha_context)

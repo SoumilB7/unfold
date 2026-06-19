@@ -217,7 +217,7 @@ def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
         return [
             {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},
             {
-                "id": "silu",
+                "id": "activation",
                 "title": activation,
                 "description": "Element-wise non-linearity after the input projection",
             },
@@ -232,12 +232,12 @@ def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
         },
         {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
         {
-            "id": "silu",
+            "id": "activation",
             "title": activation,
             "description": "Element-wise non-linearity applied to the gate path.",
         },
         {
-            "id": "mul",
+            "id": "multiply",
             "title": "Element-wise multiply",
             "description": f"{activation}(gate) × up — combines the gated and ungated paths",
         },

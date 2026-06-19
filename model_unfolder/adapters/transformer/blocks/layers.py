@@ -10,37 +10,90 @@ from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 
 
 def decoder_layer_blocks(
-    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
+    norm_kind: str = "rmsnorm", norm_placement: str = "pre",
 ) -> list[Block]:
+    """Per-layer block topology for a sequential decoder layer.
+
+    ``norm_placement`` selects where the norms sit relative to each sublayer —
+    the real architectural axis that distinguishes families (verified against the
+    HF ``DecoderLayer.forward``):
+
+    * ``pre``    — norm on the sublayer INPUT  (Llama/Mistral/Qwen/…): ``r + sub(norm(h))``
+    * ``post``   — norm on the sublayer OUTPUT (OLMo-2):                ``r + norm(sub(h))``
+    * ``double`` — norm on BOTH ends (Gemma-2/3 sandwich):  ``r + post_ln(sub(pre_ln(h)))``
+    """
+    if norm_placement == "post":
+        return _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    if norm_placement == "double":
+        return _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    return _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+
+
+def _add_block(block_id: str, residual_from: str, title: str, description: str) -> Block:
+    """A Tier-2 residual ⊕ connector: stays a glyph on the join (not a box), but is
+    clickable so its card can describe what it adds — connectors describe themselves."""
+    return {
+        "id": block_id, "role": "residual", "kind": "residual_add",
+        "residual_from": residual_from,
+        "label": "+", "title": title, "description": description,
+    }
+
+
+def _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm",
-                    _norm_desc(norm_kind, "before attention"),
-                    facts=[f"dim {hidden}"]),
+                    _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
-        {
-            "id": "add1",
-            "role": "residual",
-            "kind": "residual_add",
-            "residual_from": "rms1",
-            "label": "+",
-            "title": "Residual add",
-            "description": "block input + attention output",
-        },
+        _add_block("add1", "rms1", "Residual add", "block input + attention output"),
         _norm_block("rms2", norm_label, "Pre-FFN norm",
-                    _norm_desc(norm_kind, "before the FFN"),
-                    facts=[f"dim {hidden}"]),
+                    _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
-        {
-            "id": "add2",
-            "role": "residual",
-            "kind": "residual_add",
-            "residual_from": "rms2",
-            "label": "+",
-            "title": "Residual add",
-            "description": "post-attention + FFN output",
-        },
+        _add_block("add2", "rms2", "Residual add", "post-attention + FFN output"),
+    ]
+
+
+def _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
+    """OLMo-2 post-norm: each sublayer runs on the raw residual stream and its
+    OUTPUT is normed before the add (``r + norm(sub(h))``)."""
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+    return [
+        _attention_block(attention, hidden_size),
+        _norm_block("post_attn_ln", norm_label, "Post-attention norm",
+                    f"{norm_label} applied to the attention OUTPUT before the residual add "
+                    "(post-norm placement).", facts=[f"dim {hidden}"]),
+        _add_block("add1", "attn", "Residual add", "block input + normed attention output"),
+        _ffn_block(ffn, hidden_size),
+        _norm_block("post_ffn_ln", norm_label, "Post-FFN norm",
+                    f"{norm_label} applied to the FFN OUTPUT before the residual add "
+                    "(post-norm placement).", facts=[f"dim {hidden}"]),
+        _add_block("add2", "ffn", "Residual add", "post-attention residual + normed FFN output"),
+    ]
+
+
+def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
+    """Gemma-2/3 sandwich norm: a norm BEFORE and AFTER each sublayer
+    (``r + post_ln(sub(pre_ln(h)))``) — four norms per layer."""
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+    return [
+        _norm_block("rms1", norm_label, "Pre-attention norm (input_layernorm)",
+                    _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
+        _attention_block(attention, hidden_size),
+        _norm_block("post_attn_ln", norm_label, "Post-attention norm",
+                    f"{norm_label} applied to the attention OUTPUT before the first residual add "
+                    "(sandwich norm).", facts=[f"dim {hidden}"]),
+        _add_block("add1", "rms1", "Residual add", "block input + post-norm(attention output)"),
+        _norm_block("rms2", norm_label, "Pre-FFN norm (pre_feedforward_layernorm)",
+                    _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
+        _ffn_block(ffn, hidden_size),
+        _norm_block("post_ffn_ln", norm_label, "Post-FFN norm (post_feedforward_layernorm)",
+                    f"{norm_label} applied to the FFN OUTPUT before the second residual add "
+                    "(sandwich norm).", facts=[f"dim {hidden}"]),
+        _add_block("add2", "rms2", "Residual add", "post-attention residual + post-norm(FFN output)"),
     ]
 
 
@@ -80,6 +133,7 @@ def parallel_decoder_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add (parallel)",
             "description": "layer input + attention output + FFN output (one combined step)",
@@ -161,7 +215,7 @@ def diffusion_gemma_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
-            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add #1",
             "description": "layer input + post_attention_layernorm(attn_output)",
@@ -185,7 +239,7 @@ def diffusion_gemma_layer_blocks(
             # input == add1's output).  Tapping rms2's input stem nests cleanly
             # above the add1 bypass — same pattern as a standard Gemma2 layer.
             "residual_from": "rms2",
-            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add #2",
             "description": "post-attention residual + post_ffn_ln(mlp_out + moe_out)",
@@ -199,7 +253,7 @@ def diffusion_gemma_layer_blocks(
 #: The MoE-specific node ids the MoE view actually draws (router → experts →
 #: sum).  Used to scope the MoE lane's child cards so they don't collide with the
 #: dense MLP lane's gate_proj/up_proj/… cards.
-_MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe"}
+_MOE_NODE_IDS = {"router", "expert_1", "expert_k", "expert_kp1", "expert_n", "add_moe", "shared_expert"}
 
 
 def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_size: int) -> list[Block]:
@@ -262,7 +316,7 @@ def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_siz
         "id": "ffn_merge",
         "role": "residual",
         "kind": "residual_add",
-        "static": True,  # Tier-2 connector: the additive ⊕ glyph, not a block
+        # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
         "label": "+",
         "title": "Sum (dense MLP ⊕ MoE)",
         "description": "Element-wise sum of the dense MLP and MoE outputs.",

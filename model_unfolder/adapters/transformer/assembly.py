@@ -19,7 +19,8 @@ def decoder_layer(
     norm_placement: str = "pre",
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
-    blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
+                                  norm_placement=norm_placement)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(

@@ -580,10 +580,12 @@ def test_diffusion_gemma_block_worthiness():
     assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
     assert not ir["extras"]["render"].get("layer_annotations"), "scalar caption was removed"
 
-    # Tier-2: residual adds AND the FFN merge are static connector glyphs.
+    # Tier-2: residual adds AND the FFN merge are connector GLYPHS (⊕, not boxes) —
+    # clickable for a describing card (not static, but still kind residual_add).
     for add_id in ("add1", "add2", "ffn_merge"):
         assert blocks[add_id]["kind"] == "residual_add"
-        assert blocks[add_id]["static"] is True, f"{add_id} must be a static connector"
+        assert not blocks[add_id].get("static"), f"{add_id} connector is now clickable, not static"
+        assert blocks[add_id].get("description"), f"{add_id} must describe itself on click"
 
     # The parallel FFN is divided inline: two branch blocks, no collapsed block.
     assert "ffn" not in blocks, "the collapsed 'MLP ∥ MoE' block must be gone"
@@ -593,10 +595,10 @@ def test_diffusion_gemma_block_worthiness():
     assert blocks["attn"]["kind"] == "attention"
 
     html = d.to_html()
-    # The connector glyphs are NOT clickable and have NO card.
+    # The connector glyphs are clickable with a describing card (still glyphs, not boxes).
     for add_id in ("add1", "add2", "ffn_merge"):
-        assert f'data-id="{add_id}"' not in html, f"{add_id} must not be clickable"
-        assert f'data-card-id="{add_id}"' not in html, f"{add_id} must have no card"
+        assert f'data-id="{add_id}"' in html, f"{add_id} connector must be clickable"
+        assert f'data-card-id="{add_id}"' in html, f"{add_id} must have a describing card"
     # Both branches ARE clickable blocks inline in the architecture.
     for bid in ("ffn_mlp", "ffn_moe"):
         assert f'data-id="{bid}"' in html and f'data-card-id="{bid}"' in html
@@ -732,6 +734,176 @@ def test_moe_routing_detail():
     ir = unfold({**cfg, "n_group": 1, "topk_group": 1}).to_ir()
     ffn = next(l["ffn"] for l in ir["layers"] if l["ffn"]["kind"] == "moe")
     assert not any("groups" in f for f in router_facts(ffn))
+
+
+def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
+    """The MoE diagram must SHOW the modern router (not just card facts), draw the
+    always-on shared expert, and adapt the gate pipeline to the config — closing
+    the 'diagram shows plain top-k' gap across DeepSeek/Kimi/GLM/Qwen3-MoE."""
+    from model_unfolder.renderers.html.block_views.registry import (
+        render_block_detail, render_sub_block_detail,
+    )
+    from model_unfolder.renderers.html.metadata import _make_info
+    from model_unfolder.block_schema import validate_click_coupling
+
+    def moe_and_router(cfg):
+        ir = parse(cfg).to_dict()
+        moe = next(b for L in ir["layers"] for b in L["blocks"]
+                   if b.get("id") == "ffn" and b.get("view") == "moe")
+        info = _make_info(ir)
+        return ir, info, moe, next(c for c in moe["children"] if c["id"] == "router")
+
+    base = dict(
+        model_type="deepseek_v3", num_hidden_layers=3, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
+        kv_lora_rank=64, q_lora_rank=96, n_routed_experts=64, num_experts_per_tok=8,
+        first_k_dense_replace=1, scoring_func="sigmoid", topk_method="noaux_tc",
+        n_group=8, topk_group=4, norm_topk_prob=True, routed_scaling_factor=2.5,
+        n_shared_experts=1,
+    )
+    ir, info, moe, router = moe_and_router(base)
+    # Router drills into the gate policy view.
+    assert router.get("view") == "moe_router"
+    # The shared expert is a real Tier-1 block in the MoE view + has a card.
+    assert any(c["id"] == "shared_expert" for c in moe["children"])
+    moe_html = render_block_detail(ir, info, "m", moe)
+    assert "Shared" in moe_html and 'data-id="shared_expert"' in moe_html
+    # The weighted-sum ⊕ is a Tier-2 connector glyph — clickable for its describing card.
+    add = next(c for c in moe["children"] if c["id"] == "add_moe")
+    assert add["kind"] == "residual_add" and not add.get("static") and add.get("description")
+
+    # The gate pipeline reflects DeepSeek's full grouped, bias-corrected, scaled policy.
+    gate = render_sub_block_detail(ir, info, "m", router)
+    for token in ("sigmoid", "Group-limit", "keep 4 of 8 groups", "select top-8",
+                  "renormalize", "learned bias", "2.5"):
+        assert token in gate, f"gate view missing {token!r}"
+
+    # Dynamic (Gate A.3): a plain softmax top-k router collapses — no group / bias / scale.
+    plain = dict(model_type="m", num_hidden_layers=2, hidden_size=128,
+                 num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
+                 vocab_size=1000, rms_norm_eps=1e-5, num_local_experts=8,
+                 num_experts_per_tok=2)
+    pir, pinfo, _pmoe, prouter = moe_and_router(plain)
+    pgate = render_sub_block_detail(pir, pinfo, "m", prouter)
+    assert "softmax" in pgate and "select top-2" in pgate
+    assert "Group-limit" not in pgate and "learned bias" not in pgate
+
+    # The whole rendered model stays click-coupled with the new gate drill embedded.
+    assert validate_click_coupling(unfold(base).to_html(standalone=True)) == []
+
+
+def test_dsa_indexer_and_clamped_swiglu_are_surfaced():
+    """Two Tier-3 properties that used to be silently dropped must now read from
+    config: DeepSeek-V3.2's sparse-attention indexer and gpt-oss's clamped SwiGLU."""
+    from model_unfolder.labels import attention_summary, ffn_summary
+
+    # DSA: indexer geometry + top-k are consumed and surfaced (not 'unparsed').
+    dsa = parse(dict(
+        model_type="deepseek_v32", num_hidden_layers=2, hidden_size=128,
+        num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
+        moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
+        kv_lora_rank=64, q_lora_rank=96, qk_nope_head_dim=64, qk_rope_head_dim=32,
+        n_routed_experts=16, num_experts_per_tok=4, first_k_dense_replace=1,
+        index_topk=2048, index_n_heads=64, index_head_dim=128,
+    )).to_dict()
+    att = dsa["layers"][0]["attention"]
+    assert (att["index_topk"], att["index_n_heads"], att["index_head_dim"]) == (2048, 64, 128)
+    desc, facts = attention_summary(att)
+    assert "DeepSeek Sparse Attention" in desc
+    assert any("DSA top-2,048" in f for f in facts) and any("indexer 64×128" in f for f in facts)
+
+    # Clamped SwiGLU: gpt-oss swiglu_limit becomes a Tier-3 chip on the FFN.
+    oss = parse(dict(
+        model_type="gpt_oss", num_hidden_layers=2, hidden_size=128,
+        num_attention_heads=8, num_key_value_heads=8, intermediate_size=256,
+        vocab_size=1000, rms_norm_eps=1e-5, num_local_experts=8,
+        num_experts_per_tok=2, swiglu_limit=7.0,
+    )).to_dict()
+    ffn = next(l["ffn"] for l in oss["layers"] if l["ffn"]["kind"] == "moe")
+    assert ffn["activation_clip"] == 7.0
+    assert any("clamped ±7" in f for f in ffn_summary(ffn)[1])
+
+    # M-RoPE: Qwen-VL's rope_scaling.mrope_section becomes a Tier-3 chip.
+    vl = parse(dict(
+        model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
+        num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
+        vocab_size=1000, rms_norm_eps=1e-5,
+        rope_scaling={"type": "mrope", "mrope_section": [16, 24, 24]},
+    )).to_dict()
+    att = vl["layers"][0]["attention"]
+    assert att["mrope_section"] == [16, 24, 24]
+    assert any("M-RoPE 16/24/24" in f for f in attention_summary(att)[1])
+
+
+def test_dsa_indexer_is_a_clickable_subblock_only_when_declared():
+    """The DSA lightning indexer is a Tier-1 drill-down on V3.2's attention — a
+    third path into the scores — and is strictly gated on index_n_heads so no
+    other MLA model (V3 / Kimi) grows a phantom indexer."""
+    from model_unfolder.renderers.html.block_views.registry import (
+        render_block_detail, render_sub_block_detail,
+    )
+    from model_unfolder.renderers.html.metadata import _make_info
+
+    def attn_block(cfg):
+        ir = parse(cfg).to_dict()
+        b = next(b for L in ir["layers"] for b in L["blocks"] if b.get("id") == "attn")
+        return ir, _make_info(ir), b
+
+    mla = dict(
+        num_hidden_layers=2, hidden_size=128, num_attention_heads=16,
+        num_key_value_heads=16, intermediate_size=512, moe_intermediate_size=128,
+        vocab_size=1000, rms_norm_eps=1e-6, kv_lora_rank=64, q_lora_rank=96,
+        qk_nope_head_dim=64, qk_rope_head_dim=32, n_routed_experts=16,
+        num_experts_per_tok=4, first_k_dense_replace=1,
+    )
+    # V3.2: indexer present, clickable, and its drill describes the scorer.
+    ir, info, attn = attn_block(dict(mla, model_type="deepseek_v32",
+                                     index_topk=2048, index_n_heads=64, index_head_dim=128))
+    assert any(c["id"] == "mla_indexer" for c in attn["children"])
+    assert 'data-id="mla_indexer"' in render_block_detail(ir, info, "a", attn)
+    idx = next(c for c in attn["children"] if c["id"] == "mla_indexer")
+    drill = render_sub_block_detail(ir, info, "a", idx)
+    assert "Index scores" in drill and "top-2,048" in drill and "64" in drill
+
+    # V3 (no index fields): no phantom indexer node or child.
+    ir2, info2, attn2 = attn_block(dict(mla, model_type="deepseek_v3"))
+    assert not any(c["id"] == "mla_indexer" for c in attn2["children"])
+    assert 'data-id="mla_indexer"' not in render_block_detail(ir2, info2, "a", attn2)
+
+
+def test_layer_norm_placement_matches_source_topology():
+    """Connection fidelity (Gate A.6): the per-layer norm/residual topology must
+    match the real HF DecoderLayer.forward for families that depart from the
+    default sequential pre-norm — Gemma sandwich, OLMo-2 post-norm, Cohere parallel."""
+    base = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
+                num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
+
+    def ids(cfg):
+        L = parse(cfg).layers[-1]
+        return L.norm_placement, [b["id"] for b in L.blocks], {b["id"]: b for b in L.blocks}
+
+    # Gemma-2/3 sandwich: input_ln → attn → post_attn_ln → ⊕ → pre_ffn_ln → ffn → post_ffn_ln → ⊕
+    pl, order, by = ids(dict(base, model_type="gemma2", sliding_window=512))
+    assert pl == "double"
+    assert order == ["rms1", "attn", "post_attn_ln", "add1", "rms2", "ffn", "post_ffn_ln", "add2"]
+    assert by["add1"]["residual_from"] == "rms1" and by["add1"]["kind"] == "residual_add"
+
+    # OLMo-2 post-norm: attn → post_attn_ln → ⊕ → ffn → post_ffn_ln → ⊕ (no pre-norms)
+    pl, order, by = ids(dict(base, model_type="olmo2"))
+    assert pl == "post"
+    assert order == ["attn", "post_attn_ln", "add1", "ffn", "post_ffn_ln", "add2"]
+    assert by["add1"]["residual_from"] == "attn"  # taps the sublayer input (= layer input)
+
+    # Cohere parallel (no config flag): one shared norm feeds attn ∥ ffn → one combined ⊕
+    pl, order, by = ids(dict(base, model_type="cohere"))
+    assert by["ffn"].get("lane") and by["ffn"].get("feeds") == "add1"
+    assert "add2" not in by  # single combined residual add
+
+    # Regression: a standard family stays sequential pre-norm.
+    pl, order, _ = ids(dict(base, model_type="llama"))
+    assert pl == "pre"
+    assert order == ["rms1", "attn", "add1", "rms2", "ffn", "add2"]
 
 
 def test_single_kv_gemma4_stays_gqa_view():
@@ -920,15 +1092,16 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
 
     assert ir["layers"][0]["ffn"]["gated"] is False
     assert ffn_block["view"] == "dense_ffn"
-    assert {"up_proj", "silu", "down_proj"} <= child_ids
+    # card ids match the op-graph region ops (activation/multiply), not silu/mul.
+    assert {"up_proj", "activation", "down_proj"} <= child_ids
     assert "gate_proj" not in child_ids
-    assert "mul" not in child_ids
+    assert "multiply" not in child_ids
 
     html = d.to_html(standalone=True)
     assert "Linear (in)" in html
     assert "Linear (gate)" not in html
     assert 'data-card-id="gate_proj"' not in html
-    assert 'data-card-id="mul"' not in html
+    assert 'data-card-id="multiply"' not in html
 
 
 def test_falcon_parallel_attn_uses_parallel_topology():
@@ -1047,6 +1220,21 @@ def test_param_counts_match_published_within_tolerance():
             f"total {total_b:.1f}B vs published {pub_total}B"
         assert abs(active_b - pub_active) / pub_active < 0.08, \
             f"active {active_b:.1f}B vs published {pub_active}B"
+
+
+def test_param_estimation_never_crashes_on_list_valued_counts():
+    """Some configs declare per-layer/per-block LISTS where a scalar count is
+    expected (a heterogeneous MoE schedule). Parameter estimation must degrade to
+    an approximate number, never raise — a crash here failed the whole render."""
+    from model_unfolder.params import _ffn_params, _attn_params
+    from model_unfolder.ir import FFNSpec, AttentionSpec
+    f = FFNSpec(kind="moe", activation="silu", intermediate_size=[100, 200],
+                gated=True, num_experts=[8, 16], num_experts_per_tok=2,
+                num_shared_experts=[1])
+    total, active = _ffn_params(f, 128)
+    assert total > 0 and active > 0
+    a = AttentionSpec(kind="gqa", num_heads=[8, 8], num_kv_heads=[2], head_dim=None)
+    assert _attn_params(a, 128) > 0
 
 
 def test_model_id_uses_hf_token_env_and_explicit_override():

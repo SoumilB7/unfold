@@ -373,20 +373,30 @@ def _scheduler_step_view(geom: dict) -> dict:
             "one denoising step toward z_0.")
     else:
         return {}                      # unrecognised prediction type — no fabrication
+    # Purpose-built graph view (NOT the declared-ops chain): the step combines the
+    # primary latent z_t with a side-scaled prediction, a merge the ops engine
+    # mis-lays out (floating/duplicated ⊕). The family-specific labels flow through
+    # ``detail.scheduler_step``; one declaration, the view + JSON read it.
     return {
-        "view": "ops",
-        "detail": {"ops": [
-            {"id": "sched_pred", "kind": "input",
-             "label": [f"{sym} {what}", "from denoiser"],
-             "meta": {"desc": f"The denoiser's predicted {what} for this timestep, "
-                              "handed to the scheduler each step."}},
-            {"id": "sched_scale", "kind": "elementwise", "fn": "mul",
-             "label": scale_label, "from": ["sched_pred"],
-             "meta": {"desc": scale_desc}},
-            {"id": "sched_step", "kind": "elementwise", "fn": "add",
-             "label": step_label, "from": ["hidden", "sched_scale"],
-             "meta": {"desc": step_desc}},
-        ]},
+        "view": "scheduler_step",
+        "detail": {"scheduler_step": {
+            "sym": sym, "what": what,
+            "scale_label": scale_label, "scale_desc": scale_desc,
+            "step_label": step_label, "step_desc": step_desc,
+        }},
+        # Cards for the clickable nodes in the step view (incl. the ⊕ connector glyph).
+        "children": [
+            {"id": "sch_pred", "title": f"Predicted {what}",
+             "description": f"The denoiser's predicted {what} ({sym}) for this timestep, "
+                            "handed to the scheduler each step."},
+            {"id": "sch_scale", "title": scale_label, "description": scale_desc},
+            {"id": "sch_zt", "title": "Current latent z_t",
+             "description": "The latent being denoised — the loop-carried value the "
+                            "scheduler updates into z_{t-1}."},
+            {"id": "sch_step", "title": "Combine step",
+             "description": "Combines the current latent z_t with the scaled prediction to take "
+                            "one denoising step toward z_{t-1} (the ⊕ glyph)."},
+        ],
     }
 
 
@@ -590,26 +600,15 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "title": attn_title,
             "description": attn_desc,
             "facts": attn_facts,
-            # Opens the ONE shared attention view, parameterised by this
-            # encoder's own facts — same view the decoder/DiT attention opens.
-            "view": "attention",
-            "detail": {"attention": attn_detail},
+            # A summary tower's sublayer: a clickable DESCRIPTION card (its dims +
+            # what it does), not a generic Q/K/V drill — the hero denoiser carries
+            # the detailed attention diagram; this supporting encoder is described.
         },
         {
             "id": f"{prefix}_op_ffn",
             "title": "Feed-forward",
             "description": ffn_desc,
             "facts": ffn_facts,
-            # Opens the ONE shared FFN view, parameterised by this encoder's own
-            # facts — same view the denoiser/LLM FFN opens.
-            "view": "ffn",
-            "detail": {"ffn": {
-                "kind": "dense",
-                "gated": bool(spec.get("gated")),
-                "activation": spec.get("activation"),
-                "intermediate_size": ffn,
-                "hidden": hidden,
-            }},
         },
         {
             "id": f"{prefix}_op_norm",

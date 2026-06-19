@@ -97,6 +97,20 @@ dit_class_markers:
   - DiTTransformer
   - DiT
 
+# Diffusion `norm_type` -> base norm kind, matched as a substring of the config's
+# norm_type (diffusers states it in the transformer config). AdaLN variants
+# (ada_norm / ada_norm_single / ada_norm_zero / ada_layer_norm / ...) are LayerNorm
+# based — the AdaLN modulates a (usually non-affine) LayerNorm — so they resolve to
+# `layernorm`; `rms_norm` to `rmsnorm`. The AdaLN modulation itself is shown by the
+# timestep-conditioning wiring, not invented into the norm's type.
+norm_type_kind:
+  - "rms_norm=rmsnorm"
+  - "ada_norm=layernorm"
+  - "ada_layer_norm=layernorm"
+  - "layer_norm=layernorm"
+  - "fp32_layer_norm=layernorm"
+  - "group_norm=groupnorm"
+
 # Scheduler class -> display name, for names CamelCase splitting can't get
 # right (acronym runs). "Class=Display" pairs; bare class name sans the
 # Scheduler/DiscreteScheduler suffix.

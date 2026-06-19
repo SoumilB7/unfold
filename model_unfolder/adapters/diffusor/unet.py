@@ -13,7 +13,7 @@ from typing import Any
 
 from ...ir import AttentionSpec, FFNSpec
 from ..transformer.blocks.attention import attention_child_blocks, attention_detail
-from ..transformer.blocks.feed_forward import ffn_detail, ffn_view
+from ..transformer.blocks.feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 from ..transformer.common import get_config_value as _g
 from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
 from .compound import unet_mid_stage, unet_resolution_stage
@@ -282,7 +282,9 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
          "children": cross_children},
         {"id": f"{prefix}__ff", "title": "Feed-forward",
          "description": "Position-wise GEGLU feed-forward sublayer, applied after attention.",
-         "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)}},
+         "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)},
+         # generic (dim-neutral) op cards, shared across stages — clickable Linear/act/×.
+         "children": ffn_child_blocks(ff_spec, hidden, generic=True)},
     ]
 
 

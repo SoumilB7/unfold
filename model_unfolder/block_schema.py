@@ -48,10 +48,23 @@ class Block(TypedDict, total=False):
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
     components: list[dict]        # typed sub-facts inside a compound stage
+    # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
+    static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join
+                                  # (residual ⊕, gate ×, split, concat), NON-clickable,
+                                  # no card.  The renderer uses `clickable = not static`
+                                  # and the card builder skips static blocks.  A True
+                                  # here is the single switch that demotes a candidate
+                                  # from a box to wiring — the inverse of a Tier-1 block.
     # --- layout hints (renderer geometry; non-default topologies) ---
+    branch_side: str              # "left" | "right" — this block is a parallel branch
+                                  # drawn off the central column (not in the chain),
+                                  # converging into the `feeds` merge (e.g. dense MLP ∥
+                                  # MoE).  Distinct from `lane`, which is a side rail.
     lane: str                     # side lane placement (parallel/PLE/cross-attn)
     tap_from: str                 # block id this one taps its input from
     feeds: str                    # block id this one feeds into
+    also_feeds: "list[str]"       # additional block ids this side source fans into
+                                  # (e.g. AdaLN conditioning → each gate × it drives)
     side_align: str               # alignment of a side block against its tap
     residual_from: str            # for residual_add: the block the skip starts at
     offset_y: float
@@ -194,6 +207,30 @@ def validate_click_coupling(html: str) -> list[str]:
     card_ids = set(_CARD_ID.findall(html)) | _NODELESS_CARDS
     orphans = sorted(node_ids - card_ids)
     return [f"clickable node {nid!r} has no card (click would do nothing)" for nid in orphans]
+
+
+_DEF_ID = re.compile(r'<(?:marker|linearGradient|radialGradient|filter|clipPath) id="([^"]+)"')
+_URL_REF = re.compile(r"url\(#([^)]+)\)")
+
+
+def validate_unique_ref_ids(html: str) -> list[str]:
+    """Every ``<defs>`` id referenced by ``url(#id)`` (markers/gradients/filters)
+    must be UNIQUE across the whole document.
+
+    A diagram bakes one ``<marker>`` arrowhead per view; ``url(#id)`` resolution is
+    document-global, so a duplicate id makes the browser bind to the FIRST match —
+    which, for a drill panel, sits in a ``display:none`` subtree, so the arrowheads
+    silently vanish from the live render even though each svg looks correct in
+    isolation (a rendered PNG, or rsvg). This is the document-level check the
+    isolated-svg image pass cannot see."""
+    import collections
+    referenced = set(_URL_REF.findall(html))
+    counts = collections.Counter(self_id for self_id in _DEF_ID.findall(html))
+    return [
+        f"duplicate def id {i!r} (×{c}) referenced by url(#) — its arrowheads/fills "
+        f"bind to the first (possibly hidden) match and vanish in the browser"
+        for i, c in sorted(counts.items()) if c > 1 and i in referenced
+    ]
 
 
 # ---------------------------------------------------------------------------

@@ -107,6 +107,36 @@ def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
     raise err
 
 
+def _apply_code_norm(ir: ModelIR, evidence: Any) -> None:
+    """Fill a config-silent norm type from the model code (tier-2).
+
+    diffusion DiTs never state the norm type in config.json — it lives in the
+    diffusers block class. When `inspect_code` scanned that class, resolve the
+    norm op from it and upgrade the (otherwise "Normalization") norm cards,
+    rewriting the "config doesn't declare it" note to say it's CODE-derived."""
+    from .evidence.ast_scanner import scan_python_files
+    from .evidence.patterns import diffusion_norm_from_classes
+
+    # evidence.classes is filtered to attention/MLP classes (LLM inference), which
+    # drops the diffusion transformer BLOCK where the norm class is instantiated —
+    # so re-scan the bundle's files to see every class.
+    all_classes = scan_python_files(getattr(evidence, "files", ()) or ())
+    res = diffusion_norm_from_classes(all_classes)
+    if not res:
+        return
+    label, cls = res
+    silent_note = (" The config does not declare whether this is RMSNorm or LayerNorm "
+                   "— that lives in the model's code.")
+    code_note = (f" Its type ({label}, from diffusers `{cls}`) is read from the model "
+                 "code, not the config.")
+    for layer in getattr(ir, "layers", None) or []:
+        for b in getattr(layer, "blocks", None) or []:
+            if isinstance(b, dict) and b.get("kind") == "norm" and b.get("label") == "Normalization":
+                b["label"] = label
+                if b.get("description"):
+                    b["description"] = b["description"].replace(silent_note, code_note)
+
+
 def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: str = "local") -> None:
     from .evidence import inspect_model_code, validate_ir_with_evidence
 
@@ -123,6 +153,7 @@ def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: s
         evidence_dict["warnings"] = combined
 
     ir.extras["code_evidence"] = evidence_dict
+    _apply_code_norm(ir, evidence)
 
     # Source-scan warnings are advisory and already live in the Code Evidence
     # panel. Only promote true code/config mismatch warnings to the global IR

@@ -9,7 +9,7 @@ region the top-level FFN view and the JSON expert template project from.
 from __future__ import annotations
 
 from ....opgraph import ffn_region, rename_ops
-from ..graph import Graph, Node, Parallel
+from ..graph import Graph, Lane, Node, Parallel
 from ..graph_engine import render_graph
 from ..op_render import region_to_graph
 from .block_facts import ffn_from_block
@@ -20,6 +20,7 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     hidden = ir.get("hidden_size")
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
+    n_shared = ffn.get("num_shared_experts") or 0
     last = str(n_total) if n_total else "N"
 
     experts = [("expert_1", "Expert 1"), ("expert_k", "Expert k"),
@@ -27,19 +28,28 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     note = None
     if n_total:
         note = f"top-{k} of {n_total} experts active" if k else f"{n_total} experts"
+        if n_shared:
+            note += f" · +{n_shared} shared (always on)"
 
     nodes = [
         Node("moe_hidden", "port",
-             (f"in ({hidden:,})" if hidden else "in"), static=True),
+             (f"in · {hidden:,}" if hidden else "in"), static=True),
         Node("router", "router", "Router"),
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
-        Node("add_moe", "residual_add"),
+        # Tier-2 connector: the weighted-sum ⊕ (+ shared expert) — a glyph, no card.
+        Node("add_moe", "residual_add", static=True),
         Node("moe_out", "port", static=True),
     ]
+    # Routed experts fan out from the router; the shared expert (always-on) taps
+    # the block input directly — bypassing the router — and joins the same sum.
+    lanes: list = [[nid] for nid, _ in experts]
+    if n_shared:
+        nodes.append(Node("shared_expert", "shared_expert", ["Shared", "expert"]))
+        lanes.append(Lane(["shared_expert"], src="moe_hidden"))
     graph = Graph(
         nodes=nodes,
         flow=["moe_hidden", "router", "add_moe", "moe_out"],
-        parallels=[Parallel("router", "add_moe", [[nid] for nid, _ in experts])],
+        parallels=[Parallel("router", "add_moe", lanes)],
         note=note,
     )
     return render_graph(graph, info, mount_id, "moe",

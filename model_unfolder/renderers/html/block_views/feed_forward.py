@@ -21,8 +21,12 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     ffn = ffn_from_block(block, info)
     hidden = ffn.get("hidden") or ir.get("hidden_size")
     region = ffn_region(ffn, hidden)
+    # The ops are click-drill targets when the block declares child cards for them
+    # (Linear in / activation / Linear out / gate·up·× ) — same rule as attention;
+    # a block without children renders as a leaf summary.
+    clickable = bool(block and block.get("children"))
     return render_graph(
-        region_to_graph(region), info, mount_id, "ffn",
+        region_to_graph(region, clickable=clickable), info, mount_id, "ffn",
         f"{ir.get('name', 'model')} feed-forward block", min_width=640,
     )
 

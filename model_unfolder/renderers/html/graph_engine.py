@@ -13,7 +13,7 @@ they declare typed nodes instead of drawing rectangles).
 """
 from __future__ import annotations
 
-from .graph import Graph, Parallel
+from .graph import Graph, Parallel, wiring_problems
 from .stack_view import fit_svg, point
 from .svg import (
     _branch_dot,
@@ -47,6 +47,22 @@ _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
 _BRANCH_STUB = 48.0       # split-dot → lane-bottom rise
 _MERGE_STUB = 46.0        # lane-top → merge-node rise
 
+# --- Dable wiring log -------------------------------------------------------
+# Every graph render runs the dangling detector and appends any finding here.
+# A validator (Diagram.wiring_problems) clears, re-renders, and drains it — so
+# a dangling ⊕/×/⊙ is caught wherever it is drawn, not just in pinned tests.
+_WIRING_LOG: list[str] = []
+
+
+def reset_wiring_log() -> None:
+    _WIRING_LOG.clear()
+
+
+def drain_wiring_log() -> list[str]:
+    found = list(_WIRING_LOG)
+    _WIRING_LOG.clear()
+    return found
+
 
 def render_graph(
     graph: Graph,
@@ -59,6 +75,8 @@ def render_graph(
     pad: int = 46,
 ) -> str:
     by_id = graph.by_id()
+    for _p in wiring_problems(graph):           # Dable: flag dangling connectors
+        _WIRING_LOG.append(f"{view_key}: {_p}")
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []
     regions: list[dict] = []
@@ -170,7 +188,12 @@ def render_graph(
         ny = top["top"] - 20
         parts.append(_svg_text(cx, ny, graph.note, {
             "text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11}))
-        regions.append(point(cx, ny - 6))
+        # Register the note's full horizontal extent (not just a point) so the
+        # canvas grows to contain it — otherwise a wide or off-centre note (e.g.
+        # when a side-input shifts the flow column) clips at the edge.
+        note_half = len(graph.note) * 3.4  # ≈ half a mono char (font 11) per char
+        regions.append({"left": cx - note_half, "right": cx + note_half,
+                        "top": ny - 12, "bottom": ny})
 
     # --- 8. aside fact panel (heading + mono rows) ---
     # Tucked beside the rows it actually overlaps (the upper spine is narrow),

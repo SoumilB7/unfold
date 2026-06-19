@@ -33,10 +33,12 @@ def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
     return [{
         "id": f"{prefix}_attn",
         "title": kind_long(attn).replace(" attention", " self-attention"),
-        "description": "Self-attention over the encoder's token sequence.",
+        "description": "Self-attention over the encoder's token sequence — each token mixes "
+                       "context across the sequence.",
         "facts": facts,
-        "view": "attention",
-        "detail": {"attention": attn},
+        # A supporting encoder tower's sublayer: a clickable DESCRIPTION card (dims + what
+        # it does), not a generic Q/K/V drill (which would render all-static here). The hero
+        # network carries the detailed attention diagram; this summary is described.
     }]
 
 

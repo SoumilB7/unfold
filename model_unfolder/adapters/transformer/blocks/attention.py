@@ -25,19 +25,24 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "window_size": attention.window_size,
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
+        "rope": attention.rope,
         "bias": attention.bias,
         "shared": attention.shared,
         "no_rope": attention.no_rope,
+        "cached": attention.cached,
         "cross_attention": attention.cross_attention,
         "cross_kv_source": attention.cross_kv_source,
         "compress_ratio": attention.compress_ratio,
         "index_topk": attention.index_topk,
+        "index_n_heads": attention.index_n_heads,
+        "index_head_dim": attention.index_head_dim,
+        "mrope_section": attention.mrope_section,
         "variant": attention.variant,
     }
 
 
 def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
-                           generic: bool = False) -> list[Block]:
+                           generic: bool = False, id_prefix: str = "") -> list[Block]:
     """Per-op description cards for an attention block.
 
     ``generic=True`` produces source-neutral SDPA cards ("over the input" rather
@@ -45,7 +50,11 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     op cards are shared by sibling self- and cross-attention blocks (UNet
     Transformer2D): they share op ids, so a source-specific card on one would be
     wrong on the other — the K/V source is carried by the cross-attention's own
-    ``cross_attention_states`` node instead."""
+    ``cross_attention_states`` node instead.
+
+    ``id_prefix`` namespaces the card ids so a second attention drill in the same
+    layer (cross-attention) gets its OWN accurate cards instead of sharing the
+    source-neutral set — match it to the region's ``node_prefix``."""
     builders = {
         "mla": _mla_child_blocks,
         "ssm": _ssm_child_blocks,
@@ -55,8 +64,13 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     }
     builder = builders.get(attention.kind, _sdpa_child_blocks)
     if builder is _sdpa_child_blocks:
-        return _sdpa_child_blocks(attention, hidden_size, generic=generic)
-    return builder(attention, hidden_size)
+        cards = _sdpa_child_blocks(attention, hidden_size, generic=generic)
+    else:
+        cards = builder(attention, hidden_size)
+    if id_prefix:
+        for c in cards:
+            c["id"] = f"{id_prefix}{c['id']}"
+    return cards
 
 
 def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
@@ -164,7 +178,8 @@ def _sdpa_detailed_child_blocks(
         q_src = (("the latent query tokens" if is_text_cross else "decoder hidden states")
                  if cross_attention else "the hidden state")
         kv_src = f"the {cross_src}" if cross_attention else "the hidden state"
-        cache_facts = [] if cross_attention else [CACHE_PORT_FACT]
+        # No cache ports for cross-attention or explicitly non-cached (diffusion/ViT) attention.
+        cache_facts = [] if (cross_attention or attention.cached is False) else [CACHE_PORT_FACT]
     cross_chip = ["from cross-attention source"] if cross_attention else []
     cards = [
         {
@@ -198,8 +213,9 @@ def _sdpa_detailed_child_blocks(
         },
         {
             "id": "attn_apply_v",
-            "title": "Apply values",
-            "description": "Multiply attention weights by V to produce one context vector per head.",
+            "title": "Matrix multiplication",
+            "description": "Matrix-multiplies the softmax attention weights by V (weights · V) — "
+                           "one context vector per head.",
         },
         {
             "id": "concat_heads",
@@ -214,6 +230,15 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if attention.rope and not attention.no_rope and not cross_attention:
+        # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
+        # the two rope nodes the SDPA region now draws on the Q/K lanes.
+        cards += [
+            {"id": "q_rope", "title": "Apply RoPE (Q)",
+             "description": "Rotary position embedding applied to the query heads before the scores."},
+            {"id": "k_rope", "title": "Apply RoPE (K)",
+             "description": "Rotary position embedding applied to the key heads before the scores."},
+        ]
     if generic:
         # These cards are SHARED across stages of different width (the panel dedups
         # by id). Per-stage dims would be wrong on the shared card, so drop them —
@@ -377,7 +402,34 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "facts": ([f"{_fmt(v_v)} per head"] if v_v else []) + [f"{num_heads} heads"],
         },
     ]
-    return [
+    indexer_block = []
+    if attention.index_n_heads:
+        # DeepSeek-V3.2 DSA: the lightning indexer is a real sub-module (its own
+        # heads/dim) — a Tier-1 drill-down, not just a chip.
+        indexer_block = [{
+            "id": "mla_indexer",
+            "label": ["Sparse indexer", "(DSA)"],
+            "title": "DeepSeek Sparse Attention indexer",
+            "description": (
+                "A lightweight scorer with its own small heads that scores every key "
+                "against the query and keeps only the top-k per query; the latent "
+                "attention then runs over that sparse subset of the context."
+            ),
+            "facts": [f"{_fmt(attention.index_n_heads)} indexer heads",
+                      f"head dim {_fmt(attention.index_head_dim)}",
+                      f"top-{_fmt(attention.index_topk)} keys"],
+            "view": "dsa_indexer",
+            "children": [
+                {"id": "dsa_proj", "title": "Indexer projections",
+                 "description": f"The indexer's own lightweight query/key projections "
+                                f"({_fmt(attention.index_n_heads)} heads × {_fmt(attention.index_head_dim)})."},
+                {"id": "dsa_score", "title": "Index scores",
+                 "description": "Scores every key against the query with the indexer heads (cheap, separate from the main attention)."},
+                {"id": "dsa_topk", "title": f"Keep top-{_fmt(attention.index_topk)}",
+                 "description": f"Selects the top-{_fmt(attention.index_topk)} keys per query; the latent attention runs only over those."},
+            ],
+        }]
+    return indexer_block + [
         {
             "id": "mla_query_path",
             "label": "Query path",

@@ -80,8 +80,15 @@ def test_attention_lanes_and_spine_are_derived_from_edges():
     g = region_to_graph(attention_region(GQA, 4096), clickable=True)
     assert g.flow[:2] == ["hidden", "scaled_scores"]          # spine jumps to the join
     lanes = g.parallels[0].norm_lanes()
-    assert [lane.ids for lane in lanes] == [["q_proj"], ["k_proj"], ["v_proj"]]
+    # Q and K pass through RoPE before the scores (apply_rotary_pos_emb); V does not.
+    assert [lane.ids for lane in lanes] == [["q_proj", "q_rope"], ["k_proj", "k_rope"], ["v_proj"]]
     assert lanes[2].dst == ["attn_apply_v"]                   # V merges above the join
+
+
+def test_non_rope_family_omits_the_rope_step():
+    # ALiBi / learned-absolute families must NOT draw a fabricated RoPE node.
+    g = region_to_graph(attention_region(dict(GQA, rope=False), 4096), clickable=True)
+    assert [lane.ids for lane in g.parallels[0].norm_lanes()] == [["q_proj"], ["k_proj"], ["v_proj"]]
 
 
 def test_cross_attention_kv_lanes_take_a_side_source():

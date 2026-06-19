@@ -30,23 +30,29 @@ def ffn_detail(ffn: FFNSpec) -> dict:
         "num_shared_experts": ffn.num_shared_experts,
         "expert_intermediate_size": ffn.expert_intermediate_size,
         "routing": ffn.routing,
+        "activation_clip": ffn.activation_clip,
     }
 
 
-def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
+def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
     if ffn.kind != "moe" and ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
         # opaque region node, so the click target stays coupled to its card).
-        return _undeclared_ffn_child_blocks(hidden, inter)
-    if ffn.kind != "moe" and not ffn.gated:
-        return _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
-
-    children = _gated_ffn_child_blocks(hidden, inter, activation)
-    if ffn.kind == "moe":
-        children.extend(_moe_child_blocks(ffn, hidden, inter))
+        children = _undeclared_ffn_child_blocks(hidden, inter)
+    elif ffn.kind != "moe" and not ffn.gated:
+        children = _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
+    else:
+        children = _gated_ffn_child_blocks(hidden, inter, activation)
+        if ffn.kind == "moe":
+            children.extend(_moe_child_blocks(ffn, hidden, inter))
+    if generic:
+        # Shared across sublayers/stages of differing width (UNet Transformer2D):
+        # drop per-instance dims so the one shared card is correct everywhere.
+        for c in children:
+            c.pop("facts", None)
     return children
 
 
@@ -86,7 +92,7 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
             "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
-            "id": "silu",
+            "id": "activation",
             "label": activation,
             "title": activation,
             "description": _act_sentence("after the input projection", activation_assumed),
@@ -118,13 +124,13 @@ def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
-            "id": "silu",
+            "id": "activation",
             "label": activation,
             "title": activation,
             "description": "Element-wise non-linearity applied to the gate path.",
         },
         {
-            "id": "mul",
+            "id": "multiply",
             "label": "x",
             "title": "Gate product",
             "description": f"{activation}(gate) \u00d7 up \u2014 combines the gated and ungated paths.",
@@ -144,6 +150,38 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
     return {"routing": ffn.routing}
 
 
+def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) -> list[Block]:
+    """Cards for the clickable gate-pipeline steps drawn by the moe_router view.
+    Declared for every possible step; the view draws only the ones the config
+    enables, and unused cards are harmless (never orphaned)."""
+    r = ffn.routing or {}
+    scoring = r.get("scoring_func") or "softmax"
+    cards = [
+        {"id": "g_gate", "title": "Gate projection",
+         "description": f"Linear projecting each token to one score per expert ({hidden} → {n_experts})."},
+        {"id": "g_score", "title": f"{scoring} score",
+         "description": f"{scoring} over the gate logits → an affinity per expert."},
+        {"id": "g_topk", "title": f"Select top-{n_active}",
+         "description": f"Routes each token to its top-{n_active} experts by score."},
+    ]
+    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+        cards.append({"id": "g_group", "title": "Group-limit",
+                      "description": f"Group-limited routing: keep the top {r['topk_group']} of "
+                                     f"{r['n_group']} expert groups before the per-expert top-k."})
+    if r.get("norm_topk_prob"):
+        cards.append({"id": "g_norm", "title": "Renormalize weights",
+                      "description": "Renormalizes the selected experts' gate weights to sum to 1."})
+    if r.get("topk_method") == "noaux_tc":
+        cards.append({"id": "g_bias", "title": "Learned bias (load-balancing)",
+                      "description": "A learned per-expert bias added for SELECTION only "
+                                     "(aux-loss-free balancing); the mixing weights use the raw scores."})
+    if r.get("routed_scaling_factor"):
+        cards.append({"id": "g_scale", "title": f"× {r['routed_scaling_factor']} (routed scale)",
+                      "description": f"Scales the routed-expert gate weights by "
+                                     f"routed_scaling_factor = {r['routed_scaling_factor']}."})
+    return cards
+
+
 def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
@@ -161,12 +199,18 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     if router_detail:
         router_desc = f"Scores every expert per token and keeps the top-k \u2014 {router_detail}."
     router_facts = [f"{hidden} \u2192 {n_experts}", f"top-{n_active}"]
-    return [
+    blocks: list[Block] = [
         {
             "id": "router",
             "title": "Router",
             "description": router_desc,
             "facts": router_facts,
+            # Drill into the gating policy (score \u2192 [group-limit] \u2192 top-k \u2192
+            # [renorm] \u2192 [\u00d7scale]); built from the routing facts below.
+            "view": "moe_router",
+            "detail": {"ffn": ffn_detail(ffn)},
+            # Cards for the clickable gate steps (the \u00d7scale is a static connector).
+            "children": _moe_router_step_cards(ffn, hidden, n_experts, n_active),
         },
         {
             "id": "expert_1",
@@ -206,10 +250,29 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         },
         {
             "id": "add_moe",
+            "kind": "residual_add",
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "title": "Weighted sum",
-            "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities.",
+            "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities"
+            + (", then adds the shared expert(s)." if n_shared else "."),
         },
     ]
+    if n_shared:
+        # The shared expert(s) run on EVERY token (no routing) and are summed with
+        # the routed output — a Tier-1 always-on FFN, not part of the gated set.
+        shared_inter = _fmt((ffn.expert_intermediate_size or ffn.intermediate_size or 0) * n_shared)
+        blocks.insert(-1, {
+            "id": "shared_expert",
+            "title": "Shared expert",
+            "description": (
+                f"A dense {activation} FFN that runs on every token (it bypasses the "
+                "router) and is added to the routed-expert sum — always-on capacity "
+                "shared across all tokens."
+            ),
+            "facts": [f"{hidden} → {shared_inter} → {hidden}",
+                      f"{n_shared} shared, always active"],
+        })
+    return blocks
 
 
 def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:

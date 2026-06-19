@@ -11,7 +11,7 @@ second place an attention block's shape is authored.
 from __future__ import annotations
 
 from ....labels import describe_attention, kv_shared, mask_long
-from ....opgraph import attention_region, mla_kv_region, mla_query_region
+from ....opgraph import attention_region, mla_kv_region, mla_query_region, prefix_region
 from ..graph_engine import render_graph
 from ..utils import _html, facts_html
 from ..op_render import region_to_graph
@@ -49,6 +49,10 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
     # the host model's hidden size (the DiT's 4,608 is not Qwen3VL's 4,096).
     hidden = attn.get("hidden") or ir.get("hidden_size")
     region = attention_region(attn, hidden)
+    # A second attention drill in the same layer (cross-attn beside self-attn) gets
+    # a node-id prefix so its ops/cards don't collide with self-attention's.
+    if attn.get("node_prefix"):
+        region = prefix_region(region, attn["node_prefix"])
     graph = region_to_graph(region, clickable=clickable, out_label=None)
     _apply_presentation(graph, attn)
     title = _TITLES.get(kind, "attention")

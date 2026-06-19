@@ -30,8 +30,10 @@ from ...everchanging import (
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
+from dataclasses import replace as _replace
 from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, parallel_decoder_layer
+from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
 from .blocks import diffusion_render_spec
 from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
@@ -47,6 +49,11 @@ _SCHEDULER_DISPLAY = dict(
     pair.split("=", 1) for pair in load_diffusion_typing().get("scheduler_display", [])
     if isinstance(pair, str) and "=" in pair
 )
+#: norm_type substring -> base norm kind (ada_norm* etc. → layernorm), from typing.yaml.
+_NORM_TYPE_KIND = [
+    tuple(pair.split("=", 1)) for pair in load_diffusion_typing().get("norm_type_kind", [])
+    if isinstance(pair, str) and "=" in pair
+]
 _ENCODER_NAMES = load_diffusion_text_encoders()
 
 
@@ -275,11 +282,24 @@ def parse(cfg: Any) -> ModelIR:
     layers = []
     idx = 0
     for _ in range(num_layers):
-        layers.append(decoder_layer(
-            idx, _dit_attention(num_heads, head_dim, rope_dim, double_variant),
+        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant)
+        layer = decoder_layer(
+            idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg),
             hidden_size, norm_kind=norm_kind,
-        ))
+        )
+        # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
+        # self-attention and the FFN — insert it before the AdaLN gates so each
+        # sublayer (self / cross / FFN) reads honestly.
+        if cond["cross_attn_sublayer"]:
+            layer.blocks = _insert_cross_attention(
+                layer.blocks, attn_spec, hidden_size, norm_kind,
+                cross_dim=geom.get("cross_attention_dim"))
+        # DiT AdaLN-Zero: the timestep gates each sublayer output before its
+        # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
+        layer.blocks = _insert_adaln_gates(layer.blocks)
+        _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
+        layers.append(layer)
         idx += 1
     for _ in range(num_single):
         layers.append(parallel_decoder_layer(
@@ -289,10 +309,17 @@ def parse(cfg: Any) -> ModelIR:
         ))
         idx += 1
 
+    # In a cross-attention DiT the text enters the dedicated cross-attention
+    # sublayer; otherwise it joins the (self/joint) attention.
+    text_target = "cross_attn" if cond["cross_attn_sublayer"] else "attn"
     for layer in layers:
+        # The AdaLN conditioning fans into the gate × it drives (gate_msa/gate_mlp)
+        # as well as the norm — so the × shows WHAT it multiplies by (the timestep
+        # gate), not a dangling input.
+        gate_ids = [b["id"] for b in layer.blocks if b.get("kind") == "gate_mul"]
         layer.blocks.extend(_conditioning_side_blocks(
             text_in_attention, pooled_in_adaln, bool(geom["guidance_embeds"]),
-            geom["adaln_dim"]))
+            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
 
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
     # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
@@ -354,12 +381,142 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
         mask="full",
         rope_dim=rope_dim,
         no_rope=rope_dim is None,
+        cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
         variant=variant,
     )
 
 
+def _adaln_gate(gid: str, which: str) -> dict:
+    """A Tier-2 AdaLN gate (×) connector: the per-block gate from the timestep
+    that scales a sublayer's output before its residual add (AdaLN-Zero).
+
+    It stays a glyph (a ``×`` on the join, not a box), but is clickable so its
+    card can explain what it multiplies — connectors describe themselves."""
+    return {
+        "id": gid, "role": "residual", "kind": "gate_mul",
+        "label": "×", "title": f"AdaLN gate ({which})",
+        "description": (
+            f"Scales the {which} output by the per-block AdaLN gate from the "
+            "timestep (AdaLN-Zero) before the residual add: h = h + gate · "
+            f"{which}(modulated norm)."
+        ),
+    }
+
+
+def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
+    """Insert the AdaLN gate (×) just before each residual ⊕, so the diagram shows
+    the timestep gating each sublayer output (the DiT conditioning mechanism) as a
+    drawn connector, not only as prose on the side rail."""
+    out: list[dict] = []
+    for b in blocks:
+        if b.get("id") == "add1":
+            out.append(_adaln_gate("gate_msa", "attention"))
+        elif b.get("id") == "add2":
+            out.append(_adaln_gate("gate_mlp", "feed-forward"))
+        out.append(b)
+    return out
+
+
+def _annotate_adaln_norms(blocks: list[dict]) -> None:
+    """Name the AdaLN modulation in the self-attention & FFN norm cards (in place).
+
+    A DiT's pre-attention / pre-FFN norm is the defining piece of the architecture:
+    a (non-affine) LayerNorm whose **scale & shift are produced from the timestep
+    embedding** — AdaLN / AdaLN-Zero — not learned weights. That's how the diffusion
+    noise level conditions every block, so the norm card must say it (the cross-
+    attention norm, when present, is a plain norm and is left as-is)."""
+    if not any(b.get("kind") == "gate_mul" for b in blocks):
+        return
+    adaln = " Scale & shift come from the timestep (AdaLN), not learned weights."
+    for b in blocks:
+        if b.get("id") in ("rms1", "rms2") and b.get("kind") == "norm":
+            b["description"] = (b.get("description") or "").rstrip() + adaln
+
+
+def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
+                            hidden_size: int, norm_kind: str, *, cross_dim=None) -> list[dict]:
+    """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
+    self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
+    Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Conformed to
+    `SanaTransformerBlock` / `WanTransformerBlock` / `PixArt`
+    (`norm2 → attn2(encoder_hidden_states) → ⊕`).
+
+    The cross-attention drill is the SAME canonical attention view as self-
+    attention, **hybridised with the input change**: the image tokens are the
+    queries, the encoded text supplies K/V (`cross_attention=True`) — no bespoke
+    fork.  Its op cards are NAMESPACED (a ``node_prefix``) so the cross sublayer
+    carries its OWN accurate dims (Q over the image; K/V over the text's
+    ``cross_attention_dim``) instead of sharing self-attention's — self-attention
+    keeps its specific cards untouched."""
+    norm_label = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(norm_kind, "Normalization")
+    heads_fact = f"{self_spec.num_heads} heads" if self_spec.num_heads else None
+    # Cross spec = the self spec, but K/V come from the text (no RoPE on the cross
+    # path, full bidirectional, non-cached) — the canonical region draws the text
+    # K/V source node and drops the cache/RoPE for it.
+    cross_spec = _replace(self_spec, cross_attention=True,
+                          cross_kv_source="encoded text prompt",
+                          no_rope=True, rope_dim=None, variant=None)
+    # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
+    # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
+    cross_children = attention_child_blocks(cross_spec, hidden_size, id_prefix="x_")
+    kv_out = (self_spec.num_kv_heads or self_spec.num_heads or 0) * (self_spec.head_dim or 0)
+    if cross_dim:
+        for c in cross_children:
+            if c["id"] in ("x_k_proj", "x_v_proj") and c.get("facts"):
+                c["facts"][0] = (f"{_fmt(cross_dim)} → {_fmt(kv_out)}" if kv_out
+                                 else f"from text ({_fmt(cross_dim)})")
+    cross_children.append({
+        "id": "x_cross_attention_states",
+        "title": "Encoded text",
+        "description": (
+            "The encoded prompt supplies the keys and values here; the image tokens "
+            "are the queries. This external text K/V — a separate sublayer (attn2) "
+            "with its own residual — is what makes it cross-attention and how text "
+            "conditions the DiT."
+        ),
+        "facts": [f"K/V source ({_fmt(cross_dim)})" if cross_dim else "K/V from encoded text"],
+    })
+    cross = [
+        {
+            "id": "xattn_norm", "role": "norm", "kind": "norm",
+            "diffusion_stage": "norm",
+            "label": norm_label, "title": "Pre-cross-attention norm",
+            "description": f"{norm_label} before cross-attention — a plain norm (not AdaLN-modulated).",
+        },
+        {
+            "id": "cross_attn", "role": "attention", "kind": "attention",
+            "diffusion_stage": "cross_attention",
+            "label": ["Cross-Attention", "(to text)"],
+            "title": "Cross-attention to text",
+            "description": (
+                "Image tokens form the queries; the encoded prompt (text-encoder K/V) "
+                "is attended — a separate sublayer (attn2) from self-attention, with its "
+                "own residual. This is how text conditions a cross-attention DiT."
+            ),
+            "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
+            "view": "attention",
+            "detail": {"attention": {**attention_detail(cross_spec), "node_prefix": "x_"}},
+            "children": cross_children,
+        },
+        {
+            "id": "add_xattn", "role": "residual", "kind": "residual_add",
+            "diffusion_stage": "residual",
+            "residual_from": "xattn_norm",
+            "label": "+", "title": "Residual add (cross-attention)",
+            "description": "self-attention output + cross-attention output",
+        },
+    ]
+    out: list[dict] = []
+    for b in blocks:
+        out.append(b)
+        if b.get("id") == "add1":          # right after the self-attention residual
+            out.extend(cross)
+    return out
+
+
 def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
-                              guidance: bool, adaln_dim=None) -> list[dict]:
+                              guidance: bool, adaln_dim=None, text_target: str = "attn",
+                              gate_ids: list[str] | None = None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
     config says attention consumes text, the text token sequence -> the attention."""
@@ -370,6 +527,9 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
         "diffusion_stage": "timestep_conditioning",
         "lane": "external_bottom_left",
         "feeds": "rms1",
+        # the gate × nodes this conditioning drives — drawn so each × shows it
+        # multiplies by the timestep's gate, not a dangling input.
+        "also_feeds": list(gate_ids or []),
         "offset_y": 0,
         "label": ["Timestep" + (" + guidance" if guidance else ""), "conditioning"],
         "title": "Timestep conditioning (AdaLN)",
@@ -389,7 +549,7 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
             "kind": "conditioning",
             "diffusion_stage": "text_conditioning",
             "lane": "external_bottom_right",
-            "feeds": "attn",
+            "feeds": text_target,
             "offset_y": 0,
             "label": ["Text tokens", "conditioning"],
             "title": "Text conditioning (attention)",
@@ -445,15 +605,17 @@ def _concat_joint_variant(rope_note: str) -> dict:
 def _cross_dit_variant(rope_note: str) -> dict:
     """Cross-attention DiT block (PixArt / Hunyuan-DiT / Wan / LTX / Allegro):
     latent tokens self-attend, then read the text through cross-attention."""
+    # The cross-attention is drawn as its OWN sublayer block, so this (the self-
+    # attention) is labelled plainly — not "+ cross-attn".
     return {
-        "short": "Self + XAttn",
-        "tag": "self + cross-attention",
-        "label": ["Self-Attention", "+ Text Cross-Attn"],
-        "title": "DiT block — self-attention + text cross-attention",
+        "short": "Self-Attn",
+        "tag": "self-attention",
+        "label": ["Self-Attention", "(image tokens)"],
+        "title": "Self-attention — cross-attention DiT",
         "desc": (
             "Latent patch tokens attend to each other (full bidirectional "
-            "self-attention), then a separate cross-attention sublayer reads "
-            "the encoded text tokens as K/V. Modulated by the timestep via "
+            "self-attention); the encoded text is read by the separate "
+            "cross-attention sublayer above. Modulated by the timestep via "
             "AdaLN. " + rope_note
         ),
     }
@@ -544,10 +706,11 @@ def _dit_norm_kind(cfg: Any) -> str:
     nt = _g(cfg, "norm_type") or _g(cfg, "norm_layer")
     if isinstance(nt, str):
         low = nt.lower()
-        if "rms" in low:
-            return "rmsnorm"
-        if "layer" in low:
-            return "layernorm"
+        # AdaLN variants (ada_norm_single / ada_norm_zero / ...) are LayerNorm-based;
+        # the substring map in typing.yaml resolves them (was missed before → "unknown").
+        for sub, kind in _NORM_TYPE_KIND:
+            if sub in low:
+                return kind
     if _g(cfg, "rms_norm_eps") is not None:
         return "rmsnorm"
     if _g(cfg, "layer_norm_eps") is not None or _g(cfg, "layer_norm_epsilon") is not None:
@@ -588,6 +751,10 @@ def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
         "text_in_attention": has_joint or has_concat or has_cross,
         "pooled_in_adaln": has_pooled,
         "pre_block_fusion": has_fusion,
+        # Cross-attention DiT (PixArt / Sana / Wan / CogVideoX / Mochi / LTX /
+        # Hunyuan-DiT / Lumina): a SEPARATE cross-attention sublayer (attn2: image Q,
+        # text K/V) sits between self-attention and the FFN — three sublayers, not two.
+        "cross_attn_sublayer": has_cross and not has_joint and not has_concat,
     }
 
 
