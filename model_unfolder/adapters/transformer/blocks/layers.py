@@ -31,10 +31,11 @@ def decoder_layer_blocks(
 
 
 def _add_block(block_id: str, residual_from: str, title: str, description: str) -> Block:
-    """A Tier-2 residual ⊕ connector (a glyph on the join, no card)."""
+    """A Tier-2 residual ⊕ connector: stays a glyph on the join (not a box), but is
+    clickable so its card can describe what it adds — connectors describe themselves."""
     return {
         "id": block_id, "role": "residual", "kind": "residual_add",
-        "residual_from": residual_from, "static": True,
+        "residual_from": residual_from,
         "label": "+", "title": title, "description": description,
     }
 
@@ -132,7 +133,7 @@ def parallel_decoder_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
-            "static": True,  # Tier-2 connector: the residual ⊕ is a glyph on the join
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add (parallel)",
             "description": "layer input + attention output + FFN output (one combined step)",
@@ -214,7 +215,7 @@ def diffusion_gemma_layer_blocks(
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
-            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add #1",
             "description": "layer input + post_attention_layernorm(attn_output)",
@@ -238,7 +239,7 @@ def diffusion_gemma_layer_blocks(
             # input == add1's output).  Tapping rms2's input stem nests cleanly
             # above the add1 bypass — same pattern as a standard Gemma2 layer.
             "residual_from": "rms2",
-            "static": True,  # Tier-2 connector: a glyph on the residual join, not a block
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add #2",
             "description": "post-attention residual + post_ffn_ln(mlp_out + moe_out)",
@@ -315,7 +316,7 @@ def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_siz
         "id": "ffn_merge",
         "role": "residual",
         "kind": "residual_add",
-        "static": True,  # Tier-2 connector: the additive ⊕ glyph, not a block
+        # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
         "label": "+",
         "title": "Sum (dense MLP ⊕ MoE)",
         "description": "Element-wise sum of the dense MLP and MoE outputs.",

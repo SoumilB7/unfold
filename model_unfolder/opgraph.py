@@ -192,6 +192,18 @@ def _opaque(facts: dict, hidden: int | None, *, role: str, label: str) -> Region
 _SDPA_KINDS = {"mha", "gqa", "mqa"}
 
 
+def prefix_region(region: Region, prefix: str) -> Region:
+    """Return a copy of *region* with every op id (and edge endpoint) prefixed.
+
+    Lets two instances of the same region coexist in one document without id
+    collisions — e.g. a layer's self- and cross-attention drills, which would
+    otherwise both emit ``q_proj``/``scaled_scores`` and clash on cards."""
+    from dataclasses import replace
+    ops = [replace(o, id=f"{prefix}{o.id}") for o in region.ops]
+    edges = [Edge(f"{prefix}{e.src}", f"{prefix}{e.dst}") for e in region.edges]
+    return replace(region, ops=ops, edges=edges)
+
+
 def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = None) -> Region:
     """Resolve an attention block's facts into a canonical :class:`Region`.
 
@@ -248,10 +260,10 @@ def _cross_kv_label(attn: dict) -> list[str]:
     (DiT/UNet) vs projected image states (vision)."""
     src = str(attn.get("cross_kv_source") or "").lower()
     if any(w in src for w in ("text", "prompt", "encoder", "caption")):
-        return ["Encoded text", "(K / V)"]
+        return ["Encoded text"]
     if not src:
-        return ["External states", "(K / V)"]
-    return [str(attn.get("cross_kv_source")), "(K / V)"]
+        return ["External states"]
+    return [str(attn.get("cross_kv_source"))]
 
 
 def _sdpa_region(attn: dict, hidden: int | None) -> Region:

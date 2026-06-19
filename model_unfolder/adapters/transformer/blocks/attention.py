@@ -42,7 +42,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
 
 
 def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
-                           generic: bool = False) -> list[Block]:
+                           generic: bool = False, id_prefix: str = "") -> list[Block]:
     """Per-op description cards for an attention block.
 
     ``generic=True`` produces source-neutral SDPA cards ("over the input" rather
@@ -50,7 +50,11 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     op cards are shared by sibling self- and cross-attention blocks (UNet
     Transformer2D): they share op ids, so a source-specific card on one would be
     wrong on the other — the K/V source is carried by the cross-attention's own
-    ``cross_attention_states`` node instead."""
+    ``cross_attention_states`` node instead.
+
+    ``id_prefix`` namespaces the card ids so a second attention drill in the same
+    layer (cross-attention) gets its OWN accurate cards instead of sharing the
+    source-neutral set — match it to the region's ``node_prefix``."""
     builders = {
         "mla": _mla_child_blocks,
         "ssm": _ssm_child_blocks,
@@ -60,8 +64,13 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     }
     builder = builders.get(attention.kind, _sdpa_child_blocks)
     if builder is _sdpa_child_blocks:
-        return _sdpa_child_blocks(attention, hidden_size, generic=generic)
-    return builder(attention, hidden_size)
+        cards = _sdpa_child_blocks(attention, hidden_size, generic=generic)
+    else:
+        cards = builder(attention, hidden_size)
+    if id_prefix:
+        for c in cards:
+            c["id"] = f"{id_prefix}{c['id']}"
+    return cards
 
 
 def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
@@ -204,8 +213,9 @@ def _sdpa_detailed_child_blocks(
         },
         {
             "id": "attn_apply_v",
-            "title": "Apply values",
-            "description": "Multiply attention weights by V to produce one context vector per head.",
+            "title": "Matrix multiplication",
+            "description": "Matrix-multiplies the softmax attention weights by V (weights · V) — "
+                           "one context vector per head.",
         },
         {
             "id": "concat_heads",

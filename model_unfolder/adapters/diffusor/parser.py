@@ -287,7 +287,9 @@ def parse(cfg: Any) -> ModelIR:
         # self-attention and the FFN — insert it before the AdaLN gates so each
         # sublayer (self / cross / FFN) reads honestly.
         if cond["cross_attn_sublayer"]:
-            layer.blocks = _insert_cross_attention(layer.blocks, attn_spec, hidden_size, norm_kind)
+            layer.blocks = _insert_cross_attention(
+                layer.blocks, attn_spec, hidden_size, norm_kind,
+                cross_dim=geom.get("cross_attention_dim"))
         # DiT AdaLN-Zero: the timestep gates each sublayer output before its
         # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
         layer.blocks = _insert_adaln_gates(layer.blocks)
@@ -380,9 +382,12 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
 
 def _adaln_gate(gid: str, which: str) -> dict:
     """A Tier-2 AdaLN gate (×) connector: the per-block gate from the timestep
-    that scales a sublayer's output before its residual add (AdaLN-Zero)."""
+    that scales a sublayer's output before its residual add (AdaLN-Zero).
+
+    It stays a glyph (a ``×`` on the join, not a box), but is clickable so its
+    card can explain what it multiplies — connectors describe themselves."""
     return {
-        "id": gid, "role": "residual", "kind": "gate_mul", "static": True,
+        "id": gid, "role": "residual", "kind": "gate_mul",
         "label": "×", "title": f"AdaLN gate ({which})",
         "description": (
             f"Scales the {which} output by the per-block AdaLN gate from the "
@@ -407,7 +412,7 @@ def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
 
 
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
-                            hidden_size: int, norm_kind: str) -> list[dict]:
+                            hidden_size: int, norm_kind: str, *, cross_dim=None) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
     Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Conformed to
@@ -417,10 +422,10 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     The cross-attention drill is the SAME canonical attention view as self-
     attention, **hybridised with the input change**: the image tokens are the
     queries, the encoded text supplies K/V (`cross_attention=True`) — no bespoke
-    fork.  Self- and cross-attention share the canonical SDPA op cards (generic,
-    source-neutral, same op ids); the K/V-source difference is carried by cross-
-    attention's own `cross_attention_states` node.  This is exactly the UNet
-    Transformer2D pattern."""
+    fork.  Its op cards are NAMESPACED (a ``node_prefix``) so the cross sublayer
+    carries its OWN accurate dims (Q over the image; K/V over the text's
+    ``cross_attention_dim``) instead of sharing self-attention's — self-attention
+    keeps its specific cards untouched."""
     norm_label = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(norm_kind, "Normalization")
     heads_fact = f"{self_spec.num_heads} heads" if self_spec.num_heads else None
     # Cross spec = the self spec, but K/V come from the text (no RoPE on the cross
@@ -429,22 +434,26 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
                           no_rope=True, rope_dim=None, variant=None)
-    # Source-neutral SDPA op cards, shared by both sublayers (same op ids).
-    shared_children = attention_child_blocks(self_spec, hidden_size, generic=True)
-    for b in blocks:
-        if b.get("id") == "attn":
-            b["children"] = shared_children            # self-attn shares the generic cards
-    cross_children = shared_children + [{
-        "id": "cross_attention_states",
-        "title": "Encoded text (K/V)",
+    # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
+    # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
+    cross_children = attention_child_blocks(cross_spec, hidden_size, id_prefix="x_")
+    kv_out = (self_spec.num_kv_heads or self_spec.num_heads or 0) * (self_spec.head_dim or 0)
+    if cross_dim:
+        for c in cross_children:
+            if c["id"] in ("x_k_proj", "x_v_proj") and c.get("facts"):
+                c["facts"][0] = (f"{_fmt(cross_dim)} → {_fmt(kv_out)}" if kv_out
+                                 else f"from text ({_fmt(cross_dim)})")
+    cross_children.append({
+        "id": "x_cross_attention_states",
+        "title": "Encoded text",
         "description": (
             "The encoded prompt supplies the keys and values here; the image tokens "
             "are the queries. This external text K/V — a separate sublayer (attn2) "
             "with its own residual — is what makes it cross-attention and how text "
             "conditions the DiT."
         ),
-        "facts": ["K/V from encoded text"],
-    }]
+        "facts": [f"K/V source ({_fmt(cross_dim)})" if cross_dim else "K/V from encoded text"],
+    })
     cross = [
         {
             "id": "xattn_norm", "role": "norm", "kind": "norm",
@@ -464,13 +473,13 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
             ),
             "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
             "view": "attention",
-            "detail": {"attention": attention_detail(cross_spec)},
+            "detail": {"attention": {**attention_detail(cross_spec), "node_prefix": "x_"}},
             "children": cross_children,
         },
         {
             "id": "add_xattn", "role": "residual", "kind": "residual_add",
             "diffusion_stage": "residual",
-            "residual_from": "xattn_norm", "static": True,
+            "residual_from": "xattn_norm",
             "label": "+", "title": "Residual add (cross-attention)",
             "description": "self-attention output + cross-attention output",
         },

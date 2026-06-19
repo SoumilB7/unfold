@@ -384,7 +384,7 @@ def _scheduler_step_view(geom: dict) -> dict:
             "scale_label": scale_label, "scale_desc": scale_desc,
             "step_label": step_label, "step_desc": step_desc,
         }},
-        # Cards for the clickable nodes in the step view (the ⊕ is a static connector).
+        # Cards for the clickable nodes in the step view (incl. the ⊕ connector glyph).
         "children": [
             {"id": "sch_pred", "title": f"Predicted {what}",
              "description": f"The denoiser's predicted {what} ({sym}) for this timestep, "
@@ -393,6 +393,9 @@ def _scheduler_step_view(geom: dict) -> dict:
             {"id": "sch_zt", "title": "Current latent z_t",
              "description": "The latent being denoised — the loop-carried value the "
                             "scheduler updates into z_{t-1}."},
+            {"id": "sch_step", "title": "Combine step",
+             "description": "Combines the current latent z_t with the scaled prediction to take "
+                            "one denoising step toward z_{t-1} (the ⊕ glyph)."},
         ],
     }
 

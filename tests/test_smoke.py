@@ -580,10 +580,12 @@ def test_diffusion_gemma_block_worthiness():
     assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
     assert not ir["extras"]["render"].get("layer_annotations"), "scalar caption was removed"
 
-    # Tier-2: residual adds AND the FFN merge are static connector glyphs.
+    # Tier-2: residual adds AND the FFN merge are connector GLYPHS (⊕, not boxes) —
+    # clickable for a describing card (not static, but still kind residual_add).
     for add_id in ("add1", "add2", "ffn_merge"):
         assert blocks[add_id]["kind"] == "residual_add"
-        assert blocks[add_id]["static"] is True, f"{add_id} must be a static connector"
+        assert not blocks[add_id].get("static"), f"{add_id} connector is now clickable, not static"
+        assert blocks[add_id].get("description"), f"{add_id} must describe itself on click"
 
     # The parallel FFN is divided inline: two branch blocks, no collapsed block.
     assert "ffn" not in blocks, "the collapsed 'MLP ∥ MoE' block must be gone"
@@ -593,10 +595,10 @@ def test_diffusion_gemma_block_worthiness():
     assert blocks["attn"]["kind"] == "attention"
 
     html = d.to_html()
-    # The connector glyphs are NOT clickable and have NO card.
+    # The connector glyphs are clickable with a describing card (still glyphs, not boxes).
     for add_id in ("add1", "add2", "ffn_merge"):
-        assert f'data-id="{add_id}"' not in html, f"{add_id} must not be clickable"
-        assert f'data-card-id="{add_id}"' not in html, f"{add_id} must have no card"
+        assert f'data-id="{add_id}"' in html, f"{add_id} connector must be clickable"
+        assert f'data-card-id="{add_id}"' in html, f"{add_id} must have a describing card"
     # Both branches ARE clickable blocks inline in the architecture.
     for bid in ("ffn_mlp", "ffn_moe"):
         assert f'data-id="{bid}"' in html and f'data-card-id="{bid}"' in html
@@ -767,9 +769,9 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     assert any(c["id"] == "shared_expert" for c in moe["children"])
     moe_html = render_block_detail(ir, info, "m", moe)
     assert "Shared" in moe_html and 'data-id="shared_expert"' in moe_html
-    # The weighted-sum ⊕ is a Tier-2 static connector (no card, not clickable).
+    # The weighted-sum ⊕ is a Tier-2 connector glyph — clickable for its describing card.
     add = next(c for c in moe["children"] if c["id"] == "add_moe")
-    assert add.get("static") is True
+    assert add["kind"] == "residual_add" and not add.get("static") and add.get("description")
 
     # The gate pipeline reflects DeepSeek's full grouped, bias-corrected, scaled policy.
     gate = render_sub_block_detail(ir, info, "m", router)
@@ -885,7 +887,7 @@ def test_layer_norm_placement_matches_source_topology():
     pl, order, by = ids(dict(base, model_type="gemma2", sliding_window=512))
     assert pl == "double"
     assert order == ["rms1", "attn", "post_attn_ln", "add1", "rms2", "ffn", "post_ffn_ln", "add2"]
-    assert by["add1"]["residual_from"] == "rms1" and by["add1"]["static"]
+    assert by["add1"]["residual_from"] == "rms1" and by["add1"]["kind"] == "residual_add"
 
     # OLMo-2 post-norm: attn → post_attn_ln → ⊕ → ffn → post_ffn_ln → ⊕ (no pre-norms)
     pl, order, by = ids(dict(base, model_type="olmo2"))

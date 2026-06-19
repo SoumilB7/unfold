@@ -614,13 +614,19 @@ def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     assert cross.get("view") == "attention" and cross.get("diffusion_stage") == "cross_attention"
     xattn = cross["detail"]["attention"]
     assert xattn["cross_attention"] is True and xattn["cached"] is False
-    assert any(c["id"] == "cross_attention_states" for c in cross["children"])
-    # self- and cross-attention share the canonical SDPA op cards (same op ids).
+    # cross-attn carries its OWN namespaced op cards (accurate dims), incl. the text K/V node.
+    cross_ids = {c["id"] for c in cross["children"]}
+    assert xattn["node_prefix"] == "x_" and "x_cross_attention_states" in cross_ids
+    assert {"x_q_proj", "x_k_proj", "x_scaled_scores", "x_o_proj"} <= cross_ids
+    # self-attention keeps its own specific (non-namespaced) cards, untouched.
     self_attn = next(b for b in d.ir.layers[0].blocks if b["id"] == "attn")
     assert {c["id"] for c in self_attn["children"]} >= {"q_proj", "k_proj", "scaled_scores", "o_proj"}
-    # AdaLN gates are Tier-2 static connectors on self-attn + FFN (not on cross-attn)
-    assert all(b.get("static") for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp"))
-    assert next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn").get("static")
+    # AdaLN gates are Tier-2 connectors (× glyph) on self-attn + FFN (not on cross-attn) —
+    # glyphs, but now clickable with a describing card (not static).
+    gates = [b for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp")]
+    assert all(g["kind"] == "gate_mul" and not g.get("static") and g.get("description") for g in gates)
+    add_x = next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn")
+    assert add_x["kind"] == "residual_add" and not add_x.get("static") and add_x.get("description")
     html = d.to_html(standalone=True)
     assert "Cross-attention to text" in html and validate_click_coupling(html) == []
 

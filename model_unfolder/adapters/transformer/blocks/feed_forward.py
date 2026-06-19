@@ -246,7 +246,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         {
             "id": "add_moe",
             "kind": "residual_add",
-            "static": True,  # Tier-2 connector: the weighted-sum ⊕ glyph, not a block
+            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "title": "Weighted sum",
             "description": f"Combines top-{n_active} expert outputs, weighted by router probabilities"
             + (", then adds the shared expert(s)." if n_shared else "."),

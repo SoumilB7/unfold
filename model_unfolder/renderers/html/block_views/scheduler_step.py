@@ -26,7 +26,7 @@ def build_scheduler_step_view(ir: dict, info: dict, mount_id: str, block: dict |
     nodes = [
         Node("sch_pred", "embedding", [f"{sym} {what}", "from denoiser"]),
         Node("sch_scale", "select", scale_label, w=210),
-        Node("sch_step", "residual_add", static=True),     # combine z_t with the scaled prediction
+        Node("sch_step", "residual_add"),     # combine z_t with the scaled prediction (clickable)
         Node("sch_out", "port", ["z_{t−1}", "(one step)"], static=True),
         # the current latent enters the combine from the side (the loop-carried value)
         Node("sch_zt", "embedding", ["z_t", "current latent"]),
