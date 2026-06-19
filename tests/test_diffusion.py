@@ -66,6 +66,9 @@ PIXART = {
     "patch_size": 2,
     "in_channels": 4,
     "sample_size": 128,
+    "norm_type": "ada_norm_single",
+    "norm_elementwise_affine": False,
+    "norm_eps": 1e-6,
 }
 
 LLAMA = {
@@ -596,6 +599,21 @@ COGVIDEO_STYLE = {
     "text_embed_dim": 4096, "time_embed_dim": 512, "in_channels": 16,
     "patch_size": 2, "activation_fn": "gelu-approximate",
 }
+
+
+def test_dit_norm_type_resolved_from_config_not_generic():
+    """A config-declared norm_type names the norm — never the generic 'Normalization'.
+    diffusers DiTs state AdaLN variants (ada_norm_single / ada_norm_zero / ...), which are
+    LayerNorm-based, so they resolve to LayerNorm (the adaptive modulation is shown by the
+    timestep wiring). A model that declares NOTHING stays honest-'Normalization'."""
+    norms = [b for b in unfold(PIXART).ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert norms and all(b.get("label") == "LayerNorm" for b in norms), \
+        f"ada_norm_single must resolve to LayerNorm, got {[(b['id'], b.get('label')) for b in norms]}"
+    # rms_norm config → RMSNorm; an undeclared norm stays generic (honest-unknown).
+    rms = {**PIXART, "norm_type": "rms_norm"}
+    assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
+    bare = {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")}
+    assert any(b.get("label") == "Normalization" for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm")
 
 
 def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():

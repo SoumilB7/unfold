@@ -49,6 +49,11 @@ _SCHEDULER_DISPLAY = dict(
     pair.split("=", 1) for pair in load_diffusion_typing().get("scheduler_display", [])
     if isinstance(pair, str) and "=" in pair
 )
+#: norm_type substring -> base norm kind (ada_norm* etc. → layernorm), from typing.yaml.
+_NORM_TYPE_KIND = [
+    tuple(pair.split("=", 1)) for pair in load_diffusion_typing().get("norm_type_kind", [])
+    if isinstance(pair, str) and "=" in pair
+]
 _ENCODER_NAMES = load_diffusion_text_encoders()
 
 
@@ -684,10 +689,11 @@ def _dit_norm_kind(cfg: Any) -> str:
     nt = _g(cfg, "norm_type") or _g(cfg, "norm_layer")
     if isinstance(nt, str):
         low = nt.lower()
-        if "rms" in low:
-            return "rmsnorm"
-        if "layer" in low:
-            return "layernorm"
+        # AdaLN variants (ada_norm_single / ada_norm_zero / ...) are LayerNorm-based;
+        # the substring map in typing.yaml resolves them (was missed before → "unknown").
+        for sub, kind in _NORM_TYPE_KIND:
+            if sub in low:
+                return kind
     if _g(cfg, "rms_norm_eps") is not None:
         return "rmsnorm"
     if _g(cfg, "layer_norm_eps") is not None or _g(cfg, "layer_norm_epsilon") is not None:
