@@ -1092,15 +1092,16 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
 
     assert ir["layers"][0]["ffn"]["gated"] is False
     assert ffn_block["view"] == "dense_ffn"
-    assert {"up_proj", "silu", "down_proj"} <= child_ids
+    # card ids match the op-graph region ops (activation/multiply), not silu/mul.
+    assert {"up_proj", "activation", "down_proj"} <= child_ids
     assert "gate_proj" not in child_ids
-    assert "mul" not in child_ids
+    assert "multiply" not in child_ids
 
     html = d.to_html(standalone=True)
     assert "Linear (in)" in html
     assert "Linear (gate)" not in html
     assert 'data-card-id="gate_proj"' not in html
-    assert 'data-card-id="mul"' not in html
+    assert 'data-card-id="multiply"' not in html
 
 
 def test_falcon_parallel_attn_uses_parallel_topology():

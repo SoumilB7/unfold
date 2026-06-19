@@ -198,6 +198,10 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "route":
         return Node(op.id, "router", op.label or "Router")
     if op.kind == "opaque":
+        # An unresolved opaque is the honest-unknown signal: pale + static (the config
+        # does not declare the structure — nothing to drill or click). A resolved opaque
+        # (a named custom block) follows the view's clickable flag.
         return Node(op.id, "opaque", op.label or "Custom block",
-                    resolved=region.resolved, static=region.resolved is False)
+                    resolved=region.resolved,
+                    static=True if region.resolved is False else static)
     return Node(op.id, "norm", op.label or op.kind, static=static)

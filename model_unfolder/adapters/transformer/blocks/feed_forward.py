@@ -34,20 +34,25 @@ def ffn_detail(ffn: FFNSpec) -> dict:
     }
 
 
-def ffn_child_blocks(ffn: FFNSpec, hidden_size: int) -> list[Block]:
+def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
     if ffn.kind != "moe" and ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
         # opaque region node, so the click target stays coupled to its card).
-        return _undeclared_ffn_child_blocks(hidden, inter)
-    if ffn.kind != "moe" and not ffn.gated:
-        return _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
-
-    children = _gated_ffn_child_blocks(hidden, inter, activation)
-    if ffn.kind == "moe":
-        children.extend(_moe_child_blocks(ffn, hidden, inter))
+        children = _undeclared_ffn_child_blocks(hidden, inter)
+    elif ffn.kind != "moe" and not ffn.gated:
+        children = _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
+    else:
+        children = _gated_ffn_child_blocks(hidden, inter, activation)
+        if ffn.kind == "moe":
+            children.extend(_moe_child_blocks(ffn, hidden, inter))
+    if generic:
+        # Shared across sublayers/stages of differing width (UNet Transformer2D):
+        # drop per-instance dims so the one shared card is correct everywhere.
+        for c in children:
+            c.pop("facts", None)
     return children
 
 
@@ -87,7 +92,7 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
             "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
-            "id": "silu",
+            "id": "activation",
             "label": activation,
             "title": activation,
             "description": _act_sentence("after the input projection", activation_assumed),
@@ -119,13 +124,13 @@ def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Bl
             "facts": [f"{hidden} \u2192 {inter}"],
         },
         {
-            "id": "silu",
+            "id": "activation",
             "label": activation,
             "title": activation,
             "description": "Element-wise non-linearity applied to the gate path.",
         },
         {
-            "id": "mul",
+            "id": "multiply",
             "label": "x",
             "title": "Gate product",
             "description": f"{activation}(gate) \u00d7 up \u2014 combines the gated and ungated paths.",

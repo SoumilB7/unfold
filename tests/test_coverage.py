@@ -69,7 +69,11 @@ CORPUS = {
 
 # Registered FALLBACK views with no built-in model emitter — exercised by their own
 # unit tests, not by a catalogue model. The only views allowed to be model-unexercised.
-_FALLBACK_VIEWS = {"ops", "tower"}
+# `ffn` is the generic FFN-dispatch key (decides moe/dense/gated by the block); no
+# built-in block sets view="ffn" directly — they stamp the concrete gated_ffn/dense_ffn/
+# moe keys, which ARE exercised and route through the same build_ffn_view. So `ffn` is a
+# dispatch alias, legitimately model-unexercised (covered by the FFN tests in test_smoke).
+_FALLBACK_VIEWS = {"ops", "tower", "ffn"}
 
 
 def test_every_registered_view_is_exercised_and_couples():
@@ -99,13 +103,6 @@ def test_every_registered_view_is_exercised_and_couples():
     )
 
 
-# Purpose-built graph drill-views (NOT the op-graph region path). These had the
-# recurring "all-static = unclickable blocks" bug; coupling can't see it (a static
-# node has no data-id to orphan), so clickability is pinned here.
-_AUTHORED_GRAPH_VIEWS = {"moe_router", "dsa_indexer",
-                         "scheduler_step", "self_conditioning"}
-
-
 def test_no_duplicate_marker_ids_anywhere():
     """No two baked diagrams may share a url(#)-referenced def id (arrowhead
     markers, gradients). A duplicate makes the live browser bind every reference to
@@ -126,18 +123,28 @@ def test_no_dangling_connectors_anywhere():
         assert not problems, f"{name}: dangling connector(s):\n  " + "\n  ".join(problems)
 
 
-def test_authored_drill_views_are_clickable():
-    """The hand-authored drill views must never be all-static (unclickable blocks):
-    every one must expose at least one clickable named node."""
+def test_no_all_static_drill_views_anywhere():
+    """NO drill view — op-graph-projected (attention / ffn / moe-expert / vae / ...)
+    OR hand-authored — may be ALL-STATIC. Every rendered graph that has a substantial
+    (non-port) node must expose at least one clickable node, so a viewer can always
+    open something and read its description ("even a leaf is clickable").
+
+    This is the GENERAL form of the clickability check. The earlier version only
+    inspected the few hand-authored views, so an all-static op-graph view (the FFN
+    'leaf' rendered with clickable=False) slipped right past it — the exact "how can
+    it slip" gap. Driven off render_graph, it now sees EVERY graph the renderer builds."""
     import sys
     import model_unfolder.renderers.html.graph_engine as ge
 
-    clickable: dict[str, list] = {}
+    violations: list[tuple[str, str]] = []
 
     def _cap(graph, info, mount_id, view_key, title, **kw):
-        if view_key in _AUTHORED_GRAPH_VIEWS:
-            clickable.setdefault(view_key, [n.id for n in graph.nodes
-                                           if not n.static and n.kind != "port"])
+        nonport = [n for n in graph.nodes if n.kind != "port"]
+        # An honest-unknown opaque node (config doesn't declare the structure) is a
+        # legitimately pale/static leaf — there is nothing to drill or click.
+        honest_unknown = nonport and all(n.kind == "opaque" and not n.resolved for n in nonport)
+        if nonport and not honest_unknown and not any(not n.static for n in nonport):
+            violations.append((view_key, title))
         return _orig(graph, info, mount_id, view_key, title, **kw)
 
     _orig = ge.render_graph
@@ -154,10 +161,12 @@ def test_authored_drill_views_are_clickable():
         for m in patched:
             m.render_graph = _orig
 
-    assert _AUTHORED_GRAPH_VIEWS <= set(clickable), \
-        f"authored views never exercised by the corpus: {sorted(_AUTHORED_GRAPH_VIEWS - set(clickable))}"
-    for vk, nodes in clickable.items():
-        assert nodes, f"{vk}: drill view has NO clickable node — unclickable blocks"
+    uniq = sorted(set(violations))
+    assert not uniq, (
+        "all-static drill view(s) — every node static, so clicking opens nothing "
+        "(give the block children / render clickable):\n  "
+        + "\n  ".join(f"{vk}: {t}" for vk, t in uniq)
+    )
 
 
 def test_view_imaging_is_exhaustive_deduped_and_leaf_free():
@@ -183,7 +192,8 @@ def test_view_imaging_is_exhaustive_deduped_and_leaf_free():
 
 
 def test_fallback_views_have_dedicated_coverage():
-    """The two model-unexercised views must still be covered somewhere."""
+    """The model-unexercised dispatch/fallback views must still be covered somewhere."""
     assert _FALLBACK_VIEWS <= {k for k in reg.VIEW_REGISTRY if k}
-    # tower: tests/test_tower.py ; ops: tests/test_declared_ops.py
+    # tower: tests/test_tower.py ; ops: tests/test_declared_ops.py ;
+    # ffn (generic dispatch): build_ffn_view exercised via gated_ffn/dense_ffn in test_smoke.
     import test_tower, test_declared_ops  # noqa: F401  (importable ⇒ their suites run)

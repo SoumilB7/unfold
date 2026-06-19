@@ -600,26 +600,15 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "title": attn_title,
             "description": attn_desc,
             "facts": attn_facts,
-            # Opens the ONE shared attention view, parameterised by this
-            # encoder's own facts — same view the decoder/DiT attention opens.
-            "view": "attention",
-            "detail": {"attention": attn_detail},
+            # A summary tower's sublayer: a clickable DESCRIPTION card (its dims +
+            # what it does), not a generic Q/K/V drill — the hero denoiser carries
+            # the detailed attention diagram; this supporting encoder is described.
         },
         {
             "id": f"{prefix}_op_ffn",
             "title": "Feed-forward",
             "description": ffn_desc,
             "facts": ffn_facts,
-            # Opens the ONE shared FFN view, parameterised by this encoder's own
-            # facts — same view the denoiser/LLM FFN opens.
-            "view": "ffn",
-            "detail": {"ffn": {
-                "kind": "dense",
-                "gated": bool(spec.get("gated")),
-                "activation": spec.get("activation"),
-                "intermediate_size": ffn,
-                "hidden": hidden,
-            }},
         },
         {
             "id": f"{prefix}_op_norm",
