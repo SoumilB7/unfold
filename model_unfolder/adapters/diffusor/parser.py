@@ -298,6 +298,7 @@ def parse(cfg: Any) -> ModelIR:
         # DiT AdaLN-Zero: the timestep gates each sublayer output before its
         # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
         layer.blocks = _insert_adaln_gates(layer.blocks)
+        _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         layers.append(layer)
         idx += 1
     for _ in range(num_single):
@@ -416,6 +417,24 @@ def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
     return out
 
 
+def _annotate_adaln_norms(blocks: list[dict]) -> None:
+    """Name the AdaLN modulation in the self-attention & FFN norm cards (in place).
+
+    A DiT's pre-attention / pre-FFN norm is the defining piece of the architecture:
+    a (non-affine) LayerNorm whose **scale & shift are produced from the timestep
+    embedding** — AdaLN / AdaLN-Zero — not learned weights. That's how the diffusion
+    noise level conditions every block, so the norm card must say it (the cross-
+    attention norm, when present, is a plain norm and is left as-is)."""
+    if not any(b.get("kind") == "gate_mul" for b in blocks):
+        return
+    adaln = (" Its scale & shift are produced from the timestep embedding "
+             "(AdaLN — adaptive layer norm, AdaLN-Zero), not learned affine weights — "
+             "this is how the diffusion noise level conditions the block each step.")
+    for b in blocks:
+        if b.get("id") in ("rms1", "rms2") and b.get("kind") == "norm":
+            b["description"] = (b.get("description") or "").rstrip() + adaln
+
+
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
                             hidden_size: int, norm_kind: str, *, cross_dim=None) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
@@ -464,7 +483,9 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
             "id": "xattn_norm", "role": "norm", "kind": "norm",
             "diffusion_stage": "norm",
             "label": norm_label, "title": "Pre-cross-attention norm",
-            "description": f"{norm_label} before the cross-attention sublayer.",
+            "description": f"{norm_label} before the cross-attention sublayer — a plain norm "
+                           "(the timestep's AdaLN modulation gates only self-attention and the "
+                           "FFN, not cross-attention).",
         },
         {
             "id": "cross_attn", "role": "attention", "kind": "attention",

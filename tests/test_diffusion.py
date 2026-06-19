@@ -606,9 +606,15 @@ def test_dit_norm_type_resolved_from_config_not_generic():
     diffusers DiTs state AdaLN variants (ada_norm_single / ada_norm_zero / ...), which are
     LayerNorm-based, so they resolve to LayerNorm (the adaptive modulation is shown by the
     timestep wiring). A model that declares NOTHING stays honest-'Normalization'."""
-    norms = [b for b in unfold(PIXART).ir.layers[0].blocks if b.get("kind") == "norm"]
+    blocks = unfold(PIXART).ir.layers[0].blocks
+    norms = [b for b in blocks if b.get("kind") == "norm"]
     assert norms and all(b.get("label") == "LayerNorm" for b in norms), \
         f"ada_norm_single must resolve to LayerNorm, got {[(b['id'], b.get('label')) for b in norms]}"
+    # the AdaLN modulation must be NAMED in the self-attn & FFN norm cards (the defining
+    # DiT mechanism); the cross-attn norm is noted as a plain norm.
+    by = {b["id"]: b for b in blocks}
+    assert all("AdaLN" in by[n]["description"] for n in ("rms1", "rms2"))
+    assert "plain norm" in by["xattn_norm"]["description"]
     # rms_norm config → RMSNorm; an undeclared norm stays generic (honest-unknown).
     rms = {**PIXART, "norm_type": "rms_norm"}
     assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
