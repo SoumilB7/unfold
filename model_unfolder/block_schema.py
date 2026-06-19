@@ -209,6 +209,30 @@ def validate_click_coupling(html: str) -> list[str]:
     return [f"clickable node {nid!r} has no card (click would do nothing)" for nid in orphans]
 
 
+_DEF_ID = re.compile(r'<(?:marker|linearGradient|radialGradient|filter|clipPath) id="([^"]+)"')
+_URL_REF = re.compile(r"url\(#([^)]+)\)")
+
+
+def validate_unique_ref_ids(html: str) -> list[str]:
+    """Every ``<defs>`` id referenced by ``url(#id)`` (markers/gradients/filters)
+    must be UNIQUE across the whole document.
+
+    A diagram bakes one ``<marker>`` arrowhead per view; ``url(#id)`` resolution is
+    document-global, so a duplicate id makes the browser bind to the FIRST match —
+    which, for a drill panel, sits in a ``display:none`` subtree, so the arrowheads
+    silently vanish from the live render even though each svg looks correct in
+    isolation (a rendered PNG, or rsvg). This is the document-level check the
+    isolated-svg image pass cannot see."""
+    import collections
+    referenced = set(_URL_REF.findall(html))
+    counts = collections.Counter(self_id for self_id in _DEF_ID.findall(html))
+    return [
+        f"duplicate def id {i!r} (×{c}) referenced by url(#) — its arrowheads/fills "
+        f"bind to the first (possibly hidden) match and vanish in the browser"
+        for i, c in sorted(counts.items()) if c > 1 and i in referenced
+    ]
+
+
 # ---------------------------------------------------------------------------
 # internals
 # ---------------------------------------------------------------------------

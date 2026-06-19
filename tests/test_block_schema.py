@@ -152,10 +152,14 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
     mha_block = next(b for b in mha_ir["layers"][0]["blocks"] if b["id"] == "attn")
     gqa_block = next(b for b in gqa_ir["layers"][0]["blocks"] if b["id"] == "attn")
 
+    import re
+    # marker ids carry the view_key + a per-render uniqueness counter: "<mount>-<view>-<n>-arrow"
+    _gqa_marker = re.compile(r"gqa-attn-\d+-arrow")
+
     mha_in_gqa_context = render_block_detail(mha_ir, _make_info(gqa_ir), "attn-mha", mha_block)
     assert "grouped-query attention" not in mha_in_gqa_context
-    assert "gqa-attn-arrow" not in mha_in_gqa_context
+    assert not _gqa_marker.search(mha_in_gqa_context)
 
     gqa_in_mha_context = render_block_detail(gqa_ir, _make_info(mha_ir), "attn-gqa", gqa_block)
     assert "grouped-query attention" in gqa_in_mha_context
-    assert "gqa-attn-arrow" in gqa_in_mha_context
+    assert _gqa_marker.search(gqa_in_mha_context)

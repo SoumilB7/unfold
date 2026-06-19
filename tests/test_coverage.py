@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from model_unfolder import unfold
-from model_unfolder.block_schema import validate_click_coupling
+from model_unfolder.block_schema import validate_click_coupling, validate_unique_ref_ids
 from model_unfolder.renderers.html.block_views import registry as reg
 import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / PixArt / SDXL UNet)
 
@@ -104,6 +104,17 @@ def test_every_registered_view_is_exercised_and_couples():
 # node has no data-id to orphan), so clickability is pinned here.
 _AUTHORED_GRAPH_VIEWS = {"moe_router", "dsa_indexer",
                          "scheduler_step", "self_conditioning"}
+
+
+def test_no_duplicate_marker_ids_anywhere():
+    """No two baked diagrams may share a url(#)-referenced def id (arrowhead
+    markers, gradients). A duplicate makes the live browser bind every reference to
+    the FIRST (often hidden) match, so arrowheads vanish from the rendered output
+    even though each svg is correct in isolation — the standalone/notebook vs
+    rendered-PNG divergence. Document-level; the isolated image pass can't see it."""
+    for name, cfg in CORPUS.items():
+        problems = validate_unique_ref_ids(unfold(cfg).to_html(standalone=True))
+        assert not problems, f"{name}: duplicate marker/def ids:\n  " + "\n  ".join(problems)
 
 
 def test_no_dangling_connectors_anywhere():
