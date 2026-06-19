@@ -427,9 +427,7 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
     attention norm, when present, is a plain norm and is left as-is)."""
     if not any(b.get("kind") == "gate_mul" for b in blocks):
         return
-    adaln = (" Its scale & shift are produced from the timestep embedding "
-             "(AdaLN — adaptive layer norm, AdaLN-Zero), not learned affine weights — "
-             "this is how the diffusion noise level conditions the block each step.")
+    adaln = " Scale & shift come from the timestep (AdaLN), not learned weights."
     for b in blocks:
         if b.get("id") in ("rms1", "rms2") and b.get("kind") == "norm":
             b["description"] = (b.get("description") or "").rstrip() + adaln
@@ -483,9 +481,7 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
             "id": "xattn_norm", "role": "norm", "kind": "norm",
             "diffusion_stage": "norm",
             "label": norm_label, "title": "Pre-cross-attention norm",
-            "description": f"{norm_label} before the cross-attention sublayer — a plain norm "
-                           "(the timestep's AdaLN modulation gates only self-attention and the "
-                           "FFN, not cross-attention).",
+            "description": f"{norm_label} before cross-attention — a plain norm (not AdaLN-modulated).",
         },
         {
             "id": "cross_attn", "role": "attention", "kind": "attention",
