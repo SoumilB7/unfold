@@ -420,13 +420,18 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
                       f"top-{_fmt(attention.index_topk)} keys"],
             "view": "dsa_indexer",
             "children": [
-                {"id": "dsa_proj", "title": "Indexer projections",
-                 "description": f"The indexer's own lightweight query/key projections "
-                                f"({_fmt(attention.index_n_heads)} heads × {_fmt(attention.index_head_dim)})."},
+                {"id": "dsa_proj", "title": "Linear (Indexer)",
+                 "description": "The indexer's own lightweight per-head query/key projections "
+                                "(wq, wk) — cheap and separate from the main attention.",
+                 "facts": [f"{_fmt(attention.index_n_heads)} heads", f"dim {_fmt(attention.index_head_dim)}"]},
                 {"id": "dsa_score", "title": "Index scores",
-                 "description": "Scores every key against the query with the indexer heads (cheap, separate from the main attention)."},
-                {"id": "dsa_topk", "title": f"Keep top-{_fmt(attention.index_topk)}",
-                 "description": f"Selects the top-{_fmt(attention.index_topk)} keys per query; the latent attention runs only over those."},
+                 "description": "Scores every key against the query with the indexer heads "
+                                "(a ReLU-weighted dot product) — one relevance score per key."},
+                {"id": "dsa_topk", "title": "Top-k keys",
+                 "description": f"torch.topk(index_scores, k={_fmt(attention.index_topk)}) keeps the "
+                                f"most relevant keys per query; the latent attention then runs ONLY "
+                                f"over those — the rest of the context is skipped (sparse attention).",
+                 "facts": [f"k = {_fmt(attention.index_topk)}"]},
             ],
         }]
     return indexer_block + [

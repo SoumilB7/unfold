@@ -275,6 +275,18 @@ def _ext_source_extra(par: Parallel, by_id: dict, flow: set) -> float:
     return (max(n.height() for n in ext) + 40.0) if ext else 0.0
 
 
+def _lane_draw_order(lanes: list, par_dst: str) -> list:
+    """Left→right column order for a fan-out's lanes.
+
+    A lane that ALSO taps a target ABOVE the merge (attention's V → ⊙, two nodes
+    up the spine from the Q/K join) must sit on an OUTER column: centred, its elbow
+    to that target collapses straight onto the spine and disappears. That is exactly
+    what hid MLA's V→⊙ once DSA's sparse indexer added a 3rd lane and pushed KV to
+    the middle. Stable sort — plain merge lanes keep their order in the centre,
+    above-merge taps move outward — so the elbow always has room to render."""
+    return sorted(lanes, key=lambda ln: any(d != par_dst for d in (ln.dst or [])))
+
+
 def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx) -> None:
     """Split below ``dst`` into lanes that climb and merge back into ``dst``.
 
@@ -285,7 +297,7 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     if par.src not in geom or par.dst not in geom:
         return
     src_g, dst_g = geom[par.src], geom[par.dst]
-    lanes = par.norm_lanes()
+    lanes = _lane_draw_order(par.norm_lanes(), par.dst)
     split_y = src_g["top"] - 16
     if any(lane.src is None for lane in lanes):
         # the stem that carries the source up into the split dot — without it

@@ -17,25 +17,19 @@ from ..graph_engine import render_graph
 
 
 def build_dsa_indexer_view(ir: dict, info: dict, mount_id: str, child: dict | None = None) -> str:
-    attn = (info.get("dominant") or {}).get("spec", {}).get("attention") or {}
-    n_heads = attn.get("index_n_heads")
-    head_dim = attn.get("index_head_dim")
-    topk = attn.get("index_topk")
-    geo = (f"{n_heads:,} heads × {head_dim}" if n_heads and head_dim else "lightweight")
-
+    # Same locked design as the router: bare op-name labels (the head/dim/top-k
+    # counts are chips on the cards, never on the blocks), and the selection names
+    # its real op — Top-k keys = torch.topk over the index scores. The "sparse"
+    # subtlety lives on the cards, not as a floating caption.
     nodes = [
         Node("dsa_in", "port", ["hidden", "(query + keys)"], static=True),
-        Node("dsa_proj", "linear", ["Indexer projections", geo]),
-        Node("dsa_score", "select", ["Index scores", "every key vs query"], w=260),
-        Node("dsa_topk", "select", f"keep top-{topk:,}" if topk else "keep top-k"),
+        Node("dsa_proj", "linear", "Linear (Indexer)"),
+        Node("dsa_score", "select", "Index scores"),
+        Node("dsa_topk", "select", "Top-k keys"),
         Node("dsa_out", "port", ["selected keys", "→ latent attention"], static=True),
     ]
-    graph = Graph(
-        nodes=nodes,
-        flow=["dsa_in", "dsa_proj", "dsa_score", "dsa_topk", "dsa_out"],
-        note="sparse: the latent attention attends only over the selected keys",
-    )
+    graph = Graph(nodes=nodes, flow=["dsa_in", "dsa_proj", "dsa_score", "dsa_topk", "dsa_out"])
     return render_graph(
         graph, info, mount_id, "dsa_indexer",
-        f"{ir.get('name', 'model')} sparse-attention indexer", min_width=560,
+        f"{ir.get('name', 'model')} sparse-attention indexer", min_width=420,
     )

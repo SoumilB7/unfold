@@ -1010,7 +1010,14 @@ def test_dsa_indexer_is_a_clickable_subblock_only_when_declared():
     assert 'data-id="mla_indexer"' in render_block_detail(ir, info, "a", attn)
     idx = next(c for c in attn["children"] if c["id"] == "mla_indexer")
     drill = render_sub_block_detail(ir, info, "a", idx)
-    assert "Index scores" in drill and "top-2,048" in drill and "64" in drill
+    # Locked label standard (same as the router): bare op-name blocks, counts as
+    # card chips — the selection names its real op (Top-k keys = torch.topk).
+    assert "Linear (Indexer)" in drill and "Index scores" in drill and "Top-k keys" in drill
+    assert "top-2,048" not in drill and "64 heads" not in drill   # counts are NOT on the blocks
+    kids = {c["id"]: c for c in idx["children"]}
+    assert "torch.topk" in kids["dsa_topk"]["description"]
+    assert any("2,048" in f for f in kids["dsa_topk"]["facts"])   # k = 2,048 chip
+    assert any("64" in f for f in kids["dsa_proj"]["facts"])      # 64 heads chip
 
     # V3 (no index fields): no phantom indexer node or child.
     ir2, info2, attn2 = attn_block(dict(mla, model_type="deepseek_v3"))

@@ -100,6 +100,36 @@ def test_cross_attention_kv_lanes_take_a_side_source():
     assert srcs[("k_proj",)] == srcs[("v_proj",)] == "cross_attention_states"
 
 
+def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
+    """DSA must REUSE the MLA region and only ADD an indexer (gated on index_n_heads),
+    never reimplement it; and adding that 3rd lane must not collapse the V→⊙ elbow.
+    Regression: the indexer pushed KV to the centre column, so its tap to ⊙ ran
+    straight up the spine and vanished (a pixel break the dangling flag can't see)."""
+    from model_unfolder.renderers.html.graph_engine import _lane_draw_order
+    from model_unfolder.renderers.html.op_render import region_to_graph
+
+    mla = {"kind": "mla", "num_heads": 128, "head_dim": 192, "q_lora_rank": 1536,
+           "kv_lora_rank": 512, "rope_dim": 64}
+    dsa = {**mla, "index_n_heads": 64, "index_head_dim": 128, "index_topk": 2048}
+
+    # Additive: V3 and V3.2 share the SAME query/kv/V structure; DSA only adds the indexer.
+    base_ids = {o.id for o in attention_region(mla, 7168).ops}
+    dsa_ids = {o.id for o in attention_region(dsa, 7168).ops}
+    assert dsa_ids - base_ids == {"mla_indexer"}                  # nothing else changed
+    assert "mla_indexer" not in base_ids                          # V3/Kimi/GLM untouched
+
+    # The KV lane still feeds BOTH the scores and the V join, in both models.
+    for attn in (mla, dsa):
+        par = region_to_graph(attention_region(attn, 7168), clickable=True).parallels[0]
+        kv = next(ln for ln in par.norm_lanes() if ln.ids == ["mla_kv_path"])
+        assert "attn_apply_v" in (kv.dst or [])                   # V→⊙ edge present
+        ordered = _lane_draw_order(par.norm_lanes(), par.dst)
+        n = len(ordered)
+        # the V-tapping lane must be on an OUTER column (never the centre), so its
+        # elbow to ⊙ renders instead of collapsing onto the spine.
+        assert ordered.index(kv) in (0, n - 1), f"V lane centred among {n} lanes"
+
+
 def test_mla_region_nests_the_two_path_subgraphs():
     attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
             "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
