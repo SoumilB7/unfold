@@ -150,30 +150,60 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
     return {"routing": ffn.routing}
 
 
-def _topk_selection_cards(scoring: str, n_experts: str, n_active, n_group, topk_group) -> list[Block]:
-    """Leaf cards for the Top-k drill — each names the REAL torch op DeepSeek runs
-    to boil the experts down to k (grouped routers only). Counts are chips, never
-    on the block. (HF: ``DeepseekV3TopkRouter.get_topk_indices``.)"""
-    return [
-        {"id": "ts_group", "title": "Group scores",
-         "description": f"Per-group strength: torch.topk(scores, 2) within each of the "
-                        f"{n_group} expert groups, then summed.",
-         "facts": [f"{n_group} groups"]},
-        {"id": "ts_topk_groups", "title": "Top-k groups",
-         "description": f"torch.topk(group_scores, k={topk_group}) keeps the {topk_group} "
-                        f"strongest of {n_group} expert groups.",
-         "facts": [f"k = {topk_group}", f"of {n_group}"]},
-        {"id": "ts_mask", "title": "Mask groups",
-         "description": "masked_fill zeroes every expert in the non-selected groups so the "
-                        "expert top-k can't pick them."},
-        {"id": "ts_topk_experts", "title": "Top-k experts",
-         "description": f"torch.topk(masked_scores, k={n_active}) → the final {n_active} "
-                        f"experts routed to for this token.",
-         "facts": [f"k = {n_active}"]},
-        {"id": "ts_gather", "title": "Gather weights",
-         "description": f"scores.gather(idx): the chosen experts' RAW (pre-bias) {scoring} "
-                        f"scores — the weights that actually mix the experts."},
-    ]
+def _routing_shape(r: dict) -> tuple[bool, bool, bool]:
+    """The two axes that decide the Top-k torch sequence, read from config:
+    ``grouped`` (group-limited / node-limited routing) and ``bias`` (the
+    aux-loss-free correction bias, which makes the SELECTION scores differ from
+    the WEIGHT scores → a real gather). ``greedy`` distinguishes the two known
+    grouped methods so we never claim DeepSeek-V3's top-2-sum for V2's max."""
+    grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
+    bias = r.get("topk_method") == "noaux_tc"
+    greedy = r.get("topk_method") == "group_limited_greedy"
+    return grouped, bias, greedy
+
+
+def _topk_selection_cards(scoring, n_experts, n_active, n_group, topk_group,
+                          *, grouped, bias, greedy) -> list[Block]:
+    """Leaf cards for the Top-k drill — each names the REAL torch op, adapted per
+    family (NOT inherited): group steps only when grouped, a gather only when a
+    bias makes selection-scores ≠ weight-scores. (HF: ``DeepseekV3MoE.
+    route_tokens_to_experts`` / ``DeepseekV2`` group_limited_greedy / Mixtral.)"""
+    cards: list[Block] = []
+    if grouped:
+        if greedy:        # DeepSeek-V2: group score = its single strongest expert
+            gdesc = (f"Each of the {n_group} expert groups is scored by its top expert "
+                     f"(group_limited_greedy / node-limited routing).")
+            gfacts = [f"{n_group} groups", "max per group"]
+        elif bias:        # DeepSeek-V3 / Kimi: top-2 experts per group, summed
+            gdesc = (f"Each of the {n_group} expert groups is scored by its top-2 experts, "
+                     f"summed — torch.topk(.,2).sum(-1).")
+            gfacts = [f"{n_group} groups", "top-2 summed"]
+        else:
+            gdesc = f"Each of the {n_group} expert groups is scored by its strongest experts."
+            gfacts = [f"{n_group} groups"]
+        cards += [
+            {"id": "ts_group", "title": "Group scores", "description": gdesc, "facts": gfacts},
+            {"id": "ts_topk_groups", "title": "Top-k groups",
+             "description": f"torch.topk(group_scores, k={topk_group}) keeps the {topk_group} "
+                            f"strongest of {n_group} expert groups.",
+             "facts": [f"k = {topk_group}", f"of {n_group}"]},
+            {"id": "ts_mask", "title": "Mask groups",
+             "description": "masked_fill puts every expert outside the kept groups to −inf so "
+                            "the expert top-k can't pick them."},
+        ]
+    src = "the bias-corrected scores" if bias else ("the masked scores" if grouped else "the scores")
+    tail = (" — indices only; the weights are gathered next." if bias
+            else " and their gate weights (the top-k values themselves).")
+    cards.append({"id": "ts_topk_experts", "title": "Top-k experts",
+                  "description": f"torch.topk({src}, k={n_active}) → the {n_active} experts "
+                                 f"routed to for this token{tail}",
+                  "facts": [f"k = {n_active}"]})
+    if bias:   # selection used biased scores; the WEIGHTS come from the raw scores
+        cards.append({"id": "ts_gather", "title": "Gather weights",
+                      "description": f"scores.gather(idx): the chosen experts' RAW (pre-bias) "
+                                     f"{scoring} scores — the bias steered which experts won, "
+                                     f"but the mixing weights use these unbiased scores."})
+    return cards
 
 
 def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) -> list[Block]:
@@ -184,26 +214,36 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
     r = ffn.routing or {}
     scoring = r.get("scoring_func") or "softmax"
     n_group, topk_group = r.get("n_group") or 0, r.get("topk_group")
-    grouped = n_group > 1 and topk_group
-    # The selection card names torch.topk and (when grouped) drills into the real
-    # two-topk + mask + gather sequence; a plain router's single topk is an honest leaf.
-    if grouped:
-        select_desc = (f"torch.topk over the gate scores selects the top-{n_active} experts "
-                       f"per token — group-limited to {topk_group} of {n_group} groups first. "
-                       f"Opens into the exact torch sequence.")
-        select = {"id": "g_topk", "title": "Top-k selection", "description": select_desc,
-                  "facts": [f"top-{n_active}", f"{topk_group}/{n_group} groups"],
-                  "view": "topk_selection",
+    grouped, bias, greedy = _routing_shape(r)
+    # Top-k drills into the real torch sequence when there's structure to show —
+    # group-limiting OR a bias correction (the two things that make selection more
+    # than one plain torch.topk). A plain softmax top-k is an honest leaf whose
+    # topk values ARE the weights (no separate gather).
+    if grouped or bias:
+        bits = [f"torch.topk selects the top-{n_active} experts per token"]
+        if grouped:
+            bits.append(f"group-limited to {topk_group} of {n_group} groups")
+        if bias:
+            bits.append("on bias-corrected scores (weights come from the raw scores)")
+        facts = [f"top-{n_active}"]
+        if grouped:
+            facts.append(f"{topk_group}/{n_group} groups")
+        if bias:
+            facts.append("bias-corrected")
+        select = {"id": "g_topk", "title": "Top-k selection",
+                  "description": ", ".join(bits) + ". Opens into the exact torch sequence.",
+                  "facts": facts,
                   # block-local ffn so the drill resolves its OWN routing — never the
                   # ambient dominant variant (else an MTP-reused router renders
                   # non-grouped under a dense-layer tab; see ffn_from_block fallback).
-                  "detail": {"ffn": ffn_detail(ffn)},
-                  "children": _topk_selection_cards(scoring, n_experts, n_active, n_group, topk_group)}
+                  "view": "topk_selection", "detail": {"ffn": ffn_detail(ffn)},
+                  "children": _topk_selection_cards(scoring, n_experts, n_active, n_group,
+                                                    topk_group, grouped=grouped, bias=bias, greedy=greedy)}
     else:
         select = {"id": "g_topk", "title": "Top-k selection",
-                  "description": f"torch.topk(scores, k={n_active}) keeps the {n_active} "
-                                 f"highest-scoring experts per token; their mixing weights "
-                                 f"come from scores.gather(idx).",
+                  "description": f"torch.topk(scores, k={n_active}) keeps the {n_active} highest-"
+                                 f"scoring experts per token AND their gate weights (the top-k "
+                                 f"values themselves).",
                   "facts": [f"top-{n_active}"]}
     cards = [
         {"id": "g_gate", "title": "Linear (Gate)",

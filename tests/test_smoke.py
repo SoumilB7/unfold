@@ -875,6 +875,70 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     assert validate_click_coupling(unfold(base).to_html(standalone=True)) == []
 
 
+def test_router_topk_drill_adapts_per_family_not_inherited():
+    """Lock the router DESIGN across families while the STEPS adapt per config: the
+    Top-k drill must add group steps only when grouped, a gather only when a bias
+    splits selection-scores from weight-scores, and never inherit one family's
+    specifics for another (DeepSeek-V2's max-per-group ≠ V3's top-2-sum). Every
+    drilled child card must have a matching node in its view (no orphans)."""
+    from model_unfolder.renderers.html.metadata import _make_info
+    from model_unfolder.renderers.html.block_views.registry import render_sub_block_detail
+
+    base = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
+                num_key_value_heads=8, intermediate_size=256, vocab_size=1000,
+                rms_norm_eps=1e-5, moe_intermediate_size=128)
+
+    def find(blocks, tid):
+        for b in blocks:
+            if isinstance(b, dict):
+                if b.get("id") == tid:
+                    return b
+                hit = find(b.get("children") or [], tid)
+                if hit:
+                    return hit
+
+    def topk_block(cfg):
+        d = unfold(cfg); ir = d.to_ir(); info = _make_info(ir)
+        gt = find(info["dominant"]["spec"]["blocks"], "g_topk")
+        svg = render_sub_block_detail(ir, info, "m", gt) if gt.get("view") else ""
+        return gt, svg
+
+    # plain softmax (Mixtral): single torch.topk → an honest LEAF, no drill.
+    gt, _ = topk_block(dict(base, model_type="mixtral", num_local_experts=8, num_experts_per_tok=2))
+    assert gt.get("view") is None and not gt.get("children")
+
+    # grouped + group_limited_greedy, NO bias (DeepSeek-V2): group steps, NO gather,
+    # and the group score is the MAX (never V3's top-2-sum).
+    gt, svg = topk_block(dict(base, model_type="deepseek_v2", n_routed_experts=64,
+        num_experts_per_tok=6, n_group=8, topk_group=3, topk_method="group_limited_greedy",
+        scoring_func="softmax", routed_scaling_factor=16.0))
+    assert [c["id"] for c in gt["children"]] == ["ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts"]
+    assert "Gather weights" not in svg
+    gs = find(gt["children"], "ts_group")
+    assert "top expert" in gs["description"] and "top-2" not in gs["description"]
+
+    # grouped + noaux bias (DeepSeek-V3): full sequence WITH gather.
+    gt, svg = topk_block(dict(base, model_type="deepseek_v3", n_routed_experts=256,
+        num_experts_per_tok=8, n_group=8, topk_group=4, topk_method="noaux_tc",
+        scoring_func="sigmoid", norm_topk_prob=True, routed_scaling_factor=2.5))
+    assert [c["id"] for c in gt["children"]] == ["ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts", "ts_gather"]
+    assert "top-2" in find(gt["children"], "ts_group")["description"]
+
+    # noaux bias but NOT grouped (edge): gather WITHOUT group steps.
+    gt, svg = topk_block(dict(base, model_type="deepseek_v3", n_routed_experts=64,
+        num_experts_per_tok=8, topk_method="noaux_tc", scoring_func="sigmoid"))
+    assert [c["id"] for c in gt["children"]] == ["ts_topk_experts", "ts_gather"]
+
+    # No orphan cards: every drilled child card has a node (its title) in the view.
+    for cfg in (dict(base, model_type="deepseek_v2", n_routed_experts=64, num_experts_per_tok=6,
+                     n_group=8, topk_group=3, topk_method="group_limited_greedy", scoring_func="softmax"),
+                dict(base, model_type="deepseek_v3", n_routed_experts=256, num_experts_per_tok=8,
+                     n_group=8, topk_group=4, topk_method="noaux_tc", scoring_func="sigmoid")):
+        gt, svg = topk_block(cfg)
+        for child in gt["children"]:
+            assert child["title"] in svg, f"orphan card {child['id']!r}: no node in its drill view"
+
+
 def test_dsa_indexer_and_clamped_swiglu_are_surfaced():
     """Two Tier-3 properties that used to be silently dropped must now read from
     config: DeepSeek-V3.2's sparse-attention indexer and gpt-oss's clamped SwiGLU."""

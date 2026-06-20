@@ -82,22 +82,24 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
 
 
 def build_topk_selection_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
-    """What ``torch.topk`` actually does to boil N experts down to k.
+    """What ``torch.topk`` actually does to boil N experts down to k — adapted per
+    family, never inherited.
 
-    The router's "Top-k" block opens here. For a grouped router (DeepSeek/Kimi/GLM)
-    PyTorch runs the selection as a real sequence — two ``torch.topk`` calls (groups,
-    then experts), a ``masked_fill`` between them, and a ``gather`` of the RAW weights.
-    Every node is a leaf that names its true torch op; counts are chips on the cards,
-    never on the blocks. Built only when grouped — a plain router's single
-    ``torch.topk`` is an honest leaf card, no drill needed."""
-    ffn = ffn_from_block(block, info)
-    r = ffn.get("routing") or {}
-    n_group = r.get("n_group") or 0
-    grouped = n_group > 1 and bool(r.get("topk_group"))
+    The router's "Top-k" block opens here whenever there's real structure to show:
+      * grouped (DeepSeek/Kimi/GLM): Group scores → torch.topk(groups) → masked_fill
+      * bias-corrected (noaux_tc): … → torch.topk(experts) → gather RAW weights
+    A grouped-but-unbiased router (DeepSeek-V2 group_limited_greedy) gets the group
+    steps but NO gather (its top-k values are the weights); a plain softmax router
+    (Mixtral/Qwen) has a single ``torch.topk`` and stays an honest leaf, no drill.
+    Counts are chips on the cards, never on the blocks. (HF: ``DeepseekV3MoE.
+    route_tokens_to_experts``.)"""
+    r = (ffn_from_block(block, info).get("routing")) or {}
+    grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
+    bias = r.get("topk_method") == "noaux_tc"
 
     nodes: list[Node] = [Node("ts_in", "port", "expert scores", static=True)]
     flow = ["ts_in"]
-    if grouped:
+    if grouped:                                   # group-limited / node-limited routing
         for nid, label in (("ts_group", "Group scores"),
                            ("ts_topk_groups", "Top-k groups"),
                            ("ts_mask", "Mask groups")):
@@ -105,8 +107,9 @@ def build_topk_selection_view(ir: dict, info: dict, mount_id: str, block: dict |
             flow.append(nid)
     nodes.append(Node("ts_topk_experts", "select", "Top-k experts"))
     flow.append("ts_topk_experts")
-    nodes.append(Node("ts_gather", "select", "Gather weights"))
-    flow.append("ts_gather")
+    if bias:                                       # weights gathered from raw (pre-bias) scores
+        nodes.append(Node("ts_gather", "select", "Gather weights"))
+        flow.append("ts_gather")
     nodes.append(Node("ts_out", "port", "selected weights", static=True))
     flow.append("ts_out")
 
