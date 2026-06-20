@@ -32,7 +32,11 @@ from __future__ import annotations
 from ....labels import attention_label, attention_title
 from .attention import attention_child_blocks
 from .feed_forward import ffn_child_blocks, ffn_view
-from .layers import decoder_layer_blocks, parallel_decoder_layer_blocks
+from .layers import (
+    decoder_layer_blocks,
+    parallel_decoder_layer_blocks,
+    single_stream_decoder_layer_blocks,
+)
 from .model import decoder_model_blocks, decoder_only_render_spec, mtp_head_block
 
 __all__ = [
@@ -46,4 +50,5 @@ __all__ = [
     "ffn_view",
     "mtp_head_block",
     "parallel_decoder_layer_blocks",
+    "single_stream_decoder_layer_blocks",
 ]

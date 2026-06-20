@@ -915,11 +915,13 @@ def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
     assert f.get("gated") is None               # gating undeclared
     assert f.get("structure_declared") is False
     assert f.get("activation_assumed") is True
-    # the rendered FFN card says the structure isn't declared, asserts no shape
+    # Flux's dominant block is the FUSED single-stream block; its MLP lane (ss_mlp)
+    # must be honest about the config-undeclared activation — no fabricated GELU.
     import re
     html = unfold(FLUX).to_html(standalone=True)
-    m = re.search(r'data-card-id="block"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert m and "does not declare" in m.group(1)
+    m = re.search(r'data-card-id="ss_mlp"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert m and "does not declare the activation" in m.group(1)
+    assert "GELU" not in m.group(1)   # activation is config-silent → never fabricated
     # (Flux's CLIP/T5 text encoders legitimately declare GELU — that's their own
     # config fact and is unaffected; only the DiT block FFN is honest-unknown.)
     # LLAMA declares its activation — gating/activation are real facts, not flagged.

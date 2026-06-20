@@ -5,7 +5,12 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from ...ir import AttentionSpec, FFNSpec, LayerSpec
-from .blocks import decoder_layer_blocks, decoder_only_render_spec, parallel_decoder_layer_blocks
+from .blocks import (
+    decoder_layer_blocks,
+    decoder_only_render_spec,
+    parallel_decoder_layer_blocks,
+    single_stream_decoder_layer_blocks,
+)
 
 
 def decoder_layer(
@@ -47,6 +52,31 @@ def parallel_decoder_layer(
     into one residual add rather than two sequential adds.
     """
     blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    return LayerSpec(
+        index=index,
+        attention=attention,
+        ffn=ffn,
+        norm_kind=norm_kind,
+        norm_placement="pre",
+        blocks=blocks,
+    )
+
+
+def single_stream_decoder_layer(
+    index: int,
+    attention: AttentionSpec,
+    ffn: FFNSpec,
+    hidden_size: int,
+    *,
+    norm_kind: str = "rmsnorm",
+) -> LayerSpec:
+    """Build a fused single-stream MM-DiT layer (Flux's single-stream block).
+
+    Attention and the MLP up-projection run in parallel from one AdaLN norm; their
+    outputs are concatenated (``‖``) and projected back by a shared output
+    projection, then AdaLN-gated before the residual add.
+    """
+    blocks = single_stream_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
     return LayerSpec(
         index=index,
         attention=attention,

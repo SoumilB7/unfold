@@ -23,6 +23,16 @@ hidden_size: [hidden_size, inner_dim, d_model, dim]
 axes_dims_rope: [axes_dims_rope, axes_dim, rope_axes_dim]
 mrope_section: [mrope_section, rope_sections]
 rope_theta: [rope_theta]
+# Learned absolute positions baked into the patch embedding (SD3 / PixArt declare
+# the max grid). Presence => "position from the patch embedding"; its ABSENCE is
+# NOT evidence of NoPE — Flux carries axial RoPE in the model class, not the
+# config — so we only ASSERT a position scheme when the config gives a signal.
+pos_embed_max_size: [pos_embed_max_size, interpolation_scale]
+
+# QK-norm: per-head Q/K normalisation before the dot product (SD3.5 qk_norm:
+# "rms_norm"; some DiTs spell it use_qk_norm / qk_layernorm). A declared,
+# non-null value => the attention carries QK-norm (a Tier-3 annotation).
+qk_norm: [qk_norm, use_qk_norm, qk_layernorm]
 
 # Conditioning / stream dims.
 joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)

@@ -270,10 +270,12 @@ def _signature(layer: dict) -> str:
             ffn.get("num_experts"),
             layer.get("norm_kind"),
             layer.get("norm_placement"),
-            # Parallel-residual topology (a side-lane FFN) is structural — it
-            # separates e.g. Flux double-stream (sequential) from single-stream.
-            # External lanes (conditioning side-rails) aren't topology — exclude.
-            any(b.get("lane") and not str(b.get("lane")).startswith("external")
+            # Parallel topology is structural — it separates e.g. Flux
+            # double-stream (sequential) from single-stream (a parallel branch
+            # split: attn ∥ MLP → ‖). Both a side-LANE FFN and a BRANCH split
+            # count; external lanes (conditioning side-rails) aren't topology.
+            any((b.get("lane") and not str(b.get("lane")).startswith("external"))
+                or b.get("branch_side")
                 for b in layer.get("blocks", []) or []),
             _has_cross_attention_adapter(layer),
         )

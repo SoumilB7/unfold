@@ -142,6 +142,90 @@ def parallel_decoder_layer_blocks(
     ]
 
 
+def single_stream_decoder_layer_blocks(
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm",
+) -> list[Block]:
+    """Per-layer topology for a FUSED single-stream MM-DiT block
+    (Flux's ``FluxSingleTransformerBlock``; AuraFlow single layers).
+
+    Attention and the MLP up-projection run in PARALLEL from one AdaLN-modulated
+    norm; their outputs are CONCATENATED (``‖``, not summed) and projected back by
+    a SHARED output projection (the MLP's down-projection is fused into it), then
+    scaled by the AdaLN gate before the residual add::
+
+        norm → {attn ∥ MLP(up+act)} → ‖ concat → proj_out → × gate → ⊕ residual
+
+    HF ``FluxSingleTransformerBlock.forward``::
+
+        h = cat([attn(norm_h), act(proj_mlp(norm_h))], dim=2)
+        h = gate * proj_out(h);  hidden = residual + h
+    """
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+
+    attn_branch = _attention_block(attention, hidden_size)
+    attn_branch.update({"branch_side": "left", "feeds": "ss_concat"})
+
+    # The MLP's activation is config-derived — never fabricated. Flux's GELU lives
+    # in the model class, not the config, so when the config is silent we say so
+    # rather than inventing one (honest-unknown, mirrors the standard FFN card).
+    act = getattr(ffn, "activation", None)
+    act_suffix = f"+ {str(act).upper()}" if act else "+ activation"
+    act_note = "" if act else (
+        " The config does not declare the activation function (it is fixed in the "
+        "model class).")
+    mlp_branch = {
+        "id": "ss_mlp", "role": "ffn", "kind": "ffn",
+        "branch_side": "right", "feeds": "ss_concat",
+        "label": ["Linear", act_suffix],
+        "title": "MLP up-projection + activation",
+        "description": (
+            "The MLP up-projection (Linear) + activation, run in parallel with "
+            "attention on the same AdaLN-modulated input. Its output is "
+            "concatenated with the attention output; the down-projection is FUSED "
+            "into the shared output projection." + act_note
+        ),
+        "facts": [f"in {hidden}"],
+    }
+    concat = {
+        "id": "ss_concat", "role": "residual", "kind": "concat",
+        "label": "‖", "title": "Concatenate (attention ‖ MLP)",
+        "description": (
+            "Concatenates the attention output and the MLP activation along the "
+            "feature dimension, so one shared linear projects both back to the "
+            "model width at once."
+        ),
+    }
+    proj_out = {
+        "id": "ss_proj", "role": "ffn", "kind": "linear",
+        "label": "Output projection",
+        "title": "Shared output projection",
+        "description": (
+            "A single linear projecting the concatenated [attention ‖ MLP] back to "
+            "the model dimension — fusing the attention output projection and the "
+            "MLP down-projection into one matmul."
+        ),
+        "facts": [f"dim {hidden}"],
+    }
+    gate = {
+        "id": "gate_single", "role": "residual", "kind": "gate_mul",
+        "label": "×", "title": "AdaLN gate",
+        "description": (
+            "Scales the fused block output by the per-block AdaLN gate from the "
+            "timestep (AdaLN-Zero-Single) before the residual add."
+        ),
+    }
+    add = _add_block("ss_add", "rms1", "Residual add",
+                     "block input + gate · proj_out([attention ‖ MLP])")
+
+    return [
+        _norm_block("rms1", norm_label, "Pre-block norm (AdaLN-single)",
+                    _norm_desc(norm_kind, "feeding both attention and the MLP", shared=True),
+                    facts=[f"dim {hidden}"]),
+        attn_branch, mlp_branch, concat, proj_out, gate, add,
+    ]
+
+
 def _attention_block(attention: AttentionSpec, hidden_size: int) -> Block:
     desc, facts = attention_summary(attention_detail(attention))
     return {

@@ -27,12 +27,13 @@ from typing import Any
 
 from ...everchanging import (
     load_diffusion_aliases,
+    load_diffusion_class_defaults,
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
 from dataclasses import replace as _replace
 from ...ir import AttentionSpec, FFNSpec, ModelIR
-from ..transformer.assembly import decoder_layer, parallel_decoder_layer
+from ..transformer.assembly import decoder_layer, single_stream_decoder_layer
 from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
 from .blocks import diffusion_render_spec
@@ -40,6 +41,10 @@ from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
 
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
+
+#: Facts hardcoded in the diffusers model class but absent from config — surfaced
+#: (marked code-derived) only when the config is silent. {field: {class: value}}.
+_CLASS_DEFAULTS: dict[str, dict[str, str]] = load_diffusion_class_defaults()
 
 #: Detection + labelling vocabulary — data, edited in ``everchanging/diffusor/``.
 #: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
@@ -64,6 +69,14 @@ def _resolve(cfg: Any, canonical: str, default=None):
         if val is not None:
             return val
     return default
+
+
+def _class_default(cls: Any, field: str):
+    """Code-hardcoded value for ``field`` fixed in model class ``cls`` (from
+    class_defaults.yaml), or ``None``. Used ONLY as a fallback when the config is
+    silent — the result is surfaced marked as code-derived, never overriding a
+    declared config value."""
+    return _CLASS_DEFAULTS.get(field, {}).get(str(cls))
 
 
 # ---------------------------------------------------------------------------
@@ -236,6 +249,18 @@ def parse(cfg: Any) -> ModelIR:
     axes_dims_rope = _resolve(cfg, "axes_dims_rope")
     mrope_section = _resolve(cfg, "mrope_section")
     rope_theta = _resolve(cfg, "rope_theta")
+    # Code-derived fallback: when the config declares no RoPE but the model class
+    # fixes axial dims (Flux), surface them — MARKED as code-derived (class_defaults
+    # .yaml). Never overrides a declared config value.
+    axes_from_class = False
+    if axes_dims_rope is None:
+        _cd = _class_default(cls, "axes_dims_rope")
+        if _cd:
+            try:
+                axes_dims_rope = [int(x) for x in _cd.split(",")]
+                axes_from_class = True
+            except ValueError:
+                axes_dims_rope = None
     rope_dim = None
     if isinstance(axes_dims_rope, (list, tuple)):
         try:
@@ -249,14 +274,42 @@ def parse(cfg: Any) -> ModelIR:
         except (TypeError, ValueError):
             rope_dim = None
     has_rope = rope_dim is not None or rope_theta is not None
+    # Learned absolute positions baked into the patch embedding are a POSITIVE
+    # config signal (SD3 / PixArt declare pos_embed_max_size). Their ABSENCE is
+    # not evidence of NoPE: Flux carries axial RoPE in the model class, not the
+    # config, so a "no rotary" claim with no config signal would be a fabricated
+    # negative. We therefore only describe a position scheme we can see.
+    has_pos_embed = _resolve(cfg, "pos_embed_max_size") is not None
+    _from_class = " (set in the model class, not the config)" if axes_from_class else ""
     if isinstance(axes_dims_rope, (list, tuple)):
-        rope_note = f"Axial rotary position embedding (axes {axes_dims_rope})."
+        rope_note = f"Axial rotary position embedding (axes {axes_dims_rope}){_from_class}."
     elif isinstance(mrope_section, (list, tuple)):
         rope_note = f"Multimodal 3D rotary position embedding (sections {list(mrope_section)})."
     elif has_rope:
         rope_note = "Rotary position embedding."
+    elif has_pos_embed:
+        rope_note = "Position comes from the patch embedding (learned absolute positions)."
     else:
-        rope_note = "Position comes from the patch embedding (no rotary)."
+        rope_note = ""   # config declares no positional scheme — assert nothing
+
+    # QK-norm: per-head Q/K normalisation before the dot product. SD3.5 declares
+    # qk_norm: "rms_norm"; some DiTs spell it use_qk_norm / qk_layernorm. A
+    # declared, non-null value surfaces the QK-norm annotation on the attention.
+    # Code-derived fallback: Flux's FluxAttention RMS-norms Q/K unconditionally
+    # but declares nothing in config — surfaced (marked) via class_defaults.yaml.
+    _empty_qk = (None, False, "", "none", "None", 0)
+    _qk = _resolve(cfg, "qk_norm")
+    qk_from_class = False
+    if _qk in _empty_qk:
+        _cd = _class_default(cls, "qk_norm")
+        if _cd:
+            _qk, qk_from_class = _cd, True
+    has_qk_norm = _qk not in _empty_qk
+    if qk_from_class:
+        # Mark the code-derived QK-norm in the attention description (the chip
+        # states the fact; this clause says where the fact comes from).
+        rope_note = (rope_note + " " if rope_note else "") + (
+            "QK-norm (RMSNorm on Q/K) is applied in the model class, not the config.")
 
     # ---- Denoiser layer stack ----
     # The block's attention topology comes from the config's conditioning
@@ -282,7 +335,7 @@ def parse(cfg: Any) -> ModelIR:
     layers = []
     idx = 0
     for _ in range(num_layers):
-        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant)
+        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg),
@@ -302,8 +355,11 @@ def parse(cfg: Any) -> ModelIR:
         layers.append(layer)
         idx += 1
     for _ in range(num_single):
-        layers.append(parallel_decoder_layer(
-            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant),
+        # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
+        # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block,
+        # NOT a GPT-J parallel-sum layer).
+        layers.append(single_stream_decoder_layer(
+            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm),
             _dit_ffn(declared_act, intermediate_size, cfg),
             hidden_size, norm_kind=norm_kind,
         ))
@@ -369,7 +425,8 @@ def parse(cfg: Any) -> ModelIR:
 # Spec builders
 # ---------------------------------------------------------------------------
 
-def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> AttentionSpec:
+def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
+                   qk_norm: bool = False) -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
@@ -381,6 +438,7 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict) -> At
         mask="full",
         rope_dim=rope_dim,
         no_rope=rope_dim is None,
+        qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
         variant=variant,
     )

@@ -40,6 +40,7 @@ _KIND_LAYOUT = {
     "fusion":       {"shape": "rect",   "w": 230, "h": 50, "font": 15},
     "residual_add": {"shape": "circle", "w": 28,  "h": 28, "sym": "+"},
     "gate_mul":     {"shape": "circle", "w": 28,  "h": 28, "sym": "×"},
+    "concat":       {"shape": "circle", "w": 30,  "h": 30, "sym": "‖"},
 }
 _BLOCK_GAP = 32  # vertical gap between consecutive layer-body blocks
 # Larger than the arrow padding (`GAP` ×2) so the chain arrow has a visible

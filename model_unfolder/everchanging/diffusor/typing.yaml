@@ -69,6 +69,10 @@ block_ids:
   - rms2
   - ffn
   - add2
+  # Fused single-stream MM-DiT block (Flux single-stream): the MLP up+act lane
+  # and the shared output projection (the ‖/×/⊕ are connector glyphs, not boxes).
+  - ss_mlp
+  - ss_proj
 
 # Compound stage kinds approved for diffusion-family detail views.
 #

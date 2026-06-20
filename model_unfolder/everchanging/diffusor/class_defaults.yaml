@@ -1,0 +1,18 @@
+# Architectural facts HARDCODED in the diffusers MODEL CLASS (its __init__
+# defaults / module construction) and NOT declared in config.json. These are
+# surfaced and MARKED as code-derived: when the config is silent, the modeling
+# source is a valid evidence channel — otherwise a real RoPE / QK-norm reads as
+# absent (e.g. Flux declares neither axes_dims_rope nor qk_norm in config, yet
+# FluxPosEmbed applies axial RoPE and FluxAttention RMS-norms Q/K).
+#
+# Keyed by canonical field -> ["<_class_name>=<value>", ...]. Add a class ONLY
+# after reading its actual modeling forward()/__init__. Flow style ([a, b]) so
+# the built-in loader works without PyYAML.
+
+# Axial-RoPE per-axis dims fixed in the model class (FluxPosEmbed default
+# axes_dims_rope=(16, 56, 56); sums to head_dim 128).
+axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
+
+# QK-norm applied unconditionally in the model class (FluxAttention builds
+# RMSNorm norm_q / norm_k regardless of any config flag).
+qk_norm: ["FluxTransformer2DModel=rms_norm"]
