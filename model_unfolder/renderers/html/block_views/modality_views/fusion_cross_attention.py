@@ -17,7 +17,10 @@ def build_cross_attention_fusion_view(ir: dict, info: dict, mount_id: str, fusio
     arrow_id, shadow_id = _ids(mount_id, "cross-attention-fusion")
     parts: list[str] = []
 
-    cx = 430  # internal layout centre; the canvas auto-fits below
+    # cx is pushed right so the left-hand "Projected image states" side block clears
+    # the spine with room for its arrow — at cx=430 it overlapped the cross-attention
+    # block (right edge 284 vs the block's left edge 280) and the elbow collapsed.
+    cx = 500  # internal layout centre; the canvas auto-fits below
     hidden = _rect_block(parts, info, shadow_id, "embed", cx - 150, 406, 300, 52, "hidden_states")
     vision = _rect_block(
         parts, info, shadow_id, "cross_attention_states",

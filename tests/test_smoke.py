@@ -1163,6 +1163,37 @@ def test_gemma4_multimodal_fusion_render():
     assert 'data-card-id="fusion_mixed_stream"' in html
 
 
+def test_cross_attention_fusion_side_block_does_not_overlap_the_spine():
+    """The cross-attention fusion view (mllama/Flamingo) feeds 'Projected image
+    states' into the cross-attention block from the side — that side block must not
+    OVERLAP the spine block (it did: right edge 284 vs the block's left edge 280, so
+    the connecting arrow collapsed). A pixel break the wiring flag can't see."""
+    import re
+    from model_unfolder.preview import svg_views
+
+    cfg = dict(model_type="mllama", text_config=dict(
+        model_type="mllama_text_model", num_hidden_layers=8, hidden_size=512,
+        num_attention_heads=8, num_key_value_heads=2, intermediate_size=1024,
+        vocab_size=1000, cross_attention_layers=[3]),
+        vision_config=dict(hidden_size=256, num_hidden_layers=4,
+                           num_attention_heads=8, intermediate_size=512,
+                           patch_size=14, image_size=224))
+    html = unfold(cfg).to_html(standalone=True)
+    svg = next((s for _l, s in svg_views(html)
+                if "Cross-attention" in s and "Projected image" in s), None)
+    assert svg, "no cross-attention fusion view was rendered"
+
+    def extent(data_id):  # (left, right) of a block's rect — skip stroke-width
+        i = svg.find(f'data-id="{data_id}"')
+        m = re.search(r'<rect[^>]*?\bx="([-0-9.]+)"[^>]*?(?<!-)\bwidth="([-0-9.]+)"', svg[i:i + 400])
+        x, w = float(m.group(1)), float(m.group(2))
+        return x, x + w
+
+    _vl, vr = extent("cross_attention_states")     # Projected image states (side)
+    al, _ar = extent("cross_attention_adapter")    # Cross-attention layers (spine)
+    assert vr < al, f"side block (right {vr}) overlaps the spine block (left {al})"
+
+
 def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     """The vision tower's self-attention REUSES the one canonical SDPA region, but
     whether it draws RoPE must come from the tower's position scheme — a learned
