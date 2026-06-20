@@ -1163,6 +1163,43 @@ def test_gemma4_multimodal_fusion_render():
     assert 'data-card-id="fusion_mixed_stream"' in html
 
 
+def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
+    """The vision tower's self-attention REUSES the one canonical SDPA region, but
+    whether it draws RoPE must come from the tower's position scheme — a learned
+    table (SigLIP/CLIP/ViT) has NO RoPE, only rope_2d / multimodal_rope towers do.
+    Regression: it inherited the text default and fabricated a RoPE that
+    contradicted the learned-position node it already draws."""
+    from model_unfolder.renderers.html.metadata import _make_info
+    from model_unfolder.renderers.html.block_views.registry import render_sub_block_detail
+
+    def vision_attn_svg(cfg):
+        d = unfold(cfg); ir = d.to_ir(); info = _make_info(ir)
+        blocks = info.get("blocks", {})
+        idx = next((b for b in blocks.values() if b.get("view") == "vision_self_attention"), None)
+        if idx is None:  # find it nested under the vision encoder
+            for l, s in __import__("model_unfolder.preview", fromlist=["svg_views"]).svg_views(d.to_html(standalone=True)):
+                if l == "vision_encoder_attn":
+                    return s
+            return ""
+        return render_sub_block_detail(ir, info, "v", idx)
+
+    # SigLIP-style learned table → NO RoPE in vision attention.
+    siglip = dict(model_type="gemma3", num_hidden_layers=2, hidden_size=128,
+                  num_attention_heads=8, num_key_value_heads=4, intermediate_size=256,
+                  vocab_size=1000, vision_config={"hidden_size": 128, "num_hidden_layers": 2,
+                  "num_attention_heads": 8, "intermediate_size": 256, "patch_size": 14,
+                  "image_size": 224, "num_positions": 256})
+    assert "apply RoPE" not in vision_attn_svg(siglip), "SigLIP vision must NOT draw RoPE"
+
+    # multimodal-RoPE tower (Qwen2-VL grid stream) → RoPE present.
+    qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
+                num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
+                vocab_size=1000, image_token_id=4,
+                vision_config={"depth": 2, "hidden_size": 128, "num_heads": 8,
+                               "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
+    assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
+
+
 def test_gemma4_video_token_does_not_create_grid_video_path():
     cfg = _gemma4_e2b_vision_config()
     cfg.update({"video_token_id": 258884, "video_seq_length": 64})

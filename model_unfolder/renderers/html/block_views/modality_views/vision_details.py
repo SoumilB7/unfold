@@ -103,10 +103,16 @@ def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child
     encoder = (vision_input(ir).get("encoder") or {})
     heads = encoder.get("num_attention_heads")
     hidden = encoder.get("hidden_size")
+    # RoPE is config-derived from the tower's position scheme — a SigLIP/CLIP/ViT
+    # encoder positions patches with a LEARNED table (drawn as "Add positions"),
+    # so its attention has NO RoPE; only rope_2d / multimodal_rope towers (Qwen-VL)
+    # do. Without this the canonical region defaulted to drawing a fabricated RoPE
+    # that contradicted the learned-position node.
+    pos_kind = str((encoder.get("position_encoding") or {}).get("kind") or "")
     region = rename_ops(
         attention_region(
-            {"kind": "mha", "num_heads": heads,
-             "head_dim": _head_dim(heads, hidden), "cached": False},
+            {"kind": "mha", "num_heads": heads, "head_dim": _head_dim(heads, hidden),
+             "rope": "rope" in pos_kind, "cached": False},
             hidden,
         ),
         _VISION_ATTN_IDS,
