@@ -221,6 +221,14 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     if shape == "circle":
         _plus_block(parts, info, shadow_id, node.data_id(), g["cx"], g["cy"],
                     sym=node.glyph().sym, clickable=not node.static)
+        # A connector by a labelled CONSTANT (router `× routed_scaling_factor`) has
+        # only one tensor input — so the constant operand must be visible, else the
+        # glyph reads "× what?". Its ``sub`` is drawn beside the glyph (e.g. "2.5").
+        # Sits inside the wider neighbour boxes' span on the spine, so it can't clip.
+        if node.sub:
+            parts.append(_svg_text(g["cx"] + 20, g["cy"], node.sub, {
+                "text-anchor": "start", "dominant-baseline": "central",
+                "fill": C["muted"], "font-family": FONT_MONO, "font-size": 12.5}))
     elif shape == "formula":
         _formula_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                        g["w"], g["h"],

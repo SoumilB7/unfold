@@ -150,35 +150,88 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
     return {"routing": ffn.routing}
 
 
+def _topk_selection_cards(scoring: str, n_experts: str, n_active, n_group, topk_group) -> list[Block]:
+    """Leaf cards for the Top-k drill — each names the REAL torch op DeepSeek runs
+    to boil the experts down to k (grouped routers only). Counts are chips, never
+    on the block. (HF: ``DeepseekV3TopkRouter.get_topk_indices``.)"""
+    return [
+        {"id": "ts_group", "title": "Group scores",
+         "description": f"Per-group strength: torch.topk(scores, 2) within each of the "
+                        f"{n_group} expert groups, then summed.",
+         "facts": [f"{n_group} groups"]},
+        {"id": "ts_topk_groups", "title": "Top-k groups",
+         "description": f"torch.topk(group_scores, k={topk_group}) keeps the {topk_group} "
+                        f"strongest of {n_group} expert groups.",
+         "facts": [f"k = {topk_group}", f"of {n_group}"]},
+        {"id": "ts_mask", "title": "Mask groups",
+         "description": "masked_fill zeroes every expert in the non-selected groups so the "
+                        "expert top-k can't pick them."},
+        {"id": "ts_topk_experts", "title": "Top-k experts",
+         "description": f"torch.topk(masked_scores, k={n_active}) → the final {n_active} "
+                        f"experts routed to for this token.",
+         "facts": [f"k = {n_active}"]},
+        {"id": "ts_gather", "title": "Gather weights",
+         "description": f"scores.gather(idx): the chosen experts' RAW (pre-bias) {scoring} "
+                        f"scores — the weights that actually mix the experts."},
+    ]
+
+
 def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) -> list[Block]:
     """Cards for the clickable gate-pipeline steps drawn by the moe_router view.
     Declared for every possible step; the view draws only the ones the config
-    enables, and unused cards are harmless (never orphaned)."""
+    enables, and unused cards are harmless (never orphaned). Labels stay bare op
+    names — every count/dim/flag is a chip here, not on the block."""
     r = ffn.routing or {}
     scoring = r.get("scoring_func") or "softmax"
+    n_group, topk_group = r.get("n_group") or 0, r.get("topk_group")
+    grouped = n_group > 1 and topk_group
+    # The selection card names torch.topk and (when grouped) drills into the real
+    # two-topk + mask + gather sequence; a plain router's single topk is an honest leaf.
+    if grouped:
+        select_desc = (f"torch.topk over the gate scores selects the top-{n_active} experts "
+                       f"per token — group-limited to {topk_group} of {n_group} groups first. "
+                       f"Opens into the exact torch sequence.")
+        select = {"id": "g_topk", "title": "Top-k selection", "description": select_desc,
+                  "facts": [f"top-{n_active}", f"{topk_group}/{n_group} groups"],
+                  "view": "topk_selection",
+                  # block-local ffn so the drill resolves its OWN routing — never the
+                  # ambient dominant variant (else an MTP-reused router renders
+                  # non-grouped under a dense-layer tab; see ffn_from_block fallback).
+                  "detail": {"ffn": ffn_detail(ffn)},
+                  "children": _topk_selection_cards(scoring, n_experts, n_active, n_group, topk_group)}
+    else:
+        select = {"id": "g_topk", "title": "Top-k selection",
+                  "description": f"torch.topk(scores, k={n_active}) keeps the {n_active} "
+                                 f"highest-scoring experts per token; their mixing weights "
+                                 f"come from scores.gather(idx).",
+                  "facts": [f"top-{n_active}"]}
     cards = [
-        {"id": "g_gate", "title": "Gate projection",
-         "description": f"Linear projecting each token to one score per expert ({hidden} → {n_experts})."},
-        {"id": "g_score", "title": f"{scoring} score",
-         "description": f"{scoring} over the gate logits → an affinity per expert."},
-        {"id": "g_topk", "title": f"Select top-{n_active}",
-         "description": f"Routes each token to its top-{n_active} experts by score."},
+        {"id": "g_gate", "title": "Linear (Gate)",
+         "description": f"nn.Linear projecting each token to one score per expert "
+                        f"({hidden} → {n_experts}); a {scoring} turns the logits into "
+                        f"per-expert affinities.",
+         "facts": [f"{n_experts} experts", scoring]},
+        select,
     ]
-    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
-        cards.append({"id": "g_group", "title": "Group-limit",
-                      "description": f"Group-limited routing: keep the top {r['topk_group']} of "
-                                     f"{r['n_group']} expert groups before the per-expert top-k."})
     if r.get("norm_topk_prob"):
         cards.append({"id": "g_norm", "title": "Renormalize weights",
-                      "description": "Renormalizes the selected experts' gate weights to sum to 1."})
+                      "description": "Divides the selected experts' gate weights by their sum "
+                                     "so they add to 1 (norm_topk_prob)."})
     if r.get("topk_method") == "noaux_tc":
         cards.append({"id": "g_bias", "title": "Learned bias (load-balancing)",
-                      "description": "A learned per-expert bias added for SELECTION only "
-                                     "(aux-loss-free balancing); the mixing weights use the raw scores."})
+                      "description": "A learned per-expert bias vector (DeepSeek's "
+                                     "e_score_correction_bias) ADDED TO THE SCORES FOR "
+                                     "SELECTION ONLY — this is the aux-loss-free (noaux_tc) "
+                                     "load balancer: nudging an expert's bias up/down shifts "
+                                     "how often it's picked, spreading load WITHOUT an "
+                                     "auxiliary loss. The mixing weights still come from the "
+                                     "raw (pre-bias) scores, so balancing never distorts them.",
+                      "facts": ["per-expert", "selection only", "aux-loss-free"]})
     if r.get("routed_scaling_factor"):
         cards.append({"id": "g_scale", "title": f"× {r['routed_scaling_factor']} (routed scale)",
                       "description": f"Scales the routed-expert gate weights by "
-                                     f"routed_scaling_factor = {r['routed_scaling_factor']}."})
+                                     f"routed_scaling_factor = {r['routed_scaling_factor']}.",
+                      "facts": [f"× {r['routed_scaling_factor']}"]})
     return cards
 
 

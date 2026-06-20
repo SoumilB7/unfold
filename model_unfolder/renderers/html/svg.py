@@ -238,6 +238,11 @@ def _plus_block(parts: list[str], info: dict, shadow_id: str, node_id: str, cx: 
             "cx": cx, "cy": cy, "r": 5, "fill": "none",
             "stroke": C["text_block"], "stroke-width": 2, "pointer-events": "none",
         }))
+    elif sym in ("‖", "||"):
+        # Concat: two vertical bars, stroke-drawn (font glyphs drift off-centre).
+        gap = 2.6
+        children.append(_svg_tag("line", {"x1": cx - gap, "y1": cy - arm, "x2": cx - gap, "y2": cy + arm, **stroke_attrs}))
+        children.append(_svg_tag("line", {"x1": cx + gap, "y1": cy - arm, "x2": cx + gap, "y2": cy + arm, **stroke_attrs}))
     else:
         children.append(_svg_text(
             cx,

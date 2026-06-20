@@ -285,6 +285,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         )
 
     # --- 7. × N badge over the inner region ---
+    # The badge counts how many times THIS layer body repeats. For a
+    # heterogeneous model the view is rendered once per layer-type variant
+    # (DeepSeek-V3: 3 dense + 58 MoE), so the badge must reflect the displayed
+    # group's layer count — not the global total — to stay consistent with its
+    # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
+    # indices are available (single homogeneous stack ⇒ identical anyway).
+    group_indices = (info.get("dominant") or {}).get("indices")
+    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
     parts.append(_svg_tag("rect", {
         "x": inner_x + inner_w - 78, "y": inner_y + 12,
         "width": 66, "height": 26, "rx": 13, "ry": 13,
@@ -292,7 +300,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     }))
     parts.append(_svg_text(
         inner_x + inner_w - 45, inner_y + 25,
-        f"x {len(ir.get('layers', []))}",
+        f"x {repeat_n}",
         {"text-anchor": "middle", "dominant-baseline": "central",
          "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
     ))

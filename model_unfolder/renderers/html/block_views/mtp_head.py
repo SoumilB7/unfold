@@ -5,7 +5,7 @@ from ..graph_engine import render_graph
 from ..metadata import _block_label
 from ..tower import tower_graph
 from ..stack_view import fit_svg, point
-from ..svg import _elbow_vh, _ids, _rect_block, _svg_tag, _svg_text, _v_line
+from ..svg import _elbow_vh, _ids, _plus_block, _rect_block, _svg_tag, _svg_text, _v_line
 from ..theme import C, FONT_MONO
 
 
@@ -29,7 +29,9 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
     head   = _rect_block(parts, info, shadow_id, "mtp_head",   -120, -360, 240, 46, lbl("mtp_head", "Shared output head"))
     tblock = _rect_block(parts, info, shadow_id, "mtp_block",  -120, -268, 240, 54, lbl("mtp_block", "Transformer block"))
     proj   = _rect_block(parts, info, shadow_id, "mtp_proj",   -110, -176, 220, 46, lbl("mtp_proj", "Linear  2d -> d"))
-    concat = _rect_block(parts, info, shadow_id, "mtp_concat", -130,  -86, 260, 50, lbl("mtp_concat", "Concat"))
+    # Joining the two RMSNorm'd lanes is a true two-lane merge → a ‖ connector
+    # glyph (clickable, its card explains the concat), not a box.
+    concat = _plus_block(parts, info, shadow_id, "mtp_concat", 0, -61, sym="‖")
     hnorm  = _rect_block(parts, info, shadow_id, "mtp_hnorm",  -310,    0, 160, 46, lbl("mtp_hnorm", ["RMSNorm", "(hidden)"]))
     enorm  = _rect_block(parts, info, shadow_id, "mtp_enorm",   150,    0, 160, 46, lbl("mtp_enorm", ["RMSNorm", "(embedding)"]))
     emb    = _rect_block(parts, info, shadow_id, "mtp_emb",     135,   86, 190, 46, lbl("mtp_emb", ["Next-token", "embedding"]))

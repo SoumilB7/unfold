@@ -63,7 +63,11 @@ KIND: dict[str, Glyph] = {
     # attention / token-mixing cell
     "formula":      Glyph("formula", 280, 82, label="Scaled scores"),
     "dot_product":  Glyph("circle", 32, 32, sym="dot", label="Apply values"),
-    "concat":       Glyph("rect", 224, 54, 16, label="Concat"),
+    # A TRUE merge (two named lanes joining) → ‖ connector glyph; the "what"
+    # (NoPE+RoPE, …) lives in the card, like ⊕'s operands. A single-stream regroup
+    # (head-merge, patch-merge) is a ``reshape`` box instead — never a ‖.
+    "concat":       Glyph("circle", 30, 30, sym="‖", label="Concatenate"),
+    "reshape":      Glyph("rect", 224, 54, 16, label="Reshape"),
     "slice":        Glyph("rect", 190, 50, 15, label="Slice"),
     "rope":         Glyph("rect", 190, 50, 15, label="apply RoPE"),
     "cache":        Glyph("rect", 230, 56, 15, label="Cache"),
@@ -106,7 +110,23 @@ class Node:
         return self.label if self.label is not None else self.glyph().label
 
     def width(self) -> float:
-        return self.w if self.w is not None else self.glyph().w
+        """Block width: an explicit ``w``, else the glyph default GROWN to fit
+        the widest text line — the horizontal mirror of :meth:`height`'s line
+        fit, so a long label (``Linear → 256 scores · sigmoid``) never overflows
+        its box. A floor only: never shrinks a glyph, and the layout engine
+        already spaces residual lanes / the canvas off ``width()`` so growth
+        propagates instead of colliding."""
+        if self.w is not None:
+            return self.w
+        glyph = self.glyph()
+        if glyph.shape != "rect":
+            return glyph.w
+        heading = self.heading()
+        lines = [heading] if isinstance(heading, str) else list(heading or [])
+        label_font = self.font_size() + 3                     # BLOCK_LABEL_FONT_BOOST
+        widest = max((len(str(line)) for line in lines), default=0) * label_font * 0.6
+        sub_w = len(self.sub) * self.font_size() * 0.6 if self.sub else 0.0
+        return max(glyph.w, max(widest, sub_w) + 30)          # +30 = L/R padding
 
     def height(self) -> float:
         """Glyph height, grown to fit the text stack so a multi-line heading
@@ -234,8 +254,10 @@ class Graph:
 # ---------------------------------------------------------------------------
 _CONNECTOR_KINDS = {"residual_add", "gate_mul", "dot_product", "concat"}
 #: Connectors that ALWAYS combine two real tensors → <2 inputs is always wrong.
-_STRICT_TWO_INPUT = {"residual_add", "dot_product"}
-_GLYPH_SYM = {"+": "⊕", "×": "×", "dot": "⊙"}
+#: ``concat`` joined this set once it became a TRUE merge glyph (single-stream
+#: regroups are now ``reshape`` boxes, so a 1-input ‖ is a genuine wiring bug).
+_STRICT_TWO_INPUT = {"residual_add", "dot_product", "concat"}
+_GLYPH_SYM = {"+": "⊕", "×": "×", "dot": "⊙", "‖": "‖"}
 
 
 def _has_constant_operand(node: Node) -> bool:
@@ -253,9 +275,9 @@ def wiring_problems(graph: "Graph") -> list[str]:
 
     Counts each connector's DISTINCT inbound sources across the flow chain,
     explicit edges (flow + residual), parallel-lane merges and side-inputs; a
-    ``residual_add``/``dot_product`` with <2, or a ``gate_mul`` with <2 and no
-    labelled constant, is dangling.  ``concat`` is exempt (it may be a unary
-    head-reshape) and left to the pixel pass."""
+    ``residual_add``/``dot_product``/``concat`` with <2, or a ``gate_mul`` with
+    <2 and no labelled constant, is dangling.  (A single-stream regroup is a
+    ``reshape`` box, not a ‖, so every ‖ must genuinely merge two lanes.)"""
     par_pairs = {(p.src, p.dst) for p in graph.parallels}
     rel: set[tuple[str, str]] = set()
     for a, b in zip(graph.flow, graph.flow[1:]):
@@ -279,8 +301,6 @@ def wiring_problems(graph: "Graph") -> list[str]:
     problems: list[str] = []
     for n in graph.nodes:
         if n.kind not in _CONNECTOR_KINDS or indeg.get(n.id, 0) >= 2:
-            continue
-        if n.kind == "concat":
             continue
         if n.kind == "gate_mul" and _has_constant_operand(n):
             continue

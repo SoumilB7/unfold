@@ -113,6 +113,60 @@ def test_mla_region_nests_the_two_path_subgraphs():
         o.id for o in mla_kv_region(attn, 7168).ops}
 
 
+def test_concat_is_a_merge_glyph_while_head_merge_is_a_reshape_box():
+    """A TRUE two-lane merge (MLA NoPE+RoPE rejoin) is a ‖ connector glyph; merging
+    per-head outputs back to the model dim is a single-stream RESHAPE → a box. So a
+    ‖ always means 'two named lanes joined here', never a relabelled 1-input op."""
+    from model_unfolder.renderers.html.graph import KIND
+    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
+            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+
+    # SDPA spine: concat-of-heads is a reshape, NOT a concat.
+    ch = next(o for o in attention_region(GQA, 4096).ops if o.id == "concat_heads")
+    assert ch.kind == "reshape"
+
+    # MLA query/KV: the NoPE/RoPE rejoin is a real concat (two lanes meeting).
+    qcat = next(o for o in mla_query_region(attn, 7168).ops if o.id == "mla_q_concat")
+    kcat = next(o for o in mla_kv_region(attn, 7168).ops if o.id == "mla_k_merge")
+    assert qcat.kind == "concat" and kcat.kind == "concat"
+
+    # Glyphs: concat → the ‖ circle connector; reshape → a plain box.
+    assert KIND["concat"].shape == "circle" and KIND["concat"].sym == "‖"
+    assert KIND["reshape"].shape == "rect"
+
+    # And the merge really registers two inbound lanes (so it is not dangling).
+    g = region_to_graph(mla_query_region(attn, 7168), clickable=True)
+    from model_unfolder.renderers.html.graph import wiring_problems
+    assert wiring_problems(g) == []
+
+
+def test_block_width_grows_to_fit_a_long_label():
+    """A long label must not overflow its box: width() grows to fit, the
+    horizontal mirror of height()'s line-fit (the bug that clipped the router's
+    'Linear → 256 scores · sigmoid'). A floor only — explicit w wins, glyph
+    default is the minimum, and a sub-line is counted too."""
+    from model_unfolder.renderers.html.graph import Node
+    short = Node("a", "linear", "Gate")
+    longer = Node("b", "linear", "Linear → 256 scores · sigmoid")
+    assert longer.width() > short.width()
+    assert longer.width() >= Node("z", "linear").glyph().w        # never below the floor
+    assert Node("c", "linear", "x", w=999).width() == 999         # explicit w wins
+    # a long sub-line widens the box even when the heading is short
+    assert Node("d", "select", "top-8", sub="group-limited: keep 4 of 8").width() \
+        > Node("e", "select", "top-8").width()
+
+
+def test_a_one_input_concat_is_flagged_dangling():
+    """Now that single-stream regroups are ``reshape`` boxes, a ‖ with one input
+    is a genuine wiring bug — the dangling flag (Dable) must catch it."""
+    from model_unfolder.renderers.html.graph import Graph, Node, wiring_problems
+    bad = Graph(nodes=[Node("in", "port", "x", static=True),
+                       Node("c", "concat", "Concat")],
+                flow=["in", "c"])
+    probs = wiring_problems(bad)
+    assert len(probs) == 1 and "‖" in probs[0]
+
+
 def test_mla_kv_path_v_exits_as_a_labelled_output_lane():
     attn = {"kind": "mla", "kv_lora_rank": 512, "rope_dim": 64}
     g = region_to_graph(mla_kv_region(attn, 7168), clickable=True)

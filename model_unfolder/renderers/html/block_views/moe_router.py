@@ -2,18 +2,18 @@
 
 The top-level MoE view keeps the router a single box; this drill-down shows the
 *policy* it runs, built entirely from the config's ``routing`` facts so it adapts
-across families:
+across families. Only the two things a researcher would name get a box — the
+**gate** and the **selection** — per Gate C; the rest are sub-lines or wiring:
 
-    Gate (Linear → scores) → score fn (sigmoid│softmax)
-        → [group-limit: keep top-g of N groups]   (DeepSeek/Kimi/GLM grouped routing)
-        → select top-k experts
-        → [renormalize weights]                    (norm_topk_prob)
-        → [× routed_scaling_factor]                (scaled routed output)
+    Gate (Linear → scores · sigmoid│softmax)        score fn = a sub-line on the gate
+        → Select top-k  [· group-limited: g of N]   group-limit = a sub-line, not a box
+        → [renormalize weights]                     (norm_topk_prob)
+        → [(×) routed_scaling_factor]               a connector glyph, not a box
         → expert weights
 
 Each bracketed step is drawn **only when the config declares it** — a plain
-softmax top-k router (Mixtral, Qwen3-MoE) collapses to gate → softmax → top-k,
-while DeepSeek-V3 shows the full grouped, bias-corrected, scaled pipeline.
+softmax top-k router (Mixtral, Qwen3-MoE) collapses to gate → top-k, while
+DeepSeek-V3 shows the grouped, bias-corrected, scaled selection.
 
 The aux-loss-free subtlety (``topk_method == "noaux_tc"``, DeepSeek-V3/Kimi) is
 honest here: a learned **bias** enters the *selection* step from the side, but the
@@ -28,39 +28,28 @@ from .block_facts import ffn_from_block
 
 
 def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
-    ffn = ffn_from_block(block, info)
-    r = ffn.get("routing") or {}
-    n_exp = ffn.get("num_experts")
-    k = ffn.get("num_experts_per_tok")
-
-    scoring = r.get("scoring_func") or "softmax"   # HF default when unset
-    topk_method = r.get("topk_method")
-    n_group = r.get("n_group") or 0
-    topk_group = r.get("topk_group")
-    grouped = n_group > 1 and bool(topk_group)
+    # Which STEPS exist is config-driven; every count/flag/value is a card chip,
+    # so the view only needs the on/off knobs here (the cards read the rest).
+    r = (ffn_from_block(block, info).get("routing")) or {}
     norm = bool(r.get("norm_topk_prob"))
     scale = r.get("routed_scaling_factor")
-    bias_corrected = topk_method == "noaux_tc"
+    bias_corrected = r.get("topk_method") == "noaux_tc"
 
-    # The named gate steps are clickable (each opens its card); ports and the
-    # ×scale connector stay static.
+    # Gate C de-blocked: the GATE and the SELECTION are the only named compute
+    # here — everything else is a property or wiring. Labels stay the bare op name
+    # (the scoring fn, expert counts, group-limit knobs all live in the cards as
+    # chips, never on the block — the standing label rule); × routed_scaling_factor
+    # is a connector glyph, not a box.
     nodes: list[Node] = [Node("g_in", "port", ["token", "hidden"], static=True)]
     flow = ["g_in"]
 
-    nodes.append(Node("g_gate", "linear",
-                      ["Gate", f"Linear → {n_exp} scores" if n_exp else "Linear → scores"]))
+    nodes.append(Node("g_gate", "linear", "Linear (Gate)"))
     flow.append("g_gate")
 
-    nodes.append(Node("g_score", "activation", f"{scoring} score"))
-    flow.append("g_score")
-
-    if grouped:
-        nodes.append(Node("g_group", "select",
-                          ["Group-limit", f"keep {topk_group} of {n_group} groups"], w=268))
-        flow.append("g_group")
-
-    select_target = "g_topk"
-    nodes.append(Node("g_topk", "select", f"select top-{k}" if k else "select top-k"))
+    # Selection is one block on the router view; its card drills into the actual
+    # torch sequence (two torch.topk calls + mask + gather) that boils N experts
+    # down to k — what PyTorch really does, not a "select top-k" logic label.
+    nodes.append(Node("g_topk", "select", "Top-k"))
     flow.append("g_topk")
 
     if norm:
@@ -68,24 +57,61 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
         flow.append("g_norm")
 
     if scale:
-        # Scale by a labelled constant — a clickable step box (× {const}), not a bare
-        # × glyph (whose constant wouldn't be visible).
-        nodes.append(Node("g_scale", "select", f"× {scale} (routed scale)"))
+        # × by a labelled constant: a connector glyph (not a box), but the constant
+        # operand IS shown beside it (sub) so "× what?" is answered on the diagram —
+        # the value's digit also marks it constant-scaled, exempting the lone input.
+        nodes.append(Node("g_scale", "gate_mul", sub=f"{scale}"))
         flow.append("g_scale")
 
     nodes.append(Node("g_out", "port", "expert weights", static=True))
     flow.append("g_out")
 
     side_inputs: list[SideInput] = []
-    note = None
     if bias_corrected:
+        # The aux-loss-free (noaux_tc) subtlety — bias steers selection, weights use
+        # the raw scores — is NOT a floating caption; it lives in the bias card and
+        # the Gather-weights leaf (where "raw scores" actually happens).
         nodes.append(Node("g_bias", "embedding", ["learned bias", "(load-balancing)"]))
-        # The bias steers SELECTION (group-limit when present, else top-k) only.
-        side_inputs.append(SideInput("g_bias", "g_group" if grouped else select_target, side="left"))
-        note = "aux-loss-free (noaux_tc): the bias steers selection; the weights use the raw scores"
+        side_inputs.append(SideInput("g_bias", "g_topk", side="left"))
 
-    graph = Graph(nodes=nodes, flow=flow, side_inputs=side_inputs, note=note)
+    graph = Graph(nodes=nodes, flow=flow, side_inputs=side_inputs)
     return render_graph(
         graph, info, mount_id, "moe_router",
         f"{ir.get('name', 'model')} expert router", min_width=560,
+    )
+
+
+def build_topk_selection_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
+    """What ``torch.topk`` actually does to boil N experts down to k.
+
+    The router's "Top-k" block opens here. For a grouped router (DeepSeek/Kimi/GLM)
+    PyTorch runs the selection as a real sequence — two ``torch.topk`` calls (groups,
+    then experts), a ``masked_fill`` between them, and a ``gather`` of the RAW weights.
+    Every node is a leaf that names its true torch op; counts are chips on the cards,
+    never on the blocks. Built only when grouped — a plain router's single
+    ``torch.topk`` is an honest leaf card, no drill needed."""
+    ffn = ffn_from_block(block, info)
+    r = ffn.get("routing") or {}
+    n_group = r.get("n_group") or 0
+    grouped = n_group > 1 and bool(r.get("topk_group"))
+
+    nodes: list[Node] = [Node("ts_in", "port", "expert scores", static=True)]
+    flow = ["ts_in"]
+    if grouped:
+        for nid, label in (("ts_group", "Group scores"),
+                           ("ts_topk_groups", "Top-k groups"),
+                           ("ts_mask", "Mask groups")):
+            nodes.append(Node(nid, "select", label))
+            flow.append(nid)
+    nodes.append(Node("ts_topk_experts", "select", "Top-k experts"))
+    flow.append("ts_topk_experts")
+    nodes.append(Node("ts_gather", "select", "Gather weights"))
+    flow.append("ts_gather")
+    nodes.append(Node("ts_out", "port", "selected weights", static=True))
+    flow.append("ts_out")
+
+    graph = Graph(nodes=nodes, flow=flow)
+    return render_graph(
+        graph, info, mount_id, "topk_selection",
+        f"{ir.get('name', 'model')} top-k selection", min_width=420,
     )

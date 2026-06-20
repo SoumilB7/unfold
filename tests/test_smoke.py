@@ -440,6 +440,54 @@ def test_deepseek_v3_phase_change():
     print(f"DeepSeek-V3 phase change OK  — ~{ir['params']['total_h']} total / {ir['params']['active_h']} active")
 
 
+def _arch_variant_badges(html):
+    """The ``x N`` repeat badge inside each architecture-view variant, keyed by
+    variant index — what a viewer sees on the layer cell after toggling pills."""
+    import re
+    chunks = re.split(r'class="uf-arch-variant uf-arch-variant-(\d+)"', html)
+    out = {}
+    for i in range(1, len(chunks), 2):
+        m = re.search(r">x (\d+)<", chunks[i + 1])
+        if m:
+            out[int(chunks[i])] = int(m.group(1))
+    return out
+
+
+def test_layer_repeat_badge_is_per_variant_not_global_total():
+    """A heterogeneous model renders one architecture variant per layer type; the
+    ``x N`` badge on each must count THAT group's layers (matching its own toggle
+    pill), never the global total. Regression: the badge hardcoded
+    len(ir["layers"]) so every DeepSeek-V3 variant wrongly read "x 61"."""
+    # 1 dense + 3 MoE layers ⇒ neither group equals the total (4), so a global
+    # leak (both "x 4") is unmistakably distinguishable from the correct 1 / 3.
+    cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1}
+    badges = _arch_variant_badges(unfold(cfg).to_html(standalone=True))
+    assert sorted(badges.values()) == [1, 3], badges
+    assert sum(badges.values()) == cfg["num_hidden_layers"]
+
+    # A homogeneous stack still shows the total on its single variant.
+    homo = _arch_variant_badges(unfold(LLAMA3_8B_CONFIG).to_html(standalone=True))
+    assert set(homo.values()) == {len(unfold(LLAMA3_8B_CONFIG).to_ir()["layers"])}, homo
+
+
+def test_reused_router_drill_resolves_its_own_routing_not_the_ambient_variant():
+    """An MTP block reuses the grouped-MoE decoder layer; its Top-k drill must show
+    the SAME grouped torch sequence everywhere — never collapse to a plain (non-grouped)
+    torch.topk just because a dense-layer variant tab is the ambient dominant. Regression:
+    the drill read info['dominant'] instead of its own block-local detail.ffn."""
+    from model_unfolder.preview import svg_views
+    # Needs all three: dense+MoE variants (first_k_dense_replace), GROUPED routing
+    # (so the drill is multi-step), and an MTP block that reuses the layer.
+    cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1,
+           "num_nextn_predict_layers": 1, "scoring_func": "sigmoid", "topk_method": "noaux_tc",
+           "n_group": 8, "topk_group": 4, "norm_topk_prob": True, "routed_scaling_factor": 2.5}
+    html = unfold(cfg).to_html(standalone=True)
+    drills = [("Group scores" in svg) for _lbl, svg in svg_views(html)
+              if "Top-k experts" in svg and "Gather weights" in svg]
+    assert drills, "no top-k selection drill was baked"
+    assert all(drills), "a reused-router drill rendered non-grouped — variant leaked into block resolution"
+
+
 def test_mtp_head_detected_and_rendered():
     d = unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 1})
     ir = d.to_ir()
@@ -773,21 +821,55 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     add = next(c for c in moe["children"] if c["id"] == "add_moe")
     assert add["kind"] == "residual_add" and not add.get("static") and add.get("description")
 
-    # The gate pipeline reflects DeepSeek's full grouped, bias-corrected, scaled policy.
+    # De-blocked per Gate C: the router view shows only bare OP-NAME labels —
+    # every count/flag is a chip on a card, never on a block. The gate's scoring
+    # fn, the selection counts, the scale value all live in cards now.
     gate = render_sub_block_detail(ir, info, "m", router)
-    for token in ("sigmoid", "Group-limit", "keep 4 of 8 groups", "select top-8",
-                  "renormalize", "learned bias", "2.5"):
-        assert token in gate, f"gate view missing {token!r}"
+    for token in ("Gate", "Top-k", "renormalize", "learned bias"):
+        assert token in gate, f"router view missing label {token!r}"
+    # The descriptive text moved OFF the blocks (the user's "why not in description"):
+    # no scoring fn, no expert/group counts, no scale value painted on the diagram.
+    for leaked in ("sigmoid", "256 scores", "group-limited", "keep 4 of 8",
+                   "select top-8", "routed scale"):
+        assert leaked not in gate, f"label text {leaked!r} should be in a card, not the diagram"
 
-    # Dynamic (Gate A.3): a plain softmax top-k router collapses — no group / bias / scale.
+    rcards = {c["id"]: c for c in router["children"]}
+    # Gate card carries the Linear + scoring detail and count chips.
+    assert "sigmoid" in rcards["g_gate"]["description"] and "Linear" in rcards["g_gate"]["description"]
+    assert any("experts" in f for f in rcards["g_gate"]["facts"])
+    # routed scale is a × glyph, but its CONSTANT OPERAND is shown beside the glyph
+    # (answers "× what?") — a labelled-constant connector, not a bare ×.
+    assert ">2.5</text>" in gate, "the × must show its constant operand (2.5) on the diagram"
+    assert "2.5" in rcards["g_scale"]["title"]
+
+    # "Top-k" is not hand-wavy logic: it names torch.topk and DRILLS into the real
+    # PyTorch sequence DeepSeek runs (two torch.topk + mask + gather).
+    topk = rcards["g_topk"]
+    assert topk["view"] == "topk_selection" and "torch.topk" in topk["description"]
+    drill_ids = {c["id"] for c in topk["children"]}
+    assert {"ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts", "ts_gather"} == drill_ids
+    sel = render_sub_block_detail(ir, info, "m", topk)
+    for token in ("Group scores", "Top-k groups", "Mask groups", "Top-k experts", "Gather weights"):
+        assert token in sel, f"top-k drill missing {token!r}"
+    # the leaf cards name the actual torch ops
+    cards_by_id = {c["id"]: c for c in topk["children"]}
+    assert "torch.topk" in cards_by_id["ts_topk_experts"]["description"]
+    assert "gather" in cards_by_id["ts_gather"]["description"]
+    assert "masked_fill" in cards_by_id["ts_mask"]["description"]
+
+    # Dynamic (Gate A.3): a plain softmax top-k router collapses — no group / bias /
+    # scale, and its single torch.topk is an honest LEAF (no drill).
     plain = dict(model_type="m", num_hidden_layers=2, hidden_size=128,
                  num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                  vocab_size=1000, rms_norm_eps=1e-5, num_local_experts=8,
                  num_experts_per_tok=2)
     pir, pinfo, _pmoe, prouter = moe_and_router(plain)
     pgate = render_sub_block_detail(pir, pinfo, "m", prouter)
-    assert "softmax" in pgate and "select top-2" in pgate
-    assert "Group-limit" not in pgate and "learned bias" not in pgate
+    assert "Gate" in pgate and "Top-k" in pgate
+    pcards = {c["id"]: c for c in prouter["children"]}
+    assert pcards["g_topk"].get("view") is None and not pcards["g_topk"].get("children")
+    assert "torch.topk" in pcards["g_topk"]["description"]
+    assert "learned bias" not in pgate
 
     # The whole rendered model stays click-coupled with the new gate drill embedded.
     assert validate_click_coupling(unfold(base).to_html(standalone=True)) == []

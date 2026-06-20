@@ -33,10 +33,14 @@ from dataclasses import dataclass, field, replace
 #: positional encoding applied to a lane, ``cache`` is a stored tensor with
 #: read/write ports, and ``subgraph`` is a compound op whose internals are a
 #: nested :class:`Region` of these same primitives (hierarchy, not a new type).
+#: ``concat`` is a TRUE merge — two+ named lanes joining (MLA NoPE+RoPE) — drawn
+#: as a ‖ connector glyph. ``reshape`` is a single-stream regroup that is NOT a
+#: merge (concat-of-heads back to model dim, neighbour-patch merging) — drawn as a
+#: plain box, since a merge glyph with one input would read wrong.
 OP_KINDS = frozenset({
     "input", "output", "linear", "activation", "elementwise",
     "norm", "route", "attention_core", "conv", "opaque",
-    "concat", "slice", "rope", "cache", "subgraph",
+    "concat", "reshape", "slice", "rope", "cache", "subgraph",
 })
 
 
@@ -246,7 +250,9 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
                  "formula": "QK^T/sqrt(dim)"}),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
-        Op("concat_heads", "concat", "Concat heads", out_features=q_w),
+        # Merging per-head outputs back to model dim is a single-stream RESHAPE,
+        # not a two-lane merge — a plain box, never the ‖ concat glyph.
+        Op("concat_heads", "reshape", "Concat heads", out_features=q_w),
         Op("o_proj", "linear", "Linear (out)", in_features=q_w, out_features=hidden),
     ]
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),

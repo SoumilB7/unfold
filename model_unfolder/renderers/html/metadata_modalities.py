@@ -648,7 +648,9 @@ def _projector_ops(projector: dict) -> list[dict]:
         ]
     if kind == "patch_merger":
         return [
-            {"kind": "concat", "label": "Concat neighbouring patches"},
+            # Regrouping neighbouring patches into one feature vector is a
+            # single-stream reshape (a box), not a two-lane ‖ merge.
+            {"kind": "reshape", "label": "Concat neighbouring patches"},
             {"kind": "linear", "label": "Linear", "in": inn, "out": out},
         ]
     if kind == "perceiver_resampler":

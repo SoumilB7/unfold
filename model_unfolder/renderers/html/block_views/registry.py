@@ -26,7 +26,7 @@ from .block_facts import ffn_from_block, info_with_block_fact
 from .declared_ops import build_declared_ops_view
 from .feed_forward import build_dense_ffn_view, build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
-from .moe_router import build_moe_router_view
+from .moe_router import build_moe_router_view, build_topk_selection_view
 from .dsa_indexer import build_dsa_indexer_view
 from .scheduler_step import build_scheduler_step_view
 from .modalities import (
@@ -133,8 +133,11 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     # moe/gated/dense keys are what ``ffn_view`` stamps on layer blocks.
     "ffn": _from_block(_render_ffn_detail),
     "moe": _from_block(build_moe_view),
-    # MoE router gate policy: score → [group-limit] → top-k → [renorm] → [×scale].
+    # MoE router gate policy: gate → top-k → [renorm] → [×scale].
     "moe_router": _from_block(build_moe_router_view),
+    # The router's "Top-k" drills into the real torch sequence that boils N→k:
+    # group scores → torch.topk(groups) → mask → torch.topk(experts) → gather.
+    "topk_selection": _from_block(build_topk_selection_view),
     # DeepSeek-V3.2 DSA lightning indexer: scores all keys → keeps top-k.
     "dsa_indexer": _from_block(build_dsa_indexer_view),
     # (Cross-attention DiT sublayer reuses the canonical "attention" view with a

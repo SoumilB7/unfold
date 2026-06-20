@@ -193,7 +193,7 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         if op.fn == "scaled_dot_product":
             return Node(op.id, "formula", static=static, meta=dict(op.meta))
         return Node(op.id, "attention", op.label, static=static)
-    if op.kind in ("concat", "slice", "rope", "cache", "conv", "subgraph"):
+    if op.kind in ("concat", "reshape", "slice", "rope", "cache", "conv", "subgraph"):
         return Node(op.id, op.kind, op.label, static=static, meta=dict(op.meta))
     if op.kind == "route":
         return Node(op.id, "router", op.label or "Router")
