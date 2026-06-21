@@ -227,6 +227,7 @@ def parse(cfg: Any) -> ModelIR:
         "joint_attention_dim": _resolve(cfg, "joint_attention_dim"),
         "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
         "text_embed_dim": _resolve(cfg, "text_embed_dim"),
+        "kv_join_dim": _resolve(cfg, "kv_join_dim"),
         # AdaLN modulation width, and the text-encoder feature width fed in as
         # conditioning (e.g. Ideogram-4's Qwen3-VL llm_features_dim) — declared
         # facts that must be captured, not dropped.
@@ -354,6 +355,10 @@ def parse(cfg: Any) -> ModelIR:
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         layers.append(layer)
         idx += 1
+    # Single-stream fusion topology is a code fact (the block class): Flux 1 fuses
+    # only the OUT projection (concat_fused); Flux 2's ViT-22B parallel block fuses
+    # the IN projection too (QKV ‖ MLP-in one matmul) and gates the MLP.
+    single_fused_in = _class_default(cls, "single_stream_fusion") == "parallel"
     for _ in range(num_single):
         # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
         # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block,
@@ -361,7 +366,7 @@ def parse(cfg: Any) -> ModelIR:
         layers.append(single_stream_decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm),
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
-            hidden_size, norm_kind=norm_kind,
+            hidden_size, norm_kind=norm_kind, fused_in=single_fused_in,
         ))
         idx += 1
 
@@ -681,7 +686,36 @@ def _concat_joint_variant(rope_note: str) -> dict:
         "desc": (
             "Text tokens and latent patch tokens are concatenated into one "
             "sequence and attend jointly with shared Q/K/V (full bidirectional "
-            "attention). Modulated by the timestep via AdaLN. " + rope_note
+            "self-attention) — the block takes no separate text input. Modulated by "
+            "the timestep via AdaLN. " + rope_note
+        ),
+        # The text+latent join happens ONCE before the stack (the block self-attends
+        # over the joined sequence), so surface it as a stack caption, not a per-block
+        # rail — same treatment as the single-stream block.
+        "stack_note": [
+            "text + latent → one sequence,",
+            "joined once before this stack",
+        ],
+    }
+
+
+def _kv_joint_variant(rope_note: str) -> dict:
+    """Image-query attention over a CONCATENATED text + image K/V (PRX): each block
+    projects the text tokens to extra K/V and concatenates them with the image K/V,
+    so the image queries attend jointly over both.  Text enters the SAME attention
+    as K/V — there is no separate text stream (image-only Q) and no cross-attention
+    sublayer; the text rail therefore feeds the joint attention each block."""
+    return {
+        "short": "Joint Attn",
+        "tag": "text + image K/V",
+        "label": ["Joint Attention", "(text + image K/V)"],
+        "title": "Joint attention — image Q over concatenated text + image K/V",
+        "desc": (
+            "Each block projects the text tokens to extra key/value pairs and "
+            "concatenates them with the image K/V; the image queries then attend "
+            "over the joined text + image sequence (full bidirectional, image-only "
+            "queries, no separate text stream). Modulated by the timestep via "
+            "AdaLN. " + rope_note
         ),
     }
 
@@ -827,11 +861,14 @@ def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
     has_joint  = bool(geom.get("joint_attention_dim")) or bool(num_single)
     has_concat = bool(geom.get("text_embed_dim"))
     has_cross  = bool(geom.get("cross_attention_dim"))
+    has_kv_join = bool(geom.get("kv_join_dim"))
     has_fusion = bool(geom.get("llm_features_dim"))
     has_pooled = bool(geom.get("pooled_projection_dim"))
 
     if has_joint:
         variant = _stream_variant("MM-DiT (dual-stream)", rope_note, dual=True)
+    elif has_kv_join:
+        variant = _kv_joint_variant(rope_note)
     elif has_concat:
         variant = _concat_joint_variant(rope_note)
     elif has_cross:
@@ -843,15 +880,21 @@ def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
     return {
         "variant": variant,
         "single_variant": _stream_variant("single-stream", rope_note, dual=False),
-        # A text *encoder* alone does NOT mean text reaches attention; only a
-        # joint / concat / cross dim does. Pre-block fusion is NOT in-attention.
-        "text_in_attention": has_joint or has_concat or has_cross,
+        # A per-block text RAIL is drawn only when each block genuinely takes text:
+        # a dual-stream joint attention (encoder_hidden_states per block) or a
+        # cross-attention sublayer. A CONCAT-joint model joins text into ONE
+        # sequence UPSTREAM and self-attends over it (Lumina2's block forward has no
+        # text arg) — so it draws NO rail; the one-time join is shown as a stack
+        # caption instead (mirrors the single-stream treatment). Pre-block fusion
+        # and a text encoder alone are likewise not in-attention. A kv-join model
+        # (PRX) DOES read text in attention each block (as concatenated K/V).
+        "text_in_attention": has_joint or has_cross or has_kv_join,
         "pooled_in_adaln": has_pooled,
         "pre_block_fusion": has_fusion,
         # Cross-attention DiT (PixArt / Sana / Wan / CogVideoX / Mochi / LTX /
         # Hunyuan-DiT / Lumina): a SEPARATE cross-attention sublayer (attn2: image Q,
         # text K/V) sits between self-attention and the FFN — three sublayers, not two.
-        "cross_attn_sublayer": has_cross and not has_joint and not has_concat,
+        "cross_attn_sublayer": has_cross and not has_joint and not has_concat and not has_kv_join,
     }
 
 
@@ -945,7 +988,7 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
         if not isinstance(cls, str):
             continue
-        friendly = _ENCODER_NAMES.get(cls) or cls.replace("Model", "").replace("Encoder", "")
+        friendly = _ENCODER_NAMES.get(cls) or _clean_encoder_name(cls)
         if not friendly:
             continue
         # Keep EVERY declared encoder slot — never dedup by family name. SDXL is
@@ -959,6 +1002,24 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         specs.append(spec)
     _uniquify_encoder_names(specs)
     return specs
+
+
+#: HF class-name suffixes (task heads / base wrappers) stripped to a clean family
+#: stem when an encoder class isn't in the friendly map — so an unknown encoder
+#: reads "Mistral3", never the raw "Mistral3ForConditionalGeneration" overflowing
+#: its box. Longest match wins (stripped once); add a row to text_encoders.yaml
+#: for a nicer hand-written name.
+_ENC_CLASS_SUFFIXES = (
+    "ForConditionalGeneration", "ForCausalLM", "ForTextEncoding", "WithProjection",
+    "TextModel", "EncoderModel", "TextEncoder", "Encoder", "Model",
+)
+
+
+def _clean_encoder_name(cls: str) -> str:
+    for suf in sorted(_ENC_CLASS_SUFFIXES, key=len, reverse=True):
+        if cls.endswith(suf) and len(cls) > len(suf):
+            return cls[: -len(suf)]
+    return cls
 
 
 def _uniquify_encoder_names(specs: list[dict]) -> None:

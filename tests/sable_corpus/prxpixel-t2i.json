@@ -1,0 +1,103 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "PRXTransformer2DModel",
+    "_diffusers_version": "0.39.0.dev0",
+    "_name_or_path": "checkpoints_prx/best-model-diffusers/transformer",
+    "_pipeline_class_name": "PRXPixelPipeline",
+    "_repo_id": "Photoroom/prxpixel-t2i",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "num_train_timesteps": 1000,
+      "shift": 3.0
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "architectures": [
+          "Qwen3VLTextModel"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "bos_token_id": 151643,
+        "dtype": "bfloat16",
+        "eos_token_id": 151645,
+        "head_dim": 128,
+        "hidden_act": "silu",
+        "hidden_size": 2048,
+        "initializer_range": 0.02,
+        "intermediate_size": 6144,
+        "max_position_embeddings": 262144,
+        "model_type": "qwen3_vl_text",
+        "num_attention_heads": 16,
+        "num_hidden_layers": 28,
+        "num_key_value_heads": 8,
+        "rms_norm_eps": 1e-06,
+        "rope_scaling": {
+          "mrope_interleaved": true,
+          "mrope_section": [
+            24,
+            20,
+            20
+          ],
+          "rope_type": "default"
+        },
+        "rope_theta": 5000000,
+        "tie_word_embeddings": true,
+        "transformers_version": "4.57.6",
+        "use_cache": true,
+        "vocab_size": 151936
+      }
+    },
+    "axes_dim": [
+      64,
+      64
+    ],
+    "bottleneck_size": 768,
+    "context_in_dim": 2048,
+    "default_sample_size": 1024,
+    "depth": 24,
+    "hidden_size": 3584,
+    "in_channels": 3,
+    "mlp_ratio": 3.5,
+    "num_heads": 28,
+    "patch_size": 16,
+    "resolution_embeds": true,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Qwen3VLTextModel"
+    ],
+    "theta": 10000,
+    "time_factor": 1000.0,
+    "time_max_period": 10000,
+    "tokenizer": [
+      "transformers",
+      "Qwen2TokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "PRXTransformer2DModel"
+    ]
+  },
+  "hash_signature": [
+    "0201f62f45d46c90dc7b5b7e64e90ad2",
+    "15649625b52c6d32e9b783ca223dd225",
+    "455fcad6f15a7a8642673b21b0f8fcd7",
+    "51028cdc2f24390d0c6dc2993635fa32",
+    "671c05a4a4192258fa9687d8584567a7",
+    "737b7ee110d83b5d04bfe8118b8681dd",
+    "ef682777d723eac5206df58b21660bbb"
+  ],
+  "model": "prxpixel-t2i",
+  "source": "local"
+}

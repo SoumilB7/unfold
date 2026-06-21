@@ -36,8 +36,9 @@ qk_norm: [qk_norm, use_qk_norm, qk_layernorm]
 
 # Conditioning / stream dims.
 joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD3)
-text_embed_dim: [text_embed_dim]                     # concatenated-joint text width (CogVideoX/Mochi/HunyuanVideo)
-cross_attention_dim: [cross_attention_dim, text_dim, cap_feat_dim]  # cross-attn text width (PixArt; Wan: text_dim; Lumina: cap_feat_dim caption features)
+text_embed_dim: [text_embed_dim, cap_feat_dim]       # concatenated-joint text width (CogVideoX/Mochi/HunyuanVideo; Lumina2 cap_feat_dim — caption features CONCATENATED into the sequence + self-attended, NOT cross-attended)
+cross_attention_dim: [cross_attention_dim, text_dim]  # cross-attn text width (PixArt; Wan: text_dim)
+kv_join_dim: [context_in_dim]                        # text-K/V-join width (PRX: context_in_dim — text projected to extra K/V, CONCATENATED into the attention's K/V each block; image-only Q, no text stream)
 caption_projection_dim: [caption_projection_dim, caption_channels]
 pooled_projection_dim: [pooled_projection_dim]
 guidance_embeds: [guidance_embeds]

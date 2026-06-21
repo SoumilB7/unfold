@@ -75,9 +75,12 @@ class SableReport:
 
     @property
     def blessable(self) -> bool:
-        """Lockable only when every mechanical net passed AND the visual review was
-        explicitly marked clean — never freeze a model no eye has approved."""
-        return self.mechanical_passed and self.visual_review == "CLEAN"
+        """Lockable only when every mechanical net passed, the code oracle was
+        PRESENT (conformance actually ran — a skipped conformance must never be
+        locked as "verified"), AND the visual review was explicitly marked clean
+        (never freeze a model no eye has approved)."""
+        return (self.mechanical_passed and self.oracle == "present"
+                and self.visual_review == "CLEAN")
 
     def hash_signature(self) -> list[str]:
         """The order-independent multiset of per-view SVG hashes — the CI lock key."""
@@ -117,6 +120,13 @@ def sable(model_or_id, *, token=None, source: str = "local",
     from .preview import svg_views, _visual_hash
 
     cfg = _coerce(model_or_id, token=token)
+    # Keep the source id ON the config so a hub source lookup can find it: a
+    # trust_remote_code model (HunyuanImage-3, Ideogram-4) ships its modeling .py
+    # in the HF repo, not in the diffusers/transformers package, and _coerce drops
+    # the id. Harmless for source="local" (which resolves by class, not id).
+    if isinstance(model_or_id, str) and isinstance(cfg, dict) and not any(
+            cfg.get(k) for k in ("_name_or_path", "name_or_path", "model_id", "repo_id")):
+        cfg = {**cfg, "_name_or_path": model_or_id}
     diagram = Diagram(config_to_ir(cfg))
     ir = diagram.to_ir()
     html = diagram.to_html(standalone=True)
@@ -182,7 +192,8 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
     if not report.blessable:
         raise ValueError(
             f"not blessable: mechanical_passed={report.mechanical_passed}, "
-            f"visual_review={report.visual_review!r} — clear findings and mark the "
+            f"oracle={report.oracle!r}, visual_review={report.visual_review!r} — clear "
+            "findings, install the modeling source so conformance runs, and mark the "
             "visual review CLEAN first.")
     from .parser import _coerce
     cfg_dict = _config_dict(_coerce(model_or_id, token=token))

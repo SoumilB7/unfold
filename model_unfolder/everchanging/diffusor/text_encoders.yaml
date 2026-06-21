@@ -6,3 +6,9 @@ CLIPTextModel: CLIP
 CLIPTextModelWithProjection: CLIP
 T5EncoderModel: T5
 T5EncoderModelWithProjection: T5
+T5Gemma2EncoderModel: T5Gemma
+Gemma2Model: Gemma-2
+LlamaModel: Llama
+Qwen2Model: Qwen2
+Qwen2_5_VLForConditionalGeneration: Qwen2.5-VL
+Mistral3ForConditionalGeneration: Mistral-3

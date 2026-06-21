@@ -29,6 +29,15 @@ _CLEAN_ACTIVATIONS = {
     "Softmax", "ReLU²", "Mish", "Activation",
 }
 
+#: HF class-name task-head suffixes. A block label ending in one of these is a raw
+#: modeling class name leaked into the diagram (e.g. a text encoder rendered as
+#: "Mistral3ForConditionalGeneration"), which overflows its box — give it a clean
+#: family name in the relevant everchanging map instead.
+_RAW_CLASS_SUFFIXES = (
+    "ForConditionalGeneration", "ForCausalLM", "ForTextEncoding",
+    "ForImageGeneration", "ForSequenceClassification",
+)
+
 
 def lint_labels(ir: dict) -> list[str]:
     """Every block-label offence in ``ir`` (``Diagram.to_ir()``), as messages.
@@ -51,6 +60,12 @@ def _lint_block(block: dict) -> list[str]:
             out.append(
                 f"block {bid!r}: label part {part!r} has nested/doubled parentheses "
                 "— wrap the short discriminator, not the full tag.")
+        # 2. A raw HF modeling class name leaked into a label (it overflows the box
+        #    and reads as garbage) — give it a clean family name in everchanging.
+        if part.endswith(_RAW_CLASS_SUFFIXES):
+            out.append(
+                f"block {bid!r}: label part {part!r} is a raw model class name — "
+                "map it to a clean family name (e.g. an everchanging text_encoders row).")
     # 2. Activation-role blocks must draw the clean math name, never the config's
     #    backend spelling (gelu-approximate / gelu_pytorch_tanh / quick_gelu …).
     if _is_activation_block(block):

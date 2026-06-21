@@ -73,6 +73,23 @@ def test_wiring_conformance_flags_fabricated_text_rail():
         [p.message for p in probs]
 
 
+def test_wiring_conformance_flags_missing_text_rail():
+    """NEGATIVE CONTROL (missing direction): when a block's forward() TAKES a text
+    input (Flux's dual block has encoder_hidden_states) but the diagram draws no
+    text rail and shows no joined-sequence indication, the dropped text is flagged.
+    This is the direction that caught PRX (text K/V concatenated, drawn as plain
+    self-attention)."""
+    ir = mu.unfold(FLUX).to_ir()
+    for L in ir["layers"]:                       # strip the rail from a dual-stream layer
+        tag = str((L.get("attention") or {}).get("variant", {}).get("tag") or "").lower()
+        if "dual-stream" in tag:
+            L["blocks"] = [b for b in L["blocks"] if b.get("id") != "text_cond"]
+            break
+    probs = check_wiring_conformance(FLUX, ir)
+    assert any(p.kind == "missing_input" and p.op == "text" for p in probs), \
+        [p.message for p in probs]
+
+
 # --------------------------------------------------------------------------- #
 # the orchestrator
 # --------------------------------------------------------------------------- #

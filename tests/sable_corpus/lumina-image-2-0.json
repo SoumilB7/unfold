@@ -1,0 +1,166 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "Lumina2Transformer2DModel",
+    "_diffusers_version": "0.33.0.dev0",
+    "_name_or_path": "Alpha-VLLM/Lumina-Image-2.0",
+    "_pipeline_class_name": "Lumina2Pipeline",
+    "_repo_id": "Alpha-VLLM/Lumina-Image-2.0",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.33.0.dev0",
+      "base_image_seq_len": 256,
+      "base_shift": 0.5,
+      "invert_sigmas": false,
+      "max_image_seq_len": 4096,
+      "max_shift": 1.15,
+      "num_train_timesteps": 1000,
+      "shift": 6.0,
+      "shift_terminal": null,
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": false,
+      "use_exponential_sigmas": false,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/gemma-2-2b",
+        "architectures": [
+          "Gemma2Model"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "attn_logit_softcapping": 50.0,
+        "bos_token_id": 2,
+        "cache_implementation": "hybrid",
+        "eos_token_id": 1,
+        "final_logit_softcapping": 30.0,
+        "head_dim": 256,
+        "hidden_act": "gelu_pytorch_tanh",
+        "hidden_activation": "gelu_pytorch_tanh",
+        "hidden_size": 2304,
+        "initializer_range": 0.02,
+        "intermediate_size": 9216,
+        "max_position_embeddings": 8192,
+        "model_type": "gemma2",
+        "num_attention_heads": 8,
+        "num_hidden_layers": 26,
+        "num_key_value_heads": 4,
+        "pad_token_id": 0,
+        "query_pre_attn_scalar": 256,
+        "rms_norm_eps": 1e-06,
+        "rope_theta": 10000.0,
+        "sliding_window": 4096,
+        "torch_dtype": "float32",
+        "transformers_version": "4.44.2",
+        "use_cache": true,
+        "vocab_size": 256000
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.33.0.dev0",
+      "_name_or_path": "black-forest-labs/FLUX.1-dev",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 16,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "mid_block_add_attention": true,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 0.3611,
+      "shift_factor": 0.1159,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": false,
+      "use_quant_conv": false
+    },
+    "axes_dim_rope": [
+      32,
+      32,
+      32
+    ],
+    "axes_lens": [
+      300,
+      512,
+      512
+    ],
+    "cap_feat_dim": 2304,
+    "ffn_dim_multiplier": null,
+    "hidden_size": 2304,
+    "in_channels": 16,
+    "multiple_of": 256,
+    "norm_eps": 1e-05,
+    "num_attention_heads": 24,
+    "num_kv_heads": 8,
+    "num_layers": 26,
+    "num_refiner_layers": 2,
+    "out_channels": null,
+    "patch_size": 2,
+    "sample_size": 128,
+    "scaling_factor": 1.0,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Gemma2Model"
+    ],
+    "tokenizer": [
+      "transformers",
+      "GemmaTokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "Lumina2Transformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "0041d9fa5281f01cc955c0326718b7b4",
+    "1f9feb589dfed9eb1754bcc3eafcf0a6",
+    "375b0fc6d963ed249b5fc6e7ce086d5b",
+    "3f6351da85a5482efcd23bc0a951889f",
+    "6dc62a9559452e8afbb5c6772da97bc4",
+    "72c72e56496f2ecf5c83d5192468a0e7",
+    "8a53e5b43e29b3ed06b4e0dc092a5c19",
+    "913168b0d9b21cf50db8105a6de44992",
+    "94cbfcf9da084ac6fcd53a000af0ebd1",
+    "b26496903a90d935f59b32446b1d93be",
+    "c445b387e72b69a1bcb1cf0bc02975cc",
+    "e1641402bf13dfd461ecd0c0a7defd1c"
+  ],
+  "model": "Lumina-Image-2.0",
+  "source": "local"
+}

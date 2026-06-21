@@ -14,13 +14,21 @@
 axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
 
 # QK-norm applied unconditionally in the model class (FluxAttention builds
-# RMSNorm norm_q / norm_k regardless of any config flag).
-qk_norm: ["FluxTransformer2DModel=rms_norm"]
+# RMSNorm norm_q / norm_k regardless of any config flag). Flux 2's attentions
+# (Flux2Attention + Flux2ParallelSelfAttention) likewise RMS-norm Q/K.
+qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm"]
 
 # FFN activation fixed in the model class, not config. In diffusers the
 # activation_fn name fully specifies the FFN shape, so this also resolves the
-# gating: "gelu-approximate" is a PLAIN (non-gated) two-layer MLP. Flux builds
-# FeedForward(activation_fn="gelu-approximate") (dual-stream ff) and nn.GELU(
-# approximate="tanh") after proj_mlp (single-stream), both mult=4. A "*glu" name
-# here would instead mark the FFN gated.
-ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate"]
+# gating: "gelu-approximate" is a PLAIN (non-gated) two-layer MLP; "swiglu" is a
+# GATED MLP. Flux 1 builds FeedForward(activation_fn="gelu-approximate") + GELU(
+# tanh) (single), both mult=4. Flux 2 uses Flux2SwiGLU in BOTH blocks (dual
+# Flux2FeedForward + the single block's fused mlp_act_fn).
+ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate"]
+
+# Single-stream (fused) block topology — a CODE fact (the block class), default
+# concat_fused (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE
+# shared OUT projection). "parallel" = the ViT-22B parallel block (Flux 2's
+# Flux2SingleTransformerBlock / Flux2ParallelSelfAttention): the IN-projection is
+# ALSO fused (one matmul → QKV ‖ MLP-in) and the MLP is gated (SwiGLU).
+single_stream_fusion: ["Flux2Transformer2DModel=parallel"]

@@ -24,7 +24,15 @@ composite:
 
 # Drawn ops with NO direct forward() token that are legitimate synthesis:
 # "<family>/<view>=op".
-draw_extra: []
+#
+# flux2/single_stream: Flux 2's single block is a ViT-22B PARALLEL block — the
+# MLP's in/out linears are FUSED into the attention's QKV/out projections
+# (Flux2ParallelSelfAttention), so the MLP (ffn) and shared out-projection
+# (linear) have NO direct token in the BLOCK forward(); they live in the
+# attention. We deliberately draw them as explicit parallel lanes at the block
+# level (the defining architectural feature, confirmed with Soumil), so they are
+# declared legitimate synthesis here rather than silently passed.
+draw_extra: ["flux2/single_stream=ffn,linear"]
 
 # Staleness guard for GENUINE per-(family/view) abstraction citations only:
 # "<family>/<view>=tok,tok" — if you ever add a model-specific omit/composite/

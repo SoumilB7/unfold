@@ -187,12 +187,13 @@ def load_conformance_abstractions() -> dict:
     {"<family>/<view>": set(ops)}, "since": {citation_key: set(tokens)}}``."""
     data = load("conformance", "abstractions")
 
-    def _scoped(entries):                  # ["family/view=op", ...] -> {key: {ops}}
+    def _scoped(entries):                  # ["family/view=op[,op…]", ...] -> {key: {ops}}
         out: dict[str, set[str]] = {}
         for e in entries or []:
             if isinstance(e, str) and "=" in e:
-                key, _, op = e.partition("=")
-                out.setdefault(key.strip(), set()).add(op.strip())
+                key, _, ops = e.partition("=")
+                out.setdefault(key.strip(), set()).update(
+                    o.strip() for o in ops.split(",") if o.strip())
         return out
 
     composite: dict[str, set[str]] = {}

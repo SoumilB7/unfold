@@ -69,14 +69,20 @@ def single_stream_decoder_layer(
     hidden_size: int,
     *,
     norm_kind: str = "rmsnorm",
+    fused_in: bool = False,
 ) -> LayerSpec:
     """Build a fused single-stream MM-DiT layer (Flux's single-stream block).
 
     Attention and the MLP up-projection run in parallel from one AdaLN norm; their
     outputs are concatenated (``‖``) and projected back by a shared output
     projection, then AdaLN-gated before the residual add.
+
+    ``fused_in`` selects the ViT-22B parallel block (Flux 2): the IN projection is
+    also fused (one matmul produces QKV ‖ MLP-in) and the MLP is gated — vs Flux 1,
+    which fuses only the OUT projection.
     """
-    blocks = single_stream_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    blocks = single_stream_decoder_layer_blocks(attention, ffn, hidden_size,
+                                                norm_kind=norm_kind, fused_in=fused_in)
     return LayerSpec(
         index=index,
         attention=attention,

@@ -145,6 +145,7 @@ def parallel_decoder_layer_blocks(
 
 def single_stream_decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm",
+    *, fused_in: bool = False,
 ) -> list[Block]:
     """Per-layer topology for a FUSED single-stream MM-DiT block
     (Flux's ``FluxSingleTransformerBlock``; AuraFlow single layers).
@@ -160,9 +161,21 @@ def single_stream_decoder_layer_blocks(
 
         h = cat([attn(norm_h), act(proj_mlp(norm_h))], dim=2)
         h = gate * proj_out(h);  hidden = residual + h
+
+    ``fused_in`` selects the ViT-22B PARALLEL block (Flux 2's
+    ``Flux2SingleTransformerBlock`` / ``Flux2ParallelSelfAttention``): the IN
+    projection is ALSO fused — one matmul (``to_qkv_mlp_proj``) produces the
+    attention QKV AND the MLP input together, then a single ``to_out`` consumes
+    both. (Flux 1 fuses only the OUT projection; its in-projections are separate.)
+    The two lanes are still drawn explicitly; the fusion is named in their cards.
     """
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
+    # ViT-22B parallel block (fused_in) vs Flux 1's out-only fusion — the cards say
+    # which, so the picture never implies separate in-projections Flux 2 doesn't have.
+    fuse_in_note = (
+        " The attention QKV and this MLP-input projection are FUSED into one matmul "
+        "(a ViT-22B parallel block)." if fused_in else "")
 
     attn_branch = _attention_block(attention, hidden_size)
     attn_branch.update({"branch_side": "left", "feeds": "ss_concat"})
@@ -192,7 +205,7 @@ def single_stream_decoder_layer_blocks(
             "The MLP up-projection (Linear) + activation, run in parallel with "
             "attention on the same AdaLN-modulated input. Its output is "
             "concatenated with the attention output; the down-projection is FUSED "
-            "into the shared output projection." + act_note
+            "into the shared output projection." + fuse_in_note + act_note
         ),
         "facts": [f"in {hidden}"],
     }

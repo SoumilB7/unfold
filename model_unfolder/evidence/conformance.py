@@ -63,6 +63,9 @@ class ConformanceProblem:
         if self.kind == "fabricated_input":
             return (f"{self.view}: diagram feeds a {self.op!r} conditioning input into the block, "
                     f"but{cls}'s forward() takes no {self.op} argument — remove the rail or fix its role.{loc}")
+        if self.kind == "missing_input":
+            return (f"{self.view}:{cls}'s forward() takes a {self.op!r} conditioning input, but the "
+                    f"diagram shows no {self.op} rail and no joined-sequence indication — surface it.{loc}")
         if self.kind == "stale":
             return (f"{self.view}: citation token {self.op!r} is no longer in{cls}'s forward() — "
                     f"upstream changed; re-verify and update the citation.{loc}")
@@ -136,13 +139,36 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
         if code is None:
             continue                    # op-conformance already flags 'unresolved'
         params = " ".join(sorted(code.forward_params)).lower()
-        for role in sorted(_drawn_side_input_roles(spec, stage_role)):
+        drawn = _drawn_side_input_roles(spec, stage_role)
+        # FABRICATED: a rail the block's forward() can't receive.
+        for role in sorted(drawn):
             subs = role_params.get(role) or []
             if subs and not any(s in params for s in subs):
                 problems.append(ConformanceProblem(
                     "fabricated_input", role, key,
                     code.class_name, code.source_file, code.forward_line))
+        # MISSING: the forward() TAKES a text conditioning input the diagram neither
+        # draws as a rail NOR shows as joined into the sequence (a concat-joint /
+        # single-stream join, shown once) — a DROPPED text conditioning (PRX before
+        # its fix). Text only: timestep always conditions and is drawn universally.
+        text_subs = role_params.get("text") or []
+        if (text_subs and "text" not in drawn and not _text_in_sequence(spec)
+                and any(s in params for s in text_subs)):
+            problems.append(ConformanceProblem(
+                "missing_input", "text", key,
+                code.class_name, code.source_file, code.forward_line))
     return problems
+
+
+def _text_in_sequence(spec: dict) -> bool:
+    """True when the diagram shows text as part of the JOINED sequence (a
+    concat-joint / single-stream join, shown once via the stack caption) rather
+    than a per-block rail — so a forward that takes text is NOT 'missing' it."""
+    variant = (spec.get("attention") or {}).get("variant") or {}
+    if variant.get("stack_note"):
+        return True
+    tag = str(variant.get("tag") or "").lower()
+    return "single-stream" in tag or "text + latent" in tag
 
 
 def _drawn_side_input_roles(spec: dict, stage_role: dict) -> set[str]:
