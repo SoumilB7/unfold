@@ -1,0 +1,18 @@
+# View <-> backing HF class.method — GENUINE EXCEPTIONS ONLY.
+#
+# The resolver (evidence/conformance.py) is general by default: it reads which
+# block class the model's OWN __init__ instantiates in a ModuleList
+# (`self.transformer_blocks = ModuleList([JointTransformerBlock(...)])` ->
+# JointTransformerBlock; `self.layers = ModuleList([LlamaDecoderLayer(...)])` ->
+# LlamaDecoderLayer). So NO per-model entries are needed here for Flux / SD3 /
+# PixArt / LLMs — they resolve from their own code.
+#
+# Add a `views:` entry ONLY when a model hides its block class from a plain
+# ModuleList comprehension (a genuine exception). Key = "<family>/<view>";
+# value = "ClassName.method". Flow style so it parses without PyYAML.
+views: []
+
+# Class-name substrings marking a single-stream (fused attn∥mlp) block — a
+# generic pattern, NOT a model name. Used to tell Flux's single-stream block
+# apart from its dual-stream block when both are built in __init__.
+single_stream_class_markers: [Single]

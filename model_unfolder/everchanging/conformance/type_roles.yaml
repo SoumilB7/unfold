@@ -1,0 +1,19 @@
+# Constructed-class-name SUBSTRING -> the canonical op-role of a `self.<field>(…)`
+# call in a forward() body. E.g. `self.proj_out = nn.Linear(...)` then
+# `self.proj_out(x)` in forward -> a `linear` op; `self.attn = FluxAttention(...)`
+# then `self.attn(...)` -> an `attention` op.
+#
+# The extractor (evidence/forward_ops.py) checks roles in the PRIORITY ORDER
+# given by `priority` below (first matching substring wins), so a specific role
+# (attention / norm / ffn / activation) beats the generic `linear`. Add a new
+# module-class spelling HERE, not in code. Flow style so it parses without PyYAML.
+
+# First-match priority (most specific -> most generic).
+priority: [attention, norm, activation, embedding, ffn, linear]
+
+attention: [Attention, Attn, SelfAttn, CrossAttn]
+norm: [LayerNorm, RMSNorm, GroupNorm, AdaLayerNorm, Norm]
+activation: [GELU, SiLU, ReLU, GEGLU, SwiGLU, NewGELU, QuickGELU, Mish, Activation, ApproximateGELU]
+embedding: [Embedding, PatchEmbed, Timesteps, TimestepEmbedding, PosEmbed, CombinedTimestep]
+ffn: [FeedForward, MoE, Experts, FFN, MLP, Mlp]
+linear: [Linear, Conv1d, Conv2d, Conv3d, Conv1D]

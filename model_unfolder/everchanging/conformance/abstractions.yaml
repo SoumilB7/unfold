@@ -1,0 +1,35 @@
+# Deliberate-abstraction allow-list for the op-conformance diff.
+#
+# The diff flags BOTH directions: a code op absent from the diagram (missing), or
+# a drawn op the code never does (fabricated). Entries here declare the INTENDED
+# abstractions so they don't flag — meaning a NEW abstraction must be CONSCIOUSLY
+# added here (a reviewed YAML edit), never silently passed. Flow style.
+
+# Ops the diagram NEVER draws as their own box in a block view (pure plumbing /
+# a count). `slice` here = a block forward's .chunk/.split of the AdaLN
+# scale_shift_table into shift/scale/gate (or a pre-attention qkv split) — drawn
+# as the × gate fed by the conditioning side-input, never a slice box. (Attention
+# DRILL views, when added, will re-scope `slice` since head-splitting differs.)
+omit_global: [reshape, elementwise, repeat, embedding, slice]
+
+# Scoped omissions: "<family>/<view>=op" — drawn nowhere in THIS view only.
+omit_scoped: []
+
+# A drawn composite block-op that SUBSUMES finer code ops (so they aren't
+# "missing"), and is itself justified when any subsumed op is present in the code.
+# "drawn_op=code_op,code_op". The FFN box stands in for its up/down linears + act
+# (the single-stream block fuses the down-proj into the shared output projection).
+composite:
+  - "ffn=linear,activation"
+
+# Drawn ops with NO direct forward() token that are legitimate synthesis:
+# "<family>/<view>=op".
+draw_extra: []
+
+# Staleness guard for GENUINE per-(family/view) abstraction citations only:
+# "<family>/<view>=tok,tok" — if you ever add a model-specific omit/composite/
+# draw_extra above that relies on particular forward() tokens, cite them here so a
+# silent upstream rename fails loudly instead of rotting. Empty by default — the
+# general entries (omit_global / composite) need no citation, and the op-set diff
+# itself already catches a forward() whose shape changed.
+since: []

@@ -59,6 +59,42 @@ class ClassEvidence:
 
 
 @dataclass(frozen=True)
+class ForwardOps:
+    """The coarse op-kind PRESENCE-SET a class's ``forward()`` performs.
+
+    Extracted by AST (never executed). This is the *code side* of the
+    op-conformance diff: a set of canonical op-kinds (``concat``, ``gate_mul``,
+    ``residual_add``, ``linear``, ``attention``, ``ffn``, ``norm``,
+    ``activation``, ``slice``, ``route``, ``reshape``, ``repeat``) present in the
+    method body — NOT an ordered/wired graph. Presence-set semantics make it
+    robust to upstream refactors while still catching "an op-kind the code does
+    is absent from the diagram" (and vice-versa).
+    """
+
+    class_name: str
+    source_file: str
+    forward_line: int | None = None
+    op_kinds: frozenset[str] = frozenset()
+    field_types: dict[str, str] = field(default_factory=dict)   # self.<name> -> constructed class
+    # self.<name> = ModuleList([Block(...) ...]) -> {<name>: Block} — how a model
+    # names the block classes it actually builds (general view<->code resolution,
+    # no per-model map needed).
+    module_list_elems: dict[str, str] = field(default_factory=dict)
+    signature_tokens: frozenset[str] = frozenset()             # call/field names, for the staleness guard
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "class_name": self.class_name,
+            "source_file": self.source_file,
+            "forward_line": self.forward_line,
+            "op_kinds": sorted(self.op_kinds),
+            "field_types": dict(sorted(self.field_types.items())),
+            "module_list_elems": dict(sorted(self.module_list_elems.items())),
+            "signature_tokens": sorted(self.signature_tokens),
+        }
+
+
+@dataclass(frozen=True)
 class CodeFinding:
     """One inferred structural fact from model source code."""
 

@@ -133,6 +133,87 @@ def load_diffusion_class_defaults() -> dict[str, dict[str, str]]:
     return out
 
 
+# --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
+
+def load_conformance_op_tokens() -> dict[str, str]:
+    """``conformance/op_tokens.yaml`` inverted to ``{call_token: canonical_op}``.
+
+    The file is authored canonical->[tokens] for readability; the extractor wants
+    token->canonical. ``ignore`` maps its tokens to the sentinel ``""``."""
+    out: dict[str, str] = {}
+    for canonical, tokens in load("conformance", "op_tokens").items():
+        for tok in tokens or []:
+            out[str(tok)] = "" if canonical == "ignore" else str(canonical)
+    return out
+
+
+def load_conformance_type_roles() -> tuple[list[str], dict[str, list[str]]]:
+    """``conformance/type_roles.yaml`` -> (priority_order, {role: [substrings]}).
+
+    The extractor matches a constructed-class name against substrings in
+    ``priority`` order (first hit wins), so a specific role beats generic
+    ``linear``."""
+    data = load("conformance", "type_roles")
+    priority = [str(r) for r in (data.get("priority") or [])]
+    roles = {k: [str(s) for s in (v or [])]
+             for k, v in data.items() if k != "priority"}
+    if not priority:                       # fall back to declared order
+        priority = list(roles.keys())
+    return priority, roles
+
+
+def load_conformance_map() -> dict:
+    """``conformance/conformance_map.yaml`` -> view<->code overrides + markers.
+
+    Returns ``{"views": {"<family>/<view>": "Class.method"},
+    "single_stream_class_markers": [...]}``."""
+    data = load("conformance", "conformance_map")
+    views: dict[str, str] = {}
+    for entry in data.get("views") or []:
+        if isinstance(entry, str) and "=" in entry:
+            key, _, val = entry.partition("=")
+            views[key.strip()] = val.strip()
+    return {
+        "views": views,
+        "single_stream_class_markers": [str(m) for m in (data.get("single_stream_class_markers") or [])],
+    }
+
+
+def load_conformance_abstractions() -> dict:
+    """``conformance/abstractions.yaml`` -> the deliberate-abstraction allow-list.
+
+    Returns ``{"omit_global": set, "omit_scoped": {"<family>/<view>": set(ops)},
+    "composite": {drawn_op: set(absorbed_code_ops)}, "draw_extra":
+    {"<family>/<view>": set(ops)}, "since": {citation_key: set(tokens)}}``."""
+    data = load("conformance", "abstractions")
+
+    def _scoped(entries):                  # ["family/view=op", ...] -> {key: {ops}}
+        out: dict[str, set[str]] = {}
+        for e in entries or []:
+            if isinstance(e, str) and "=" in e:
+                key, _, op = e.partition("=")
+                out.setdefault(key.strip(), set()).add(op.strip())
+        return out
+
+    composite: dict[str, set[str]] = {}
+    for e in data.get("composite") or []:  # ["ffn=linear,activation", ...]
+        if isinstance(e, str) and "=" in e:
+            drawn, _, absorbed = e.partition("=")
+            composite[drawn.strip()] = {a.strip() for a in absorbed.split(",") if a.strip()}
+    since: dict[str, set[str]] = {}
+    for e in data.get("since") or []:      # ["family/view=tokA,tokB", ...]
+        if isinstance(e, str) and "=" in e:
+            key, _, toks = e.partition("=")
+            since[key.strip()] = {t.strip() for t in toks.split(",") if t.strip()}
+    return {
+        "omit_global": {str(o) for o in (data.get("omit_global") or [])},
+        "omit_scoped": _scoped(data.get("omit_scoped")),
+        "composite": composite,
+        "draw_extra": _scoped(data.get("draw_extra")),
+        "since": since,
+    }
+
+
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:
     """Minimal reader for ``key: [a, b, c]`` / ``key:`` + ``- item`` blocks.
 

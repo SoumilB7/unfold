@@ -1,0 +1,24 @@
+# Code-token (the call name in a forward() body) -> canonical op-kind.
+#
+# Used by the op-conformance extractor (evidence/forward_ops.py) to map what a
+# HF forward() actually DOES onto the diagram's op alphabet, so a per-view diff
+# can assert "the picture matches the code" both directions. Add a new spelling
+# HERE, never in code. Flow style ([a, b]) so it parses without PyYAML.
+#
+# NOTE: gate_mul (×) and residual_add (⊕) are NOT call tokens — they come from
+# binary-operator detection (`*` / `+` on tensors) in the extractor, not here.
+
+# torch.cat / .concat -> a real merge (the ‖ the diagram draws).
+concat: [cat, concat]
+# Single-stream regroupings (split heads / chunk qkv) -> slice.
+slice: [split, chunk, unbind, tensor_split]
+# Routed selection (MoE / DSA indexer top-k) -> route.
+route: [topk]
+# Activation function calls invoked directly (F.gelu(...), gelu(...), softmax).
+activation: [gelu, silu, relu, geglu, swiglu, gelu_new, quick_gelu, sigmoid, softmax]
+# Tensor-shape regroupings the diagram treats as a reshape box (or omits) — never
+# a computational op.
+reshape: [reshape, view, transpose, permute, flatten, unsqueeze, squeeze, unpatchify, pixel_shuffle, expand, repeat_interleave]
+# Pure plumbing that is NEVER an op (dtype / contiguity / masking / introspection)
+# — dropped entirely from the op-set.
+ignore: [to, clip, clamp, contiguous, type_as, detach, float, half, bool, long, int, masked_fill, size, shape, len, type, device, dtype, dim, unsqueeze_, print, getattr, isinstance, super]

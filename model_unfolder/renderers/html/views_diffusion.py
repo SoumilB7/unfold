@@ -25,7 +25,7 @@ from .cards import (
 from .evidence import _code_evidence_section
 from .graph_engine import _badge
 from .interactions import _click_script
-from .metadata import _make_info
+from .metadata import _block_lookup, _group_label, _make_info, _meta_for
 from .sections import _details_section, _header, _stats_banner
 from .styles import _style
 from .svg import (
@@ -58,12 +58,29 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
     info = _make_info(ir) if ir.get("layers") else _stub_info()
 
     loop_svg = _build_loop_view(ir, info, mount_id)
-    loop_cards = _build_loop_cards(ir, info, mount_id)          # panel[0]  (L2)
     # Descendant levels below the loop blocks: [0] = VAE decoder stages, [1] =
     # the ResNet ops inside a stage, ... — one nested panel per level.
     loop_levels = _build_loop_descendant_levels(ir, info, mount_id)
 
     style = _style(mount_id)
+
+    # A heterogeneous DiT denoiser (Flux: dual-stream + single-stream) renders
+    # EVERY block-type variant with a pure-CSS toggle, so non-dominant blocks are
+    # drillable and enter the image/test surface — not just the dominant one.
+    # Single-group denoisers (and UNet) keep the original single-arch path.
+    radios_html = ""
+    variant_dit_cards: str | None = None
+    variant_dit_nested: list[str] | None = None
+    if not is_unet and len(info.get("groups") or []) > 1:
+        v = _dit_group_variants(ir, info, mount_id)
+        pills = f'<div class="uf-group-toggle" role="tablist">{"".join(v["pills"])}</div>'
+        loop_cards = _build_loop_cards(ir, info, mount_id, denoiser_arch=pills + "".join(v["arch"]))
+        variant_dit_cards = "".join(v["l3"])
+        variant_dit_nested = ["".join(level) for level in v["nested_by_depth"]]
+        radios_html = "".join(v["radios"])
+        style = style + "\n" + "\n".join(v["css"])
+    else:
+        loop_cards = _build_loop_cards(ir, info, mount_id)      # panel[0]  (L2)
 
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
@@ -87,8 +104,12 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
         nested_levels = list(loop_levels)
         layer_map_section = ""
     else:
-        dit_cards = _build_inspect_cards(ir, info, mount_id)        # panel[1] (L3)
-        dit_nested = _build_nested_inspect_panels(ir, info, mount_id)  # panel[2+] (L4+)
+        if variant_dit_cards is not None:        # per-variant cards (multi-group denoiser)
+            dit_cards = variant_dit_cards
+            dit_nested = variant_dit_nested or []
+        else:
+            dit_cards = _build_inspect_cards(ir, info, mount_id)        # panel[1] (L3)
+            dit_nested = _build_nested_inspect_panels(ir, info, mount_id)  # panel[2+] (L4+)
         # Merge level-wise: the DiT layer drill-downs and the loop's VAE
         # descendants share panels at matching depths.
         nested_levels = _merge_levels([dit_cards] + dit_nested, loop_levels)
@@ -112,6 +133,7 @@ def render_diffusion_fragment(ir: dict, mount_id: str, include_font_import: bool
 {FONT_IMPORT if include_font_import else ""}
 {style}
 </style>
+{radios_html}
 <div class="uf-card">
 {_header(ir, info, mount_id)}
 {_stats_banner(ir)}
@@ -131,9 +153,57 @@ def _stub_info() -> dict:
     return {"groups": [], "blocks": {}, "meta": {}, "dominant": None, "layer_sigs": []}
 
 
-def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
+def _dit_group_variants(ir: dict, info: dict, mount_id: str) -> dict:
+    """Per-DiT-group (arch SVG + L3 block cards + nested drill panels) for a
+    HETEROGENEOUS denoiser, with the pure-CSS radio/pill toggle — so EVERY block
+    type (e.g. Flux's dual-stream AND single-stream) renders and is drillable, not
+    just the dominant one. Mirrors the transformer ``document.py`` toggle, scoped
+    to the diffusion denoiser card. Each variant carries its OWN inspect cards, so
+    every block id has a card (click-coupling stays intact)."""
+    groups = info.get("groups") or []
+    dominant = info.get("dominant")
+    dom_idx = groups.index(dominant) if dominant in groups else 0
+    out: dict = {"radios": [], "pills": [], "arch": [], "l3": [], "nested_by_depth": [], "css": []}
+    for i, group in enumerate(groups):
+        suffix = f"-g{i}"
+        blocks = _block_lookup(ir, group["spec"])
+        gi = {"groups": groups, "dominant": group, "blocks": blocks,
+              "meta": _meta_for(ir, group["spec"], blocks)}
+        rid = f"{mount_id}-g{i}"
+        checked = " checked" if i == dom_idx else ""
+        out["radios"].append(
+            f'<input type="radio" name="{_attr(mount_id)}-g" id="{_attr(rid)}" '
+            f'class="uf-group-radio"{checked}>')
+        out["pills"].append(
+            f'<label for="{_attr(rid)}" class="uf-group-pill">{_html(_group_label(group, info))}</label>')
+        out["arch"].append(
+            f'<div class="uf-arch-variant uf-arch-variant-{i}">'
+            f'{_build_architecture_view(ir, gi, mount_id + suffix)}</div>')
+        out["l3"].append(
+            f'<div class="uf-l2-variant uf-l2-variant-{i}">'
+            f'{_build_inspect_cards(ir, gi, mount_id + suffix)}</div>')
+        for depth, inner in enumerate(_build_nested_inspect_panels(ir, gi, mount_id + suffix)):
+            while len(out["nested_by_depth"]) <= depth:
+                out["nested_by_depth"].append([])
+            out["nested_by_depth"][depth].append(
+                f'<div class="uf-nested-variant uf-nested-variant-{i}">{inner}</div>')
+        out["css"].append(
+            f"#{mount_id} #{rid}:checked ~ .uf-card .uf-arch-variant-{i},"
+            f"#{mount_id} #{rid}:checked ~ .uf-card .uf-l2-variant-{i},"
+            f"#{mount_id} #{rid}:checked ~ .uf-card .uf-nested-variant-{i} {{ display:block; }}")
+        out["css"].append(
+            f"#{mount_id} #{rid}:checked ~ .uf-card .uf-group-pill[for='{_attr(rid)}'] "
+            f"{{ background:{C['block']}; color:#FFFFFF; }}")
+    return out
+
+
+def _build_loop_cards(ir: dict, info: dict, mount_id: str, *, denoiser_arch: str | None = None) -> str:
     """L2 cards for the loop nodes; the denoiser card embeds its architecture —
-    the DiT stack, or the UNet U-shape (per ``render.denoiser_view``)."""
+    the DiT stack, or the UNet U-shape (per ``render.denoiser_view``).
+
+    ``denoiser_arch`` overrides the embedded DiT architecture HTML — used to embed
+    the per-variant toggle + arch panels for a heterogeneous denoiser (e.g. Flux's
+    dual-stream + single-stream blocks) instead of the dominant variant alone."""
     render = (ir.get("extras") or {}).get("render") or {}
     loop_blocks = render.get("loop_blocks") or []
     denoiser_view = render.get("denoiser_view", "dit")
@@ -146,7 +216,9 @@ def _build_loop_cards(ir: dict, info: dict, mount_id: str) -> str:
         desc = block.get("description", "")
         facts = block.get("facts")
         if bid == "denoiser":
-            if denoiser_view == "unet":
+            if denoiser_arch is not None:
+                svg = denoiser_arch
+            elif denoiser_view == "unet":
                 svg = block_detail_svg(ir, info, mount_id, {"id": "denoiser", "view": "unet"})
             else:
                 svg = _build_architecture_view(ir, info, mount_id)
