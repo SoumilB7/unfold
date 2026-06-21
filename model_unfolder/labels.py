@@ -403,6 +403,11 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
                 "projecting back down.")
     else:
         desc = "Two-layer MLP — expand, apply the non-linearity, project back."
+    if ffn.get("activation_from_class"):
+        # The activation (and so the gate-or-not shape) was read from the model
+        # class, not the config — say where the fact comes from (code-derived).
+        desc += (" The activation is fixed in the model class, not the config "
+                 "(surfaced as a code-derived fact).")
     facts = [activation_label(ffn.get("activation")),
              f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
     if ffn.get("activation_clip"):

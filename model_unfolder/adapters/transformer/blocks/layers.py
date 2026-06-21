@@ -5,7 +5,8 @@ from ....block_schema import Block
 from ....ir import AttentionSpec, FFNSpec
 from ..common import format_dim as _fmt
 from .attention import attention_child_blocks, attention_detail
-from ....labels import attention_label, attention_summary, attention_title, ffn_summary
+from ....labels import (activation_label, attention_label, attention_summary,
+                        attention_title, ffn_summary)
 from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 
 
@@ -166,14 +167,22 @@ def single_stream_decoder_layer_blocks(
     attn_branch = _attention_block(attention, hidden_size)
     attn_branch.update({"branch_side": "left", "feeds": "ss_concat"})
 
-    # The MLP's activation is config-derived — never fabricated. Flux's GELU lives
-    # in the model class, not the config, so when the config is silent we say so
-    # rather than inventing one (honest-unknown, mirrors the standard FFN card).
+    # The MLP's activation is never fabricated. When the config declares it, or the
+    # model class fixes it (Flux's gelu-approximate, surfaced via class_defaults and
+    # MARKED code-derived), name it; when nothing declares it, say so honestly
+    # (mirrors the standard FFN card). The label uses the clean math name (GELU),
+    # never the backend spelling (gelu-approximate).
     act = getattr(ffn, "activation", None)
-    act_suffix = f"+ {str(act).upper()}" if act else "+ activation"
-    act_note = "" if act else (
-        " The config does not declare the activation function (it is fixed in the "
-        "model class).")
+    from_class = getattr(ffn, "activation_from_class", False)
+    act_suffix = f"+ {activation_label(act)}" if act else "+ activation"
+    if act and from_class:
+        act_note = (f" The activation ({activation_label(act)}) is fixed in the model "
+                    "class, not the config — surfaced as a code-derived fact.")
+    elif act:
+        act_note = ""
+    else:
+        act_note = (" The config does not declare the activation function (it is "
+                    "fixed in the model class).")
     mlp_branch = {
         "id": "ss_mlp", "role": "ffn", "kind": "ffn",
         "branch_side": "right", "feeds": "ss_concat",
@@ -198,7 +207,7 @@ def single_stream_decoder_layer_blocks(
     }
     proj_out = {
         "id": "ss_proj", "role": "ffn", "kind": "linear",
-        "label": "Output projection",
+        "label": "Fused projection",
         "title": "Shared output projection",
         "description": (
             "A single linear projecting the concatenated [attention ‖ MLP] back to "

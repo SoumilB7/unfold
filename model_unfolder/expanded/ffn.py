@@ -24,6 +24,7 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
         "kind":              kind,
         "activation":        ffn.get("activation"),
         "activation_assumed": ffn.get("activation_assumed") or None,
+        "activation_from_class": ffn.get("activation_from_class") or None,
         "intermediate_size": ffn.get("intermediate_size"),
         "gated":             bool(ffn.get("gated")) if declared else None,
         "structure_declared": None if declared else False,

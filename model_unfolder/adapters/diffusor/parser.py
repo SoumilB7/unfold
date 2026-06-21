@@ -338,7 +338,7 @@ def parse(cfg: Any) -> ModelIR:
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm)
         layer = decoder_layer(
             idx, attn_spec,
-            _dit_ffn(declared_act, intermediate_size, cfg),
+            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
             hidden_size, norm_kind=norm_kind,
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
@@ -360,7 +360,7 @@ def parse(cfg: Any) -> ModelIR:
         # NOT a GPT-J parallel-sum layer).
         layers.append(single_stream_decoder_layer(
             idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm),
-            _dit_ffn(declared_act, intermediate_size, cfg),
+            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
             hidden_size, norm_kind=norm_kind,
         ))
         idx += 1
@@ -373,8 +373,17 @@ def parse(cfg: Any) -> ModelIR:
         # as well as the norm — so the × shows WHAT it multiplies by (the timestep
         # gate), not a dangling input.
         gate_ids = [b["id"] for b in layer.blocks if b.get("kind") == "gate_mul"]
+        # A SINGLE-STREAM block (Flux's FluxSingleTransformerBlock) takes no
+        # per-block text input: text + image tokens are concatenated into one
+        # sequence ONCE before the stack, so the block self-attends over the joint
+        # sequence.  Drawing a per-block text rail there read like cross-attention
+        # AND forced the rail to cross the parallel MLP branch — so it is dropped
+        # here (the one-time join is surfaced as the variant's stack caption).
+        is_single = "single-stream" in str(
+            (layer.attention.variant or {}).get("tag") or "").lower()
         layer.blocks.extend(_conditioning_side_blocks(
-            text_in_attention, pooled_in_adaln, bool(geom["guidance_embeds"]),
+            text_in_attention and not is_single, pooled_in_adaln,
+            bool(geom["guidance_embeds"]),
             geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
 
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
@@ -622,7 +631,13 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
 
 
 def _stream_variant(tag: str, rope_note: str, *, dual: bool) -> dict:
-    """Self-describing label set for a DiT block's joint attention."""
+    """Self-describing label set for a DiT block's joint attention.
+
+    The block LABEL carries only the short stream discriminator
+    (``dual-stream`` / ``single-stream``); the richer ``tag`` (e.g.
+    ``MM-DiT (dual-stream)``) is kept for the layer-map legend and the variant
+    classifier, never painted on the block — wrapping the full tag in parens
+    would double the parentheses and crowd the label."""
     if dual:
         body = (
             "Full bidirectional attention over the concatenated image + text "
@@ -631,17 +646,28 @@ def _stream_variant(tag: str, rope_note: str, *, dual: bool) -> dict:
         )
     else:
         body = (
-            "Full bidirectional attention over one concatenated image + text "
-            "stream with shared Q/K/V; attention and MLP run in parallel on the "
-            "same input (single-stream). "
+            "Full bidirectional self-attention over ONE sequence: text and image "
+            "tokens are concatenated upstream (once, before this stack), so the "
+            "block takes no separate text input — attention and the MLP "
+            "up-projection run in parallel on the same AdaLN-modulated input. "
         )
-    return {
+    variant = {
         "short": "Joint Attn",
         "tag": tag,
-        "label": ["Joint Attention", f"({tag})"],
+        "label": ["Joint Attention", "(dual-stream)" if dual else "(single-stream)"],
         "title": f"Joint attention — {tag}",
         "desc": body + "Modulated by the timestep via AdaLN. " + rope_note,
     }
+    if not dual:
+        # The one-time text+image join is a property of the STACK, not a per-block
+        # op: a per-block text rail would read like cross-attention AND would have
+        # to cross the parallel MLP branch.  Surface it as a caption on the
+        # single-stream variant's architecture frame instead (drawn by the view).
+        variant["stack_note"] = [
+            "text + image → one sequence,",
+            "joined once before this stack",
+        ]
+    return variant
 
 
 def _concat_joint_variant(rope_note: str) -> dict:
@@ -715,7 +741,8 @@ def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
     }
 
 
-def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None) -> FFNSpec:
+def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
+             cls: Any = None) -> FFNSpec:
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
@@ -729,11 +756,21 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None) 
             num_experts=num_experts,
             num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
+    # Code-derived fallback: when the config declares no activation but the model
+    # class fixes it (Flux's FeedForward / single-stream MLP are gelu-approximate),
+    # surface the activation_fn name from class_defaults.yaml — MARKED code-derived.
+    # In diffusers the activation_fn name fully specifies the FFN, so this also
+    # resolves the gating below; never overrides a config-declared value.
+    from_class = False
+    if declared_activation is None and cls is not None:
+        _cd = _class_default(cls, "ffn_activation_fn")
+        if _cd:
+            declared_activation, from_class = _cd, True
     if declared_activation is None:
-        # Honest-unknown: no activation is declared, so the gating (gate-or-not,
-        # i.e. 2 vs 3 projections) is not a config fact either — it lives in the
-        # block class. ``gated=None`` makes the renderer draw the FFN honestly as
-        # "inner structure not declared" instead of asserting a non-gated GELU MLP.
+        # Honest-unknown: no activation is declared (config OR class), so the gating
+        # (gate-or-not, i.e. 2 vs 3 projections) is not a fact we have either — it
+        # lives in the block class. ``gated=None`` makes the renderer draw the FFN
+        # honestly as "inner structure not declared", never a fabricated shape.
         return FFNSpec(
             kind="dense",
             activation=None,
@@ -741,14 +778,16 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None) 
             intermediate_size=intermediate_size,
             gated=None,
         )
-    # A declared activation IS a gating fact in diffusers: the activation_fn name
-    # fully specifies the FFN — a "*glu" name (geglu / swiglu) is gated; a plain
-    # name (gelu / gelu-approximate / silu) is the non-gated two-layer MLP.
+    # A declared (or code-derived) activation IS a gating fact in diffusers: the
+    # activation_fn name fully specifies the FFN — a "*glu" name (geglu / swiglu)
+    # is gated; a plain name (gelu / gelu-approximate / silu) is the non-gated
+    # two-layer MLP.
     act = str(declared_activation).lower()
     return FFNSpec(
         kind="dense",
         activation=act,
         activation_assumed=False,
+        activation_from_class=from_class,
         intermediate_size=intermediate_size,
         gated="glu" in act,
     )

@@ -23,6 +23,7 @@ def ffn_detail(ffn: FFNSpec) -> dict:
     return {
         "kind": ffn.kind,
         "activation": ffn.activation,
+        "activation_from_class": ffn.activation_from_class,
         "intermediate_size": ffn.intermediate_size,
         "gated": ffn.gated,
         "num_experts": ffn.num_experts,
@@ -43,7 +44,8 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         # opaque region node, so the click target stays coupled to its card).
         children = _undeclared_ffn_child_blocks(hidden, inter)
     elif ffn.kind != "moe" and not ffn.gated:
-        children = _dense_ffn_child_blocks(hidden, inter, activation, ffn.activation_assumed)
+        children = _dense_ffn_child_blocks(hidden, inter, activation,
+                                           ffn.activation_assumed, ffn.activation_from_class)
     else:
         children = _gated_ffn_child_blocks(hidden, inter, activation)
         if ffn.kind == "moe":
@@ -73,16 +75,21 @@ def _undeclared_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
     ]
 
 
-def _act_sentence(where: str, assumed: bool) -> str:
+def _act_sentence(where: str, assumed: bool, from_class: bool = False) -> str:
     base = f"Element-wise non-linearity applied {where}."
-    if assumed:
+    if from_class:
+        base += (" The activation (and hence whether the FFN gates) is fixed in the "
+                 "model class, not declared in the config \u2014 surfaced as a "
+                 "code-derived fact.")
+    elif assumed:
         base += (" The config declares no activation \u2014 this is the standard "
                  "DiT MLP default, not a config-stated fact.")
     return base
 
 
 def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
-                            activation_assumed: bool = False) -> list[Block]:
+                            activation_assumed: bool = False,
+                            activation_from_class: bool = False) -> list[Block]:
     return [
         {
             "id": "up_proj",
@@ -95,7 +102,8 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
             "id": "activation",
             "label": activation,
             "title": activation,
-            "description": _act_sentence("after the input projection", activation_assumed),
+            "description": _act_sentence("after the input projection", activation_assumed,
+                                         activation_from_class),
         },
         {
             "id": "down_proj",

@@ -343,6 +343,25 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         ))
         ann_y += 30
 
+    # --- 7c. Per-variant stack caption (Tier-3) ---
+    # A property of THIS block-type's stack, not the whole model — e.g. Flux's
+    # single-stream stack joins text+image into one sequence once before the
+    # stack.  Read off the dominant group's attention variant (not the global
+    # render extras), so it shows on the single-stream variant ONLY, never the
+    # dual.  Anchored bottom-left (the input side — it reads as "before the
+    # stack"), short lines kept clear of the centre spine and the × N badge.
+    stack_note = ((spec.get("attention") or {}).get("variant") or {}).get("stack_note")
+    if stack_note:
+        note_lines = stack_note if isinstance(stack_note, list) else [stack_note]
+        note_y = inner_y + inner_h - 14 * len(note_lines) - 6
+        for line in note_lines:
+            parts.append(_svg_text(
+                inner_x + 16, note_y, line,
+                {"text-anchor": "start", "fill": C["muted"],
+                 "font-family": FONT_MONO, "font-size": 11},
+            ))
+            note_y += 15
+
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
 
 

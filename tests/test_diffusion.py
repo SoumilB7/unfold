@@ -104,11 +104,13 @@ def test_flux_layer_count_and_geometry():
     assert attn.mask == "full"
     assert attn.no_rope is False
     assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
-    # Flux declares no activation_fn, so the FFN's inner structure (gating +
-    # activation) is NOT a config fact — rendered honest-unknown, never a guessed
-    # non-gated GELU MLP.
-    assert ir.layers[0].ffn.gated is None
-    assert ir.layers[0].ffn.activation_assumed is True
+    # Flux declares no activation_fn in config, but its model class fixes it
+    # (FeedForward gelu-approximate, non-gated) — surfaced from class_defaults and
+    # MARKED code-derived, never guessed (see test_flux_ffn_activation_is_code_derived_gelu).
+    assert ir.layers[0].ffn.gated is False
+    assert ir.layers[0].ffn.activation == "gelu-approximate"
+    assert ir.layers[0].ffn.activation_from_class is True
+    assert ir.layers[0].ffn.activation_assumed is False
 
 
 def test_diffusion_render_spec_theme():
@@ -319,6 +321,56 @@ def test_flux_splits_double_and_single_stream_groups():
     groups = info["groups"]
     assert len(groups) == 2
     assert sorted(len(g["indices"]) for g in groups) == [19, 38]
+
+
+def test_flux_single_stream_block_has_no_text_rail_and_clean_labels():
+    """Option-1 single-stream depiction: text + image are joined into ONE sequence
+    ONCE before the stack, so the block takes no per-block text rail — only the
+    timestep (AdaLN) conditions it.  A per-block text rail was both a
+    cross-attention-like misread AND a line forced to cross the parallel MLP
+    branch (it landed on attention's far port through the MLP box).
+
+    The op-conformance net checks op-KINDS, not side-input wiring or labels, so
+    these facts need their own pin:
+    * a single-stream layer carries adaln_cond but NOT text_cond;
+    * a dual-stream layer STILL carries text_cond (joint attn genuinely mixes the
+      two streams there — the suppression must be single-stream-only);
+    * neither attention label double-wraps its tag in parens
+      ("(MM-DiT (dual-stream))" regressed to "(dual-stream)");
+    * the single-stream variant declares the one-time-join stack caption (and the
+      dual one does NOT);
+    * the fused output projection is disambiguated from the model-level bookend.
+    """
+    ir = config_to_ir(FLUX)
+
+    def _is_single(layer):
+        return "single-stream" in str(
+            (layer.attention.variant or {}).get("tag") or "").lower()
+
+    single = next(L for L in ir.layers if _is_single(L))
+    dual = next(L for L in ir.layers if not _is_single(L))
+
+    single_side = {b["id"] for b in single.blocks if b.get("lane")}
+    dual_side = {b["id"] for b in dual.blocks if b.get("lane")}
+    assert "adaln_cond" in single_side and "text_cond" not in single_side
+    assert "text_cond" in dual_side          # dual keeps its (correct) text input
+
+    assert single.attention.variant["label"] == ["Joint Attention", "(single-stream)"]
+    assert dual.attention.variant["label"] == ["Joint Attention", "(dual-stream)"]
+    for L in (single, dual):                 # no nested parens in the block label
+        suffix = L.attention.variant["label"][1]
+        assert suffix.count("(") == 1 and suffix.count(")") == 1
+
+    assert single.attention.variant.get("stack_note")      # join surfaced (single only)
+    assert not dual.attention.variant.get("stack_note")
+
+    proj = next(b for b in single.blocks if b.get("id") == "ss_proj")
+    assert proj["label"] == "Fused projection"             # != model-level "Output projection"
+
+    # The caption renders in the single-stream variant's architecture SVG, and no
+    # "Text tokens conditioning" rail is drawn for that variant.
+    html = unfold(FLUX).to_html(standalone=True)
+    assert "joined once before this stack" in html
 
 
 @pytest.mark.parametrize("cfg", [FLUX, PIXART])
@@ -905,29 +957,69 @@ def test_diffusion_json_does_not_leak_llm_io_fields():
 
 
 def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
-    """When the DiT config declares no activation, the FFN's inner structure
-    (activation AND gating) is not a config fact — so it is rendered honestly as
-    undeclared (gated=null, structure_declared=false), never a fabricated
-    non-gated GELU MLP.  A real LLM (which declares its activation) is unaffected.
-    Pins WEAK-3 / honest-unknown."""
-    f = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
+    """When NOTHING declares the FFN activation — neither the config NOR a
+    ``class_defaults.yaml`` entry — the inner structure (activation AND gating) is
+    rendered honestly as undeclared (gated=null, structure_declared=false), never a
+    fabricated non-gated GELU MLP.  Uses IDEO_STYLE: a custom DiT class with no
+    class default.  (Flux, whose model class DOES fix the activation, is the
+    code-derived case — see ``test_flux_ffn_activation_is_code_derived_gelu``.)
+    Pins WEAK-3 / honest-unknown.  A real LLM (declares its activation) is
+    unaffected."""
+    f = unfold(IDEO_STYLE).to_json()["layer_groups"][0]["ffn"]
     assert f.get("activation") is None          # no fabricated default
     assert f.get("gated") is None               # gating undeclared
     assert f.get("structure_declared") is False
     assert f.get("activation_assumed") is True
-    # Flux's dominant block is the FUSED single-stream block; its MLP lane (ss_mlp)
-    # must be honest about the config-undeclared activation — no fabricated GELU.
+    assert not f.get("activation_from_class")   # not code-derived either — truly unknown
+    # The FFN block's card says exactly that — never a fabricated GELU shape.
     import re
-    html = unfold(FLUX).to_html(standalone=True)
-    m = re.search(r'data-card-id="ss_mlp"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert m and "does not declare the activation" in m.group(1)
-    assert "GELU" not in m.group(1)   # activation is config-silent → never fabricated
-    # (Flux's CLIP/T5 text encoders legitimately declare GELU — that's their own
-    # config fact and is unaffected; only the DiT block FFN is honest-unknown.)
+    html = unfold(IDEO_STYLE).to_html(standalone=True)
+    m = re.search(r'data-card-id="ffn"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert m and "does not declare the gating or activation" in m.group(1)
+    assert "GELU" not in m.group(1)   # activation is unknown → never fabricated
     # LLAMA declares its activation — gating/activation are real facts, not flagged.
     lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
     assert lf["activation"] == "silu" and "activation_assumed" not in lf
     assert lf["gated"] is True
+
+
+def test_flux_ffn_activation_is_code_derived_gelu():
+    """Flux declares no FFN activation in config, but its model class fixes it
+    (``FeedForward(activation_fn="gelu-approximate")`` / ``nn.GELU(approximate=
+    "tanh")`` after proj_mlp, both mult=4, NON-gated).  We surface that from
+    ``class_defaults.yaml`` — MARKED code-derived — so the FFN drill is informative
+    (Linear → GELU → Linear) AND consistent with the single-stream MLP lane,
+    instead of a pale opaque box.  This is the inverse of the honest-unknown pin
+    above: a fact we CAN cite to the model class is surfaced, never fabricated
+    silently.  In diffusers the activation_fn name fully specifies the FFN, so the
+    non-gated shape is derived from it (a "*glu" name would mark it gated)."""
+    import re
+    ir = config_to_ir(FLUX)
+
+    def _is_single(L):
+        return "single-stream" in str((L.attention.variant or {}).get("tag") or "").lower()
+
+    for L in (next(x for x in ir.layers if _is_single(x)),
+              next(x for x in ir.layers if not _is_single(x))):
+        assert L.ffn.activation == "gelu-approximate"
+        assert L.ffn.gated is False                 # derived from the non-glu name
+        assert L.ffn.activation_from_class is True   # code-derived, marked
+
+    # JSON parity + the dense drill is real (Linear → GELU → Linear), not opaque.
+    fj = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
+    assert fj.get("activation") == "gelu-approximate"
+    assert fj.get("activation_from_class") is True and fj.get("gated") is False
+    dual = next(L for L in ir.layers if not _is_single(L))
+    ffn_block = next(b for b in dual.blocks if b.get("id") == "ffn")
+    assert [c["id"] for c in ffn_block["children"]] == ["up_proj", "activation", "down_proj"]
+
+    html = unfold(FLUX).to_html(standalone=True)
+    # The activation card marks the fact code-derived; the single-stream lane marks
+    # it too and shows the clean math name (GELU), never the backend spelling.
+    act = re.search(r'data-card-id="activation"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert act and "fixed in the model class" in act.group(1)
+    ss = re.search(r'data-card-id="ss_mlp"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
+    assert ss and "code-derived" in ss.group(1) and "GELU" in ss.group(1)
 
 
 # Ideogram-4-style DiT: custom class, LLM-feature conditioning, an AdaLN dim, a

@@ -16,3 +16,11 @@ axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
 # QK-norm applied unconditionally in the model class (FluxAttention builds
 # RMSNorm norm_q / norm_k regardless of any config flag).
 qk_norm: ["FluxTransformer2DModel=rms_norm"]
+
+# FFN activation fixed in the model class, not config. In diffusers the
+# activation_fn name fully specifies the FFN shape, so this also resolves the
+# gating: "gelu-approximate" is a PLAIN (non-gated) two-layer MLP. Flux builds
+# FeedForward(activation_fn="gelu-approximate") (dual-stream ff) and nn.GELU(
+# approximate="tanh") after proj_mlp (single-stream), both mult=4. A "*glu" name
+# here would instead mark the FFN gated.
+ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate"]

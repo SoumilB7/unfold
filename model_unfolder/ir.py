@@ -68,6 +68,11 @@ class FFNSpec:
     activation_assumed: bool = False  # True ⇒ config declared no activation; the
                                       # value is a convention (DiT default), not a
                                       # config fact — render/JSON must say so
+    activation_from_class: bool = False  # True ⇒ the activation (and hence the
+                                      # gate-or-not structure) was read from the
+                                      # model CLASS, not the config (a code-derived
+                                      # fact, e.g. Flux's fixed gelu-approximate) —
+                                      # render/JSON must mark it as such
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: int = 0
@@ -204,6 +209,7 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "kind": f.kind,
         "activation": f.activation,
         "activation_assumed": f.activation_assumed,
+        "activation_from_class": f.activation_from_class,
         "intermediate_size": f.intermediate_size,
         "gated": f.gated,
         "num_experts": f.num_experts,
