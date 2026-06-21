@@ -214,6 +214,26 @@ def load_conformance_abstractions() -> dict:
     }
 
 
+def load_conformance_wiring_roles() -> tuple[dict[str, str], dict[str, list[str]]]:
+    """``conformance/wiring_roles.yaml`` -> (stage_role, role_params).
+
+    ``stage_role``: a side-input's ``diffusion_stage`` -> conditioning role.
+    ``role_params``: role -> forward()-parameter-name substrings that satisfy it.
+    Both authored as ``"key=val[,val…]"`` flow entries so the loader needs no PyYAML."""
+    data = load("conformance", "wiring_roles")
+    stage_role: dict[str, str] = {}
+    for e in data.get("stage_role") or []:
+        if isinstance(e, str) and "=" in e:
+            k, _, v = e.partition("=")
+            stage_role[k.strip()] = v.strip()
+    role_params: dict[str, list[str]] = {}
+    for e in data.get("role_params") or []:
+        if isinstance(e, str) and "=" in e:
+            role, _, subs = e.partition("=")
+            role_params[role.strip()] = [s.strip().lower() for s in subs.split(",") if s.strip()]
+    return stage_role, role_params
+
+
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:
     """Minimal reader for ``key: [a, b, c]`` / ``key:`` + ``- item`` blocks.
 

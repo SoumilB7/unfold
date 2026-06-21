@@ -1,0 +1,98 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "FluxTransformer2DModel",
+    "_diffusers_version": "0.30.0",
+    "_scheduler_config": {
+      "num_train_timesteps": 1000,
+      "shift": 3.0
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_class_name": "CLIPTextModel",
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "intermediate_size": 3072,
+        "max_position_embeddings": 77,
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "_class_name": "T5EncoderModel",
+        "d_ff": 10240,
+        "d_model": 4096,
+        "dense_act_fn": "gelu_new",
+        "feed_forward_proj": "gated-gelu",
+        "is_gated_act": true,
+        "num_heads": 64,
+        "num_layers": 24,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "latent_channels": 16,
+      "layers_per_block": 2,
+      "out_channels": 3,
+      "scaling_factor": 0.3611
+    },
+    "attention_head_dim": 128,
+    "axes_dims_rope": [
+      16,
+      56,
+      56
+    ],
+    "guidance_embeds": true,
+    "in_channels": 64,
+    "joint_attention_dim": 4096,
+    "num_attention_heads": 24,
+    "num_layers": 19,
+    "num_single_layers": 38,
+    "patch_size": 1,
+    "pooled_projection_dim": 768,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "T5EncoderModel"
+    ]
+  },
+  "hash_signature": [
+    "0751c0064be790891edf52f8bed807bb",
+    "161669abbe98a0e5446e0f9c701f23ec",
+    "1fed3d769e1f085bd217c7b68be0060c",
+    "43606bad901d2a12e1fbbacdfe62a3b0",
+    "48125ea1e7d6a56703533d06cb377d75",
+    "52c9cf92642b382085cff8f09bbb3704",
+    "565270f4d8543fb166a76073d87e00cc",
+    "6fe1482f7559ed0de0bdd32182140ce3",
+    "9b87e79060d680606c06b299ed03b566",
+    "a607db23748b2307eaa06eb3587d5538",
+    "b354d4cb12016360e1a9612e0000ac6e",
+    "c9190e7c6e47418f8f6b3283d2cd7bdf",
+    "ca5a7a3c7d12892f3d7d48a382c9e3ce",
+    "cab11650142d0a456aca749072e2d76c"
+  ],
+  "model": "FluxTransformer2DModel",
+  "source": "local"
+}

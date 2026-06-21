@@ -101,7 +101,21 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
         field_types=field_types,
         module_list_elems=module_list_elems,
         signature_tokens=frozenset(t for t in sig_tokens if t),
+        forward_params=_forward_params(forward),
     )
+
+
+def _forward_params(forward: ast.FunctionDef) -> frozenset[str]:
+    """The ``forward()`` parameter names minus ``self`` (positional, keyword-only,
+    and ``*args``/``**kwargs`` names).  The code side of wiring-conformance: which
+    conditioning inputs the block actually receives."""
+    a = forward.args
+    names = [p.arg for p in (*a.posonlyargs, *a.args, *a.kwonlyargs)]
+    if a.vararg:
+        names.append(a.vararg.arg)
+    if a.kwarg:
+        names.append(a.kwarg.arg)
+    return frozenset(n for n in names if n and n != "self")
 
 
 # ---------------------------------------------------------------------------

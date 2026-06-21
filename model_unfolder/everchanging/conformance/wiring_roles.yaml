@@ -1,0 +1,21 @@
+# Wiring-conformance vocabulary: a drawn SIDE-INPUT (conditioning rail) must
+# correspond to a real argument the block's forward() receives.  This is the
+# coarse, robust complement to op-conformance: op-conformance checks which op
+# KINDS the code performs; this checks that a conditioning INPUT the diagram feeds
+# into a block is one the block actually takes — catching a parser that invents
+# conditioning a block can't receive (a "fabricated input").
+#
+# Two maps, flow style so the built-in loader works without PyYAML:
+#
+# stage_role: a diagram side-input's `diffusion_stage` -> its conditioning ROLE.
+stage_role:
+  - "text_conditioning=text"
+  - "timestep_conditioning=timestep"
+  - "cross_attention=text"
+#
+# role_params: a ROLE -> forward() parameter-name substrings that satisfy it. A
+# drawn side-input of role R is justified iff the backing forward() has a param
+# whose name contains one of R's substrings.  Substrings, lowercased match.
+role_params:
+  - "text=encoder_hidden_states,context,prompt_embed,text_embed,cross,added_cond"
+  - "timestep=temb,timestep,time_emb,t_emb,emb,conditioning,added_cond"

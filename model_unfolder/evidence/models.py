@@ -81,6 +81,10 @@ class ForwardOps:
     # no per-model map needed).
     module_list_elems: dict[str, str] = field(default_factory=dict)
     signature_tokens: frozenset[str] = frozenset()             # call/field names, for the staleness guard
+    #: the ``forward()`` PARAMETER names (minus self) — e.g. ``hidden_states``,
+    #: ``encoder_hidden_states``, ``temb``.  The code side of wiring-conformance:
+    #: a side-input the diagram draws must correspond to a real conditioning arg.
+    forward_params: frozenset[str] = frozenset()
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -91,6 +95,7 @@ class ForwardOps:
             "field_types": dict(sorted(self.field_types.items())),
             "module_list_elems": dict(sorted(self.module_list_elems.items())),
             "signature_tokens": sorted(self.signature_tokens),
+            "forward_params": sorted(self.forward_params),
         }
 
 

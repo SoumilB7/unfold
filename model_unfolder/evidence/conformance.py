@@ -22,6 +22,7 @@ from pathlib import Path
 from ..everchanging import (
     load_conformance_abstractions,
     load_conformance_map,
+    load_conformance_wiring_roles,
 )
 from .forward_ops import extract_forward_ops
 from .models import ForwardOps
@@ -59,6 +60,9 @@ class ConformanceProblem:
         if self.kind == "fabricated":
             return (f"{self.view}: diagram draws {self.op!r} but{cls}'s forward() never does it — "
                     f"remove it or declare it as draw_extra.{loc}")
+        if self.kind == "fabricated_input":
+            return (f"{self.view}: diagram feeds a {self.op!r} conditioning input into the block, "
+                    f"but{cls}'s forward() takes no {self.op} argument — remove the rail or fix its role.{loc}")
         if self.kind == "stale":
             return (f"{self.view}: citation token {self.op!r} is no longer in{cls}'s forward() — "
                     f"upstream changed; re-verify and update the citation.{loc}")
@@ -99,6 +103,59 @@ def check_model_conformance(target, ir: dict, *, source: str = "local") -> list[
             continue
         problems.extend(diff_conformance(diagram_op_set(spec), code, family, view, abstractions))
     return problems
+
+
+def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list[ConformanceProblem]:
+    """Diff each layer-group's drawn conditioning SIDE-INPUTS against the backing
+    ``forward()``'s parameters.
+
+    A side-input the diagram feeds into a block whose ``forward()`` takes no
+    argument of that role is a FABRICATED input — the parser invented conditioning
+    the block cannot receive (e.g. a text rail on a block whose forward has no
+    ``encoder_hidden_states``).  Coarse + robust by design: it checks role
+    PRESENCE (does the block take ANY text / timestep arg), never exact edges, so
+    it never reconstructs wiring it can't trust.  Op-conformance checks op KINDS;
+    this checks conditioning INPUTS — the complementary axis."""
+    family = _family(target)
+    bundle = resolve_source_files(target, source=source)
+    files = _augment_diffusion_files(bundle.files)
+    if not files:
+        return []                       # no oracle — op-conformance records 'unresolved'
+    forward_ops = extract_forward_ops(files)
+    cmap = load_conformance_map()
+    stage_role, role_params = load_conformance_wiring_roles()
+
+    representatives: dict[str, dict] = {}
+    for layer in (ir.get("layers") or []):
+        representatives.setdefault(f"{family}/{classify_group(layer)}", layer)
+
+    problems: list[ConformanceProblem] = []
+    for key, spec in representatives.items():
+        view = key.split("/", 1)[1]
+        code = resolve_view_code(family, view, spec, forward_ops, cmap)
+        if code is None:
+            continue                    # op-conformance already flags 'unresolved'
+        params = " ".join(sorted(code.forward_params)).lower()
+        for role in sorted(_drawn_side_input_roles(spec, stage_role)):
+            subs = role_params.get(role) or []
+            if subs and not any(s in params for s in subs):
+                problems.append(ConformanceProblem(
+                    "fabricated_input", role, key,
+                    code.class_name, code.source_file, code.forward_line))
+    return problems
+
+
+def _drawn_side_input_roles(spec: dict, stage_role: dict) -> set[str]:
+    """The conditioning ROLES the diagram feeds into this block-type as external
+    side-rails (text / timestep), read from each side block's ``diffusion_stage``."""
+    roles: set[str] = set()
+    for b in (spec.get("blocks") or []):
+        if not str(b.get("lane", "")).startswith("external"):
+            continue
+        role = stage_role.get(str(b.get("diffusion_stage") or ""))
+        if role:
+            roles.add(role)
+    return roles
 
 
 def diagram_op_set(spec: dict) -> frozenset[str]:

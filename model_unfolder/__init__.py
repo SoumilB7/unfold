@@ -12,7 +12,9 @@ Outside Jupyter::
 """
 from .diagram import Diagram
 from .evidence import inspect_model_code
+from .lint import lint_labels
 from .parser import config_to_ir
+from .sable import SableReport, bless, check_regression, load_corpus, sable
 from .ir import ModelIR, LayerSpec, AttentionSpec, FFNSpec, CrossLayerEdge
 from .params import estimate_params
 from .errors import (
@@ -36,6 +38,12 @@ __all__ = [
     "config_to_ir",
     "inspect_model_code",
     "estimate_params",
+    "sable",
+    "SableReport",
+    "bless",
+    "check_regression",
+    "load_corpus",
+    "lint_labels",
     "UnfoldError",
     "ModelNotFoundError",
     "ModelAccessError",
