@@ -203,6 +203,8 @@ def _load_config_from_hf(auto_config: Any, model_id: str, token: Any = None):
                 return _load_raw_config_json(model_id, auth_token)
             except ImportError:
                 raise  # missing huggingface_hub — a dependency error, keep as-is
+            except UnfoldError:
+                raise  # already a clean, actionable message (stub/unparseable config)
             except Exception as e2:
                 raise _classify_load_error(model_id, e2) from e2
         raise _classify_load_error(model_id, e) from e
@@ -323,8 +325,36 @@ def _should_fallback_to_raw_json(error: Exception) -> bool:
     )
 
 
-def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
+#: Keys that signal a config.json actually describes a model architecture
+#: (transformers OR diffusers). A root config with NONE of these is a stub — an
+#: original-release repo that stores weights in a custom format, not an unfoldable
+#: HF/diffusers config (e.g. tencent/HunyuanVideo ships `{"Name": ["HunyuanVideo"]}`).
+_ARCH_SIGNAL_KEYS = (
+    "model_type", "architectures", "auto_map", "_class_name", "_diffusers_version",
+    "num_hidden_layers", "num_layers", "n_layers", "n_layer", "hidden_size", "dim",
+    "depth", "num_attention_heads",
+)
+
+
+def _parse_config_json_text(text: str):
+    """Parse config.json, tolerating the trailing commas / ``//`` comments some
+    hand-written repo configs carry (strict JSON forbids both). Returns the parsed
+    value, or ``None`` if it is irrecoverably malformed."""
     import json
+    import re
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    cleaned = re.sub(r"//[^\n]*", "", text)            # // line comments
+    cleaned = re.sub(r",(\s*[}\]])", r"\1", cleaned)   # trailing commas before } or ]
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None
+
+
+def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
     try:
         from huggingface_hub import hf_hub_download
     except ImportError as e:
@@ -337,7 +367,32 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
         kwargs["token"] = auth_token
     path = hf_hub_download(**kwargs)
     with open(path) as f:
-        return json.load(f)
+        cfg = _parse_config_json_text(f.read())
+    return _ensure_unfoldable_config(cfg, model_id)
+
+
+def _ensure_unfoldable_config(cfg, model_id: str) -> dict:
+    """Validate a last-resort raw config.json. A diffusers pipeline would already
+    have been handled (model_index.json), so fail HONESTLY when this carries no
+    model — an unparseable file or a placeholder stub — instead of leaking a raw
+    JSONDecodeError or letting an empty config fall through to a confusing parse."""
+    if cfg is None:
+        raise ModelNotFoundError(
+            f"'{model_id}' has a config.json that isn't valid JSON and the repo is not "
+            "a diffusers pipeline (no model_index.json). Point unfold at a diffusers-"
+            "format or transformers config repo for this model."
+        )
+    if not isinstance(cfg, dict) or not any(k in cfg for k in _ARCH_SIGNAL_KEYS):
+        shown = ", ".join(list(cfg)[:6]) if isinstance(cfg, dict) else type(cfg).__name__
+        raise ModelNotFoundError(
+            f"'{model_id}' has no unfoldable model config — its config.json is a stub "
+            f"(keys: {shown}) with no architecture, model_type, or diffusers pipeline "
+            "(no model_index.json). This is typically an ORIGINAL-RELEASE repo that "
+            "stores weights in a custom format. Point unfold at the diffusers-format "
+            "repo for this model — the one with a model_index.json and a transformer/ "
+            "subfolder (often a '-community' org or a '-Diffusers' suffix)."
+        )
+    return cfg
 
 
 def _should_retry_with_remote_code(error: Exception) -> bool:

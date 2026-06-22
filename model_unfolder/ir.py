@@ -35,6 +35,9 @@ class AttentionSpec:
     bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
+    rope_3d: bool = False            # 3D axial RoPE over (temporal·height·width) — video DiTs
+                                    # (Wan/HunyuanVideo/CogVideoX/Mochi/LTX); surfaces the temporal
+                                    # axis as a chip so the block reads as video without drilling
     cached: Optional[bool] = None   # whether K/V are written to an autoregressive cache;
                                     # None → default (causal LMs cache, cross-attn doesn't);
                                     # False → bidirectional/non-AR (diffusion DiT, ViT) — no cache ports

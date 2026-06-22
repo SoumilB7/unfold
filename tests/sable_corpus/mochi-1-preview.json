@@ -1,0 +1,180 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "MochiTransformer3DModel",
+    "_diffusers_version": "0.32.0.dev0",
+    "_name_or_path": "genmo/mochi-1-preview",
+    "_pipeline_class_name": "MochiPipeline",
+    "_repo_id": "genmo/mochi-1-preview",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.32.0.dev0",
+      "base_image_seq_len": 256,
+      "base_shift": 0.5,
+      "invert_sigmas": true,
+      "max_image_seq_len": 4096,
+      "max_shift": 1.15,
+      "num_train_timesteps": 1000,
+      "shift": 1.0,
+      "use_dynamic_shifting": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/t5-v1_1-xxl",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "tie_word_embeddings": false,
+        "torch_dtype": "float32",
+        "transformers_version": "4.45.2",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLMochi",
+      "_diffusers_version": "0.32.0.dev0",
+      "act_fn": "silu",
+      "add_attention_block": [
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "decoder_block_out_channels": [
+        128,
+        256,
+        512,
+        768
+      ],
+      "encoder_block_out_channels": [
+        64,
+        128,
+        256,
+        384
+      ],
+      "in_channels": 15,
+      "latent_channels": 12,
+      "latents_mean": [
+        -0.06730895953510081,
+        -0.038011381506090416,
+        -0.07477820912866141,
+        -0.05565264470995561,
+        0.012767231469026969,
+        -0.04703542746246419,
+        0.043896967884726704,
+        -0.09346305707025976,
+        -0.09918314763016893,
+        -0.008729793427399178,
+        -0.011931556316503654,
+        -0.0321993391887285
+      ],
+      "latents_std": [
+        0.9263795028493863,
+        0.9248894543193766,
+        0.9393059390890617,
+        0.959253732819592,
+        0.8244560132752793,
+        0.917259975397747,
+        0.9294154431013696,
+        1.3720942357788521,
+        0.881393668867029,
+        0.9168315692124348,
+        0.9185249279345552,
+        0.9274757570805041
+      ],
+      "layers_per_block": [
+        3,
+        3,
+        4,
+        6,
+        3
+      ],
+      "out_channels": 3,
+      "scaling_factor": 1.0,
+      "spatial_expansions": [
+        2,
+        2,
+        2
+      ],
+      "temporal_expansions": [
+        1,
+        2,
+        3
+      ]
+    },
+    "activation_fn": "swiglu",
+    "attention_head_dim": 128,
+    "in_channels": 12,
+    "max_sequence_length": 256,
+    "num_attention_heads": 24,
+    "num_layers": 48,
+    "out_channels": null,
+    "patch_size": 2,
+    "pooled_projection_dim": 1536,
+    "qk_norm": "rms_norm",
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_embed_dim": 4096,
+    "text_encoder": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "time_embed_dim": 256,
+    "tokenizer": [
+      "transformers",
+      "T5Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "MochiTransformer3DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLMochi"
+    ]
+  },
+  "hash_signature": [
+    "367890e023a13048cf089232a026954b",
+    "7d8517124cdebbe6ccfc0f7e825743f9",
+    "83d8afc4107222d999481235c8f7e1b4",
+    "84f18c811f524ad4554b856d60f3cf76",
+    "8f49f25a13561f80d292dce2504feaad",
+    "d586c381db9d883e7513e8184b64c5c8",
+    "d7d9354966f4495a28c380d90a280dd3",
+    "d8231cdbb4fc341af6833070f3dd8d49"
+  ],
+  "model": "mochi-1-preview",
+  "source": "local"
+}

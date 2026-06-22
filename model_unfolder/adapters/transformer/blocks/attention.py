@@ -26,6 +26,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
         "rope": attention.rope,
+        "rope_3d": attention.rope_3d,
         "bias": attention.bias,
         "shared": attention.shared,
         "no_rope": attention.no_rope,

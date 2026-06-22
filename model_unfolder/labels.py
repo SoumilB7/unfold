@@ -352,6 +352,11 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append(f"indexer {_fmt_int(attention.get('index_n_heads'))}×{_fmt_int(attention.get('index_head_dim'))}")
     if attention.get("mrope_section"):
         facts.append("M-RoPE " + "/".join(str(s) for s in attention["mrope_section"]))
+    if attention.get("rope_3d") and not attention.get("no_rope"):
+        # Video DiTs: the temporal axis lives in the positional encoding. Surface it
+        # as a chip so the block reads as VIDEO (a 3rd, time, dimension) without
+        # drilling into the attention's "apply RoPE" leaves.
+        facts.append("3D RoPE · T·H·W")
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):

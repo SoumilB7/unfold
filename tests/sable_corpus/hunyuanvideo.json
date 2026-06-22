@@ -1,0 +1,188 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "HunyuanVideoTransformer3DModel",
+    "_diffusers_version": "0.32.0.dev0",
+    "_name_or_path": "hunyuanvideo-community/HunyuanVideo",
+    "_pipeline_class_name": "HunyuanVideoPipeline",
+    "_repo_id": "hunyuanvideo-community/HunyuanVideo",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.32.0.dev0",
+      "base_image_seq_len": 256,
+      "base_shift": 0.5,
+      "invert_sigmas": false,
+      "max_image_seq_len": 4096,
+      "max_shift": 1.15,
+      "num_train_timesteps": 1000,
+      "shift": 7.0,
+      "shift_terminal": null,
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": false,
+      "use_exponential_sigmas": false,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "/raid/aryan/llava-llama-3-8b-v1_1-extracted/text_encoder",
+        "architectures": [
+          "LlamaModel"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "bos_token_id": 128000,
+        "eos_token_id": 128001,
+        "head_dim": 128,
+        "hidden_act": "silu",
+        "hidden_size": 4096,
+        "initializer_range": 0.02,
+        "intermediate_size": 14336,
+        "max_position_embeddings": 8192,
+        "mlp_bias": false,
+        "model_type": "llama",
+        "num_attention_heads": 32,
+        "num_hidden_layers": 32,
+        "num_key_value_heads": 8,
+        "pretraining_tp": 1,
+        "rms_norm_eps": 1e-05,
+        "rope_scaling": null,
+        "rope_theta": 500000.0,
+        "tie_word_embeddings": false,
+        "torch_dtype": "float16",
+        "transformers_version": "4.48.0.dev0",
+        "use_cache": true,
+        "vocab_size": 128320
+      },
+      "text_encoder_2": {
+        "_name_or_path": "/raid/aryan/llava-llama-3-8b-v1_1-extracted/text_encoder_2",
+        "architectures": [
+          "CLIPTextModel"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "dropout": 0.0,
+        "eos_token_id": 2,
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "pad_token_id": 1,
+        "projection_dim": 768,
+        "torch_dtype": "float16",
+        "transformers_version": "4.48.0.dev0",
+        "vocab_size": 49408
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLHunyuanVideo",
+      "_diffusers_version": "0.32.0.dev0",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "HunyuanVideoDownBlock3D",
+        "HunyuanVideoDownBlock3D",
+        "HunyuanVideoDownBlock3D",
+        "HunyuanVideoDownBlock3D"
+      ],
+      "in_channels": 3,
+      "latent_channels": 16,
+      "layers_per_block": 2,
+      "mid_block_add_attention": true,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "scaling_factor": 0.476986,
+      "spatial_compression_ratio": 8,
+      "temporal_compression_ratio": 4,
+      "up_block_types": [
+        "HunyuanVideoUpBlock3D",
+        "HunyuanVideoUpBlock3D",
+        "HunyuanVideoUpBlock3D",
+        "HunyuanVideoUpBlock3D"
+      ]
+    },
+    "attention_head_dim": 128,
+    "guidance_embeds": true,
+    "in_channels": 16,
+    "mlp_ratio": 4.0,
+    "num_attention_heads": 24,
+    "num_layers": 20,
+    "num_refiner_layers": 2,
+    "num_single_layers": 40,
+    "out_channels": 16,
+    "patch_size": 2,
+    "patch_size_t": 1,
+    "pooled_projection_dim": 768,
+    "qk_norm": "rms_norm",
+    "rope_axes_dim": [
+      16,
+      56,
+      56
+    ],
+    "rope_theta": 256.0,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_embed_dim": 4096,
+    "text_encoder": [
+      "transformers",
+      "LlamaModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "LlamaTokenizerFast"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "HunyuanVideoTransformer3DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLHunyuanVideo"
+    ]
+  },
+  "hash_signature": [
+    "2d4deb7e5d271b6c70408c4d31d43018",
+    "31833723dfb5a71a4aef89b03f38e012",
+    "34829e302343eaa19667bcba8a150848",
+    "39836ce319f39d91cdabd979d8d24a12",
+    "42bc7c1561fc62d035146669fd1e8359",
+    "42f97b3458ea613132d2a5096c8a7da3",
+    "46d3fedae5ce4dc05eb5f12c5ec194ae",
+    "511bc69086c757f55d1a4e9922fd78ed",
+    "525c5ecce36d11cdae9ee2ae802e7de8",
+    "5871fde00ef3746ba87af0731028bc04",
+    "6fe1482f7559ed0de0bdd32182140ce3",
+    "b519dd2b49412f252d6fd28a9443a93e",
+    "bf38a076baa29fc5858612bbd71d0fe5",
+    "c554a7b119091b80e1b2306025d6c1ab"
+  ],
+  "model": "HunyuanVideo",
+  "source": "local"
+}

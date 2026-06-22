@@ -16,7 +16,10 @@ axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
 # QK-norm applied unconditionally in the model class (FluxAttention builds
 # RMSNorm norm_q / norm_k regardless of any config flag). Flux 2's attentions
 # (Flux2Attention + Flux2ParallelSelfAttention) likewise RMS-norm Q/K.
-qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm"]
+# CogVideoXBlock builds its Attention with qk_norm="layer_norm" when its
+# qk_norm flag (default True) is set — a LayerNorm on Q/K, not RMSNorm — and the
+# config.json does not carry the flag. (The norm TYPE is read from this value.)
+qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm", "CogVideoXTransformer3DModel=layer_norm"]
 
 # FFN activation fixed in the model class, not config. In diffusers the
 # activation_fn name fully specifies the FFN shape, so this also resolves the
@@ -24,7 +27,7 @@ qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm",
 # GATED MLP. Flux 1 builds FeedForward(activation_fn="gelu-approximate") + GELU(
 # tanh) (single), both mult=4. Flux 2 uses Flux2SwiGLU in BOTH blocks (dual
 # Flux2FeedForward + the single block's fused mlp_act_fn).
-ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate"]
+ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate", "WanTransformer3DModel=gelu-approximate", "HunyuanVideoTransformer3DModel=gelu-approximate"]
 
 # Single-stream (fused) block topology — a CODE fact (the block class), default
 # concat_fused (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE
@@ -32,3 +35,29 @@ ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer
 # Flux2SingleTransformerBlock / Flux2ParallelSelfAttention): the IN-projection is
 # ALSO fused (one matmul → QKV ‖ MLP-in) and the MLP is gated (SwiGLU).
 single_stream_fusion: ["Flux2Transformer2DModel=parallel"]
+
+# 3D (temporal · height · width) AXIAL RoPE applied to Q/K in self-attention,
+# fixed in the model class and declared by NO config field (so it reads as NoPE
+# unless surfaced). Video DiTs split the FULL head dim across the three axes
+# inside their rotary module (WanRotaryPosEmbed: h=w=2·(d//6), t=d−h−w; other
+# families use their own split). We surface the FACT — full-head_dim 3D rotary —
+# and NEVER fabricate a per-axis numeric split (it is head-dim-dependent). The
+# parser sets rope_dim = head_dim from this flag, which drops the false NoPE chip
+# and draws the RoPE nodes on the self-attention Q/K lanes (cross-attn stays
+# no-RoPE — attn2 is called with rotary_emb=None).
+rope_3d: ["WanTransformer3DModel=true", "MochiTransformer3DModel=true", "LTXVideoTransformer3DModel=true"]
+
+# Gating dialect: Mochi does NOT multiply a sublayer output by a bare AdaLN gate.
+# It folds the per-block timestep gate into a modulated RMSNorm of the sublayer
+# output (MochiModulatedRMSNorm): h = h + RMSNorm(sublayer) · tanh(gate). So the
+# gate is a real norm op (a quiet box), not a Tier-2 × connector — drawing a ×
+# here fabricates a gate_mul the forward never does. The parser inserts a
+# post-sublayer modulated-norm box instead of the × for these classes.
+gate_via_norm: ["MochiTransformer3DModel=true"]
+
+# Pre-cross-attention norm presence. Most cross-attention DiTs norm before attn2
+# (Wan declares cross_attn_norm=True; PixArt/Sana norm in-class — the default).
+# LTXVideoTransformerBlock is the exception: it applies attn2 directly to the
+# post-self-attention hidden states with NO pre-norm, so drawing one fabricates a
+# block. Only the exceptions need an entry (default is present).
+cross_attn_norm: ["LTXVideoTransformer3DModel=false"]

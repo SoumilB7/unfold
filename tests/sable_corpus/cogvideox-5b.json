@@ -1,0 +1,169 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "CogVideoXTransformer3DModel",
+    "_diffusers_version": "0.31.0.dev0",
+    "_name_or_path": "THUDM/CogVideoX-5b",
+    "_pipeline_class_name": "CogVideoXPipeline",
+    "_repo_id": "THUDM/CogVideoX-5b",
+    "_scheduler_config": {
+      "_class_name": "CogVideoXDDIMScheduler",
+      "_diffusers_version": "0.31.0.dev0",
+      "beta_end": 0.012,
+      "beta_schedule": "scaled_linear",
+      "beta_start": 0.00085,
+      "clip_sample": false,
+      "clip_sample_range": 1.0,
+      "num_train_timesteps": 1000,
+      "prediction_type": "v_prediction",
+      "rescale_betas_zero_snr": true,
+      "sample_max_value": 1.0,
+      "set_alpha_to_one": true,
+      "snr_shift_scale": 1.0,
+      "steps_offset": 0,
+      "timestep_spacing": "trailing",
+      "trained_betas": null
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "/share/official_pretrains/hf_home/t5-v1_1-xxl",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "tie_word_embeddings": false,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.43.4",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLCogVideoX",
+      "_diffusers_version": "0.32.0.dev0",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        256,
+        512
+      ],
+      "down_block_types": [
+        "CogVideoXDownBlock3D",
+        "CogVideoXDownBlock3D",
+        "CogVideoXDownBlock3D",
+        "CogVideoXDownBlock3D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "invert_scale_latents": false,
+      "latent_channels": 16,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 3,
+      "norm_eps": 1e-06,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_height": 480,
+      "sample_width": 720,
+      "scaling_factor": 0.7,
+      "shift_factor": null,
+      "temporal_compression_ratio": 4,
+      "up_block_types": [
+        "CogVideoXUpBlock3D",
+        "CogVideoXUpBlock3D",
+        "CogVideoXUpBlock3D",
+        "CogVideoXUpBlock3D"
+      ],
+      "use_post_quant_conv": false,
+      "use_quant_conv": false
+    },
+    "activation_fn": "gelu-approximate",
+    "attention_bias": true,
+    "attention_head_dim": 64,
+    "dropout": 0.0,
+    "flip_sin_to_cos": true,
+    "freq_shift": 0,
+    "in_channels": 16,
+    "max_text_seq_length": 226,
+    "norm_elementwise_affine": true,
+    "norm_eps": 1e-05,
+    "num_attention_heads": 48,
+    "num_layers": 42,
+    "out_channels": 16,
+    "patch_size": 2,
+    "sample_frames": 49,
+    "sample_height": 60,
+    "sample_width": 90,
+    "scheduler": [
+      "diffusers",
+      "CogVideoXDDIMScheduler"
+    ],
+    "spatial_interpolation_scale": 1.875,
+    "temporal_compression_ratio": 4,
+    "temporal_interpolation_scale": 1.0,
+    "text_embed_dim": 4096,
+    "text_encoder": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "time_embed_dim": 512,
+    "timestep_activation_fn": "silu",
+    "tokenizer": [
+      "transformers",
+      "T5Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "CogVideoXTransformer3DModel"
+    ],
+    "use_rotary_positional_embeddings": true,
+    "vae": [
+      "diffusers",
+      "AutoencoderKLCogVideoX"
+    ]
+  },
+  "hash_signature": [
+    "034c793ae3e5acd9fce6c0bd159ecd6a",
+    "05345b9d770885b0d1901419373a2c6e",
+    "053fcc78f071a8789407e54b117644d2",
+    "10d76b125cb25efa2bbbfcebf99525b9",
+    "1efec7c4e7629fbc685ea25b9413b797",
+    "68a15e11ae644cd2c62c97d9bb926534",
+    "79014d44ce1efb8b5e5885c9236ab40e",
+    "b7eafb19db8b53e0f5790078c3d1f62a",
+    "cdd40226ad21413bbe1904a814c8750b",
+    "ced2f58961b3e6ed5100fa28a4d2167d",
+    "d8231cdbb4fc341af6833070f3dd8d49",
+    "df5709939ae9ea83ad93306dea871bb8"
+  ],
+  "model": "CogVideoX-5b",
+  "source": "local"
+}

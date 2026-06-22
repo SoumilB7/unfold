@@ -1548,6 +1548,34 @@ def test_model_id_custom_code_falls_back_to_raw_config_json():
     assert len(d.to_ir()["layers"]) == 2
 
 
+def test_raw_config_tolerates_trailing_commas_but_rejects_stub_configs():
+    """The last-resort raw config.json path must (1) tolerate trailing commas /
+    comments some hand-written configs carry, and (2) fail HONESTLY on a placeholder
+    stub (tencent/HunyuanVideo ships `{"Name": ["HunyuanVideo"]}`) with an actionable
+    message — not leak a raw JSONDecodeError or a confusing downstream parse."""
+    import pytest
+    from model_unfolder.errors import ModelNotFoundError
+    from model_unfolder.parser import _ensure_unfoldable_config, _parse_config_json_text
+
+    # tolerant parse: trailing comma + // comment still parses to a real config
+    cfg = _parse_config_json_text(
+        '{\n  "model_type": "x", // dialect\n  "num_hidden_layers": 4,\n}')
+    assert cfg == {"model_type": "x", "num_hidden_layers": 4}
+    # irrecoverable garbage -> None (not an exception)
+    assert _parse_config_json_text("{not json at all") is None
+
+    # a real config passes the unfoldable check unchanged
+    assert _ensure_unfoldable_config({"model_type": "llama", "num_hidden_layers": 2},
+                                     "x/y") == {"model_type": "llama", "num_hidden_layers": 2}
+    # the HunyuanVideo stub (no architecture signal) -> clean, actionable error
+    with pytest.raises(ModelNotFoundError) as ei:
+        _ensure_unfoldable_config({"Name": ["HunyuanVideo"]}, "tencent/HunyuanVideo")
+    assert "stub" in str(ei.value) and "diffusers-format" in str(ei.value)
+    # unparseable file -> clean error, not a leaked JSONDecodeError
+    with pytest.raises(ModelNotFoundError):
+        _ensure_unfoldable_config(None, "tencent/HunyuanVideo")
+
+
 def test_typed_errors_for_access_notfound_and_parse():
     """Load/parse failures surface as the right typed UnfoldError subclass."""
     import pytest

@@ -275,6 +275,26 @@ def parse(cfg: Any) -> ModelIR:
         except (TypeError, ValueError):
             rope_dim = None
     has_rope = rope_dim is not None or rope_theta is not None
+    # 3D RoPE DETECTION fix (Wan / Mochi / LTX / CogVideoX): these video DiTs apply
+    # axial rotary over (temporal · height · width) to Q/K but declare NO rope dims
+    # in config (it's in the model class), so without help the block reads as NoPE —
+    # a fabricated negative. The signal is a CONFIG flag (CogVideoX:
+    # use_rotary_positional_embeddings) or a CODE fact (class_defaults.yaml::rope_3d).
+    # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
+    # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
+    rope_3d_from_config = bool(_resolve(cfg, "use_rotary_positional_embeddings"))
+    rope_3d_from_class = False
+    if not has_rope and head_dim and (rope_3d_from_config or _class_default(cls, "rope_3d")):
+        rope_dim = head_dim
+        has_rope = True
+        rope_3d_from_class = not rope_3d_from_config
+    # The TEMPORAL axis: ANY video DiT (a *Transformer3DModel — geom["video"]) with
+    # rope uses 3D (T·H·W) rope, whether detected above OR via axes_dims_rope
+    # (HunyuanVideo's rope_axes_dim=[16,56,56] = temporal·height·width). This — not
+    # the detection path — drives the "3D RoPE · T·H·W" card chip + the note, so the
+    # block reads as VIDEO without drilling. Image DiTs (Flux's 3-axis axial rope)
+    # are NOT video, so they keep the plain "Axial rotary" note and no chip.
+    rope_3d = bool(geom.get("video")) and has_rope
     # Learned absolute positions baked into the patch embedding are a POSITIVE
     # config signal (SD3 / PixArt declare pos_embed_max_size). Their ABSENCE is
     # not evidence of NoPE: Flux carries axial RoPE in the model class, not the
@@ -282,7 +302,18 @@ def parse(cfg: Any) -> ModelIR:
     # negative. We therefore only describe a position scheme we can see.
     has_pos_embed = _resolve(cfg, "pos_embed_max_size") is not None
     _from_class = " (set in the model class, not the config)" if axes_from_class else ""
-    if isinstance(axes_dims_rope, (list, tuple)):
+    if rope_3d:
+        if rope_3d_from_config:
+            _origin = "declared by use_rotary_positional_embeddings"
+        elif rope_3d_from_class:
+            _origin = "set in the model class, not the config"
+        elif isinstance(axes_dims_rope, (list, tuple)):
+            _origin = f"axes {list(axes_dims_rope)}"
+        else:
+            _origin = "rotary applied to Q/K"
+        rope_note = ("3D rotary position embedding over temporal · height · width "
+                     f"axes ({_origin}).")
+    elif isinstance(axes_dims_rope, (list, tuple)):
         rope_note = f"Axial rotary position embedding (axes {axes_dims_rope}){_from_class}."
     elif isinstance(mrope_section, (list, tuple)):
         rope_note = f"Multimodal 3D rotary position embedding (sections {list(mrope_section)})."
@@ -308,9 +339,13 @@ def parse(cfg: Any) -> ModelIR:
     has_qk_norm = _qk not in _empty_qk
     if qk_from_class:
         # Mark the code-derived QK-norm in the attention description (the chip
-        # states the fact; this clause says where the fact comes from).
+        # states the fact; this clause says where the fact comes from). The norm
+        # TYPE comes from the class-default value — Flux RMS-norms Q/K, CogVideoX
+        # LayerNorm-norms them ("layer_norm" if qk_norm else None) — so never
+        # hardcode "RMSNorm".
+        _qk_kind = "LayerNorm" if "layer" in str(_qk).lower() else "RMSNorm"
         rope_note = (rope_note + " " if rope_note else "") + (
-            "QK-norm (RMSNorm on Q/K) is applied in the model class, not the config.")
+            f"QK-norm ({_qk_kind} on Q/K) is applied in the model class, not the config.")
 
     # ---- Denoiser layer stack ----
     # The block's attention topology comes from the config's conditioning
@@ -333,10 +368,23 @@ def parse(cfg: Any) -> ModelIR:
     geom["denoiser_style"] = double_variant["tag"]
     geom["pre_block_text_fusion"] = cond["pre_block_fusion"]
 
+    # Pre-cross-attention norm: most cross-attention DiTs RMSNorm/LayerNorm the
+    # hidden state before attn2 (Wan declares cross_attn_norm=True; PixArt/Sana do
+    # it in-class). LTX is the exception — LTXVideoTransformerBlock applies attn2
+    # DIRECTLY to the post-self-attention hidden states, with NO pre-norm — so a
+    # drawn pre-cross-attn norm would be a fabricated block. Read the config flag,
+    # then the class default (LTX=false), else default to present (the family norm).
+    _can = _resolve(cfg, "cross_attn_norm")
+    if _can is None:
+        _can_cd = _class_default(cls, "cross_attn_norm")
+        if _can_cd is not None:
+            _can = str(_can_cd).lower() not in ("false", "0", "none", "no")
+    cross_attn_prenorm = True if _can is None else bool(_can)
+
     layers = []
     idx = 0
     for _ in range(num_layers):
-        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm)
+        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm, rope_3d)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
@@ -348,10 +396,18 @@ def parse(cfg: Any) -> ModelIR:
         if cond["cross_attn_sublayer"]:
             layer.blocks = _insert_cross_attention(
                 layer.blocks, attn_spec, hidden_size, norm_kind,
-                cross_dim=geom.get("cross_attention_dim"))
-        # DiT AdaLN-Zero: the timestep gates each sublayer output before its
-        # residual add (h = h + gate · sublayer(...)) — drawn as Tier-2 × connectors.
-        layer.blocks = _insert_adaln_gates(layer.blocks)
+                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm)
+        # Timestep gating of each sublayer output before its residual add comes in
+        # two code dialects: the common AdaLN-Zero one multiplies by a bare gate
+        # (h = h + gate · sublayer(...)) → Tier-2 × connectors; Mochi instead FOLDS
+        # the gate into a modulated RMSNorm of the sublayer output
+        # (h = h + ModulatedRMSNorm(sublayer(...), gate)) → a post-sublayer norm box,
+        # NOT a ×. Drawing a × for Mochi fabricates a gate_mul the forward never does
+        # (op-conformance catches it). The dialect is a code fact (class_defaults).
+        if _class_default(cls, "gate_via_norm"):
+            layer.blocks = _insert_output_gated_norms(layer.blocks)
+        else:
+            layer.blocks = _insert_adaln_gates(layer.blocks)
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         layers.append(layer)
         idx += 1
@@ -364,7 +420,7 @@ def parse(cfg: Any) -> ModelIR:
         # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block,
         # NOT a GPT-J parallel-sum layer).
         layers.append(single_stream_decoder_layer(
-            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm),
+            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm, rope_3d),
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
             hidden_size, norm_kind=norm_kind, fused_in=single_fused_in,
         ))
@@ -440,7 +496,7 @@ def parse(cfg: Any) -> ModelIR:
 # ---------------------------------------------------------------------------
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
-                   qk_norm: bool = False) -> AttentionSpec:
+                   qk_norm: bool = False, rope_3d: bool = False) -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
@@ -452,6 +508,7 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
         mask="full",
         rope_dim=rope_dim,
         no_rope=rope_dim is None,
+        rope_3d=rope_3d,        # 3D (T·H·W) axial RoPE — surfaces the temporal axis chip
         qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
         variant=variant,
@@ -489,6 +546,40 @@ def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
     return out
 
 
+def _output_gated_norm(nid: str, which: str) -> dict:
+    """A post-sublayer modulated RMSNorm that CARRIES the AdaLN gate (Mochi).
+
+    Mochi does not multiply a sublayer output by a bare gate; it folds the per-block
+    timestep gate into a normalisation of that output (``MochiModulatedRMSNorm``)
+    before the residual add: ``h = h + RMSNorm(sublayer) · tanh(gate)``. So the gate
+    lives inside a real norm op (a quiet Tier-1 box), NOT a Tier-2 × connector — and
+    the box's card explains it, so no gate_mul is fabricated."""
+    return {
+        "id": nid, "role": "norm", "kind": "norm",
+        "diffusion_stage": "norm",
+        "label": "Normalization", "title": f"Modulated output norm ({which})",
+        "description": (
+            f"RMSNorm of the {which} output, scaled by the per-block timestep gate "
+            "(tanh) before the residual add. Mochi folds the AdaLN gate into this "
+            "post-sublayer norm (MochiModulatedRMSNorm) instead of a bare × gate."
+        ),
+    }
+
+
+def _insert_output_gated_norms(blocks: list[dict]) -> list[dict]:
+    """Mochi dialect: insert the modulated post-sublayer norm (carrying the gate)
+    just before each residual ⊕, instead of the AdaLN × connector (see
+    :func:`_output_gated_norm`)."""
+    out: list[dict] = []
+    for b in blocks:
+        if b.get("id") == "add1":
+            out.append(_output_gated_norm("out_norm_msa", "attention"))
+        elif b.get("id") == "add2":
+            out.append(_output_gated_norm("out_norm_mlp", "feed-forward"))
+        out.append(b)
+    return out
+
+
 def _annotate_adaln_norms(blocks: list[dict]) -> None:
     """Name the AdaLN modulation in the self-attention & FFN norm cards (in place).
 
@@ -496,8 +587,11 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
     a (non-affine) LayerNorm whose **scale & shift are produced from the timestep
     embedding** — AdaLN / AdaLN-Zero — not learned weights. That's how the diffusion
     noise level conditions every block, so the norm card must say it (the cross-
-    attention norm, when present, is a plain norm and is left as-is)."""
-    if not any(b.get("kind") == "gate_mul" for b in blocks):
+    attention norm, when present, is a plain norm and is left as-is). Triggers for
+    BOTH gating dialects: the × connector (AdaLN-Zero) and Mochi's output-gated
+    norms (the pre-norms still produce the timestep modulation)."""
+    if not any(b.get("kind") == "gate_mul" or str(b.get("id", "")).startswith("out_norm")
+               for b in blocks):
         return
     adaln = " Scale & shift come from the timestep (AdaLN), not learned weights."
     for b in blocks:
@@ -506,12 +600,18 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
 
 
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
-                            hidden_size: int, norm_kind: str, *, cross_dim=None) -> list[dict]:
+                            hidden_size: int, norm_kind: str, *, cross_dim=None,
+                            pre_norm: bool = True) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
-    Wan / CogVideoX / Mochi / LTX / Hunyuan-DiT / Lumina).  Conformed to
+    Wan / Hunyuan-DiT / Lumina).  Conformed to
     `SanaTransformerBlock` / `WanTransformerBlock` / `PixArt`
     (`norm2 → attn2(encoder_hidden_states) → ⊕`).
+
+    ``pre_norm=False`` drops the pre-cross-attention norm for the LTX dialect:
+    ``LTXVideoTransformerBlock`` applies attn2 directly to the post-self-attention
+    hidden states (no norm before it), so the sublayer is just ``cross-attn → ⊕``
+    and the residual skip taps the self-attention residual (``add1``) instead.
 
     The cross-attention drill is the SAME canonical attention view as self-
     attention, **hybridised with the input change**: the image tokens are the
@@ -527,7 +627,7 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     # K/V source node and drops the cache/RoPE for it.
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
-                          no_rope=True, rope_dim=None, variant=None)
+                          no_rope=True, rope_dim=None, rope_3d=False, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
     # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
     cross_children = attention_child_blocks(cross_spec, hidden_size, id_prefix="x_")
@@ -548,13 +648,18 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
         ),
         "facts": [f"K/V source ({_fmt(cross_dim)})" if cross_dim else "K/V from encoded text"],
     })
-    cross = [
-        {
-            "id": "xattn_norm", "role": "norm", "kind": "norm",
-            "diffusion_stage": "norm",
-            "label": norm_label, "title": "Pre-cross-attention norm",
-            "description": f"{norm_label} before cross-attention — a plain norm (not AdaLN-modulated).",
-        },
+    _no_prenorm_clause = (
+        "" if pre_norm else
+        " It reads the post-self-attention hidden states directly — LTX applies no "
+        "pre-cross-attention norm (only its self-attention and FFN are pre-normed)."
+    )
+    cross_norm = [{
+        "id": "xattn_norm", "role": "norm", "kind": "norm",
+        "diffusion_stage": "norm",
+        "label": norm_label, "title": "Pre-cross-attention norm",
+        "description": f"{norm_label} before cross-attention — a plain norm (not AdaLN-modulated).",
+    }] if pre_norm else []
+    cross = cross_norm + [
         {
             "id": "cross_attn", "role": "attention", "kind": "attention",
             "diffusion_stage": "cross_attention",
@@ -563,7 +668,7 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
             "description": (
                 "Image tokens form the queries; the encoded prompt (text-encoder K/V) "
                 "is attended — a separate sublayer (attn2) from self-attention, with its "
-                "own residual. This is how text conditions a cross-attention DiT."
+                "own residual. This is how text conditions a cross-attention DiT." + _no_prenorm_clause
             ),
             "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
             "view": "attention",
@@ -573,7 +678,8 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
         {
             "id": "add_xattn", "role": "residual", "kind": "residual_add",
             "diffusion_stage": "residual",
-            "residual_from": "xattn_norm",
+            # skip taps the pre-norm (when present) else the self-attention residual.
+            "residual_from": "xattn_norm" if pre_norm else "add1",
             "label": "+", "title": "Residual add (cross-attention)",
             "description": "self-attention output + cross-attention output",
         },

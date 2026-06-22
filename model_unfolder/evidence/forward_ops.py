@@ -216,22 +216,44 @@ def _module_list_elems(init: ast.FunctionDef | None) -> dict[str, str]:
     How a model NAMES the block classes it actually builds — the general,
     config-free way to resolve which ``forward()`` backs a layer view (Flux's
     ``transformer_blocks`` -> FluxTransformerBlock, ``single_transformer_blocks``
-    -> FluxSingleTransformerBlock; Llama's ``layers`` -> LlamaDecoderLayer)."""
-    out: dict[str, str] = {}
+    -> FluxSingleTransformerBlock; Llama's ``layers`` -> LlamaDecoderLayer).
+
+    Branch-aware: a model may build the SAME field from different classes in an
+    ``if``/``else`` gated by a config flag — HunyuanVideo does
+    ``if image_condition_type == "token_replace": [TokenReplaceBlock] else:
+    [TransformerBlock]``. The base/default build is the ``else`` (or top-level)
+    branch; the special variant is gated behind a positive config test. The
+    parser draws the GENERIC block (it does not model the special variant), so we
+    resolve to the DEFAULT-branch class — comparing the generic diagram against
+    the generic block, not the gated variant (which would falsely flag the
+    variant's extra ops, e.g. token-replace's concat). Models with no gated
+    construction (every assignment top-level) are unchanged."""
     if init is None:
-        return out
-    for child in ast.walk(init):
-        if not (isinstance(child, ast.Assign) and isinstance(child.value, ast.Call)):
-            continue
-        if _call_name(child.value.func) not in ("ModuleList", "Sequential", "ModuleDict"):
-            continue
-        elem = _list_elem_class(child.value.args)
-        if not elem:
-            continue
-        for target in child.targets:
-            field = _self_field(target)
-            if field is not None:
-                out.setdefault(field, elem)
+        return {}
+    # field -> [(class, is_default), …] in source order; default = reachable
+    # without entering a positive config-`if` test (top level or an else branch).
+    cands: dict[str, list[tuple[str, bool]]] = {}
+
+    def visit(stmts: list, is_default: bool) -> None:
+        for st in stmts:
+            if (isinstance(st, ast.Assign) and isinstance(st.value, ast.Call)
+                    and _call_name(st.value.func) in ("ModuleList", "Sequential", "ModuleDict")):
+                elem = _list_elem_class(st.value.args)
+                if elem:
+                    for target in st.targets:
+                        field = _self_field(target)
+                        if field is not None:
+                            cands.setdefault(field, []).append((elem, is_default))
+            elif isinstance(st, ast.If):
+                visit(st.body, False)            # positive branch = gated/special
+                visit(st.orelse, is_default)     # else (or elif chain) keeps default-ness
+            elif isinstance(st, (ast.For, ast.While, ast.With, ast.Try)):
+                visit(getattr(st, "body", []), is_default)
+
+    visit(init.body, True)
+    out: dict[str, str] = {}
+    for field, lst in cands.items():
+        out[field] = next((cls for cls, default in lst if default), lst[0][0])
     return out
 
 
