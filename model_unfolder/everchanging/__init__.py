@@ -162,6 +162,15 @@ def load_conformance_type_roles() -> tuple[list[str], dict[str, list[str]]]:
     return priority, roles
 
 
+def load_conformance_fact_markers() -> dict[str, list[str]]:
+    """``conformance/fact_markers.yaml`` -> ``{marker: [substrings]}`` for the
+    fact-conformance net (the SAME-op-kind, different-SEMANTICS dimensions
+    op-presence is blind to): ``rotary`` (block applies RoPE -> a NoPE claim is
+    fabricated) and ``linear_attn`` (self-attn is linear, not softmax)."""
+    data = load("conformance", "fact_markers")
+    return {k: [str(s) for s in (v or [])] for k, v in data.items()}
+
+
 def load_conformance_map() -> dict:
     """``conformance/conformance_map.yaml`` -> view<->code overrides + markers.
 

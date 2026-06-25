@@ -7,9 +7,12 @@ deterministic pass instead of an improvised, corner-cutting one:
 
 It runs the **mechanical** nets that can pass/fail on their own — click-coupling,
 the dangling-connector flag, unique ref-ids, op-conformance (diagram vs the code's
-op-kinds), wiring-conformance (drawn conditioning vs the code's forward args), and
-label-lint — and renders every distinct view to a PNG gallery for the one net that
-can't be automated: a human/agent **visual** review against :data:`VISUAL_RUBRIC`.
+op-kinds), wiring-conformance (drawn conditioning vs the code's forward args),
+fact-conformance (the same-op-kind / different-semantics dimensions op-presence is
+blind to: positional scheme = fabricated NoPE, attention algorithm = linear vs
+softmax), and label-lint — and renders every distinct view to a PNG gallery for the
+one net that can't be automated: a human/agent **visual** review against
+:data:`VISUAL_RUBRIC`.
 
 The split is the whole point.  Mechanical findings are objective and get CI-locked
 (see :func:`bless`): once a model passes, its config + per-view SVG hashes are frozen
@@ -115,7 +118,11 @@ def sable(model_or_id, *, token=None, source: str = "local",
     from .diagram import Diagram
     from .block_schema import validate_click_coupling, validate_unique_ref_ids
     from .lint import lint_labels
-    from .evidence import check_model_conformance, check_wiring_conformance
+    from .evidence import (
+        check_fact_conformance,
+        check_model_conformance,
+        check_wiring_conformance,
+    )
     from .evidence.sources import resolve_source_files
     from .preview import svg_views, _visual_hash
 
@@ -146,6 +153,12 @@ def sable(model_or_id, *, token=None, source: str = "local",
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("wiring_conformance",
                    [p.message for p in (check_wiring_conformance(cfg, ir, source=source) if oracle_files else [])],
+                   note="" if oracle_files else "skipped — no code oracle"),
+        # Fact-conformance: the SAME-op-kind, different-SEMANTICS dimensions that
+        # op-presence is blind to — positional scheme (fabricated NoPE) and attention
+        # algorithm (linear vs softmax). The two classes I kept catching by EYE.
+        SableCheck("fact_conformance",
+                   [p.message for p in (check_fact_conformance(cfg, ir, source=source) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),
     ]

@@ -2,6 +2,7 @@
   "checks": {
     "click_coupling": true,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
     "op_conformance": true,
     "unique_ref_ids": true,
@@ -148,10 +149,10 @@
     ]
   },
   "hash_signature": [
-    "0041d9fa5281f01cc955c0326718b7b4",
     "1f9feb589dfed9eb1754bcc3eafcf0a6",
     "375b0fc6d963ed249b5fc6e7ce086d5b",
     "3f6351da85a5482efcd23bc0a951889f",
+    "5ecbefdc7ad39904d54f066cbc0b1963",
     "6dc62a9559452e8afbb5c6772da97bc4",
     "72c72e56496f2ecf5c83d5192468a0e7",
     "8a53e5b43e29b3ed06b4e0dc092a5c19",

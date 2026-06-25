@@ -21,6 +21,7 @@ from pathlib import Path
 
 from ..everchanging import (
     load_conformance_abstractions,
+    load_conformance_fact_markers,
     load_conformance_map,
     load_conformance_wiring_roles,
 )
@@ -69,6 +70,14 @@ class ConformanceProblem:
         if self.kind == "stale":
             return (f"{self.view}: citation token {self.op!r} is no longer in{cls}'s forward() — "
                     f"upstream changed; re-verify and update the citation.{loc}")
+        if self.kind == "fabricated_position":
+            return (f"{self.view}: diagram asserts NoPE (no positional encoding) but{cls}'s "
+                    f"forward() applies rotary ({self.op}) — surface the (often code-derived) "
+                    f"RoPE, never a positionless claim.{loc}")
+        if self.kind == "wrong_attention":
+            drawn = "softmax" if self.op == "linear" else "linear"
+            return (f"{self.view}: diagram draws {drawn} attention but{cls} uses {self.op} "
+                    f"attention — match the attention algorithm (set the self-attention kind).{loc}")
         return f"{self.view}: no code unit resolved to diff against — add a conformance_map override.{cls}{loc}"
 
 
@@ -156,6 +165,69 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
                 and any(s in params for s in text_subs)):
             problems.append(ConformanceProblem(
                 "missing_input", "text", key,
+                code.class_name, code.source_file, code.forward_line))
+    return problems
+
+
+def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[ConformanceProblem]:
+    """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
+    structurally blind to — the SAME op-kind with different SEMANTICS:
+
+    * **positional scheme** — a ``NoPE`` (positionless) claim is FABRICATED when the
+      block actually applies rotary (threads ``rotary_emb`` / ``image_rotary_emb`` /
+      ``freqs_cis`` into its attention). This is the recurring "fabricated NoPE"
+      miss (Wan / CogVideoX / Mochi / LTX applied 3D rotary in code while the diagram
+      drew a NoPE chip) — invisible to a presence-set because NoPE and RoPE attention
+      have the identical op-set.
+    * **attention algorithm** — the drawn attention KIND must match the code: a
+      ``*LinearAttn*`` processor in the block's ``__init__`` means LINEAR attention,
+      not softmax (Sana drawn as softmax QK^T) — both are just "attention" to a
+      presence-set.
+
+    Complementary axis to op-conformance (op KINDS) and wiring-conformance
+    (conditioning INPUTS). Coarse + robust: the signals are param/token PRESENCE and
+    a constructed-class substring, never reconstructed wiring."""
+    family = _family(target)
+    bundle = resolve_source_files(target, source=source)
+    files = _augment_diffusion_files(bundle.files)
+    if not files:
+        return []                       # no oracle — op-conformance records 'unresolved'
+    forward_ops = extract_forward_ops(files)
+    cmap = load_conformance_map()
+    markers = load_conformance_fact_markers()
+    rotary_subs = [s.lower() for s in markers.get("rotary", [])]
+    linear_subs = markers.get("linear_attn", [])
+
+    representatives: dict[str, dict] = {}
+    for layer in (ir.get("layers") or []):
+        representatives.setdefault(f"{family}/{classify_group(layer)}", layer)
+
+    problems: list[ConformanceProblem] = []
+    for key, spec in representatives.items():
+        view = key.split("/", 1)[1]
+        code = resolve_view_code(family, view, spec, forward_ops, cmap)
+        if code is None:
+            continue                    # op-conformance already flags 'unresolved'
+        attn = spec.get("attention") or {}
+
+        # Positional: a NoPE claim contradicted by rotary threaded through the block.
+        if rotary_subs and attn.get("no_rope"):
+            toks = " ".join(code.forward_params | code.signature_tokens).lower()
+            if any(s in toks for s in rotary_subs):
+                problems.append(ConformanceProblem(
+                    "fabricated_position", "rotary", key,
+                    code.class_name, code.source_file, code.forward_line))
+
+        # Attention algorithm: the drawn KIND vs a *LinearAttn* processor in __init__.
+        diagram_linear = attn.get("kind") == "linear"
+        code_linear = any(m in r for r in code.init_class_refs for m in linear_subs)
+        if code_linear and not diagram_linear:
+            problems.append(ConformanceProblem(
+                "wrong_attention", "linear", key,
+                code.class_name, code.source_file, code.forward_line))
+        elif diagram_linear and not code_linear:
+            problems.append(ConformanceProblem(
+                "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line))
     return problems
 

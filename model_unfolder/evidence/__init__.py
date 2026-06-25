@@ -1,6 +1,7 @@
 """Static source-code evidence for model topology validation."""
 from .conformance import (
     ConformanceProblem,
+    check_fact_conformance,
     check_model_conformance,
     check_wiring_conformance,
 )
@@ -14,6 +15,7 @@ __all__ = [
     "extract_forward_ops",
     "check_model_conformance",
     "check_wiring_conformance",
+    "check_fact_conformance",
     "validate_ir_with_evidence",
     "ConformanceProblem",
     "ClassEvidence",

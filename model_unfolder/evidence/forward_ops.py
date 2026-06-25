@@ -102,7 +102,24 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
         module_list_elems=module_list_elems,
         signature_tokens=frozenset(t for t in sig_tokens if t),
         forward_params=_forward_params(forward),
+        init_class_refs=_init_class_refs(init),
     )
+
+
+def _init_class_refs(init: ast.FunctionDef | None) -> frozenset[str]:
+    """Every class-name CONSTRUCTED in ``__init__`` — every ``Foo(...)`` call token,
+    including nested kwargs like ``Attention(..., processor=SanaLinearAttnProcessor())``.
+    The ``self.x = Cls`` field types miss processors (a kwarg, not an attribute), so
+    this captures the attention ALGORITHM signal for fact-conformance."""
+    if init is None:
+        return frozenset()
+    refs: set[str] = set()
+    for child in ast.walk(init):
+        if isinstance(child, ast.Call):
+            name = _call_name(child.func)
+            if name:
+                refs.add(name)
+    return frozenset(refs)
 
 
 def _forward_params(forward: ast.FunctionDef) -> frozenset[str]:

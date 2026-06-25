@@ -13,7 +13,7 @@ import pytest
 
 import model_unfolder as mu
 from model_unfolder import lint_labels, sable, bless, check_regression, load_corpus
-from model_unfolder.evidence import check_wiring_conformance
+from model_unfolder.evidence import check_fact_conformance, check_wiring_conformance
 from tests.test_diffusion import FLUX, PIXART, LLAMA
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
@@ -88,6 +88,42 @@ def test_wiring_conformance_flags_missing_text_rail():
     probs = check_wiring_conformance(FLUX, ir)
     assert any(p.kind == "missing_input" and p.op == "text" for p in probs), \
         [p.message for p in probs]
+
+
+# --------------------------------------------------------------------------- #
+# fact-conformance — the SAME-op-kind, different-SEMANTICS axis (positional
+# scheme, attention algorithm) that op-presence conformance is blind to.
+# --------------------------------------------------------------------------- #
+
+@pytest.mark.parametrize("name,cfg", [("FLUX", FLUX), ("PIXART", PIXART)])
+def test_fact_conformance_clean_on_corpus(name, cfg):
+    """FLUX (axial RoPE, softmax) and PixArt (learned-pos, softmax) make no
+    fabricated-NoPE or wrong-attention claim — fact-conformance is clean."""
+    ir = mu.unfold(cfg).to_ir()
+    assert [p.message for p in check_fact_conformance(cfg, ir)] == []
+
+
+def test_fact_conformance_flags_fabricated_nope():
+    """NEGATIVE CONTROL: a block whose forward() applies rotary (FLUX threads
+    image_rotary_emb) but whose diagram asserts NoPE must fire. This is the
+    recurring fabricated-NoPE class (Wan/CogVideoX/Mochi/LTX/Lumina2)."""
+    ir = mu.unfold(FLUX).to_ir()
+    for L in ir["layers"]:                       # strip the positional scheme
+        att = L.get("attention") or {}
+        att["no_rope"], att["rope"], att["rope_dim"] = True, False, None
+    probs = check_fact_conformance(FLUX, ir)
+    assert any(p.kind == "fabricated_position" for p in probs), [p.message for p in probs]
+
+
+def test_fact_conformance_flags_wrong_attention_kind():
+    """NEGATIVE CONTROL: a diagram that draws LINEAR attention for a block whose
+    code uses softmax (FLUX has no *LinearAttn* processor) must fire — the inverse
+    of the Sana miss (softmax drawn for a linear-attention block)."""
+    ir = mu.unfold(FLUX).to_ir()
+    for L in ir["layers"]:
+        (L.get("attention") or {})["kind"] = "linear"
+    probs = check_fact_conformance(FLUX, ir)
+    assert any(p.kind == "wrong_attention" for p in probs), [p.message for p in probs]
 
 
 # --------------------------------------------------------------------------- #

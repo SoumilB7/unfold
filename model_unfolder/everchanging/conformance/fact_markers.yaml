@@ -1,0 +1,25 @@
+# Vocabulary for FACT-conformance (evidence/conformance.py::check_fact_conformance)
+# — the architecture dimensions op-PRESENCE conformance is structurally BLIND to,
+# because they are the SAME op-kind with different SEMANTICS:
+#
+#   * positional scheme — a NoPE attention and a RoPE attention have the IDENTICAL
+#     op-set, so presence-conformance can't tell them apart (the recurring
+#     "fabricated NoPE" miss: Wan/CogVideoX/Mochi/LTX applied rotary in code while
+#     the diagram drew a NoPE chip);
+#   * attention algorithm — linear attention and softmax attention are both just
+#     an "attention" op to a presence-set (Sana drawn as softmax QK^T when its
+#     processor is SanaLinearAttnProcessor — ReLU-kernel LINEAR attention).
+#
+# Flow style ([a, b]) so the built-in loader needs no PyYAML.
+
+# Substrings that, in a block's forward() PARAMETER names or call tokens, mean the
+# block APPLIES ROTARY position encoding to Q/K (it threads rotary_emb /
+# image_rotary_emb / freqs_cis into its attention). Matched case-insensitively. If
+# any is present, a "NoPE / positionless" claim on that block is a fabricated
+# negative — surface the real (often code-derived) RoPE instead.
+rotary: [rotary, freqs_cis]
+
+# Class-name substrings (in a block's __init__ constructions — typically the
+# attention PROCESSOR, e.g. SanaLinearAttnProcessor2_0) that mean the self-attention
+# is LINEAR attention, not softmax. Matched case-sensitively (class names).
+linear_attn: [LinearAttn, LinearAttention]

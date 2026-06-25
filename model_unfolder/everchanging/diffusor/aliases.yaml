@@ -20,7 +20,10 @@ hidden_size: [hidden_size, inner_dim, d_model, dim]
 
 # Positional encoding: Flux applies axial RoPE over the joint sequence; the
 # per-axis dims sum to the head dim. Presence of this field => RoPE (not NoPE).
-axes_dims_rope: [axes_dims_rope, axes_dim, rope_axes_dim]
+# Spelling varies: HunyuanVideo=rope_axes_dim, Lumina2=axes_dim_rope (singular
+# "dim", "rope" SUFFIX — distinct from the Flux axes_dim). fact-conformance caught
+# Lumina2's fabricated NoPE because this alias was missing axes_dim_rope.
+axes_dims_rope: [axes_dims_rope, axes_dim, axes_dim_rope, rope_axes_dim]
 mrope_section: [mrope_section, rope_sections]
 rope_theta: [rope_theta]
 # Learned absolute positions baked into the patch embedding (SD3 / PixArt declare

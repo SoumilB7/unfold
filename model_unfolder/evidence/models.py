@@ -85,6 +85,11 @@ class ForwardOps:
     #: ``encoder_hidden_states``, ``temb``.  The code side of wiring-conformance:
     #: a side-input the diagram draws must correspond to a real conditioning arg.
     forward_params: frozenset[str] = frozenset()
+    #: EVERY class-name constructed in ``__init__`` (including nested kwargs, e.g.
+    #: ``Attention(..., processor=SanaLinearAttnProcessor2_0())``) — the code side of
+    #: fact-conformance for the attention ALGORITHM (a ``*LinearAttn*`` processor is
+    #: a code fact the diagram's attention KIND must match), not just self.<field>.
+    init_class_refs: frozenset[str] = frozenset()
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -96,6 +101,7 @@ class ForwardOps:
             "module_list_elems": dict(sorted(self.module_list_elems.items())),
             "signature_tokens": sorted(self.signature_tokens),
             "forward_params": sorted(self.forward_params),
+            "init_class_refs": sorted(self.init_class_refs),
         }
 
 
