@@ -19,7 +19,7 @@ axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
 # CogVideoXBlock builds its Attention with qk_norm="layer_norm" when its
 # qk_norm flag (default True) is set — a LayerNorm on Q/K, not RMSNorm — and the
 # config.json does not carry the flag. (The norm TYPE is read from this value.)
-qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm", "CogVideoXTransformer3DModel=layer_norm"]
+qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm", "CogVideoXTransformer3DModel=layer_norm", "AuraFlowTransformer2DModel=layer_norm"]
 
 # FFN activation fixed in the model class, not config. In diffusers the
 # activation_fn name fully specifies the FFN shape, so this also resolves the
@@ -27,14 +27,17 @@ qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm",
 # GATED MLP. Flux 1 builds FeedForward(activation_fn="gelu-approximate") + GELU(
 # tanh) (single), both mult=4. Flux 2 uses Flux2SwiGLU in BOTH blocks (dual
 # Flux2FeedForward + the single block's fused mlp_act_fn).
-ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate", "WanTransformer3DModel=gelu-approximate", "HunyuanVideoTransformer3DModel=gelu-approximate"]
+ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate", "WanTransformer3DModel=gelu-approximate", "HunyuanVideoTransformer3DModel=gelu-approximate", "SD3Transformer2DModel=gelu-approximate", "AuraFlowTransformer2DModel=swiglu"]
 
-# Single-stream (fused) block topology — a CODE fact (the block class), default
-# concat_fused (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE
-# shared OUT projection). "parallel" = the ViT-22B parallel block (Flux 2's
-# Flux2SingleTransformerBlock / Flux2ParallelSelfAttention): the IN-projection is
-# ALSO fused (one matmul → QKV ‖ MLP-in) and the MLP is gated (SwiGLU).
-single_stream_fusion: ["Flux2Transformer2DModel=parallel"]
+# Single-stream block topology — a CODE fact (the block class). Default concat_fused
+# (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE shared OUT
+# projection). "parallel" = Flux 2's ViT-22B parallel block (IN-projection ALSO
+# fused → QKV ‖ MLP-in, gated SwiGLU). "sequential" = NOT fused at all: a plain
+# sequential gated DiT block (self-attn → FFN) over the joined [text+image]
+# sequence — AuraFlow's AuraFlowSingleTransformerBlock (its forward does NO concat
+# and NO fused projection; the text+image join happens ONCE upstream, like a
+# concat-joint block). Drawing concat-fusion for it fabricates a concat + linear.
+single_stream_fusion: ["Flux2Transformer2DModel=parallel", "AuraFlowTransformer2DModel=sequential"]
 
 # 3D (temporal · height · width) AXIAL RoPE applied to Q/K in self-attention,
 # fixed in the model class and declared by NO config field (so it reads as NoPE
@@ -55,9 +58,22 @@ rope_3d: ["WanTransformer3DModel=true", "MochiTransformer3DModel=true", "LTXVide
 # post-sublayer modulated-norm box instead of the × for these classes.
 gate_via_norm: ["MochiTransformer3DModel=true"]
 
-# Pre-cross-attention norm presence. Most cross-attention DiTs norm before attn2
-# (Wan declares cross_attn_norm=True; PixArt/Sana norm in-class — the default).
-# LTXVideoTransformerBlock is the exception: it applies attn2 directly to the
-# post-self-attention hidden states with NO pre-norm, so drawing one fabricates a
-# block. Only the exceptions need an entry (default is present).
-cross_attn_norm: ["LTXVideoTransformer3DModel=false"]
+# Pre-cross-attention norm presence. The DEFAULT is now NO pre-norm (the verified
+# cross-attn DiTs — PixArt/Sana/LTX — apply attn2 to the raw hidden; Wan, which DOES
+# pre-norm, declares cross_attn_norm=True in its config). This key lists the rare
+# models that HAVE the pre-norm but DON'T declare it in config (currently none —
+# Wan uses the config flag). Add "<Class>=true" here only after reading the block's
+# forward() and confirming a norm precedes attn2.
+cross_attn_norm: []
+
+# Self-attention KIND when the model class fixes a non-softmax processor and the
+# config is silent. Sana's block builds attn1 with SanaLinearAttnProcessor2_0 —
+# ReLU-kernel LINEAR attention (its defining efficiency feature) — while attn2
+# (cross) stays standard softmax. Surfaced so the self-attn drill draws the linear
+# path (kernel map → linear mix), not a fabricated softmax QK^T.
+self_attn_kind: ["SanaTransformer2DModel=linear"]
+
+# FFN kind when the block class fixes a non-MLP feed-forward and the config is
+# silent. Sana's block builds self.ff = GLUMBConv — a gated CONV Mix-FFN (1×1 conv
+# expand → depthwise 3×3 conv → SiLU gate → 1×1 conv project), not a Linear MLP.
+ffn_kind: ["SanaTransformer2DModel=conv_glu"]

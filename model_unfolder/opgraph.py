@@ -102,6 +102,9 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     if kind == "moe":
         return _moe_region(ffn, hidden, inter)
 
+    if kind == "conv_glu":
+        return _conv_glu_mlp_region(hidden, inter, ffn.get("activation") or "silu")
+
     # Honest-unknown: the config declares the block IS a feed-forward and how wide
     # its inner projection is, but NOT whether it gates (2 vs 3 projections) or
     # which activation it uses — those live in the model code.  Draw one honest
@@ -132,6 +135,25 @@ def _gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
              Edge("gate_proj", "activation"), Edge("activation", "multiply"),
              Edge("up_proj", "multiply"), Edge("multiply", "down_proj")]
     return Region("ffn", "ffn", "Gated MLP", ops, edges, template="gated_mlp")
+
+
+#: Sana's GLUMBConv described as one honest leaf (its conv-gate internals differ
+#: enough from a Linear MLP that we name the structure in prose rather than fabricate
+#: Linear up/down boxes; resolved=True since this is KNOWN, not honest-unknown).
+_GLUMBCONV_DESC = (
+    "Sana's GLUMBConv — a GATED CONV Mix-FFN, not a Linear MLP: a 1×1 conv expands "
+    "the width to 2× the inner channels, a depthwise 3×3 conv mixes locally, the "
+    "result splits in half (value · SiLU(gate)), and a 1×1 conv projects back. The "
+    "conv feed-forward paired with linear attention is what makes Sana efficient."
+)
+
+
+def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu") -> Region:
+    op = Op("block", "opaque", "Gated conv Mix-FFN",
+            in_features=hidden, out_features=hidden,
+            meta={"intermediate_size": inter, "desc": _GLUMBCONV_DESC})
+    return Region("ffn", "ffn", "Gated conv Mix-FFN", [op], [],
+                  template="conv_glu", source="opaque", resolved=True)
 
 
 def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:

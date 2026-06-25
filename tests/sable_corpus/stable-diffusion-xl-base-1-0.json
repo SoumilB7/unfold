@@ -1,0 +1,242 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "UNet2DConditionModel",
+    "_diffusers_version": "0.19.0.dev0",
+    "_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+    "_pipeline_class_name": "StableDiffusionXLPipeline",
+    "_repo_id": "stabilityai/stable-diffusion-xl-base-1.0",
+    "_scheduler_config": {
+      "_class_name": "EulerDiscreteScheduler",
+      "_diffusers_version": "0.19.0.dev0",
+      "beta_end": 0.012,
+      "beta_schedule": "scaled_linear",
+      "beta_start": 0.00085,
+      "clip_sample": false,
+      "interpolation_type": "linear",
+      "num_train_timesteps": 1000,
+      "prediction_type": "epsilon",
+      "sample_max_value": 1.0,
+      "set_alpha_to_one": false,
+      "skip_prk_steps": true,
+      "steps_offset": 1,
+      "timestep_spacing": "leading",
+      "trained_betas": null,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "architectures": [
+          "CLIPTextModel"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "dropout": 0.0,
+        "eos_token_id": 2,
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "pad_token_id": 1,
+        "projection_dim": 768,
+        "torch_dtype": "float16",
+        "transformers_version": "4.32.0.dev0",
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "dropout": 0.0,
+        "eos_token_id": 2,
+        "hidden_act": "gelu",
+        "hidden_size": 1280,
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 5120,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 20,
+        "num_hidden_layers": 32,
+        "pad_token_id": 1,
+        "projection_dim": 1280,
+        "torch_dtype": "float16",
+        "transformers_version": "4.32.0.dev0",
+        "vocab_size": 49408
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.20.0.dev0",
+      "_name_or_path": "../sdxl-vae/",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 0.13025,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ]
+    },
+    "act_fn": "silu",
+    "add_watermarker": null,
+    "addition_embed_type": "text_time",
+    "addition_embed_type_num_heads": 64,
+    "addition_time_embed_dim": 256,
+    "attention_head_dim": [
+      5,
+      10,
+      20
+    ],
+    "block_out_channels": [
+      320,
+      640,
+      1280
+    ],
+    "center_input_sample": false,
+    "class_embed_type": null,
+    "class_embeddings_concat": false,
+    "conv_in_kernel": 3,
+    "conv_out_kernel": 3,
+    "cross_attention_dim": 2048,
+    "cross_attention_norm": null,
+    "down_block_types": [
+      "DownBlock2D",
+      "CrossAttnDownBlock2D",
+      "CrossAttnDownBlock2D"
+    ],
+    "downsample_padding": 1,
+    "dual_cross_attention": false,
+    "encoder_hid_dim": null,
+    "encoder_hid_dim_type": null,
+    "flip_sin_to_cos": true,
+    "force_zeros_for_empty_prompt": true,
+    "freq_shift": 0,
+    "in_channels": 4,
+    "layers_per_block": 2,
+    "mid_block_only_cross_attention": null,
+    "mid_block_scale_factor": 1,
+    "mid_block_type": "UNetMidBlock2DCrossAttn",
+    "norm_eps": 1e-05,
+    "norm_num_groups": 32,
+    "num_attention_heads": null,
+    "num_class_embeds": null,
+    "only_cross_attention": false,
+    "out_channels": 4,
+    "projection_class_embeddings_input_dim": 2816,
+    "resnet_out_scale_factor": 1.0,
+    "resnet_skip_time_act": false,
+    "resnet_time_scale_shift": "default",
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "EulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModel"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "time_cond_proj_dim": null,
+    "time_embedding_act_fn": null,
+    "time_embedding_dim": null,
+    "time_embedding_type": "positional",
+    "timestep_post_act": null,
+    "tokenizer": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "transformer_layers_per_block": [
+      1,
+      2,
+      10
+    ],
+    "unet": [
+      "diffusers",
+      "UNet2DConditionModel"
+    ],
+    "up_block_types": [
+      "CrossAttnUpBlock2D",
+      "CrossAttnUpBlock2D",
+      "UpBlock2D"
+    ],
+    "upcast_attention": null,
+    "use_linear_projection": true,
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "0850c4e36b23a250337f084246890fd0",
+    "09d273d6022ab07158f8dc7b09698e33",
+    "0ddcdb100c7fba897d06e89d253cfdd3",
+    "19881dbe26ee6e9c28298b4f00967617",
+    "1f259e59ffa9b85c128e90153526ddfa",
+    "2989690d90d82dded5881dedfe9065ca",
+    "2f1629970ce23e018d4bc9220f3384f7",
+    "3ecc45f838bfd7eebd7dca350c3f7d04",
+    "40325d6d1106b458996838748a7df14b",
+    "498f27eac22f32eb6d48d602da830a91",
+    "64d6cd9b58140f0e4a7ec3412116dd93",
+    "6e406e48020a66f749a4fcf945797a07",
+    "7c5fc3c739f41d8a567418b5f619d2c8",
+    "85a4069394f87fccf7bfab9611bbfbc2",
+    "8870ec2d1f94d18d07b8440da8b9ab4b",
+    "8874936fa4778a9d44c1cf1a7d0bc752",
+    "8d24f016deed8cbc7b7e8e5bd234dc2e",
+    "9ad20efcf870037eef9d1cb50c0bc390",
+    "b32f612f227252073a08e66d082113c1",
+    "b6825da71ac9e3581ea874f3f5c3457f",
+    "b75b8f3ce3d358907036ee12b22cbbc2",
+    "c21895423df9cd2333325df600a8146e",
+    "c60a86c043f8d2be68bca7e5df2215e7",
+    "cdf43b8ecc2ac51d8d827ac14dbd6dae",
+    "de1c686b48c01108f536c2978d7f2263",
+    "f2e1233e250891e2de39c5c057476f4b"
+  ],
+  "model": "stable-diffusion-xl-base-1.0",
+  "source": "local"
+}

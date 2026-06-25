@@ -1,0 +1,223 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "SanaTransformer2DModel",
+    "_diffusers_version": "0.32.0.dev0",
+    "_name_or_path": "Efficient-Large-Model/Sana_1600M_1024px_diffusers",
+    "_pipeline_class_name": "SanaPipeline",
+    "_repo_id": "Efficient-Large-Model/Sana_1600M_1024px_diffusers",
+    "_scheduler_config": {
+      "_class_name": "DPMSolverMultistepScheduler",
+      "_diffusers_version": "0.32.0.dev0",
+      "algorithm_type": "dpmsolver++",
+      "beta_end": 0.02,
+      "beta_schedule": "linear",
+      "beta_start": 0.0001,
+      "dynamic_thresholding_ratio": 0.995,
+      "euler_at_final": false,
+      "final_sigmas_type": "zero",
+      "flow_shift": 3.0,
+      "lambda_min_clipped": -Infinity,
+      "lower_order_final": true,
+      "num_train_timesteps": 1000,
+      "prediction_type": "flow_prediction",
+      "rescale_betas_zero_snr": false,
+      "sample_max_value": 1.0,
+      "solver_order": 2,
+      "solver_type": "midpoint",
+      "steps_offset": 0,
+      "thresholding": false,
+      "timestep_spacing": "linspace",
+      "trained_betas": null,
+      "use_beta_sigmas": false,
+      "use_exponential_sigmas": false,
+      "use_flow_sigmas": true,
+      "use_karras_sigmas": false,
+      "use_lu_lambdas": false,
+      "variance_type": null
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/gemma-2-2b-it",
+        "architectures": [
+          "Gemma2Model"
+        ],
+        "attention_bias": false,
+        "attention_dropout": 0.0,
+        "attn_logit_softcapping": 50.0,
+        "bos_token_id": 2,
+        "cache_implementation": "hybrid",
+        "eos_token_id": [
+          1,
+          107
+        ],
+        "final_logit_softcapping": 30.0,
+        "head_dim": 256,
+        "hidden_act": "gelu_pytorch_tanh",
+        "hidden_activation": "gelu_pytorch_tanh",
+        "hidden_size": 2304,
+        "initializer_range": 0.02,
+        "intermediate_size": 9216,
+        "max_position_embeddings": 8192,
+        "model_type": "gemma2",
+        "num_attention_heads": 8,
+        "num_hidden_layers": 26,
+        "num_key_value_heads": 4,
+        "pad_token_id": 0,
+        "query_pre_attn_scalar": 256,
+        "rms_norm_eps": 1e-06,
+        "rope_theta": 10000.0,
+        "sliding_window": 4096,
+        "torch_dtype": "bfloat16",
+        "transformers_version": "4.46.0",
+        "use_cache": true,
+        "vocab_size": 256000
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderDC",
+      "_diffusers_version": "0.32.0.dev0",
+      "_name_or_path": "mit-han-lab/dc-ae-f32c32-sana-1.0-diffusers",
+      "attention_head_dim": 32,
+      "decoder_act_fns": "silu",
+      "decoder_block_out_channels": [
+        128,
+        256,
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "decoder_block_types": [
+        "ResBlock",
+        "ResBlock",
+        "ResBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock"
+      ],
+      "decoder_layers_per_block": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "decoder_norm_types": "rms_norm",
+      "decoder_qkv_multiscales": [
+        [],
+        [],
+        [],
+        [
+          5
+        ],
+        [
+          5
+        ],
+        [
+          5
+        ]
+      ],
+      "downsample_block_type": "Conv",
+      "encoder_block_out_channels": [
+        128,
+        256,
+        512,
+        512,
+        1024,
+        1024
+      ],
+      "encoder_block_types": [
+        "ResBlock",
+        "ResBlock",
+        "ResBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock",
+        "EfficientViTBlock"
+      ],
+      "encoder_layers_per_block": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ],
+      "encoder_qkv_multiscales": [
+        [],
+        [],
+        [],
+        [
+          5
+        ],
+        [
+          5
+        ],
+        [
+          5
+        ]
+      ],
+      "in_channels": 3,
+      "latent_channels": 32,
+      "scaling_factor": 0.41407,
+      "upsample_block_type": "interpolate"
+    },
+    "attention_bias": false,
+    "attention_head_dim": 32,
+    "caption_channels": 2304,
+    "cross_attention_dim": 2240,
+    "cross_attention_head_dim": 112,
+    "dropout": 0.0,
+    "in_channels": 32,
+    "mlp_ratio": 2.5,
+    "norm_elementwise_affine": false,
+    "norm_eps": 1e-06,
+    "num_attention_heads": 70,
+    "num_cross_attention_heads": 20,
+    "num_layers": 20,
+    "out_channels": 32,
+    "patch_size": 1,
+    "sample_size": 32,
+    "scheduler": [
+      "diffusers",
+      "DPMSolverMultistepScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "Gemma2Model"
+    ],
+    "tokenizer": [
+      "transformers",
+      "GemmaTokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "SanaTransformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderDC"
+    ]
+  },
+  "hash_signature": [
+    "453ff2334cd3f6708a3667f93d99ffd8",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "7aae01a2ba3277f8635e31fa6053b591",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "8f1efbf888fed1e2e05e2bfcc25cbd9c",
+    "913168b0d9b21cf50db8105a6de44992",
+    "c3b47dc7cf4b0422fe0b553c1dbe768b",
+    "ecf21c98fc66bf5486863c305bc5c80b",
+    "f3479e573804486bdff98b7e00b91a9e"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "source": "local"
+}

@@ -663,10 +663,13 @@ def test_dit_norm_type_resolved_from_config_not_generic():
     assert norms and all(b.get("label") == "LayerNorm" for b in norms), \
         f"ada_norm_single must resolve to LayerNorm, got {[(b['id'], b.get('label')) for b in norms]}"
     # the AdaLN modulation must be NAMED in the self-attn & FFN norm cards (the defining
-    # DiT mechanism); the cross-attn norm is noted as a plain norm.
+    # DiT mechanism). ada_norm_single (PixArt) has NO pre-cross-attn norm, so there is no
+    # xattn_norm card here — but when one IS drawn (cross_attn_norm=True) it's a plain norm.
     by = {b["id"]: b for b in blocks}
     assert all("AdaLN" in by[n]["description"] for n in ("rms1", "rms2"))
-    assert "plain norm" in by["xattn_norm"]["description"]
+    assert "xattn_norm" not in by
+    by_wn = {b["id"]: b for b in unfold({**PIXART, "cross_attn_norm": True}).ir.layers[0].blocks}
+    assert "plain norm" in by_wn["xattn_norm"]["description"]
     # rms_norm config → RMSNorm; an undeclared norm stays generic (honest-unknown).
     rms = {**PIXART, "norm_type": "rms_norm"}
     assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
@@ -713,13 +716,24 @@ def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
 def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
     self-attn → cross-attn(to text) → FFN — each AdaLN-gated where the source gates
-    (self + FFN). MM-DiT (joint) has NO separate cross-attention sublayer."""
+    (self + FFN). MM-DiT (joint) has NO separate cross-attention sublayer.
+
+    The PRE-cross-attention norm is model-dependent and code-derived: PixArt
+    (norm_type=ada_norm_single) and LTX apply attn2 to the raw post-self-attn hidden
+    (NO pre-norm — the diffusers "For PixArt norm2 isn't applied here" branch), while
+    Wan declares cross_attn_norm=True and DOES pre-norm. Neither is fabricated."""
     d = unfold(PIXART)
     ids = [b["id"] for b in d.ir.layers[0].blocks]
-    # the three-sublayer chain in order
-    assert ids[:11] == ["rms1", "attn", "gate_msa", "add1",
-                        "xattn_norm", "cross_attn", "add_xattn",
+    # ada_norm_single → cross-attn has NO pre-norm (attn2 reads the raw hidden state).
+    assert ids[:10] == ["rms1", "attn", "gate_msa", "add1",
+                        "cross_attn", "add_xattn",
                         "rms2", "ffn", "gate_mlp", "add2"]
+    assert "xattn_norm" not in ids
+    # A config that declares cross_attn_norm=True DOES draw the pre-cross-attn norm.
+    with_norm = [b["id"] for b in unfold({**PIXART, "cross_attn_norm": True}).ir.layers[0].blocks]
+    assert with_norm[:11] == ["rms1", "attn", "gate_msa", "add1",
+                              "xattn_norm", "cross_attn", "add_xattn",
+                              "rms2", "ffn", "gate_mlp", "add2"]
     cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
     # The cross-attn drill is the CANONICAL attention view, hybridised with the input
     # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.

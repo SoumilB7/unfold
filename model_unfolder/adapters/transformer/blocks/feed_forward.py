@@ -39,7 +39,13 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
     hidden = _fmt(hidden_size)
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
-    if ffn.kind != "moe" and ffn.gated is None:
+    if ffn.kind == "conv_glu":
+        # Sana's GLUMBConv — a gated CONV Mix-FFN named as one honest leaf (its
+        # conv-gate internals are KNOWN but differ from a Linear MLP, so we describe
+        # the structure rather than fabricate Linear up/down boxes). The id matches
+        # the op-graph's opaque region node so the click target stays coupled.
+        children = _conv_glu_ffn_child_blocks(hidden, inter)
+    elif ffn.kind != "moe" and ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
         # opaque region node, so the click target stays coupled to its card).
         children = _undeclared_ffn_child_blocks(hidden, inter)
@@ -56,6 +62,24 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         for c in children:
             c.pop("facts", None)
     return children
+
+
+def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
+    return [
+        {
+            "id": "block",
+            "label": "Gated conv Mix-FFN",
+            "title": "GLUMBConv (gated conv Mix-FFN)",
+            "description": (
+                "Sana's GLUMBConv — a gated CONV feed-forward, not a Linear MLP: a "
+                "1×1 conv expands to 2× the inner width, a depthwise 3×3 conv mixes "
+                "locally, the result splits in half (value · SiLU(gate)), and a 1×1 "
+                "conv projects back. The conv FFN paired with linear attention is what "
+                "makes Sana efficient."
+            ),
+            "facts": [f"{hidden} → {inter} → {hidden}", "depthwise 3×3 + SiLU gate"],
+        },
+    ]
 
 
 def _undeclared_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:

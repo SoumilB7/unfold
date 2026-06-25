@@ -1,0 +1,168 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "Transformer2DModel",
+    "_diffusers_version": "0.28.0.dev0",
+    "_name_or_path": "PixArt-alpha/PixArt-Sigma-XL-2-1024-MS",
+    "_pipeline_class_name": "PixArtSigmaPipeline",
+    "_repo_id": "PixArt-alpha/PixArt-Sigma-XL-2-1024-MS",
+    "_scheduler_config": {
+      "_class_name": "DPMSolverMultistepScheduler",
+      "_diffusers_version": "0.22.0.dev0",
+      "algorithm_type": "dpmsolver++",
+      "beta_end": 0.02,
+      "beta_schedule": "linear",
+      "beta_start": 0.0001,
+      "dynamic_thresholding_ratio": 0.995,
+      "euler_at_final": false,
+      "lambda_min_clipped": -Infinity,
+      "lower_order_final": true,
+      "num_train_timesteps": 1000,
+      "prediction_type": "epsilon",
+      "sample_max_value": 1.0,
+      "solver_order": 2,
+      "solver_type": "midpoint",
+      "steps_offset": 0,
+      "thresholding": false,
+      "timestep_spacing": "linspace",
+      "trained_betas": null,
+      "use_karras_sigmas": false,
+      "use_lu_lambdas": false,
+      "variance_type": null
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "data/t5_ckpts",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "tie_word_embeddings": false,
+        "torch_dtype": "float32",
+        "transformers_version": "4.30.0",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.18.0.dev0",
+      "_name_or_path": ".",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": false,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 512,
+      "scaling_factor": 0.13025,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ]
+    },
+    "activation_fn": "gelu-approximate",
+    "attention_bias": true,
+    "attention_head_dim": 72,
+    "attention_type": "default",
+    "caption_channels": 4096,
+    "cross_attention_dim": 1152,
+    "double_self_attention": false,
+    "dropout": 0.0,
+    "in_channels": 4,
+    "interpolation_scale": 2,
+    "norm_elementwise_affine": false,
+    "norm_eps": 1e-06,
+    "norm_num_groups": 32,
+    "norm_type": "ada_norm_single",
+    "num_attention_heads": 16,
+    "num_embeds_ada_norm": 1000,
+    "num_layers": 28,
+    "num_vector_embeds": null,
+    "only_cross_attention": false,
+    "out_channels": 8,
+    "patch_size": 2,
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "DPMSolverMultistepScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "T5Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "Transformer2DModel"
+    ],
+    "upcast_attention": false,
+    "use_additional_conditions": false,
+    "use_linear_projection": false,
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "1584a5f7876a1612417fb88f5211af58",
+    "1e6e37015517da680f7d22555b019a11",
+    "2996dd565ad86c02c4de77710644a035",
+    "2ad9d9bd3a750ec84c04440348eb463c",
+    "62493dac4a0c1fe07edaeabed33be017",
+    "6dacceff78b93cd295446b14ca0d3f15",
+    "9017b8e43fcbe059963aa513060ed950",
+    "9f198a62053f6939aaa6682f5757e736",
+    "a66b0d9f8538451a202c6aff20678d1f",
+    "b27da72d8797da4f23c882340fe81c3f",
+    "d3552b121e3b5b31a3a81a831305315c",
+    "d8231cdbb4fc341af6833070f3dd8d49",
+    "f8c0f6c893ff6bc3aa7f3e8490d60356"
+  ],
+  "model": "PixArt-Sigma-XL-2-1024-MS",
+  "source": "local"
+}

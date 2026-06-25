@@ -1,0 +1,208 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "SD3Transformer2DModel",
+    "_diffusers_version": "0.31.0.dev0",
+    "_name_or_path": "stabilityai/stable-diffusion-3.5-large",
+    "_pipeline_class_name": "StableDiffusion3Pipeline",
+    "_repo_id": "stabilityai/stable-diffusion-3.5-large",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.29.0.dev0",
+      "num_train_timesteps": 1000,
+      "shift": 3.0
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "dropout": 0.0,
+        "eos_token_id": 2,
+        "hidden_act": "quick_gelu",
+        "hidden_size": 768,
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 3072,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 12,
+        "num_hidden_layers": 12,
+        "pad_token_id": 1,
+        "projection_dim": 768,
+        "torch_dtype": "float16",
+        "transformers_version": "4.41.2",
+        "vocab_size": 49408
+      },
+      "text_encoder_2": {
+        "architectures": [
+          "CLIPTextModelWithProjection"
+        ],
+        "attention_dropout": 0.0,
+        "bos_token_id": 0,
+        "dropout": 0.0,
+        "eos_token_id": 2,
+        "hidden_act": "gelu",
+        "hidden_size": 1280,
+        "initializer_factor": 1.0,
+        "initializer_range": 0.02,
+        "intermediate_size": 5120,
+        "layer_norm_eps": 1e-05,
+        "max_position_embeddings": 77,
+        "model_type": "clip_text_model",
+        "num_attention_heads": 20,
+        "num_hidden_layers": 32,
+        "pad_token_id": 1,
+        "projection_dim": 1280,
+        "torch_dtype": "float16",
+        "transformers_version": "4.41.2",
+        "vocab_size": 49408
+      },
+      "text_encoder_3": {
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "tie_word_embeddings": false,
+        "torch_dtype": "float16",
+        "transformers_version": "4.41.2",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.31.0.dev0",
+      "_name_or_path": "../sdxl-vae/",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 16,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "mid_block_add_attention": true,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 1.5305,
+      "shift_factor": 0.0609,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": false,
+      "use_quant_conv": false
+    },
+    "attention_head_dim": 64,
+    "caption_projection_dim": 2432,
+    "in_channels": 16,
+    "joint_attention_dim": 4096,
+    "num_attention_heads": 38,
+    "num_layers": 38,
+    "out_channels": 16,
+    "patch_size": 2,
+    "pooled_projection_dim": 2048,
+    "pos_embed_max_size": 192,
+    "qk_norm": "rms_norm",
+    "sample_size": 128,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "text_encoder_2": [
+      "transformers",
+      "CLIPTextModelWithProjection"
+    ],
+    "text_encoder_3": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_2": [
+      "transformers",
+      "CLIPTokenizer"
+    ],
+    "tokenizer_3": [
+      "transformers",
+      "T5TokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "SD3Transformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "0dbcdb67f2a8402becbbc7de7c2c91d2",
+    "2151daa165995629158025efd99f19c9",
+    "45cd86342b280fda1152396b228dc6e5",
+    "4d7cebce3cc717ac8526e0b0de1fe39f",
+    "5e4cf072825aa25f1c2a37e77fc4bdcc",
+    "62596e357340b7e1f3d93fe986e141a6",
+    "96c790036e5cb90633491ba4ae9c9c6c",
+    "b6e394128267fd1d82004c53827a5c48",
+    "b883764bf60a9f1c21a88ac0030983fb",
+    "c73da7543802a9add541c80909f2707f",
+    "c7d527c9716ad15ea86aad84761dad3b",
+    "d8231cdbb4fc341af6833070f3dd8d49",
+    "d9672a2a93fc388b5667ff54bbc4f62b",
+    "ff446529f304d20f7683f0ab777c2ebb"
+  ],
+  "model": "stable-diffusion-3.5-large",
+  "source": "local"
+}

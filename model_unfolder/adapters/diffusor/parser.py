@@ -368,23 +368,32 @@ def parse(cfg: Any) -> ModelIR:
     geom["denoiser_style"] = double_variant["tag"]
     geom["pre_block_text_fusion"] = cond["pre_block_fusion"]
 
-    # Pre-cross-attention norm: most cross-attention DiTs RMSNorm/LayerNorm the
-    # hidden state before attn2 (Wan declares cross_attn_norm=True; PixArt/Sana do
-    # it in-class). LTX is the exception — LTXVideoTransformerBlock applies attn2
-    # DIRECTLY to the post-self-attention hidden states, with NO pre-norm — so a
-    # drawn pre-cross-attn norm would be a fabricated block. Read the config flag,
-    # then the class default (LTX=false), else default to present (the family norm).
+    # Pre-cross-attention norm — a POSITIVE structural fact, drawn ONLY with evidence
+    # (never invented). The verified cross-attention DiTs apply attn2 to the RAW
+    # post-self-attention hidden state with NO pre-norm — PixArt (BasicTransformerBlock
+    # ada_norm_single: "For PixArt norm2 isn't applied here"), Sana, and LTX all do —
+    # so NOT drawing it is the honest default. The ones that DO pre-norm say so: Wan
+    # declares cross_attn_norm=True in config; any other verified case is a class
+    # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
+    # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
     _can = _resolve(cfg, "cross_attn_norm")
     if _can is None:
         _can_cd = _class_default(cls, "cross_attn_norm")
         if _can_cd is not None:
             _can = str(_can_cd).lower() not in ("false", "0", "none", "no")
-    cross_attn_prenorm = True if _can is None else bool(_can)
+    cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
+
+    # Self-attention kind: standard softmax MHA unless the model class fixes a
+    # non-softmax processor with the config silent (Sana = ReLU-kernel LINEAR
+    # attention via SanaLinearAttnProcessor) — a code fact (class_defaults). The
+    # CROSS attention stays softmax (mha); only the self path changes.
+    self_attn_kind = _class_default(cls, "self_attn_kind") or "mha"
 
     layers = []
     idx = 0
     for _ in range(num_layers):
-        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm, rope_3d)
+        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
+                                   rope_3d, has_pos_embed, self_attn_kind)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
@@ -411,19 +420,33 @@ def parse(cfg: Any) -> ModelIR:
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         layers.append(layer)
         idx += 1
-    # Single-stream fusion topology is a code fact (the block class): Flux 1 fuses
-    # only the OUT projection (concat_fused); Flux 2's ViT-22B parallel block fuses
-    # the IN projection too (QKV ‖ MLP-in one matmul) and gates the MLP.
-    single_fused_in = _class_default(cls, "single_stream_fusion") == "parallel"
+    # Single-stream topology is a code fact (the block class): Flux 1 fuses only the
+    # OUT projection (concat_fused); Flux 2's ViT-22B parallel block fuses the IN
+    # projection too (QKV ‖ MLP-in) and gates the MLP; AuraFlow does NOT fuse at all
+    # — its single block is a plain SEQUENTIAL gated DiT block (self-attn → FFN) over
+    # the joined [text+image] sequence (joined once upstream), so it renders as a
+    # concat-joint block, not a fused parallel one (drawing fusion would fabricate a
+    # concat + a fused linear the forward never does).
+    single_fusion = _class_default(cls, "single_stream_fusion")
+    single_fused_in = single_fusion == "parallel"
+    seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single):
-        # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
-        # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block,
-        # NOT a GPT-J parallel-sum layer).
-        layers.append(single_stream_decoder_layer(
-            idx, _dit_attention(num_heads, head_dim, rope_dim, single_variant, has_qk_norm, rope_3d),
-            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
-            hidden_size, norm_kind=norm_kind, fused_in=single_fused_in,
-        ))
+        s_attn = _dit_attention(num_heads, head_dim, rope_dim,
+                                seq_single_variant or single_variant, has_qk_norm,
+                                rope_3d, has_pos_embed, self_attn_kind)
+        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls)
+        if single_fusion == "sequential":
+            # Sequential gated DiT block over the joined sequence (AuraFlow): the
+            # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
+            layer = decoder_layer(idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind)
+            layer.blocks = _insert_adaln_gates(layer.blocks)
+            _annotate_adaln_norms(layer.blocks)
+            layers.append(layer)
+        else:
+            # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
+            # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block).
+            layers.append(single_stream_decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in))
         idx += 1
 
     # In a cross-attention DiT the text enters the dedicated cross-attention
@@ -434,16 +457,16 @@ def parse(cfg: Any) -> ModelIR:
         # as well as the norm — so the × shows WHAT it multiplies by (the timestep
         # gate), not a dangling input.
         gate_ids = [b["id"] for b in layer.blocks if b.get("kind") == "gate_mul"]
-        # A SINGLE-STREAM block (Flux's FluxSingleTransformerBlock) takes no
-        # per-block text input: text + image tokens are concatenated into one
-        # sequence ONCE before the stack, so the block self-attends over the joint
-        # sequence.  Drawing a per-block text rail there read like cross-attention
-        # AND forced the rail to cross the parallel MLP branch — so it is dropped
-        # here (the one-time join is surfaced as the variant's stack caption).
-        is_single = "single-stream" in str(
-            (layer.attention.variant or {}).get("tag") or "").lower()
+        # A block whose text is JOINED into the sequence upstream takes no per-block
+        # text input — text + image are concatenated ONCE before the stack, so the
+        # block self-attends over the joint sequence. That covers BOTH the
+        # single-stream (Flux) and the concat-joint (CogVideoX / AuraFlow's single
+        # blocks) variants: the marker is the variant's stack_note (the "joined once"
+        # caption). Drawing a per-block text rail there reads like cross-attention; it
+        # is dropped (the one-time join is the variant's stack caption instead).
+        text_joined = bool((layer.attention.variant or {}).get("stack_note"))
         layer.blocks.extend(_conditioning_side_blocks(
-            text_in_attention and not is_single, pooled_in_adaln,
+            text_in_attention and not text_joined, pooled_in_adaln,
             bool(geom["guidance_embeds"]),
             geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
 
@@ -496,18 +519,26 @@ def parse(cfg: Any) -> ModelIR:
 # ---------------------------------------------------------------------------
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
-                   qk_norm: bool = False, rope_3d: bool = False) -> AttentionSpec:
+                   qk_norm: bool = False, rope_3d: bool = False,
+                   has_pos_embed: bool = False, kind: str = "mha") -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
+    #
+    # Positional honesty: ``rope`` (which gates the drawn RoPE nodes) is true only
+    # when a rope dim exists; ``no_rope`` (the "NoPE" chip = TRULY positionless) is
+    # true only when there is NEITHER rope NOR a learned absolute position embedding.
+    # SD3 has no rope but a learned pos-embed (pos_embed_max_size) → it is NOT NoPE,
+    # so the chip must not fire (the position scheme is named in the rope note).
     return AttentionSpec(
-        kind="mha",
+        kind=kind,
         num_heads=num_heads,
         num_kv_heads=num_heads,
         head_dim=head_dim or None,
         mask="full",
         rope_dim=rope_dim,
-        no_rope=rope_dim is None,
+        rope=rope_dim is not None,
+        no_rope=rope_dim is None and not has_pos_embed,
         rope_3d=rope_3d,        # 3D (T·H·W) axial RoPE — surfaces the temporal axis chip
         qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
@@ -627,6 +658,7 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     # K/V source node and drops the cache/RoPE for it.
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
+                          kind="mha",   # cross-attn is softmax even when self-attn is linear (Sana)
                           no_rope=True, rope_dim=None, rope_3d=False, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
     # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
@@ -895,6 +927,17 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
             gated=False,
             num_experts=num_experts,
             num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
+        )
+    # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
+    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. A code
+    # fact (the block builds self.ff = GLUMBConv); class_defaults ffn_kind=conv_glu.
+    if cls is not None and _class_default(cls, "ffn_kind") == "conv_glu":
+        return FFNSpec(
+            kind="conv_glu",
+            activation=(str(declared_activation).lower() if declared_activation else "silu"),
+            activation_assumed=declared_activation is None,
+            intermediate_size=intermediate_size,
+            gated=True,
         )
     # Code-derived fallback: when the config declares no activation but the model
     # class fixes it (Flux's FeedForward / single-stream MLP are gelu-approximate),

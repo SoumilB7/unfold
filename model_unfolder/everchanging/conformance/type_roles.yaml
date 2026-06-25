@@ -15,5 +15,7 @@ attention: [Attention, Attn, SelfAttn, CrossAttn]
 norm: [LayerNorm, RMSNorm, GroupNorm, AdaLayerNorm, Norm]
 activation: [GELU, SiLU, ReLU, GEGLU, SwiGLU, NewGELU, QuickGELU, Mish, Activation, ApproximateGELU]
 embedding: [Embedding, PatchEmbed, Timesteps, TimestepEmbedding, PosEmbed, CombinedTimestep]
-ffn: [FeedForward, MoE, Experts, FFN, MLP, Mlp]
+# GLUMBConv/MBConv = Sana's gated conv Mix-FFN (the block's self.ff) — an FFN, not a
+# bare conv (must beat the generic `linear`/Conv role; ffn has priority over linear).
+ffn: [FeedForward, MoE, Experts, FFN, MLP, Mlp, GLUMBConv, MBConv]
 linear: [Linear, Conv1d, Conv2d, Conv3d, Conv1D]

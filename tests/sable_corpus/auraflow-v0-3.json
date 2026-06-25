@@ -1,0 +1,144 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "dangling_connectors": true,
+    "label_lint": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "AuraFlowTransformer2DModel",
+    "_diffusers_version": "0.31.0.dev0",
+    "_name_or_path": "fal/AuraFlow-v0.3",
+    "_pipeline_class_name": "AuraFlowPipeline",
+    "_repo_id": "fal/AuraFlow-v0.3",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.30.0.dev0",
+      "num_train_timesteps": 1000,
+      "shift": 1.73
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "/raid/.cache/huggingface/models--fal--AuraFlow/snapshots/edf69bec4c8c57f5278a655aaca3ceb60d82c0b4/text_encoder",
+        "architectures": [
+          "UMT5EncoderModel"
+        ],
+        "classifier_dropout": 0.0,
+        "d_ff": 5120,
+        "d_kv": 64,
+        "d_model": 2048,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "eos_token_id": 2,
+        "feed_forward_proj": "gated-gelu",
+        "initializer_factor": 1.0,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "umt5",
+        "num_decoder_layers": 24,
+        "num_heads": 32,
+        "num_layers": 24,
+        "output_past": true,
+        "pad_token_id": 0,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "scalable_attention": true,
+        "tie_word_embeddings": false,
+        "tokenizer_class": "LlamaTokenizerFast",
+        "torch_dtype": "float16",
+        "transformers_version": "4.41.2",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKL",
+      "_diffusers_version": "0.30.0.dev0",
+      "_name_or_path": "/raid/.cache/huggingface/models--fal--AuraFlow/snapshots/edf69bec4c8c57f5278a655aaca3ceb60d82c0b4/vae",
+      "act_fn": "silu",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "down_block_types": [
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D",
+        "DownEncoderBlock2D"
+      ],
+      "force_upcast": true,
+      "in_channels": 3,
+      "latent_channels": 4,
+      "latents_mean": null,
+      "latents_std": null,
+      "layers_per_block": 2,
+      "norm_num_groups": 32,
+      "out_channels": 3,
+      "sample_size": 1024,
+      "scaling_factor": 0.13025,
+      "shift_factor": null,
+      "up_block_types": [
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D",
+        "UpDecoderBlock2D"
+      ],
+      "use_post_quant_conv": true,
+      "use_quant_conv": true
+    },
+    "attention_head_dim": 256,
+    "caption_projection_dim": 3072,
+    "in_channels": 4,
+    "joint_attention_dim": 2048,
+    "num_attention_heads": 12,
+    "num_mmdit_layers": 4,
+    "num_single_dit_layers": 32,
+    "out_channels": 4,
+    "patch_size": 2,
+    "pos_embed_max_size": 9216,
+    "sample_size": 64,
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "UMT5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "LlamaTokenizerFast"
+    ],
+    "transformer": [
+      "diffusers",
+      "AuraFlowTransformer2DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKL"
+    ]
+  },
+  "hash_signature": [
+    "0eb0426d8d1ea95f976a2f6c41e94f38",
+    "48e134ef4c919df87a42c8ac83b85ba6",
+    "58ddb6994315abf21dc62b88c4917b2f",
+    "784f69a8f122766416ebdb3f26927e32",
+    "a0bfa030b3ecbd9b2c89578218afb1d0",
+    "a71d3f755a31dd4fc49f037f44024797",
+    "b4223ada326eb9629f977e55dd1addd8",
+    "beaee335df17a557098be88cfebbcdbc",
+    "c40e688c3ea242c4bc4b93b7df0944f0",
+    "c472e755aace909c47382bb19d606961",
+    "c81ee442783e0c900bb800849b619b59",
+    "d874f2023f0b788ae7b6068f2b2976d0",
+    "f9010fccd6e65d22ac9ded5df45ac337"
+  ],
+  "model": "AuraFlow-v0.3",
+  "source": "local"
+}

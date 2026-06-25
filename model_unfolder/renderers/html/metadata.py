@@ -278,6 +278,12 @@ def _signature(layer: dict) -> str:
                 or b.get("branch_side")
                 for b in layer.get("blocks", []) or []),
             _has_cross_attention_adapter(layer),
+            # The attention VARIANT tag is itself a topology discriminator — it
+            # separates streams that share the same op-signature but differ in how
+            # text enters (AuraFlow: 4 dual-stream MM-DiT blocks vs 32 concat-joint
+            # "text + latent" blocks — both sequential gated, identical op-set, so
+            # only the variant tells them apart). No-op for single-variant models.
+            (attention.get("variant") or {}).get("tag"),
         )
     )
 
