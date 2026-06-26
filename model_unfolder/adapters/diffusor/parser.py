@@ -93,6 +93,32 @@ def _code_ffn_activation(cfg: Any):
         return None
 
 
+def _code_has_rope(cfg: Any) -> bool:
+    """Whether the denoiser applies rotary position embedding, READ FROM THE
+    MODELING SOURCE — the pure code-based replacement for the ``rope_3d`` table.
+    Uses the SAME evidence fact-conformance reads to CATCH a fabricated NoPE
+    (forward rotary markers), so the parser derives what the net checks. Best-effort,
+    silent on failure (no source → no rope claim, an honest negative)."""
+    try:
+        from ...evidence.patterns import diffusion_rope_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_rope_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return False
+
+
+def _code_attn_kind(cfg: Any):
+    """The attention ALGORITHM (linear vs softmax) READ FROM THE MODELING SOURCE —
+    the code-based replacement for the ``self_attn_kind`` table. Returns "linear" or
+    None (None ⇒ caller's softmax default). Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_attn_kind_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_attn_kind_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
@@ -197,6 +223,10 @@ def parse(cfg: Any) -> ModelIR:
     num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)
     num_single   = int(_resolve(cfg, "num_single_layers", 0) or 0)
     num_heads    = int(_resolve(cfg, "num_attention_heads", 0) or 0)
+    # Grouped-query attention: KV heads from config when declared (Lumina-Next
+    # num_kv_heads:8), else None → the spec falls back to Q heads (plain MHA). Never
+    # hardcode 32 — that silently dropped GQA.
+    num_kv_heads = int(_resolve(cfg, "num_kv_heads", 0) or 0) or None
     head_dim     = int(_resolve(cfg, "attention_head_dim", 0) or 0)
     # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
     # hidden_size directly without a per-head dim — derive the head dim from it.
@@ -312,8 +342,15 @@ def parse(cfg: Any) -> ModelIR:
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
     rope_3d_from_config = bool(_resolve(cfg, "use_rotary_positional_embeddings"))
+    # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
+    # nothing in config) — read from the SAME evidence fact-conformance reads, so the
+    # parser asserts rope exactly when the net would flag its absence as fabricated.
+    # The class_defaults ``rope_3d`` row is now ONLY a last-resort for un-resolvable
+    # source. We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
+    # per-axis split (head-dim dependent).
     rope_3d_from_class = False
-    if not has_rope and head_dim and (rope_3d_from_config or _class_default(cls, "rope_3d")):
+    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg)
+                                      or _class_default(cls, "rope_3d")):
         rope_dim = head_dim
         has_rope = True
         rope_3d_from_class = not rope_3d_from_config
@@ -416,13 +453,16 @@ def parse(cfg: Any) -> ModelIR:
     # non-softmax processor with the config silent (Sana = ReLU-kernel LINEAR
     # attention via SanaLinearAttnProcessor) — a code fact (class_defaults). The
     # CROSS attention stays softmax (mha); only the self path changes.
-    self_attn_kind = _class_default(cls, "self_attn_kind") or "mha"
+    # Attention ALGORITHM read from source (Sana's linear attention) — the SAME
+    # *LinearAttn* signal fact-conformance reads. Code-first; the class_defaults table
+    # is last-resort for un-resolvable source; default softmax MHA.
+    self_attn_kind = _code_attn_kind(cfg) or _class_default(cls, "self_attn_kind") or "mha"
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
-                                   rope_3d, has_pos_embed, self_attn_kind)
+                                   rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act),
@@ -462,7 +502,7 @@ def parse(cfg: Any) -> ModelIR:
     for _ in range(num_single):
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
-                                rope_3d, has_pos_embed, self_attn_kind)
+                                rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
         s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act)
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
@@ -549,7 +589,8 @@ def parse(cfg: Any) -> ModelIR:
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
                    qk_norm: bool = False, rope_3d: bool = False,
-                   has_pos_embed: bool = False, kind: str = "mha") -> AttentionSpec:
+                   has_pos_embed: bool = False, kind: str = "mha",
+                   num_kv_heads: int | None = None) -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
@@ -562,7 +603,7 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
     return AttentionSpec(
         kind=kind,
         num_heads=num_heads,
-        num_kv_heads=num_heads,
+        num_kv_heads=num_kv_heads or num_heads,   # config GQA when declared, else MHA
         head_dim=head_dim or None,
         mask="full",
         rope_dim=rope_dim,

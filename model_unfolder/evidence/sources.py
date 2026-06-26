@@ -182,6 +182,18 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
     )
 
 
+def _looks_like_diffusion_class(cls: str) -> bool:
+    """Whether ``cls`` names a diffusion denoiser — by the GENERAL marker vocabulary
+    (everchanging ``dit_class_markers`` + UNet), never a hand-picked substring. The
+    old narrow ``"Transformer"/"UNet"`` gate missed ``HunyuanDiT2DModel`` /
+    ``LuminaNextDiT2DModel`` (they carry "DiT", not "Transformer"), wrongly reporting
+    their installed source as MISSING and silently skipping conformance + the
+    code-derived FFN. Reuses the same markers the diffusor adapter detects on."""
+    from ..everchanging import load_diffusion_typing
+    markers = tuple(load_diffusion_typing().get("dit_class_markers") or ()) + ("UNet", "Transformer")
+    return any(m in cls for m in markers)
+
+
 def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
     """Resolve a diffusion model's modeling file in the installed ``diffusers``.
 
@@ -191,7 +203,7 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
     Returns ``None`` when the target isn't a diffusion class or diffusers is
     absent (so the caller falls back to the transformers bundle)."""
     cls = _string_value(target, "_class_name")
-    if not cls or ("Transformer" not in cls and "UNet" not in cls):
+    if not cls or not _looks_like_diffusion_class(cls):
         return None
     try:
         import diffusers

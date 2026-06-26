@@ -53,7 +53,13 @@ single_stream_fusion: ["Flux2Transformer2DModel=parallel", "AuraFlowTransformer2
 # parser sets rope_dim = head_dim from this flag, which drops the false NoPE chip
 # and draws the RoPE nodes on the self-attention Q/K lanes (cross-attn stays
 # no-RoPE — attn2 is called with rotary_emb=None).
-rope_3d: ["WanTransformer3DModel=true", "MochiTransformer3DModel=true", "LTXVideoTransformer3DModel=true"]
+# RoPE is now READ FROM THE MODELING SOURCE (evidence/patterns.py::
+# diffusion_rope_from_files, the same rotary evidence fact-conformance reads) — Wan/
+# Mochi/LTX/Allegro/Lumina all resolve from code and need NO row here. This table is
+# now ONLY a last-resort for a video DiT whose source can't be read locally
+# (custom/gated code). Empty until such a case appears — add a row only after
+# confirming the source genuinely can't be resolved.
+rope_3d: []
 
 # Gating dialect: Mochi does NOT multiply a sublayer output by a bare AdaLN gate.
 # It folds the per-block timestep gate into a modulated RMSNorm of the sublayer
@@ -76,7 +82,11 @@ cross_attn_norm: []
 # ReLU-kernel LINEAR attention (its defining efficiency feature) — while attn2
 # (cross) stays standard softmax. Surfaced so the self-attn drill draws the linear
 # path (kernel map → linear mix), not a fabricated softmax QK^T.
-self_attn_kind: ["SanaTransformer2DModel=linear"]
+# Attention algorithm is now READ FROM THE SOURCE (evidence/patterns.py::
+# diffusion_attn_kind_from_files — the same *LinearAttn* processor signal
+# fact-conformance reads). Sana resolves from code and needs NO row. Last-resort
+# only for un-resolvable source; empty until such a case appears.
+self_attn_kind: []
 
 # FFN kind when the block class fixes a non-MLP feed-forward and the config is
 # silent. Sana's block builds self.ff = GLUMBConv — a gated CONV Mix-FFN (1×1 conv

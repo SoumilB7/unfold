@@ -249,3 +249,65 @@ def test_diffusion_ffn_activation_from_named_swiglu_class(tmp_path):
     f = tmp_path / "modeling_struct.py"
     f.write_text(src)
     assert diffusion_ffn_activation_from_files([str(f)]) == "swiglu"
+
+
+def test_diffusion_source_resolves_for_dit_named_classes():
+    """A DiT denoiser named with "DiT" (not "Transformer"/"UNet") must still be
+    recognised as a diffusion class so its installed source resolves — else
+    conformance + the code-derived FFN silently skip (the HunyuanDiT/Lumina-Next
+    MISSING-oracle-on-installed-source bug). Detected by the general marker
+    vocabulary, never a hand-picked substring."""
+    from model_unfolder.evidence.sources import _looks_like_diffusion_class
+    assert _looks_like_diffusion_class("HunyuanDiT2DModel")
+    assert _looks_like_diffusion_class("LuminaNextDiT2DModel")
+    assert _looks_like_diffusion_class("FluxTransformer2DModel")
+    assert _looks_like_diffusion_class("StableCascadeUNet")
+    assert not _looks_like_diffusion_class("LlamaForCausalLM")
+
+
+def test_rope_read_from_source_uses_fact_conformance_evidence(tmp_path):
+    """RoPE presence is read from the SAME forward rotary evidence fact-conformance
+    reads (so the parser asserts rope exactly when the net would flag its absence as
+    a fabricated NoPE). A block whose forward applies rotary => rope; one with only
+    learned positions => no rope. Fixes the Allegro/Lumina fabricated-NoPE class."""
+    from model_unfolder.evidence.patterns import diffusion_rope_from_files
+    rope = (
+        "class RopeBlock:\n"
+        "    def forward(self, hidden_states, image_rotary_emb=None):\n"
+        "        return apply_rotary_emb(hidden_states, image_rotary_emb)\n"
+    )
+    learned = (
+        "class LearnedPosBlock:\n"
+        "    def forward(self, hidden_states):\n"
+        "        return self.attn(hidden_states + self.pos_embed)\n"
+    )
+    fr = tmp_path / "modeling_rope.py"; fr.write_text(rope)
+    fl = tmp_path / "modeling_learned.py"; fl.write_text(learned)
+    assert diffusion_rope_from_files([str(fr)]) is True
+    assert diffusion_rope_from_files([str(fl)]) is False
+
+
+def test_attn_kind_read_from_source_linear_processor(tmp_path):
+    """The attention ALGORITHM is read from the SAME *LinearAttn* processor signal
+    fact-conformance reads (init_class_refs): a block constructing a LinearAttn
+    processor => "linear"; a plain softmax block => None (caller's MHA default).
+    Sana's class lives in a per-model table no longer — this is the rail."""
+    from model_unfolder.evidence.patterns import diffusion_attn_kind_from_files
+    linear = (
+        "class MyBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.attn = Attention(dim, processor=MyLinearAttnProcessor())\n"
+        "    def forward(self, x):\n"
+        "        return self.attn(x)\n"
+    )
+    softmax = (
+        "class MyBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.attn = Attention(dim)\n"
+        "    def forward(self, x):\n"
+        "        return self.attn(x)\n"
+    )
+    fl = tmp_path / "modeling_lin.py"; fl.write_text(linear)
+    fs = tmp_path / "modeling_soft.py"; fs.write_text(softmax)
+    assert diffusion_attn_kind_from_files([str(fl)]) == "linear"
+    assert diffusion_attn_kind_from_files([str(fs)]) is None

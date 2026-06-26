@@ -582,3 +582,44 @@ def _class_ffn_shape_from_name(name: str) -> str | None:
     if "geglu" in n:
         return "geglu"
     return None
+
+
+# ---------------------------------------------------------------------------
+# Diffusion RoPE — does the denoiser apply rotary position embedding? A code fact:
+# the block threads/applies rotary (image_rotary_emb param, apply_rotary_emb call,
+# freqs_cis) — declared nowhere in many configs (Allegro/Lumina/Wan/Mochi/LTX), so
+# the block falsely reads as NoPE. This reuses the EXACT evidence fact-conformance
+# reads to CATCH a fabricated NoPE (forward_params ∪ signature_tokens vs the rotary
+# markers) — the law's one-source-of-truth: the parser DERIVES what the net CHECKS.
+# Scans the MODEL's own files only (never the shared attention module, whose rotary
+# helpers would make every model look rope'd).
+# ---------------------------------------------------------------------------
+def diffusion_rope_from_files(files) -> bool:
+    """True when the denoiser's modeling source applies rotary position embedding."""
+    from ..everchanging import load_conformance_fact_markers
+    from .forward_ops import extract_forward_ops
+    rotary_subs = [s.lower() for s in (load_conformance_fact_markers().get("rotary") or ())]
+    if not rotary_subs:
+        return False
+    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    for fo in ops.values():
+        toks = " ".join(t.lower() for t in (fo.forward_params | fo.signature_tokens))
+        if any(s in toks for s in rotary_subs):
+            return True
+    return False
+
+
+def diffusion_attn_kind_from_files(files) -> str | None:
+    """"linear" when the denoiser builds a LINEAR-attention processor (Sana's
+    `SanaLinearAttnProcessor`), else None (caller defaults to softmax MHA). Reuses
+    the SAME `*LinearAttn*` signal fact-conformance reads to CATCH a wrong attention
+    algorithm (`ForwardOps.init_class_refs` — all classes constructed in __init__,
+    incl. nested processor kwargs) — so the parser DERIVES what the net checks."""
+    from ..everchanging import load_conformance_fact_markers
+    from .forward_ops import extract_forward_ops
+    linear_subs = [s.lower() for s in (load_conformance_fact_markers().get("linear_attn") or ())]
+    if not linear_subs:
+        return None
+    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    refs = " ".join(r.lower() for fo in ops.values() for r in fo.init_class_refs)
+    return "linear" if any(s in refs for s in linear_subs) else None
