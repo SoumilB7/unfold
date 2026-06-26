@@ -399,6 +399,47 @@ def test_unet_is_claimed_by_diffusor_not_transformer():
     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
 
 
+def test_unet_detection_is_by_signature_not_name():
+    """THE CORE LAW: a conv-U is detected by its config SIGNATURE, never by the
+    "UNet" substring in its class name. Both directions must hold:
+
+    * a NON-"UNet"-named config carrying the dialect fields IS a UNet, and
+    * a "UNet"-named config that does NOT carry the dialect (no block-type lists,
+      no cross_attention_dim) is NOT forced through ``parse_unet`` — the failure
+      mode that dragged Kandinsky3UNet / StableCascadeUNet into a fabricated
+      UNet2DConditionModel structure.
+    """
+    from model_unfolder.adapters.diffusor.unet import is_unet
+
+    # name says nothing of "UNet", but the signature is the full dialect → claimed.
+    no_unet_in_name = {k: v for k, v in SDXL_UNET.items() if k != "_class_name"}
+    no_unet_in_name["_class_name"] = "SomeBespokeDenoiser2DModel"
+    assert is_unet(no_unet_in_name) is True
+
+    # "UNet" in the name but only `block_out_channels` (no block-type lists, no
+    # cross_attention_dim) → NOT claimed (identity must not override evidence).
+    name_only = {"_class_name": "MysteryUNetModel", "block_out_channels": [128, 256]}
+    assert is_unet(name_only) is False
+
+
+def test_unet_does_not_fabricate_cross_attention_mid_when_undeclared():
+    """A conv-U conditioned by `cross_attention_dim` but declaring no block-type
+    lists (Kandinsky3UNet shape) must NOT get a fabricated cross-attention mid
+    block, and must surface the code-defined-placement caveat as a warning."""
+    kand = {
+        "_class_name": "Kandinsky3UNet", "_repo_id": "kandinsky-community/kandinsky-3",
+        "block_out_channels": [384, 768, 1536, 3072], "layers_per_block": 3,
+        "attention_head_dim": 64, "cross_attention_dim": 4096, "in_channels": 4,
+    }
+    from model_unfolder.adapters.diffusor.unet import is_unet, parse_unet
+    assert is_unet(kand) is True                          # claimed (signature: cross_attention_dim)
+    unet = parse_unet(kand)
+    assert unet["mid"].get("attn") is False               # NO fabricated cross-attn mid
+    assert unet["declares_block_types"] is False
+    ir = config_to_ir(kand)
+    assert any("attention placement is defined in the model code" in w for w in ir.warnings)
+
+
 def test_sdxl_unet_conditioning_is_honest():
     """SDXL conformance pins:
     * BOTH text encoders survive (CLIP-L + OpenCLIP-bigG), never folded into one;

@@ -182,12 +182,20 @@ def _has_numeric_operand(node: ast.BinOp) -> bool:
 
 
 def _role_of(class_name: str) -> str | None:
-    """First role whose substring list matches ``class_name`` (priority order)."""
+    """First role whose substring list matches ``class_name`` (priority order).
+
+    Case-INSENSITIVE: a class's role must not hinge on capitalisation. Without it
+    ``OlmoeSparseMoeBlock`` ("Moe") misses the ``MoE`` marker and ``Qwen3Moe…``
+    likewise, so their MoE field goes untyped and op-conformance falsely flags the
+    drawn FFN as fabricated. Matching on lowercase makes the marker list a set of
+    *concepts*, not spellings (the hand-duplicated ``MLP``/``Mlp`` entries existed
+    only to paper over this)."""
     if not class_name:
         return None
+    lc = class_name.lower()
     for role in _ROLE_PRIORITY:
         for sub in _ROLE_SUBSTR.get(role, ()):
-            if sub in class_name:
+            if sub.lower() in lc:
                 return role
     return None
 

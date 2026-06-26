@@ -20,13 +20,23 @@ from .compound import unet_mid_stage, unet_resolution_stage
 
 
 def is_unet(cfg: Any) -> bool:
-    """True for a UNet2DConditionModel-style config (or a pipeline with a unet)."""
-    cls = _g(cfg, "_class_name")
-    if isinstance(cls, str) and "UNet" in cls:
-        return True
-    if isinstance(cls, str) and cls.endswith("Pipeline") and _g(cfg, "unet") is not None:
-        return True
-    return _g(cfg, "block_out_channels") is not None and _g(cfg, "down_block_types") is not None
+    """True for a convolutional U-net denoiser — detected by CONFIG SIGNATURE, never
+    by class name.
+
+    THE CORE LAW: identity (``"UNet" in _class_name``) is not a signal — it dragged
+    ``Kandinsky3UNet`` / ``StableCascadeUNet`` through the ``UNet2DConditionModel``
+    dialect and fabricated a structure their configs never declare. A conv-U is
+    instead recognised by the fields it carries: per-stage channels
+    (``block_out_channels``) plus EITHER the resolution-stage block-type lists
+    (``down_block_types`` — the full UNet2DConditionModel dialect ``parse_unet``
+    reads end-to-end) OR a text-conditioning width (``cross_attention_dim`` — a
+    conditioned conv-U whose per-stage attention placement may live in the model
+    code; rendered honestly as a skeleton + a code-defined-placement note rather
+    than fabricated). A raw pipeline dict defers to its nested ``unet`` sub-config."""
+    if _g(cfg, "block_out_channels") is None:
+        sub = _g(cfg, "unet")
+        return isinstance(sub, dict) and is_unet(sub)
+    return _g(cfg, "down_block_types") is not None or _g(cfg, "cross_attention_dim") is not None
 
 
 def parse_unet(cfg: Any) -> dict:
@@ -35,7 +45,12 @@ def parse_unet(cfg: Any) -> dict:
     n = len(boc)
     down_types = list(_g(cfg, "down_block_types") or [])
     up_types = list(_g(cfg, "up_block_types") or [])
-    mid_type = _g(cfg, "mid_block_type") or "UNetMidBlock2DCrossAttn"
+    # NO fabricated default: a missing mid_block_type means the config does not
+    # declare a cross-attention bottleneck, so we must not assert one (Kandinsky3 /
+    # other non-UNet2DConditionModel dialects carry no block-type lists). The mid
+    # renders as a plain bottleneck (attn=False) and the absent block-type lists are
+    # surfaced honestly via ``declares_block_types`` below.
+    mid_type = _g(cfg, "mid_block_type") or ""
     lpb = _g(cfg, "layers_per_block")
     tlpb = _g(cfg, "transformer_layers_per_block")
 
@@ -120,6 +135,11 @@ def parse_unet(cfg: Any) -> dict:
         "down": down, "mid": mid, "up": up,
         "downscale": 2 ** (n - 1) if n else None,
         "addition_embed_type": _g(cfg, "addition_embed_type"),
+        # Whether the config declares the resolution-stage block-type lists. When it
+        # does NOT (Kandinsky3UNet etc.), per-stage attention placement is defined in
+        # the model code, not the config — the caller surfaces that honestly rather
+        # than letting the absent lists read as "no attention anywhere".
+        "declares_block_types": bool(down_types or up_types),
     }
 
 

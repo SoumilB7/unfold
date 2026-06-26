@@ -79,6 +79,20 @@ def _class_default(cls: Any, field: str):
     return _CLASS_DEFAULTS.get(field, {}).get(str(cls))
 
 
+def _code_ffn_activation(cfg: Any):
+    """The DiT FFN's activation_fn READ FROM THE MODELING SOURCE — the pure
+    code-based replacement for the ``ffn_activation_fn`` class-defaults table.
+    Best-effort and silent on failure (no source → honest-undeclared FFN); never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import diffusion_ffn_activation_from_files
+        from ...evidence.sources import resolve_source_files
+        files = resolve_source_files(cfg, source="local").files
+        return diffusion_ffn_activation_from_files(files)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
@@ -90,6 +104,16 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
     boc = unet["block_out_channels"]
     if not boc:
         warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
+    if boc and not unet.get("declares_block_types"):
+        cad = unet.get("cross_attention_dim")
+        warnings.append(
+            "This UNet config declares no down_block_types/up_block_types — per-stage "
+            "attention placement is defined in the model code, not the config, so the "
+            "denoiser is shown as a convolutional U skeleton"
+            + (f" with text cross-attention (dim {cad}) entering at code-defined stages"
+               if cad else "")
+            + "."
+        )
     hidden = max(boc) if boc else 0
     text_encoders = _detect_text_encoders(cfg)
     text_encoder_specs = _text_encoder_specs(cfg)
@@ -193,6 +217,11 @@ def parse(cfg: Any) -> ModelIR:
     declared_act = next((_resolve(cfg, k, None) for k in
                          ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
                          if _resolve(cfg, k, None)), None)
+    # The DiT FFN's activation/gating is almost never in the config — it lives in
+    # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
+    # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
+    # the source isn't resolvable the FFN renders honestly as undeclared.
+    code_ffn_act = _code_ffn_activation(cfg) if declared_act is None else None
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
     # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
     norm_kind = _dit_norm_kind(cfg)
@@ -396,7 +425,7 @@ def parse(cfg: Any) -> ModelIR:
                                    rope_3d, has_pos_embed, self_attn_kind)
         layer = decoder_layer(
             idx, attn_spec,
-            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
+            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act),
             hidden_size, norm_kind=norm_kind,
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
@@ -434,7 +463,7 @@ def parse(cfg: Any) -> ModelIR:
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
                                 rope_3d, has_pos_embed, self_attn_kind)
-        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls)
+        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act)
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
             # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
@@ -914,15 +943,21 @@ def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
 
 
 def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
-             cls: Any = None) -> FFNSpec:
+             cls: Any = None, code_activation: Any = None) -> FFNSpec:
+    # ``code_activation`` is the FFN activation_fn READ FROM THE MODELING SOURCE
+    # (the block's ``FeedForward(activation_fn=…)`` / named SwiGLU class) — the pure
+    # code-based replacement for the old per-model ``class_defaults`` table. The
+    # config almost never declares the DiT FFN's activation/gating; the code always
+    # does, so we read it there.
+    moe_act = declared_activation or code_activation
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
     if num_experts > 1:
         return FFNSpec(
             kind="moe",
-            activation=(str(declared_activation).lower() if declared_activation else None),
-            activation_assumed=declared_activation is None,
+            activation=(str(moe_act).lower() if moe_act else None),
+            activation_assumed=moe_act is None,
             intermediate_size=intermediate_size,
             gated=False,
             num_experts=num_experts,
@@ -939,16 +974,18 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
             intermediate_size=intermediate_size,
             gated=True,
         )
-    # Code-derived fallback: when the config declares no activation but the model
-    # class fixes it (Flux's FeedForward / single-stream MLP are gelu-approximate),
-    # surface the activation_fn name from class_defaults.yaml — MARKED code-derived.
-    # In diffusers the activation_fn name fully specifies the FFN, so this also
-    # resolves the gating below; never overrides a config-declared value.
+    # Code-derived: when the config declares no activation but the model class fixes
+    # it (Flux's FeedForward is gelu-approximate; HiDream/Lumina build a SwiGLU FFN),
+    # surface the activation_fn READ FROM THE SOURCE. In diffusers the activation_fn
+    # name fully specifies the FFN, so this also resolves the gating below; never
+    # overrides a config-declared value. The class_defaults table is now ONLY a
+    # last-resort for a model whose SOURCE can't be read locally (custom/gated code
+    # not installed) — the law's sanctioned "truly-opaque code-fact" exception.
     from_class = False
-    if declared_activation is None and cls is not None:
-        _cd = _class_default(cls, "ffn_activation_fn")
-        if _cd:
-            declared_activation, from_class = _cd, True
+    if declared_activation is None:
+        resolved = code_activation or _class_default(cls, "ffn_activation_fn")
+        if resolved:
+            declared_activation, from_class = resolved, True
     if declared_activation is None:
         # Honest-unknown: no activation is declared (config OR class), so the gating
         # (gate-or-not, i.e. 2 vs 3 projections) is not a fact we have either — it

@@ -24,8 +24,12 @@ Detectors should attach the actual field/call names that triggered them as
 """
 from __future__ import annotations
 
+import ast
+import functools
 from collections import defaultdict
+from pathlib import Path
 
+from .ast_scanner import _call_name
 from .models import ClassEvidence, CodeEvidence, CodeFinding, SourceBundle
 
 
@@ -428,4 +432,153 @@ def diffusion_norm_from_classes(classes: tuple[ClassEvidence, ...]) -> tuple[str
     if rms:                                            # RMSNorm only (no LayerNorm at all)
         best = max(rms, key=lambda n: used[n])
         return ("RMSNorm", best)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Diffusion DiT block FFN activation/gating — a code-only fact (diffusers states
+# it either as a `FeedForward(activation_fn="...")` construction kwarg OR via a
+# named/structured FFN class: SwiGLU, a w1·w3·silu gate). Reading it from the
+# block's actual FFN construction lets the FFN drill render the real shape instead
+# of an honest-unknown box — GENERALLY, with NO per-model table (the standing law).
+# Returns a diffusers-style activation_fn string ("gelu-approximate" / "geglu" /
+# "swiglu" / "silu" / "gelu") so the existing `"glu" in act => gated` logic and the
+# label space are identical to a config-declared value.
+# ---------------------------------------------------------------------------
+
+#: self.<field> names that hold a block's feed-forward sub-module.
+_FFN_FIELD_HINTS = ("ff", "ff_i", "ff_context", "feed_forward", "feedforward", "mlp", "ffn")
+#: field-name sets whose presence in an FFN class means a GATED (gate·up) MLP.
+_GATED_FIELD_SETS = ({"gate_proj"}, {"gate_up_proj"}, {"w1", "w3"}, {"linear_1", "linear_2"})
+
+
+def _is_ffn_ctor(name: str) -> bool:
+    n = (name or "").lower()
+    return any(t in n for t in ("feedforward", "mlp", "ffn", "glu", "moe"))
+
+
+def _str_kwarg(call: ast.Call, *names: str) -> str | None:
+    for kw in call.keywords:
+        if kw.arg in names and isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
+            return kw.value.value.lower()
+    return None
+
+
+def _class_ffn_shape(cd: ast.ClassDef) -> str | None:
+    """A diffusers activation_fn string inferred from an FFN class BODY — the
+    gate·up field pattern (or a name token) => gated; a silu/gelu call => the
+    activation. Used when the FFN is a named/structured class (SwiGLU, Lumina's
+    feed-forward) that takes no activation_fn kwarg."""
+    name = cd.name.lower()
+    if "swiglu" in name:
+        return "swiglu"
+    if "geglu" in name:
+        return "geglu"
+    fields: set[str] = set()
+    calls: set[str] = set()
+    for n in ast.walk(cd):
+        if (isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                and n.value.id == "self"):
+            fields.add(n.attr)
+        elif isinstance(n, ast.Call):
+            cn = _call_name(n.func)
+            if cn:
+                calls.add(cn.lower())
+    gated = any(s <= fields for s in _GATED_FIELD_SETS) or any("glu" in c for c in calls)
+    act = "silu" if any("silu" in c for c in calls) else ("gelu" if any("gelu" in c for c in calls) else None)
+    if gated:
+        return "swiglu" if act in (None, "silu") else "geglu"
+    return act
+
+
+@functools.lru_cache(maxsize=4)
+def _shared_ffn_defs() -> dict[str, ast.ClassDef]:
+    """Class defs from the library modules where SHARED feed-forward classes live
+    (a block often constructs ``FeedForward`` / ``LuminaFeedForward`` imported from
+    here, not defined in its own file). Used ONLY to resolve the STRUCTURE of a
+    class the model constructs — never as a source of construction sites (those
+    must come from the model's own files, else generic library blocks pollute the
+    signal). Library-layout-general; best-effort, only locates+parses the .py."""
+    files: list[str] = []
+    for mod in ("diffusers.models.attention",):
+        try:
+            import importlib
+            f = getattr(importlib.import_module(mod), "__file__", None)
+            if f:
+                files.append(f)
+        except Exception:
+            continue
+    return _parse_defs(tuple(files))
+
+
+@functools.lru_cache(maxsize=128)
+def _parse_defs(files: tuple[str, ...]) -> dict[str, ast.ClassDef]:
+    defs: dict[str, ast.ClassDef] = {}
+    for path in files:
+        try:
+            tree = ast.parse(Path(path).read_text(encoding="utf-8"), filename=path)
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                defs.setdefault(node.name, node)
+    return defs
+
+
+def diffusion_ffn_activation_from_files(files) -> str | None:
+    """Resolve the DiT block FFN's activation_fn from the modeling SOURCE.
+
+    Walks every transformer-block class, finds its feed-forward construction
+    (``self.ff = FeedForward(..., activation_fn="gelu-approximate")`` or
+    ``self.feed_forward = LuminaFeedForward(...)`` etc.), and returns the
+    activation_fn — from the construction kwarg when present, else inferred from
+    the constructed FFN class's own shape. Returns ``None`` when the source
+    doesn't fix it (then the FFN renders honestly as inner-structure-undeclared,
+    never a fabricated shape)."""
+    defs = _parse_defs(tuple(str(f) for f in (files or ())))
+    if not defs:
+        return None
+    kwarg_hits: list[str] = []
+    struct_hits: list[str] = []
+    for cls_name, cd in defs.items():
+        if not cls_name.lower().endswith("block"):
+            continue                                   # FFN is constructed inside the block
+        init = next((n for n in cd.body
+                     if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == "__init__"), None)
+        if init is None:
+            continue
+        for node in ast.walk(init):
+            if not (isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)):
+                continue
+            field = next((t.attr for t in node.targets
+                          if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name)
+                          and t.value.id == "self"), None)
+            ctor = _call_name(node.value.func)
+            if not ctor or not (field in _FFN_FIELD_HINTS or _is_ffn_ctor(ctor)):
+                continue
+            act = _str_kwarg(node.value, "activation_fn", "act_fn", "hidden_act")
+            if act:
+                kwarg_hits.append(act)
+            else:
+                # resolve the constructed FFN class's STRUCTURE: model files first,
+                # then the shared library module (FeedForward/LuminaFeedForward live
+                # in diffusers attention.py), then a last-resort name token.
+                target = defs.get(ctor) or _shared_ffn_defs().get(ctor)
+                shape = _class_ffn_shape(target) if target is not None else _class_ffn_shape_from_name(ctor)
+                if shape:
+                    struct_hits.append(shape)
+    # An explicit construction kwarg is the strongest signal; else the structural
+    # inference. Most common wins (dual/single blocks usually share one activation).
+    for hits in (kwarg_hits, struct_hits):
+        if hits:
+            return max(set(hits), key=hits.count)
+    return None
+
+
+def _class_ffn_shape_from_name(name: str) -> str | None:
+    n = (name or "").lower()
+    if "swiglu" in n:
+        return "swiglu"
+    if "geglu" in n:
+        return "geglu"
     return None

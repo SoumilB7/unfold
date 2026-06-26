@@ -155,3 +155,97 @@ def test_heterogeneous_denoiser_renders_every_variant():
     assert n_arch >= n_groups, (
         f"{n_arch} architecture variants rendered for {n_groups} block-type groups "
         "— a non-dominant variant collapsed (invisible).")
+
+
+# --------------------------------------------------------------------------
+# Indirect class construction must not read as a FABRICATED op (the op-conf
+# false-positive class: Snowflake's MIXTRAL_ATTENTION_CLASSES[...] registry, and
+# the "Moe"-spelled MoE blocks of OLMoE / Qwen3-MoE that case-sensitivity missed).
+# --------------------------------------------------------------------------
+
+def test_role_mapping_is_case_insensitive():
+    from model_unfolder.evidence.forward_ops import _role_of
+    # MoE block classes spell it "Moe", not "MoE" — must still type as the FFN family
+    # (else their MoE field goes untyped and op-conformance falsely flags the drawn FFN).
+    assert _role_of("OlmoeSparseMoeBlock") == "ffn"
+    assert _role_of("Qwen3MoeSparseMoeBlock") == "ffn"
+    # an ALL-CAPS class registry name still reads as attention.
+    assert _role_of("MIXTRAL_ATTENTION_CLASSES") == "attention"
+
+
+def test_call_name_resolves_registry_subscript_construction():
+    import ast
+    from model_unfolder.evidence.ast_scanner import _call_name
+    # `self.self_attn = MIXTRAL_ATTENTION_CLASSES[impl](config)` — the constructed
+    # func is a Subscript; it must resolve to the registry base name so the field
+    # gets TYPED (not None, which would drop the attention op).
+    call = ast.parse("MIXTRAL_ATTENTION_CLASSES[impl](config)", mode="eval").body
+    assert _call_name(call.func) == "MIXTRAL_ATTENTION_CLASSES"
+
+
+def test_indirect_construction_yields_real_ops_not_fabrications(tmp_path):
+    """End-to-end: a layer that builds attention via a class REGISTRY and a MoE
+    FFN whose class spells "Moe" must expose BOTH ops — so op-conformance does not
+    flag the diagram's attention/ffn as fabricated. Locks the FP class generally,
+    via the code shape (registry subscript + case-insensitive role), no model name."""
+    src = (
+        "import torch.nn as nn\n"
+        "ATTENTION_CLASSES = {'eager': object}\n"
+        "class MyDecoderLayer(nn.Module):\n"
+        "    def __init__(self, config):\n"
+        "        super().__init__()\n"
+        "        self.input_layernorm = nn.LayerNorm(8)\n"
+        "        self.self_attn = ATTENTION_CLASSES[config._attn_implementation](config)\n"
+        "        self.mlp = MyModelSparseMoeBlock(config)\n"
+        "    def forward(self, x):\n"
+        "        x = x + self.self_attn(self.input_layernorm(x))\n"
+        "        x = x + self.mlp(x)\n"
+        "        return x\n"
+    )
+    f = tmp_path / "modeling_my.py"
+    f.write_text(src)
+    ops = extract_forward_ops([str(f)])["MyDecoderLayer"]
+    assert "attention" in ops.op_kinds, ops.op_kinds   # registry-built attention is REAL
+    assert "ffn" in ops.op_kinds, ops.op_kinds          # "Moe"-spelled block reads as ffn
+
+
+# --------------------------------------------------------------------------
+# Diffusion FFN activation/gating read from the SOURCE — no per-model table.
+# (T3: the gated==None pale-FFN class. The fact lives in the block's FFN
+# construction, never the config.)
+# --------------------------------------------------------------------------
+
+def test_diffusion_ffn_activation_from_construction_kwarg(tmp_path):
+    """A block that builds `FeedForward(activation_fn="geglu")` resolves to that
+    activation from the modeling source — the CogView4 shape (config is silent)."""
+    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
+    src = (
+        "class MyTransformerBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.ff = FeedForward(dim=dim, activation_fn='geglu')\n"
+    )
+    f = tmp_path / "modeling_kwarg.py"
+    f.write_text(src)
+    assert diffusion_ffn_activation_from_files([str(f)]) == "geglu"
+
+
+def test_diffusion_ffn_activation_from_named_swiglu_class(tmp_path):
+    """A block that builds a structurally-gated SwiGLU FFN class (w1·w3·silu gate)
+    resolves to "swiglu" from the class body — the HiDream/Lumina shape, where the
+    activation is in the class structure, not a kwarg. No name token needed."""
+    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
+    src = (
+        "class MyFusedFFN:\n"
+        "    def __init__(self, dim, hidden):\n"
+        "        self.w1 = nn.Linear(dim, hidden)\n"
+        "        self.w2 = nn.Linear(hidden, dim)\n"
+        "        self.w3 = nn.Linear(dim, hidden)\n"
+        "    def forward(self, x):\n"
+        "        return self.w2(F.silu(self.w1(x)) * self.w3(x))\n"
+        "class MyTransformerBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.feed_forward = MyFusedFFN(dim, 4 * dim)\n"
+    )
+    f = tmp_path / "modeling_struct.py"
+    f.write_text(src)
+    assert diffusion_ffn_activation_from_files([str(f)]) == "swiglu"

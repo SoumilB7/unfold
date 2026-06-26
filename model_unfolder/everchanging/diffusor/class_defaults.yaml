@@ -21,13 +21,18 @@ axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
 # config.json does not carry the flag. (The norm TYPE is read from this value.)
 qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm", "CogVideoXTransformer3DModel=layer_norm", "AuraFlowTransformer2DModel=layer_norm"]
 
-# FFN activation fixed in the model class, not config. In diffusers the
-# activation_fn name fully specifies the FFN shape, so this also resolves the
-# gating: "gelu-approximate" is a PLAIN (non-gated) two-layer MLP; "swiglu" is a
-# GATED MLP. Flux 1 builds FeedForward(activation_fn="gelu-approximate") + GELU(
-# tanh) (single), both mult=4. Flux 2 uses Flux2SwiGLU in BOTH blocks (dual
-# Flux2FeedForward + the single block's fused mlp_act_fn).
-ffn_activation_fn: ["FluxTransformer2DModel=gelu-approximate", "Flux2Transformer2DModel=swiglu", "QwenImageTransformer2DModel=gelu-approximate", "Lumina2Transformer2DModel=swiglu", "PRXTransformer2DModel=gelu-approximate", "WanTransformer3DModel=gelu-approximate", "HunyuanVideoTransformer3DModel=gelu-approximate", "SD3Transformer2DModel=gelu-approximate", "AuraFlowTransformer2DModel=swiglu"]
+# FFN activation fixed in the model class, not config. This is now READ FROM THE
+# MODELING SOURCE (evidence/patterns.py::diffusion_ffn_activation_from_files) for
+# every model whose source is installed — Flux/Flux2/QwenImage/Lumina2/Wan/
+# HunyuanVideo/SD3/AuraFlow/CogView4/HiDream all resolve from code and need NO row
+# here. This table is now ONLY a last-resort for a model whose source can't be read
+# locally (custom/gated code not installed) — the law's sanctioned "truly-opaque
+# code-fact" exception. Add a row ONLY after confirming the source genuinely can't
+# be resolved; otherwise it's a banned per-model shortcut.
+# PRX (PRXTransformer2DModel): custom-code repo, modeling .py not in installed
+# diffusers, so the source reader returns nothing — gelu-approximate is its
+# FeedForward's activation, transcribed from the repo's modeling code.
+ffn_activation_fn: ["PRXTransformer2DModel=gelu-approximate"]
 
 # Single-stream block topology — a CODE fact (the block class). Default concat_fused
 # (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE shared OUT

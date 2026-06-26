@@ -84,4 +84,11 @@ def _call_name(node: ast.AST) -> str | None:
         return node.id
     if isinstance(node, ast.Attribute):
         return node.attr
+    # Indirect construction via a class registry — ``CLASSES[key](...)`` — resolves
+    # to the registry's base name so the constructed class is still TYPED. The HF
+    # codebase builds attention this way (``MIXTRAL_ATTENTION_CLASSES[impl](...)``);
+    # without this the field is untyped and op-conformance falsely flags a
+    # "fabricated" attention. Read from the code shape, never special-case the model.
+    if isinstance(node, ast.Subscript):
+        return _call_name(node.value)
     return None
