@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "model-unfolder"
-version = "0.2.15"
+version = "0.2.16"
 description = "Unfold any HuggingFace transformer into an interactive architecture diagram, inline in Jupyter."
 readme = "README.md"
 requires-python = ">=3.9"
