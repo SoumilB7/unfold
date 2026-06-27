@@ -348,7 +348,6 @@ def _window_strip(
         "x": active_x - 4, "y": strip_y - 4,
         "width": active_w + 8, "height": cell_h + 8, "rx": 7, "ry": 7,
         "fill": "none", "stroke": C["block"], "stroke-width": 1,
-        "stroke-dasharray": "4 3",
     }))
     parts.append(_svg_text(
         x + w / 2, strip_y + cell_h + 18,
@@ -462,7 +461,7 @@ def _v_seg(x: float, y1: float, y2: float, arrow_id: str) -> str:
     )
 
 
-def _elbow_vh(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
+def _elbow_vh(x1: float, y1: float, x2: float, y2: float, arrow_id: str | None) -> str:
     if abs(x2 - x1) < 1 or abs(y2 - y1) < 1:
         d = f"M {_num(x1)} {_num(y1)} L {_num(x2)} {_num(y2)}"
     else:
@@ -569,7 +568,7 @@ def _branch_dot(cx: float, cy: float) -> str:
     return _svg_tag("circle", {"cx": cx, "cy": cy, "r": 3.2, "fill": C["arrow"]})
 
 
-def _path(d: str, arrow_id: str) -> str:
+def _path(d: str, arrow_id: str | None) -> str:
     return _svg_tag(
         "path",
         {
@@ -579,7 +578,7 @@ def _path(d: str, arrow_id: str) -> str:
             "stroke-width": 1.6,
             "stroke-linecap": "round",
             "stroke-linejoin": "round",
-            "marker-end": f"url(#{arrow_id})",
+            "marker-end": f"url(#{arrow_id})" if arrow_id else None,
         },
     )
 

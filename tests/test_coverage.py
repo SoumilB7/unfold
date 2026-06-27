@@ -26,7 +26,12 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from model_unfolder import unfold
-from model_unfolder.block_schema import validate_click_coupling, validate_unique_ref_ids
+from model_unfolder.block_schema import (
+    validate_click_coupling,
+    validate_no_dotted_arrows,
+    validate_no_dotted_boundaries,
+    validate_unique_ref_ids,
+)
 from model_unfolder.renderers.html.block_views import registry as reg
 import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / PixArt / SDXL UNet)
 
@@ -114,6 +119,14 @@ def test_no_duplicate_marker_ids_anywhere():
         assert not problems, f"{name}: duplicate marker/def ids:\n  " + "\n  ".join(problems)
 
 
+def test_no_dotted_arrows_or_boundaries_anywhere():
+    """Solid flow and region strokes are a corpus-wide design invariant."""
+    for name, cfg in CORPUS.items():
+        html = unfold(cfg).to_html(standalone=True)
+        problems = validate_no_dotted_arrows(html) + validate_no_dotted_boundaries(html)
+        assert not problems, f"{name}: dotted structural stroke(s):\n  " + "\n  ".join(problems)
+
+
 def test_no_dangling_connectors_anywhere():
     """Dable's dangling flag, run across the whole corpus: NO graph — at any drill
     depth, in any model — may draw a ⊕/×/⊙ with a missing input. (The detector
@@ -166,6 +179,40 @@ def test_no_all_static_drill_views_anywhere():
         "all-static drill view(s) — every node static, so clicking opens nothing "
         "(give the block children / render clickable):\n  "
         + "\n  ".join(f"{vk}: {t}" for vk, t in uniq)
+    )
+
+
+def test_no_static_connectors_in_any_graph_view():
+    """Tier-2 connector glyphs are clickable explanations, never static layout."""
+    import sys
+    import model_unfolder.renderers.html.graph_engine as ge
+
+    connector_kinds = {"residual_add", "gate_mul", "dot_product", "concat"}
+    violations: list[tuple[str, str]] = []
+
+    def _cap(graph, info, mount_id, view_key, title, **kw):
+        for node in graph.nodes:
+            if node.kind in connector_kinds and node.static:
+                violations.append((view_key, node.id))
+        return _orig(graph, info, mount_id, view_key, title, **kw)
+
+    _orig = ge.render_graph
+    patched = [m for n, m in sys.modules.items()
+               if "block_views" in n and hasattr(m, "render_graph")]
+    ge.render_graph = _cap
+    for module in patched:
+        module.render_graph = _cap
+    try:
+        for cfg in CORPUS.values():
+            unfold(cfg).to_html(standalone=True)
+    finally:
+        ge.render_graph = _orig
+        for module in patched:
+            module.render_graph = _orig
+
+    assert not violations, (
+        "static Tier-2 connector(s) — give each glyph a card/description:\n  "
+        + "\n  ".join(f"{view}: {node}" for view, node in sorted(set(violations)))
     )
 
 

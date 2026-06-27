@@ -63,7 +63,19 @@ def config_to_ir(
         )
         _report_error("ModelNotFoundError", str(err))
         raise err
-    ir = adapter.parse(cfg)
+    # First-class config ownership audit. This is capture-only: it prints
+    # nothing and changes no parsing decisions. Nested component parses remain
+    # inside the outer capture even if their legacy debug tracker resets.
+    from .adapters.transformer import debug as _config_debug
+    with _config_debug.capture_accesses() as accessed_fields:
+        ir = adapter.parse(cfg)
+    unread = _config_debug.unparsed_fields(
+        [cfg], touched=accessed_fields, recursive=True
+    )
+    ir.extras["config_audit"] = {
+        "unread": unread,
+        "accessed": sorted(accessed_fields),
+    }
     _ensure_parsable(ir, cfg_or_id)
     _debug_validate_blocks(ir)
     if inspect_code:

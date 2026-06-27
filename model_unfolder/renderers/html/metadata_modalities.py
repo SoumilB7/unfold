@@ -235,6 +235,7 @@ def _vision_children(vision: dict) -> list[dict]:
     tokens = vision.get("tokens") or {}
 
     image_size = input_spec.get("image_size")
+    input_channels = input_spec.get("channels")
     patch_size = input_spec.get("patch_size") or embedding.get("patch_size")
     grid_phrase = grid_card_phrase(coerce_grid(embedding.get("grid"), image_size, patch_size))
     encoder_bits = [
@@ -277,6 +278,42 @@ def _vision_children(vision: dict) -> list[dict]:
     vision_heads = encoder.get("num_attention_heads")
     vision_hidden = encoder.get("hidden_size")
     vision_head_dim = _head_dim(vision_heads, vision_hidden)
+    vision_pos_kind = str((encoder.get("position_encoding") or {}).get("kind") or "")
+    vision_uses_rope = "rope" in vision_pos_kind
+    vision_norm_kind = str(encoder.get("norm_kind") or "LayerNorm")
+    patch_facts = [f for f in (
+        grid_phrase or "",
+        f"→ {_fmt_int(embedding.get('out_features'))} per patch"
+        if embedding.get("out_features") else "",
+    ) if f]
+    patch_ops = embedding.get("ops") or []
+    if patch_ops:
+        patch_card = {
+            "id": "vision_patches",
+            "title": "Patch embedding",
+            "description": "Maps the image tensor to patch tokens in the code-defined operation order.",
+            "facts": patch_facts,
+            "view": "ops",
+            "detail": {"ops": patch_ops},
+        }
+    else:
+        patch_card = {
+            "id": "vision_patches",
+            "title": "Patch embedding",
+            "description": "Generic patch embedding; its exact backend is not established by this config.",
+            "facts": patch_facts,
+            "view": "vision_patch_embedding",
+            "children": [
+                {"id": "vision_pixels", "title": "Image pixels",
+                 "description": "Raw image tensor before patch embedding."},
+                {"id": "vision_patch_flatten", "title": "Patch regrouping",
+                 "description": "Generic patch regrouping; the exact source op order is not established."},
+                {"id": "vision_patch_project", "title": "Patch projection",
+                 "description": "Learned patch projection; backend is intentionally not guessed."},
+                {"id": "vision_patch_tokens", "title": "Patch tokens",
+                 "description": "One token per image patch."},
+            ],
+        }
 
     return [
         {
@@ -285,45 +322,12 @@ def _vision_children(vision: dict) -> list[dict]:
             "description": "Raw image tensor before the vision tower.",
             "facts": [f for f in (
                 f"image size {_fmt_int(image_size)}" if image_size else "",
+                f"{_fmt_int(input_channels)} input channels" if input_channels else "",
                 "shape [batch, images, channels, height, width]",
             ) if f],
         },
         *_tiling_children(tiling),
-        {
-            "id": "vision_patches",
-            "title": "Patch embedding",
-            "description": "Splits the image into patches and projects each one to the encoder width.",
-            "facts": [f for f in (
-                grid_phrase or "",
-                f"\u2192 {_fmt_int(embedding.get('out_features'))} per patch" if embedding.get("out_features") else "",
-            ) if f],
-            "view": "vision_patch_embedding",
-            "children": [
-                {
-                    "id": "vision_pixels",
-                    "title": "Image pixels",
-                    "description": "Raw image tensor before patch embedding.",
-                    "facts": [f"image size {_fmt_int(image_size)}"] if image_size else [],
-                },
-                {
-                    "id": "vision_patch_flatten",
-                    "title": "Flatten patches",
-                    "description": "Each image patch is flattened into a vector before projection.",
-                },
-                {
-                    "id": "vision_patch_project",
-                    "title": "Patch projection",
-                    "description": "Conv/linear projection of each flattened patch into the encoder width.",
-                    "facts": [f"output dim {_fmt_int(embedding.get('out_features'))}"] if embedding.get("out_features") else [],
-                },
-                {
-                    "id": "vision_patch_tokens",
-                    "title": "Patch tokens",
-                    "description": "One token per image patch.",
-                    "facts": [f"width {_fmt_int(embedding.get('out_features'))}"] if embedding.get("out_features") else [],
-                },
-            ],
-        },
+        patch_card,
         {
             "id": "vision_encoder",
             "title": "Vision encoder",
@@ -332,16 +336,22 @@ def _vision_children(vision: dict) -> list[dict]:
             "view": "vision_encoder",
             "children": [
                 {
+                    "id": "vision_patch_tokens",
+                    "title": "Patch tokens",
+                    "description": "Patch embeddings entering the repeated vision encoder stack.",
+                    "facts": [f"width {_fmt_int(vision_hidden)}"] if vision_hidden else [],
+                },
+                *([{
                     "id": "vision_position",
                     "title": "Vision positions",
                     "description": "Position information is added before the visual transformer stack.",
-                    "facts": [str((encoder.get("position_encoding") or {}).get("kind")).replace("_", " ")]
-                        if (encoder.get("position_encoding") or {}).get("kind") else [],
-                },
+                    "facts": [vision_pos_kind.replace("_", " ")] if vision_pos_kind else [],
+                }] if not vision_uses_rope else []),
                 {
                     "id": "vision_encoder_norm1",
                     "title": "Pre-attention norm",
                     "description": "Normalization inside each repeated vision encoder layer.",
+                    "facts": [vision_norm_kind],
                 },
                 {
                     "id": "vision_encoder_attn",
@@ -368,6 +378,17 @@ def _vision_children(vision: dict) -> list[dict]:
                             "title": "Value projection",
                             **_linear_card(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
                         },
+                        *([{
+                            "id": "vision_attn_q_rope",
+                            "title": "Apply vision RoPE (Q)",
+                            "description": "Rotary position embedding rotates vision query heads before attention scores.",
+                            "facts": [vision_pos_kind.replace("_", " ")],
+                        }, {
+                            "id": "vision_attn_k_rope",
+                            "title": "Apply vision RoPE (K)",
+                            "description": "Rotary position embedding rotates vision key heads before attention scores.",
+                            "facts": [vision_pos_kind.replace("_", " ")],
+                        }] if vision_uses_rope else []),
                         {
                             "id": "vision_attn_scaled",
                             "title": "Scaled attention scores",
@@ -400,39 +421,27 @@ def _vision_children(vision: dict) -> list[dict]:
                     ],
                 },
                 {
+                    "id": "vision_add1",
+                    "title": "Vision attention residual add",
+                    "description": "Adds the vision-layer input to the self-attention output.",
+                },
+                {
                     "id": "vision_encoder_norm2",
                     "title": "Pre-MLP norm",
                     "description": "Second normalization inside each repeated vision encoder layer.",
+                    "facts": [vision_norm_kind],
                 },
                 {
                     "id": "vision_encoder_mlp",
                     "title": "Vision MLP",
                     "description": "Feed-forward sublayer inside each repeated vision encoder block.",
                     "view": "vision_mlp",
-                    "children": [
-                        {
-                            "id": "vision_mlp_input",
-                            "title": "Patch states",
-                            "description": "Visual patch states entering the MLP sublayer.",
-                        },
-                        {
-                            "id": "vision_mlp_fc1",
-                            "title": "Input projection",
-                            "description": "Linear into the MLP's inner width.",
-                            "facts": [f"{_fmt_int(vision_hidden)} → {_fmt_int(encoder.get('intermediate_size'))}"],
-                        },
-                        {
-                            "id": "vision_mlp_activation",
-                            "title": "Activation",
-                            "description": "Element-wise non-linearity inside the vision MLP.",
-                        },
-                        {
-                            "id": "vision_mlp_fc2",
-                            "title": "Output projection",
-                            "description": "Linear back to the encoder width.",
-                            "facts": [f"{_fmt_int(encoder.get('intermediate_size'))} → {_fmt_int(vision_hidden)}"],
-                        },
-                    ],
+                    "children": _vision_mlp_children(encoder, vision_hidden),
+                },
+                {
+                    "id": "vision_add2",
+                    "title": "Vision MLP residual add",
+                    "description": "Adds the post-attention state to the vision MLP output.",
                 },
                 {
                     "id": "vision_encoded_states",
@@ -557,7 +566,11 @@ def _video_children(video: dict) -> list[dict]:
             "id": "video_frames",
             "title": "Video frames",
             "description": "Frame tensor before the visual tower.",
-            "facts": ["shape [batch, videos, frames, channels, height, width]"],
+            "facts": [f for f in (
+                "shape [batch, videos, frames, channels, height, width]",
+                f"{_fmt_int(input_spec.get('channels'))} input channels"
+                if input_spec.get("channels") else "",
+            ) if f],
         },
         {
             "id": "video_patches",
@@ -567,6 +580,8 @@ def _video_children(video: dict) -> list[dict]:
                 f"temporal patch {_fmt_int(input_spec.get('temporal_patch_size'))}" if input_spec.get("temporal_patch_size") else "",
                 f"projects each patch to {_fmt_int(embedding.get('out_features'))}" if embedding.get("out_features") else "",
             ]),
+            **({"view": "ops", "detail": {"ops": embedding.get("ops")}}
+               if embedding.get("ops") else {}),
         },
         {
             "id": "video_encoder",
@@ -592,6 +607,39 @@ def _video_children(video: dict) -> list[dict]:
                 f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
             ]),
         },
+    ]
+
+
+def _vision_mlp_children(encoder: dict, hidden: int | None) -> list[dict]:
+    """Cards for the same dense/gated profile consumed by the canonical FFN view."""
+    inner = encoder.get("intermediate_size")
+    dims_in = [f"{_fmt_int(hidden)} → {_fmt_int(inner)}"] if hidden and inner else []
+    dims_out = [f"{_fmt_int(inner)} → {_fmt_int(hidden)}"] if hidden and inner else []
+    common = [{
+        "id": "vision_mlp_input",
+        "title": "Patch states",
+        "description": "Visual patch states entering the MLP sublayer.",
+    }]
+    if encoder.get("ffn_gated"):
+        return common + [
+            {"id": "vision_mlp_gate", "title": "Gate projection",
+             "description": "Linear gate branch into the MLP inner width.", "facts": dims_in},
+            {"id": "vision_mlp_up", "title": "Up projection",
+             "description": "Parallel value branch into the MLP inner width.", "facts": dims_in},
+            {"id": "vision_mlp_activation", "title": "Gate activation",
+             "description": "Applies the configured non-linearity to the gate branch."},
+            {"id": "vision_mlp_multiply", "title": "Gated product",
+             "description": "Element-wise product of the activated gate and value branches."},
+            {"id": "vision_mlp_fc2", "title": "Output projection",
+             "description": "Linear back to the encoder width.", "facts": dims_out},
+        ]
+    return common + [
+        {"id": "vision_mlp_fc1", "title": "Input projection",
+         "description": "Linear into the MLP's inner width.", "facts": dims_in},
+        {"id": "vision_mlp_activation", "title": "Activation",
+         "description": "Element-wise non-linearity inside the vision MLP."},
+        {"id": "vision_mlp_fc2", "title": "Output projection",
+         "description": "Linear back to the encoder width.", "facts": dims_out},
     ]
 
 
@@ -635,6 +683,9 @@ _PROJECTOR_DESCS = {
 def _projector_ops(projector: dict) -> list[dict]:
     """The connector's structure, declared in the op alphabet — only from
     facts the parser actually extracted (no dims known → no ops, prose card)."""
+    declared = projector.get("ops")
+    if declared:
+        return list(declared)
     kind = str(projector.get("kind") or "linear_projector")
     inn, out = projector.get("in_features"), projector.get("out_features")
     act = projector.get("activation")
@@ -672,8 +723,12 @@ def _projector_card_fields(projector: dict) -> dict:
         str(projector.get("activation") or ""),
         f"{_fmt_int(projector.get('num_latents'))} latent queries" if projector.get("num_latents") else "",
     ) if f]
+    profile_title = {
+        "qwen_vl_patch_merger": "Qwen-VL patch merger",
+        "mistral3_multimodal_projector": "Mistral3 multimodal projector",
+    }.get(projector.get("profile"))
     fields = {
-        "title": _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
+        "title": profile_title or _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
         "description": _PROJECTOR_DESCS.get(kind, "Projects encoder features into the decoder's embedding space."),
         "facts": facts,
     }

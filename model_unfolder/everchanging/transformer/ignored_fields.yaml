@@ -11,10 +11,21 @@ keys:
   - model_type
   - architectures
   - transformers_version
+  - _diffusers_version
   - torch_dtype
   - dtype
   - _name_or_path
   - name_or_path
+  # Diffusers model_index identity/component references. Their fetched configs
+  # are audited separately under _vae_config / _text_encoder_configs.
+  - _pipeline_class_name
+  - tokenizer
+  - tokenizer_2
+  - tokenizer_3
+  - transformer
+  - transformer_2
+  - unet
+  - vae
   - use_cache
   - return_dict
   - output_attentions
@@ -23,6 +34,8 @@ keys:
   - _attn_implementation
   - _attn_implementation_autoset
   - pretraining_tp
+  # Numerical stability tolerance; does not alter the named op/topology.
+  - norm_eps
   # --- dropout ---
   - attention_dropout
   - hidden_dropout
@@ -49,6 +62,8 @@ keys:
   - tf_legacy_loss
   - torchscript
   - use_bfloat16
+  # Execution precision policy; it changes dtype, not the operation graph.
+  - force_upcast
   - tokenizer_class
   # --- HF GenerationConfig defaults dumped into config.json (decoding, not shape) ---
   - do_sample
@@ -107,3 +122,11 @@ keys:
 suffixes:
   - _token_id
   - _token_ids
+
+# Nested component configs whose internals are owned by another adapter/domain.
+# The containing key must still be read; this only prevents the parent model's
+# audit from pretending it owns every child option.  VAE config is deliberately
+# absent because the diffusion adapter renders and therefore owns its decoder.
+opaque_scopes:
+  - _scheduler_config
+  - _text_encoder_configs

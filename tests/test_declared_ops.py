@@ -40,6 +40,19 @@ QWEN2VL_STYLE = {
                       "spatial_merge_size": 2, "depth": 32, "num_heads": 16},
 }
 
+MISTRAL3_STYLE = {
+    "architectures": ["Mistral3ForConditionalGeneration"], "model_type": "mistral3",
+    "image_token_index": 10, "spatial_merge_size": 2,
+    "projector_hidden_act": "gelu", "vision_feature_layer": -1,
+    "text_config": {"model_type": "mistral", "hidden_size": 5120, "num_hidden_layers": 4,
+                    "num_attention_heads": 32, "num_key_value_heads": 8,
+                    "intermediate_size": 14336, "vocab_size": 131072,
+                    "rms_norm_eps": 1e-5, "head_dim": 128},
+    "vision_config": {"model_type": "pixtral", "hidden_size": 1024, "image_size": 1024,
+                      "patch_size": 16, "num_hidden_layers": 24,
+                      "num_attention_heads": 16, "intermediate_size": 4096},
+}
+
 
 def test_ops_region_builds_a_chain_with_implicit_wiring():
     r = ops_region([
@@ -86,8 +99,58 @@ def test_mlp_projector_card_declares_its_ops():
 def test_patch_merger_card_declares_its_ops():
     html = unfold(QWEN2VL_STYLE).to_html(standalone=True)
     i = html.find('data-card-id="vision_projector"')
-    seg = html[i:i + 4000]
-    assert "Patch merger" in seg and "Concat" in seg and "<svg" in seg
+    seg = html[i:i + 9000]
+    assert "Qwen-VL patch merger" in seg and "Merge neighbouring patches" in seg
+    assert "LayerNorm" in seg and "GELU" in seg and seg.count("Linear") >= 2
+
+
+def test_vision_patch_profiles_preserve_source_order_and_concrete_backend():
+    pixtral = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
+    qwen = unfold(QWEN2VL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
+    assert [op["label"] for op in pixtral["embedding"]["ops"]] == [
+        "Conv2d", "Flatten spatial grid", "Transpose to tokens", "RMSNorm"
+    ]
+    assert [op["label"] for op in qwen["embedding"]["ops"]] == [
+        "Reshape patches", "Conv3d", "Flatten tokens"
+    ]
+    for cfg in (PIXTRAL_STYLE, QWEN2VL_STYLE):
+        html = unfold(cfg).to_html(standalone=True)
+        assert "Linear / Conv2d" not in html
+        assert 'data-card-id="vision_patches"' in html
+
+
+def test_pixtral_encoder_uses_rmsnorm_and_a_gated_vision_mlp():
+    vision = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
+    assert vision["encoder"]["norm_kind"] == "RMSNorm"
+    assert vision["encoder"]["ffn_gated"] is True
+    html = unfold(PIXTRAL_STYLE).to_html(standalone=True)
+    for node_id in ("vision_mlp_gate", "vision_mlp_up", "vision_mlp_multiply"):
+        assert f'data-id="{node_id}"' in html
+        assert f'data-card-id="{node_id}"' in html
+
+
+def test_mistral3_projector_includes_norm_patch_merge_and_two_linear_mlp():
+    vision = unfold(MISTRAL3_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
+    projector = vision["projector"]
+    assert projector["profile"] == "mistral3_multimodal_projector"
+    assert [op.get("label") or op.get("fn") for op in projector["ops"]] == [
+        "RMSNorm", "Group neighbouring patches", "Patch merge", "Linear", "gelu", "Linear"
+    ]
+    html = unfold(MISTRAL3_STYLE).to_html(standalone=True)
+    assert "Mistral3 multimodal projector" in html
+    assert "Patch merge" in html and "RMSNorm" in html
+
+
+def test_qwen_video_path_reuses_the_same_conv3d_and_patch_merger_profiles():
+    cfg = {**QWEN2VL_STYLE, "video_token_id": 151656}
+    video = unfold(cfg).to_ir()["extras"]["modalities"]["inputs"]["video"]
+    assert [op["label"] for op in video["embedding"]["ops"]] == [
+        "Reshape patches", "Conv3d", "Flatten tokens"
+    ]
+    assert video["projector"]["profile"] == "qwen_vl_patch_merger"
+    html = unfold(cfg).to_html(standalone=True)
+    assert 'data-card-id="video_patches"' in html
+    assert 'data-card-id="video_projector"' in html
 
 
 # Views that render their children as *op nodes* of one canonical region —

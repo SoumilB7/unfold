@@ -324,6 +324,13 @@ def parse(cfg: Any) -> ModelIR:
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
     # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
     norm_kind = _dit_norm_kind(cfg)
+    # These two diffusers spellings are different structures, not aliases:
+    # PixArt ``caption_channels`` builds PixArtAlphaTextProjection
+    # (Linear -> GELU -> Linear); SD3/AuraFlow ``caption_projection_dim`` builds
+    # one context Linear.  Carry that distinction into the loop op graph.
+    caption_input_dim = _resolve(cfg, "caption_input_dim")
+    caption_projection_dim = _resolve(cfg, "caption_projection_dim")
+    norm_elementwise_affine = _g(cfg, "norm_elementwise_affine")
 
     if not num_layers and not num_single:
         warnings.append(
@@ -361,6 +368,9 @@ def parse(cfg: Any) -> ModelIR:
         # facts that must be captured, not dropped.
         "adaln_dim": _resolve(cfg, "adaln_dim"),
         "llm_features_dim": _resolve(cfg, "llm_features_dim"),
+        "caption_input_dim": caption_input_dim,
+        "caption_projection_dim": caption_projection_dim,
+        "norm_elementwise_affine": norm_elementwise_affine,
         "video": "3D" in str(cls),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
@@ -570,6 +580,7 @@ def parse(cfg: Any) -> ModelIR:
         else:
             layer.blocks = _insert_adaln_gates(layer.blocks)
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
+        _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
         layers.append(layer)
         idx += 1
     # Single-stream topology is a code fact (the block class): Flux 1 fuses only the
@@ -594,12 +605,15 @@ def parse(cfg: Any) -> ModelIR:
             layer = decoder_layer(idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind)
             layer.blocks = _insert_adaln_gates(layer.blocks)
             _annotate_adaln_norms(layer.blocks)
+            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
             layers.append(layer)
         else:
             # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
             # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block).
-            layers.append(single_stream_decoder_layer(
-                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in))
+            layer = single_stream_decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in)
+            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            layers.append(layer)
         idx += 1
 
     # In a cross-attention DiT the text enters the dedicated cross-attention
@@ -645,6 +659,9 @@ def parse(cfg: Any) -> ModelIR:
         "joint_attention_dim": geom["joint_attention_dim"],
         "cross_attention_dim": geom["cross_attention_dim"],
         "pooled_projection_dim": geom["pooled_projection_dim"],
+        "caption_input_dim": geom["caption_input_dim"],
+        "caption_projection_dim": geom["caption_projection_dim"],
+        "norm_elementwise_affine": geom["norm_elementwise_affine"],
         "guidance_embeds": geom["guidance_embeds"],
         "text_encoders": geom["text_encoders"] or None,
         "scheduler": geom.get("scheduler"),
@@ -782,6 +799,26 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
     for b in blocks:
         if b.get("id") in ("rms1", "rms2") and b.get("kind") == "norm":
             b["description"] = (b.get("description") or "").rstrip() + adaln
+
+
+def _annotate_norm_affine(blocks: list[dict], affine) -> None:
+    """Surface diffusers' ``norm_elementwise_affine`` as a card fact.
+
+    This flag changes the parameterization of the block norms even when their
+    placement is unchanged.  It belongs on cards (Tier 3), not in topology or
+    painted into the block label.  Output-gated custom norms are excluded: the
+    BasicTransformerBlock flag does not describe those separate modules.
+    """
+    if affine is None:
+        return
+    fact = ("learned affine scale + bias" if bool(affine)
+            else "non-affine (elementwise_affine = false)")
+    for block in blocks:
+        if block.get("kind") != "norm" or str(block.get("id", "")).startswith("out_norm"):
+            continue
+        facts = block.setdefault("facts", [])
+        if fact not in facts:
+            facts.append(fact)
 
 
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
@@ -1239,8 +1276,9 @@ def _scheduler_geom(cfg: Any) -> dict:
             ("scheduler_beta_schedule", "beta_schedule"),
             ("scheduler_timestep_spacing", "timestep_spacing"),
         ):
-            if sched_cfg.get(field) is not None:
-                out[key] = sched_cfg[field]
+            value = _g(sched_cfg, field)
+            if value is not None:
+                out[key] = value
     return out
 
 
@@ -1253,26 +1291,36 @@ def _vae_geom(cfg: Any) -> dict | None:
 
     def _v(canonical):
         for alias in _ALIASES.get(canonical, [canonical]):
-            if vcfg.get(alias) is not None:
-                return vcfg[alias]
+            value = _g(vcfg, alias)
+            if value is not None:
+                return value
         return None
 
     boc = _v("block_out_channels")
     if not isinstance(boc, (list, tuple)):
         # Wan/Qwen 3D-causal VAEs parameterize stages as base_dim × dim_mult.
-        base, mult = vcfg.get("base_dim"), vcfg.get("dim_mult")
+        base, mult = _g(vcfg, "base_dim"), _g(vcfg, "dim_mult")
         if isinstance(base, int) and isinstance(mult, (list, tuple)):
             boc = [base * m for m in mult if isinstance(m, int)]
     lpb = _v("layers_per_block")
     out = {
         "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
         "latent_channels": _v("latent_channels"),
-        "out_channels": vcfg.get("out_channels"),
+        "out_channels": _g(vcfg, "out_channels"),
         # Per-stage depth must be a declared scalar — DC-AE's per-stage *lists*
         # mix block types (ResBlock/EViT), so a single count would be invented.
         "layers_per_block": lpb if isinstance(lpb, int) else None,
-        "scaling_factor": vcfg.get("scaling_factor"),
-        "class": vcfg.get("_class_name"),
+        "scaling_factor": _g(vcfg, "scaling_factor"),
+        "shift_factor": _g(vcfg, "shift_factor"),
+        "latents_mean": _g(vcfg, "latents_mean"),
+        "latents_std": _g(vcfg, "latents_std"),
+        "norm_num_groups": _g(vcfg, "norm_num_groups"),
+        "down_block_types": _g(vcfg, "down_block_types"),
+        "up_block_types": _g(vcfg, "up_block_types"),
+        "use_quant_conv": _g(vcfg, "use_quant_conv"),
+        "use_post_quant_conv": _g(vcfg, "use_post_quant_conv"),
+        "mid_block_add_attention": _g(vcfg, "mid_block_add_attention"),
+        "class": _g(vcfg, "_class_name"),
     }
     return {k: v for k, v in out.items() if v is not None} or None
 
@@ -1307,7 +1355,11 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         # CLIP-L + OpenCLIP-bigG (both map to "CLIP"); SD3 is CLIP-L + CLIP-G + T5.
         # Folding same-family encoders into one drops a real, distinct encoder —
         # and the fact that their outputs concatenate into the cross-attn width.
-        spec = {"name": friendly}
+        # ``family`` is the bare operation/module label drawn on the diagram.
+        # ``name`` may later be disambiguated for cards/prose when a pipeline has
+        # two encoders from the same family (SDXL/SD3's two CLIPs).  Keeping both
+        # prevents a config fact such as hidden width from leaking into the box.
+        spec = {"name": friendly, "family": friendly}
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
             spec.update(_normalize_encoder_config(sub))
@@ -1336,8 +1388,10 @@ def _clean_encoder_name(cls: str) -> str:
 
 def _uniquify_encoder_names(specs: list[dict]) -> None:
     """Disambiguate encoders that share a family name (SDXL: CLIP + CLIP) so each
-    box reads distinctly — by hidden width when the loader fetched it, else a
-    1-based ordinal.  Singletons keep their clean family name."""
+    card/prose reference reads distinctly — by hidden width when the loader
+    fetched it, else a 1-based ordinal.  The separate ``family`` value remains
+    the bare SVG block label; numeric facts never enter a box.  Singletons keep
+    their clean family name."""
     from collections import Counter
     counts = Counter(s["name"] for s in specs)
     nth: dict[str, int] = {}

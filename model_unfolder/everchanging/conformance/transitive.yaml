@@ -1,0 +1,75 @@
+# Transitive-delegation vocabulary for the RECURSIVE drill-conformance net
+# (evidence/transitive.py + evidence/conformance.py::check_nested_conformance).
+#
+# A drill view (attention internals, FFN, router, expert, indexer, vision) is
+# drawn BELOW the resolution of its sub-module's own forward() AST — the heavy
+# math lives inside library calls (scaled_dot_product_attention), free helpers
+# (apply_rotary_pos_emb, eager_attention_forward) and delegated callables (the
+# diffusers attention PROCESSOR, the FeedForward `net` ModuleList).  The
+# transitive extractor FOLLOWS those delegations to a leaf op-set; this file is
+# the only place that leaf vocabulary lives.  Flat flow style so it parses
+# without PyYAML (codebase doctrine).
+
+# --- attention-compute leaves -------------------------------------------------
+# The score/softmax/apply-V computation, however dispatched, is the pair
+# {dot_product, activation(softmax)}.  These call tokens TERMINATE transitive
+# resolution at that pair: the SDPA/flash/eager library entry points and the
+# standard `attention_interface = ALL_ATTENTION_FUNCTIONS[...]` dispatch variable
+# (transformers' universal pattern — a general signature, never a model name).
+attention_compute_ops: [dot_product, activation]
+attention_compute_tokens: [scaled_dot_product_attention, sdpa_attention_forward, eager_attention_forward, flash_attention_forward, flex_attention_forward, flash_attn_func, flash_attn_varlen_func, attention_interface, _attention_forward]
+
+# --- presentation / structural DRAWN kinds -----------------------------------
+# Drawn node kinds that are NOT computational ops to diff (ports, layout sugar,
+# and the drill-INTO container glyphs that have their OWN drill + diff).  Dropped
+# from a drill's drawn op-set before the op-kind diff.
+drawn_ignore: [port, formula, subgraph, opaque, output, source, embedding, router, expert, shared_expert]
+
+# Drawn node kind -> canonical code op alphabet ("drawn=code"); only kinds whose
+# drawn spelling differs from the code spelling need a row.
+drawn_op_map: [select=route]
+
+# --- semantic presence kinds (NOT op-kinds) ----------------------------------
+# rope / cache carry no distinct op-KIND in code (apply_rotary is a `*`+`+`+cat;
+# a cache write is `.update`), so they are DROPPED from the op-kind diff and
+# verified by SIGNATURE-TOKEN presence in the transitive closure instead — drawn
+# iff a marker is reachable, fabricated iff drawn without it.  Same rail
+# fact_conformance uses for the block-level NoPE claim, at drill altitude.
+semantic_kinds: [rope, cache]
+semantic_rope_markers: [rotary, rope, rotate_half, freqs_cis, apply_rope]
+semantic_cache_markers: [past_key_value, kv_cache, cache_kwargs, _update_cache]
+
+# Library-helper call tokens whose op-kinds we know without a body (terminal).
+# Kept tiny + general: each is a torch/stdlib primitive, not a model symbol.
+# "name=op[,op]"; an empty RHS means the helper contributes no op (pure plumbing).
+library_helpers: [repeat_kv=reshape, dropout=]
+
+# --- drill ROLE classification + diff direction ------------------------------
+# Each rendered drill (render-log `view_key`: gqa-attn / mla / ffn / expert_1 …)
+# is classified to a leaf-compute ROLE by substring; the role picks which UNION
+# sub-module closure it is diffed against.  "role=sub1,sub2" — view_key substrings.
+#
+# v1 SCOPE = the pure LEAF COMPUTE drills, where the transitive closure is clean
+# and high-value (attention internals, FFN/expert internals). Deliberately ABSENT:
+#  * COMPOSITE container drills (vision-encoder, mtp-transformer-block, the moe
+#    container) — they draw sub-CONTAINERS that each have their OWN leaf drill
+#    (checked there) + the top-level block diff, so a leaf op-diff here would
+#    mis-read attention/ffn glyphs as fabricated;
+#  * the ROUTER / indexer SELECTION drills (moe_router, topk, dsa_indexer) — their
+#    glyphs (top-k select, renormalize, ×scale, the e_score bias) are selection
+#    LOGIC that does not map 1:1 onto the compute op alphabet; a faithful diff
+#    needs a dedicated selection vocabulary (a conscious future extension), not a
+#    band-aid against the compute closure. The `route` type-role below already
+#    isolates the gate/indexer class for when that net lands.
+drill_role_markers: [attention=attn,mla, ffn=ffn,mlp, expert=expert, vision_attention=vision-self-attention, vision_mlp=vision-mlp]
+
+# A leaf role's drawn closure is diffed against the union closure of the model's
+# reachable sub-module classes carrying the mapped TYPE-role; "role=type_role".
+drill_role_to_type: [attention=attention, ffn=ffn, expert=ffn, vision_attention=attention, vision_mlp=ffn]
+
+# SALIENT omissions (code->diagram) per role — the ONLY missing-ops checked at
+# drill altitude, because deep following brings incidental ops (a processor's
+# optional residual/rescale, eager scaling) a faithful drill never draws.  A
+# gated FFN/expert MUST draw its gate + activation (the dense-vs-gated bug); the
+# rest is fabrication-only.  "role=op[,op]"; absent role = fabrication-only.
+drill_salient_missing: [ffn=gate_mul,activation, expert=gate_mul,activation]

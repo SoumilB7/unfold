@@ -160,6 +160,8 @@ def model_family_hint(cfg: Any) -> str | None:
         return mt if mt in {"mllama", "llama4"} else "mllama"
     if mt.startswith(("qwen2_vl", "qwen2_5_vl", "qwen3_vl")):
         return "qwen_vl"
+    if mt == "mistral3" or "mistral3" in arch:
+        return "mistral3"
     if mt == "paligemma":
         return "paligemma"
     if mt == "gemma4" or "gemma4" in arch:

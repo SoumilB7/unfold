@@ -1,11 +1,8 @@
 """Video pathway detail SVGs."""
 from __future__ import annotations
 
-from ...graph_engine import render_graph
 from ...stack_view import StackView
-from ...tower import tower_graph
-from .audio import encoder_tower_spec
-from .common import video_input
+from .vision_details import build_vision_encoder_view
 
 
 def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
@@ -20,9 +17,7 @@ def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
 
 
 def build_video_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
-    """The video pathway's visual tower — same backbone, facts from the video
-    modality's encoder record."""
-    encoder = (video_input(ir).get("encoder") or {})
-    spec = encoder_tower_spec(encoder, prefix="video_enc")
-    return render_graph(tower_graph(spec), info, mount_id, "video-encoder",
-                        f"{ir.get('name', 'model')} video encoder")
+    """Video and image tokens share one vision transformer in Qwen-VL-style
+    models. Reuse the canonical vision encoder view rather than maintaining a
+    second, structurally weaker tower template that can omit norms/residuals."""
+    return build_vision_encoder_view(ir, info, mount_id, _child)

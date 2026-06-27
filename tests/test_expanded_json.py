@@ -498,11 +498,14 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert vision["embedding"]["out_features"] == 32
     assert vision["encoder"]["hidden_size"] == 32
     assert vision["encoder"]["position_encoding"] == {"kind": "multimodal_rope"}
-    assert vision["projector"] == {
-        "kind": "patch_merger",
-        "in_features": 128,
-        "out_features": 64,
-    }
+    projector = vision["projector"]
+    assert projector["kind"] == "patch_merger"
+    assert projector["in_features"] == 128 and projector["out_features"] == 64
+    assert projector["profile"] == "qwen_vl_patch_merger"
+    assert [op["kind"] for op in projector["ops"]] == [
+        "norm", "reshape", "linear", "activation", "linear"
+    ]
+    assert projector["ops"][3]["fn"] == "gelu"
     assert vision["tokens"] == {
         "kind": "grid_visual_tokens",
         "width": 64,
@@ -522,11 +525,13 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert video["kind"] == "video_to_grid_tokens"
     assert video["embedding"]["out_features"] == 32
     assert video["encoder"]["hidden_size"] == 32
-    assert video["projector"] == {
-        "kind": "patch_merger",
-        "in_features": 128,
-        "out_features": 64,
-    }
+    video_projector = video["projector"]
+    assert video_projector["kind"] == "patch_merger"
+    assert video_projector["in_features"] == 128 and video_projector["out_features"] == 64
+    assert video_projector["profile"] == "qwen_vl_patch_merger"
+    assert [op["kind"] for op in video_projector["ops"]] == [
+        "norm", "reshape", "linear", "activation", "linear"
+    ]
     assert video["tokens"] == {
         "kind": "grid_video_tokens",
         "width": 64,

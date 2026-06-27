@@ -23,6 +23,8 @@ whole "silently renders wrong" class becomes a failing test, not a surprise.
 from __future__ import annotations
 
 import re
+from collections import defaultdict
+from html.parser import HTMLParser
 from typing import Any, Iterator, Optional, TypedDict
 
 from .everchanging import load_diffusion_typing, load_transformer_typing
@@ -197,16 +199,96 @@ _NODELESS_CARDS = frozenset({"default"})
 
 
 def validate_click_coupling(html: str) -> list[str]:
-    """Every clickable node must resolve to a card; return any that don't.
+    """Every clickable node must resolve in its *next* inspect panel.
 
     A ``data-id`` with no matching ``data-card-id`` means clicking that node
     opens nothing — exactly the silent failure a view drawing an undeclared
-    node-id produces.
+    node-id produces.  Generated documents are checked by interaction depth:
+    architecture nodes must resolve in panel 2, nodes rendered inside panel N
+    must resolve in panel N+1.  This prevents an unrelated same-id card at a
+    different depth from masking a broken click.  Small snippets with no panel
+    structure retain the original document-global behavior for compatibility.
     """
+    scoped = _ClickScopeParser()
+    scoped.feed(html)
+    scoped.close()
+    if scoped.panel_depths:
+        problems: list[str] = []
+        for source_depth, node_ids in sorted(scoped.nodes_by_source_depth.items()):
+            target_depth = source_depth + 1
+            card_ids = scoped.cards_by_depth.get(target_depth, set()) | _NODELESS_CARDS
+            for nid in sorted(node_ids - card_ids):
+                problems.append(
+                    f"panel depth {source_depth}: clickable node {nid!r} has no card "
+                    f"in target panel depth {target_depth} (click would do nothing)"
+                )
+        return problems
+
     node_ids = set(_DATA_ID.findall(html))
     card_ids = set(_CARD_ID.findall(html)) | _NODELESS_CARDS
     orphans = sorted(node_ids - card_ids)
     return [f"clickable node {nid!r} has no card (click would do nothing)" for nid in orphans]
+
+
+class _ClickScopeParser(HTMLParser):
+    """Collect node/card ids under the same depth model used by interactions.js."""
+
+    _VOID = frozenset({
+        "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+        "meta", "param", "source", "track", "wbr",
+    })
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._stack: list[tuple[str, bool, int | None]] = []
+        self.nodes_by_source_depth: dict[int, set[str]] = defaultdict(set)
+        self.cards_by_depth: dict[int, set[str]] = defaultdict(set)
+        self.panel_depths: set[int] = set()
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        self._open(tag, attrs)
+
+    def handle_startendtag(self, tag: str, attrs) -> None:
+        self._open(tag, attrs)
+        if tag.lower() not in self._VOID:
+            self._stack.pop()
+
+    def handle_endtag(self, tag: str) -> None:
+        tag = tag.lower()
+        while self._stack:
+            opened, _arch, _panel = self._stack.pop()
+            if opened == tag:
+                break
+
+    def _open(self, tag: str, attrs) -> None:
+        tag = tag.lower()
+        attr = dict(attrs)
+        classes = set((attr.get("class") or "").split())
+        parent_arch = self._stack[-1][1] if self._stack else False
+        parent_panel = self._stack[-1][2] if self._stack else None
+        in_arch = parent_arch or "uf-section-arch" in classes
+        panel_depth = parent_panel
+        if "uf-inspect-panel" in classes:
+            try:
+                panel_depth = int(attr.get("data-depth"))
+            except (TypeError, ValueError):
+                panel_depth = None
+            if panel_depth is not None:
+                self.panel_depths.add(panel_depth)
+
+        card_id = attr.get("data-card-id")
+        if card_id and panel_depth is not None:
+            self.cards_by_depth[panel_depth].add(card_id)
+
+        node_id = attr.get("data-id")
+        if node_id:
+            if panel_depth is not None:
+                self.nodes_by_source_depth[panel_depth].add(node_id)
+            elif in_arch:
+                self.nodes_by_source_depth[1].add(node_id)
+
+        if tag not in self._VOID:
+            self._stack.append((tag, in_arch, panel_depth))
 
 
 _DEF_ID = re.compile(r'<(?:marker|linearGradient|radialGradient|filter|clipPath) id="([^"]+)"')
@@ -231,6 +313,52 @@ def validate_unique_ref_ids(html: str) -> list[str]:
         f"bind to the first (possibly hidden) match and vanish in the browser"
         for i, c in sorted(counts.items()) if c > 1 and i in referenced
     ]
+
+
+_STROKED_ELEMENT = re.compile(
+    r"<(?P<tag>line|path|polyline|rect|polygon|circle|ellipse)\b(?P<attrs>[^>]*)>",
+    re.I | re.S,
+)
+_DASH_ATTR = re.compile(r"\bstroke-dasharray\s*=\s*(['\"])[^'\"]+\1", re.I)
+_MARKER_ATTR = re.compile(r"\bmarker-end\s*=\s*(['\"])url\(#([^)]+)\)\1", re.I)
+
+
+def validate_no_dotted_arrows(html: str) -> list[str]:
+    """No generated arrow/flow line may be dotted.
+
+    Dotted strokes are easy to miss in code review and read as optional/uncertain
+    wiring in the pixels.  This intentionally targets arrow-bearing line/path
+    elements (``marker-end``) so non-flow decorations cannot mask a real dataflow
+    violation.
+    """
+    problems: list[str] = []
+    for match in _STROKED_ELEMENT.finditer(html):
+        attrs = match.group("attrs")
+        marker = _MARKER_ATTR.search(attrs)
+        if _DASH_ATTR.search(attrs) and marker:
+            problems.append(
+                f"dotted {match.group('tag').lower()} arrow/flow line references marker "
+                f"{marker.group(2)!r} — generated dataflow arrows must be solid"
+            )
+    return problems
+
+
+def validate_no_dotted_boundaries(html: str) -> list[str]:
+    """No non-arrow structural boundary may use a dotted stroke.
+
+    Kept separate from :func:`validate_no_dotted_arrows` so failures say whether
+    flow semantics or region/highlight styling regressed.  Attribute order and
+    quote style are deliberately irrelevant.
+    """
+    problems: list[str] = []
+    for match in _STROKED_ELEMENT.finditer(html):
+        attrs = match.group("attrs")
+        if _DASH_ATTR.search(attrs) and not _MARKER_ATTR.search(attrs):
+            problems.append(
+                f"dotted {match.group('tag').lower()} structural boundary — generated "
+                "regions/highlights must use solid strokes"
+            )
+    return problems
 
 
 # ---------------------------------------------------------------------------
@@ -259,4 +387,6 @@ __all__ = [
     "iter_block_tree",
     "validate_block_tree",
     "validate_click_coupling",
+    "validate_no_dotted_arrows",
+    "validate_no_dotted_boundaries",
 ]

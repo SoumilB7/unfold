@@ -8,6 +8,7 @@ from .detect import (
     has_cross_attention_adapter,
     has_video_input,
     is_unified_grid_stream,
+    model_family_hint,
     vision_family_hint,
 )
 from .schema import Stage, assemble_path
@@ -19,6 +20,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     unified_grid = is_unified_grid_stream(cfg, vision_cfg)
     image_size = first(vision_cfg, "image_size", "input_size")
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
+    input_channels = first(vision_cfg, "in_channels", "num_channels")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
     projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn, unified_grid)
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
@@ -28,8 +30,14 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     # the patch count, so that count wins when present.
     token_count = perceiver_latents(cfg) or visual_token_count(cfg, vision_cfg, cross_attn)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
+    vision_family = vision_family_hint(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
+    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
+    projector_profile = vision_projector_ops(
+        cfg, vision_cfg, hidden_size, projector_in, projector_out,
+        projector_activation, unified_grid,
+    )
     token_kind = (
         "vision_cross_attention_states" if cross_attn
         else "grid_visual_tokens" if unified_grid
@@ -80,12 +88,15 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "output_dim": (multilayer or {}).get("output_dim")
                       or first(vision_cfg, "vision_output_dim", "output_dim"),
         "position_encoding": vision_position_encoding(cfg, vision_cfg),
+        "norm_kind": "RMSNorm" if vision_family == "pixtral_vision_transformer" else "LayerNorm",
+        "ffn_gated": vision_family == "pixtral_vision_transformer",
     })
 
     stages = [
         Stage("input", "image_pixels", "input", "image_pixels",
-              {"shape": image_shape, "image_size": image_size, "patch_size": patch_size},
-              step_fields={"shape": image_shape}),
+              {"shape": image_shape, "image_size": image_size, "patch_size": patch_size,
+               "channels": input_channels},
+              step_fields={"shape": image_shape, "channels": input_channels}),
     ]
     if tiling:
         stages.append(
@@ -100,7 +111,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         )
     stages.append(
         Stage("embedding", "patch_embedding", "patch_embedding", "patch_embedding",
-              {"patch_size": patch_size, "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg)},
+              drop_none({"patch_size": patch_size, "out_features": hidden_size,
+                         "grid": patch_grid_geometry(vision_cfg),
+                         "ops": embedding_ops or None}),
               step_fields={"patch_size": patch_size, "out_features": hidden_size})
     )
     stages.append(
@@ -116,7 +129,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     stages.append(
         Stage("projector", "projector", projection_operation, projector_kind_value,
               drop_none({"in_features": projector_in, "out_features": projector_out,
-                         "activation": projector_activation, "num_latents": perceiver_latents(cfg)}))
+                         "activation": projector_activation, "num_latents": perceiver_latents(cfg),
+                         "profile": (projector_profile or {}).get("profile"),
+                         "ops": (projector_profile or {}).get("ops")}))
     )
     stages.append(
         Stage("tokens", token_node_id, final_operation, token_kind,
@@ -139,6 +154,87 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     )
 
 
+def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> list[dict]:
+    """Return an exact patch-embedding chain only for established signatures.
+
+    These are class/config-family signatures, never model ids. Unknown towers
+    keep the honest generic patch view instead of receiving a guessed backend.
+    """
+    family = vision_family_hint(cfg, vision_cfg)
+    patch = first(vision_cfg, "patch_size", "patch_size_h")
+    temporal = first(vision_cfg, "temporal_patch_size")
+    channels = first(vision_cfg, "in_channels", "num_channels")
+    if temporal is not None:
+        kernel = f"{temporal}×{patch}×{patch}" if patch is not None else None
+        return [
+            {"kind": "reshape", "label": "Reshape patches"},
+            {"kind": "conv", "label": "Conv3d", "in": channels, "out": hidden_size,
+             "meta": {"desc": "3D patch convolution over time, height, and width.",
+                      "kernel": kernel}},
+            {"kind": "reshape", "label": "Flatten tokens"},
+        ]
+    if family in {"siglip_vision_transformer", "pixtral_vision_transformer"}:
+        ops = [
+            {"kind": "conv", "label": "Conv2d", "in": channels, "out": hidden_size,
+             "meta": {"desc": "2D patch convolution over the image grid.",
+                      "kernel": f"{patch}×{patch}" if patch is not None else None}},
+            {"kind": "reshape", "label": "Flatten spatial grid"},
+            {"kind": "reshape", "label": "Transpose to tokens"},
+        ]
+        if family == "pixtral_vision_transformer":
+            ops.append({"kind": "norm", "label": "RMSNorm"})
+        return ops
+    return []
+
+
+def vision_projector_ops(
+    cfg: Any,
+    vision_cfg: Any,
+    vision_hidden: Any,
+    projector_in: Any,
+    projector_out: Any,
+    activation: Any,
+    unified_grid: bool,
+) -> dict | None:
+    """Return source-established projector/merger chains for shared families."""
+    merge = as_int(first(vision_cfg, "spatial_merge_size") or first(cfg, "spatial_merge_size"))
+    hidden = as_int(vision_hidden)
+    merged = hidden * merge**2 if hidden is not None and merge is not None else projector_in
+
+    # Qwen-VL PatchMerger: norm each patch, regroup the spatial merge unit,
+    # then Linear -> GELU -> Linear. Temporal patching is the structural
+    # signature shared by its image/video-capable vision families.
+    if unified_grid and first(vision_cfg, "temporal_patch_size") is not None:
+        return {
+            "profile": "qwen_vl_patch_merger",
+            "ops": [
+                {"kind": "norm", "label": "LayerNorm"},
+                {"kind": "reshape", "label": "Merge neighbouring patches"},
+                {"kind": "linear", "label": "Linear", "in": merged, "out": merged},
+                {"kind": "activation", "fn": "gelu"},
+                {"kind": "linear", "label": "Linear", "in": merged, "out": projector_out},
+            ],
+        }
+
+    # Mistral3 wraps Pixtral with RMSNorm + a learned patch merger before its
+    # two-linear projector. Plain Pixtral/LLaVA wrappers are deliberately not
+    # swept into this profile because their connector code differs.
+    root_arch = str(architecture(cfg) or "").lower()
+    if model_family_hint(cfg) == "mistral3" or "mistral3" in root_arch:
+        ops = [
+            {"kind": "norm", "label": "RMSNorm"},
+            {"kind": "reshape", "label": "Group neighbouring patches"},
+            {"kind": "linear", "label": "Patch merge", "in": merged, "out": hidden},
+            {"kind": "linear", "label": "Linear", "in": hidden, "out": projector_out},
+        ]
+        if activation:
+            ops.append({"kind": "activation", "fn": str(activation)})
+        ops.append({"kind": "linear", "label": "Linear",
+                    "in": projector_out, "out": projector_out})
+        return {"profile": "mistral3_multimodal_projector", "ops": ops}
+    return None
+
+
 def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return video intake when a model reuses its visual tower for frames."""
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
@@ -150,16 +246,24 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     temporal_patch_size = first(vision_cfg, "temporal_patch_size")
+    input_channels = first(vision_cfg, "in_channels", "num_channels")
     video_shape = ["batch", "videos", "frames", "channels", "height", "width"]
     grid = grid_spec(cfg, vision_cfg, "video")
+    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
+    projector_profile = vision_projector_ops(
+        cfg, vision_cfg, hidden_size, projector_in, projector_out,
+        first(cfg, "projector_hidden_act", "mm_projector_act"), True,
+    )
 
     stages = [
         Stage("input", "video_frames", "input", "video_frames",
-              {"shape": video_shape, "patch_size": patch_size, "temporal_patch_size": temporal_patch_size},
-              step_fields={"shape": video_shape}),
+              {"shape": video_shape, "patch_size": patch_size,
+               "temporal_patch_size": temporal_patch_size, "channels": input_channels},
+              step_fields={"shape": video_shape, "channels": input_channels}),
         Stage("embedding", "video_patch_embedding", "temporal_patch_embedding", "temporal_patch_embedding",
-              {"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
-               "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg)},
+              drop_none({"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
+                         "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg),
+                         "ops": embedding_ops or None}),
               step_fields={"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
                            "out_features": hidden_size}),
         Stage("encoder", "video_encoder", "encode", encoder_kind,
@@ -168,7 +272,9 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
                "position_encoding": vision_position_encoding(cfg, vision_cfg)},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
         Stage("projector", "video_projector", "merge_patches_to_text_width", projector_kind_value,
-              {"in_features": projector_in, "out_features": projector_out}),
+              drop_none({"in_features": projector_in, "out_features": projector_out,
+                         "profile": (projector_profile or {}).get("profile"),
+                         "ops": (projector_profile or {}).get("ops")})),
         Stage("tokens", "video_tokens", "emit_grid_token_stream", "grid_video_tokens",
               {"width": text_hidden_size or None, "grid": grid}),
     ]

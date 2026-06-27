@@ -23,11 +23,14 @@ from ..everchanging import (
     load_conformance_abstractions,
     load_conformance_fact_markers,
     load_conformance_map,
+    load_conformance_transitive,
+    load_conformance_type_roles,
     load_conformance_wiring_roles,
 )
-from .forward_ops import extract_forward_ops
+from .forward_ops import _role_of, extract_forward_ops
 from .models import ForwardOps
 from .sources import _model_type, _string_value, resolve_source_files
+from .transitive import build_registry, transitive_closure
 
 #: diagram block ``kind``s that ARE canonical ops (everything else — adaln /
 #: conditioning side-inputs, ports, sources — is plumbing, not the block's op).
@@ -113,7 +116,9 @@ def check_model_conformance(target, ir: dict, *, source: str = "local") -> list[
         if code is None:
             problems.append(ConformanceProblem("unresolved", "", key))
             continue
-        problems.extend(diff_conformance(diagram_op_set(spec), code, family, view, abstractions))
+        problems.extend(
+            diff_conformance(diagram_op_set(spec), code, family, view, abstractions, cfg=target)
+        )
     return problems
 
 
@@ -232,6 +237,173 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
     return problems
 
 
+def check_nested_conformance(target, render_log, *, source: str = "local") -> list[ConformanceProblem]:
+    """Recurse INTO every drill view and diff its DRAWN op-set against the
+    TRANSITIVE closure of the backing sub-module's ``forward()`` — one altitude
+    below :func:`check_model_conformance` (which stops at the layer block).
+
+    ``render_log`` is ``graph_engine.drain_render_log()`` after a full render:
+    ``[(view_key, drawn_op_kinds, node_ids), …]`` for every graph the renderer
+    drew (architecture + every drill, to the leaves).  Each drill is classified to
+    a ROLE (attention / ffn / expert / route / vision-*), diffed against the UNION
+    transitive closure of the model's reachable sub-module classes of that role:
+
+    * **fabrication (diagram→code), strict** — a drawn compute op absent from the
+      closure (and not a declared draw_extra) is FABRICATED. The clean, high-value
+      direction (a drill drawing softmax/rope/a gate the code never does).
+    * **salient omission (code→diagram), scoped** — only the per-role
+      ``drill_salient_missing`` ops (a gated FFN/expert MUST draw its gate+act —
+      the dense-vs-gated bug). Deep following brings incidental ops (a processor's
+      optional residual, eager scaling) a faithful drill never draws, so the
+      missing direction is deliberately narrow.
+    * **semantic presence** — a drawn ``rope``/``cache`` glyph must have its marker
+      reachable in the closure's signature tokens, else it is fabricated.
+
+    A role whose closure is EMPTY (an opaque delegation we could not statically
+    follow — e.g. diffusers' append-built FeedForward with library activations) is
+    SKIPPED, never flagged: honest-unknown, not a false fabrication."""
+    family = _family(target)
+    bundle = resolve_source_files(target, source=source)
+    files = _augment_diffusion_files(bundle.files)
+    if not files:
+        return []                        # no oracle — check_model_conformance records 'unresolved'
+    registry = build_registry(files)
+    vocab = load_conformance_transitive()
+    ab = load_conformance_abstractions()
+
+    role_closures = _role_union_closures(registry, vocab)
+    if not role_closures:
+        return []
+
+    problems: list[ConformanceProblem] = []
+    seen: dict[str, frozenset[str]] = {}
+    for view_key, drawn, _ids in render_log:
+        # dedup: many layer-groups bake identical drills; keep the richest drawn set
+        if view_key in seen and drawn <= seen[view_key]:
+            continue
+        seen[view_key] = seen.get(view_key, frozenset()) | drawn
+    for view_key, drawn in seen.items():
+        drill_role = _drill_role(view_key, vocab)
+        if drill_role is None:
+            continue                     # architecture / container view — not a sub-module drill
+        type_role = vocab["drill_role_to_type"].get(drill_role)
+        closure = role_closures.get(type_role)
+        if not closure or not closure[0]:
+            continue                     # opaque delegation — honest-unknown, skip
+        ops, tokens, cls = closure
+        problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, tokens, cls, vocab, ab))
+    return problems
+
+
+def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], frozenset[str], str]]:
+    """``type_role -> (union_ops, union_tokens, representative_class)`` over the
+    model's reachable sub-module classes carrying that role.
+
+    Starts at the ModuleList-built BLOCK classes, walks their ``field_types`` +
+    ``sub_module_classes`` to gather every reachable sub-module (the Attention, the
+    MLP, the MoE block, its experts, the gate), tags each by :func:`_role_of`, and
+    unions the transitive closure of each.  Attention classes inject their
+    diffusers processor (``init_class_refs`` matching ``Processor``) so the
+    delegated ``__call__`` is followed."""
+    blocks = [name for name, info in registry.items() if _is_block_class(name)]
+    reachable = _reachable_submodules(blocks, registry)
+    by_role: dict[str, list[str]] = {}
+    for cls in reachable:
+        role = _role_of(cls)
+        if role:
+            by_role.setdefault(role, []).append(cls)
+
+    out: dict[str, tuple[frozenset[str], frozenset[str], str]] = {}
+    for role, classes in by_role.items():
+        ops: set[str] = set()
+        toks: set[str] = set()
+        for cls in classes:
+            extra = _processor_refs(registry.get(cls)) if role == "attention" else frozenset()
+            c_ops, c_toks = transitive_closure(cls, registry, vocab, extra_class_refs=extra)
+            ops |= c_ops
+            toks |= c_toks
+        out[role] = (frozenset(ops), frozenset(toks), sorted(classes, key=lambda n: (len(n), n))[0])
+    return out
+
+
+def _reachable_submodules(starts, registry, *, max_depth: int = 4) -> set[str]:
+    """Every class reachable from ``starts`` via ``field_types`` + built
+    sub-modules, bounded by depth (the block itself is excluded from the result —
+    we want its parts, not the block)."""
+    seen: set[str] = set(starts)
+    out: set[str] = set()
+    frontier = list(starts)
+    for _ in range(max_depth):
+        nxt: list[str] = []
+        for name in frontier:
+            info = registry.get(name)
+            if info is None:
+                continue
+            children = set(info.field_types.values())
+            for classes in info.sub_module_classes.values():
+                children |= set(classes)
+            for child in children:
+                if child in registry and child not in seen:
+                    seen.add(child)
+                    out.add(child)
+                    nxt.append(child)
+        frontier = nxt
+    return out
+
+
+def _processor_refs(info) -> frozenset[str]:
+    if info is None:
+        return frozenset()
+    return frozenset(r for r in info.init_class_refs if "Processor" in r)
+
+
+def _drill_role(view_key: str, vocab) -> str | None:
+    lc = view_key.lower()
+    for role, subs in vocab["drill_role_markers"].items():
+        if any(s in lc for s in subs):
+            return role
+    return None
+
+
+def _diff_drill(family, view_key, drill_role, drawn, code_ops, code_tokens,
+                cls, vocab, ab) -> list[ConformanceProblem]:
+    key = f"{family}/{view_key}"
+    drawn_ignore = vocab["drawn_ignore"]
+    semantic = vocab["semantic_kinds"]
+    op_map = vocab["drawn_op_map"]
+    omit = ab["omit_global"]
+    draw_extra = ab["draw_extra"].get(key, set()) | ab["draw_extra"].get(f"{family}/{drill_role}", set())
+    salient = vocab["drill_salient_missing"].get(drill_role, frozenset())
+
+    drawn_compute = {op_map.get(k, k) for k in drawn if k not in drawn_ignore and k not in semantic}
+    out: list[ConformanceProblem] = []
+
+    def _prob(kind, op):
+        return ConformanceProblem(kind, op, key, cls)
+
+    # fabrication (diagram -> code): a drawn compute op the closure never performs.
+    for op in sorted(drawn_compute):
+        if op in code_ops or op in omit or op in draw_extra:
+            continue
+        out.append(_prob("fabricated", op))
+    # salient omission (code -> diagram): only the role's must-draw ops.
+    for op in sorted(salient):
+        if op in code_ops and op not in drawn_compute:
+            out.append(_prob("missing", op))
+    # semantic presence: a drawn rope/cache glyph needs its marker reachable.
+    for sk in sorted(semantic):
+        if sk in drawn:
+            markers = vocab["semantic_markers"].get(sk, [])
+            if markers and not any(_tok_has_marker(t, markers) for t in code_tokens):
+                out.append(_prob("fabricated", sk))
+    return out
+
+
+def _tok_has_marker(token: str, markers) -> bool:
+    lc = token.lower()
+    return any(m in lc for m in markers if m)
+
+
 def _text_in_sequence(spec: dict) -> bool:
     """True when the diagram shows text as part of the JOINED sequence (a
     concat-joint / single-stream join, shown once via the stack caption) rather
@@ -313,7 +485,7 @@ def resolve_view_code(family: str, view: str, spec: dict,
 
 
 def diff_conformance(diagram: frozenset[str], code: ForwardOps,
-                     family: str, view: str, ab: dict) -> list[ConformanceProblem]:
+                     family: str, view: str, ab: dict, *, cfg=None) -> list[ConformanceProblem]:
     key = f"{family}/{view}"
     cset = code.op_kinds
     omit = ab["omit_global"] | ab["omit_scoped"].get(key, set())
@@ -329,6 +501,8 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
         if op in diagram or op in omit:
             continue
         if any(op in composite.get(drawn, ()) for drawn in diagram):   # subsumed by a drawn composite
+            continue
+        if _op_is_dormant(op, code, cfg):   # config-gated branch the config turns off
             continue
         problems.append(_prob("missing", op))
     # diagram -> code: fabricated
@@ -363,6 +537,71 @@ def classify_group(spec: dict) -> str:
 
 def _is_block_class(name: str) -> bool:
     return name.endswith(("DecoderLayer", "TransformerBlock"))
+
+
+_TEXT_WRAPPERS = ("text_config", "language_config", "llm_config",
+                  "text_model_config", "thinker_config")
+
+
+def _op_is_dormant(op: str, code: ForwardOps, cfg) -> bool:
+    """True when ``op`` is performed by the code ONLY inside positive config-gated
+    ``if`` branches that the given config turns OFF — so a diagram that omits it
+    is faithful, not missing it.  Mirrors the parser's own predicate: a feature is
+    drawn iff its gate field is truthy.  Requires the gate field be PRESENT and
+    falsy in config (``0``/``False``/``""``); an absent field or a module-typed
+    gate is left required, so a real miss is never hidden."""
+    if cfg is None:
+        return False
+    gatesets = code.gated_op_kinds.get(op)
+    if not gatesets:
+        return False
+    return all(_branch_inactive(gateset, cfg) for gateset in gatesets)
+
+
+def _branch_inactive(gateset: frozenset[str], cfg) -> bool:
+    """A gated branch is provably inactive iff at least one of its gate fields is
+    present-and-falsy in the config."""
+    for field in gateset:
+        value = _config_field_value(cfg, field)
+        if value is not None and not value:
+            return True
+    return False
+
+
+def _config_field_value(cfg, key: str):
+    """The raw config value for ``key`` (top level or a text wrapper), or None
+    when absent — None means 'cannot prove off', so the op stays required."""
+    for scope in _config_scopes(cfg):
+        if key in scope:
+            return scope[key]
+    return None
+
+
+def _config_scopes(cfg):
+    root = _as_mapping(cfg)
+    yield root
+    for wrapper in _TEXT_WRAPPERS:
+        sub = root.get(wrapper)
+        if isinstance(sub, dict):
+            yield sub
+            inner = sub.get("text_config")           # one more level (Qwen3-Omni)
+            if isinstance(inner, dict):
+                yield inner
+
+
+def _as_mapping(cfg) -> dict:
+    if isinstance(cfg, dict):
+        return cfg
+    if hasattr(cfg, "to_dict"):
+        try:
+            value = cfg.to_dict()
+            if isinstance(value, dict):
+                return value
+        except Exception:
+            pass
+    if hasattr(cfg, "__dict__"):
+        return {k: v for k, v in vars(cfg).items() if not k.startswith("__")}
+    return {}
 
 
 def _family(target) -> str:

@@ -504,8 +504,9 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
-    # The transformer block opens into its own tower (like the vision encoder).
-    assert "decoder layer" in html
+    # The transformer block opens into its own tower (like the vision encoder),
+    # but it is ONE block — no repeat pill/frame pretending it is a region.
+    assert "decoder layer" not in html
     assert "Multi-Head Latent" in html
 
     # The block REUSES the real decoder-layer blocks as its children (no
@@ -1229,6 +1230,19 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
                 vision_config={"depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
     assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
+
+    # Vision RoPE leaves are namespaced and carded at the next drill depth. The
+    # old bare q_rope/k_rope ids were accidentally validated by text-attention
+    # cards elsewhere in the document, while vision clicks opened nothing.
+    from model_unfolder.block_schema import validate_click_coupling
+    from model_unfolder.preview import svg_views
+    qwen_html = unfold(qwen).to_html(standalone=True)
+    vision_svg = next(svg for label, svg in svg_views(qwen_html)
+                      if label == "vision_encoder_attn")
+    for node_id in ("vision_attn_q_rope", "vision_attn_k_rope"):
+        assert f'data-id="{node_id}"' in vision_svg
+        assert f'data-card-id="{node_id}"' in qwen_html
+    assert validate_click_coupling(qwen_html) == []
 
 
 def test_gemma4_video_token_does_not_create_grid_video_path():

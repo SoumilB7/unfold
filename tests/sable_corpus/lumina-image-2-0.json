@@ -1,9 +1,12 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
     "fact_conformance": true,
     "label_lint": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -151,16 +154,17 @@
   "hash_signature": [
     "1f9feb589dfed9eb1754bcc3eafcf0a6",
     "375b0fc6d963ed249b5fc6e7ce086d5b",
-    "3f6351da85a5482efcd23bc0a951889f",
     "5ecbefdc7ad39904d54f066cbc0b1963",
     "6dc62a9559452e8afbb5c6772da97bc4",
     "72c72e56496f2ecf5c83d5192468a0e7",
     "8a53e5b43e29b3ed06b4e0dc092a5c19",
     "913168b0d9b21cf50db8105a6de44992",
     "94cbfcf9da084ac6fcd53a000af0ebd1",
+    "a4bd9d4acf64c641ef5d7bbe32e79a7b",
     "b26496903a90d935f59b32446b1d93be",
     "c445b387e72b69a1bcb1cf0bc02975cc",
-    "e1641402bf13dfd461ecd0c0a7defd1c"
+    "e1641402bf13dfd461ecd0c0a7defd1c",
+    "ead2500cfbe67a591bd8d16e60405d59"
   ],
   "model": "Lumina-Image-2.0",
   "source": "local"

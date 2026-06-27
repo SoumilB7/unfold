@@ -15,7 +15,7 @@ This module defines that structure *once*:
   a node whose ``id`` matches a child block opens that block's card.
 * :class:`Edge`  — ``flow`` (vertical chain) or ``residual`` (the additive
   bypass, drawn as a side loop into a ``residual_add`` node).
-* :class:`Group` — a set of member nodes drawn inside one dashed frame with a
+* :class:`Group` — a set of member nodes drawn inside one solid frame with a
   ``× N`` badge; the repeated transformer/UNet/VAE cell.
 * :class:`Graph` — nodes + the bottom→top ``flow`` order + edges + groups.
 

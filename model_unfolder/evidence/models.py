@@ -90,6 +90,13 @@ class ForwardOps:
     #: fact-conformance for the attention ALGORITHM (a ``*LinearAttn*`` processor is
     #: a code fact the diagram's attention KIND must match), not just self.<field>.
     init_class_refs: frozenset[str] = frozenset()
+    #: op-kinds reachable ONLY inside a positive config-gated ``if`` branch (e.g.
+    #: ``if self.hidden_size_per_layer_input:`` → the ``gate_mul`` inside it),
+    #: mapped to the gate-field-set(s) that enable each gated occurrence. A op
+    #: here is DORMANT — and so NOT required of the diagram — when its gate field
+    #: is present-and-falsy in the config (the same predicate the parser uses to
+    #: decide not to draw it). Ops with any unconditional occurrence are absent.
+    gated_op_kinds: dict[str, tuple[frozenset[str], ...]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -102,6 +109,8 @@ class ForwardOps:
             "signature_tokens": sorted(self.signature_tokens),
             "forward_params": sorted(self.forward_params),
             "init_class_refs": sorted(self.init_class_refs),
+            "gated_op_kinds": {k: [sorted(s) for s in v]
+                               for k, v in sorted(self.gated_op_kinds.items())},
         }
 
 

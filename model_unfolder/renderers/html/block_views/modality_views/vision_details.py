@@ -20,7 +20,6 @@ from ...patch_grid import coerce_grid, grid_subtitle, grid_title
 from ...stack_view import StackView
 from ...svg import _svg_tag, _svg_text
 from ...theme import C, FONT_MONO
-from ...utils import _fmt_int
 from .common import vision_input
 
 
@@ -52,20 +51,25 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
     hidden = encoder.get("hidden_size")
     intermediate = encoder.get("intermediate_size")
     pos = (encoder.get("position_encoding") or {}).get("kind")
+    norm_kind = encoder.get("norm_kind") or "LayerNorm"
+
+    pre = [{"id": "vision_patch_tokens", "kind": "embedding", "label": "Patch tokens"}]
+    # Learned/absolute positions are added to patch tokens before the stack.
+    # Rotary positions are not: Qwen-VL computes cos/sin outside the loop and
+    # applies them to Q/K inside attention, which the nested attention view shows.
+    if "rope" not in str(pos or ""):
+        pre.append({"id": "vision_position", "kind": "embedding", "label": _pos_label(pos)})
 
     graph = tower_graph({
-        "pre": [
-            {"id": "vision_patch_tokens", "kind": "embedding", "label": "Patch tokens"},
-            {"id": "vision_position", "kind": "embedding", "label": _pos_label(pos)},
-        ],
+        "pre": pre,
         "cell": [
-            {"id": "vision_encoder_norm1", "kind": "norm", "label": "LayerNorm"},
+            {"id": "vision_encoder_norm1", "kind": "norm", "label": norm_kind},
             {"id": "vision_encoder_attn", "kind": "attention", "label": "Self-attention"},
-            {"id": "vision_add1", "kind": "residual_add", "static": True,
+            {"id": "vision_add1", "kind": "residual_add",
              "residual_from": "vision_encoder_norm1"},
-            {"id": "vision_encoder_norm2", "kind": "norm", "label": "LayerNorm"},
+            {"id": "vision_encoder_norm2", "kind": "norm", "label": norm_kind},
             {"id": "vision_encoder_mlp", "kind": "ffn", "label": "MLP"},
-            {"id": "vision_add2", "kind": "residual_add", "static": True,
+            {"id": "vision_add2", "kind": "residual_add",
              "residual_from": "vision_encoder_norm2"},
         ],
         "repeat": layers,
@@ -78,7 +82,9 @@ def build_vision_encoder_view(ir: dict, info: dict, mount_id: str, _child: dict)
 #: canonical SDPA op ids -> the vision tower's card namespace.
 _VISION_ATTN_IDS = {
     "q_proj": "vision_attn_q",
+    "q_rope": "vision_attn_q_rope",
     "k_proj": "vision_attn_k",
+    "k_rope": "vision_attn_k_rope",
     "v_proj": "vision_attn_v",
     "scaled_scores": "vision_attn_scaled",
     "attn_softmax": "vision_attn_softmax",
@@ -92,6 +98,15 @@ _VISION_MLP_IDS = {
     "hidden": "vision_mlp_input",
     "up_proj": "vision_mlp_fc1",
     "activation": "vision_mlp_activation",
+    "down_proj": "vision_mlp_fc2",
+}
+
+_VISION_GATED_MLP_IDS = {
+    "hidden": "vision_mlp_input",
+    "gate_proj": "vision_mlp_gate",
+    "up_proj": "vision_mlp_up",
+    "activation": "vision_mlp_activation",
+    "multiply": "vision_mlp_multiply",
     "down_proj": "vision_mlp_fc2",
 }
 
@@ -125,14 +140,15 @@ def build_vision_self_attention_view(ir: dict, info: dict, mount_id: str, _child
 def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> str:
     """The feed-forward sublayer — the ONE canonical FFN region, renamed."""
     encoder = (vision_input(ir).get("encoder") or {})
+    gated = bool(encoder.get("ffn_gated"))
     region = rename_ops(
         ffn_region(
-            {"kind": "dense", "gated": False,
+            {"kind": "dense", "gated": gated,
              "activation": encoder.get("activation"),
              "intermediate_size": encoder.get("intermediate_size")},
             encoder.get("hidden_size"),
         ),
-        _VISION_MLP_IDS,
+        _VISION_GATED_MLP_IDS if gated else _VISION_MLP_IDS,
     )
     graph = region_to_graph(region, clickable=True)
     return render_graph(graph, info, mount_id, "vision-mlp",
@@ -144,9 +160,9 @@ def build_vision_mlp_view(ir: dict, info: dict, mount_id: str, _child: dict) -> 
 # ---------------------------------------------------------------------------
 
 def _projection_label(out_features: int | None):
-    if out_features:
-        return ["Linear / Conv2d", f"to {_fmt_int(out_features)}d"]
-    return ["Linear / Conv2d", "projection"]
+    # Exact supported signatures use declared op chains. The fallback must stay
+    # honest when config alone cannot choose a concrete backend.
+    return "Patch projection"
 
 
 def _pos_label(pos: str | None):

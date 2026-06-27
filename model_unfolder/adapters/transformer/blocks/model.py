@@ -188,10 +188,17 @@ def block_diffusion_loop_blocks(
                  )},
                 {"id": "sc_act", "title": "GELU (gate activation)",
                  "description": "GELU applied to gate_proj output. Forms the gating weights."},
+                {"id": "sc_gate_up", "title": "Self-conditioning gate product",
+                 "description": "Element-wise GELU(gate_proj) × up_proj; the two SwiGLU branches join here."},
                 {"id": "sc_down", "title": "down_proj",
                  "description": (
                      f"Projects from {_fmt(sc_int)} → {_fmt(hidden_size)}. "
                      f"Produces the self-conditioning signal added to the canvas embeddings."
+                 )},
+                {"id": "sc_add", "title": "Canvas residual add",
+                 "description": (
+                     "Adds the projected previous-step self-conditioning signal to "
+                     "the current canvas embeddings (inputs_embeds)."
                  )},
                 {"id": "sc_post_norm", "title": "post_norm (RMSNorm, no learned scale)",
                  "description": (

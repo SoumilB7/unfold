@@ -49,7 +49,11 @@ def load_aliases() -> dict[str, list[str]]:
 def load_ignored_fields() -> dict[str, list[str]]:
     """Non-architectural config keys/suffixes (``transformer/ignored_fields.yaml``)."""
     data = load("transformer", "ignored_fields")
-    return {"keys": data.get("keys") or [], "suffixes": data.get("suffixes") or []}
+    return {
+        "keys": data.get("keys") or [],
+        "suffixes": data.get("suffixes") or [],
+        "opaque_scopes": data.get("opaque_scopes") or [],
+    }
 
 
 def load_transformer_typing() -> dict[str, list[str]]:
@@ -243,6 +247,58 @@ def load_conformance_wiring_roles() -> tuple[dict[str, str], dict[str, list[str]
             role, _, subs = e.partition("=")
             role_params[role.strip()] = [s.strip().lower() for s in subs.split(",") if s.strip()]
     return stage_role, role_params
+
+
+def load_conformance_transitive() -> dict:
+    """``conformance/transitive.yaml`` -> the recursive drill-conformance vocab.
+
+    Returns a dict with: ``attention_compute_ops`` (frozenset), ``attention_compute_tokens``
+    (frozenset), ``drawn_ignore`` (frozenset of drawn node-kinds dropped from the
+    op diff), ``drawn_op_map`` (drawn-kind -> code-op), ``semantic_kinds`` (drawn
+    kinds checked by marker presence, not op-kind), ``semantic_markers``
+    ({kind: [substrings]}), and ``library_helpers`` (token -> frozenset(ops))."""
+    data = load("conformance", "transitive")
+
+    def _list(key):
+        return [str(x) for x in (data.get(key) or [])]
+
+    drawn_op_map: dict[str, str] = {}
+    for e in _list("drawn_op_map"):            # ["select=route", ...]
+        if "=" in e:
+            k, _, v = e.partition("=")
+            drawn_op_map[k.strip()] = v.strip()
+    helpers: dict[str, frozenset[str]] = {}
+    for e in _list("library_helpers"):         # ["repeat_kv=reshape", "dropout="]
+        if "=" in e:
+            name, _, ops = e.partition("=")
+            helpers[name.strip()] = frozenset(o.strip() for o in ops.split(",") if o.strip())
+
+    def _kv_list(key):                         # ["role=a,b", ...] -> {role: [a, b]}
+        out: dict[str, list[str]] = {}
+        for e in _list(key):
+            if "=" in e:
+                k, _, v = e.partition("=")
+                out[k.strip()] = [x.strip() for x in v.split(",") if x.strip()]
+        return out
+
+    def _kv_str(key):                          # ["role=type", ...] -> {role: type}
+        return {k: (v[0] if v else "") for k, v in _kv_list(key).items()}
+
+    return {
+        "attention_compute_ops": frozenset(_list("attention_compute_ops")),
+        "attention_compute_tokens": frozenset(_list("attention_compute_tokens")),
+        "drawn_ignore": frozenset(_list("drawn_ignore")),
+        "drawn_op_map": drawn_op_map,
+        "semantic_kinds": frozenset(_list("semantic_kinds")),
+        "semantic_markers": {
+            "rope": [s.lower() for s in _list("semantic_rope_markers")],
+            "cache": [s.lower() for s in _list("semantic_cache_markers")],
+        },
+        "library_helpers": helpers,
+        "drill_role_markers": _kv_list("drill_role_markers"),
+        "drill_role_to_type": _kv_str("drill_role_to_type"),
+        "drill_salient_missing": {k: frozenset(v) for k, v in _kv_list("drill_salient_missing").items()},
+    }
 
 
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:

@@ -189,6 +189,74 @@ def test_loop_blocks_are_typed_with_approved_stages():
         assert stage in DIFFUSION_STAGES, stage
 
 
+def test_pixart_caption_projection_is_explicit_and_code_shaped():
+    """caption_channels is not an alias for caption_projection_dim: PixArt owns
+    a real Linear -> GELU -> Linear operation between text encoding and x-attn."""
+    d = unfold(PIXART)
+    render = d.ir.extras["render"]
+    blocks = {b["id"]: b for b in render["loop_blocks"]}
+    projection = blocks["text_projection"]
+    assert projection["diffusion_stage"] == "text_projection"
+    assert [op["kind"] for op in projection["detail"]["ops"]] == [
+        "linear", "activation", "linear"
+    ]
+    assert projection["detail"]["ops"][0]["in"] == 4096
+    assert projection["detail"]["ops"][0]["out"] == 16 * 72
+    edges = {(e["from"], e["to"]) for e in render["loop_edges"]}
+    assert ("text_encoder", "text_projection") in edges
+    assert ("text_projection", "denoiser") in edges
+    assert ("text_encoder", "denoiser") not in edges
+    html = d.to_html(standalone=True)
+    assert 'data-id="text_projection"' in html
+    assert 'data-card-id="text_projection"' in html
+    assert "PixArtAlphaTextProjection" in html
+
+
+def test_norm_elementwise_affine_is_a_card_fact_not_a_block_label():
+    ir = config_to_ir(PIXART)
+    norms = [b for b in ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert norms
+    assert all("non-affine (elementwise_affine = false)" in b.get("facts", [])
+               for b in norms)
+    assert all("affine" not in str(b.get("label", "")).lower() for b in norms)
+
+
+def test_vae_decoder_surfaces_input_conv_and_attention_mid_block():
+    cfg = {**PIXART, "_vae_config": FLUX["_vae_config"] | {"mid_block_add_attention": True}}
+    d = unfold(cfg)
+    vae = next(b for b in d.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode")
+    children = {b["id"]: b for b in vae["children"]}
+    assert "vae_conv_in" in children and "vae_mid_block" in children
+    assert [op["label"] for op in children["vae_mid_block"]["detail"]["ops"]] == [
+        "ResNet", "Attention", "ResNet"
+    ]
+    html = d.to_html(standalone=True)
+    assert 'data-id="vae_conv_in"' in html and 'data-card-id="vae_conv_in"' in html
+    assert 'data-id="vae_mid_block"' in html and 'data-card-id="vae_mid_block"' in html
+
+
+def test_vae_mid_block_requires_evidence_and_honors_explicit_no_attention():
+    silent = unfold({**PIXART, "_vae_config": FLUX["_vae_config"]})
+    silent_vae = next(
+        b for b in silent.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode"
+    )
+    silent_ids = {b["id"] for b in silent_vae["children"]}
+    assert "vae_conv_in" not in silent_ids and "vae_mid_block" not in silent_ids
+
+    explicit = unfold({
+        **PIXART,
+        "_vae_config": FLUX["_vae_config"] | {"mid_block_add_attention": False},
+    })
+    explicit_vae = next(
+        b for b in explicit.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode"
+    )
+    explicit_children = {b["id"]: b for b in explicit_vae["children"]}
+    assert "vae_conv_in" in explicit_children and "vae_mid_block" in explicit_children
+    assert [op["label"] for op in explicit_children["vae_mid_block"]["detail"]["ops"]] == [
+        "ResNet", "ResNet"
+    ]
+
+
 def test_unknown_diffusion_blocks_render_unresolved():
     from model_unfolder.renderers.html.views import _is_resolved_diffusion_block
 
@@ -276,10 +344,10 @@ def test_text_encoder_shows_real_config_dims():
     depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
     specs = diffusor._text_encoder_specs(FLUX)
     assert specs == [
-        {"name": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
+        {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
          "kv_heads": 12, "head_dim": 64, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
-        {"name": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
+        {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
          "kv_heads": 64, "head_dim": 64, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
@@ -294,7 +362,10 @@ def test_text_encoder_falls_back_when_no_config():
     layers', no invented numbers."""
     flux_no_enc = {k: v for k, v in FLUX.items() if k != "_text_encoder_configs"}
     specs = diffusor._text_encoder_specs(flux_no_enc)
-    assert specs == [{"name": "CLIP"}, {"name": "T5"}]
+    assert specs == [
+        {"name": "CLIP", "family": "CLIP"},
+        {"name": "T5", "family": "T5"},
+    ]
     html = unfold(flux_no_enc).to_html(standalone=True)
     assert "× N" in html
 

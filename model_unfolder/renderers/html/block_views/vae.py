@@ -36,6 +36,15 @@ def build_vae_decoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> 
     latent = d.get("latent_channels")
 
     pre: list[dict] = []
+    if d.get("use_post_quant_conv") and "vae_post_quant_conv" in children:
+        pre.append({"id": "vae_post_quant_conv", "kind": "embedding",
+                    "label": "Post-quant Conv", "w": 240, "h": 58})
+    if "vae_conv_in" in children:
+        pre.append({"id": "vae_conv_in", "kind": "embedding",
+                    "label": "Conv-in", "w": 240, "h": 58})
+    if "vae_mid_block" in children:
+        pre.append({"id": "vae_mid_block", "kind": "attention",
+                    "label": "Mid block", "w": 240, "h": 58})
     for idx, _c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
         node_id = f"vae_decoder_block_{block_no}"

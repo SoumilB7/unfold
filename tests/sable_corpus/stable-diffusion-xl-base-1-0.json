@@ -2,7 +2,10 @@
   "checks": {
     "click_coupling": true,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -220,6 +223,7 @@
     "3ecc45f838bfd7eebd7dca350c3f7d04",
     "40325d6d1106b458996838748a7df14b",
     "498f27eac22f32eb6d48d602da830a91",
+    "5df8a4eda034ca7f242d0fb47b632e22",
     "64d6cd9b58140f0e4a7ec3412116dd93",
     "6e406e48020a66f749a4fcf945797a07",
     "7c5fc3c739f41d8a567418b5f619d2c8",
@@ -231,7 +235,6 @@
     "b32f612f227252073a08e66d082113c1",
     "b6825da71ac9e3581ea874f3f5c3457f",
     "b75b8f3ce3d358907036ee12b22cbbc2",
-    "c21895423df9cd2333325df600a8146e",
     "c60a86c043f8d2be68bca7e5df2215e7",
     "cdf43b8ecc2ac51d8d827ac14dbd6dae",
     "de1c686b48c01108f536c2978d7f2263",

@@ -757,3 +757,65 @@ def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
     f2 = tmp_path / "m_two.py"; f2.write_text(two)
     assert layer_class_count_from_files([str(f1)]) == 1
     assert layer_class_count_from_files([str(f2)]) == 2
+
+
+def test_dormant_config_gated_op_is_not_required_but_an_active_one_is(tmp_path):
+    """An op the code performs ONLY inside a positive config-gated ``if`` branch
+    (PLE's ``hidden_states * per_layer_input`` under ``if self.flag:``) is not
+    required of a diagram when the gate field is present-and-falsy in config — the
+    same predicate the parser draws by. With the gate truthy it is still required;
+    an unconditional op of the same kind is always required. Fixes the gemma-4
+    false ``gate_mul`` while never hiding a real, active miss."""
+    from model_unfolder.evidence.forward_ops import extract_forward_ops
+    from model_unfolder.evidence.conformance import diff_conformance
+    from model_unfolder.everchanging import load_conformance_abstractions
+
+    gated = (
+        "class GatedBlock:\n"
+        "    def __init__(self):\n"
+        "        self.attn = FooAttention(8)\n"
+        "        self.mlp = FooMLP(8)\n"
+        "    def forward(self, x):\n"
+        "        x = self.attn(x)\n"
+        "        x = self.mlp(x)\n"
+        "        if self.flag:\n"
+        "            x = x * gate\n"          # gate_mul ONLY under the config gate
+        "        return x\n"
+    )
+    f = tmp_path / "m_gated.py"; f.write_text(gated)
+    ops = extract_forward_ops([str(f)])["GatedBlock"]
+    assert "gate_mul" in ops.op_kinds                      # the op is present in code
+    assert "gate_mul" in ops.gated_op_kinds                # but only as a gated occurrence
+    assert frozenset({"flag"}) in ops.gated_op_kinds["gate_mul"]
+
+    ab = load_conformance_abstractions()
+    drawn = frozenset({"attention", "ffn"})               # diagram correctly omits the gate
+    # gate OFF (present, falsy) -> not required
+    off = diff_conformance(drawn, ops, "x", "block", ab, cfg={"flag": 0})
+    assert [p.op for p in off if p.kind == "missing"] == []
+    # gate ON (present, truthy) -> still required
+    on = diff_conformance(drawn, ops, "x", "block", ab, cfg={"flag": 1})
+    assert "gate_mul" in [p.op for p in on if p.kind == "missing"]
+    # no config at all -> conservative, stays required (never hide a real miss)
+    blind = diff_conformance(drawn, ops, "x", "block", ab, cfg=None)
+    assert "gate_mul" in [p.op for p in blind if p.kind == "missing"]
+
+
+def test_unconditional_op_is_never_treated_as_gated(tmp_path):
+    """An op that also occurs unconditionally must never be suppressed even if it
+    ALSO appears under a config gate — its unconditional path always runs."""
+    from model_unfolder.evidence.forward_ops import extract_forward_ops
+    src = (
+        "class B:\n"
+        "    def __init__(self):\n"
+        "        self.attn = FooAttention(8)\n"
+        "    def forward(self, x):\n"
+        "        x = x * scale\n"            # unconditional gate_mul
+        "        if self.flag:\n"
+        "            x = x * other\n"        # also gated, but the op already runs above
+        "        return x\n"
+    )
+    f = tmp_path / "m_uncond.py"; f.write_text(src)
+    ops = extract_forward_ops([str(f)])["B"]
+    assert "gate_mul" in ops.op_kinds
+    assert "gate_mul" not in ops.gated_op_kinds            # has an unconditional occurrence

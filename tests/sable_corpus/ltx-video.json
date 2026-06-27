@@ -1,8 +1,12 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -132,15 +136,16 @@
     ]
   },
   "hash_signature": [
-    "10bd18e666540f50132b37072358456f",
     "125d0a42cb145fbbe563f068a0b13316",
     "2358e47255259136523f02cab857a2fc",
     "2a3f54a316a4b14bc4d12de1f10603e0",
     "49e1633d8e64698d8b55b6aba47456a7",
     "85a7409550ac4cd62a30bb332658282b",
     "ba3983a841063a93922f6df9b89ed562",
+    "bd56357e9127c33322064c9b9401ec96",
     "c4d53f4d586a05b6b6c9dbcd640e9e15",
-    "d8231cdbb4fc341af6833070f3dd8d49"
+    "d8231cdbb4fc341af6833070f3dd8d49",
+    "f7a05b6da2a5c9fc1824403377cf4fd4"
   ],
   "model": "LTX-Video",
   "source": "local"

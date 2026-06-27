@@ -6,11 +6,15 @@ deterministic pass instead of an improvised, corner-cutting one:
     parse -> render -> every mechanical net -> gallery -> report -> (bless -> CI lock)
 
 It runs the **mechanical** nets that can pass/fail on their own — click-coupling,
-the dangling-connector flag, unique ref-ids, op-conformance (diagram vs the code's
+the dangling-connector flag, unique ref-ids, no dotted arrows or boundaries,
+op-conformance (diagram vs the code's
 op-kinds), wiring-conformance (drawn conditioning vs the code's forward args),
 fact-conformance (the same-op-kind / different-semantics dimensions op-presence is
 blind to: positional scheme = fabricated NoPE, attention algorithm = linear vs
-softmax), and label-lint — and renders every distinct view to a PNG gallery for the
+softmax), and label-lint.  It also emits the staged, non-blocking
+``config_field_audit`` coverage warning: every unread owned config field must be
+triaged even though known backlog prevents that net from gating CI yet.  Sable then
+renders every distinct view to a PNG gallery for the
 one net that can't be automated: a human/agent **visual** review against
 :data:`VISUAL_RUBRIC`.
 
@@ -56,6 +60,7 @@ class SableCheck:
     name: str
     findings: list[str] = field(default_factory=list)
     note: str = ""                       # advisory context (e.g. oracle degraded)
+    blocking: bool = True                # False = staged coverage warning, not a gate
 
     @property
     def passed(self) -> bool:
@@ -74,7 +79,7 @@ class SableReport:
 
     @property
     def mechanical_passed(self) -> bool:
-        return all(c.passed for c in self.checks)
+        return all(c.passed for c in self.checks if c.blocking)
 
     @property
     def blessable(self) -> bool:
@@ -96,7 +101,9 @@ class SableReport:
                  f"({len(self.view_hashes)} distinct views"
                  + (f", {len(self.gallery)} PNGs" if self.gallery else ", no PNGs") + ")"]
         for c in self.checks:
-            mark = "ok" if c.passed else f"FAIL ({len(c.findings)})"
+            mark = ("ok" if c.passed else
+                    f"FAIL ({len(c.findings)})" if c.blocking else
+                    f"WARN ({len(c.findings)})")
             lines.append(f"    [{mark:>9}] {c.name}" + (f"  — {c.note}" if c.note else ""))
             for f_ in c.findings[:8]:
                 lines.append(f"        · {f_}")
@@ -116,7 +123,12 @@ def sable(model_or_id, *, token=None, source: str = "local",
     caller (inline, or a vision-subagent fleet) to fill in against ``report.rubric``."""
     from .parser import _coerce, config_to_ir
     from .diagram import Diagram
-    from .block_schema import validate_click_coupling, validate_unique_ref_ids
+    from .block_schema import (
+        validate_click_coupling,
+        validate_no_dotted_arrows,
+        validate_no_dotted_boundaries,
+        validate_unique_ref_ids,
+    )
     from .lint import lint_labels
     from .evidence import (
         check_fact_conformance,
@@ -148,6 +160,18 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck("click_coupling", validate_click_coupling(html)),
         SableCheck("dangling_connectors", diagram.wiring_problems()),
         SableCheck("unique_ref_ids", validate_unique_ref_ids(html)),
+        SableCheck("no_dotted_arrows", validate_no_dotted_arrows(html)),
+        SableCheck("no_dotted_boundaries", validate_no_dotted_boundaries(html)),
+        SableCheck(
+            "config_field_audit",
+            [
+                f"unread config field {path!r} — parse it, add YAML vocabulary, "
+                "or classify it as intentionally ignored"
+                for path in ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
+            ],
+            note="coverage advisory — promote to blocking after owned-field backlog is zero",
+            blocking=False,
+        ),
         SableCheck("op_conformance",
                    [p.message for p in op_probs if p.kind in ("missing", "fabricated", "stale")],
                    note="" if oracle_files else "skipped — no code oracle"),
@@ -238,6 +262,8 @@ def check_regression(fixture: dict) -> list[str]:
     rep = sable(fixture["config"], source=fixture.get("source", "local"), render_images=False)
     out: list[str] = []
     for c in rep.checks:
+        if not c.blocking:
+            continue
         out.extend(f"{c.name}: {f_}" for f_ in c.findings)
     locked = list(fixture.get("hash_signature") or [])
     if rep.hash_signature() != locked:

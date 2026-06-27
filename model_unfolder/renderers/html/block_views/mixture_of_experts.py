@@ -36,8 +36,9 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
              (f"in · {hidden:,}" if hidden else "in"), static=True),
         Node("router", "router", "Router"),
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
-        # Tier-2 connector: the weighted-sum ⊕ (+ shared expert) — a glyph, no card.
-        Node("add_moe", "residual_add", static=True),
+        # Tier-2 connector: weighted routed outputs (+ shared expert) join here;
+        # its existing add_moe child card explains the operands.
+        Node("add_moe", "residual_add"),
         Node("moe_out", "port", static=True),
     ]
     # Routed experts fan out from the router; the shared expert (always-on) taps

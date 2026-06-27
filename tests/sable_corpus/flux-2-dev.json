@@ -1,8 +1,12 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -163,6 +167,7 @@
     "13757bc1292d0f5aab4eb530476da2da",
     "17c4013edb73ab284de6a7fe44a96ff1",
     "2151c03853d290e19096cdfed43cea97",
+    "3cdad3a82c4edc7d0bbd2f6748ee0d2c",
     "47b67033885e46bf6c634adb80a11f25",
     "7806d0098f85ff778c6758562544110c",
     "7f902367ae262cd10ef1a5bd023637a9",
@@ -171,7 +176,7 @@
     "a759406e5f5eb86007274717b92c59a5",
     "a91e888580c2c970255c34c2cee7b9d9",
     "b81a3249fc578ae80129792adb148dff",
-    "d13eeec352b52e70834d12f01ebd652e",
+    "e60e4f00008fdd1f3e9bb1582c0ad6a5",
     "fa814a293e21cef0b70e733ad5060617"
   ],
   "model": "FLUX.2-dev",

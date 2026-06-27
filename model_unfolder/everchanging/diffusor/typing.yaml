@@ -22,6 +22,7 @@ stages:
 
   # ── Conditioning encoders / adapters ─────────────────────────────
   - text_encoder           # CLIP / T5 text encoder(s)
+  - text_projection        # denoiser-owned context/caption projection after encoding
   - pooled_embed           # pooled text vector (CLIP pooled) — global conditioning
   - controlnet             # ControlNet structural conditioning
   - ip_adapter             # image-prompt (IP-Adapter) conditioning

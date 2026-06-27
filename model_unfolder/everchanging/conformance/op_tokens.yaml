@@ -18,6 +18,11 @@ concat: [cat, concat]
 slice: [split, chunk, unbind, tensor_split]
 # Routed selection (MoE / DSA indexer top-k) -> route.
 route: [topk]
+# Score / apply-V matrix products (the eager attention compute, an explicit QK^T
+# or weights·V) -> dot_product. The drill draws these as ⊙ score/apply nodes; at
+# BLOCK altitude it is omit_global'd (a sub-module concern), so this is for the
+# recursive drill-conformance net.
+dot_product: [matmul, bmm, einsum, baddbmm]
 # Activation function calls invoked directly (F.gelu(...), gelu(...), softmax).
 activation: [gelu, silu, relu, geglu, swiglu, gelu_new, quick_gelu, sigmoid, softmax]
 # Tensor-shape regroupings the diagram treats as a reshape box (or omits) — never

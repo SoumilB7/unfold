@@ -74,23 +74,29 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
     init = _method(node, "__init__")
     field_types = _field_types(init)
     module_list_elems = _module_list_elems(init)
-    op_kinds: set[str] = set()
     sig_tokens: set[str] = set()
 
+    # Every call name is a signature token (used by the staleness guard), read
+    # flat — gate-awareness is irrelevant to "does this symbol still exist".
     for child in ast.walk(forward):
         if isinstance(child, ast.Call):
             name = _call_name(child.func)
             if name:
                 sig_tokens.add(name)
-            kind = _call_op_kind(child, field_types)
-            if kind:
-                op_kinds.add(kind)
-        elif isinstance(child, ast.BinOp):
-            kind = _binop_op_kind(child)
-            if kind:
-                op_kinds.add(kind)
-        elif isinstance(child, ast.For):
-            op_kinds.add("repeat")
+
+    # Op-kinds collected WITH their config-gate context, so a dormant gated op
+    # (PLE's gate_mul under ``if self.hidden_size_per_layer_input:``) is not
+    # required of a diagram the parser correctly drew without it.
+    occurrences = _forward_op_occurrences(forward, field_types)
+    op_kinds = {kind for kind, _gates in occurrences}
+    unconditional = {kind for kind, gates in occurrences if not gates}
+    gated_op_kinds: dict[str, list[frozenset[str]]] = {}
+    for kind, gates in occurrences:
+        if kind in unconditional:
+            continue
+        bucket = gated_op_kinds.setdefault(kind, [])
+        if gates not in bucket:
+            bucket.append(gates)
 
     sig_tokens |= set(field_types)
     return ForwardOps(
@@ -103,7 +109,102 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
         signature_tokens=frozenset(t for t in sig_tokens if t),
         forward_params=_forward_params(forward),
         init_class_refs=_init_class_refs(init),
+        gated_op_kinds={k: tuple(v) for k, v in gated_op_kinds.items()},
     )
+
+
+def _forward_op_occurrences(forward: ast.FunctionDef, field_types: dict[str, str]):
+    """``[(op_kind, frozenset(gate_fields)), ...]`` — every op the forward does,
+    each tagged with the POSITIVE config-gate fields enclosing it (empty when
+    unconditional).  A recursive descent (not ``ast.walk``) so an ``if`` body's
+    gate context is known; only positive truthiness gates count (``if self.X:`` /
+    ``if self.X is not None:`` / ``if self.X > 0:`` / their ``and``-combination),
+    because those are the ones a falsy config value provably disables."""
+    occ: list[tuple[str, frozenset[str]]] = []
+
+    def scan_expr(expr: ast.AST, gates: frozenset[str]) -> None:
+        for child in ast.walk(expr):
+            if isinstance(child, ast.Call):
+                kind = _call_op_kind(child, field_types)
+                if kind:
+                    occ.append((kind, gates))
+            elif isinstance(child, ast.BinOp):
+                kind = _binop_op_kind(child)
+                if kind:
+                    occ.append((kind, gates))
+
+    def scan_stmt(stmt: ast.AST, gates: frozenset[str]) -> None:
+        if isinstance(stmt, ast.If):
+            scan_expr(stmt.test, gates)
+            gf = _positive_gate_fields(stmt.test)
+            body_gates = (gates | gf) if gf else gates
+            for s in stmt.body:
+                scan_stmt(s, body_gates)
+            for s in stmt.orelse:            # else branch: NOT gated by a falsy X
+                scan_stmt(s, gates)
+        elif isinstance(stmt, (ast.For, ast.AsyncFor)):
+            occ.append(("repeat", gates))
+            scan_expr(stmt.iter, gates)
+            for s in (*stmt.body, *stmt.orelse):
+                scan_stmt(s, gates)
+        elif isinstance(stmt, ast.While):
+            scan_expr(stmt.test, gates)
+            for s in (*stmt.body, *stmt.orelse):
+                scan_stmt(s, gates)
+        elif isinstance(stmt, (ast.With, ast.AsyncWith)):
+            for s in stmt.body:
+                scan_stmt(s, gates)
+        elif isinstance(stmt, ast.Try):
+            for s in (*stmt.body, *stmt.orelse, *stmt.finalbody):
+                scan_stmt(s, gates)
+            for handler in stmt.handlers:
+                for s in handler.body:
+                    scan_stmt(s, gates)
+        else:                                # a simple statement (no nested stmts)
+            scan_expr(stmt, gates)
+
+    for stmt in forward.body:
+        scan_stmt(stmt, frozenset())
+    return occ
+
+
+def _positive_gate_fields(test: ast.AST) -> frozenset[str]:
+    """The config field names a positive truthiness ``if`` test reads, or empty.
+
+    ``self.X`` / ``config.X`` / ``self.config.X`` truthiness, ``X is not None``,
+    ``X > 0`` and their ``and``-combination — each disabled by a falsy X.  A
+    ``not`` / ``is None`` / ``== 0`` / ``or`` test is NOT a positive gate (its
+    body runs when the field is falsy), so it yields nothing and the op stays
+    unconditional/required."""
+    fields: set[str] = set()
+
+    def attr_field(n: ast.AST) -> str | None:
+        if isinstance(n, ast.Attribute):
+            base = n.value
+            if isinstance(base, ast.Name) and base.id in ("self", "config"):
+                return n.attr
+            if isinstance(base, ast.Attribute) and base.attr == "config":
+                return n.attr
+        return None
+
+    def visit(t: ast.AST) -> None:
+        direct = attr_field(t)
+        if direct:
+            fields.add(direct)
+            return
+        if isinstance(t, ast.Compare) and len(t.ops) == 1:
+            f = attr_field(t.left)
+            rhs = t.comparators[0]
+            if f and isinstance(t.ops[0], ast.IsNot) and isinstance(rhs, ast.Constant) and rhs.value is None:
+                fields.add(f)
+            elif f and isinstance(t.ops[0], ast.Gt) and isinstance(rhs, ast.Constant) and rhs.value == 0:
+                fields.add(f)
+        elif isinstance(t, ast.BoolOp) and isinstance(t.op, ast.And):
+            for value in t.values:
+                visit(value)
+
+    visit(test)
+    return frozenset(fields)
 
 
 def _init_class_refs(init: ast.FunctionDef | None) -> frozenset[str]:
@@ -219,19 +320,32 @@ def _self_field(func: ast.AST) -> str | None:
 
 
 def _field_types(init: ast.FunctionDef | None) -> dict[str, str]:
-    """``self.x = SomeClass(...)`` -> ``{"x": "SomeClass"}`` (constructed class name)."""
+    """``self.x = SomeClass(...)`` -> ``{"x": "SomeClass"}`` (constructed class name).
+
+    Also captures the activation-FACTORY idioms that are NOT a constructor call:
+    transformers' ``self.act_fn = ACT2FN[config.hidden_act]`` (a ``Subscript``) and
+    diffusers' ``self.act = get_activation(name)`` (already a ``Call``). Without this
+    a gated/MLP ``forward()`` that does ``self.act_fn(self.gate_proj(x))`` loses its
+    ``activation`` op, so the FFN/expert DRILL — which DOES draw the activation —
+    falsely reads as fabricating it. The registry key is the subscripted name
+    (``ACT2FN``/``ACT2CLS``), resolved to the ``activation`` role via type_roles."""
     types: dict[str, str] = {}
     if init is None:
         return types
     for child in ast.walk(init):
-        if isinstance(child, ast.Assign) and isinstance(child.value, ast.Call):
+        if not isinstance(child, ast.Assign):
+            continue
+        cls: str | None = None
+        if isinstance(child.value, ast.Call):
             cls = _call_name(child.value.func)
-            if not cls:
-                continue
-            for target in child.targets:
-                field = _self_field(target)
-                if field is not None:
-                    types.setdefault(field, cls)
+        elif isinstance(child.value, ast.Subscript) and isinstance(child.value.value, ast.Name):
+            cls = child.value.value.id          # ACT2FN[...] / ACT2CLS[...]
+        if not cls:
+            continue
+        for target in child.targets:
+            field = _self_field(target)
+            if field is not None:
+                types.setdefault(field, cls)
     return types
 
 

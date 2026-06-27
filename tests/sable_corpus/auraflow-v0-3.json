@@ -1,8 +1,12 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": true,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -125,16 +129,17 @@
     ]
   },
   "hash_signature": [
-    "0eb0426d8d1ea95f976a2f6c41e94f38",
+    "1a3d6bda4e340dbfb04840cb92c31c64",
     "48e134ef4c919df87a42c8ac83b85ba6",
     "58ddb6994315abf21dc62b88c4917b2f",
+    "5d3b553a834bd18ff5da0e9ab9ea10f1",
     "784f69a8f122766416ebdb3f26927e32",
     "a0bfa030b3ecbd9b2c89578218afb1d0",
     "a71d3f755a31dd4fc49f037f44024797",
     "b4223ada326eb9629f977e55dd1addd8",
-    "beaee335df17a557098be88cfebbcdbc",
     "c40e688c3ea242c4bc4b93b7df0944f0",
     "c472e755aace909c47382bb19d606961",
+    "c50009c8594dfe7524fc253c00ea8da9",
     "c81ee442783e0c900bb800849b619b59",
     "d874f2023f0b788ae7b6068f2b2976d0",
     "f9010fccd6e65d22ac9ded5df45ac337"

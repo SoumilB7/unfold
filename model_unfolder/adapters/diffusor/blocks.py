@@ -61,9 +61,12 @@ def diffusion_loop_edges(geom: dict) -> list[dict]:
     derived from edge multiplicity wherever they're needed.
     """
     encoders = geom.get("text_encoders") or []
-    cond_ids = ["timestep"] + (
-        [f"encoder_{i}" for i in range(len(encoders))] if encoders else ["text_encoder"]
-    )
+    text_ids = ([f"encoder_{i}" for i in range(len(encoders))]
+                if encoders else ["text_encoder"])
+    has_text_projection = bool(
+        geom.get("caption_input_dim") or geom.get("caption_projection_dim"))
+    has_context_assembly = has_text_projection and len(text_ids) > 1
+    cond_ids = ["timestep"] + (["text_projection"] if has_text_projection else text_ids)
     edges: list[dict] = [
         {"from": "noise", "to": "latent", "to_port": "bottom",
          "label": "z_T · once", "when": "once", "route": "spine", "gap": 4},
@@ -90,6 +93,17 @@ def diffusion_loop_edges(geom: dict) -> list[dict]:
     if encoders:
         edges += [{"from": "prompt", "to": f"encoder_{i}", "route": "prompt"}
                   for i in range(len(encoders))]
+    # A denoiser-owned text projection is a real boundary operation between the
+    # external text encoder output and attention.  It receives every encoder
+    # lane (one lane for PixArt; potentially several in a pipeline manifest),
+    # then its output—not the raw encoder tensor—conditions the denoiser.
+    if has_text_projection:
+        projection_source = "text_context" if has_context_assembly else text_ids[0]
+        if has_context_assembly:
+            edges += [{"from": eid, "to": "text_context", "route": "context"}
+                      for eid in text_ids]
+        edges.append({"from": projection_source, "to": "text_projection",
+                      "route": "projection"})
     return edges
 
 
@@ -210,6 +224,20 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     ) if f]
 
     vae = geom.get("vae")
+    vae_facts = []
+    if isinstance(vae, dict):
+        if vae.get("scaling_factor") is not None:
+            vae_facts.append(f"latent scale {vae['scaling_factor']}")
+        if vae.get("shift_factor") is not None:
+            vae_facts.append(f"latent shift {vae['shift_factor']}")
+        if vae.get("latents_mean") is not None or vae.get("latents_std") is not None:
+            vae_facts.append("latent mean/std normalization")
+        if vae.get("use_post_quant_conv"):
+            vae_facts.append("post-quant 1x1 conv")
+        if vae.get("use_quant_conv"):
+            vae_facts.append("encoder quant 1x1 conv")
+        if vae.get("mid_block_add_attention"):
+            vae_facts.append("attention-bearing mid block")
     return [
         {
             "id": "noise",
@@ -244,6 +272,8 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             geom.get("text_encoder_specs") or [], family=family,
             cross_attention_dim=geom.get("cross_attention_dim"),
         ),
+        *(_text_context_blocks(geom)),
+        *(_text_projection_blocks(geom)),
         {
             "id": "latent",
             "role": "input",
@@ -307,6 +337,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "from latent space back to a full-resolution pixel image."
                 + (" Click to open its architecture." if vae else "")
             ),
+            "facts": vae_facts,
             **(
                 {
                     "view": "vae_decoder",
@@ -328,6 +359,85 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                             "The generated image in pixel space."),
         },
     ]
+
+
+def _text_projection_blocks(geom: dict) -> list[Block]:
+    """The denoiser-owned projection applied after text encoding.
+
+    The config vocabulary preserves two distinct HF signatures rather than
+    calling them aliases.  The declared op list is projected to the SVG and its
+    cards by the universal op-graph renderer, so all three stay coupled.
+    """
+    caption_in = geom.get("caption_input_dim")
+    caption_out = geom.get("caption_projection_dim")
+    hidden = geom.get("hidden_size") or None
+    joint = geom.get("joint_attention_dim") or None
+    if caption_in:
+        ops = [
+            {"kind": "linear", "label": "Linear", "in": caption_in, "out": hidden},
+            {"kind": "activation", "fn": "gelu"},
+            {"kind": "linear", "label": "Linear", "in": hidden, "out": hidden},
+        ]
+        desc = (
+            "PixArtAlphaTextProjection maps the text-encoder features through "
+            "Linear -> GELU -> Linear before cross-attention. This is owned by "
+            "the denoiser, not by the external text encoder."
+        )
+        facts = [f for f in (
+            f"{_fmt(caption_in)} -> {_fmt(hidden)}" if hidden else f"input {_fmt(caption_in)}",
+            "2 linear layers",
+        ) if f]
+    elif caption_out:
+        in_dim = joint or geom.get("cross_attention_dim") or None
+        ops = [{"kind": "linear", "label": "Linear", "in": in_dim, "out": caption_out}]
+        desc = (
+            "The denoiser's context_embedder linearly projects encoded prompt "
+            "features before they enter the transformer blocks."
+        )
+        facts = [f"{_fmt(in_dim)} -> {_fmt(caption_out)}" if in_dim else f"output {_fmt(caption_out)}"]
+    else:
+        return []
+    return [{
+        "id": "text_projection",
+        "role": "embedding",
+        "kind": "linear",
+        "diffusion_stage": "text_projection",
+        "label": "Text projection",
+        "title": "Denoiser text projection",
+        "description": desc,
+        "facts": facts,
+        "view": "ops",
+        "detail": {"ops": ops},
+    }]
+
+
+def _text_context_blocks(geom: dict) -> list[Block]:
+    """Honest pipeline boundary before a denoiser projection with many encoders.
+
+    The denoiser receives one ``encoder_hidden_states`` tensor, not three
+    independent Linear inputs.  Exact padding/concatenation lives in each HF
+    pipeline, so this block names the assembly without fabricating one universal
+    concat formula.
+    """
+    encoders = geom.get("text_encoders") or []
+    has_projection = geom.get("caption_input_dim") or geom.get("caption_projection_dim")
+    if len(encoders) < 2 or not has_projection:
+        return []
+    return [{
+        "id": "text_context",
+        "role": "embedding",
+        "kind": "embedding",
+        "diffusion_stage": "text_conditioning",
+        "label": ["Context", "assembly"],
+        "title": "Assemble encoded context",
+        "description": (
+            "The pipeline assembles the outputs of the text encoders into the one "
+            "encoder_hidden_states tensor accepted by the denoiser. The exact "
+            "padding/concatenation policy is pipeline-owned; this boundary avoids "
+            "drawing several independent tensors entering one Linear."
+        ),
+        "facts": [f"{len(encoders)} encoder outputs -> 1 context tensor"],
+    }]
 
 
 def _scheduler_step_view(geom: dict) -> dict:
@@ -409,6 +519,8 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     lpb = vae.get("layers_per_block")
     resnets = (lpb + 1) if isinstance(lpb, int) else None
     scale = 2 ** (len(channels) - 1) if channels else None
+    norm_groups = vae.get("norm_num_groups")
+    up_types = vae.get("up_block_types") or []
 
     children: list[Block] = [
         {
@@ -418,9 +530,61 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
             "facts": [f for f in (f"{latent} ch" if latent else "", "latent res") if f],
         },
     ]
+    if vae.get("use_post_quant_conv"):
+        children.append({
+            "id": "vae_post_quant_conv",
+            "title": "Post-quant convolution",
+            "description": (
+                "A learned 1x1 convolution maps the clean latent into the decoder's "
+                "input representation before the first decoder stage."
+            ),
+            "facts": ["Conv 1x1"],
+        })
+    # The KL decoder always has a mid region in current diffusers, but this
+    # config-to-diagram path only asserts its exact shape when the component
+    # config explicitly declares whether attention is present. Config silence
+    # is not permission to invent the class default; source-evidence promotion
+    # for silent VAEs remains tracked separately.
+    if channels and vae.get("mid_block_add_attention") is not None:
+        children.append({
+            "id": "vae_conv_in",
+            "title": "Decoder input convolution",
+            "description": (
+                "A learned 3x3 convolution maps the latent channels into the "
+                "decoder's deepest feature width before the mid block."
+            ),
+            "facts": [f"Conv 3x3", f"{_fmt(latent)} -> {_fmt(channels[-1])} ch"]
+            if latent else ["Conv 3x3", f"out {_fmt(channels[-1])} ch"],
+        })
+        has_mid_attention = bool(vae.get("mid_block_add_attention"))
+        mid_ops = [
+            {"kind": "opaque", "label": "ResNet", "meta": {
+                "class_name": "ResNet", "desc": "First residual cell in the VAE decoder mid block."}},
+            *([{"kind": "attention_core", "label": "Attention", "fn": "spatial attention",
+                "meta": {"desc": "Spatial self-attention in the decoder bottleneck."}}]
+              if has_mid_attention else []),
+            {"kind": "opaque", "label": "ResNet", "meta": {
+                "class_name": "ResNet", "desc": "Second residual cell in the VAE decoder mid block."}},
+        ]
+        children.append({
+            "id": "vae_mid_block",
+            "title": "Decoder mid block",
+            "description": (
+                "The bottleneck between the decoder input convolution and resolution "
+                "up stages: ResNet -> spatial attention -> ResNet."
+                if has_mid_attention else
+                "The bottleneck between the decoder input convolution and resolution "
+                "up stages; this config declares no mid-block attention."
+            ),
+            "facts": [f"{_fmt(channels[-1])} ch"] +
+                     (["spatial attention"] if has_mid_attention else ["no attention"]),
+            "view": "ops",
+            "detail": {"ops": mid_ops},
+        })
     for idx, c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
         upsamples = idx > 1
+        stage_type = up_types[idx - 1] if idx - 1 < len(up_types) else None
         card = {
             "id": f"vae_decoder_block_{block_no}",
             "title": f"Up stage {block_no}",
@@ -429,6 +593,8 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
                 f"{_fmt(c)} ch",
                 f"{resnets}× ResNet" if resnets else "",
                 "↑2× spatial" if upsamples else "",
+                str(stage_type) if stage_type else "",
+                f"GroupNorm {norm_groups} groups" if norm_groups else "",
             ) if f],
             "diffusion_part_kind": "up_stage",
         }
@@ -441,7 +607,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
                 "components": stage["components"],
                 "view": "vae_decoder_block",
                 "detail": {**stage, "channels": c, "resnets": resnets, "upsamples": upsamples},
-                "children": _vae_resnet_ops(upsamples),
+                "children": _vae_resnet_ops(upsamples, norm_groups),
             })
         children.append(card)
     if channels:
@@ -463,7 +629,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
     return children
 
 
-def _vae_resnet_ops(upsamples: bool) -> list[Block]:
+def _vae_resnet_ops(upsamples: bool, norm_groups=None) -> list[Block]:
     """Description cards for the ops inside one VAE decoder ResNet stage.
 
     Ids are unique per node (the tower draws each op as its own block); the two
@@ -481,9 +647,11 @@ def _vae_resnet_ops(upsamples: bool) -> list[Block]:
         "stack runs GroupNorm + SiLU \u2192 Conv 3\u00d73 twice."
     )
     ops: list[Block] = [
-        {"id": "vae_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "vae_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc,
+         "facts": [f"{norm_groups} groups"] if norm_groups else []},
         {"id": "vae_op_conv1", "title": "Conv 3\u00d73", "description": conv_desc},
-        {"id": "vae_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "vae_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc,
+         "facts": [f"{norm_groups} groups"] if norm_groups else []},
         {"id": "vae_op_conv2", "title": "Conv 3\u00d73", "description": conv_desc},
         {
             "id": "vae_op_residual",
@@ -673,6 +841,11 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
     }]
     for i, enc in enumerate(encoders):
         spec = specs[i] if i < len(specs) else {}
+        # ``enc`` is a distinct display name for cards/prose and can include a
+        # width when two same-family encoders need disambiguation.  The diagram
+        # box itself must stay the bare family/op name; dimensions belong on the
+        # card chips.  Older/external specs without ``family`` remain supported.
+        block_label = spec.get("family") or enc
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
                   "node_prefix": f"encoder_{i}", "denoiser_family": family}
         for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos",
@@ -684,7 +857,7 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
             "role": "embedding",
             "kind": "embedding",
             "diffusion_stage": "text_encoder",
-            "label": enc,
+            "label": block_label,
             "title": f"{enc} text encoder",
             "description": _encoder_desc(enc, text_dim, pooled, family),
             "view": "text_encoder",
