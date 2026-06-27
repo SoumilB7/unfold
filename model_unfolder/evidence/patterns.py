@@ -572,6 +572,65 @@ def diffusion_ffn_activation_from_files(files) -> str | None:
     for hits in (kwarg_hits, struct_hits):
         if hits:
             return max(set(hits), key=hits.count)
+    # Last resort: a block whose FFN is INLINE (no FeedForward submodule) but which
+    # constructs a standalone activation field — ``self.mlp_act = GELU(approximate=
+    # "tanh")`` (PRX). Only reached when the standard FFN scan found nothing, so
+    # standard-FFN models are unaffected.
+    act_hits = [a for name, cd in defs.items() if name.lower().endswith("block")
+                for a in _standalone_act_fns(cd)]
+    if act_hits:
+        return max(set(act_hits), key=act_hits.count)
+    return None
+
+
+def _standalone_act_fns(cd: ast.ClassDef) -> list[str]:
+    """Activations from ``self.<…act…> = GELU(approximate="tanh")`` / ``SiLU()`` …
+    assignments in a class __init__ — the diffusers-style activation_fn string."""
+    out: list[str] = []
+    init = next((n for n in cd.body
+                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == "__init__"), None)
+    if init is None:
+        return out
+    for node in ast.walk(init):
+        if not (isinstance(node, ast.Assign) and isinstance(node.value, ast.Call)):
+            continue
+        field = next((t.attr for t in node.targets
+                      if isinstance(t, ast.Attribute) and isinstance(t.value, ast.Name)
+                      and t.value.id == "self"), None)
+        if not field or "act" not in field.lower():
+            continue
+        ctor = (_call_name(node.value.func) or "").lower()
+        if "gelu" in ctor:
+            approx = _str_kwarg(node.value, "approximate")
+            out.append("gelu-approximate" if approx == "tanh" else "gelu")
+        elif "silu" in ctor or "swish" in ctor:
+            out.append("silu")
+        elif "relu" in ctor:
+            out.append("relu")
+    return out
+
+
+def diffusion_axes_dims_rope_from_files(files) -> list[int] | None:
+    """The axial-RoPE per-axis dims fixed in the model class __init__ default
+    (``axes_dims_rope=(16, 56, 56)`` for Flux), READ FROM THE MODELING SOURCE —
+    the code-based replacement for the `axes_dims_rope` table.  Returns the int
+    list or None.  (Config-declaring models — Flux/Flux2 both carry it in config —
+    take the config path and never reach here; this serves a config-silent variant.)"""
+    import ast as _ast
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for fn in _ast.walk(tree):
+            if not isinstance(fn, _ast.FunctionDef):
+                continue
+            for arg, default in zip(fn.args.args[::-1], (fn.args.defaults or [])[::-1]):
+                if arg.arg in ("axes_dims_rope", "axes_dim") and isinstance(default, (_ast.Tuple, _ast.List)):
+                    vals = [e.value for e in default.elts
+                            if isinstance(e, _ast.Constant) and isinstance(e.value, int)]
+                    if vals and len(vals) == len(default.elts):
+                        return vals
     return None
 
 
@@ -623,6 +682,177 @@ def diffusion_attn_kind_from_files(files) -> str | None:
     ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
     refs = " ".join(r.lower() for fo in ops.values() for r in fo.init_class_refs)
     return "linear" if any(s in refs for s in linear_subs) else None
+
+
+def diffusion_ffn_kind_from_files(files) -> str | None:
+    """"conv_glu" when the denoiser block builds a gated CONV Mix-FFN (Sana's
+    `GLUMBConv`), else None (caller's default Linear MLP).  Reuses the SAME
+    init-construction evidence as `diffusion_attn_kind_from_files` (init_class_refs)
+    against the `conv_ffn` class markers — the code-based replacement for the
+    `ffn_kind` class_defaults table."""
+    from ..everchanging import load_conformance_fact_markers
+    from .forward_ops import extract_forward_ops
+    conv_subs = [s.lower() for s in (load_conformance_fact_markers().get("conv_ffn") or ())]
+    if not conv_subs:
+        return None
+    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    refs = " ".join(r.lower() for fo in ops.values() for r in fo.init_class_refs)
+    return "conv_glu" if any(s in refs for s in conv_subs) else None
+
+
+def _qk_norm_type(s) -> str | None:
+    """A qk_norm spelling ("rms_norm" / "fp32_layer_norm" / a norm CLASS name like
+    RMSNorm/LayerNorm) -> the canonical norm kind."""
+    s = (s or "").lower()
+    if "rms" in s:
+        return "rms_norm"
+    if "layer" in s:
+        return "layer_norm"
+    return None
+
+
+def diffusion_qk_norm_from_files(files) -> str | None:
+    """The Q/K-norm TYPE the denoiser applies ("rms_norm" / "layer_norm"), READ FROM
+    THE MODELING SOURCE, or None when the block does not norm Q/K.  The code-based
+    replacement for the `qk_norm` class_defaults table — for the DiTs whose config
+    is SILENT on qk_norm but whose attention applies it (config-declaring models are
+    handled upstream by the config path and never reach here).
+
+    Four code spellings, all observed across the corpus:
+      1. ``self.norm_q = RMSNorm(...)`` / ``norm_added_q`` — the norm field's class
+         (Flux / Flux2 / PRX);
+      2. a literal ``Attention(qk_norm="rms_norm"|"fp32_layer_norm")`` kwarg
+         (Lumina2 / AuraFlow);
+      3. a variable ``Attention(qk_norm=qk_norm)`` — resolved to the enclosing
+         function's ``qk_norm`` parameter DEFAULT when that is a literal str
+         (QwenImage: default ``"rms_norm"``);
+      4. a conditional ``Attention(qk_norm="layer_norm" if qk_norm else None)``
+         (IfExp) — the string constant in the expression (CogVideoX)."""
+    import ast as _ast
+    from collections import Counter
+    cands: list[str] = []
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        # patterns 2/3/4: qk_norm= kwargs, resolving a Name to its fn param default.
+        for fn in _ast.walk(tree):
+            if not isinstance(fn, _ast.FunctionDef):
+                continue
+            defaults = {a.arg: d.value for a, d in
+                        zip(fn.args.args[::-1], (fn.args.defaults or [])[::-1])
+                        if isinstance(d, _ast.Constant) and isinstance(d.value, str)}
+            for node in _ast.walk(fn):
+                if not isinstance(node, _ast.Call):
+                    continue
+                for kw in node.keywords or []:
+                    if kw.arg != "qk_norm":
+                        continue
+                    v = kw.value
+                    if isinstance(v, _ast.Constant) and isinstance(v.value, str):
+                        cands.append(_qk_norm_type(v.value))
+                    elif isinstance(v, _ast.Name) and v.id in defaults:
+                        cands.append(_qk_norm_type(defaults[v.id]))
+                    elif isinstance(v, _ast.IfExp):
+                        for sub in (v.body, v.orelse):
+                            if isinstance(sub, _ast.Constant) and isinstance(sub.value, str):
+                                cands.append(_qk_norm_type(sub.value))
+        # pattern 1: a norm_q / q_norm / norm_added_q field's constructed class.
+        for node in _ast.walk(tree):
+            if not (isinstance(node, _ast.Assign) and isinstance(node.value, _ast.Call)):
+                continue
+            for tgt in node.targets:
+                if isinstance(tgt, _ast.Attribute) and tgt.attr in ("norm_q", "q_norm", "norm_added_q"):
+                    fnc = node.value.func
+                    nm = fnc.attr if isinstance(fnc, _ast.Attribute) else getattr(fnc, "id", "")
+                    cands.append(_qk_norm_type(nm))
+    cands = [c for c in cands if c]
+    if not cands:
+        return None
+    return Counter(cands).most_common(1)[0][0]
+
+
+def diffusion_single_stream_fusion_from_files(files) -> str | None:
+    """How the denoiser's SINGLE-STREAM block fuses, READ FROM THE MODELING SOURCE,
+    or None when the model has no single-stream blocks.  The code-based replacement
+    for the `single_stream_fusion` table:
+      * ``sequential``   — a plain attn → FFN block with a real FFN submodule and no
+        concat (AuraFlow: joined [text+image] sequence, gated DiT block);
+      * ``parallel``     — fused IN-projection (QKV ‖ MLP-in), concat, no separate
+        MLP/FFN path (Flux 2's ViT-22B parallel block);
+      * ``concat_fused`` — concat of attn ∥ inline-MLP into ONE shared OUT projection
+        (Flux 1 / HunyuanVideo); behaves as the default fused single block.
+
+    Anchored to the block class the MODEL actually builds into a ``single_*``
+    ModuleList — NOT any class merely named ``*Single*`` (SD3 DEFINES an unused
+    ``SD3SingleTransformerBlock`` but never stacks it; it has no single-stream
+    blocks, so this returns None)."""
+    import ast as _ast
+    from .forward_ops import _field_types, _method, _module_list_elems, _role_of
+    classes: dict = {}
+    elem: str | None = None
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            classes[node.name] = node
+            for field, cls in _module_list_elems(_method(node, "__init__")).items():
+                if "single" in field.lower():
+                    elem = cls
+    if elem is None or elem not in classes:
+        return None
+    block = classes[elem]
+    forward = _method(block, "forward")
+    if forward is None:
+        return None
+    roles = [_role_of(c) for c in _field_types(_method(block, "__init__")).values()]
+    has_cat = any(isinstance(c, _ast.Call) and getattr(c.func, "attr", "") == "cat"
+                  for c in _ast.walk(forward))
+    if "ffn" in roles and not has_cat:
+        return "sequential"
+    if has_cat and "linear" in roles:
+        return "concat_fused"
+    if has_cat:
+        return "parallel"
+    return None
+
+
+def diffusion_gate_via_norm_from_files(files) -> bool:
+    """True when the denoiser folds the per-block timestep GATE into a modulated
+    norm of the sublayer OUTPUT (Mochi: h = h + norm(sublayer)·gate) instead of a
+    bare × gate connector — so drawing a × would fabricate a gate_mul the forward
+    never does.  Read STRUCTURALLY, not by class name: a constructed *Modulated*Norm
+    class whose forward GATES the normed output by a scale (a `*`) with NO additive
+    FiLM shift (a `+`).  This distinguishes Mochi's gate-norm from a standard AdaLN
+    FiLM norm (`norm·(1+scale)+shift`, e.g. Sana's SanaModulatedNorm), which has the
+    additive shift and keeps its × gate.  Replaces the `gate_via_norm` table."""
+    import ast as _ast
+    from .forward_ops import _method
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            if "Modulated" not in node.name or not ("Norm" in node.name or "RMS" in node.name):
+                continue
+            forward = _method(node, "forward")
+            if forward is None:
+                continue
+            has_mult = any(isinstance(c, _ast.BinOp) and isinstance(c.op, _ast.Mult)
+                           for c in _ast.walk(forward))
+            has_add = any(isinstance(c, _ast.BinOp) and isinstance(c.op, _ast.Add)
+                          for c in _ast.walk(forward))
+            if has_mult and not has_add:
+                return True
+    return False
 
 
 # ---------------------------------------------------------------------------

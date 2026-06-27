@@ -9,40 +9,42 @@
 # after reading its actual modeling forward()/__init__. Flow style ([a, b]) so
 # the built-in loader works without PyYAML.
 
-# Axial-RoPE per-axis dims fixed in the model class (FluxPosEmbed default
+# Axial-RoPE per-axis dims fixed in the model class (Flux __init__ default
 # axes_dims_rope=(16, 56, 56); sums to head_dim 128).
-axes_dims_rope: ["FluxTransformer2DModel=16,56,56"]
+# READ FROM THE SOURCE now (evidence/patterns.py::diffusion_axes_dims_rope_from_files
+# — the __init__ default tuple). Flux/Flux2 both carry axes_dims_rope in config so
+# the config path wins; this serves a config-silent variant. Empty offline fallback.
+axes_dims_rope: []
 
-# QK-norm applied unconditionally in the model class (FluxAttention builds
-# RMSNorm norm_q / norm_k regardless of any config flag). Flux 2's attentions
-# (Flux2Attention + Flux2ParallelSelfAttention) likewise RMS-norm Q/K.
-# CogVideoXBlock builds its Attention with qk_norm="layer_norm" when its
-# qk_norm flag (default True) is set — a LayerNorm on Q/K, not RMSNorm — and the
-# config.json does not carry the flag. (The norm TYPE is read from this value.)
-qk_norm: ["FluxTransformer2DModel=rms_norm", "Flux2Transformer2DModel=rms_norm", "QwenImageTransformer2DModel=rms_norm", "Lumina2Transformer2DModel=rms_norm", "PRXTransformer2DModel=rms_norm", "CogVideoXTransformer3DModel=layer_norm", "AuraFlowTransformer2DModel=layer_norm"]
+# QK-norm applied in the model class with the config silent (FluxAttention builds
+# RMSNorm norm_q/norm_k; CogVideoX builds Attention(qk_norm="layer_norm"); etc.).
+# READ FROM THE SOURCE now (evidence/patterns.py::diffusion_qk_norm_from_files —
+# the norm_q class / qk_norm kwarg / param-default / IfExp constant, four spellings
+# across Flux·Flux2·QwenImage·Lumina2·PRX·CogVideoX·AuraFlow), so the norm TYPE
+# (rms_norm vs layer_norm) is derived, not tabulated. Config-declaring models
+# (SD3/Wan/LTX/Mochi/Hunyuan) take the config path and never reach the reader.
+# Empty offline-only fallback.
+qk_norm: []
 
-# FFN activation fixed in the model class, not config. This is now READ FROM THE
-# MODELING SOURCE (evidence/patterns.py::diffusion_ffn_activation_from_files) for
-# every model whose source is installed — Flux/Flux2/QwenImage/Lumina2/Wan/
-# HunyuanVideo/SD3/AuraFlow/CogView4/HiDream all resolve from code and need NO row
-# here. This table is now ONLY a last-resort for a model whose source can't be read
-# locally (custom/gated code not installed) — the law's sanctioned "truly-opaque
-# code-fact" exception. Add a row ONLY after confirming the source genuinely can't
-# be resolved; otherwise it's a banned per-model shortcut.
-# PRX (PRXTransformer2DModel): custom-code repo, modeling .py not in installed
-# diffusers, so the source reader returns nothing — gelu-approximate is its
-# FeedForward's activation, transcribed from the repo's modeling code.
-ffn_activation_fn: ["PRXTransformer2DModel=gelu-approximate"]
+# FFN activation fixed in the model class, not config. READ FROM THE MODELING
+# SOURCE (evidence/patterns.py::diffusion_ffn_activation_from_files) for every
+# model — Flux/Flux2/QwenImage/Lumina2/Wan/HunyuanVideo/SD3/AuraFlow/CogView4/
+# HiDream resolve from their FeedForward construction, and PRX (whose FFN is INLINE
+# with a standalone self.mlp_act = GELU(approximate="tanh")) now resolves via the
+# standalone-act fallback. Empty offline-only fallback for un-resolvable source.
+ffn_activation_fn: []
 
 # Single-stream block topology — a CODE fact (the block class). Default concat_fused
 # (Flux 1: separate in-projections, attn ∥ MLP-act → concat → ONE shared OUT
 # projection). "parallel" = Flux 2's ViT-22B parallel block (IN-projection ALSO
 # fused → QKV ‖ MLP-in, gated SwiGLU). "sequential" = NOT fused at all: a plain
 # sequential gated DiT block (self-attn → FFN) over the joined [text+image]
-# sequence — AuraFlow's AuraFlowSingleTransformerBlock (its forward does NO concat
-# and NO fused projection; the text+image join happens ONCE upstream, like a
-# concat-joint block). Drawing concat-fusion for it fabricates a concat + linear.
-single_stream_fusion: ["Flux2Transformer2DModel=parallel", "AuraFlowTransformer2DModel=sequential"]
+# sequence — AuraFlow's AuraFlowSingleTransformerBlock.
+# READ FROM THE SOURCE now (evidence/patterns.py::diffusion_single_stream_fusion_from_files
+# — anchored to the block class the model BUILDS into a single_* ModuleList, then
+# classified by its forward: real FFN + no concat → sequential; concat + MLP linears
+# → concat_fused; concat + fused parallel attn → parallel). Empty offline-only fallback.
+single_stream_fusion: []
 
 # 3D (temporal · height · width) AXIAL RoPE applied to Q/K in self-attention,
 # fixed in the model class and declared by NO config field (so it reads as NoPE
@@ -65,9 +67,12 @@ rope_3d: []
 # It folds the per-block timestep gate into a modulated RMSNorm of the sublayer
 # output (MochiModulatedRMSNorm): h = h + RMSNorm(sublayer) · tanh(gate). So the
 # gate is a real norm op (a quiet box), not a Tier-2 × connector — drawing a ×
-# here fabricates a gate_mul the forward never does. The parser inserts a
-# post-sublayer modulated-norm box instead of the × for these classes.
-gate_via_norm: ["MochiTransformer3DModel=true"]
+# here fabricates a gate_mul the forward never does.
+# READ FROM THE SOURCE now (evidence/patterns.py::diffusion_gate_via_norm_from_files
+# — a *Modulated*Norm class that gates the normed output by a scale with NO additive
+# FiLM shift, distinguishing it from a standard AdaLN FiLM norm like Sana's). Empty
+# offline-only fallback.
+gate_via_norm: []
 
 # Pre-cross-attention norm presence. The DEFAULT is now NO pre-norm (the verified
 # cross-attn DiTs — PixArt/Sana/LTX — apply attn2 to the raw hidden; Wan, which DOES
@@ -91,4 +96,6 @@ self_attn_kind: []
 # FFN kind when the block class fixes a non-MLP feed-forward and the config is
 # silent. Sana's block builds self.ff = GLUMBConv — a gated CONV Mix-FFN (1×1 conv
 # expand → depthwise 3×3 conv → SiLU gate → 1×1 conv project), not a Linear MLP.
-ffn_kind: ["SanaTransformer2DModel=conv_glu"]
+# READ FROM THE SOURCE now (evidence/patterns.py::diffusion_ffn_kind_from_files —
+# the `conv_ffn` class markers); empty offline-only fallback.
+ffn_kind: []

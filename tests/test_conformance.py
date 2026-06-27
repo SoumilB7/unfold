@@ -313,6 +313,220 @@ def test_attn_kind_read_from_source_linear_processor(tmp_path):
     assert diffusion_attn_kind_from_files([str(fs)]) is None
 
 
+def test_ffn_kind_read_from_conv_glumbconv_construction(tmp_path):
+    """The FFN KIND is read from the block's constructed ff class (the SAME
+    init-construction evidence attn-kind reads): a block building GLUMBConv =>
+    "conv_glu" (Sana's gated conv Mix-FFN); a plain FeedForward => None (caller's
+    Linear-MLP default).  Replaces the per-model ffn_kind table."""
+    from model_unfolder.evidence.patterns import diffusion_ffn_kind_from_files
+    conv = (
+        "class MyBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.ff = GLUMBConv(dim)\n"
+        "    def forward(self, x):\n"
+        "        return self.ff(x)\n"
+    )
+    mlp = conv.replace("GLUMBConv", "FeedForward")
+    fc = tmp_path / "m_conv.py"; fc.write_text(conv)
+    fm = tmp_path / "m_mlp.py"; fm.write_text(mlp)
+    assert diffusion_ffn_kind_from_files([str(fc)]) == "conv_glu"
+    assert diffusion_ffn_kind_from_files([str(fm)]) is None
+
+
+def test_gate_via_norm_distinguishes_gate_norm_from_film_norm(tmp_path):
+    """gate-via-norm (Mochi) is read STRUCTURALLY: a *Modulated*Norm class whose
+    forward gates the normed output by a scale (`*`) with NO additive FiLM shift
+    (`+`).  A standard AdaLN FiLM norm (`norm*(1+scale)+shift`, e.g. Sana's
+    SanaModulatedNorm) has the additive shift and is NOT gate-via-norm — the
+    distinction that stops Sana being falsely flipped."""
+    from model_unfolder.evidence.patterns import diffusion_gate_via_norm_from_files
+    gate = (
+        "class FooModulatedRMSNorm:\n"
+        "    def __init__(self, eps):\n"
+        "        self.norm = RMSNorm(eps)\n"
+        "    def forward(self, x, scale=None):\n"
+        "        x = self.norm(x)\n"
+        "        x = x * scale\n"
+        "        return x\n"
+    )
+    film = (
+        "class FooModulatedNorm:\n"
+        "    def __init__(self, dim):\n"
+        "        self.norm = LayerNorm(dim)\n"
+        "    def forward(self, x, temb, table):\n"
+        "        x = self.norm(x)\n"
+        "        shift, scale = (table[None] + temb).chunk(2, dim=1)\n"
+        "        x = x * (1 + scale) + shift\n"
+        "        return x\n"
+    )
+    fg = tmp_path / "m_gate.py"; fg.write_text(gate)
+    ff = tmp_path / "m_film.py"; ff.write_text(film)
+    assert diffusion_gate_via_norm_from_files([str(fg)]) is True
+    assert diffusion_gate_via_norm_from_files([str(ff)]) is False
+
+
+def test_qk_norm_type_read_from_four_code_spellings(tmp_path):
+    """The Q/K-norm TYPE is read from the four code spellings observed across the
+    DiT corpus: a norm_q field class, a literal kwarg, a variable kwarg resolved to
+    its param default, and an IfExp constant — each yielding rms_norm vs layer_norm.
+    Replaces the per-model qk_norm table (zero drift on all 7 corpus models)."""
+    from model_unfolder.evidence.patterns import diffusion_qk_norm_from_files
+    field_rms = (
+        "class A:\n"
+        "    def __init__(self):\n"
+        "        self.norm_q = RMSNorm(8)\n"
+        "        self.norm_added_q = RMSNorm(8)\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    literal_layer = (
+        "class B:\n"
+        "    def __init__(self):\n"
+        "        self.attn = Attention(8, qk_norm='fp32_layer_norm')\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    param_default = (
+        "class C:\n"
+        "    def __init__(self, qk_norm='rms_norm'):\n"
+        "        self.attn = Attention(8, qk_norm=qk_norm)\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    ifexp = (
+        "class D:\n"
+        "    def __init__(self, qk_norm=True):\n"
+        "        self.attn = Attention(8, qk_norm='layer_norm' if qk_norm else None)\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    plain = (
+        "class E:\n"
+        "    def __init__(self):\n"
+        "        self.attn = Attention(8)\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    def w(name, s):
+        f = tmp_path / name; f.write_text(s); return str(f)
+    assert diffusion_qk_norm_from_files([w("a.py", field_rms)]) == "rms_norm"
+    assert diffusion_qk_norm_from_files([w("b.py", literal_layer)]) == "layer_norm"
+    assert diffusion_qk_norm_from_files([w("c.py", param_default)]) == "rms_norm"
+    assert diffusion_qk_norm_from_files([w("d.py", ifexp)]) == "layer_norm"
+    assert diffusion_qk_norm_from_files([w("e.py", plain)]) is None
+
+
+def test_single_stream_fusion_anchored_to_built_block(tmp_path):
+    """single-stream fusion is read from the block the model BUILDS into a single_*
+    ModuleList (not any *Single* class): a real FFN submodule + no concat =>
+    sequential; concat + MLP linears => concat_fused; concat + fused parallel attn
+    => parallel.  A model that DEFINES a *Single* block but never stacks it (SD3) has
+    no single-stream blocks => None — the false-positive this anchoring prevents."""
+    from model_unfolder.evidence.patterns import diffusion_single_stream_fusion_from_files
+    sequential = (
+        "class FooSingleTransformerBlock:\n"
+        "    def __init__(self):\n"
+        "        self.norm1 = AdaLayerNormZero(8)\n"
+        "        self.attn = Attention(8)\n"
+        "        self.ff = FeedForward(8)\n"
+        "    def forward(self, x):\n        return self.ff(self.attn(x))\n"
+        "\nclass FooModel:\n"
+        "    def __init__(self):\n"
+        "        self.single_transformer_blocks = nn.ModuleList([FooSingleTransformerBlock() for _ in range(2)])\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    concat_fused = (
+        "class BarSingleTransformerBlock:\n"
+        "    def __init__(self):\n"
+        "        self.norm = AdaLayerNormZeroSingle(8)\n"
+        "        self.proj_mlp = nn.Linear(8, 32)\n"
+        "        self.proj_out = nn.Linear(40, 8)\n"
+        "        self.attn = Attention(8)\n"
+        "    def forward(self, x):\n        return self.proj_out(torch.cat([self.attn(x), self.proj_mlp(x)]))\n"
+        "\nclass BarModel:\n"
+        "    def __init__(self):\n"
+        "        self.single_transformer_blocks = nn.ModuleList([BarSingleTransformerBlock() for _ in range(2)])\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    # Defines a *Single* block but never stacks it -> not a single-stream model.
+    defined_unused = (
+        "class BazSingleTransformerBlock:\n"
+        "    def __init__(self):\n"
+        "        self.attn = Attention(8)\n"
+        "        self.ff = FeedForward(8)\n"
+        "    def forward(self, x):\n        return self.ff(self.attn(x))\n"
+        "\nclass BazModel:\n"
+        "    def __init__(self):\n"
+        "        self.transformer_blocks = nn.ModuleList([SomeDualBlock() for _ in range(2)])\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    def w(name, s):
+        f = tmp_path / name; f.write_text(s); return str(f)
+    assert diffusion_single_stream_fusion_from_files([w("seq.py", sequential)]) == "sequential"
+    assert diffusion_single_stream_fusion_from_files([w("cf.py", concat_fused)]) == "concat_fused"
+    assert diffusion_single_stream_fusion_from_files([w("unused.py", defined_unused)]) is None
+
+
+def test_axes_dims_rope_read_from_init_default(tmp_path):
+    """Axial-RoPE per-axis dims are read from the model __init__ default tuple
+    (Flux axes_dims_rope=(16,56,56)); a model without the param => None."""
+    from model_unfolder.evidence.patterns import diffusion_axes_dims_rope_from_files
+    axial = (
+        "class FooModel:\n"
+        "    def __init__(self, axes_dims_rope=(16, 56, 56)):\n"
+        "        self.x = 1\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    none = (
+        "class BarModel:\n"
+        "    def __init__(self, dim=8):\n"
+        "        self.x = 1\n"
+        "    def forward(self, x):\n        return x\n"
+    )
+    fa = tmp_path / "ax.py"; fa.write_text(axial)
+    fn = tmp_path / "no.py"; fn.write_text(none)
+    assert diffusion_axes_dims_rope_from_files([str(fa)]) == [16, 56, 56]
+    assert diffusion_axes_dims_rope_from_files([str(fn)]) is None
+
+
+def test_ffn_activation_reads_inline_standalone_act_field(tmp_path):
+    """A block whose FFN is INLINE (no FeedForward submodule) but builds a
+    standalone activation field — PRX's self.mlp_act = GELU(approximate='tanh') —
+    resolves to gelu-approximate; the fallback fires only when the standard FFN
+    scan finds nothing, so standard-FFN models are unaffected."""
+    from model_unfolder.evidence.patterns import diffusion_ffn_activation_from_files
+    inline = (
+        "class FooBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.mlp_act = GELU(approximate='tanh')\n"
+        "        self.linear1 = nn.Linear(dim, dim)\n"
+        "    def forward(self, x):\n        return self.linear1(self.mlp_act(x))\n"
+    )
+    # a standard FeedForward block must still win via the normal scan, not the fallback
+    standard = (
+        "class BarBlock:\n"
+        "    def __init__(self, dim):\n"
+        "        self.ff = FeedForward(dim, activation_fn='geglu')\n"
+        "        self.extra_act = SiLU()\n"
+        "    def forward(self, x):\n        return self.ff(x)\n"
+    )
+    fi = tmp_path / "inline.py"; fi.write_text(inline)
+    fs = tmp_path / "std.py"; fs.write_text(standard)
+    assert diffusion_ffn_activation_from_files([str(fi)]) == "gelu-approximate"
+    assert diffusion_ffn_activation_from_files([str(fs)]) == "geglu"   # standard scan wins
+
+
+def test_diffusor_class_defaults_table_is_empty_all_code_derived():
+    """The per-model diffusor class_defaults table is FULLY EMPTY — every
+    architectural fact (qk_norm, ffn activation/kind, rope/axial dims, gate dialect,
+    single-stream fusion, attn kind, cross-attn norm) is now read from the modeling
+    SOURCE, not tabulated by class name. This is the conscious-abstraction gate: a
+    NEW row is the law's tolerated 'truly-opaque source' exception, so adding one
+    must be deliberate — update this test WITH the justification (why the evidence
+    genuinely can't be read), never silently."""
+    from model_unfolder.everchanging import load_diffusion_class_defaults
+    table = load_diffusion_class_defaults()
+    rows = {field: mapping for field, mapping in table.items() if mapping}
+    assert rows == {}, (
+        "diffusor class_defaults gained per-model rows — derive from code instead, "
+        f"or justify as truly-opaque here: {rows}")
+
+
 # ---------------------------------------------------------------------------
 # Decoder-layer MACRO-TOPOLOGY read from the forward() dataflow (code ->
 # structure), the general replacement for the layer_topology.yaml model_type

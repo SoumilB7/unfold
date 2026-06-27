@@ -122,6 +122,70 @@ def _code_attn_kind(cfg: Any):
         return None
 
 
+def _code_ffn_kind(cfg: Any):
+    """The FFN KIND (gated conv Mix-FFN vs Linear MLP) READ FROM THE MODELING SOURCE
+    — "conv_glu" when the block builds Sana's GLUMBConv, else None. The code-based
+    replacement for the ``ffn_kind`` table. Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_ffn_kind_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_ffn_kind_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
+def _code_gate_via_norm(cfg: Any) -> bool:
+    """Whether the block folds its timestep gate into a modulated norm of the
+    sublayer output (Mochi) rather than a × gate — READ FROM THE MODELING SOURCE.
+    The code-based replacement for the ``gate_via_norm`` table. Best-effort."""
+    try:
+        from ...evidence.patterns import diffusion_gate_via_norm_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_gate_via_norm_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return False
+
+
+def _code_axes_dims_rope(cfg: Any):
+    """The axial-RoPE per-axis dims fixed in the model __init__ default (Flux
+    axes_dims_rope=(16,56,56)) READ FROM THE MODELING SOURCE — the code-based
+    replacement for the ``axes_dims_rope`` table. Returns list[int] or None.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_axes_dims_rope_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_axes_dims_rope_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
+def _code_single_fusion(cfg: Any):
+    """The single-stream block's fusion topology (parallel / sequential /
+    concat_fused) READ FROM THE MODELING SOURCE, or None (no single blocks / default
+    fused). The code-based replacement for the ``single_stream_fusion`` table.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_single_stream_fusion_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_single_stream_fusion_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
+def _code_qk_norm(cfg: Any):
+    """The Q/K-norm TYPE ("rms_norm"/"layer_norm") the attention applies, READ FROM
+    THE MODELING SOURCE — for DiTs whose config is silent on qk_norm but whose
+    attention norms Q/K (Flux/Flux2/QwenImage/Lumina2/PRX/CogVideoX/AuraFlow). The
+    code-based replacement for the ``qk_norm`` table. Returns None when the block
+    does not norm Q/K. Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_qk_norm_from_files
+        from ...evidence.sources import resolve_source_files
+        return diffusion_qk_norm_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
@@ -255,6 +319,8 @@ def parse(cfg: Any) -> ModelIR:
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
     # the source isn't resolvable the FFN renders honestly as undeclared.
     code_ffn_act = _code_ffn_activation(cfg) if declared_act is None else None
+    code_ffn_kind = _code_ffn_kind(cfg)
+    code_gate_via_norm = _code_gate_via_norm(cfg)
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
     # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
     norm_kind = _dit_norm_kind(cfg)
@@ -317,13 +383,19 @@ def parse(cfg: Any) -> ModelIR:
     # .yaml). Never overrides a declared config value.
     axes_from_class = False
     if axes_dims_rope is None:
-        _cd = _class_default(cls, "axes_dims_rope")
-        if _cd:
-            try:
-                axes_dims_rope = [int(x) for x in _cd.split(",")]
-                axes_from_class = True
-            except ValueError:
-                axes_dims_rope = None
+        # Config silent — READ the axial dims from the model __init__ default
+        # (code -> fact); the class_defaults table is the offline-only fallback.
+        _code_axes = _code_axes_dims_rope(cfg)
+        if _code_axes:
+            axes_dims_rope, axes_from_class = _code_axes, True
+        else:
+            _cd = _class_default(cls, "axes_dims_rope")
+            if _cd:
+                try:
+                    axes_dims_rope = [int(x) for x in _cd.split(",")]
+                    axes_from_class = True
+                except ValueError:
+                    axes_dims_rope = None
     rope_dim = None
     if isinstance(axes_dims_rope, (list, tuple)):
         try:
@@ -402,9 +474,16 @@ def parse(cfg: Any) -> ModelIR:
     _qk = _resolve(cfg, "qk_norm")
     qk_from_class = False
     if _qk in _empty_qk:
-        _cd = _class_default(cls, "qk_norm")
-        if _cd:
-            _qk, qk_from_class = _cd, True
+        # Config silent — READ the Q/K-norm TYPE from the modeling source (the
+        # attention's norm_q class / qk_norm kwarg); the class_defaults table is the
+        # offline-only fallback.
+        _code_qk = _code_qk_norm(cfg)
+        if _code_qk:
+            _qk, qk_from_class = _code_qk, True
+        else:
+            _cd = _class_default(cls, "qk_norm")
+            if _cd:
+                _qk, qk_from_class = _cd, True
     has_qk_norm = _qk not in _empty_qk
     if qk_from_class:
         # Mark the code-derived QK-norm in the attention description (the chip
@@ -468,7 +547,8 @@ def parse(cfg: Any) -> ModelIR:
                                    rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
         layer = decoder_layer(
             idx, attn_spec,
-            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act),
+            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
+                     code_ffn_kind=code_ffn_kind),
             hidden_size, norm_kind=norm_kind,
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
@@ -485,7 +565,7 @@ def parse(cfg: Any) -> ModelIR:
         # (h = h + ModulatedRMSNorm(sublayer(...), gate)) → a post-sublayer norm box,
         # NOT a ×. Drawing a × for Mochi fabricates a gate_mul the forward never does
         # (op-conformance catches it). The dialect is a code fact (class_defaults).
-        if _class_default(cls, "gate_via_norm"):
+        if code_gate_via_norm or _class_default(cls, "gate_via_norm"):
             layer.blocks = _insert_output_gated_norms(layer.blocks)
         else:
             layer.blocks = _insert_adaln_gates(layer.blocks)
@@ -499,14 +579,15 @@ def parse(cfg: Any) -> ModelIR:
     # the joined [text+image] sequence (joined once upstream), so it renders as a
     # concat-joint block, not a fused parallel one (drawing fusion would fabricate a
     # concat + a fused linear the forward never does).
-    single_fusion = _class_default(cls, "single_stream_fusion")
+    single_fusion = _code_single_fusion(cfg) or _class_default(cls, "single_stream_fusion")
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single):
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
                                 rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
-        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act)
+        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
+                         code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
             # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
@@ -987,7 +1068,7 @@ def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
 
 
 def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
-             cls: Any = None, code_activation: Any = None) -> FFNSpec:
+             cls: Any = None, code_activation: Any = None, code_ffn_kind: Any = None) -> FFNSpec:
     # ``code_activation`` is the FFN activation_fn READ FROM THE MODELING SOURCE
     # (the block's ``FeedForward(activation_fn=…)`` / named SwiGLU class) — the pure
     # code-based replacement for the old per-model ``class_defaults`` table. The
@@ -1008,9 +1089,10 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
             num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
     # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
-    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. A code
-    # fact (the block builds self.ff = GLUMBConv); class_defaults ffn_kind=conv_glu.
-    if cls is not None and _class_default(cls, "ffn_kind") == "conv_glu":
+    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
+    # THE SOURCE (the block builds self.ff = GLUMBConv); the class_defaults table is
+    # the offline-only fallback.
+    if (code_ffn_kind or _class_default(cls, "ffn_kind")) == "conv_glu":
         return FFNSpec(
             kind="conv_glu",
             activation=(str(declared_activation).lower() if declared_activation else "silu"),
