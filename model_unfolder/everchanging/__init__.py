@@ -105,6 +105,7 @@ def load_diffusion_typing() -> dict[str, list[str]]:
         "part_kinds": data.get("part_kinds") or [],
         "dit_class_markers": data.get("dit_class_markers") or [],
         "scheduler_display": data.get("scheduler_display") or [],
+        "scheduler_flow_matching_markers": data.get("scheduler_flow_matching_markers") or [],
         "norm_type_kind": data.get("norm_type_kind") or [],
     }
 

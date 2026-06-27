@@ -89,6 +89,36 @@ def _resolve(cfg: Any, canonical: str, default=None):
     return default
 
 
+def _code_layer_topology(cfg: Any) -> dict | None:
+    """The decoder layer's macro-topology (norm placement + parallel residual)
+    READ FROM THE MODELING SOURCE — the code-based replacement for the
+    ``layer_topology.yaml`` model_type table.  "code -> structure": where the
+    norms sit and whether attention ∥ FFN is wiring the forward() states, not a
+    per-family lookup.  Returns ``{"norm_placement", "parallel_residual"}`` or
+    None (no source / no layer class found → caller falls back to the table
+    cache, then the safe pre/sequential default).  Best-effort, never raises into
+    the parse."""
+    try:
+        from ...evidence.patterns import decoder_layer_topology_from_files
+        from ...evidence.sources import resolve_source_files
+        files = resolve_source_files(cfg, source="local").files
+        return decoder_layer_topology_from_files(files)
+    except Exception:
+        return None
+
+
+def _code_norm_kind(cfg: Any) -> str | None:
+    """The decoder's norm KIND (rmsnorm/layernorm) READ FROM THE MODELING SOURCE
+    — used only as a config-silent fallback (no eps field), replacing the legacy
+    model_type family-set.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_norm_kind_from_files
+        from ...evidence.sources import resolve_source_files
+        return decoder_norm_kind_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
 _TEXT_WRAPPER_KEYS = (
     "text_config", "language_config", "llm_config", "text_model_config",
     "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
@@ -225,13 +255,16 @@ def parse(cfg: Any) -> ModelIR:
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"))
-    # Norm placement (pre / post / double-sandwich) is architectural for a few
-    # families and carries no config flag — looked up by model_type from data.
     _mt_candidates = {model_type, str(_g(text_cfg, "model_type") or "").lower()}
-    norm_placement = next(
-        (_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
-         if mt in _LAYER_TOPOLOGY["norm_placement"]),
-        "pre",
+    # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
+    # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
+    # structure), the general replacement for the model_type identity table.
+    # The table is now only an offline fallback cache when source can't be read.
+    _code_topo = _code_layer_topology(text_cfg)
+    norm_placement = (
+        (_code_topo or {}).get("norm_placement")
+        or next((_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
+                 if mt in _LAYER_TOPOLOGY["norm_placement"]), "pre")
     )
     # RoPE is the default for decoder LLMs; ALiBi / learned-absolute families
     # (BLOOM/MPT/GPT-2/OPT) don't apply it — drawing a RoPE step there would be
@@ -291,10 +324,15 @@ def parse(cfg: Any) -> ModelIR:
     use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
 
     # ---- Layer topology ----
-    # Parallel residual is usually a config flag, but some families (Cohere) are
-    # architecturally parallel with no flag — recognised by model_type from data.
+    # Parallel residual: a config flag when the family TOGGLES it (Falcon
+    # new_decoder_architecture / GPT-NeoX use_parallel_residual — gated inside an
+    # `if`, so the config decides); else READ FROM the forward() when it is
+    # UNCONDITIONAL structure with no flag (Cohere, GPT-J, Phi — all flagless,
+    # all missed by the old model_type table, so all silently drawn sequential).
+    # The table stays only as an offline fallback cache.
     use_parallel_residual = bool(
         _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
+        or (_code_topo or {}).get("parallel_residual")
         or _mt_candidates & set(_LAYER_TOPOLOGY["parallel_residual"])
     )
 
@@ -462,15 +500,19 @@ def parse(cfg: Any) -> ModelIR:
         multimodal_extras(cfg, text_cfg, hidden_size),
     )
 
-    # ---- Block diffusion (DiffusionGemma) ----------------------------------------
-    # Top-level model_type is "diffusion_gemma"; the inner text_config is parsed as
-    # a normal transformer for the per-layer IR.  We then override:
+    # ---- Block diffusion (masked/canvas-denoising text LMs) ----------------------
+    # Detected by EVIDENCE, not one exact model_type string: a block-diffusion LM
+    # declares a denoising CANVAS (``canvas_length``) and/or sits in the diffusion
+    # architecture family — so a sibling block-diffusion model (not just
+    # diffusion_gemma) routes here too.  The inner text_config is parsed as a
+    # normal transformer for the per-layer IR; we then override:
     #   1. The render layout (block_diffusion loop view).
-    #   2. Per-layer blocks: DiffusionGemma has post-attention norm, parallel
+    #   2. Per-layer blocks: this family has post-attention norm, parallel
     #      dense-MLP + MoE, post-FFN norm, and a per-layer learned scalar —
-    #      none of which the generic decoder_layer topology expresses.
+    #      none of which the generic decoder_layer topology expresses (the block
+    #      builder is the opaque-source fallback for these research models).
     #   3. qk_norm: Q/K/V norms are unconditional in __init__ (not a config flag).
-    if model_type == "diffusion_gemma":
+    if _g(cfg, "canvas_length") is not None or "diffusion" in model_type:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
@@ -790,10 +832,12 @@ def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
         return "rmsnorm"
     if _g(cfg, "layer_norm_epsilon") is not None or _g(cfg, "layer_norm_eps") is not None:
         return "layernorm"
-    # Legacy decoder-only families predate RMSNorm — they universally use LayerNorm.
-    model_type = (_g(cfg, "model_type") or "").lower()
-    if model_type in {"gpt_neox", "gptj", "gpt2", "bloom", "mpt", "falcon", "opt", "phi"}:
-        return "layernorm"
+    # Config carries no eps field — read the norm KIND from the layer's norm
+    # submodule class in the modeling source (code -> fact), the general
+    # replacement for the old legacy-family model_type set (gpt2/neox/opt/…).
+    code_kind = _code_norm_kind(cfg)
+    if code_kind:
+        return code_kind
     return "rmsnorm"
 
 

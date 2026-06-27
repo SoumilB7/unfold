@@ -623,3 +623,211 @@ def diffusion_attn_kind_from_files(files) -> str | None:
     ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
     refs = " ".join(r.lower() for fo in ops.values() for r in fo.init_class_refs)
     return "linear" if any(s in refs for s in linear_subs) else None
+
+
+# ---------------------------------------------------------------------------
+# Decoder-layer MACRO-TOPOLOGY (norm placement + parallel residual) — a pure
+# CODE/STRUCTURE fact read from the layer's forward() dataflow, NOT from the
+# model_type (the old layer_topology.yaml identity table).  "config -> facts,
+# code -> structure": where the norms sit relative to each sublayer, and whether
+# attention and the FFN run in parallel off one input, is wiring the forward()
+# states directly — no config field carries it (Gemma's sandwich, OLMo-2's
+# post-norm, Cohere/GPT-J/Phi's parallel residual are all flagless).
+#
+# Read in EVALUATION order (post-order: an argument like ``attn(norm(x))`` runs
+# the norm first) over the layer's TOP-LEVEL forward statements only — a
+# config-gated parallel/sequential branch (Falcon `new_decoder_architecture`,
+# GPT-NeoX `use_parallel_residual`) lives inside an ``if`` and is deferred to the
+# config flag the parser already reads, so code asserts only the UNCONDITIONAL
+# structure.  Segment the role stream by residual-add: within a sublayer's
+# segment a norm BEFORE it ⇒ pre-contribution, AFTER it (before the add) ⇒
+# post; both ⇒ double (sandwich).  A segment holding BOTH attention and ffn
+# (no add between) ⇒ parallel residual.
+# ---------------------------------------------------------------------------
+def decoder_layer_topology_from_files(files) -> dict | None:
+    """`{"norm_placement": "pre"|"post"|"double", "parallel_residual": bool}` read
+    from the decoder layer's forward() in `files`, or None when no layer class is
+    found.  Identity-free: the layer is the class that constructs BOTH an
+    attention-role and an ffn-role submodule (what a decoder layer *is*), never a
+    name match."""
+    import ast as _ast
+    from ..everchanging import load_conformance_op_tokens
+    from .forward_ops import _method
+
+    merge_tokens = {tok for tok, kind in load_conformance_op_tokens().items()
+                    if kind == "residual_add"}
+
+    layer = _find_decoder_layer(files, _ast)
+    if layer is None:
+        return None
+    cls_node, field_types = layer
+    fwd = _method(cls_node, "forward")
+    if fwd is None:
+        return None
+
+    seq = _linearize_forward(fwd, field_types, merge_tokens, _ast)
+    return _classify_topology(seq)
+
+
+# A forward()-signature parameter that only an AUTOREGRESSIVE DECODER carries —
+# a KV cache.  Multimodal modeling files bundle vision/audio ENCODER layers that
+# also have an attention + an ffn submodule (so they pass the structural test for
+# "a layer"), but encoders don't cache, so this separates the text decoder layer
+# from the encoder layers without a single class-name match.
+_DECODER_CACHE_PARAMS = frozenset({
+    "past_key_values", "past_key_value", "layer_past", "use_cache", "cache_position",
+})
+
+
+def _find_decoder_layer(files, _ast, required_roles=("attention", "ffn")):
+    """The (ClassDef, field_types) of the TEXT DECODER layer — the class building
+    submodules of all ``required_roles`` (what a layer *is*), found by structure
+    not by class name.  When a file bundles several such classes (a multimodal
+    file with vision/audio encoder layers), the decoder is the one whose forward()
+    takes a KV-cache parameter (only an autoregressive decoder caches); otherwise
+    the first candidate.
+
+    ``required_roles`` lets the topology classifier ask for attention+ffn (it
+    classifies norms around the FFN sublayer) while the norm-KIND reader asks for
+    attention+norm — the latter both catches a decoder whose FFN is inline
+    ``fc1``/``fc2`` Linears not an MLP submodule (OPT) AND excludes an
+    attention-HELPER class whose only "attention" role is a flash-attn flag field
+    (``flash_attn_…`` matches the ``attn`` substring) but which has no norm."""
+    from .forward_ops import _field_types, _forward_params, _method, _role_of
+    want = set(required_roles)
+    candidates = []
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            forward = _method(node, "forward")
+            if forward is None:
+                continue
+            ftypes = _field_types(_method(node, "__init__"))
+            roles = {_role_of(c) for c in ftypes.values()}
+            if want <= roles:
+                caches = bool(_forward_params(forward) & _DECODER_CACHE_PARAMS)
+                candidates.append((caches, node, ftypes))
+    if not candidates:
+        return None
+    caching = [c for c in candidates if c[0]]
+    _, node, ftypes = (caching or candidates)[0]
+    return node, ftypes
+
+
+def layer_class_count_from_files(files) -> int:
+    """How many distinct LAYER classes (a class building an attention submodule
+    AND an ffn- or norm-role one) the modeling source defines.  A single-tower
+    decoder file has 1 (the decoder layer); a multimodal/multi-variant file has
+    ≥2 (text decoder + vision/audio encoder layers — Gemma-3n/Gemma-4/Llama-4/
+    Qwen2-VL).  The general, name-free replacement for the hardcoded multi-variant
+    family list used to gate code↔IR topology warnings."""
+    import ast as _ast
+    from .forward_ops import _field_types, _method, _role_of
+    names: set[str] = set()
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef) or _method(node, "forward") is None:
+                continue
+            roles = {_role_of(c) for c in _field_types(_method(node, "__init__")).values()}
+            if "attention" in roles and ({"ffn", "norm"} & roles):
+                names.add(node.name)
+    return len(names)
+
+
+def decoder_norm_kind_from_files(files) -> str | None:
+    """"rmsnorm" / "layernorm" read from the decoder layer's NORM submodule class
+    name — the code-based replacement for the legacy model_type family-set that
+    guessed LayerNorm for pre-RMSNorm decoders when the config carried no eps
+    field.  config-silent norm KIND is still a fact, so it comes from the next
+    evidence channel (the norm class the layer constructs), never identity.
+    Returns None when no decoder/norm is found (caller keeps its default)."""
+    import ast as _ast
+    from .forward_ops import _role_of
+    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "norm"))
+    if layer is None:
+        return None
+    _, field_types = layer
+    for cls_name in field_types.values():
+        if _role_of(cls_name) != "norm":
+            continue
+        lc = cls_name.lower()
+        if "rms" in lc:
+            return "rmsnorm"
+        if "layernorm" in lc or "layer_norm" in lc:
+            return "layernorm"
+    return None
+
+
+def _linearize_forward(fwd, field_types, merge_tokens, _ast) -> list[str]:
+    """The forward's TOP-LEVEL statements as an ordered role stream — ``norm`` /
+    ``attention`` / ``ffn`` / ``add`` — in evaluation order (post-order so a norm
+    nested in a sublayer's args is emitted before the sublayer)."""
+    from .forward_ops import _role_of, _self_field
+    toks: list[str] = []
+
+    def emit_calls(node) -> None:
+        for child in _ast.iter_child_nodes(node):
+            emit_calls(child)                       # post-order: args before call
+        if isinstance(node, _ast.Call):
+            field = _self_field(node.func)
+            if field is not None:
+                role = _role_of(field_types.get(field, ""))
+                if role in ("norm", "attention", "ffn"):
+                    toks.append(role)
+            else:
+                name = _call_name(node.func)         # residual-merge helper (dropout_add)
+                if name in merge_tokens:
+                    toks.append("add")
+
+    def is_add(value) -> bool:
+        return isinstance(value, _ast.BinOp) and isinstance(value.op, _ast.Add)
+
+    for stmt in fwd.body:                           # TOP-LEVEL only (no If/For descent)
+        if isinstance(stmt, _ast.Assign):
+            if is_add(stmt.value):
+                emit_calls(stmt.value); toks.append("add")
+            else:
+                emit_calls(stmt.value)
+        elif isinstance(stmt, _ast.AugAssign) and isinstance(stmt.op, _ast.Add):
+            emit_calls(stmt.value); toks.append("add")
+        elif isinstance(stmt, _ast.Expr):
+            emit_calls(stmt.value)
+    return toks
+
+
+def _classify_topology(seq: list[str]) -> dict:
+    """Reduce the role stream to `{norm_placement, parallel_residual}`."""
+    segments: list[list[str]] = []
+    cur: list[str] = []
+    for tok in seq:
+        if tok == "add":
+            segments.append(cur); cur = []
+        else:
+            cur.append(tok)
+    if cur:
+        segments.append(cur)
+
+    placements: set[str] = set()
+    parallel = False
+    for seg in segments:
+        if "attention" in seg and "ffn" in seg:
+            parallel = True
+        for sub in ("attention", "ffn"):
+            if sub in seg:
+                i = seg.index(sub)
+                pre = "norm" in seg[:i]
+                post = "norm" in seg[i + 1:]
+                placements.add("double" if (pre and post) else "post" if post else "pre")
+    placement = ("double" if "double" in placements
+                 else "post" if placements == {"post"}
+                 else "pre")
+    return {"norm_placement": placement, "parallel_residual": parallel}

@@ -5,8 +5,12 @@
 # can assert "the picture matches the code" both directions. Add a new spelling
 # HERE, never in code. Flow style ([a, b]) so it parses without PyYAML.
 #
-# NOTE: gate_mul (×) and residual_add (⊕) are NOT call tokens — they come from
-# binary-operator detection (`*` / `+` on tensors) in the extractor, not here.
+# NOTE: gate_mul (×) and residual_add (⊕) come mainly from binary-operator
+# detection (`*` / `+` on tensors) in the extractor — EXCEPT a residual-add
+# written as a HELPER CALL (Falcon's `dropout_add(sublayer, residual)`), which a
+# `+` scan can't see; listing the helper here lets both the op-conformance set
+# and the decoder-layer topology reader treat it as the residual merge it is.
+residual_add: [dropout_add]
 
 # torch.cat / .concat -> a real merge (the ‖ the diagram draws).
 concat: [cat, concat]

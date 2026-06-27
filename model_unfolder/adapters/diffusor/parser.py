@@ -54,6 +54,9 @@ _SCHEDULER_DISPLAY = dict(
     pair.split("=", 1) for pair in load_diffusion_typing().get("scheduler_display", [])
     if isinstance(pair, str) and "=" in pair
 )
+#: scheduler-class substrings that mark a flow-matching integrator (data, not a
+#: hardcoded magic string) — the scheduler declares its own algorithm by class.
+_FLOW_MATCHING_MARKERS = tuple(load_diffusion_typing().get("scheduler_flow_matching_markers", []))
 #: norm_type substring -> base norm kind (ada_norm* etc. → layernorm), from typing.yaml.
 _NORM_TYPE_KIND = [
     tuple(pair.split("=", 1)) for pair in load_diffusion_typing().get("norm_type_kind", [])
@@ -1143,7 +1146,7 @@ def _scheduler_geom(cfg: Any) -> dict:
             display = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", " ", display)
         out["scheduler"] = display
         out["scheduler_class"] = cls
-        out["scheduler_flow_matching"] = "FlowMatch" in cls
+        out["scheduler_flow_matching"] = any(m in cls for m in _FLOW_MATCHING_MARKERS)
     sched_cfg = _g(cfg, "_scheduler_config")
     if isinstance(sched_cfg, dict):
         for key, field in (

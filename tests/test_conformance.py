@@ -311,3 +311,235 @@ def test_attn_kind_read_from_source_linear_processor(tmp_path):
     fs = tmp_path / "modeling_soft.py"; fs.write_text(softmax)
     assert diffusion_attn_kind_from_files([str(fl)]) == "linear"
     assert diffusion_attn_kind_from_files([str(fs)]) is None
+
+
+# ---------------------------------------------------------------------------
+# Decoder-layer MACRO-TOPOLOGY read from the forward() dataflow (code ->
+# structure), the general replacement for the layer_topology.yaml model_type
+# table. Asserts the GENERAL dataflow-classifier behavior on synthetic source,
+# never a single family.
+# ---------------------------------------------------------------------------
+
+_PRE_LAYER = (
+    "class FooDecoderLayer:\n"
+    "    def __init__(self):\n"
+    "        self.input_layernorm = RMSNorm(8)\n"
+    "        self.post_attention_layernorm = RMSNorm(8)\n"
+    "        self.self_attn = FooAttention(8)\n"
+    "        self.mlp = FooMLP(8)\n"
+    "    def forward(self, x, past_key_values=None):\n"
+    "        residual = x\n"
+    "        x = self.input_layernorm(x)\n"
+    "        x = self.self_attn(x)\n"
+    "        x = residual + x\n"
+    "        residual = x\n"
+    "        x = self.post_attention_layernorm(x)\n"
+    "        x = self.mlp(x)\n"
+    "        x = residual + x\n"
+    "        return x\n"
+)
+_DOUBLE_LAYER = (
+    "class FooDecoderLayer:\n"
+    "    def __init__(self):\n"
+    "        self.input_layernorm = RMSNorm(8)\n"
+    "        self.post_attention_layernorm = RMSNorm(8)\n"
+    "        self.pre_feedforward_layernorm = RMSNorm(8)\n"
+    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
+    "        self.self_attn = FooAttention(8)\n"
+    "        self.mlp = FooMLP(8)\n"
+    "    def forward(self, x, past_key_values=None):\n"
+    "        residual = x\n"
+    "        x = self.input_layernorm(x)\n"
+    "        x = self.self_attn(x)\n"
+    "        x = self.post_attention_layernorm(x)\n"
+    "        x = residual + x\n"
+    "        residual = x\n"
+    "        x = self.pre_feedforward_layernorm(x)\n"
+    "        x = self.mlp(x)\n"
+    "        x = self.post_feedforward_layernorm(x)\n"
+    "        x = residual + x\n"
+    "        return x\n"
+)
+_POST_LAYER = (
+    "class FooDecoderLayer:\n"
+    "    def __init__(self):\n"
+    "        self.post_attention_layernorm = RMSNorm(8)\n"
+    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
+    "        self.self_attn = FooAttention(8)\n"
+    "        self.mlp = FooMLP(8)\n"
+    "    def forward(self, x, past_key_values=None):\n"
+    "        residual = x\n"
+    "        x = self.self_attn(x)\n"
+    "        x = self.post_attention_layernorm(x)\n"
+    "        x = residual + x\n"
+    "        residual = x\n"
+    "        x = self.mlp(x)\n"
+    "        x = self.post_feedforward_layernorm(x)\n"
+    "        x = residual + x\n"
+    "        return x\n"
+)
+_PARALLEL_LAYER = (
+    "class FooDecoderLayer:\n"
+    "    def __init__(self):\n"
+    "        self.input_layernorm = LayerNorm(8)\n"
+    "        self.self_attn = FooAttention(8)\n"
+    "        self.mlp = FooMLP(8)\n"
+    "    def forward(self, x, past_key_values=None):\n"
+    "        residual = x\n"
+    "        x = self.input_layernorm(x)\n"
+    "        attn_out = self.self_attn(x)\n"
+    "        mlp_out = self.mlp(x)\n"
+    "        x = residual + attn_out + mlp_out\n"
+    "        return x\n"
+)
+
+
+def _topo(tmp_path, src):
+    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
+    f = tmp_path / "modeling_topo.py"
+    f.write_text(src)
+    return decoder_layer_topology_from_files([str(f)])
+
+
+def test_layer_topology_classifies_norm_placement_from_dataflow(tmp_path):
+    """norm placement is read from where the norms sit relative to each sublayer in
+    the forward() — not a model_type row. norm-before-sublayer => pre, norm-after =>
+    post, both => double (sandwich)."""
+    assert _topo(tmp_path, _PRE_LAYER)["norm_placement"] == "pre"
+    assert _topo(tmp_path, _DOUBLE_LAYER)["norm_placement"] == "double"
+    assert _topo(tmp_path, _POST_LAYER)["norm_placement"] == "post"
+
+
+def test_layer_topology_detects_parallel_residual_from_shared_input(tmp_path):
+    """parallel residual is read from the forward: attention and the FFN consumed in
+    one residual segment (one norm feeds both, one combined add) => parallel; the
+    sequential layer where the FFN follows the attention add => not parallel.
+    Catches GPT-J / Phi / Cohere, all flagless and all missed by the old table."""
+    assert _topo(tmp_path, _PARALLEL_LAYER)["parallel_residual"] is True
+    assert _topo(tmp_path, _PRE_LAYER)["parallel_residual"] is False
+
+
+def test_layer_topology_finds_decoder_not_encoder_in_multimodal_file(tmp_path):
+    """When a modeling file bundles several attention+ffn classes (a multimodal
+    file's vision/audio ENCODER layers + the text decoder), the decoder is picked
+    by its KV-cache forward parameter — an encoder doesn't cache. Without this the
+    first class (an encoder, often parallel) is misread as the decoder's topology."""
+    src = (
+        "class FooVisionEncoderLayer:\n"          # first, but an encoder (no cache)
+        "    def __init__(self):\n"
+        "        self.norm1 = LayerNorm(8)\n"
+        "        self.attn = FooAttention(8)\n"
+        "        self.mlp = FooMLP(8)\n"
+        "    def forward(self, x):\n"
+        "        residual = x\n"
+        "        a = self.attn(self.norm1(x))\n"
+        "        m = self.mlp(self.norm1(x))\n"
+        "        return residual + a + m\n"        # parallel — would mislead
+        "\n\n" + _PRE_LAYER
+    )
+    topo = _topo(tmp_path, src)
+    assert topo["norm_placement"] == "pre"
+    assert topo["parallel_residual"] is False     # decoder picked, not the encoder
+
+
+def test_layer_topology_real_families_match_code(tmp_path):
+    """The installed modeling source must classify each family as its known
+    structure — zero drift from the emptied table — and CATCH the flagless parallels
+    (GPT-J / Phi) the table never listed. Skips a family whose source isn't
+    installed (a gap, not a failure)."""
+    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
+    from model_unfolder.evidence.sources import resolve_source_files
+    expect = {
+        "llama": ("pre", False), "gemma2": ("double", False), "olmo2": ("post", False),
+        "cohere": ("pre", True), "gpt_j": ("pre", True), "phi": ("pre", True),
+        "phi3": ("pre", False),
+    }
+    seen = 0
+    for mt, (place, parallel) in expect.items():
+        files = resolve_source_files({"model_type": mt}, source="local").files
+        topo = decoder_layer_topology_from_files(files)
+        if topo is None:
+            continue
+        seen += 1
+        assert topo["norm_placement"] == place, f"{mt}: {topo} != {place}"
+        assert topo["parallel_residual"] is parallel, f"{mt}: {topo} parallel != {parallel}"
+    assert seen >= 4, "too few installed families exercised — resolver may be broken"
+
+
+def test_norm_kind_read_from_decoder_norm_class(tmp_path):
+    """config-silent norm KIND is read from the decoder's NORM submodule class
+    (RMSNorm vs LayerNorm), not a legacy model_type family-set.  An attention
+    HELPER class whose only attention signal is a flash-attn flag field (no norm)
+    must NOT be mistaken for the decoder layer."""
+    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
+    rms = (
+        "class FooDecoderLayer:\n"
+        "    def __init__(self):\n"
+        "        self.input_layernorm = FooRMSNorm(8)\n"
+        "        self.self_attn = FooAttention(8)\n"
+        "    def forward(self, x, past_key_values=None):\n"
+        "        return x\n"
+    )
+    ln = rms.replace("FooRMSNorm", "FooLayerNorm")
+    helper = (                                  # flash-attn flag matches 'attn', has no norm
+        "class FooFlashAttention2:\n"
+        "    def __init__(self):\n"
+        "        self._flag = flash_attn_supports_top_left_mask()\n"
+        "    def forward(self, x, past_key_values=None):\n"
+        "        return x\n"
+        "\n\n" + ln
+    )
+    fr = tmp_path / "m_rms.py"; fr.write_text(rms)
+    fl = tmp_path / "m_ln.py"; fl.write_text(ln)
+    fh = tmp_path / "m_helper.py"; fh.write_text(helper)
+    assert decoder_norm_kind_from_files([str(fr)]) == "rmsnorm"
+    assert decoder_norm_kind_from_files([str(fl)]) == "layernorm"
+    assert decoder_norm_kind_from_files([str(fh)]) == "layernorm"   # helper skipped
+
+
+def test_norm_kind_real_legacy_families_are_layernorm():
+    """The installed pre-RMSNorm decoders read LayerNorm from code (zero drift from
+    the deleted family-set), modern decoders RMSNorm — config-silently."""
+    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
+    from model_unfolder.evidence.sources import resolve_source_files
+    expect = {"gpt2": "layernorm", "opt": "layernorm", "bloom": "layernorm",
+              "gptj": "layernorm", "falcon": "layernorm", "phi": "layernorm",
+              "llama": "rmsnorm", "gemma2": "rmsnorm"}
+    seen = 0
+    for mt, kind in expect.items():
+        files = resolve_source_files({"model_type": mt}, source="local").files
+        got = decoder_norm_kind_from_files(files)
+        if got is None:
+            continue
+        seen += 1
+        assert got == kind, f"{mt}: {got} != {kind}"
+    assert seen >= 5
+
+
+def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
+    """A multi-variant modeling file is detected by counting distinct LAYER classes
+    (attention + ffn/norm), not a hardcoded family name: one decoder layer => 1
+    (single tower), + a vision encoder layer => 2 (multi-variant)."""
+    from model_unfolder.evidence.patterns import layer_class_count_from_files
+    one = (
+        "class FooDecoderLayer:\n"
+        "    def __init__(self):\n"
+        "        self.input_layernorm = FooRMSNorm(8)\n"
+        "        self.self_attn = FooAttention(8)\n"
+        "        self.mlp = FooMLP(8)\n"
+        "    def forward(self, x, past_key_values=None):\n"
+        "        return x\n"
+    )
+    two = one + (
+        "\n\nclass FooVisionEncoderLayer:\n"
+        "    def __init__(self):\n"
+        "        self.norm1 = FooLayerNorm(8)\n"
+        "        self.attn = FooAttention(8)\n"
+        "        self.mlp = FooMLP(8)\n"
+        "    def forward(self, x):\n"
+        "        return x\n"
+    )
+    f1 = tmp_path / "m_one.py"; f1.write_text(one)
+    f2 = tmp_path / "m_two.py"; f2.write_text(two)
+    assert layer_class_count_from_files([str(f1)]) == 1
+    assert layer_class_count_from_files([str(f2)]) == 2

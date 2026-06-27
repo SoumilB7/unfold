@@ -259,11 +259,16 @@ def _drawn_side_input_roles(spec: dict, stage_role: dict) -> set[str]:
 def diagram_op_set(spec: dict) -> frozenset[str]:
     """The canonical op-kinds the diagram draws for one layer-group's block list.
 
-    Side-input conditioning (adaln / text) and ports are excluded — they are
-    inputs the block receives, not ops it performs."""
+    Side-input CONDITIONING (adaln / text / timestep) is excluded — it is an
+    input the block receives, not an op it performs — identified by an
+    ``external`` lane (the same marker :func:`_drawn_side_input_roles` uses).  A
+    block in a non-external lane is a real op merely laid out to the side (a
+    PARALLEL-RESIDUAL branch's FFN — GPT-J/Phi/Cohere — taps a sibling, not an
+    external rail), so it IS counted; dropping every lane block hid the parallel
+    FFN and falsely flagged the code's ffn as omitted."""
     out: set[str] = set()
     for block in (spec.get("blocks") or []):
-        if block.get("lane"):
+        if str(block.get("lane", "")).startswith("external"):
             continue
         kind = block.get("kind")
         if kind in _NON_OP_KINDS:
