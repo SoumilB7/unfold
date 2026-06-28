@@ -5,7 +5,6 @@ from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
-    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -94,6 +93,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    position_evidence = ((ir.get("extras") or {}).get("position_encoding") or {})
+    position_mechanisms = position_evidence.get("mechanisms") or [] \
+        if isinstance(position_evidence, dict) else []
+    has_absolute_position = any(
+        item.get("kind") in {"learned_absolute", "fixed_absolute"}
+        and item.get("application") == "embedding_add"
+        for item in position_mechanisms if isinstance(item, dict)
+    )
     modality_inputs = modalities.get("inputs") or {}
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
@@ -153,10 +160,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     inner_y = 200 + mtp_pad
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
+    position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
     if has_modality_fusion and not has_cross_attention_fusion:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292)
     else:
-        h = inner_y + inner_h + 232
+        h = inner_y + inner_h + 232 + position_pad
     w = 960 if needs_wide_arch else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
@@ -169,6 +177,32 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         tok_text, embed, stack_input = draw_multimodal_input_scaffold(
             parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h, modalities,
         )
+    elif has_absolute_position:
+        tok_text = _rect_block(parts, info, shadow_id, "tok_text",
+                               cx - 280, h - 100, 220, 44,
+                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
+                               resolved=True)
+        position_ids = _rect_block(parts, info, shadow_id, "position_ids",
+                                   cx + 60, h - 100, 220, 44,
+                                   _block_label(info, "position_ids", "Position IDs"), font_size=17,
+                                   resolved=True)
+        embed = _rect_block(parts, info, shadow_id, "embed",
+                            cx - 300, h - 174, 260, 44,
+                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
+                            resolved=True)
+        position_embed = _rect_block(parts, info, shadow_id, "position_embed",
+                                     cx + 40, h - 174, 260, 44,
+                                     _block_label(info, "position_embed", "Learned Position Embedding"),
+                                     font_size=15, resolved=True)
+        position_add = _plus_block(parts, info, shadow_id, "position_add",
+                                   cx, h - 230, sym="+", clickable=True)
+        parts.append(_v_line(tok_text, embed, arrow_id))
+        parts.append(_v_line(position_ids, position_embed, arrow_id))
+        parts.append(_elbow_vh(embed["cx"], embed["top"],
+                               position_add["left"] - GAP, position_add["cy"], arrow_id))
+        parts.append(_elbow_vh(position_embed["cx"], position_embed["top"],
+                               position_add["right"] + GAP, position_add["cy"], arrow_id))
+        stack_input = position_add
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
@@ -227,7 +261,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     # --- 4. Linear chain arrows ---
     chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
-    if not has_modality_fusion:
+    if not has_modality_fusion and not has_absolute_position:
         chain.insert(0, tok_text)
     merge_geom = block_pos.get(merge_id) if merge_id else None
     for src, dst in zip(chain, chain[1:]):

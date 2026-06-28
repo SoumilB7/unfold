@@ -31,7 +31,7 @@ from .ast_scanner import _call_name
 from .forward_ops import _method, _module_list_elems, _role_of, extract_forward_ops
 from .models import ForwardOps
 from .sources import _model_type, _string_value, resolve_source_files
-from .transitive import build_registry, transitive_closure
+from .transitive import CallableInfo, build_registry, transitive_closure
 
 #: diagram block ``kind``s that ARE canonical ops (everything else — adaln /
 #: conditioning side-inputs, ports, sources — is plumbing, not the block's op).
@@ -77,9 +77,11 @@ class ConformanceProblem:
             return (f"{self.view}: citation token {self.op!r} is no longer in{cls}'s forward() — "
                     f"upstream changed; re-verify and update the citation.{loc}")
         if self.kind == "fabricated_position":
-            return (f"{self.view}: diagram asserts NoPE (no positional encoding) but{cls}'s "
-                    f"forward() applies rotary ({self.op}) — surface the (often code-derived) "
-                    f"RoPE, never a positionless claim.{loc}")
+            return (f"{self.view}: diagram draws positional scheme {self.op!r}, but{cls}'s "
+                    f"configured source path does not — remove the fabricated scheme.{loc}")
+        if self.kind == "missing_position":
+            return (f"{self.view}: code applies positional scheme {self.op!r}, but the diagram "
+                    f"omits it — surface it at its real computation stage.{cls}{loc}")
         if self.kind == "wrong_attention":
             drawn = "softmax" if self.op == "linear" else "linear"
             return (f"{self.view}: diagram draws {drawn} attention but{cls} uses {self.op} "
@@ -172,7 +174,8 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
         # its fix). Text only: timestep always conditions and is drawn universally.
         text_subs = role_params.get("text") or []
         if (text_subs and "text" not in drawn and not _text_in_sequence(spec)
-                and any(s in params for s in text_subs)):
+                and any(s in params for s in text_subs)
+                and _config_field_value(target, "add_cross_attention") is not False):
             problems.append(ConformanceProblem(
                 "missing_input", "text", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
@@ -214,6 +217,34 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
         representatives.setdefault(f"{family}/{classify_group(layer)}", layer)
 
     problems: list[ConformanceProblem] = []
+
+    # Symmetric positional scheme check.  Parser and net consume this exact typed
+    # evidence function; the net compares the resulting IR projection rather than
+    # maintaining a second family/marker decision rail.
+    if _model_type(target):
+        from .position import decoder_positional_evidence
+        position = decoder_positional_evidence(target, source=source)
+        if position.status == "ambiguous":
+            problems.append(ConformanceProblem(
+                "unresolved", "position", f"{family}/position",
+                source_component=position.component,
+            ))
+        elif position.status == "proven":
+            code_kinds = set(position.kinds)
+            drawn_kinds = _drawn_position_kinds(ir)
+            evidence = position.mechanisms[0] if position.mechanisms else None
+            for kind in sorted(drawn_kinds - code_kinds):
+                problems.append(ConformanceProblem(
+                    "fabricated_position", kind, f"{family}/position",
+                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
+                    getattr(evidence, "line", None), position.component,
+                ))
+            for kind in sorted(code_kinds - drawn_kinds):
+                problems.append(ConformanceProblem(
+                    "missing_position", kind, f"{family}/position",
+                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
+                    getattr(evidence, "line", None), position.component,
+                ))
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
         code = resolve_view_code(family, view, spec, forward_ops, cmap)
@@ -226,7 +257,7 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
             toks = " ".join(code.forward_params | code.signature_tokens).lower()
             if any(s in toks for s in rotary_subs):
                 problems.append(ConformanceProblem(
-                    "fabricated_position", "rotary", key,
+                    "missing_position", "rope", key,
                     code.class_name, code.source_file, code.forward_line, code.component))
 
         # Attention algorithm: the drawn KIND vs a *LinearAttn* processor in __init__.
@@ -241,6 +272,31 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
                 "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
     return problems
+
+
+def _drawn_position_kinds(ir: dict) -> set[str]:
+    kinds: set[str] = set()
+    value = (ir.get("extras") or {}).get("position_encoding")
+    if isinstance(value, dict) and value.get("kind"):
+        kinds.add(str(value["kind"]))
+    elif isinstance(value, str):
+        kinds.add(value)
+    model_block_ids = {
+        block.get("id")
+        for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
+        if isinstance(block, dict)
+    }
+    if {"position_embed", "position_add"} <= model_block_ids and isinstance(value, dict):
+        for item in value.get("mechanisms") or []:
+            if isinstance(item, dict) and item.get("application") == "embedding_add":
+                kinds.add(str(item.get("kind")))
+    for layer in ir.get("layers") or []:
+        attn = layer.get("attention") or {}
+        if attn.get("position_kind"):
+            kinds.add(str(attn["position_kind"]))
+        elif attn.get("rope") and attn.get("kind") != "gated_delta":
+            kinds.add("rope")
+    return kinds
 
 
 def check_nested_conformance(target, render_log, *, source: str = "local") -> list[ConformanceProblem]:
@@ -409,6 +465,8 @@ def _component_block_classes(registry, architecture: str | None) -> list[str]:
         seen.add(name)
         info = registry[name]
         children = set(info.field_types.values())
+        for candidates in info.field_type_candidates.values():
+            children |= set(candidates)
         for classes in info.sub_module_classes.values():
             children |= set(classes)
             found |= set(classes) & all_blocks
@@ -466,12 +524,53 @@ def _resolve_drill_closure(blocks, registry, vocab, drill_role, view_key):
         return None
     direct = _direct_role_classes(blocks, registry, type_role, vocab)
     direct = _view_class_candidates(direct, view_key, vocab)
+    if drill_role == "ffn" and not direct:
+        inline = _inline_ffn_closure(blocks, registry, vocab)
+        if inline is not None:
+            return inline
     candidates = direct
     if drill_role == "expert":
         candidates = _expert_classes(direct, registry, shared="shared" in view_key.lower())
         if not candidates:
             candidates = direct             # fused experts live in the MoE callable itself
     return _unique_candidate_closure(candidates, blocks, registry, vocab)
+
+
+def _inline_ffn_closure(blocks, registry, vocab):
+    """Attribute an inlined ``fc1 -> activation -> fc2`` leaf to its block.
+
+    XGLM-style layers do not own an MLP submodule: the two projections and
+    activation are direct block fields. Returning the whole block closure would
+    be unsoundly permissive (it also contains attention/norm/residual), so retain
+    only the operations proven by the exact inline FFN field signature. Multiple
+    block variants are accepted only when that profile is identical.
+    """
+    profiles: list[tuple[frozenset[str], CallableInfo]] = []
+    markers = vocab.get("component_class_markers", {})
+    non_text_markers = [marker.lower() for domain, values in markers.items()
+                        if domain != "text" for marker in values]
+    for name in blocks:
+        if any(marker in name.lower() for marker in non_text_markers):
+            continue
+        info = registry.get(name)
+        if info is None:
+            continue
+        linear_fields = [field for field, child in info.field_types.items()
+                         if _role_of(child) == "linear"]
+        activation_fields = [field for field, child in info.field_types.items()
+                             if _role_of(child) == "activation"]
+        called = set(info.self_field_calls)
+        if (len([field for field in linear_fields if field in called]) < 2
+                or not any(field in called for field in activation_fields)):
+            continue
+        ops = {"linear", "activation"}
+        if (len(linear_fields) >= 3
+                or any("gate" in field.lower() for field in linear_fields)):
+            ops.add("gate_mul")
+        profiles.append((frozenset(ops), info))
+    if not profiles or len({ops for ops, _info in profiles}) != 1:
+        return None
+    return profiles[0]
 
 
 def _view_class_candidates(candidates: set[str], view_key: str, vocab) -> set[str]:
@@ -529,6 +628,15 @@ def _direct_role_classes(starts, registry, role: str, vocab=None) -> set[str]:
                 fallback.add(child)
                 if not markers or any(marker in field.lower() for marker in markers):
                     matched.add(child)
+        for field, children in info.field_type_candidates.items():
+            dispatch = info.field_type_dispatch.get(field, {})
+            if "eager" in dispatch:
+                children = frozenset({dispatch["eager"]})
+            eligible = {child for child in children
+                        if child in registry and _role_of(child) == role}
+            fallback |= eligible
+            if not markers or any(marker in field.lower() for marker in markers):
+                matched |= eligible
         for field, classes in info.sub_module_classes.items():
             eligible = {child for child in classes
                         if child in registry and _role_of(child) == role}
@@ -748,6 +856,8 @@ def _reachable_submodules(starts, registry, *, max_depth: int = 4) -> set[str]:
             if info is None:
                 continue
             children = set(info.field_types.values())
+            for candidates in info.field_type_candidates.values():
+                children |= set(candidates)
             for classes in info.sub_module_classes.values():
                 children |= set(classes)
             for child in children:

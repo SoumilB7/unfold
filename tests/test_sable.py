@@ -182,7 +182,61 @@ def test_fact_conformance_flags_fabricated_nope():
         att = L.get("attention") or {}
         att["no_rope"], att["rope"], att["rope_dim"] = True, False, None
     probs = check_fact_conformance(FLUX, ir)
-    assert any(p.kind == "fabricated_position" for p in probs), [p.message for p in probs]
+    assert any(p.kind == "missing_position" for p in probs), [p.message for p in probs]
+
+
+def test_fact_conformance_is_symmetric_for_fabricated_rope_and_missing_learned_position():
+    """StarCoder's old drawing must fail in BOTH directions: invented RoPE and
+    omitted learned-position addition, using one typed source decision."""
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("gpt_bigcode").to_dict()
+    ir = mu.unfold(cfg).to_ir()
+    ir["extras"].pop("position_encoding", None)
+    for layer in ir["layers"]:
+        attn = layer["attention"]
+        attn["rope"] = True
+        attn["position_kind"] = "rope"
+        attn["position_application"] = "qk_rotation"
+    probs = check_fact_conformance(cfg, ir)
+    assert any(p.kind == "fabricated_position" and p.op == "rope" for p in probs)
+    assert any(p.kind == "missing_position" and p.op == "learned_absolute" for p in probs)
+
+
+def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
+    """Wrong alternatives must fail even though both correctly omit RoPE."""
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("bloom").to_dict()
+    ir = mu.unfold(cfg).to_ir()
+    for layer in ir["layers"]:
+        layer["attention"]["position_kind"] = "learned_absolute"
+        layer["attention"]["position_application"] = "embedding_add"
+    probs = check_fact_conformance(cfg, ir)
+    assert any(p.kind == "fabricated_position" and p.op == "learned_absolute" for p in probs)
+    assert any(p.kind == "missing_position" and p.op == "alibi" for p in probs)
+
+
+def test_present_but_ambiguous_position_is_blocking_unresolved(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.evidence import position as position_module
+
+    monkeypatch.setattr(
+        position_module, "decoder_positional_evidence",
+        lambda *a, **k: PositionalEvidence("ambiguous", reason="negative control"),
+    )
+    probs = check_fact_conformance(LLAMA, mu.unfold(LLAMA).to_ir())
+    assert any(p.kind == "unresolved" and p.op == "position" for p in probs)
+
+
+def test_true_oracle_missing_remains_visible_in_sable_report():
+    cfg = {
+        "model_type": "definitely_uninstalled_decoder",
+        "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 4,
+    }
+    report = sable(cfg, render_images=False)
+    assert report.oracle.startswith("MISSING")
 
 
 def test_fact_conformance_flags_wrong_attention_kind():
@@ -233,7 +287,6 @@ def test_sable_regression_corpus():
     by exact source attribution stay pinned as explicit unresolved debt; they are
     not silently re-blessed without a fresh Dable review."""
     expected_unresolved = {
-        "prxpixel-t2i.json": {"prx/ffn"},
         "stable-diffusion-xl-base-1-0.json": {
             "unet2dcondition/attn", "unet2dcondition/ffn",
         },

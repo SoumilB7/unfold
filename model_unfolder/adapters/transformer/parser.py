@@ -128,9 +128,36 @@ def _code_ffn_gated(cfg: Any) -> bool | None:
     try:
         from ...evidence.patterns import decoder_ffn_gated_from_files
         from ...evidence.sources import resolve_source_files
-        return decoder_ffn_gated_from_files(resolve_source_files(cfg, source="local").files)
+        return decoder_ffn_gated_from_files(
+            resolve_source_files(cfg, source="local").files, cfg=cfg
+        )
     except Exception:
         return None
+
+
+def _code_ffn_activation(cfg: Any) -> str | None:
+    """Config-silent FFN activation read from the exact modeling source."""
+    try:
+        from ...evidence.patterns import decoder_ffn_activation_from_files
+        from ...evidence.sources import resolve_source_files
+        return decoder_ffn_activation_from_files(
+            resolve_source_files(cfg, source="local").files
+        )
+    except Exception:
+        return None
+
+
+def _code_position(cfg: Any):
+    """Typed positional evidence shared verbatim with fact-conformance."""
+    try:
+        from ...evidence.position import decoder_positional_evidence
+        return decoder_positional_evidence(cfg, source="local")
+    except Exception:
+        # A detector failure is not permission to assert a source-derived fact.
+        # Treat it as present-but-unresolved; fact-conformance will expose the
+        # same state when the source oracle is available.
+        from ...evidence.models import PositionalEvidence
+        return PositionalEvidence("ambiguous", reason="positional detector raised")
 
 
 _TEXT_WRAPPER_KEYS = (
@@ -251,6 +278,8 @@ def parse(cfg: Any) -> ModelIR:
         nested_act = _g(ffn_cfg, "ffn_act_fn")
         if isinstance(nested_act, dict):
             activation_raw = nested_act.get("name")
+    if activation_raw is None:
+        activation_raw = _code_ffn_activation(text_cfg)
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
@@ -285,15 +314,24 @@ def parse(cfg: Any) -> ModelIR:
     # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
     # the code (and the nested-conformance net).  None keeps the heuristic.
     _code_gated = _code_ffn_gated(text_cfg)
+    _code_position_evidence = _code_position(cfg)
     norm_placement = (
         (_code_topo or {}).get("norm_placement")
         or next((_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
                  if mt in _LAYER_TOPOLOGY["norm_placement"]), "pre")
     )
-    # RoPE is the default for decoder LLMs; ALiBi / learned-absolute families
-    # (BLOOM/MPT/GPT-2/OPT) don't apply it — drawing a RoPE step there would be
-    # fabricated wiring.
-    uses_rope = not (_mt_candidates & set(_LAYER_TOPOLOGY["no_rope"]))
+    # Position scheme: configured source evidence wins.  The legacy identity
+    # cache is consulted ONLY when no oracle exists, never for ambiguous source.
+    _position_mechanisms = list(_code_position_evidence.mechanisms)
+    if _code_position_evidence.status == "proven":
+        uses_rope = "rope" in _code_position_evidence.kinds
+    elif _code_position_evidence.status == "oracle_missing":
+        uses_rope = not (_mt_candidates & set(_LAYER_TOPOLOGY["no_rope"]))
+    else:
+        uses_rope = False
+        warnings.append(
+            "Modeling source is present but the configured positional scheme is unresolved."
+        )
 
     if not num_layers:
         warnings.append("Config missing num_hidden_layers (and aliases) — layer list will be empty.")
@@ -341,6 +379,7 @@ def parse(cfg: Any) -> ModelIR:
 
     # ---- Position encoding ----
     no_rope_interval     = _g(text_cfg, "no_rope_layer_interval") or 0
+    _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
@@ -448,6 +487,10 @@ def parse(cfg: Any) -> ModelIR:
                     CrossLayerEdge(kind="kv_share", from_layer=kv_source, to_layer=i, shared=["K", "V"])
                 )
 
+        position_mechanism = _position_for_layer(
+            _code_position_evidence, is_gated_delta=is_gated_delta,
+            fallback_rope=uses_rope,
+        )
         attn = AttentionSpec(
             kind=attn_kind,
             num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
@@ -464,6 +507,8 @@ def parse(cfg: Any) -> ModelIR:
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
             rope=uses_rope and not is_gated_delta,
+            position_kind=position_mechanism[0],
+            position_application=position_mechanism[1],
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
@@ -552,6 +597,49 @@ def parse(cfg: Any) -> ModelIR:
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
         multimodal_extras(cfg, text_cfg, hidden_size),
     )
+    final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    for block in extras["render"]["model_blocks"]:
+        if block.get("id") == "final_rms":
+            block.update({
+                "label": f"Final {final_norm_name}",
+                "description": (
+                    f"{final_norm_name} over the last hidden state before the output head."
+                ),
+            })
+    extras["position_encoding"] = {
+        **_code_position_evidence.to_dict(),
+        "fallback_rope": uses_rope if _code_position_evidence.status == "oracle_missing" else None,
+    }
+    absolute_item = next((item for item in _position_mechanisms
+                          if item.kind in {"learned_absolute", "fixed_absolute"}), None)
+    if absolute_item is not None:
+        learned = absolute_item.kind == "learned_absolute"
+        position_label = "Learned Position Embedding" if learned else "Fixed Position Encoding"
+        extras["render"]["model_blocks"].extend([
+            {
+                "id": "position_ids", "role": "input", "kind": "source",
+                "label": "Position IDs", "title": "Position indices",
+                "description": "Sequence-position indices used to look up learned positional vectors.",
+            },
+            {
+                "id": "position_embed", "role": "embedding", "kind": "embedding",
+                "label": position_label, "title": position_label,
+                "description": (
+                    "Looks up one learned positional vector for each sequence position."
+                    if learned else
+                    "Selects a deterministic sinusoidal vector for each sequence position."
+                ),
+            },
+            {
+                "id": "position_add", "role": "residual", "kind": "residual_add",
+                "label": "+", "title": "Token + position embedding",
+                "description": (
+                    "Adds the learned positional vector to the token embedding before the decoder stack."
+                    if learned else
+                    "Adds the fixed positional vector to the token embedding before the decoder stack."
+                ),
+            },
+        ])
 
     # ---- Block diffusion (masked/canvas-denoising text LMs) ----------------------
     # Detected by EVIDENCE, not one exact model_type string: a block-diffusion LM
@@ -932,6 +1020,28 @@ def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | 
     if partial_rotary_factor and head_dim:
         return int(head_dim * float(partial_rotary_factor))
     return None
+
+
+def _position_for_layer(evidence, *, is_gated_delta: bool, fallback_rope: bool) -> tuple[str, str]:
+    """Project model evidence onto one concrete layer without moving altitudes."""
+    if evidence.status == "proven":
+        mechanisms = list(evidence.mechanisms)
+        if is_gated_delta:
+            selected = next((item for item in mechanisms if item.kind == "none"), None)
+            if selected is not None:
+                return selected.kind, selected.application
+        # Attention-stage mechanisms take precedence on the attention card.  A
+        # model may independently add an absolute position vector before the
+        # stack; that operation remains represented by the model-level blocks.
+        selected = next((item for item in mechanisms
+                         if item.kind in {"rope", "alibi", "none"}), None)
+        if selected is None and mechanisms:
+            selected = mechanisms[0]
+        if selected is not None:
+            return selected.kind, selected.application
+    if evidence.status == "ambiguous":
+        return "unknown", "none"
+    return ("rope", "qk_rotation") if fallback_rope else ("unknown", "none")
 
 
 def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:

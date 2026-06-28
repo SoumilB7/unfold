@@ -55,6 +55,13 @@ class CallableInfo:
     call_tokens: frozenset[str]                    # every bare call name in the body
     component: str = "root"
     field_types: dict[str, str] = field(default_factory=dict)        # self.x -> class
+    # ``self.attn = ATTENTION_CLASSES[config._attn_implementation](...)`` cannot
+    # be represented by the legacy one-class ``field_types`` map.  Preserve every
+    # class named by the module-level literal registry without changing that
+    # stable API; consumers which can prove candidate equivalence may follow all
+    # of them, while ordinary callers keep seeing the registry token.
+    field_type_candidates: dict[str, frozenset[str]] = field(default_factory=dict)
+    field_type_dispatch: dict[str, dict[str, str]] = field(default_factory=dict)
     self_field_calls: frozenset[str] = frozenset()                   # fields called self.F(...)
     iter_field_calls: frozenset[str] = frozenset()                   # fields looped `for _ in self.F`
     sub_module_classes: dict[str, frozenset[str]] = field(default_factory=dict)  # field -> elem classes (list/append)
@@ -112,9 +119,17 @@ def transitive_closure(start: str, registry: dict[str, CallableInfo], vocab: dic
 
         # 1. typed self.<field>(...) calls -> follow the field's class if followable
         for fld in info.self_field_calls:
-            cls = info.field_types.get(fld)
-            if cls and cls in registry:
-                queue.append((cls, frozenset()))
+            candidates = info.field_type_candidates.get(fld)
+            if candidates:
+                dispatch = info.field_type_dispatch.get(fld, {})
+                selected = {dispatch["eager"]} if "eager" in dispatch else candidates
+                for cls in selected:
+                    if cls in registry:
+                        queue.append((cls, frozenset()))
+            else:
+                cls = info.field_types.get(fld)
+                if cls and cls in registry:
+                    queue.append((cls, frozenset()))
         # 2. iterated ModuleList fields (`for m in self.net: m(x)`) -> each elem class
         for fld in info.iter_field_calls:
             for cls in info.sub_module_classes.get(fld, ()):  # appends + literal + comp
@@ -175,9 +190,10 @@ def _parse_file(path: str, _mtime_key: float) -> dict[str, CallableInfo]:
     except (OSError, SyntaxError, UnicodeDecodeError):
         return {}
     out: dict[str, CallableInfo] = {}
+    class_maps = _module_class_maps(tree)
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
-            info = _scan_class(node, path)
+            info = _scan_class(node, path, class_maps)
             if info is not None:
                 out[node.name] = info
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and _is_top_level(node, tree):
@@ -189,7 +205,8 @@ def _is_top_level(node: ast.AST, tree: ast.Module) -> bool:
     return node in getattr(tree, "body", [])
 
 
-def _scan_class(node: ast.ClassDef, source_file: str) -> CallableInfo | None:
+def _scan_class(node: ast.ClassDef, source_file: str,
+                class_maps: dict[str, dict[str, str]]) -> CallableInfo | None:
     methods = {m.name: m for m in node.body
                if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))}
     entry = methods.get("forward") or methods.get("__call__")
@@ -197,6 +214,7 @@ def _scan_class(node: ast.ClassDef, source_file: str) -> CallableInfo | None:
         return None
     init = methods.get("__init__")
     field_types = _field_types(init)            # shared with forward_ops — no twin
+    field_type_candidates, field_type_dispatch = _field_class_map_candidates(init, class_maps)
     sub_mods = _init_sub_modules(init)
 
     # Fold every SELF-METHOD helper reachable from the entry into one body view, so
@@ -235,12 +253,64 @@ def _scan_class(node: ast.ClassDef, source_file: str) -> CallableInfo | None:
         op_kinds=frozenset(ops),
         call_tokens=frozenset(tokens),
         field_types=field_types,
+        field_type_candidates=field_type_candidates,
+        field_type_dispatch=field_type_dispatch,
         self_field_calls=frozenset(self_calls),
         iter_field_calls=frozenset(iter_calls),
         sub_module_classes=sub_mods,
         init_class_refs=_init_class_refs(init) | _class_attr_processor_refs(node),
         var_fn_bindings=var_fns,
     )
+
+
+def _module_class_maps(tree: ast.Module) -> dict[str, dict[str, str]]:
+    """Literal module registries such as ``GPTJ_ATTENTION_CLASSES``.
+
+    Only dictionary values which are direct class names are retained.  This is
+    static provenance, not execution: a dynamic/imported registry remains
+    unresolved instead of being guessed.
+    """
+    out: dict[str, dict[str, str]] = {}
+    for statement in tree.body:
+        if not isinstance(statement, ast.Assign) or not isinstance(statement.value, ast.Dict):
+            continue
+        names = [target.id for target in statement.targets if isinstance(target, ast.Name)]
+        mapping = {
+            key.value: value.id
+            for key, value in zip(statement.value.keys, statement.value.values)
+            if isinstance(key, ast.Constant) and isinstance(key.value, str)
+            and isinstance(value, ast.Name)
+        }
+        if mapping:
+            for name in names:
+                out[name] = mapping
+    return out
+
+
+def _field_class_map_candidates(
+    init: ast.FunctionDef | None,
+    class_maps: dict[str, dict[str, str]],
+) -> tuple[dict[str, frozenset[str]], dict[str, dict[str, str]]]:
+    """``self.x = CLASS_MAP[key](...)`` -> all literal candidate classes."""
+    if init is None or not class_maps:
+        return {}, {}
+    out: dict[str, frozenset[str]] = {}
+    dispatch: dict[str, dict[str, str]] = {}
+    for statement in ast.walk(init):
+        if not isinstance(statement, ast.Assign) or not isinstance(statement.value, ast.Call):
+            continue
+        func = statement.value.func
+        if not (isinstance(func, ast.Subscript) and isinstance(func.value, ast.Name)):
+            continue
+        mapping = class_maps.get(func.value.id)
+        if not mapping:
+            continue
+        for target in statement.targets:
+            field = _self_field(target)
+            if field is not None:
+                out[field] = frozenset(mapping.values())
+                dispatch[field] = dict(mapping)
+    return out, dispatch
 
 
 def _class_attr_processor_refs(node: ast.ClassDef) -> frozenset[str]:

@@ -30,6 +30,7 @@ MODEL_TYPE_TO_TRANSFORMERS_DIR = {
     "olmo": "olmo",
     "olmo2": "olmo2",
     "olmoe": "olmoe",
+    "openai-gpt": "openai",
     "opt": "opt",
     "phi": "phi",
     "phi3": "phi3",

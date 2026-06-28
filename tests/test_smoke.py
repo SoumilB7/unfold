@@ -71,6 +71,83 @@ def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately
     assert "Causal depthwise Conv1d" in html
     assert "Gate attention output" in html
 
+
+def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    cfg = {
+        "model_type": "bloom", "vocab_size": 100, "hidden_size": 64,
+        "intermediate_size": 128, "num_hidden_layers": 1,
+        "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg: PositionalEvidence("ambiguous", reason="negative control"),
+    )
+    ir = parser_module.parse(cfg)
+    assert ir.layers[0].attention.position_kind == "unknown"
+    assert ir.layers[0].attention.rope is False
+    assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
+
+
+def test_position_identity_cache_is_only_an_oracle_missing_fallback(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    base = {
+        "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg: PositionalEvidence("oracle_missing", reason="negative control"),
+    )
+    bloom = parser_module.parse({**base, "model_type": "bloom"})
+    unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
+    assert bloom.layers[0].attention.rope is False
+    assert unknown.layers[0].attention.rope is True
+
+
+def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("gpt_bigcode").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "learned_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Learned Position Embedding" in html
+    assert "Token + position embedding" in html
+
+
+def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("xglm").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "fixed_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Fixed Position Encoding" in html
+    assert "Adds the fixed positional vector" in html
+
+
+def test_final_norm_label_uses_the_code_derived_norm_class():
+    from transformers import AutoConfig
+
+    layernorm = unfold(AutoConfig.for_model("gpt_bigcode").to_dict()).to_html()
+    rmsnorm = unfold(AutoConfig.for_model("llama").to_dict()).to_html()
+    assert "Final LayerNorm" in layernorm
+    assert "Final RMSNorm" not in layernorm
+    assert "Final RMSNorm" in rmsnorm
+
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
     "model_type": "deepseek_v3",

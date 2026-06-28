@@ -40,7 +40,7 @@ from dataclasses import dataclass, field, replace
 OP_KINDS = frozenset({
     "input", "output", "linear", "activation", "elementwise",
     "norm", "route", "attention_core", "conv", "opaque",
-    "concat", "reshape", "slice", "rope", "cache", "subgraph",
+    "concat", "reshape", "slice", "rope", "position", "cache", "subgraph",
 })
 
 
@@ -343,6 +343,21 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         ]
         edges = [edge for edge in edges
                  if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
+    if (attn.get("position_kind") == "alibi"
+            and attn.get("position_application") == "attention_bias" and not cross):
+        ops += [
+            Op("alibi_offsets", "input", "Relative positions"),
+            Op("alibi_bias", "position", "ALiBi bias"),
+            Op("score_bias_add", "elementwise", fn="add"),
+        ]
+        edges = [edge for edge in edges
+                 if not (edge.src == "scaled_scores" and edge.dst == "attn_softmax")]
+        edges += [
+            Edge("scaled_scores", "score_bias_add"),
+            Edge("alibi_offsets", "alibi_bias"),
+            Edge("alibi_bias", "score_bias_add"),
+            Edge("score_bias_add", "attn_softmax"),
+        ]
     # RoPE: the real forward rotates Q and K before the scores (apply_rotary_pos_emb).
     # Show it on the Q and K lanes — unless the family doesn't use RoPE (ALiBi /
     # learned absolute) or this specific layer is NoPE (Llama-4 interleaved NoPE).

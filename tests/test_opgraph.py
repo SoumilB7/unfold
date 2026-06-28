@@ -92,6 +92,27 @@ def test_non_rope_family_omits_the_rope_step():
     assert [lane.ids for lane in g.parallels[0].norm_lanes()] == [["q_proj"], ["k_proj"], ["v_proj"]]
 
 
+def test_alibi_bias_is_a_real_two_input_score_add():
+    attn = dict(
+        GQA, rope=False, position_kind="alibi",
+        position_application="attention_bias",
+    )
+    region = attention_region(attn, 4096)
+    assert {"alibi_offsets", "alibi_bias", "score_bias_add"} <= {
+        op.id for op in region.ops
+    }
+    assert set(region.inputs_of("score_bias_add")) == {"scaled_scores", "alibi_bias"}
+    graph = region_to_graph(region, clickable=True)
+    assert wiring_problems(graph) == []
+    from model_unfolder.renderers.html.graph_engine import _lane_draw_order
+    parallel = graph.parallels[0]
+    ordered = _lane_draw_order(parallel.norm_lanes(), parallel.dst)
+    alibi_lane = next(lane for lane in ordered if lane.ids == ["alibi_bias"])
+    v_lane = next(lane for lane in ordered if lane.ids == ["v_proj"])
+    assert ordered.index(v_lane) == 0
+    assert ordered.index(alibi_lane) == len(ordered) - 1
+
+
 def test_cross_attention_kv_lanes_take_a_side_source():
     r = attention_region(dict(GQA, cross_attention=True), 4096)
     g = region_to_graph(r, clickable=True)

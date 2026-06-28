@@ -287,6 +287,32 @@ def test_call_name_resolves_registry_subscript_construction():
     assert _call_name(call.func) == "MIXTRAL_ATTENTION_CLASSES"
 
 
+def test_literal_attention_class_map_preserves_candidates_and_uses_eager_default(tmp_path):
+    """Keep every registry candidate for semantic checks while the generic
+    transitive path follows the library's eager default."""
+    from model_unfolder.evidence.transitive import build_registry, transitive_closure
+    from model_unfolder.everchanging import load_conformance_transitive
+
+    source = tmp_path / "modeling_dispatch.py"
+    source.write_text(
+        "class EagerAttention:\n"
+        "    def forward(self, x):\n        return apply_rotary_pos_emb(x)\n"
+        "class FlashAttention:\n"
+        "    def forward(self, x):\n        return apply_rotary_pos_emb(x)\n"
+        "ATTENTION_CLASSES = {'eager': EagerAttention, 'flash_attention_2': FlashAttention}\n"
+        "class Block:\n"
+        "    def __init__(self, config):\n"
+        "        self.attn = ATTENTION_CLASSES[config._attn_implementation](config)\n"
+        "    def forward(self, x):\n        return self.attn(x)\n"
+    )
+    registry = build_registry([str(source)])
+    info = registry["Block"]
+    assert info.field_type_candidates["attn"] == {"EagerAttention", "FlashAttention"}
+    assert info.field_type_dispatch["attn"]["eager"] == "EagerAttention"
+    _ops, tokens = transitive_closure("Block", registry, load_conformance_transitive())
+    assert "apply_rotary_pos_emb" in tokens
+
+
 def test_indirect_construction_yields_real_ops_not_fabrications(tmp_path):
     """End-to-end: a layer that builds attention via a class REGISTRY and a MoE
     FFN whose class spells "Moe" must expose BOTH ops — so op-conformance does not
@@ -770,7 +796,7 @@ def test_layer_topology_real_families_match_code(tmp_path):
     expect = {
         "llama": ("pre", False), "gemma2": ("double", False), "olmo2": ("post", False),
         "cohere": ("pre", True), "gpt_j": ("pre", True), "phi": ("pre", True),
-        "phi3": ("pre", False),
+        "phi3": ("pre", False), "bloom": ("pre", False),
     }
     seen = 0
     for mt, (place, parallel) in expect.items():
@@ -1129,6 +1155,41 @@ def test_code_derived_ffn_gating_overrides_rmsnorm_heuristic():
         assert decoder_ffn_gated_from_files(bundle.files) is expected
 
 
+def test_bloom_dormant_tensor_parallel_multiply_is_not_an_ffn_gate():
+    """BLOOM's disabled slow path multiplies slice indices/weights; that is not
+    gate*up and must not turn its dense GELU MLP into a gated SiLU diagram."""
+    from transformers import AutoConfig
+    from model_unfolder.evidence.patterns import (
+        decoder_ffn_activation_from_files,
+        decoder_ffn_gated_from_files,
+    )
+
+    cfg = AutoConfig.for_model("bloom").to_dict()
+    bundle = resolve_source_files(cfg, source="local")
+    if not bundle.files:
+        pytest.skip("transformers BLOOM source not installed")
+    assert decoder_ffn_gated_from_files(bundle.files, cfg=cfg) is False
+    assert decoder_ffn_activation_from_files(bundle.files) == "gelu"
+    ffn = mu.unfold(cfg).to_ir()["layers"][0]["ffn"]
+    assert ffn["gated"] is False
+    assert ffn["activation"] == "gelu"
+
+
+def test_disabled_optional_cross_attention_param_is_not_a_missing_text_rail():
+    """XGLM keeps optional encoder states in the signature while config disables
+    construction of encoder_attn; a signature-only net must not fabricate it."""
+    from transformers import AutoConfig
+    from model_unfolder.evidence import check_wiring_conformance
+
+    cfg = AutoConfig.for_model("xglm").to_dict()
+    assert cfg["add_cross_attention"] is False
+    ir = mu.unfold(cfg).to_ir()
+    assert check_wiring_conformance(cfg, ir) == []
+    report = mu.sable(cfg, render_images=False)
+    nested = next(check for check in report.checks if check.name == "nested_conformance")
+    assert nested.findings == []
+
+
 # --- selection (router / indexer) + composite (moe container / vision-encoder /
 #     mtp block) drill conformance, and the YAML multi-value-marker regression ---
 
@@ -1224,7 +1285,6 @@ def test_moe_expert_combine_index_add_is_residual():
 def test_real_moe_models_nested_clean(mt):
     """Real MoE models (selection + composite + expert leaf drills all active) are
     clean — the net resolves the router/indexer/container against real code."""
-    import model_unfolder as mu
     cfg = {"model_type": mt, "hidden_size": 128, "num_hidden_layers": 2,
            "num_attention_heads": 8, "num_key_value_heads": 2, "intermediate_size": 256,
            "moe_intermediate_size": 128, "vocab_size": 1000, "num_experts": 8,

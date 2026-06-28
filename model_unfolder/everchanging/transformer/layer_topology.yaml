@@ -22,11 +22,11 @@ norm_placement: []
 # combined add).  READ FROM CODE — empty fallback (see header).
 parallel_residual: []
 
-# Families that do NOT apply rotary position embedding to Q/K — they use ALiBi
-# (BLOOM/MPT) or a learned absolute position table (GPT-2/OPT/GPT-Neo).  The
-# attention drill omits the RoPE step for these (it would be fabricated wiring).
-# (RoPE presence is a separate code-readable fact; this row list is retained
-# until that detector lands.)
+# Offline-only cache for families that do NOT apply rotary position embedding.
+# Installed source is resolved first by evidence/position.py and distinguishes
+# ALiBi from a learned embedding add.  This list is consulted ONLY when the code
+# oracle is genuinely missing; present-but-ambiguous source is blocking and must
+# never fall through here.  A fallback rendering remains NEEDS-HUMAN.
 no_rope:
   - bloom
   - mpt

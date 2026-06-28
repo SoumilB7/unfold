@@ -832,7 +832,7 @@ def diffusion_gate_via_norm_from_files(files) -> bool:
     FiLM norm (`norm·(1+scale)+shift`, e.g. Sana's SanaModulatedNorm), which has the
     additive shift and keeps its × gate.  Replaces the `gate_via_norm` table."""
     import ast as _ast
-    from .forward_ops import _method
+    from .forward_ops import _method, _role_of, extract_forward_ops
     for path in (files or ()):
         try:
             tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
@@ -882,7 +882,7 @@ def decoder_layer_topology_from_files(files) -> dict | None:
     name match."""
     import ast as _ast
     from ..everchanging import load_conformance_op_tokens
-    from .forward_ops import _method
+    from .forward_ops import _method, _role_of, extract_forward_ops
 
     merge_tokens = {tok for tok, kind in load_conformance_op_tokens().items()
                     if kind == "residual_add"}
@@ -895,7 +895,18 @@ def decoder_layer_topology_from_files(files) -> dict | None:
     if fwd is None:
         return None
 
-    seq = _linearize_forward(fwd, field_types, merge_tokens, _ast)
+    forward_ops = extract_forward_ops(tuple(str(path) for path in (files or ())))
+    residual_fields = {
+        field for field, class_name in field_types.items()
+        if _role_of(class_name) in {"attention", "ffn"}
+        and class_name in forward_ops
+        and "residual" in forward_ops[class_name].forward_params
+        and "residual_add" in forward_ops[class_name].op_kinds
+    }
+    seq = _linearize_forward(
+        fwd, field_types, merge_tokens, _ast,
+        residual_fields=residual_fields,
+    )
     return _classify_topology(seq)
 
 
@@ -997,7 +1008,7 @@ def decoder_norm_kind_from_files(files) -> str | None:
     return None
 
 
-def decoder_ffn_gated_from_files(files) -> bool | None:
+def decoder_ffn_gated_from_files(files, cfg=None) -> bool | None:
     """``True`` (gate·up SwiGLU/GeGLU) / ``False`` (dense fc1→act→fc2) read from the
     decoder layer's plain-MLP submodule ``forward()`` — the code-based replacement
     for the ``rmsnorm -> gated`` heuristic, which mis-gates a dense RMSNorm decoder
@@ -1023,11 +1034,63 @@ def decoder_ffn_gated_from_files(files) -> bool | None:
         if info is None or "route" in info.op_kinds:   # MoE container — not this reader's job
             continue
         if "linear" in info.op_kinds:
-            return "gate_mul" in info.op_kinds
+            # A generic tensor multiplication is not sufficient evidence of a
+            # gated MLP. BLOOM's dormant tensor-parallel slow path multiplies
+            # slice indices/weights, yet its MLP is the ordinary two-projection
+            # dense GELU form. Constructor shape is the stable code signature:
+            # three linears (w1/w3/w2), or a fused gate-up field plus down.
+            linear_fields = [
+                field for field, class_name in info.field_types.items()
+                if _role_of(class_name) == "linear"
+            ]
+            if len(linear_fields) >= 3:
+                return True
+            if any("gate" in field.lower() for field in linear_fields):
+                return True
+            if len(linear_fields) >= 2:
+                return False
     return None
 
 
-def _linearize_forward(fwd, field_types, merge_tokens, _ast) -> list[str]:
+def decoder_ffn_activation_from_files(files) -> str | None:
+    """Read a config-silent dense-FFN activation from its constructed class.
+
+    Some families hardcode the activation in modeling code (BLOOM constructs
+    ``BloomGelu``) and expose no ``hidden_act`` config field. Returning a source
+    fact here prevents the parser's last-resort SiLU default from fabricating a
+    gated modern-MLP shape for a legacy dense GELU block.
+    """
+    import ast as _ast
+    from .forward_ops import _role_of
+    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
+    if layer is None:
+        return None
+    _, field_types = layer
+    from .forward_ops import extract_forward_ops
+    fo = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    for cls_name in field_types.values():
+        if _role_of(cls_name) != "ffn":
+            continue
+        info = fo.get(cls_name)
+        if info is None:
+            continue
+        names = [
+            class_name.lower() for class_name in info.field_types.values()
+            if _role_of(class_name) == "activation"
+        ]
+        for name in names:
+            if "silu" in name or "swish" in name:
+                return "silu"
+            if "gelu" in name:
+                return "gelu"
+            if "relu" in name:
+                return "relu"
+    return None
+
+
+def _linearize_forward(
+    fwd, field_types, merge_tokens, _ast, *, residual_fields=frozenset()
+) -> list[str]:
     """The forward's TOP-LEVEL statements as an ordered role stream — ``norm`` /
     ``attention`` / ``ffn`` / ``add`` — in evaluation order (post-order so a norm
     nested in a sublayer's args is emitted before the sublayer)."""
@@ -1043,6 +1106,11 @@ def _linearize_forward(fwd, field_types, merge_tokens, _ast) -> list[str]:
                 role = _role_of(field_types.get(field, ""))
                 if role in ("norm", "attention", "ffn"):
                     toks.append(role)
+                    # BLOOM-style helpers take the residual explicitly and
+                    # perform dropout_add internally. Preserve that real stage
+                    # boundary even though the parent block has no visible `+`.
+                    if field in residual_fields:
+                        toks.append("add")
             else:
                 name = _call_name(node.func)         # residual-merge helper (dropout_add)
                 if name in merge_tokens:

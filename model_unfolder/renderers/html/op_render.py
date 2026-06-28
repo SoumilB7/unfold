@@ -186,6 +186,8 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "activation":
         label = op.label if op.label is not None else activation_label(op.fn or "silu")
         return Node(op.id, "activation", label, static=static)
+    if op.kind == "position":
+        return Node(op.id, "embedding", op.label or "Position encoding", static=static)
     if op.kind == "elementwise":
         kind = {"mul": "gate_mul", "add": "residual_add"}.get(op.fn or "", "dot_product")
         return Node(op.id, kind, static=static)

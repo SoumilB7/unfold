@@ -372,6 +372,17 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append("3D RoPE · T·H·W")
     if attention.get("output_gate"):
         facts.append(f"{attention['output_gate']} output gate")
+    position_kind = attention.get("position_kind")
+    if position_kind == "alibi":
+        facts.append("ALiBi")
+    elif position_kind == "learned_absolute":
+        facts.append("learned positions")
+    elif position_kind == "fixed_absolute":
+        facts.append("fixed positions")
+    elif position_kind == "none" and not attention.get("no_rope"):
+        facts.append("no positional transform")
+    elif position_kind == "unknown":
+        facts.append("position scheme unresolved")
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
@@ -590,6 +601,7 @@ _OP_SENTENCES = {
     "reshape": "Regroups one tensor into a new shape (no learned weights).",
     "slice": "Splits the tensor into named lanes.",
     "rope": "Applies rotary position encoding to this lane.",
+    "position": "Constructs or applies positional information at this stage.",
     "cache": "Stored tensor reused across steps (write on entry, read on reuse).",
     "subgraph": "Compound block with its own internal structure.",
     "opaque": "Internals not declared by the config — drawn as one honest block.",

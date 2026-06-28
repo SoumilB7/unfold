@@ -2,6 +2,8 @@
 import os
 import sys
 
+import pytest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import config_to_ir, inspect_model_code, unfold
@@ -404,6 +406,206 @@ class Llama4TextAttention:
     ev = inspect_model_code(tmp_path)
 
     assert "nope_layer_interleaving" in ev.components["feature"]
+
+
+# ---------------------------------------------------------------------------
+# Typed positional evidence — model stage + attention stage, config selected
+# ---------------------------------------------------------------------------
+
+
+def test_positional_evidence_real_counterexample_matrix():
+    """The exact regressions which disprove a flat/file-presence detector."""
+    from transformers import AutoConfig
+    from model_unfolder.evidence.position import decoder_positional_evidence
+
+    expected = {
+        "bloom": "alibi",
+        "mpt": "alibi",
+        "gpt2": "learned_absolute",
+        "gpt_neo": "learned_absolute",
+        "opt": "learned_absolute",
+        "gpt_bigcode": "learned_absolute",
+        "openai-gpt": "learned_absolute",
+        "xglm": "fixed_absolute",
+        "ctrl": "fixed_absolute",
+        "gptj": "rope",
+        "llama": "rope",
+        "mistral": "rope",
+        "phi3": "rope",
+        "mixtral": "rope",
+    }
+    seen = 0
+    for model_type, kind in expected.items():
+        try:
+            cfg = AutoConfig.for_model(model_type).to_dict()
+        except (KeyError, ValueError):
+            continue
+        evidence = decoder_positional_evidence(cfg)
+        assert evidence.status == "proven", (model_type, evidence)
+        assert evidence.kinds == {kind}, (model_type, evidence)
+        seen += 1
+    assert seen >= 11
+
+
+def test_falcon_config_selects_rope_or_alibi_from_same_source():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.position import decoder_positional_evidence
+
+    cfg = AutoConfig.for_model("falcon").to_dict()
+    rope = decoder_positional_evidence({**cfg, "alibi": False})
+    alibi = decoder_positional_evidence({**cfg, "alibi": True})
+    assert rope.status == alibi.status == "proven"
+    assert rope.kinds == {"rope"}
+    assert alibi.kinds == {"alibi"}
+    assert rope.mechanisms[0].source_file == alibi.mechanisms[0].source_file
+
+
+def test_zero_rotary_geometry_is_a_proven_noop():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.position import decoder_positional_evidence
+
+    cfg = AutoConfig.for_model("gpt_neox").to_dict()
+    evidence = decoder_positional_evidence({**cfg, "rotary_pct": 0.0})
+    assert evidence.status == "proven"
+    assert evidence.kinds == {"none"}
+
+
+def test_hybrid_schedule_proves_rope_and_positionless_mixer():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.position import decoder_positional_evidence
+
+    try:
+        cfg = AutoConfig.for_model("qwen3_5").to_dict()
+    except (KeyError, ValueError):
+        pytest.skip("installed transformers has no qwen3_5")
+    evidence = decoder_positional_evidence(cfg)
+    assert evidence.status == "proven"
+    assert evidence.kinds == {"rope", "none"}
+
+
+def test_multimodal_shared_file_uses_the_qualified_text_component():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.position import decoder_positional_evidence
+
+    try:
+        cfg = AutoConfig.for_model("qwen3_5").to_dict()
+    except (KeyError, ValueError):
+        pytest.skip("installed transformers has no qwen3_5")
+    evidence = decoder_positional_evidence(cfg)
+    assert evidence.status == "proven"
+    assert evidence.component == "text_config"
+    assert {item.class_name for item in evidence.mechanisms} == {
+        "Qwen3_5Attention", "Qwen3_5GatedDeltaNet",
+    }
+    assert not any("Vision" in item.class_name for item in evidence.mechanisms)
+
+
+def test_model_input_absolute_add_can_coexist_with_attention_rope(tmp_path, monkeypatch):
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.position import decoder_positional_evidence
+    from model_unfolder.evidence import position as position_module
+
+    source = _write_modeling_file(
+        tmp_path,
+        """
+def apply_rotary_pos_emb(q, k):
+    return q, k
+
+class FakeAttention:
+    def forward(self, x):
+        q, k = apply_rotary_pos_emb(x, x)
+        return q + k
+
+class FakeMLP:
+    def forward(self, x):
+        return x
+
+class FakeBlock:
+    def __init__(self):
+        self.attn = FakeAttention()
+        self.mlp = FakeMLP()
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class FakeModel:
+    def __init__(self):
+        self.wpe = Embedding()
+        self.layers = ModuleList([FakeBlock()])
+    def forward(self, input_ids, position_ids):
+        x = input_ids + self.wpe(position_ids)
+        for layer in self.layers:
+            x = layer(x)
+        return x
+""",
+    )
+    bundle = SourceBundle(
+        source="path", files=(str(source),), model_type="fake",
+        component_files={"root": (str(source),)},
+        component_architectures={"root": "FakeModel"},
+    )
+    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
+    evidence = decoder_positional_evidence({"model_type": "fake"})
+    assert evidence.status == "proven"
+    assert evidence.kinds == {"learned_absolute", "rope"}
+
+
+def test_dead_rotary_helper_does_not_count_as_applied(tmp_path, monkeypatch):
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.position import decoder_positional_evidence
+    from model_unfolder.evidence import position as position_module
+
+    source = _write_modeling_file(
+        tmp_path,
+        """
+def apply_rotary_pos_emb(q, k):
+    return q, k
+
+class FakeAttention:
+    def forward(self, x):
+        return x
+
+class FakeMLP:
+    def forward(self, x):
+        return x
+
+class FakeBlock:
+    def __init__(self):
+        self.attn = FakeAttention()
+        self.mlp = FakeMLP()
+    def forward(self, x, past_key_value=None):
+        return self.mlp(self.attn(x))
+
+class FakeModel:
+    def __init__(self):
+        self.layers = ModuleList([FakeBlock()])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+""",
+    )
+    bundle = SourceBundle(
+        source="path", files=(str(source),), model_type="fake",
+        component_files={"root": (str(source),)},
+        component_architectures={"root": "FakeModel"},
+    )
+    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
+    evidence = decoder_positional_evidence({"model_type": "fake"})
+    assert evidence.status == "ambiguous"
+    assert not evidence.mechanisms
+
+
+def test_oracle_missing_is_distinct_from_present_but_ambiguous(monkeypatch):
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.position import decoder_positional_evidence
+    from model_unfolder.evidence import position as position_module
+
+    monkeypatch.setattr(
+        position_module, "resolve_source_files",
+        lambda *a, **k: SourceBundle(source="local", model_type="missing"),
+    )
+    evidence = decoder_positional_evidence({"model_type": "missing"})
+    assert evidence.status == "oracle_missing"
 
 
 # ---------------------------------------------------------------------------

@@ -26,6 +26,8 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
         "rope": attention.rope,
+        "position_kind": attention.position_kind,
+        "position_application": attention.position_application,
         "rope_3d": attention.rope_3d,
         "bias": attention.bias,
         "shared": attention.shared,
@@ -252,6 +254,16 @@ def _sdpa_detailed_child_blocks(
              "description": "Rotary position embedding applied to the query heads before the scores."},
             {"id": "k_rope", "title": "Apply RoPE (K)",
              "description": "Rotary position embedding applied to the key heads before the scores."},
+        ]
+    if (attention.position_kind == "alibi"
+            and attention.position_application == "attention_bias" and not cross_attention):
+        cards += [
+            {"id": "alibi_offsets", "title": "Relative positions",
+             "description": "Relative token offsets used to construct the head-specific ALiBi slopes."},
+            {"id": "alibi_bias", "title": "ALiBi positional bias",
+             "description": "Head-specific linear position bias added to attention scores."},
+            {"id": "score_bias_add", "title": "Add ALiBi to scores",
+             "description": "Adds the ALiBi bias to the QK attention scores before softmax."},
         ]
     if generic:
         # These cards are SHARED across stages of different width (the panel dedups

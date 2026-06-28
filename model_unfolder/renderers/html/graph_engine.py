@@ -311,7 +311,25 @@ def _lane_draw_order(lanes: list, par_dst: str) -> list:
     what hid MLA's V→⊙ once DSA's sparse indexer added a 3rd lane and pushed KV to
     the middle. Stable sort — plain merge lanes keep their order in the centre,
     above-merge taps move outward — so the elbow always has room to render."""
-    return sorted(lanes, key=lambda ln: any(d != par_dst for d in (ln.dst or [])))
+    def reaches_above(lane) -> bool:
+        return any(d != par_dst for d in (lane.dst or []))
+
+    has_off_flow_tap = any(lane.src is not None and reaches_above(lane)
+                           for lane in lanes)
+
+    def slot(lane) -> int:
+        if not has_off_flow_tap:
+            return int(reaches_above(lane))
+        # With two distinct above-spine taps (ALiBi -> score add and V -> apply
+        # values), put them on opposite OUTER columns. Keeping both on the right
+        # either crosses the V rail or runs the ALiBi rail through the score box.
+        if reaches_above(lane) and lane.src is None:
+            return 0
+        if not reaches_above(lane):
+            return 1
+        return 2
+
+    return sorted(lanes, key=slot)
 
 
 def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx) -> None:
@@ -323,7 +341,7 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     """
     if par.src not in geom or par.dst not in geom:
         return
-    src_g, dst_g = geom[par.src], geom[par.dst]
+    src_g = geom[par.src]
     lanes = _lane_draw_order(par.norm_lanes(), par.dst)
     split_y = src_g["top"] - 16
     if any(lane.src is None for lane in lanes):

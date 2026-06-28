@@ -8,7 +8,16 @@ from .conformance import (
 )
 from .forward_ops import extract_forward_ops
 from .inspector import inspect_model_code
-from .models import ClassEvidence, CodeEvidence, CodeFinding, ForwardOps, SourceBundle
+from .models import (
+    ClassEvidence,
+    CodeEvidence,
+    CodeFinding,
+    ForwardOps,
+    PositionalEvidence,
+    PositionalMechanism,
+    SourceBundle,
+)
+from .position import decoder_positional_evidence
 from .validate import validate_ir_with_evidence
 
 __all__ = [
@@ -24,5 +33,8 @@ __all__ = [
     "CodeEvidence",
     "CodeFinding",
     "ForwardOps",
+    "PositionalEvidence",
+    "PositionalMechanism",
     "SourceBundle",
+    "decoder_positional_evidence",
 ]

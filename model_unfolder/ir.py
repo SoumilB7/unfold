@@ -32,6 +32,8 @@ class AttentionSpec:
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
     rope: bool = True               # applies rotary position embedding to Q/K before scores
                                     # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
+    position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
+    position_application: Optional[str] = None  # qk_rotation | attention_bias | embedding_add | none
     bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
@@ -105,6 +107,7 @@ class LayerSpec:
         return (
             a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
             a.qk_norm, a.shared, a.no_rope, a.output_gate,
+            a.position_kind, a.position_application,
             a.cross_attention,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
@@ -195,6 +198,8 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "v_head_dim": a.v_head_dim,
         "qk_norm": a.qk_norm,
         "rope": a.rope,
+        "position_kind": a.position_kind,
+        "position_application": a.position_application,
         "bias": a.bias,
         "shared": a.shared,
         "no_rope": a.no_rope,

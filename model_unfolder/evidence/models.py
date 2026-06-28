@@ -15,6 +15,55 @@ CODE_EVIDENCE_SCHEMA_VERSION = "1.0"
 
 
 @dataclass(frozen=True)
+class PositionalMechanism:
+    """One position signal proven from a concrete source path.
+
+    ``application`` is deliberately separate from ``kind``: learned absolute
+    positions are added at model input, ALiBi biases attention scores, and RoPE
+    rotates Q/K.  Collapsing those altitudes was the original design mistake.
+    """
+
+    kind: str                       # rope | alibi | learned_absolute | fixed_absolute | none
+    application: str                # qk_rotation | attention_bias | embedding_add | none
+    class_name: str = ""
+    source_file: str = ""
+    line: int | None = None
+    symbols: tuple[str, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "application": self.application,
+            "class_name": self.class_name,
+            "source_file": self.source_file,
+            "line": self.line,
+            "symbols": list(self.symbols),
+        }
+
+
+@dataclass(frozen=True)
+class PositionalEvidence:
+    """Typed decoder positional evidence and its confidence state."""
+
+    status: str                     # proven | ambiguous | oracle_missing
+    mechanisms: tuple[PositionalMechanism, ...] = ()
+    component: str = "root"
+    reason: str = ""
+
+    @property
+    def kinds(self) -> frozenset[str]:
+        return frozenset(item.kind for item in self.mechanisms)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "component": self.component,
+            "reason": self.reason,
+            "mechanisms": [item.to_dict() for item in self.mechanisms],
+        }
+
+
+@dataclass(frozen=True)
 class SourceBundle:
     """Python files gathered from one source."""
 
