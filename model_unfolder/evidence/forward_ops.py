@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import ast
 import functools
+from dataclasses import replace
 from pathlib import Path
 
 from ..everchanging import load_conformance_op_tokens, load_conformance_type_roles
@@ -30,14 +31,17 @@ _ROLE_PRIORITY, _ROLE_SUBSTR = load_conformance_type_roles()
 # public API
 # ---------------------------------------------------------------------------
 
-def extract_forward_ops(files) -> dict[str, ForwardOps]:
+def extract_forward_ops(files, *, component: str = "root") -> dict[str, ForwardOps]:
     """Map every class with a ``forward()`` in ``files`` -> its :class:`ForwardOps`.
 
     One AST parse per file, cached by ``(path, mtime)`` so a modeling file shared
     by many views/models is parsed once."""
     out: dict[str, ForwardOps] = {}
     for path in files:
-        out.update(_parse_file(str(path), _mtime(str(path))))
+        for name, evidence in _parse_file(str(path), _mtime(str(path))).items():
+            out[name] = evidence if evidence.component == component else replace(
+                evidence, component=component
+            )
     return out
 
 
@@ -171,9 +175,9 @@ def _forward_op_occurrences(forward: ast.FunctionDef, field_types: dict[str, str
 def _positive_gate_fields(test: ast.AST) -> frozenset[str]:
     """The config field names a positive truthiness ``if`` test reads, or empty.
 
-    ``self.X`` / ``config.X`` / ``self.config.X`` truthiness, ``X is not None``,
-    ``X > 0`` and their ``and``-combination — each disabled by a falsy X.  A
-    ``not`` / ``is None`` / ``== 0`` / ``or`` test is NOT a positive gate (its
+    ``self.X`` / ``config.X`` / ``self.config.X`` truthiness, ``X > 0`` and their
+    ``and``-combination — each disabled by a falsy X. ``X is not None`` is NOT a
+    truthiness gate (zero still executes it). A ``not`` / ``is None`` / ``== 0`` / ``or`` test is NOT a positive gate (its
     body runs when the field is falsy), so it yields nothing and the op stays
     unconditional/required."""
     fields: set[str] = set()
@@ -195,9 +199,7 @@ def _positive_gate_fields(test: ast.AST) -> frozenset[str]:
         if isinstance(t, ast.Compare) and len(t.ops) == 1:
             f = attr_field(t.left)
             rhs = t.comparators[0]
-            if f and isinstance(t.ops[0], ast.IsNot) and isinstance(rhs, ast.Constant) and rhs.value is None:
-                fields.add(f)
-            elif f and isinstance(t.ops[0], ast.Gt) and isinstance(rhs, ast.Constant) and rhs.value == 0:
+            if f and isinstance(t.ops[0], ast.Gt) and isinstance(rhs, ast.Constant) and rhs.value == 0:
                 fields.add(f)
         elif isinstance(t, ast.BoolOp) and isinstance(t.op, ast.And):
             for value in t.values:
@@ -273,7 +275,10 @@ def _binop_op_kind(node: ast.BinOp) -> str | None:
     instead of an ``nn.Linear`` call — so without it the fused projection is
     invisible and the drill's per-expert ``linear`` reads as fabricated."""
     if isinstance(node.op, ast.MatMult):
-        return "dot_product"
+        # A fused projection often uses ``hidden @ self.gate_up_proj[...]``
+        # instead of F.linear. Classify it as linear only when an operand names
+        # an explicit projection/weight; ordinary Q @ K remains dot_product.
+        return "linear" if any(_projection_operand(x) for x in (node.left, node.right)) else "dot_product"
     if _has_numeric_operand(node):
         return "elementwise"
     if isinstance(node.op, ast.Add):
@@ -281,6 +286,16 @@ def _binop_op_kind(node: ast.BinOp) -> str | None:
     if isinstance(node.op, ast.Mult):
         return "gate_mul"
     return None
+
+
+def _projection_operand(node: ast.AST) -> bool:
+    names: set[str] = set()
+    for child in ast.walk(node):
+        if isinstance(child, ast.Name):
+            names.add(child.id.lower())
+        elif isinstance(child, ast.Attribute):
+            names.add(child.attr.lower())
+    return any("proj" in name or "weight" in name for name in names)
 
 
 def _has_numeric_operand(node: ast.BinOp) -> bool:
@@ -346,6 +361,15 @@ def _field_types(init: ast.FunctionDef | None) -> dict[str, str]:
         cls: str | None = None
         if isinstance(child.value, ast.Call):
             cls = _call_name(child.value.func)
+        elif isinstance(child.value, ast.IfExp):
+            # Conditional constructor assignment: both branches represent the
+            # same field role (e.g. fused vs Python gated RMSNorm).  Preserve a
+            # concrete branch so calls to ``self.<field>`` remain typed.
+            for branch in (child.value.body, child.value.orelse):
+                if isinstance(branch, ast.Call):
+                    cls = _call_name(branch.func)
+                    if cls:
+                        break
         elif isinstance(child.value, ast.Subscript) and isinstance(child.value.value, ast.Name):
             cls = child.value.value.id          # ACT2FN[...] / ACT2CLS[...]
         if not cls:

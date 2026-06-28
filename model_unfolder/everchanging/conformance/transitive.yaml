@@ -17,7 +17,7 @@
 # standard `attention_interface = ALL_ATTENTION_FUNCTIONS[...]` dispatch variable
 # (transformers' universal pattern — a general signature, never a model name).
 attention_compute_ops: [dot_product, activation]
-attention_compute_tokens: [scaled_dot_product_attention, sdpa_attention_forward, eager_attention_forward, flash_attention_forward, flex_attention_forward, flash_attn_func, flash_attn_varlen_func, attention_interface, _attention_forward]
+attention_compute_tokens: [scaled_dot_product_attention, sdpa_attention_forward, eager_attention_forward, flash_attention_forward, flex_attention_forward, flash_attn_func, flash_attn_varlen_func, attention_interface, _attention_forward, dispatch_attention_fn]
 
 # --- presentation / structural DRAWN kinds -----------------------------------
 # Drawn node kinds that are NOT computational ops to diff (ports, layout sugar,
@@ -35,7 +35,7 @@ drawn_op_map: [select=route]
 # verified by SIGNATURE-TOKEN presence in the transitive closure instead — drawn
 # iff a marker is reachable, fabricated iff drawn without it.  Same rail
 # fact_conformance uses for the block-level NoPE claim, at drill altitude.
-semantic_kinds: [rope, cache]
+semantic_kinds: [rope, cache, context_window]
 semantic_rope_markers: [rotary, rope, rotate_half, freqs_cis, apply_rope]
 semantic_cache_markers: [past_key_value, kv_cache, cache_kwargs, _update_cache]
 
@@ -54,7 +54,7 @@ library_helpers: [repeat_kv=reshape, dropout=]
 # a flow list `[role=a,b, …]` would comma-split `a,b` into separate items and drop
 # the tail (so `attn,mla` silently lost `mla`).  Order matters (first hit wins).
 drill_role_markers:
-  - attention=attn,mla
+  - attention=attn,mla,gated-delta
   - ffn=ffn,mlp
   - expert=expert
   - vision_attention=vision-self-attention
@@ -62,6 +62,34 @@ drill_role_markers:
   - route=router,topk
   - indexer=indexer,dsa
   - composite=moe,vision-encoder,mtp-transformer-block,mtp-block
+
+# Render-view substrings that select a delegated config component before any
+# class/role closure is built. Unmatched drills use the text component (or root
+# when no text wrapper exists). This prevents a decoder MLP from becoming
+# evidence for a vision MLP merely because both files belong to one model.
+component_view_markers:
+  - vision=vision,video
+  - audio=audio
+
+# Class-name markers used only when several delegated towers share one source
+# component (older wrapper configs may expose only the root model_type).
+component_class_markers:
+  - vision=Vision,Visual
+  - audio=Audio,Whisper,Speech
+
+# Field-name markers identify the exact submodule owned by a block. They prevent
+# helper containers such as `fuser=GatedSelfAttentionDense(...)` from being
+# mistaken for the block's `attn1` attention drill.
+role_field_markers:
+  - attention=attn,attention
+  - ffn=ff,ffn,mlp,moe,expert
+  - route=route,router,gate,indexer
+
+# A single block class may construct mutually exclusive mixer classes according
+# to its layer schedule. The render view selects the matching source class;
+# unmatched views exclude these specialized candidates.
+drill_class_markers:
+  - gated-delta=DeltaNet
 
 # A LEAF role's drawn closure is diffed against the union transitive closure of the
 # model's reachable sub-module classes carrying the mapped TYPE-role; "role=type_role".
@@ -118,10 +146,11 @@ composite_container_map: [expert=ffn, shared_expert=ffn, router=route]
 # not a model name; injected into the attention closure.
 processor_markers: [Processor]
 
-# Drawn-op -> code-ops that ALSO satisfy it in the fabrication check.  A drawn
-# ``linear`` (a projection) is satisfied by a code ``dot_product`` too: a linear
-# projection IS a matmul, and a FUSED expert/attention does it as a batched ``@``
-# over stacked weight Parameters (MixtralExperts) instead of an nn.Linear call.
+# Drawn-op -> code-ops that ALSO satisfy it in the fabrication check. Projection
+# matmuls over explicit weight/projection operands are classified as ``linear``
+# by the extractor; an arbitrary attention dot-product must never justify a
+# fabricated projection.
 # "drawn=code1,code2".
 drill_op_equivalents:
-  - linear=linear,dot_product
+  - linear=linear
+  - attention=attention,dot_product

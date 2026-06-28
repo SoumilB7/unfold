@@ -34,6 +34,43 @@ KIMI_K2_CONFIG = {
     "moe_layer_freq": 1,
 }
 
+
+def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately():
+    cfg = {
+        "model_type": "qwen3_5_text",
+        "architectures": ["Qwen3_5ForCausalLM"],
+        "vocab_size": 1000,
+        "hidden_size": 512,
+        "intermediate_size": 1024,
+        "num_hidden_layers": 8,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "head_dim": 64,
+        "hidden_act": "silu",
+        "layer_types": [
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+        ],
+        "linear_num_key_heads": 4,
+        "linear_num_value_heads": 8,
+        "linear_key_head_dim": 64,
+        "linear_value_head_dim": 64,
+        "linear_conv_kernel_dim": 4,
+        "attn_output_gate": True,
+        "output_gate_type": "swish",
+    }
+    ir = unfold(cfg).to_ir()
+    assert [ir["layers"][i]["attention"]["kind"] for i in (0, 3)] == ["gated_delta", "gqa"]
+    delta = ir["layers"][0]["attention"]
+    assert delta["rope"] is False and delta["conv_kernel_size"] == 4
+    assert delta["output_gate"] is None
+    assert ir["layers"][3]["attention"]["output_gate"] == "sigmoid"
+    assert len({layer.signature() for layer in parse(cfg).layers}) == 2
+    html = unfold(cfg).to_html(standalone=True)
+    assert "Gated DeltaNet" in html
+    assert "Causal depthwise Conv1d" in html
+    assert "Gate attention output" in html
+
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
     "model_type": "deepseek_v3",

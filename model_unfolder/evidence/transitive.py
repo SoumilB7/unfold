@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import ast
 import functools
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from .ast_scanner import _call_name
@@ -39,6 +39,7 @@ from .forward_ops import (
     _call_op_kind,
     _field_types,
     _init_class_refs,
+    _role_of,
     _self_field,
 )
 
@@ -52,6 +53,7 @@ class CallableInfo:
     line: int | None
     op_kinds: frozenset[str]                       # direct ops in the body
     call_tokens: frozenset[str]                    # every bare call name in the body
+    component: str = "root"
     field_types: dict[str, str] = field(default_factory=dict)        # self.x -> class
     self_field_calls: frozenset[str] = frozenset()                   # fields called self.F(...)
     iter_field_calls: frozenset[str] = frozenset()                   # fields looped `for _ in self.F`
@@ -65,12 +67,15 @@ class CallableInfo:
 # public API
 # ---------------------------------------------------------------------------
 
-def build_registry(files) -> dict[str, CallableInfo]:
+def build_registry(files, *, component: str = "root") -> dict[str, CallableInfo]:
     """Every followable callable in ``files`` -> :class:`CallableInfo` (classes by
     class name, free functions by function name). One cached AST parse per file."""
     out: dict[str, CallableInfo] = {}
     for path in files:
-        out.update(_parse_file(str(path), _mtime(str(path))))
+        for name, evidence in _parse_file(str(path), _mtime(str(path))).items():
+            out[name] = evidence if evidence.component == component else replace(
+                evidence, component=component
+            )
     return out
 
 
@@ -90,6 +95,7 @@ def transitive_closure(start: str, registry: dict[str, CallableInfo], vocab: dic
     attn_ops = vocab["attention_compute_ops"]
     helpers = vocab["library_helpers"]
     rope_cache_markers = tuple(vocab["semantic_markers"]["rope"]) + tuple(vocab["semantic_markers"]["cache"])
+    root_field_types = registry[start].field_types if start in registry else {}
 
     ops: set[str] = set()
     tokens: set[str] = set()
@@ -123,6 +129,12 @@ def transitive_closure(start: str, registry: dict[str, CallableInfo], vocab: dic
                         queue.append((cls, frozenset()))
         # 3. bare call tokens -> attention-compute leaf / library helper / free fn
         for tok in info.call_tokens:
+            # A delegated processor calls projections as ``attn.to_q(x)`` rather
+            # than ``self.to_q(x)``.  Resolve that token against the exact owning
+            # attention class's fields so its real Linear/Norm ops remain visible.
+            owner_role = _role_of(root_field_types.get(tok, ""))
+            if owner_role:
+                ops.add(owner_role)
             if tok in attn_tokens:
                 ops |= attn_ops                       # terminal: curated compute pair
             elif tok in helpers:
@@ -238,18 +250,22 @@ def _class_attr_processor_refs(node: ast.ClassDef) -> frozenset[str]:
     ``_available_processors = [FluxAttnProcessor, ...]``. So the processor's
     ``__call__`` (where ``apply_rotary_emb`` / the SDPA compute lives) is reachable
     only by reading the class body. Returns those processor class names."""
-    refs: set[str] = set()
+    default: set[str] = set()
+    available: set[str] = set()
     for st in node.body:
         if not isinstance(st, ast.Assign):
             continue
         names = [t.id for t in st.targets if isinstance(t, ast.Name)]
+        selected = default if "_default_processor_cls" in names else available
         if not any(n in ("_default_processor_cls", "_available_processors") for n in names):
             continue
         if isinstance(st.value, ast.Name):
-            refs.add(st.value.id)
+            selected.add(st.value.id)
         elif isinstance(st.value, (ast.List, ast.Tuple)):
-            refs.update(e.id for e in st.value.elts if isinstance(e, ast.Name))
-    return frozenset(refs)
+            selected.update(e.id for e in st.value.elts if isinstance(e, ast.Name))
+    # Alternative processors are runtime options, not evidence for the configured
+    # default path.  Use them only for older classes that declare no default.
+    return frozenset(default or available)
 
 
 def _scan_function(node: ast.FunctionDef, source_file: str) -> CallableInfo:

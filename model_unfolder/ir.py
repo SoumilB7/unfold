@@ -8,13 +8,13 @@ dense+MoE phase changes, YOCO/CLA cross-layer KV sharing, etc.).
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 
 @dataclass
 class AttentionSpec:
-    """Specification of an attention block within a layer."""
-    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "ssm" | "recurrent" | "linear" | "rwkv"
+    """Specification of an attention/token-mixer block within a layer."""
+    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "gated_delta" | "ssm" | ...
     num_heads: int
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None
@@ -51,6 +51,8 @@ class AttentionSpec:
     index_n_heads: Optional[int] = None     # DeepSeek-V3.2 DSA lightning-indexer head count
     index_head_dim: Optional[int] = None    # DeepSeek-V3.2 DSA lightning-indexer per-head width
     mrope_section: Optional[list] = None    # Qwen-VL multimodal RoPE [temporal, height, width] split
+    conv_kernel_size: Optional[int] = None  # local causal depthwise conv in hybrid mixers
+    output_gate: Optional[str] = None       # attention-output gate (e.g. sigmoid/swish)
     # Self-describing label override for attention variants the generic kind/mask
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
@@ -102,7 +104,7 @@ class LayerSpec:
         f = self.ffn
         return (
             a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
-            a.qk_norm, a.shared, a.no_rope,
+            a.qk_norm, a.shared, a.no_rope, a.output_gate,
             a.cross_attention,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
@@ -203,6 +205,8 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "index_n_heads": a.index_n_heads,
         "index_head_dim": a.index_head_dim,
         "mrope_section": a.mrope_section,
+        "conv_kernel_size": a.conv_kernel_size,
+        "output_gate": a.output_gate,
         "variant": a.variant,
     }
 

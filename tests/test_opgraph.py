@@ -14,6 +14,7 @@ from model_unfolder.opgraph import (
     mla_query_region,
 )
 from model_unfolder.renderers.html.op_render import region_to_graph
+from model_unfolder.renderers.html.graph import wiring_problems
 
 GQA = {"kind": "gqa", "num_heads": 32, "num_kv_heads": 8, "head_dim": 128}
 
@@ -214,6 +215,32 @@ def test_ssm_region_is_an_honest_chain_not_a_fabricated_qkv():
     assert [o.id for o in r.ops] == ["hidden", "ssm_in_proj", "ssm_conv",
                                      "ssm_scan", "ssm_gate", "ssm_out_proj"]
     assert r.merges() == []
+
+
+def test_gated_delta_region_preserves_conv_gates_recurrence_and_gated_norm():
+    r = attention_region({
+        "kind": "gated_delta", "num_heads": 32, "num_kv_heads": 16,
+        "head_dim": 128, "v_head_dim": 128, "conv_kernel_size": 4,
+    }, 4096)
+    ids = {o.id for o in r.ops}
+    assert {
+        "delta_qkv_proj", "delta_z_proj", "delta_beta_proj", "delta_decay_proj",
+        "delta_conv", "delta_qkv_split", "delta_beta", "delta_decay",
+        "delta_rule", "delta_gated_norm", "delta_out_proj",
+    } <= ids
+    assert r.template == "gated_delta"
+    assert set(r.inputs_of("delta_rule")) == {"delta_qkv_split", "delta_beta", "delta_decay"}
+    assert set(r.inputs_of("delta_gated_norm")) == {"delta_rule", "delta_z_proj"}
+    graph = region_to_graph(r, clickable=True)
+    assert not wiring_problems(graph)
+
+
+def test_sdpa_output_gate_splits_q_and_gates_before_output_projection():
+    r = attention_region({**GQA, "output_gate": "sigmoid"}, 4096)
+    assert set(r.inputs_of("attn_output_mul")) == {"concat_heads", "attn_output_gate"}
+    assert r.inputs_of("o_proj") == ["attn_output_mul"]
+    assert r.inputs_of("q_gate_split") == ["q_proj"]
+    assert not wiring_problems(region_to_graph(r, clickable=True))
 
 
 def test_unknown_attention_kind_is_one_honest_opaque_node():

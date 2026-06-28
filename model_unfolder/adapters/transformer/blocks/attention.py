@@ -38,6 +38,8 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "index_n_heads": attention.index_n_heads,
         "index_head_dim": attention.index_head_dim,
         "mrope_section": attention.mrope_section,
+        "conv_kernel_size": attention.conv_kernel_size,
+        "output_gate": attention.output_gate,
         "variant": attention.variant,
     }
 
@@ -58,6 +60,7 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     source-neutral set — match it to the region's ``node_prefix``."""
     builders = {
         "mla": _mla_child_blocks,
+        "gated_delta": _gated_delta_child_blocks,
         "ssm": _ssm_child_blocks,
         "recurrent": _recurrent_child_blocks,
         "rwkv": _rwkv_child_blocks,
@@ -71,6 +74,16 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     if id_prefix:
         for c in cards:
             c["id"] = f"{id_prefix}{c['id']}"
+    if attention.output_gate:
+        cards.extend([
+            {"id": "q_gate_split", "title": "Split query and output gate",
+             "description": "Splits the widened query projection into Q and a per-head output-gate lane."},
+            {"id": "attn_output_gate", "title": "Attention output gate",
+             "description": "Applies sigmoid to the projected gate before it modulates the attention output.",
+             "facts": [str(attention.output_gate)]},
+            {"id": "attn_output_mul", "title": "Gate attention output",
+             "description": "Multiplies the concatenated attention output by the learned gate before output projection."},
+        ])
     return cards
 
 
@@ -657,4 +670,43 @@ def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -
             "description": "Linear back to the residual width.",
             "facts": [f"{q_out} → {hidden}"],
         },
+    ]
+
+
+def _gated_delta_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
+    hidden = _fmt(hidden_size)
+    kernel = attention.conv_kernel_size
+    geometry = [f for f in (
+        f"{attention.num_kv_heads} K heads" if attention.num_kv_heads else "",
+        f"{attention.num_heads} V heads" if attention.num_heads else "",
+        f"K dim {_fmt(attention.head_dim)}" if attention.head_dim else "",
+        f"V dim {_fmt(attention.v_head_dim)}" if attention.v_head_dim else "",
+    ) if f]
+    return [
+        {"id": "delta_qkv_proj", "title": "Q/K/V projection",
+         "description": "Joint linear projection for query, key and value streams.",
+         "facts": [f"input {hidden}", *geometry]},
+        {"id": "delta_z_proj", "title": "Output-gate projection",
+         "description": "Projects z, the gate consumed by the gated output normalization."},
+        {"id": "delta_beta_proj", "title": "Beta projection",
+         "description": "Projects the learned delta-update strength before sigmoid."},
+        {"id": "delta_decay_proj", "title": "Decay projection",
+         "description": "Projects the recurrent decay parameter before softplus/exponential shaping."},
+        {"id": "delta_conv", "title": "Causal depthwise convolution",
+         "description": "Mixes local Q/K/V context before the recurrent delta update.",
+         "facts": [f"kernel {kernel}"] if kernel else []},
+        {"id": "delta_qkv_split", "title": "Split Q, K and V",
+         "description": "Separates the convolved joint projection into query, key and value streams."},
+        {"id": "delta_beta", "title": "Sigmoid beta",
+         "description": "Bounds the learned delta-update strength."},
+        {"id": "delta_decay", "title": "Decay gate",
+         "description": "Builds the negative recurrent decay from A, softplus(a + dt_bias)."},
+        {"id": "delta_rule", "title": "Gated delta-rule recurrence",
+         "description": "Uses the chunk kernel for sequences and the recurrent kernel for one-token cached decode.",
+         "facts": geometry},
+        {"id": "delta_gated_norm", "title": "Gated RMSNorm",
+         "description": "Normalizes the delta-rule output while applying the projected z gate."},
+        {"id": "delta_out_proj", "title": "Output projection",
+         "description": "Projects the recurrent mixer output back to the residual width.",
+         "facts": [f"→ {hidden}"]},
     ]

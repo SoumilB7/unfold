@@ -962,3 +962,34 @@ So the scalable approach is not "add more per-model options." The scalable appro
 5. bless a corpus case so the same miss cannot recur silently.
 
 Anything else is a local patch, not model support.
+
+### 10.5 Enforced anti-false-green invariants (2026-06-28)
+
+The library now enforces several rules that an auditor must understand rather than work
+around:
+
+1. **Delegated source is part of the oracle.** Source discovery walks nested `*_config`
+   objects and preserves the qualified component, model type and static AutoModel class.
+   A wrapper file alone is not complete evidence.
+2. **Evidence is component- and block-rooted.** Nested conformance resolves
+   `component → AutoModel → repeated ModuleList block → owning field → callable`. Do not
+   reintroduce a union of all attention/MLP classes in all files: that lets a text sibling
+   justify a vision drawing and recreates false PASS/false FAIL behavior.
+3. **Unattributed rendered structure is blocking.** A non-opaque drill with no exact
+   callable is `unresolved`; it is not silently skipped. The remaining known unresolved
+   families are explicit test-pinned debt (inline PRX FFN, dynamic UNet factories,
+   multi-variant DiffusionGemma drills, and a synthetic audio wrapper missing its delegated
+   text config).
+4. **Layer schedules change mixer kind, not only mask.** A `linear_attention` layer in a
+   hybrid Qwen-style stack is a gated delta-rule recurrent mixer, not causal GQA. Confirm
+   the IR signature and manifest contain separate full-attention and recurrent-mixer views.
+5. **Read conditions literally.** `if x is not None` still executes for `x == 0`; it must
+   not be treated as a truthiness gate. When constructor arguments select an implementation,
+   follow the selected branch instead of whichever AST assignment happened to be visited.
+6. **Do not use mathematical hand-waving as op equivalence.** `index_copy_` replaces and is
+   not residual addition. A Q·K dot product does not prove a Linear projection exists.
+   Projection matmuls are accepted only when their operand is an explicit projection/weight.
+
+These invariants explain why an older blessed report can become `unresolved` without any SVG
+hash changing: stronger evidence attribution has invalidated the proof, not necessarily the
+picture. Never re-bless such a model until its source path and every PNG are reviewed again.

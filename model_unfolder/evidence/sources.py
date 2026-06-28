@@ -119,7 +119,11 @@ def _path_bundle(target: Any) -> SourceBundle | None:
         files = (str(path),) if path.suffix == ".py" else ()
     else:
         files = tuple(str(p) for p in sorted(path.rglob("*.py")) if p.is_file())
-    return SourceBundle(source="path", files=files, model_id=str(path), warnings=() if files else ("No Python files found.",))
+    return SourceBundle(
+        source="path", files=files, model_id=str(path),
+        warnings=() if files else ("No Python files found.",),
+        component_files={"root": files} if files else {},
+    )
 
 
 def _installed_transformers_bundle(target: Any) -> SourceBundle:
@@ -146,40 +150,138 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             warnings=("transformers is not installed; cannot inspect local modeling source.",),
         )
 
-    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
     models_root = Path(transformers.__file__).resolve().parent / "models"
-    if family_dir is None:
-        family_dir = _direct_transformers_family_dir(models_root, model_type)
-    if family_dir is None:
-        return SourceBundle(
-            source="local",
-            model_type=model_type,
-            architecture=architecture,
-            model_id=model_id,
-            warnings=(
-                f"No installed Transformers source directory for model_type={model_type!r}. "
-                "Use code_source='hub' or pass a local modeling file/directory for code evidence.",
-            ),
-        )
+    files: list[str] = []
+    warnings: list[str] = []
+    seen_files: set[str] = set()
+    component_files: dict[str, tuple[str, ...]] = {}
+    component_model_types: dict[str, str] = {}
+    component_architectures: dict[str, str] = {}
 
-    root = models_root / family_dir
-    if not root.exists():
-        return SourceBundle(
-            source="local",
-            model_type=model_type,
-            architecture=architecture,
-            model_id=model_id,
-            warnings=(f"No installed Transformers source directory for model_type={model_type!r}.",),
+    # Composite HF configs delegate real computation to nested component configs:
+    # ``AutoModel.from_config(config.vision_config)`` and a separate text model are
+    # common.  Looking up only the root wrapper makes the oracle appear present
+    # while omitting the classes that actually perform the work.  Walk every
+    # nested ``*_config`` structurally and gather its installed modeling source.
+    for component, cfg in _component_configs(target):
+        component_type = _own_model_type(cfg)
+        if component == "root" and not component_type:
+            component_type = model_type
+        if not component_type:
+            warnings.append(f"Could not infer model_type for Transformers component {component!r}.")
+            continue
+        component_model_types[component] = component_type
+        component_architecture = (
+            (_own_architecture(cfg) or _auto_model_architecture(component_type))
+            if component == "root"
+            else (_auto_model_architecture(component_type) or _own_architecture(cfg))
         )
-    files = tuple(str(p) for p in sorted(root.glob("modeling*.py")))
+        if component_architecture:
+            component_architectures[component] = component_architecture
+        family_dir = _transformers_family_dir(models_root, component_type)
+        if family_dir is None:
+            warnings.append(
+                f"No installed Transformers source directory for component {component!r} "
+                f"(model_type={component_type!r})."
+            )
+            continue
+        modeling_files = tuple(sorted((models_root / family_dir).glob("modeling*.py")))
+        if not modeling_files:
+            warnings.append(
+                f"No modeling*.py files found for component {component!r} "
+                f"(model_type={component_type!r})."
+            )
+        component_paths = tuple(str(path) for path in modeling_files)
+        if component_paths:
+            component_files[component] = component_paths
+        for path in component_paths:
+            value = path
+            if value not in seen_files:
+                seen_files.add(value)
+                files.append(value)
+
     return SourceBundle(
         source="local",
-        files=files,
+        files=tuple(files),
         model_type=model_type,
         architecture=architecture,
         model_id=model_id,
-        warnings=() if files else (f"No modeling*.py files found for model_type={model_type!r}.",),
+        warnings=tuple(warnings) if warnings else (() if files else (
+            f"No modeling*.py files found for model_type={model_type!r}.",
+        )),
+        component_files=component_files,
+        component_model_types=component_model_types,
+        component_architectures=component_architectures,
     )
+
+
+def _component_configs(target: Any):
+    """Yield ``(qualified_path, config)`` for root and nested component configs.
+
+    Only fields named ``*_config`` are traversed.  This follows Hugging Face's
+    composite-config contract without mistaking arbitrary dictionaries (rope
+    scaling, quantization settings, generation options) for model components.
+    Object identity guards recursive/shared config objects.
+    """
+    seen: set[int] = set()
+
+    def walk(value: Any, path: str):
+        if value is None or isinstance(value, (str, bytes, int, float, bool)):
+            return
+        identity = id(value)
+        if identity in seen:
+            return
+        seen.add(identity)
+        yield path, value
+        items = value.items() if isinstance(value, dict) else vars(value).items() \
+            if hasattr(value, "__dict__") else ()
+        for name, child in items:
+            if str(name).endswith("_config") and child is not None:
+                child_path = str(name) if path == "root" else f"{path}.{name}"
+                yield from walk(child, child_path)
+
+    yield from walk(target, "root")
+
+
+def _own_model_type(target: Any) -> str | None:
+    """Return only this config object's model type, never a nested fallback."""
+    value = _get_value(target, "model_type")
+    return str(value) if value else None
+
+
+def _own_architecture(target: Any) -> str | None:
+    arches = _get_value(target, "architectures")
+    if arches:
+        try:
+            return str(arches[0])
+        except (TypeError, IndexError):
+            return str(arches)
+    return None
+
+
+def _auto_model_architecture(model_type: str) -> str | None:
+    """The installed Transformers AutoModel mapping, read without model import.
+
+    Composite component configs commonly omit ``architectures``.  The static
+    mapping is the authoritative config-type -> concrete model class relation
+    used by ``AutoModel.from_config`` itself, and lets conformance start from the
+    exact delegated model instead of every class sharing its source file.
+    """
+    try:
+        from transformers.models.auto.modeling_auto import MODEL_MAPPING_NAMES
+    except (ImportError, AttributeError):
+        return None
+    value = MODEL_MAPPING_NAMES.get(model_type)
+    if isinstance(value, (tuple, list)):
+        value = value[0] if value else None
+    return str(value) if value else None
+
+
+def _transformers_family_dir(models_root: Path, model_type: str) -> str | None:
+    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
+    if family_dir is not None and (models_root / family_dir).exists():
+        return family_dir
+    return _direct_transformers_family_dir(models_root, model_type)
 
 
 def _looks_like_diffusion_class(cls: str) -> bool:
@@ -222,7 +324,9 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
             continue
         if pat.search(text):
             return SourceBundle(source="local", files=(str(f),),
-                                architecture=cls, model_id=model_id)
+                                architecture=cls, model_id=model_id,
+                                component_files={"root": (str(f),)},
+                                component_architectures={"root": cls})
     return SourceBundle(
         source="local", architecture=cls, model_id=model_id,
         warnings=(f"No installed diffusers modeling file defines {cls!r}.",),
@@ -237,7 +341,17 @@ def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str |
     use the model_type as the directory name, so this keeps multimodal additions
     like qwen2_audio from needing one-off source-map entries.
     """
-    for candidate in (model_type, model_type.replace("-", "_")):
+    normalized = model_type.replace("-", "_")
+    candidates = [model_type, normalized]
+    # Nested HF config types often describe the component role while sharing the
+    # parent's implementation package: qwen3_5_text -> qwen3_5,
+    # siglip_vision_model -> siglip.  Strip only recognized role suffixes and
+    # accept the result solely when that installed family directory exists.
+    for suffix in ("_vision_model", "_text_model", "_audio_model",
+                   "_vision", "_text", "_audio"):
+        if normalized.endswith(suffix):
+            candidates.append(normalized[:-len(suffix)])
+    for candidate in candidates:
         if candidate and (models_root / candidate).exists():
             return candidate
     return None
@@ -275,6 +389,7 @@ def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:
         architecture=_architecture(target),
         model_id=model_id,
         warnings=() if files else (f"No Python source files found in Hub repo {model_id!r}.",),
+        component_files={"root": files} if files else {},
     )
 
 

@@ -263,6 +263,12 @@ def parse(cfg: Any) -> ModelIR:
         sliding_window = None
         max_window_layers = None
     layer_types  = _g(text_cfg, "layer_types") or []
+    full_attention_interval = _g(text_cfg, "full_attention_interval") or 0
+    if not layer_types and full_attention_interval and num_layers:
+        layer_types = [
+            "linear_attention" if (i + 1) % int(full_attention_interval) else "full_attention"
+            for i in range(num_layers)
+        ]
     # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
     # are picked up — see everchanging/aliases.yaml.
     compress_ratios = _resolve(text_cfg, "compress_ratios") or []
@@ -310,6 +316,15 @@ def parse(cfg: Any) -> ModelIR:
     has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
     if has_multi_query_flag:
         num_kv_heads = 1
+    # Hybrid linear-recurrent token mixers (for example a gated delta network)
+    # carry geometry separate from the full-attention head fields.
+    linear_num_k_heads = _g(text_cfg, "linear_num_key_heads")
+    linear_num_v_heads = _g(text_cfg, "linear_num_value_heads")
+    linear_k_head_dim = _g(text_cfg, "linear_key_head_dim")
+    linear_v_head_dim = _g(text_cfg, "linear_value_head_dim")
+    linear_conv_kernel = _g(text_cfg, "linear_conv_kernel_dim")
+    attn_output_gate = _g(text_cfg, "attn_output_gate")
+    _g(text_cfg, "output_gate_type")  # ownership acknowledged; source applies sigmoid
     # Determine if the stack mixes sliding + full layers — affects mask labeling
     # (a full layer in a sliding stack is labeled "global", not "causal").
     sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
@@ -416,7 +431,12 @@ def parse(cfg: Any) -> ModelIR:
             layer_kv_heads = num_kv_heads
             layer_head_dim = head_dim
 
-        attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
+        layer_type = layer_types[i] if i < len(layer_types) else None
+        is_gated_delta = layer_type == "linear_attention"
+        attn_kind = (
+            "gated_delta" if is_gated_delta
+            else _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
+        )
         is_nope   = bool(no_rope_interval > 1 and i % no_rope_interval == 0)
         is_cross_attn_layer = has_cross_attention_side_state and i in cross_attn_layer_set
 
@@ -430,20 +450,20 @@ def parse(cfg: Any) -> ModelIR:
 
         attn = AttentionSpec(
             kind=attn_kind,
-            num_heads=num_heads,
-            num_kv_heads=layer_kv_heads,
-            head_dim=layer_head_dim,
+            num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
+            num_kv_heads=(linear_num_k_heads or layer_kv_heads) if is_gated_delta else layer_kv_heads,
+            head_dim=(linear_k_head_dim or layer_head_dim) if is_gated_delta else layer_head_dim,
             kv_lora_rank=kv_lora_rank if is_mla else None,
             q_lora_rank=q_lora_rank if is_mla else None,
             qk_nope_head_dim=qk_nope_head_dim if is_mla else None,
             qk_rope_head_dim=qk_rope_head_dim if is_mla else None,
-            v_head_dim=v_head_dim_cfg if is_mla else None,
+            v_head_dim=(linear_v_head_dim if is_gated_delta else v_head_dim_cfg if is_mla else None),
             rope_dim=rope_dim_value,
             mask=mask,
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=use_qk_norm,
-            rope=uses_rope,
+            rope=uses_rope and not is_gated_delta,
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
@@ -456,6 +476,21 @@ def parse(cfg: Any) -> ModelIR:
             index_n_heads=_g(text_cfg, "index_n_heads"),
             index_head_dim=_g(text_cfg, "index_head_dim"),
             mrope_section=mrope_section,
+            conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
+            output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
+            variant=(
+                {
+                    "short": "Gated DeltaNet",
+                    "tag": "linear recurrent mixer",
+                    "label": ["Gated DeltaNet", "Token Mixer"],
+                    "title": "Gated DeltaNet token mixer",
+                    "desc": (
+                        "Causal depthwise convolution feeds a gated delta-rule recurrence; "
+                        "cached decoding switches to the recurrent update path."
+                    ),
+                }
+                if is_gated_delta else None
+            ),
         )
 
         is_dense_at_layer = _is_dense_at_layer(

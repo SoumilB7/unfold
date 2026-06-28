@@ -9,14 +9,14 @@
 # module-class spelling HERE, not in code. Flow style so it parses without PyYAML.
 
 # First-match priority (most specific -> most generic).
-priority: [route, attention, norm, activation, embedding, ffn, linear]
+priority: [route, attention, norm, activation, embedding, ffn, conv, linear]
 
 # route = the MoE GATE / sparse INDEXER (the class whose forward does top-k), kept
 # DISTINCT from the MoE container (which stays `ffn`) so the router/indexer DRILL
 # resolves to the route-capable class. Highest priority so a `*TopkRouter` /
 # `*Indexer` is route, not caught by a generic role.
 route: [TopkRouter, Router, MoEGate, Indexer]
-attention: [Attention, Attn, SelfAttn, CrossAttn]
+attention: [Attention, Attn, SelfAttn, CrossAttn, DeltaNet]
 norm: [LayerNorm, RMSNorm, GroupNorm, AdaLayerNorm, Norm]
 # ACT2FN / ACT2CLS = the transformers activation-factory lookup `self.act_fn =
 # ACT2FN[hidden_act]` (captured by _field_types as a Subscript) — an activation op.
@@ -25,4 +25,5 @@ embedding: [Embedding, PatchEmbed, Timesteps, TimestepEmbedding, PosEmbed, Combi
 # GLUMBConv/MBConv = Sana's gated conv Mix-FFN (the block's self.ff) — an FFN, not a
 # bare conv (must beat the generic `linear`/Conv role; ffn has priority over linear).
 ffn: [FeedForward, MoE, Experts, FFN, MLP, Mlp, GLUMBConv, MBConv]
-linear: [Linear, Conv1d, Conv2d, Conv3d, Conv1D]
+conv: [Conv1d, Conv2d, Conv3d, Conv1D]
+linear: [Linear]

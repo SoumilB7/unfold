@@ -16,6 +16,7 @@ data in ``everchanging/conformance/`` — never hardcoded.
 """
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -26,7 +27,8 @@ from ..everchanging import (
     load_conformance_transitive,
     load_conformance_wiring_roles,
 )
-from .forward_ops import _role_of, extract_forward_ops
+from .ast_scanner import _call_name
+from .forward_ops import _method, _module_list_elems, _role_of, extract_forward_ops
 from .models import ForwardOps
 from .sources import _model_type, _string_value, resolve_source_files
 from .transitive import build_registry, transitive_closure
@@ -35,7 +37,7 @@ from .transitive import build_registry, transitive_closure
 #: conditioning side-inputs, ports, sources — is plumbing, not the block's op).
 _DIAGRAM_OP_KINDS = frozenset({
     "norm", "attention", "ffn", "concat", "linear",
-    "gate_mul", "residual_add", "activation", "slice", "route", "reshape",
+    "gate_mul", "residual_add", "activation", "slice", "route", "reshape", "conv",
 })
 _NON_OP_KINDS = frozenset({"adaln", "conditioning", "source", "output", "port", "embedding"})
 
@@ -50,12 +52,14 @@ class ConformanceProblem:
     class_name: str = ""
     source_file: str = ""
     forward_line: int | None = None
+    source_component: str = ""
 
     @property
     def message(self) -> str:
         loc = ""
         if self.source_file:
-            loc = f" [{Path(self.source_file).name}" + (f":{self.forward_line}" if self.forward_line else "") + "]"
+            owner = f"{self.source_component}/" if self.source_component else ""
+            loc = f" [{owner}{Path(self.source_file).name}" + (f":{self.forward_line}" if self.forward_line else "") + "]"
         cls = f" {self.class_name}" if self.class_name else ""
         if self.kind == "missing":
             return (f"{self.view}: code does {self.op!r} but the diagram omits it — "
@@ -94,10 +98,11 @@ def check_model_conformance(target, ir: dict, *, source: str = "local") -> list[
     Returns all problems (including ``unresolved`` for views with no code unit)."""
     family = _family(target)
     bundle = resolve_source_files(target, source=source)
-    files = _augment_diffusion_files(bundle.files)
+    component, component_files = _component_source(bundle, "text")
+    files = _augment_diffusion_files(component_files)
     if not files:
         return [ConformanceProblem("unresolved", "", f"{family}/*")]
-    forward_ops = extract_forward_ops(files)
+    forward_ops = extract_forward_ops(files, component=component)
     cmap = load_conformance_map()
     abstractions = load_conformance_abstractions()
 
@@ -134,10 +139,11 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
     this checks conditioning INPUTS — the complementary axis."""
     family = _family(target)
     bundle = resolve_source_files(target, source=source)
-    files = _augment_diffusion_files(bundle.files)
+    component, component_files = _component_source(bundle, "text")
+    files = _augment_diffusion_files(component_files)
     if not files:
         return []                       # no oracle — op-conformance records 'unresolved'
-    forward_ops = extract_forward_ops(files)
+    forward_ops = extract_forward_ops(files, component=component)
     cmap = load_conformance_map()
     stage_role, role_params = load_conformance_wiring_roles()
 
@@ -159,7 +165,7 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
             if subs and not any(s in params for s in subs):
                 problems.append(ConformanceProblem(
                     "fabricated_input", role, key,
-                    code.class_name, code.source_file, code.forward_line))
+                    code.class_name, code.source_file, code.forward_line, code.component))
         # MISSING: the forward() TAKES a text conditioning input the diagram neither
         # draws as a rail NOR shows as joined into the sequence (a concat-joint /
         # single-stream join, shown once) — a DROPPED text conditioning (PRX before
@@ -169,7 +175,7 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
                 and any(s in params for s in text_subs)):
             problems.append(ConformanceProblem(
                 "missing_input", "text", key,
-                code.class_name, code.source_file, code.forward_line))
+                code.class_name, code.source_file, code.forward_line, code.component))
     return problems
 
 
@@ -193,10 +199,11 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
     a constructed-class substring, never reconstructed wiring."""
     family = _family(target)
     bundle = resolve_source_files(target, source=source)
-    files = _augment_diffusion_files(bundle.files)
+    component, component_files = _component_source(bundle, "text")
+    files = _augment_diffusion_files(component_files)
     if not files:
         return []                       # no oracle — op-conformance records 'unresolved'
-    forward_ops = extract_forward_ops(files)
+    forward_ops = extract_forward_ops(files, component=component)
     cmap = load_conformance_map()
     markers = load_conformance_fact_markers()
     rotary_subs = [s.lower() for s in markers.get("rotary", [])]
@@ -220,7 +227,7 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
             if any(s in toks for s in rotary_subs):
                 problems.append(ConformanceProblem(
                     "fabricated_position", "rotary", key,
-                    code.class_name, code.source_file, code.forward_line))
+                    code.class_name, code.source_file, code.forward_line, code.component))
 
         # Attention algorithm: the drawn KIND vs a *LinearAttn* processor in __init__.
         diagram_linear = attn.get("kind") == "linear"
@@ -228,11 +235,11 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
         if code_linear and not diagram_linear:
             problems.append(ConformanceProblem(
                 "wrong_attention", "linear", key,
-                code.class_name, code.source_file, code.forward_line))
+                code.class_name, code.source_file, code.forward_line, code.component))
         elif diagram_linear and not code_linear:
             problems.append(ConformanceProblem(
                 "wrong_attention", "softmax", key,
-                code.class_name, code.source_file, code.forward_line))
+                code.class_name, code.source_file, code.forward_line, code.component))
     return problems
 
 
@@ -264,24 +271,27 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
     follow) is SKIPPED — honest-unknown, not a false fabrication."""
     family = _family(target)
     bundle = resolve_source_files(target, source=source)
-    files = _augment_diffusion_files(bundle.files)
-    if not files:
+    if not bundle.files:
         return []                        # no oracle — check_model_conformance records 'unresolved'
-    registry = build_registry(files)
     vocab = load_conformance_transitive()
     ab = load_conformance_abstractions()
 
-    role_closures = _role_union_closures(registry, vocab)
-    if not role_closures:
-        return []
-    # the SELECTION closure: routing top-k lives in the MoE container (ffn-role,
-    # folded from its self-method) AND/OR the gate/indexer (route-role).
-    sel_ops = role_closures.get("ffn", (frozenset(),))[0] | role_closures.get("route", (frozenset(),))[0]
-    # per-block TRANSITIVE closures for the composite check — a composite draws
-    # sub-CONTAINER glyphs (expert / router / the expert-combine ⊕) whose op may
-    # live one level down (the combine is the experts' ``index_add_``), so the
-    # check is "some block's transitive closure supersets the drawn containers".
-    block_closure_sets = [transitive_closure(b, registry, vocab)[0] for b in _block_classes(registry)]
+    # Build evidence separately per delegated component.  This is the boundary
+    # that prevents text decoder classes from becoming evidence for vision/audio
+    # drills (and vice versa).  Each context is lazy because most models render
+    # only text/root views.
+    contexts: dict[str, tuple[str, dict, list[str]]] = {}
+
+    def context(domain: str):
+        if domain not in contexts:
+            component, component_files = _component_source(bundle, domain)
+            files = _augment_diffusion_files(component_files)
+            registry = build_registry(files, component=component)
+            architectures = getattr(bundle, "component_architectures", {}) or {}
+            block_roots = _component_block_classes(registry, architectures.get(component))
+            block_roots = _domain_block_classes(block_roots, domain, vocab)
+            contexts[domain] = (component, registry, block_roots)
+        return contexts[domain]
 
     problems: list[ConformanceProblem] = []
     seen: dict[str, frozenset[str]] = {}
@@ -292,18 +302,39 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
         drill_role = _drill_role(view_key, vocab)
         if drill_role is None:
             continue                     # architecture view — not a sub-module drill
+        domain = _drill_domain(view_key, vocab)
+        component, registry, block_roots = context(domain)
         category = vocab["drill_category"].get(drill_role, "leaf_compute")
         if category == "composite":
+            block_closure_sets = [transitive_closure(b, registry, vocab)[0]
+                                  for b in block_roots]
+            if not block_closure_sets:
+                problems.append(ConformanceProblem(
+                    "unresolved", "", f"{family}/{view_key}", source_component=component))
+                continue
             problems.extend(_diff_composite(family, view_key, drawn, block_closure_sets, vocab, ab))
         elif category == "selection":
+            closure = _resolve_selection_closure(block_roots, registry, vocab)
+            if closure is None:
+                problems.append(ConformanceProblem(
+                    "unresolved", "", f"{family}/{view_key}", source_component=component))
+                continue
+            sel_ops, _evidence = closure
             problems.extend(_diff_selection(family, view_key, drill_role, drawn, sel_ops, vocab, ab))
         else:
-            type_role = vocab["drill_role_to_type"].get(drill_role)
-            closure = role_closures.get(type_role)
-            if not closure or not closure[0]:
-                continue                 # opaque delegation — honest-unknown, skip
-            ops, cls = closure
-            problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, cls, vocab, ab))
+            closure = _resolve_drill_closure(
+                block_roots, registry, vocab, drill_role, view_key,
+            )
+            if closure is None:
+                # A rendered decomposition without one exact backing callable is
+                # not clean.  It may be a missing extractor or a genuinely opaque
+                # delegate, but either way Sable must say unresolved, never [ok].
+                if "opaque" not in drawn:
+                    problems.append(ConformanceProblem(
+                        "unresolved", "", f"{family}/{view_key}", source_component=component))
+                continue
+            ops, evidence = closure
+            problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, evidence, vocab, ab))
     return problems
 
 
@@ -316,8 +347,8 @@ def _block_classes(registry) -> list[str]:
             if any(_role_of(c) in ("attention", "ffn") for c in info.field_types.values())]
 
 
-def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], str]]:
-    """``type_role -> (union_ops, representative_class)`` over the model's reachable
+def _role_union_closures(registry, vocab, *, blocks=None) -> dict[str, tuple[frozenset[str], object]]:
+    """``type_role -> (union_ops, representative evidence)`` over the model's reachable
     sub-module classes carrying that role.
 
     Starts at the ModuleList-built BLOCK classes, walks their ``field_types`` +
@@ -326,7 +357,7 @@ def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], str
     unions the transitive closure of each.  Attention classes inject their
     diffusers processor (``init_class_refs`` matching ``Processor``) so the
     delegated ``__call__`` is followed."""
-    blocks = _block_classes(registry)
+    blocks = list(blocks) if blocks is not None else _block_classes(registry)
     reachable = set(blocks) | _reachable_submodules(blocks, registry)
     by_role: dict[str, list[str]] = {}
     for cls in reachable:
@@ -344,15 +375,363 @@ def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], str
     for name in (*blocks, *by_role.get("attention", [])):
         block_procs |= _processor_refs(registry.get(name), proc_markers)
 
-    out: dict[str, tuple[frozenset[str], str]] = {}
+    out: dict[str, tuple[frozenset[str], object]] = {}
     for role, classes in by_role.items():
         ops: set[str] = set()
         for cls in classes:
             extra = (_processor_refs(registry.get(cls), proc_markers) | frozenset(block_procs)) \
                 if role == "attention" else frozenset()
             ops |= transitive_closure(cls, registry, vocab, extra_class_refs=extra)[0]
-        out[role] = (frozenset(ops), sorted(classes, key=lambda n: (len(n), n))[0])
+        representative = sorted(classes, key=lambda n: (len(n), n))[0]
+        out[role] = (frozenset(ops), registry[representative])
     return out
+
+
+def _component_block_classes(registry, architecture: str | None) -> list[str]:
+    """Resolve the concrete repeated block classes reachable from one AutoModel.
+
+    Starting at the component's static AutoModel architecture is what separates
+    Qwen3.5's text decoder from its vision blocks even though both live in one
+    Python file.  The walk follows constructed fields and ModuleList elements;
+    only structurally block-like classes are returned.  When architecture
+    metadata is unavailable, the conservative fallback retains the old search.
+    """
+    all_blocks = set(_block_classes(registry))
+    if not architecture or architecture not in registry:
+        return sorted(all_blocks)
+    found = _init_helper_block_classes(registry[architecture], architecture, registry, all_blocks)
+    seen: set[str] = set()
+    queue = [architecture]
+    while queue:
+        name = queue.pop(0)
+        if name in seen or name not in registry:
+            continue
+        seen.add(name)
+        info = registry[name]
+        children = set(info.field_types.values())
+        for classes in info.sub_module_classes.values():
+            children |= set(classes)
+            found |= set(classes) & all_blocks
+        for child in children:
+            if child in registry and child not in seen:
+                queue.append(child)
+    return sorted(found) if found else sorted(all_blocks)
+
+
+def _init_helper_block_classes(model_info, architecture, registry, all_blocks) -> set[str]:
+    """ModuleLists built in ``self._init_*`` helpers called by ``__init__``.
+
+    Diffusers' generic Transformer2DModel chooses an input mode in ``__init__``
+    and builds its BasicTransformerBlock list inside that helper.  Stopping at
+    the literal ``__init__`` loses the exact block and falls back to every block
+    class in the package.
+    """
+    try:
+        tree = ast.parse(Path(model_info.source_file).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, UnicodeDecodeError):
+        return set()
+    cls = next((n for n in ast.walk(tree)
+                if isinstance(n, ast.ClassDef) and n.name == architecture), None)
+    if cls is None:
+        return set()
+    methods = {node.name: node for node in cls.body
+               if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    stack = [methods.get("__init__")]
+    seen: set[str] = set()
+    found: set[str] = set()
+    while stack:
+        method = stack.pop()
+        if method is None or method.name in seen:
+            continue
+        seen.add(method.name)
+        found |= set(_module_list_elems(method).values()) & all_blocks
+        for call in ast.walk(method):
+            if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                    and isinstance(call.func.value, ast.Name) and call.func.value.id == "self"
+                    and call.func.attr in methods and call.func.attr not in seen):
+                stack.append(methods[call.func.attr])
+    return found
+
+
+def _resolve_drill_closure(blocks, registry, vocab, drill_role, view_key):
+    """Resolve one rendered leaf drill to concrete callable(s) under its block.
+
+    Unlike the former same-role union, candidates start at the exact AutoModel's
+    repeated block and follow the field that owns this drill.  Multiple candidates
+    are accepted only when their transitive op sets are identical; otherwise the
+    view is ambiguous and the caller reports ``unresolved``.
+    """
+    type_role = vocab["drill_role_to_type"].get(drill_role)
+    if not type_role:
+        return None
+    direct = _direct_role_classes(blocks, registry, type_role, vocab)
+    direct = _view_class_candidates(direct, view_key, vocab)
+    candidates = direct
+    if drill_role == "expert":
+        candidates = _expert_classes(direct, registry, shared="shared" in view_key.lower())
+        if not candidates:
+            candidates = direct             # fused experts live in the MoE callable itself
+    return _unique_candidate_closure(candidates, blocks, registry, vocab)
+
+
+def _view_class_candidates(candidates: set[str], view_key: str, vocab) -> set[str]:
+    markers = vocab.get("drill_class_markers", {})
+    lc = view_key.lower()
+    selected_markers = [subs for view, subs in markers.items() if view in lc]
+    if selected_markers:
+        wanted = [marker for subs in selected_markers for marker in subs]
+        selected = {name for name in candidates
+                    if any(marker.lower() in name.lower() for marker in wanted)}
+        return selected or candidates
+    specialized = [marker for subs in markers.values() for marker in subs]
+    ordinary = {name for name in candidates
+                if not any(marker.lower() in name.lower() for marker in specialized)}
+    return ordinary or candidates
+
+
+def _resolve_selection_closure(blocks, registry, vocab):
+    """Resolve router/indexer selection to its concrete route callable."""
+    containers = (_direct_role_classes(blocks, registry, "ffn", vocab)
+                  | _direct_role_classes(blocks, registry, "attention", vocab))
+    routes: set[str] = set()
+    for container in containers:
+        routes |= _direct_role_classes([container], registry, "route", vocab)
+    candidates = routes | containers
+    if not candidates:
+        return None
+    # Selection work is commonly split between the exact container and its exact
+    # gate/indexer child (projection in one, top-k/renorm in the other).  Unioning
+    # that ownership path is sound; unioning unrelated same-role siblings was not.
+    resolved = [_unique_candidate_closure({name}, blocks, registry, vocab)
+                for name in sorted(candidates)]
+    resolved = [item for item in resolved if item is not None]
+    if not resolved:
+        return None
+    ops = frozenset().union(*(item[0] for item in resolved))
+    if "route" not in ops:
+        return None                         # selection view, but no exact top-k callable
+    evidence = next((item[1] for item in resolved
+                     if _role_of(item[1].name) == "route"), resolved[0][1])
+    return ops, evidence
+
+
+def _direct_role_classes(starts, registry, role: str, vocab=None) -> set[str]:
+    out: set[str] = set()
+    markers = ((vocab or {}).get("role_field_markers", {}).get(role) or [])
+    for name in starts:
+        info = registry.get(name)
+        if info is None:
+            continue
+        matched: set[str] = set()
+        fallback: set[str] = set()
+        for field, child in info.field_types.items():
+            if child in registry and _role_of(child) == role:
+                fallback.add(child)
+                if not markers or any(marker in field.lower() for marker in markers):
+                    matched.add(child)
+        for field, classes in info.sub_module_classes.items():
+            eligible = {child for child in classes
+                        if child in registry and _role_of(child) == role}
+            fallback |= eligible
+            if not markers or any(marker in field.lower() for marker in markers):
+                matched |= eligible
+        out |= matched or fallback
+    return out
+
+
+def _domain_block_classes(blocks: list[str], domain: str, vocab) -> list[str]:
+    """Separate text/vision/audio block roots when one wrapper file owns all."""
+    markers_by_domain = vocab.get("component_class_markers", {})
+    own = markers_by_domain.get(domain, [])
+    if domain == "text":
+        excluded = [marker for values in markers_by_domain.values() for marker in values]
+        selected = [name for name in blocks if not any(marker.lower() in name.lower()
+                                                        for marker in excluded)]
+    else:
+        selected = [name for name in blocks if any(marker.lower() in name.lower()
+                                                    for marker in own)]
+    return selected or blocks
+
+
+def _expert_classes(containers, registry, *, shared: bool) -> set[str]:
+    """Expert fields directly owned by the resolved MoE container."""
+    out: set[str] = set()
+    for name in containers:
+        info = registry.get(name)
+        if info is None:
+            continue
+        for field, child in info.field_types.items():
+            field_lc = field.lower()
+            if "expert" not in field_lc or ("shared" in field_lc) != shared:
+                continue
+            if child in registry and _role_of(child) == "ffn":
+                out.add(child)
+        for field, classes in info.sub_module_classes.items():
+            field_lc = field.lower()
+            if "expert" not in field_lc or ("shared" in field_lc) != shared:
+                continue
+            out |= {child for child in classes
+                    if child in registry and _role_of(child) == "ffn"}
+    return out
+
+
+def _unique_candidate_closure(candidates, blocks, registry, vocab):
+    if not candidates:
+        return None
+    proc_markers = vocab["processor_markers"]
+    block_procs: set[str] = set()
+    for name in blocks:
+        block_procs |= _processor_refs(registry.get(name), proc_markers)
+    resolved: list[tuple[frozenset[str], object]] = []
+    for name in sorted(candidates):
+        info = registry.get(name)
+        if info is None:
+            continue
+        envs = _constructor_envs(blocks, name, registry)
+        selected_refs = _selected_init_refs(info, envs)
+        if _has_ambiguous_init_variants(info, registry, vocab, selected_refs):
+            return None
+        extra = _processor_refs(info, proc_markers) | frozenset(block_procs) \
+            if _role_of(name) == "attention" else frozenset()
+        extra |= frozenset(ref for ref in selected_refs if ref in registry)
+        ops = transitive_closure(name, registry, vocab, extra_class_refs=extra)[0]
+        if ops:
+            resolved.append((ops, info))
+    if not resolved:
+        return None
+    distinct = {ops for ops, _info in resolved}
+    if len(distinct) != 1:
+        return None                         # several real variants; view attribution missing
+    return resolved[0]
+
+
+def _has_ambiguous_init_variants(info, registry, vocab, selected_refs=frozenset()) -> bool:
+    """True when a callable constructs several alternative activation modules.
+
+    Diffusers ``FeedForward`` selects GELU/GEGLU/SwiGLU from a constructor
+    argument.  Until that argument is propagated from the owning block, choosing
+    whichever AST branch happened to be visited last is unsound; make the drill
+    unresolved instead of issuing a false fabricated/missing result.
+    """
+    variants = [name for name in (selected_refs or info.init_class_refs)
+                if name in registry and _role_of(name) == "activation"]
+    op_sets = {transitive_closure(name, registry, vocab)[0] for name in variants}
+    return len(op_sets) > 1
+
+
+def _constructor_envs(blocks, candidate: str, registry) -> list[dict[str, object]]:
+    """Literal kwargs passed by exact owning blocks to ``candidate(...)``."""
+    envs: list[dict[str, object]] = []
+    for block in blocks:
+        info = registry.get(block)
+        if info is None:
+            continue
+        try:
+            tree = ast.parse(Path(info.source_file).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        cls = next((n for n in ast.walk(tree)
+                    if isinstance(n, ast.ClassDef) and n.name == block), None)
+        init = _method(cls, "__init__") if cls is not None else None
+        if init is None:
+            continue
+        defaults = _literal_param_defaults(init)
+        for node in ast.walk(init):
+            if not isinstance(node, ast.Call) or _call_name(node.func) != candidate:
+                continue
+            env: dict[str, object] = {}
+            for kw in node.keywords:
+                if kw.arg and isinstance(kw.value, ast.Constant):
+                    env[kw.arg] = kw.value.value
+                elif kw.arg and isinstance(kw.value, ast.Name) and kw.value.id in defaults:
+                    env[kw.arg] = defaults[kw.value.id]
+            envs.append(env)
+    return envs
+
+
+def _literal_param_defaults(fn: ast.FunctionDef) -> dict[str, object]:
+    args = [*fn.args.posonlyargs, *fn.args.args]
+    defaults: dict[str, object] = {}
+    if fn.args.defaults:
+        for arg, value in zip(args[-len(fn.args.defaults):], fn.args.defaults):
+            if isinstance(value, ast.Constant):
+                defaults[arg.arg] = value.value
+    for arg, value in zip(fn.args.kwonlyargs, fn.args.kw_defaults):
+        if isinstance(value, ast.Constant):
+            defaults[arg.arg] = value.value
+    return defaults
+
+
+def _selected_init_refs(info, envs: list[dict[str, object]]) -> frozenset[str]:
+    """Constructed classes on the statically selected ``__init__`` branches."""
+    if not envs:
+        return frozenset()
+    try:
+        tree = ast.parse(Path(info.source_file).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, UnicodeDecodeError):
+        return frozenset()
+    cls = next((n for n in ast.walk(tree)
+                if isinstance(n, ast.ClassDef) and n.name == info.name), None)
+    init = _method(cls, "__init__") if cls is not None else None
+    if init is None:
+        return frozenset()
+    refs: set[str] = set()
+    for env in envs:
+        _collect_selected_calls(init.body, env, refs)
+    return frozenset(refs)
+
+
+def _collect_selected_calls(statements, env: dict[str, object], refs: set[str]) -> None:
+    for statement in statements:
+        if isinstance(statement, ast.If):
+            decision = _eval_static_condition(statement.test, env)
+            if decision is True:
+                _collect_selected_calls(statement.body, env, refs)
+            elif decision is False:
+                _collect_selected_calls(statement.orelse, env, refs)
+            else:                               # unknown condition: preserve both
+                _collect_selected_calls(statement.body, env, refs)
+                _collect_selected_calls(statement.orelse, env, refs)
+            continue
+        for node in ast.walk(statement):
+            if isinstance(node, ast.Call):
+                name = _call_name(node.func)
+                if name:
+                    refs.add(name)
+
+
+def _eval_static_condition(node: ast.AST, env: dict[str, object]) -> bool | None:
+    """Evaluate literal constructor-argument guards; unknown stays unknown."""
+    if isinstance(node, ast.BoolOp):
+        values = [_eval_static_condition(value, env) for value in node.values]
+        if isinstance(node.op, ast.And):
+            return False if False in values else True if all(v is True for v in values) else None
+        return True if True in values else False if all(v is False for v in values) else None
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        value = _eval_static_condition(node.operand, env)
+        return None if value is None else not value
+    if not isinstance(node, ast.Compare) or len(node.ops) != 1:
+        return None
+    left = env.get(node.left.id) if isinstance(node.left, ast.Name) else None
+    if isinstance(node.left, ast.Name) and node.left.id not in env:
+        return None
+    rhs_node = node.comparators[0]
+    if isinstance(rhs_node, ast.Constant):
+        right = rhs_node.value
+    elif isinstance(rhs_node, (ast.Tuple, ast.List)) and all(isinstance(e, ast.Constant) for e in rhs_node.elts):
+        right = tuple(e.value for e in rhs_node.elts)
+    else:
+        return None
+    op = node.ops[0]
+    if isinstance(op, (ast.Eq, ast.Is)):
+        return left == right
+    if isinstance(op, (ast.NotEq, ast.IsNot)):
+        return left != right
+    if isinstance(op, ast.In):
+        return left in right
+    if isinstance(op, ast.NotIn):
+        return left not in right
+    return None
 
 
 def _reachable_submodules(starts, registry, *, max_depth: int = 4) -> set[str]:
@@ -394,7 +773,16 @@ def _drill_role(view_key: str, vocab) -> str | None:
     return None
 
 
-def _diff_drill(family, view_key, drill_role, drawn, code_ops, cls, vocab, ab) -> list[ConformanceProblem]:
+def _drill_domain(view_key: str, vocab) -> str:
+    """Map a rendered view to its delegated component using YAML vocabulary."""
+    lc = view_key.lower()
+    for domain, subs in vocab["component_view_markers"].items():
+        if any(sub in lc for sub in subs):
+            return domain
+    return "text"
+
+
+def _diff_drill(family, view_key, drill_role, drawn, code_ops, evidence, vocab, ab) -> list[ConformanceProblem]:
     key = f"{family}/{view_key}"
     drawn_ignore = vocab["drawn_ignore"]
     semantic = vocab["semantic_kinds"]
@@ -408,7 +796,14 @@ def _diff_drill(family, view_key, drill_role, drawn, code_ops, cls, vocab, ab) -
     out: list[ConformanceProblem] = []
 
     def _prob(kind, op):
-        return ConformanceProblem(kind, op, key, cls)
+        class_name = evidence.name if hasattr(evidence, "name") else str(evidence or "")
+        return ConformanceProblem(
+            kind, op, key,
+            class_name,
+            getattr(evidence, "source_file", ""),
+            getattr(evidence, "line", None),
+            getattr(evidence, "component", ""),
+        )
 
     # An OPAQUE drill (honest-unknown: the parser drew a single ``opaque`` block
     # because it could not decompose the sub-module) makes NO claim — it must not be
@@ -595,7 +990,10 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
     problems: list[ConformanceProblem] = []
 
     def _prob(kind: str, op: str) -> ConformanceProblem:
-        return ConformanceProblem(kind, op, key, code.class_name, code.source_file, code.forward_line)
+        return ConformanceProblem(
+            kind, op, key, code.class_name, code.source_file,
+            code.forward_line, code.component,
+        )
 
     # code -> diagram: missing
     for op in sorted(cset):
@@ -642,6 +1040,39 @@ def _is_block_class(name: str) -> bool:
 
 _TEXT_WRAPPERS = ("text_config", "language_config", "llm_config",
                   "text_model_config", "thinker_config")
+
+
+def _component_source(bundle, domain: str) -> tuple[str, tuple[str, ...]]:
+    """Select one qualified component oracle without blending sibling towers.
+
+    ``SourceBundle.files`` is intentionally flat for compatibility; conformance
+    must use ``component_files``.  A multimodal model's decoder views belong to
+    its text/language component, vision drills to its vision component, and so
+    on.  If no delegated component exists (ordinary text model or a Diffusers
+    model), ``root`` remains the honest source.
+    """
+    component_files = getattr(bundle, "component_files", None)
+    groups = component_files or ({"root": bundle.files} if bundle.files else {})
+    if not groups:
+        return "root", ()
+
+    def segments(path: str) -> tuple[str, ...]:
+        return tuple(part.lower() for part in path.split("."))
+
+    if domain == "text":
+        exact = {name.lower() for name in _TEXT_WRAPPERS}
+        candidates = [name for name in groups
+                      if any(part in exact for part in segments(name))]
+    else:
+        marker = domain.lower()
+        candidates = [name for name in groups
+                      if any(marker in part for part in segments(name))]
+    if not candidates:
+        return ("root", tuple(groups.get("root", bundle.files)))
+    # Prefer the deepest qualified config path; nested composite configs can
+    # contain another text/vision config and the leaf owns the concrete class.
+    chosen = sorted(candidates, key=lambda name: (-name.count("."), name))[0]
+    return chosen, tuple(groups[chosen])
 
 
 def _op_is_dormant(op: str, code: ForwardOps, cfg) -> bool:
@@ -727,7 +1158,7 @@ def _augment_diffusion_files(files: tuple[str, ...]) -> tuple[str, ...]:
         parts = p.parts
         if "models" in parts:
             models_root = Path(*parts[: parts.index("models") + 1])
-            for sib in ("attention.py", "attention_processor.py", "normalization.py"):
+            for sib in ("attention.py", "attention_processor.py", "normalization.py", "activations.py"):
                 cand = models_root / sib
                 if cand.exists() and str(cand) not in out:
                     out.append(str(cand))

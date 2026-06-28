@@ -24,6 +24,7 @@ _TITLES = {
     "recurrent": "linear recurrent unit",
     "rwkv": "RWKV token mixing",
     "linear": "linear attention",
+    "gated_delta": "Gated DeltaNet token mixer",
 }
 _VIEW_KEYS = {
     "gqa": "gqa-attn",
@@ -33,6 +34,7 @@ _VIEW_KEYS = {
     "recurrent": "recurrent",
     "rwkv": "rwkv",
     "linear": "linear-attn",
+    "gated_delta": "gated-delta",
 }
 
 

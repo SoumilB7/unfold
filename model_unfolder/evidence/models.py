@@ -24,6 +24,14 @@ class SourceBundle:
     architecture: str | None = None
     model_id: str | None = None
     warnings: tuple[str, ...] = ()
+    # Qualified HF config path -> the files selected by that component.  ``files``
+    # remains the stable deduplicated flat API; this map preserves ownership so
+    # text/vision/audio evidence is never blended merely because one wrapper
+    # delegates to several model families.  A shared implementation file may
+    # intentionally appear in more than one component tuple.
+    component_files: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    component_model_types: dict[str, str] = field(default_factory=dict)
+    component_architectures: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -73,6 +81,7 @@ class ForwardOps:
 
     class_name: str
     source_file: str
+    component: str = "root"
     forward_line: int | None = None
     op_kinds: frozenset[str] = frozenset()
     field_types: dict[str, str] = field(default_factory=dict)   # self.<name> -> constructed class
@@ -102,6 +111,7 @@ class ForwardOps:
         return {
             "class_name": self.class_name,
             "source_file": self.source_file,
+            "component": self.component,
             "forward_line": self.forward_line,
             "op_kinds": sorted(self.op_kinds),
             "field_types": dict(sorted(self.field_types.items())),

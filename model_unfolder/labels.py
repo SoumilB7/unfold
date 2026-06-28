@@ -53,6 +53,7 @@ _KIND_SHORT = {
     "ssm": "SSM",
     "recurrent": "LRU",
     "linear": "Lin-Attn",
+    "gated_delta": "Gated-Delta",
     "rwkv": "RWKV",
 }
 _KIND_LONG = {
@@ -63,6 +64,7 @@ _KIND_LONG = {
     "ssm": "Selective state-space model (Mamba)",
     "recurrent": "Linear Recurrent Unit (LRU)",
     "linear": "Linear attention",
+    "gated_delta": "Gated DeltaNet recurrent mixer",
     "rwkv": "RWKV token-mixing",
 }
 _ACTIVATION_LABELS = {
@@ -234,6 +236,11 @@ def describe_attention(attention: dict) -> str:
             f"{attention.get('num_kv_heads')} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
+    elif kind == "gated_delta":
+        text = (
+            "Gated delta-rule recurrence; causal depthwise convolution; "
+            f"{attention.get('num_kv_heads')} K / {attention.get('num_heads')} V heads"
+        )
     else:
         text = (
             f"Multi-head; {attention.get('num_heads')} heads; "
@@ -323,6 +330,12 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     elif kind == "linear":
         desc = "Linear attention — kernelized scores accumulate in linear time."
         _head_facts(attention, facts)
+    elif kind == "gated_delta":
+        desc = ("Gated DeltaNet — causal depthwise convolution feeds a gated "
+                "delta-rule recurrence with cached recurrent state.")
+        if attention.get("conv_kernel_size"):
+            facts.append(f"conv kernel {attention.get('conv_kernel_size')}")
+        _head_facts(attention, facts)
     else:
         desc = "Multi-head self-attention — every head attends over the sequence."
         facts.append(f"{attention.get('num_heads')} heads")
@@ -357,6 +370,8 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         # as a chip so the block reads as VIDEO (a 3rd, time, dimension) without
         # drilling into the attention's "apply RoPE" leaves.
         facts.append("3D RoPE · T·H·W")
+    if attention.get("output_gate"):
+        facts.append(f"{attention['output_gate']} output gate")
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
@@ -476,6 +491,8 @@ def attention_label(attention: AttentionSpec) -> list[str]:
         return ["RWKV", "Token-Mixing"]
     if kind == "linear":
         return ["Linear", "Attention"]
+    if kind == "gated_delta":
+        return ["Gated DeltaNet", "Token Mixer"]
 
     tags = []
     if attention.qk_norm:
@@ -507,6 +524,7 @@ def attention_title(attention: AttentionSpec) -> str:
             "recurrent": "Linear Recurrent Unit (LRU)",
             "rwkv": "RWKV token-mixing",
             "linear": "Linear attention",
+            "gated_delta": "Gated DeltaNet token mixer",
         }.get(attention.kind, "Attention")
     base = _prefixed_title(_attention_mask_title_prefix(attention), base)
     extras = []

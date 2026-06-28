@@ -243,6 +243,8 @@ def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = 
         return _sdpa_region(attn, hidden)
     if kind == "mla":
         return _mla_region(attn, hidden)
+    if kind == "gated_delta":
+        return _gated_delta_region(attn, hidden)
     if kind == "ssm":
         return _ssm_region(attn, hidden)
     if kind == "recurrent":
@@ -306,7 +308,8 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
 
     ops = [
         Op("hidden", "input", out_features=hidden),
-        Op("q_proj", "linear", "Linear (Q)", in_features=hidden, out_features=q_w),
+        Op("q_proj", "linear", "Linear (Q + gate)" if attn.get("output_gate") else "Linear (Q)",
+           in_features=hidden, out_features=q_w),
         Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
            meta={"cached": cached}),
         Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
@@ -323,6 +326,23 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         Edge("v_proj", "attn_apply_v"),
         *core_edges,
     ]
+    q_source = "q_proj"
+    if attn.get("output_gate"):
+        ops += [
+            Op("q_gate_split", "slice", "Split Q / gate"),
+            Op("attn_output_gate", "activation", "Sigmoid gate", fn="sigmoid"),
+            Op("attn_output_mul", "elementwise", fn="mul"),
+        ]
+        q_source = "q_gate_split"
+        edges += [
+            Edge("q_proj", "q_gate_split"),
+            Edge("q_gate_split", "attn_output_gate"),
+            Edge("attn_output_gate", "attn_output_mul"),
+            Edge("concat_heads", "attn_output_mul"),
+            Edge("attn_output_mul", "o_proj"),
+        ]
+        edges = [edge for edge in edges
+                 if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
     # RoPE: the real forward rotates Q and K before the scores (apply_rotary_pos_emb).
     # Show it on the Q and K lanes — unless the family doesn't use RoPE (ALiBi /
     # learned absolute) or this specific layer is NoPE (Llama-4 interleaved NoPE).
@@ -332,11 +352,11 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Op("k_rope", "rope", ["apply RoPE", "K"]),
         ]
         edges += [
-            Edge("q_proj", "q_rope"), Edge("q_rope", "scaled_scores"),
+            Edge(q_source, "q_rope"), Edge("q_rope", "scaled_scores"),
             Edge("k_proj", "k_rope"), Edge("k_rope", "scaled_scores"),
         ]
     else:
-        edges += [Edge("q_proj", "scaled_scores"), Edge("k_proj", "scaled_scores")]
+        edges += [Edge(q_source, "scaled_scores"), Edge("k_proj", "scaled_scores")]
     return Region("attention", "attention", kind, ops, edges, template=kind)
 
 
@@ -345,8 +365,6 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
     compressed-KV path (both :func:`subgraph` ops with their own regions)
     feeding the shared SDPA spine."""
     heads, _, head_dim, q_w, _ = _head_geometry(attn, hidden)
-    q_rank = attn.get("q_lora_rank")
-    kv_rank = attn.get("kv_lora_rank")
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_query_path", "subgraph", "Query path",
@@ -381,7 +399,6 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
 def mla_query_region(attn: dict, hidden: int | None) -> Region:
     """The MLA query path: (LoRA) projection, NoPE/RoPE split, RoPE, concat."""
     q_rank = attn.get("q_lora_rank")
-    rope = attn.get("rope_dim")
     _, _, _, q_w, _ = _head_geometry(attn, hidden)
     ops = [
         Op("hidden", "input", out_features=hidden),
@@ -405,7 +422,6 @@ def mla_kv_region(attn: dict, hidden: int | None) -> Region:
     """The MLA compressed-KV path: compress → latent cache → expand, with the
     RoPE key side-channel branching pre-cache and V leaving as its own output."""
     kv_rank = attn.get("kv_lora_rank")
-    rope = attn.get("rope_dim")
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_kv_down", "linear", "KV compression",
@@ -430,7 +446,6 @@ def mla_kv_region(attn: dict, hidden: int | None) -> Region:
 
 
 def _ssm_region(attn: dict, hidden: int | None) -> Region:
-    state = attn.get("head_dim")
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("ssm_in_proj", "linear", "Input projection", in_features=hidden),
@@ -491,6 +506,54 @@ def _linear_attention_region(attn: dict, hidden: int | None) -> Region:
         Edge("linear_mix", "o_proj"),
     ]
     return Region("attention", "attention", "linear", ops, edges, template="linear_attention")
+
+
+def _gated_delta_region(attn: dict, hidden: int | None) -> Region:
+    """Gated delta-rule recurrent mixer used in hybrid decoder stacks.
+
+    This is deliberately not the generic kernelized-linear-attention template:
+    the real computation has a causal depthwise conv, beta/decay gates, a
+    chunk-or-recurrent delta-rule state update, and a z-gated output norm.
+    """
+    k_heads = attn.get("num_kv_heads")
+    v_heads = attn.get("num_heads")
+    k_dim = attn.get("head_dim")
+    v_dim = attn.get("v_head_dim")
+    ops = [
+        Op("hidden", "input", out_features=hidden),
+        Op("delta_qkv_proj", "linear", "Q/K/V projection", in_features=hidden),
+        Op("delta_z_proj", "linear", "Output gate (z)", in_features=hidden),
+        Op("delta_beta_proj", "linear", "Beta projection", in_features=hidden),
+        Op("delta_decay_proj", "linear", "Decay projection", in_features=hidden),
+        Op("delta_conv", "conv", "Causal depthwise Conv1d",
+           meta={"kernel_size": attn.get("conv_kernel_size")}),
+        Op("delta_qkv_split", "slice", "Split Q / K / V"),
+        Op("delta_beta", "activation", "Sigmoid beta", fn="sigmoid"),
+        Op("delta_decay", "activation", "Decay gate", fn="softplus_exp"),
+        Op("delta_rule", "attention_core", "Gated delta rule", fn="gated_delta_rule",
+           meta={"key_heads": k_heads, "value_heads": v_heads,
+                 "key_head_dim": k_dim, "value_head_dim": v_dim}),
+        Op("delta_gated_norm", "norm", "Gated RMSNorm"),
+        Op("delta_out_proj", "linear", "Output projection", out_features=hidden),
+    ]
+    edges = [
+        Edge("hidden", "delta_qkv_proj"),
+        Edge("hidden", "delta_z_proj"),
+        Edge("hidden", "delta_beta_proj"),
+        Edge("hidden", "delta_decay_proj"),
+        Edge("delta_qkv_proj", "delta_conv"),
+        Edge("delta_conv", "delta_qkv_split"),
+        Edge("delta_qkv_split", "delta_rule"),
+        Edge("delta_beta_proj", "delta_beta"),
+        Edge("delta_beta", "delta_rule"),
+        Edge("delta_decay_proj", "delta_decay"),
+        Edge("delta_decay", "delta_rule"),
+        Edge("delta_rule", "delta_gated_norm"),
+        Edge("delta_z_proj", "delta_gated_norm"),
+        Edge("delta_gated_norm", "delta_out_proj"),
+    ]
+    return Region("attention", "attention", "gated_delta", ops, edges,
+                  template="gated_delta")
 
 
 def _chain(ids: list[str]) -> list[Edge]:
