@@ -33,21 +33,14 @@ import functools
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..everchanging import (
-    load_conformance_op_tokens,
-    load_conformance_transitive,
-    load_conformance_type_roles,
-)
 from .ast_scanner import _call_name
 from .forward_ops import (
     _binop_op_kind,
     _call_op_kind,
-    _method,
+    _field_types,
+    _init_class_refs,
     _self_field,
 )
-
-_OP_TOKENS: dict[str, str] = load_conformance_op_tokens()
-_ROLE_PRIORITY, _ROLE_SUBSTR = load_conformance_type_roles()
 
 
 @dataclass(frozen=True)
@@ -191,7 +184,7 @@ def _scan_class(node: ast.ClassDef, source_file: str) -> CallableInfo | None:
     if entry is None:
         return None
     init = methods.get("__init__")
-    field_types = _init_field_types(init)
+    field_types = _field_types(init)            # shared with forward_ops — no twin
     sub_mods = _init_sub_modules(init)
 
     # Fold every SELF-METHOD helper reachable from the entry into one body view, so
@@ -336,28 +329,6 @@ def _bound_free_fn(value: ast.AST) -> str | None:
 # __init__ scanning (sub-module discovery)
 # ---------------------------------------------------------------------------
 
-def _init_field_types(init: ast.FunctionDef | None) -> dict[str, str]:
-    """``self.x = Cls(...)`` / ``self.x = ACT2FN[...]`` -> ``{x: Cls}``."""
-    types: dict[str, str] = {}
-    if init is None:
-        return types
-    for child in ast.walk(init):
-        if not isinstance(child, ast.Assign):
-            continue
-        cls: str | None = None
-        if isinstance(child.value, ast.Call):
-            cls = _call_name(child.value.func)
-        elif isinstance(child.value, ast.Subscript) and isinstance(child.value.value, ast.Name):
-            cls = child.value.value.id
-        if not cls:
-            continue
-        for target in child.targets:
-            fld = _self_field(target)
-            if fld is not None:
-                types.setdefault(fld, cls)
-    return types
-
-
 def _init_sub_modules(init: ast.FunctionDef | None) -> dict[str, frozenset[str]]:
     """``field -> {elem classes}`` for ModuleList/Sequential built three ways:
     a literal/comprehension (``ModuleList([Block() for _])``), or appends
@@ -422,15 +393,3 @@ def _list_elem_classes(args: list, local_classes: dict[str, str]) -> set[str]:
                 if cls:
                     out.add(cls)
     return out
-
-
-def _init_class_refs(init: ast.FunctionDef | None) -> frozenset[str]:
-    if init is None:
-        return frozenset()
-    refs: set[str] = set()
-    for child in ast.walk(init):
-        if isinstance(child, ast.Call):
-            name = _call_name(child.func)
-            if name:
-                refs.add(name)
-    return frozenset(refs)

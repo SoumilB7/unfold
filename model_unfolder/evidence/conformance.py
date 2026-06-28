@@ -24,7 +24,6 @@ from ..everchanging import (
     load_conformance_fact_markers,
     load_conformance_map,
     load_conformance_transitive,
-    load_conformance_type_roles,
     load_conformance_wiring_roles,
 )
 from .forward_ops import _role_of, extract_forward_ops
@@ -278,8 +277,6 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
     # the SELECTION closure: routing top-k lives in the MoE container (ffn-role,
     # folded from its self-method) AND/OR the gate/indexer (route-role).
     sel_ops = role_closures.get("ffn", (frozenset(),))[0] | role_closures.get("route", (frozenset(),))[0]
-    sel_tokens = (role_closures.get("ffn", (None, frozenset()))[1]
-                  | role_closures.get("route", (None, frozenset()))[1])
     # per-block TRANSITIVE closures for the composite check — a composite draws
     # sub-CONTAINER glyphs (expert / router / the expert-combine ⊕) whose op may
     # live one level down (the combine is the experts' ``index_add_``), so the
@@ -299,15 +296,14 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
         if category == "composite":
             problems.extend(_diff_composite(family, view_key, drawn, block_closure_sets, vocab, ab))
         elif category == "selection":
-            problems.extend(_diff_selection(family, view_key, drill_role, drawn,
-                                            sel_ops, sel_tokens, vocab, ab))
+            problems.extend(_diff_selection(family, view_key, drill_role, drawn, sel_ops, vocab, ab))
         else:
             type_role = vocab["drill_role_to_type"].get(drill_role)
             closure = role_closures.get(type_role)
             if not closure or not closure[0]:
                 continue                 # opaque delegation — honest-unknown, skip
-            ops, tokens, cls = closure
-            problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, tokens, cls, vocab, ab))
+            ops, cls = closure
+            problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, cls, vocab, ab))
     return problems
 
 
@@ -320,9 +316,9 @@ def _block_classes(registry) -> list[str]:
             if any(_role_of(c) in ("attention", "ffn") for c in info.field_types.values())]
 
 
-def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], frozenset[str], str]]:
-    """``type_role -> (union_ops, union_tokens, representative_class)`` over the
-    model's reachable sub-module classes carrying that role.
+def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], str]]:
+    """``type_role -> (union_ops, representative_class)`` over the model's reachable
+    sub-module classes carrying that role.
 
     Starts at the ModuleList-built BLOCK classes, walks their ``field_types`` +
     ``sub_module_classes`` to gather every reachable sub-module (the Attention, the
@@ -343,21 +339,19 @@ def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], fro
     # ``__call__`` (where the SDPA compute AND ``apply_rotary_emb`` live) is named
     # by the BLOCK, not the Attention class.  Gather every processor class built by
     # any block or attention class and inject them into the attention closure.
+    proc_markers = vocab["processor_markers"]
     block_procs: set[str] = set()
     for name in (*blocks, *by_role.get("attention", [])):
-        block_procs |= _processor_refs(registry.get(name))
+        block_procs |= _processor_refs(registry.get(name), proc_markers)
 
-    out: dict[str, tuple[frozenset[str], frozenset[str], str]] = {}
+    out: dict[str, tuple[frozenset[str], str]] = {}
     for role, classes in by_role.items():
         ops: set[str] = set()
-        toks: set[str] = set()
         for cls in classes:
-            extra = (_processor_refs(registry.get(cls)) | frozenset(block_procs)) \
+            extra = (_processor_refs(registry.get(cls), proc_markers) | frozenset(block_procs)) \
                 if role == "attention" else frozenset()
-            c_ops, c_toks = transitive_closure(cls, registry, vocab, extra_class_refs=extra)
-            ops |= c_ops
-            toks |= c_toks
-        out[role] = (frozenset(ops), frozenset(toks), sorted(classes, key=lambda n: (len(n), n))[0])
+            ops |= transitive_closure(cls, registry, vocab, extra_class_refs=extra)[0]
+        out[role] = (frozenset(ops), sorted(classes, key=lambda n: (len(n), n))[0])
     return out
 
 
@@ -386,10 +380,10 @@ def _reachable_submodules(starts, registry, *, max_depth: int = 4) -> set[str]:
     return out
 
 
-def _processor_refs(info) -> frozenset[str]:
+def _processor_refs(info, markers) -> frozenset[str]:
     if info is None:
         return frozenset()
-    return frozenset(r for r in info.init_class_refs if "Processor" in r)
+    return frozenset(r for r in info.init_class_refs if any(m in r for m in markers))
 
 
 def _drill_role(view_key: str, vocab) -> str | None:
@@ -400,8 +394,7 @@ def _drill_role(view_key: str, vocab) -> str | None:
     return None
 
 
-def _diff_drill(family, view_key, drill_role, drawn, code_ops, code_tokens,
-                cls, vocab, ab) -> list[ConformanceProblem]:
+def _diff_drill(family, view_key, drill_role, drawn, code_ops, cls, vocab, ab) -> list[ConformanceProblem]:
     key = f"{family}/{view_key}"
     drawn_ignore = vocab["drawn_ignore"]
     semantic = vocab["semantic_kinds"]
@@ -448,8 +441,7 @@ def _diff_drill(family, view_key, drill_role, drawn, code_ops, code_tokens,
     return out
 
 
-def _diff_selection(family, view_key, drill_role, drawn, code_ops, code_tokens,
-                    vocab, ab) -> list[ConformanceProblem]:
+def _diff_selection(family, view_key, drill_role, drawn, code_ops, vocab, ab) -> list[ConformanceProblem]:
     """Diff a ROUTER / INDEXER selection drill against the SELECTION closure.
 
     The drill's structural selection steps — the top-k glyph (``select`` -> code
@@ -500,8 +492,9 @@ def _diff_composite(family, view_key, drawn, block_sets, vocab, ab) -> list[Conf
     key = f"{family}/{view_key}"
     cmap = vocab["composite_container_map"]
     omit = ab["omit_global"]
-    # drop ports / sources / layout sugar, keep+map the real containers
-    drop = {"port", "formula", "subgraph", "opaque", "output", "source", "embedding"}
+    # drop ports / sources / layout sugar (the drawn_ignore set) but KEEP the real
+    # container glyphs we map (expert / shared_expert / router), then map them.
+    drop = vocab["drawn_ignore"] - set(cmap)
     drawn_mapped = {cmap.get(k, k) for k in drawn if k not in drop and k not in omit}
     if "opaque" in drawn or not drawn_mapped or not block_sets:
         return []

@@ -82,13 +82,21 @@ drill_category: [route=selection, indexer=selection, composite=composite]
 
 # SALIENT omissions (code->diagram) per role — the ONLY missing-ops checked at
 # drill altitude, because deep following brings incidental ops (a processor's
-# optional residual/rescale, eager scaling) a faithful drill never draws.  A
-# gated FFN/expert MUST draw its gate + activation (the dense-vs-gated bug); a
-# router/indexer MUST draw its top-k (select) when the code routes.  "role=op[,op]";
-# absent role = fabrication-only.
+# optional residual/rescale, eager scaling) a faithful drill never draws.
+#
+# A router/indexer MUST draw its top-k (``select`` -> code ``route``) when the code
+# routes — this is SOUND: a drill is classified `route`/`indexer` only when its
+# view_key says so, and there is no "dense router", so no conflation.
+#
+# NOTE — NO ffn/expert salient (the dense-vs-gated gate).  It cannot be done
+# soundly here: the diff resolves a role against the UNION of the model's same-role
+# sub-modules (to avoid multimodal text-vs-vision attribution), and that union
+# conflates a GATED text MLP with a DENSE vision MLP — so "the union has gate_mul"
+# does NOT mean THIS drill's FFN is gated, and a dense FFN drawn without a gate
+# would false-flag.  The dense-vs-gated FACT is instead fixed AT THE SOURCE by the
+# code-derived FFN-gating parser rail (decoder_ffn_gated_from_files), so the drill
+# draws gated iff the code gates — one source of truth, no downstream guess.
 drill_salient_missing:
-  - ffn=gate_mul,activation
-  - expert=gate_mul,activation
   - route=route
   - indexer=route
 
@@ -103,6 +111,12 @@ selection_presentation_kinds: [norm, embedding]
 # diff can reconcile the drawn sub-container against the block's own forward.
 # "glyph=op".  (expert/shared_expert are FFN sub-modules; router is the route gate.)
 composite_container_map: [expert=ffn, shared_expert=ffn, router=route]
+
+# Class-name substrings marking a diffusers attention PROCESSOR (the delegate built
+# by the parent block — ``Attention(processor=CogVideoXAttnProcessor2_0())`` — whose
+# ``__call__`` carries the SDPA compute + ``apply_rotary_emb``).  General pattern,
+# not a model name; injected into the attention closure.
+processor_markers: [Processor]
 
 # Drawn-op -> code-ops that ALSO satisfy it in the fabrication check.  A drawn
 # ``linear`` (a projection) is satisfied by a code ``dot_product`` too: a linear

@@ -893,8 +893,10 @@ def test_diffusion_attention_closure_injects_block_processor():
     vocab = load_conformance_transitive()
     closures = _role_union_closures(reg, vocab)
     assert "attention" in closures, "no attention sub-module resolved"
-    _ops, tokens, _cls = closures["attention"]
-    assert any("rotary" in t.lower() for t in tokens), "block-supplied processor not injected"
+    ops, _cls = closures["attention"]
+    # the diffusers Attention.forward itself is empty (it delegates to the processor);
+    # the SDPA compute appears ONLY if the block-supplied processor was injected.
+    assert "dot_product" in ops, "block-supplied processor not injected into the closure"
 
 
 def _cogvideox_cfg():
@@ -912,7 +914,7 @@ def test_nested_conformance_catches_fabricated_op(tmp_path, monkeypatch):
     from model_unfolder.evidence import conformance as conf
 
     # a model whose ffn closure is {linear, activation, gate_mul} (a gated MLP)
-    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), "FakeMLP")}
     monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
     monkeypatch.setattr(conf, "resolve_source_files",
                         lambda *a, **k: type("B", (), {"files": ("x.py",)})())
@@ -924,20 +926,23 @@ def test_nested_conformance_catches_fabricated_op(tmp_path, monkeypatch):
         [p.message for p in problems]
 
 
-def test_nested_conformance_catches_dense_drawn_for_gated_code(tmp_path, monkeypatch):
-    """NEGATIVE CONTROL (the dense-vs-gated bug): an FFN drill that omits the gate
-    while the sub-module's code DOES gate (closure has ``gate_mul``) MUST flag a
-    salient ``missing gate_mul``."""
+def test_dense_ffn_drill_not_false_flagged_when_a_sibling_is_gated(monkeypatch):
+    """SOUNDNESS REGRESSION: there is NO leaf ffn/expert salient `gate_mul` check,
+    because the diff resolves a role against the UNION of same-role sub-modules and
+    a multimodal model has a GATED text MLP next to a DENSE vision MLP — so the
+    union carries `gate_mul` even though THIS (dense) FFN drill correctly omits it.
+    Drawing the dense FFN must stay CLEAN (the dense-vs-gated fact is fixed at the
+    parser by the code-derived gating rail, not guessed here)."""
     from model_unfolder.evidence import conformance as conf
-    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    # union has gate_mul (from a gated sibling) — but a dense drill must NOT flag it
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), "FakeMLP")}
     monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
     monkeypatch.setattr(conf, "resolve_source_files",
                         lambda *a, **k: type("B", (), {"files": ("x.py",)})())
     monkeypatch.setattr(conf, "build_registry", lambda *a, **k: {})
+    monkeypatch.setattr(conf, "_block_classes", lambda *a, **k: [])
     log = [("ffn", frozenset({"linear", "activation", "port"}), frozenset())]   # dense drawn
-    problems = conf.check_nested_conformance({"model_type": "x"}, log)
-    assert any(p.kind == "missing" and p.op == "gate_mul" for p in problems), \
-        [p.message for p in problems]
+    assert conf.check_nested_conformance({"model_type": "x"}, log) == []
 
 
 def test_opaque_drill_makes_no_claim(monkeypatch):
@@ -945,7 +950,7 @@ def test_opaque_drill_makes_no_claim(monkeypatch):
     sub-module, so it drew one ``opaque`` block) must NOT be held to fabrication or
     salient-omission — Sana's GLUMBConv FFN is drawn opaque and must stay clean."""
     from model_unfolder.evidence import conformance as conf
-    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), "FakeMLP")}
     monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
     monkeypatch.setattr(conf, "resolve_source_files",
                         lambda *a, **k: type("B", (), {"files": ("x.py",)})())
@@ -1009,7 +1014,7 @@ def test_selection_drill_requires_topk(monkeypatch):
     ab = load_conformance_abstractions()
     sel = frozenset({"route", "linear", "gate_mul"})
     probs = conf._diff_selection("x", "moe_router", "route",
-                                 frozenset({"linear", "gate_mul", "port"}), sel, frozenset(), v, ab)
+                                 frozenset({"linear", "gate_mul", "port"}), sel, v, ab)
     assert any(p.kind == "missing" and p.op == "route" for p in probs)
 
 
@@ -1022,7 +1027,7 @@ def test_selection_drill_drops_renormalize_and_bias_presentation():
     ab = load_conformance_abstractions()
     sel = frozenset({"route", "linear", "gate_mul"})
     drawn = frozenset({"select", "linear", "gate_mul", "norm", "embedding", "port"})
-    assert conf._diff_selection("x", "moe_router", "route", drawn, sel, frozenset(), v, ab) == []
+    assert conf._diff_selection("x", "moe_router", "route", drawn, sel, v, ab) == []
 
 
 def test_composite_catches_impossible_container_combo():

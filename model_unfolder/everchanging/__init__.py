@@ -302,6 +302,7 @@ def load_conformance_transitive() -> dict:
         "drill_op_equivalents": {k: frozenset(v) for k, v in _kv_list("drill_op_equivalents").items()},
         "selection_presentation_kinds": frozenset(_list("selection_presentation_kinds")),
         "composite_container_map": _kv_str("composite_container_map"),
+        "processor_markers": frozenset(_list("processor_markers")),
     }
 
 
