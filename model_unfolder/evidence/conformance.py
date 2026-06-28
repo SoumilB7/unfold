@@ -238,30 +238,31 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
 
 
 def check_nested_conformance(target, render_log, *, source: str = "local") -> list[ConformanceProblem]:
-    """Recurse INTO every drill view and diff its DRAWN op-set against the
-    TRANSITIVE closure of the backing sub-module's ``forward()`` — one altitude
-    below :func:`check_model_conformance` (which stops at the layer block).
+    """Recurse INTO every drill view and diff its DRAWN op-set against the model's
+    own code — one altitude below :func:`check_model_conformance` (which stops at
+    the layer block).  ``render_log`` is ``graph_engine.drain_render_log()`` after a
+    full render: ``[(view_key, drawn_op_kinds, node_ids), …]`` for every graph the
+    renderer drew (architecture + every drill, to the leaves).
 
-    ``render_log`` is ``graph_engine.drain_render_log()`` after a full render:
-    ``[(view_key, drawn_op_kinds, node_ids), …]`` for every graph the renderer
-    drew (architecture + every drill, to the leaves).  Each drill is classified to
-    a ROLE (attention / ffn / expert / route / vision-*), diffed against the UNION
-    transitive closure of the model's reachable sub-module classes of that role:
+    Each drill is classified to a ROLE, and its role's CATEGORY picks the diff:
 
-    * **fabrication (diagram→code), strict** — a drawn compute op absent from the
-      closure (and not a declared draw_extra) is FABRICATED. The clean, high-value
-      direction (a drill drawing softmax/rope/a gate the code never does).
-    * **salient omission (code→diagram), scoped** — only the per-role
-      ``drill_salient_missing`` ops (a gated FFN/expert MUST draw its gate+act —
-      the dense-vs-gated bug). Deep following brings incidental ops (a processor's
-      optional residual, eager scaling) a faithful drill never draws, so the
-      missing direction is deliberately narrow.
-    * **semantic presence** — a drawn ``rope``/``cache`` glyph must have its marker
-      reachable in the closure's signature tokens, else it is fabricated.
+    * **leaf_compute** (attention / ffn / expert / vision-attn / vision-mlp) — the
+      drawn compute ops vs the sub-module's TRANSITIVE ``forward()`` closure
+      (following sdpa / rotary / the diffusers processor / the FeedForward
+      ModuleList).  Fabrication strict; salient omission scoped (the gate); rope/
+      cache are semantic-only.
+    * **selection** (router / indexer) — the top-k glyph (``select``) must back onto
+      a code ``route`` and the gate onto a ``linear``; the renormalize / e_score-bias
+      are config-driven presentation (dropped).  Diffed against the SELECTION
+      closure (the ffn ∪ route sub-module closures, which carry the routing top-k).
+    * **composite** (the moe container / vision-encoder / mtp block) — a mini-block
+      drawing sub-CONTAINERS (attention / ffn / expert / router): a BLOCK-ALTITUDE
+      check that the drawn containers (glyph→op) correspond to a REAL block type
+      (some block class's own ``forward`` op-set supersets them), never the
+      transitive closure (the sub-containers each have their own leaf drill).
 
-    A role whose closure is EMPTY (an opaque delegation we could not statically
-    follow — e.g. diffusers' append-built FeedForward with library activations) is
-    SKIPPED, never flagged: honest-unknown, not a false fabrication."""
+    A leaf whose closure is EMPTY (an opaque delegation we could not statically
+    follow) is SKIPPED — honest-unknown, not a false fabrication."""
     family = _family(target)
     bundle = resolve_source_files(target, source=source)
     files = _augment_diffusion_files(bundle.files)
@@ -274,25 +275,49 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
     role_closures = _role_union_closures(registry, vocab)
     if not role_closures:
         return []
+    # the SELECTION closure: routing top-k lives in the MoE container (ffn-role,
+    # folded from its self-method) AND/OR the gate/indexer (route-role).
+    sel_ops = role_closures.get("ffn", (frozenset(),))[0] | role_closures.get("route", (frozenset(),))[0]
+    sel_tokens = (role_closures.get("ffn", (None, frozenset()))[1]
+                  | role_closures.get("route", (None, frozenset()))[1])
+    # per-block TRANSITIVE closures for the composite check — a composite draws
+    # sub-CONTAINER glyphs (expert / router / the expert-combine ⊕) whose op may
+    # live one level down (the combine is the experts' ``index_add_``), so the
+    # check is "some block's transitive closure supersets the drawn containers".
+    block_closure_sets = [transitive_closure(b, registry, vocab)[0] for b in _block_classes(registry)]
 
     problems: list[ConformanceProblem] = []
     seen: dict[str, frozenset[str]] = {}
     for view_key, drawn, _ids in render_log:
         # dedup: many layer-groups bake identical drills; keep the richest drawn set
-        if view_key in seen and drawn <= seen[view_key]:
-            continue
         seen[view_key] = seen.get(view_key, frozenset()) | drawn
     for view_key, drawn in seen.items():
         drill_role = _drill_role(view_key, vocab)
         if drill_role is None:
-            continue                     # architecture / container view — not a sub-module drill
-        type_role = vocab["drill_role_to_type"].get(drill_role)
-        closure = role_closures.get(type_role)
-        if not closure or not closure[0]:
-            continue                     # opaque delegation — honest-unknown, skip
-        ops, tokens, cls = closure
-        problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, tokens, cls, vocab, ab))
+            continue                     # architecture view — not a sub-module drill
+        category = vocab["drill_category"].get(drill_role, "leaf_compute")
+        if category == "composite":
+            problems.extend(_diff_composite(family, view_key, drawn, block_closure_sets, vocab, ab))
+        elif category == "selection":
+            problems.extend(_diff_selection(family, view_key, drill_role, drawn,
+                                            sel_ops, sel_tokens, vocab, ab))
+        else:
+            type_role = vocab["drill_role_to_type"].get(drill_role)
+            closure = role_closures.get(type_role)
+            if not closure or not closure[0]:
+                continue                 # opaque delegation — honest-unknown, skip
+            ops, tokens, cls = closure
+            problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, tokens, cls, vocab, ab))
     return problems
+
+
+def _block_classes(registry) -> list[str]:
+    """The model's BLOCK classes — structural, not name-based: any class that builds
+    an attention- or ffn-role submodule (what a transformer/DiT layer IS), so
+    diffusion blocks named ``*Block`` (CogVideoXBlock) are found too, not just
+    ``*DecoderLayer`` / ``*TransformerBlock``."""
+    return [name for name, info in registry.items()
+            if any(_role_of(c) in ("attention", "ffn") for c in info.field_types.values())]
 
 
 def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], frozenset[str], str]]:
@@ -305,20 +330,30 @@ def _role_union_closures(registry, vocab) -> dict[str, tuple[frozenset[str], fro
     unions the transitive closure of each.  Attention classes inject their
     diffusers processor (``init_class_refs`` matching ``Processor``) so the
     delegated ``__call__`` is followed."""
-    blocks = [name for name, info in registry.items() if _is_block_class(name)]
-    reachable = _reachable_submodules(blocks, registry)
+    blocks = _block_classes(registry)
+    reachable = set(blocks) | _reachable_submodules(blocks, registry)
     by_role: dict[str, list[str]] = {}
     for cls in reachable:
         role = _role_of(cls)
         if role:
             by_role.setdefault(role, []).append(cls)
 
+    # diffusers attach the attention PROCESSOR at the PARENT block:
+    # ``Attention(processor=CogVideoXAttnProcessor2_0())`` — so the processor's
+    # ``__call__`` (where the SDPA compute AND ``apply_rotary_emb`` live) is named
+    # by the BLOCK, not the Attention class.  Gather every processor class built by
+    # any block or attention class and inject them into the attention closure.
+    block_procs: set[str] = set()
+    for name in (*blocks, *by_role.get("attention", [])):
+        block_procs |= _processor_refs(registry.get(name))
+
     out: dict[str, tuple[frozenset[str], frozenset[str], str]] = {}
     for role, classes in by_role.items():
         ops: set[str] = set()
         toks: set[str] = set()
         for cls in classes:
-            extra = _processor_refs(registry.get(cls)) if role == "attention" else frozenset()
+            extra = (_processor_refs(registry.get(cls)) | frozenset(block_procs)) \
+                if role == "attention" else frozenset()
             c_ops, c_toks = transitive_closure(cls, registry, vocab, extra_class_refs=extra)
             ops |= c_ops
             toks |= c_toks
@@ -371,6 +406,7 @@ def _diff_drill(family, view_key, drill_role, drawn, code_ops, code_tokens,
     drawn_ignore = vocab["drawn_ignore"]
     semantic = vocab["semantic_kinds"]
     op_map = vocab["drawn_op_map"]
+    equiv = vocab["drill_op_equivalents"]
     omit = ab["omit_global"]
     draw_extra = ab["draw_extra"].get(key, set()) | ab["draw_extra"].get(f"{family}/{drill_role}", set())
     salient = vocab["drill_salient_missing"].get(drill_role, frozenset())
@@ -381,27 +417,99 @@ def _diff_drill(family, view_key, drill_role, drawn, code_ops, code_tokens,
     def _prob(kind, op):
         return ConformanceProblem(kind, op, key, cls)
 
+    # An OPAQUE drill (honest-unknown: the parser drew a single ``opaque`` block
+    # because it could not decompose the sub-module) makes NO claim — it must not be
+    # held to fabrication or omission.  Only a drill that actually DREW a
+    # decomposition is diffed.
+    if "opaque" in drawn or not drawn_compute:
+        return out
+
     # fabrication (diagram -> code): a drawn compute op the closure never performs.
     for op in sorted(drawn_compute):
         if op in code_ops or op in omit or op in draw_extra:
+            continue
+        if equiv.get(op, frozenset({op})) & code_ops:   # a fused-equivalent satisfies it
             continue
         out.append(_prob("fabricated", op))
     # salient omission (code -> diagram): only the role's must-draw ops.
     for op in sorted(salient):
         if op in code_ops and op not in drawn_compute:
             out.append(_prob("missing", op))
-    # semantic presence: a drawn rope/cache glyph needs its marker reachable.
-    for sk in sorted(semantic):
-        if sk in drawn:
-            markers = vocab["semantic_markers"].get(sk, [])
-            if markers and not any(_tok_has_marker(t, markers) for t in code_tokens):
-                out.append(_prob("fabricated", sk))
+    # NOTE: rope/cache are dropped from ``drawn_compute`` above (semantic, not a
+    # compute op) but NOT fabrication-flagged here.  A drill-level "drawn rope but
+    # no rope marker reachable" flag is sensitive to resolution COMPLETENESS — a
+    # multimodal model whose TEXT-decoder source is not loaded leaves the attention
+    # union holding only the (NoPE) audio-encoder attention, so the text drill's
+    # honest rope reads as fabricated.  The positional-scheme axis (NoPE vs RoPE)
+    # is already netted ROBUSTLY at block altitude by fact_conformance, which uses
+    # the config's own ``no_rope`` evidence — so we defer to it rather than risk a
+    # false fabrication here.  (The transitive closure still FOLLOWS rope/processor
+    # delegation; it just isn't the oracle for this one semantic claim.)
     return out
 
 
-def _tok_has_marker(token: str, markers) -> bool:
-    lc = token.lower()
-    return any(m in lc for m in markers if m)
+def _diff_selection(family, view_key, drill_role, drawn, code_ops, code_tokens,
+                    vocab, ab) -> list[ConformanceProblem]:
+    """Diff a ROUTER / INDEXER selection drill against the SELECTION closure.
+
+    The drill's structural selection steps — the top-k glyph (``select`` -> code
+    ``route``) and the gate/score projection (``linear``) — must back onto the code;
+    a ``×scale`` (``gate_mul``) likewise.  The renormalize box (``norm`` = a
+    ``/=sum`` div) and the e_score-correction bias (``embedding`` = a buffer add)
+    are CONFIG-DRIVEN presentation, drawn from the same config flags the code gates
+    on, so op-presence is the wrong oracle — they are dropped (``selection_
+    presentation_kinds``).  SALIENT: a router/indexer that routes MUST draw its
+    top-k (``route``), so an omitted ``select`` while the code has ``route`` flags."""
+    key = f"{family}/{view_key}"
+    drop = vocab["drawn_ignore"] | vocab["semantic_kinds"] | vocab["selection_presentation_kinds"]
+    op_map = vocab["drawn_op_map"]
+    equiv = vocab["drill_op_equivalents"]
+    omit = ab["omit_global"]
+    draw_extra = ab["draw_extra"].get(key, set()) | ab["draw_extra"].get(f"{family}/{drill_role}", set())
+    salient = vocab["drill_salient_missing"].get(drill_role, frozenset())
+
+    drawn_compute = {op_map.get(k, k) for k in drawn if k not in drop}
+    out: list[ConformanceProblem] = []
+    if "opaque" in drawn or not drawn_compute:
+        return out
+
+    for op in sorted(drawn_compute):                       # fabrication
+        if op in code_ops or op in omit or op in draw_extra:
+            continue
+        if equiv.get(op, frozenset({op})) & code_ops:
+            continue
+        out.append(ConformanceProblem("fabricated", op, key))
+    for op in sorted(salient):                             # the top-k must be drawn
+        if op in code_ops and op not in drawn_compute:
+            out.append(ConformanceProblem("missing", op, key))
+    return out
+
+
+def _diff_composite(family, view_key, drawn, block_sets, vocab, ab) -> list[ConformanceProblem]:
+    """Diff a COMPOSITE container drill (the moe container / vision-encoder / mtp
+    block).  It draws sub-CONTAINER glyphs (attention / ffn / expert / shared_expert
+    / router / norm / residual_add) that each have their own leaf drill, so we do
+    NOT expand them — we check the drawn containers (glyph -> code op via
+    ``composite_container_map``) correspond to a REAL block type: some block class's
+    TRANSITIVE closure must SUPERSET them (transitive, because a container's op may
+    live one level down — the expert-combine ⊕ is the experts' ``index_add_``).  A
+    container the model has no block for (e.g. a fabricated attention in an
+    attention-free encoder, or routing in a dense block) is flagged.  Conservative
+    (existence of a matching block, never a specific one), so it needs no multimodal
+    text-vs-vision attribution."""
+    key = f"{family}/{view_key}"
+    cmap = vocab["composite_container_map"]
+    omit = ab["omit_global"]
+    # drop ports / sources / layout sugar, keep+map the real containers
+    drop = {"port", "formula", "subgraph", "opaque", "output", "source", "embedding"}
+    drawn_mapped = {cmap.get(k, k) for k in drawn if k not in drop and k not in omit}
+    if "opaque" in drawn or not drawn_mapped or not block_sets:
+        return []
+    if any(drawn_mapped <= blk for blk in block_sets):
+        return []                          # the drawn containers ARE a real block type
+    best = max(block_sets, key=lambda blk: len(drawn_mapped & blk))
+    return [ConformanceProblem("fabricated", op, key)
+            for op in sorted(drawn_mapped - best)]
 
 
 def _text_in_sequence(spec: dict) -> bool:

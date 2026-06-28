@@ -819,3 +819,255 @@ def test_unconditional_op_is_never_treated_as_gated(tmp_path):
     ops = extract_forward_ops([str(f)])["B"]
     assert "gate_mul" in ops.op_kinds
     assert "gate_mul" not in ops.gated_op_kinds            # has an unconditional occurrence
+
+
+# ===========================================================================
+# RECURSIVE nested-drill conformance — diff each leaf-compute drill (attention /
+# FFN / expert internals) against the TRANSITIVE forward() closure of its backing
+# sub-module (following sdpa / rotary / the diffusers processor / the FeedForward
+# ModuleList).  One altitude below the per-layer check above.
+# ===========================================================================
+
+from model_unfolder.evidence import check_nested_conformance
+from model_unfolder.evidence.transitive import build_registry, transitive_closure
+from model_unfolder.everchanging import load_conformance_transitive
+from model_unfolder.renderers.html.graph_engine import drain_render_log, reset_render_log
+
+
+def _render_log(cfg):
+    reset_render_log()
+    mu.unfold(cfg).to_html(standalone=True)
+    return drain_render_log()
+
+
+@pytest.mark.parametrize("name", list(tc.CORPUS))
+def test_nested_conformance_clean_over_corpus(name):
+    """Every leaf-compute drill in the corpus conforms to its sub-module's
+    transitive forward() closure — both directions, no fabrication / salient
+    omission. The corpus spans attention (GQA / MLA), gated & dense FFN, experts,
+    vision/audio/video, DiT/MMDiT, UNet."""
+    cfg = tc.CORPUS[name]
+    problems = check_nested_conformance(cfg, _render_log(cfg))
+    assert problems == [], "\n".join(p.message for p in problems)
+
+
+def test_transitive_closure_follows_sdpa_and_rotary():
+    """The attention closure must FOLLOW the delegated compute: the score/softmax
+    pair (via the ``attention_interface``/SDPA leaf) and the rotary helper token —
+    even though ``LlamaAttention.forward`` itself extracts to only {linear, reshape}."""
+    bundle = resolve_source_files({"model_type": "llama"}, source="local")
+    if not bundle.files:
+        pytest.skip("transformers llama source not installed")
+    reg = build_registry(bundle.files)
+    vocab = load_conformance_transitive()
+    ops, tokens = transitive_closure("LlamaAttention", reg, vocab)
+    assert {"dot_product", "activation", "linear"} <= ops      # sdpa compute followed
+    assert any("rotary" in t.lower() for t in tokens)          # rope helper reachable
+    # The eager helper's `* scaling` / `+ mask` noise must NOT leak as gate/residual.
+    assert "gate_mul" not in ops and "residual_add" not in ops
+
+
+def test_transitive_closure_follows_self_method_helper():
+    """A ``self.route_tokens_to_experts(...)`` self-METHOD (where the router's
+    ``torch.topk`` lives, NOT in forward) must be folded into the class op-set —
+    the general self-method-following the engine does."""
+    bundle = resolve_source_files({"model_type": "deepseek_v3"}, source="local")
+    if not bundle.files:
+        pytest.skip("transformers deepseek_v3 source not installed")
+    reg = build_registry(bundle.files)
+    vocab = load_conformance_transitive()
+    ops, _ = transitive_closure("DeepseekV3MoE", reg, vocab)
+    assert "route" in ops          # topk in route_tokens_to_experts, folded in
+
+
+def test_diffusion_attention_closure_injects_block_processor():
+    """A diffusers ``Attention`` delegates to a PROCESSOR built by the PARENT block
+    (``Attention(processor=CogVideoXAttnProcessor2_0())``).  The union attention
+    closure must inject it so the SDPA compute (and ``apply_rotary_emb``) is seen —
+    otherwise the attention drill's rope/softmax reads as fabricated."""
+    from model_unfolder.evidence.conformance import _augment_diffusion_files, _role_union_closures
+    bundle = resolve_source_files(_cogvideox_cfg(), source="local")
+    if not bundle.files:
+        pytest.skip("diffusers cogvideox source not installed")
+    reg = build_registry(_augment_diffusion_files(bundle.files))
+    vocab = load_conformance_transitive()
+    closures = _role_union_closures(reg, vocab)
+    assert "attention" in closures, "no attention sub-module resolved"
+    _ops, tokens, _cls = closures["attention"]
+    assert any("rotary" in t.lower() for t in tokens), "block-supplied processor not injected"
+
+
+def _cogvideox_cfg():
+    return {
+        "_class_name": "CogVideoXTransformer3DModel",
+        "num_attention_heads": 4, "attention_head_dim": 16, "num_layers": 2,
+        "in_channels": 4, "out_channels": 4, "text_embed_dim": 32,
+        "time_embed_dim": 32, "sample_width": 8, "sample_height": 8, "sample_frames": 9,
+    }
+
+
+def test_nested_conformance_catches_fabricated_op(tmp_path, monkeypatch):
+    """NEGATIVE CONTROL: a drill that draws a compute op its sub-module never does
+    (a fabricated ``concat`` in an FFN drill) MUST be flagged."""
+    from model_unfolder.evidence import conformance as conf
+
+    # a model whose ffn closure is {linear, activation, gate_mul} (a gated MLP)
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
+    monkeypatch.setattr(conf, "resolve_source_files",
+                        lambda *a, **k: type("B", (), {"files": ("x.py",)})())
+    monkeypatch.setattr(conf, "build_registry", lambda *a, **k: {})
+    # the drill DRAWS a concat the code never does -> fabricated
+    log = [("ffn", frozenset({"linear", "activation", "gate_mul", "concat", "port"}), frozenset())]
+    problems = conf.check_nested_conformance({"model_type": "x"}, log)
+    assert any(p.kind == "fabricated" and p.op == "concat" for p in problems), \
+        [p.message for p in problems]
+
+
+def test_nested_conformance_catches_dense_drawn_for_gated_code(tmp_path, monkeypatch):
+    """NEGATIVE CONTROL (the dense-vs-gated bug): an FFN drill that omits the gate
+    while the sub-module's code DOES gate (closure has ``gate_mul``) MUST flag a
+    salient ``missing gate_mul``."""
+    from model_unfolder.evidence import conformance as conf
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
+    monkeypatch.setattr(conf, "resolve_source_files",
+                        lambda *a, **k: type("B", (), {"files": ("x.py",)})())
+    monkeypatch.setattr(conf, "build_registry", lambda *a, **k: {})
+    log = [("ffn", frozenset({"linear", "activation", "port"}), frozenset())]   # dense drawn
+    problems = conf.check_nested_conformance({"model_type": "x"}, log)
+    assert any(p.kind == "missing" and p.op == "gate_mul" for p in problems), \
+        [p.message for p in problems]
+
+
+def test_opaque_drill_makes_no_claim(monkeypatch):
+    """An honest-unknown OPAQUE drill (the parser could not decompose the
+    sub-module, so it drew one ``opaque`` block) must NOT be held to fabrication or
+    salient-omission — Sana's GLUMBConv FFN is drawn opaque and must stay clean."""
+    from model_unfolder.evidence import conformance as conf
+    fake_closures = {"ffn": (frozenset({"linear", "activation", "gate_mul"}), frozenset(), "FakeMLP")}
+    monkeypatch.setattr(conf, "_role_union_closures", lambda *a, **k: fake_closures)
+    monkeypatch.setattr(conf, "resolve_source_files",
+                        lambda *a, **k: type("B", (), {"files": ("x.py",)})())
+    monkeypatch.setattr(conf, "build_registry", lambda *a, **k: {})
+    log = [("ffn", frozenset({"opaque", "port"}), frozenset())]
+    assert conf.check_nested_conformance({"model_type": "x"}, log) == []
+
+
+def test_code_derived_ffn_gating_overrides_rmsnorm_heuristic():
+    """The dense-vs-gated FACT is code-derived: ``PhiMLP`` is dense (no gate_mul) so
+    a Phi config (RMSNorm + gelu_new) renders a DENSE FFN, NOT the gated FFN the
+    rmsnorm heuristic would have drawn — and ``LlamaMLP`` (gate_mul) stays gated.
+    This is what keeps the parser and the nested net from diverging."""
+    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
+    for mt, expected in (("phi", False), ("llama", True)):
+        bundle = resolve_source_files({"model_type": mt}, source="local")
+        if not bundle.files:
+            pytest.skip(f"transformers {mt} source not installed")
+        assert decoder_ffn_gated_from_files(bundle.files) is expected
+
+
+# --- selection (router / indexer) + composite (moe container / vision-encoder /
+#     mtp block) drill conformance, and the YAML multi-value-marker regression ---
+
+def test_drill_role_markers_parse_all_multi_values():
+    """REGRESSION: a flow-list `[role=a,b, …]` comma-splits the value and drops the
+    tail (it once silently lost `attn,mla` -> only `attn`, so the MLA drill was
+    NEVER checked). Block style preserves them — assert every multi-value marker
+    survives and the three categories classify correctly."""
+    from model_unfolder.evidence import conformance as conf
+    v = load_conformance_transitive()
+    m = v["drill_role_markers"]
+    assert "mla" in m["attention"] and "topk" in m["route"]
+    assert {"vision-encoder", "mtp-transformer-block"} <= set(m["composite"])
+    cat = lambda vk: v["drill_category"].get(conf._drill_role(vk, v), "leaf_compute")
+    assert cat("mla") == "leaf_compute"           # was skipped before the fix
+    assert cat("moe_router") == "selection" and cat("dsa_indexer") == "selection"
+    assert cat("moe") == "composite" and cat("vision-encoder") == "composite"
+
+
+def test_selection_closure_carries_routing_topk():
+    """The selection closure (ffn ∪ route sub-module closures) must carry the
+    routing `route` (the top-k, folded from the MoE container's self-method) and the
+    gate `linear` — i.e. it is genuinely exercised, not an empty no-op."""
+    from model_unfolder.evidence import conformance as conf
+    bundle = resolve_source_files({"model_type": "deepseek_v3"}, source="local")
+    if not bundle.files:
+        pytest.skip("transformers deepseek_v3 source not installed")
+    reg = build_registry(conf._augment_diffusion_files(bundle.files))
+    rc = conf._role_union_closures(reg, load_conformance_transitive())
+    sel = rc.get("ffn", (frozenset(),))[0] | rc.get("route", (frozenset(),))[0]
+    assert "route" in sel and "linear" in sel
+
+
+def test_selection_drill_requires_topk(monkeypatch):
+    """NEGATIVE CONTROL: a router/indexer drill that omits its top-k (`select`)
+    while the routing code DOES route MUST flag a salient `missing route` — the
+    Mixtral-style 'router drawn without its selection step' bug."""
+    from model_unfolder.evidence import conformance as conf
+    v = load_conformance_transitive()
+    ab = load_conformance_abstractions()
+    sel = frozenset({"route", "linear", "gate_mul"})
+    probs = conf._diff_selection("x", "moe_router", "route",
+                                 frozenset({"linear", "gate_mul", "port"}), sel, frozenset(), v, ab)
+    assert any(p.kind == "missing" and p.op == "route" for p in probs)
+
+
+def test_selection_drill_drops_renormalize_and_bias_presentation():
+    """The renormalize box (`norm`) and the e_score bias (`embedding`) are config-
+    driven presentation, NOT compute ops — a selection drill drawing them against a
+    closure that has no nn-norm / no embedding must stay clean (not fabricated)."""
+    from model_unfolder.evidence import conformance as conf
+    v = load_conformance_transitive()
+    ab = load_conformance_abstractions()
+    sel = frozenset({"route", "linear", "gate_mul"})
+    drawn = frozenset({"select", "linear", "gate_mul", "norm", "embedding", "port"})
+    assert conf._diff_selection("x", "moe_router", "route", drawn, sel, frozenset(), v, ab) == []
+
+
+def test_composite_catches_impossible_container_combo():
+    """NEGATIVE CONTROL: a composite drawing containers no single block has
+    together (attention + routing, when the model has an attention block and a
+    separate MoE block but none with both) MUST flag the orphan container."""
+    from model_unfolder.evidence import conformance as conf
+    v = load_conformance_transitive()
+    ab = load_conformance_abstractions()
+    blocks = [frozenset({"attention", "ffn", "norm", "residual_add"}),
+              frozenset({"ffn", "route", "residual_add", "linear", "gate_mul"})]
+    probs = conf._diff_composite("x", "moe", frozenset({"attention", "router", "port"}), blocks, v, ab)
+    assert any(p.kind == "fabricated" and p.op == "route" for p in probs)
+    # the real moe container (expert + router + combine) is clean
+    assert conf._diff_composite("x", "moe",
+                                frozenset({"expert", "router", "residual_add", "port"}), blocks, v, ab) == []
+
+
+def test_moe_expert_combine_index_add_is_residual():
+    """A fused MoE combine `final_hidden_states.index_add_(...)` (Mixtral/Qwen3/
+    Olmoe) is the ⊕ the moe drill draws — it must be detected as `residual_add`,
+    not missed (it is a scatter, not a `+`)."""
+    from model_unfolder.evidence.transitive import build_registry, transitive_closure
+    bundle = resolve_source_files({"model_type": "mixtral"}, source="local")
+    if not bundle.files:
+        pytest.skip("transformers mixtral source not installed")
+    reg = build_registry(bundle.files)
+    vocab = load_conformance_transitive()
+    # the MoE block's transitive closure (experts included) carries the combine ⊕
+    moe = next((n for n in reg if "SparseMoe" in n or n.endswith("MoE") or n.endswith("Moe")), None)
+    assert moe is not None
+    ops, _ = transitive_closure(moe, reg, vocab)
+    assert "residual_add" in ops
+
+
+@pytest.mark.parametrize("mt", ["mixtral", "qwen3_moe", "olmoe", "deepseek_v3"])
+def test_real_moe_models_nested_clean(mt):
+    """Real MoE models (selection + composite + expert leaf drills all active) are
+    clean — the net resolves the router/indexer/container against real code."""
+    import model_unfolder as mu
+    cfg = {"model_type": mt, "hidden_size": 128, "num_hidden_layers": 2,
+           "num_attention_heads": 8, "num_key_value_heads": 2, "intermediate_size": 256,
+           "moe_intermediate_size": 128, "vocab_size": 1000, "num_experts": 8,
+           "num_local_experts": 8, "num_experts_per_tok": 2}
+    if not resolve_source_files(cfg, source="local").files:
+        pytest.skip(f"{mt} source not installed")
+    problems = check_nested_conformance(cfg, _render_log(cfg))
+    assert problems == [], "\n".join(p.message for p in problems)

@@ -11,7 +11,7 @@ it should have folders with model name -> images, html, report and Manifest
 `model_unfolder` turns a HuggingFace model's `config.json` into an architecture diagram.
 Your job is to **prove the diagram is correct** by checking it two ways:
 
-1. **SABLE** = run 9 blocking automated nets plus the staged unread-config audit.
+1. **SABLE** = run 10 blocking automated nets plus the staged unread-config audit.
    Pass = every blocking net reports nothing; every config-audit warning is still triaged.
 2. **DABLE** = look at the rendered **images** with your own eyes, AND read the model's
    **real HuggingFace (transformers or diffusers) code**, AND confirm the picture matches the code.
@@ -82,7 +82,7 @@ test cases): `hunyuanvideo`, `flux-2-dev`, `fluxtransformer2dmodel`, `mochi-1-pr
 
 ---
 
-## 2. STEP A — SABLE (9 blocking nets + config coverage advisory)
+## 2. STEP A — SABLE (10 blocking nets + config coverage advisory)
 
 Run this **exact** script. Replace the first line with your model from STEP 1.
 
@@ -111,6 +111,7 @@ SABLE · HunyuanVideo
     [       ok] op_conformance
     [       ok] wiring_conformance
     [       ok] fact_conformance
+    [       ok] nested_conformance
     [       ok] label_lint
   visual review: PENDING  (inspect the gallery against report.rubric)
 ```
@@ -145,14 +146,15 @@ What each net means (so you can describe a failure correctly):
 | `no_dotted_arrows` | a generated dataflow arrow uses a dotted stroke, which incorrectly reads as optional/uncertain flow. |
 | `no_dotted_boundaries` | a region/highlight boundary uses a dotted stroke; all generated structural boundaries must be solid. |
 | `config_field_audit` | a config field was never read by its owning parser. This is a staged advisory until the known backlog reaches zero; triage it manually now. |
-| `op_conformance` | the diagram is **missing an op the code does**, or **drew an op the code never does** (a coarse op-KIND diff against the real `forward()`). |
+| `op_conformance` | the diagram is **missing an op the code does**, or **drew an op the code never does** (a coarse op-KIND diff against the real `forward()`), at the LAYER block altitude. |
 | `wiring_conformance` | a conditioning input (text / timestep) is wired wrong vs the code. |
 | `fact_conformance` | same op-kind but wrong **meaning** — e.g. drew NoPE when the code applies RoPE, or softmax when the code is linear attention. |
+| `nested_conformance` | one altitude DEEPER than `op_conformance`: it recurses INTO each leaf-compute drill (attention / FFN / expert internals) and diffs the drawn ops against the **transitive** `forward()` closure of the backing sub-module — following `scaled_dot_product_attention`, `apply_rotary_pos_emb`, the diffusers attention **processor**, and the fused/append-built expert weights. Catches a drill that fabricates an op the code never does, or omits a gate the code DOES (the dense-vs-gated bug). |
 | `label_lint` | a label breaks the label rules (raw activation name on a block, nested parens, etc.). |
 
-> `op_conformance`, `wiring_conformance`, `fact_conformance` are the three nets that compare
-> the diagram to the **actual code**. They only run when `oracle: present`. A failure in any of
-> them is the strongest possible signal that the picture does not match the code.
+> `op_conformance`, `wiring_conformance`, `fact_conformance`, `nested_conformance` are the four
+> nets that compare the diagram to the **actual code**. They only run when `oracle: present`. A
+> failure in any of them is the strongest possible signal that the picture does not match the code.
 
 **Also confirm the variants rendered.** Some models have more than one block type (e.g. Flux:
 dual-stream AND single-stream). The summary prints the number of distinct views. If you expect

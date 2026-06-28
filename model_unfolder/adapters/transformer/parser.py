@@ -119,6 +119,20 @@ def _code_norm_kind(cfg: Any) -> str | None:
         return None
 
 
+def _code_ffn_gated(cfg: Any) -> bool | None:
+    """Whether the decoder's plain MLP is gated (gate·up) READ FROM THE MODELING
+    SOURCE — overrides the ``rmsnorm -> gated`` heuristic, which mis-gates a dense
+    RMSNorm decoder (Phi: ``PhiMLP`` is dense). Same code-evidence rail that feeds
+    the nested-conformance net, so the drawing and the net never diverge.
+    Best-effort, never raises into the parse; None keeps the heuristic."""
+    try:
+        from ...evidence.patterns import decoder_ffn_gated_from_files
+        from ...evidence.sources import resolve_source_files
+        return decoder_ffn_gated_from_files(resolve_source_files(cfg, source="local").files)
+    except Exception:
+        return None
+
+
 _TEXT_WRAPPER_KEYS = (
     "text_config", "language_config", "llm_config", "text_model_config",
     "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
@@ -261,6 +275,10 @@ def parse(cfg: Any) -> ModelIR:
     # structure), the general replacement for the model_type identity table.
     # The table is now only an offline fallback cache when source can't be read.
     _code_topo = _code_layer_topology(text_cfg)
+    # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — overrides the
+    # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
+    # the code (and the nested-conformance net).  None keeps the heuristic.
+    _code_gated = _code_ffn_gated(text_cfg)
     norm_placement = (
         (_code_topo or {}).get("norm_placement")
         or next((_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
@@ -455,7 +473,7 @@ def parse(cfg: Any) -> ModelIR:
                 kind="moe",
                 activation=activation,
                 intermediate_size=intermediate_size or moe_intermediate_size,
-                gated=_is_gated(activation, norm_kind),
+                gated=_is_gated(activation, norm_kind, _code_gated),
                 num_experts=num_experts,
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
@@ -468,7 +486,7 @@ def parse(cfg: Any) -> ModelIR:
                 kind="dense",
                 activation=activation,
                 intermediate_size=intermediate_size,
-                gated=_is_gated(activation, norm_kind),
+                gated=_is_gated(activation, norm_kind, _code_gated),
                 activation_clip=activation_clip,
             )
 
@@ -841,11 +859,17 @@ def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
     return "rmsnorm"
 
 
-def _is_gated(activation: str, norm_kind: str | None = None) -> bool:
+def _is_gated(activation: str, norm_kind: str | None = None,
+              code_gated: bool | None = None) -> bool:
     """Whether the FFN has a separate gate projection (SwiGLU/GeGLU style).
 
-    Heuristics, in order:
+    Evidence order (code > config-signal > heuristic):
 
+    * ``code_gated`` — the MLP class's ``forward()`` either does a ``gate_mul`` or
+      not (read from the modeling source). The ground truth: it wins whenever
+      available, so a dense RMSNorm decoder (Phi) is no longer mis-gated by the
+      heuristic below. This is the SAME evidence the nested-conformance net reads,
+      so the drawing and the net cannot diverge.
     * Activation explicitly says so: ``silu``/``swish`` (Llama/Mistral/Qwen/
       DeepSeek/GPT-OSS style), anything with ``glu`` in the name, or
       ``gelu_pytorch_tanh`` (Gemma family — uses gate/up/down despite the
@@ -856,6 +880,8 @@ def _is_gated(activation: str, norm_kind: str | None = None) -> bool:
       MPT / OPT / Falcon / Phi-1/2) end up here and are correctly
       classified as non-gated.
     """
+    if code_gated is not None:
+        return code_gated
     a = (activation or "").lower()
     if "glu" in a or a in {"silu", "swish", "gelu_pytorch_tanh"}:
         return True

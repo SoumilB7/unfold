@@ -997,6 +997,36 @@ def decoder_norm_kind_from_files(files) -> str | None:
     return None
 
 
+def decoder_ffn_gated_from_files(files) -> bool | None:
+    """``True`` (gate·up SwiGLU/GeGLU) / ``False`` (dense fc1→act→fc2) read from the
+    decoder layer's plain-MLP submodule ``forward()`` — the code-based replacement
+    for the ``rmsnorm -> gated`` heuristic, which mis-gates a dense RMSNorm decoder
+    (Phi rendered gated though ``PhiMLP`` is dense; the nested-conformance net's
+    first catch).  config-silent FFN gating is a fact, so it comes from the code:
+    does the MLP class's forward perform a ``gate_mul``?
+
+    Targets the SIMPLE MLP only (``linear`` present, no ``route``); a MoE container
+    is skipped (returns None, so the existing MoE path keeps its own logic).
+    Returns None when no decoder / simple-MLP class is found (caller keeps its
+    heuristic default)."""
+    import ast as _ast
+    from .forward_ops import _role_of, extract_forward_ops
+    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
+    if layer is None:
+        return None
+    _, field_types = layer
+    fo = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    for cls_name in field_types.values():
+        if _role_of(cls_name) != "ffn":
+            continue
+        info = fo.get(cls_name)
+        if info is None or "route" in info.op_kinds:   # MoE container — not this reader's job
+            continue
+        if "linear" in info.op_kinds:
+            return "gate_mul" in info.op_kinds
+    return None
+
+
 def _linearize_forward(fwd, field_types, merge_tokens, _ast) -> list[str]:
     """The forward's TOP-LEVEL statements as an ordered role stream — ``norm`` /
     ``attention`` / ``ffn`` / ``add`` — in evaluation order (post-order so a norm

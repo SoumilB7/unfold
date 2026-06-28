@@ -262,10 +262,18 @@ def _call_op_kind(call: ast.Call, field_types: dict[str, str]) -> str | None:
 
 
 def _binop_op_kind(node: ast.BinOp) -> str | None:
-    """``a + b`` -> residual_add, ``a * b`` -> gate_mul — UNLESS an operand is a
-    bare numeric literal (then it's scalar/modulation arithmetic, ``elementwise``,
-    which the diagram never draws as its own box). ``elementwise`` is returned so
-    the diff's allow-list can reason about it, not silently dropped."""
+    """``a + b`` -> residual_add, ``a * b`` -> gate_mul, ``a @ b`` -> dot_product —
+    UNLESS an ``+``/``*`` operand is a bare numeric literal (then it's
+    scalar/modulation arithmetic, ``elementwise``, which the diagram never draws as
+    its own box). ``elementwise`` is returned so the diff's allow-list can reason
+    about it, not silently dropped.
+
+    ``@`` (matmul) is how a FUSED expert/attention does its projections directly on
+    stacked ``nn.Parameter`` weights (MixtralExperts: ``hidden @ gate_up_proj``)
+    instead of an ``nn.Linear`` call — so without it the fused projection is
+    invisible and the drill's per-expert ``linear`` reads as fabricated."""
+    if isinstance(node.op, ast.MatMult):
+        return "dot_product"
     if _has_numeric_operand(node):
         return "elementwise"
     if isinstance(node.op, ast.Add):

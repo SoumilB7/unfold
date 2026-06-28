@@ -297,7 +297,11 @@ def load_conformance_transitive() -> dict:
         "library_helpers": helpers,
         "drill_role_markers": _kv_list("drill_role_markers"),
         "drill_role_to_type": _kv_str("drill_role_to_type"),
+        "drill_category": _kv_str("drill_category"),
         "drill_salient_missing": {k: frozenset(v) for k, v in _kv_list("drill_salient_missing").items()},
+        "drill_op_equivalents": {k: frozenset(v) for k, v in _kv_list("drill_op_equivalents").items()},
+        "selection_presentation_kinds": frozenset(_list("selection_presentation_kinds")),
+        "composite_container_map": _kv_str("composite_container_map"),
     }
 
 

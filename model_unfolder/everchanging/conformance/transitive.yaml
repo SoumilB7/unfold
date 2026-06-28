@@ -45,31 +45,69 @@ semantic_cache_markers: [past_key_value, kv_cache, cache_kwargs, _update_cache]
 library_helpers: [repeat_kv=reshape, dropout=]
 
 # --- drill ROLE classification + diff direction ------------------------------
-# Each rendered drill (render-log `view_key`: gqa-attn / mla / ffn / expert_1 …)
-# is classified to a leaf-compute ROLE by substring; the role picks which UNION
-# sub-module closure it is diffed against.  "role=sub1,sub2" — view_key substrings.
-#
-# v1 SCOPE = the pure LEAF COMPUTE drills, where the transitive closure is clean
-# and high-value (attention internals, FFN/expert internals). Deliberately ABSENT:
-#  * COMPOSITE container drills (vision-encoder, mtp-transformer-block, the moe
-#    container) — they draw sub-CONTAINERS that each have their OWN leaf drill
-#    (checked there) + the top-level block diff, so a leaf op-diff here would
-#    mis-read attention/ffn glyphs as fabricated;
-#  * the ROUTER / indexer SELECTION drills (moe_router, topk, dsa_indexer) — their
-#    glyphs (top-k select, renormalize, ×scale, the e_score bias) are selection
-#    LOGIC that does not map 1:1 onto the compute op alphabet; a faithful diff
-#    needs a dedicated selection vocabulary (a conscious future extension), not a
-#    band-aid against the compute closure. The `route` type-role below already
-#    isolates the gate/indexer class for when that net lands.
-drill_role_markers: [attention=attn,mla, ffn=ffn,mlp, expert=expert, vision_attention=vision-self-attention, vision_mlp=vision-mlp]
+# Each rendered drill (render-log `view_key`: gqa-attn / mla / ffn / expert_1 /
+# moe_router / dsa_indexer / moe / vision-encoder …) is classified to a ROLE by
+# substring (checked IN ORDER, first hit wins — so `moe_router` matches `router`
+# before the composite `moe`).  The role's CATEGORY (below) picks which diff runs.
+# "role=sub1,sub2" — view_key substrings.
+# BLOCK style (one `- role=v1,v2` per line) is REQUIRED for multi-value entries:
+# a flow list `[role=a,b, …]` would comma-split `a,b` into separate items and drop
+# the tail (so `attn,mla` silently lost `mla`).  Order matters (first hit wins).
+drill_role_markers:
+  - attention=attn,mla
+  - ffn=ffn,mlp
+  - expert=expert
+  - vision_attention=vision-self-attention
+  - vision_mlp=vision-mlp
+  - route=router,topk
+  - indexer=indexer,dsa
+  - composite=moe,vision-encoder,mtp-transformer-block,mtp-block
 
-# A leaf role's drawn closure is diffed against the union closure of the model's
-# reachable sub-module classes carrying the mapped TYPE-role; "role=type_role".
+# A LEAF role's drawn closure is diffed against the union transitive closure of the
+# model's reachable sub-module classes carrying the mapped TYPE-role; "role=type_role".
 drill_role_to_type: [attention=attention, ffn=ffn, expert=ffn, vision_attention=attention, vision_mlp=ffn]
+
+# Drill CATEGORY -> which diff runs.  "role=category".  Absent = leaf_compute.
+#  * leaf_compute — drawn compute ops vs the sub-module's TRANSITIVE closure
+#    (attention/ffn/expert internals; the v1 net).
+#  * selection — a router/indexer drill: its TOP-K (select) must back onto a code
+#    `route`, its gate onto a `linear`; renormalize/bias are config-driven
+#    presentation (dropped). Diffed against the SELECTION closure (ffn ∪ route
+#    type-roles, which carries the folded-in topk).
+#  * composite — a mini-block drawing sub-CONTAINERS (attention/ffn/expert/router):
+#    a BLOCK-ALTITUDE diff (container glyph -> code op) against the union of the
+#    model's block classes' OWN forward op-kinds — never the transitive closure
+#    (the sub-containers each have their own leaf drill).
+drill_category: [route=selection, indexer=selection, composite=composite]
 
 # SALIENT omissions (code->diagram) per role — the ONLY missing-ops checked at
 # drill altitude, because deep following brings incidental ops (a processor's
 # optional residual/rescale, eager scaling) a faithful drill never draws.  A
-# gated FFN/expert MUST draw its gate + activation (the dense-vs-gated bug); the
-# rest is fabrication-only.  "role=op[,op]"; absent role = fabrication-only.
-drill_salient_missing: [ffn=gate_mul,activation, expert=gate_mul,activation]
+# gated FFN/expert MUST draw its gate + activation (the dense-vs-gated bug); a
+# router/indexer MUST draw its top-k (select) when the code routes.  "role=op[,op]";
+# absent role = fabrication-only.
+drill_salient_missing:
+  - ffn=gate_mul,activation
+  - expert=gate_mul,activation
+  - route=route
+  - indexer=route
+
+# SELECTION presentation kinds — drawn glyphs that are config-driven, NOT compute
+# ops, so they are dropped from the selection diff (like rope/cache are for leaves):
+# `norm` = the renormalize box (a `/=sum` div, not an nn-norm), `embedding` = the
+# e_score correction BIAS buffer.  Both are drawn from config flags the code gates
+# on too, so op-presence is the wrong oracle for them.
+selection_presentation_kinds: [norm, embedding]
+
+# COMPOSITE container glyph -> the code op-kind it stands for, so a block-altitude
+# diff can reconcile the drawn sub-container against the block's own forward.
+# "glyph=op".  (expert/shared_expert are FFN sub-modules; router is the route gate.)
+composite_container_map: [expert=ffn, shared_expert=ffn, router=route]
+
+# Drawn-op -> code-ops that ALSO satisfy it in the fabrication check.  A drawn
+# ``linear`` (a projection) is satisfied by a code ``dot_product`` too: a linear
+# projection IS a matmul, and a FUSED expert/attention does it as a batched ``@``
+# over stacked weight Parameters (MixtralExperts) instead of an nn.Linear call.
+# "drawn=code1,code2".
+drill_op_equivalents:
+  - linear=linear,dot_product

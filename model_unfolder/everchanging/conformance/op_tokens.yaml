@@ -10,7 +10,11 @@
 # written as a HELPER CALL (Falcon's `dropout_add(sublayer, residual)`), which a
 # `+` scan can't see; listing the helper here lets both the op-conformance set
 # and the decoder-layer topology reader treat it as the residual merge it is.
-residual_add: [dropout_add]
+# A MoE expert-COMBINE is an additive accumulation written as a scatter, not a `+`:
+# ``final_hidden_states.index_add_(0, token_idx, current)`` (Mixtral/Qwen3/Olmoe
+# fused experts) — the ⊕ the moe drill draws. Listing the scatter helpers lets the
+# combine be seen as the residual_add it is.
+residual_add: [dropout_add, index_add_, index_add, scatter_add_, scatter_add, index_copy_]
 
 # torch.cat / .concat -> a real merge (the ‖ the diagram draws).
 concat: [cat, concat]
@@ -23,6 +27,12 @@ route: [topk]
 # BLOCK altitude it is omit_global'd (a sub-module concern), so this is for the
 # recursive drill-conformance net.
 dot_product: [matmul, bmm, einsum, baddbmm]
+# A FUNCTIONAL linear -> linear. ``self.proj(x)`` is typed via the role table, but
+# a FUSED expert calls ``nn.functional.linear(x, self.gate_up_proj[i])`` on a
+# stacked weight Parameter (MixtralExperts / DeepseekV3NaiveMoe) — a real linear
+# the role table can't see (no self.<field> module). Without this the expert
+# drill's per-expert linears read as fabricated.
+linear: [linear]
 # Activation function calls invoked directly (F.gelu(...), gelu(...), softmax).
 activation: [gelu, silu, relu, geglu, swiglu, gelu_new, quick_gelu, sigmoid, softmax]
 # Tensor-shape regroupings the diagram treats as a reshape box (or omits) — never
