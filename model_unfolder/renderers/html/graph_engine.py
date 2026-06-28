@@ -33,6 +33,7 @@ from .svg import (
     _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
+from .render_context import ensure_render_context, release_render_context
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
@@ -51,16 +52,15 @@ _MERGE_STUB = 46.0        # lane-top → merge-node rise
 # Every graph render runs the dangling detector and appends any finding here.
 # A validator (Diagram.wiring_problems) clears, re-renders, and drains it — so
 # a dangling ⊕/×/⊙ is caught wherever it is drawn, not just in pinned tests.
-_WIRING_LOG: list[str] = []
-
-
 def reset_wiring_log() -> None:
-    _WIRING_LOG.clear()
+    ensure_render_context().wiring_findings.clear()
 
 
 def drain_wiring_log() -> list[str]:
-    found = list(_WIRING_LOG)
-    _WIRING_LOG.clear()
+    context = ensure_render_context()
+    found = list(context.wiring_findings)
+    context.wiring_findings.clear()
+    release_render_context(context)
     return found
 
 
@@ -73,16 +73,15 @@ def drain_wiring_log() -> list[str]:
 # deeper than the top-level layer diff. Each entry is one rendered graph:
 # ``(view_key, drawn_op_kinds, node_ids)``. Many layer-groups bake byte-identical
 # drills, so callers dedup by ``view_key`` (the reader keeps the richest set).
-_RENDER_LOG: list[tuple[str, frozenset[str], frozenset[str]]] = []
-
-
 def reset_render_log() -> None:
-    _RENDER_LOG.clear()
+    ensure_render_context().events.clear()
 
 
 def drain_render_log() -> list[tuple[str, frozenset[str], frozenset[str]]]:
-    found = list(_RENDER_LOG)
-    _RENDER_LOG.clear()
+    context = ensure_render_context()
+    found = [event.legacy_tuple() for event in context.events]
+    context.events.clear()
+    release_render_context(context)
     return found
 
 
@@ -96,14 +95,15 @@ def render_graph(
     min_width: int = 560,
     pad: int = 46,
 ) -> str:
+    context = ensure_render_context()
     by_id = graph.by_id()
     for _p in wiring_problems(graph):           # Dable: flag dangling connectors
-        _WIRING_LOG.append(f"{view_key}: {_p}")
-    _RENDER_LOG.append((                         # recursive-conformance op capture
+        context.wiring_findings.append(f"{view_key}: {_p}")
+    context.record_graph(
         view_key,
-        frozenset(n.kind for n in graph.nodes),
-        frozenset(n.id for n in graph.nodes),
-    ))
+        (n.kind for n in graph.nodes),
+        (n.id for n in graph.nodes),
+    )
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []
     regions: list[dict] = []

@@ -14,7 +14,7 @@ from typing import Any
 from ..everchanging import load_conformance_transitive
 from .ast_scanner import _call_name
 from .forward_ops import _method, _role_of, _self_field
-from .models import PositionalEvidence, PositionalMechanism
+from .models import PositionalEvidence, PositionalMechanism, SourceBundle
 from .sources import resolve_source_files
 from .transitive import CallableInfo, build_registry, transitive_closure
 
@@ -29,13 +29,18 @@ _ALIBI_CALL_MARKERS = (
 )
 
 
-def decoder_positional_evidence(target: Any, *, source: str = "local") -> PositionalEvidence:
+def decoder_positional_evidence(
+    target: Any,
+    *,
+    source: str = "local",
+    bundle: SourceBundle | None = None,
+) -> PositionalEvidence:
     """Return the configured decoder positional mechanism with exact provenance.
 
     ``ambiguous`` means source exists but cannot prove one configured path;
     callers must not consult an identity fallback in that state.
     """
-    bundle = resolve_source_files(target, source=source)
+    bundle = bundle or resolve_source_files(target, source=source)
     # Imported lazily to keep the low-level evidence modules acyclic.  These are
     # the same ownership primitives recursive conformance uses, so parser and net
     # cannot silently choose different text/vision classes.

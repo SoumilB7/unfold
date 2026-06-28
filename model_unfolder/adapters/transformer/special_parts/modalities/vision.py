@@ -9,9 +9,67 @@ from .detect import (
     has_video_input,
     is_unified_grid_stream,
     model_family_hint,
-    vision_family_hint,
 )
 from .schema import Stage, assemble_path
+
+
+def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
+    """Project one typed source record into every visual-path IR projection."""
+    if not payload or evidence is None:
+        return payload
+    modalities = (payload.get("modalities") or {}).get("inputs") or {}
+    evidence_dict = evidence.to_dict()
+    for name in ("vision", "video"):
+        path = modalities.get(name)
+        if not isinstance(path, dict):
+            continue
+        path["source_evidence"] = evidence_dict
+        embedding = path.get("embedding") or {}
+        if evidence.patch_ops:
+            embedding["ops"] = [op.to_dict() for op in evidence.patch_ops]
+        else:
+            embedding.pop("ops", None)
+        embedding["source_component"] = evidence.component
+        embedding["source_owner"] = evidence.owner_class
+        encoder = path.get("encoder") or {}
+        encoder["kind"] = "vision_encoder"
+        encoder["source_component"] = evidence.component
+        encoder["source_owner"] = evidence.owner_class
+        encoder["position_encoding"] = {"kind": evidence.position_kind}
+        encoder["input_position_kind"] = evidence.input_position_kind
+        variants = [variant.to_dict() for variant in evidence.variants]
+        for variant in variants:
+            field = variant.get("repeat_field")
+            if field == "num_hidden_layers":
+                variant["repeat"] = encoder.get("num_layers")
+            elif field:
+                variant["repeat"] = encoder.get(field)
+        encoder["variants"] = variants
+        encoder["final_norm_kind"] = evidence.final_norm_kind
+        if evidence.variants:
+            primary = evidence.variants[0]
+            encoder["norm_kind"] = primary.norm_kind
+            encoder["norm_placement"] = primary.norm_placement
+            encoder["ffn_gated"] = primary.ffn_gated
+            encoder["residual_gated"] = primary.residual_gated
+            encoder["attention_class"] = primary.attention_class
+            encoder["ffn_class"] = primary.ffn_class
+            encoder["projection_mode"] = primary.projection_mode
+            encoder["q_norm"] = primary.q_norm
+            encoder["k_norm"] = primary.k_norm
+            encoder["v_norm"] = primary.v_norm
+            encoder["post_rope_scale"] = primary.post_rope_scale
+            encoder["attention_position_kind"] = primary.position_kind
+            encoder["attention_kind"] = primary.attention_kind
+            encoder["ffn_projection_mode"] = primary.ffn_projection_mode
+        for step in path.get("pipeline") or []:
+            if step.get("id") in {"patch_embedding", "video_patch_embedding"}:
+                step["ops"] = embedding["ops"]
+            elif step.get("id") in {"vision_encoder", "video_encoder"}:
+                step["kind"] = "vision_encoder"
+                step["source_component"] = evidence.component
+                step["source_owner"] = evidence.owner_class
+    return payload
 
 
 def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
@@ -30,7 +88,6 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     # the patch count, so that count wins when present.
     token_count = perceiver_latents(cfg) or visual_token_count(cfg, vision_cfg, cross_attn)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
-    vision_family = vision_family_hint(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
     embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
@@ -69,7 +126,6 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     multilayer = multilayer_features(vision_cfg)
     features = feature_selection(cfg)
     encoder_fields = drop_none({
-        "architecture": architecture(vision_cfg),
         "hidden_size": hidden_size,
         "num_layers": num_layers,
         "num_attention_heads": num_heads,
@@ -88,8 +144,8 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "output_dim": (multilayer or {}).get("output_dim")
                       or first(vision_cfg, "vision_output_dim", "output_dim"),
         "position_encoding": vision_position_encoding(cfg, vision_cfg),
-        "norm_kind": "RMSNorm" if vision_family == "pixtral_vision_transformer" else "LayerNorm",
-        "ffn_gated": vision_family == "pixtral_vision_transformer",
+        "norm_kind": "unknown",
+        "ffn_gated": None,
     })
 
     stages = [
@@ -160,30 +216,8 @@ def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> l
     These are class/config-family signatures, never model ids. Unknown towers
     keep the honest generic patch view instead of receiving a guessed backend.
     """
-    family = vision_family_hint(cfg, vision_cfg)
-    patch = first(vision_cfg, "patch_size", "patch_size_h")
-    temporal = first(vision_cfg, "temporal_patch_size")
-    channels = first(vision_cfg, "in_channels", "num_channels")
-    if temporal is not None:
-        kernel = f"{temporal}×{patch}×{patch}" if patch is not None else None
-        return [
-            {"kind": "reshape", "label": "Reshape patches"},
-            {"kind": "conv", "label": "Conv3d", "in": channels, "out": hidden_size,
-             "meta": {"desc": "3D patch convolution over time, height, and width.",
-                      "kernel": kernel}},
-            {"kind": "reshape", "label": "Flatten tokens"},
-        ]
-    if family in {"siglip_vision_transformer", "pixtral_vision_transformer"}:
-        ops = [
-            {"kind": "conv", "label": "Conv2d", "in": channels, "out": hidden_size,
-             "meta": {"desc": "2D patch convolution over the image grid.",
-                      "kernel": f"{patch}×{patch}" if patch is not None else None}},
-            {"kind": "reshape", "label": "Flatten spatial grid"},
-            {"kind": "reshape", "label": "Transpose to tokens"},
-        ]
-        if family == "pixtral_vision_transformer":
-            ops.append({"kind": "norm", "label": "RMSNorm"})
-        return ops
+    # Config proves geometry, not callable order or backend. Typed source
+    # evidence fills this list after path assembly.
     return []
 
 
@@ -267,7 +301,7 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
               step_fields={"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
                            "out_features": hidden_size}),
         Stage("encoder", "video_encoder", "encode", encoder_kind,
-              {"architecture": architecture(vision_cfg), "hidden_size": hidden_size,
+              {"hidden_size": hidden_size,
                "num_layers": num_layers, "num_attention_heads": num_heads,
                "position_encoding": vision_position_encoding(cfg, vision_cfg)},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
@@ -333,7 +367,7 @@ def merged_patch_features(vision_cfg: Any, encoder_hidden_size: Any) -> int | No
 
 def vision_encoder_kind(cfg: Any, vision_cfg: Any) -> str:
     """Return a semantic kind for the vision tower."""
-    return vision_family_hint(cfg, vision_cfg) or "vision_transformer"
+    return "vision_encoder"
 
 
 def vision_position_encoding(cfg: Any, vision_cfg: Any) -> dict | None:

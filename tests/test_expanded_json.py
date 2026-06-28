@@ -257,24 +257,21 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "image_size": 896,
         "patch_size": 16,
     }
-    assert vision["embedding"] == {
-        "kind": "patch_embedding",
-        "patch_size": 16,
-        "out_features": 32,
-        "grid": {
+    embedding = vision["embedding"]
+    assert {key: embedding[key] for key in ("kind", "patch_size", "out_features", "grid")} == {
+        "kind": "patch_embedding", "patch_size": 16, "out_features": 32, "grid": {
             "kind": "static_patch_grid",
             "patch": {"h": 16, "w": 16},
             "input": {"h": 896, "w": 896},
             "tiles": {"h": 56, "w": 56},
         },
     }
-    assert vision["encoder"]["kind"] == "gemma4_vision"
+    assert [op["kind"] for op in embedding["ops"]] == ["linear"]
+    assert embedding["source_owner"] == "Gemma4VisionModel"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["encoder"]["hidden_size"] == 32
     # Position encoding is derived structurally (learned table + 2D RoPE), no family hint.
-    assert vision["encoder"]["position_encoding"] == {
-        "kind": "learned_2d_plus_rope_2d",
-        "rope": {"rope_theta": 100.0, "rope_type": "default"},
-    }
+    assert vision["encoder"]["position_encoding"] == {"kind": "learned_absolute_plus_rope"}
     assert vision["encoder"]["global_head_dim"] == 8
     # k=3 average pool surfaces as a post-encoder token-reduction section + stage.
     assert vision["reduction"] == {
@@ -417,7 +414,7 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
 
     vision = data["modalities"]["inputs"]["vision"]
     assert vision["kind"] == "image_to_cross_attention_states"
-    assert vision["encoder"]["kind"] == "mllama_vision_model"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["encoder"]["num_attention_heads"] == 16
     # Structural: local+global layer split and the wide concatenated output.
     assert vision["encoder"]["num_global_layers"] == 8
@@ -480,7 +477,7 @@ def test_mllama_cross_attention_is_layer_variant_only():
     assert "Cross-Attention" in html
     assert "cross_attention_states" in html
     assert "Projected image states" in html
-    assert "Flatten patches" in html
+    assert "Flatten spatial grid" in html
     assert "Vision self-attention" in html
     assert "vision_attn_scaled" in html
     assert "vision_mlp_fc1" in html
@@ -494,10 +491,10 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
 
     vision = data["modalities"]["inputs"]["vision"]
     assert vision["kind"] == "image_to_grid_tokens"
-    assert vision["encoder"]["kind"] == "qwen_vl_vision_transformer"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["embedding"]["out_features"] == 32
     assert vision["encoder"]["hidden_size"] == 32
-    assert vision["encoder"]["position_encoding"] == {"kind": "multimodal_rope"}
+    assert vision["encoder"]["position_encoding"] == {"kind": "rope"}
     projector = vision["projector"]
     assert projector["kind"] == "patch_merger"
     assert projector["in_features"] == 128 and projector["out_features"] == 64

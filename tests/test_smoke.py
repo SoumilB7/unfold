@@ -83,7 +83,7 @@ def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
     }
     monkeypatch.setattr(
         parser_module, "_code_position",
-        lambda _cfg: PositionalEvidence("ambiguous", reason="negative control"),
+        lambda _cfg, _context=None: PositionalEvidence("ambiguous", reason="negative control"),
     )
     ir = parser_module.parse(cfg)
     assert ir.layers[0].attention.position_kind == "unknown"
@@ -91,7 +91,7 @@ def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
     assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
 
 
-def test_position_identity_cache_is_only_an_oracle_missing_fallback(monkeypatch):
+def test_oracle_missing_position_is_unknown_independent_of_model_identity(monkeypatch):
     from model_unfolder.evidence.models import PositionalEvidence
     from model_unfolder.adapters.transformer import parser as parser_module
 
@@ -101,12 +101,17 @@ def test_position_identity_cache_is_only_an_oracle_missing_fallback(monkeypatch)
     }
     monkeypatch.setattr(
         parser_module, "_code_position",
-        lambda _cfg: PositionalEvidence("oracle_missing", reason="negative control"),
+        lambda _cfg, _context=None: PositionalEvidence("oracle_missing", reason="negative control"),
     )
     bloom = parser_module.parse({**base, "model_type": "bloom"})
     unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
     assert bloom.layers[0].attention.rope is False
-    assert unknown.layers[0].attention.rope is True
+    assert unknown.layers[0].attention.rope is False
+    assert bloom.layers[0].attention.position_kind == "unknown"
+    assert unknown.layers[0].attention.position_kind == "unknown"
+    assert "fallback_rope" not in bloom.extras["position_encoding"]
+    assert "fallback_rope" not in unknown.extras["position_encoding"]
+    assert any("source is unavailable" in warning for warning in bloom.warnings)
 
 
 def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
@@ -122,6 +127,8 @@ def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
     html = diagram.to_html(standalone=True)
     assert "Learned Position Embedding" in html
     assert "Token + position embedding" in html
+    from model_unfolder.labels import attention_summary
+    assert "learned positions" not in attention_summary(ir["layers"][0]["attention"])[1]
 
 
 def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
@@ -137,6 +144,8 @@ def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
     html = diagram.to_html(standalone=True)
     assert "Fixed Position Encoding" in html
     assert "Adds the fixed positional vector" in html
+    from model_unfolder.labels import attention_summary
+    assert "fixed positions" not in attention_summary(ir["layers"][0]["attention"])[1]
 
 
 def test_final_norm_label_uses_the_code_derived_norm_class():
@@ -1230,7 +1239,7 @@ def test_gemma4_ple_uses_reusable_part_contract():
 def test_gemma4_multimodal_fusion_render():
     d = unfold(_gemma4_e2b_vision_config())
     ir = d.to_ir()
-    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
+    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "vision_encoder"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
@@ -1332,7 +1341,8 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     # SigLIP-style learned table → NO RoPE in vision attention.
     siglip = dict(model_type="gemma3", num_hidden_layers=2, hidden_size=128,
                   num_attention_heads=8, num_key_value_heads=4, intermediate_size=256,
-                  vocab_size=1000, vision_config={"hidden_size": 128, "num_hidden_layers": 2,
+                  vocab_size=1000, vision_config={"model_type": "siglip_vision_model",
+                  "architectures": ["SiglipVisionModel"], "hidden_size": 128, "num_hidden_layers": 2,
                   "num_attention_heads": 8, "intermediate_size": 256, "patch_size": 14,
                   "image_size": 224, "num_positions": 256})
     assert "apply RoPE" not in vision_attn_svg(siglip), "SigLIP vision must NOT draw RoPE"
@@ -1341,7 +1351,9 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
                 num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                 vocab_size=1000, image_token_id=4,
-                vision_config={"depth": 2, "hidden_size": 128, "num_heads": 8,
+                vision_config={"model_type": "qwen2_vl",
+                               "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+                               "depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
     assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
 
@@ -1494,7 +1506,13 @@ def test_new_should_support_family_routes():
         ir = d.to_ir()
         layer = ir["layers"][0]
 
-        assert not ir["warnings"]
+        if cfg is YI_34B_CONFIG:
+            assert ir["warnings"] == [
+                "Modeling source is unavailable; the positional scheme remains unknown."
+            ]
+            assert layer["attention"]["position_kind"] == "unknown"
+        else:
+            assert not ir["warnings"]
         assert layer["attention"]["kind"] == attn_kind
         assert layer["ffn"]["kind"] == ffn_kind
         assert layer["norm_kind"] == norm_kind

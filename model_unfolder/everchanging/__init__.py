@@ -85,8 +85,7 @@ def load_layer_topology() -> dict:
             mt, _, place = item.partition("=")
             placement[mt.strip()] = place.strip()
     return {"norm_placement": placement,
-            "parallel_residual": list(data.get("parallel_residual") or []),
-            "no_rope": list(data.get("no_rope") or [])}
+            "parallel_residual": list(data.get("parallel_residual") or [])}
 
 
 # --- diffusor domain --------------------------------------------------------

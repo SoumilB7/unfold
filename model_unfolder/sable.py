@@ -136,9 +136,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         check_nested_conformance,
         check_wiring_conformance,
     )
-    from .evidence.sources import resolve_source_files
+    from .evidence.context import ParseContext
     from .preview import svg_views, _visual_hash
-    from .renderers.html.graph_engine import drain_render_log, reset_render_log
 
     cfg = _coerce(model_or_id, token=token)
     # Keep the source id ON the config so a hub source lookup can find it: a
@@ -148,21 +147,23 @@ def sable(model_or_id, *, token=None, source: str = "local",
     if isinstance(model_or_id, str) and isinstance(cfg, dict) and not any(
             cfg.get(k) for k in ("_name_or_path", "name_or_path", "model_id", "repo_id")):
         cfg = {**cfg, "_name_or_path": model_or_id}
-    diagram = Diagram(config_to_ir(cfg))
+    context = ParseContext.build(cfg, source=source, token=token)
+    diagram = Diagram(config_to_ir(cfg, parse_context=context))
     ir = diagram.to_ir()
     # Capture the op-kinds the renderer DRAWS for every graph (architecture + every
     # drill, to the leaves) so the nested-conformance net can diff each drill
     # against its backing sub-module's transitive forward() closure.
-    reset_render_log()
     html = diagram.to_html(standalone=True)
-    render_log = drain_render_log()
+    render_log = diagram.render_events()
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.
-    oracle_files = resolve_source_files(cfg, source=source).files
+    oracle_files = context.source_bundle.files
     oracle = "present" if oracle_files else "MISSING (conformance degraded — install the modeling source)"
 
-    op_probs = check_model_conformance(cfg, ir, source=source) if oracle_files else []
+    op_probs = check_model_conformance(
+        cfg, ir, source=source, bundle=context.source_bundle
+    ) if oracle_files else []
     checks = [
         SableCheck("click_coupling", validate_click_coupling(html)),
         SableCheck("dangling_connectors", diagram.wiring_problems()),
@@ -183,20 +184,26 @@ def sable(model_or_id, *, token=None, source: str = "local",
                    [p.message for p in op_probs if p.kind in ("missing", "fabricated", "stale")],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("wiring_conformance",
-                   [p.message for p in (check_wiring_conformance(cfg, ir, source=source) if oracle_files else [])],
+                   [p.message for p in (check_wiring_conformance(
+                       cfg, ir, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         # Fact-conformance: the SAME-op-kind, different-SEMANTICS dimensions that
         # op-presence is blind to — positional scheme (fabricated NoPE) and attention
         # algorithm (linear vs softmax). The two classes I kept catching by EYE.
         SableCheck("fact_conformance",
-                   [p.message for p in (check_fact_conformance(cfg, ir, source=source) if oracle_files else [])],
+                   [p.message for p in (check_fact_conformance(
+                       cfg, ir, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         # Nested-conformance: recurse INTO each leaf-compute drill (attention / FFN /
         # expert internals) and diff its DRAWN op-set against the TRANSITIVE forward()
         # closure of the backing sub-module (following sdpa / rotary / the diffusers
         # processor / the FeedForward ModuleList). One altitude below op_conformance.
         SableCheck("nested_conformance",
-                   [p.message for p in (check_nested_conformance(cfg, render_log, source=source) if oracle_files else [])],
+                   [p.message for p in (check_nested_conformance(
+                       cfg, render_log, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),
     ]

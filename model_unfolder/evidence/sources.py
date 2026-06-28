@@ -151,7 +151,19 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             warnings=("transformers is not installed; cannot inspect local modeling source.",),
         )
 
-    models_root = Path(transformers.__file__).resolve().parent / "models"
+    package_file = getattr(transformers, "__file__", None)
+    if not package_file:
+        return SourceBundle(
+            source="local",
+            model_type=model_type,
+            architecture=architecture,
+            model_id=model_id,
+            warnings=(
+                "transformers has no filesystem package path; cannot inspect "
+                "local modeling source.",
+            ),
+        )
+    models_root = Path(package_file).resolve().parent / "models"
     files: list[str] = []
     warnings: list[str] = []
     seen_files: set[str] = set()

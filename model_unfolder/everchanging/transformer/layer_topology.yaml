@@ -21,15 +21,3 @@ norm_placement: []
 # Flagless parallel-residual families (attention ∥ FFN off one input, one
 # combined add).  READ FROM CODE — empty fallback (see header).
 parallel_residual: []
-
-# Offline-only cache for families that do NOT apply rotary position embedding.
-# Installed source is resolved first by evidence/position.py and distinguishes
-# ALiBi from a learned embedding add.  This list is consulted ONLY when the code
-# oracle is genuinely missing; present-but-ambiguous source is blocking and must
-# never fall through here.  A fallback rendering remains NEEDS-HUMAN.
-no_rope:
-  - bloom
-  - mpt
-  - gpt2
-  - gpt_neo
-  - opt

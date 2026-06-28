@@ -73,7 +73,16 @@ def tower_graph(spec: dict) -> Graph:
             default_kind="port", static=source.get("static", True))
     for block in spec.get("pre") or []:
         add(block)
-    cell_ids = [add(block) for block in spec.get("cell") or []]
+    cell_groups: list[tuple[list[str], object, object]] = []
+    if spec.get("cells"):
+        cell_ids = []
+        for cell_spec in spec.get("cells") or []:
+            ids = [add(block) for block in cell_spec.get("cell") or []]
+            cell_ids.extend(ids)
+            cell_groups.append((ids, cell_spec.get("repeat"), cell_spec.get("repeat_label")))
+    else:
+        cell_ids = [add(block) for block in spec.get("cell") or []]
+        cell_groups.append((cell_ids, spec.get("repeat"), spec.get("repeat_label")))
     for block in spec.get("post") or []:
         add(block)
     output = spec.get("output")
@@ -100,10 +109,9 @@ def tower_graph(spec: dict) -> Graph:
     # (A genuinely non-repeated unit, like a ResNet residual cell, is declared as
     # ``pre`` instead of ``cell`` so it never frames as a repeat.)
     groups = []
-    repeat = spec.get("repeat")
-    repeat_label = spec.get("repeat_label")
-    if cell_ids and repeat != 1:
-        groups.append(Group(cell_ids, repeat=repeat, label=repeat_label))
+    for ids, repeat, repeat_label in cell_groups:
+        if ids and repeat != 1:
+            groups.append(Group(ids, repeat=repeat, label=repeat_label))
     return Graph(nodes=nodes, flow=flow, edges=edges, groups=groups,
                  side_inputs=side_inputs, note=spec.get("note"))
 

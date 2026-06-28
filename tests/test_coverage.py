@@ -38,7 +38,8 @@ import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / Pix
 _BASE = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
              num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
 
-_VISION_CFG = {"depth": 4, "hidden_size": 128, "num_heads": 8, "patch_size": 14, "in_channels": 3}
+_VISION_CFG = {"model_type": "qwen2_vl", "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+               "depth": 4, "hidden_size": 128, "num_heads": 8, "patch_size": 14, "in_channels": 3}
 _GRID_VISION = {**_VISION_CFG, "spatial_merge_size": 2, "temporal_patch_size": 2}
 
 # A corpus designed to span EVERY view archetype (offline — synthetic + diffusion dicts).

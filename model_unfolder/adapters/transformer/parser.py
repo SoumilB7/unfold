@@ -48,6 +48,7 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_extras,
 )
 from .special_parts.modalities import multimodal_extras
+from .special_parts.modalities.vision import apply_vision_evidence
 from .special_parts.modalities.detect import cross_attention_layers as _cross_attention_layers
 
 
@@ -89,7 +90,20 @@ def _resolve(cfg: Any, canonical: str, default=None):
     return default
 
 
-def _code_layer_topology(cfg: Any) -> dict | None:
+def _source_files(cfg: Any, context=None):
+    """Return this parse's already-resolved source files.
+
+    Direct adapter callers still get a complete parse: ``parse`` creates the
+    context once before any detector runs.  The fallback is retained only for
+    isolated helper tests and third-party calls to these private helpers.
+    """
+    if context is not None:
+        return context.source_bundle.files
+    from ...evidence.sources import resolve_source_files
+    return resolve_source_files(cfg, source="local").files
+
+
+def _code_layer_topology(cfg: Any, context=None) -> dict | None:
     """The decoder layer's macro-topology (norm placement + parallel residual)
     READ FROM THE MODELING SOURCE — the code-based replacement for the
     ``layer_topology.yaml`` model_type table.  "code -> structure": where the
@@ -100,26 +114,24 @@ def _code_layer_topology(cfg: Any) -> dict | None:
     the parse."""
     try:
         from ...evidence.patterns import decoder_layer_topology_from_files
-        from ...evidence.sources import resolve_source_files
-        files = resolve_source_files(cfg, source="local").files
+        files = _source_files(cfg, context)
         return decoder_layer_topology_from_files(files)
     except Exception:
         return None
 
 
-def _code_norm_kind(cfg: Any) -> str | None:
+def _code_norm_kind(cfg: Any, context=None) -> str | None:
     """The decoder's norm KIND (rmsnorm/layernorm) READ FROM THE MODELING SOURCE
     — used only as a config-silent fallback (no eps field), replacing the legacy
     model_type family-set.  Best-effort, never raises into the parse."""
     try:
         from ...evidence.patterns import decoder_norm_kind_from_files
-        from ...evidence.sources import resolve_source_files
-        return decoder_norm_kind_from_files(resolve_source_files(cfg, source="local").files)
+        return decoder_norm_kind_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_ffn_gated(cfg: Any) -> bool | None:
+def _code_ffn_gated(cfg: Any, context=None) -> bool | None:
     """Whether the decoder's plain MLP is gated (gate·up) READ FROM THE MODELING
     SOURCE — overrides the ``rmsnorm -> gated`` heuristic, which mis-gates a dense
     RMSNorm decoder (Phi: ``PhiMLP`` is dense). Same code-evidence rail that feeds
@@ -127,31 +139,26 @@ def _code_ffn_gated(cfg: Any) -> bool | None:
     Best-effort, never raises into the parse; None keeps the heuristic."""
     try:
         from ...evidence.patterns import decoder_ffn_gated_from_files
-        from ...evidence.sources import resolve_source_files
-        return decoder_ffn_gated_from_files(
-            resolve_source_files(cfg, source="local").files, cfg=cfg
-        )
+        return decoder_ffn_gated_from_files(_source_files(cfg, context), cfg=cfg)
     except Exception:
         return None
 
 
-def _code_ffn_activation(cfg: Any) -> str | None:
+def _code_ffn_activation(cfg: Any, context=None) -> str | None:
     """Config-silent FFN activation read from the exact modeling source."""
     try:
         from ...evidence.patterns import decoder_ffn_activation_from_files
-        from ...evidence.sources import resolve_source_files
-        return decoder_ffn_activation_from_files(
-            resolve_source_files(cfg, source="local").files
-        )
+        return decoder_ffn_activation_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_position(cfg: Any):
+def _code_position(cfg: Any, context=None):
     """Typed positional evidence shared verbatim with fact-conformance."""
     try:
         from ...evidence.position import decoder_positional_evidence
-        return decoder_positional_evidence(cfg, source="local")
+        bundle = context.source_bundle if context is not None else None
+        return decoder_positional_evidence(cfg, source="local", bundle=bundle)
     except Exception:
         # A detector failure is not permission to assert a source-derived fact.
         # Treat it as present-but-unresolved; fact-conformance will expose the
@@ -237,7 +244,10 @@ def matches(_cfg: Any) -> bool:
     return True  # the only adapter — must be registered last in the global list
 
 
-def parse(cfg: Any) -> ModelIR:
+def parse(cfg: Any, context=None) -> ModelIR:
+    if context is None:
+        from ...evidence.context import ParseContext
+        context = ParseContext.build(cfg, source="local")
     debug.reset()  # start a fresh field-access record for this parse
     warnings: list[str] = []
     model_type = (_g(cfg, "model_type") or "unknown").lower()
@@ -279,7 +289,7 @@ def parse(cfg: Any) -> ModelIR:
         if isinstance(nested_act, dict):
             activation_raw = nested_act.get("name")
     if activation_raw is None:
-        activation_raw = _code_ffn_activation(text_cfg)
+        activation_raw = _code_ffn_activation(text_cfg, context)
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
@@ -303,35 +313,38 @@ def parse(cfg: Any) -> ModelIR:
     compress_ratios = _resolve(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
-    norm_kind    = _norm_kind(text_cfg, get("norm_type"))
+    norm_kind    = _norm_kind(text_cfg, get("norm_type"), context)
     _mt_candidates = {model_type, str(_g(text_cfg, "model_type") or "").lower()}
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
     # The table is now only an offline fallback cache when source can't be read.
-    _code_topo = _code_layer_topology(text_cfg)
+    _code_topo = _code_layer_topology(text_cfg, context)
     # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — overrides the
     # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
     # the code (and the nested-conformance net).  None keeps the heuristic.
-    _code_gated = _code_ffn_gated(text_cfg)
-    _code_position_evidence = _code_position(cfg)
+    _code_gated = _code_ffn_gated(text_cfg, context)
+    _code_position_evidence = _code_position(cfg, context)
     norm_placement = (
         (_code_topo or {}).get("norm_placement")
         or next((_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
                  if mt in _LAYER_TOPOLOGY["norm_placement"]), "pre")
     )
-    # Position scheme: configured source evidence wins.  The legacy identity
-    # cache is consulted ONLY when no oracle exists, never for ambiguous source.
+    # Position scheme: only configured source evidence may assert a mechanism.
+    # Missing source stays unknown; a family convention is not evidence.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
     if _code_position_evidence.status == "proven":
         uses_rope = "rope" in _code_position_evidence.kinds
-    elif _code_position_evidence.status == "oracle_missing":
-        uses_rope = not (_mt_candidates & set(_LAYER_TOPOLOGY["no_rope"]))
     else:
         uses_rope = False
-        warnings.append(
-            "Modeling source is present but the configured positional scheme is unresolved."
-        )
+        if _code_position_evidence.status == "oracle_missing":
+            warnings.append(
+                "Modeling source is unavailable; the positional scheme remains unknown."
+            )
+        else:
+            warnings.append(
+                "Modeling source is present but the configured positional scheme is unresolved."
+            )
 
     if not num_layers:
         warnings.append("Config missing num_hidden_layers (and aliases) — layer list will be empty.")
@@ -489,7 +502,6 @@ def parse(cfg: Any) -> ModelIR:
 
         position_mechanism = _position_for_layer(
             _code_position_evidence, is_gated_delta=is_gated_delta,
-            fallback_rope=uses_rope,
         )
         attn = AttentionSpec(
             kind=attn_kind,
@@ -590,12 +602,24 @@ def parse(cfg: Any) -> ModelIR:
     vocab_size = get("vocab_size", 0)
     tie_word_embeddings = bool(get("tie_word_embeddings", False))
 
+    modality_extras = multimodal_extras(cfg, text_cfg, hidden_size)
+    if modality_extras:
+        try:
+            from ...evidence.vision import vision_tower_evidence
+            modality_extras = apply_vision_evidence(
+                modality_extras,
+                vision_tower_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # A failed source extractor must leave the path honestly generic;
+            # it is never permission to restore a family-derived structure.
+            pass
     extras = decoder_extras(
         vocab_size,
         hidden_size,
         tie_word_embeddings,
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
-        multimodal_extras(cfg, text_cfg, hidden_size),
+        modality_extras,
     )
     final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
     for block in extras["render"]["model_blocks"]:
@@ -608,7 +632,6 @@ def parse(cfg: Any) -> ModelIR:
             })
     extras["position_encoding"] = {
         **_code_position_evidence.to_dict(),
-        "fallback_rope": uses_rope if _code_position_evidence.status == "oracle_missing" else None,
     }
     absolute_item = next((item for item in _position_mechanisms
                           if item.kind in {"learned_absolute", "fixed_absolute"}), None)
@@ -961,7 +984,7 @@ def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag:
     return "gqa"
 
 
-def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
+def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
     """Pick LayerNorm vs RMSNorm from config — first explicit field, then eps hints."""
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
@@ -976,7 +999,7 @@ def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
     # Config carries no eps field — read the norm KIND from the layer's norm
     # submodule class in the modeling source (code -> fact), the general
     # replacement for the old legacy-family model_type set (gpt2/neox/opt/…).
-    code_kind = _code_norm_kind(cfg)
+    code_kind = _code_norm_kind(cfg, context)
     if code_kind:
         return code_kind
     return "rmsnorm"
@@ -1022,7 +1045,7 @@ def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | 
     return None
 
 
-def _position_for_layer(evidence, *, is_gated_delta: bool, fallback_rope: bool) -> tuple[str, str]:
+def _position_for_layer(evidence, *, is_gated_delta: bool) -> tuple[str, str]:
     """Project model evidence onto one concrete layer without moving altitudes."""
     if evidence.status == "proven":
         mechanisms = list(evidence.mechanisms)
@@ -1041,7 +1064,7 @@ def _position_for_layer(evidence, *, is_gated_delta: bool, fallback_rope: bool) 
             return selected.kind, selected.application
     if evidence.status == "ambiguous":
         return "unknown", "none"
-    return ("rope", "qk_rotation") if fallback_rope else ("unknown", "none")
+    return "unknown", "none"
 
 
 def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:

@@ -375,10 +375,9 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     position_kind = attention.get("position_kind")
     if position_kind == "alibi":
         facts.append("ALiBi")
-    elif position_kind == "learned_absolute":
-        facts.append("learned positions")
-    elif position_kind == "fixed_absolute":
-        facts.append("fixed positions")
+    # Learned/fixed absolute positions are model-input operations.  Their
+    # embedding + add blocks live before the repeated decoder stack; repeating
+    # the fact on an attention card assigns it to the wrong computation stage.
     elif position_kind == "none" and not attention.get("no_rope"):
         facts.append("no positional transform")
     elif position_kind == "unknown":

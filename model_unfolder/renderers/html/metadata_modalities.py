@@ -1,6 +1,8 @@
 """Multimodal block metadata and detail-card children."""
 from __future__ import annotations
 
+from copy import deepcopy
+
 from ...labels import attention_summary, kind_long
 from .patch_grid import coerce_grid, grid_card_phrase
 from .utils import _fmt_int
@@ -267,6 +269,8 @@ def _vision_children(vision: dict) -> list[dict]:
         pos_kind = (encoder.get("position_encoding") or {}).get("kind")
         if pos_kind:
             encoder_bits.append(str(pos_kind).replace("_", " "))
+    if encoder.get("source_owner"):
+        encoder_bits.append(f"source {encoder.get('source_owner')}")
     encoder_bits.append("separate vision tower")
 
     tiling = vision.get("tiling") or {}
@@ -279,7 +283,9 @@ def _vision_children(vision: dict) -> list[dict]:
     vision_hidden = encoder.get("hidden_size")
     vision_head_dim = _head_dim(vision_heads, vision_hidden)
     vision_pos_kind = str((encoder.get("position_encoding") or {}).get("kind") or "")
-    vision_uses_rope = "rope" in vision_pos_kind
+    vision_input_pos_kind = str(encoder.get("input_position_kind") or vision_pos_kind)
+    vision_attn_pos_kind = str(encoder.get("attention_position_kind") or vision_pos_kind)
+    vision_uses_rope = "rope" in vision_attn_pos_kind
     vision_norm_kind = str(encoder.get("norm_kind") or "LayerNorm")
     patch_facts = [f for f in (
         grid_phrase or "",
@@ -300,22 +306,11 @@ def _vision_children(vision: dict) -> list[dict]:
         patch_card = {
             "id": "vision_patches",
             "title": "Patch embedding",
-            "description": "Generic patch embedding; its exact backend is not established by this config.",
+            "description": "Code-defined patch embedding; the exact backend and operation order are unresolved.",
             "facts": patch_facts,
-            "view": "vision_patch_embedding",
-            "children": [
-                {"id": "vision_pixels", "title": "Image pixels",
-                 "description": "Raw image tensor before patch embedding."},
-                {"id": "vision_patch_flatten", "title": "Patch regrouping",
-                 "description": "Generic patch regrouping; the exact source op order is not established."},
-                {"id": "vision_patch_project", "title": "Patch projection",
-                 "description": "Learned patch projection; backend is intentionally not guessed."},
-                {"id": "vision_patch_tokens", "title": "Patch tokens",
-                 "description": "One token per image patch."},
-            ],
         }
 
-    return [
+    result = [
         {
             "id": "vision_pixels",
             "title": "Image pixels",
@@ -345,8 +340,13 @@ def _vision_children(vision: dict) -> list[dict]:
                     "id": "vision_position",
                     "title": "Vision positions",
                     "description": "Position information is added before the visual transformer stack.",
-                    "facts": [vision_pos_kind.replace("_", " ")] if vision_pos_kind else [],
-                }] if not vision_uses_rope else []),
+                    "facts": [vision_input_pos_kind.replace("_", " ")] if vision_input_pos_kind else [],
+                }] if any(marker in vision_input_pos_kind for marker in ("learned", "fixed")) else []),
+                *([{
+                    "id": "vision_encoder_unknown",
+                    "title": "Code-defined vision block",
+                    "description": "The exact repeated vision block could not be resolved; no standard ViT cell is invented.",
+                }] if not encoder.get("variants") else []),
                 {
                     "id": "vision_encoder_norm1",
                     "title": "Pre-attention norm",
@@ -360,14 +360,36 @@ def _vision_children(vision: dict) -> list[dict]:
                     "facts": [f for f in (
                         f"{_fmt_int(encoder.get('num_attention_heads'))} heads" if encoder.get("num_attention_heads") else "",
                         f"hidden {_fmt_int(encoder.get('hidden_size'))}" if encoder.get("hidden_size") else "",
+                        "post-RoPE Q/K scaling" if encoder.get("post_rope_scale") else "",
                     ) if f],
                     "view": "vision_self_attention",
                     "children": [
+                        *([{
+                            "id": "vision_attn_qkv",
+                            "title": "Fused QKV projection",
+                            **_linear_card(vision_hidden, None, vision_heads, vision_head_dim),
+                        }, {
+                            "id": "vision_attn_q_split", "title": "Split queries",
+                            "description": "Slices Q from the fused QKV projection.",
+                        }, {
+                            "id": "vision_attn_k_split", "title": "Split keys",
+                            "description": "Slices K from the fused QKV projection.",
+                        }, {
+                            "id": "vision_attn_v_split", "title": "Split values",
+                            "description": "Slices V from the fused QKV projection.",
+                        }] if encoder.get("projection_mode") == "fused_qkv" else []),
+                        *([] if encoder.get("projection_mode") == "fused_qkv" else [
                         {
                             "id": "vision_attn_q",
                             "title": "Query projection",
                             **_linear_card(vision_hidden, vision_hidden, vision_heads, vision_head_dim),
                         },
+                        ]),
+                        *([{
+                            "id": f"vision_attn_{lane}_norm",
+                            "title": f"{lane.upper()} normalization",
+                            "description": f"Normalizes vision {lane.upper()} heads before attention.",
+                        } for lane in ("q", "k", "v") if encoder.get(f"{lane}_norm")]),
                         {
                             "id": "vision_attn_k",
                             "title": "Key projection",
@@ -382,12 +404,12 @@ def _vision_children(vision: dict) -> list[dict]:
                             "id": "vision_attn_q_rope",
                             "title": "Apply vision RoPE (Q)",
                             "description": "Rotary position embedding rotates vision query heads before attention scores.",
-                            "facts": [vision_pos_kind.replace("_", " ")],
+                            "facts": [vision_attn_pos_kind.replace("_", " ")],
                         }, {
                             "id": "vision_attn_k_rope",
                             "title": "Apply vision RoPE (K)",
                             "description": "Rotary position embedding rotates vision key heads before attention scores.",
-                            "facts": [vision_pos_kind.replace("_", " ")],
+                            "facts": [vision_attn_pos_kind.replace("_", " ")],
                         }] if vision_uses_rope else []),
                         {
                             "id": "vision_attn_scaled",
@@ -425,6 +447,11 @@ def _vision_children(vision: dict) -> list[dict]:
                     "title": "Vision attention residual add",
                     "description": "Adds the vision-layer input to the self-attention output.",
                 },
+                *([{
+                    "id": "vision_attn_residual_gate",
+                    "title": "Learned attention gate",
+                    "description": "Multiplies the attention update by the source-defined tanh gate before the residual add.",
+                }] if encoder.get("residual_gated") else []),
                 {
                     "id": "vision_encoder_norm2",
                     "title": "Pre-MLP norm",
@@ -443,6 +470,11 @@ def _vision_children(vision: dict) -> list[dict]:
                     "title": "Vision MLP residual add",
                     "description": "Adds the post-attention state to the vision MLP output.",
                 },
+                *([{
+                    "id": "vision_mlp_residual_gate",
+                    "title": "Learned MLP residual gate",
+                    "description": "Multiplies the MLP update by the source-defined tanh gate before the residual add.",
+                }] if encoder.get("residual_gated") else []),
                 {
                     "id": "vision_encoded_states",
                     "title": "Encoded image states",
@@ -473,6 +505,69 @@ def _vision_children(vision: dict) -> list[dict]:
             ) if f],
         },
     ]
+    encoder_card = next(item for item in result if item.get("id") == "vision_encoder")
+    children = encoder_card["children"]
+    variants = encoder.get("variants") or []
+    if not variants:
+        keep = {"vision_patch_tokens", "vision_position", "vision_encoder_unknown",
+                "vision_encoded_states"}
+        encoder_card["children"] = [item for item in children if item.get("id") in keep]
+        return result
+
+    placement = encoder.get("norm_placement")
+    if placement in {"post", "double"}:
+        children.extend([
+            {"id": "vision_encoder_norm1_post", "title": "Post-attention norm",
+             "description": "Source-defined normalization after attention.",
+             "facts": [vision_norm_kind]},
+            {"id": "vision_encoder_norm2_post", "title": "Post-MLP norm",
+             "description": "Source-defined normalization after the MLP.",
+             "facts": [vision_norm_kind]},
+        ])
+    if encoder.get("final_norm_kind") not in {None, "", "unknown"}:
+        children.append({"id": "vision_final_norm", "title": "Final vision norm",
+                         "description": "Normalization after the complete vision encoder stack.",
+                         "facts": [encoder["final_norm_kind"]]})
+
+    if len(variants) > 1:
+        by_id = {item.get("id"): item for item in children}
+        base_ids = [
+            "vision_encoder_norm1", "vision_encoder_attn", "vision_attn_residual_gate",
+            "vision_encoder_norm1_post", "vision_add1", "vision_encoder_norm2",
+            "vision_encoder_mlp", "vision_mlp_residual_gate",
+            "vision_encoder_norm2_post", "vision_add2",
+        ]
+        for index, variant in enumerate(variants[1:], 1):
+            suffix = f"__{index}"
+            scoped = {**encoder, **variant, "variants": [variant]}
+            for base_id in base_ids:
+                base = by_id.get(base_id)
+                if base is None:
+                    continue
+                if "residual_gate" in base_id and not variant.get("residual_gated"):
+                    continue
+                clone = deepcopy(base)
+                _suffix_card_ids(clone, suffix)
+                if base_id in {"vision_encoder_attn", "vision_encoder_mlp"}:
+                    clone["detail"] = {"encoder": scoped, "suffix": suffix}
+                children.append(clone)
+            if variant.get("residual_gated") and not by_id.get("vision_attn_residual_gate"):
+                children.extend([
+                    {"id": f"vision_attn_residual_gate{suffix}",
+                     "title": "Learned attention gate",
+                     "description": "Multiplies the attention update by the source-defined tanh gate."},
+                    {"id": f"vision_mlp_residual_gate{suffix}",
+                     "title": "Learned MLP gate",
+                     "description": "Multiplies the MLP update by the source-defined tanh gate."},
+                ])
+    return result
+
+
+def _suffix_card_ids(card: dict, suffix: str) -> None:
+    if card.get("id"):
+        card["id"] = str(card["id"]) + suffix
+    for child in card.get("children") or []:
+        _suffix_card_ids(child, suffix)
 
 
 def _audio_description(audio: dict) -> tuple[str, list[str]]:
@@ -620,6 +715,19 @@ def _vision_mlp_children(encoder: dict, hidden: int | None) -> list[dict]:
         "title": "Patch states",
         "description": "Visual patch states entering the MLP sublayer.",
     }]
+    if encoder.get("ffn_gated") and encoder.get("ffn_projection_mode") == "fused_gate_up":
+        return common + [
+            {"id": "vision_mlp_gate_up", "title": "Fused gate/up projection",
+             "description": "One linear projection stores gate and value channels together."},
+            {"id": "vision_mlp_gate_up_split", "title": "Split gate / up",
+             "description": "Splits the fused projection into gate and value lanes."},
+            {"id": "vision_mlp_activation", "title": "Gate activation",
+             "description": "Applies the source-defined non-linearity to the gate lane."},
+            {"id": "vision_mlp_multiply", "title": "Gated product",
+             "description": "Element-wise product of activated gate and value lanes."},
+            {"id": "vision_mlp_fc2", "title": "Output projection",
+             "description": "Linear back to the encoder width.", "facts": dims_out},
+        ]
     if encoder.get("ffn_gated"):
         return common + [
             {"id": "vision_mlp_gate", "title": "Gate projection",

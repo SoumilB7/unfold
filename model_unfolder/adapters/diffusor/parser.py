@@ -82,21 +82,27 @@ def _class_default(cls: Any, field: str):
     return _CLASS_DEFAULTS.get(field, {}).get(str(cls))
 
 
-def _code_ffn_activation(cfg: Any):
+def _source_files(cfg: Any, context=None):
+    """Use the one source bundle resolved for this parse."""
+    if context is not None:
+        return context.source_bundle.files
+    from ...evidence.sources import resolve_source_files
+    return resolve_source_files(cfg, source="local").files
+
+
+def _code_ffn_activation(cfg: Any, context=None):
     """The DiT FFN's activation_fn READ FROM THE MODELING SOURCE — the pure
     code-based replacement for the ``ffn_activation_fn`` class-defaults table.
     Best-effort and silent on failure (no source → honest-undeclared FFN); never
     raises into the parse."""
     try:
         from ...evidence.patterns import diffusion_ffn_activation_from_files
-        from ...evidence.sources import resolve_source_files
-        files = resolve_source_files(cfg, source="local").files
-        return diffusion_ffn_activation_from_files(files)
+        return diffusion_ffn_activation_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_has_rope(cfg: Any) -> bool:
+def _code_has_rope(cfg: Any, context=None) -> bool:
     """Whether the denoiser applies rotary position embedding, READ FROM THE
     MODELING SOURCE — the pure code-based replacement for the ``rope_3d`` table.
     Uses the SAME evidence fact-conformance reads to CATCH a fabricated NoPE
@@ -104,75 +110,69 @@ def _code_has_rope(cfg: Any) -> bool:
     silent on failure (no source → no rope claim, an honest negative)."""
     try:
         from ...evidence.patterns import diffusion_rope_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_rope_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_rope_from_files(_source_files(cfg, context))
     except Exception:
         return False
 
 
-def _code_attn_kind(cfg: Any):
+def _code_attn_kind(cfg: Any, context=None):
     """The attention ALGORITHM (linear vs softmax) READ FROM THE MODELING SOURCE —
     the code-based replacement for the ``self_attn_kind`` table. Returns "linear" or
     None (None ⇒ caller's softmax default). Best-effort, silent on failure."""
     try:
         from ...evidence.patterns import diffusion_attn_kind_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_attn_kind_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_attn_kind_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_ffn_kind(cfg: Any):
+def _code_ffn_kind(cfg: Any, context=None):
     """The FFN KIND (gated conv Mix-FFN vs Linear MLP) READ FROM THE MODELING SOURCE
     — "conv_glu" when the block builds Sana's GLUMBConv, else None. The code-based
     replacement for the ``ffn_kind`` table. Best-effort, silent on failure."""
     try:
         from ...evidence.patterns import diffusion_ffn_kind_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_ffn_kind_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_ffn_kind_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_gate_via_norm(cfg: Any) -> bool:
+def _code_gate_via_norm(cfg: Any, context=None) -> bool:
     """Whether the block folds its timestep gate into a modulated norm of the
     sublayer output (Mochi) rather than a × gate — READ FROM THE MODELING SOURCE.
     The code-based replacement for the ``gate_via_norm`` table. Best-effort."""
     try:
         from ...evidence.patterns import diffusion_gate_via_norm_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_gate_via_norm_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_gate_via_norm_from_files(_source_files(cfg, context))
     except Exception:
         return False
 
 
-def _code_axes_dims_rope(cfg: Any):
+def _code_axes_dims_rope(cfg: Any, context=None):
     """The axial-RoPE per-axis dims fixed in the model __init__ default (Flux
     axes_dims_rope=(16,56,56)) READ FROM THE MODELING SOURCE — the code-based
     replacement for the ``axes_dims_rope`` table. Returns list[int] or None.
     Best-effort, silent on failure."""
     try:
         from ...evidence.patterns import diffusion_axes_dims_rope_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_axes_dims_rope_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_axes_dims_rope_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_single_fusion(cfg: Any):
+def _code_single_fusion(cfg: Any, context=None):
     """The single-stream block's fusion topology (parallel / sequential /
     concat_fused) READ FROM THE MODELING SOURCE, or None (no single blocks / default
     fused). The code-based replacement for the ``single_stream_fusion`` table.
     Best-effort, silent on failure."""
     try:
         from ...evidence.patterns import diffusion_single_stream_fusion_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_single_stream_fusion_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_single_stream_fusion_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
 
-def _code_qk_norm(cfg: Any):
+def _code_qk_norm(cfg: Any, context=None):
     """The Q/K-norm TYPE ("rms_norm"/"layer_norm") the attention applies, READ FROM
     THE MODELING SOURCE — for DiTs whose config is silent on qk_norm but whose
     attention norms Q/K (Flux/Flux2/QwenImage/Lumina2/PRX/CogVideoX/AuraFlow). The
@@ -180,8 +180,7 @@ def _code_qk_norm(cfg: Any):
     does not norm Q/K. Best-effort, silent on failure."""
     try:
         from ...evidence.patterns import diffusion_qk_norm_from_files
-        from ...evidence.sources import resolve_source_files
-        return diffusion_qk_norm_from_files(resolve_source_files(cfg, source="local").files)
+        return diffusion_qk_norm_from_files(_source_files(cfg, context))
     except Exception:
         return None
 
@@ -275,7 +274,10 @@ def matches(cfg: Any) -> bool:
     return False
 
 
-def parse(cfg: Any) -> ModelIR:
+def parse(cfg: Any, context=None) -> ModelIR:
+    if context is None:
+        from ...evidence.context import ParseContext
+        context = ParseContext.build(cfg, source="local")
     warnings: list[str] = []   # config GAPS → "⚠ partial config"
     notes: list[str] = []      # by-design advisories → neutral ⓘ (not a deficiency)
     cls = _g(cfg, "_class_name") or "diffusion"
@@ -318,9 +320,9 @@ def parse(cfg: Any) -> ModelIR:
     # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
     # the source isn't resolvable the FFN renders honestly as undeclared.
-    code_ffn_act = _code_ffn_activation(cfg) if declared_act is None else None
-    code_ffn_kind = _code_ffn_kind(cfg)
-    code_gate_via_norm = _code_gate_via_norm(cfg)
+    code_ffn_act = _code_ffn_activation(cfg, context) if declared_act is None else None
+    code_ffn_kind = _code_ffn_kind(cfg, context)
+    code_gate_via_norm = _code_gate_via_norm(cfg, context)
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
     # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
     norm_kind = _dit_norm_kind(cfg)
@@ -395,7 +397,7 @@ def parse(cfg: Any) -> ModelIR:
     if axes_dims_rope is None:
         # Config silent — READ the axial dims from the model __init__ default
         # (code -> fact); the class_defaults table is the offline-only fallback.
-        _code_axes = _code_axes_dims_rope(cfg)
+        _code_axes = _code_axes_dims_rope(cfg, context)
         if _code_axes:
             axes_dims_rope, axes_from_class = _code_axes, True
         else:
@@ -434,7 +436,7 @@ def parse(cfg: Any) -> ModelIR:
     # source. We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
     # per-axis split (head-dim dependent).
     rope_3d_from_class = False
-    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg)
+    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)
                                       or _class_default(cls, "rope_3d")):
         rope_dim = head_dim
         has_rope = True
@@ -487,7 +489,7 @@ def parse(cfg: Any) -> ModelIR:
         # Config silent — READ the Q/K-norm TYPE from the modeling source (the
         # attention's norm_q class / qk_norm kwarg); the class_defaults table is the
         # offline-only fallback.
-        _code_qk = _code_qk_norm(cfg)
+        _code_qk = _code_qk_norm(cfg, context)
         if _code_qk:
             _qk, qk_from_class = _code_qk, True
         else:
@@ -548,7 +550,7 @@ def parse(cfg: Any) -> ModelIR:
     # Attention ALGORITHM read from source (Sana's linear attention) — the SAME
     # *LinearAttn* signal fact-conformance reads. Code-first; the class_defaults table
     # is last-resort for un-resolvable source; default softmax MHA.
-    self_attn_kind = _code_attn_kind(cfg) or _class_default(cls, "self_attn_kind") or "mha"
+    self_attn_kind = _code_attn_kind(cfg, context) or _class_default(cls, "self_attn_kind") or "mha"
 
     layers = []
     idx = 0
@@ -590,7 +592,7 @@ def parse(cfg: Any) -> ModelIR:
     # the joined [text+image] sequence (joined once upstream), so it renders as a
     # concat-joint block, not a fused parallel one (drawing fusion would fabricate a
     # concat + a fused linear the forward never does).
-    single_fusion = _code_single_fusion(cfg) or _class_default(cls, "single_stream_fusion")
+    single_fusion = _code_single_fusion(cfg, context) or _class_default(cls, "single_stream_fusion")
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single):

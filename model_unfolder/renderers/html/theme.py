@@ -12,7 +12,15 @@ default); diffusion diagrams render blue.  Add a palette here and select it via
 """
 from __future__ import annotations
 
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
+
+from .render_context import (
+    RenderContext,
+    activate_render_context,
+    current_render_context,
+    ensure_render_context,
+)
 
 FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap');"
 FONT_LINK = "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap"
@@ -64,16 +72,34 @@ BLUE = {
 PALETTES = {"teal": TEAL, "blue": BLUE}
 DEFAULT_THEME = "teal"
 
-#: The *active* palette.  Every renderer module does ``from .theme import C`` and
-#: indexes it at call time, so mutating this dict in place recolours the whole
-#: render.  Initialised to the default; swapped by :func:`use_theme`.
-C: dict = dict(TEAL)
+class _ContextPalette(Mapping):
+    """Dict-like view of the palette owned by the active RenderContext."""
+
+    def _value(self) -> dict:
+        context = current_render_context()
+        return PALETTES.get(context.theme if context else DEFAULT_THEME, TEAL)
+
+    def __getitem__(self, key):
+        return self._value()[key]
+
+    def __iter__(self) -> Iterator:
+        return iter(self._value())
+
+    def __len__(self) -> int:
+        return len(self._value())
+
+    def get(self, key, default=None):
+        return self._value().get(key, default)
+
+
+#: Read-only, call-local palette view. Existing ``from .theme import C`` call
+#: sites remain valid, but concurrent renders no longer mutate one shared dict.
+C: Mapping = _ContextPalette()
 
 
 def set_theme(name: str | None) -> None:
-    """Repoint the active palette ``C`` to a named theme (in place)."""
-    C.clear()
-    C.update(PALETTES.get(name or DEFAULT_THEME, TEAL))
+    """Set the theme on the current call-local render context."""
+    ensure_render_context().theme = name or DEFAULT_THEME
 
 
 @contextmanager
@@ -84,10 +110,14 @@ def use_theme(name: str | None):
     CLI.  (Concurrent renders in one process would race on ``C`` — acceptable for
     now, same trade-off as the parser's per-parse debug record.)
     """
-    previous = dict(C)
-    set_theme(name)
+    context = current_render_context()
+    if context is None:
+        with activate_render_context(RenderContext(theme=name or DEFAULT_THEME)):
+            yield
+        return
+    previous = context.theme
+    context.theme = name or DEFAULT_THEME
     try:
         yield
     finally:
-        C.clear()
-        C.update(previous)
+        context.theme = previous

@@ -29,7 +29,7 @@ from ..everchanging import (
 )
 from .ast_scanner import _call_name
 from .forward_ops import _method, _module_list_elems, _role_of, extract_forward_ops
-from .models import ForwardOps
+from .models import ForwardOps, SourceBundle
 from .sources import _model_type, _string_value, resolve_source_files
 from .transitive import CallableInfo, build_registry, transitive_closure
 
@@ -86,6 +86,9 @@ class ConformanceProblem:
             drawn = "softmax" if self.op == "linear" else "linear"
             return (f"{self.view}: diagram draws {drawn} attention but{cls} uses {self.op} "
                     f"attention — match the attention algorithm (set the self-attention kind).{loc}")
+        if self.kind == "wrong_vision_fact":
+            return (f"{self.view}: vision fact differs from the qualified source evidence: "
+                    f"{self.op}.{cls}{loc}")
         return f"{self.view}: no code unit resolved to diff against — add a conformance_map override.{cls}{loc}"
 
 
@@ -93,13 +96,15 @@ class ConformanceProblem:
 # public API
 # ---------------------------------------------------------------------------
 
-def check_model_conformance(target, ir: dict, *, source: str = "local") -> list[ConformanceProblem]:
+def check_model_conformance(
+    target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+) -> list[ConformanceProblem]:
     """Diff every layer-group view of ``ir`` against the model's ``forward()`` code.
 
     ``target`` is the config (dict/object); ``ir`` is ``Diagram.to_ir()``.
     Returns all problems (including ``unresolved`` for views with no code unit)."""
     family = _family(target)
-    bundle = resolve_source_files(target, source=source)
+    bundle = bundle or resolve_source_files(target, source=source)
     component, component_files = _component_source(bundle, "text")
     files = _augment_diffusion_files(component_files)
     if not files:
@@ -128,7 +133,59 @@ def check_model_conformance(target, ir: dict, *, source: str = "local") -> list[
     return problems
 
 
-def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list[ConformanceProblem]:
+def _check_vision_facts(target, ir: dict, *, bundle: SourceBundle, source: str) -> list[ConformanceProblem]:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    paths = [path for key, path in modalities.items()
+             if key in {"vision", "video"} and isinstance(path, dict)]
+    if not paths:
+        return []
+    from .vision import vision_tower_evidence
+    evidence = vision_tower_evidence(target, source=source, bundle=bundle)
+    view = f"{evidence.component}/vision"
+    if evidence.status == "ambiguous":
+        return [ConformanceProblem("unresolved", "vision", view,
+                                   evidence.owner_class, evidence.source_file,
+                                   source_component=evidence.component)]
+    if evidence.status != "proven":
+        return []
+    out: list[ConformanceProblem] = []
+    for path in paths:
+        encoder = path.get("encoder") or {}
+        drawn_variants = encoder.get("variants") or []
+        expected = [variant.to_dict() for variant in evidence.variants]
+        checks = {
+            "position_kind": ((encoder.get("position_encoding") or {}).get("kind"),
+                              evidence.position_kind),
+            "input_position_kind": (encoder.get("input_position_kind"),
+                                    evidence.input_position_kind),
+            "final_norm_kind": (encoder.get("final_norm_kind"), evidence.final_norm_kind),
+            "variant_count": (len(drawn_variants), len(expected)),
+        }
+        for index, code_variant in enumerate(expected):
+            if index >= len(drawn_variants):
+                break
+            drawn = drawn_variants[index]
+            for field in ("block_class", "norm_kind", "norm_placement", "ffn_gated",
+                          "residual_gated", "projection_mode", "q_norm", "k_norm",
+                          "v_norm", "post_rope_scale", "position_kind",
+                          "attention_kind", "ffn_projection_mode"):
+                checks[f"variant[{index}].{field}"] = (drawn.get(field), code_variant.get(field))
+        exemplar = evidence.variants[0] if evidence.variants else None
+        for field, (drawn, code) in checks.items():
+            if drawn == code:
+                continue
+            out.append(ConformanceProblem(
+                "wrong_vision_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
+                getattr(exemplar, "block_class", evidence.owner_class),
+                getattr(exemplar, "source_file", evidence.source_file),
+                getattr(exemplar, "line", None), evidence.component,
+            ))
+    return out
+
+
+def check_wiring_conformance(
+    target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+) -> list[ConformanceProblem]:
     """Diff each layer-group's drawn conditioning SIDE-INPUTS against the backing
     ``forward()``'s parameters.
 
@@ -140,7 +197,7 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
     it never reconstructs wiring it can't trust.  Op-conformance checks op KINDS;
     this checks conditioning INPUTS — the complementary axis."""
     family = _family(target)
-    bundle = resolve_source_files(target, source=source)
+    bundle = bundle or resolve_source_files(target, source=source)
     component, component_files = _component_source(bundle, "text")
     files = _augment_diffusion_files(component_files)
     if not files:
@@ -182,7 +239,9 @@ def check_wiring_conformance(target, ir: dict, *, source: str = "local") -> list
     return problems
 
 
-def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[ConformanceProblem]:
+def check_fact_conformance(
+    target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+) -> list[ConformanceProblem]:
     """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
     structurally blind to — the SAME op-kind with different SEMANTICS:
 
@@ -201,7 +260,7 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
     (conditioning INPUTS). Coarse + robust: the signals are param/token PRESENCE and
     a constructed-class substring, never reconstructed wiring."""
     family = _family(target)
-    bundle = resolve_source_files(target, source=source)
+    bundle = bundle or resolve_source_files(target, source=source)
     component, component_files = _component_source(bundle, "text")
     files = _augment_diffusion_files(component_files)
     if not files:
@@ -223,7 +282,7 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
     # maintaining a second family/marker decision rail.
     if _model_type(target):
         from .position import decoder_positional_evidence
-        position = decoder_positional_evidence(target, source=source)
+        position = decoder_positional_evidence(target, source=source, bundle=bundle)
         if position.status == "ambiguous":
             problems.append(ConformanceProblem(
                 "unresolved", "position", f"{family}/position",
@@ -271,6 +330,7 @@ def check_fact_conformance(target, ir: dict, *, source: str = "local") -> list[C
             problems.append(ConformanceProblem(
                 "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
+    problems.extend(_check_vision_facts(target, ir, bundle=bundle, source=source))
     return problems
 
 
@@ -299,7 +359,9 @@ def _drawn_position_kinds(ir: dict) -> set[str]:
     return kinds
 
 
-def check_nested_conformance(target, render_log, *, source: str = "local") -> list[ConformanceProblem]:
+def check_nested_conformance(
+    target, render_log, *, source: str = "local", bundle: SourceBundle | None = None,
+) -> list[ConformanceProblem]:
     """Recurse INTO every drill view and diff its DRAWN op-set against the model's
     own code — one altitude below :func:`check_model_conformance` (which stops at
     the layer block).  ``render_log`` is ``graph_engine.drain_render_log()`` after a
@@ -326,7 +388,7 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
     A leaf whose closure is EMPTY (an opaque delegation we could not statically
     follow) is SKIPPED — honest-unknown, not a false fabrication."""
     family = _family(target)
-    bundle = resolve_source_files(target, source=source)
+    bundle = bundle or resolve_source_files(target, source=source)
     if not bundle.files:
         return []                        # no oracle — check_model_conformance records 'unresolved'
     vocab = load_conformance_transitive()
@@ -350,11 +412,24 @@ def check_nested_conformance(target, render_log, *, source: str = "local") -> li
         return contexts[domain]
 
     problems: list[ConformanceProblem] = []
-    seen: dict[str, frozenset[str]] = {}
-    for view_key, drawn, _ids in render_log:
-        # dedup: many layer-groups bake identical drills; keep the richest drawn set
-        seen[view_key] = seen.get(view_key, frozenset()) | drawn
-    for view_key, drawn in seen.items():
+    seen: dict[tuple, frozenset[str]] = {}
+    for entry in render_log:
+        if hasattr(entry, "drawn_ops"):
+            view_key = entry.view
+            drawn = entry.drawn_ops
+            # Equal view names from different block/component/variant owners are
+            # deliberately distinct. Unioning them is how one correct sibling
+            # used to hide another variant's missing operation.
+            event_key = (
+                view_key, tuple(entry.block_path), entry.component,
+                entry.variant, entry.source_owner,
+            )
+        else:
+            view_key, drawn, _ids = entry
+            event_key = (view_key, (), "", "", "")
+        seen[event_key] = seen.get(event_key, frozenset()) | drawn
+    for event_key, drawn in seen.items():
+        view_key = event_key[0]
         drill_role = _drill_role(view_key, vocab)
         if drill_role is None:
             continue                     # architecture view — not a sub-module drill

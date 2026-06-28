@@ -64,6 +64,129 @@ class PositionalEvidence:
 
 
 @dataclass(frozen=True)
+class SourceOp:
+    """One ordered operation proven from a concrete callable."""
+
+    kind: str
+    label: str
+    class_name: str = ""
+    source_file: str = ""
+    line: int | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "kind": self.kind,
+            "label": self.label,
+            "class_name": self.class_name,
+            "source_file": self.source_file,
+            "line": self.line,
+        }
+
+
+@dataclass(frozen=True)
+class VisionLayerEvidence:
+    """Source-derived facts for one repeated vision encoder block variant."""
+
+    block_class: str
+    source_file: str
+    line: int | None
+    norm_kind: str
+    norm_placement: str
+    ffn_gated: bool
+    residual_gated: bool
+    attention_class: str = ""
+    ffn_class: str = ""
+    projection_mode: str = "separate_qkv"
+    q_norm: bool = False
+    k_norm: bool = False
+    v_norm: bool = False
+    post_rope_scale: bool = False
+    position_kind: str = "unknown"
+    attention_kind: str = "softmax"
+    ffn_projection_mode: str = "split"
+    variant_key: str = ""
+    repeat_field: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "block_class": self.block_class,
+            "source_file": self.source_file,
+            "line": self.line,
+            "norm_kind": self.norm_kind,
+            "norm_placement": self.norm_placement,
+            "ffn_gated": self.ffn_gated,
+            "residual_gated": self.residual_gated,
+            "attention_class": self.attention_class,
+            "ffn_class": self.ffn_class,
+            "projection_mode": self.projection_mode,
+            "q_norm": self.q_norm,
+            "k_norm": self.k_norm,
+            "v_norm": self.v_norm,
+            "post_rope_scale": self.post_rope_scale,
+            "position_kind": self.position_kind,
+            "attention_kind": self.attention_kind,
+            "ffn_projection_mode": self.ffn_projection_mode,
+            "variant_key": self.variant_key,
+            "repeat_field": self.repeat_field,
+        }
+
+
+@dataclass(frozen=True)
+class VisionTowerEvidence:
+    """Qualified evidence for a delegated vision tower."""
+
+    status: str
+    component: str = "vision_config"
+    owner_class: str = ""
+    source_file: str = ""
+    reason: str = ""
+    patch_ops: tuple[SourceOp, ...] = ()
+    position_kind: str = "unknown"
+    input_position_kind: str = "unknown"
+    variants: tuple[VisionLayerEvidence, ...] = ()
+    final_norm_kind: str = "unknown"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "component": self.component,
+            "owner_class": self.owner_class,
+            "source_file": self.source_file,
+            "reason": self.reason,
+            "patch_ops": [op.to_dict() for op in self.patch_ops],
+            "position_kind": self.position_kind,
+            "input_position_kind": self.input_position_kind,
+            "variants": [variant.to_dict() for variant in self.variants],
+            "final_norm_kind": self.final_norm_kind,
+        }
+
+
+@dataclass(frozen=True)
+class ProjectorEvidence:
+    """Ordered operations of the exact multimodal connector callable."""
+
+    status: str
+    component: str = "root"
+    owner_class: str = ""
+    field_name: str = ""
+    projector_class: str = ""
+    source_file: str = ""
+    line: int | None = None
+    ops: tuple[SourceOp, ...] = ()
+    kind: str = "code_defined_projector"
+    reason: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status, "component": self.component,
+            "owner_class": self.owner_class, "field_name": self.field_name,
+            "projector_class": self.projector_class, "source_file": self.source_file,
+            "line": self.line, "ops": [op.to_dict() for op in self.ops],
+            "kind": self.kind, "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
 class SourceBundle:
     """Python files gathered from one source."""
 

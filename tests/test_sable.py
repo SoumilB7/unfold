@@ -8,6 +8,8 @@ fixtures from test_diffusion so everything runs without network.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -17,6 +19,90 @@ from model_unfolder.evidence import check_fact_conformance, check_wiring_conform
 from tests.test_diffusion import FLUX, PIXART, LLAMA
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
+
+
+def test_plain_parse_resolves_model_source_once(monkeypatch):
+    """Every architectural detector consumes one call-local source bundle."""
+    from model_unfolder.evidence import context as context_module
+
+    real = context_module.resolve_source_files
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append((args, kwargs))
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(context_module, "resolve_source_files", counted)
+    mu.unfold(LLAMA)
+    assert len(calls) == 1
+
+
+def test_sable_parse_and_all_conformance_nets_share_one_source_bundle(monkeypatch):
+    """Sable must not rediscover source separately for parse and each net."""
+    from model_unfolder.evidence import context as context_module
+
+    real = context_module.resolve_source_files
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append((args, kwargs))
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(context_module, "resolve_source_files", counted)
+    sable(LLAMA, render_images=False)
+    assert len(calls) == 1
+
+
+def test_concurrent_transformer_and_diffusion_renders_are_call_local():
+    """Theme and graph diagnostics cannot cross-contaminate concurrent calls."""
+    from model_unfolder.renderers.html.document import render_document
+    from model_unfolder.renderers.html.render_context import (
+        RenderContext,
+        activate_render_context,
+    )
+
+    llama_ir = mu.unfold(LLAMA).to_ir()
+    flux_ir = deepcopy(mu.unfold(FLUX).to_ir())
+    # Production currently chooses teal for both domains. Force the registered
+    # blue palette here so the test exercises actual cross-theme isolation.
+    flux_ir["extras"]["render"]["theme"] = "blue"
+
+    def render(ir, mount, theme):
+        context = RenderContext(theme=theme)
+        with activate_render_context(context):
+            html = render_document(ir, mount)
+        return html, context
+
+    llama_expected, _ = render(llama_ir, "concurrent-llama", "teal")
+    flux_expected, _ = render(flux_ir, "concurrent-flux", "blue")
+
+    for _ in range(3):
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            llama_future = pool.submit(render, llama_ir, "concurrent-llama", "teal")
+            flux_future = pool.submit(render, flux_ir, "concurrent-flux", "blue")
+            llama_html, llama_context = llama_future.result()
+            flux_html, flux_context = flux_future.result()
+
+        assert llama_html == llama_expected
+        assert flux_html == flux_expected
+        assert "#0F6E56" in llama_html and "#1E5FB0" not in llama_html
+        assert "#1E5FB0" in flux_html and "#0F6E56" not in flux_html
+        assert llama_context.events and flux_context.events
+        assert not llama_context.wiring_findings
+        assert not flux_context.wiring_findings
+
+
+def test_render_events_carry_block_path_component_and_variant():
+    diagram = mu.unfold(FLUX)
+    diagram.to_html(standalone=True)
+    events = diagram.render_events()
+    assert events
+    attn = next(event for event in events if event.view == "attn")
+    assert attn.block_path == ("attn",)
+    assert attn.component == "root"
+    assert "MM-DiT" in attn.variant
+    assert attn.source_owner == "FluxTransformer2DModel"
+    assert "linear" in attn.drawn_ops
 
 
 # --------------------------------------------------------------------------- #

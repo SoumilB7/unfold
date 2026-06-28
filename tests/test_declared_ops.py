@@ -108,7 +108,8 @@ def test_vision_patch_profiles_preserve_source_order_and_concrete_backend():
     pixtral = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     qwen = unfold(QWEN2VL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     assert [op["label"] for op in pixtral["embedding"]["ops"]] == [
-        "Conv2d", "Flatten spatial grid", "Transpose to tokens", "RMSNorm"
+        "Conv2d", "Crop patches", "Flatten spatial grid",
+        "Transpose to tokens", "Join patch sequences", "RMSNorm"
     ]
     assert [op["label"] for op in qwen["embedding"]["ops"]] == [
         "Reshape patches", "Conv3d", "Flatten tokens"

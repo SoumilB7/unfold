@@ -26,6 +26,7 @@ def config_to_ir(
     *,
     inspect_code: bool = False,
     code_source: str = "local",
+    parse_context: Any = None,
 ) -> ModelIR:
     """Parse anything HF-shaped into an IR.
 
@@ -50,6 +51,9 @@ def config_to_ir(
         inspection downloads source files only and should be requested explicitly.
     """
     cfg = _coerce(cfg_or_id, token=token)
+    if parse_context is None:
+        from .evidence.context import ParseContext
+        parse_context = ParseContext.build(cfg, source="local", token=token)
     adapter = find_adapter(cfg)
     if adapter is None:
         arches = (
@@ -68,7 +72,20 @@ def config_to_ir(
     # inside the outer capture even if their legacy debug tracker resets.
     from .adapters.transformer import debug as _config_debug
     with _config_debug.capture_accesses() as accessed_fields:
-        ir = adapter.parse(cfg)
+        ir = adapter.parse(cfg, context=parse_context)
+    bundle = parse_context.source_bundle
+    component_files = getattr(bundle, "component_files", {}) or {}
+    component_architectures = getattr(bundle, "component_architectures", {}) or {}
+    ir.extras["source_provenance"] = {
+        "source": bundle.source,
+        "components": {
+            component: {
+                "architecture": component_architectures.get(component),
+                "files": list(files),
+            }
+            for component, files in component_files.items()
+        },
+    }
     unread = _config_debug.unparsed_fields(
         [cfg], touched=accessed_fields, recursive=True
     )

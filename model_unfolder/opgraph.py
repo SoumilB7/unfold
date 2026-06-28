@@ -113,9 +113,11 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
         return _undeclared_ffn(hidden, inter)
 
     # A recognised dense/gated MLP: build from config (tier 1).
-    if kind in (None, "dense", "mlp", "ffn") and inter is not None:
+    if kind in (None, "dense", "mlp", "ffn") and (inter is not None or ffn.get("source_proven")):
         gated = bool(ffn.get("gated", True))
         act = ffn.get("activation") or ("silu" if gated else "gelu")
+        if gated and ffn.get("projection_mode") == "fused_gate_up":
+            return _fused_gated_mlp(hidden, inter, act)
         return _gated_mlp(hidden, inter, act) if gated else _dense_mlp(hidden, inter, act)
 
     # Tier 3: unrecognised — one honest opaque node, no fabricated internals.
@@ -135,6 +137,25 @@ def _gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
              Edge("gate_proj", "activation"), Edge("activation", "multiply"),
              Edge("up_proj", "multiply"), Edge("multiply", "down_proj")]
     return Region("ffn", "ffn", "Gated MLP", ops, edges, template="gated_mlp")
+
+
+def _fused_gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+    ops = [
+        Op("hidden", "input", out_features=hidden),
+        Op("gate_up_proj", "linear", "Linear (gate + up)", in_features=hidden,
+           out_features=(2 * inter if inter else None)),
+        Op("gate_up_split", "slice", "Split gate / up"),
+        Op("activation", "activation", fn=act),
+        Op("multiply", "elementwise", fn="mul"),
+        Op("down_proj", "linear", "Linear (down)", in_features=inter, out_features=hidden),
+    ]
+    edges = [
+        Edge("hidden", "gate_up_proj"), Edge("gate_up_proj", "gate_up_split"),
+        Edge("gate_up_split", "activation"), Edge("activation", "multiply"),
+        Edge("gate_up_split", "multiply"), Edge("multiply", "down_proj"),
+    ]
+    return Region("ffn", "ffn", "Fused gated MLP", ops, edges,
+                  template="fused_gated_mlp")
 
 
 #: Sana's GLUMBConv described as one honest leaf (its conv-gate internals differ
@@ -306,41 +327,80 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     _cached = attn.get("cached")
     cached = (not cross) if _cached is None else bool(_cached)
 
-    ops = [
-        Op("hidden", "input", out_features=hidden),
-        Op("q_proj", "linear", "Linear (Q + gate)" if attn.get("output_gate") else "Linear (Q)",
-           in_features=hidden, out_features=q_w),
-        Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
-           meta={"cached": cached}),
-        Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
-           meta={"cached": cached}),
-    ]
+    fused_qkv = attn.get("projection_mode") == "fused_qkv"
+    if fused_qkv:
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            Op("qkv_proj", "linear", "Linear (QKV)", in_features=hidden),
+            Op("q_split", "slice", "Split Q", out_features=q_w),
+            Op("k_split", "slice", "Split K", out_features=kv_w,
+               meta={"cached": cached}),
+            Op("v_split", "slice", "Split V", out_features=kv_w,
+               meta={"cached": cached}),
+        ]
+        edges = [
+            Edge("hidden", "qkv_proj"),
+            Edge("qkv_proj", "q_split"), Edge("qkv_proj", "k_split"),
+            Edge("qkv_proj", "v_split"), Edge("v_split", "attn_apply_v"),
+        ]
+        q_source, k_source = "q_split", "k_split"
+    else:
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            Op("q_proj", "linear", "Linear (Q + gate)" if attn.get("output_gate") else "Linear (Q)",
+               in_features=hidden, out_features=q_w),
+            Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
+               meta={"cached": cached}),
+            Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
+               meta={"cached": cached}),
+        ]
+        edges = [
+            Edge("hidden", "q_proj"), Edge("v_proj", "attn_apply_v"),
+        ]
+        q_source, k_source = "q_proj", "k_proj"
     kv_src = "hidden"
     if cross:
         ops.append(Op("cross_attention_states", "input", _cross_kv_label(attn)))
         kv_src = "cross_attention_states"
     core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
     ops += core_ops
-    edges = [
-        Edge("hidden", "q_proj"), Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj"),
-        Edge("v_proj", "attn_apply_v"),
-        *core_edges,
-    ]
-    q_source = "q_proj"
+    if not fused_qkv:
+        edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
+    edges += core_edges
     if attn.get("output_gate"):
+        projected_q = q_source
         ops += [
             Op("q_gate_split", "slice", "Split Q / gate"),
             Op("attn_output_gate", "activation", "Sigmoid gate", fn="sigmoid"),
             Op("attn_output_mul", "elementwise", fn="mul"),
         ]
-        q_source = "q_gate_split"
         edges += [
-            Edge("q_proj", "q_gate_split"),
+            Edge(projected_q, "q_gate_split"),
             Edge("q_gate_split", "attn_output_gate"),
             Edge("attn_output_gate", "attn_output_mul"),
             Edge("concat_heads", "attn_output_mul"),
             Edge("attn_output_mul", "o_proj"),
         ]
+        q_source = "q_gate_split"
+    for lane, source_id in (("q", q_source), ("k", k_source), ("v", "v_split" if fused_qkv else "v_proj")):
+        if not attn.get(f"{lane}_norm"):
+            continue
+        norm_id = f"{lane}_norm"
+        ops.append(Op(norm_id, "norm", f"{lane.upper()} Norm"))
+        replacement = norm_id
+        edges.append(Edge(source_id, norm_id))
+        if lane == "q":
+            q_source = replacement
+        elif lane == "k":
+            k_source = replacement
+        else:
+            edges = [edge for edge in edges
+                     if not (edge.src == source_id and edge.dst == "attn_apply_v")]
+            edges.append(Edge(norm_id, "attn_apply_v"))
+    if attn.get("output_gate"):
+        # The gated output replaces the ordinary concat-heads -> output
+        # projection edge.  Keep this outside the optional Q/K/V-norm loop:
+        # an output gate is independent of whether any lane is normalized.
         edges = [edge for edge in edges
                  if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
     if (attn.get("position_kind") == "alibi"
@@ -368,10 +428,10 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         ]
         edges += [
             Edge(q_source, "q_rope"), Edge("q_rope", "scaled_scores"),
-            Edge("k_proj", "k_rope"), Edge("k_rope", "scaled_scores"),
+            Edge(k_source, "k_rope"), Edge("k_rope", "scaled_scores"),
         ]
     else:
-        edges += [Edge(q_source, "scaled_scores"), Edge("k_proj", "scaled_scores")]
+        edges += [Edge(q_source, "scaled_scores"), Edge(k_source, "scaled_scores")]
     return Region("attention", "attention", kind, ops, edges, template=kind)
 
 

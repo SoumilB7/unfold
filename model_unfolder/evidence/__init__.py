@@ -7,7 +7,15 @@ from .conformance import (
     check_wiring_conformance,
 )
 from .forward_ops import extract_forward_ops
+from .context import ParseContext
 from .inspector import inspect_model_code
+from .identity_guard import (
+    IdentityViolation,
+    NameBlindResult,
+    name_blind_diff,
+    scan_identity_debt,
+    scrub_semantic_identity,
+)
 from .models import (
     ClassEvidence,
     CodeEvidence,
@@ -15,9 +23,14 @@ from .models import (
     ForwardOps,
     PositionalEvidence,
     PositionalMechanism,
+    SourceOp,
     SourceBundle,
+    VisionLayerEvidence,
+    VisionTowerEvidence,
 )
 from .position import decoder_positional_evidence
+from .vision import vision_tower_evidence
+from .projector import projector_evidence
 from .validate import validate_ir_with_evidence
 
 __all__ = [
@@ -36,5 +49,16 @@ __all__ = [
     "PositionalEvidence",
     "PositionalMechanism",
     "SourceBundle",
+    "SourceOp",
+    "VisionLayerEvidence",
+    "VisionTowerEvidence",
+    "ParseContext",
     "decoder_positional_evidence",
+    "vision_tower_evidence",
+    "projector_evidence",
+    "IdentityViolation",
+    "NameBlindResult",
+    "name_blind_diff",
+    "scan_identity_debt",
+    "scrub_semantic_identity",
 ]
