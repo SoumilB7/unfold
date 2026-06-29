@@ -77,6 +77,7 @@ _ACTIVATION_LABELS = {
     "swish": "SiLU",
     "geglu": "GEGLU",
     "swiglu": "SwiGLU",
+    "glu": "GLU",
 }
 
 

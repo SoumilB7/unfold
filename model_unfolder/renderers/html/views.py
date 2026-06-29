@@ -83,6 +83,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     is_diffusion = _is_diffusion_architecture(ir)
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
+    group_indices = (info.get("dominant") or {}).get("indices")
+    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
+    repeated_region = repeat_n != 1
 
     # Side blocks live OFF the central column.  They share a row with the block
     # they feed but get their own offset x-position and explicit connections.
@@ -170,7 +173,8 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     arrow_id, shadow_id = _ids(mount_id, "arch")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
-    parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
+    if repeated_region:
+        parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     # --- 2. Model-level scaffold (positions tracked by total height h) ---
     if has_modality_fusion:
@@ -326,24 +330,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # group's layer count — not the global total — to stay consistent with its
     # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
     # indices are available (single homogeneous stack ⇒ identical anyway).
-    group_indices = (info.get("dominant") or {}).get("indices")
-    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
-    parts.append(_svg_tag("rect", {
-        "x": inner_x + inner_w - 78, "y": inner_y + 12,
-        "width": 66, "height": 26, "rx": 13, "ry": 13,
-        "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
-    }))
-    parts.append(_svg_text(
-        inner_x + inner_w - 45, inner_y + 25,
-        f"x {repeat_n}",
-        {"text-anchor": "middle", "dominant-baseline": "central",
-         "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
-    ))
+    if repeated_region:
+        parts.append(_svg_tag("rect", {
+            "x": inner_x + inner_w - 78, "y": inner_y + 12,
+            "width": 66, "height": 26, "rx": 13, "ry": 13,
+            "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
+        }))
+        parts.append(_svg_text(
+            inner_x + inner_w - 45, inner_y + 25,
+            f"x {repeat_n}",
+            {"text-anchor": "middle", "dominant-baseline": "central",
+             "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
+        ))
     # Optional caption under the × N badge — clarifies what the repeat means when
     # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
     # to the badge so it reads as a footnote to the repeat count.
     repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
-    if repeat_note:
+    if repeat_note and repeated_region:
         note_y = inner_y + 50
         for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
             parts.append(_svg_text(

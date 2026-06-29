@@ -38,7 +38,7 @@ from __future__ import annotations
 from typing import Any
 
 from . import debug
-from ...everchanging import load_aliases, load_layer_type_labels, load_layer_topology
+from ...everchanging import load_aliases, load_layer_type_labels
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -48,7 +48,9 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_extras,
 )
 from .special_parts.modalities import multimodal_extras
-from .special_parts.modalities.vision import apply_vision_evidence
+from .special_parts.modalities.fusion import apply_fusion_evidence
+from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
+from .special_parts.modalities.audio import apply_audio_evidence
 from .special_parts.modalities.detect import cross_attention_layers as _cross_attention_layers
 
 
@@ -69,11 +71,6 @@ _SLIDING_LABELS = set(_LAYER_TYPE_LABELS["sliding"])
 _FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
 _COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
 _HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
-
-# Per-family macro-topology (post/sandwich norm, flag-less parallel residual) —
-# data, not code (everchanging/transformer/layer_topology.yaml).
-_LAYER_TOPOLOGY = load_layer_topology()
-
 
 def _resolve(cfg: Any, canonical: str, default=None):
     """Try every known alias for a field, return the first hit."""
@@ -314,22 +311,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     norm_kind    = _norm_kind(text_cfg, get("norm_type"), context)
-    _mt_candidates = {model_type, str(_g(text_cfg, "model_type") or "").lower()}
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
-    # The table is now only an offline fallback cache when source can't be read.
     _code_topo = _code_layer_topology(text_cfg, context)
     # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — overrides the
     # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
     # the code (and the nested-conformance net).  None keeps the heuristic.
     _code_gated = _code_ffn_gated(text_cfg, context)
     _code_position_evidence = _code_position(cfg, context)
-    norm_placement = (
-        (_code_topo or {}).get("norm_placement")
-        or next((_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
-                 if mt in _LAYER_TOPOLOGY["norm_placement"]), "pre")
-    )
+    norm_placement = (_code_topo or {}).get("norm_placement") or "pre"
     # Position scheme: only configured source evidence may assert a mechanism.
     # Missing source stays unknown; a family convention is not evidence.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
@@ -414,11 +405,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # `if`, so the config decides); else READ FROM the forward() when it is
     # UNCONDITIONAL structure with no flag (Cohere, GPT-J, Phi — all flagless,
     # all missed by the old model_type table, so all silently drawn sequential).
-    # The table stays only as an offline fallback cache.
     use_parallel_residual = bool(
         _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
         or (_code_topo or {}).get("parallel_residual")
-        or _mt_candidates & set(_LAYER_TOPOLOGY["parallel_residual"])
     )
 
     # ---- MoE ----
@@ -605,6 +594,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
     modality_extras = multimodal_extras(cfg, text_cfg, hidden_size)
     if modality_extras:
         try:
+            from ...evidence.audio import audio_tower_evidence
+            modality_extras = apply_audio_evidence(
+                modality_extras,
+                audio_tower_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # Missing/ambiguous source keeps one honest opaque audio tower and
+            # connector.  It never revives the former family-labelled sketch.
+            pass
+        try:
             from ...evidence.vision import vision_tower_evidence
             modality_extras = apply_vision_evidence(
                 modality_extras,
@@ -613,6 +612,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
         except Exception:
             # A failed source extractor must leave the path honestly generic;
             # it is never permission to restore a family-derived structure.
+            pass
+        try:
+            from ...evidence.fusion import fusion_evidence
+            modality_extras = apply_fusion_evidence(
+                modality_extras,
+                fusion_evidence(cfg, bundle=context.source_bundle),
+                cfg,
+                text_cfg,
+            )
+        except Exception:
+            # Fusion structure is wrapper-code evidence.  Failure must leave the
+            # base payload opaque, never revive a family/config guess.
+            pass
+        try:
+            from ...evidence.projector import projector_evidence
+            modality_extras = apply_projector_evidence(
+                modality_extras,
+                projector_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # As with the tower extractor, failure leaves one honest generic
+            # connector.  Config dimensions survive; callable structure does not.
             pass
     extras = decoder_extras(
         vocab_size,

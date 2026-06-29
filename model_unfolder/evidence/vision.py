@@ -51,20 +51,26 @@ def vision_tower_evidence(
 
     registry = build_registry(files, component=component)
     architecture = (bundle.component_architectures or {}).get(component)
+    if root_fallback:
+        wrapper = ((bundle.component_architectures or {}).get("root")
+                   or bundle.architecture)
+        architecture = _assigned_component_class(
+            wrapper, "vision_config", registry,
+        )
+        if not architecture:
+            return VisionTowerEvidence(
+                "ambiguous", component=component, owner_class=wrapper or "",
+                source_file=str(files[0]),
+                reason="root wrapper does not prove the delegated vision class",
+            )
     vocab = load_conformance_transitive()
-    blocks = _domain_block_classes(
-        _component_block_classes(registry, architecture), "vision", vocab,
-    )
+    blocks = _component_block_classes(registry, architecture)
+    if not root_fallback:
+        blocks = _domain_block_classes(blocks, "vision", vocab)
     # Wrapper/model/projector classes may themselves contain an FFN. A repeated
     # encoder cell necessarily performs both attention and FFN in its forward.
     blocks = [name for name in blocks if name in registry
               and {"attention", "ffn"} <= set(registry[name].op_kinds)]
-    if root_fallback:
-        # Root is usable only when the shared wrapper file itself exposes an
-        # explicitly vision-qualified block.  This admits Qwen's co-located
-        # vision implementation but rejects a Gemma text decoder accidentally
-        # standing in for an unresolved delegated SigLIP tower.
-        blocks = [name for name in blocks if "vision" in name.lower()]
     if not blocks:
         return VisionTowerEvidence(
             "ambiguous", component=component, owner_class=architecture or "",
@@ -137,6 +143,69 @@ def vision_tower_evidence(
         variants=tuple(variants),
         final_norm_kind=_final_norm_kind(owner_info),
     )
+
+
+def _assigned_component_class(
+    architecture: str | None,
+    config_field: str,
+    registry: dict[str, CallableInfo],
+) -> str:
+    """Resolve a delegated component from the wrapper's constructor dataflow.
+
+    This accepts only a concrete source class constructed with
+    ``config.<component>`` (directly or through ``Class._from_config``). Generic
+    ``AutoModel.from_config`` remains unresolved here: without a qualified
+    component config/source mapping, guessing among classes in the wrapper file
+    would recreate the family-name rail this function replaces.
+    """
+    if not architecture or architecture not in registry:
+        return ""
+    found: set[str] = set()
+    seen: set[str] = set()
+    queue = [architecture]
+    while queue:
+        name = queue.pop(0)
+        if name in seen or name not in registry:
+            continue
+        seen.add(name)
+        info = registry[name]
+        node = _class_node(info.source_file, name)
+        init = _method(node, "__init__") if node else None
+        for call in (item for item in ast.walk(init) if isinstance(item, ast.Call)) \
+                if init else ():
+            if not _call_reads_config_field(call, config_field):
+                continue
+            candidate = _constructed_class(call.func)
+            if candidate in registry:
+                found.add(candidate)
+        children = set(info.field_types.values())
+        for candidates in info.field_type_candidates.values():
+            children.update(candidates)
+        queue.extend(child for child in children if child in registry and child not in seen)
+    return next(iter(found)) if len(found) == 1 else ""
+
+
+def _call_reads_config_field(call: ast.Call, field: str) -> bool:
+    return any(
+        isinstance(item, ast.Attribute)
+        and item.attr == field
+        and isinstance(item.value, ast.Name)
+        and item.value.id == "config"
+        for arg in (*call.args, *(keyword.value for keyword in call.keywords))
+        for item in ast.walk(arg)
+    )
+
+
+def _constructed_class(func: ast.AST) -> str:
+    if isinstance(func, ast.Name):
+        return func.id
+    if (isinstance(func, ast.Attribute)
+            and func.attr in {"from_config", "_from_config"}):
+        if isinstance(func.value, ast.Name):
+            return func.value.id
+        if isinstance(func.value, ast.Attribute):
+            return func.value.attr
+    return ""
 
 
 def _vision_owner(
@@ -311,7 +380,7 @@ def _ordered_patch_callable(
     if forward is None:
         return []
     calls = _calls_in_execution_order(forward)
-    out: list[SourceOp] = []
+    out: list[SourceOp] = _input_affine_ops(class_name, info, forward)
     # When the caller reached this class through ``self.patch_*``, the callable
     # itself is the patch operation.  Its first projection may be named
     # ``input_proj`` (Gemma4), not ``patch_*``; starting the semantic window here
@@ -393,6 +462,49 @@ def _ordered_patch_callable(
             boundary = min(boundaries)
             out = [item for item in out if item.line is None or item.line < boundary]
     return out
+
+
+def _input_affine_ops(
+    class_name: str,
+    info: CallableInfo,
+    forward: ast.FunctionDef,
+) -> list[SourceOp]:
+    """Surface model-code pixel normalization before patch projection.
+
+    Some towers normalize in the image processor, outside the model and outside
+    this diagram. Gemma4 instead executes an affine transform inside the patch
+    embedder's own ``forward``. Detect only a reassignment of an actual forward
+    input from itself through numeric add/subtract/multiply/divide, and only
+    before the first self-module call. This avoids guessing conventional image
+    normalization for towers whose code does not perform it.
+    """
+    params = {arg.arg for arg in (*forward.args.posonlyargs, *forward.args.args)
+              if arg.arg not in {"self", "cls"}}
+    for stmt in forward.body:
+        calls = _calls_in_execution_order(stmt)
+        if any(_self_field(call.func) for call in calls):
+            break
+        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        target = next((item.id for item in targets if isinstance(item, ast.Name)), "")
+        if target not in params:
+            continue
+        rhs = stmt.value
+        if not any(isinstance(item, ast.Name) and item.id == target for item in ast.walk(rhs)):
+            continue
+        binops = [item for item in ast.walk(rhs) if isinstance(item, ast.BinOp)]
+        has_numeric = any(
+            isinstance(item, ast.Constant) and isinstance(item.value, (int, float))
+            for item in ast.walk(rhs)
+        )
+        if has_numeric and any(isinstance(item.op, (ast.Add, ast.Sub, ast.Mult, ast.Div))
+                               for item in binops):
+            return [SourceOp(
+                "elementwise", "Normalize pixels", class_name,
+                info.source_file, getattr(stmt, "lineno", None), fn="affine",
+            )]
+    return []
 
 
 def _model_position_kind(owner: str, registry: dict[str, CallableInfo]) -> str:

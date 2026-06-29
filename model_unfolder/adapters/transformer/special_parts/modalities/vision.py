@@ -3,12 +3,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from .accessors import architecture, as_int, drop_none, first, nested, present_paths
+from .accessors import as_int, drop_none, first, nested, present_paths
 from .detect import (
     has_cross_attention_adapter,
     has_video_input,
     is_unified_grid_stream,
-    model_family_hint,
 )
 from .schema import Stage, assemble_path
 
@@ -72,6 +71,47 @@ def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
     return payload
 
 
+def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
+    """Project the one qualified connector record into image and video paths.
+
+    The card, op drill, path label, and fact-conformance net all read this same
+    object.  Config remains authoritative for dimensions and latent counts; it
+    never fabricates callable order when source evidence is absent.
+    """
+    if not payload or evidence is None:
+        return payload
+    modalities = (payload.get("modalities") or {}).get("inputs") or {}
+    evidence_dict = evidence.to_dict()
+    for name in ("vision", "video"):
+        path = modalities.get(name)
+        if not isinstance(path, dict):
+            continue
+        projector = path.get("projector") or {}
+        projector.pop("profile", None)
+        projector["source_evidence"] = evidence_dict
+        projector["source_owner"] = evidence.owner_class
+        projector["source_component"] = evidence.component
+        projector["source_class"] = evidence.projector_class
+        projector["source_field"] = evidence.field_name
+        if evidence.status == "proven":
+            projector["kind"] = evidence.kind
+            projector["ops"] = [op.to_dict() for op in evidence.ops]
+            projector["learned_queries"] = evidence.learned_queries
+        else:
+            projector["kind"] = "code_defined_projector"
+            projector.pop("ops", None)
+            projector.pop("learned_queries", None)
+        for step in path.get("pipeline") or []:
+            if step.get("id") not in {"projector", "video_projector"}:
+                continue
+            step["kind"] = projector["kind"]
+            if evidence.status == "proven":
+                step["ops"] = projector["ops"]
+            else:
+                step.pop("ops", None)
+    return payload
+
+
 def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return image/vision intake as semantic facts."""
     cross_attn = has_cross_attention_adapter(cfg, text_cfg)
@@ -91,10 +131,6 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     projector_kind_value = projector_kind(cfg)
     projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
     embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
-    projector_profile = vision_projector_ops(
-        cfg, vision_cfg, hidden_size, projector_in, projector_out,
-        projector_activation, unified_grid,
-    )
     token_kind = (
         "vision_cross_attention_states" if cross_attn
         else "grid_visual_tokens" if unified_grid
@@ -185,9 +221,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     stages.append(
         Stage("projector", "projector", projection_operation, projector_kind_value,
               drop_none({"in_features": projector_in, "out_features": projector_out,
-                         "activation": projector_activation, "num_latents": perceiver_latents(cfg),
-                         "profile": (projector_profile or {}).get("profile"),
-                         "ops": (projector_profile or {}).get("ops")}))
+                         "activation": projector_activation, "num_latents": perceiver_latents(cfg)}))
     )
     stages.append(
         Stage("tokens", token_node_id, final_operation, token_kind,
@@ -221,54 +255,6 @@ def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> l
     return []
 
 
-def vision_projector_ops(
-    cfg: Any,
-    vision_cfg: Any,
-    vision_hidden: Any,
-    projector_in: Any,
-    projector_out: Any,
-    activation: Any,
-    unified_grid: bool,
-) -> dict | None:
-    """Return source-established projector/merger chains for shared families."""
-    merge = as_int(first(vision_cfg, "spatial_merge_size") or first(cfg, "spatial_merge_size"))
-    hidden = as_int(vision_hidden)
-    merged = hidden * merge**2 if hidden is not None and merge is not None else projector_in
-
-    # Qwen-VL PatchMerger: norm each patch, regroup the spatial merge unit,
-    # then Linear -> GELU -> Linear. Temporal patching is the structural
-    # signature shared by its image/video-capable vision families.
-    if unified_grid and first(vision_cfg, "temporal_patch_size") is not None:
-        return {
-            "profile": "qwen_vl_patch_merger",
-            "ops": [
-                {"kind": "norm", "label": "LayerNorm"},
-                {"kind": "reshape", "label": "Merge neighbouring patches"},
-                {"kind": "linear", "label": "Linear", "in": merged, "out": merged},
-                {"kind": "activation", "fn": "gelu"},
-                {"kind": "linear", "label": "Linear", "in": merged, "out": projector_out},
-            ],
-        }
-
-    # Mistral3 wraps Pixtral with RMSNorm + a learned patch merger before its
-    # two-linear projector. Plain Pixtral/LLaVA wrappers are deliberately not
-    # swept into this profile because their connector code differs.
-    root_arch = str(architecture(cfg) or "").lower()
-    if model_family_hint(cfg) == "mistral3" or "mistral3" in root_arch:
-        ops = [
-            {"kind": "norm", "label": "RMSNorm"},
-            {"kind": "reshape", "label": "Group neighbouring patches"},
-            {"kind": "linear", "label": "Patch merge", "in": merged, "out": hidden},
-            {"kind": "linear", "label": "Linear", "in": hidden, "out": projector_out},
-        ]
-        if activation:
-            ops.append({"kind": "activation", "fn": str(activation)})
-        ops.append({"kind": "linear", "label": "Linear",
-                    "in": projector_out, "out": projector_out})
-        return {"profile": "mistral3_multimodal_projector", "ops": ops}
-    return None
-
-
 def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return video intake when a model reuses its visual tower for frames."""
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
@@ -284,10 +270,6 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     video_shape = ["batch", "videos", "frames", "channels", "height", "width"]
     grid = grid_spec(cfg, vision_cfg, "video")
     embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
-    projector_profile = vision_projector_ops(
-        cfg, vision_cfg, hidden_size, projector_in, projector_out,
-        first(cfg, "projector_hidden_act", "mm_projector_act"), True,
-    )
 
     stages = [
         Stage("input", "video_frames", "input", "video_frames",
@@ -306,9 +288,7 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
                "position_encoding": vision_position_encoding(cfg, vision_cfg)},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
         Stage("projector", "video_projector", "merge_patches_to_text_width", projector_kind_value,
-              drop_none({"in_features": projector_in, "out_features": projector_out,
-                         "profile": (projector_profile or {}).get("profile"),
-                         "ops": (projector_profile or {}).get("ops")})),
+              drop_none({"in_features": projector_in, "out_features": projector_out})),
         Stage("tokens", "video_tokens", "emit_grid_token_stream", "grid_video_tokens",
               {"width": text_hidden_size or None, "grid": grid}),
     ]

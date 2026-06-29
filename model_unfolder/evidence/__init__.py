@@ -17,6 +17,9 @@ from .identity_guard import (
     scrub_semantic_identity,
 )
 from .models import (
+    AudioCallableEvidence,
+    AudioLayerEvidence,
+    AudioTowerEvidence,
     ClassEvidence,
     CodeEvidence,
     CodeFinding,
@@ -31,6 +34,8 @@ from .models import (
 from .position import decoder_positional_evidence
 from .vision import vision_tower_evidence
 from .projector import projector_evidence
+from .fusion import fusion_evidence
+from .audio import audio_tower_evidence
 from .validate import validate_ir_with_evidence
 
 __all__ = [
@@ -43,6 +48,9 @@ __all__ = [
     "validate_ir_with_evidence",
     "ConformanceProblem",
     "ClassEvidence",
+    "AudioCallableEvidence",
+    "AudioLayerEvidence",
+    "AudioTowerEvidence",
     "CodeEvidence",
     "CodeFinding",
     "ForwardOps",
@@ -56,6 +64,8 @@ __all__ = [
     "decoder_positional_evidence",
     "vision_tower_evidence",
     "projector_evidence",
+    "fusion_evidence",
+    "audio_tower_evidence",
     "IdentityViolation",
     "NameBlindResult",
     "name_blind_diff",

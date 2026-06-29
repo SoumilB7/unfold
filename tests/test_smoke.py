@@ -578,15 +578,15 @@ def _arch_variant_badges(html):
 
 def test_layer_repeat_badge_is_per_variant_not_global_total():
     """A heterogeneous model renders one architecture variant per layer type; the
-    ``x N`` badge on each must count THAT group's layers (matching its own toggle
-    pill), never the global total. Regression: the badge hardcoded
-    len(ir["layers"]) so every DeepSeek-V3 variant wrongly read "x 61"."""
-    # 1 dense + 3 MoE layers ⇒ neither group equals the total (4), so a global
-    # leak (both "x 4") is unmistakably distinguishable from the correct 1 / 3.
+    ``x N`` badge must count THAT group's layers, never the global total.  A
+    one-off variant is not a repeated region, so it deliberately has no badge."""
+    # 1 dense + 3 MoE layers: only the genuinely repeated MoE region earns x 3.
     cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1}
-    badges = _arch_variant_badges(unfold(cfg).to_html(standalone=True))
-    assert sorted(badges.values()) == [1, 3], badges
-    assert sum(badges.values()) == cfg["num_hidden_layers"]
+    html = unfold(cfg).to_html(standalone=True)
+    badges = _arch_variant_badges(html)
+    assert sorted(badges.values()) == [3], badges
+    assert html.count('class="uf-arch-variant ') == 2
+    assert ">x 1<" not in html
 
     # A homogeneous stack still shows the total on its single variant.
     homo = _arch_variant_badges(unfold(LLAMA3_8B_CONFIG).to_html(standalone=True))
@@ -1240,7 +1240,8 @@ def test_gemma4_multimodal_fusion_render():
     d = unfold(_gemma4_e2b_vision_config())
     ir = d.to_ir()
     assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "vision_encoder"
-    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "audio_encoder"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["source_owner"] == "Gemma4AudioModel"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
     assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"

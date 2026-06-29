@@ -19,26 +19,38 @@ from model_unfolder.evidence.identity_guard import (
 # a new kind/file adds a key.  Runtime triage keeps line numbers (each finding
 # still carries .line); only this regression comparison drops them.
 EXPECTED_REPORT_ONLY_DEBT = {
+    ("model_unfolder/adapters/diffusor/blocks.py",
+     "class_identity_branch", "class-name/domain substring controls an architectural branch"): 3,
     ("model_unfolder/adapters/diffusor/parser.py",
-     "identity_branch", "identity-derived predicate controls a branch"): 3,
+     "class_identity_branch", "class-name/domain substring controls an architectural branch"): 1,
     ("model_unfolder/adapters/diffusor/parser.py",
-     "identity_helper", "runtime call to _class_default()"): 9,
+     "class_marker_table", "runtime access to class-name marker vocabulary 'dit_class_markers'"): 1,
+    ("model_unfolder/adapters/diffusor/parser.py",
+     "class_marker_table", "runtime access to class-name marker vocabulary 'scheduler_flow_matching_markers'"): 1,
     ("model_unfolder/adapters/transformer/parser.py",
      "identity_branch", "identity-derived predicate controls a branch"): 1,
-    ("model_unfolder/adapters/transformer/special_parts/modalities/audio.py",
-     "identity_helper", "runtime call to audio_family_hint()"): 1,
-    ("model_unfolder/adapters/transformer/special_parts/modalities/detect.py",
-     "identity_branch", "identity-derived predicate controls a branch"): 1,
-    ("model_unfolder/adapters/transformer/special_parts/modalities/detect.py",
-     "identity_helper", "runtime call to model_family_hint()"): 6,
-    ("model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
-     "identity_branch", "identity-derived predicate controls a branch"): 1,
-    ("model_unfolder/adapters/transformer/special_parts/modalities/vision.py",
-     "identity_helper", "runtime call to model_family_hint()"): 1,
+    ("model_unfolder/evidence/conformance.py",
+     "class_marker_table", "runtime access to class-name marker vocabulary 'component_class_markers'"): 2,
+    ("model_unfolder/evidence/conformance.py",
+     "class_marker_table", "runtime access to class-name marker vocabulary 'drill_class_markers'"): 1,
+    ("model_unfolder/evidence/conformance.py",
+     "class_marker_table", "runtime access to class-name marker vocabulary 'processor_markers'"): 2,
+    ("model_unfolder/evidence/conformance.py",
+     "class_marker_table", "runtime access to class-name marker vocabulary 'single_stream_class_markers'"): 1,
     ("model_unfolder/evidence/sources.py",
-     "identity_helper", "runtime call to _guess_model_type_from_id()"): 1,
-    ("model_unfolder/renderers/html/metadata_modalities.py",
-     "identity_profile", "family profile selects rendered metadata"): 1,
+     "class_marker_table", "runtime access to class-name marker vocabulary 'dit_class_markers'"): 1,
+    ("model_unfolder/everchanging/conformance/conformance_map.yaml",
+     "identity_table", "populated class-name marker table 'single_stream_class_markers' can select architecture"): 1,
+    ("model_unfolder/everchanging/conformance/transitive.yaml",
+     "identity_table", "populated class-name marker table 'component_class_markers' can select architecture"): 1,
+    ("model_unfolder/everchanging/conformance/transitive.yaml",
+     "identity_table", "populated class-name marker table 'drill_class_markers' can select architecture"): 1,
+    ("model_unfolder/everchanging/conformance/transitive.yaml",
+     "identity_table", "populated class-name marker table 'processor_markers' can select architecture"): 1,
+    ("model_unfolder/everchanging/diffusor/typing.yaml",
+     "identity_table", "populated class-name marker table 'dit_class_markers' can select architecture"): 1,
+    ("model_unfolder/everchanging/diffusor/typing.yaml",
+     "identity_table", "populated class-name marker table 'scheduler_flow_matching_markers' can select architecture"): 1,
 }
 
 
@@ -66,6 +78,16 @@ def test_static_guard_negative_controls_cover_all_three_identity_mechanisms():
         "norm_kind:\n  pixtral: RMSNorm\n  siglip: LayerNorm\n"
     )
     assert any(item.kind == "identity_table" for item in table)
+
+
+def test_static_guard_catches_class_name_domain_substring_inside_evidence():
+    findings = scan_identity_source(
+        "def choose(block_class):\n"
+        "    if 'vision' in block_class.lower():\n"
+        "        return {'kind': 'vision_encoder'}\n",
+        path="model_unfolder/evidence/new_detector.py",
+    )
+    assert any(item.kind == "class_identity_branch" for item in findings)
 
 
 def test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source():

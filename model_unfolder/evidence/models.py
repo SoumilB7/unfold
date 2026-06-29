@@ -72,15 +72,31 @@ class SourceOp:
     class_name: str = ""
     source_file: str = ""
     line: int | None = None
+    fn: str = ""
+    repeat: int | str | None = None
+    description: str = ""
+    op_id: str = ""
+    inputs: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        value = {
             "kind": self.kind,
             "label": self.label,
             "class_name": self.class_name,
             "source_file": self.source_file,
             "line": self.line,
         }
+        if self.fn:
+            value["fn"] = self.fn
+        if self.repeat is not None:
+            value["repeat"] = self.repeat
+        if self.description:
+            value["description"] = self.description
+        if self.op_id:
+            value["id"] = self.op_id
+        if self.inputs:
+            value["from"] = self.inputs[0] if len(self.inputs) == 1 else list(self.inputs)
+        return value
 
 
 @dataclass(frozen=True)
@@ -162,6 +178,80 @@ class VisionTowerEvidence:
 
 
 @dataclass(frozen=True)
+class AudioCallableEvidence:
+    """Exact operation graph for one callable reached by an audio tower."""
+
+    class_name: str
+    source_file: str
+    line: int | None
+    ops: tuple[SourceOp, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "class_name": self.class_name,
+            "source_file": self.source_file,
+            "line": self.line,
+            "ops": [op.to_dict() for op in self.ops],
+        }
+
+
+@dataclass(frozen=True)
+class AudioLayerEvidence:
+    """Source-derived graph for one repeated audio encoder block."""
+
+    block_class: str
+    source_file: str
+    line: int | None
+    ops: tuple[SourceOp, ...] = ()
+    callables: tuple[AudioCallableEvidence, ...] = ()
+    repeat_field: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "block_class": self.block_class,
+            "source_file": self.source_file,
+            "line": self.line,
+            "ops": [op.to_dict() for op in self.ops],
+            "callables": [item.to_dict() for item in self.callables],
+            "repeat_field": self.repeat_field,
+        }
+
+
+@dataclass(frozen=True)
+class AudioTowerEvidence:
+    """Qualified evidence for a delegated audio tower and its connector."""
+
+    status: str
+    component: str = "audio_config"
+    owner_class: str = ""
+    source_file: str = ""
+    reason: str = ""
+    frontend_ops: tuple[SourceOp, ...] = ()
+    position_kind: str = "unknown"
+    position_application: str = "unknown"
+    variants: tuple[AudioLayerEvidence, ...] = ()
+    post_ops: tuple[SourceOp, ...] = ()
+    projector_ops: tuple[SourceOp, ...] = ()
+    projector_class: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "component": self.component,
+            "owner_class": self.owner_class,
+            "source_file": self.source_file,
+            "reason": self.reason,
+            "frontend_ops": [op.to_dict() for op in self.frontend_ops],
+            "position_kind": self.position_kind,
+            "position_application": self.position_application,
+            "variants": [variant.to_dict() for variant in self.variants],
+            "post_ops": [op.to_dict() for op in self.post_ops],
+            "projector_ops": [op.to_dict() for op in self.projector_ops],
+            "projector_class": self.projector_class,
+        }
+
+
+@dataclass(frozen=True)
 class ProjectorEvidence:
     """Ordered operations of the exact multimodal connector callable."""
 
@@ -174,6 +264,7 @@ class ProjectorEvidence:
     line: int | None = None
     ops: tuple[SourceOp, ...] = ()
     kind: str = "code_defined_projector"
+    learned_queries: bool = False
     reason: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -182,7 +273,49 @@ class ProjectorEvidence:
             "owner_class": self.owner_class, "field_name": self.field_name,
             "projector_class": self.projector_class, "source_file": self.source_file,
             "line": self.line, "ops": [op.to_dict() for op in self.ops],
-            "kind": self.kind, "reason": self.reason,
+            "kind": self.kind, "learned_queries": self.learned_queries,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
+class FusionRouteEvidence:
+    """One modality's exact wrapper-level route into the decoder."""
+
+    modality: str
+    operation: str
+    source_file: str = ""
+    line: int | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "modality": self.modality, "operation": self.operation,
+            "source_file": self.source_file, "line": self.line,
+        }
+
+
+@dataclass(frozen=True)
+class FusionEvidence:
+    """Qualified model-wrapper evidence for modality/text fusion."""
+
+    status: str
+    component: str = "root"
+    owner_class: str = ""
+    source_file: str = ""
+    line: int | None = None
+    kind: str = "code_defined_fusion"
+    operation: str = "unknown"
+    routes: tuple[FusionRouteEvidence, ...] = ()
+    grid_positions: bool = False
+    reason: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status, "component": self.component,
+            "owner_class": self.owner_class, "source_file": self.source_file,
+            "line": self.line, "kind": self.kind, "operation": self.operation,
+            "routes": [route.to_dict() for route in self.routes],
+            "grid_positions": self.grid_positions, "reason": self.reason,
         }
 
 

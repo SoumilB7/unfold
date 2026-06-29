@@ -100,7 +100,7 @@ def test_patch_merger_card_declares_its_ops():
     html = unfold(QWEN2VL_STYLE).to_html(standalone=True)
     i = html.find('data-card-id="vision_projector"')
     seg = html[i:i + 9000]
-    assert "Qwen-VL patch merger" in seg and "Merge neighbouring patches" in seg
+    assert "Patch merger" in seg and "Reshape / merge patches" in seg
     assert "LayerNorm" in seg and "GELU" in seg and seg.count("Linear") >= 2
 
 
@@ -133,13 +133,16 @@ def test_pixtral_encoder_uses_rmsnorm_and_a_gated_vision_mlp():
 def test_mistral3_projector_includes_norm_patch_merge_and_two_linear_mlp():
     vision = unfold(MISTRAL3_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     projector = vision["projector"]
-    assert projector["profile"] == "mistral3_multimodal_projector"
+    assert "profile" not in projector
+    assert projector["source_class"] == "Mistral3MultiModalProjector"
     assert [op.get("label") or op.get("fn") for op in projector["ops"]] == [
-        "RMSNorm", "Group neighbouring patches", "Patch merge", "Linear", "gelu", "Linear"
+        "RMSNorm", "Split image sequences", "Arrange spatial grid",
+        "Extract merge windows", "Flatten merge windows", "Join image sequences",
+        "Patch merge", "Linear (in)", "gelu", "Linear (out)"
     ]
     html = unfold(MISTRAL3_STYLE).to_html(standalone=True)
-    assert "Mistral3 multimodal projector" in html
-    assert "Patch merge" in html and "RMSNorm" in html
+    assert "Patch merger" in html
+    assert "Extract merge windows" in html and "RMSNorm" in html
 
 
 def test_qwen_video_path_reuses_the_same_conv3d_and_patch_merger_profiles():
@@ -148,7 +151,8 @@ def test_qwen_video_path_reuses_the_same_conv3d_and_patch_merger_profiles():
     assert [op["label"] for op in video["embedding"]["ops"]] == [
         "Reshape patches", "Conv3d", "Flatten tokens"
     ]
-    assert video["projector"]["profile"] == "qwen_vl_patch_merger"
+    assert "profile" not in video["projector"]
+    assert video["projector"]["source_class"] == "PatchMerger"
     html = unfold(cfg).to_html(standalone=True)
     assert 'data-card-id="video_patches"' in html
     assert 'data-card-id="video_projector"' in html

@@ -89,6 +89,15 @@ class ConformanceProblem:
         if self.kind == "wrong_vision_fact":
             return (f"{self.view}: vision fact differs from the qualified source evidence: "
                     f"{self.op}.{cls}{loc}")
+        if self.kind == "wrong_projector_fact":
+            return (f"{self.view}: projector fact differs from the qualified source evidence: "
+                    f"{self.op}.{cls}{loc}")
+        if self.kind == "wrong_fusion_fact":
+            return (f"{self.view}: modality-fusion fact differs from the qualified wrapper "
+                    f"evidence: {self.op}.{cls}{loc}")
+        if self.kind == "wrong_audio_fact":
+            return (f"{self.view}: audio-tower fact differs from the qualified source "
+                    f"evidence: {self.op}.{cls}{loc}")
         return f"{self.view}: no code unit resolved to diff against — add a conformance_map override.{cls}{loc}"
 
 
@@ -142,7 +151,7 @@ def _check_vision_facts(target, ir: dict, *, bundle: SourceBundle, source: str) 
     from .vision import vision_tower_evidence
     evidence = vision_tower_evidence(target, source=source, bundle=bundle)
     view = f"{evidence.component}/vision"
-    if evidence.status == "ambiguous":
+    if evidence.status in {"ambiguous", "oracle_missing"}:
         return [ConformanceProblem("unresolved", "vision", view,
                                    evidence.owner_class, evidence.source_file,
                                    source_component=evidence.component)]
@@ -181,6 +190,183 @@ def _check_vision_facts(target, ir: dict, *, bundle: SourceBundle, source: str) 
                 getattr(exemplar, "line", None), evidence.component,
             ))
     return out
+
+
+def _check_projector_facts(target, ir: dict, *, bundle: SourceBundle,
+                           source: str) -> list[ConformanceProblem]:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    paths = [path for key, path in modalities.items()
+             if key in {"vision", "video"} and isinstance(path, dict)]
+    if not paths:
+        return []
+    from .projector import projector_evidence
+    evidence = projector_evidence(target, source=source, bundle=bundle)
+    view = f"{evidence.component}/projector"
+    if evidence.status == "ambiguous":
+        return [ConformanceProblem(
+            "unresolved", "projector", view, evidence.owner_class,
+            evidence.source_file, source_component=evidence.component,
+        )]
+    if evidence.status != "proven":
+        return []
+
+    expected_ops = [_projector_op_signature(op.to_dict()) for op in evidence.ops]
+    out: list[ConformanceProblem] = []
+    for path_name, path in ((key, modalities.get(key)) for key in ("vision", "video")):
+        if not isinstance(path, dict):
+            continue
+        projector = path.get("projector") or {}
+        drawn_ops = [_projector_op_signature(op) for op in projector.get("ops") or []]
+        checks = {
+            "kind": (projector.get("kind"), evidence.kind),
+            "ops": (drawn_ops, expected_ops),
+            "learned_queries": (bool(projector.get("learned_queries")),
+                                evidence.learned_queries),
+            "source_class": (projector.get("source_class"), evidence.projector_class),
+            "source_field": (projector.get("source_field"), evidence.field_name),
+        }
+        for field, (drawn, code) in checks.items():
+            if drawn == code:
+                continue
+            out.append(ConformanceProblem(
+                "wrong_projector_fact",
+                f"{path_name}.{field}: diagram={drawn!r}, code={code!r}", view,
+                evidence.projector_class, evidence.source_file, evidence.line,
+                evidence.component,
+            ))
+    return out
+
+
+def _projector_op_signature(op: dict) -> tuple:
+    sources = op.get("from")
+    normalized_sources = ((sources,) if isinstance(sources, str)
+                          else tuple(sources or ()))
+    return (
+        str(op.get("kind") or ""), str(op.get("label") or ""),
+        str(op.get("fn") or ""), str(op.get("id") or ""),
+        normalized_sources, op.get("repeat"),
+    )
+
+
+def _check_audio_facts(target, ir: dict, *, bundle: SourceBundle,
+                       source: str) -> list[ConformanceProblem]:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    path = modalities.get("audio")
+    if not isinstance(path, dict):
+        return []
+    from .audio import audio_tower_evidence
+    evidence = audio_tower_evidence(target, source=source, bundle=bundle)
+    view = f"{evidence.component}/audio"
+    if evidence.status in {"ambiguous", "oracle_missing"}:
+        return [ConformanceProblem(
+            "unresolved", "audio", view, evidence.owner_class,
+            evidence.source_file, source_component=evidence.component,
+        )]
+    if evidence.status != "proven":
+        return []
+    encoder = path.get("encoder") or {}
+    projector = path.get("projector") or {}
+    drawn_variants = encoder.get("variants") or []
+    expected_variants = [item.to_dict() for item in evidence.variants]
+    signature = lambda values: [_projector_op_signature(op) for op in values or []]
+    checks = {
+        "source_owner": (encoder.get("source_owner"), evidence.owner_class),
+        "position.kind": ((encoder.get("position_encoding") or {}).get("kind"),
+                          evidence.position_kind),
+        "position.application": ((encoder.get("position_encoding") or {}).get("application"),
+                                 evidence.position_application),
+        "frontend_ops": (signature(encoder.get("frontend_ops")),
+                         signature(op.to_dict() for op in evidence.frontend_ops)),
+        "post_ops": (signature(encoder.get("post_ops")),
+                     signature(op.to_dict() for op in evidence.post_ops)),
+        "projector_ops": (signature(projector.get("ops")),
+                          signature(op.to_dict() for op in evidence.projector_ops)),
+        "variant_count": (len(drawn_variants), len(expected_variants)),
+    }
+    for index, expected in enumerate(expected_variants):
+        if index >= len(drawn_variants):
+            break
+        drawn = drawn_variants[index]
+        checks[f"variant[{index}].block_class"] = (
+            drawn.get("block_class"), expected.get("block_class"),
+        )
+        checks[f"variant[{index}].ops"] = (
+            signature(drawn.get("ops")), signature(expected.get("ops")),
+        )
+    out = []
+    exemplar = evidence.variants[0] if evidence.variants else None
+    for field, (drawn, code) in checks.items():
+        if drawn == code:
+            continue
+        out.append(ConformanceProblem(
+            "wrong_audio_fact", f"{field}: diagram={drawn!r}, code={code!r}", view,
+            getattr(exemplar, "block_class", evidence.owner_class),
+            getattr(exemplar, "source_file", evidence.source_file),
+            getattr(exemplar, "line", None), evidence.component,
+        ))
+    return out
+
+
+def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
+                        source: str) -> list[ConformanceProblem]:
+    modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    inputs = modalities.get("inputs") or {}
+    fusion = modalities.get("fusion")
+    if not isinstance(fusion, dict):
+        return []
+    from .fusion import fusion_evidence
+    evidence = fusion_evidence(target, source=source, bundle=bundle)
+    view = f"{evidence.component}/fusion"
+    if evidence.status == "ambiguous":
+        return [ConformanceProblem(
+            "unresolved", "fusion", view, evidence.owner_class,
+            evidence.source_file, evidence.line, evidence.component,
+        )]
+    if evidence.status != "proven":
+        return []
+
+    expected_routes = tuple(
+        (route.modality, route.operation) for route in evidence.routes
+        if route.modality in inputs
+    )
+    checks = {
+        "kind": (fusion.get("kind"), evidence.kind),
+        "operation": (fusion.get("operation"), evidence.operation),
+        "routes": (_drawn_fusion_routes(fusion), expected_routes),
+        "source_owner": (fusion.get("source_owner"), evidence.owner_class),
+    }
+    out = []
+    for field, (drawn, code) in checks.items():
+        if drawn == code:
+            continue
+        out.append(ConformanceProblem(
+            "wrong_fusion_fact", f"{field}: diagram={drawn!r}, code={code!r}",
+            view, evidence.owner_class, evidence.source_file, evidence.line,
+            evidence.component,
+        ))
+    return out
+
+
+def _drawn_fusion_routes(fusion: dict) -> tuple[tuple[str, str], ...]:
+    mechanism = fusion.get("mechanism") or {}
+    kind = fusion.get("kind")
+    if kind == "placeholder_replace":
+        routes = mechanism.get("routes") if mechanism.get("kind") == "scatter_many" else [mechanism]
+        out = []
+        for route in routes or []:
+            source = str(route.get("source") or "")
+            modality = source.split(".")[2] if source.startswith("modalities.inputs.") else ""
+            out.append((modality, str(route.get("operation") or "")))
+        return tuple(out)
+    if kind == "unified_multimodal_stream":
+        return tuple((str(name), "masked_scatter") for name in mechanism.get("sources") or [])
+    if kind == "cross_attention":
+        return tuple((str(name), "cross_attention_states") for name in mechanism.get("sources") or [])
+    if kind == "prefix_soft_tokens":
+        source = str(mechanism.get("source") or "")
+        modality = source.split(".")[2] if source.startswith("modalities.inputs.") else ""
+        return ((modality, "prefix_concat"),) if modality else ()
+    return ()
 
 
 def check_wiring_conformance(
@@ -331,6 +517,9 @@ def check_fact_conformance(
                 "wrong_attention", "softmax", key,
                 code.class_name, code.source_file, code.forward_line, code.component))
     problems.extend(_check_vision_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_projector_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_fusion_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_audio_facts(target, ir, bundle=bundle, source=source))
     return problems
 
 

@@ -592,13 +592,46 @@ def _audio_children(audio: dict) -> list[dict]:
     encoder = audio.get("encoder") or {}
     projector = audio.get("projector") or {}
     tokens = audio.get("tokens") or {}
-    encoder_bits = [str(encoder.get("kind") or "audio encoder").replace("_", " ")]
+    encoder_bits = ["audio encoder"]
     if encoder.get("num_layers"):
         encoder_bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
     if encoder.get("num_attention_heads"):
         encoder_bits.append(f"{_fmt_int(encoder.get('num_attention_heads'))} heads")
     if encoder.get("hidden_size"):
         encoder_bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    callable_children = []
+    seen_callables = set()
+    for variant in encoder.get("variants") or []:
+        for item in variant.get("callables") or []:
+            class_name = str(item.get("class_name") or "Audio callable")
+            card_id = f"audio_callable_{_slug_identifier(class_name)}"
+            if card_id in seen_callables:
+                continue
+            seen_callables.add(card_id)
+            card = {
+                "id": card_id,
+                "title": class_name,
+                "description": (
+                    "Exact operations read from the delegated audio source callable."
+                    if item.get("ops") else
+                    "Source-qualified audio callable; retained as a conscious composite at this altitude."
+                ),
+                "facts": [f for f in (
+                    str(item.get("source_file") or ""),
+                    f"line {item.get('line')}" if item.get("line") else "",
+                ) if f],
+            }
+            if item.get("ops"):
+                card.update({
+                    "view": "ops",
+                    "detail": {"ops": _audio_callable_ops(item.get("ops") or [])},
+                })
+            callable_children.append(card)
+    source_facts = [f for f in (
+        str(encoder.get("source_owner") or ""),
+        str(encoder.get("source_component") or ""),
+        str(encoder.get("source_file") or ""),
+    ) if f]
     return [
         {
             "id": "audio_features",
@@ -612,10 +645,25 @@ def _audio_children(audio: dict) -> list[dict]:
         {
             "id": "audio_encoder",
             "title": "Audio encoder",
-            "description": f"{encoder_bits[0]} — a separate audio tower.",
-            "facts": [bit for bit in encoder_bits[1:] if bit],
+            "description": "A separate audio tower whose structure is derived from its delegated source.",
+            "facts": [*source_facts, *[bit for bit in encoder_bits[1:] if bit]],
             "view": "audio_encoder",
-            "children": _encoder_attention_child("audio_enc", encoder),
+            "children": [
+                *callable_children,
+                {
+                    "id": "audio_residual_add", "title": "Residual add",
+                    "description": "Adds the saved audio-cell residual to the transformed branch.",
+                },
+                {
+                    "id": "audio_gate_mul", "title": "Element-wise multiply",
+                    "description": "Multiplies two source-proven audio branches element by element.",
+                },
+                {
+                    "id": "audio_position_add", "title": "Add fixed positions",
+                    "description": "Adds the fixed audio position embedding to the convolutional features.",
+                },
+                *([] if callable_children else _encoder_attention_child("audio_enc", encoder)),
+            ],
         },
         {
             "id": "audio_projector",
@@ -632,6 +680,31 @@ def _audio_children(audio: dict) -> list[dict]:
             ) if f],
         },
     ]
+
+
+def _slug_identifier(value: str) -> str:
+    import re
+    return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+
+
+def _audio_callable_ops(declared: list[dict]) -> list[dict]:
+    """Normalize an audio callable graph without collapsing its entry skip.
+
+    Unlike projector branch sentinels, ``__entry__`` in these SSA records is
+    the callable input and may reappear at a late residual add.  It must always
+    map to ``hidden`` rather than the preceding operation.
+    """
+    ops = [dict(op) for op in declared]
+    for op in ops:
+        if op.get("kind") == "activation" and op.get("fn"):
+            op.pop("label", None)
+        sources = op.get("from")
+        values = [sources] if isinstance(sources, str) else list(sources or [])
+        mapped = ["hidden" if isinstance(source, str) and source.startswith("__entry__:")
+                  else source for source in values]
+        if mapped:
+            op["from"] = mapped[0] if len(mapped) == 1 else mapped
+    return ops
 
 
 def _video_description(video: dict) -> tuple[str, list[str]]:
@@ -789,35 +862,44 @@ _PROJECTOR_DESCS = {
 
 
 def _projector_ops(projector: dict) -> list[dict]:
-    """The connector's structure, declared in the op alphabet — only from
-    facts the parser actually extracted (no dims known → no ops, prose card)."""
+    """Return only the qualified source-derived connector operation chain."""
     declared = projector.get("ops")
-    if declared:
-        return list(declared)
-    kind = str(projector.get("kind") or "linear_projector")
-    inn, out = projector.get("in_features"), projector.get("out_features")
-    act = projector.get("activation")
-    if not (inn and out):
+    if not declared:
         return []
-    if kind == "mlp_projector" and act:
-        return [
-            {"kind": "linear", "label": "Linear", "in": inn, "out": out},
-            {"kind": "activation", "fn": act},
-            {"kind": "linear", "label": "Linear", "in": out, "out": out},
-        ]
-    if kind == "patch_merger":
-        return [
-            # Regrouping neighbouring patches into one feature vector is a
-            # single-stream reshape (a box), not a two-lane ‖ merge.
-            {"kind": "reshape", "label": "Concat neighbouring patches"},
-            {"kind": "linear", "label": "Linear", "in": inn, "out": out},
-        ]
-    if kind == "perceiver_resampler":
-        return [{"kind": "attention_core", "label": "Latent cross-attention",
-                 "fn": "cross_attention", "in": inn, "out": out}]
-    if kind in ("linear_projector", "linear"):
-        return [{"kind": "linear", "label": "Linear", "in": inn, "out": out}]
-    return []
+    ops = [dict(op) for op in declared]
+    entry_targets: dict[str, str] = {}
+    for op in ops:
+        if op.get("kind") == "activation" and op.get("fn"):
+            # Source keeps the exact callable/class label for provenance; the
+            # renderer projects activation names through the central label
+            # vocabulary (GELU, SiLU, ...).
+            op.pop("label", None)
+        if op.get("description"):
+            op.setdefault("meta", {})["desc"] = op.pop("description")
+    for index, op in enumerate(ops):
+        sources = op.get("from")
+        values = [sources] if isinstance(sources, str) else list(sources or [])
+        mapped = []
+        for source in values:
+            if not isinstance(source, str) or not source.startswith("__entry__:"):
+                mapped.append(source)
+                continue
+            if index > 0 and not ops[index - 1].get("id"):
+                ops[index - 1]["id"] = f"projector_entry_{index}"
+            target = entry_targets.setdefault(
+                source, ops[index - 1].get("id") if index > 0 else "hidden",
+            )
+            mapped.append(target)
+        if mapped:
+            op["from"] = mapped[0] if len(mapped) == 1 else mapped
+    # Widths are config facts; operation order is source evidence.  Enrich only
+    # the chain boundaries so the drill can label its real input/output without
+    # pretending the AST established every intermediate width.
+    if projector.get("in_features") is not None:
+        ops[0].setdefault("in", projector["in_features"])
+    if projector.get("out_features") is not None:
+        ops[-1].setdefault("out", projector["out_features"])
+    return ops
 
 
 def _projector_card_fields(projector: dict) -> dict:
@@ -830,13 +912,10 @@ def _projector_card_fields(projector: dict) -> dict:
         f"{_fmt_int(inn)} \u2192 {_fmt_int(out)}" if (inn and out) else "",
         str(projector.get("activation") or ""),
         f"{_fmt_int(projector.get('num_latents'))} latent queries" if projector.get("num_latents") else "",
+        "learned latent queries" if projector.get("learned_queries") else "",
     ) if f]
-    profile_title = {
-        "qwen_vl_patch_merger": "Qwen-VL patch merger",
-        "mistral3_multimodal_projector": "Mistral3 multimodal projector",
-    }.get(projector.get("profile"))
     fields = {
-        "title": profile_title or _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
+        "title": _PROJECTOR_TITLES.get(kind, kind.replace("_", " ").capitalize()),
         "description": _PROJECTOR_DESCS.get(kind, "Projects encoder features into the decoder's embedding space."),
         "facts": facts,
     }
@@ -872,13 +951,33 @@ def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
             ", ".join(runtime) if runtime else "",
             f"decoder width {_fmt_int(width)}" if width else "",
         ) if f]
-        return ("Text and visual tokens merge into one decoder stream with "
-                "grid-aware positions.", facts)
+        return ("The wrapper masked-scatters visual features into reserved token slots, "
+                "then assigns grid-aware positions to the shared decoder stream.", facts)
+    if fusion.get("kind") == "code_defined_fusion":
+        return ("The wrapper fusion operation could not be resolved exactly; no scatter, "
+                "prefix, interleave, or cross-attention topology is invented.", [])
     return (f"{kind.capitalize()} \u2014 the merged stream feeds the decoder stack.",
             [f"width {_fmt_int(width)}"] if width else [])
 
 
 def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
+    if fusion.get("kind") == "code_defined_fusion":
+        return [{
+            "id": "fusion_unknown",
+            "title": "Code-defined fusion",
+            "description": "Source is missing or ambiguous at the wrapper fusion boundary.",
+        }]
+    if fusion.get("kind") == "prefix_soft_tokens":
+        return [
+            {"id": "embed", "title": "Text embeddings",
+             "description": "The text embedding sequence before modality prefixing."},
+            {"id": "vision_path", "title": "Visual tokens",
+             "description": "Projected visual tokens supplied as the prefix lane."},
+            {"id": "prefix_concat", "title": "Prefix concatenation",
+             "description": "The wrapper explicitly concatenates visual tokens before text embeddings."},
+            {"id": "stack_input", "title": "Decoder input",
+             "description": "The concatenated visual-prefix and text sequence."},
+        ]
     if fusion.get("kind") == "cross_attention":
         return [
             {

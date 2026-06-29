@@ -119,24 +119,6 @@ def load_diffusion_text_encoders() -> dict[str, str]:
     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
 
 
-def load_diffusion_class_defaults() -> dict[str, dict[str, str]]:
-    """Architectural facts HARDCODED in the diffusers model class but NOT in the
-    config (``diffusor/class_defaults.yaml``) — surfaced (marked code-derived)
-    when the config is silent (e.g. Flux's axial RoPE / QK-norm).
-
-    Stored flow-style as ``field: ["<_class_name>=<value>", ...]``; returned as
-    ``{canonical_field: {class_name: value}}``."""
-    out: dict[str, dict[str, str]] = {}
-    for field, entries in load("diffusor", "class_defaults").items():
-        mapping: dict[str, str] = {}
-        for entry in entries or []:
-            if isinstance(entry, str) and "=" in entry:
-                cls, _, val = entry.partition("=")
-                mapping[cls.strip()] = val.strip()
-        out[field] = mapping
-    return out
-
-
 # --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
 
 def load_conformance_op_tokens() -> dict[str, str]:

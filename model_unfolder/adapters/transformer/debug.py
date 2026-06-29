@@ -134,19 +134,6 @@ def report_error(kind: str, message: str, *, cause: BaseException | None = None)
 
 # --- internals ------------------------------------------------------------
 
-def _config_keys(cfg: Any) -> set[str]:
-    if isinstance(cfg, dict):
-        return set(cfg.keys())
-    if hasattr(cfg, "to_dict"):
-        try:
-            return set(cfg.to_dict().keys())
-        except Exception:
-            pass
-    if hasattr(cfg, "__dict__"):
-        return {k for k in vars(cfg) if not k.startswith("__")}
-    return set()
-
-
 def _config_entries(cfg: Any, *, recursive: bool, prefix: str = ""):
     mapping = _config_mapping(cfg)
     for key, value in mapping.items():

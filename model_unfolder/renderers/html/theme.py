@@ -1,10 +1,9 @@
 """Shared visual constants for the HTML/SVG renderer.
 
-The colour palette lives in :data:`C`, a single dict that every renderer module
-imports by reference and reads at call time (``C["block"]``).  That makes domain
-theming a swap of the dict's *contents*, not a parameter threaded through ~100
-call sites: :func:`use_theme` repoints ``C`` to a named palette for the duration
-of one render and restores it after.
+The colour palette is exposed through :data:`C`, a read-only mapping that every
+renderer imports and reads at call time (``C["block"]``). The mapping resolves
+through the active call-local :class:`RenderContext`, so concurrent renders can
+use different palettes without mutating shared module state.
 
 Palettes are keyed by *domain*: transformer-LLM diagrams render teal (the
 default); diffusion diagrams render blue.  Add a palette here and select it via
@@ -19,7 +18,6 @@ from .render_context import (
     RenderContext,
     activate_render_context,
     current_render_context,
-    ensure_render_context,
 )
 
 FONT_IMPORT = "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap');"
@@ -97,19 +95,9 @@ class _ContextPalette(Mapping):
 C: Mapping = _ContextPalette()
 
 
-def set_theme(name: str | None) -> None:
-    """Set the theme on the current call-local render context."""
-    ensure_render_context().theme = name or DEFAULT_THEME
-
-
 @contextmanager
 def use_theme(name: str | None):
-    """Render under a named palette, restoring the previous one afterward.
-
-    Single render is synchronous, so the in-place swap is safe for a notebook /
-    CLI.  (Concurrent renders in one process would race on ``C`` — acceptable for
-    now, same trade-off as the parser's per-parse debug record.)
-    """
+    """Render under a call-local palette and restore its prior value afterward."""
     context = current_render_context()
     if context is None:
         with activate_render_context(RenderContext(theme=name or DEFAULT_THEME)):

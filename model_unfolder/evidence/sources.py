@@ -128,7 +128,7 @@ def _path_bundle(target: Any) -> SourceBundle | None:
 
 
 def _installed_transformers_bundle(target: Any) -> SourceBundle:
-    model_type = _model_type(target) or _guess_model_type_from_id(_model_id(target))
+    model_type = _model_type(target)
     architecture = _architecture(target)
     model_id = _model_id(target)
     if not model_type:
@@ -456,45 +456,3 @@ def _clean_token(token: Any):
         return token or None
     return token
 
-
-def _guess_model_type_from_id(model_id: str | None) -> str | None:
-    if not model_id:
-        return None
-    value = model_id.lower()
-    checks = (
-        ("deepseek-v3", "deepseek_v3"),
-        ("deepseek-r1", "deepseek_v3"),
-        ("deepseek-v2", "deepseek_v2"),
-        ("qwen3-moe", "qwen3_moe"),
-        ("qwen2-moe", "qwen2_moe"),
-        ("qwen3", "qwen3"),
-        ("qwen2", "qwen2"),
-        ("mixtral", "mixtral"),
-        ("mistral", "mistral"),
-        ("llama-4", "llama4"),
-        ("llama4", "llama4"),
-        ("llama", "llama"),
-        ("gemma-3n", "gemma3n"),
-        ("gemma-3", "gemma3"),
-        ("gemma-2", "gemma2"),
-        ("gemma", "gemma"),
-        ("phi-3", "phi3"),
-        ("phi3", "phi3"),
-        ("phi", "phi"),
-        ("falcon", "falcon"),
-        ("dbrx", "dbrx"),
-        ("olmoe", "olmoe"),
-        ("olmo-2", "olmo2"),
-        ("olmo2", "olmo2"),
-        ("olmo", "olmo"),
-        ("gpt-oss", "gpt_oss"),
-        ("gpt-neox", "gpt_neox"),
-        ("gpt-j", "gpt_j"),
-        ("bloom", "bloom"),
-        ("opt-", "opt"),
-        ("mpt", "mpt"),
-    )
-    for needle, model_type in checks:
-        if needle in value:
-            return model_type
-    return None

@@ -48,22 +48,6 @@ _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
 _BRANCH_STUB = 48.0       # split-dot → lane-bottom rise
 _MERGE_STUB = 46.0        # lane-top → merge-node rise
 
-# --- Dable wiring log -------------------------------------------------------
-# Every graph render runs the dangling detector and appends any finding here.
-# A validator (Diagram.wiring_problems) clears, re-renders, and drains it — so
-# a dangling ⊕/×/⊙ is caught wherever it is drawn, not just in pinned tests.
-def reset_wiring_log() -> None:
-    ensure_render_context().wiring_findings.clear()
-
-
-def drain_wiring_log() -> list[str]:
-    context = ensure_render_context()
-    found = list(context.wiring_findings)
-    context.wiring_findings.clear()
-    release_render_context(context)
-    return found
-
-
 # --- Recursive-conformance render log ---------------------------------------
 # render_graph is the ONE chokepoint every drill graph passes through, so it is
 # also where we capture the op-kind set the renderer actually DRAWS for each view

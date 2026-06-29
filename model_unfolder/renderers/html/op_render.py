@@ -103,6 +103,13 @@ def region_to_graph(
         new_lanes: list[Lane] = []
         spine_ids: list[str] | None = None
         for b in branches:
+            # A direct edge from the branch point to a later merge is a real
+            # skip lane with no operation node of its own (residual identity).
+            # Treating the merge as a one-node output lane loses the arriving
+            # edge and leaves a visually dangling ⊕.
+            if is_merge(b):
+                new_lanes.append(Lane([], dst=[b], src=cur))
+                continue
             ids, dsts, pure = chase(b)
             if pure:
                 new_lanes.append(Lane(ids, dst=dsts))
@@ -189,6 +196,8 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "position":
         return Node(op.id, "embedding", op.label or "Position encoding", static=static)
     if op.kind == "elementwise":
+        if op.fn not in {"mul", "add", "matmul"} and op.label:
+            return Node(op.id, "activation", op.label, static=static)
         kind = {"mul": "gate_mul", "add": "residual_add"}.get(op.fn or "", "dot_product")
         return Node(op.id, kind, static=static)
     if op.kind == "attention_core":

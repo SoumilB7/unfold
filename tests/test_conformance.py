@@ -641,20 +641,31 @@ def test_ffn_activation_reads_inline_standalone_act_field(tmp_path):
     assert diffusion_ffn_activation_from_files([str(fs)]) == "geglu"   # standard scan wins
 
 
-def test_diffusor_class_defaults_table_is_empty_all_code_derived():
-    """The per-model diffusor class_defaults table is FULLY EMPTY — every
-    architectural fact (qk_norm, ffn activation/kind, rope/axial dims, gate dialect,
-    single-stream fusion, attn kind, cross-attn norm) is now read from the modeling
-    SOURCE, not tabulated by class name. This is the conscious-abstraction gate: a
-    NEW row is the law's tolerated 'truly-opaque source' exception, so adding one
-    must be deliberate — update this test WITH the justification (why the evidence
-    genuinely can't be read), never silently."""
-    from model_unfolder.everchanging import load_diffusion_class_defaults
-    table = load_diffusion_class_defaults()
-    rows = {field: mapping for field, mapping in table.items() if mapping}
-    assert rows == {}, (
-        "diffusor class_defaults gained per-model rows — derive from code instead, "
-        f"or justify as truly-opaque here: {rows}")
+def test_diffusor_class_defaults_mechanism_is_eradicated():
+    """The per-model diffusor class_defaults MECHANISM is gone — loader, dead YAML
+    data file and every ``_class_default`` call site are deleted, not merely emptied.
+    Every architectural fact (qk_norm, ffn activation/kind, rope/axial dims, gate
+    dialect, single-stream fusion, attn kind, cross-attn norm) is read from the
+    modeling SOURCE, never tabulated by class name. This is the regrowth guard:
+    re-introducing the table is a deliberate, reviewable act — not a silent one."""
+    import importlib
+    import pathlib
+
+    from model_unfolder import everchanging
+
+    assert not hasattr(everchanging, "load_diffusion_class_defaults"), (
+        "the class-name fact-table loader was re-introduced — derive from code instead")
+
+    parser_src = pathlib.Path(
+        importlib.import_module("model_unfolder.adapters.diffusor.parser").__file__
+    ).read_text()
+    assert "_class_default" not in parser_src, (
+        "a `_class_default` class-name fallback was re-introduced in the diffusor parser")
+
+    yaml_path = (pathlib.Path(everchanging.__file__).parent
+                 / "diffusor" / "class_defaults.yaml")
+    assert not yaml_path.exists(), (
+        f"{yaml_path.name} is a dead regrowth point with no loader — delete it")
 
 
 # ---------------------------------------------------------------------------

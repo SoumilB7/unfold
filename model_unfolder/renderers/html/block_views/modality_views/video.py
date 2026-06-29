@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from ...stack_view import StackView
 from .vision_details import build_vision_encoder_view
+from .vision import _connector_label
 
 
 def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
@@ -11,7 +12,9 @@ def build_video_path_view(ir: dict, info: dict, mount_id: str, _block: dict) -> 
     view.block("video_frames", "Video frames", w=220, h=44)
     view.block("video_patches", "Temporal patches", w=260, h=44)
     view.block("video_encoder", "Vision encoder", w=300, h=54)
-    view.block("video_projector", "Patch merger", w=270, h=48)
+    video = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs", {}).get("video") or {}
+    projector = video.get("projector") or {}
+    view.block("video_projector", _connector_label(projector, True), w=270, h=48)
     view.block("video_tokens", "Video grid tokens", w=290, h=48)
     return view.render()
 

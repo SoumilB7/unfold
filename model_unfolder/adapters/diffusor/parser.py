@@ -27,7 +27,6 @@ from typing import Any
 
 from ...everchanging import (
     load_diffusion_aliases,
-    load_diffusion_class_defaults,
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
@@ -41,10 +40,6 @@ from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
 
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
-
-#: Facts hardcoded in the diffusers model class but absent from config — surfaced
-#: (marked code-derived) only when the config is silent. {field: {class: value}}.
-_CLASS_DEFAULTS: dict[str, dict[str, str]] = load_diffusion_class_defaults()
 
 #: Detection + labelling vocabulary — data, edited in ``everchanging/diffusor/``.
 #: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
@@ -72,14 +67,6 @@ def _resolve(cfg: Any, canonical: str, default=None):
         if val is not None:
             return val
     return default
-
-
-def _class_default(cls: Any, field: str):
-    """Code-hardcoded value for ``field`` fixed in model class ``cls`` (from
-    class_defaults.yaml), or ``None``. Used ONLY as a fallback when the config is
-    silent — the result is surfaced marked as code-derived, never overriding a
-    declared config value."""
-    return _CLASS_DEFAULTS.get(field, {}).get(str(cls))
 
 
 def _source_files(cfg: Any, context=None):
@@ -400,14 +387,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _code_axes = _code_axes_dims_rope(cfg, context)
         if _code_axes:
             axes_dims_rope, axes_from_class = _code_axes, True
-        else:
-            _cd = _class_default(cls, "axes_dims_rope")
-            if _cd:
-                try:
-                    axes_dims_rope = [int(x) for x in _cd.split(",")]
-                    axes_from_class = True
-                except ValueError:
-                    axes_dims_rope = None
     rope_dim = None
     if isinstance(axes_dims_rope, (list, tuple)):
         try:
@@ -436,8 +415,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # source. We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
     # per-axis split (head-dim dependent).
     rope_3d_from_class = False
-    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)
-                                      or _class_default(cls, "rope_3d")):
+    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)):
         rope_dim = head_dim
         has_rope = True
         rope_3d_from_class = not rope_3d_from_config
@@ -492,10 +470,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _code_qk = _code_qk_norm(cfg, context)
         if _code_qk:
             _qk, qk_from_class = _code_qk, True
-        else:
-            _cd = _class_default(cls, "qk_norm")
-            if _cd:
-                _qk, qk_from_class = _cd, True
     has_qk_norm = _qk not in _empty_qk
     if qk_from_class:
         # Mark the code-derived QK-norm in the attention description (the chip
@@ -537,10 +511,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
     # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
     _can = _resolve(cfg, "cross_attn_norm")
-    if _can is None:
-        _can_cd = _class_default(cls, "cross_attn_norm")
-        if _can_cd is not None:
-            _can = str(_can_cd).lower() not in ("false", "0", "none", "no")
     cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
 
     # Self-attention kind: standard softmax MHA unless the model class fixes a
@@ -550,7 +520,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Attention ALGORITHM read from source (Sana's linear attention) — the SAME
     # *LinearAttn* signal fact-conformance reads. Code-first; the class_defaults table
     # is last-resort for un-resolvable source; default softmax MHA.
-    self_attn_kind = _code_attn_kind(cfg, context) or _class_default(cls, "self_attn_kind") or "mha"
+    self_attn_kind = _code_attn_kind(cfg, context) or "mha"
 
     layers = []
     idx = 0
@@ -577,7 +547,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # (h = h + ModulatedRMSNorm(sublayer(...), gate)) → a post-sublayer norm box,
         # NOT a ×. Drawing a × for Mochi fabricates a gate_mul the forward never does
         # (op-conformance catches it). The dialect is a code fact (class_defaults).
-        if code_gate_via_norm or _class_default(cls, "gate_via_norm"):
+        if code_gate_via_norm:
             layer.blocks = _insert_output_gated_norms(layer.blocks)
         else:
             layer.blocks = _insert_adaln_gates(layer.blocks)
@@ -592,7 +562,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # the joined [text+image] sequence (joined once upstream), so it renders as a
     # concat-joint block, not a fused parallel one (drawing fusion would fabricate a
     # concat + a fused linear the forward never does).
-    single_fusion = _code_single_fusion(cfg, context) or _class_default(cls, "single_stream_fusion")
+    single_fusion = _code_single_fusion(cfg, context)
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single):
@@ -1131,7 +1101,7 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
     # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
     # THE SOURCE (the block builds self.ff = GLUMBConv); the class_defaults table is
     # the offline-only fallback.
-    if (code_ffn_kind or _class_default(cls, "ffn_kind")) == "conv_glu":
+    if code_ffn_kind == "conv_glu":
         return FFNSpec(
             kind="conv_glu",
             activation=(str(declared_activation).lower() if declared_activation else "silu"),
@@ -1148,7 +1118,7 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
     # not installed) — the law's sanctioned "truly-opaque code-fact" exception.
     from_class = False
     if declared_activation is None:
-        resolved = code_activation or _class_default(cls, "ffn_activation_fn")
+        resolved = code_activation
         if resolved:
             declared_activation, from_class = resolved, True
     if declared_activation is None:

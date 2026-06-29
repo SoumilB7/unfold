@@ -80,7 +80,10 @@ def test_mllama_preserves_local_and_global_constructor_variants():
 
 
 def test_gemma4_surfaces_double_norm_and_qkv_norms():
-    layer = _evidence(GEMMA4_VISION_TINY_CONFIG).variants[0]
+    evidence = _evidence(GEMMA4_VISION_TINY_CONFIG)
+    layer = evidence.variants[0]
+    assert [(op.kind, op.label) for op in evidence.patch_ops[:2]] == [
+        ("elementwise", "Normalize pixels"), ("linear", "Linear")]
     assert layer.norm_placement == "double"
     assert (layer.q_norm, layer.k_norm, layer.v_norm) == (True, True, True)
     html = unfold(GEMMA4_VISION_TINY_CONFIG).to_html(standalone=False)
@@ -93,6 +96,94 @@ def test_gemma4_surfaces_double_norm_and_qkv_norms():
 def test_missing_vision_oracle_is_unknown_not_a_standard_vit_cell():
     evidence = vision_tower_evidence({}, bundle=SourceBundle(source="local"))
     assert evidence.status == "oracle_missing"
+
+
+_ROOT_FALLBACK_SOURCE = '''
+class OpticalAttention:
+    def __init__(self):
+        self.q_proj = Linear()
+    def forward(self, x):
+        return self.q_proj(x)
+
+class OpticalMLP:
+    def __init__(self):
+        self.fc1 = Linear()
+        self.fc2 = Linear()
+    def forward(self, x):
+        return self.fc2(self.fc1(x))
+
+class OpticalCell:
+    def __init__(self):
+        self.norm = LayerNorm()
+        self.attn = OpticalAttention()
+        self.mlp = OpticalMLP()
+    def forward(self, x):
+        x = self.norm(x)
+        x = self.attn(x)
+        return self.mlp(x)
+
+class OpticalTower:
+    def __init__(self):
+        self.patch_embed = Conv2d()
+        self.layers = ModuleList([OpticalCell()])
+    def forward(self, pixels):
+        x = self.patch_embed(pixels)
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+class TextDecoderLayer:
+    def __init__(self):
+        self.attn = OpticalAttention()
+        self.mlp = OpticalMLP()
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class Inner:
+    def __init__(self, config):
+        self.visual = OpticalTower._from_config(config.vision_config)
+        self.layers = ModuleList([TextDecoderLayer()])
+    def forward(self, x):
+        return self.visual(x)
+
+class Wrapper:
+    def __init__(self, config):
+        self.model = Inner(config)
+    def forward(self, x):
+        return self.model(x)
+'''
+
+
+def _root_fallback_bundle(path):
+    return SourceBundle(
+        source="path", files=(str(path),), architecture="Wrapper",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+    )
+
+
+def test_root_fallback_follows_wrapper_assignment_not_a_vision_name(tmp_path):
+    source = tmp_path / "modeling_wrapper.py"
+    source.write_text(_ROOT_FALLBACK_SOURCE)
+    evidence = vision_tower_evidence(
+        {"vision_config": {}}, bundle=_root_fallback_bundle(source),
+    )
+    assert evidence.status == "proven"
+    assert evidence.owner_class == "OpticalTower"
+    assert [item.block_class for item in evidence.variants] == ["OpticalCell"]
+
+
+def test_root_fallback_does_not_guess_automodel_delegate_from_class_names(tmp_path):
+    source = tmp_path / "modeling_wrapper.py"
+    source.write_text(_ROOT_FALLBACK_SOURCE.replace(
+        "OpticalTower._from_config(config.vision_config)",
+        "AutoModel.from_config(config.vision_config)",
+    ))
+    evidence = vision_tower_evidence(
+        {"vision_config": {}}, bundle=_root_fallback_bundle(source),
+    )
+    assert evidence.status == "ambiguous"
+    assert evidence.reason == "root wrapper does not prove the delegated vision class"
 
 
 def test_vision_fact_conformance_consumes_the_same_typed_evidence():
