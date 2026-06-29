@@ -1,8 +1,13 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -190,6 +195,7 @@
     "7de1b35af5bfd972b5869d1c492d3b54",
     "88d97706eacf798e0e5238c531dd5b18",
     "8ee9dfa0df3ccf2769954ce082c7d2c0",
+    "aa4f7268539d28a234b33d9a01b0ddc6",
     "b81d64f599b43794abcc2478c65ece53",
     "bba796a1fc49b57c5e7281d8ea73196c",
     "ee21379401ada292c6ef33f4ce27b7bc",

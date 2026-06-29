@@ -153,8 +153,16 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # Capture the op-kinds the renderer DRAWS for every graph (architecture + every
     # drill, to the leaves) so the nested-conformance net can diff each drill
     # against its backing sub-module's transitive forward() closure.
-    html = diagram.to_html(standalone=True)
-    render_log = diagram.render_events()
+    # Sable must never inherit an ambient compatibility render context left by
+    # a direct view call in the same process. Capture this model in an explicit
+    # call-local context so another model's drills cannot enter conformance.
+    from .renderers.html.render_context import RenderContext, activate_render_context
+    render_context = RenderContext(
+        theme=str((((ir.get("extras") or {}).get("render") or {}).get("theme")) or "teal")
+    )
+    with activate_render_context(render_context):
+        html = diagram.to_html(standalone=True)
+    render_log = list(render_context.events)
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.

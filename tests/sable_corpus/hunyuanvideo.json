@@ -5,6 +5,7 @@
     "dangling_connectors": true,
     "fact_conformance": true,
     "label_lint": true,
+    "nested_conformance": true,
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
@@ -182,8 +183,10 @@
     "502c3ffeb9a9ffadf61a8ec993944433",
     "511bc69086c757f55d1a4e9922fd78ed",
     "525c5ecce36d11cdae9ee2ae802e7de8",
+    "5629211bc9efbd086f2f26426877c1af",
     "6fe1482f7559ed0de0bdd32182140ce3",
     "91159c59e3f25f213cb37f5efa0d18de",
+    "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
     "b519dd2b49412f252d6fd28a9443a93e",
     "bf38a076baa29fc5858612bbd71d0fe5",
     "c554a7b119091b80e1b2306025d6c1ab"

@@ -16,7 +16,8 @@ live in approved ``diffusion_stage`` tags plus titles and descriptions.
 from __future__ import annotations
 
 from ...block_schema import Block
-from ...labels import attention_summary, kind_long
+from ...labels import attention_summary, cards_from_region, ffn_summary, kind_long
+from ...opgraph import ffn_region, rename_ops
 from ..transformer.common import format_dim as _fmt
 from .compound import vae_up_stage
 
@@ -688,8 +689,8 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     LayerNorm vs RMSNorm), so they must not share a card.
     """
     spec = spec or {}
-    hidden, heads, ffn = spec.get("hidden"), spec.get("heads"), spec.get("ffn")
-    vocab, max_pos, act = spec.get("vocab"), spec.get("max_pos"), spec.get("activation")
+    hidden, heads = spec.get("hidden"), spec.get("heads")
+    vocab, max_pos = spec.get("vocab"), spec.get("max_pos")
     upper = enc.upper()
     is_t5 = "T5" in upper
     is_clip = "CLIP" in upper
@@ -747,14 +748,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     attn_title = kind_long(attn_detail).replace(" attention", " self-attention")
     attn_facts = attention_summary(attn_detail)[1] if heads else []
 
-    ffn_desc = (
-        "A position-wise two-layer MLP applied to each token independently, "
-        "expanding then projecting back — the per-token non-linear transform."
-    )
-    ffn_facts = [f for f in (
-        f"{_fmt(hidden)} → {_fmt(ffn)} → {_fmt(hidden)}" if (hidden and ffn) else "",
-        str(act) if act else "",
-    ) if f]
+    ffn_block = _text_encoder_ffn_block(spec, prefix)
 
     return [
         {
@@ -772,12 +766,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             # what it does), not a generic Q/K/V drill — the hero denoiser carries
             # the detailed attention diagram; this supporting encoder is described.
         },
-        {
-            "id": f"{prefix}_op_ffn",
-            "title": "Feed-forward",
-            "description": ffn_desc,
-            "facts": ffn_facts,
-        },
+        ffn_block,
         {
             "id": f"{prefix}_op_norm",
             "title": norm,
@@ -797,6 +786,55 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             ),
         },
     ]
+
+
+def _text_encoder_ffn_block(spec: dict, prefix: str) -> Block:
+    """Project one nested encoder FFN from a canonical operation region.
+
+    The summary, drill SVG and leaf cards all consume the same fact/region.  The
+    source-evidence envelope decides whether a split/fused layout is proven;
+    unresolved storage remains one opaque node instead of defaulting to a
+    family convention.
+    """
+    evidence = spec.get("ffn_evidence") if isinstance(spec.get("ffn_evidence"), dict) else {}
+    status = str(evidence.get("status") or "oracle_missing")
+    gated = spec.get("gated") if "gated" in spec else None
+    fact = {
+        "kind": "dense",
+        "hidden": spec.get("hidden"),
+        "intermediate_size": spec.get("ffn"),
+        "activation": spec.get("activation"),
+        "gated": gated,
+        "structure_status": status,
+    }
+    if status == "proven" and spec.get("ffn_projection_mode"):
+        fact["projection_mode"] = spec["ffn_projection_mode"]
+
+    region = ffn_region(fact, spec.get("hidden"))
+    namespace = f"{prefix}_ffn_"
+    namespaced = rename_ops(
+        region,
+        {op.id: f"{namespace}{op.id}" for op in region.ops if op.id != "hidden"},
+    )
+    desc, facts = ffn_summary(fact)
+    if not region.resolved and region.ops:
+        desc = str((region.ops[0].meta or {}).get("desc") or desc)
+    facts = [item for item in facts if not item.endswith("?")]
+    return {
+        "id": f"{prefix}_op_ffn",
+        "role": "ffn",
+        "kind": "ffn",
+        "title": "Feed-forward",
+        "description": desc,
+        "facts": facts,
+        "view": "ffn",
+        "detail": {
+            "ffn": fact,
+            "op_namespace": namespace,
+            "evidence": evidence,
+        },
+        "children": cards_from_region(namespaced),
+    }
 
 
 def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None,

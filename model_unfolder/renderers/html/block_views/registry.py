@@ -86,8 +86,11 @@ def render_view(ctx: ViewCtx, block: dict) -> str | None:
     if fn is None:
         return None
     scoped = dict(block)
+    detail = scoped.get("detail") if isinstance(scoped.get("detail"), dict) else {}
+    evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
     provenance = ((ctx.ir.get("extras") or {}).get("source_provenance") or {}).get("components") or {}
-    component = scoped.get("source_component") or scoped.get("component")
+    component = (scoped.get("source_component") or scoped.get("component")
+                 or evidence.get("component"))
     if not component:
         marker = " ".join(str(scoped.get(key) or "") for key in ("id", "view", "kind")).lower()
         domain = "vision" if "vision" in marker else "audio" if "audio" in marker else "root"
@@ -97,7 +100,9 @@ def render_view(ctx: ViewCtx, block: dict) -> str | None:
         )
     scoped.setdefault("source_component", component)
     source = provenance.get(component) if isinstance(provenance, dict) else None
-    if isinstance(source, dict) and source.get("architecture"):
+    if evidence.get("owner_class"):
+        scoped.setdefault("source_owner", evidence["owner_class"])
+    elif isinstance(source, dict) and source.get("architecture"):
         scoped.setdefault("source_owner", source["architecture"])
     dominant = ctx.info.get("dominant") if isinstance(ctx.info, dict) else None
     if isinstance(dominant, dict) and dominant.get("sig") is not None:

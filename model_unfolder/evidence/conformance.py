@@ -612,6 +612,7 @@ def check_nested_conformance(
             event_key = (
                 view_key, tuple(entry.block_path), entry.component,
                 entry.variant, entry.source_owner,
+                getattr(entry, "source_file", ""),
             )
         else:
             view_key, drawn, _ids = entry
@@ -642,9 +643,27 @@ def check_nested_conformance(
             sel_ops, _evidence = closure
             problems.extend(_diff_selection(family, view_key, drill_role, drawn, sel_ops, vocab, ab))
         else:
-            closure = _resolve_drill_closure(
-                block_roots, registry, vocab, drill_role, view_key,
-            )
+            # Exact render provenance wins over post-hoc semantic matching. A
+            # supporting component (for example CLIP or T5 inside a Diffusers
+            # pipeline) may not belong to the root source bundle at all; its
+            # typed card evidence carries the concrete callable and file. Match
+            # that callable directly so an unrelated same-role root FFN cannot
+            # satisfy or contradict this drill.
+            source_owner = event_key[4] if len(event_key) > 4 else ""
+            source_file = event_key[5] if len(event_key) > 5 else ""
+            if source_owner and source_file:
+                bound_registry = build_registry((source_file,), component=event_key[2] or component)
+                if source_owner in bound_registry:
+                    closure = (
+                        transitive_closure(source_owner, bound_registry, vocab)[0],
+                        bound_registry[source_owner],
+                    )
+                else:
+                    closure = None
+            else:
+                closure = _resolve_drill_closure(
+                    block_roots, registry, vocab, drill_role, view_key,
+                )
             if closure is None:
                 # A rendered decomposition without one exact backing callable is
                 # not clean.  It may be a missing extractor or a genuinely opaque

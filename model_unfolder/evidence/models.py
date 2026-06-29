@@ -100,6 +100,41 @@ class SourceOp:
 
 
 @dataclass(frozen=True)
+class FFNStructureEvidence:
+    """Exact storage shape of one feed-forward callable.
+
+    ``projection_mode`` is structural, not a family label: ``dense`` means one
+    input and one output projection, ``split`` means distinct gate/up/down
+    projections, and ``fused_gate_up`` means one fused gate+up projection plus a
+    split before the product.  Ambiguous or missing source never selects a
+    conventional shape.
+    """
+
+    status: str                         # proven | ambiguous | oracle_missing
+    gated: bool | None = None
+    projection_mode: str = "unknown"
+    owner_class: str = ""
+    source_file: str = ""
+    line: int | None = None
+    component: str = "root"
+    reason: str = ""
+    candidate_classes: tuple[str, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "gated": self.gated,
+            "projection_mode": self.projection_mode,
+            "owner_class": self.owner_class,
+            "source_file": self.source_file,
+            "line": self.line,
+            "component": self.component,
+            "reason": self.reason,
+            "candidate_classes": list(self.candidate_classes),
+        }
+
+
+@dataclass(frozen=True)
 class VisionLayerEvidence:
     """Source-derived facts for one repeated vision encoder block variant."""
 

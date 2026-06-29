@@ -112,6 +112,12 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     if ffn.get("gated") is None and kind in (None, "dense", "mlp", "ffn"):
         return _undeclared_ffn(hidden, inter)
 
+    # Some callers know that the FFN is gated from config but cannot prove how
+    # the weights are stored (separate gate/up vs fused gate-up) because source
+    # is missing or ambiguous.  Do not silently choose the common split layout.
+    if ffn.get("structure_status") in {"ambiguous", "oracle_missing"}:
+        return _unresolved_ffn_storage(hidden, inter, ffn)
+
     # A recognised dense/gated MLP: build from config (tier 1).
     if kind in (None, "dense", "mlp", "ffn") and (inter is not None or ffn.get("source_proven")):
         gated = bool(ffn.get("gated", True))
@@ -206,6 +212,25 @@ def _undeclared_ffn(hidden: int | None, inter: int | None) -> Region:
             meta={"intermediate_size": inter, "desc": desc})
     return Region("ffn", "ffn", "Feed-forward", [op], [],
                   template="undeclared", source="opaque", resolved=False)
+
+
+def _unresolved_ffn_storage(hidden: int | None, inter: int | None, facts: dict) -> Region:
+    gated = facts.get("gated")
+    known = "gated" if gated is True else "dense" if gated is False else "feed-forward"
+    desc = (
+        f"The {known} FFN is known from config, but its exact projection storage "
+        "could not be resolved from modeling source. It is kept opaque rather "
+        "than inventing separate or fused projection modules."
+    )
+    op = Op(
+        "block", "opaque", "Gated FFN" if gated is True else "Feed-forward",
+        in_features=hidden, out_features=hidden,
+        meta={"intermediate_size": inter, "desc": desc},
+    )
+    return Region(
+        "ffn", "ffn", "Feed-forward", [op], [], template="unresolved_storage",
+        source="opaque", resolved=False,
+    )
 
 
 def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:

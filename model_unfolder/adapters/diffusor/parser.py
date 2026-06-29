@@ -1332,6 +1332,11 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
             spec.update(_normalize_encoder_config(sub))
+            evidence = spec.get("ffn_evidence")
+            if isinstance(evidence, dict):
+                evidence = dict(evidence)
+                evidence["component"] = key
+                spec["ffn_evidence"] = evidence
         specs.append(spec)
     _uniquify_encoder_names(specs)
     return specs
@@ -1382,10 +1387,14 @@ def _normalize_encoder_config(c: dict) -> dict:
     ``text_config``, GQA, norm kind — and the neutral spec is projected from
     the resulting IR.  No second field-extraction vocabulary lives here.
     """
+    from ...evidence.context import ParseContext
+    from ...evidence.ffn import ffn_structure_evidence
+    from ...evidence.patterns import decoder_ffn_activation_from_files
     from ..transformer.parser import parse as _parse_transformer
 
     try:
-        ir = _parse_transformer(c)
+        context = ParseContext.build(c, source="local")
+        ir = _parse_transformer(c, context=context)
     except Exception:
         return {}
     if not ir.layers:
@@ -1403,9 +1412,38 @@ def _normalize_encoder_config(c: dict) -> dict:
     if _has("norm_type", "rms_norm_eps", "layer_norm_eps", "layer_norm_epsilon"):
         norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
             str(getattr(layer, "norm_kind", "") or "").lower())
-    act = (ffn.activation or "").lower()
-    gated_explicit = (_has("is_gated_act", "feed_forward_proj")
-                      or "glu" in act or act in ("silu", "swish", "gelu_pytorch_tanh"))
+    # Gating and projection storage are code/config facts, never encoder-family
+    # conventions.  A config may explicitly select a gated branch (T5's
+    # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must
+    # resolve the callable.  Missing/ambiguous source stays tri-state unknown.
+    explicit_gated = None
+    for src in (c, inner):
+        if "is_gated_act" in src:
+            explicit_gated = bool(src.get("is_gated_act"))
+            break
+        proj = src.get("feed_forward_proj")
+        if isinstance(proj, str):
+            explicit_gated = proj.lower().startswith("gated-")
+            break
+    bundle = context.source_bundle
+    component_files = bundle.component_files or {"root": bundle.files}
+    text_components = [name for name in component_files
+                       if name == "text_config" or name.endswith(".text_config")]
+    component = text_components[0] if len(text_components) == 1 else "root"
+    files = component_files.get(component, bundle.files)
+    architecture = (bundle.component_architectures or {}).get(component) or bundle.architecture
+    ffn_evidence = ffn_structure_evidence(
+        files, expected_gated=explicit_gated, component=component,
+        architecture=architecture,
+    )
+    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else explicit_gated
+
+    activation_explicit = _has(
+        "hidden_act", "hidden_activation", "activation_function", "activation_fn",
+        "dense_act_fn", "feed_forward_proj", "ffn_act_fn",
+    )
+    code_activation = decoder_ffn_activation_from_files(files)
+    act = (ffn.activation if activation_explicit else code_activation) or None
     fields = {
         "layers": len(ir.layers),
         "hidden": ir.hidden_size,
@@ -1414,11 +1452,15 @@ def _normalize_encoder_config(c: dict) -> dict:
         "kv_heads": attn.num_kv_heads,
         "head_dim": attn.head_dim,
         "ffn": ffn.intermediate_size,
-        "activation": ffn.activation,
+        "activation": act,
         "vocab": ir.vocab_size,
         "max_pos": ir.max_position_embeddings,
         "norm": norm,
     }
     out = {k: v for k, v in fields.items() if v}
-    out["gated"] = bool(ffn.gated) if gated_explicit else False
+    if gated is not None:
+        out["gated"] = bool(gated)
+    out["ffn_evidence"] = ffn_evidence.to_dict()
+    if ffn_evidence.status == "proven":
+        out["ffn_projection_mode"] = ffn_evidence.projection_mode
     return out

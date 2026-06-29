@@ -1017,13 +1017,25 @@ def test_index_copy_is_not_an_additive_residual(tmp_path):
 from model_unfolder.evidence import check_nested_conformance
 from model_unfolder.evidence.transitive import build_registry, transitive_closure
 from model_unfolder.everchanging import load_conformance_transitive
-from model_unfolder.renderers.html.graph_engine import drain_render_log, reset_render_log
-
-
 def _render_log(cfg):
-    reset_render_log()
-    mu.unfold(cfg).to_html(standalone=True)
-    return drain_render_log()
+    from model_unfolder.renderers.html.render_context import RenderContext, activate_render_context
+
+    diagram = mu.unfold(cfg)
+    context = RenderContext()
+    with activate_render_context(context):
+        diagram.to_html(standalone=True)
+    # Preserve the corpus's historical view-level union until its pinned broad
+    # attribution debt is migrated, while exercising exact provenance for the
+    # newly source-bound supporting text encoders. Production Sable consumes
+    # the full typed event stream directly.
+    return [
+        event if (
+            event.component.startswith("text_encoder")
+            or (event.block_path and event.block_path[-1].startswith("encoder_")
+                and event.view == "ffn")
+        ) else event.legacy_tuple()
+        for event in context.events
+    ]
 
 
 _EXPECTED_NESTED_UNRESOLVED = {

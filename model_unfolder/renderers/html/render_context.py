@@ -16,6 +16,8 @@ class RenderEvent:
     component: str
     variant: str
     source_owner: str
+    source_file: str
+    source_line: int | None
     drawn_ops: frozenset[str]
     node_ids: frozenset[str]
 
@@ -58,6 +60,8 @@ class RenderContext:
             block.get("source_owner") or evidence.get("owner_class")
             or evidence.get("class_name") or ""
         )
+        source_file = str(block.get("source_file") or evidence.get("source_file") or "")
+        source_line = block.get("source_line") or evidence.get("line")
         variant = str(
             block.get("variant") or block.get("group_variant")
             or evidence.get("variant") or ""
@@ -69,6 +73,8 @@ class RenderContext:
             component=component,
             variant=variant,
             source_owner=source_owner,
+            source_file=source_file,
+            source_line=source_line if isinstance(source_line, int) else None,
             drawn_ops=frozenset(drawn_ops),
             node_ids=frozenset(node_ids),
         ))

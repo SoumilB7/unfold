@@ -1,7 +1,9 @@
 """Source discovery for static Hugging Face modeling-code inspection."""
 from __future__ import annotations
 
+import functools
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -129,16 +131,8 @@ def _path_bundle(target: Any) -> SourceBundle | None:
 
 def _installed_transformers_bundle(target: Any) -> SourceBundle:
     model_type = _model_type(target)
-    architecture = _architecture(target)
+    architecture = _architecture(target) or _string_value(target, "_class_name")
     model_id = _model_id(target)
-    if not model_type:
-        return SourceBundle(
-            source="local",
-            model_type=model_type,
-            architecture=architecture,
-            model_id=model_id,
-            warnings=("Could not infer model_type for installed Transformers source lookup.",),
-        )
 
     try:
         import transformers
@@ -164,6 +158,24 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             ),
         )
     models_root = Path(package_file).resolve().parent / "models"
+    if not model_type:
+        # Exact architecture/class identity is a legitimate source ADDRESS. It
+        # does not assert a structural fact: find the installed file that
+        # literally defines that class, then let AST evidence decide structure.
+        # This covers component configs that omit model_type but retain
+        # ``architectures``/``_class_name`` (common in frozen pipeline fixtures).
+        file = _transformers_file_for_class(str(models_root), architecture or "")
+        if file:
+            files = (file,)
+            return SourceBundle(
+                source="local", files=files, architecture=architecture,
+                model_id=model_id, component_files={"root": files},
+                component_architectures={"root": architecture} if architecture else {},
+            )
+        return SourceBundle(
+            source="local", architecture=architecture, model_id=model_id,
+            warnings=("Could not infer model_type or exact installed model class for source lookup.",),
+        )
     files: list[str] = []
     warnings: list[str] = []
     seen_files: set[str] = set()
@@ -226,6 +238,22 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         component_model_types=component_model_types,
         component_architectures=component_architectures,
     )
+
+
+@functools.lru_cache(maxsize=128)
+def _transformers_file_for_class(models_root: str, class_name: str) -> str | None:
+    if not class_name:
+        return None
+    pattern = re.compile(rf"^class\s+{re.escape(class_name)}\b", re.M)
+    matches: list[str] = []
+    for path in sorted(Path(models_root).rglob("modeling*.py")):
+        try:
+            source = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        if pattern.search(source):
+            matches.append(str(path))
+    return matches[0] if len(matches) == 1 else None
 
 
 def _component_configs(target: Any):
@@ -455,4 +483,3 @@ def _clean_token(token: Any):
         token = token.strip()
         return token or None
     return token
-

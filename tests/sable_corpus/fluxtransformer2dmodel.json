@@ -1,8 +1,13 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": true,
     "dangling_connectors": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -91,7 +96,9 @@
     "b354d4cb12016360e1a9612e0000ac6e",
     "c9190e7c6e47418f8f6b3283d2cd7bdf",
     "ca5a7a3c7d12892f3d7d48a382c9e3ce",
-    "cab11650142d0a456aca749072e2d76c"
+    "cab11650142d0a456aca749072e2d76c",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
   "model": "FluxTransformer2DModel",
   "source": "local"

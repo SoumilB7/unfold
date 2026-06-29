@@ -42,12 +42,15 @@ FLUX = {
     # text_encoder_2/ (CLIP ViT-L/14 + T5-v1.1-XXL encoder).
     "_text_encoder_configs": {
         "text_encoder": {
-            "_class_name": "CLIPTextModel", "num_hidden_layers": 12, "hidden_size": 768,
+            "_class_name": "CLIPTextModel", "architectures": ["CLIPTextModel"],
+            "model_type": "clip_text_model",
+            "num_hidden_layers": 12, "hidden_size": 768,
             "num_attention_heads": 12, "intermediate_size": 3072, "hidden_act": "quick_gelu",
             "max_position_embeddings": 77, "vocab_size": 49408,
         },
         "text_encoder_2": {
-            "_class_name": "T5EncoderModel", "num_layers": 24, "d_model": 4096,
+            "_class_name": "T5EncoderModel", "architectures": ["T5EncoderModel"],
+            "model_type": "t5", "num_layers": 24, "d_model": 4096,
             "num_heads": 64, "d_ff": 10240, "dense_act_fn": "gelu_new", "vocab_size": 32128,
             "is_gated_act": True, "feed_forward_proj": "gated-gelu",
         },
@@ -131,7 +134,8 @@ def test_diffusion_renders_in_the_green_llm_theme():
 
 
 def test_denoiser_skeleton_is_drawn():
-    html = unfold(FLUX).to_html(standalone=True)
+    diagram = unfold(FLUX)
+    html = diagram.to_html(standalone=True)
     for label in ("Noisy latent", "Patchify", "Output projection", "Unpatchify", "VAE decode"):
         assert label in html, f"skeleton stage {label!r} not drawn"
     assert "AdaLN-Out" not in html
@@ -343,7 +347,10 @@ def test_text_encoder_shows_real_config_dims():
     """When the loader fetched the encoders' configs, the view shows their real
     depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
     specs = diffusor._text_encoder_specs(FLUX)
-    assert specs == [
+    structural = [{k: v for k, v in spec.items()
+                   if k not in {"ffn_evidence", "ffn_projection_mode"}}
+                  for spec in specs]
+    assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
          "kv_heads": 12, "head_dim": 64, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
@@ -351,10 +358,88 @@ def test_text_encoder_shows_real_config_dims():
          "kv_heads": 64, "head_dim": 64, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
+    assert [(s["ffn_evidence"]["status"], s["ffn_evidence"]["owner_class"],
+             s["ffn_projection_mode"]) for s in specs] == [
+        ("proven", "CLIPMLP", "dense"),
+        ("proven", "T5DenseGatedActDense", "split"),
+    ]
     html = unfold(FLUX).to_html(standalone=True)
     assert "× 12" in html and "× 24" in html   # real depths
     assert "12 heads" in html and "64 heads" in html
     assert "768 → 3,072" in html and "4,096 → 10,240" in html
+
+
+def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
+    """Supporting text towers are not allowed to flatten a gated FFN into the
+    old prose-only "two-layer MLP" card. CLIP and T5 consume the same canonical
+    FFN resolver but retain their exact dense vs gated source structure."""
+    from model_unfolder.opgraph import ffn_region
+
+    ir = config_to_ir(FLUX)
+    loop = {b["id"]: b for b in ir.extras["render"]["loop_blocks"]}
+    clip = next(c for c in loop["encoder_0"]["children"] if c["id"].endswith("_op_ffn"))
+    t5 = next(c for c in loop["encoder_1"]["children"] if c["id"].endswith("_op_ffn"))
+
+    clip_fact = clip["detail"]["ffn"]
+    t5_fact = t5["detail"]["ffn"]
+    assert ffn_region(clip_fact, clip_fact["hidden"]).template == "dense_mlp"
+    assert ffn_region(t5_fact, t5_fact["hidden"]).template == "gated_mlp"
+    assert "Two-layer MLP" in clip["description"]
+    assert "Gated MLP" in t5["description"] and "SwiGLU" not in t5["description"]
+    assert {c["id"] for c in t5["children"]} == {
+        "encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
+        "encoder_1_ffn_activation", "encoder_1_ffn_multiply",
+        "encoder_1_ffn_down_proj",
+    }
+    assert not ({c["id"] for c in clip["children"]} & {c["id"] for c in t5["children"]})
+
+    diagram = unfold(FLUX)
+    html = diagram.to_html(standalone=True)
+    # The summary card itself contains the canonical SVG, and every drawn op is
+    # coupled to its namespaced leaf card at the next interaction depth.
+    for cid in ("encoder_0_op_ffn", "encoder_1_op_ffn"):
+        start = html.index(f'data-card-id="{cid}"')
+        assert '<div class="uf-card-svg"><svg' in html[start:start + 25000]
+    for nid in ("encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
+                "encoder_1_ffn_multiply", "encoder_1_ffn_down_proj"):
+        assert f'data-id="{nid}"' in html and f'data-card-id="{nid}"' in html
+    assert validate_click_coupling(html) == []
+    owners = {(event.block_path, event.source_owner, event.component)
+              for event in diagram.render_events() if event.view == "ffn"}
+    assert (("encoder_0_op_ffn",), "CLIPMLP", "text_encoder") in owners
+    assert (("encoder_1_op_ffn",), "T5DenseGatedActDense", "text_encoder_2") in owners
+
+
+def test_text_encoder_ffn_missing_source_stays_opaque():
+    from model_unfolder.adapters.diffusor.blocks import _text_encoder_ffn_block
+    from model_unfolder.opgraph import ffn_region
+
+    block = _text_encoder_ffn_block({
+        "hidden": 256, "ffn": 1024, "activation": "silu", "gated": True,
+        "ffn_evidence": {"status": "oracle_missing"},
+    }, "unknown_encoder")
+    fact = block["detail"]["ffn"]
+    region = ffn_region(fact, fact["hidden"])
+    assert region.template == "unresolved_storage" and region.resolved is False
+    assert [op.kind for op in region.ops] == ["opaque"]
+    assert "exact projection storage" in block["description"]
+
+
+def test_text_encoder_ffn_preserves_fused_gate_up_storage():
+    from model_unfolder.adapters.diffusor.blocks import _text_encoder_ffn_block
+    from model_unfolder.opgraph import ffn_region
+
+    block = _text_encoder_ffn_block({
+        "hidden": 256, "ffn": 1024, "activation": "silu", "gated": True,
+        "ffn_projection_mode": "fused_gate_up",
+        "ffn_evidence": {"status": "proven", "owner_class": "NovelFusedCell"},
+    }, "fused_encoder")
+    fact = block["detail"]["ffn"]
+    assert ffn_region(fact, fact["hidden"]).template == "fused_gated_mlp"
+    ids = {child["id"] for child in block["children"]}
+    assert "fused_encoder_ffn_gate_up_proj" in ids
+    assert "fused_encoder_ffn_gate_up_split" in ids
+    assert "fused_encoder_ffn_gate_proj" not in ids
 
 
 def test_text_encoder_falls_back_when_no_config():
