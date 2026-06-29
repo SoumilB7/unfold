@@ -832,7 +832,7 @@ def diffusion_gate_via_norm_from_files(files) -> bool:
     FiLM norm (`norm·(1+scale)+shift`, e.g. Sana's SanaModulatedNorm), which has the
     additive shift and keeps its × gate.  Replaces the `gate_via_norm` table."""
     import ast as _ast
-    from .forward_ops import _method, _role_of, extract_forward_ops
+    from .forward_ops import _method
     for path in (files or ()):
         try:
             tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))

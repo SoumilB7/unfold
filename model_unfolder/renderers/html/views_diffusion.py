@@ -30,7 +30,6 @@ from .sections import _details_section, _header, _stats_banner
 from .styles import _style
 from .svg import (
     _defs,
-    _elbow_hv,
     _ids,
     _rect_block,
     _region_rect,
@@ -39,7 +38,7 @@ from .svg import (
     _svg_text,
     _v_line,
 )
-from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
+from .theme import C, FONT_MONO, GAP
 from .utils import _attr, _html
 from .views import _build_architecture_view, _build_layer_map, _is_resolved_diffusion_block
 

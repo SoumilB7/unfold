@@ -377,13 +377,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     axes_dims_rope = _resolve(cfg, "axes_dims_rope")
     mrope_section = _resolve(cfg, "mrope_section")
     rope_theta = _resolve(cfg, "rope_theta")
-    # Code-derived fallback: when the config declares no RoPE but the model class
-    # fixes axial dims (Flux), surface them — MARKED as code-derived (class_defaults
-    # .yaml). Never overrides a declared config value.
+    # Code-derived: when the config declares no RoPE but the model class fixes axial
+    # dims (Flux), surface them READ FROM THE MODELING SOURCE (code -> fact). Never
+    # overrides a declared config value.
     axes_from_class = False
     if axes_dims_rope is None:
         # Config silent — READ the axial dims from the model __init__ default
-        # (code -> fact); the class_defaults table is the offline-only fallback.
+        # (code -> fact). No table fallback: unreadable source stays NoPE.
         _code_axes = _code_axes_dims_rope(cfg, context)
         if _code_axes:
             axes_dims_rope, axes_from_class = _code_axes, True
@@ -404,15 +404,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # axial rotary over (temporal · height · width) to Q/K but declare NO rope dims
     # in config (it's in the model class), so without help the block reads as NoPE —
     # a fabricated negative. The signal is a CONFIG flag (CogVideoX:
-    # use_rotary_positional_embeddings) or a CODE fact (class_defaults.yaml::rope_3d).
+    # use_rotary_positional_embeddings) or a CODE fact read from the modeling source.
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
     rope_3d_from_config = bool(_resolve(cfg, "use_rotary_positional_embeddings"))
     # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
     # nothing in config) — read from the SAME evidence fact-conformance reads, so the
     # parser asserts rope exactly when the net would flag its absence as fabricated.
-    # The class_defaults ``rope_3d`` row is now ONLY a last-resort for un-resolvable
-    # source. We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
+    # When the source can't be read the block stays NoPE (never identity-guessed).
+    # We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
     # per-axis split (head-dim dependent).
     rope_3d_from_class = False
     if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)):
@@ -458,15 +458,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # QK-norm: per-head Q/K normalisation before the dot product. SD3.5 declares
     # qk_norm: "rms_norm"; some DiTs spell it use_qk_norm / qk_layernorm. A
     # declared, non-null value surfaces the QK-norm annotation on the attention.
-    # Code-derived fallback: Flux's FluxAttention RMS-norms Q/K unconditionally
-    # but declares nothing in config — surfaced (marked) via class_defaults.yaml.
+    # Code-derived: Flux's FluxAttention RMS-norms Q/K unconditionally but declares
+    # nothing in config — surfaced by reading the modeling source (code -> fact).
     _empty_qk = (None, False, "", "none", "None", 0)
     _qk = _resolve(cfg, "qk_norm")
     qk_from_class = False
     if _qk in _empty_qk:
         # Config silent — READ the Q/K-norm TYPE from the modeling source (the
-        # attention's norm_q class / qk_norm kwarg); the class_defaults table is the
-        # offline-only fallback.
+        # attention's norm_q class / qk_norm kwarg). No table fallback.
         _code_qk = _code_qk_norm(cfg, context)
         if _code_qk:
             _qk, qk_from_class = _code_qk, True
@@ -515,11 +514,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # Self-attention kind: standard softmax MHA unless the model class fixes a
     # non-softmax processor with the config silent (Sana = ReLU-kernel LINEAR
-    # attention via SanaLinearAttnProcessor) — a code fact (class_defaults). The
-    # CROSS attention stays softmax (mha); only the self path changes.
-    # Attention ALGORITHM read from source (Sana's linear attention) — the SAME
-    # *LinearAttn* signal fact-conformance reads. Code-first; the class_defaults table
-    # is last-resort for un-resolvable source; default softmax MHA.
+    # attention via SanaLinearAttnProcessor) — a code fact. The CROSS attention stays
+    # softmax (mha); only the self path changes. The attention ALGORITHM is READ FROM
+    # THE SOURCE (the SAME *LinearAttn* signal fact-conformance reads); unreadable
+    # source falls to the default softmax MHA.
     self_attn_kind = _code_attn_kind(cfg, context) or "mha"
 
     layers = []
@@ -546,7 +544,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # the gate into a modulated RMSNorm of the sublayer output
         # (h = h + ModulatedRMSNorm(sublayer(...), gate)) → a post-sublayer norm box,
         # NOT a ×. Drawing a × for Mochi fabricates a gate_mul the forward never does
-        # (op-conformance catches it). The dialect is a code fact (class_defaults).
+        # (op-conformance catches it). The dialect is a code fact read from source.
         if code_gate_via_norm:
             layer.blocks = _insert_output_gated_norms(layer.blocks)
         else:
@@ -1099,8 +1097,8 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
         )
     # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
     # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
-    # THE SOURCE (the block builds self.ff = GLUMBConv); the class_defaults table is
-    # the offline-only fallback.
+    # THE SOURCE (the block builds self.ff = GLUMBConv); unreadable source falls to
+    # the honest default (a Linear MLP), never an identity guess.
     if code_ffn_kind == "conv_glu":
         return FFNSpec(
             kind="conv_glu",
@@ -1113,9 +1111,8 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
     # it (Flux's FeedForward is gelu-approximate; HiDream/Lumina build a SwiGLU FFN),
     # surface the activation_fn READ FROM THE SOURCE. In diffusers the activation_fn
     # name fully specifies the FFN, so this also resolves the gating below; never
-    # overrides a config-declared value. The class_defaults table is now ONLY a
-    # last-resort for a model whose SOURCE can't be read locally (custom/gated code
-    # not installed) — the law's sanctioned "truly-opaque code-fact" exception.
+    # overrides a config-declared value. When the SOURCE can't be read the activation
+    # stays unknown/assumed, never identity-guessed from a class-name table.
     from_class = False
     if declared_activation is None:
         resolved = code_activation
