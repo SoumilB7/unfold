@@ -234,3 +234,8 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
     gqa_in_mha_context = render_block_detail(gqa_ir, _make_info(mha_ir), "attn-gqa", gqa_block)
     assert "grouped-query attention" in gqa_in_mha_context
     assert _gqa_marker.search(gqa_in_mha_context)
+
+    # A direct detail render is a complete render call, not an ambient capture.
+    # Its events must not become the first events returned by a later Diagram.
+    from model_unfolder.renderers.html.render_context import current_render_context
+    assert current_render_context() is None
