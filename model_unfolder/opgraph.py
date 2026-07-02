@@ -312,12 +312,22 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
     return heads, kv_heads, head_dim, q_w, kv_w
 
 
-def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None) -> tuple[list[Op], list[Edge]]:
-    """The shared SDPA spine: scores → softmax → ⊙V → concat → out."""
+def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
+                   *, scaled: bool = True) -> tuple[list[Op], list[Edge]]:
+    """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
+
+    ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
+    1/sqrt(d) into initialization and matmuls unscaled scores) — drawing the
+    sqrt there would fabricate an op the forward() never performs.
+    """
     ops = [
         Op("scaled_scores", "attention_core", fn="scaled_dot_product",
            meta={"numerator": "Q K^T", "denominator": "sqrt(dim)",
-                 "formula": "QK^T/sqrt(dim)"}),
+                 "formula": "QK^T/sqrt(dim)"} if scaled else
+           {"numerator": "Q K^T", "denominator": None, "formula": "QK^T",
+            "desc": "Raw dot-product attention scores QK^T — this family folds "
+                    "the 1/sqrt(d) scaling into its weight initialization, so "
+                    "the forward pass adds no explicit scale."}),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
         # Merging per-head outputs back to model dim is a single-stream RESHAPE,
@@ -387,7 +397,10 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     if cross:
         ops.append(Op("cross_attention_states", "input", _cross_kv_label(attn)))
         kv_src = "cross_attention_states"
-    core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
+    core_ops, core_edges = _sdpa_core_ops(
+        heads, head_dim, q_w, hidden,
+        scaled=attn.get("scores_scaled") is not False,
+    )
     ops += core_ops
     if not fused_qkv:
         edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
@@ -428,19 +441,35 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         # an output gate is independent of whether any lane is normalized.
         edges = [edge for edge in edges
                  if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
-    if (attn.get("position_kind") == "alibi"
+    # A position bias ADDED to the pre-softmax scores is one lane shape with two
+    # code-proven flavours: ALiBi (fixed head-specific slopes) and the learned
+    # relative bias (T5-family bucketed-distance Embedding).  Same topology,
+    # distinct ops/cards — the label states which computation the code performs.
+    bias_kind = attn.get("position_kind")
+    if (bias_kind in ("alibi", "relative_bias")
             and attn.get("position_application") == "attention_bias" and not cross):
+        if bias_kind == "alibi":
+            offsets_id, bias_op = "alibi_offsets", Op("alibi_bias", "position", "ALiBi bias")
+        else:
+            offsets_id = "rel_bias_offsets"
+            bias_op = Op(
+                "rel_pos_bias", "position", "Relative position bias",
+                meta={"desc": "A learned embedding over bucketed relative "
+                              "token distances, added to the attention scores "
+                              "before softmax. Computed once by the first layer "
+                              "and shared down the stack."},
+            )
         ops += [
-            Op("alibi_offsets", "input", "Relative positions"),
-            Op("alibi_bias", "position", "ALiBi bias"),
+            Op(offsets_id, "input", "Relative positions"),
+            bias_op,
             Op("score_bias_add", "elementwise", fn="add"),
         ]
         edges = [edge for edge in edges
                  if not (edge.src == "scaled_scores" and edge.dst == "attn_softmax")]
         edges += [
             Edge("scaled_scores", "score_bias_add"),
-            Edge("alibi_offsets", "alibi_bias"),
-            Edge("alibi_bias", "score_bias_add"),
+            Edge(offsets_id, bias_op.id),
+            Edge(bias_op.id, "score_bias_add"),
             Edge("score_bias_add", "attn_softmax"),
         ]
     # RoPE: the real forward rotates Q and K before the scores (apply_rotary_pos_emb).

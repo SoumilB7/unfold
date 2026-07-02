@@ -114,6 +114,53 @@ class SableReport:
         return "\n".join(lines)
 
 
+def _ambiguous_evidence_findings(ir: dict) -> list[str]:
+    """Every block whose ``detail.evidence`` envelope reports ``ambiguous``.
+
+    ``ambiguous`` means the rail SCANNED installed source and could not resolve
+    the callable — so the drawn stub is an extractor/vocabulary gap, not an
+    honest absence (that is ``oracle_missing``, which stays exempt).  Walks the
+    same block tree every projection renders: layer blocks + the model-level
+    ``model_blocks`` / ``loop_blocks`` skeleton, recursively through children.
+    """
+    findings: list[str] = []
+
+    def _walk(block, path: str) -> None:
+        if not isinstance(block, dict):
+            return
+        here = f"{path}/{block.get('id') or block.get('label') or '?'}"
+        detail = block.get("detail") if isinstance(block.get("detail"), dict) else {}
+        evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
+        if str(evidence.get("status") or "") == "ambiguous":
+            reason = str(evidence.get("reason") or "unresolved")
+            component = str(evidence.get("component") or "root")
+            findings.append(
+                f"{here}: {component} evidence is ambiguous ({reason}) while the "
+                "modeling source is installed — the drill renders an honest stub; "
+                "extend the shared extractor or everchanging/ vocabulary"
+            )
+        for child in (block.get("children") or []):
+            _walk(child, here)
+
+    for i, layer in enumerate(ir.get("layers") or []):
+        for block in (layer.get("blocks") or []):
+            _walk(block, f"layer{i}")
+    render = ((ir.get("extras") or {}).get("render") or {})
+    for key in ("model_blocks", "loop_blocks"):
+        for block in (render.get(key) or []):
+            _walk(block, key)
+    # Dedupe identical repeated-layer findings while keeping order.
+    seen: set[str] = set()
+    unique = []
+    for item in findings:
+        normalized = re.sub(r"^layer\d+", "layerN", item)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        unique.append(item)
+    return unique
+
+
 def sable(model_or_id, *, token=None, source: str = "local",
           outdir: str | None = None, render_images: bool = True) -> SableReport:
     """Run the full mechanical pass over a model and render its view gallery.
@@ -214,6 +261,19 @@ def sable(model_or_id, *, token=None, source: str = "local",
                    ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),
+        # Present-but-ambiguous evidence (eradication-plan invariant #3): a block
+        # whose evidence envelope says "ambiguous" was scanned against INSTALLED
+        # source that the extractor could not resolve — the drill then renders an
+        # honest stub while the answer sits in the code (the SD3.5/SDXL CLIP
+        # factory-construction miss).  oracle_missing stays exempt (no source, no
+        # claim).  Advisory during migration, same staging as config_field_audit.
+        SableCheck(
+            "evidence_ambiguity",
+            _ambiguous_evidence_findings(ir),
+            note="present-but-ambiguous advisory — extend the evidence extractor "
+                 "or vocabulary; promote to blocking once the backlog is zero",
+            blocking=False,
+        ),
     ]
 
     # Deterministic per-view SVG hashes (the CI-lock key) — dedup by visual hash so

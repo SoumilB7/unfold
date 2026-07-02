@@ -1332,11 +1332,12 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
             spec.update(_normalize_encoder_config(sub))
-            evidence = spec.get("ffn_evidence")
-            if isinstance(evidence, dict):
-                evidence = dict(evidence)
-                evidence["component"] = key
-                spec["ffn_evidence"] = evidence
+            for envelope_key in ("ffn_evidence", "position_evidence"):
+                evidence = spec.get(envelope_key)
+                if isinstance(evidence, dict):
+                    evidence = dict(evidence)
+                    evidence["component"] = key
+                    spec[envelope_key] = evidence
         specs.append(spec)
     _uniquify_encoder_names(specs)
     return specs
@@ -1389,7 +1390,11 @@ def _normalize_encoder_config(c: dict) -> dict:
     """
     from ...evidence.context import ParseContext
     from ...evidence.ffn import ffn_structure_evidence
-    from ...evidence.patterns import decoder_ffn_activation_from_files
+    from ...evidence.patterns import (
+        attention_score_scaling_from_files,
+        decoder_ffn_activation_from_files,
+    )
+    from ..transformer.blocks.attention import attention_detail
     from ..transformer.parser import parse as _parse_transformer
 
     try:
@@ -1463,4 +1468,18 @@ def _normalize_encoder_config(c: dict) -> dict:
     out["ffn_evidence"] = ffn_evidence.to_dict()
     if ffn_evidence.status == "proven":
         out["ffn_projection_mode"] = ffn_evidence.projection_mode
+    # The encoder's attention drill projects the SAME canonical region a decoder
+    # layer uses, off the sub-parse's own typed spec — the one serializer, no
+    # second fact vocabulary.  ``cached`` is pipeline-honest: a prompt encoder
+    # runs once, never autoregressively, so no KV-cache ports are drawn.
+    attn_fact = attention_detail(attn)
+    attn_fact["cached"] = False
+    attn_fact["hidden"] = ir.hidden_size
+    scaled = attention_score_scaling_from_files(files)
+    if scaled is not None:
+        attn_fact["scores_scaled"] = scaled
+    out["attention_detail"] = attn_fact
+    position = (ir.extras or {}).get("position_encoding")
+    if isinstance(position, dict):
+        out["position_evidence"] = position
     return out

@@ -3,6 +3,7 @@
     "click_coupling": true,
     "config_field_audit": false,
     "dangling_connectors": true,
+    "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
     "nested_conformance": true,
@@ -187,6 +188,7 @@
     ]
   },
   "hash_signature": [
+    "01b001aaf2819dd97684ab2cf9289c82",
     "16a6798a2085439b3d272d169349b4aa",
     "28e39454c95b30e92cf798c97768cfdd",
     "2fafa21f0f504acbc36cae0d02e0897f",

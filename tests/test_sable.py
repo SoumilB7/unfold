@@ -97,12 +97,18 @@ def test_render_events_carry_block_path_component_and_variant():
     diagram.to_html(standalone=True)
     events = diagram.render_events()
     assert events
-    attn = next(event for event in events if event.view == "attn")
+    attn = next(event for event in events
+                if event.view == "attn" and event.component == "root")
     assert attn.block_path == ("attn",)
-    assert attn.component == "root"
     assert "MM-DiT" in attn.variant
     assert attn.source_owner == "FluxTransformer2DModel"
     assert "linear" in attn.drawn_ops
+    # The supporting text encoders now bake their OWN canonical attention drills,
+    # each carrying its qualified component — never unioned with the denoiser's.
+    encoder_attn = [event for event in events
+                    if event.view == "attn" and event.component != "root"]
+    assert encoder_attn and all(
+        event.block_path[-1].endswith("_op_selfattn") for event in encoder_attn)
 
 
 # --------------------------------------------------------------------------- #
@@ -394,3 +400,44 @@ def test_sable_regression_corpus():
                       ) for view in expected)]
         assert actual_expected == expected, f"{filename} lost pinned unresolved coverage: {drift}"
         assert unexpected == [], f"{filename} regressed:\n  " + "\n  ".join(unexpected)
+
+
+# --------------------------------------------------------------------------- #
+# evidence_ambiguity — the present-but-ambiguous advisory net
+# --------------------------------------------------------------------------- #
+
+def test_evidence_ambiguity_flags_ambiguous_envelopes_and_passes_clean_trees():
+    """The net fires on a block whose evidence envelope says ``ambiguous`` (the
+    source was scanned but the extractor could not resolve it — a stub the code
+    could have answered), dedupes repeated layers, and exempts honest
+    ``oracle_missing`` / ``proven`` envelopes."""
+    from model_unfolder.sable import _ambiguous_evidence_findings
+
+    def _ir(status):
+        block = {
+            "id": "enc_op_ffn", "label": "Feed-forward",
+            "detail": {"evidence": {"status": status, "component": "text_config",
+                                    "reason": "no exact feed-forward projection callable"}},
+        }
+        return {
+            "layers": [
+                {"blocks": [dict(block)]},
+                {"blocks": [dict(block)]},          # repeated layer -> one finding
+            ],
+            "extras": {"render": {"loop_blocks": [
+                {"id": "encoder_0", "children": [dict(block)]},
+            ]}},
+        }
+
+    ambiguous = _ambiguous_evidence_findings(_ir("ambiguous"))
+    assert len(ambiguous) == 2                       # layerN dedup + the loop block
+    assert all("ambiguous" in f_ and "text_config" in f_ for f_ in ambiguous)
+    assert _ambiguous_evidence_findings(_ir("proven")) == []
+    assert _ambiguous_evidence_findings(_ir("oracle_missing")) == []
+
+
+def test_evidence_ambiguity_is_wired_into_sable_as_advisory():
+    report = sable(FLUX, render_images=False)
+    check = next(c for c in report.checks if c.name == "evidence_ambiguity")
+    assert not check.blocking                        # migration staging, like config_field_audit
+    assert check.passed, check.findings              # FLUX resolves all envelopes today

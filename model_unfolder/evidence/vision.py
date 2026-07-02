@@ -6,7 +6,7 @@ import functools
 from pathlib import Path
 from typing import Any
 
-from ..everchanging import load_conformance_transitive
+from ..everchanging import load_conformance_transitive, load_constructor_classmethods
 from .ast_scanner import _call_name
 from .forward_ops import _method, _role_of, _self_field
 from .models import (
@@ -199,8 +199,10 @@ def _call_reads_config_field(call: ast.Call, field: str) -> bool:
 def _constructed_class(func: ast.AST) -> str:
     if isinstance(func, ast.Name):
         return func.id
+    # Factory-classmethod vocabulary is shared with the AST extractor
+    # (everchanging/conformance/transitive.yaml) — one place knows the spellings.
     if (isinstance(func, ast.Attribute)
-            and func.attr in {"from_config", "_from_config"}):
+            and func.attr in load_constructor_classmethods()):
         if isinstance(func.value, ast.Name):
             return func.value.id
         if isinstance(func.value, ast.Attribute):

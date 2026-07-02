@@ -1088,6 +1088,67 @@ def decoder_ffn_activation_from_files(files) -> str | None:
     return None
 
 
+def attention_score_scaling_from_files(files) -> bool | None:
+    """Does the attention forward() scale its scores (QK^T / sqrt(d))?
+
+    Three-way, evidence-only:
+
+    - ``True``  — scaling proven: the attention class either delegates to an
+      internally-scaling SDPA terminal (``scaled_dot_product_attention`` /
+      ``attention_interface`` …) or carries an explicit scale symbol
+      (``self.scaling``, ``self.scale``, a ``sqrt`` call).
+    - ``False`` — UNscaled proven: the class computes the scores by explicit
+      matmul and its whole body carries no scale symbol — the T5-family folds
+      1/sqrt(d) into weight initialization, so drawing the sqrt would fabricate
+      an op the code never performs.
+    - ``None``  — no attention class resolved; the caller keeps the standard
+      scaled default.
+
+    Markers are data (``everchanging/conformance/transitive.yaml``).
+    """
+    import ast as _ast
+    from ..everchanging import load_conformance_transitive
+    from .ast_scanner import _call_name
+    from .forward_ops import _role_of
+    vocab = load_conformance_transitive()
+
+    def _verdict(cls_node) -> bool | None:
+        calls = {name for child in _ast.walk(cls_node)
+                 if isinstance(child, _ast.Call)
+                 for name in [_call_name(child.func)] if name}
+        if calls & set(vocab["attention_compute_tokens"]):
+            return True                   # delegated terminal scales internally
+        symbols = {child.attr for child in _ast.walk(cls_node)
+                   if isinstance(child, _ast.Attribute)}
+        symbols |= {child.id for child in _ast.walk(cls_node) if isinstance(child, _ast.Name)}
+        symbols |= {kw.arg for child in _ast.walk(cls_node) if isinstance(child, _ast.Call)
+                    for kw in child.keywords if kw.arg}
+        if any(marker in symbol.lower()
+               for symbol in symbols for marker in vocab["score_scale_markers"]):
+            return True
+        if calls & {"matmul", "bmm", "einsum", "baddbmm"}:
+            return False                  # raw QK^T, provably no scale symbol
+        return None                       # wrapper class: computes no scores itself
+
+    # Every attention-role class that actually computes scores gets a verdict;
+    # a unanimous verdict is the fact, mixed or empty stays honestly unproven.
+    # (Role-wide instead of decoder-layer-rooted: T5's block appends sublayers
+    # into a ModuleList, so layer-rooted field typing cannot see them.)
+    verdicts: set[bool] = set()
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef) or _role_of(node.name) != "attention":
+                continue
+            value = _verdict(node)
+            if value is not None:
+                verdicts.add(value)
+    return next(iter(verdicts)) if len(verdicts) == 1 else None
+
+
 def _linearize_forward(
     fwd, field_types, merge_tokens, _ast, *, residual_fields=frozenset()
 ) -> list[str]:

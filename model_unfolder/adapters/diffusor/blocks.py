@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from ...block_schema import Block
 from ...labels import attention_summary, cards_from_region, ffn_summary, kind_long
-from ...opgraph import ffn_region, rename_ops
+from ...opgraph import attention_region, ffn_region, prefix_region, rename_ops
 from ..transformer.common import format_dim as _fmt
 from .compound import vae_up_stage
 
@@ -736,7 +736,11 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     # ONE source for the attention facts: the detail dict feeds the embedded
     # canonical view AND (via the central vocabulary) the title + chips, so the
     # header can never disagree with the diagram (Qwen3VL GQA vs "multi-head").
-    attn_detail = {
+    # The sub-parse's own typed spec (``attention_detail``, via the one decoder
+    # serializer) wins when the loader fetched the encoder config; the local
+    # dict is only the fallback for spec dicts without a fetched sub-config.
+    attn_detail = spec.get("attention_detail") if isinstance(
+        spec.get("attention_detail"), dict) else {
         "kind": spec.get("kind") or (
             "gqa" if (spec.get("kv_heads") and spec.get("kv_heads") != heads) else "mha"),
         "num_heads": heads,
@@ -748,6 +752,10 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     attn_title = kind_long(attn_detail).replace(" attention", " self-attention")
     attn_facts = attention_summary(attn_detail)[1] if heads else []
 
+    attn_block = _text_encoder_attention_block(
+        spec, prefix, attn_detail, title=attn_title,
+        description=attn_desc, facts=attn_facts,
+    )
     ffn_block = _text_encoder_ffn_block(spec, prefix)
 
     return [
@@ -757,15 +765,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             "description": embed_desc,
             "facts": embed_facts,
         },
-        {
-            "id": f"{prefix}_op_selfattn",
-            "title": attn_title,
-            "description": attn_desc,
-            "facts": attn_facts,
-            # A summary tower's sublayer: a clickable DESCRIPTION card (its dims +
-            # what it does), not a generic Q/K/V drill — the hero denoiser carries
-            # the detailed attention diagram; this supporting encoder is described.
-        },
+        attn_block,
         ffn_block,
         {
             "id": f"{prefix}_op_norm",
@@ -786,6 +786,43 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
             ),
         },
     ]
+
+
+def _text_encoder_attention_block(spec: dict, prefix: str, attn_detail: dict, *,
+                                  title: str, description: str,
+                                  facts: list[str]) -> Block:
+    """Project one nested encoder self-attention from the canonical region.
+
+    Same contract as :func:`_text_encoder_ffn_block`: the drill SVG and its leaf
+    cards derive from ONE region (ids can never drift apart), namespaced so two
+    encoders at the same card depth cannot satisfy each other's clicks.  The
+    drill exists only when the loader fetched the encoder's own config and the
+    sub-parse produced a typed spec (``attention_detail``); a spec without that
+    evidence keeps the honest description-only card — never a guessed Q/K/V.
+    """
+    block: Block = {
+        "id": f"{prefix}_op_selfattn",
+        "title": title,
+        "description": description,
+        "facts": facts,
+    }
+    if not isinstance(spec.get("attention_detail"), dict):
+        return block
+    namespace = f"{prefix}_attn_"
+    region = attention_region(attn_detail, attn_detail.get("hidden"))
+    namespaced = prefix_region(region, namespace)
+    block.update({
+        "role": "attention",
+        "kind": "attention",
+        "view": "attention",
+        "detail": {
+            "attention": {**attn_detail, "node_prefix": namespace},
+            "evidence": spec.get("position_evidence")
+            if isinstance(spec.get("position_evidence"), dict) else {},
+        },
+        "children": cards_from_region(namespaced),
+    })
+    return block
 
 
 def _text_encoder_ffn_block(spec: dict, prefix: str) -> Block:

@@ -274,7 +274,9 @@ def load_conformance_transitive() -> dict:
         "semantic_markers": {
             "rope": [s.lower() for s in _list("semantic_rope_markers")],
             "cache": [s.lower() for s in _list("semantic_cache_markers")],
+            "relative_bias": [s.lower() for s in _list("semantic_relative_bias_markers")],
         },
+        "score_scale_markers": frozenset(s.lower() for s in _list("score_scale_markers")),
         "library_helpers": helpers,
         "drill_role_markers": _kv_list("drill_role_markers"),
         "component_view_markers": _kv_list("component_view_markers"),
@@ -288,7 +290,26 @@ def load_conformance_transitive() -> dict:
         "selection_presentation_kinds": frozenset(_list("selection_presentation_kinds")),
         "composite_container_map": _kv_str("composite_container_map"),
         "processor_markers": frozenset(_list("processor_markers")),
+        "constructor_classmethods": frozenset(_list("constructor_classmethods")),
     }
+
+
+_CONSTRUCTOR_CLASSMETHODS: frozenset[str] | None = None
+
+
+def load_constructor_classmethods() -> frozenset[str]:
+    """Factory classmethods that construct their base class (``X._from_config``).
+
+    Cached at module level: the shared AST extractor consults this set for every
+    ``Attribute`` call it classifies, so the YAML must be read once, not per node.
+    """
+    global _CONSTRUCTOR_CLASSMETHODS
+    if _CONSTRUCTOR_CLASSMETHODS is None:
+        data = load("conformance", "transitive")
+        _CONSTRUCTOR_CLASSMETHODS = frozenset(
+            str(x) for x in (data.get("constructor_classmethods") or [])
+        )
+    return _CONSTRUCTOR_CLASSMETHODS
 
 
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:

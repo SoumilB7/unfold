@@ -276,11 +276,13 @@ def _formula_block(
     h: float,
     *,
     numerator: str = "Q K^T",
-    denominator: str = "sqrt(dim)",
+    denominator: str | None = "sqrt(dim)",
     clickable: bool = True,
 ) -> dict:
     """Green fraction block (numerator over a rule over denominator) — the
-    scaled-score step of SDPA-style attention."""
+    scaled-score step of SDPA-style attention.  A falsy ``denominator`` draws
+    the numerator alone, centred (a code-proven UNscaled score — T5-family —
+    where painting the sqrt would fabricate an op the forward never performs)."""
     children = [
         _node_title(info, node_id),
         _svg_tag("rect", {
@@ -288,22 +290,31 @@ def _formula_block(
             "fill": C["block"], "stroke": C["block_alt"], "stroke-width": 0.6,
             "filter": f"url(#{shadow_id})",
         }),
-        _svg_text(x + w / 2, y + h * 0.32, numerator, {
+    ]
+    if denominator:
+        children += [
+            _svg_text(x + w / 2, y + h * 0.32, numerator, {
+                "text-anchor": "middle", "dominant-baseline": "central",
+                "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 22,
+                "pointer-events": "none",
+            }),
+            _svg_tag("line", {
+                "x1": x + 72, "y1": y + h * 0.52, "x2": x + w - 72, "y2": y + h * 0.52,
+                "stroke": C["text_block"], "stroke-width": 1.7,
+                "stroke-linecap": "round", "pointer-events": "none",
+            }),
+            _svg_text(x + w / 2, y + h * 0.73, denominator, {
+                "text-anchor": "middle", "dominant-baseline": "central",
+                "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 19,
+                "pointer-events": "none",
+            }),
+        ]
+    else:
+        children.append(_svg_text(x + w / 2, y + h / 2, numerator, {
             "text-anchor": "middle", "dominant-baseline": "central",
             "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 22,
             "pointer-events": "none",
-        }),
-        _svg_tag("line", {
-            "x1": x + 72, "y1": y + h * 0.52, "x2": x + w - 72, "y2": y + h * 0.52,
-            "stroke": C["text_block"], "stroke-width": 1.7,
-            "stroke-linecap": "round", "pointer-events": "none",
-        }),
-        _svg_text(x + w / 2, y + h * 0.73, denominator, {
-            "text-anchor": "middle", "dominant-baseline": "central",
-            "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 19,
-            "pointer-events": "none",
-        }),
-    ]
+        }))
     if clickable:
         parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
     else:

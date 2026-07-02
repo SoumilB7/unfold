@@ -348,7 +348,8 @@ def test_text_encoder_shows_real_config_dims():
     depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
     specs = diffusor._text_encoder_specs(FLUX)
     structural = [{k: v for k, v in spec.items()
-                   if k not in {"ffn_evidence", "ffn_projection_mode"}}
+                   if k not in {"ffn_evidence", "ffn_projection_mode",
+                                "attention_detail", "position_evidence"}}
                   for spec in specs]
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
@@ -362,6 +363,15 @@ def test_text_encoder_shows_real_config_dims():
              s["ffn_projection_mode"]) for s in specs] == [
         ("proven", "CLIPMLP", "dense"),
         ("proven", "T5DenseGatedActDense", "split"),
+    ]
+    # The typed attention facts ride the same spec: positional scheme + score
+    # scaling are evidence, per encoder (CLIP learned-absolute + scaled;
+    # T5 relative-bias + code-proven UNscaled scores).
+    assert [(s["attention_detail"]["position_kind"],
+             s["attention_detail"].get("scores_scaled", True),
+             s["position_evidence"]["status"]) for s in specs] == [
+        ("learned_absolute", True, "proven"),
+        ("relative_bias", False, "proven"),
     ]
     html = unfold(FLUX).to_html(standalone=True)
     assert "× 12" in html and "× 24" in html   # real depths
@@ -1578,3 +1588,56 @@ def test_unet_resnet_view_shows_timestep_injection_and_correct_residual():
     rn = view_svg("unet_down_1__resnet")
     assert "Timestep emb" in rn, "Timestep source must appear in ResNet drill"
     assert validate_click_coupling(html) == []
+
+
+def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
+    """Every fetched-config encoder bakes a REAL attention drill (canonical
+    region, namespaced), and its positional lane matches the encoder's own
+    code: CLIP learned-absolute -> no RoPE nodes; T5 -> relative-bias score
+    add + code-proven unscaled QK^T.  A spec without a fetched sub-config
+    keeps the description-only card (no fabricated Q/K/V)."""
+    d = unfold(FLUX)
+    html = d.to_html()
+    ir = d.to_ir()
+
+    def find_block(blocks, bid):
+        for b in blocks or []:
+            if b.get("id") == bid:
+                return b
+            hit = find_block(b.get("children"), bid)
+            if hit is not None:
+                return hit
+
+    loop = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks")
+    clip = find_block(loop, "encoder_0_op_selfattn")
+    t5 = find_block(loop, "encoder_1_op_selfattn")
+    assert clip and clip.get("view") == "attention" and clip.get("children")
+    assert t5 and t5.get("view") == "attention" and t5.get("children")
+
+    clip_ids = {c["id"] for c in clip["children"]}
+    t5_ids = {c["id"] for c in t5["children"]}
+    # Namespaced so two encoders at the same depth cannot satisfy each other.
+    assert all(i.startswith("encoder_0_attn_") for i in clip_ids)
+    assert all(i.startswith("encoder_1_attn_") for i in t5_ids)
+    # CLIP: learned absolute positions live at the embedding, NOT in attention.
+    assert not any(i.endswith(("q_rope", "k_rope")) for i in clip_ids)
+    assert not any(i.endswith(("rel_pos_bias", "alibi_bias")) for i in clip_ids)
+    # T5: the learned relative bias enters the scores; RoPE would be fabricated.
+    assert {"encoder_1_attn_rel_pos_bias", "encoder_1_attn_rel_bias_offsets",
+            "encoder_1_attn_score_bias_add"} <= t5_ids
+    assert not any(i.endswith(("q_rope", "k_rope")) for i in t5_ids)
+    # Unscaled scores: the T5 drill draws raw QK^T (no fabricated sqrt(dim)),
+    # while CLIP keeps the standard scaled fraction.
+    assert 'data-id="encoder_1_attn_scaled_scores"' in html
+    t5_panel = html.split('data-card-id="encoder_1_op_selfattn"', 1)[1]
+    t5_svg = t5_panel.split("</svg>", 1)[0]
+    assert "sqrt(dim)" not in t5_svg
+    clip_panel = html.split('data-card-id="encoder_0_op_selfattn"', 1)[1]
+    clip_svg = clip_panel.split("</svg>", 1)[0]
+    assert "sqrt(dim)" in clip_svg
+    # No fetched sub-config -> honest description-only card, never a guessed drill.
+    from model_unfolder.adapters.diffusor.blocks import _text_encoder_ops
+    bare = _text_encoder_ops("CLIP", None, None, "enc_x", spec={})
+    bare_attn = next(b for b in bare if b["id"] == "enc_x_op_selfattn")
+    assert "view" not in bare_attn and not bare_attn.get("children")
+    assert bare_attn.get("description")

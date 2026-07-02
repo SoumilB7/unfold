@@ -19,6 +19,17 @@
 attention_compute_ops: [dot_product, activation]
 attention_compute_tokens: [scaled_dot_product_attention, sdpa_attention_forward, eager_attention_forward, flash_attention_forward, flex_attention_forward, flash_attn_func, flash_attn_varlen_func, attention_interface, _attention_forward, dispatch_attention_fn]
 
+# --- constructor classmethods -------------------------------------------------
+# Factory classmethods that CONSTRUCT their base class: ``CLIPTextModel.
+# _from_config(config)`` builds a CLIPTextModel exactly as ``CLIPTextModel
+# (config)`` would.  The shared AST extractor (ast_scanner._call_name) resolves
+# such a call to the BASE class name so field typing / init refs / reachability
+# closures descend through factory-built delegation instead of dead-ending at
+# the wrapper (the SD3.5/SDXL ``CLIPTextModelWithProjection`` stub-FFN failure).
+# ``AutoModel.from_config`` resolves to the honest name "AutoModel" — still no
+# concrete class at this altitude; qualified component resolution owns that.
+constructor_classmethods: [_from_config, from_config, from_pretrained]
+
 # --- presentation / structural DRAWN kinds -----------------------------------
 # Drawn node kinds that are NOT computational ops to diff (ports, layout sugar,
 # and the drill-INTO container glyphs that have their OWN drill + diff).  Dropped
@@ -38,6 +49,16 @@ drawn_op_map: [select=route]
 semantic_kinds: [rope, cache, context_window]
 semantic_rope_markers: [rotary, rope, rotate_half, freqs_cis, apply_rope]
 semantic_cache_markers: [past_key_value, kv_cache, cache_kwargs, _update_cache]
+# Learned relative-position bias ADDED to attention scores (T5-family signature:
+# a bucketed-distance Embedding owned by the attention class, materialized by a
+# compute_bias self-method, `scores += position_bias`).  General code markers,
+# never a model name — any encoder built this way proves `relative_bias`.
+semantic_relative_bias_markers: [relative_attention_bias, compute_bias, position_bias]
+# Score scaling signature: presence of ANY of these in the attention closure's
+# signature tokens proves the standard QK^T/sqrt(d) scaling; their PROVEN absence
+# (source present, attention class resolved, no marker) is the honest "unscaled
+# scores" fact (T5 folds 1/sqrt(d) into init and matmuls raw Q.K^T).
+score_scale_markers: [scaling, scale, sqrt, rsqrt, softmax_scale]
 
 # Library-helper call tokens whose op-kinds we know without a body (terminal).
 # Kept tiny + general: each is a torch/stdlib primitive, not a model symbol.

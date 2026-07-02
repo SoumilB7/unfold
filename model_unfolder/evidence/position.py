@@ -147,6 +147,11 @@ def decoder_positional_evidence(
         return PositionalEvidence(
             "proven", _combine_mechanisms(alibi, absolute), component
         )
+    relative = _relative_bias_mechanism(attention_classes, registry)
+    if relative is not None:
+        return PositionalEvidence(
+            "proven", _combine_mechanisms(relative, absolute), component
+        )
 
     return PositionalEvidence(
         "ambiguous", component=component,
@@ -225,6 +230,32 @@ def _rope_mechanism(name: str, registry: dict[str, CallableInfo]) -> PositionalM
         "rope", "qk_rotation", name, info.source_file,
         _call_line(info.source_file, name, hits), tuple(hits),
     )
+
+
+def _relative_bias_mechanism(
+    attention_classes: set[str], registry: dict[str, CallableInfo]
+) -> PositionalMechanism | None:
+    """Learned relative-position bias ADDED to the attention scores.
+
+    The T5-family code signature, matched generally: the attention class's
+    transitive closure carries the relative-bias markers (a bucketed-distance
+    Embedding / ``compute_bias`` / ``position_bias``) — never a model name.
+    Application altitude is ``attention_bias`` (a score add), like ALiBi, but
+    the bias is LEARNED, so it is its own typed mechanism.
+    """
+    vocab = load_conformance_transitive()
+    markers = tuple(vocab["semantic_markers"].get("relative_bias") or ())
+    for name in sorted(attention_classes):
+        _ops, tokens = transitive_closure(name, registry, vocab)
+        hits = sorted(token for token in tokens
+                      if any(marker in token.lower() for marker in markers if marker))
+        if hits:
+            info = registry[name]
+            return PositionalMechanism(
+                "relative_bias", "attention_bias", name, info.source_file,
+                _call_line(info.source_file, name, hits), tuple(hits),
+            )
+    return None
 
 
 def _alibi_mechanism(

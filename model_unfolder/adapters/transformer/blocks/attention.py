@@ -265,6 +265,19 @@ def _sdpa_detailed_child_blocks(
             {"id": "score_bias_add", "title": "Add ALiBi to scores",
              "description": "Adds the ALiBi bias to the QK attention scores before softmax."},
         ]
+    if (attention.position_kind == "relative_bias"
+            and attention.position_application == "attention_bias" and not cross_attention):
+        cards += [
+            {"id": "rel_bias_offsets", "title": "Relative positions",
+             "description": "Bucketed relative token distances looked up by the learned bias embedding."},
+            {"id": "rel_pos_bias", "title": "Relative position bias",
+             "description": "A learned embedding over bucketed relative distances, added to the "
+                            "attention scores before softmax. Computed once by the first layer "
+                            "and shared down the stack."},
+            {"id": "score_bias_add", "title": "Add position bias to scores",
+             "description": "Adds the learned relative-position bias to the QK attention scores "
+                            "before softmax."},
+        ]
     if generic:
         # These cards are SHARED across stages of different width (the panel dedups
         # by id). Per-stage dims would be wrong on the shared card, so drop them —

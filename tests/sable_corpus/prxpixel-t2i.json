@@ -3,6 +3,7 @@
     "click_coupling": true,
     "config_field_audit": false,
     "dangling_connectors": true,
+    "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
     "nested_conformance": true,
@@ -102,6 +103,7 @@
     "51028cdc2f24390d0c6dc2993635fa32",
     "671c05a4a4192258fa9687d8584567a7",
     "737b7ee110d83b5d04bfe8118b8681dd",
+    "c0658044cd71687a0581f7a5fce91ef0",
     "ef682777d723eac5206df58b21660bbb"
   ],
   "model": "prxpixel-t2i",

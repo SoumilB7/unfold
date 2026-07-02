@@ -660,3 +660,128 @@ def _write_modeling_file(tmp_path, body: str):
     path = tmp_path / "modeling_fake.py"
     path.write_text(body.strip() + "\n", encoding="utf-8")
     return path
+
+
+def test_field_types_resolve_constructor_classmethod_factories():
+    """``self.x = Klass._from_config(cfg)`` types the field as ``Klass`` (never
+    the factory's method name) — the general delegated-construction signature
+    behind the transformers ``*WithProjection`` wrappers.  ``AutoModel`` stays
+    the honest address name; concrete resolution belongs to the qualified
+    component rail, not the shared extractor."""
+    import ast
+    from model_unfolder.evidence.forward_ops import _field_types, _method
+
+    tree = ast.parse(
+        "class Wrapper:\n"
+        "    def __init__(self, config):\n"
+        "        self.inner = InnerTower._from_config(config)\n"
+        "        self.other = OtherTower.from_config(config.sub_config)\n"
+        "        self.auto = AutoModel.from_config(config.vision_config)\n"
+        "        self.plain = PlainLayer(config)\n"
+    )
+    node = next(n for n in ast.walk(tree) if isinstance(n, ast.ClassDef))
+    types = _field_types(_method(node, "__init__"))
+    assert types["inner"] == "InnerTower"
+    assert types["other"] == "OtherTower"
+    assert types["auto"] == "AutoModel"
+    assert types["plain"] == "PlainLayer"
+
+
+def test_relative_bias_is_a_proven_positional_mechanism(tmp_path, monkeypatch):
+    """A learned bias over bucketed relative distances added to the scores
+    (the T5-family code shape, matched by general markers) proves
+    ``relative_bias`` at the ``attention_bias`` altitude — no more
+    present-but-ambiguous for encoders built this way."""
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.position import decoder_positional_evidence
+    from model_unfolder.evidence import position as position_module
+
+    source = _write_modeling_file(
+        tmp_path,
+        """
+class NovelBiasAttention:
+    def __init__(self):
+        self.relative_attention_bias = Embedding()
+    def compute_bias(self, q_len, k_len):
+        return self.relative_attention_bias(q_len)
+    def forward(self, x):
+        scores = matmul(x, x)
+        position_bias = self.compute_bias(1, 1)
+        scores += position_bias
+        return softmax(scores)
+
+class FakeMLP:
+    def forward(self, x):
+        return x
+
+class FakeBlock:
+    def __init__(self):
+        self.attn = NovelBiasAttention()
+        self.mlp = FakeMLP()
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class FakeModel:
+    def __init__(self):
+        self.layers = ModuleList([FakeBlock()])
+    def forward(self, input_ids):
+        x = input_ids
+        for layer in self.layers:
+            x = layer(x)
+        return x
+""",
+    )
+    bundle = SourceBundle(
+        source="path", files=(str(source),), model_type="fake",
+        component_files={"root": (str(source),)},
+        component_architectures={"root": "FakeModel"},
+    )
+    monkeypatch.setattr(position_module, "resolve_source_files", lambda *a, **k: bundle)
+    evidence = decoder_positional_evidence({"model_type": "fake"})
+    assert evidence.status == "proven"
+    assert evidence.kinds == {"relative_bias"}
+    mechanism = evidence.mechanisms[0]
+    assert mechanism.application == "attention_bias"
+    assert mechanism.class_name == "NovelBiasAttention"
+
+
+def test_attention_score_scaling_verdicts_are_code_derived(tmp_path):
+    """scores_scaled: True on an explicit scale symbol or an SDPA terminal,
+    False only for a provably raw matmul, None for wrapper-only/mixed files."""
+    from model_unfolder.evidence.patterns import attention_score_scaling_from_files
+
+    scaled = tmp_path / "scaled.py"
+    scaled.write_text(
+        "class ScaledAttention:\n"
+        "    def __init__(self):\n"
+        "        self.scaling = 0.125\n"
+        "    def forward(self, q, k):\n"
+        "        return matmul(q, k) * self.scaling\n"
+    )
+    unscaled = tmp_path / "unscaled.py"
+    unscaled.write_text(
+        "class RawAttention:\n"
+        "    def forward(self, q, k):\n"
+        "        scores = matmul(q, k)\n"
+        "        return softmax(scores)\n"
+    )
+    delegated = tmp_path / "delegated.py"
+    delegated.write_text(
+        "class DelegatedAttention:\n"
+        "    def forward(self, q, k):\n"
+        "        return scaled_dot_product_attention(q, k, k)\n"
+    )
+    wrapper_only = tmp_path / "wrapper.py"
+    wrapper_only.write_text(
+        "class WrapperAttention:\n"
+        "    def __init__(self):\n"
+        "        self.inner = Something()\n"
+        "    def forward(self, x):\n"
+        "        return self.inner(x)\n"
+    )
+    assert attention_score_scaling_from_files((scaled,)) is True
+    assert attention_score_scaling_from_files((unscaled,)) is False
+    assert attention_score_scaling_from_files((delegated,)) is True
+    assert attention_score_scaling_from_files((wrapper_only,)) is None
+    # Mixed verdicts across one file's attention classes stay honestly unproven.
+    assert attention_score_scaling_from_files((scaled, unscaled)) is None
