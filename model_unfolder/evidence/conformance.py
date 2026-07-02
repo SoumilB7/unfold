@@ -600,6 +600,29 @@ def check_nested_conformance(
             contexts[domain] = (component, registry, block_roots)
         return contexts[domain]
 
+    def context_for(domain: str, event_component: str):
+        """The event's OWN qualified component wins over the per-domain pick.
+
+        A pipeline can hold several sibling text components (SD3: CLIP + CLIP +
+        T5); one-component-per-domain would diff one encoder's drill against a
+        sibling's classes.  A render event stamped with a component the bundle
+        qualifies is exact ownership — bind to it directly.
+        """
+        files_map = getattr(bundle, "component_files", None) or {}
+        if (event_component and event_component != "root"
+                and event_component in files_map):
+            key = f"component:{event_component}"
+            if key not in contexts:
+                files = _augment_diffusion_files(tuple(files_map[event_component]))
+                registry = build_registry(files, component=event_component)
+                architectures = getattr(bundle, "component_architectures", {}) or {}
+                block_roots = _component_block_classes(
+                    registry, architectures.get(event_component))
+                block_roots = _domain_block_classes(block_roots, domain, vocab)
+                contexts[key] = (event_component, registry, block_roots)
+            return contexts[key]
+        return context(domain)
+
     problems: list[ConformanceProblem] = []
     seen: dict[tuple, frozenset[str]] = {}
     for entry in render_log:
@@ -624,7 +647,8 @@ def check_nested_conformance(
         if drill_role is None:
             continue                     # architecture view — not a sub-module drill
         domain = _drill_domain(view_key, vocab)
-        component, registry, block_roots = context(domain)
+        component, registry, block_roots = context_for(
+            domain, event_key[2] if len(event_key) > 2 else "")
         category = vocab["drill_category"].get(drill_role, "leaf_compute")
         if category == "composite":
             block_closure_sets = [transitive_closure(b, registry, vocab)[0]
@@ -1448,6 +1472,17 @@ def _component_source(bundle, domain: str) -> tuple[str, tuple[str, ...]]:
     groups = component_files or ({"root": bundle.files} if bundle.files else {})
     if not groups:
         return "root", ()
+    # Pipeline SLOT components (a Diffusers pipeline's fetched text encoders)
+    # are sibling models, not the root's own delegated stack — they bind only
+    # through exact event/evidence ownership, never through a domain pick (the
+    # denoiser's block view is not a Mistral layer merely because the pipeline
+    # also ships a Mistral prompt encoder).
+    slots = set(getattr(bundle, "pipeline_components", ()) or ())
+    if slots:
+        groups = {name: files for name, files in groups.items()
+                  if name.split(".")[0] not in slots}
+        if not groups:
+            return "root", tuple(bundle.files)
 
     def segments(path: str) -> tuple[str, ...]:
         return tuple(part.lower() for part in path.split("."))

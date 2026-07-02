@@ -95,7 +95,10 @@ def build_mla_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) ->
 def _apply_presentation(graph, attn: dict) -> None:
     if attn.get("mask") == "sliding":
         for node in graph.nodes:
-            if node.id == "hidden":
+            # Presentation keys on CANONICAL identity — a namespaced drill (a
+            # supporting tower's attention, at any nesting depth) renames its
+            # ids but carries meta["canonical_id"] through the rename.
+            if (node.meta or {}).get("canonical_id", node.id) == "hidden":
                 node.kind = "context_window"
                 node.label = None
                 node.sub = None
@@ -107,18 +110,23 @@ def _kv_sharing_aside(attn: dict) -> dict | None:
     kind = attn.get("kind")
     heads = attn.get("num_heads") or 0
     kv_heads = attn.get("num_kv_heads") or heads
+    # A prompt encoder runs once — there is no autoregressive KV cache to
+    # shrink; the sharing still cuts the K/V projections themselves.
+    cached = attn.get("cached", True) is not False
     if kind == "mqa" and heads > 1:
         return {
-            "title": "Shared K/V cache",
+            "title": "Shared K/V cache" if cached else "Shared K/V heads",
             "rows": [("1 K + 1 V", f"reused by {heads} Q")],
-            "footer": [f"KV cache {heads}x smaller", "than full MHA"],
+            "footer": [f"KV cache {heads}x smaller" if cached
+                       else f"{heads}x fewer K/V projections", "than full MHA"],
         }
     if kind != "gqa" or not heads or not kv_heads or heads % kv_heads:
         return None
     per_group = heads // kv_heads
     aside = {"title": "KV sharing pattern", "rows": _gqa_rows(heads, kv_heads, per_group)}
     if per_group > 1:
-        aside["footer"] = [f"KV cache {per_group}x smaller", "than full MHA"]
+        aside["footer"] = [f"KV cache {per_group}x smaller" if cached
+                           else f"{per_group}x fewer K/V projections", "than full MHA"]
     return aside
 
 

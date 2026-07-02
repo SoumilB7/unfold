@@ -17,7 +17,9 @@ from .block_facts import ffn_from_block
 
 def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
     ffn = ffn_from_block(block, info)
-    hidden = ir.get("hidden_size")
+    # The fact dict's own width wins — a tower's MoE must not inherit the host
+    # model's hidden size (same rule as the attention/FFN views).
+    hidden = ffn.get("hidden") or ir.get("hidden_size")
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
     n_shared = ffn.get("num_shared_experts") or 0
@@ -79,7 +81,7 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
                 "activation": ffn.get("activation"),
                 "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
             },
-            ir.get("hidden_size"),
+            ffn.get("hidden") or ir.get("hidden_size"),
         ),
         _EXPERT_IDS,
     )

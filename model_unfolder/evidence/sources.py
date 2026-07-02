@@ -364,14 +364,58 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
         except (OSError, UnicodeDecodeError):
             continue
         if pat.search(text):
-            return SourceBundle(source="local", files=(str(f),),
+            component_files = {"root": (str(f),)}
+            component_model_types: dict = {}
+            component_architectures = {"root": cls}
+            files = [str(f)]
+            # A pipeline's fetched text-encoder configs (text_encoder /
+            # text_encoder_2 / …) are real delegated TRANSFORMERS components.
+            # Each goes through the SAME composite resolver a standalone
+            # transformers config gets — so a wrapper encoder (Mistral3, a
+            # Qwen-VL pressed into prompt duty) also qualifies its own nested
+            # text/vision components, prefixed under the pipeline slot
+            # (``text_encoder.text_config`` → modeling_mistral.py).  Without
+            # this an encoder drill is either silently skipped by nested
+            # conformance or diffed against the denoiser's own forward().
+            pipeline_components: list[str] = []
+            for enc_name, enc_cfg, _enc_type in _pipeline_text_encoder_components(target):
+                pipeline_components.append(enc_name)
+                enc_bundle = _installed_transformers_bundle(enc_cfg)
+                for sub_key, sub_files in (enc_bundle.component_files or {}).items():
+                    key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
+                    component_files[key] = tuple(sub_files)
+                    files.extend(p for p in sub_files if p not in files)
+                for sub_key, value in (enc_bundle.component_model_types or {}).items():
+                    key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
+                    component_model_types[key] = value
+                for sub_key, value in (enc_bundle.component_architectures or {}).items():
+                    key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
+                    component_architectures[key] = value
+            return SourceBundle(source="local", files=tuple(files),
                                 architecture=cls, model_id=model_id,
-                                component_files={"root": (str(f),)},
-                                component_architectures={"root": cls})
+                                component_files=component_files,
+                                component_model_types=component_model_types,
+                                component_architectures=component_architectures,
+                                pipeline_components=tuple(pipeline_components))
     return SourceBundle(
         source="local", architecture=cls, model_id=model_id,
         warnings=(f"No installed diffusers modeling file defines {cls!r}.",),
     )
+
+
+def _pipeline_text_encoder_components(target: Any):
+    """Yield ``(component_name, config, model_type)`` for fetched pipeline
+    text-encoder configs.  The list-of-names form (configs not fetched) has
+    nothing to qualify and yields nothing."""
+    raw = _get_value(target, "_text_encoder_configs")
+    if not isinstance(raw, dict):
+        return
+    for name, cfg in raw.items():
+        if not isinstance(cfg, dict):
+            continue
+        model_type = _own_model_type(cfg)
+        if model_type:
+            yield str(name), cfg, model_type
 
 
 def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:

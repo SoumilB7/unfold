@@ -1332,11 +1332,21 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
             spec.update(_normalize_encoder_config(sub))
+            # QUALIFY ownership onto the sub-model spec, recursively — inner
+            # component paths (a VL wrapper's ``text_config``) become dotted
+            # (``text_encoder.text_config``), which the source bundle
+            # qualifies, so every projected block/event binds to its exact
+            # oracle by construction.  The flat envelopes get the same
+            # treatment for prose/back-compat consumers.
+            from ...submodel import qualify_component
+            if isinstance(spec.get("sub_model"), dict):
+                qualify_component(spec["sub_model"], key)
             for envelope_key in ("ffn_evidence", "position_evidence"):
                 evidence = spec.get(envelope_key)
                 if isinstance(evidence, dict):
                     evidence = dict(evidence)
-                    evidence["component"] = key
+                    inner = str(evidence.get("component") or "root")
+                    evidence["component"] = key if inner == "root" else f"{key}.{inner}"
                     spec[envelope_key] = evidence
         specs.append(spec)
     _uniquify_encoder_names(specs)
@@ -1394,7 +1404,6 @@ def _normalize_encoder_config(c: dict) -> dict:
         attention_score_scaling_from_files,
         decoder_ffn_activation_from_files,
     )
-    from ..transformer.blocks.attention import attention_detail
     from ..transformer.parser import parse as _parse_transformer
 
     try:
@@ -1404,7 +1413,15 @@ def _normalize_encoder_config(c: dict) -> dict:
         return {}
     if not ir.layers:
         return {}
-    layer = ir.layers[0]
+    # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
+    # type, and a heterogeneous stack (sliding/global alternation, hybrid
+    # full/linear mixers) additionally carries one entry per distinct signature
+    # so the tower renders every real layer type — same collapse the main
+    # architecture view uses (ir.distinct_layer_groups).
+    from ...ir import distinct_layer_groups
+    groups = distinct_layer_groups(ir.layers)
+    dominant = max(groups, key=lambda group: len(group["indices"]))
+    layer = dominant["layer"]
     attn, ffn = layer.attention, layer.ffn
 
     # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
@@ -1468,18 +1485,35 @@ def _normalize_encoder_config(c: dict) -> dict:
     out["ffn_evidence"] = ffn_evidence.to_dict()
     if ffn_evidence.status == "proven":
         out["ffn_projection_mode"] = ffn_evidence.projection_mode
-    # The encoder's attention drill projects the SAME canonical region a decoder
-    # layer uses, off the sub-parse's own typed spec — the one serializer, no
-    # second fact vocabulary.  ``cached`` is pipeline-honest: a prompt encoder
-    # runs once, never autoregressively, so no KV-cache ports are drawn.
-    attn_fact = attention_detail(attn)
-    attn_fact["cached"] = False
-    attn_fact["hidden"] = ir.hidden_size
     scaled = attention_score_scaling_from_files(files)
-    if scaled is not None:
-        attn_fact["scores_scaled"] = scaled
-    out["attention_detail"] = attn_fact
     position = (ir.extras or {}).get("position_encoding")
+
+    # The ONE facts-only sub-model spec — groups, schedule, per-group typed
+    # attention/FFN facts, evidence envelopes — replaces every hand-plumbed
+    # structural key.  Drill children/cards/regions derive from it at
+    # projection time through the same canonical builders the root uses, so a
+    # new IR fact reaches every embedded context (at any nesting depth) with
+    # zero relay edits here.
+    from ...submodel import submodel_spec
+    out["sub_model"] = submodel_spec(
+        ir,
+        altitude="tower",
+        scores_scaled=scaled,
+        norm_label=norm,
+        activation=act,
+        gated=gated,
+        structure_status=ffn_evidence.status,
+        projection_mode=(ffn_evidence.projection_mode
+                         if ffn_evidence.status == "proven" else None),
+        position_evidence=position if isinstance(position, dict) else None,
+        ffn_evidence=ffn_evidence.to_dict(),
+    )
+    # Flat prose fields (title/chips wording) derive from the spec's dominant
+    # group — never hand-built a second time.
+    spec_groups = out["sub_model"]["groups"]
+    dominant_group = max(spec_groups, key=lambda group: group["count"])
+    out["attention_detail"] = dominant_group["attention"]
     if isinstance(position, dict):
         out["position_evidence"] = position
+
     return out

@@ -181,6 +181,50 @@ class ModelIR:
         return groups
 
 
+def distinct_layer_groups(layers) -> list[dict]:
+    """Collapse a layer stack by DISTINCT signature, in encounter order.
+
+    A run-length encoding of a periodic schedule (sliding/global alternation,
+    hybrid full/linear mixers) explodes into per-layer segments; the consumer-
+    facing grouping is by distinct structural signature, exactly like the main
+    architecture view's group collapse (``renderers/html/metadata.py`` holds the
+    dict-IR twin of this typed helper).  Each group carries its representative
+    layer, every member index, and its contiguous runs.
+    """
+    by_sig: dict = {}
+    order: list = []
+    for layer in layers:
+        sig = layer.signature()
+        if sig not in by_sig:
+            by_sig[sig] = {"sig": sig, "layer": layer, "indices": [], "runs": []}
+            order.append(sig)
+        group = by_sig[sig]
+        if group["runs"] and group["runs"][-1][-1] == layer.index - 1:
+            group["runs"][-1] = (group["runs"][-1][0], layer.index)
+        else:
+            group["runs"].append((layer.index, layer.index))
+        group["indices"].append(layer.index)
+    return [by_sig[sig] for sig in order]
+
+
+def detect_layer_period(sigs: list) -> int | None:
+    """Smallest period ``p < n`` such that ``sigs[i] == sigs[i % p]`` for all i.
+
+    ``None`` when the sequence is aperiodic (or repeats only at full length) —
+    the same rule the architecture metadata uses to say "5 sliding + 1 full,
+    cycled" instead of listing twenty segments.
+    """
+    n = len(sigs)
+    if n < 2:
+        return None
+    for p in range(1, n // 2 + 1):
+        if n % p:
+            continue
+        if all(sigs[i] == sigs[i % p] for i in range(n)):
+            return p
+    return None
+
+
 def _attention_to_dict(a: AttentionSpec) -> dict:
     return {
         "kind": a.kind,

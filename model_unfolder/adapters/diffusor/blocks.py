@@ -16,8 +16,8 @@ live in approved ``diffusion_stage`` tags plus titles and descriptions.
 from __future__ import annotations
 
 from ...block_schema import Block
-from ...labels import attention_summary, cards_from_region, ffn_summary, kind_long
-from ...opgraph import attention_region, ffn_region, prefix_region, rename_ops
+from ...labels import attention_summary, kind_long
+from ...submodel import submodel_cell_blocks
 from ..transformer.common import format_dim as _fmt
 from .compound import vae_up_stage
 
@@ -752,125 +752,82 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     attn_title = kind_long(attn_detail).replace(" attention", " self-attention")
     attn_facts = attention_summary(attn_detail)[1] if heads else []
 
-    attn_block = _text_encoder_attention_block(
-        spec, prefix, attn_detail, title=attn_title,
-        description=attn_desc, facts=attn_facts,
-    )
-    ffn_block = _text_encoder_ffn_block(spec, prefix)
-
-    return [
-        {
-            "id": f"{prefix}_op_embed",
-            "title": "Token embedding" if (is_t5 or is_lm_style) else "Token + positional embedding",
-            "description": embed_desc,
-            "facts": embed_facts,
-        },
-        attn_block,
-        ffn_block,
-        {
-            "id": f"{prefix}_op_norm",
-            "title": norm,
-            "description": (
-                f"{norm} normalizes each token's features before the sublayer "
-                "(pre-norm). Keeps activation scales stable so the network trains "
-                f"deeply. Both sublayers in every layer are {norm}-normalized."
-            ),
-        },
-        {
-            "id": f"{prefix}_op_add",
-            "title": "Residual add",
-            "description": (
-                "Adds the sublayer input back onto its output (x + sublayer(norm(x))). "
-                "Every attention and feed-forward sublayer is wrapped in this residual "
-                "so signals and gradients flow cleanly through depth."
-            ),
-        },
-    ]
-
-
-def _text_encoder_attention_block(spec: dict, prefix: str, attn_detail: dict, *,
-                                  title: str, description: str,
-                                  facts: list[str]) -> Block:
-    """Project one nested encoder self-attention from the canonical region.
-
-    Same contract as :func:`_text_encoder_ffn_block`: the drill SVG and its leaf
-    cards derive from ONE region (ids can never drift apart), namespaced so two
-    encoders at the same card depth cannot satisfy each other's clicks.  The
-    drill exists only when the loader fetched the encoder's own config and the
-    sub-parse produced a typed spec (``attention_detail``); a spec without that
-    evidence keeps the honest description-only card — never a guessed Q/K/V.
-    """
-    block: Block = {
-        "id": f"{prefix}_op_selfattn",
-        "title": title,
-        "description": description,
-        "facts": facts,
+    embed_card = {
+        "id": f"{prefix}_op_embed",
+        "title": "Token embedding" if (is_t5 or is_lm_style) else "Token + positional embedding",
+        "description": embed_desc,
+        "facts": embed_facts,
     }
-    if not isinstance(spec.get("attention_detail"), dict):
-        return block
-    namespace = f"{prefix}_attn_"
-    region = attention_region(attn_detail, attn_detail.get("hidden"))
-    namespaced = prefix_region(region, namespace)
-    block.update({
-        "role": "attention",
-        "kind": "attention",
-        "view": "attention",
-        "detail": {
-            "attention": {**attn_detail, "node_prefix": namespace},
-            "evidence": spec.get("position_evidence")
-            if isinstance(spec.get("position_evidence"), dict) else {},
-        },
-        "children": cards_from_region(namespaced),
-    })
-    return block
 
+    # ONE recursive projector for the cell cards: a homogeneous stack keeps
+    # the bare ids, each additional layer type gets `_g<k>`, a nested
+    # sub-model gets `_s<j>` and recurses — the sub-model spec is facts-only,
+    # so every drill/card is derived here through the same canonical builders
+    # the root model uses (see model_unfolder/submodel.py).
+    sub_model = spec.get("sub_model") if isinstance(spec.get("sub_model"), dict) else None
+    if sub_model and sub_model.get("groups"):
+        return [embed_card] + submodel_cell_blocks(
+            sub_model, prefix,
+            attn_description=attn_desc,
+            norm_fallback=norm,
+            norm_card=_encoder_norm_card,
+            residual_card=_encoder_residual_card,
+        )
 
-def _text_encoder_ffn_block(spec: dict, prefix: str) -> Block:
-    """Project one nested encoder FFN from a canonical operation region.
-
-    The summary, drill SVG and leaf cards all consume the same fact/region.  The
-    source-evidence envelope decides whether a split/fused layout is proven;
-    unresolved storage remains one opaque node instead of defaulting to a
-    family convention.
-    """
-    evidence = spec.get("ffn_evidence") if isinstance(spec.get("ffn_evidence"), dict) else {}
-    status = str(evidence.get("status") or "oracle_missing")
-    gated = spec.get("gated") if "gated" in spec else None
-    fact = {
+    # No fetched sub-config → the attention stays an honest DESCRIPTION card
+    # (no evidence, no guessed Q/K/V), and the FFN projects the honest-unknown
+    # opaque region through the same projector — tri-state unknown, never a
+    # fabricated gate-or-not shape.
+    from ...submodel import submodel_ffn_block
+    fallback_spec = {"component": None, "evidence": {"ffn": spec.get("ffn_evidence")
+                     if isinstance(spec.get("ffn_evidence"), dict) else {}}}
+    fallback_group = {"ffn": {
         "kind": "dense",
         "hidden": spec.get("hidden"),
         "intermediate_size": spec.get("ffn"),
         "activation": spec.get("activation"),
-        "gated": gated,
-        "structure_status": status,
-    }
-    if status == "proven" and spec.get("ffn_projection_mode"):
-        fact["projection_mode"] = spec["ffn_projection_mode"]
-
-    region = ffn_region(fact, spec.get("hidden"))
-    namespace = f"{prefix}_ffn_"
-    namespaced = rename_ops(
-        region,
-        {op.id: f"{namespace}{op.id}" for op in region.ops if op.id != "hidden"},
-    )
-    desc, facts = ffn_summary(fact)
-    if not region.resolved and region.ops:
-        desc = str((region.ops[0].meta or {}).get("desc") or desc)
-    facts = [item for item in facts if not item.endswith("?")]
-    return {
-        "id": f"{prefix}_op_ffn",
-        "role": "ffn",
-        "kind": "ffn",
-        "title": "Feed-forward",
-        "description": desc,
-        "facts": facts,
-        "view": "ffn",
-        "detail": {
-            "ffn": fact,
-            "op_namespace": namespace,
-            "evidence": evidence,
+        "gated": spec.get("gated") if "gated" in spec else None,
+        "structure_status": str((spec.get("ffn_evidence") or {}).get("status")
+                                or "oracle_missing"),
+        **({"projection_mode": spec["ffn_projection_mode"]}
+           if (spec.get("ffn_evidence") or {}).get("status") == "proven"
+           and spec.get("ffn_projection_mode") else {}),
+    }}
+    return [
+        embed_card,
+        {
+            "id": f"{prefix}_op_selfattn",
+            "title": attn_title,
+            "description": attn_desc,
+            "facts": attn_facts,
         },
-        "children": cards_from_region(namespaced),
+        submodel_ffn_block(fallback_spec, fallback_group, prefix),
+        _encoder_norm_card(prefix, norm),
+        _encoder_residual_card(prefix),
+    ]
+
+
+def _encoder_norm_card(prefix: str, norm: str) -> Block:
+    return {
+        "id": f"{prefix}_op_norm",
+        "title": norm,
+        "description": (
+            f"{norm} normalizes each token's features before the sublayer "
+            "(pre-norm). Keeps activation scales stable so the network trains "
+            f"deeply. Both sublayers in every layer are {norm}-normalized."
+        ),
+    }
+
+
+def _encoder_residual_card(prefix: str) -> Block:
+    return {
+        "id": f"{prefix}_op_add",
+        "title": "Residual add",
+        "description": (
+            "Adds the sublayer input back onto its output (x + sublayer(norm(x))). "
+            "Every attention and feed-forward sublayer is wrapped in this residual "
+            "so signals and gradients flow cleanly through depth."
+        ),
     }
 
 
@@ -924,7 +881,7 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
                   "node_prefix": f"encoder_{i}", "denoiser_family": family}
         for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos",
-                  "norm", "gated"):
+                  "norm", "gated", "sub_model"):
             if spec.get(k) is not None:
                 detail[k] = spec[k]
         blocks.append({

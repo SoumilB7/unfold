@@ -269,9 +269,15 @@ def prefix_region(region: Region, prefix: str) -> Region:
 
     Lets two instances of the same region coexist in one document without id
     collisions — e.g. a layer's self- and cross-attention drills, which would
-    otherwise both emit ``q_proj``/``scaled_scores`` and clash on cards."""
+    otherwise both emit ``q_proj``/``scaled_scores`` and clash on cards.
+    Every prefixed op keeps its CANONICAL identity in ``meta["canonical_id"]``
+    so id-keyed behaviour (the sliding context strip, card semantics,
+    conformance matching) survives the rename at any nesting depth."""
     from dataclasses import replace
-    ops = [replace(o, id=f"{prefix}{o.id}") for o in region.ops]
+    ops = [replace(o, id=f"{prefix}{o.id}",
+                   meta={"canonical_id": o.meta.get("canonical_id", o.id),
+                         **{k: v for k, v in o.meta.items() if k != "canonical_id"}})
+           for o in region.ops]
     edges = [Edge(f"{prefix}{e.src}", f"{prefix}{e.dst}") for e in region.edges]
     return replace(region, ops=ops, edges=edges)
 
@@ -694,8 +700,15 @@ def rename_ops(region: Region, mapping: dict[str, str]) -> Region:
 
     Lets one canonical template serve several card namespaces (the gated MLP
     inside an MoE expert uses ``expert_*`` card ids) without re-authoring it.
+    A renamed op keeps its CANONICAL identity in ``meta["canonical_id"]`` —
+    presentation rules, card derivation and conformance matching key on that,
+    never on the raw (rename-fragile) id string.
     """
-    ops = [replace(op, id=mapping.get(op.id, op.id), meta=dict(op.meta)) for op in region.ops]
+    ops = [replace(op, id=mapping.get(op.id, op.id),
+                   meta={"canonical_id": op.meta.get("canonical_id", op.id),
+                         **{k: v for k, v in op.meta.items() if k != "canonical_id"}}
+                   if op.id in mapping else dict(op.meta))
+           for op in region.ops]
     edges = [Edge(mapping.get(e.src, e.src), mapping.get(e.dst, e.dst)) for e in region.edges]
     return replace(region, ops=ops, edges=edges)
 

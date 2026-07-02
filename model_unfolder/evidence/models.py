@@ -372,6 +372,13 @@ class SourceBundle:
     component_files: dict[str, tuple[str, ...]] = field(default_factory=dict)
     component_model_types: dict[str, str] = field(default_factory=dict)
     component_architectures: dict[str, str] = field(default_factory=dict)
+    # Pipeline SLOT components (a Diffusers pipeline's fetched text encoders:
+    # text_encoder / text_encoder_2 / …).  These are SIBLING models beside the
+    # root, not the root's own delegated stack — exact-ownership oracles only:
+    # an event/evidence stamped with the slot path binds to them, but a
+    # domain-based pick ("the text component") must never select them for the
+    # root's own views (the denoiser block is not a Mistral layer).
+    pipeline_components: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

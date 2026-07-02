@@ -71,6 +71,32 @@ CORPUS = {
     "dit_mmdit":    td.FLUX,        # attention, ffn, scheduler_step, vae_decoder(_block), text_encoder, encoded_text_concat
     "dit_cross":    td.PIXART,      # cross_attention
     "unet":         td.SDXL_UNET,   # unet, unet_stage, unet_resnet, unet_transformer
+    # A pipeline whose text encoder is a HETEROGENEOUS stack (sliding/global
+    # alternation) — exercises the grouped encoder tower (per-layer-type cells
+    # + per-group drills) through every universal net.
+    "dit_hybrid_encoder": {**td.FLUX, "_text_encoder_configs": {
+        "text_encoder": {
+            "_class_name": "LlamaModel", "architectures": ["LlamaForCausalLM"],
+            "model_type": "llama", "num_hidden_layers": 24, "hidden_size": 2048,
+            "num_attention_heads": 16, "num_key_value_heads": 4,
+            "intermediate_size": 5632, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+            "vocab_size": 32000, "max_position_embeddings": 8192,
+            "rope_theta": 10000.0, "sliding_window": 4096,
+            "layer_types": ["sliding_attention", "full_attention"] * 12,
+        },
+    }},
+    # An MoE text encoder — the canonical router/top-k/expert drill transplanted
+    # into a supporting tower, checked by every universal net.
+    "dit_moe_encoder": {**td.FLUX, "_text_encoder_configs": {
+        "text_encoder": {
+            "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],
+            "model_type": "mixtral", "num_hidden_layers": 32, "hidden_size": 4096,
+            "num_attention_heads": 32, "num_key_value_heads": 8,
+            "intermediate_size": 14336, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+            "vocab_size": 32000, "max_position_embeddings": 32768,
+            "rope_theta": 1e6, "num_local_experts": 8, "num_experts_per_tok": 2,
+        },
+    }},
 }
 
 # Registered FALLBACK views with no built-in model emitter — exercised by their own

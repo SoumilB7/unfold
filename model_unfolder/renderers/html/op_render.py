@@ -48,7 +48,14 @@ def region_to_graph(
         pred.setdefault(e.dst, []).append(e.src)
 
     inputs = [o.id for o in region.ops if o.kind == "input"]
-    primary = "hidden" if "hidden" in by_op else (inputs[0] if inputs else region.ops[0].id)
+    # The primary input is identified by CANONICAL identity, not the raw id —
+    # a namespaced region instance (``<ns>hidden``) keeps its original id in
+    # meta["canonical_id"], so rename depth can never detach the spine root.
+    primary = next(
+        (o.id for o in region.ops
+         if (o.meta or {}).get("canonical_id", o.id) == "hidden"),
+        inputs[0] if inputs else region.ops[0].id,
+    )
     op_order = {o.id: i for i, o in enumerate(region.ops)}
 
     def is_merge(n: str) -> bool:
@@ -183,7 +190,7 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "input":
         if op.id == primary:
             label = f"in ({op.out_features:,})" if op.out_features else "in"
-            return Node(op.id, "port", label, static=True)
+            return Node(op.id, "port", label, static=True, meta=dict(op.meta))
         # A secondary input (cross-attention's text / image states) is drawn as a
         # solid block like everything else — not the light accent bookend.
         return Node(op.id, "embedding", op.label, w=250, h=46, static=static)
