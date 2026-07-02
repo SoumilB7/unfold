@@ -1,8 +1,14 @@
 {
   "checks": {
     "click_coupling": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
     "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
     "op_conformance": true,
     "unique_ref_ids": true,
     "wiring_conformance": true
@@ -149,16 +155,19 @@
     ]
   },
   "hash_signature": [
+    "14a695384058a63e8d7cbb25b6b4b842",
     "1584a5f7876a1612417fb88f5211af58",
     "1e6e37015517da680f7d22555b019a11",
-    "2996dd565ad86c02c4de77710644a035",
     "2ad9d9bd3a750ec84c04440348eb463c",
+    "4aba2ecfbdf02367e04c9dc1739143e3",
     "62493dac4a0c1fe07edaeabed33be017",
     "6dacceff78b93cd295446b14ca0d3f15",
     "9017b8e43fcbe059963aa513060ed950",
     "9f198a62053f6939aaa6682f5757e736",
     "a66b0d9f8538451a202c6aff20678d1f",
     "b27da72d8797da4f23c882340fe81c3f",
+    "b31abab691626c72dde789ac736cc3b0",
+    "b38dcb2f6c9289cc9b810d9bbdfa6610",
     "d3552b121e3b5b31a3a81a831305315c",
     "d8231cdbb4fc341af6833070f3dd8d49",
     "f8c0f6c893ff6bc3aa7f3e8490d60356"

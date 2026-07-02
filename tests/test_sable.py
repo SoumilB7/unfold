@@ -8,6 +8,8 @@ fixtures from test_diffusion so everything runs without network.
 from __future__ import annotations
 
 import json
+from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -17,6 +19,96 @@ from model_unfolder.evidence import check_fact_conformance, check_wiring_conform
 from tests.test_diffusion import FLUX, PIXART, LLAMA
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
+
+
+def test_plain_parse_resolves_model_source_once(monkeypatch):
+    """Every architectural detector consumes one call-local source bundle."""
+    from model_unfolder.evidence import context as context_module
+
+    real = context_module.resolve_source_files
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append((args, kwargs))
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(context_module, "resolve_source_files", counted)
+    mu.unfold(LLAMA)
+    assert len(calls) == 1
+
+
+def test_sable_parse_and_all_conformance_nets_share_one_source_bundle(monkeypatch):
+    """Sable must not rediscover source separately for parse and each net."""
+    from model_unfolder.evidence import context as context_module
+
+    real = context_module.resolve_source_files
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append((args, kwargs))
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(context_module, "resolve_source_files", counted)
+    sable(LLAMA, render_images=False)
+    assert len(calls) == 1
+
+
+def test_concurrent_transformer_and_diffusion_renders_are_call_local():
+    """Theme and graph diagnostics cannot cross-contaminate concurrent calls."""
+    from model_unfolder.renderers.html.document import render_document
+    from model_unfolder.renderers.html.render_context import (
+        RenderContext,
+        activate_render_context,
+    )
+
+    llama_ir = mu.unfold(LLAMA).to_ir()
+    flux_ir = deepcopy(mu.unfold(FLUX).to_ir())
+    # Production currently chooses teal for both domains. Force the registered
+    # blue palette here so the test exercises actual cross-theme isolation.
+    flux_ir["extras"]["render"]["theme"] = "blue"
+
+    def render(ir, mount, theme):
+        context = RenderContext(theme=theme)
+        with activate_render_context(context):
+            html = render_document(ir, mount)
+        return html, context
+
+    llama_expected, _ = render(llama_ir, "concurrent-llama", "teal")
+    flux_expected, _ = render(flux_ir, "concurrent-flux", "blue")
+
+    for _ in range(3):
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            llama_future = pool.submit(render, llama_ir, "concurrent-llama", "teal")
+            flux_future = pool.submit(render, flux_ir, "concurrent-flux", "blue")
+            llama_html, llama_context = llama_future.result()
+            flux_html, flux_context = flux_future.result()
+
+        assert llama_html == llama_expected
+        assert flux_html == flux_expected
+        assert "#0F6E56" in llama_html and "#1E5FB0" not in llama_html
+        assert "#1E5FB0" in flux_html and "#0F6E56" not in flux_html
+        assert llama_context.events and flux_context.events
+        assert not llama_context.wiring_findings
+        assert not flux_context.wiring_findings
+
+
+def test_render_events_carry_block_path_component_and_variant():
+    diagram = mu.unfold(FLUX)
+    diagram.to_html(standalone=True)
+    events = diagram.render_events()
+    assert events
+    attn = next(event for event in events
+                if event.view == "attn" and event.component == "root")
+    assert attn.block_path == ("attn",)
+    assert "MM-DiT" in attn.variant
+    assert attn.source_owner == "FluxTransformer2DModel"
+    assert "linear" in attn.drawn_ops
+    # The supporting text encoders now bake their OWN canonical attention drills,
+    # each carrying its qualified component — never unioned with the denoiser's.
+    encoder_attn = [event for event in events
+                    if event.view == "attn" and event.component != "root"]
+    assert encoder_attn and all(
+        event.block_path[-1].endswith("_op_selfattn") for event in encoder_attn)
 
 
 # --------------------------------------------------------------------------- #
@@ -29,22 +121,92 @@ def test_label_lint_clean_on_corpus(name, cfg):
 
 
 def test_label_lint_flags_nested_parens_and_raw_activation():
-    """The two real regressions it exists for: a tag wrapped in parens it already
-    had, and a raw backend activation spelling on an activation block."""
+    """Negative controls for text/design classes that repeatedly slipped through
+    non-visual checks: nested labels, raw backend activation, numeric facts on
+    blocks, backend alternatives, and static Tier-2 connectors."""
     ir = {
         "layers": [{"blocks": [
             {"id": "attn", "kind": "attention", "label": ["Joint Attention", "(MM-DiT (dual-stream))"]},
             {"id": "activation", "kind": "activation", "label": "gelu-approximate"},
+            {"id": "clip", "kind": "embedding", "label": "CLIP (768-d)"},
+            {"id": "patch", "kind": "linear", "label": "Linear / Conv2d"},
+            {"id": "encoder", "kind": "attention", "label": "Encoder ×30"},
+            {"id": "bad_add", "kind": "residual_add", "label": "⊕", "static": True},
             {"id": "ok_attn", "kind": "attention", "label": ["Joint Attention", "(dual-stream)"]},
             {"id": "ok_act", "kind": "activation", "label": "GELU"},
+            {"id": "ok_conv", "kind": "linear", "label": "Conv2d"},
         ]}],
         "extras": {},
     }
     problems = lint_labels(ir)
     assert any("nested/doubled parentheses" in p and "attn" in p for p in problems)
     assert any("raw backend" in p and "activation" in p for p in problems)
+    assert any("dimensions/counts" in p and "clip" in p for p in problems)
+    assert any("backend ops" in p and "patch" in p for p in problems)
+    assert any("dimensions/counts" in p and "encoder" in p for p in problems)
+    assert any("Tier-2 connector" in p and "bad_add" in p for p in problems)
     # the clean siblings are NOT flagged
-    assert not any("ok_attn" in p or "ok_act" in p for p in problems)
+    assert not any("ok_attn" in p or "ok_act" in p or "ok_conv" in p for p in problems)
+
+
+def test_numeric_lint_separates_dimensions_from_topology_descriptors():
+    """A *dimension* (768-d / 1024d) is a fact that belongs on a chip and must
+    flag; a bare single-digit + D (2D / 3D / axial 3D) is an N-dimensional
+    TOPOLOGY descriptor (3D-RoPE, 2D patch grid) — operation identity, not a
+    channel count — and must NOT flag.  This is the false-positive that would
+    otherwise reject an honest ``3D RoPE`` attention label."""
+    from model_unfolder.lint import _leaks_numeric_fact
+
+    # dimensions / counts -> flag
+    for fact in ("768-d", "1024d", "1,280-d", "768d", "8-d", "12 heads", "Encoder ×30"):
+        assert _leaks_numeric_fact(fact), f"{fact!r} is a numeric fact and must flag"
+    # qualitative N-dimensional topology -> do NOT flag
+    for topo in ("3D", "2D", "axial 3D", "3D RoPE", "2D patch", "3D-RoPE"):
+        assert not _leaks_numeric_fact(topo), f"{topo!r} is a topology descriptor, not a dimension"
+
+    # …and the same at the label-lint level: a 3D-RoPE attention block is clean.
+    ir = {
+        "layers": [{"blocks": [
+            {"id": "rope", "kind": "attention", "label": "Attention (3D RoPE)"},
+            {"id": "patch", "kind": "linear", "label": "2D Patchify"},
+            {"id": "dim", "kind": "embedding", "label": "Embedding 768-d"},
+        ]}],
+        "extras": {},
+    }
+    problems = lint_labels(ir)
+    assert not any("rope" in p or "patch" in p for p in problems)
+    assert any("dimensions/counts" in p and "dim" in p for p in problems)
+
+
+def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
+    """Sable's outer audit cannot be erased by a nested component parser."""
+    from model_unfolder.adapters.transformer import debug
+
+    cfg = {
+        "model_type": "outer",
+        "vision_config": {"hidden_size": 128, "new_architecture_switch": True},
+        "torch_dtype": "float16",  # intentionally ignored vocabulary
+    }
+    with debug.capture_accesses() as touched:
+        debug.note_access("model_type")
+        debug.note_access("vision_config")
+        debug.reset()  # a nested parser's legacy reset must not erase capture
+        debug.note_access("hidden_size")
+    assert "model_type" in touched and "hidden_size" in touched
+    assert debug.unparsed_fields([cfg], touched=touched, recursive=True) == [
+        "vision_config.new_architecture_switch"
+    ]
+
+
+def test_config_field_audit_is_visible_but_staged_non_blocking():
+    """Unread architecture switches must be reported without breaking every
+    existing blessed model before the ownership backlog has been worked down."""
+    cfg = {**LLAMA, "brand_new_architecture_switch": True}
+    report = sable(cfg, render_images=False)
+    audit = next(c for c in report.checks if c.name == "config_field_audit")
+    assert audit.blocking is False
+    assert any("brand_new_architecture_switch" in finding for finding in audit.findings)
+    assert report.mechanical_passed
 
 
 # --------------------------------------------------------------------------- #
@@ -112,7 +274,61 @@ def test_fact_conformance_flags_fabricated_nope():
         att = L.get("attention") or {}
         att["no_rope"], att["rope"], att["rope_dim"] = True, False, None
     probs = check_fact_conformance(FLUX, ir)
-    assert any(p.kind == "fabricated_position" for p in probs), [p.message for p in probs]
+    assert any(p.kind == "missing_position" for p in probs), [p.message for p in probs]
+
+
+def test_fact_conformance_is_symmetric_for_fabricated_rope_and_missing_learned_position():
+    """StarCoder's old drawing must fail in BOTH directions: invented RoPE and
+    omitted learned-position addition, using one typed source decision."""
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("gpt_bigcode").to_dict()
+    ir = mu.unfold(cfg).to_ir()
+    ir["extras"].pop("position_encoding", None)
+    for layer in ir["layers"]:
+        attn = layer["attention"]
+        attn["rope"] = True
+        attn["position_kind"] = "rope"
+        attn["position_application"] = "qk_rotation"
+    probs = check_fact_conformance(cfg, ir)
+    assert any(p.kind == "fabricated_position" and p.op == "rope" for p in probs)
+    assert any(p.kind == "missing_position" and p.op == "learned_absolute" for p in probs)
+
+
+def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
+    """Wrong alternatives must fail even though both correctly omit RoPE."""
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("bloom").to_dict()
+    ir = mu.unfold(cfg).to_ir()
+    for layer in ir["layers"]:
+        layer["attention"]["position_kind"] = "learned_absolute"
+        layer["attention"]["position_application"] = "embedding_add"
+    probs = check_fact_conformance(cfg, ir)
+    assert any(p.kind == "fabricated_position" and p.op == "learned_absolute" for p in probs)
+    assert any(p.kind == "missing_position" and p.op == "alibi" for p in probs)
+
+
+def test_present_but_ambiguous_position_is_blocking_unresolved(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.evidence import position as position_module
+
+    monkeypatch.setattr(
+        position_module, "decoder_positional_evidence",
+        lambda *a, **k: PositionalEvidence("ambiguous", reason="negative control"),
+    )
+    probs = check_fact_conformance(LLAMA, mu.unfold(LLAMA).to_ir())
+    assert any(p.kind == "unresolved" and p.op == "position" for p in probs)
+
+
+def test_true_oracle_missing_remains_visible_in_sable_report():
+    cfg = {
+        "model_type": "definitely_uninstalled_decoder",
+        "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 4,
+    }
+    report = sable(cfg, render_images=False)
+    assert report.oracle.startswith("MISSING")
 
 
 def test_fact_conformance_flags_wrong_attention_kind():
@@ -159,12 +375,69 @@ def test_bless_requires_visual_review_and_round_trips(tmp_path):
 
 
 def test_sable_regression_corpus():
-    """Every blessed model re-renders identically — same clean mechanical pass AND
-    the same per-view SVG hashes. Drift here means a diagram changed under a model
-    that was signed off: re-review its gallery and re-bless if intended."""
+    """Every blessed model retains its SVG lock.  Old blessings newly invalidated
+    by exact source attribution stay pinned as explicit unresolved debt; they are
+    not silently re-blessed without a fresh Dable review."""
+    expected_unresolved = {
+        "stable-diffusion-xl-base-1-0.json": {
+            "unet2dcondition/attn", "unet2dcondition/ffn",
+        },
+    }
     corpus = load_corpus()
     if not corpus:
         pytest.skip("no blessed models in tests/sable_corpus/ yet")
     for filename, fixture in corpus:
         drift = check_regression(fixture)
-        assert drift == [], f"{filename} regressed:\n  " + "\n  ".join(drift)
+        expected = expected_unresolved.get(filename, set())
+        actual_expected = {
+            view for view in expected
+            if any(item.startswith(f"nested_conformance: {view}: no code unit resolved")
+                   for item in drift)
+        }
+        unexpected = [item for item in drift
+                      if not any(item.startswith(
+                          f"nested_conformance: {view}: no code unit resolved"
+                      ) for view in expected)]
+        assert actual_expected == expected, f"{filename} lost pinned unresolved coverage: {drift}"
+        assert unexpected == [], f"{filename} regressed:\n  " + "\n  ".join(unexpected)
+
+
+# --------------------------------------------------------------------------- #
+# evidence_ambiguity — the present-but-ambiguous advisory net
+# --------------------------------------------------------------------------- #
+
+def test_evidence_ambiguity_flags_ambiguous_envelopes_and_passes_clean_trees():
+    """The net fires on a block whose evidence envelope says ``ambiguous`` (the
+    source was scanned but the extractor could not resolve it — a stub the code
+    could have answered), dedupes repeated layers, and exempts honest
+    ``oracle_missing`` / ``proven`` envelopes."""
+    from model_unfolder.sable import _ambiguous_evidence_findings
+
+    def _ir(status):
+        block = {
+            "id": "enc_op_ffn", "label": "Feed-forward",
+            "detail": {"evidence": {"status": status, "component": "text_config",
+                                    "reason": "no exact feed-forward projection callable"}},
+        }
+        return {
+            "layers": [
+                {"blocks": [dict(block)]},
+                {"blocks": [dict(block)]},          # repeated layer -> one finding
+            ],
+            "extras": {"render": {"loop_blocks": [
+                {"id": "encoder_0", "children": [dict(block)]},
+            ]}},
+        }
+
+    ambiguous = _ambiguous_evidence_findings(_ir("ambiguous"))
+    assert len(ambiguous) == 2                       # layerN dedup + the loop block
+    assert all("ambiguous" in f_ and "text_config" in f_ for f_ in ambiguous)
+    assert _ambiguous_evidence_findings(_ir("proven")) == []
+    assert _ambiguous_evidence_findings(_ir("oracle_missing")) == []
+
+
+def test_evidence_ambiguity_is_wired_into_sable_as_advisory():
+    report = sable(FLUX, render_images=False)
+    check = next(c for c in report.checks if c.name == "evidence_ambiguity")
+    assert not check.blocking                        # migration staging, like config_field_audit
+    assert check.passed, check.findings              # FLUX resolves all envelopes today

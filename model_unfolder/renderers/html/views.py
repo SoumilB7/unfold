@@ -5,7 +5,6 @@ from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
-    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -84,6 +83,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     is_diffusion = _is_diffusion_architecture(ir)
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
+    group_indices = (info.get("dominant") or {}).get("indices")
+    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
+    repeated_region = repeat_n != 1
 
     # Side blocks live OFF the central column.  They share a row with the block
     # they feed but get their own offset x-position and explicit connections.
@@ -94,6 +96,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    position_evidence = ((ir.get("extras") or {}).get("position_encoding") or {})
+    position_mechanisms = position_evidence.get("mechanisms") or [] \
+        if isinstance(position_evidence, dict) else []
+    has_absolute_position = any(
+        item.get("kind") in {"learned_absolute", "fixed_absolute"}
+        and item.get("application") == "embedding_add"
+        for item in position_mechanisms if isinstance(item, dict)
+    )
     modality_inputs = modalities.get("inputs") or {}
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
@@ -153,22 +163,50 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     inner_y = 200 + mtp_pad
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
+    position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
     if has_modality_fusion and not has_cross_attention_fusion:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292)
     else:
-        h = inner_y + inner_h + 232
+        h = inner_y + inner_h + 232 + position_pad
     w = 960 if needs_wide_arch else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
-    parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
+    if repeated_region:
+        parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     # --- 2. Model-level scaffold (positions tracked by total height h) ---
     if has_modality_fusion:
         tok_text, embed, stack_input = draw_multimodal_input_scaffold(
             parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h, modalities,
         )
+    elif has_absolute_position:
+        tok_text = _rect_block(parts, info, shadow_id, "tok_text",
+                               cx - 280, h - 100, 220, 44,
+                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
+                               resolved=True)
+        position_ids = _rect_block(parts, info, shadow_id, "position_ids",
+                                   cx + 60, h - 100, 220, 44,
+                                   _block_label(info, "position_ids", "Position IDs"), font_size=17,
+                                   resolved=True)
+        embed = _rect_block(parts, info, shadow_id, "embed",
+                            cx - 300, h - 174, 260, 44,
+                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
+                            resolved=True)
+        position_embed = _rect_block(parts, info, shadow_id, "position_embed",
+                                     cx + 40, h - 174, 260, 44,
+                                     _block_label(info, "position_embed", "Learned Position Embedding"),
+                                     font_size=15, resolved=True)
+        position_add = _plus_block(parts, info, shadow_id, "position_add",
+                                   cx, h - 230, sym="+", clickable=True)
+        parts.append(_v_line(tok_text, embed, arrow_id))
+        parts.append(_v_line(position_ids, position_embed, arrow_id))
+        parts.append(_elbow_vh(embed["cx"], embed["top"],
+                               position_add["left"] - GAP, position_add["cy"], arrow_id))
+        parts.append(_elbow_vh(position_embed["cx"], position_embed["top"],
+                               position_add["right"] + GAP, position_add["cy"], arrow_id))
+        stack_input = position_add
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
@@ -227,7 +265,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     # --- 4. Linear chain arrows ---
     chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
-    if not has_modality_fusion:
+    if not has_modality_fusion and not has_absolute_position:
         chain.insert(0, tok_text)
     merge_geom = block_pos.get(merge_id) if merge_id else None
     for src, dst in zip(chain, chain[1:]):
@@ -292,24 +330,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # group's layer count — not the global total — to stay consistent with its
     # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
     # indices are available (single homogeneous stack ⇒ identical anyway).
-    group_indices = (info.get("dominant") or {}).get("indices")
-    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
-    parts.append(_svg_tag("rect", {
-        "x": inner_x + inner_w - 78, "y": inner_y + 12,
-        "width": 66, "height": 26, "rx": 13, "ry": 13,
-        "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
-    }))
-    parts.append(_svg_text(
-        inner_x + inner_w - 45, inner_y + 25,
-        f"x {repeat_n}",
-        {"text-anchor": "middle", "dominant-baseline": "central",
-         "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
-    ))
+    if repeated_region:
+        parts.append(_svg_tag("rect", {
+            "x": inner_x + inner_w - 78, "y": inner_y + 12,
+            "width": 66, "height": 26, "rx": 13, "ry": 13,
+            "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
+        }))
+        parts.append(_svg_text(
+            inner_x + inner_w - 45, inner_y + 25,
+            f"x {repeat_n}",
+            {"text-anchor": "middle", "dominant-baseline": "central",
+             "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
+        ))
     # Optional caption under the × N badge — clarifies what the repeat means when
     # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
     # to the badge so it reads as a footnote to the repeat count.
     repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
-    if repeat_note:
+    if repeat_note and repeated_region:
         note_y = inner_y + 50
         for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
             parts.append(_svg_text(

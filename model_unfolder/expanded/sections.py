@@ -72,6 +72,26 @@ def build_io(raw: dict) -> dict[str, Any]:
             "trace":         {"ir_path": "extras.render.model_blocks.embed"},
         }),
     }
+    position = ((raw.get("extras") or {}).get("position_encoding") or {})
+    mechanisms = position.get("mechanisms") or [] if isinstance(position, dict) else []
+    if any(item.get("kind") in {"learned_absolute", "fixed_absolute"} for item in mechanisms
+           if isinstance(item, dict)):
+        out["position_ids"] = {
+            "kind": "position_ids",
+            "shape": ["batch", "sequence"],
+            "trace": {"ir_path": "extras.render.model_blocks.position_ids"},
+        }
+        out["position_embedding"] = drop_none({
+            "operation": "embedding_lookup",
+            "embedding_dim": hidden,
+            "output_width": hidden,
+            "trace": {"ir_path": "extras.render.model_blocks.position_embed"},
+        })
+        out["position_add"] = {
+            "operation": "elementwise_add",
+            "inputs": ["token_embedding", "position_embedding"],
+            "trace": {"ir_path": "extras.render.model_blocks.position_add"},
+        }
     if fusion:
         out["stack_input"] = drop_none({
             "kind":          (fusion.get("output") or {}).get("kind"),

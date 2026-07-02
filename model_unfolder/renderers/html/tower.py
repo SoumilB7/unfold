@@ -28,6 +28,11 @@ _KIND_TO_NODE = {
     "moe": "ffn",
     "embedding": "embedding",
     "linear": "linear",
+    "conv": "conv",
+    "activation": "activation",
+    "reshape": "reshape",
+    "slice": "slice",
+    "opaque": "opaque",
     "residual_add": "residual_add",
     "gate_mul": "gate_mul",
     "port": "port",
@@ -73,7 +78,16 @@ def tower_graph(spec: dict) -> Graph:
             default_kind="port", static=source.get("static", True))
     for block in spec.get("pre") or []:
         add(block)
-    cell_ids = [add(block) for block in spec.get("cell") or []]
+    cell_groups: list[tuple[list[str], object, object]] = []
+    if spec.get("cells"):
+        cell_ids = []
+        for cell_spec in spec.get("cells") or []:
+            ids = [add(block) for block in cell_spec.get("cell") or []]
+            cell_ids.extend(ids)
+            cell_groups.append((ids, cell_spec.get("repeat"), cell_spec.get("repeat_label")))
+    else:
+        cell_ids = [add(block) for block in spec.get("cell") or []]
+        cell_groups.append((cell_ids, spec.get("repeat"), spec.get("repeat_label")))
     for block in spec.get("post") or []:
         add(block)
     output = spec.get("output")
@@ -94,15 +108,15 @@ def tower_graph(spec: dict) -> Graph:
         side_inputs.append(SideInput(nb["id"], si["target"], si.get("side", "right")))
 
     # A ``cell`` is a repeated stack: it frames with an "× N" pill (a known count,
-    # or "× N" when the count is unknown).  The ONE case with no pill is a cell
-    # that runs exactly once (× 1 is noise) — unless it carries an explicit label.
+    # or "× N" when the count is unknown).  A cell that runs exactly once earns
+    # neither the pill NOR the repeat frame — even if a caller supplies a label.
+    # A semantic caption must not fabricate repeated-region presentation.
     # (A genuinely non-repeated unit, like a ResNet residual cell, is declared as
     # ``pre`` instead of ``cell`` so it never frames as a repeat.)
     groups = []
-    repeat = spec.get("repeat")
-    repeat_label = spec.get("repeat_label")
-    if cell_ids and (repeat_label or repeat != 1):
-        groups.append(Group(cell_ids, repeat=repeat, label=repeat_label))
+    for ids, repeat, repeat_label in cell_groups:
+        if ids and repeat != 1:
+            groups.append(Group(ids, repeat=repeat, label=repeat_label))
     return Graph(nodes=nodes, flow=flow, edges=edges, groups=groups,
                  side_inputs=side_inputs, note=spec.get("note"))
 

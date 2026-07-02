@@ -5,8 +5,16 @@
 # can assert "the picture matches the code" both directions. Add a new spelling
 # HERE, never in code. Flow style ([a, b]) so it parses without PyYAML.
 #
-# NOTE: gate_mul (×) and residual_add (⊕) are NOT call tokens — they come from
-# binary-operator detection (`*` / `+` on tensors) in the extractor, not here.
+# NOTE: gate_mul (×) and residual_add (⊕) come mainly from binary-operator
+# detection (`*` / `+` on tensors) in the extractor — EXCEPT a residual-add
+# written as a HELPER CALL (Falcon's `dropout_add(sublayer, residual)`), which a
+# `+` scan can't see; listing the helper here lets both the op-conformance set
+# and the decoder-layer topology reader treat it as the residual merge it is.
+# A MoE expert-COMBINE is an additive accumulation written as a scatter, not a `+`:
+# ``final_hidden_states.index_add_(0, token_idx, current)`` (Mixtral/Qwen3/Olmoe
+# fused experts) — the ⊕ the moe drill draws. Listing the scatter helpers lets the
+# combine be seen as the residual_add it is.
+residual_add: [dropout_add, index_add_, index_add, scatter_add_, scatter_add]
 
 # torch.cat / .concat -> a real merge (the ‖ the diagram draws).
 concat: [cat, concat]
@@ -14,6 +22,21 @@ concat: [cat, concat]
 slice: [split, chunk, unbind, tensor_split]
 # Routed selection (MoE / DSA indexer top-k) -> route.
 route: [topk]
+# Score / apply-V matrix products (the eager attention compute, an explicit QK^T
+# or weights·V) -> dot_product. The drill draws these as ⊙ score/apply nodes; at
+# BLOCK altitude it is omit_global'd (a sub-module concern), so this is for the
+# recursive drill-conformance net.
+dot_product: [matmul, bmm, einsum, baddbmm]
+# Recurrent/linear token-mixing kernels are the attention-core operation even
+# when dispatched through a custom library function rather than SDPA.
+attention: [chunk_gated_delta_rule, recurrent_gated_delta_rule, torch_chunk_gated_delta_rule, torch_recurrent_gated_delta_rule]
+conv: [conv1d, conv2d, conv3d]
+# A FUNCTIONAL linear -> linear. ``self.proj(x)`` is typed via the role table, but
+# a FUSED expert calls ``nn.functional.linear(x, self.gate_up_proj[i])`` on a
+# stacked weight Parameter (MixtralExperts / DeepseekV3NaiveMoe) — a real linear
+# the role table can't see (no self.<field> module). Without this the expert
+# drill's per-expert linears read as fabricated.
+linear: [linear]
 # Activation function calls invoked directly (F.gelu(...), gelu(...), softmax).
 activation: [gelu, silu, relu, geglu, swiglu, gelu_new, quick_gelu, sigmoid, softmax]
 # Tensor-shape regroupings the diagram treats as a reshape box (or omits) — never
@@ -21,4 +44,4 @@ activation: [gelu, silu, relu, geglu, swiglu, gelu_new, quick_gelu, sigmoid, sof
 reshape: [reshape, view, transpose, permute, flatten, unsqueeze, squeeze, unpatchify, pixel_shuffle, expand, repeat_interleave]
 # Pure plumbing that is NEVER an op (dtype / contiguity / masking / introspection)
 # — dropped entirely from the op-set.
-ignore: [to, clip, clamp, contiguous, type_as, detach, float, half, bool, long, int, masked_fill, size, shape, len, type, device, dtype, dim, unsqueeze_, print, getattr, isinstance, super]
+ignore: [to, clip, clamp, contiguous, type_as, detach, float, half, bool, long, int, masked_fill, size, shape, len, type, device, dtype, dim, unsqueeze_, print, getattr, isinstance, super, index_copy_]

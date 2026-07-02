@@ -1,7 +1,6 @@
 """Low-level SVG primitives and routing helpers."""
 from __future__ import annotations
 
-import itertools
 from typing import Any
 
 from .theme import BLOCK_LABEL_FONT_SIZE, C, FONT_HEAD, FONT_MONO, GAP
@@ -15,12 +14,9 @@ BLOCK_LABEL_FONT_BOOST = 3
 # layer-groups bake identical copies), so keying ids only by (mount, view) collided —
 # and in the browser url(#dup) binds to the FIRST match, which is a hidden drill panel,
 # so the arrowheads silently vanished (rsvg renders each svg isolated, hiding it). A
-# per-render counter makes each diagram's defs ids globally unique within the document.
-_ID_SEQ = itertools.count()
-
-
 def _ids(mount_id: str, view: str) -> tuple[str, str]:
-    n = next(_ID_SEQ)
+    from .render_context import ensure_render_context
+    n = ensure_render_context().next_id()
     return f"{mount_id}-{view}-{n}-arrow", f"{mount_id}-{view}-{n}-shadow"
 
 
@@ -280,11 +276,13 @@ def _formula_block(
     h: float,
     *,
     numerator: str = "Q K^T",
-    denominator: str = "sqrt(dim)",
+    denominator: str | None = "sqrt(dim)",
     clickable: bool = True,
 ) -> dict:
     """Green fraction block (numerator over a rule over denominator) — the
-    scaled-score step of SDPA-style attention."""
+    scaled-score step of SDPA-style attention.  A falsy ``denominator`` draws
+    the numerator alone, centred (a code-proven UNscaled score — T5-family —
+    where painting the sqrt would fabricate an op the forward never performs)."""
     children = [
         _node_title(info, node_id),
         _svg_tag("rect", {
@@ -292,22 +290,31 @@ def _formula_block(
             "fill": C["block"], "stroke": C["block_alt"], "stroke-width": 0.6,
             "filter": f"url(#{shadow_id})",
         }),
-        _svg_text(x + w / 2, y + h * 0.32, numerator, {
+    ]
+    if denominator:
+        children += [
+            _svg_text(x + w / 2, y + h * 0.32, numerator, {
+                "text-anchor": "middle", "dominant-baseline": "central",
+                "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 22,
+                "pointer-events": "none",
+            }),
+            _svg_tag("line", {
+                "x1": x + 72, "y1": y + h * 0.52, "x2": x + w - 72, "y2": y + h * 0.52,
+                "stroke": C["text_block"], "stroke-width": 1.7,
+                "stroke-linecap": "round", "pointer-events": "none",
+            }),
+            _svg_text(x + w / 2, y + h * 0.73, denominator, {
+                "text-anchor": "middle", "dominant-baseline": "central",
+                "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 19,
+                "pointer-events": "none",
+            }),
+        ]
+    else:
+        children.append(_svg_text(x + w / 2, y + h / 2, numerator, {
             "text-anchor": "middle", "dominant-baseline": "central",
             "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 22,
             "pointer-events": "none",
-        }),
-        _svg_tag("line", {
-            "x1": x + 72, "y1": y + h * 0.52, "x2": x + w - 72, "y2": y + h * 0.52,
-            "stroke": C["text_block"], "stroke-width": 1.7,
-            "stroke-linecap": "round", "pointer-events": "none",
-        }),
-        _svg_text(x + w / 2, y + h * 0.73, denominator, {
-            "text-anchor": "middle", "dominant-baseline": "central",
-            "fill": C["text_block"], "font-family": FONT_HEAD, "font-size": 19,
-            "pointer-events": "none",
-        }),
-    ]
+        }))
     if clickable:
         parts.append(_svg_tag("g", {"class": "uf-node", "data-id": node_id}, "".join(children)))
     else:
@@ -348,7 +355,6 @@ def _window_strip(
         "x": active_x - 4, "y": strip_y - 4,
         "width": active_w + 8, "height": cell_h + 8, "rx": 7, "ry": 7,
         "fill": "none", "stroke": C["block"], "stroke-width": 1,
-        "stroke-dasharray": "4 3",
     }))
     parts.append(_svg_text(
         x + w / 2, strip_y + cell_h + 18,
@@ -462,7 +468,7 @@ def _v_seg(x: float, y1: float, y2: float, arrow_id: str) -> str:
     )
 
 
-def _elbow_vh(x1: float, y1: float, x2: float, y2: float, arrow_id: str) -> str:
+def _elbow_vh(x1: float, y1: float, x2: float, y2: float, arrow_id: str | None) -> str:
     if abs(x2 - x1) < 1 or abs(y2 - y1) < 1:
         d = f"M {_num(x1)} {_num(y1)} L {_num(x2)} {_num(y2)}"
     else:
@@ -569,7 +575,7 @@ def _branch_dot(cx: float, cy: float) -> str:
     return _svg_tag("circle", {"cx": cx, "cy": cy, "r": 3.2, "fill": C["arrow"]})
 
 
-def _path(d: str, arrow_id: str) -> str:
+def _path(d: str, arrow_id: str | None) -> str:
     return _svg_tag(
         "path",
         {
@@ -579,7 +585,7 @@ def _path(d: str, arrow_id: str) -> str:
             "stroke-width": 1.6,
             "stroke-linecap": "round",
             "stroke-linejoin": "round",
-            "marker-end": f"url(#{arrow_id})",
+            "marker-end": f"url(#{arrow_id})" if arrow_id else None,
         },
     )
 

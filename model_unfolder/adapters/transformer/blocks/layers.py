@@ -181,8 +181,8 @@ def single_stream_decoder_layer_blocks(
     attn_branch.update({"branch_side": "left", "feeds": "ss_concat"})
 
     # The MLP's activation is never fabricated. When the config declares it, or the
-    # model class fixes it (Flux's gelu-approximate, surfaced via class_defaults and
-    # MARKED code-derived), name it; when nothing declares it, say so honestly
+    # model class fixes it (Flux's gelu-approximate, surfaced by reading the modeling
+    # source and MARKED code-derived), name it; when nothing declares it, say so honestly
     # (mirrors the standard FFN card). The label uses the clean math name (GELU),
     # never the backend spelling (gelu-approximate).
     act = getattr(ffn, "activation", None)

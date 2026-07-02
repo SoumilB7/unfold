@@ -38,7 +38,6 @@ from .modalities import (
 from .modality_views.audio import build_audio_encoder_view
 from .modality_views.video import build_video_encoder_view
 from .modality_views.vision_details import (
-    build_patch_embedding_view,
     build_vision_encoder_view,
     build_vision_mlp_view,
     build_vision_self_attention_view,
@@ -48,6 +47,11 @@ from .self_conditioning import build_self_conditioning_view
 from .per_layer_embedding import build_per_layer_embedding_view
 from .text_encoder import build_text_encoder_view
 from ..tower import build_tower_view
+from ..render_context import (
+    RenderContext,
+    activate_render_context,
+    current_render_context,
+)
 from .unet import (
     build_encoded_text_concat_view,
     build_unet_resnet_view,
@@ -65,6 +69,7 @@ class ViewCtx:
     ir: dict
     info: dict
     mount_id: str
+    render_context: RenderContext
 
     def render(self, block: dict) -> str | None:
         return render_view(self, block)
@@ -81,7 +86,32 @@ def view_key(block: dict) -> str | None:
 def render_view(ctx: ViewCtx, block: dict) -> str | None:
     """The single dispatcher: pick the layout by the block's ``view`` key."""
     fn = VIEW_REGISTRY.get(view_key(block))
-    return fn(ctx, block) if fn else None
+    if fn is None:
+        return None
+    scoped = dict(block)
+    detail = scoped.get("detail") if isinstance(scoped.get("detail"), dict) else {}
+    evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
+    provenance = ((ctx.ir.get("extras") or {}).get("source_provenance") or {}).get("components") or {}
+    component = (scoped.get("source_component") or scoped.get("component")
+                 or evidence.get("component"))
+    if not component:
+        marker = " ".join(str(scoped.get(key) or "") for key in ("id", "view", "kind")).lower()
+        domain = "vision" if "vision" in marker else "audio" if "audio" in marker else "root"
+        component = next(
+            (name for name in provenance if domain != "root" and domain in name.lower()),
+            "root",
+        )
+    scoped.setdefault("source_component", component)
+    source = provenance.get(component) if isinstance(provenance, dict) else None
+    if evidence.get("owner_class"):
+        scoped.setdefault("source_owner", evidence["owner_class"])
+    elif isinstance(source, dict) and source.get("architecture"):
+        scoped.setdefault("source_owner", source["architecture"])
+    dominant = ctx.info.get("dominant") if isinstance(ctx.info, dict) else None
+    if isinstance(dominant, dict) and dominant.get("sig") is not None:
+        scoped.setdefault("group_variant", dominant["sig"])
+    with ctx.render_context.block(scoped):
+        return fn(ctx, block)
 
 
 # --- Back-compat entry points (callers still pass ir / info / mount_id / block).
@@ -89,11 +119,30 @@ def render_view(ctx: ViewCtx, block: dict) -> str | None:
 # block vs sub-block table, nor a ``kind ==`` special-case.
 
 def render_block_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str | None:
-    return render_view(ViewCtx(ir, info, mount_id), block)
+    return _render_detail(ir, info, mount_id, block)
 
 
 def render_sub_block_detail(ir: dict, info: dict, mount_id: str, child: dict) -> str | None:
-    return render_view(ViewCtx(ir, info, mount_id), child)
+    return _render_detail(ir, info, mount_id, child)
+
+
+def _render_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str | None:
+    """Render one detail without leaving an implicit capture behind.
+
+    Full-document and Sable callers explicitly activate a call-local context;
+    reuse it so their diagnostics receive this graph.  Compatibility callers
+    that render a detail directly get a fresh context whose lifetime is exactly
+    this call.  Previously ``ViewCtx`` used ``ensure_render_context`` as a
+    default factory, which installed a context without a reset token.  Its old
+    events then contaminated the next unrelated ``Diagram.render_events()``.
+    """
+    context = current_render_context()
+    if context is not None:
+        return render_view(ViewCtx(ir, info, mount_id, context), block)
+
+    context = RenderContext()
+    with activate_render_context(context):
+        return render_view(ViewCtx(ir, info, mount_id, context), block)
 
 
 # --- Adapters bridging the recursive (ctx, block) signature onto the existing
@@ -176,7 +225,6 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "mla_query_path": _from_block(build_mla_query_path_view),
     "mla_kv_cache_path": _from_block(build_mla_kv_cache_view),
     "moe_expert": _from_block(build_moe_expert_view),
-    "vision_patch_embedding": _from_block(build_patch_embedding_view),
     "vision_encoder": _from_block(build_vision_encoder_view),
     "vision_self_attention": _from_block(build_vision_self_attention_view),
     "vision_mlp": _from_block(build_vision_mlp_view),

@@ -17,7 +17,9 @@ from .block_facts import ffn_from_block
 
 def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = None) -> str:
     ffn = ffn_from_block(block, info)
-    hidden = ir.get("hidden_size")
+    # The fact dict's own width wins — a tower's MoE must not inherit the host
+    # model's hidden size (same rule as the attention/FFN views).
+    hidden = ffn.get("hidden") or ir.get("hidden_size")
     n_total = ffn.get("num_experts")
     k = ffn.get("num_experts_per_tok")
     n_shared = ffn.get("num_shared_experts") or 0
@@ -36,8 +38,9 @@ def build_moe_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
              (f"in · {hidden:,}" if hidden else "in"), static=True),
         Node("router", "router", "Router"),
         *[Node(nid, "expert", lbl) for nid, lbl in experts],
-        # Tier-2 connector: the weighted-sum ⊕ (+ shared expert) — a glyph, no card.
-        Node("add_moe", "residual_add", static=True),
+        # Tier-2 connector: weighted routed outputs (+ shared expert) join here;
+        # its existing add_moe child card explains the operands.
+        Node("add_moe", "residual_add"),
         Node("moe_out", "port", static=True),
     ]
     # Routed experts fan out from the router; the shared expert (always-on) taps
@@ -78,7 +81,7 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
                 "activation": ffn.get("activation"),
                 "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
             },
-            ir.get("hidden_size"),
+            ffn.get("hidden") or ir.get("hidden_size"),
         ),
         _EXPERT_IDS,
     )

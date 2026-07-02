@@ -26,14 +26,20 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from model_unfolder import unfold
-from model_unfolder.block_schema import validate_click_coupling, validate_unique_ref_ids
+from model_unfolder.block_schema import (
+    validate_click_coupling,
+    validate_no_dotted_arrows,
+    validate_no_dotted_boundaries,
+    validate_unique_ref_ids,
+)
 from model_unfolder.renderers.html.block_views import registry as reg
 import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / PixArt / SDXL UNet)
 
 _BASE = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
              num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
 
-_VISION_CFG = {"depth": 4, "hidden_size": 128, "num_heads": 8, "patch_size": 14, "in_channels": 3}
+_VISION_CFG = {"model_type": "qwen2_vl", "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+               "depth": 4, "hidden_size": 128, "num_heads": 8, "patch_size": 14, "in_channels": 3}
 _GRID_VISION = {**_VISION_CFG, "spatial_merge_size": 2, "temporal_patch_size": 2}
 
 # A corpus designed to span EVERY view archetype (offline — synthetic + diffusion dicts).
@@ -65,6 +71,32 @@ CORPUS = {
     "dit_mmdit":    td.FLUX,        # attention, ffn, scheduler_step, vae_decoder(_block), text_encoder, encoded_text_concat
     "dit_cross":    td.PIXART,      # cross_attention
     "unet":         td.SDXL_UNET,   # unet, unet_stage, unet_resnet, unet_transformer
+    # A pipeline whose text encoder is a HETEROGENEOUS stack (sliding/global
+    # alternation) — exercises the grouped encoder tower (per-layer-type cells
+    # + per-group drills) through every universal net.
+    "dit_hybrid_encoder": {**td.FLUX, "_text_encoder_configs": {
+        "text_encoder": {
+            "_class_name": "LlamaModel", "architectures": ["LlamaForCausalLM"],
+            "model_type": "llama", "num_hidden_layers": 24, "hidden_size": 2048,
+            "num_attention_heads": 16, "num_key_value_heads": 4,
+            "intermediate_size": 5632, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+            "vocab_size": 32000, "max_position_embeddings": 8192,
+            "rope_theta": 10000.0, "sliding_window": 4096,
+            "layer_types": ["sliding_attention", "full_attention"] * 12,
+        },
+    }},
+    # An MoE text encoder — the canonical router/top-k/expert drill transplanted
+    # into a supporting tower, checked by every universal net.
+    "dit_moe_encoder": {**td.FLUX, "_text_encoder_configs": {
+        "text_encoder": {
+            "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],
+            "model_type": "mixtral", "num_hidden_layers": 32, "hidden_size": 4096,
+            "num_attention_heads": 32, "num_key_value_heads": 8,
+            "intermediate_size": 14336, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+            "vocab_size": 32000, "max_position_embeddings": 32768,
+            "rope_theta": 1e6, "num_local_experts": 8, "num_experts_per_tok": 2,
+        },
+    }},
 }
 
 # Registered FALLBACK views with no built-in model emitter — exercised by their own
@@ -112,6 +144,14 @@ def test_no_duplicate_marker_ids_anywhere():
     for name, cfg in CORPUS.items():
         problems = validate_unique_ref_ids(unfold(cfg).to_html(standalone=True))
         assert not problems, f"{name}: duplicate marker/def ids:\n  " + "\n  ".join(problems)
+
+
+def test_no_dotted_arrows_or_boundaries_anywhere():
+    """Solid flow and region strokes are a corpus-wide design invariant."""
+    for name, cfg in CORPUS.items():
+        html = unfold(cfg).to_html(standalone=True)
+        problems = validate_no_dotted_arrows(html) + validate_no_dotted_boundaries(html)
+        assert not problems, f"{name}: dotted structural stroke(s):\n  " + "\n  ".join(problems)
 
 
 def test_no_dangling_connectors_anywhere():
@@ -166,6 +206,40 @@ def test_no_all_static_drill_views_anywhere():
         "all-static drill view(s) — every node static, so clicking opens nothing "
         "(give the block children / render clickable):\n  "
         + "\n  ".join(f"{vk}: {t}" for vk, t in uniq)
+    )
+
+
+def test_no_static_connectors_in_any_graph_view():
+    """Tier-2 connector glyphs are clickable explanations, never static layout."""
+    import sys
+    import model_unfolder.renderers.html.graph_engine as ge
+
+    connector_kinds = {"residual_add", "gate_mul", "dot_product", "concat"}
+    violations: list[tuple[str, str]] = []
+
+    def _cap(graph, info, mount_id, view_key, title, **kw):
+        for node in graph.nodes:
+            if node.kind in connector_kinds and node.static:
+                violations.append((view_key, node.id))
+        return _orig(graph, info, mount_id, view_key, title, **kw)
+
+    _orig = ge.render_graph
+    patched = [m for n, m in sys.modules.items()
+               if "block_views" in n and hasattr(m, "render_graph")]
+    ge.render_graph = _cap
+    for module in patched:
+        module.render_graph = _cap
+    try:
+        for cfg in CORPUS.values():
+            unfold(cfg).to_html(standalone=True)
+    finally:
+        ge.render_graph = _orig
+        for module in patched:
+            module.render_graph = _orig
+
+    assert not violations, (
+        "static Tier-2 connector(s) — give each glyph a card/description:\n  "
+        + "\n  ".join(f"{view}: {node}" for view, node in sorted(set(violations)))
     )
 
 

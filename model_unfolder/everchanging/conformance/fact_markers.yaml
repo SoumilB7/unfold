@@ -23,3 +23,9 @@ rotary: [rotary, freqs_cis]
 # attention PROCESSOR, e.g. SanaLinearAttnProcessor2_0) that mean the self-attention
 # is LINEAR attention, not softmax. Matched case-sensitively (class names).
 linear_attn: [LinearAttn, LinearAttention]
+
+# Class-name substrings (in a block's __init__) that mean the FEED-FORWARD is a
+# gated CONV Mix-FFN (Sana's GLUMBConv: 1×1 conv → depthwise 3×3 → SiLU gate →
+# 1×1 conv), not a Linear MLP — same "ffn" op-role, different structure, so a
+# presence-set can't tell them apart. Matched case-sensitively (class names).
+conv_ffn: [GLUMBConv, MBConv]

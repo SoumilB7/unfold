@@ -11,7 +11,7 @@ FFN — routes through :func:`build_ffn_view` with the clicked block's facts, so
 """
 from __future__ import annotations
 
-from ....opgraph import ffn_region
+from ....opgraph import ffn_region, rename_ops
 from ..graph_engine import render_graph
 from ..op_render import region_to_graph
 from .block_facts import ffn_from_block
@@ -21,6 +21,15 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     ffn = ffn_from_block(block, info)
     hidden = ffn.get("hidden") or ir.get("hidden_size")
     region = ffn_region(ffn, hidden)
+    namespace = str(((block or {}).get("detail") or {}).get("op_namespace") or "")
+    if namespace:
+        # Supporting towers can place several independent FFNs at the same card
+        # depth (CLIP + T5). Keep the static input port stable, but namespace
+        # every drawable operation so one encoder cannot satisfy another's click.
+        region = rename_ops(
+            region,
+            {op.id: f"{namespace}{op.id}" for op in region.ops if op.id != "hidden"},
+        )
     # The ops are click-drill targets when the block declares child cards for them
     # (Linear in / activation / Linear out / gate·up·× ) — same rule as attention;
     # a block without children renders as a leaf summary.

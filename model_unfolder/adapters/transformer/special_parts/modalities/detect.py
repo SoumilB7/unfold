@@ -1,14 +1,13 @@
-"""Structural multimodal feature detection.
+"""Config-declared multimodal feature detection.
 
-Model-family checks live here as low-priority compatibility hints.  Callers
-should prefer the structural predicates in this module instead of checking
-``model_type`` directly.
+Structural source facts live in the qualified evidence modules.  This file is
+limited to numeric/flag declarations and never maps model identity to a shape.
 """
 from __future__ import annotations
 
 from typing import Any
 
-from .accessors import architectures_text, drop_none, first, model_type
+from .accessors import drop_none, first
 
 
 def has_cross_attention_adapter(cfg: Any, text_cfg: Any | None = None) -> bool:
@@ -19,9 +18,7 @@ def has_cross_attention_adapter(cfg: Any, text_cfg: Any | None = None) -> bool:
         return True
     if text_cfg is not None and first(text_cfg, "cross_attention_frequency", "cross_attention_layers") is not None:
         return True
-    if first(cfg, "vision_feature_layer", "vision_feature_select_strategy") is not None:
-        return model_family_hint(cfg) in {"mllama", "llama4"}
-    return model_family_hint(cfg) in {"mllama", "llama4"}
+    return False
 
 
 def is_unified_grid_stream(cfg: Any, vision_cfg: Any | None = None) -> bool:
@@ -36,32 +33,12 @@ def is_unified_grid_stream(cfg: Any, vision_cfg: Any | None = None) -> bool:
         return True
     if vision_cfg is not None and first(vision_cfg, "spatial_merge_size", "temporal_patch_size") is not None:
         return True
-    return model_family_hint(cfg) == "qwen_vl"
+    return False
 
 
 def has_video_input(cfg: Any) -> bool:
     """Return true when config exposes video placeholder/token fields."""
     return first(cfg, "video_token_id", "video_token_index", "video_token") is not None
-
-
-def has_prefix_soft_tokens(cfg: Any) -> bool:
-    """Return true for models that prepend modality tokens before text tokens."""
-    if first(cfg, "prefix_soft_tokens", "prepend_visual_tokens", "num_prefix_tokens") is not None:
-        return True
-    return model_family_hint(cfg) == "paligemma"
-
-
-def fusion_kind(cfg: Any, text_cfg: Any | None, vision_cfg: Any | None) -> str:
-    """Classify the model-level multimodal fusion mechanism."""
-    if has_cross_attention_adapter(cfg, text_cfg):
-        return "cross_attention"
-    if is_unified_grid_stream(cfg, vision_cfg):
-        return "unified_multimodal_stream"
-    if has_prefix_soft_tokens(cfg):
-        return "prefix_soft_tokens"
-    if placeholders(cfg):
-        return "placeholder_replace"
-    return "modality_token_fusion"
 
 
 def cross_attention_layers(cfg: Any, text_cfg: Any | None = None) -> list[int] | None:
@@ -124,46 +101,3 @@ def image_placeholder(cfg: Any) -> dict | None:
         return None
     return drop_none({"kind": "image_placeholder", "token_id": token_id, "token": token})
 
-
-def vision_family_hint(cfg: Any, vision_cfg: Any) -> str | None:
-    """Return a compatibility hint for vision tower labels."""
-    root_hint = model_family_hint(cfg)
-    vision_type = model_type(vision_cfg)
-    arch = architectures_text(vision_cfg)
-    if root_hint in {"mllama", "llama4"} or vision_type == "mllama_vision_model" or "mllama" in arch:
-        return "mllama_vision_model"
-    if root_hint == "gemma4" or "gemma4" in vision_type or "gemma4" in arch:
-        return "gemma4_vision"
-    if root_hint == "qwen_vl":
-        return "qwen_vl_vision_transformer"
-    if root_hint == "pixtral" or "pixtral" in vision_type or "pixtral" in arch:
-        return "pixtral_vision_transformer"
-    if "siglip" in vision_type or "siglip" in arch:
-        return "siglip_vision_transformer"
-    return None
-
-
-def audio_family_hint(cfg: Any, audio_cfg: Any) -> str | None:
-    """Return a compatibility hint for audio tower labels."""
-    audio_type = model_type(audio_cfg)
-    arch = architectures_text(audio_cfg)
-    if model_family_hint(cfg) == "gemma4" or "gemma4" in audio_type or "gemma4" in arch:
-        return "gemma4_audio"
-    return None
-
-
-def model_family_hint(cfg: Any) -> str | None:
-    """Return a normalized model-family hint for compatibility fallbacks."""
-    mt = model_type(cfg)
-    arch = architectures_text(cfg)
-    if mt in {"mllama", "llama4"} or "mllama" in arch:
-        return mt if mt in {"mllama", "llama4"} else "mllama"
-    if mt.startswith(("qwen2_vl", "qwen2_5_vl", "qwen3_vl")):
-        return "qwen_vl"
-    if mt == "paligemma":
-        return "paligemma"
-    if mt == "gemma4" or "gemma4" in arch:
-        return "gemma4"
-    if mt == "pixtral" or "pixtral" in arch:
-        return "pixtral"
-    return None

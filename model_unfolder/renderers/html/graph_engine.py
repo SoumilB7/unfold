@@ -2,11 +2,11 @@
 
 Given a declarative graph (nodes + bottom→top flow + residual edges + repeat
 groups + branch/merge parallels), this places the column, draws the flow arrows,
-the residual side-loops, the dashed repeat-frame with its ``× N`` badge, and the
+the residual side-loops, the solid repeat-frame with its ``× N`` badge, and the
 parallel branch-and-merge sections, then self-sizes the canvas.
 
 Crucially the *concepts* live here once: a residual is always
-:func:`~.svg._residual_loop_right`; a repeat is always the dashed frame + badge;
+:func:`~.svg._residual_loop_right`; a repeat is always the solid frame + badge;
 a gate∥up / Q∥K∥V branch is always a :class:`~.graph.Parallel`.  Views stop
 re-implementing them (and stop mushing several ops into one labelled box, because
 they declare typed nodes instead of drawing rectangles).
@@ -33,6 +33,7 @@ from .svg import (
     _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
+from .render_context import ensure_render_context, release_render_context
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
@@ -47,20 +48,24 @@ _INTRA_GAP = 24.0         # gap between stacked nodes inside one lane
 _BRANCH_STUB = 48.0       # split-dot → lane-bottom rise
 _MERGE_STUB = 46.0        # lane-top → merge-node rise
 
-# --- Dable wiring log -------------------------------------------------------
-# Every graph render runs the dangling detector and appends any finding here.
-# A validator (Diagram.wiring_problems) clears, re-renders, and drains it — so
-# a dangling ⊕/×/⊙ is caught wherever it is drawn, not just in pinned tests.
-_WIRING_LOG: list[str] = []
+# --- Recursive-conformance render log ---------------------------------------
+# render_graph is the ONE chokepoint every drill graph passes through, so it is
+# also where we capture the op-kind set the renderer actually DRAWS for each view
+# (architecture + every drill, to the leaves). The op-conformance net drains this
+# to diff each drill's drawn op-set against its backing sub-module ``forward()`` —
+# the same "ground truth is the rendered HTML" rail as the wiring log, one altitude
+# deeper than the top-level layer diff. Each entry is one rendered graph:
+# ``(view_key, drawn_op_kinds, node_ids)``. Many layer-groups bake byte-identical
+# drills, so callers dedup by ``view_key`` (the reader keeps the richest set).
+def reset_render_log() -> None:
+    ensure_render_context().events.clear()
 
 
-def reset_wiring_log() -> None:
-    _WIRING_LOG.clear()
-
-
-def drain_wiring_log() -> list[str]:
-    found = list(_WIRING_LOG)
-    _WIRING_LOG.clear()
+def drain_render_log() -> list[tuple[str, frozenset[str], frozenset[str]]]:
+    context = ensure_render_context()
+    found = [event.legacy_tuple() for event in context.events]
+    context.events.clear()
+    release_render_context(context)
     return found
 
 
@@ -74,9 +79,15 @@ def render_graph(
     min_width: int = 560,
     pad: int = 46,
 ) -> str:
+    context = ensure_render_context()
     by_id = graph.by_id()
     for _p in wiring_problems(graph):           # Dable: flag dangling connectors
-        _WIRING_LOG.append(f"{view_key}: {_p}")
+        context.wiring_findings.append(f"{view_key}: {_p}")
+    context.record_graph(
+        view_key,
+        (n.kind for n in graph.nodes),
+        (n.id for n in graph.nodes),
+    )
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []
     regions: list[dict] = []
@@ -284,7 +295,25 @@ def _lane_draw_order(lanes: list, par_dst: str) -> list:
     what hid MLA's V→⊙ once DSA's sparse indexer added a 3rd lane and pushed KV to
     the middle. Stable sort — plain merge lanes keep their order in the centre,
     above-merge taps move outward — so the elbow always has room to render."""
-    return sorted(lanes, key=lambda ln: any(d != par_dst for d in (ln.dst or [])))
+    def reaches_above(lane) -> bool:
+        return any(d != par_dst for d in (lane.dst or []))
+
+    has_off_flow_tap = any(lane.src is not None and reaches_above(lane)
+                           for lane in lanes)
+
+    def slot(lane) -> int:
+        if not has_off_flow_tap:
+            return int(reaches_above(lane))
+        # With two distinct above-spine taps (ALiBi -> score add and V -> apply
+        # values), put them on opposite OUTER columns. Keeping both on the right
+        # either crosses the V rail or runs the ALiBi rail through the score box.
+        if reaches_above(lane) and lane.src is None:
+            return 0
+        if not reaches_above(lane):
+            return 1
+        return 2
+
+    return sorted(lanes, key=slot)
 
 
 def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, cx) -> None:
@@ -296,7 +325,7 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     """
     if par.src not in geom or par.dst not in geom:
         return
-    src_g, dst_g = geom[par.src], geom[par.dst]
+    src_g = geom[par.src]
     lanes = _lane_draw_order(par.norm_lanes(), par.dst)
     split_y = src_g["top"] - 16
     if any(lane.src is None for lane in lanes):
@@ -322,8 +351,27 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
     ext_extra = _ext_source_extra(par, by_id, set(geom))
     lane_bottom = src_g["top"] - _BRANCH_STUB - ext_extra   # lanes' first-node bottom edge
 
+    # Several parallel lanes may enter the same small connector from one side
+    # (MoE experts → weighted-sum ⊕). Giving every route its own arrowhead stacks
+    # them into an X-shaped blot. Same-side lanes join a short bus with one arrow;
+    # a centred lane enters the connector from the bottom.
+    circle_entries: dict[tuple[int, str], tuple[str, float, int]] = {}
+    grouped_entries: dict[tuple[str, str], list[int]] = {}
+    for lane_idx, (lane_x, lane) in enumerate(zip(xs, lanes)):
+        for dst_id in (lane.dst or [par.dst]):
+            d_g = geom.get(dst_id)
+            d_node = by_id.get(dst_id)
+            if d_g is None or d_node is None or d_node.glyph().shape != "circle":
+                continue
+            side = "left" if lane_x < d_g["left"] else "right" if lane_x > d_g["right"] else "bottom"
+            grouped_entries.setdefault((dst_id, side), []).append(lane_idx)
+    for (dst_id, side), lane_indices in grouped_entries.items():
+        for entry_idx, lane_idx in enumerate(lane_indices):
+            offset = (entry_idx - (len(lane_indices) - 1) / 2) * 7.0 if side != "bottom" else 0.0
+            circle_entries[(lane_idx, dst_id)] = (side, offset, len(lane_indices))
+
     lane_geoms: list[list[dict]] = []
-    for lane_x, lane in zip(xs, lanes):
+    for lane_idx, (lane_x, lane) in enumerate(zip(xs, lanes)):
         nodes = [by_id[i] for i in lane.ids if i in by_id]
         if not nodes:
             lane_geoms.append([])
@@ -381,15 +429,56 @@ def _draw_parallel(parts, regions, info, shadow_id, arrow_id, par, by_id, geom, 
                 lane_y = min(d_g["bottom"] + 26, (top_g["top"] + entry_y) / 2)
                 parts.append(_merge_up_route(lane_x, top_g["top"], entry_x, entry_y, lane_y, arrow_id))
             else:
-                # A circle (⊕/⊗/⊙) or a target further up the spine: enter the
-                # nearest side at its centre height.
-                if lane_x < d_g["left"]:
-                    target_x = d_g["left"] - GAP
-                elif lane_x > d_g["right"]:
-                    target_x = d_g["right"] + GAP
+                # A rectangular target further up the spine (linear attention's
+                # V lane, cross-attention side state) enters its nearest SIDE at
+                # centre height. It must not collapse onto the spine/bottom port.
+                if d_node is not None and d_node.glyph().shape != "circle":
+                    if lane_x < d_g["left"]:
+                        target_x = d_g["left"] - GAP
+                    elif lane_x > d_g["right"]:
+                        target_x = d_g["right"] + GAP
+                    else:
+                        target_x = d_g["cx"]
+                    parts.append(_elbow_vh(
+                        lane_x, top_g["top"], target_x, d_g["cy"], arrow_id
+                    ))
+                    continue
+
+                # Circle connector (⊕/×/⊙/‖): enter a side bus or the bottom edge.
+                side, offset, same_side_count = circle_entries.get(
+                    (lane_idx, dst_id), (None, 0.0, 1)
+                )
+                target_y = d_g["cy"] + offset
+                if side == "left":
+                    target_x = d_g["left"] - GAP - (18 if same_side_count > 1 else 0)
+                elif side == "right":
+                    target_x = d_g["right"] + GAP + (18 if same_side_count > 1 else 0)
                 else:
                     target_x = d_g["cx"]
-                parts.append(_elbow_vh(lane_x, top_g["top"], target_x, d_g["cy"], arrow_id))
+                    target_y = d_g["bottom"] + GAP
+                # Multiple lanes on one side join a short bus first; one clean
+                # arrow then enters the connector instead of stacked arrowheads.
+                route_arrow = None if same_side_count > 1 and side in ("left", "right") else arrow_id
+                parts.append(_elbow_vh(lane_x, top_g["top"], target_x, target_y, route_arrow))
+
+    for (dst_id, side), lane_indices in grouped_entries.items():
+        if len(lane_indices) <= 1 or side not in ("left", "right"):
+            continue
+        d_g = geom[dst_id]
+        offsets = [circle_entries[(idx, dst_id)][1] for idx in lane_indices]
+        bus_x = (d_g["left"] - GAP - 18) if side == "left" else (d_g["right"] + GAP + 18)
+        parts.append(_svg_tag("line", {
+            "x1": bus_x, "y1": d_g["cy"] + min(offsets),
+            "x2": bus_x, "y2": d_g["cy"] + max(offsets),
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none",
+        }))
+        edge_x = d_g["left"] - GAP if side == "left" else d_g["right"] + GAP
+        parts.append(_svg_tag("line", {
+            "x1": bus_x, "y1": d_g["cy"], "x2": edge_x, "y2": d_g["cy"],
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
 
     _draw_side_sources(parts, regions, info, shadow_id, arrow_id,
                        lanes, xs, lane_geoms, by_id, geom, lane_bottom)

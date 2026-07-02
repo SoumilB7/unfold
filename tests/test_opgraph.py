@@ -14,6 +14,7 @@ from model_unfolder.opgraph import (
     mla_query_region,
 )
 from model_unfolder.renderers.html.op_render import region_to_graph
+from model_unfolder.renderers.html.graph import wiring_problems
 
 GQA = {"kind": "gqa", "num_heads": 32, "num_kv_heads": 8, "head_dim": 128}
 
@@ -89,6 +90,27 @@ def test_non_rope_family_omits_the_rope_step():
     # ALiBi / learned-absolute families must NOT draw a fabricated RoPE node.
     g = region_to_graph(attention_region(dict(GQA, rope=False), 4096), clickable=True)
     assert [lane.ids for lane in g.parallels[0].norm_lanes()] == [["q_proj"], ["k_proj"], ["v_proj"]]
+
+
+def test_alibi_bias_is_a_real_two_input_score_add():
+    attn = dict(
+        GQA, rope=False, position_kind="alibi",
+        position_application="attention_bias",
+    )
+    region = attention_region(attn, 4096)
+    assert {"alibi_offsets", "alibi_bias", "score_bias_add"} <= {
+        op.id for op in region.ops
+    }
+    assert set(region.inputs_of("score_bias_add")) == {"scaled_scores", "alibi_bias"}
+    graph = region_to_graph(region, clickable=True)
+    assert wiring_problems(graph) == []
+    from model_unfolder.renderers.html.graph_engine import _lane_draw_order
+    parallel = graph.parallels[0]
+    ordered = _lane_draw_order(parallel.norm_lanes(), parallel.dst)
+    alibi_lane = next(lane for lane in ordered if lane.ids == ["alibi_bias"])
+    v_lane = next(lane for lane in ordered if lane.ids == ["v_proj"])
+    assert ordered.index(v_lane) == 0
+    assert ordered.index(alibi_lane) == len(ordered) - 1
 
 
 def test_cross_attention_kv_lanes_take_a_side_source():
@@ -214,6 +236,32 @@ def test_ssm_region_is_an_honest_chain_not_a_fabricated_qkv():
     assert [o.id for o in r.ops] == ["hidden", "ssm_in_proj", "ssm_conv",
                                      "ssm_scan", "ssm_gate", "ssm_out_proj"]
     assert r.merges() == []
+
+
+def test_gated_delta_region_preserves_conv_gates_recurrence_and_gated_norm():
+    r = attention_region({
+        "kind": "gated_delta", "num_heads": 32, "num_kv_heads": 16,
+        "head_dim": 128, "v_head_dim": 128, "conv_kernel_size": 4,
+    }, 4096)
+    ids = {o.id for o in r.ops}
+    assert {
+        "delta_qkv_proj", "delta_z_proj", "delta_beta_proj", "delta_decay_proj",
+        "delta_conv", "delta_qkv_split", "delta_beta", "delta_decay",
+        "delta_rule", "delta_gated_norm", "delta_out_proj",
+    } <= ids
+    assert r.template == "gated_delta"
+    assert set(r.inputs_of("delta_rule")) == {"delta_qkv_split", "delta_beta", "delta_decay"}
+    assert set(r.inputs_of("delta_gated_norm")) == {"delta_rule", "delta_z_proj"}
+    graph = region_to_graph(r, clickable=True)
+    assert not wiring_problems(graph)
+
+
+def test_sdpa_output_gate_splits_q_and_gates_before_output_projection():
+    r = attention_region({**GQA, "output_gate": "sigmoid"}, 4096)
+    assert set(r.inputs_of("attn_output_mul")) == {"concat_heads", "attn_output_gate"}
+    assert r.inputs_of("o_proj") == ["attn_output_mul"]
+    assert r.inputs_of("q_gate_split") == ["q_proj"]
+    assert not wiring_problems(region_to_graph(r, clickable=True))
 
 
 def test_unknown_attention_kind_is_one_honest_opaque_node():

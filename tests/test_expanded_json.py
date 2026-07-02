@@ -257,24 +257,21 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "image_size": 896,
         "patch_size": 16,
     }
-    assert vision["embedding"] == {
-        "kind": "patch_embedding",
-        "patch_size": 16,
-        "out_features": 32,
-        "grid": {
+    embedding = vision["embedding"]
+    assert {key: embedding[key] for key in ("kind", "patch_size", "out_features", "grid")} == {
+        "kind": "patch_embedding", "patch_size": 16, "out_features": 32, "grid": {
             "kind": "static_patch_grid",
             "patch": {"h": 16, "w": 16},
             "input": {"h": 896, "w": 896},
             "tiles": {"h": 56, "w": 56},
         },
     }
-    assert vision["encoder"]["kind"] == "gemma4_vision"
+    assert [op["kind"] for op in embedding["ops"]] == ["elementwise", "linear"]
+    assert embedding["source_owner"] == "Gemma4VisionModel"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["encoder"]["hidden_size"] == 32
     # Position encoding is derived structurally (learned table + 2D RoPE), no family hint.
-    assert vision["encoder"]["position_encoding"] == {
-        "kind": "learned_2d_plus_rope_2d",
-        "rope": {"rope_theta": 100.0, "rope_type": "default"},
-    }
+    assert vision["encoder"]["position_encoding"] == {"kind": "learned_absolute_plus_rope"}
     assert vision["encoder"]["global_head_dim"] == 8
     # k=3 average pool surfaces as a post-encoder token-reduction section + stage.
     assert vision["reduction"] == {
@@ -313,6 +310,7 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "kind": "scatter",
         "source": "modalities.inputs.vision.tokens",
         "into": "io.token_embedding",
+        "operation": "masked_scatter",
         "at": {"kind": "image_placeholder", "token_id": 262144},
     }
     assert fusion["target"] == "stack.input_embeddings"
@@ -357,14 +355,15 @@ def test_expanded_json_carries_structured_audio_inputs():
         "shape": ["batch", "segments", "frames", "features"],
         "feature_size": 128,
     }
-    assert audio["encoder"]["kind"] == "gemma4_audio"
+    assert audio["encoder"]["kind"] == "audio_encoder"
+    assert audio["encoder"]["source_owner"] == "Gemma4AudioModel"
     assert audio["encoder"]["hidden_size"] == 1024
     assert audio["encoder"]["num_layers"] == 12
-    assert audio["projector"] == {
-        "kind": "linear_projector",
-        "in_features": 1024,
-        "out_features": 64,
-    }
+    assert audio["projector"]["kind"] == "linear_projector"
+    assert audio["projector"]["in_features"] == 1024
+    assert audio["projector"]["out_features"] == 64
+    assert audio["projector"]["source_class"] == "Linear"
+    assert [op["kind"] for op in audio["projector"]["ops"]] == ["linear"]
     assert audio["tokens"] == {
         "kind": "soft_audio_tokens",
         "count": 750,
@@ -417,18 +416,19 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
 
     vision = data["modalities"]["inputs"]["vision"]
     assert vision["kind"] == "image_to_cross_attention_states"
-    assert vision["encoder"]["kind"] == "mllama_vision_model"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["encoder"]["num_attention_heads"] == 16
     # Structural: local+global layer split and the wide concatenated output.
     assert vision["encoder"]["num_global_layers"] == 8
     assert vision["encoder"]["output_dim"] == 7680
     # max_num_tiles -> an image-tiling section + stage (image split into N tiles).
     assert vision["tiling"] == {"kind": "image_tiling", "mode": "fixed_tiles", "max_tiles": 4}
-    assert vision["projector"] == {
-        "kind": "linear_projector",
-        "in_features": 7680,
-        "out_features": 4096,
+    assert {key: vision["projector"][key] for key in
+            ("kind", "in_features", "out_features", "source_class")} == {
+        "kind": "linear_projector", "in_features": 7680,
+        "out_features": 4096, "source_class": "Linear",
     }
+    assert [op["kind"] for op in vision["projector"]["ops"]] == ["linear"]
     assert vision["tokens"] == {
         "kind": "vision_cross_attention_states",
         "count": 1025,
@@ -449,6 +449,7 @@ def test_expanded_json_supports_mllama_cross_attention_vision():
     assert fusion["target"] == "decoder.cross_attention_layers"
     assert fusion["mechanism"] == {
         "kind": "cross_attention",
+        "operation": "cross_attention_states",
         "sources": ["vision"],
         "layers": [3, 8, 13, 18, 23, 28, 33, 38],
         "num_layers": 8,
@@ -480,7 +481,7 @@ def test_mllama_cross_attention_is_layer_variant_only():
     assert "Cross-Attention" in html
     assert "cross_attention_states" in html
     assert "Projected image states" in html
-    assert "Flatten patches" in html
+    assert "Flatten spatial grid" in html
     assert "Vision self-attention" in html
     assert "vision_attn_scaled" in html
     assert "vision_mlp_fc1" in html
@@ -494,15 +495,19 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
 
     vision = data["modalities"]["inputs"]["vision"]
     assert vision["kind"] == "image_to_grid_tokens"
-    assert vision["encoder"]["kind"] == "qwen_vl_vision_transformer"
+    assert vision["encoder"]["kind"] == "vision_encoder"
     assert vision["embedding"]["out_features"] == 32
     assert vision["encoder"]["hidden_size"] == 32
-    assert vision["encoder"]["position_encoding"] == {"kind": "multimodal_rope"}
-    assert vision["projector"] == {
-        "kind": "patch_merger",
-        "in_features": 128,
-        "out_features": 64,
-    }
+    assert vision["encoder"]["position_encoding"] == {"kind": "rope"}
+    projector = vision["projector"]
+    assert projector["kind"] == "patch_merger"
+    assert projector["in_features"] == 128 and projector["out_features"] == 64
+    assert "profile" not in projector
+    assert projector["source_class"] == "PatchMerger"
+    assert [op["kind"] for op in projector["ops"]] == [
+        "norm", "reshape", "linear", "activation", "linear"
+    ]
+    assert projector["ops"][3]["fn"] == "gelu"
     assert vision["tokens"] == {
         "kind": "grid_visual_tokens",
         "width": 64,
@@ -522,11 +527,14 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert video["kind"] == "video_to_grid_tokens"
     assert video["embedding"]["out_features"] == 32
     assert video["encoder"]["hidden_size"] == 32
-    assert video["projector"] == {
-        "kind": "patch_merger",
-        "in_features": 128,
-        "out_features": 64,
-    }
+    video_projector = video["projector"]
+    assert video_projector["kind"] == "patch_merger"
+    assert video_projector["in_features"] == 128 and video_projector["out_features"] == 64
+    assert "profile" not in video_projector
+    assert video_projector["source_class"] == "PatchMerger"
+    assert [op["kind"] for op in video_projector["ops"]] == [
+        "norm", "reshape", "linear", "activation", "linear"
+    ]
     assert video["tokens"] == {
         "kind": "grid_video_tokens",
         "width": 64,
@@ -543,10 +551,11 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
 
     fusion = data["modalities"]["fusion"]
     assert fusion["kind"] == "unified_multimodal_stream"
-    assert fusion["operation"] == "interleave_modal_tokens"
+    assert fusion["operation"] == "scatter_grid_tokens_into_placeholder_slots"
     assert fusion["target"] == "stack.input_embeddings"
     assert fusion["mechanism"] == {
-        "kind": "interleave_grid_streams",
+        "kind": "grid_placeholder_replace",
+        "operation": "scatter_grid_tokens_into_placeholder_slots",
         "sources": ["vision", "video"],
         "position_encoding": "multimodal_rope",
         "runtime_grid_inputs": ["image_grid_thw", "video_grid_thw"],
@@ -569,7 +578,7 @@ def test_expanded_json_supports_qwen_style_unified_grid_stream():
     assert "title" not in encoded
 
 
-def test_multimodal_detection_uses_structural_fields_without_family_model_type():
+def test_modality_geometry_is_structural_but_fusion_waits_for_wrapper_source():
     qwen_like = deepcopy(QWEN2_VL_TINY_CONFIG)
     qwen_like.pop("model_type", None)
     qwen_like["architectures"] = []
@@ -580,7 +589,7 @@ def test_multimodal_detection_uses_structural_fields_without_family_model_type()
     assert qwen_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_grid_tokens"
     assert qwen_data["modalities"]["inputs"]["vision"]["tokens"]["grid"]["runtime_input"] == "image_grid_thw"
     assert qwen_data["modalities"]["inputs"]["video"]["kind"] == "video_to_grid_tokens"
-    assert qwen_data["modalities"]["fusion"]["kind"] == "unified_multimodal_stream"
+    assert qwen_data["modalities"]["fusion"]["kind"] == "code_defined_fusion"
 
     mllama_like = deepcopy(MLLAMA_VISION_TINY_CONFIG)
     mllama_like.pop("model_type", None)
@@ -590,7 +599,7 @@ def test_multimodal_detection_uses_structural_fields_without_family_model_type()
     mllama_data = unfold(mllama_like, return_json=True)
     assert mllama_data["modalities"]["inputs"]["vision"]["kind"] == "image_to_cross_attention_states"
     assert mllama_data["modalities"]["inputs"]["vision"]["tokens"]["count"] == 1025
-    assert mllama_data["modalities"]["fusion"]["kind"] == "cross_attention"
+    assert mllama_data["modalities"]["fusion"]["kind"] == "code_defined_fusion"
 
 
 def test_dynamic_resolution_vision_emits_dynamic_patch_grid():

@@ -1,7 +1,7 @@
 """Qwen-style unified multimodal stream detail SVG."""
 from __future__ import annotations
 
-from ...stack_view import fit_svg, point
+from ...stack_view import fit_svg
 from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C, FONT_HEAD, GAP
 from .common import row_label, slot, video_input, vision_input
@@ -27,11 +27,13 @@ def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict)
         "cx": cx,
     }
     unified_surface(parts, fusion, surface, vision, video)
-    text = _rect_block(parts, info, shadow_id, "embed", 92, h - 112, 220, 50, "Text embeddings")
-    visual = _rect_block(parts, info, shadow_id, "vision_path", cx - 110, h - 112, 220, 50, "Image grid tokens")
+    text_x = 40 if has_video else 90
+    vision_x = 320 if has_video else w - 310
+    text = _rect_block(parts, info, shadow_id, "embed", text_x, h - 112, 220, 50, "Text embeddings")
+    visual = _rect_block(parts, info, shadow_id, "vision_path", vision_x, h - 112, 220, 50, "Image grid tokens")
     modality_blocks = [text, visual]
     if has_video:
-        video_block = _rect_block(parts, info, shadow_id, "video_path", w - 312, h - 112, 220, 50, "Video grid tokens")
+        video_block = _rect_block(parts, info, shadow_id, "video_path", w - 260, h - 112, 220, 50, "Video grid tokens")
         modality_blocks.append(video_block)
 
     for block in modality_blocks:
@@ -69,7 +71,7 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
     }))
     parts.append(_svg_text(
         box["cx"], box["top"] + 28,
-        "interleave text with grid-aware visual tokens",
+        "replace visual slots, then assign grid positions",
         {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
     ))
 
@@ -123,4 +125,3 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
         slot(parts, left + 536, row_stream, 46, "tok", node_id="unified_stream")
     else:
         slot(parts, left + 386, row_stream, 46, "tok", node_id="unified_stream")
-

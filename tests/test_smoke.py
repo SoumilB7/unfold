@@ -34,6 +34,129 @@ KIMI_K2_CONFIG = {
     "moe_layer_freq": 1,
 }
 
+
+def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately():
+    cfg = {
+        "model_type": "qwen3_5_text",
+        "architectures": ["Qwen3_5ForCausalLM"],
+        "vocab_size": 1000,
+        "hidden_size": 512,
+        "intermediate_size": 1024,
+        "num_hidden_layers": 8,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "head_dim": 64,
+        "hidden_act": "silu",
+        "layer_types": [
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+        ],
+        "linear_num_key_heads": 4,
+        "linear_num_value_heads": 8,
+        "linear_key_head_dim": 64,
+        "linear_value_head_dim": 64,
+        "linear_conv_kernel_dim": 4,
+        "attn_output_gate": True,
+        "output_gate_type": "swish",
+    }
+    ir = unfold(cfg).to_ir()
+    assert [ir["layers"][i]["attention"]["kind"] for i in (0, 3)] == ["gated_delta", "gqa"]
+    delta = ir["layers"][0]["attention"]
+    assert delta["rope"] is False and delta["conv_kernel_size"] == 4
+    assert delta["output_gate"] is None
+    assert ir["layers"][3]["attention"]["output_gate"] == "sigmoid"
+    assert len({layer.signature() for layer in parse(cfg).layers}) == 2
+    html = unfold(cfg).to_html(standalone=True)
+    assert "Gated DeltaNet" in html
+    assert "Causal depthwise Conv1d" in html
+    assert "Gate attention output" in html
+
+
+def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    cfg = {
+        "model_type": "bloom", "vocab_size": 100, "hidden_size": 64,
+        "intermediate_size": 128, "num_hidden_layers": 1,
+        "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg, _context=None: PositionalEvidence("ambiguous", reason="negative control"),
+    )
+    ir = parser_module.parse(cfg)
+    assert ir.layers[0].attention.position_kind == "unknown"
+    assert ir.layers[0].attention.rope is False
+    assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
+
+
+def test_oracle_missing_position_is_unknown_independent_of_model_identity(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    base = {
+        "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg, _context=None: PositionalEvidence("oracle_missing", reason="negative control"),
+    )
+    bloom = parser_module.parse({**base, "model_type": "bloom"})
+    unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
+    assert bloom.layers[0].attention.rope is False
+    assert unknown.layers[0].attention.rope is False
+    assert bloom.layers[0].attention.position_kind == "unknown"
+    assert unknown.layers[0].attention.position_kind == "unknown"
+    assert "fallback_rope" not in bloom.extras["position_encoding"]
+    assert "fallback_rope" not in unknown.extras["position_encoding"]
+    assert any("source is unavailable" in warning for warning in bloom.warnings)
+
+
+def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("gpt_bigcode").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "learned_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Learned Position Embedding" in html
+    assert "Token + position embedding" in html
+    from model_unfolder.labels import attention_summary
+    assert "learned positions" not in attention_summary(ir["layers"][0]["attention"])[1]
+
+
+def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("xglm").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "fixed_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Fixed Position Encoding" in html
+    assert "Adds the fixed positional vector" in html
+    from model_unfolder.labels import attention_summary
+    assert "fixed positions" not in attention_summary(ir["layers"][0]["attention"])[1]
+
+
+def test_final_norm_label_uses_the_code_derived_norm_class():
+    from transformers import AutoConfig
+
+    layernorm = unfold(AutoConfig.for_model("gpt_bigcode").to_dict()).to_html()
+    rmsnorm = unfold(AutoConfig.for_model("llama").to_dict()).to_html()
+    assert "Final LayerNorm" in layernorm
+    assert "Final RMSNorm" not in layernorm
+    assert "Final RMSNorm" in rmsnorm
+
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
     "model_type": "deepseek_v3",
@@ -455,15 +578,15 @@ def _arch_variant_badges(html):
 
 def test_layer_repeat_badge_is_per_variant_not_global_total():
     """A heterogeneous model renders one architecture variant per layer type; the
-    ``x N`` badge on each must count THAT group's layers (matching its own toggle
-    pill), never the global total. Regression: the badge hardcoded
-    len(ir["layers"]) so every DeepSeek-V3 variant wrongly read "x 61"."""
-    # 1 dense + 3 MoE layers ⇒ neither group equals the total (4), so a global
-    # leak (both "x 4") is unmistakably distinguishable from the correct 1 / 3.
+    ``x N`` badge must count THAT group's layers, never the global total.  A
+    one-off variant is not a repeated region, so it deliberately has no badge."""
+    # 1 dense + 3 MoE layers: only the genuinely repeated MoE region earns x 3.
     cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1}
-    badges = _arch_variant_badges(unfold(cfg).to_html(standalone=True))
-    assert sorted(badges.values()) == [1, 3], badges
-    assert sum(badges.values()) == cfg["num_hidden_layers"]
+    html = unfold(cfg).to_html(standalone=True)
+    badges = _arch_variant_badges(html)
+    assert sorted(badges.values()) == [3], badges
+    assert html.count('class="uf-arch-variant ') == 2
+    assert ">x 1<" not in html
 
     # A homogeneous stack still shows the total on its single variant.
     homo = _arch_variant_badges(unfold(LLAMA3_8B_CONFIG).to_html(standalone=True))
@@ -504,8 +627,9 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
-    # The transformer block opens into its own tower (like the vision encoder).
-    assert "decoder layer" in html
+    # The transformer block opens into its own tower (like the vision encoder),
+    # but it is ONE block — no repeat pill/frame pretending it is a region.
+    assert "decoder layer" not in html
     assert "Multi-Head Latent" in html
 
     # The block REUSES the real decoder-layer blocks as its children (no
@@ -1115,8 +1239,9 @@ def test_gemma4_ple_uses_reusable_part_contract():
 def test_gemma4_multimodal_fusion_render():
     d = unfold(_gemma4_e2b_vision_config())
     ir = d.to_ir()
-    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
-    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
+    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "vision_encoder"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "audio_encoder"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["source_owner"] == "Gemma4AudioModel"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
     assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
@@ -1217,7 +1342,8 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     # SigLIP-style learned table → NO RoPE in vision attention.
     siglip = dict(model_type="gemma3", num_hidden_layers=2, hidden_size=128,
                   num_attention_heads=8, num_key_value_heads=4, intermediate_size=256,
-                  vocab_size=1000, vision_config={"hidden_size": 128, "num_hidden_layers": 2,
+                  vocab_size=1000, vision_config={"model_type": "siglip_vision_model",
+                  "architectures": ["SiglipVisionModel"], "hidden_size": 128, "num_hidden_layers": 2,
                   "num_attention_heads": 8, "intermediate_size": 256, "patch_size": 14,
                   "image_size": 224, "num_positions": 256})
     assert "apply RoPE" not in vision_attn_svg(siglip), "SigLIP vision must NOT draw RoPE"
@@ -1226,9 +1352,24 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
                 num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                 vocab_size=1000, image_token_id=4,
-                vision_config={"depth": 2, "hidden_size": 128, "num_heads": 8,
+                vision_config={"model_type": "qwen2_vl",
+                               "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+                               "depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
     assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
+
+    # Vision RoPE leaves are namespaced and carded at the next drill depth. The
+    # old bare q_rope/k_rope ids were accidentally validated by text-attention
+    # cards elsewhere in the document, while vision clicks opened nothing.
+    from model_unfolder.block_schema import validate_click_coupling
+    from model_unfolder.preview import svg_views
+    qwen_html = unfold(qwen).to_html(standalone=True)
+    vision_svg = next(svg for label, svg in svg_views(qwen_html)
+                      if label == "vision_encoder_attn")
+    for node_id in ("vision_attn_q_rope", "vision_attn_k_rope"):
+        assert f'data-id="{node_id}"' in vision_svg
+        assert f'data-card-id="{node_id}"' in qwen_html
+    assert validate_click_coupling(qwen_html) == []
 
 
 def test_gemma4_video_token_does_not_create_grid_video_path():
@@ -1366,7 +1507,13 @@ def test_new_should_support_family_routes():
         ir = d.to_ir()
         layer = ir["layers"][0]
 
-        assert not ir["warnings"]
+        if cfg is YI_34B_CONFIG:
+            assert ir["warnings"] == [
+                "Modeling source is unavailable; the positional scheme remains unknown."
+            ]
+            assert layer["attention"]["position_kind"] == "unknown"
+        else:
+            assert not ir["warnings"]
         assert layer["attention"]["kind"] == attn_kind
         assert layer["ffn"]["kind"] == ffn_kind
         assert layer["norm_kind"] == norm_kind

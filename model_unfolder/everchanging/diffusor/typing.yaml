@@ -22,6 +22,7 @@ stages:
 
   # ── Conditioning encoders / adapters ─────────────────────────────
   - text_encoder           # CLIP / T5 text encoder(s)
+  - text_projection        # denoiser-owned context/caption projection after encoding
   - pooled_embed           # pooled text vector (CLIP pooled) — global conditioning
   - controlnet             # ControlNet structural conditioning
   - ip_adapter             # image-prompt (IP-Adapter) conditioning
@@ -126,3 +127,11 @@ scheduler_display:
   - "PNDM=PNDM"
   - "DDIM=DDIM"
   - "DDPM=DDPM"
+
+# Scheduler-CLASS substrings whose presence marks a FLOW-MATCHING (rectified-flow)
+# integrator — the scheduler step is x ← x + dt·v (a velocity field), not a
+# denoising x̂₀/ε step.  The scheduler declares its own algorithm in its class
+# name (FlowMatchEulerDiscreteScheduler), so this reads a DECLARED fact, not the
+# model's identity.  Vocabulary as data, not a hardcoded substring in code.
+scheduler_flow_matching_markers:
+  - FlowMatch

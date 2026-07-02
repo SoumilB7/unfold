@@ -49,7 +49,11 @@ def load_aliases() -> dict[str, list[str]]:
 def load_ignored_fields() -> dict[str, list[str]]:
     """Non-architectural config keys/suffixes (``transformer/ignored_fields.yaml``)."""
     data = load("transformer", "ignored_fields")
-    return {"keys": data.get("keys") or [], "suffixes": data.get("suffixes") or []}
+    return {
+        "keys": data.get("keys") or [],
+        "suffixes": data.get("suffixes") or [],
+        "opaque_scopes": data.get("opaque_scopes") or [],
+    }
 
 
 def load_transformer_typing() -> dict[str, list[str]]:
@@ -81,8 +85,7 @@ def load_layer_topology() -> dict:
             mt, _, place = item.partition("=")
             placement[mt.strip()] = place.strip()
     return {"norm_placement": placement,
-            "parallel_residual": list(data.get("parallel_residual") or []),
-            "no_rope": list(data.get("no_rope") or [])}
+            "parallel_residual": list(data.get("parallel_residual") or [])}
 
 
 # --- diffusor domain --------------------------------------------------------
@@ -105,6 +108,7 @@ def load_diffusion_typing() -> dict[str, list[str]]:
         "part_kinds": data.get("part_kinds") or [],
         "dit_class_markers": data.get("dit_class_markers") or [],
         "scheduler_display": data.get("scheduler_display") or [],
+        "scheduler_flow_matching_markers": data.get("scheduler_flow_matching_markers") or [],
         "norm_type_kind": data.get("norm_type_kind") or [],
     }
 
@@ -113,24 +117,6 @@ def load_diffusion_text_encoders() -> dict[str, str]:
     """Text-encoder class name -> friendly label (``diffusor/text_encoders.yaml``;
     the whole file is the flat map)."""
     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
-
-
-def load_diffusion_class_defaults() -> dict[str, dict[str, str]]:
-    """Architectural facts HARDCODED in the diffusers model class but NOT in the
-    config (``diffusor/class_defaults.yaml``) — surfaced (marked code-derived)
-    when the config is silent (e.g. Flux's axial RoPE / QK-norm).
-
-    Stored flow-style as ``field: ["<_class_name>=<value>", ...]``; returned as
-    ``{canonical_field: {class_name: value}}``."""
-    out: dict[str, dict[str, str]] = {}
-    for field, entries in load("diffusor", "class_defaults").items():
-        mapping: dict[str, str] = {}
-        for entry in entries or []:
-            if isinstance(entry, str) and "=" in entry:
-                cls, _, val = entry.partition("=")
-                mapping[cls.strip()] = val.strip()
-        out[field] = mapping
-    return out
 
 
 # --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
@@ -242,6 +228,88 @@ def load_conformance_wiring_roles() -> tuple[dict[str, str], dict[str, list[str]
             role, _, subs = e.partition("=")
             role_params[role.strip()] = [s.strip().lower() for s in subs.split(",") if s.strip()]
     return stage_role, role_params
+
+
+def load_conformance_transitive() -> dict:
+    """``conformance/transitive.yaml`` -> the recursive drill-conformance vocab.
+
+    Returns a dict with: ``attention_compute_ops`` (frozenset), ``attention_compute_tokens``
+    (frozenset), ``drawn_ignore`` (frozenset of drawn node-kinds dropped from the
+    op diff), ``drawn_op_map`` (drawn-kind -> code-op), ``semantic_kinds`` (drawn
+    kinds checked by marker presence, not op-kind), ``semantic_markers``
+    ({kind: [substrings]}), and ``library_helpers`` (token -> frozenset(ops))."""
+    data = load("conformance", "transitive")
+
+    def _list(key):
+        return [str(x) for x in (data.get(key) or [])]
+
+    drawn_op_map: dict[str, str] = {}
+    for e in _list("drawn_op_map"):            # ["select=route", ...]
+        if "=" in e:
+            k, _, v = e.partition("=")
+            drawn_op_map[k.strip()] = v.strip()
+    helpers: dict[str, frozenset[str]] = {}
+    for e in _list("library_helpers"):         # ["repeat_kv=reshape", "dropout="]
+        if "=" in e:
+            name, _, ops = e.partition("=")
+            helpers[name.strip()] = frozenset(o.strip() for o in ops.split(",") if o.strip())
+
+    def _kv_list(key):                         # ["role=a,b", ...] -> {role: [a, b]}
+        out: dict[str, list[str]] = {}
+        for e in _list(key):
+            if "=" in e:
+                k, _, v = e.partition("=")
+                out[k.strip()] = [x.strip() for x in v.split(",") if x.strip()]
+        return out
+
+    def _kv_str(key):                          # ["role=type", ...] -> {role: type}
+        return {k: (v[0] if v else "") for k, v in _kv_list(key).items()}
+
+    return {
+        "attention_compute_ops": frozenset(_list("attention_compute_ops")),
+        "attention_compute_tokens": frozenset(_list("attention_compute_tokens")),
+        "drawn_ignore": frozenset(_list("drawn_ignore")),
+        "drawn_op_map": drawn_op_map,
+        "semantic_kinds": frozenset(_list("semantic_kinds")),
+        "semantic_markers": {
+            "rope": [s.lower() for s in _list("semantic_rope_markers")],
+            "cache": [s.lower() for s in _list("semantic_cache_markers")],
+            "relative_bias": [s.lower() for s in _list("semantic_relative_bias_markers")],
+        },
+        "score_scale_markers": frozenset(s.lower() for s in _list("score_scale_markers")),
+        "library_helpers": helpers,
+        "drill_role_markers": _kv_list("drill_role_markers"),
+        "component_view_markers": _kv_list("component_view_markers"),
+        "component_class_markers": _kv_list("component_class_markers"),
+        "role_field_markers": _kv_list("role_field_markers"),
+        "drill_class_markers": _kv_list("drill_class_markers"),
+        "drill_role_to_type": _kv_str("drill_role_to_type"),
+        "drill_category": _kv_str("drill_category"),
+        "drill_salient_missing": {k: frozenset(v) for k, v in _kv_list("drill_salient_missing").items()},
+        "drill_op_equivalents": {k: frozenset(v) for k, v in _kv_list("drill_op_equivalents").items()},
+        "selection_presentation_kinds": frozenset(_list("selection_presentation_kinds")),
+        "composite_container_map": _kv_str("composite_container_map"),
+        "processor_markers": frozenset(_list("processor_markers")),
+        "constructor_classmethods": frozenset(_list("constructor_classmethods")),
+    }
+
+
+_CONSTRUCTOR_CLASSMETHODS: frozenset[str] | None = None
+
+
+def load_constructor_classmethods() -> frozenset[str]:
+    """Factory classmethods that construct their base class (``X._from_config``).
+
+    Cached at module level: the shared AST extractor consults this set for every
+    ``Attribute`` call it classifies, so the YAML must be read once, not per node.
+    """
+    global _CONSTRUCTOR_CLASSMETHODS
+    if _CONSTRUCTOR_CLASSMETHODS is None:
+        data = load("conformance", "transitive")
+        _CONSTRUCTOR_CLASSMETHODS = frozenset(
+            str(x) for x in (data.get("constructor_classmethods") or [])
+        )
+    return _CONSTRUCTOR_CLASSMETHODS
 
 
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:

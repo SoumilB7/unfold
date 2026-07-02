@@ -42,12 +42,15 @@ FLUX = {
     # text_encoder_2/ (CLIP ViT-L/14 + T5-v1.1-XXL encoder).
     "_text_encoder_configs": {
         "text_encoder": {
-            "_class_name": "CLIPTextModel", "num_hidden_layers": 12, "hidden_size": 768,
+            "_class_name": "CLIPTextModel", "architectures": ["CLIPTextModel"],
+            "model_type": "clip_text_model",
+            "num_hidden_layers": 12, "hidden_size": 768,
             "num_attention_heads": 12, "intermediate_size": 3072, "hidden_act": "quick_gelu",
             "max_position_embeddings": 77, "vocab_size": 49408,
         },
         "text_encoder_2": {
-            "_class_name": "T5EncoderModel", "num_layers": 24, "d_model": 4096,
+            "_class_name": "T5EncoderModel", "architectures": ["T5EncoderModel"],
+            "model_type": "t5", "num_layers": 24, "d_model": 4096,
             "num_heads": 64, "d_ff": 10240, "dense_act_fn": "gelu_new", "vocab_size": 32128,
             "is_gated_act": True, "feed_forward_proj": "gated-gelu",
         },
@@ -131,7 +134,8 @@ def test_diffusion_renders_in_the_green_llm_theme():
 
 
 def test_denoiser_skeleton_is_drawn():
-    html = unfold(FLUX).to_html(standalone=True)
+    diagram = unfold(FLUX)
+    html = diagram.to_html(standalone=True)
     for label in ("Noisy latent", "Patchify", "Output projection", "Unpatchify", "VAE decode"):
         assert label in html, f"skeleton stage {label!r} not drawn"
     assert "AdaLN-Out" not in html
@@ -187,6 +191,74 @@ def test_loop_blocks_are_typed_with_approved_stages():
     for bid, stage in expected.items():
         assert loop[bid]["diffusion_stage"] == stage, bid
         assert stage in DIFFUSION_STAGES, stage
+
+
+def test_pixart_caption_projection_is_explicit_and_code_shaped():
+    """caption_channels is not an alias for caption_projection_dim: PixArt owns
+    a real Linear -> GELU -> Linear operation between text encoding and x-attn."""
+    d = unfold(PIXART)
+    render = d.ir.extras["render"]
+    blocks = {b["id"]: b for b in render["loop_blocks"]}
+    projection = blocks["text_projection"]
+    assert projection["diffusion_stage"] == "text_projection"
+    assert [op["kind"] for op in projection["detail"]["ops"]] == [
+        "linear", "activation", "linear"
+    ]
+    assert projection["detail"]["ops"][0]["in"] == 4096
+    assert projection["detail"]["ops"][0]["out"] == 16 * 72
+    edges = {(e["from"], e["to"]) for e in render["loop_edges"]}
+    assert ("text_encoder", "text_projection") in edges
+    assert ("text_projection", "denoiser") in edges
+    assert ("text_encoder", "denoiser") not in edges
+    html = d.to_html(standalone=True)
+    assert 'data-id="text_projection"' in html
+    assert 'data-card-id="text_projection"' in html
+    assert "PixArtAlphaTextProjection" in html
+
+
+def test_norm_elementwise_affine_is_a_card_fact_not_a_block_label():
+    ir = config_to_ir(PIXART)
+    norms = [b for b in ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert norms
+    assert all("non-affine (elementwise_affine = false)" in b.get("facts", [])
+               for b in norms)
+    assert all("affine" not in str(b.get("label", "")).lower() for b in norms)
+
+
+def test_vae_decoder_surfaces_input_conv_and_attention_mid_block():
+    cfg = {**PIXART, "_vae_config": FLUX["_vae_config"] | {"mid_block_add_attention": True}}
+    d = unfold(cfg)
+    vae = next(b for b in d.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode")
+    children = {b["id"]: b for b in vae["children"]}
+    assert "vae_conv_in" in children and "vae_mid_block" in children
+    assert [op["label"] for op in children["vae_mid_block"]["detail"]["ops"]] == [
+        "ResNet", "Attention", "ResNet"
+    ]
+    html = d.to_html(standalone=True)
+    assert 'data-id="vae_conv_in"' in html and 'data-card-id="vae_conv_in"' in html
+    assert 'data-id="vae_mid_block"' in html and 'data-card-id="vae_mid_block"' in html
+
+
+def test_vae_mid_block_requires_evidence_and_honors_explicit_no_attention():
+    silent = unfold({**PIXART, "_vae_config": FLUX["_vae_config"]})
+    silent_vae = next(
+        b for b in silent.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode"
+    )
+    silent_ids = {b["id"] for b in silent_vae["children"]}
+    assert "vae_conv_in" not in silent_ids and "vae_mid_block" not in silent_ids
+
+    explicit = unfold({
+        **PIXART,
+        "_vae_config": FLUX["_vae_config"] | {"mid_block_add_attention": False},
+    })
+    explicit_vae = next(
+        b for b in explicit.ir.extras["render"]["loop_blocks"] if b["id"] == "vae_decode"
+    )
+    explicit_children = {b["id"]: b for b in explicit_vae["children"]}
+    assert "vae_conv_in" in explicit_children and "vae_mid_block" in explicit_children
+    assert [op["label"] for op in explicit_children["vae_mid_block"]["detail"]["ops"]] == [
+        "ResNet", "ResNet"
+    ]
 
 
 def test_unknown_diffusion_blocks_render_unresolved():
@@ -275,13 +347,32 @@ def test_text_encoder_shows_real_config_dims():
     """When the loader fetched the encoders' configs, the view shows their real
     depth/width/heads/FFN (not a schematic 'N'), distinctly per encoder."""
     specs = diffusor._text_encoder_specs(FLUX)
-    assert specs == [
-        {"name": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
+    structural = [{k: v for k, v in spec.items()
+                   if k not in {"ffn_evidence", "ffn_projection_mode",
+                                "attention_detail", "position_evidence",
+                                "sub_model"}}
+                  for spec in specs]
+    assert structural == [
+        {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
          "kv_heads": 12, "head_dim": 64, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
-        {"name": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
+        {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
          "kv_heads": 64, "head_dim": 64, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
+    ]
+    assert [(s["ffn_evidence"]["status"], s["ffn_evidence"]["owner_class"],
+             s["ffn_projection_mode"]) for s in specs] == [
+        ("proven", "CLIPMLP", "dense"),
+        ("proven", "T5DenseGatedActDense", "split"),
+    ]
+    # The typed attention facts ride the same spec: positional scheme + score
+    # scaling are evidence, per encoder (CLIP learned-absolute + scaled;
+    # T5 relative-bias + code-proven UNscaled scores).
+    assert [(s["attention_detail"]["position_kind"],
+             s["attention_detail"].get("scores_scaled", True),
+             s["position_evidence"]["status"]) for s in specs] == [
+        ("learned_absolute", True, "proven"),
+        ("relative_bias", False, "proven"),
     ]
     html = unfold(FLUX).to_html(standalone=True)
     assert "× 12" in html and "× 24" in html   # real depths
@@ -289,12 +380,92 @@ def test_text_encoder_shows_real_config_dims():
     assert "768 → 3,072" in html and "4,096 → 10,240" in html
 
 
+def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
+    """Supporting text towers are not allowed to flatten a gated FFN into the
+    old prose-only "two-layer MLP" card. CLIP and T5 consume the same canonical
+    FFN resolver but retain their exact dense vs gated source structure."""
+    from model_unfolder.opgraph import ffn_region
+
+    ir = config_to_ir(FLUX)
+    loop = {b["id"]: b for b in ir.extras["render"]["loop_blocks"]}
+    clip = next(c for c in loop["encoder_0"]["children"] if c["id"].endswith("_op_ffn"))
+    t5 = next(c for c in loop["encoder_1"]["children"] if c["id"].endswith("_op_ffn"))
+
+    clip_fact = clip["detail"]["ffn"]
+    t5_fact = t5["detail"]["ffn"]
+    assert ffn_region(clip_fact, clip_fact["hidden"]).template == "dense_mlp"
+    assert ffn_region(t5_fact, t5_fact["hidden"]).template == "gated_mlp"
+    assert "Two-layer MLP" in clip["description"]
+    assert "Gated MLP" in t5["description"] and "SwiGLU" not in t5["description"]
+    assert {c["id"] for c in t5["children"]} == {
+        "encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
+        "encoder_1_ffn_activation", "encoder_1_ffn_multiply",
+        "encoder_1_ffn_down_proj",
+    }
+    assert not ({c["id"] for c in clip["children"]} & {c["id"] for c in t5["children"]})
+
+    diagram = unfold(FLUX)
+    html = diagram.to_html(standalone=True)
+    # The summary card itself contains the canonical SVG, and every drawn op is
+    # coupled to its namespaced leaf card at the next interaction depth.
+    for cid in ("encoder_0_op_ffn", "encoder_1_op_ffn"):
+        start = html.index(f'data-card-id="{cid}"')
+        assert '<div class="uf-card-svg"><svg' in html[start:start + 25000]
+    for nid in ("encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
+                "encoder_1_ffn_multiply", "encoder_1_ffn_down_proj"):
+        assert f'data-id="{nid}"' in html and f'data-card-id="{nid}"' in html
+    assert validate_click_coupling(html) == []
+    owners = {(event.block_path, event.source_owner, event.component)
+              for event in diagram.render_events() if event.view == "ffn"}
+    assert (("encoder_0_op_ffn",), "CLIPMLP", "text_encoder") in owners
+    assert (("encoder_1_op_ffn",), "T5DenseGatedActDense", "text_encoder_2") in owners
+
+
+def test_text_encoder_ffn_missing_source_stays_opaque():
+    from model_unfolder.submodel import submodel_ffn_block
+    from model_unfolder.opgraph import ffn_region
+
+    block = submodel_ffn_block(
+        {"component": "", "evidence": {"ffn": {"status": "oracle_missing"}}},
+        {"ffn": {"kind": "dense", "hidden": 256, "intermediate_size": 1024,
+                 "activation": "silu", "gated": True,
+                 "structure_status": "oracle_missing"}},
+        "unknown_encoder")
+    fact = block["detail"]["ffn"]
+    region = ffn_region(fact, fact["hidden"])
+    assert region.template == "unresolved_storage" and region.resolved is False
+    assert [op.kind for op in region.ops] == ["opaque"]
+    assert "exact projection storage" in block["description"]
+
+
+def test_text_encoder_ffn_preserves_fused_gate_up_storage():
+    from model_unfolder.submodel import submodel_ffn_block
+    from model_unfolder.opgraph import ffn_region
+
+    block = submodel_ffn_block(
+        {"component": "",
+         "evidence": {"ffn": {"status": "proven", "owner_class": "NovelFusedCell"}}},
+        {"ffn": {"kind": "dense", "hidden": 256, "intermediate_size": 1024,
+                 "activation": "silu", "gated": True,
+                 "structure_status": "proven", "projection_mode": "fused_gate_up"}},
+        "fused_encoder")
+    fact = block["detail"]["ffn"]
+    assert ffn_region(fact, fact["hidden"]).template == "fused_gated_mlp"
+    ids = {child["id"] for child in block["children"]}
+    assert "fused_encoder_ffn_gate_up_proj" in ids
+    assert "fused_encoder_ffn_gate_up_split" in ids
+    assert "fused_encoder_ffn_gate_proj" not in ids
+
+
 def test_text_encoder_falls_back_when_no_config():
     """Without fetched encoder configs, the view stays honest: schematic '× N
     layers', no invented numbers."""
     flux_no_enc = {k: v for k, v in FLUX.items() if k != "_text_encoder_configs"}
     specs = diffusor._text_encoder_specs(flux_no_enc)
-    assert specs == [{"name": "CLIP"}, {"name": "T5"}]
+    assert specs == [
+        {"name": "CLIP", "family": "CLIP"},
+        {"name": "T5", "family": "T5"},
+    ]
     html = unfold(flux_no_enc).to_html(standalone=True)
     assert "× N" in html
 
@@ -397,6 +568,47 @@ SDXL_UNET = {
 def test_unet_is_claimed_by_diffusor_not_transformer():
     assert diffusor.matches(SDXL_UNET) is True
     assert config_to_ir(SDXL_UNET).architecture == "UNet2DConditionModel"
+
+
+def test_unet_detection_is_by_signature_not_name():
+    """THE CORE LAW: a conv-U is detected by its config SIGNATURE, never by the
+    "UNet" substring in its class name. Both directions must hold:
+
+    * a NON-"UNet"-named config carrying the dialect fields IS a UNet, and
+    * a "UNet"-named config that does NOT carry the dialect (no block-type lists,
+      no cross_attention_dim) is NOT forced through ``parse_unet`` — the failure
+      mode that dragged Kandinsky3UNet / StableCascadeUNet into a fabricated
+      UNet2DConditionModel structure.
+    """
+    from model_unfolder.adapters.diffusor.unet import is_unet
+
+    # name says nothing of "UNet", but the signature is the full dialect → claimed.
+    no_unet_in_name = {k: v for k, v in SDXL_UNET.items() if k != "_class_name"}
+    no_unet_in_name["_class_name"] = "SomeBespokeDenoiser2DModel"
+    assert is_unet(no_unet_in_name) is True
+
+    # "UNet" in the name but only `block_out_channels` (no block-type lists, no
+    # cross_attention_dim) → NOT claimed (identity must not override evidence).
+    name_only = {"_class_name": "MysteryUNetModel", "block_out_channels": [128, 256]}
+    assert is_unet(name_only) is False
+
+
+def test_unet_does_not_fabricate_cross_attention_mid_when_undeclared():
+    """A conv-U conditioned by `cross_attention_dim` but declaring no block-type
+    lists (Kandinsky3UNet shape) must NOT get a fabricated cross-attention mid
+    block, and must surface the code-defined-placement caveat as a warning."""
+    kand = {
+        "_class_name": "Kandinsky3UNet", "_repo_id": "kandinsky-community/kandinsky-3",
+        "block_out_channels": [384, 768, 1536, 3072], "layers_per_block": 3,
+        "attention_head_dim": 64, "cross_attention_dim": 4096, "in_channels": 4,
+    }
+    from model_unfolder.adapters.diffusor.unet import is_unet, parse_unet
+    assert is_unet(kand) is True                          # claimed (signature: cross_attention_dim)
+    unet = parse_unet(kand)
+    assert unet["mid"].get("attn") is False               # NO fabricated cross-attn mid
+    assert unet["declares_block_types"] is False
+    ir = config_to_ir(kand)
+    assert any("attention placement is defined in the model code" in w for w in ir.warnings)
 
 
 def test_sdxl_unet_conditioning_is_honest():
@@ -1381,3 +1593,181 @@ def test_unet_resnet_view_shows_timestep_injection_and_correct_residual():
     rn = view_svg("unet_down_1__resnet")
     assert "Timestep emb" in rn, "Timestep source must appear in ResNet drill"
     assert validate_click_coupling(html) == []
+
+
+def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
+    """Every fetched-config encoder bakes a REAL attention drill (canonical
+    region, namespaced), and its positional lane matches the encoder's own
+    code: CLIP learned-absolute -> no RoPE nodes; T5 -> relative-bias score
+    add + code-proven unscaled QK^T.  A spec without a fetched sub-config
+    keeps the description-only card (no fabricated Q/K/V)."""
+    d = unfold(FLUX)
+    html = d.to_html()
+    ir = d.to_ir()
+
+    def find_block(blocks, bid):
+        for b in blocks or []:
+            if b.get("id") == bid:
+                return b
+            hit = find_block(b.get("children"), bid)
+            if hit is not None:
+                return hit
+
+    loop = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks")
+    clip = find_block(loop, "encoder_0_op_selfattn")
+    t5 = find_block(loop, "encoder_1_op_selfattn")
+    assert clip and clip.get("view") == "attention" and clip.get("children")
+    assert t5 and t5.get("view") == "attention" and t5.get("children")
+
+    clip_ids = {c["id"] for c in clip["children"]}
+    t5_ids = {c["id"] for c in t5["children"]}
+    # Namespaced so two encoders at the same depth cannot satisfy each other.
+    assert all(i.startswith("encoder_0_attn_") for i in clip_ids)
+    assert all(i.startswith("encoder_1_attn_") for i in t5_ids)
+    # CLIP: learned absolute positions live at the embedding, NOT in attention.
+    assert not any(i.endswith(("q_rope", "k_rope")) for i in clip_ids)
+    assert not any(i.endswith(("rel_pos_bias", "alibi_bias")) for i in clip_ids)
+    # T5: the learned relative bias enters the scores; RoPE would be fabricated.
+    assert {"encoder_1_attn_rel_pos_bias", "encoder_1_attn_rel_bias_offsets",
+            "encoder_1_attn_score_bias_add"} <= t5_ids
+    assert not any(i.endswith(("q_rope", "k_rope")) for i in t5_ids)
+    # Unscaled scores: the T5 drill draws raw QK^T (no fabricated sqrt(dim)),
+    # while CLIP keeps the standard scaled fraction.
+    assert 'data-id="encoder_1_attn_scaled_scores"' in html
+    t5_panel = html.split('data-card-id="encoder_1_op_selfattn"', 1)[1]
+    t5_svg = t5_panel.split("</svg>", 1)[0]
+    assert "sqrt(dim)" not in t5_svg
+    clip_panel = html.split('data-card-id="encoder_0_op_selfattn"', 1)[1]
+    clip_svg = clip_panel.split("</svg>", 1)[0]
+    assert "sqrt(dim)" in clip_svg
+    # No fetched sub-config -> honest description-only card, never a guessed drill.
+    from model_unfolder.adapters.diffusor.blocks import _text_encoder_ops
+    bare = _text_encoder_ops("CLIP", None, None, "enc_x", spec={})
+    bare_attn = next(b for b in bare if b["id"] == "enc_x_op_selfattn")
+    assert "view" not in bare_attn and not bare_attn.get("children")
+    assert bare_attn.get("description")
+
+
+HYBRID_ENC = {**FLUX, "_text_encoder_configs": {
+    "text_encoder": {
+        "_class_name": "LlamaModel", "architectures": ["LlamaForCausalLM"],
+        "model_type": "llama", "num_hidden_layers": 24, "hidden_size": 2048,
+        "num_attention_heads": 16, "num_key_value_heads": 4,
+        "intermediate_size": 5632, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+        "vocab_size": 32000, "max_position_embeddings": 8192,
+        "rope_theta": 10000.0, "sliding_window": 4096,
+        "layer_types": ["sliding_attention", "full_attention"] * 12,
+    },
+}}
+
+
+def test_heterogeneous_encoder_renders_grouped_layer_types():
+    """A text encoder whose stack alternates layer types renders EVERY distinct
+    type — per-group cells inside one cycle frame (the code's loop body), each
+    with its own namespaced drill — instead of layer-0 standing in for all.
+    The tag names only the distinction (mask flavour); the schedule stays data."""
+    import re
+    d = unfold(HYBRID_ENC)
+    ir = d.to_ir()
+
+    def find_block(blocks, bid):
+        for b in blocks or []:
+            if b.get("id") == bid:
+                return b
+            hit = find_block(b.get("children"), bid)
+            if hit is not None:
+                return hit
+
+    loop = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks")
+    enc = find_block(loop, "encoder_0")
+    det = enc.get("detail") or {}
+    sub_model = det.get("sub_model") or {}
+    groups = sub_model.get("groups")
+    assert [(g["count"], g["tag"]) for g in groups] == [
+        (12, "sliding window"), (12, "global")]
+    assert sub_model.get("schedule", {}).get("period") == 2
+
+    child_ids = [c.get("id") for c in enc.get("children") or []]
+    assert "encoder_0_g0_op_selfattn" in child_ids and "encoder_0_g1_op_selfattn" in child_ids
+    assert "encoder_0_op_selfattn" not in child_ids     # no layer-0 stand-in card
+
+    html = d.to_html()
+    seg = html.split('data-card-id="encoder_0"', 1)[1]
+    svg = seg.split("</svg>", 1)[0]
+    node_ids = set(re.findall(r'data-id="([^"]+)"', svg))
+    assert {"encoder_0_g0_op_selfattn", "encoder_0_g1_op_selfattn",
+            "encoder_0_g0_op_ffn", "encoder_0_g1_op_ffn"} <= node_ids
+    labels = re.findall(r"<text[^>]*>([^<]{2,40})</text>", svg)
+    assert "× 12" in labels                              # one frame per CYCLE, not per layer
+    assert "sliding window" in labels and "global" in labels
+    # Both groups' attention drills exist and are namespaced apart.
+    assert 'data-card-id="encoder_0_g0_op_selfattn"' in html
+    assert 'data-card-id="encoder_0_g1_op_selfattn"' in html
+    assert d.wiring_problems() == []
+
+    # A homogeneous encoder is untouched: no groups, the original single-cell ids.
+    d_flat = unfold(FLUX)
+    flat = find_block(((d_flat.to_ir().get("extras") or {}).get("render") or {})
+                      .get("loop_blocks"), "encoder_0")
+    assert len(((flat.get("detail") or {}).get("sub_model") or {}).get("groups") or []) <= 1
+    assert "encoder_0_op_selfattn" in [c.get("id") for c in flat.get("children") or []]
+
+
+def test_distinct_layer_groups_and_period_detection():
+    """The typed grouping utilities: distinct-signature collapse in encounter
+    order with contiguous runs, and smallest-true-period detection."""
+    from model_unfolder.ir import detect_layer_period, distinct_layer_groups
+    from model_unfolder.evidence.context import ParseContext
+    sub = HYBRID_ENC["_text_encoder_configs"]["text_encoder"]
+    ir = transformer.parse(sub, context=ParseContext.build(sub, source="local"))
+    groups = distinct_layer_groups(ir.layers)
+    assert len(groups) == 2
+    assert groups[0]["indices"] == list(range(0, 24, 2))
+    assert groups[1]["indices"] == list(range(1, 24, 2))
+    assert all(start == end for start, end in groups[0]["runs"])  # alternation: runs of 1
+    sigs = [layer.signature() for layer in ir.layers]
+    assert detect_layer_period(sigs) == 2
+    assert detect_layer_period(sigs[:1]) is None
+    assert detect_layer_period([sigs[0]] * 6) == 1
+
+
+MOE_ENC = {**FLUX, "_text_encoder_configs": {
+    "text_encoder": {
+        "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],
+        "model_type": "mixtral", "num_hidden_layers": 32, "hidden_size": 4096,
+        "num_attention_heads": 32, "num_key_value_heads": 8,
+        "intermediate_size": 14336, "hidden_act": "silu", "rms_norm_eps": 1e-5,
+        "vocab_size": 32000, "max_position_embeddings": 32768, "rope_theta": 1e6,
+        "num_local_experts": 8, "num_experts_per_tok": 2,
+    },
+}}
+
+
+def test_moe_text_encoder_opens_the_canonical_moe_drill():
+    """An MoE text encoder opens the SAME router/top-k/expert drill a decoder
+    MoE opens — serialized off the one decoder builder, at the ENCODER's own
+    width — and the tower cell is labelled MoE, not Feed-forward."""
+    import re
+    d = unfold(MOE_ENC)
+    html = d.to_html()
+
+    seg = html.split('data-card-id="encoder_0_op_ffn"', 1)[1]
+    svg = seg.split("</svg>", 1)[0]
+    nodes = set(re.findall(r'data-id="([^"]+)"', svg))
+    assert {"router", "expert_1", "expert_n", "add_moe"} <= nodes
+    assert "in · 4,096" in svg          # the ENCODER's width, not FLUX's inner dim
+    assert "top-2 of 8" in svg
+    # Full canonical depth: the router gate pipeline and the expert FFN leaves.
+    assert 'data-card-id="router"' in html
+    assert 'data-card-id="expert_1"' in html
+    assert 'data-card-id="expert_gate_proj"' in html
+    # Tower cell names the real block.
+    tower_svg = html.split('data-card-id="encoder_0"', 1)[1].split("</svg>", 1)[0]
+    assert "Mixture of Experts" in tower_svg
+    assert d.wiring_problems() == []
+    from model_unfolder.block_schema import validate_click_coupling
+    assert validate_click_coupling(html) == []
+    # A dense encoder never gains an expert subtree.
+    flat = unfold(FLUX).to_html()
+    flat_seg = flat.split('data-card-id="encoder_0_op_ffn"', 1)[1].split("</svg>", 1)[0]
+    assert "router" not in flat_seg

@@ -30,7 +30,6 @@ from .sections import _details_section, _header, _stats_banner
 from .styles import _style
 from .svg import (
     _defs,
-    _elbow_hv,
     _ids,
     _rect_block,
     _region_rect,
@@ -39,7 +38,7 @@ from .svg import (
     _svg_text,
     _v_line,
 )
-from .theme import C, FONT_BODY, FONT_HEAD, FONT_MONO, GAP
+from .theme import C, FONT_MONO, GAP
 from .utils import _attr, _html
 from .views import _build_architecture_view, _build_layer_map, _is_resolved_diffusion_block
 
@@ -389,7 +388,14 @@ def _place_conditioning(parts, info, shadow_id, label, resolved, blocks, pos):
     centred on the denoiser so aligned sources get a straight arrow; latent
     flows vertically, conditioning enters laterally — the two axes keep meaning."""
     enc_ids = sorted(bid for bid in blocks if bid.startswith("encoder_"))
+    # Top-to-bottom is reverse dataflow because arrows rise toward the denoiser:
+    # prompt -> encoder(s) -> context assembly -> projection -> denoiser. Keeping
+    # that order prevents the prompt->encoder line from crossing later stages.
     entries: list[tuple[str, object]] = [("timestep", label("timestep", "Timestep t"))]
+    if "text_projection" in blocks:
+        entries += [("text_projection", label("text_projection", "Text projection"))]
+    if "text_context" in blocks:
+        entries += [("text_context", label("text_context", "Context assembly"))]
     if enc_ids:
         entries += [(bid, label(bid, "Encoder")) for bid in enc_ids]
     else:
@@ -419,6 +425,8 @@ def _draw_loop_edges(parts, loop_edges, pos, cx, loop_y, arrow_id):
     adapter, also projected to JSON) is the single source of the topology."""
     mono = {"fill": C["muted"], "font-family": FONT_MONO, "font-size": 12}
     prompt_targets: list[dict] = []
+    projection_sources: list[dict] = []
+    context_sources: list[dict] = []
     for e in loop_edges:
         frm, to = pos.get(e.get("from")), pos.get(e.get("to"))
         if frm is None or to is None:
@@ -434,8 +442,42 @@ def _draw_loop_edges(parts, loop_edges, pos, cx, loop_y, arrow_id):
             _edge_lateral(parts, e, frm, to, arrow_id)
         elif route == "prompt":
             prompt_targets.append(to)
+        elif route == "projection":
+            projection_sources.append(frm)
+        elif route == "context":
+            context_sources.append(frm)
     if prompt_targets:
         _draw_prompt_fanout(parts, pos["prompt"], prompt_targets, arrow_id)
+    if projection_sources and "text_projection" in pos:
+        _draw_projection_fanin(parts, projection_sources, pos["text_projection"], arrow_id)
+    if context_sources and "text_context" in pos:
+        _draw_projection_fanin(parts, context_sources, pos["text_context"], arrow_id)
+
+
+def _draw_projection_fanin(parts, sources, projection, arrow_id):
+    """Route encoded-text lane(s) into the denoiser-owned projection."""
+    if len(sources) == 1:
+        src = sources[0]
+        if src["cy"] > projection["cy"]:
+            x1, y1, x2, y2 = src["cx"], src["top"], projection["cx"], projection["bottom"] + 4
+        else:
+            x1, y1, x2, y2 = src["cx"], src["bottom"], projection["cx"], projection["top"] - 4
+        parts.append(_svg_tag("line", {
+            "x1": x1, "y1": y1, "x2": x2, "y2": y2,
+            "stroke": C["arrow"], "stroke-width": 1.6,
+            "stroke-linecap": "round", "marker-end": f"url(#{arrow_id})", "fill": "none"}))
+        return
+    bus_x = projection["right"] + 18
+    for src in sources:
+        parts.append(_svg_tag("line", {
+            "x1": src["right"], "y1": src["cy"], "x2": bus_x, "y2": src["cy"],
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "fill": "none"}))
+    parts.append(_svg_tag("path", {
+        "d": (f"M {bus_x} {sources[0]['cy']} L {bus_x} {projection['cy']} "
+              f"L {projection['right'] + 4} {projection['cy']}"),
+        "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+        "stroke-linejoin": "round", "marker-end": f"url(#{arrow_id})", "fill": "none"}))
 
 
 def _edge_spine(parts, e, frm, to, cx, loop_y, arrow_id, mono):

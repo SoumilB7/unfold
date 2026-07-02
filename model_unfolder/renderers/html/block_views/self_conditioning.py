@@ -25,9 +25,9 @@ def build_self_conditioning_view(ir: dict, info: dict, mount_id: str, block: dic
         Node("sc_gate", "linear", "gate_proj"),
         Node("sc_act", "activation", "GELU"),
         Node("sc_up", "linear", "up_proj"),
-        Node("sc_gate_up", "gate_mul", static=True),       # SwiGLU ⊗ — connector glyph
+        Node("sc_gate_up", "gate_mul"),                    # SwiGLU × — clickable connector
         Node("sc_down", "linear", "down_proj"),
-        Node("sc_add", "residual_add", static=True),       # ⊕ add canvas — connector glyph
+        Node("sc_add", "residual_add"),                    # ⊕ add canvas — clickable connector
         Node("sc_post_norm", "norm", ["post_norm", "RMSNorm · no scale"]),
         Node("sc_out", "port", static=True),
         # The canvas embeddings enter the ⊕ laterally (the thing being enriched).

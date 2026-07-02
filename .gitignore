@@ -40,3 +40,6 @@ htmlcov/
 
 # Notebooks scratch
 .ipynb_checkpoints/
+
+# Previewer
+previews/

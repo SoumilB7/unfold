@@ -10,6 +10,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable
 
+from ..everchanging import load_constructor_classmethods
 from .models import ClassEvidence
 
 
@@ -83,5 +84,23 @@ def _call_name(node: ast.AST) -> str | None:
     if isinstance(node, ast.Name):
         return node.id
     if isinstance(node, ast.Attribute):
+        # Constructor classmethods — ``CLIPTextModel._from_config(config)`` —
+        # CONSTRUCT their base class, so the call resolves to the base name;
+        # returning the method name instead leaves the field typed as the bogus
+        # class "_from_config" and every reachability closure dead-ends at the
+        # wrapper (a wrapper-owned tower then renders an unresolved stub even
+        # though its source is installed).  The factory-name vocabulary is data
+        # (everchanging/conformance/transitive.yaml), never a model branch.
+        if node.attr in load_constructor_classmethods():
+            base = _call_name(node.value)
+            if base:
+                return base
         return node.attr
+    # Indirect construction via a class registry — ``CLASSES[key](...)`` — resolves
+    # to the registry's base name so the constructed class is still TYPED. The HF
+    # codebase builds attention this way (``MIXTRAL_ATTENTION_CLASSES[impl](...)``);
+    # without this the field is untyped and op-conformance falsely flags a
+    # "fabricated" attention. Read from the code shape, never special-case the model.
+    if isinstance(node, ast.Subscript):
+        return _call_name(node.value)
     return None

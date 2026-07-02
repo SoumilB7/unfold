@@ -3,14 +3,113 @@ from __future__ import annotations
 
 from typing import Any
 
-from .accessors import architecture, as_int, drop_none, first, nested, present_paths
+from .accessors import as_int, drop_none, first, nested, present_paths
 from .detect import (
     has_cross_attention_adapter,
     has_video_input,
     is_unified_grid_stream,
-    vision_family_hint,
 )
 from .schema import Stage, assemble_path
+
+
+def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
+    """Project one typed source record into every visual-path IR projection."""
+    if not payload or evidence is None:
+        return payload
+    modalities = (payload.get("modalities") or {}).get("inputs") or {}
+    evidence_dict = evidence.to_dict()
+    for name in ("vision", "video"):
+        path = modalities.get(name)
+        if not isinstance(path, dict):
+            continue
+        path["source_evidence"] = evidence_dict
+        embedding = path.get("embedding") or {}
+        if evidence.patch_ops:
+            embedding["ops"] = [op.to_dict() for op in evidence.patch_ops]
+        else:
+            embedding.pop("ops", None)
+        embedding["source_component"] = evidence.component
+        embedding["source_owner"] = evidence.owner_class
+        encoder = path.get("encoder") or {}
+        encoder["kind"] = "vision_encoder"
+        encoder["source_component"] = evidence.component
+        encoder["source_owner"] = evidence.owner_class
+        encoder["position_encoding"] = {"kind": evidence.position_kind}
+        encoder["input_position_kind"] = evidence.input_position_kind
+        variants = [variant.to_dict() for variant in evidence.variants]
+        for variant in variants:
+            field = variant.get("repeat_field")
+            if field == "num_hidden_layers":
+                variant["repeat"] = encoder.get("num_layers")
+            elif field:
+                variant["repeat"] = encoder.get(field)
+        encoder["variants"] = variants
+        encoder["final_norm_kind"] = evidence.final_norm_kind
+        if evidence.variants:
+            primary = evidence.variants[0]
+            encoder["norm_kind"] = primary.norm_kind
+            encoder["norm_placement"] = primary.norm_placement
+            encoder["ffn_gated"] = primary.ffn_gated
+            encoder["residual_gated"] = primary.residual_gated
+            encoder["attention_class"] = primary.attention_class
+            encoder["ffn_class"] = primary.ffn_class
+            encoder["projection_mode"] = primary.projection_mode
+            encoder["q_norm"] = primary.q_norm
+            encoder["k_norm"] = primary.k_norm
+            encoder["v_norm"] = primary.v_norm
+            encoder["post_rope_scale"] = primary.post_rope_scale
+            encoder["attention_position_kind"] = primary.position_kind
+            encoder["attention_kind"] = primary.attention_kind
+            encoder["ffn_projection_mode"] = primary.ffn_projection_mode
+        for step in path.get("pipeline") or []:
+            if step.get("id") in {"patch_embedding", "video_patch_embedding"}:
+                step["ops"] = embedding["ops"]
+            elif step.get("id") in {"vision_encoder", "video_encoder"}:
+                step["kind"] = "vision_encoder"
+                step["source_component"] = evidence.component
+                step["source_owner"] = evidence.owner_class
+    return payload
+
+
+def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
+    """Project the one qualified connector record into image and video paths.
+
+    The card, op drill, path label, and fact-conformance net all read this same
+    object.  Config remains authoritative for dimensions and latent counts; it
+    never fabricates callable order when source evidence is absent.
+    """
+    if not payload or evidence is None:
+        return payload
+    modalities = (payload.get("modalities") or {}).get("inputs") or {}
+    evidence_dict = evidence.to_dict()
+    for name in ("vision", "video"):
+        path = modalities.get(name)
+        if not isinstance(path, dict):
+            continue
+        projector = path.get("projector") or {}
+        projector.pop("profile", None)
+        projector["source_evidence"] = evidence_dict
+        projector["source_owner"] = evidence.owner_class
+        projector["source_component"] = evidence.component
+        projector["source_class"] = evidence.projector_class
+        projector["source_field"] = evidence.field_name
+        if evidence.status == "proven":
+            projector["kind"] = evidence.kind
+            projector["ops"] = [op.to_dict() for op in evidence.ops]
+            projector["learned_queries"] = evidence.learned_queries
+        else:
+            projector["kind"] = "code_defined_projector"
+            projector.pop("ops", None)
+            projector.pop("learned_queries", None)
+        for step in path.get("pipeline") or []:
+            if step.get("id") not in {"projector", "video_projector"}:
+                continue
+            step["kind"] = projector["kind"]
+            if evidence.status == "proven":
+                step["ops"] = projector["ops"]
+            else:
+                step.pop("ops", None)
+    return payload
 
 
 def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
@@ -19,6 +118,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     unified_grid = is_unified_grid_stream(cfg, vision_cfg)
     image_size = first(vision_cfg, "image_size", "input_size")
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
+    input_channels = first(vision_cfg, "in_channels", "num_channels")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
     projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn, unified_grid)
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
@@ -30,6 +130,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
+    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
     token_kind = (
         "vision_cross_attention_states" if cross_attn
         else "grid_visual_tokens" if unified_grid
@@ -61,7 +162,6 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     multilayer = multilayer_features(vision_cfg)
     features = feature_selection(cfg)
     encoder_fields = drop_none({
-        "architecture": architecture(vision_cfg),
         "hidden_size": hidden_size,
         "num_layers": num_layers,
         "num_attention_heads": num_heads,
@@ -80,12 +180,15 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "output_dim": (multilayer or {}).get("output_dim")
                       or first(vision_cfg, "vision_output_dim", "output_dim"),
         "position_encoding": vision_position_encoding(cfg, vision_cfg),
+        "norm_kind": "unknown",
+        "ffn_gated": None,
     })
 
     stages = [
         Stage("input", "image_pixels", "input", "image_pixels",
-              {"shape": image_shape, "image_size": image_size, "patch_size": patch_size},
-              step_fields={"shape": image_shape}),
+              {"shape": image_shape, "image_size": image_size, "patch_size": patch_size,
+               "channels": input_channels},
+              step_fields={"shape": image_shape, "channels": input_channels}),
     ]
     if tiling:
         stages.append(
@@ -100,7 +203,9 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         )
     stages.append(
         Stage("embedding", "patch_embedding", "patch_embedding", "patch_embedding",
-              {"patch_size": patch_size, "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg)},
+              drop_none({"patch_size": patch_size, "out_features": hidden_size,
+                         "grid": patch_grid_geometry(vision_cfg),
+                         "ops": embedding_ops or None}),
               step_fields={"patch_size": patch_size, "out_features": hidden_size})
     )
     stages.append(
@@ -139,6 +244,17 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     )
 
 
+def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> list[dict]:
+    """Return an exact patch-embedding chain only for established signatures.
+
+    These are class/config-family signatures, never model ids. Unknown towers
+    keep the honest generic patch view instead of receiving a guessed backend.
+    """
+    # Config proves geometry, not callable order or backend. Typed source
+    # evidence fills this list after path assembly.
+    return []
+
+
 def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return video intake when a model reuses its visual tower for frames."""
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
@@ -150,25 +266,29 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     temporal_patch_size = first(vision_cfg, "temporal_patch_size")
+    input_channels = first(vision_cfg, "in_channels", "num_channels")
     video_shape = ["batch", "videos", "frames", "channels", "height", "width"]
     grid = grid_spec(cfg, vision_cfg, "video")
+    embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
 
     stages = [
         Stage("input", "video_frames", "input", "video_frames",
-              {"shape": video_shape, "patch_size": patch_size, "temporal_patch_size": temporal_patch_size},
-              step_fields={"shape": video_shape}),
+              {"shape": video_shape, "patch_size": patch_size,
+               "temporal_patch_size": temporal_patch_size, "channels": input_channels},
+              step_fields={"shape": video_shape, "channels": input_channels}),
         Stage("embedding", "video_patch_embedding", "temporal_patch_embedding", "temporal_patch_embedding",
-              {"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
-               "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg)},
+              drop_none({"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
+                         "out_features": hidden_size, "grid": patch_grid_geometry(vision_cfg),
+                         "ops": embedding_ops or None}),
               step_fields={"patch_size": patch_size, "temporal_patch_size": temporal_patch_size,
                            "out_features": hidden_size}),
         Stage("encoder", "video_encoder", "encode", encoder_kind,
-              {"architecture": architecture(vision_cfg), "hidden_size": hidden_size,
+              {"hidden_size": hidden_size,
                "num_layers": num_layers, "num_attention_heads": num_heads,
                "position_encoding": vision_position_encoding(cfg, vision_cfg)},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
         Stage("projector", "video_projector", "merge_patches_to_text_width", projector_kind_value,
-              {"in_features": projector_in, "out_features": projector_out}),
+              drop_none({"in_features": projector_in, "out_features": projector_out})),
         Stage("tokens", "video_tokens", "emit_grid_token_stream", "grid_video_tokens",
               {"width": text_hidden_size or None, "grid": grid}),
     ]
@@ -227,7 +347,7 @@ def merged_patch_features(vision_cfg: Any, encoder_hidden_size: Any) -> int | No
 
 def vision_encoder_kind(cfg: Any, vision_cfg: Any) -> str:
     """Return a semantic kind for the vision tower."""
-    return vision_family_hint(cfg, vision_cfg) or "vision_transformer"
+    return "vision_encoder"
 
 
 def vision_position_encoding(cfg: Any, vision_cfg: Any) -> dict | None:

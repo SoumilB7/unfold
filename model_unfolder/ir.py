@@ -8,13 +8,13 @@ dense+MoE phase changes, YOCO/CLA cross-layer KV sharing, etc.).
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 
 @dataclass
 class AttentionSpec:
-    """Specification of an attention block within a layer."""
-    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "ssm" | "recurrent" | "linear" | "rwkv"
+    """Specification of an attention/token-mixer block within a layer."""
+    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "gated_delta" | "ssm" | ...
     num_heads: int
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None
@@ -32,6 +32,8 @@ class AttentionSpec:
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
     rope: bool = True               # applies rotary position embedding to Q/K before scores
                                     # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
+    position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
+    position_application: Optional[str] = None  # qk_rotation | attention_bias | embedding_add | none
     bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
@@ -51,6 +53,8 @@ class AttentionSpec:
     index_n_heads: Optional[int] = None     # DeepSeek-V3.2 DSA lightning-indexer head count
     index_head_dim: Optional[int] = None    # DeepSeek-V3.2 DSA lightning-indexer per-head width
     mrope_section: Optional[list] = None    # Qwen-VL multimodal RoPE [temporal, height, width] split
+    conv_kernel_size: Optional[int] = None  # local causal depthwise conv in hybrid mixers
+    output_gate: Optional[str] = None       # attention-output gate (e.g. sigmoid/swish)
     # Self-describing label override for attention variants the generic kind/mask
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
@@ -102,7 +106,8 @@ class LayerSpec:
         f = self.ffn
         return (
             a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
-            a.qk_norm, a.shared, a.no_rope,
+            a.qk_norm, a.shared, a.no_rope, a.output_gate,
+            a.position_kind, a.position_application,
             a.cross_attention,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
@@ -176,6 +181,50 @@ class ModelIR:
         return groups
 
 
+def distinct_layer_groups(layers) -> list[dict]:
+    """Collapse a layer stack by DISTINCT signature, in encounter order.
+
+    A run-length encoding of a periodic schedule (sliding/global alternation,
+    hybrid full/linear mixers) explodes into per-layer segments; the consumer-
+    facing grouping is by distinct structural signature, exactly like the main
+    architecture view's group collapse (``renderers/html/metadata.py`` holds the
+    dict-IR twin of this typed helper).  Each group carries its representative
+    layer, every member index, and its contiguous runs.
+    """
+    by_sig: dict = {}
+    order: list = []
+    for layer in layers:
+        sig = layer.signature()
+        if sig not in by_sig:
+            by_sig[sig] = {"sig": sig, "layer": layer, "indices": [], "runs": []}
+            order.append(sig)
+        group = by_sig[sig]
+        if group["runs"] and group["runs"][-1][-1] == layer.index - 1:
+            group["runs"][-1] = (group["runs"][-1][0], layer.index)
+        else:
+            group["runs"].append((layer.index, layer.index))
+        group["indices"].append(layer.index)
+    return [by_sig[sig] for sig in order]
+
+
+def detect_layer_period(sigs: list) -> int | None:
+    """Smallest period ``p < n`` such that ``sigs[i] == sigs[i % p]`` for all i.
+
+    ``None`` when the sequence is aperiodic (or repeats only at full length) —
+    the same rule the architecture metadata uses to say "5 sliding + 1 full,
+    cycled" instead of listing twenty segments.
+    """
+    n = len(sigs)
+    if n < 2:
+        return None
+    for p in range(1, n // 2 + 1):
+        if n % p:
+            continue
+        if all(sigs[i] == sigs[i % p] for i in range(n)):
+            return p
+    return None
+
+
 def _attention_to_dict(a: AttentionSpec) -> dict:
     return {
         "kind": a.kind,
@@ -193,6 +242,8 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "v_head_dim": a.v_head_dim,
         "qk_norm": a.qk_norm,
         "rope": a.rope,
+        "position_kind": a.position_kind,
+        "position_application": a.position_application,
         "bias": a.bias,
         "shared": a.shared,
         "no_rope": a.no_rope,
@@ -203,6 +254,8 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "index_n_heads": a.index_n_heads,
         "index_head_dim": a.index_head_dim,
         "mrope_section": a.mrope_section,
+        "conv_kernel_size": a.conv_kernel_size,
+        "output_gate": a.output_gate,
         "variant": a.variant,
     }
 

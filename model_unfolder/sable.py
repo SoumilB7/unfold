@@ -6,11 +6,15 @@ deterministic pass instead of an improvised, corner-cutting one:
     parse -> render -> every mechanical net -> gallery -> report -> (bless -> CI lock)
 
 It runs the **mechanical** nets that can pass/fail on their own — click-coupling,
-the dangling-connector flag, unique ref-ids, op-conformance (diagram vs the code's
+the dangling-connector flag, unique ref-ids, no dotted arrows or boundaries,
+op-conformance (diagram vs the code's
 op-kinds), wiring-conformance (drawn conditioning vs the code's forward args),
 fact-conformance (the same-op-kind / different-semantics dimensions op-presence is
 blind to: positional scheme = fabricated NoPE, attention algorithm = linear vs
-softmax), and label-lint — and renders every distinct view to a PNG gallery for the
+softmax), and label-lint.  It also emits the staged, non-blocking
+``config_field_audit`` coverage warning: every unread owned config field must be
+triaged even though known backlog prevents that net from gating CI yet.  Sable then
+renders every distinct view to a PNG gallery for the
 one net that can't be automated: a human/agent **visual** review against
 :data:`VISUAL_RUBRIC`.
 
@@ -56,6 +60,7 @@ class SableCheck:
     name: str
     findings: list[str] = field(default_factory=list)
     note: str = ""                       # advisory context (e.g. oracle degraded)
+    blocking: bool = True                # False = staged coverage warning, not a gate
 
     @property
     def passed(self) -> bool:
@@ -74,7 +79,7 @@ class SableReport:
 
     @property
     def mechanical_passed(self) -> bool:
-        return all(c.passed for c in self.checks)
+        return all(c.passed for c in self.checks if c.blocking)
 
     @property
     def blessable(self) -> bool:
@@ -96,7 +101,9 @@ class SableReport:
                  f"({len(self.view_hashes)} distinct views"
                  + (f", {len(self.gallery)} PNGs" if self.gallery else ", no PNGs") + ")"]
         for c in self.checks:
-            mark = "ok" if c.passed else f"FAIL ({len(c.findings)})"
+            mark = ("ok" if c.passed else
+                    f"FAIL ({len(c.findings)})" if c.blocking else
+                    f"WARN ({len(c.findings)})")
             lines.append(f"    [{mark:>9}] {c.name}" + (f"  — {c.note}" if c.note else ""))
             for f_ in c.findings[:8]:
                 lines.append(f"        · {f_}")
@@ -105,6 +112,53 @@ class SableReport:
         lines.append(f"  visual review: {self.visual_review}  "
                      "(inspect the gallery against report.rubric)")
         return "\n".join(lines)
+
+
+def _ambiguous_evidence_findings(ir: dict) -> list[str]:
+    """Every block whose ``detail.evidence`` envelope reports ``ambiguous``.
+
+    ``ambiguous`` means the rail SCANNED installed source and could not resolve
+    the callable — so the drawn stub is an extractor/vocabulary gap, not an
+    honest absence (that is ``oracle_missing``, which stays exempt).  Walks the
+    same block tree every projection renders: layer blocks + the model-level
+    ``model_blocks`` / ``loop_blocks`` skeleton, recursively through children.
+    """
+    findings: list[str] = []
+
+    def _walk(block, path: str) -> None:
+        if not isinstance(block, dict):
+            return
+        here = f"{path}/{block.get('id') or block.get('label') or '?'}"
+        detail = block.get("detail") if isinstance(block.get("detail"), dict) else {}
+        evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
+        if str(evidence.get("status") or "") == "ambiguous":
+            reason = str(evidence.get("reason") or "unresolved")
+            component = str(evidence.get("component") or "root")
+            findings.append(
+                f"{here}: {component} evidence is ambiguous ({reason}) while the "
+                "modeling source is installed — the drill renders an honest stub; "
+                "extend the shared extractor or everchanging/ vocabulary"
+            )
+        for child in (block.get("children") or []):
+            _walk(child, here)
+
+    for i, layer in enumerate(ir.get("layers") or []):
+        for block in (layer.get("blocks") or []):
+            _walk(block, f"layer{i}")
+    render = ((ir.get("extras") or {}).get("render") or {})
+    for key in ("model_blocks", "loop_blocks"):
+        for block in (render.get(key) or []):
+            _walk(block, key)
+    # Dedupe identical repeated-layer findings while keeping order.
+    seen: set[str] = set()
+    unique = []
+    for item in findings:
+        normalized = re.sub(r"^layer\d+", "layerN", item)
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        unique.append(item)
+    return unique
 
 
 def sable(model_or_id, *, token=None, source: str = "local",
@@ -116,14 +170,20 @@ def sable(model_or_id, *, token=None, source: str = "local",
     caller (inline, or a vision-subagent fleet) to fill in against ``report.rubric``."""
     from .parser import _coerce, config_to_ir
     from .diagram import Diagram
-    from .block_schema import validate_click_coupling, validate_unique_ref_ids
+    from .block_schema import (
+        validate_click_coupling,
+        validate_no_dotted_arrows,
+        validate_no_dotted_boundaries,
+        validate_unique_ref_ids,
+    )
     from .lint import lint_labels
     from .evidence import (
         check_fact_conformance,
         check_model_conformance,
+        check_nested_conformance,
         check_wiring_conformance,
     )
-    from .evidence.sources import resolve_source_files
+    from .evidence.context import ParseContext
     from .preview import svg_views, _visual_hash
 
     cfg = _coerce(model_or_id, token=token)
@@ -134,33 +194,86 @@ def sable(model_or_id, *, token=None, source: str = "local",
     if isinstance(model_or_id, str) and isinstance(cfg, dict) and not any(
             cfg.get(k) for k in ("_name_or_path", "name_or_path", "model_id", "repo_id")):
         cfg = {**cfg, "_name_or_path": model_or_id}
-    diagram = Diagram(config_to_ir(cfg))
+    context = ParseContext.build(cfg, source=source, token=token)
+    diagram = Diagram(config_to_ir(cfg, parse_context=context))
     ir = diagram.to_ir()
-    html = diagram.to_html(standalone=True)
+    # Capture the op-kinds the renderer DRAWS for every graph (architecture + every
+    # drill, to the leaves) so the nested-conformance net can diff each drill
+    # against its backing sub-module's transitive forward() closure.
+    # Sable must never inherit an ambient compatibility render context left by
+    # a direct view call in the same process. Capture this model in an explicit
+    # call-local context so another model's drills cannot enter conformance.
+    from .renderers.html.render_context import RenderContext, activate_render_context
+    render_context = RenderContext(
+        theme=str((((ir.get("extras") or {}).get("render") or {}).get("theme")) or "teal")
+    )
+    with activate_render_context(render_context):
+        html = diagram.to_html(standalone=True)
+    render_log = list(render_context.events)
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.
-    oracle_files = resolve_source_files(cfg, source=source).files
+    oracle_files = context.source_bundle.files
     oracle = "present" if oracle_files else "MISSING (conformance degraded — install the modeling source)"
 
-    op_probs = check_model_conformance(cfg, ir, source=source) if oracle_files else []
+    op_probs = check_model_conformance(
+        cfg, ir, source=source, bundle=context.source_bundle
+    ) if oracle_files else []
     checks = [
         SableCheck("click_coupling", validate_click_coupling(html)),
         SableCheck("dangling_connectors", diagram.wiring_problems()),
         SableCheck("unique_ref_ids", validate_unique_ref_ids(html)),
+        SableCheck("no_dotted_arrows", validate_no_dotted_arrows(html)),
+        SableCheck("no_dotted_boundaries", validate_no_dotted_boundaries(html)),
+        SableCheck(
+            "config_field_audit",
+            [
+                f"unread config field {path!r} — parse it, add YAML vocabulary, "
+                "or classify it as intentionally ignored"
+                for path in ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
+            ],
+            note="coverage advisory — promote to blocking after owned-field backlog is zero",
+            blocking=False,
+        ),
         SableCheck("op_conformance",
                    [p.message for p in op_probs if p.kind in ("missing", "fabricated", "stale")],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("wiring_conformance",
-                   [p.message for p in (check_wiring_conformance(cfg, ir, source=source) if oracle_files else [])],
+                   [p.message for p in (check_wiring_conformance(
+                       cfg, ir, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         # Fact-conformance: the SAME-op-kind, different-SEMANTICS dimensions that
         # op-presence is blind to — positional scheme (fabricated NoPE) and attention
         # algorithm (linear vs softmax). The two classes I kept catching by EYE.
         SableCheck("fact_conformance",
-                   [p.message for p in (check_fact_conformance(cfg, ir, source=source) if oracle_files else [])],
+                   [p.message for p in (check_fact_conformance(
+                       cfg, ir, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
+                   note="" if oracle_files else "skipped — no code oracle"),
+        # Nested-conformance: recurse INTO each leaf-compute drill (attention / FFN /
+        # expert internals) and diff its DRAWN op-set against the TRANSITIVE forward()
+        # closure of the backing sub-module (following sdpa / rotary / the diffusers
+        # processor / the FeedForward ModuleList). One altitude below op_conformance.
+        SableCheck("nested_conformance",
+                   [p.message for p in (check_nested_conformance(
+                       cfg, render_log, source=source, bundle=context.source_bundle
+                   ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),
+        # Present-but-ambiguous evidence (eradication-plan invariant #3): a block
+        # whose evidence envelope says "ambiguous" was scanned against INSTALLED
+        # source that the extractor could not resolve — the drill then renders an
+        # honest stub while the answer sits in the code (the SD3.5/SDXL CLIP
+        # factory-construction miss).  oracle_missing stays exempt (no source, no
+        # claim).  Advisory during migration, same staging as config_field_audit.
+        SableCheck(
+            "evidence_ambiguity",
+            _ambiguous_evidence_findings(ir),
+            note="present-but-ambiguous advisory — extend the evidence extractor "
+                 "or vocabulary; promote to blocking once the backlog is zero",
+            blocking=False,
+        ),
     ]
 
     # Deterministic per-view SVG hashes (the CI-lock key) — dedup by visual hash so
@@ -238,6 +351,8 @@ def check_regression(fixture: dict) -> list[str]:
     rep = sable(fixture["config"], source=fixture.get("source", "local"), render_images=False)
     out: list[str] = []
     for c in rep.checks:
+        if not c.blocking:
+            continue
         out.extend(f"{c.name}: {f_}" for f_ in c.findings)
     locked = list(fixture.get("hash_signature") or [])
     if rep.hash_signature() != locked:
