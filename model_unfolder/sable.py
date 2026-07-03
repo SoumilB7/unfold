@@ -225,6 +225,10 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck("unique_ref_ids", validate_unique_ref_ids(html)),
         SableCheck("no_dotted_arrows", validate_no_dotted_arrows(html)),
         SableCheck("no_dotted_boundaries", validate_no_dotted_boundaries(html)),
+        # BLOCKING since 2026-07-04 (owned-field backlog reached zero): every
+        # present config field is parsed, chipped via config_facts.yaml, or
+        # consciously declared silent/no-op/ignored — an unread field now
+        # blocks a bless like any structural failure.
         SableCheck(
             "config_field_audit",
             [
@@ -232,8 +236,6 @@ def sable(model_or_id, *, token=None, source: str = "local",
                 "or classify it as intentionally ignored"
                 for path in ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
             ],
-            note="coverage advisory — promote to blocking after owned-field backlog is zero",
-            blocking=False,
         ),
         SableCheck("op_conformance",
                    [p.message for p in op_probs if p.kind in ("missing", "fabricated", "stale")],
@@ -267,12 +269,12 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # honest stub while the answer sits in the code (the SD3.5/SDXL CLIP
         # factory-construction miss).  oracle_missing stays exempt (no source, no
         # claim).  Advisory during migration, same staging as config_field_audit.
+        # BLOCKING since 2026-07-03 (backlog reached zero across the corpus):
+        # ambiguous means the rail SCANNED installed source and could not
+        # resolve the callable — an extractor/vocabulary gap, never shippable.
         SableCheck(
             "evidence_ambiguity",
             _ambiguous_evidence_findings(ir),
-            note="present-but-ambiguous advisory — extend the evidence extractor "
-                 "or vocabulary; promote to blocking once the backlog is zero",
-            blocking=False,
         ),
     ]
 

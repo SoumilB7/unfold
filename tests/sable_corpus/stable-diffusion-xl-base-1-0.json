@@ -6,7 +6,7 @@
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
-    "nested_conformance": false,
+    "nested_conformance": true,
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,

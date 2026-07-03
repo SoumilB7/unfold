@@ -129,6 +129,7 @@ def check_model_conformance(
     if not files:
         return [ConformanceProblem("unresolved", "", f"{family}/*")]
     forward_ops = extract_forward_ops(files, component=component)
+    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
     cmap = load_conformance_map()
     abstractions = load_conformance_abstractions()
 
@@ -142,7 +143,7 @@ def check_model_conformance(
     problems: list[ConformanceProblem] = []
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
-        code = resolve_view_code(family, view, spec, forward_ops, cmap)
+        code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
         if code is None:
             problems.append(ConformanceProblem("unresolved", "", key))
             continue
@@ -399,6 +400,7 @@ def check_wiring_conformance(
     if not files:
         return []                       # no oracle — op-conformance records 'unresolved'
     forward_ops = extract_forward_ops(files, component=component)
+    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
     cmap = load_conformance_map()
     stage_role, role_params = load_conformance_wiring_roles()
 
@@ -409,7 +411,7 @@ def check_wiring_conformance(
     problems: list[ConformanceProblem] = []
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
-        code = resolve_view_code(family, view, spec, forward_ops, cmap)
+        code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
         if code is None:
             continue                    # op-conformance already flags 'unresolved'
         params = " ".join(sorted(code.forward_params)).lower()
@@ -462,6 +464,7 @@ def check_fact_conformance(
     if not files:
         return []                       # no oracle — op-conformance records 'unresolved'
     forward_ops = extract_forward_ops(files, component=component)
+    architecture = (getattr(bundle, "component_architectures", {}) or {}).get(component)
     cmap = load_conformance_map()
     markers = load_conformance_fact_markers()
     rotary_subs = [s.lower() for s in markers.get("rotary", [])]
@@ -476,8 +479,10 @@ def check_fact_conformance(
     # Symmetric positional scheme check.  Parser and net consume this exact typed
     # evidence function; the net compares the resulting IR projection rather than
     # maintaining a second family/marker decision rail.
+    problems.extend(_check_storage_facts(
+        family, ir, files, representatives, check_bookend=bool(_model_type(target))))
+    problems.extend(_check_component_storage_facts(family, ir, bundle))
     if _model_type(target):
-        problems.extend(_check_storage_facts(family, ir, files, representatives))
         from .position import decoder_positional_evidence
         position = decoder_positional_evidence(target, source=source, bundle=bundle)
         if position.status == "ambiguous":
@@ -503,7 +508,7 @@ def check_fact_conformance(
                 ))
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
-        code = resolve_view_code(family, view, spec, forward_ops, cmap)
+        code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
         if code is None:
             continue                    # op-conformance already flags 'unresolved'
         attn = spec.get("attention") or {}
@@ -534,7 +539,85 @@ def check_fact_conformance(
     return problems
 
 
-def _check_storage_facts(family: str, ir: dict, files, representatives) -> list[ConformanceProblem]:
+def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
+                               code_qkv, code_expert, *,
+                               component: str = "") -> list[ConformanceProblem]:
+    """The fused-vs-split comparisons for ONE layer/group spec — shared by the
+    root pass and the per-pipeline-component pass so the vocabulary and rules
+    can never diverge."""
+    from .ffn import ffn_structure_evidence
+
+    problems: list[ConformanceProblem] = []
+    if attn.get("kind") in ("mha", "gqa", "mqa") and code_qkv is not None:
+        drawn_fused = attn.get("projection_mode") == "fused_qkv"
+        if code_qkv and not drawn_fused:
+            problems.append(ConformanceProblem(
+                "wrong_storage", "attention QKV is stored FUSED, drawn split", key,
+                source_component=component))
+        elif drawn_fused and not code_qkv:
+            problems.append(ConformanceProblem(
+                "wrong_storage", "attention QKV is stored SPLIT, drawn fused", key,
+                source_component=component))
+    if not ffn:
+        return problems
+    if ffn.get("num_experts"):
+        drawn_fused = ffn.get("expert_projection_mode") == "fused_gate_up"
+        if code_expert is True and not drawn_fused:
+            problems.append(ConformanceProblem(
+                "wrong_storage", "expert gate/up is stored FUSED, drawn split", key,
+                source_component=component))
+        elif code_expert is False and drawn_fused:
+            problems.append(ConformanceProblem(
+                "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key,
+                source_component=component))
+    elif ffn.get("gated"):
+        evidence = ffn_structure_evidence(files, expected_gated=True)
+        if evidence.status == "proven" and evidence.projection_mode:
+            drawn = ffn.get("projection_mode") or "split"
+            if drawn != evidence.projection_mode:
+                problems.append(ConformanceProblem(
+                    "wrong_storage",
+                    f"FFN gate/up is stored {evidence.projection_mode.upper()}, "
+                    f"drawn {drawn}", key, source_component=component))
+    return problems
+
+
+def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[ConformanceProblem]:
+    """The SAME storage comparisons for every pipeline SLOT's encoder tower:
+    the drawn facts live on the conditioning block's recursive ``sub_model``
+    spec, the code truth in the slot's own qualified files (whole subtree —
+    a wrapper encoder's delegated stack included)."""
+    from .patterns import attention_fused_qkv_from_files, expert_fused_gate_up_from_files
+
+    component_files = getattr(bundle, "component_files", {}) or {}
+    slots = [s for s in (getattr(bundle, "pipeline_components", ()) or ())
+             if component_files.get(s)]
+    towers = [block for block in
+              (((ir.get("extras") or {}).get("render") or {}).get("loop_blocks") or [])
+              if isinstance(block, dict)
+              and block.get("diffusion_stage") == "text_encoder"
+              and isinstance((block.get("detail") or {}).get("sub_model"), dict)]
+    problems: list[ConformanceProblem] = []
+    for slot, block in zip(slots, towers):
+        files: list[str] = []
+        for key, group in component_files.items():
+            if key == slot or key.startswith(slot + "."):
+                files.extend(f for f in group if f not in files)
+        if not files:
+            continue
+        code_qkv = attention_fused_qkv_from_files(files)
+        code_expert = expert_fused_gate_up_from_files(files)
+        sub_model = block["detail"]["sub_model"]
+        for i, group in enumerate(sub_model.get("groups") or []):
+            problems.extend(_storage_problems_for_spec(
+                f"{family}/{block.get('id') or slot}/g{i}",
+                group.get("attention") or {}, group.get("ffn") or {},
+                files, code_qkv, code_expert, component=slot))
+    return problems
+
+
+def _check_storage_facts(family: str, ir: dict, files, representatives,
+                         *, check_bookend: bool = True) -> list[ConformanceProblem]:
     """Projection-STORAGE and embedding-BOOKEND facts vs the modeling source —
     the fused-vs-split class (gpt-oss fused experts, Falcon fused ``query_key_
     value``, BLOOM's word-embedding LayerNorm) that op-PRESENCE conformance is
@@ -545,7 +628,6 @@ def _check_storage_facts(family: str, ir: dict, files, representatives) -> list[
     decoder domain; the per-component diffusion pass is the recorded follow-up.
     File-level verdicts are unanimous-or-None, so a heterogeneous stack with
     mixed storage abstains rather than guessing."""
-    from .ffn import ffn_structure_evidence
     from .patterns import (
         attention_fused_qkv_from_files,
         embedding_stage_norm_from_files,
@@ -557,38 +639,14 @@ def _check_storage_facts(family: str, ir: dict, files, representatives) -> list[
     code_expert = expert_fused_gate_up_from_files(files)
 
     for key, spec in representatives.items():
-        attn = spec.get("attention") or {}
-        ffn = spec.get("ffn") or {}
         # Vocabulary is the SPEC's own (ir.py): attention "fused_qkv" | None;
         # FFN/expert "fused_gate_up" | "split" | "dense" | None(=conventional).
-        if attn.get("kind") in ("mha", "gqa", "mqa") and code_qkv is not None:
-            drawn_fused = attn.get("projection_mode") == "fused_qkv"
-            if code_qkv and not drawn_fused:
-                problems.append(ConformanceProblem(
-                    "wrong_storage", "attention QKV is stored FUSED, drawn split", key))
-            elif drawn_fused and not code_qkv:
-                problems.append(ConformanceProblem(
-                    "wrong_storage", "attention QKV is stored SPLIT, drawn fused", key))
-        if not ffn:
-            continue
-        if ffn.get("num_experts"):
-            drawn_fused = ffn.get("expert_projection_mode") == "fused_gate_up"
-            if code_expert is True and not drawn_fused:
-                problems.append(ConformanceProblem(
-                    "wrong_storage", "expert gate/up is stored FUSED, drawn split", key))
-            elif code_expert is False and drawn_fused:
-                problems.append(ConformanceProblem(
-                    "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key))
-        elif ffn.get("gated"):
-            evidence = ffn_structure_evidence(files, expected_gated=True)
-            if evidence.status == "proven" and evidence.projection_mode:
-                drawn = ffn.get("projection_mode") or "split"
-                if drawn != evidence.projection_mode:
-                    problems.append(ConformanceProblem(
-                        "wrong_storage",
-                        f"FFN gate/up is stored {evidence.projection_mode.upper()}, "
-                        f"drawn {drawn}", key))
+        problems.extend(_storage_problems_for_spec(
+            key, spec.get("attention") or {}, spec.get("ffn") or {},
+            files, code_qkv, code_expert))
 
+    if not check_bookend:
+        return problems
     drawn_bookend = any(
         isinstance(block, dict) and block.get("id") == "embed_norm"
         for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
@@ -817,6 +875,12 @@ def _component_block_classes(registry, architecture: str | None) -> list[str]:
         for classes in info.sub_module_classes.values():
             children |= set(classes)
             found |= set(classes) & all_blocks
+        # A STRING-DISPATCH FACTORY (diffusers ``get_down_block``): the
+        # constructed element is a free FUNCTION whose body constructs the real
+        # block classes — its children are the registry entries its body calls.
+        if getattr(info, "is_function", False):
+            children |= {tok for tok in info.call_tokens if tok in registry}
+            found |= info.call_tokens & all_blocks
         for child in children:
             if child in registry and child not in seen:
                 queue.append(child)
@@ -1377,7 +1441,8 @@ def diagram_op_set(spec: dict) -> frozenset[str]:
 
 
 def resolve_view_code(family: str, view: str, spec: dict,
-                      forward_ops: dict[str, ForwardOps], cmap: dict) -> ForwardOps | None:
+                      forward_ops: dict[str, ForwardOps], cmap: dict,
+                      architecture: str | None = None) -> ForwardOps | None:
     """Pick the ONE class.forward to diff a view against — GENERAL, config-free.
 
     Primary: read which block class the model's own ``__init__`` instantiates in a
@@ -1385,16 +1450,33 @@ def resolve_view_code(family: str, view: str, spec: dict,
     LlamaDecoderLayer``); single-stream is the ModuleList whose field name says so
     or whose class carries a single-stream marker. This needs NO per-model map.
     A ``conformance_map.yaml`` override (genuine exceptions only) and a name
-    heuristic are fallbacks. Unresolved returns None (the caller records it)."""
+    heuristic are fallbacks. Unresolved returns None (the caller records it).
+
+    ``architecture`` ANCHORS the scan to classes reachable from the component's
+    own root class: shared library files (diffusers' attention_processor /
+    embeddings) carry deprecation shims that construct OTHER architectures'
+    classes, so an unanchored whole-file scan can bind a Mochi view to
+    FluxTransformerBlock.  Anchoring is a filter, never a new signal — when the
+    reachable set yields no block ModuleList (a string-factory build the flat
+    forward_ops reader can't see through), the unanchored scan is kept."""
     markers = cmap.get("single_stream_class_markers") or []
 
     def _is_single(field: str, cls: str) -> bool:
         return "single" in field.lower() or any(m in cls for m in markers)
 
+    reachable = _reachable_forward_ops(architecture, forward_ops)
+
     # 1. General: the model names its block classes via ModuleLists in __init__.
     block_elems = {field: cls for fo in forward_ops.values()
                    for field, cls in fo.module_list_elems.items()
                    if _is_block_class(cls) and cls in forward_ops}
+    if reachable:
+        anchored = {field: cls for fo in forward_ops.values()
+                    if fo.class_name in reachable
+                    for field, cls in fo.module_list_elems.items()
+                    if _is_block_class(cls) and cls in forward_ops}
+        if anchored:
+            block_elems = anchored
     for field, cls in block_elems.items():
         if _is_single(field, cls) == (view == "single_stream"):
             return forward_ops[cls]
@@ -1407,7 +1489,32 @@ def resolve_view_code(family: str, view: str, spec: dict,
     # 3. Name heuristic, disambiguated by the single-stream markers.
     cands = [c for c in forward_ops if _is_block_class(c)
              and (any(m in c for m in markers) == (view == "single_stream"))]
+    if reachable:
+        anchored_cands = [c for c in cands if c in reachable]
+        if anchored_cands:
+            cands = anchored_cands
     return forward_ops[sorted(cands, key=lambda n: (len(n), n))[0]] if cands else None
+
+
+def _reachable_forward_ops(architecture: str | None,
+                           forward_ops: dict[str, ForwardOps]) -> set[str]:
+    """Class names reachable from ``architecture`` through constructed fields,
+    ModuleList elements and init constructions — the anchoring set for
+    :func:`resolve_view_code`.  Empty when the architecture is unknown."""
+    if not architecture or architecture not in forward_ops:
+        return set()
+    seen: set[str] = set()
+    queue = [architecture]
+    while queue:
+        name = queue.pop()
+        if name in seen or name not in forward_ops:
+            continue
+        seen.add(name)
+        fo = forward_ops[name]
+        children = set(fo.field_types.values()) | set(fo.module_list_elems.values())
+        children |= set(fo.init_class_refs)
+        queue.extend(c for c in children if c in forward_ops and c not in seen)
+    return seen
 
 
 def diff_conformance(diagram: frozenset[str], code: ForwardOps,
@@ -1590,17 +1697,79 @@ def _family(target) -> str:
 
 
 def _augment_diffusion_files(files: tuple[str, ...]) -> tuple[str, ...]:
-    """Diffusion block classes (SD3 JointTransformerBlock, PixArt
-    BasicTransformerBlock) live in ``models/attention.py``, not the model file —
-    add the sibling block/processor/norm files so the resolver can find them."""
-    out = list(files)
-    for f in files:
-        p = Path(f)
-        parts = p.parts
-        if "models" in parts:
-            models_root = Path(*parts[: parts.index("models") + 1])
-            for sib in ("attention.py", "attention_processor.py", "normalization.py", "activations.py"):
-                cand = models_root / sib
-                if cand.exists() and str(cand) not in out:
-                    out.append(str(cand))
+    """Close each modeling file over ITS OWN IMPORTS inside the package's
+    ``models/`` subtree — general replacement for the old hardcoded sibling
+    list.  Diffusers spreads one architecture across files (SDXL:
+    unet_2d_condition -> unet_2d_blocks [the ``get_down_block`` string factory]
+    -> transformer_2d -> attention -> normalization/activations), so the
+    resolver follows ``import`` statements exactly as Python would: relative
+    levels against the file's package, absolute paths that stay under the same
+    ``models/`` root.  Bounded (depth/count) and never leaves the models tree —
+    reading the file's own import declarations, never guessing names."""
+    out: list[str] = list(files)
+    seen: set[str] = set(out)
+    frontier = [f for f in files if "models" in Path(f).parts]
+    depth = 0
+    while frontier and depth < 4 and len(out) < 48:
+        depth += 1
+        next_frontier: list[str] = []
+        for f in frontier:
+            for target in _imported_model_files(f):
+                if target not in seen and len(out) < 48:
+                    seen.add(target)
+                    out.append(target)
+                    next_frontier.append(target)
+        frontier = next_frontier
     return tuple(out)
+
+
+def _imported_model_files(path: str) -> list[str]:
+    """The .py files ``path`` imports CONSTRUCTION material from, resolved inside
+    its own package's ``models/`` subtree.  Pure AST — no import machinery
+    executed.  An import is followed only when the file actually CALLS one of
+    the imported names (a constructor / factory use) — back-compat re-exports
+    and isinstance/type-hint imports (diffusers' attention_processor importing
+    Flux classes) would otherwise pull unrelated architectures into every
+    model's registry."""
+    import ast as _ast
+    p = Path(path)
+    parts = p.parts
+    if "models" not in parts:
+        return []
+    models_root = Path(*parts[: parts.index("models") + 1])
+    package_dir = p.parent
+    try:
+        tree = _ast.parse(p.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, UnicodeDecodeError):
+        return []
+    called_names = {
+        node.func.id for node in _ast.walk(tree)
+        if isinstance(node, _ast.Call) and isinstance(node.func, _ast.Name)
+    }
+    targets: list[str] = []
+    for node in _ast.walk(tree):
+        if not isinstance(node, _ast.ImportFrom) or not node.module and not node.level:
+            continue
+        if not any(alias.name == "*" or alias.name in called_names
+                   or (alias.asname or "") in called_names
+                   for alias in node.names):
+            continue                     # nothing imported here is ever constructed
+        module = node.module or ""
+        if node.level:                       # relative: walk up (level-1) packages
+            base = package_dir
+            for _ in range(node.level - 1):
+                base = base.parent
+            candidate = base.joinpath(*module.split(".")) if module else base
+        else:                                # absolute: only inside this models root
+            mparts = module.split(".")
+            if "models" not in mparts:
+                continue
+            candidate = models_root.joinpath(*mparts[mparts.index("models") + 1:])
+        py = candidate.with_suffix(".py")
+        try:
+            inside = py.is_relative_to(models_root)
+        except AttributeError:
+            inside = str(py).startswith(str(models_root))
+        if inside and py.exists() and py.is_file():
+            targets.append(str(py))
+    return targets

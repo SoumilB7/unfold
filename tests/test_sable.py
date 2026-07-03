@@ -198,15 +198,16 @@ def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
     ]
 
 
-def test_config_field_audit_is_visible_but_staged_non_blocking():
-    """Unread architecture switches must be reported without breaking every
-    existing blessed model before the ownership backlog has been worked down."""
+def test_config_field_audit_is_blocking():
+    """Promoted 2026-07-04 (owned-field backlog reached zero): an unread config
+    switch now FAILS the mechanical pass — a new field must be parsed, chipped
+    via config_facts.yaml, or consciously declared ignored."""
     cfg = {**LLAMA, "brand_new_architecture_switch": True}
     report = sable(cfg, render_images=False)
     audit = next(c for c in report.checks if c.name == "config_field_audit")
-    assert audit.blocking is False
+    assert audit.blocking is True
     assert any("brand_new_architecture_switch" in finding for finding in audit.findings)
-    assert report.mechanical_passed
+    assert not report.mechanical_passed
 
 
 # --------------------------------------------------------------------------- #
@@ -417,11 +418,10 @@ def test_sable_regression_corpus():
     """Every blessed model retains its SVG lock.  Old blessings newly invalidated
     by exact source attribution stay pinned as explicit unresolved debt; they are
     not silently re-blessed without a fresh Dable review."""
-    expected_unresolved = {
-        "stable-diffusion-xl-base-1-0.json": {
-            "unet2dcondition/attn", "unet2dcondition/ffn",
-        },
-    }
+    # Unit 10 (2026-07-03) resolved the last pinned unresolved debt: the UNet
+    # string-factory (get_down_block) is followed generally now, so NO fixture
+    # may carry unresolved nested-conformance findings.
+    expected_unresolved: dict[str, set] = {}
     corpus = load_corpus()
     if not corpus:
         pytest.skip("no blessed models in tests/sable_corpus/ yet")
@@ -475,11 +475,14 @@ def test_evidence_ambiguity_flags_ambiguous_envelopes_and_passes_clean_trees():
     assert _ambiguous_evidence_findings(_ir("oracle_missing")) == []
 
 
-def test_evidence_ambiguity_is_wired_into_sable_as_advisory():
+def test_evidence_ambiguity_is_wired_into_sable_as_blocking():
+    """Promoted 2026-07-03 (backlog reached zero): an ambiguous evidence
+    envelope — installed source scanned, callable unresolved — now blocks a
+    bless like any other mechanical failure."""
     report = sable(FLUX, render_images=False)
     check = next(c for c in report.checks if c.name == "evidence_ambiguity")
-    assert not check.blocking                        # migration staging, like config_field_audit
-    assert check.passed, check.findings              # FLUX resolves all envelopes today
+    assert check.blocking
+    assert check.passed, check.findings              # FLUX resolves all envelopes
 
 
 def test_every_fixture_gallery_is_durable_and_complete():

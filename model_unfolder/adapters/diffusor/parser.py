@@ -176,7 +176,7 @@ def _code_qk_norm(cfg: Any, context=None):
 # Adapter interface
 # ---------------------------------------------------------------------------
 
-def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
+def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=None) -> ModelIR:
     """Build the IR for a UNet denoiser: no flat layer stack — the U-net
     structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
     unet = parse_unet(cfg)
@@ -195,12 +195,13 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
         )
     hidden = max(boc) if boc else 0
     text_encoders = _detect_text_encoders(cfg)
-    text_encoder_specs = _text_encoder_specs(cfg)
+    text_encoder_specs = _text_encoder_specs(cfg, context=context)
     geom = unet_geom(cfg, unet, text_encoders=text_encoders,
                      scheduler_geom=_scheduler_geom(cfg),
                      text_encoder_specs=text_encoder_specs)
     geom["vae"] = _vae_geom(cfg)
     geom["text_encoder_specs"] = text_encoder_specs
+    geom["config_facts"] = _config_fact_chips(cfg)
 
     extras: dict = {"render": unet_render_spec(geom), "unet": unet}
     meta = {k: v for k, v in {
@@ -261,6 +262,63 @@ def matches(cfg: Any) -> bool:
     return False
 
 
+def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
+    """Read EVERY declared config-fact field (``everchanging/diffusor/
+    config_facts.yaml``) and format the informative ones as per-stage card
+    chips.  The READ is the point even when no chip results: each lookup
+    records ownership for the config-field audit, so a field is either parsed,
+    chipped, or consciously declared silent/no-op in YAML — never silently
+    dropped.  ``vae`` rows read from the pipeline's embedded VAE sub-config."""
+    from ...everchanging import load_diffusion_config_facts
+    table = load_diffusion_config_facts()
+    vae_cfg = _g(cfg, "_vae_config")
+    out: dict[str, list[str]] = {}
+    for bucket, rows in table.items():
+        src = vae_cfg if bucket == "vae" else cfg
+        if src is None:
+            continue
+        chips: list[str] = []
+        for row in rows:
+            value = _g(src, row["field"])
+            if value is None or row.get("silent"):
+                continue
+            if "noop" in row and _fact_is_noop(value, row["noop"]):
+                continue
+            chips.append(_fact_chip(row["label"], value))
+        if chips:
+            out[bucket] = chips
+    return out
+
+
+def _fact_is_noop(value, noop) -> bool:
+    if isinstance(value, bool) or isinstance(noop, bool):
+        return isinstance(value, bool) and isinstance(noop, bool) and value == noop
+    if isinstance(value, (int, float)) and isinstance(noop, (int, float)):
+        return float(value) == float(noop)
+    return str(value).strip().lower() == str(noop).strip().lower()
+
+
+def _fact_chip(label: str, value) -> str:
+    if value is True:
+        return label
+    if isinstance(value, (list, tuple)):
+        flat = list(value)
+        if all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in flat):
+            return f"{label} {'·'.join(_fmt(v) if isinstance(v, int) else str(v) for v in flat)}"
+        uniq: list[str] = []
+        for v in flat:
+            text = str(v)
+            if text not in uniq:
+                uniq.append(text)
+        shown = "/".join(uniq[:4]) + ("…" if len(uniq) > 4 else "")
+        return f"{label} {shown}"
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    if isinstance(value, int):
+        return f"{label} {_fmt(value)}"
+    return f"{label} {value}"
+
+
 def parse(cfg: Any, context=None) -> ModelIR:
     if context is None:
         from ...evidence.context import ParseContext
@@ -273,7 +331,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
     if is_unet(cfg):
-        return _parse_unet_model(cfg, arch_name, warnings)
+        return _parse_unet_model(cfg, arch_name, warnings, context=context)
 
     # ---- Denoiser geometry ----
     num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)
@@ -363,10 +421,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "video": _temporal_axis(cfg, cls, context),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
-        "text_encoder_specs": _text_encoder_specs(cfg),
+        "text_encoder_specs": _text_encoder_specs(cfg, context=context),
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
         "vae": _vae_geom(cfg),
+        "config_facts": _config_fact_chips(cfg),
         **_scheduler_geom(cfg),
     }
 
@@ -1326,7 +1385,55 @@ def _detect_text_encoders(cfg: Any) -> list[str]:
     return [s["name"] for s in _text_encoder_specs(cfg)]
 
 
-def _text_encoder_specs(cfg: Any) -> list[dict]:
+def _slot_context(root_context, slot: str):
+    """A ParseContext for one pipeline SLOT (text_encoder / text_encoder_2 / …),
+    derived from the root's ALREADY-RESOLVED bundle.  The sub-parse must not
+    re-resolve source from its own sub-config: the pipeline resolution already
+    qualified this component's files, and a fresh resolve from the sub-config
+    alone silently degrades whenever that sub-config loses its address (the
+    name-blind harness scrubs it; a minimal frozen config never had it).
+    None when the root carries no files for the slot — the caller then builds
+    its own context exactly as before."""
+    if root_context is None:
+        return None
+    from ...evidence.context import ParseContext
+    from ...evidence.models import SourceBundle
+    bundle = getattr(root_context, "source_bundle", None)
+    all_files = getattr(bundle, "component_files", {}) or {}
+    if not all_files.get(slot):
+        return None
+    # Graft the slot's whole QUALIFIED SUBTREE, re-rooted: the slot itself
+    # becomes "root" and inner delegations keep their relative paths
+    # (``text_encoder.text_config`` → ``text_config``), so a wrapper encoder's
+    # delegated stack (Mistral3 → Mistral) stays resolvable in the sub-parse.
+    prefix = slot + "."
+    def _reroot(mapping: dict) -> dict:
+        out = {}
+        for key, value in (mapping or {}).items():
+            if key == slot:
+                out["root"] = value
+            elif key.startswith(prefix):
+                out[key[len(prefix):]] = value
+        return out
+    component_files = {k: tuple(v) for k, v in _reroot(all_files).items()}
+    files: list[str] = []
+    for group in component_files.values():
+        files.extend(f for f in group if f not in files)
+    component_model_types = _reroot(getattr(bundle, "component_model_types", {}) or {})
+    component_architectures = _reroot(getattr(bundle, "component_architectures", {}) or {})
+    sub_bundle = SourceBundle(
+        source=bundle.source,
+        files=tuple(files),
+        model_type=component_model_types.get("root"),
+        architecture=component_architectures.get("root"),
+        component_files=component_files,
+        component_model_types=component_model_types,
+        component_architectures=component_architectures,
+    )
+    return ParseContext(source_bundle=sub_bundle, source=root_context.source)
+
+
+def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
     """One spec per text encoder: its friendly name plus the real depth/width/
     heads/FFN parsed from its own ``config.json`` *when the loader fetched it*
     (stashed under ``_text_encoder_configs``).  Numeric fields are simply absent
@@ -1358,7 +1465,7 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         spec = {"name": friendly, "family": friendly}
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
-            spec.update(_normalize_encoder_config(sub))
+            spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted
             # (``text_encoder.text_config``), which the source bundle
@@ -1416,7 +1523,7 @@ def _uniquify_encoder_names(specs: list[dict]) -> None:
         s["name"] = f"{name} ({_fmt(hid)}-d)" if hid else f"{name} {nth[name]}"
 
 
-def _normalize_encoder_config(c: dict) -> dict:
+def _normalize_encoder_config(c: dict, context=None) -> dict:
     """Read an encoder's shape off the ONE universal transformer adapter.
 
     A pipeline's text-encoder config *is* a transformers config (CLIP, T5,
@@ -1434,7 +1541,8 @@ def _normalize_encoder_config(c: dict) -> dict:
     from ..transformer.parser import parse as _parse_transformer
 
     try:
-        context = ParseContext.build(c, source="local")
+        if context is None:
+            context = ParseContext.build(c, source="local")
         ir = _parse_transformer(c, context=context)
     except Exception:
         return {}

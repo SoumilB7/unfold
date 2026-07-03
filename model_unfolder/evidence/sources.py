@@ -413,9 +413,13 @@ def _pipeline_text_encoder_components(target: Any):
     for name, cfg in raw.items():
         if not isinstance(cfg, dict):
             continue
+        # ANY declared address qualifies the slot — model_type, architectures,
+        # or the diffusers-style ``_class_name`` (a minimal frozen sub-config
+        # may carry only the class declaration; the composite resolver handles
+        # every one of these forms).
         model_type = _own_model_type(cfg)
-        if model_type:
-            yield str(name), cfg, model_type
+        if model_type or _architecture(cfg) or _string_value(cfg, "_class_name"):
+            yield str(name), cfg, model_type or ""
 
 
 def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:

@@ -213,9 +213,21 @@ def _scan_class(node: ast.ClassDef, source_file: str,
     if entry is None:
         return None
     init = methods.get("__init__")
-    field_types = _field_types(init)            # shared with forward_ops — no twin
+    # Fold init HELPER methods the constructor delegates to (diffusers'
+    # ``Transformer2DModel.__init__ -> self._init_patched_inputs(...)`` builds
+    # the transformer_blocks there) — same folding forward gets below.  One
+    # merged construction view; first-writer wins per field, like _field_types.
+    init_bodies = _folded_init_bodies(init, methods)
+    field_types = {}
+    for body in init_bodies:                    # shared with forward_ops — no twin
+        for fld, cls in _field_types(body).items():
+            field_types.setdefault(fld, cls)
     field_type_candidates, field_type_dispatch = _field_class_map_candidates(init, class_maps)
-    sub_mods = _init_sub_modules(init)
+    sub_mods_merged: dict[str, set[str]] = {}
+    for body in init_bodies:
+        for fld, classes in _init_sub_modules(body).items():
+            sub_mods_merged.setdefault(fld, set()).update(classes)
+    sub_mods = {k: frozenset(v) for k, v in sub_mods_merged.items()}
 
     # Fold every SELF-METHOD helper reachable from the entry into one body view, so
     # ops hidden in a helper are seen — the router's `torch.topk` lives in
@@ -258,9 +270,35 @@ def _scan_class(node: ast.ClassDef, source_file: str,
         self_field_calls=frozenset(self_calls),
         iter_field_calls=frozenset(iter_calls),
         sub_module_classes=sub_mods,
-        init_class_refs=_init_class_refs(init) | _class_attr_processor_refs(node),
+        init_class_refs=frozenset().union(
+            *(_init_class_refs(b) for b in init_bodies)) | _class_attr_processor_refs(node)
+        if init_bodies else _class_attr_processor_refs(node),
         var_fn_bindings=var_fns,
     )
+
+
+def _folded_init_bodies(init: ast.FunctionDef | None, methods: dict) -> list:
+    """``__init__`` plus every self-METHOD it (transitively) calls — the
+    construction may live in a delegated helper (``self._init_patched_inputs``).
+    Cycle-guarded; returns [] when there is no __init__."""
+    if init is None:
+        return []
+    out: list = []
+    seen: set[str] = set()
+    stack = [init]
+    while stack:
+        m = stack.pop()
+        if m.name in seen:
+            continue
+        seen.add(m.name)
+        out.append(m)
+        for child in ast.walk(m):
+            if (isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
+                    and isinstance(child.func.value, ast.Name)
+                    and child.func.value.id == "self"
+                    and child.func.attr in methods and child.func.attr not in seen):
+                stack.append(methods[child.func.attr])
+    return out
 
 
 def _module_class_maps(tree: ast.Module) -> dict[str, dict[str, str]]:
@@ -424,18 +462,38 @@ def _init_sub_modules(init: ast.FunctionDef | None) -> dict[str, frozenset[str]]
     if init is None:
         return {}
     local_classes: dict[str, str] = {}
+    local_list_elems: dict[str, set[str]] = {}
     for st in ast.walk(init):
         if isinstance(st, ast.Assign) and isinstance(st.value, ast.Call):
             cls = _call_name(st.value.func)
             for tgt in st.targets:
                 if isinstance(tgt, ast.Name) and cls:
                     local_classes[tgt.id] = cls
+        # a LOCAL list seeded literal/comprehension: ``attns = [Cls(...) ...]``
+        if isinstance(st, ast.Assign) and isinstance(st.value, (ast.List, ast.ListComp)):
+            elems = set(_list_elem_classes([st.value], local_classes))
+            for tgt in st.targets:
+                if isinstance(tgt, ast.Name):
+                    local_list_elems.setdefault(tgt.id, set()).update(elems)
+        # ``attns.append(Cls(...))`` — the diffusers UNet down/up-block idiom:
+        # accumulate into a local list, wrap in ModuleList at the end.
+        if (isinstance(st, ast.Call) and isinstance(st.func, ast.Attribute)
+                and st.func.attr == "append" and st.args
+                and isinstance(st.func.value, ast.Name)):
+            cls = _elem_class(st.args[-1], local_classes)
+            if cls:
+                local_list_elems.setdefault(st.func.value.id, set()).add(cls)
 
     for st in ast.walk(init):
-        # literal / comprehension ModuleList assigned to a field
+        # literal / comprehension ModuleList assigned to a field — or a
+        # ModuleList WRAPPING an accumulated local list (``ModuleList(attns)``)
         if (isinstance(st, ast.Assign) and isinstance(st.value, ast.Call)
                 and _call_name(st.value.func) in ("ModuleList", "Sequential", "ModuleDict")):
-            for cls in _list_elem_classes(st.value.args, local_classes):
+            elems = set(_list_elem_classes(st.value.args, local_classes))
+            for arg in st.value.args:
+                if isinstance(arg, ast.Name) and arg.id in local_list_elems:
+                    elems |= local_list_elems[arg.id]
+            for cls in elems:
                 for tgt in st.targets:
                     fld = _self_field(tgt)
                     if fld is not None:

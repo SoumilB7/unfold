@@ -1125,18 +1125,24 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
     4. the ``layer_norm_eps*`` spelling hint;
     5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
     """
+    # Both eps spellings are read UP FRONT: they are real config facts (the
+    # epsilon in use) and must record their access for the ownership audit even
+    # when a higher channel (math) decides the KIND before the spelling hint.
+    rms_eps = _g(cfg, "rms_norm_eps")
+    ln_eps = _g(cfg, "layer_norm_epsilon")
+    ln_eps2 = _g(cfg, "layer_norm_eps")
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
         if "rms" in nt:
             return "rmsnorm"
         if "layer" in nt:
             return "layernorm"
-    if _g(cfg, "rms_norm_eps") is not None:
+    if rms_eps is not None:
         return "rmsnorm"
     math_kind = _code_norm_math(cfg, context)
     if math_kind:
         return math_kind
-    if _g(cfg, "layer_norm_epsilon") is not None or _g(cfg, "layer_norm_eps") is not None:
+    if ln_eps is not None or ln_eps2 is not None:
         return "layernorm"
     return _code_norm_kind(cfg, context)
 

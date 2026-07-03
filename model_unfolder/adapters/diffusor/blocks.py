@@ -239,7 +239,9 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             vae_facts.append("encoder quant 1x1 conv")
         if vae.get("mid_block_add_attention"):
             vae_facts.append("attention-bearing mid block")
-    return [
+    cf = geom.get("config_facts") or {}
+    vae_facts.extend(cf.get("vae") or [])
+    blocks_out = [
         {
             "id": "noise",
             "role": "input",
@@ -267,6 +269,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + ". " + _timestep_mechanism(family)
                 + _added_cond_sentence(added)
             ),
+            "facts": cf.get("timestep") or None,
         },
         *_text_conditioning_blocks(
             encoders, text_dim, geom.get("pooled_projection_dim"),
@@ -293,7 +296,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "two arrows feeding it are two writers at different times, not a "
                 "sum."
             ),
-            "facts": [latent_shape] if latent_shape else None,
+            "facts": ([latent_shape] if latent_shape else []) + (cf.get("latent") or []) or None,
         },
         {
             "id": "denoiser",
@@ -308,6 +311,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 "conditioning) and predicts the noise to remove. Click to open its "
                 "architecture."
             ),
+            "facts": cf.get("denoiser") or None,
             # A UNet denoiser declares its U-shape stages as cards, so every box
             # in the U is clickable and described (a DiT declares none — its
             # layers carry the cards).
@@ -363,6 +367,14 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                             "The generated image in pixel space."),
         },
     ]
+    # Text-conditioning chips (max text tokens, resolution embeddings) belong on
+    # the prompt/encoder card — attached here because the conditioning blocks
+    # are assembled by their own helper.
+    for block in blocks_out:
+        if block.get("diffusion_stage") in ("prompt", "text_encoder") and cf.get("conditioning"):
+            block["facts"] = (block.get("facts") or []) + list(cf["conditioning"])
+            break
+    return blocks_out
 
 
 def _text_projection_blocks(geom: dict) -> list[Block]:

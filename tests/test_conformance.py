@@ -1045,8 +1045,8 @@ _EXPECTED_NESTED_UNRESOLVED = {
     "self_cond": {"gqa-attn", "ffn", "moe_router", "expert_1", "expert_k", "expert_kp1", "expert_n"},
     # Synthetic wrapper fixture omits the delegated language config/source.
     "audio": {"ffn"},
-    # UNet block factories are dynamic and do not expose an exact block class yet.
-    "unet": {"attn", "ffn"},
+    # (UNet block factories resolved 2026-07-03: the string factory
+    # ``get_down_block`` is followed generally — no unet pin remains.)
 }
 
 
@@ -1406,3 +1406,26 @@ def test_bookend_conformance_embed_norm_both_directions():
         list(fabricated["extras"]["render"]["model_blocks"])
         + [{"id": "embed_norm", "role": "norm", "kind": "norm"}])
     assert any(p.kind == "fabricated_bookend" for p in _fact_problems(clean_cfg, fabricated))
+
+
+def test_component_storage_conformance_flags_encoder_tower_divergence():
+    """The storage net runs per pipeline SLOT: claiming a fused QKV on FLUX's
+    CLIP tower (whose source stores split q/k/v projections) is flagged with
+    the slot as the component; the honest parse is clean."""
+    import copy
+    import json
+    from pathlib import Path
+    from model_unfolder.evidence.conformance import check_fact_conformance
+
+    cfg = json.loads((Path(__file__).parent / "sable_corpus" /
+                      "fluxtransformer2dmodel.json").read_text())["config"]
+    ir = mu.config_to_ir(cfg).to_dict()
+    assert not [p for p in check_fact_conformance(cfg, ir) if p.kind == "wrong_storage"]
+
+    tampered = copy.deepcopy(ir)
+    for block in tampered["extras"]["render"]["loop_blocks"]:
+        if isinstance(block, dict) and block.get("id") == "encoder_0":
+            block["detail"]["sub_model"]["groups"][0]["attention"]["projection_mode"] = "fused_qkv"
+    flagged = [p for p in check_fact_conformance(cfg, tampered) if p.kind == "wrong_storage"]
+    assert flagged and flagged[0].source_component == "text_encoder"
+    assert "stored SPLIT, drawn fused" in flagged[0].op

@@ -76,6 +76,19 @@ def capture_accesses():
         _captures.reset(token)
 
 
+def _value_at(cfg: Any, path: str):
+    """The value at a dotted path in a dict-like config (None when unreachable)."""
+    node = cfg
+    for segment in path.split("."):
+        if isinstance(node, dict):
+            node = node.get(segment)
+        else:
+            node = getattr(node, segment, None)
+        if node is None:
+            return None
+    return node
+
+
 def unparsed_fields(
     cfgs: list[Any], *, touched: set[str] | None = None, recursive: bool = False
 ) -> list[str]:
@@ -90,6 +103,14 @@ def unparsed_fields(
     present: dict[str, str] = {}
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
+            # A present-but-null field DECLARES A FEATURE ABSENT
+            # (``class_embed_type: null``, ``encoder_hid_dim: null``) — there is
+            # no fact to parse and no structure to draw, so an unread null is
+            # not coverage debt.  Safe by construction: any null a parser DOES
+            # derive meaning from (``num_key_value_heads: null`` ⇒ MHA) is read,
+            # hence touched, hence never in this set to begin with.
+            if _value_at(cfg, path) is None:
+                continue
             present[path] = key
     def _owned_by_declaration(path: str) -> bool:
         # A declared-ignored key and an opaque scope both OWN their subtree:

@@ -143,6 +143,9 @@ keys:
   - initializer_factor
   - projection_dim
   - scalable_attention
+  # Pipeline-level inference behavior, not architecture: whether an empty
+  # prompt is encoded or zero-filled changes no drawn op (SDXL model_index).
+  - force_zeros_for_empty_prompt
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:

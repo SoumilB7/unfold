@@ -155,35 +155,16 @@ def test_name_blind_guard_preserves_source_address_and_clean_decoder_structure()
 
 
 def test_name_blind_guard_over_blessed_corpus():
-    """BLOCKING corpus net.  For every blessed fixture, parse the frozen config
-    with and without semantic identity:
-
-    * a TRANSFORMER-domain fixture must be structurally IDENTICAL — the LLM
-      parse derives every fact from declared fields + pre-resolved source;
-    * a DIFFUSION fixture's denoiser must be structurally identical; the only
-      tolerated divergence is INSIDE its text-encoder conditioning blocks,
-      whose nested sub-parse builds its own ParseContext from the scrubbed
-      sub-config — the documented nested-ADDRESS gap of the harness (the
-      root's pre-resolution does not yet reach pipeline components), not
-      identity-as-fact.  Any drift OUTSIDE the encoder sub-tree fails.
-    """
+    """BLOCKING corpus net, STRICT: every blessed fixture — LLM and diffusion —
+    must parse structurally IDENTICAL with all semantic identity scrubbed.
+    (The former text-encoder containment tolerance is gone: the encoder
+    sub-parse now inherits the root's pre-resolved component bundle via
+    ``_slot_context``, so a scrubbed sub-config loses no address.)"""
     from model_unfolder.sable import load_corpus
 
     corpus = load_corpus()
     assert corpus, "no blessed fixtures — the corpus lock is gone"
     for fname, fix in corpus:
         result = name_blind_diff(fix["config"])
-        if result.structural_equal:
-            continue
-        render = (result.original.get("extras") or {}).get("render", {})
-        loop = render.get("loop_blocks") or []
-        assert loop, f"{fname}: non-diffusion fixture must be name-blind equal: " \
-                     f"{result.changed_paths[:6]}"
-        encoder_prefixes = tuple(
-            f"$.extras.render.loop_blocks[{i}]"
-            for i, block in enumerate(loop)
-            if isinstance(block, dict) and block.get("diffusion_stage") == "text_encoder"
-        )
-        stray = [p for p in result.changed_paths if not p.startswith(encoder_prefixes)]
-        assert stray == [], f"{fname}: name-blind drift OUTSIDE the text-encoder " \
-                            f"sub-tree: {stray[:6]}"
+        assert result.structural_equal, \
+            f"{fname}: name-blind structural drift: {result.changed_paths[:6]}"

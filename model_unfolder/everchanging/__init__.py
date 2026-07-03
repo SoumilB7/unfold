@@ -95,6 +95,15 @@ def load_diffusion_aliases() -> dict[str, list[str]]:
     return load("diffusor", "aliases")
 
 
+def load_diffusion_config_facts() -> dict[str, list[dict]]:
+    """Declared config FACT fields (``diffusor/config_facts.yaml``): per-stage
+    buckets of ``{field, label, noop?, silent?}`` rows.  Every present field is
+    READ (ownership audit) and non-noop, non-silent values become card chips."""
+    data = load("diffusor", "config_facts")
+    return {bucket: [row for row in (rows or []) if isinstance(row, dict) and row.get("field")]
+            for bucket, rows in (data or {}).items()}
+
+
 def load_diffusion_typing() -> dict[str, list[str]]:
     """APPROVED diffusion block typing (``diffusor/typing.yaml``): ``stages``
     (blessed diffusion_stage values), ``block_ids`` (reused transformer-layer
