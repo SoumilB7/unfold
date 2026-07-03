@@ -353,13 +353,16 @@ def test_text_encoder_shows_real_config_dims():
                                 "sub_model"}}
                   for spec in specs]
     assert structural == [
-        {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "kind": "mha", "heads": 12,
-         "kv_heads": 12, "head_dim": 64, "ffn": 3072,
+        {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
-        {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "kind": "mha", "heads": 64,
-         "kv_heads": 64, "head_dim": 64, "ffn": 10240,
+        {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
+    # Attention geometry lives ONLY on the typed sub-model facts — never
+    # duplicated as flat scalars (the dead add-on vocabulary this replaced).
+    assert [(s["attention_detail"]["kind"], s["attention_detail"]["num_heads"],
+             s["attention_detail"]["num_kv_heads"], s["attention_detail"]["head_dim"])
+            for s in specs] == [("mha", 12, 12, 64), ("mha", 64, 64, 64)]
     assert [(s["ffn_evidence"]["status"], s["ffn_evidence"]["owner_class"],
              s["ffn_projection_mode"]) for s in specs] == [
         ("proven", "CLIPMLP", "dense"),

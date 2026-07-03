@@ -34,7 +34,7 @@ EXPECTED_REPORT_ONLY_DEBT = {
     ("model_unfolder/evidence/conformance.py",
      "class_marker_table", "runtime access to class-name marker vocabulary 'drill_class_markers'"): 1,
     ("model_unfolder/evidence/conformance.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'processor_markers'"): 2,
+     "class_marker_table", "runtime access to class-name marker vocabulary 'processor_markers'"): 1,
     ("model_unfolder/evidence/conformance.py",
      "class_marker_table", "runtime access to class-name marker vocabulary 'single_stream_class_markers'"): 1,
     ("model_unfolder/evidence/sources.py",

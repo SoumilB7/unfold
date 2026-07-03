@@ -35,11 +35,6 @@ def model_type(cfg: Any) -> str:
     return str(_g(cfg, "model_type", "") or "").lower()
 
 
-def architectures_text(cfg: Any) -> str:
-    """Return normalized architecture names as one search string."""
-    return " ".join(_g(cfg, "architectures", []) or []).lower()
-
-
 def as_int(value: Any) -> int | None:
     """Best-effort integer coercion for config values."""
     if isinstance(value, (list, tuple)):

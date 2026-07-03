@@ -33,7 +33,7 @@ from .svg import (
     _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
-from .render_context import ensure_render_context, release_render_context
+from .render_context import ensure_render_context
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
@@ -57,18 +57,6 @@ _MERGE_STUB = 46.0        # lane-top → merge-node rise
 # deeper than the top-level layer diff. Each entry is one rendered graph:
 # ``(view_key, drawn_op_kinds, node_ids)``. Many layer-groups bake byte-identical
 # drills, so callers dedup by ``view_key`` (the reader keeps the richest set).
-def reset_render_log() -> None:
-    ensure_render_context().events.clear()
-
-
-def drain_render_log() -> list[tuple[str, frozenset[str], frozenset[str]]]:
-    context = ensure_render_context()
-    found = [event.legacy_tuple() for event in context.events]
-    context.events.clear()
-    release_render_context(context)
-    return found
-
-
 def render_graph(
     graph: Graph,
     info: dict,

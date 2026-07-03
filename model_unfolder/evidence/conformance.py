@@ -553,7 +553,7 @@ def check_nested_conformance(
 ) -> list[ConformanceProblem]:
     """Recurse INTO every drill view and diff its DRAWN op-set against the model's
     own code — one altitude below :func:`check_model_conformance` (which stops at
-    the layer block).  ``render_log`` is ``graph_engine.drain_render_log()`` after a
+    the layer block).  ``render_log`` is the call-local RenderContext's events after a
     full render: ``[(view_key, drawn_op_kinds, node_ids), …]`` for every graph the
     renderer drew (architecture + every drill, to the leaves).
 
@@ -708,46 +708,6 @@ def _block_classes(registry) -> list[str]:
     ``*DecoderLayer`` / ``*TransformerBlock``."""
     return [name for name, info in registry.items()
             if any(_role_of(c) in ("attention", "ffn") for c in info.field_types.values())]
-
-
-def _role_union_closures(registry, vocab, *, blocks=None) -> dict[str, tuple[frozenset[str], object]]:
-    """``type_role -> (union_ops, representative evidence)`` over the model's reachable
-    sub-module classes carrying that role.
-
-    Starts at the ModuleList-built BLOCK classes, walks their ``field_types`` +
-    ``sub_module_classes`` to gather every reachable sub-module (the Attention, the
-    MLP, the MoE block, its experts, the gate), tags each by :func:`_role_of`, and
-    unions the transitive closure of each.  Attention classes inject their
-    diffusers processor (``init_class_refs`` matching ``Processor``) so the
-    delegated ``__call__`` is followed."""
-    blocks = list(blocks) if blocks is not None else _block_classes(registry)
-    reachable = set(blocks) | _reachable_submodules(blocks, registry)
-    by_role: dict[str, list[str]] = {}
-    for cls in reachable:
-        role = _role_of(cls)
-        if role:
-            by_role.setdefault(role, []).append(cls)
-
-    # diffusers attach the attention PROCESSOR at the PARENT block:
-    # ``Attention(processor=CogVideoXAttnProcessor2_0())`` — so the processor's
-    # ``__call__`` (where the SDPA compute AND ``apply_rotary_emb`` live) is named
-    # by the BLOCK, not the Attention class.  Gather every processor class built by
-    # any block or attention class and inject them into the attention closure.
-    proc_markers = vocab["processor_markers"]
-    block_procs: set[str] = set()
-    for name in (*blocks, *by_role.get("attention", [])):
-        block_procs |= _processor_refs(registry.get(name), proc_markers)
-
-    out: dict[str, tuple[frozenset[str], object]] = {}
-    for role, classes in by_role.items():
-        ops: set[str] = set()
-        for cls in classes:
-            extra = (_processor_refs(registry.get(cls), proc_markers) | frozenset(block_procs)) \
-                if role == "attention" else frozenset()
-            ops |= transitive_closure(cls, registry, vocab, extra_class_refs=extra)[0]
-        representative = sorted(classes, key=lambda n: (len(n), n))[0]
-        out[role] = (frozenset(ops), registry[representative])
-    return out
 
 
 def _component_block_classes(registry, architecture: str | None) -> list[str]:
@@ -1147,33 +1107,6 @@ def _eval_static_condition(node: ast.AST, env: dict[str, object]) -> bool | None
     if isinstance(op, ast.NotIn):
         return left not in right
     return None
-
-
-def _reachable_submodules(starts, registry, *, max_depth: int = 4) -> set[str]:
-    """Every class reachable from ``starts`` via ``field_types`` + built
-    sub-modules, bounded by depth (the block itself is excluded from the result —
-    we want its parts, not the block)."""
-    seen: set[str] = set(starts)
-    out: set[str] = set()
-    frontier = list(starts)
-    for _ in range(max_depth):
-        nxt: list[str] = []
-        for name in frontier:
-            info = registry.get(name)
-            if info is None:
-                continue
-            children = set(info.field_types.values())
-            for candidates in info.field_type_candidates.values():
-                children |= set(candidates)
-            for classes in info.sub_module_classes.values():
-                children |= set(classes)
-            for child in children:
-                if child in registry and child not in seen:
-                    seen.add(child)
-                    out.add(child)
-                    nxt.append(child)
-        frontier = nxt
-    return out
 
 
 def _processor_refs(info, markers) -> frozenset[str]:

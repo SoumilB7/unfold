@@ -199,10 +199,11 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     assert Path(text_code.source_file).name == "modeling_gemma2.py"
 
     vision_component, vision_files = conf._component_source(bundle, "vision")
-    vision_registry = build_registry(vision_files, component=vision_component)
-    closures = conf._role_union_closures(vision_registry, load_conformance_transitive())
-    assert closures.get("ffn"), "SigLIP vision MLP closure did not resolve"
-    _ops, vision_evidence = closures["ffn"]
+    from model_unfolder.evidence.ffn import ffn_structure_evidence
+    vision_evidence = ffn_structure_evidence(
+        vision_files, component=vision_component,
+        architecture=(bundle.component_architectures or {}).get(vision_component))
+    assert vision_evidence.status == "proven", "SigLIP vision MLP did not resolve"
     assert vision_evidence.component == "vision_config"
     assert Path(vision_evidence.source_file).name == "modeling_siglip.py"
 
@@ -1096,15 +1097,18 @@ def test_diffusion_attention_closure_injects_block_processor():
     (``Attention(processor=CogVideoXAttnProcessor2_0())``).  The union attention
     closure must inject it so the SDPA compute (and ``apply_rotary_emb``) is seen —
     otherwise the attention drill's rope/softmax reads as fabricated."""
-    from model_unfolder.evidence.conformance import _augment_diffusion_files, _role_union_closures
+    from model_unfolder.evidence.conformance import (
+        _augment_diffusion_files, _block_classes, _resolve_drill_closure)
     bundle = resolve_source_files(_cogvideox_cfg(), source="local")
     if not bundle.files:
         pytest.skip("diffusers cogvideox source not installed")
     reg = build_registry(_augment_diffusion_files(bundle.files))
     vocab = load_conformance_transitive()
-    closures = _role_union_closures(reg, vocab)
-    assert "attention" in closures, "no attention sub-module resolved"
-    ops, _cls = closures["attention"]
+    blocks = [b for b in _block_classes(reg) if "CogVideoX" in b]
+    assert blocks, "no CogVideoX block class resolved"
+    closure = _resolve_drill_closure(blocks, reg, vocab, "attention", "attn")
+    assert closure is not None, "no attention sub-module resolved"
+    ops, _evidence = closure
     # the diffusers Attention.forward itself is empty (it delegates to the processor);
     # the SDPA compute appears ONLY if the block-supplied processor was injected.
     assert "dot_product" in ops, "block-supplied processor not injected into the closure"
@@ -1241,8 +1245,10 @@ def test_selection_closure_carries_routing_topk():
     if not bundle.files:
         pytest.skip("transformers deepseek_v3 source not installed")
     reg = build_registry(conf._augment_diffusion_files(bundle.files))
-    rc = conf._role_union_closures(reg, load_conformance_transitive())
-    sel = rc.get("ffn", (frozenset(),))[0] | rc.get("route", (frozenset(),))[0]
+    blocks = conf._block_classes(reg)
+    closure = conf._resolve_selection_closure(blocks, reg, load_conformance_transitive())
+    assert closure is not None, "selection closure did not resolve"
+    sel, _evidence = closure
     assert "route" in sel and "linear" in sel
 
 

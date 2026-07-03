@@ -1422,7 +1422,7 @@ def _normalize_encoder_config(c: dict) -> dict:
     groups = distinct_layer_groups(ir.layers)
     dominant = max(groups, key=lambda group: len(group["indices"]))
     layer = dominant["layer"]
-    attn, ffn = layer.attention, layer.ffn
+    ffn = layer.ffn
 
     # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
     # config is silent — right for decoder LLMs, invented facts for encoders.
@@ -1466,13 +1466,12 @@ def _normalize_encoder_config(c: dict) -> dict:
     )
     code_activation = decoder_ffn_activation_from_files(files)
     act = (ffn.activation if activation_explicit else code_activation) or None
+    # Flat fields are PROSE/legacy-display only — attention geometry lives on
+    # the sub-model spec's typed facts (attention_detail per group), never
+    # duplicated here.
     fields = {
         "layers": len(ir.layers),
         "hidden": ir.hidden_size,
-        "kind": attn.kind,
-        "heads": attn.num_heads,
-        "kv_heads": attn.num_kv_heads,
-        "head_dim": attn.head_dim,
         "ffn": ffn.intermediate_size,
         "activation": act,
         "vocab": ir.vocab_size,

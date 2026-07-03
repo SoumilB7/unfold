@@ -689,7 +689,7 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     LayerNorm vs RMSNorm), so they must not share a card.
     """
     spec = spec or {}
-    hidden, heads = spec.get("hidden"), spec.get("heads")
+    hidden = spec.get("hidden")
     vocab, max_pos = spec.get("vocab"), spec.get("max_pos")
     upper = enc.upper()
     is_t5 = "T5" in upper
@@ -731,26 +731,18 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
         "Each token attends to the others in the prompt, mixing context across the "
         "sequence so every position is contextualised." + attn_extra
     )
-    head_dim = spec.get("head_dim") or (
-        (hidden // heads) if (hidden and heads and hidden % heads == 0) else None)
-    # ONE source for the attention facts: the detail dict feeds the embedded
-    # canonical view AND (via the central vocabulary) the title + chips, so the
-    # header can never disagree with the diagram (Qwen3VL GQA vs "multi-head").
-    # The sub-parse's own typed spec (``attention_detail``, via the one decoder
-    # serializer) wins when the loader fetched the encoder config; the local
-    # dict is only the fallback for spec dicts without a fetched sub-config.
+    # ONE source for the attention facts: the sub-parse's own typed spec
+    # (``attention_detail``, via the one decoder serializer) — the title and
+    # chips derive from the same fact the drill draws, so the header can never
+    # disagree with the diagram.  Without a fetched sub-config there is NO
+    # fact vocabulary here (no kind-guessing): the card keeps the neutral
+    # title and no invented chips.
     attn_detail = spec.get("attention_detail") if isinstance(
-        spec.get("attention_detail"), dict) else {
-        "kind": spec.get("kind") or (
-            "gqa" if (spec.get("kv_heads") and spec.get("kv_heads") != heads) else "mha"),
-        "num_heads": heads,
-        "num_kv_heads": spec.get("kv_heads") or heads,
-        "head_dim": head_dim,
-        "hidden": hidden,
-        "cached": False,
-    }
-    attn_title = kind_long(attn_detail).replace(" attention", " self-attention")
-    attn_facts = attention_summary(attn_detail)[1] if heads else []
+        spec.get("attention_detail"), dict) else {}
+    attn_title = (kind_long(attn_detail).replace(" attention", " self-attention")
+                  if attn_detail else "Multi-head self-attention")
+    attn_facts = (attention_summary(attn_detail)[1]
+                  if attn_detail.get("num_heads") else [])
 
     embed_card = {
         "id": f"{prefix}_op_embed",
@@ -880,7 +872,7 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
         block_label = spec.get("family") or enc
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
                   "node_prefix": f"encoder_{i}", "denoiser_family": family}
-        for k in ("layers", "hidden", "heads", "ffn", "activation", "vocab", "max_pos",
+        for k in ("layers", "hidden", "ffn", "activation", "vocab", "max_pos",
                   "norm", "gated", "sub_model"):
             if spec.get(k) is not None:
                 detail[k] = spec[k]
