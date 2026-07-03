@@ -1088,6 +1088,155 @@ def decoder_ffn_activation_from_files(files) -> str | None:
     return None
 
 
+def attention_fused_qkv_from_files(files) -> bool | None:
+    """Is Q/K/V stored as ONE fused projection (BLOOM ``query_key_value``,
+    GPT-2 ``c_attn``, MPT ``Wqkv``) rather than separate q/k/v Linears?
+
+    Storage fidelity for the attention drill: drawing three projections when
+    the code holds one fused matrix is diagram→code fabrication.  ``None``
+    keeps the split default (split IS the dominant modern layout)."""
+    import ast as _ast
+    from .forward_ops import _field_types, _method, _role_of
+    fused_names = {"query_key_value", "qkv_proj", "wqkv", "c_attn", "qkv"}
+    verdicts: set[bool] = set()
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef) or _role_of(node.name) != "attention":
+                continue
+            if _method(node, "forward") is None:
+                continue
+            fields = _field_types(_method(node, "__init__"))
+            has_fused = any(name.lower() in fused_names for name in fields)
+            has_split = {"q_proj", "k_proj", "v_proj"} <= set(fields)
+            if has_fused and not has_split:
+                verdicts.add(True)
+            elif has_split:
+                verdicts.add(False)
+    return next(iter(verdicts)) if len(verdicts) == 1 else None
+
+
+def embedding_stage_norm_from_files(files) -> str | None:
+    """A norm module applied to the EMBEDDING OUTPUT before the layer stack
+    (BLOOM's ``word_embeddings_layernorm``) — a real drawn block the layer
+    nets never see (bookend altitude).  Returns the norm kind label
+    ("LayerNorm"/"RMSNorm") when the model-stage forward provably applies a
+    norm-role field to the embedding result, else None."""
+    import ast as _ast
+    from .forward_ops import _field_types, _method, _role_of
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            forward = _method(node, "forward")
+            if forward is None:
+                continue
+            fields = _field_types(_method(node, "__init__"))
+            embed_fields = {f for f, c in fields.items() if _role_of(c) == "embedding"}
+            norm_fields = {f: c for f, c in fields.items() if _role_of(c) == "norm"}
+            if not embed_fields or not norm_fields:
+                continue
+            # ORDER-AWARE walk over the top-level statements: a variable only
+            # counts as "the embedding output" until it is reassigned or the
+            # layer loop begins — otherwise a model reusing one name
+            # (h = embed(...); for ...: h = layer(h); self.norm(h)) would
+            # misread its FINAL norm as an embedding-stage norm.
+            embed_vars: set[str] = set()
+
+            def _is_self_call(value, names) -> bool:
+                return (isinstance(value, _ast.Call)
+                        and isinstance(value.func, _ast.Attribute)
+                        and isinstance(value.func.value, _ast.Name)
+                        and value.func.value.id == "self"
+                        and value.func.attr in names)
+
+            def _pre_loop_stmts(body):
+                """Statements in source order, transparent through If/With
+                (HF wraps the embed assign in ``if inputs_embeds is None:``),
+                stopping at the first loop — where the layer stack begins."""
+                for stmt in body:
+                    if isinstance(stmt, (_ast.For, _ast.AsyncFor, _ast.While)):
+                        return
+                    if isinstance(stmt, _ast.If):
+                        yield from _pre_loop_stmts(stmt.body)
+                        yield from _pre_loop_stmts(stmt.orelse)
+                        continue
+                    if isinstance(stmt, (_ast.With, _ast.AsyncWith)):
+                        yield from _pre_loop_stmts(stmt.body)
+                        continue
+                    yield stmt
+
+            found: str | None = None
+            for stmt in _pre_loop_stmts(forward.body):
+                for child in _ast.walk(stmt):
+                    if (found is None and isinstance(child, _ast.Call)
+                            and _is_self_call(child, norm_fields)
+                            and any(isinstance(arg, _ast.Name) and arg.id in embed_vars
+                                    for arg in child.args)):
+                        cls = norm_fields[child.func.attr]
+                        found = "RMSNorm" if "rms" in cls.lower() else "LayerNorm"
+                if isinstance(stmt, _ast.Assign):
+                    targets = {t.id for t in stmt.targets if isinstance(t, _ast.Name)}
+                    if _is_self_call(stmt.value, embed_fields):
+                        embed_vars |= targets
+                    elif (isinstance(stmt.value, _ast.Name)
+                          and stmt.value.id in embed_vars):
+                        embed_vars |= targets          # alias keeps the lineage
+                    else:
+                        embed_vars -= targets          # reassigned away
+                if found:
+                    return found
+    return None
+
+
+def expert_fused_gate_up_from_files(files) -> bool | None:
+    """Are the ROUTED EXPERTS stored as one fused ``gate_up`` tensor?
+
+    The dense/shared MLP and the routed experts are DIFFERENT callables with
+    independent storage: DeepSeek-V3's ``DeepseekV3MLP`` keeps split
+    gate/up/down modules while its naive-MoE experts hold a stacked
+    ``gate_up_proj`` Parameter chunked in forward (same for Mixtral / gpt-oss
+    experts).  The module-typed FFN evidence cannot see Parameter storage, so
+    this reads the fused-experts code signature directly: a field named
+    ``*gate_up*`` whose owner's forward() splits it (``chunk``/``split``/
+    indexing) — regardless of whether the field types as Linear or Parameter.
+    ``None`` (not found) keeps the conventional split expert drawing.
+    """
+    import ast as _ast
+    from .forward_ops import _field_types, _method
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            forward = _method(node, "forward")
+            if forward is None:
+                continue
+            fields = _field_types(_method(node, "__init__"))
+            fused = {name for name in fields
+                     if "gate_up" in name.lower() or "up_gate" in name.lower()}
+            if not fused:
+                continue
+            # The STORAGE fact is the fused field itself; the split spelling
+            # varies (``.chunk(2)`` vs gpt-oss's interleaved ``[..., ::2]``
+            # slicing), so requiring a split token would miss real fused code.
+            referenced = {child.attr for child in _ast.walk(forward)
+                          if isinstance(child, _ast.Attribute)}
+            if fused & referenced:
+                return True
+    return None
+
+
 def attention_score_scaling_from_files(files) -> bool | None:
     """Does the attention forward() scale its scores (QK^T / sqrt(d))?
 

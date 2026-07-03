@@ -1,0 +1,178 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "config_field_audit": true,
+    "dangling_connectors": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_name_or_path": "Qwen/Qwen2-VL-7B-Instruct",
+    "architectures": [
+      "Qwen2VLForConditionalGeneration"
+    ],
+    "chunk_size_feed_forward": 0,
+    "dtype": "bfloat16",
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "image_token_id": 151655,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "model_type": "qwen2_vl",
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "problem_type": null,
+    "return_dict": true,
+    "text_config": {
+      "_name_or_path": "",
+      "architectures": null,
+      "attention_dropout": 0.0,
+      "bos_token_id": 151643,
+      "chunk_size_feed_forward": 0,
+      "dtype": "bfloat16",
+      "eos_token_id": 151645,
+      "hidden_act": "silu",
+      "hidden_size": 3584,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "initializer_range": 0.02,
+      "intermediate_size": 18944,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "layer_types": [
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention",
+        "full_attention"
+      ],
+      "max_position_embeddings": 32768,
+      "max_window_layers": 28,
+      "model_type": "qwen2_vl_text",
+      "num_attention_heads": 28,
+      "num_hidden_layers": 28,
+      "num_key_value_heads": 4,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "pad_token_id": null,
+      "problem_type": null,
+      "return_dict": true,
+      "rms_norm_eps": 1e-06,
+      "rope_parameters": {
+        "mrope_section": [
+          16,
+          24,
+          24
+        ],
+        "rope_theta": 1000000.0,
+        "rope_type": "default",
+        "type": "mrope"
+      },
+      "sliding_window": null,
+      "use_cache": true,
+      "use_sliding_window": false,
+      "vocab_size": 152064
+    },
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "video_token_id": 151656,
+    "vision_config": {
+      "_name_or_path": "",
+      "architectures": null,
+      "chunk_size_feed_forward": 0,
+      "depth": 32,
+      "dtype": null,
+      "embed_dim": 1280,
+      "hidden_act": "quick_gelu",
+      "hidden_size": 3584,
+      "id2label": {
+        "0": "LABEL_0",
+        "1": "LABEL_1"
+      },
+      "in_channels": 3,
+      "in_chans": 3,
+      "initializer_range": 0.02,
+      "is_encoder_decoder": false,
+      "label2id": {
+        "LABEL_0": 0,
+        "LABEL_1": 1
+      },
+      "mlp_ratio": 4,
+      "model_type": "qwen2_vl_vision",
+      "num_heads": 16,
+      "output_attentions": false,
+      "output_hidden_states": false,
+      "patch_size": 14,
+      "problem_type": null,
+      "return_dict": true,
+      "spatial_merge_size": 2,
+      "spatial_patch_size": 14,
+      "temporal_patch_size": 2
+    },
+    "vision_end_token_id": 151653,
+    "vision_start_token_id": 151652,
+    "vision_token_id": 151654
+  },
+  "hash_signature": [
+    "0119adc0a472b33e71e237cdd615e4bb",
+    "02f7afb2157dbc002163e20c1eec6cb7",
+    "0722d68e8b7714f0ad5c5d7b9946ea36",
+    "2c92800356c775ae2fb957d272c5ded4",
+    "43637c4f3ca2ab6813ae9a9656e8040c",
+    "4dda5c76b0ed456862579ed11f792711",
+    "765cf15f546a9349dfa4de85af879e64",
+    "86cb2fa423db6270e8a72babac4eda18",
+    "9c741585082f0bbdc957268127769d59",
+    "b87789d90a5ef4f2300b571043c58d21",
+    "c7679bca24724d3fd277f8c5dee25ce4",
+    "d294b927141a6e9cc7d60a0edef39d56",
+    "ef485e6ad2cbd15238a27bfae758a9c3"
+  ],
+  "model": "Qwen2-VL-7B-Instruct",
+  "source": "local",
+  "visual_evidence": {
+    "gallery_dir": "/private/tmp/claude-501/-Users-soumil-Code-Projects-Understand-llmvisualizer/a92a5cee-b94f-4931-a83f-631ec44bdf84/scratchpad/llm_bless/Qwen2-VL-7B-Instruct",
+    "manifest": true,
+    "png_count": 13
+  }
+}

@@ -359,19 +359,58 @@ def test_sable_mechanical_pass_on_corpus(name, cfg):
 # the CI lock
 # --------------------------------------------------------------------------- #
 
-def test_bless_requires_visual_review_and_round_trips(tmp_path):
+def test_bless_refuses_without_visual_artifacts(tmp_path):
+    """The visual gate is ARTIFACT-verified, in every environment:
+    a CLEAN string cannot bless without real on-disk evidence."""
     r = sable(FLUX, render_images=False)
     # mechanical-clean but visual PENDING -> NOT blessable.
     with pytest.raises(ValueError):
         bless(r, FLUX, corpus_dir=str(tmp_path))
-    # Approve the eye step, then it locks and reproduces with no drift.
+    # CLEAN with NO gallery (rsvg absent / render skipped) -> refused loudly.
+    r.visual_review = "CLEAN"
+    with pytest.raises(ValueError, match="without images is not a review"):
+        bless(r, FLUX, corpus_dir=str(tmp_path))
+    # CLEAN with a STALE gallery (files deleted since review) -> refused.
+    r.gallery = [str(tmp_path / "gone" / "00__architecture.png")]
+    with pytest.raises(ValueError, match="missing on disk|gallery/view"):
+        bless(r, FLUX, corpus_dir=str(tmp_path))
+    # CLEAN with a PARTIAL gallery (count != distinct views) -> refused.
+    partial = tmp_path / "partial"; partial.mkdir()
+    one = partial / "00__architecture.png"; one.write_bytes(b"png")
+    r.gallery = [str(one)]
+    if len(r.view_hashes) != 1:
+        with pytest.raises(ValueError, match="gallery/view mismatch"):
+            bless(r, FLUX, corpus_dir=str(tmp_path))
+
+
+def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
+    """Success path: a real gallery blesses, reproduces drift-free, and a
+    RE-bless after drift carries the superseded signature (a visible
+    transition, never a silent overwrite)."""
+    import shutil
+    if not shutil.which("rsvg-convert"):
+        pytest.skip("rsvg-convert not installed — bless success path needs real PNGs")
+    r = sable(FLUX, outdir=str(tmp_path / "gallery"))
+    assert r.gallery and len(r.gallery) == len(r.view_hashes)
+    assert (tmp_path / "gallery" / "MANIFEST.txt").exists()
     r.visual_review = "CLEAN"
     path = bless(r, FLUX, corpus_dir=str(tmp_path))
     fixture = json.loads(open(path).read())
     assert check_regression(fixture) == []
+    assert fixture["visual_evidence"]["png_count"] == len(r.view_hashes)
+    assert "superseded_hash_signature" not in fixture
     # Tamper the locked signature -> drift is detected.
-    fixture["hash_signature"] = ["deadbeef"] + fixture["hash_signature"][1:]
-    assert any("view drift" in m for m in check_regression(fixture))
+    tampered = dict(fixture)
+    tampered["hash_signature"] = ["deadbeef"] + fixture["hash_signature"][1:]
+    assert any("view drift" in m for m in check_regression(tampered))
+    # Simulate an older lock with a different signature on disk, then re-bless:
+    # the new fixture must carry the superseded signature.
+    with open(path, "w") as fh:
+        json.dump(tampered, fh)
+    path2 = bless(r, FLUX, corpus_dir=str(tmp_path))
+    refreshed = json.loads(open(path2).read())
+    assert refreshed["hash_signature"] == fixture["hash_signature"]
+    assert refreshed["superseded_hash_signature"] == tampered["hash_signature"]
 
 
 def test_sable_regression_corpus():

@@ -164,10 +164,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     inner_y = 200 + mtp_pad
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
     position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
+    # An embedding-stage norm (BLOOM's word-embedding LayerNorm) adds one quiet
+    # bookend box between the embedding and the stack — reserve its slot.
+    has_embed_norm = bool((info.get("blocks") or {}).get("embed_norm"))
+    embed_norm_pad = 64 if has_embed_norm else 0
     if has_modality_fusion and not has_cross_attention_fusion:
-        h = inner_y + inner_h + (360 if has_audio_fusion else 292)
+        h = inner_y + inner_h + (360 if has_audio_fusion else 292) + embed_norm_pad
     else:
-        h = inner_y + inner_h + 232 + position_pad
+        h = inner_y + inner_h + 232 + position_pad + embed_norm_pad
     w = 960 if needs_wide_arch else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
@@ -217,6 +221,13 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                             _block_label(info, "embed", "Token Embedding layer"), font_size=17,
                             resolved=_is_resolved_diffusion_block(is_diffusion, info, "embed"))
         stack_input = embed
+        if has_embed_norm:
+            embed_norm = _rect_block(parts, info, shadow_id, "embed_norm",
+                                     cx - 90, h - 232, 180, 36,
+                                     _block_label(info, "embed_norm", "LayerNorm"),
+                                     font_size=16)
+            parts.append(_v_line(embed, embed_norm, arrow_id))
+            stack_input = embed_norm
     final_rms = _rect_block(parts, info, shadow_id, "final_rms",
                             cx - 90, 140 + mtp_pad, 180, 36,
                             _block_label(info, "final_rms", "Final RMSNorm"), font_size=16,

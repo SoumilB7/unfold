@@ -42,6 +42,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "mrope_section": attention.mrope_section,
         "conv_kernel_size": attention.conv_kernel_size,
         "output_gate": attention.output_gate,
+        "projection_mode": attention.projection_mode,
         "variant": attention.variant,
     }
 
@@ -197,7 +198,40 @@ def _sdpa_detailed_child_blocks(
         # No cache ports for cross-attention or explicitly non-cached (diffusion/ViT) attention.
         cache_facts = [] if (cross_attention or attention.cached is False) else [CACHE_PORT_FACT]
     cross_chip = ["from cross-attention source"] if cross_attention else []
-    cards = [
+    if attention.projection_mode == "fused_qkv" and not cross_attention:
+        # Code-proven FUSED storage (BLOOM query_key_value / GPT-2 c_attn):
+        # one projection matrix, split in forward — drawing three separate
+        # projections would fabricate modules the code does not hold.
+        projection_cards = [
+            {
+                "id": "qkv_proj",
+                "title": "Fused QKV projection",
+                "description": f"ONE linear over {q_src} producing queries, keys and "
+                               "values together — this family stores Q/K/V as a "
+                               "single fused matrix, split after the projection.",
+                "facts": [f"{num_heads} Q heads", kv_chip],
+            },
+            {
+                "id": "q_split",
+                "title": "Split queries",
+                "description": "Slices the fused projection into the per-head queries.",
+                "facts": [f"→ {q_out}", f"head dim {d_k}"],
+            },
+            {
+                "id": "k_split",
+                "title": "Split keys",
+                "description": "Slices the fused projection into the keys.",
+                "facts": [f"→ {kv_out}", kv_chip, *cache_facts],
+            },
+            {
+                "id": "v_split",
+                "title": "Split values",
+                "description": "Slices the fused projection into the values.",
+                "facts": [f"→ {kv_out}", kv_chip, *cache_facts],
+            },
+        ]
+    else:
+        projection_cards = [
         {
             "id": "q_proj",
             "title": "Query projection",
@@ -216,6 +250,9 @@ def _sdpa_detailed_child_blocks(
             "description": f"Linear over {kv_src} producing the values.",
             "facts": [f"{hidden} → {kv_out}", kv_chip, *cross_chip, *cache_facts],
         },
+        ]
+    cards = [
+        *projection_cards,
         {
             "id": "scaled_scores",
             "title": scaled_title,

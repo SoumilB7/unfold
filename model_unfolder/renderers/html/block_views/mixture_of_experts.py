@@ -64,6 +64,8 @@ _EXPERT_IDS = {
     "hidden": "expert_hidden",
     "gate_proj": "expert_gate_proj",
     "up_proj": "expert_up_proj",
+    "gate_up_proj": "expert_gate_up_proj",
+    "gate_up_split": "expert_gate_up_split",
     "activation": "expert_act",
     "multiply": "expert_mul",
     "down_proj": "expert_down_proj",
@@ -80,6 +82,9 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
                 "gated": bool(ffn.get("gated", True)),
                 "activation": ffn.get("activation"),
                 "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
+                # Code-proven fused gate_up storage flows into the expert drill —
+                # the fused projection + split IS the faithful picture.
+                "projection_mode": ffn.get("expert_projection_mode"),
             },
             ffn.get("hidden") or ir.get("hidden_size"),
         ),

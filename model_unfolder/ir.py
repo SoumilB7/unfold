@@ -55,6 +55,10 @@ class AttentionSpec:
     mrope_section: Optional[list] = None    # Qwen-VL multimodal RoPE [temporal, height, width] split
     conv_kernel_size: Optional[int] = None  # local causal depthwise conv in hybrid mixers
     output_gate: Optional[str] = None       # attention-output gate (e.g. sigmoid/swish)
+    projection_mode: Optional[str] = None   # code-proven Q/K/V STORAGE:
+                                    # "fused_qkv" (one query_key_value/c_attn
+                                    # matrix, split in forward) vs None (split
+                                    # projections / unproven keeps the default)
     # Self-describing label override for attention variants the generic kind/mask
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
@@ -80,6 +84,14 @@ class FFNSpec:
                                       # model CLASS, not the config (a code-derived
                                       # fact, e.g. Flux's fixed gelu-approximate) —
                                       # render/JSON must mark it as such
+    bias: Optional[bool] = None    # MLP projection bias (mlp_bias) — a Tier-3
+                                   # chip when True; None ⇒ config silent.
+    projection_mode: Optional[str] = None  # code-proven STORAGE of the plain
+                                   # MLP: "split" | "fused_gate_up" | "dense";
+                                   # None ⇒ unproven (conventional shape kept).
+    expert_projection_mode: Optional[str] = None  # code-proven STORAGE of the
+                                   # ROUTED EXPERTS — an independent callable
+                                   # (DeepSeek: split MLP + fused experts).
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: int = 0

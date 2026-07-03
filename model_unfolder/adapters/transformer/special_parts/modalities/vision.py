@@ -167,9 +167,14 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "num_attention_heads": num_heads,
         # A vision tower that declares global layers runs a local+global stack.
         "num_global_layers": first(vision_cfg, "num_global_layers"),
-        "num_channels": first(vision_cfg, "num_channels"),
+        "num_channels": first(vision_cfg, "num_channels", "in_chans", "in_channels"),
         "global_head_dim": first(vision_cfg, "global_head_dim"),
-        "intermediate_size": first(vision_cfg, "intermediate_size", "mlp_dim"),
+        # timm/ViT dialects declare the MLP width as a RATIO of the hidden size
+        # (Qwen2-VL: mlp_ratio=4 -> 1280*4); a declared ratio is a config fact,
+        # never a guessed default.
+        "intermediate_size": first(vision_cfg, "intermediate_size", "mlp_dim")
+        or (int(first(vision_cfg, "mlp_ratio") * hidden_size)
+            if first(vision_cfg, "mlp_ratio") and hidden_size else None),
         "activation": first(vision_cfg, "hidden_act", "hidden_activation"),
         "patch_size": patch_size,
         # Which encoder output the connector reads (single layer + CLS policy).

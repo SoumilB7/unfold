@@ -91,11 +91,19 @@ def unparsed_fields(
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
             present[path] = key
+    def _owned_by_declaration(path: str) -> bool:
+        # A declared-ignored key and an opaque scope both OWN their subtree:
+        # `id2label` ignored ⇒ `id2label.0` is not a finding; an opaque scope
+        # (`quantization_config`) is owned elsewhere ⇒ neither the parent
+        # access nor its descendants are this parser's unread debt.
+        return any(segment in _IGNORED_KEYS or segment in _OPAQUE_SCOPES
+                   for segment in path.split("."))
+
     return sorted(
         path for path, key in present.items()
         if key not in reads
-        and key not in _IGNORED_KEYS
         and not key.endswith(_IGNORED_SUFFIXES)
+        and not _owned_by_declaration(path)
     )
 
 

@@ -141,6 +141,59 @@ def _code_ffn_gated(cfg: Any, context=None) -> bool | None:
         return None
 
 
+def _code_ffn_storage_mode(cfg: Any, context=None, *, expected_gated=None) -> str | None:
+    """FFN projection STORAGE read from the modeling source: split gate/up/down
+    modules vs a fused ``gate_up_proj`` that is chunked in forward (Mixtral /
+    DeepSeek-V3 naive MoE / gpt-oss experts).  A whiteboard-equivalent split
+    drawing is NOT code-faithful when the source stores fused — the drill must
+    show the fused projection + split (anti-overlook rule).  None keeps the
+    default split rendering (unproven storage stays the conventional shape only
+    for the ALREADY-drawn gated structure; the gate-or-not fact itself remains
+    evidence/tri-state via ``_code_ffn_gated``)."""
+    try:
+        from ...evidence.ffn import ffn_structure_evidence
+        evidence = ffn_structure_evidence(
+            _source_files(cfg, context), expected_gated=expected_gated)
+        if evidence.status == "proven":
+            return evidence.projection_mode
+        return None
+    except Exception:
+        return None
+
+
+def _code_embedding_norm(cfg: Any, context=None) -> str | None:
+    """A norm applied to the embedding OUTPUT before the stack (BLOOM's
+    word-embedding LayerNorm) — a real drawn bookend read from the source."""
+    try:
+        from ...evidence.patterns import embedding_stage_norm_from_files
+        return embedding_stage_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
+    """Fused Q/K/V storage (one ``query_key_value``/``c_attn`` projection) read
+    from the source — the drill draws Linear (QKV) + splits, never three
+    fabricated projections."""
+    try:
+        from ...evidence.patterns import attention_fused_qkv_from_files
+        return attention_fused_qkv_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_expert_storage(cfg: Any, context=None) -> str | None:
+    """Routed-EXPERT storage read from the source — independent of the plain
+    MLP's storage (DeepSeek-V3: split MLP for dense/shared, fused stacked
+    ``gate_up_proj`` for the routed experts)."""
+    try:
+        from ...evidence.patterns import expert_fused_gate_up_from_files
+        fused = expert_fused_gate_up_from_files(_source_files(cfg, context))
+        return "fused_gate_up" if fused else None
+    except Exception:
+        return None
+
+
 def _code_ffn_activation(cfg: Any, context=None) -> str | None:
     """Config-silent FFN activation read from the exact modeling source."""
     try:
@@ -319,6 +372,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
     # the code (and the nested-conformance net).  None keeps the heuristic.
     _code_gated = _code_ffn_gated(text_cfg, context)
+    _code_storage_mode = _code_ffn_storage_mode(text_cfg, context, expected_gated=_code_gated)
+    _code_expert_fused = _code_expert_storage(text_cfg, context)
+    _code_fused_qkv = _code_attention_fused_qkv(text_cfg, context)
     _code_position_evidence = _code_position(cfg, context)
     norm_placement = (_code_topo or {}).get("norm_placement") or "pre"
     # Position scheme: only configured source evidence may assert a mechanism.
@@ -392,12 +448,29 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
     _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
     mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
+    if mrope_section is not None:
+        debug.note_access("mrope_section")   # consumed SUBKEY of the scaling dict
 
     # ---- QK-Norm ----
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
     use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
+    # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
+    # True; None keeps "config does not declare it").
+    _mlp_bias = _g(text_cfg, "mlp_bias")
+    use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
+    # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
+    # bidirectional attention — a MASK fact, consumed here so a positive value
+    # can never be silently dropped.
+    if _g(text_cfg, "use_bidirectional_attention"):
+        forced_bidirectional = True
+    else:
+        forced_bidirectional = False
+    # BLOOM-family topology switch: when TRUE the residual taps the POST-LN
+    # output instead of the raw hidden state — surfaced as a layer annotation
+    # (the tap is a wiring fact; False is the drawn default).
+    residual_post_layernorm = bool(_g(text_cfg, "apply_residual_connection_post_layernorm"))
 
     # ---- Layer topology ----
     # Parallel residual: a config flag when the family TOGGLES it (Falcon
@@ -462,6 +535,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types, max_window_layers,
         )
+        if forced_bidirectional and mask in ("causal", "global"):
+            mask = "bidirectional"       # encoder-reuse switch: a MASK fact
         compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
         # Per-layer dual KV: full layers in a sliding stack use the global counts.
@@ -524,6 +599,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             mrope_section=mrope_section,
             conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
             output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
+            projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
+                                             and not is_gated_delta) else None),
             variant=(
                 {
                     "short": "Gated DeltaNet",
@@ -561,6 +638,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 expert_intermediate_size=moe_intermediate_size or intermediate_size,
                 routing=moe_routing,
                 activation_clip=activation_clip,
+                bias=use_mlp_bias,
+                projection_mode=_code_storage_mode,
+                expert_projection_mode=_code_expert_fused,
             )
         else:
             ffn = FFNSpec(
@@ -569,6 +649,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 intermediate_size=intermediate_size,
                 gated=_is_gated(activation, norm_kind, _code_gated),
                 activation_clip=activation_clip,
+                bias=use_mlp_bias,
+                projection_mode=_code_storage_mode,
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
@@ -641,8 +723,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
         tie_word_embeddings,
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
         modality_extras,
+        embed_norm=_code_embedding_norm(text_cfg, context),
     )
     final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    if residual_post_layernorm:
+        extras["render"].setdefault("layer_annotations", []).append(
+            "residual taps the post-LayerNorm output")
     for block in extras["render"]["model_blocks"]:
         if block.get("id") == "final_rms":
             block.update({
@@ -791,6 +877,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
+        # These SUBKEYS are consumed above via plain dict reads — record them so
+        # the ownership audit reflects consumption, not just the parent lookup.
+        for consumed in ("rope_type", "type", "factor",
+                         "original_max_position_embeddings", "rope_theta"):
+            if consumed in rope_params:
+                debug.note_access(consumed)
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.

@@ -6,11 +6,12 @@ from ....block_schema import Block
 from ..common import format_dim as _fmt
 
 
-def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> dict:
+def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+                             embed_norm: str | None = None) -> dict:
     return {
         "family": "transformer",
         "layout": "decoder_only",
-        "model_blocks": decoder_model_blocks(vocab_size, hidden_size, tie_word_embeddings),
+        "model_blocks": decoder_model_blocks(vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm),
     }
 
 
@@ -258,10 +259,10 @@ def block_diffusion_loop_blocks(
     ]
 
 
-def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> list[Block]:
+def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+                         embed_norm: str | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
-    tied = " (tied with output)" if tie_word_embeddings else ""
     return [
         {
             "id": "tok_text",
@@ -282,6 +283,18 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
                            + (" — weights tied with the output head." if tie_word_embeddings else "."),
             "facts": [f"{vocab} vocab", f"{hidden}-d"],
         },
+        *([{
+            "id": "embed_norm",
+            "role": "norm",
+            "kind": "norm",
+            "label": embed_norm,
+            "title": "Embedding norm",
+            "description": (
+                f"{embed_norm} applied to the token embeddings BEFORE the layer "
+                "stack — a code-level stage of this family (BLOOM's "
+                "word-embedding LayerNorm), read from the modeling source."
+            ),
+        }] if embed_norm else []),
         {
             "id": "final_rms",
             "role": "norm",

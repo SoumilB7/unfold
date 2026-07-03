@@ -421,6 +421,8 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
         facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
         if ffn.get("activation_clip"):
             facts.append(f"clamped ±{ffn['activation_clip']:g}")
+        if ffn.get("bias"):
+            facts.append("learned bias")
         return desc, facts
     if ffn.get("gated") is None:
         # Config declares the FFN and its inner width, but not whether it gates

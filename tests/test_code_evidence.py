@@ -785,3 +785,68 @@ def test_attention_score_scaling_verdicts_are_code_derived(tmp_path):
     assert attention_score_scaling_from_files((wrapper_only,)) is None
     # Mixed verdicts across one file's attention classes stay honestly unproven.
     assert attention_score_scaling_from_files((scaled, unscaled)) is None
+
+
+def test_storage_fidelity_detectors_are_code_shaped(tmp_path):
+    """The three storage/bookend detectors fire on the code SHAPE, never a
+    name: fused experts (stacked gate_up split any way), fused QKV (one
+    projection, no split q/k/v), and an embedding-stage norm applied to the
+    embedding OUTPUT.  Negative controls prove absence stays None."""
+    from model_unfolder.evidence.patterns import (
+        attention_fused_qkv_from_files,
+        embedding_stage_norm_from_files,
+        expert_fused_gate_up_from_files,
+    )
+
+    fused = tmp_path / "fused.py"
+    fused.write_text(
+        "class NovelExperts:\n"
+        "    def __init__(self):\n"
+        "        self.gate_up_proj = Parameter()\n"
+        "        self.down_proj = Parameter()\n"
+        "    def forward(self, x):\n"
+        "        gate_up = linear(x, self.gate_up_proj)\n"
+        "        gate = gate_up[..., ::2]\n"          # interleaved split, no chunk()
+        "        up = gate_up[..., 1::2]\n"
+        "        return linear(gate * up, self.down_proj)\n"
+        "class NovelAttention:\n"
+        "    def __init__(self):\n"
+        "        self.query_key_value = Linear()\n"
+        "    def forward(self, x):\n"
+        "        qkv = self.query_key_value(x)\n"
+        "        return qkv\n"
+        "class NovelModel:\n"
+        "    def __init__(self):\n"
+        "        self.word_embeddings = Embedding()\n"
+        "        self.word_embeddings_layernorm = LayerNorm()\n"
+        "        self.layers = ModuleList([NovelAttention()])\n"
+        "    def forward(self, input_ids):\n"
+        "        h = self.word_embeddings(input_ids)\n"
+        "        h = self.word_embeddings_layernorm(h)\n"
+        "        return h\n"
+    )
+    split = tmp_path / "split.py"
+    split.write_text(
+        "class PlainAttention:\n"
+        "    def __init__(self):\n"
+        "        self.q_proj = Linear(); self.k_proj = Linear(); self.v_proj = Linear()\n"
+        "    def forward(self, x):\n"
+        "        return self.q_proj(x)\n"
+        "class PlainModel:\n"
+        "    def __init__(self):\n"
+        "        self.embed_tokens = Embedding()\n"
+        "        self.norm = RMSNorm()\n"
+        "    def forward(self, input_ids):\n"
+        "        h = self.embed_tokens(input_ids)\n"
+        "        for layer in []:\n"
+        "            h = layer(h)\n"
+        "        return self.norm(h)\n"                # FINAL norm, not embed-stage?
+    )
+    assert expert_fused_gate_up_from_files((fused,)) is True
+    assert expert_fused_gate_up_from_files((split,)) is None
+    assert attention_fused_qkv_from_files((fused,)) is True
+    assert attention_fused_qkv_from_files((split,)) is False
+    assert embedding_stage_norm_from_files((fused,)) == "LayerNorm"
+    # A FINAL norm applied to a reused variable name is NOT an embedding-stage
+    # norm — the order-aware dataflow must not misread llama-shaped code.
+    assert embedding_stage_norm_from_files((split,)) is None

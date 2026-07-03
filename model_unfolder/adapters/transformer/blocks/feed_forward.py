@@ -32,6 +32,9 @@ def ffn_detail(ffn: FFNSpec) -> dict:
         "expert_intermediate_size": ffn.expert_intermediate_size,
         "routing": ffn.routing,
         "activation_clip": ffn.activation_clip,
+        "bias": ffn.bias,
+        "projection_mode": ffn.projection_mode,
+        "expert_projection_mode": ffn.expert_projection_mode,
     }
 
 
@@ -312,7 +315,23 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
     activation = activation_label(ffn.activation)
-    expert_children = _moe_expert_child_blocks(hidden, inter, activation)
+    if ffn.expert_projection_mode == "fused_gate_up":
+        # Code-proven fused storage: the expert cards derive from the SAME
+        # canonical region the drill draws (fused Linear(gate+up) -> split),
+        # so ids can never drift — a hand-authored split card set here would
+        # be the exact fabrication the storage evidence exists to prevent.
+        from ....labels import cards_from_region
+        from ....opgraph import ffn_region, rename_ops
+        from ....renderers.html.block_views.mixture_of_experts import _EXPERT_IDS
+        region = ffn_region(
+            {"kind": "dense", "gated": True, "activation": ffn.activation,
+             "intermediate_size": ffn.expert_intermediate_size or ffn.intermediate_size,
+             "projection_mode": "fused_gate_up"},
+            None,
+        )
+        expert_children = cards_from_region(rename_ops(region, _EXPERT_IDS))
+    else:
+        expert_children = _moe_expert_child_blocks(hidden, inter, activation)
     expert_desc = (
         "One dense FFN expert \u2014 only the routed tokens pass through it"
         + (f"; {n_shared} shared expert(s) are always active" if n_shared else "")

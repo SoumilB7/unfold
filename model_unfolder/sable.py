@@ -321,6 +321,29 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
             f"oracle={report.oracle!r}, visual_review={report.visual_review!r} — clear "
             "findings, install the modeling source so conformance runs, and mark the "
             "visual review CLEAN first.")
+    # A CLEAN visual review must be BACKED BY ARTIFACTS, not a string an eager
+    # caller sets: the gallery PNGs must exist on disk and their count must
+    # match the distinct-view count (one image per distinct diagram is exactly
+    # what save_images produces).  An absent rsvg-convert silently produced an
+    # empty gallery before — that is a hard refusal here, never a soft pass.
+    gallery = [str(p) for p in (report.gallery or [])]
+    if not gallery:
+        raise ValueError(
+            "no rendered gallery on this report — run sable(..., render_images=True) "
+            "with rsvg-convert installed and INSPECT the PNGs; a visual review "
+            "without images is not a review.")
+    missing = [p for p in gallery if not Path(p).exists()]
+    if missing:
+        raise ValueError(f"gallery images missing on disk (stale review?): {missing[:3]}")
+    if len(gallery) != len(report.view_hashes):
+        raise ValueError(
+            f"gallery/view mismatch: {len(gallery)} PNGs vs "
+            f"{len(report.view_hashes)} distinct views — regenerate the gallery "
+            "and re-review; a partial gallery cannot certify the whole model.")
+    manifest = Path(gallery[0]).parent / "MANIFEST.txt"
+    if not manifest.exists():
+        raise ValueError(f"gallery manifest missing: {manifest} — regenerate with "
+                         "save_images(); provenance requires the manifest.")
     from .parser import _coerce
     cfg_dict = _config_dict(_coerce(model_or_id, token=token))
     repro = sable(cfg_dict, source=source, render_images=False)
@@ -332,14 +355,30 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
                          "(pipeline wiring not self-contained?) — not lockable.")
     corpus = Path(corpus_dir) if corpus_dir else DEFAULT_CORPUS
     corpus.mkdir(parents=True, exist_ok=True)
+    path = corpus / f"{_slug(report.model)}.json"
     fixture = {
         "model": report.model,
         "source": source,
         "config": cfg_dict,
         "hash_signature": report.hash_signature(),
         "checks": {c.name: c.passed for c in report.checks},
+        "visual_evidence": {
+            "gallery_dir": str(Path(gallery[0]).parent),
+            "png_count": len(gallery),
+            "manifest": True,
+        },
     }
-    path = corpus / f"{_slug(report.model)}.json"
+    # A re-bless is a VISIBLE transition, never a silent overwrite: the previous
+    # lock's signature is carried in the new fixture so the review diff states
+    # exactly which pictures were re-approved.
+    if path.exists():
+        try:
+            previous = json.loads(path.read_text())
+        except (OSError, ValueError):
+            previous = {}
+        old_signature = previous.get("hash_signature")
+        if old_signature and old_signature != fixture["hash_signature"]:
+            fixture["superseded_hash_signature"] = old_signature
     path.write_text(json.dumps(fixture, indent=2, sort_keys=True, default=str))
     return str(path)
 

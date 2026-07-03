@@ -443,3 +443,84 @@ def _list_elem_class(args: list) -> str | None:
                     if name:
                         return name
     return None
+
+
+def unclassified_call_tokens(files) -> dict[str, int]:
+    """Bare call tokens the op vocabulary does not know — the LOUD-miss net.
+
+    A call token in a ``forward()`` that reaches ``_call_op_kind`` unmapped
+    contributes NOTHING to the presence set — the op silently vanishes from
+    every conformance diff.  This collector returns exactly that set so a test
+    can pin it EMPTY: a new HF helper spelling then fails loudly and becomes a
+    conscious ``op_tokens.yaml`` row, never a silent thinning of the diff.
+
+    Deliberately scoped to BARE tokens — the calls the token table owns:
+    * ``self.<field>(...)`` / ``self.method(...)`` are the field-typing and
+      transitive rails' job (nested conformance blocks their unresolved cases);
+    * forward-local bindings (loop vars, ``attn_fn = ...``) are delegation the
+      transitive layer follows through their origin, not tokens;
+    * names defined in the scanned files are followed as classes/free helpers;
+    * ``CamelCase(...)`` constructions (exceptions, output containers, caches)
+      are not operations — cache/rope semantics are keyed by markers instead.
+    """
+    from ..everchanging import load_conformance_transitive
+    vocab = load_conformance_transitive()
+    excused = set(vocab["attention_compute_tokens"]) | set(vocab["library_helpers"])
+    markers = {m for values in vocab["semantic_markers"].values() for m in values}
+
+    def _forward_locals(fn: ast.FunctionDef) -> set[str]:
+        names = {arg.arg for arg in fn.args.args}
+        if fn.args.vararg:
+            names.add(fn.args.vararg.arg)
+        if fn.args.kwarg:
+            names.add(fn.args.kwarg.arg)
+        for node in ast.walk(fn):
+            targets = ()
+            if isinstance(node, ast.Assign):
+                targets = node.targets
+            elif isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+                targets = (node.target,)
+            elif isinstance(node, (ast.For, ast.AsyncFor)):
+                targets = (node.target,)
+            elif isinstance(node, ast.comprehension):
+                targets = (node.target,)
+            elif isinstance(node, (ast.With, ast.AsyncWith)):
+                targets = tuple(item.optional_vars for item in node.items
+                                if item.optional_vars is not None)
+            for target in targets:
+                names.update(x.id for x in ast.walk(target) if isinstance(x, ast.Name))
+        return names
+
+    unknown: dict[str, int] = {}
+    for file_name in files or ():
+        try:
+            tree = ast.parse(Path(str(file_name)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        defined = {n.name for n in ast.walk(tree)
+                   if isinstance(n, (ast.ClassDef, ast.FunctionDef))}
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            forward = _method(node, "forward")
+            if forward is None:
+                continue
+            local = _forward_locals(forward)
+            for child in ast.walk(forward):
+                if not isinstance(child, ast.Call):
+                    continue
+                if isinstance(child.func, ast.Attribute):
+                    root = child.func
+                    while isinstance(root, ast.Attribute):
+                        root = root.value
+                    if isinstance(root, ast.Name) and root.id == "self":
+                        continue                      # field/method rail owns it
+                name = _call_name(child.func)
+                if (name is None or name in local or name in defined
+                        or name[:1].isupper()
+                        or name in _OP_TOKENS or name in excused
+                        or name.lower() in markers
+                        or any(m in name.lower() for m in markers if m)):
+                    continue
+                unknown[name] = unknown.get(name, 0) + 1
+    return unknown

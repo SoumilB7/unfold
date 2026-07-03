@@ -17,7 +17,8 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     spec = info["dominant"]["spec"]
     layer_blocks = spec.get("blocks") or []
 
-    for node_id in ("tok_text", "embed", "position_ids", "position_embed", "position_add"):
+    for node_id in ("tok_text", "embed", "embed_norm",
+                    "position_ids", "position_embed", "position_add"):
         if node_id not in info.get("blocks", {}) and node_id not in {"tok_text", "embed"}:
             continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))

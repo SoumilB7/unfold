@@ -1760,7 +1760,12 @@ def test_moe_text_encoder_opens_the_canonical_moe_drill():
     # Full canonical depth: the router gate pipeline and the expert FFN leaves.
     assert 'data-card-id="router"' in html
     assert 'data-card-id="expert_1"' in html
-    assert 'data-card-id="expert_gate_proj"' in html
+    # Mixtral stores experts as ONE fused gate_up tensor — the drill and its
+    # cards show the faithful fused projection + split (storage evidence
+    # composing with the embedded sub-model).
+    assert 'data-card-id="expert_gate_up_proj"' in html
+    assert 'data-card-id="expert_gate_up_split"' in html
+    assert 'data-card-id="expert_gate_proj"' not in html
     # Tower cell names the real block.
     tower_svg = html.split('data-card-id="encoder_0"', 1)[1].split("</svg>", 1)[0]
     assert "Mixture of Experts" in tower_svg

@@ -7,6 +7,32 @@
 
 # Exact key names to ignore.
 keys:
+  # --- classification-head label maps + duplicate/derived geometry + numerics ---
+  # id2label/label2id: task-head label names, never architecture.
+  - id2label
+  - label2id
+  # qk_head_dim: derived duplicate of qk_nope_head_dim + qk_rope_head_dim (both read).
+  - qk_head_dim
+  # spatial_patch_size: duplicate spelling beside patch_size (read) on Qwen-VL vision.
+  - spatial_patch_size
+  # rope_interleave: rotate-half vs interleaved WEIGHT LAYOUT — an implementation
+  # storage detail with identical math; the drawn RoPE op is unchanged.
+  - rope_interleave
+  # initial_context_length: pretraining context note; the scaling facts are read
+  # from rope_parameters (factor / original_max_position_embeddings).
+  - initial_context_length
+  # YaRN interpolation coefficients inside the (consumed) rope scaling dict —
+  # the surfaced facts are the scaling TYPE, FACTOR and original context length;
+  # these remaining numbers shape the interpolation curve only.
+  - beta_fast
+  - beta_slow
+  - mscale
+  - mscale_all_dim
+  - truncate
+  # BLOOM numerics/perf switches (softmax dtype, fused kernels, exactness trade).
+  - attention_softmax_in_fp32
+  - masked_softmax_fusion
+  - slow_but_exact
   # --- identity / dtype / generic ---
   - model_type
   - architectures
@@ -130,3 +156,6 @@ suffixes:
 opaque_scopes:
   - _scheduler_config
   - _text_encoder_configs
+  # Addressing / weights-format payloads — never drawn facts.
+  - auto_map
+  - quantization_config
