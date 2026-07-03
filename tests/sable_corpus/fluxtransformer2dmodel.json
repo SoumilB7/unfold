@@ -104,5 +104,10 @@
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
   "model": "FluxTransformer2DModel",
-  "source": "local"
+  "source": "local",
+  "visual_evidence": {
+    "gallery_dir": "galleries/fluxtransformer2dmodel",
+    "manifest": true,
+    "png_count": 18
+  }
 }

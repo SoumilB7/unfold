@@ -58,9 +58,11 @@ CORPUS = {
                          index_topk=2048, index_n_heads=64, index_head_dim=128),  # dsa_indexer
     "ple":          dict(_BASE, model_type="m", hidden_size_per_layer_input=64,
                          vocab_size_per_layer_input=1000),                         # per_layer_embedding
-    "self_cond":    dict(model_type="diffusion_gemma",
+    "self_cond":    dict(model_type="diffusion_gemma", canvas_length=256,
                          text_config=dict(_BASE, n_routed_experts=8, num_experts_per_tok=2,
                                           moe_intermediate_size=128)),             # self_conditioning
+                         # canvas_length is what the REAL config declares — block-diffusion
+                         # detection is config-first, never a model_type spelling.
     "vision":       dict(_BASE, model_type="qwen2_vl", vision_config=_VISION_CFG,
                          image_token_id=4),  # vision_path/encoder/self_attention/mlp/patch_embedding, multimodal_fusion
     "audio":        dict(_BASE, model_type="qwen2_audio",

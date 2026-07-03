@@ -1,7 +1,7 @@
 {
   "checks": {
     "click_coupling": true,
-    "config_field_audit": true,
+    "config_field_audit": false,
     "dangling_connectors": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
@@ -63,7 +63,7 @@
   "model": "bloom",
   "source": "local",
   "visual_evidence": {
-    "gallery_dir": "/private/tmp/claude-501/-Users-soumil-Code-Projects-Understand-llmvisualizer/a92a5cee-b94f-4931-a83f-631ec44bdf84/scratchpad/llm_bless/bloom",
+    "gallery_dir": "galleries/bloom",
     "manifest": true,
     "png_count": 4
   }

@@ -272,6 +272,9 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             encoders, text_dim, geom.get("pooled_projection_dim"),
             geom.get("text_encoder_specs") or [], family=family,
             cross_attention_dim=geom.get("cross_attention_dim"),
+            entry_dims=[geom.get(k) for k in (
+                "cross_attention_dim", "caption_input_dim",
+                "joint_attention_dim", "text_embed_dim", "kv_join_dim")],
         ),
         *(_text_context_blocks(geom)),
         *(_text_projection_blocks(geom)),
@@ -691,40 +694,43 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     spec = spec or {}
     hidden = spec.get("hidden")
     vocab, max_pos = spec.get("vocab"), spec.get("max_pos")
-    upper = enc.upper()
-    is_t5 = "T5" in upper
-    is_clip = "CLIP" in upper
-    # Norm kind comes from the encoder's own config when fetched; the CLIP/T5
-    # conventions are only the fallback for the two classic families.
-    norm = spec.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
-    is_lm_style = bool(spec.get("norm") == "RMSNorm" and not is_t5)
+    # EVERY family-name key is gone: the norm label is the fetched config's own
+    # (honest bare "Norm" when unfetched), and the positional prose is keyed on
+    # the sub-parse's PROVEN position mechanism — never on "T5"/"CLIP" in the
+    # display name (eradication of the encoder prose identity branches).
+    norm = spec.get("norm") or "Norm"
+    sub_model = spec.get("sub_model") if isinstance(spec.get("sub_model"), dict) else {}
+    groups = sub_model.get("groups") or []
+    dominant = max(groups, key=lambda g: g.get("count") or 0) if groups else {}
+    pos_kind = (dominant.get("attention") or {}).get("position_kind")
 
-    if is_t5:
+    if pos_kind == "relative_bias":
         embed_desc = (
-            "Maps each token id to a vector. T5 adds no absolute positional "
-            "embedding — position is injected as a relative position bias inside "
+            "Maps each token id to a vector. No absolute positional embedding "
+            "is added — position is injected as a relative position bias inside "
             "the attention scores."
         )
-        attn_extra = " T5 attention is bidirectional (every token sees every other)."
-    elif is_clip:
+        attn_extra = (" Position enters here as a learned relative-position "
+                      "bias added to the attention scores.")
+    elif pos_kind in ("learned_absolute", "fixed_absolute"):
         embed_desc = (
             "Maps each token id to a learned vector and adds a learned positional "
             "embedding for its place in the sequence."
         )
-        attn_extra = " CLIP's text transformer uses left-to-right masking (each token attends only to earlier tokens)."
-    elif is_lm_style:
+        attn_extra = ""
+    elif pos_kind == "rope":
         embed_desc = (
             "Maps each token id to a vector. Position is injected by rotary "
             "embeddings inside attention, not added here."
         )
         attn_extra = ""
     else:
-        embed_desc = "Maps each token id to a vector and adds positional information."
+        embed_desc = "Maps each token id to a vector."
         attn_extra = ""
     embed_facts = [f for f in (
         f"{_fmt(vocab)} vocab" if vocab else "",
         f"{_fmt(hidden)}-d" if hidden else "",
-        f"max seq {_fmt(max_pos)}" if (max_pos and not is_t5) else "",
+        f"max seq {_fmt(max_pos)}" if (max_pos and pos_kind != "relative_bias") else "",
     ) if f]
 
     attn_desc = (
@@ -746,7 +752,9 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
 
     embed_card = {
         "id": f"{prefix}_op_embed",
-        "title": "Token embedding" if (is_t5 or is_lm_style) else "Token + positional embedding",
+        "title": ("Token + positional embedding"
+                  if pos_kind in ("learned_absolute", "fixed_absolute")
+                  else "Token embedding"),
         "description": embed_desc,
         "facts": embed_facts,
     }
@@ -825,7 +833,8 @@ def _encoder_residual_card(prefix: str) -> Block:
 
 def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None,
                               *, family: str | None = None,
-                              cross_attention_dim=None) -> list[Block]:
+                              cross_attention_dim=None,
+                              entry_dims: list | None = None) -> list[Block]:
     """One block per real text encoder (+ a shared prompt source), so the diagram
     shows the actual number of encoders (Flux: CLIP + T5; SDXL: CLIP-L + CLIP-G;
     SD3: CLIP-L + CLIP-G + T5) instead of a single combined block.  ``specs``
@@ -863,6 +872,10 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
             + _multi_encoder_concat_note(specs, cross_attention_dim, family)
         ),
     }]
+    entry_dims = [d for d in ([text_dim, cross_attention_dim] + list(entry_dims or [])) if d]
+    encoder_roles = _encoder_roles(specs, entry_dims, pooled)
+    while len(encoder_roles) < len(encoders):
+        encoder_roles.append(set())
     for i, enc in enumerate(encoders):
         spec = specs[i] if i < len(specs) else {}
         # ``enc`` is a distinct display name for cards/prose and can include a
@@ -871,7 +884,8 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
         # card chips.  Older/external specs without ``family`` remain supported.
         block_label = spec.get("family") or enc
         detail = {"name": enc, "text_dim": text_dim, "pooled": pooled,
-                  "node_prefix": f"encoder_{i}", "denoiser_family": family}
+                  "node_prefix": f"encoder_{i}", "denoiser_family": family,
+                  "conditioning_role": sorted(encoder_roles[i])}
         for k in ("layers", "hidden", "ffn", "activation", "vocab", "max_pos",
                   "norm", "gated", "sub_model"):
             if spec.get(k) is not None:
@@ -883,7 +897,9 @@ def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | No
             "diffusion_stage": "text_encoder",
             "label": block_label,
             "title": f"{enc} text encoder",
-            "description": _encoder_desc(enc, text_dim, pooled, family),
+            "description": _encoder_desc(enc, spec.get("hidden") or text_dim,
+                                          pooled, family,
+                                          role=encoder_roles[i]),
             "view": "text_encoder",
             "detail": detail,
             "children": _text_encoder_ops(enc, text_dim, pooled, f"encoder_{i}", spec),
@@ -908,30 +924,67 @@ def _multi_encoder_concat_note(specs: list, cross_attention_dim, family) -> str:
             f"conditioning.")
 
 
-def _encoder_desc(enc: str, text_dim, pooled, family: str | None = None) -> str:
-    name = enc.upper()
+def _encoder_roles(specs: list, entry_dims: list, pooled) -> list[set]:
+    """Per-encoder pipeline ROLE from the config's own dimension routing —
+    never from the encoder's family name (eradication of the T5/CLIP prose
+    branches).  An encoder supplies the token SEQUENCE when its width matches
+    ANY declared text-entry width — the joint/cross-attention width, or a
+    pre-projection width like PixArt's ``caption_channels`` (alone, or as a
+    concat contributor — SDXL's 768+1280=2048); it supplies the POOLED vector
+    when its width (or the non-sequence encoders' sum — SD3's 768+1280=2048)
+    matches the pooled projection width.  Unfetched widths stay role-less:
+    neutral prose, no guessed routing.
+    """
+    hiddens = [spec.get("hidden") for spec in (specs or [])]
+    roles: list[set] = [set() for _ in hiddens]
+    known = [h for h in hiddens if h]
+    for seq_target in {int(d) for d in (entry_dims or []) if d}:
+        if not known:
+            break
+        if len(known) > 1 and sum(known) == seq_target:
+            for k, h in enumerate(hiddens):
+                if h:
+                    roles[k].add("sequence")
+        else:
+            for k, h in enumerate(hiddens):
+                if h and int(h) == seq_target:
+                    roles[k].add("sequence")
+    if pooled:
+        for k, h in enumerate(hiddens):
+            if h and int(h) == int(pooled):
+                roles[k].add("pooled")
+        if not any("pooled" in r for r in roles):
+            rest = [(k, h) for k, h in enumerate(hiddens) if h and "sequence" not in roles[k]]
+            if len(rest) > 1 and sum(h for _k, h in rest) == int(pooled):
+                for k, _h in rest:
+                    roles[k].add("pooled")
+    return roles
+
+
+def _encoder_desc(enc: str, text_dim, pooled, family: str | None = None,
+                  role: set | None = None) -> str:
     is_unet = family == "unet"
-    if "T5" in name:
-        role = (
+    role = role or set()
+    if "sequence" in role and is_unet:
+        # In a UNet (SD/SDXL) the encoder supplies token-level features for
+        # cross-attention — NOT AdaLN. (SDXL's pooled vector feeds the added
+        # text_time conditioning, described on the timestep, not here.)
+        wording = "produces token-level features for the U-net's cross-attention"
+    elif "sequence" in role:
+        wording = (
             "produces the prompt token sequence"
             + (f" (width {_fmt(text_dim)})" if text_dim else "")
-            + (", consumed by the U-net's cross-attention" if is_unet
-               else ", consumed by the denoiser's joint/cross attention")
+            + ", consumed by the denoiser's joint/cross attention"
         )
-    elif "CLIP" in name and is_unet:
-        # In a UNet (SD/SDXL) CLIP supplies token-level features for cross-attention
-        # — NOT AdaLN. (SDXL's pooled vector feeds the added text_time conditioning,
-        # described on the timestep, not here.)
-        role = "produces token-level features for the U-net's cross-attention"
-    elif "CLIP" in name:
-        role = (
+    elif "pooled" in role:
+        wording = (
             "produces a pooled prompt vector"
             + (f" ({_fmt(pooled)})" if pooled else "")
             + ", used as global conditioning (AdaLN modulation)"
         )
     else:
-        role = "encodes the prompt into a conditioning embedding"
-    return f"{enc}: {role}. Frozen; run once and reused every sampling step."
+        wording = "encodes the prompt into a conditioning embedding"
+    return f"{enc}: {wording}. Frozen; run once and reused every sampling step."
 
 
 def diffusion_model_blocks(geom: dict) -> list[Block]:

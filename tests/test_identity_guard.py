@@ -1,62 +1,95 @@
-"""Negative controls and the temporary report-only identity debt snapshot."""
+"""The identity guard, BLOCKING: debt is zero and stays zero.
+
+Unit 9 endpoint.  Every identity-to-structure mechanism the static net detects
+is now either eradicated (debt == []) or consciously reclassified as DECLARED
+class vocabulary — two lawful categories pinned exactly below so a new table or
+use site is a reviewed act, never an accident:
+
+* code-shape markers classify a class ALREADY RESOLVED from the model's own
+  ``__init__`` evidence (conformance registry) — same category as forward_ops
+  type-roles (RMSNorm -> norm);
+* declared-component markers read a diffusers config's OWN ``_class_name``
+  constructor declaration (like ``architectures[0]``), never a per-model table.
+"""
 from __future__ import annotations
 
 from collections import Counter
 
 from model_unfolder.evidence.identity_guard import (
     name_blind_diff,
+    scan_declared_class_vocabulary,
     scan_identity_debt,
     scan_identity_source,
     scan_identity_yaml_source,
 )
 
 
-# The pin is the MULTISET of (file, kind, detail) -> count, deliberately NOT
-# keyed on line number.  Pinning by line made every edit that inserts a line
-# above a debt item a false failure that trained us to bump numbers blindly.
-# A count-per-(file, kind, detail) is immune to line shifts yet still trips on a
-# genuinely new identity usage: a new call of an existing kind bumps the count,
-# a new kind/file adds a key.  Runtime triage keeps line numbers (each finding
-# still carries .line); only this regression comparison drops them.
-EXPECTED_REPORT_ONLY_DEBT = {
-    ("model_unfolder/adapters/diffusor/blocks.py",
-     "class_identity_branch", "class-name/domain substring controls an architectural branch"): 3,
+def test_identity_debt_is_zero_and_blocking():
+    """No identity-derived architectural decision anywhere in production code.
+    This is the Unit 9 flip: the guard is no longer report-only — ANY new
+    identity branch / helper / family-fact table fails this test."""
+    assert scan_identity_debt() == []
+
+
+# The multiset of (file, kind, detail) -> count for DECLARED vocabulary,
+# deliberately NOT keyed on line number (line pins train blind bumping).  A new
+# runtime access bumps a count; a new table/file adds a key — both require a
+# conscious edit HERE with the category justification.
+EXPECTED_DECLARED_VOCABULARY = {
     ("model_unfolder/adapters/diffusor/parser.py",
-     "class_identity_branch", "class-name/domain substring controls an architectural branch"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'dit_class_markers' "
+     "(declared-component: reads the config's own _class_name declaration)"): 1,
     ("model_unfolder/adapters/diffusor/parser.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'dit_class_markers'"): 1,
-    ("model_unfolder/adapters/diffusor/parser.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'scheduler_flow_matching_markers'"): 1,
-    ("model_unfolder/adapters/transformer/parser.py",
-     "identity_branch", "identity-derived predicate controls a branch"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'scheduler_flow_matching_markers' "
+     "(declared-component: reads the config's own _class_name declaration)"): 1,
     ("model_unfolder/evidence/conformance.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'component_class_markers'"): 2,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'component_class_markers' "
+     "(code-shape: classifies a class resolved from init evidence)"): 2,
     ("model_unfolder/evidence/conformance.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'drill_class_markers'"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'drill_class_markers' "
+     "(code-shape: classifies a class resolved from init evidence)"): 1,
     ("model_unfolder/evidence/conformance.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'processor_markers'"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'processor_markers' "
+     "(code-shape: classifies a class resolved from init evidence)"): 1,
     ("model_unfolder/evidence/conformance.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'single_stream_class_markers'"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'single_stream_class_markers' "
+     "(code-shape: classifies a class resolved from init evidence)"): 1,
     ("model_unfolder/evidence/sources.py",
-     "class_marker_table", "runtime access to class-name marker vocabulary 'dit_class_markers'"): 1,
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'dit_class_markers' "
+     "(declared-component: reads the config's own _class_name declaration)"): 1,
     ("model_unfolder/everchanging/conformance/conformance_map.yaml",
-     "identity_table", "populated class-name marker table 'single_stream_class_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'single_stream_class_markers' (code-shape)"): 1,
     ("model_unfolder/everchanging/conformance/transitive.yaml",
-     "identity_table", "populated class-name marker table 'component_class_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'component_class_markers' (code-shape)"): 1,
     ("model_unfolder/everchanging/conformance/transitive.yaml",
-     "identity_table", "populated class-name marker table 'drill_class_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'drill_class_markers' (code-shape)"): 1,
     ("model_unfolder/everchanging/conformance/transitive.yaml",
-     "identity_table", "populated class-name marker table 'processor_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'processor_markers' (code-shape)"): 1,
     ("model_unfolder/everchanging/diffusor/typing.yaml",
-     "identity_table", "populated class-name marker table 'dit_class_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'dit_class_markers' (declared-component)"): 1,
     ("model_unfolder/everchanging/diffusor/typing.yaml",
-     "identity_table", "populated class-name marker table 'scheduler_flow_matching_markers' can select architecture"): 1,
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'scheduler_flow_matching_markers' "
+     "(declared-component)"): 1,
 }
 
 
-def test_report_only_identity_debt_is_pinned_and_cannot_grow():
-    actual = Counter((item.path, item.kind, item.detail) for item in scan_identity_debt())
-    assert dict(actual) == EXPECTED_REPORT_ONLY_DEBT
+def test_declared_class_vocabulary_is_pinned_exactly():
+    actual = Counter((item.path, item.kind, item.detail)
+                     for item in scan_declared_class_vocabulary())
+    assert dict(actual) == EXPECTED_DECLARED_VOCABULARY
 
 
 def test_static_guard_negative_controls_cover_all_three_identity_mechanisms():
@@ -90,6 +123,21 @@ def test_static_guard_catches_class_name_domain_substring_inside_evidence():
     assert any(item.kind == "class_identity_branch" for item in findings)
 
 
+def test_declared_vocabulary_is_still_detected_never_invisible():
+    """Reclassification must not blind the scanner: a declared-table access and
+    a populated declared table are still FINDINGS (of the declared kind, pinned
+    above), and a family-keyed fact table remains identity DEBT."""
+    access = scan_identity_source("ops = vocab['processor_markers']\n")
+    assert any(item.kind == "declared_class_vocabulary" for item in access)
+
+    table = scan_identity_yaml_source("drill_class_markers:\n  - gated-delta=DeltaNet\n")
+    assert any(item.kind == "declared_vocabulary_table" for item in table)
+    assert not any(item.kind == "identity_table" for item in table)
+
+    debt_table = scan_identity_yaml_source("ffn_activation_fn:\n  pixtral: silu\n")
+    assert any(item.kind == "identity_table" for item in debt_table)
+
+
 def test_name_blind_guard_preserves_vision_structure_with_pre_resolved_source():
     from tests.test_declared_ops import PIXTRAL_STYLE
 
@@ -104,3 +152,38 @@ def test_name_blind_guard_preserves_source_address_and_clean_decoder_structure()
     result = name_blind_diff(AutoConfig.for_model("llama").to_dict())
     assert result.structural_equal
     assert result.changed_paths == ()
+
+
+def test_name_blind_guard_over_blessed_corpus():
+    """BLOCKING corpus net.  For every blessed fixture, parse the frozen config
+    with and without semantic identity:
+
+    * a TRANSFORMER-domain fixture must be structurally IDENTICAL — the LLM
+      parse derives every fact from declared fields + pre-resolved source;
+    * a DIFFUSION fixture's denoiser must be structurally identical; the only
+      tolerated divergence is INSIDE its text-encoder conditioning blocks,
+      whose nested sub-parse builds its own ParseContext from the scrubbed
+      sub-config — the documented nested-ADDRESS gap of the harness (the
+      root's pre-resolution does not yet reach pipeline components), not
+      identity-as-fact.  Any drift OUTSIDE the encoder sub-tree fails.
+    """
+    from model_unfolder.sable import load_corpus
+
+    corpus = load_corpus()
+    assert corpus, "no blessed fixtures — the corpus lock is gone"
+    for fname, fix in corpus:
+        result = name_blind_diff(fix["config"])
+        if result.structural_equal:
+            continue
+        render = (result.original.get("extras") or {}).get("render", {})
+        loop = render.get("loop_blocks") or []
+        assert loop, f"{fname}: non-diffusion fixture must be name-blind equal: " \
+                     f"{result.changed_paths[:6]}"
+        encoder_prefixes = tuple(
+            f"$.extras.render.loop_blocks[{i}]"
+            for i, block in enumerate(loop)
+            if isinstance(block, dict) and block.get("diffusion_stage") == "text_encoder"
+        )
+        stray = [p for p in result.changed_paths if not p.startswith(encoder_prefixes)]
+        assert stray == [], f"{fname}: name-blind drift OUTSIDE the text-encoder " \
+                            f"sub-tree: {stray[:6]}"

@@ -1322,3 +1322,87 @@ def test_real_moe_models_nested_clean(mt):
         pytest.skip(f"{mt} source not installed")
     problems = check_nested_conformance(cfg, _render_log(cfg))
     assert problems == [], "\n".join(p.message for p in problems)
+
+
+# ---------------------------------------------------------------------------
+# storage / bookend fact conformance (fused-vs-split, embedding-stage norm)
+# ---------------------------------------------------------------------------
+
+def _fact_problems(cfg, ir):
+    from model_unfolder.evidence.conformance import check_fact_conformance
+    return check_fact_conformance(cfg, ir)
+
+
+def test_storage_conformance_flags_fused_qkv_drawn_split():
+    """Falcon stores one fused ``query_key_value`` projection.  The honest parse
+    carries that fact and is clean; an IR that lost the fact (the exact plumbing
+    drop this net exists for — the serializer omitted the spec field once) is
+    flagged.  Symmetric direction: fabricating fused on a split model (Llama)."""
+    import copy
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("falcon").to_dict()
+    ir = mu.config_to_ir(cfg).to_dict()
+    assert ir["layers"][0]["attention"]["projection_mode"] == "fused_qkv"
+    assert not [p for p in _fact_problems(cfg, ir) if p.kind == "wrong_storage"]
+
+    tampered = copy.deepcopy(ir)
+    tampered["layers"][0]["attention"]["projection_mode"] = None
+    assert any(p.kind == "wrong_storage" and "stored FUSED" in p.op
+               for p in _fact_problems(cfg, tampered))
+
+    split_cfg = AutoConfig.for_model("llama").to_dict()
+    split_ir = mu.config_to_ir(split_cfg).to_dict()
+    assert not [p for p in _fact_problems(split_cfg, split_ir) if p.kind == "wrong_storage"]
+    fabricated = copy.deepcopy(split_ir)
+    fabricated["layers"][0]["attention"]["projection_mode"] = "fused_qkv"
+    assert any(p.kind == "wrong_storage" and "stored SPLIT" in p.op
+               for p in _fact_problems(split_cfg, fabricated))
+
+
+def test_storage_conformance_flags_fused_experts_drawn_split():
+    """gpt-oss stores stacked fused ``gate_up_proj`` experts; dropping the drawn
+    fact is flagged, and the honest parse is clean."""
+    import copy
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("gpt_oss").to_dict()
+    ir = mu.config_to_ir(cfg).to_dict()
+    moe_layers = [l for l in ir["layers"] if (l.get("ffn") or {}).get("num_experts")]
+    assert moe_layers and moe_layers[0]["ffn"]["expert_projection_mode"] == "fused_gate_up"
+    assert not [p for p in _fact_problems(cfg, ir) if p.kind == "wrong_storage"]
+
+    tampered = copy.deepcopy(ir)
+    for layer in tampered["layers"]:
+        if (layer.get("ffn") or {}).get("num_experts"):
+            layer["ffn"]["expert_projection_mode"] = None
+    assert any(p.kind == "wrong_storage" and "expert gate/up" in p.op
+               for p in _fact_problems(cfg, tampered))
+
+
+def test_bookend_conformance_embed_norm_both_directions():
+    """BLOOM normalizes the word-embedding output (a drawn bookend): removing the
+    drawn block is a MISSING bookend; injecting one into Llama (whose source has
+    no such signature) is FABRICATED."""
+    import copy
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("bloom").to_dict()
+    ir = mu.config_to_ir(cfg).to_dict()
+    blocks = ir["extras"]["render"]["model_blocks"]
+    assert any(b.get("id") == "embed_norm" for b in blocks)
+    assert not [p for p in _fact_problems(cfg, ir)
+                if p.kind in ("missing_bookend", "fabricated_bookend")]
+
+    tampered = copy.deepcopy(ir)
+    tampered["extras"]["render"]["model_blocks"] = [
+        b for b in blocks if b.get("id") != "embed_norm"]
+    assert any(p.kind == "missing_bookend" for p in _fact_problems(cfg, tampered))
+
+    clean_cfg = AutoConfig.for_model("llama").to_dict()
+    clean_ir = mu.config_to_ir(clean_cfg).to_dict()
+    fabricated = copy.deepcopy(clean_ir)
+    fabricated["extras"]["render"]["model_blocks"] = (
+        list(fabricated["extras"]["render"]["model_blocks"])
+        + [{"id": "embed_norm", "role": "norm", "kind": "norm"}])
+    assert any(p.kind == "fabricated_bookend" for p in _fact_problems(clean_cfg, fabricated))

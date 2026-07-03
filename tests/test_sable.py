@@ -480,3 +480,23 @@ def test_evidence_ambiguity_is_wired_into_sable_as_advisory():
     check = next(c for c in report.checks if c.name == "evidence_ambiguity")
     assert not check.blocking                        # migration staging, like config_field_audit
     assert check.passed, check.findings              # FLUX resolves all envelopes today
+
+
+def test_every_fixture_gallery_is_durable_and_complete():
+    """The reviewed pixels are part of the lock: every fixture's visual_evidence
+    must point INSIDE the corpus (galleries/<slug>, never a scratch/session
+    directory), with the PNG count it certifies and the save_images MANIFEST."""
+    from pathlib import Path
+    from model_unfolder.sable import DEFAULT_CORPUS, load_corpus
+
+    for fname, fix in load_corpus():
+        evidence = fix.get("visual_evidence") or {}
+        gallery_dir = str(evidence.get("gallery_dir") or "")
+        assert gallery_dir.startswith("galleries/"), \
+            f"{fname}: gallery_dir {gallery_dir!r} is not corpus-relative"
+        home = DEFAULT_CORPUS / gallery_dir
+        pngs = list(home.glob("*.png"))
+        assert home.is_dir(), f"{fname}: durable gallery missing: {home}"
+        assert len(pngs) == evidence.get("png_count"), \
+            f"{fname}: {len(pngs)} PNGs on disk vs {evidence.get('png_count')} certified"
+        assert (home / "MANIFEST.txt").exists(), f"{fname}: gallery MANIFEST missing"

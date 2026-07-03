@@ -184,5 +184,10 @@
     "fa814a293e21cef0b70e733ad5060617"
   ],
   "model": "FLUX.2-dev",
-  "source": "local"
+  "source": "local",
+  "visual_evidence": {
+    "gallery_dir": "galleries/flux-2-dev",
+    "manifest": true,
+    "png_count": 16
+  }
 }

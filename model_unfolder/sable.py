@@ -356,6 +356,18 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
     corpus = Path(corpus_dir) if corpus_dir else DEFAULT_CORPUS
     corpus.mkdir(parents=True, exist_ok=True)
     path = corpus / f"{_slug(report.model)}.json"
+    # The reviewed pixels are PART of the lock's provenance, so they are copied
+    # into a DURABLE home beside the fixture (galleries/<slug>/) — a
+    # visual_evidence pointer into a scratch/session directory dies with the
+    # session and leaves the lock claiming a review nobody can re-open.
+    import shutil
+    gallery_home = corpus / "galleries" / _slug(report.model)
+    if gallery_home.exists():
+        shutil.rmtree(gallery_home)
+    gallery_home.mkdir(parents=True)
+    for png in gallery:
+        shutil.copy2(png, gallery_home / Path(png).name)
+    shutil.copy2(manifest, gallery_home / "MANIFEST.txt")
     fixture = {
         "model": report.model,
         "source": source,
@@ -363,7 +375,7 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
         "hash_signature": report.hash_signature(),
         "checks": {c.name: c.passed for c in report.checks},
         "visual_evidence": {
-            "gallery_dir": str(Path(gallery[0]).parent),
+            "gallery_dir": str(gallery_home.relative_to(corpus)),
             "png_count": len(gallery),
             "manifest": True,
         },
@@ -379,6 +391,10 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
         old_signature = previous.get("hash_signature")
         if old_signature and old_signature != fixture["hash_signature"]:
             fixture["superseded_hash_signature"] = old_signature
+        elif previous.get("superseded_hash_signature"):
+            # A same-signature re-bless (provenance refresh) must not erase the
+            # recorded transition history.
+            fixture["superseded_hash_signature"] = previous["superseded_hash_signature"]
     path.write_text(json.dumps(fixture, indent=2, sort_keys=True, default=str))
     return str(path)
 

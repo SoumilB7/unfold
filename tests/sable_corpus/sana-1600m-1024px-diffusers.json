@@ -217,6 +217,22 @@
     "2c4f2ec85716cffe17a4bd65683756c3",
     "44214a47b62afb95cf44b9c9a99c6eae",
     "453ff2334cd3f6708a3667f93d99ffd8",
+    "6417ca6cdf18114b520401dfa256692a",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "7aae01a2ba3277f8635e31fa6053b591",
+    "7b8543951da5d030f7fcbd979cd40049",
+    "7fa8ba3824ca9c1245b42b4764f65232",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "c3b47dc7cf4b0422fe0b553c1dbe768b",
+    "ecf21c98fc66bf5486863c305bc5c80b",
+    "f3479e573804486bdff98b7e00b91a9e"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
+    "2c4f2ec85716cffe17a4bd65683756c3",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "453ff2334cd3f6708a3667f93d99ffd8",
     "6f3ff3d93134f0e32a666f32805babb4",
     "7aae01a2ba3277f8635e31fa6053b591",
     "7b8543951da5d030f7fcbd979cd40049",
@@ -227,6 +243,9 @@
     "ecf21c98fc66bf5486863c305bc5c80b",
     "f3479e573804486bdff98b7e00b91a9e"
   ],
-  "model": "Sana_1600M_1024px_diffusers",
-  "source": "local"
+  "visual_evidence": {
+    "gallery_dir": "galleries/sana-1600m-1024px-diffusers",
+    "manifest": true,
+    "png_count": 12
+  }
 }

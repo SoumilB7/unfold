@@ -25,24 +25,30 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     name = str(d.get("name") or block.get("title") or "Text encoder")
     layers = d.get("layers")
     pfx = d.get("node_prefix") or block.get("id") or "encoder"
-    upper = name.upper()
-    is_clip, is_t5 = "CLIP" in upper, "T5" in upper
     is_unet = d.get("denoiser_family") == "unet"
 
-    # The encoder's own config wins (Qwen-VL-style LM encoders are RMSNorm +
-    # rotary); the CLIP/T5 conventions are only the fallback.
-    norm = d.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
-    no_learned_pos = is_t5 or (d.get("norm") == "RMSNorm" and not is_t5)
-    embed_main = ("Token embedding" if no_learned_pos
-                  else ["Token + positional", "embedding"])   # two lines — fits the node
+    # EVERY fact here is evidence-keyed, never family-name-keyed: the norm
+    # label is the fetched config's own (bare "Norm" when unfetched), the
+    # embedding label follows the PROVEN position mechanism, and the exit note
+    # follows the encoder's dimension-routed pipeline ROLE.
+    sub_model = d.get("sub_model") if isinstance(d.get("sub_model"), dict) else {}
+    sm_groups = sub_model.get("groups") or []
+    dominant = max(sm_groups, key=lambda g: g.get("count") or 0) if sm_groups else {}
+    pos_kind = (dominant.get("attention") or {}).get("position_kind")
+    norm = d.get("norm") or "Norm"
+    embed_main = (["Token + positional", "embedding"]   # two lines — fits the node
+                  if pos_kind in ("learned_absolute", "fixed_absolute")
+                  else "Token embedding")
     # Where the encoder's output ENTERS the denoiser (the exit-arrow caption):
-    # a UNet consumes token features via cross-attention K/V; CLIP-in-a-DiT
-    # contributes the pooled AdaLN vector; T5 feeds joint/cross attention.
+    # a UNet consumes token features via cross-attention K/V; a pooled-role
+    # encoder contributes the AdaLN vector; a sequence-role encoder feeds the
+    # joint/cross attention.
+    role = set(d.get("conditioning_role") or [])
     if is_unet:
         note = "→ cross-attention K/V"
-    elif is_clip:
+    elif "pooled" in role:
         note = "→ global AdaLN conditioning"
-    elif is_t5:
+    elif "sequence" in role:
         note = "→ joint / cross attention"
     else:
         note = "→ denoiser conditioning"

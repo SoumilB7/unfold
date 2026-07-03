@@ -128,6 +128,17 @@ def _code_norm_kind(cfg: Any, context=None) -> str | None:
         return None
 
 
+def _code_norm_math(cfg: Any, context=None) -> str | None:
+    """The decoder's norm KIND read from the norm class's forward() MATH —
+    outranks the eps-field spelling (T5: ``layer_norm_epsilon`` in config,
+    variance-only RMS in code).  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import norm_kind_from_files_math
+        return norm_kind_from_files_math(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
 def _code_ffn_gated(cfg: Any, context=None) -> bool | None:
     """Whether the decoder's plain MLP is gated (gate·up) READ FROM THE MODELING
     SOURCE — overrides the ``rmsnorm -> gated`` heuristic, which mis-gates a dense
@@ -783,7 +794,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     #      none of which the generic decoder_layer topology expresses (the block
     #      builder is the opaque-source fallback for these research models).
     #   3. qk_norm: Q/K/V norms are unconditional in __init__ (not a config flag).
-    if _g(cfg, "canvas_length") is not None or "diffusion" in model_type:
+    # Block-diffusion layout is a CONFIG fact (canvas_length declares the
+    # denoising canvas) — never a model_type spelling.  A block-diffusion
+    # config without canvas_length renders as the plain decoder its config
+    # declares; identity must not fill the gap (eradication plan I-07).
+    if _g(cfg, "canvas_length") is not None:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
@@ -1097,8 +1112,19 @@ def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag:
     return "gqa"
 
 
-def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
-    """Pick LayerNorm vs RMSNorm from config — first explicit field, then eps hints."""
+def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) -> str | None:
+    """The norm kind from EVIDENCE only — None when nothing states it (the
+    caller chooses its default and KNOWS it is a default).  Channel order:
+
+    1. an explicit ``norm_type`` config declaration;
+    2. ``rms_norm_eps`` — a spelling only RMS implementations carry;
+    3. the norm class's ``forward()`` MATH from the modeling source — this
+       outranks the ambiguous ``layer_norm_eps*`` spelling because T5's config
+       declares ``layer_norm_epsilon`` while ``T5LayerNorm`` computes a
+       variance-only rescale (RMS): the spelling lies, the math never does;
+    4. the ``layer_norm_eps*`` spelling hint;
+    5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
+    """
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
         if "rms" in nt:
@@ -1107,15 +1133,17 @@ def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
             return "layernorm"
     if _g(cfg, "rms_norm_eps") is not None:
         return "rmsnorm"
+    math_kind = _code_norm_math(cfg, context)
+    if math_kind:
+        return math_kind
     if _g(cfg, "layer_norm_epsilon") is not None or _g(cfg, "layer_norm_eps") is not None:
         return "layernorm"
-    # Config carries no eps field — read the norm KIND from the layer's norm
-    # submodule class in the modeling source (code -> fact), the general
-    # replacement for the old legacy-family model_type set (gpt2/neox/opt/…).
-    code_kind = _code_norm_kind(cfg, context)
-    if code_kind:
-        return code_kind
-    return "rmsnorm"
+    return _code_norm_kind(cfg, context)
+
+
+def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
+    """LayerNorm vs RMSNorm — evidence channels first, modern-LM default last."""
+    return _norm_kind_evidence(cfg, explicit_norm_type, context) or "rmsnorm"
 
 
 def _is_gated(activation: str, norm_kind: str | None = None,

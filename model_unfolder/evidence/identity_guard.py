@@ -51,11 +51,33 @@ _CLASS_DOMAIN_MARKERS = frozenset({
     "single_stream", "singlestream", "3d", "t5", "clip",
 })
 
-_CLASS_MARKER_TABLES = frozenset({
-    "dit_class_markers", "scheduler_flow_matching_markers",
+# Two DECLARED, lawful categories of class-name vocabulary (Unit 9 boundary).
+# Both are still surfaced — as ``declared_class_vocabulary`` findings pinned by
+# their own test — so adding a table or a use site remains a conscious act; they
+# are simply no longer identity DEBT:
+#
+# * CODE-SHAPE markers classify a class that was ALREADY RESOLVED from the
+#   model's own code evidence (the conformance registry reads which classes the
+#   model's ``__init__`` constructs; the marker only names the ROLE of that
+#   resolved class — vision/audio domain, drill↔mixer pairing, diffusers
+#   processor refs, the single-stream fallback behind the field-name primary).
+#   Same category as ``forward_ops`` type-roles (RMSNorm -> norm), which the
+#   guard has always allowed.
+_CODE_SHAPE_MARKER_TABLES = frozenset({
     "single_stream_class_markers", "component_class_markers",
     "drill_class_markers", "processor_markers",
 })
+# * DECLARED-COMPONENT markers read a diffusers config's OWN ``_class_name`` —
+#   a constructor spec's declaration of which component/algorithm to build
+#   (``FlowMatch…Scheduler`` declares the integrator exactly like
+#   ``architectures[0]`` declares the modeling file). Reading the declaration
+#   is reading the config, not looking up per-model facts.
+_DECLARED_COMPONENT_TABLES = frozenset({
+    "dit_class_markers", "scheduler_flow_matching_markers",
+})
+_DECLARED_VOCABULARY_TABLES = _CODE_SHAPE_MARKER_TABLES | _DECLARED_COMPONENT_TABLES
+
+_CLASS_MARKER_TABLES = _DECLARED_VOCABULARY_TABLES
 
 _ARCHITECTURAL_FACT_TABLES = frozenset({
     "norm_kind", "norm_placement", "parallel_residual", "no_rope",
@@ -131,8 +153,11 @@ def scan_identity_source(source: str, *, path: str = "<memory>") -> list[Identit
                 "class-name/domain substring controls an architectural branch")
 
         if isinstance(node, ast.Constant) and node.value in _CLASS_MARKER_TABLES:
-            add(node, "class_marker_table",
-                f"runtime access to class-name marker vocabulary {node.value!r}")
+            category = ("code-shape: classifies a class resolved from init evidence"
+                        if node.value in _CODE_SHAPE_MARKER_TABLES else
+                        "declared-component: reads the config's own _class_name declaration")
+            add(node, "declared_class_vocabulary",
+                f"runtime access to declared class vocabulary {node.value!r} ({category})")
 
         if isinstance(node, (ast.If, ast.IfExp)):
             test = node.test
@@ -156,8 +181,13 @@ def scan_identity_source(source: str, *, path: str = "<memory>") -> list[Identit
     return sorted(findings.values(), key=lambda item: (item.path, item.line, item.kind, item.detail))
 
 
-def scan_identity_debt(root: str | Path | None = None) -> list[IdentityViolation]:
-    """Scan production parser/renderer sources for report-only identity debt."""
+_DECLARED_VOCABULARY_KINDS = frozenset({
+    "declared_class_vocabulary", "declared_vocabulary_table",
+})
+
+
+def _scan_all_findings(root: str | Path | None = None) -> list[IdentityViolation]:
+    """One walk over production sources + everchanging YAML — debt AND declared."""
     package = Path(root) if root is not None else Path(__file__).resolve().parents[1]
     files: list[Path] = []
     for relative in ("adapters", "renderers", "evidence"):
@@ -173,7 +203,7 @@ def scan_identity_debt(root: str | Path | None = None) -> list[IdentityViolation
         for item in scan_identity_source(source, path=rel):
             if item.path.endswith("evidence/sources.py"):
                 if ("_guess_model_type_from_id" not in item.detail
-                        and item.kind != "class_marker_table"):
+                        and item.kind not in _DECLARED_VOCABULARY_KINDS):
                     continue
             findings.append(item)
     for file in sorted((package / "everchanging").rglob("*.yaml")):
@@ -183,6 +213,22 @@ def scan_identity_debt(root: str | Path | None = None) -> list[IdentityViolation
         rel = str(file.relative_to(package.parent))
         findings.extend(scan_identity_yaml_source(file.read_text(encoding="utf-8"), path=rel))
     return findings
+
+
+def scan_identity_debt(root: str | Path | None = None) -> list[IdentityViolation]:
+    """Identity DEBT only: findings whose mechanism lets a model's NAME select
+    its drawn architecture.  Declared class vocabulary (code-shape roles over
+    init-resolved classes; _class_name component declarations) is excluded here
+    and pinned separately by :func:`scan_declared_class_vocabulary`."""
+    return [item for item in _scan_all_findings(root)
+            if item.kind not in _DECLARED_VOCABULARY_KINDS]
+
+
+def scan_declared_class_vocabulary(root: str | Path | None = None) -> list[IdentityViolation]:
+    """Every declared-vocabulary table and use site — pinned by its own test so
+    a NEW table or a NEW runtime access is a conscious, reviewed act."""
+    return [item for item in _scan_all_findings(root)
+            if item.kind in _DECLARED_VOCABULARY_KINDS]
 
 
 def scan_identity_yaml_source(source: str, *, path: str = "<memory>.yaml") -> list[IdentityViolation]:
@@ -211,12 +257,16 @@ def scan_identity_yaml_source(source: str, *, path: str = "<memory>.yaml") -> li
         if key not in _ARCHITECTURAL_FACT_TABLES or not table:
             continue
         line = next((i for i, text in enumerate(lines, 1) if text.startswith(f"{key}:")), 1)
-        detail = (
-            f"populated class-name marker table {key!r} can select architecture"
-            if key in _CLASS_MARKER_TABLES else
-            f"populated architectural fact table {key!r} is keyed outside source evidence"
-        )
-        findings.append(IdentityViolation(path, line, "identity_table", detail))
+        if key in _DECLARED_VOCABULARY_TABLES:
+            category = ("code-shape" if key in _CODE_SHAPE_MARKER_TABLES
+                        else "declared-component")
+            findings.append(IdentityViolation(
+                path, line, "declared_vocabulary_table",
+                f"populated declared class vocabulary {key!r} ({category})"))
+            continue
+        findings.append(IdentityViolation(
+            path, line, "identity_table",
+            f"populated architectural fact table {key!r} is keyed outside source evidence"))
     return findings
 
 
@@ -272,7 +322,23 @@ def _normalized_structure(value: dict[str, Any]) -> dict[str, Any]:
     if isinstance(extras, dict):
         for key in ("config_audit", "code_evidence"):
             extras.pop(key, None)
+    _drop_display_class(value)
     return value
+
+
+def _drop_display_class(value: Any) -> None:
+    """``detail.class`` is the resolved class name shown on a card — display
+    provenance (same category as the top-level ``name``/``architecture`` keys
+    dropped above), never an architectural fact."""
+    if isinstance(value, dict):
+        detail = value.get("detail")
+        if isinstance(detail, dict):
+            detail.pop("class", None)
+        for item in value.values():
+            _drop_display_class(item)
+    elif isinstance(value, list):
+        for item in value:
+            _drop_display_class(item)
 
 
 def _loaded_names(node: ast.AST) -> set[str]:
@@ -385,6 +451,7 @@ def violation_snapshot(findings: Iterable[IdentityViolation]) -> str:
 
 __all__ = [
     "IDENTITY_CONFIG_KEYS", "IdentityViolation", "NameBlindResult",
-    "name_blind_diff", "scan_identity_debt", "scan_identity_source",
-    "scan_identity_yaml_source", "scrub_semantic_identity", "violation_snapshot",
+    "name_blind_diff", "scan_declared_class_vocabulary", "scan_identity_debt",
+    "scan_identity_source", "scan_identity_yaml_source",
+    "scrub_semantic_identity", "violation_snapshot",
 ]

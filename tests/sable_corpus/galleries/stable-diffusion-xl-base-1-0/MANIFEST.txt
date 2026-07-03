@@ -1,0 +1,35 @@
+# 30 DISTINCT diagram views (architecture + every drill, to the leaves)
+# 50 baked svgs total — 20 identical per-layer-group copies collapsed
+# 75 description-only leaf cards skipped (no diagram)
+# amber border = clickable block (opens a card); no border = static port/glyph
+
+00__architecture.png
+01__encoder_0.png
+02__encoder_1.png
+03__denoiser.png
+04__scheduler.png
+05__vae_decode.png
+06__encoder_0_op_selfattn.png
+07__encoder_0_op_ffn.png
+08__encoder_1_op_selfattn.png
+09__encoder_1_op_ffn.png
+10__unet_down_0.png
+11__unet_down_1.png
+12__unet_down_2.png
+13__unet_mid.png
+14__unet_up_0.png
+15__unet_up_1.png
+16__unet_up_2.png
+17__unet_text_cond.png
+18__vae_decoder_block_4.png
+19__vae_decoder_block_3.png
+20__vae_decoder_block_2.png
+21__vae_decoder_block_1.png
+22__unet_down_0__resnet.png   (+1 identical copies collapsed)
+23__unet_down_1__resnet.png   (+1 identical copies collapsed)
+24__unet_down_1__transformer.png   (+1 identical copies collapsed)
+25__unet_down_2__resnet.png   (+3 identical copies collapsed)
+26__unet_down_2__transformer.png   (+2 identical copies collapsed)
+27__unet_down_1__selfattn.png   (+4 identical copies collapsed)
+28__unet_down_1__crossattn.png   (+4 identical copies collapsed)
+29__unet_down_1__ff.png   (+4 identical copies collapsed)

@@ -171,7 +171,7 @@
   "model": "Qwen2-VL-7B-Instruct",
   "source": "local",
   "visual_evidence": {
-    "gallery_dir": "/private/tmp/claude-501/-Users-soumil-Code-Projects-Understand-llmvisualizer/a92a5cee-b94f-4931-a83f-631ec44bdf84/scratchpad/llm_bless/Qwen2-VL-7B-Instruct",
+    "gallery_dir": "galleries/qwen2-vl-7b-instruct",
     "manifest": true,
     "png_count": 13
   }

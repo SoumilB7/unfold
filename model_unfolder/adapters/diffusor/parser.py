@@ -360,7 +360,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "caption_input_dim": caption_input_dim,
         "caption_projection_dim": caption_projection_dim,
         "norm_elementwise_affine": norm_elementwise_affine,
-        "video": "3D" in str(cls),
+        "video": _temporal_axis(cfg, cls, context),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
         "text_encoder_specs": _text_encoder_specs(cfg),
@@ -1294,6 +1294,33 @@ def _vae_geom(cfg: Any) -> dict | None:
     return {k: v for k, v in out.items() if v is not None} or None
 
 
+def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
+    """VIDEO denoiser detection from EVIDENCE, never the class name (I-10).
+
+    Primary: the resolved root class's own forward() processes a frames axis
+    (``num_frames`` — a perfect discriminator across diffusers video vs image
+    transformers).  Config corroboration when source is unreadable: declared
+    temporal fields, or a 3-sequence ``patch_size``.  Silence stays False —
+    an image denoiser, never a guessed video one.
+    """
+    try:
+        from ...evidence.patterns import denoiser_temporal_axis_from_files
+        bundle = getattr(context, "source_bundle", None)
+        files = getattr(bundle, "files", None)
+        architecture = getattr(bundle, "architecture", None) or (str(cls) if cls else None)
+        verdict = denoiser_temporal_axis_from_files(files, architecture)
+        if verdict is not None:
+            return verdict
+    except Exception:
+        pass
+    from ...everchanging import load_diffusion_typing
+    fields = load_diffusion_typing().get("temporal_config_fields") or []
+    if any(_g(cfg, field) is not None for field in fields):
+        return True
+    patch = _g(cfg, "patch_size")
+    return isinstance(patch, (list, tuple)) and len(patch) == 3
+
+
 def _detect_text_encoders(cfg: Any) -> list[str]:
     """Friendly text-encoder names from a diffusers pipeline index, if present."""
     return [s["name"] for s in _text_encoder_specs(cfg)]
@@ -1426,14 +1453,21 @@ def _normalize_encoder_config(c: dict) -> dict:
 
     # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
     # config is silent — right for decoder LLMs, invented facts for encoders.
-    # Carry norm/gated only when the config gives an explicit signal.
+    # Carry norm/gated only when EVIDENCE states them (config declaration, eps
+    # spelling, or the norm class's forward() math — the same channel stack the
+    # universal parser uses, so a frozen minimal config with no eps field still
+    # gets its norm from the installed modeling source, never from a default).
     inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
     def _has(*keys):
         return any(k in src for src in (c, inner) for k in keys)
-    norm = None
-    if _has("norm_type", "rms_norm_eps", "layer_norm_eps", "layer_norm_epsilon"):
-        norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-            str(getattr(layer, "norm_kind", "") or "").lower())
+    from ..transformer.parser import _norm_kind_evidence, _unwrap_text
+    text_cfg = _unwrap_text(c)
+    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+        str(_norm_kind_evidence(
+            text_cfg,
+            (inner.get("norm_type") if isinstance(inner, dict) else None)
+            or c.get("norm_type"),
+            context) or "").lower())
     # Gating and projection storage are code/config facts, never encoder-family
     # conventions.  A config may explicitly select a gated branch (T5's
     # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must

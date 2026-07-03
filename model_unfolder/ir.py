@@ -268,6 +268,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "mrope_section": a.mrope_section,
         "conv_kernel_size": a.conv_kernel_size,
         "output_gate": a.output_gate,
+        "projection_mode": a.projection_mode,
         "variant": a.variant,
     }
 
@@ -286,6 +287,9 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "expert_intermediate_size": f.expert_intermediate_size,
         "routing": f.routing,
         "activation_clip": f.activation_clip,
+        "bias": f.bias,
+        "projection_mode": f.projection_mode,
+        "expert_projection_mode": f.expert_projection_mode,
     }
 
 

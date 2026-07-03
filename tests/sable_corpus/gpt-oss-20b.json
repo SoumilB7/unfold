@@ -119,7 +119,7 @@
   "model": "gpt-oss-20b",
   "source": "local",
   "visual_evidence": {
-    "gallery_dir": "/private/tmp/claude-501/-Users-soumil-Code-Projects-Understand-llmvisualizer/a92a5cee-b94f-4931-a83f-631ec44bdf84/scratchpad/llm_bless/gpt-oss-20b",
+    "gallery_dir": "galleries/gpt-oss-20b",
     "manifest": true,
     "png_count": 8
   }

@@ -70,7 +70,7 @@
   "model": "llama-7b",
   "source": "local",
   "visual_evidence": {
-    "gallery_dir": "/private/tmp/claude-501/-Users-soumil-Code-Projects-Understand-llmvisualizer/a92a5cee-b94f-4931-a83f-631ec44bdf84/scratchpad/llm_bless/llama-7b",
+    "gallery_dir": "galleries/llama-7b",
     "manifest": true,
     "png_count": 4
   }

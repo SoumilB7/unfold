@@ -135,3 +135,12 @@ scheduler_display:
 # model's identity.  Vocabulary as data, not a hardcoded substring in code.
 scheduler_flow_matching_markers:
   - FlowMatch
+
+# --- temporal-axis evidence (video DiT detection) -----------------------------
+# The denoiser is a VIDEO model iff its own code processes a frames axis: the
+# root class's forward() carries these identifiers (all diffusers video
+# transformers unpack/receive num_frames; no image transformer does).  Config
+# corroboration when source is unreadable: the temporal field spellings below,
+# or a 3-sequence patch_size.  NEVER a class-name substring (eradication I-10).
+temporal_forward_markers: [num_frames]
+temporal_config_fields: [sample_frames, num_frames, temporal_compression_ratio, temporal_interpolation_scale, patch_size_t, temporal_patch_size]

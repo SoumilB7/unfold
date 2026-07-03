@@ -352,11 +352,15 @@ def test_text_encoder_shows_real_config_dims():
                                 "attention_detail", "position_evidence",
                                 "sub_model"}}
                   for spec in specs]
+    # ``norm`` comes from the norm class's forward() MATH in the modeling
+    # source — CLIP builds nn.LayerNorm, T5LayerNorm is variance-only RMS
+    # despite its name and its config's ``layer_norm_epsilon`` spelling.
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
-         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77, "gated": False},
+         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77,
+         "norm": "LayerNorm", "gated": False},
         {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
-         "activation": "gelu_new", "vocab": 32128, "gated": True},
+         "activation": "gelu_new", "vocab": 32128, "norm": "RMSNorm", "gated": True},
     ]
     # Attention geometry lives ONLY on the typed sub-model facts — never
     # duplicated as flat scalars (the dead add-on vocabulary this replaced).

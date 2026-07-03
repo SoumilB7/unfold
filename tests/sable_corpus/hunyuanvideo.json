@@ -183,6 +183,29 @@
     "46d3fedae5ce4dc05eb5f12c5ec194ae",
     "502c3ffeb9a9ffadf61a8ec993944433",
     "511bc69086c757f55d1a4e9922fd78ed",
+    "5629211bc9efbd086f2f26426877c1af",
+    "5b3f222642ab31336a21bdad82a4f1ee",
+    "6fe1482f7559ed0de0bdd32182140ce3",
+    "91159c59e3f25f213cb37f5efa0d18de",
+    "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
+    "b2c6e4ae5d3287f06cbdbc5ccc689963",
+    "b519dd2b49412f252d6fd28a9443a93e",
+    "bf38a076baa29fc5858612bbd71d0fe5",
+    "c554a7b119091b80e1b2306025d6c1ab",
+    "e61a83137bf7f8efd7fa6bc30ad12024"
+  ],
+  "model": "HunyuanVideo",
+  "source": "local",
+  "superseded_hash_signature": [
+    "2d4deb7e5d271b6c70408c4d31d43018",
+    "31833723dfb5a71a4aef89b03f38e012",
+    "34829e302343eaa19667bcba8a150848",
+    "39836ce319f39d91cdabd979d8d24a12",
+    "42bc7c1561fc62d035146669fd1e8359",
+    "42f97b3458ea613132d2a5096c8a7da3",
+    "46d3fedae5ce4dc05eb5f12c5ec194ae",
+    "502c3ffeb9a9ffadf61a8ec993944433",
+    "511bc69086c757f55d1a4e9922fd78ed",
     "525c5ecce36d11cdae9ee2ae802e7de8",
     "5629211bc9efbd086f2f26426877c1af",
     "6fe1482f7559ed0de0bdd32182140ce3",
@@ -194,6 +217,9 @@
     "c554a7b119091b80e1b2306025d6c1ab",
     "e61a83137bf7f8efd7fa6bc30ad12024"
   ],
-  "model": "HunyuanVideo",
-  "source": "local"
+  "visual_evidence": {
+    "gallery_dir": "galleries/hunyuanvideo",
+    "manifest": true,
+    "png_count": 19
+  }
 }

@@ -1,0 +1,18 @@
+# 13 DISTINCT diagram views (architecture + every drill, to the leaves)
+# 41 baked svgs total — 28 identical per-layer-group copies collapsed
+# 188 description-only leaf cards skipped (no diagram)
+# amber border = clickable block (opens a card); no border = static port/glyph
+
+00__architecture.png
+01__architecture_v1.png
+02__attn.png   (+3 identical copies collapsed)
+03__ffn.png
+04__mtp.png   (+1 identical copies collapsed)
+05__ffn__1.png   (+2 identical copies collapsed)
+06__mtp_block.png   (+1 identical copies collapsed)
+07__mla_query_path.png   (+3 identical copies collapsed)
+08__mla_kv_path.png   (+3 identical copies collapsed)
+09__router.png   (+2 identical copies collapsed)
+10__expert_1.png   (+11 identical copies collapsed)
+11__g_topk.png   (+2 identical copies collapsed)
+12__architecture__1.png

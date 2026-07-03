@@ -98,6 +98,16 @@ class ConformanceProblem:
         if self.kind == "wrong_audio_fact":
             return (f"{self.view}: audio-tower fact differs from the qualified source "
                     f"evidence: {self.op}.{cls}{loc}")
+        if self.kind == "wrong_storage":
+            return (f"{self.view}: projection STORAGE differs from the modeling source: "
+                    f"{self.op} — draw the real storage (a fused projection is a fused "
+                    f"Linear + split, never separate Linears, and vice versa).{cls}{loc}")
+        if self.kind == "missing_bookend":
+            return (f"{self.view}: the source normalizes the embedding output "
+                    f"({self.op}) but the diagram omits the bookend — draw it.{cls}{loc}")
+        if self.kind == "fabricated_bookend":
+            return (f"{self.view}: diagram draws an embedding-stage norm but the source "
+                    f"shows no such bookend — remove it.{cls}{loc}")
         return f"{self.view}: no code unit resolved to diff against — add a conformance_map override.{cls}{loc}"
 
 
@@ -467,6 +477,7 @@ def check_fact_conformance(
     # evidence function; the net compares the resulting IR projection rather than
     # maintaining a second family/marker decision rail.
     if _model_type(target):
+        problems.extend(_check_storage_facts(family, ir, files, representatives))
         from .position import decoder_positional_evidence
         position = decoder_positional_evidence(target, source=source, bundle=bundle)
         if position.status == "ambiguous":
@@ -520,6 +531,75 @@ def check_fact_conformance(
     problems.extend(_check_projector_facts(target, ir, bundle=bundle, source=source))
     problems.extend(_check_fusion_facts(target, ir, bundle=bundle, source=source))
     problems.extend(_check_audio_facts(target, ir, bundle=bundle, source=source))
+    return problems
+
+
+def _check_storage_facts(family: str, ir: dict, files, representatives) -> list[ConformanceProblem]:
+    """Projection-STORAGE and embedding-BOOKEND facts vs the modeling source —
+    the fused-vs-split class (gpt-oss fused experts, Falcon fused ``query_key_
+    value``, BLOOM's word-embedding LayerNorm) that op-PRESENCE conformance is
+    blind to: a fused and a split MLP have the identical op-set, and a bookend
+    norm is just another ``norm`` op.  Consumes the SAME typed evidence
+    functions the parser derives these facts from, so a plumbing drop (spec
+    field lost, renderer bypass) surfaces here instead of shipping.  Text
+    decoder domain; the per-component diffusion pass is the recorded follow-up.
+    File-level verdicts are unanimous-or-None, so a heterogeneous stack with
+    mixed storage abstains rather than guessing."""
+    from .ffn import ffn_structure_evidence
+    from .patterns import (
+        attention_fused_qkv_from_files,
+        embedding_stage_norm_from_files,
+        expert_fused_gate_up_from_files,
+    )
+
+    problems: list[ConformanceProblem] = []
+    code_qkv = attention_fused_qkv_from_files(files)
+    code_expert = expert_fused_gate_up_from_files(files)
+
+    for key, spec in representatives.items():
+        attn = spec.get("attention") or {}
+        ffn = spec.get("ffn") or {}
+        # Vocabulary is the SPEC's own (ir.py): attention "fused_qkv" | None;
+        # FFN/expert "fused_gate_up" | "split" | "dense" | None(=conventional).
+        if attn.get("kind") in ("mha", "gqa", "mqa") and code_qkv is not None:
+            drawn_fused = attn.get("projection_mode") == "fused_qkv"
+            if code_qkv and not drawn_fused:
+                problems.append(ConformanceProblem(
+                    "wrong_storage", "attention QKV is stored FUSED, drawn split", key))
+            elif drawn_fused and not code_qkv:
+                problems.append(ConformanceProblem(
+                    "wrong_storage", "attention QKV is stored SPLIT, drawn fused", key))
+        if not ffn:
+            continue
+        if ffn.get("num_experts"):
+            drawn_fused = ffn.get("expert_projection_mode") == "fused_gate_up"
+            if code_expert is True and not drawn_fused:
+                problems.append(ConformanceProblem(
+                    "wrong_storage", "expert gate/up is stored FUSED, drawn split", key))
+            elif code_expert is False and drawn_fused:
+                problems.append(ConformanceProblem(
+                    "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key))
+        elif ffn.get("gated"):
+            evidence = ffn_structure_evidence(files, expected_gated=True)
+            if evidence.status == "proven" and evidence.projection_mode:
+                drawn = ffn.get("projection_mode") or "split"
+                if drawn != evidence.projection_mode:
+                    problems.append(ConformanceProblem(
+                        "wrong_storage",
+                        f"FFN gate/up is stored {evidence.projection_mode.upper()}, "
+                        f"drawn {drawn}", key))
+
+    drawn_bookend = any(
+        isinstance(block, dict) and block.get("id") == "embed_norm"
+        for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
+    )
+    code_bookend = embedding_stage_norm_from_files(files)
+    if code_bookend and not drawn_bookend:
+        problems.append(ConformanceProblem(
+            "missing_bookend", code_bookend, f"{family}/model"))
+    elif drawn_bookend and not code_bookend:
+        problems.append(ConformanceProblem(
+            "fabricated_bookend", "embed_norm", f"{family}/model"))
     return problems
 
 
