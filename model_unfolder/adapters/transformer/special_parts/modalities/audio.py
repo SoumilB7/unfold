@@ -110,6 +110,13 @@ def audio_path(cfg: Any, audio_cfg: Any, text_hidden_size: int) -> dict:
                "num_layers": num_layers, "num_attention_heads": num_heads,
                "intermediate_size": intermediate_size,
                "activation": activation,
+               # Declared streaming/window geometry (Qwen-Omni audio encoder:
+               # chunked attention over n_window frames) + position capacity.
+               "attention_window": first(audio_cfg, "n_window"),
+               "max_source_positions": first(audio_cfg, "max_source_positions"),
+               # Whisper-family flag: embeddings scaled by sqrt(d_model) when
+               # true — read so a declared True is never silently dropped.
+               "embedding_scaled": first(audio_cfg, "scale_embedding"),
                "evidence_status": "unresolved"},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
         Stage("projector", "audio_projector", "project_to_text_width", projector_kind_value,

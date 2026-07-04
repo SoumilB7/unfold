@@ -9,7 +9,7 @@ from .ast_scanner import _call_name
 from .forward_ops import _method, _role_of, _self_field
 from .models import ProjectorEvidence, SourceBundle, SourceOp
 from .sources import resolve_source_files
-from .transitive import CallableInfo, build_registry
+from .transitive import resolve_architecture_anchor,  CallableInfo, build_registry
 
 _EXPLICIT_FIELD_MARKERS = ("projector", "merger", "connector", "resampler")
 _MODALITY_FIELD_MARKERS = ("vision", "image", "visual", "multimodal", "multi_modal")
@@ -21,7 +21,8 @@ def projector_evidence(target: Any, *, source: str = "local",
     if not bundle.files:
         return ProjectorEvidence("oracle_missing", reason="no modeling source")
     registry = build_registry(bundle.files)
-    root = bundle.architecture or (bundle.component_architectures or {}).get("root")
+    root = resolve_architecture_anchor(
+        registry, bundle.architecture or (bundle.component_architectures or {}).get("root"))
     candidates = _reachable_projectors(root, registry)
     if not candidates:
         return ProjectorEvidence("ambiguous", owner_class=root or "",

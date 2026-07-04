@@ -223,8 +223,6 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             if component == "root"
             else (_auto_model_architecture(component_type) or _own_architecture(cfg))
         )
-        if component_architecture:
-            component_architectures[component] = component_architecture
         family_dir = _transformers_family_dir(models_root, component_type)
         if family_dir is None:
             warnings.append(
@@ -233,6 +231,12 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             )
             continue
         modeling_files = tuple(sorted((models_root / family_dir).glob("modeling*.py")))
+        if not component_architecture:
+            # component-only model_type: the source's config_class declaration
+            component_architecture = _architecture_from_config_class(
+                modeling_files, component_type)
+        if component_architecture:
+            component_architectures[component] = component_architecture
         if not modeling_files:
             warnings.append(
                 f"No modeling*.py files found for component {component!r} "
@@ -532,6 +536,58 @@ def _declares_remote_code(target: Any) -> bool:
             if any(isinstance(v, dict) and v.get("auto_map") for v in nested.values()):
                 return True
     return False
+
+
+def _architecture_from_config_class(modeling_files, component_type: str) -> str | None:
+    """Component architecture read from the SOURCE's own ownership declaration.
+
+    AutoModel registers only composite entries, so a component-only model_type
+    (``qwen2_5_omni_text``) has no MODEL_MAPPING row.  The modeling file still
+    states which class consumes the component's config: ``config_class =
+    Qwen2_5OmniTextConfig`` on the class body.  Among declarers, the one some
+    other class CONSTRUCTS is the concrete model (bases are only inherited) —
+    a structural pick, never a name pattern."""
+    try:
+        from transformers.models.auto.configuration_auto import CONFIG_MAPPING_NAMES
+    except ImportError:
+        return None
+    config_cls = CONFIG_MAPPING_NAMES.get(component_type)
+    if not config_cls:
+        return None
+    import ast
+    owners: list[str] = []
+    constructed: set[str] = set()
+    for path in modeling_files:
+        try:
+            tree = ast.parse(Path(path).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                name = getattr(node.func, "id", None)
+                if name:
+                    constructed.add(name)
+            if not isinstance(node, ast.ClassDef):
+                continue
+            for st in node.body:
+                # legacy spelling: config_class = XConfig
+                if (isinstance(st, ast.Assign) and len(st.targets) == 1
+                        and isinstance(st.targets[0], ast.Name)
+                        and st.targets[0].id == "config_class"
+                        and isinstance(st.value, ast.Name)
+                        and st.value.id == config_cls):
+                    owners.append(node.name)
+                # modern spelling: a class-body annotation `config: XConfig`
+                if (isinstance(st, ast.AnnAssign)
+                        and isinstance(st.target, ast.Name)
+                        and st.target.id in ("config", "config_class")
+                        and isinstance(st.annotation, ast.Name)
+                        and st.annotation.id == config_cls):
+                    owners.append(node.name)
+    live = [o for o in owners if o in constructed]
+    if len(live) == 1:
+        return live[0]
+    return owners[0] if len(owners) == 1 else None
 
 
 def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:

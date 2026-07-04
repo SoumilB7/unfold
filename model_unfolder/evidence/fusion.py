@@ -8,7 +8,7 @@ from typing import Any
 from .ast_scanner import _call_name
 from .models import FusionEvidence, FusionRouteEvidence, SourceBundle
 from .sources import resolve_source_files
-from .transitive import CallableInfo, build_registry
+from .transitive import resolve_architecture_anchor,  CallableInfo, build_registry
 
 
 def fusion_evidence(target: Any, *, source: str = "local",
@@ -17,7 +17,8 @@ def fusion_evidence(target: Any, *, source: str = "local",
     if not bundle.files:
         return FusionEvidence("oracle_missing", reason="no modeling source")
     registry = build_registry(bundle.files)
-    root = bundle.architecture or (bundle.component_architectures or {}).get("root")
+    root = resolve_architecture_anchor(
+        registry, bundle.architecture or (bundle.component_architectures or {}).get("root"))
     candidates = []
     for name, depth in _reachable(root, registry):
         info = registry[name]

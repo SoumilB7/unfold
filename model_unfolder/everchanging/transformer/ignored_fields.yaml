@@ -70,7 +70,15 @@ keys:
   - embd_pdrop
   - attn_pdrop
   - dropout
+  # activation_dropout / encoder_layerdrop: Whisper-family training
+  # regularization on the (Omni) audio encoder — never structure.
+  - activation_dropout
+  - encoder_layerdrop
   # --- HF/training/serving plumbing ---
+  # init_std / ignore_index: weight-init scale and loss label mask — training
+  # constants (Qwen-Omni thinker/vision/audio scopes), never drawn structure.
+  - init_std
+  - ignore_index
   - auto_map
   - id2label
   - label2id

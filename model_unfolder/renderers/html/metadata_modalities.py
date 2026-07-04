@@ -980,6 +980,10 @@ def _unified_fusion_children(fusion: dict, inputs: dict) -> list[dict]:
     runtime = mechanism.get("runtime_grid_inputs") or []
     output = fusion.get("output") or {}
     width = output.get("width")
+    # Declared time-alignment constants (Qwen-Omni): audio/video positions map
+    # to wall-clock time — carried on the fusion facts.
+    pos_per_sec = fusion.get("position_ids_per_second")
+    seconds_per_chunk = fusion.get("seconds_per_chunk")
     children = [
         {
             "id": "embed",
@@ -1043,6 +1047,23 @@ def _unified_fusion_children(fusion: dict, inputs: dict) -> list[dict]:
             "description": "Visual tokens use multimodal rotary positions over time, height, and width.",
         },
         {
+            "id": "unified_audio_token",
+            "title": "Audio token span",
+            "description": "Audio placeholder positions are replaced by the encoder's soft audio tokens.",
+        },
+        {
+            "id": "unified_audio_position",
+            "title": "Time-aligned audio positions",
+            "description": (
+                "Audio tokens take positions aligned to WALL-CLOCK time, so "
+                "simultaneous audio and video frames share position ids."
+            ),
+            "facts": [f for f in (
+                f"{_fmt_int(pos_per_sec)} position ids / second" if pos_per_sec else "",
+                f"{seconds_per_chunk}s chunks" if seconds_per_chunk else "",
+            ) if f] or None,
+        },
+        {
             "id": "unified_stream",
             "title": "Unified decoder stream",
             "description": "The decoder receives one interleaved token stream.",
@@ -1050,9 +1071,14 @@ def _unified_fusion_children(fusion: dict, inputs: dict) -> list[dict]:
         },
     ]
     if "video" not in inputs:
-        return [
+        children = [
             child for child in children
             if child["id"] not in {"video_path", "unified_video_token", "unified_video_grid"}
+        ]
+    if "audio" not in inputs:
+        children = [
+            child for child in children
+            if child["id"] not in {"unified_audio_token", "unified_audio_position"}
         ]
     return children
 

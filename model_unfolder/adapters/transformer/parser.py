@@ -247,10 +247,7 @@ def _code_position(cfg: Any, context=None):
         return PositionalEvidence("ambiguous", reason="positional detector raised")
 
 
-_TEXT_WRAPPER_KEYS = (
-    "text_config", "language_config", "llm_config", "text_model_config",
-    "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
-)
+from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
 
 
 def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:

@@ -1519,6 +1519,8 @@ def _reachable_forward_ops(architecture: str | None,
     """Class names reachable from ``architecture`` through constructed fields,
     ModuleList elements and init constructions — the anchoring set for
     :func:`resolve_view_code`.  Empty when the architecture is unknown."""
+    from .transitive import resolve_architecture_anchor
+    architecture = resolve_architecture_anchor(forward_ops, architecture)
     if not architecture or architecture not in forward_ops:
         return set()
     seen: set[str] = set()

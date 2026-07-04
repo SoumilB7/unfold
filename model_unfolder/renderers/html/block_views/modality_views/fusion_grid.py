@@ -4,16 +4,20 @@ from __future__ import annotations
 from ...stack_view import fit_svg
 from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C, FONT_HEAD, GAP
-from .common import row_label, slot, video_input, vision_input
+from .common import audio_input, row_label, slot, video_input, vision_input
 
 
 def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict) -> str:
-    """Show text/image/video interleaving with runtime grid positions."""
+    """Show text/image/video/audio interleaving with runtime grid positions."""
     vision = vision_input(ir)
     video = video_input(ir)
+    audio = audio_input(ir)
     has_video = bool(video)
+    has_audio = bool(audio)
     # internal layout grid (drives the interleave surface width); canvas auto-fits
     w, h = (860, 660) if has_video else (800, 620)
+    if has_audio:
+        w += 200                       # one more lane in the interleave surface
     arrow_id, shadow_id = _ids(mount_id, "unified-multimodal-stream")
     parts: list[str] = []
 
@@ -26,15 +30,19 @@ def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict)
         "bottom": 440 if has_video else 400,
         "cx": cx,
     }
-    unified_surface(parts, fusion, surface, vision, video)
+    unified_surface(parts, fusion, surface, vision, video, audio)
     text_x = 40 if has_video else 90
     vision_x = 320 if has_video else w - 310
     text = _rect_block(parts, info, shadow_id, "embed", text_x, h - 112, 220, 50, "Text embeddings")
     visual = _rect_block(parts, info, shadow_id, "vision_path", vision_x, h - 112, 220, 50, "Image grid tokens")
     modality_blocks = [text, visual]
     if has_video:
-        video_block = _rect_block(parts, info, shadow_id, "video_path", w - 260, h - 112, 220, 50, "Video grid tokens")
+        video_x = (w - 490) if has_audio else (w - 260)
+        video_block = _rect_block(parts, info, shadow_id, "video_path", video_x, h - 112, 220, 50, "Video grid tokens")
         modality_blocks.append(video_block)
+    if has_audio:
+        audio_block = _rect_block(parts, info, shadow_id, "audio_path", w - 260, h - 112, 220, 50, "Soft audio tokens")
+        modality_blocks.append(audio_block)
 
     for block in modality_blocks:
         parts.append(_svg_tag("line", {
@@ -58,7 +66,8 @@ def build_unified_stream_view(ir: dict, info: dict, mount_id: str, fusion: dict)
     return fit_svg(arrow_id, shadow_id, parts, regions, f"{ir.get('name', 'model')} unified multimodal stream")
 
 
-def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, video: dict) -> None:
+def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, video: dict,
+                    audio: dict | None = None) -> None:
     """Draw dynamic grid-token interleaving for Qwen-style multimodal streams."""
     parts.append(_svg_tag("rect", {
         "x": box["left"], "y": box["top"],
@@ -71,7 +80,8 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
     }))
     parts.append(_svg_text(
         box["cx"], box["top"] + 28,
-        "replace visual slots, then assign grid positions",
+        ("replace visual + audio slots, then assign positions" if audio
+         else "replace visual slots, then assign grid positions"),
         {"text-anchor": "middle", "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
     ))
 
@@ -89,11 +99,14 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
     slot(parts, left + 112, row_text, 52, "VS", node_id="unified_vision_markers")
     slot(parts, left + 174, row_text, 110, "IMG", emphasis=True, node_id="unified_image_token")
     slot(parts, left + 294, row_text, 52, "VE", node_id="unified_vision_markers")
+    tail_x = left + 356                # where the lane after IMG continues
     if video:
-        slot(parts, left + 356, row_text, 110, "VID", emphasis=True, node_id="unified_video_token")
-        slot(parts, left + 476, row_text, 46, "tok", node_id="unified_text_tokens")
-    else:
-        slot(parts, left + 356, row_text, 46, "tok", node_id="unified_text_tokens")
+        slot(parts, tail_x, row_text, 110, "VID", emphasis=True, node_id="unified_video_token")
+        tail_x += 120
+    if audio:
+        slot(parts, tail_x, row_text, 110, "AUD", emphasis=True, node_id="unified_audio_token")
+        tail_x += 120
+    slot(parts, tail_x, row_text, 46, "tok", node_id="unified_text_tokens")
 
     row_label(parts, box["left"] + 38, row_grid + 14, "grid")
     grid = ((vision.get("tokens") or {}).get("grid") or {})
@@ -109,6 +122,10 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
     slot(parts, left + 174, row_pos, 174, "M-RoPE visual pos", emphasis=True, node_id="unified_mrope")
     if video:
         slot(parts, left + 356, row_pos, 174, "M-RoPE video pos", emphasis=True, node_id="unified_mrope")
+    if audio:
+        audio_pos_x = left + (536 if video else 356)
+        slot(parts, audio_pos_x, row_pos, 158, "time-aligned pos", emphasis=True,
+             node_id="unified_audio_position")
 
     row_label(parts, box["left"] + 38, row_stream + 14, "stream")
     slot(parts, left, row_stream, 46, "tok", node_id="unified_stream")
@@ -118,10 +135,15 @@ def unified_surface(parts: list[str], _fusion: dict, box: dict, vision: dict, vi
     slot(parts, left + 224, row_stream, 42, "v1", emphasis=True, node_id="unified_stream")
     slot(parts, left + 274, row_stream, 42, "...", node_id="unified_stream")
     slot(parts, left + 324, row_stream, 52, "VE", node_id="unified_vision_markers")
+    stream_x = left + 386
     if video:
-        slot(parts, left + 386, row_stream, 42, "f0", emphasis=True, node_id="unified_stream")
-        slot(parts, left + 436, row_stream, 42, "f1", emphasis=True, node_id="unified_stream")
-        slot(parts, left + 486, row_stream, 42, "...", node_id="unified_stream")
-        slot(parts, left + 536, row_stream, 46, "tok", node_id="unified_stream")
-    else:
-        slot(parts, left + 386, row_stream, 46, "tok", node_id="unified_stream")
+        slot(parts, stream_x, row_stream, 42, "f0", emphasis=True, node_id="unified_stream")
+        slot(parts, stream_x + 50, row_stream, 42, "f1", emphasis=True, node_id="unified_stream")
+        slot(parts, stream_x + 100, row_stream, 42, "...", node_id="unified_stream")
+        stream_x += 150
+    if audio:
+        slot(parts, stream_x, row_stream, 42, "a0", emphasis=True, node_id="unified_stream")
+        slot(parts, stream_x + 50, row_stream, 42, "a1", emphasis=True, node_id="unified_stream")
+        slot(parts, stream_x + 100, row_stream, 42, "...", node_id="unified_stream")
+        stream_x += 150
+    slot(parts, stream_x, row_stream, 46, "tok", node_id="unified_stream")

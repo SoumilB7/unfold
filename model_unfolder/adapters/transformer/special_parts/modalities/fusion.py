@@ -28,6 +28,11 @@ def fusion_path(cfg: Any, text_cfg: Any, modalities: dict[str, Any], text_hidden
         "target": "unknown",
         "placeholder": placeholder,
         "placeholders": placeholder_map or None,
+        # Time-aligned multimodal positions (Qwen-Omni): audio/video tokens are
+        # assigned position ids by WALL-CLOCK time — the declared mapping
+        # constants are facts of the fusion, not runtime bookkeeping.
+        "position_ids_per_second": first(cfg, "position_id_per_seconds"),
+        "seconds_per_chunk": first(cfg, "seconds_per_chunk"),
         "mechanism": None,
         "output": drop_none({
             "kind": "mixed_embeddings" if kind != "cross_attention" else "decoder_hidden_states",

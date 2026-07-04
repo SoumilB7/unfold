@@ -86,6 +86,32 @@ def build_registry(files, *, component: str = "root") -> dict[str, CallableInfo]
     return out
 
 
+def resolve_architecture_anchor(registry: dict, declared: str | None) -> str | None:
+    """The class the reachability walks start from.
+
+    The DECLARED architecture when the installed source defines it.  When it
+    does not (an upstream RENAME leaves configs declaring a class the source
+    no longer has — Qwen2.5-Omni configs say ``Qwen2_5OmniModel``, the file
+    defines ``Qwen2_5OmniForConditionalGeneration``), recover STRUCTURALLY:
+    the unique construction ROOT — the class no other class constructs that
+    itself constructs registry classes.  Never a name heuristic; if several
+    roots exist the declared value is kept and the caller fails honestly."""
+    if declared and declared in registry:
+        return declared
+    constructed: set[str] = set()
+    for info in registry.values():
+        constructed |= set(info.field_types.values())
+        for classes in (getattr(info, "sub_module_classes", None) or {}).values():
+            constructed |= set(classes)
+        for cls in (getattr(info, "module_list_elems", None) or {}).values():
+            constructed.add(cls)
+        constructed |= set(getattr(info, "init_class_refs", None) or ())
+    roots = [name for name, info in registry.items()
+             if name not in constructed
+             and any(cls in registry for cls in info.field_types.values())]
+    return roots[0] if len(roots) == 1 else declared
+
+
 def transitive_closure(start: str, registry: dict[str, CallableInfo], vocab: dict,
                        *, extra_class_refs: frozenset[str] = frozenset(),
                        max_nodes: int = 400) -> tuple[frozenset[str], frozenset[str]]:
@@ -210,9 +236,33 @@ def _scan_class(node: ast.ClassDef, source_file: str,
     methods = {m.name: m for m in node.body
                if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))}
     entry = methods.get("forward") or methods.get("__call__")
-    if entry is None:
-        return None
     init = methods.get("__init__")
+    if entry is None:
+        # A CONTAINER: construction but no forward (a generation-only composite
+        # wrapper — Qwen-Omni's entry class builds thinker/talker/token2wav and
+        # only orchestrates generate()).  Its field graph is real construction
+        # evidence the walks must cross; ops are honestly empty.
+        if init is None:
+            return None
+        # Same helper folding as the normal path: composite wrappers build
+        # sub-models in init-DELEGATED methods (Omni's enable_talker()).
+        container_bodies = _folded_init_bodies(init, methods)
+        container_fields: dict = {}
+        for body in container_bodies:
+            for fld, cls in _field_types(body).items():
+                container_fields.setdefault(fld, cls)
+        if not container_fields:
+            return None
+        return CallableInfo(
+            name=node.name,
+            source_file=source_file,
+            line=getattr(init, "lineno", None),
+            op_kinds=frozenset(),
+            call_tokens=frozenset(),
+            field_types=container_fields,
+            init_class_refs=frozenset().union(
+                *(_init_class_refs(b) for b in container_bodies)),
+        )
     # Fold init HELPER methods the constructor delegates to (diffusers'
     # ``Transformer2DModel.__init__ -> self._init_patched_inputs(...)`` builds
     # the transformer_blocks there) — same folding forward gets below.  One

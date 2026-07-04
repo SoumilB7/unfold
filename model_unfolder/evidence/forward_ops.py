@@ -73,9 +73,30 @@ def _parse_file(path: str, _mtime_key: float) -> dict[str, ForwardOps]:
 
 def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | None:
     forward = _method(node, "forward")
-    if forward is None:
-        return None
     init = _method(node, "__init__")
+    if forward is None:
+        # CONTAINER: construction but no forward (a generation-only composite
+        # wrapper).  Its field graph anchors reachability; ops honestly empty.
+        if init is None:
+            return None
+        container_fields = _field_types(init)
+        for helper in _init_helper_methods(node, init):
+            for fld, cls in _field_types(helper).items():
+                container_fields.setdefault(fld, cls)
+        if not container_fields:
+            return None
+        return ForwardOps(
+            class_name=node.name,
+            source_file=source_file,
+            forward_line=None,
+            op_kinds=frozenset(),
+            field_types=container_fields,
+            module_list_elems=_module_list_elems(init),
+            signature_tokens=frozenset(container_fields),
+            forward_params=(),
+            init_class_refs=_init_class_refs(init),
+            gated_op_kinds={},
+        )
     field_types = _field_types(init)
     module_list_elems = _module_list_elems(init)
     sig_tokens: set[str] = set()
@@ -153,6 +174,17 @@ def _init_local_fn_bindings(init: ast.FunctionDef | None,
               if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
               and isinstance(child.func.value, ast.Name) and child.func.value.id == "self"}
     return [local_fns[fn] for fld, fn in bound.items() if fld in called]
+
+
+def _init_helper_methods(node: ast.ClassDef, init: ast.FunctionDef) -> list:
+    """Methods the __init__ calls as ``self.helper()`` — composite wrappers
+    build sub-models there (Omni's enable_talker)."""
+    methods = {m.name: m for m in node.body
+               if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    called = {child.func.attr for child in ast.walk(init)
+              if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
+              and isinstance(child.func.value, ast.Name) and child.func.value.id == "self"}
+    return [methods[name] for name in called if name in methods and name != "__init__"]
 
 
 def _forward_op_occurrences(forward: ast.FunctionDef, field_types: dict[str, str]):

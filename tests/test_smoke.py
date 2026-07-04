@@ -1835,6 +1835,82 @@ def test_multi_query_flag_defers_to_declared_group_count():
     assert a["bias"] is True
 
 
+def test_modality_host_looks_through_declared_wrappers():
+    """An Omni-style composite hides the WHOLE multimodal host one declared
+    wrapper down (thinker_config carries vision_config/audio_config AND the
+    modality token ids).  The host walk descends the SAME wrapper vocabulary
+    the LM unwrap uses — general, never a name for one family.  Flat
+    multimodal configs keep resolving at the root."""
+    nested = {
+        "model_type": "composite_xyz",
+        "architectures": ["CompositeForConditionalGeneration"],
+        "thinker_config": {
+            "model_type": "inner_xyz",
+            "audio_token_index": 151646,
+            "vision_config": {"model_type": "inner_vit", "depth": 4,
+                              "hidden_size": 128, "num_heads": 4,
+                              "patch_size": 14, "spatial_merge_size": 2},
+            "audio_config": {"model_type": "inner_audio", "d_model": 128,
+                             "encoder_layers": 2, "encoder_attention_heads": 4,
+                             "num_mel_bins": 128},
+            "text_config": {"model_type": "llama", "hidden_size": 256,
+                            "num_hidden_layers": 2, "num_attention_heads": 4,
+                            "intermediate_size": 512, "vocab_size": 1000},
+        },
+    }
+    ir = unfold(nested).to_ir()
+    inputs = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    assert "vision" in inputs and "audio" in inputs
+    # flat host (vision at root) still resolves at the root level
+    flat = {"model_type": "llava", "architectures": ["LlavaForConditionalGeneration"],
+            "vision_config": {"model_type": "clip_vision_model", "hidden_size": 128,
+                              "num_hidden_layers": 2, "num_attention_heads": 4,
+                              "image_size": 224, "patch_size": 14},
+            "text_config": {"model_type": "llama", "hidden_size": 256,
+                            "num_hidden_layers": 2, "num_attention_heads": 4,
+                            "intermediate_size": 512, "vocab_size": 1000}}
+    ir = unfold(flat).to_ir()
+    inputs = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    assert "vision" in inputs
+
+
+def test_stale_architecture_anchor_recovers_to_construction_root(tmp_path):
+    """Upstream renames leave configs declaring classes the installed source no
+    longer defines (Qwen2.5-Omni: config says Qwen2_5OmniModel, the file defines
+    ...ForConditionalGeneration — an init-only container whose sub-models are
+    built in an init-delegated helper).  The anchor must recover STRUCTURALLY:
+    container classes enter the registry, and the unique construction root
+    replaces the stale name.  Ambiguity keeps the declared value (honest fail)."""
+    f = tmp_path / "modeling_y.py"
+    f.write_text("""
+import torch.nn as nn
+
+class Inner(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.linear = nn.Linear(4, 4)
+    def forward(self, x):
+        return self.linear(x)
+
+class Wrapper(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.inner = Inner(config)
+        if config.enable_extra:
+            self.enable_extra()
+    def enable_extra(self):
+        self.extra = Inner(self.config)
+""")
+    from model_unfolder.evidence.transitive import build_registry, resolve_architecture_anchor
+    reg = build_registry([str(f)])
+    assert "Wrapper" in reg                      # container entered the registry
+    assert reg["Wrapper"].field_types.get("inner") == "Inner"
+    assert reg["Wrapper"].field_types.get("extra") == "Inner"   # init-helper folded
+    assert resolve_architecture_anchor(reg, "RenamedAwayModel") == "Wrapper"
+    # declared-and-present name always wins
+    assert resolve_architecture_anchor(reg, "Inner") == "Inner"
+
+
 def _restore_env(name, value):
     if value is None:
         os.environ.pop(name, None)

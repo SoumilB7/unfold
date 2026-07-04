@@ -204,6 +204,12 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "output_dim": (multilayer or {}).get("output_dim")
                       or first(vision_cfg, "vision_output_dim", "output_dim"),
         "position_encoding": vision_position_encoding(cfg, vision_cfg),
+        # A windowed vision tower that declares WHICH blocks run full attention
+        # (Qwen2.5-VL/Omni fullatt_block_indexes) — the layer schedule is a
+        # structural fact, not an impl flag.
+        "full_attention_block_indexes": first(vision_cfg, "fullatt_block_indexes"),
+        # Video token time-density (grid streams): declared tokens per second.
+        "video_tokens_per_second": first(vision_cfg, "tokens_per_second"),
         "norm_kind": "unknown",
         "ffn_gated": None,
     })
@@ -347,7 +353,10 @@ def vision_projector_out(
     if cross_attn:
         return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
     if unified_grid:
-        return text_hidden_size or first(vision_cfg, "hidden_size", "out_hidden_size", "output_dim")
+        # The merger's own declared output width wins (Qwen2.5-VL/Omni
+        # out_hidden_size); the text width is the fallback, not the source.
+        return (first(vision_cfg, "out_hidden_size") or text_hidden_size
+                or first(vision_cfg, "hidden_size", "output_dim"))
     return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
 
 
