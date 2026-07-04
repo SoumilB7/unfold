@@ -17,7 +17,7 @@ T5 don't share a drill card — see ``_text_encoder_ops`` in
 from __future__ import annotations
 
 from ..graph_engine import render_graph
-from ..tower import tower_graph
+from ..tower import tower_cell, tower_graph
 
 
 def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -63,21 +63,12 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     }
 
     def _cell(prefix: str, *, attn_label, attn_sub=None, norm_label=norm,
-              ffn_kind=None) -> list[dict]:
-        return [
-            {"id": f"{prefix}_op_norm", "kind": "norm", "label": norm_label},
-            {"id": f"{prefix}_op_selfattn", "kind": "attention",
-             "label": attn_label, "sub": attn_sub},
-            {"id": f"{prefix}_op_add", "kind": "residual_add",
-             "residual_from": f"{prefix}_op_norm"},
-            {"id": f"{prefix}_op_norm2", "kind": "norm", "label": norm_label,
-             "target": f"{prefix}_op_norm"},
-            {"id": f"{prefix}_op_ffn", "kind": "ffn",
-             "label": (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
-                       else "Feed-forward (FFN)")},
-            {"id": f"{prefix}_op_add2", "kind": "residual_add",
-             "residual_from": f"{prefix}_op_norm2", "target": f"{prefix}_op_add"},
-        ]
+              ffn_kind=None, placement="pre", input_id=None) -> list[dict]:
+        # THE one cell projector (tower.py) — placement comes from the
+        # sub-parse's code-derived norm_placement fact, never assumed.
+        return tower_cell(prefix, attn_label=attn_label, attn_sub=attn_sub,
+                          norm_label=norm_label, ffn_kind=ffn_kind,
+                          placement=placement, input_id=input_id)
 
     sub_model = d.get("sub_model") if isinstance(d.get("sub_model"), dict) else {}
     groups = sub_model.get("groups") if isinstance(sub_model.get("groups"), list) else None
@@ -103,7 +94,8 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
             return _cell(f"{pfx}_g{k}",
                          attn_label=label, attn_sub=group.get("tag"),
                          norm_label=group.get("norm") or norm,
-                         ffn_kind=(group.get("ffn") or {}).get("kind"))
+                         ffn_kind=(group.get("ffn") or {}).get("kind"),
+                         placement=group.get("norm_placement") or "pre")
 
         runs = [tuple(run) for run in (schedule.get("runs") or [])]
         period = schedule.get("period")
@@ -131,7 +123,9 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     else:
         single = (groups[0] if groups else {})
         spec["cell"] = _cell(pfx, attn_label="Multi-head self-attention",
-                             ffn_kind=(single.get("ffn") or {}).get("kind"))
+                             ffn_kind=(single.get("ffn") or {}).get("kind"),
+                             placement=single.get("norm_placement") or "pre",
+                             input_id=f"{pfx}_op_embed")
         spec["repeat"] = layers
 
     graph = tower_graph(spec)

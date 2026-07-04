@@ -145,6 +145,14 @@ class VisionLayerEvidence:
     norm_placement: str
     ffn_gated: bool
     residual_gated: bool
+    #: activation applied to the residual gate when the block CALLS one around
+    #: the gate-mul (Gemma-3 vision: ``tanh``); None ⇒ evidence records only
+    #: that a learned gate exists — captions must not name an activation.
+    gate_activation: str | None = None
+    #: True when the block IS the standard two-sublayer cell (one attention +
+    #: at most one FFN, no in-block conv mixer) — a conformer is not, and must
+    #: never be projected as one.
+    standard_cell: bool = True
     attention_class: str = ""
     ffn_class: str = ""
     projection_mode: str = "separate_qkv"
@@ -167,6 +175,8 @@ class VisionLayerEvidence:
             "norm_placement": self.norm_placement,
             "ffn_gated": self.ffn_gated,
             "residual_gated": self.residual_gated,
+            "gate_activation": self.gate_activation,
+            "standard_cell": self.standard_cell,
             "attention_class": self.attention_class,
             "ffn_class": self.ffn_class,
             "projection_mode": self.projection_mode,
@@ -240,6 +250,11 @@ class AudioLayerEvidence:
     ops: tuple[SourceOp, ...] = ()
     callables: tuple[AudioCallableEvidence, ...] = ()
     repeat_field: str = ""
+    #: typed per-layer facts from the ONE shared reader
+    #: (:func:`~.vision.layer_facts_from_block`) — norm kind/placement, FFN
+    #: gating, gates, projection modes — so the audio tower rides the same
+    #: cell projector as every other tower.
+    layer_facts: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -249,6 +264,7 @@ class AudioLayerEvidence:
             "ops": [op.to_dict() for op in self.ops],
             "callables": [item.to_dict() for item in self.callables],
             "repeat_field": self.repeat_field,
+            "layer_facts": dict(self.layer_facts),
         }
 
 

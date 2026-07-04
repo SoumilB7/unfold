@@ -25,6 +25,7 @@ from .models import (
 from .projector import _callable_ops, projector_evidence
 from .sources import resolve_source_files
 from .transitive import CallableInfo, build_registry
+from .vision import layer_facts_from_block
 
 
 def audio_tower_evidence(
@@ -83,6 +84,7 @@ def audio_tower_evidence(
             projector_class = candidate.projector_class
 
     variants = []
+    facts_vocab = load_conformance_transitive()
     for block in sorted(blocks):
         info = registry[block]
         ops = _flow_ops(block, info, registry, prefix=_slug(block))
@@ -94,6 +96,7 @@ def audio_tower_evidence(
             ops=tuple(ops),
             callables=tuple(callables),
             repeat_field=_repeat_field(owner_info, block),
+            layer_facts=layer_facts_from_block(block, registry, facts_vocab),
         ))
 
     return AudioTowerEvidence(

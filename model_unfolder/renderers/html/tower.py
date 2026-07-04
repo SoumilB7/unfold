@@ -41,6 +41,80 @@ _KIND_TO_NODE = {
 }
 
 
+def tower_cell(
+    prefix: str,
+    *,
+    attn_label,
+    norm_label,
+    placement: str = "pre",
+    attn_sub=None,
+    ffn_kind=None,
+    ffn_label=None,
+    input_id: str | None = None,
+    attn_gate: str | None = None,
+    ffn_gate: str | None = None,
+    unknown_label=None,
+) -> list[dict]:
+    """THE transformer-layer cell — one projection of ``[norm → mixer → ⊕ ;
+    norm → FFN → ⊕]`` for every tower (text encoder, vision, audio, refiner,
+    any secondary stack), so norm PLACEMENT, residual GATES and labels can
+    never diverge between towers.
+
+    * ``placement`` — ``pre`` (norm before the op; the skip taps the norm's
+      input), ``post`` (op → ⊕ → norm; BERT — the first skip needs
+      ``input_id``), ``double`` (sandwich: pre-norm AND a post-norm between
+      the op and its ⊕; Gemma-2).  Anything else renders the honest-unknown
+      single node (``unknown_label``) — a cell is never guessed.
+    * ``attn_gate`` / ``ffn_gate`` — a ``×`` gate between the sublayer output
+      and its ⊕ (conditioning-derived or learned residual gates); the value is
+      the gate's short operand caption (drawn beside the glyph, Gate C).
+    * ids follow the ONE scheme: ``{prefix}_op_norm / _op_selfattn / _op_add /
+      _op_norm2 / _op_ffn / _op_add2`` (+ ``_post`` norms, ``_gate`` muls) —
+      cards and drills key on these, identically in every tower.
+    """
+    if placement not in ("pre", "post", "double"):
+        return [{"id": f"{prefix}_op_unknown", "kind": "norm",
+                 "label": unknown_label or "Code-defined block", "resolved": False}]
+    ffn_text = ffn_label or (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
+                             else "Feed-forward (FFN)")
+
+    def _sublayer(op_block: dict, n: str, add_id: str, skip_from: str,
+                  gate: str | None, align: dict) -> list[dict]:
+        out: list[dict] = []
+        if placement in ("pre", "double"):
+            out.append({"id": n, "kind": "norm", "label": norm_label, **align.get(n, {})})
+        out.append(op_block)
+        if placement == "double":
+            # The post-norm aliases the cell's ONE norm card (same ``target``
+            # scheme norm2 uses) — the card's prose states the placement.
+            out.append({"id": f"{n}_post", "kind": "norm", "label": norm_label,
+                        "target": f"{prefix}_op_norm"})
+        if gate:
+            out.append({"id": f"{op_block['id']}_gate", "kind": "gate_mul",
+                        "label": "×", "sub": gate})
+        out.append({"id": add_id, "kind": "residual_add",
+                    "residual_from": skip_from, **align.get(add_id, {})})
+        if placement == "post":
+            out.append({"id": n, "kind": "norm", "label": norm_label, **align.get(n, {})})
+        return out
+
+    norm1, norm2 = f"{prefix}_op_norm", f"{prefix}_op_norm2"
+    add1, add2 = f"{prefix}_op_add", f"{prefix}_op_add2"
+    attn = {"id": f"{prefix}_op_selfattn", "kind": "attention",
+            "label": attn_label, "sub": attn_sub}
+    ffn = {"id": f"{prefix}_op_ffn", "kind": "ffn", "label": ffn_text}
+    if placement == "post":
+        # BERT shape: h = norm(h + op(h)) — the first skip taps the cell input.
+        skip1 = input_id or f"{prefix}_op_in"
+        skip2 = norm1
+    else:
+        # pre / double: the skip taps the pre-norm's input.
+        skip1, skip2 = norm1, norm2
+    align = {norm2: {"target": norm1}, add2: {"target": add1}}
+    return (_sublayer(attn, norm1, add1, skip1, attn_gate, align)
+            + _sublayer(ffn, norm2, add2, skip2, ffn_gate, align))
+
+
 def tower_graph(spec: dict) -> Graph:
     """Assemble a tower Graph from a spec of block stages.
 

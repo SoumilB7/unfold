@@ -73,10 +73,14 @@ def test_mllama_preserves_local_and_global_constructor_variants():
     html = unfold(MLLAMA_VISION_TINY_CONFIG).to_html(standalone=False)
     assert "× 32" in html and "× 8" in html
     assert ">transformer<" not in html and ">global_transformer<" not in html
-    for node in ("vision_encoder_attn__1", "vision_attn_residual_gate__1",
-                 "vision_mlp_residual_gate__1"):
+    # Both constructor variants render as layer-type GROUPS through the one
+    # tower projector; only the gated (global) group draws the × gates, and
+    # every gate couples to its card.
+    for node in ("vision_enc_g0_op_selfattn", "vision_enc_g1_op_selfattn",
+                 "vision_enc_g1_op_selfattn_gate", "vision_enc_g1_op_ffn_gate"):
         assert f'data-id="{node}"' in html
         assert f'data-card-id="{node}"' in html
+    assert 'data-id="vision_enc_g0_op_selfattn_gate"' not in html
 
 
 def test_gemma4_surfaces_double_norm_and_qkv_norms():
@@ -87,10 +91,14 @@ def test_gemma4_surfaces_double_norm_and_qkv_norms():
     assert layer.norm_placement == "double"
     assert (layer.q_norm, layer.k_norm, layer.v_norm) == (True, True, True)
     html = unfold(GEMMA4_VISION_TINY_CONFIG).to_html(standalone=False)
-    for node in ("vision_attn_q_norm", "vision_attn_k_norm", "vision_attn_v_norm",
-                 "vision_encoder_norm1_post", "vision_encoder_norm2_post"):
+    # Q/K/V norms surface inside the ONE namespaced canonical attention region.
+    for node in ("vision_enc_attn_q_norm", "vision_enc_attn_k_norm",
+                 "vision_enc_attn_v_norm"):
         assert f'data-id="{node}"' in html
         assert f'data-card-id="{node}"' in html
+    # Sandwich placement: 4 norm NODES share the cell's one norm card (pre +
+    # post per sublayer) — a pre-norm tower draws exactly 2.
+    assert html.count('data-id="vision_enc_op_norm"') == 4
 
 
 def test_missing_vision_oracle_is_unknown_not_a_standard_vit_cell():

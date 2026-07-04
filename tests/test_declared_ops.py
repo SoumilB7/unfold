@@ -125,7 +125,8 @@ def test_pixtral_encoder_uses_rmsnorm_and_a_gated_vision_mlp():
     assert vision["encoder"]["norm_kind"] == "RMSNorm"
     assert vision["encoder"]["ffn_gated"] is True
     html = unfold(PIXTRAL_STYLE).to_html(standalone=True)
-    for node_id in ("vision_mlp_gate", "vision_mlp_up", "vision_mlp_multiply"):
+    for node_id in ("vision_enc_ffn_gate_proj", "vision_enc_ffn_up_proj",
+                    "vision_enc_ffn_multiply"):
         assert f'data-id="{node_id}"' in html
         assert f'data-card-id="{node_id}"' in html
 

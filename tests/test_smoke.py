@@ -1331,10 +1331,12 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     def vision_attn_svg(cfg):
         d = unfold(cfg); ir = d.to_ir(); info = _make_info(ir)
         blocks = info.get("blocks", {})
-        idx = next((b for b in blocks.values() if b.get("view") == "vision_self_attention"), None)
+        idx = next((b for b in blocks.values()
+                    if str(b.get("id", "")).startswith("vision_enc")
+                    and str(b.get("id", "")).endswith("_op_selfattn")), None)
         if idx is None:  # find it nested under the vision encoder
             for l, s in __import__("model_unfolder.preview", fromlist=["svg_views"]).svg_views(d.to_html(standalone=True)):
-                if l == "vision_encoder_attn":
+                if l.startswith("vision_enc") and l.endswith("_op_selfattn"):
                     return s
             return ""
         return render_sub_block_detail(ir, info, "v", idx)
@@ -1365,8 +1367,8 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     from model_unfolder.preview import svg_views
     qwen_html = unfold(qwen).to_html(standalone=True)
     vision_svg = next(svg for label, svg in svg_views(qwen_html)
-                      if label == "vision_encoder_attn")
-    for node_id in ("vision_attn_q_rope", "vision_attn_k_rope"):
+                      if label.startswith("vision_enc") and label.endswith("_op_selfattn"))
+    for node_id in ("vision_enc_attn_q_rope", "vision_enc_attn_k_rope"):
         assert f'data-id="{node_id}"' in vision_svg
         assert f'data-card-id="{node_id}"' in qwen_html
     assert validate_click_coupling(qwen_html) == []

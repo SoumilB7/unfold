@@ -188,7 +188,7 @@ def test_recursion_contract_nested_submodel_projects_and_couples():
         spec, "encoder_0",
         attn_description="Each token attends to the others in the prompt.",
         norm_fallback="RMSNorm",
-        norm_card=lambda prefix, norm: {
+        norm_card=lambda prefix, norm, placement="pre": {
             "id": f"{prefix}_op_norm", "title": norm, "description": f"{norm}."},
         residual_card=lambda prefix: {
             "id": f"{prefix}_op_add", "title": "Residual add",

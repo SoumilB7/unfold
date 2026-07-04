@@ -129,6 +129,12 @@ def submodel_spec(
             "attention": _attention_fact(group["layer"]),
             "ffn": _ffn_fact(group["layer"]),
             "norm": _norm_for(group["layer"]),
+            # Norm PLACEMENT is a per-group structural fact (pre / post /
+            # double sandwich), code-derived by the sub-parse's topology
+            # evidence — serialized so the ONE tower cell projector places
+            # norms from the fact instead of assuming pre-norm (the assumption
+            # silently mis-draws a Gemma-2 sandwich or a BERT post-norm tower).
+            "norm_placement": group["layer"].norm_placement,
         }
         for k, group in enumerate(groups)
     ]
@@ -264,6 +270,8 @@ def submodel_attention_block(spec: dict, group: dict, prefix: str, *,
         "facts": facts,
         "view": "attention",
         "source_component": _owning_component(spec, evidence),
+        **({"source_owner": group["source_owner"], "source_file": group.get("source_file")}
+           if group.get("source_owner") else {}),
         "detail": {
             "attention": {**fact, "node_prefix": namespace},
             "evidence": evidence if isinstance(evidence, dict) else {},
@@ -321,6 +329,8 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
         "facts": facts,
         "view": "ffn",
         "source_component": component,
+        **({"source_owner": group["source_owner"], "source_file": group.get("source_file")}
+           if group.get("source_owner") else {}),
         "detail": {
             "ffn": fact,
             "op_namespace": namespace,
@@ -383,18 +393,48 @@ def submodel_cell_blocks(
     cards: list[Block] = []
 
     def _cell(group: dict, cell_prefix: str, *, chips: list[str]) -> list[Block]:
+        # The card side MIRRORS the cell projector's node side exactly: an
+        # unknown-placement group renders one honest-unknown node, so it gets
+        # one honest-unknown card; a gated group's × connectors each get their
+        # one-line card (Gate C: a connector explains itself).
+        placement = group.get("norm_placement")
+        if placement is not None and placement not in ("pre", "post", "double"):
+            return [{
+                "id": f"{cell_prefix}_op_unknown",
+                "title": "Code-defined block",
+                "description": ("The exact repeated block could not be resolved "
+                                "from the source; no standard cell is invented."),
+            }]
         attn = group["attention"]
         title = kind_long(attn).replace(" attention", " self-attention")
         facts = (attention_summary(attn)[1] if attn.get("num_heads") else [])
-        return [
+        cards = [
             submodel_attention_block(
                 spec, group, cell_prefix, title=title,
                 description=attn_description, facts=facts + chips,
             ),
             submodel_ffn_block(spec, group, cell_prefix),
-            norm_card(cell_prefix, group.get("norm") or norm_fallback),
+            norm_card(cell_prefix, group.get("norm") or norm_fallback,
+                      placement or "pre"),
             residual_card(cell_prefix),
         ]
+        gate = group.get("residual_gate")
+        if gate:
+            cards.extend([
+                {
+                    "id": f"{cell_prefix}_op_selfattn_gate",
+                    "title": "Learned attention residual gate",
+                    "description": (f"Multiplies the attention update by the "
+                                    f"source-defined {gate} before its residual add."),
+                },
+                {
+                    "id": f"{cell_prefix}_op_ffn_gate",
+                    "title": "Learned MLP residual gate",
+                    "description": (f"Multiplies the MLP update by the "
+                                    f"source-defined {gate} before its residual add."),
+                },
+            ])
+        return cards
 
     if len(groups) > 1:
         for k, group in enumerate(groups):

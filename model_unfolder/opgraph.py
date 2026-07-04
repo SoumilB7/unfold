@@ -118,10 +118,19 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     if ffn.get("structure_status") in {"ambiguous", "oracle_missing"}:
         return _unresolved_ffn_storage(hidden, inter, ffn)
 
-    # A recognised dense/gated MLP: build from config (tier 1).
-    if kind in (None, "dense", "mlp", "ffn") and (inter is not None or ffn.get("source_proven")):
+    # A recognised dense/gated MLP: build from config (tier 1) or from PROVEN
+    # source structure (tier 2 — ``structure_status: "proven"`` is the facts
+    # dialect's spelling of ``source_proven``; one meaning, both honored).
+    structure_proven = bool(ffn.get("source_proven")
+                            or ffn.get("structure_status") == "proven")
+    if kind in (None, "dense", "mlp", "ffn") and (inter is not None or structure_proven):
         gated = bool(ffn.get("gated", True))
-        act = ffn.get("activation") or ("silu" if gated else "gelu")
+        act = ffn.get("activation")
+        if not act:
+            # Config-tier builds keep the family convention; a SOURCE-proven
+            # structure with an unnamed activation stays honestly unlabeled —
+            # naming gelu there would be a fabricated fact.
+            act = None if structure_proven else ("silu" if gated else "gelu")
         if gated and ffn.get("projection_mode") == "fused_gate_up":
             return _fused_gated_mlp(hidden, inter, act)
         return _gated_mlp(hidden, inter, act) if gated else _dense_mlp(hidden, inter, act)

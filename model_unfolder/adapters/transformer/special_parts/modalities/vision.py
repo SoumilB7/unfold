@@ -44,6 +44,17 @@ def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
             elif field:
                 variant["repeat"] = encoder.get(field)
         encoder["variants"] = variants
+        # A non-standard block (conformer-style) must not be projected as the
+        # standard cell — no sub_model means the view draws honest-unknown.
+        if not all(v.get("standard_cell", True) for v in variants):
+            encoder.pop("sub_model", None)
+            encoder["final_norm_kind"] = evidence.final_norm_kind
+            continue
+        # THE one tower dialect: the variants ARE layer-type groups, so the
+        # encoder carries a sub_model-shaped spec and rides the same cell
+        # projector / namespaced canonical drills / card builder as every
+        # other tower (text encoders, refiners).  Facts only — no drawables.
+        encoder["sub_model"] = _vision_submodel_spec(encoder, variants, evidence)
         encoder["final_norm_kind"] = evidence.final_norm_kind
         if evidence.variants:
             primary = evidence.variants[0]
@@ -69,6 +80,14 @@ def apply_vision_evidence(payload: dict | None, evidence) -> dict | None:
                 step["source_component"] = evidence.component
                 step["source_owner"] = evidence.owner_class
     return payload
+
+
+def _vision_submodel_spec(encoder: dict, variants: list[dict], evidence) -> dict:
+    """Delegates to the ONE shared tower spec builder (schema.py) — the vision
+    variant dicts already carry the shared layer-fact keys at top level."""
+    from .schema import tower_submodel_spec
+    return tower_submodel_spec(
+        encoder, variants, component=str(getattr(evidence, "component", "") or ""))
 
 
 def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:

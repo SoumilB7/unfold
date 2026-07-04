@@ -39,6 +39,9 @@ def encoder_tower_spec(encoder: dict, *, prefix: str = "enc") -> dict:
     card (declared per modality in ``metadata_modalities``) opens the ONE
     canonical attention view.  The FFN stays static: no inner width is
     recorded, so there is nothing honest to draw."""
+    sub_model = encoder.get("sub_model") if isinstance(encoder.get("sub_model"), dict) else {}
+    if sub_model.get("groups"):
+        return _audio_cell_tower_spec(encoder, sub_model, prefix=prefix)
     variants = encoder.get("variants") or []
     if variants:
         return _source_audio_tower_spec(encoder, variants, prefix=prefix)
@@ -65,6 +68,60 @@ def encoder_tower_spec(encoder: dict, *, prefix: str = "enc") -> dict:
         ],
         "repeat": encoder.get("num_layers"),
         "output": {"id": f"{prefix}_out"},
+    }
+
+
+def _audio_cell_tower_spec(encoder: dict, sub_model: dict, *, prefix: str) -> dict:
+    """The audio tower through THE one cell projector — same cells, gates and
+    honest-unknown as every tower; the source-derived conv FRONT-END and the
+    post chain (pooling, final norm) stay exactly as read from the source.
+    The per-op truth (fc1/activation/fc2, projections) lives at drill depth in
+    the canonical attention/FFN views; dropout and fp16-clamp guards are
+    inference no-ops the cell deliberately does not draw as blocks (Gate C)."""
+    from ...tower import tower_cell
+
+    hidden = encoder.get("hidden_size")
+    pre, pre_sides = _ops_to_blocks(
+        encoder.get("frontend_ops") or [], prefix=f"{prefix}_front",
+    )
+    post, post_sides = _ops_to_blocks(
+        encoder.get("post_ops") or [], prefix=f"{prefix}_post",
+    )
+    groups = sub_model.get("groups") or []
+    position = encoder.get("position_encoding") or {}
+    cells = []
+    side_inputs = [*pre_sides, *post_sides]
+    for k, group in enumerate(groups):
+        cell_prefix = prefix if len(groups) == 1 else f"{prefix}_g{k}"
+        placement = group.get("norm_placement")
+        gate = group.get("residual_gate")
+        cell = tower_cell(
+            cell_prefix,
+            attn_label="Self-attention",
+            norm_label=group.get("norm") or "Norm",
+            placement=placement if placement in ("pre", "post", "double") else "unknown",
+            attn_gate=gate,
+            ffn_gate=gate,
+            unknown_label="Code-defined audio block",
+        )
+        if position.get("application") == "attention_side_input":
+            side_inputs.append({
+                "node": {"id": f"{cell_prefix}_op_selfattn_position", "kind": "embedding",
+                         "label": "Relative positions", "static": True},
+                "target": f"{cell_prefix}_op_selfattn", "side": "right",
+            })
+        cells.append({
+            "cell": cell,
+            "repeat": group.get("count") or encoder.get("num_layers"),
+            "repeat_label": None,
+        })
+    return {
+        "source": {"id": f"{prefix}_in", "label": f"in ({_fmt_int(hidden)})" if hidden else None},
+        "pre": pre,
+        "cells": cells,
+        "post": post,
+        "output": {"id": f"{prefix}_out"},
+        "side_inputs": side_inputs,
     }
 
 

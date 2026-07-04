@@ -63,3 +63,93 @@ def assemble_path(path_kind: str, stages: list[Stage], trace_config_paths: list[
         "trace": {"config_paths": trace_config_paths},
     })
 
+
+
+def tower_group_tags(variants: list[dict]) -> list[str]:
+    """One short tag per variant group, built ONLY from the FACTS that differ
+    across the groups (gating, norm, placement, position scheme) — never the
+    constructor's variant_key/field name (a code identifier is provenance,
+    not a display distinction)."""
+    if len(variants) < 2:
+        return [""] * len(variants)
+
+    def facts(v: dict) -> dict:
+        return {
+            "gated residuals": bool(v.get("residual_gated")),
+            str(v.get("norm_kind") or ""): True,
+            str(v.get("norm_placement") or ""): True,
+            "rope": "rope" in str(v.get("position_kind") or ""),
+        }
+    all_facts = [facts(v) for v in variants]
+    tags = []
+    for i, mine in enumerate(all_facts):
+        others = [f for j, f in enumerate(all_facts) if j != i]
+        diff = [key for key, val in mine.items()
+                if val and key and not all(o.get(key) for o in others)]
+        tags.append(", ".join(diff))
+    return tags
+
+
+def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str = "") -> dict:
+    """Project the typed vision evidence into the ONE sub-model spec shape.
+
+    Every field is a straight carry of an evidence/config fact — the group
+    dialect is the contract, not a re-derivation: attention facts feed the
+    canonical ``attention_region`` (uncached — a tower never decodes), FFN
+    facts the canonical ``ffn_region``, ``norm_placement``/``residual_gate``
+    the one cell projector.  A gate caption names its activation ONLY when
+    the evidence recorded one (Gemma-3's ``tanh``); otherwise it stays the
+    generic "learned gate" — never an inherited spelling."""
+    heads = encoder.get("num_attention_heads")
+    hidden = encoder.get("hidden_size")
+    head_dim = (hidden // heads) if heads and hidden and hidden % heads == 0 else None
+    tags = tower_group_tags(variants)
+    groups = []
+    for i, variant in enumerate(variants):
+        gate = None
+        if variant.get("residual_gated"):
+            act = variant.get("gate_activation")
+            gate = f"{act} learned gate" if act else "learned gate"
+        groups.append({
+            "count": variant.get("repeat"),
+            "tag": tags[i],
+            "attention": {
+                "kind": ("linear" if variant.get("attention_kind") == "linear" else "mha"),
+                "num_heads": heads,
+                "head_dim": head_dim,
+                "hidden": hidden,
+                "rope": "rope" in str(variant.get("position_kind") or ""),
+                "cached": False,
+                "projection_mode": variant.get("projection_mode"),
+                "q_norm": variant.get("q_norm"),
+                "k_norm": variant.get("k_norm"),
+                "v_norm": variant.get("v_norm"),
+            },
+            "ffn": {
+                "kind": "dense",
+                "hidden": hidden,
+                "gated": variant.get("ffn_gated"),
+                "activation": encoder.get("activation"),
+                "intermediate_size": encoder.get("intermediate_size"),
+                "projection_mode": variant.get("ffn_projection_mode"),
+                "structure_status": "proven",
+            },
+            "norm": {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+                str(variant.get("norm_kind") or "").lower()),
+            "norm_placement": variant.get("norm_placement"),
+            "residual_gate": gate,
+            # Exact drill-binding provenance: the block class this group's
+            # facts were read from — the conformance oracle for its drills.
+            "source_owner": variant.get("block_class"),
+            "source_file": variant.get("source_file"),
+        })
+    return {
+        "component": component,
+        "altitude": "tower",
+        "layers": encoder.get("num_layers"),
+        "hidden": hidden,
+        "groups": groups,
+        "evidence": {"position": None, "ffn": None},
+        "sub_models": [],
+    }
+

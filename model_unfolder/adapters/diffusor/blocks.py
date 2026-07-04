@@ -819,15 +819,23 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     ]
 
 
-def _encoder_norm_card(prefix: str, norm: str) -> Block:
+def _encoder_norm_card(prefix: str, norm: str, placement: str = "pre") -> Block:
+    where = {
+        "pre": (f"{norm} normalizes each token's features before the sublayer "
+                "(pre-norm). Keeps activation scales stable so the network "
+                f"trains deeply. Both sublayers in every layer are {norm}-normalized."),
+        "double": (f"{norm} normalizes each sublayer's input AND re-normalizes its "
+                   "output before the residual add (sandwich placement). Keeps "
+                   "activation scales stable in both directions; all norms in the "
+                   f"layer are {norm}."),
+        "post": (f"{norm} normalizes after each sublayer's residual add "
+                 "(post-norm). Keeps activation scales stable so the network "
+                 f"trains deeply. Both sublayers in every layer are {norm}-normalized."),
+    }
     return {
         "id": f"{prefix}_op_norm",
         "title": norm,
-        "description": (
-            f"{norm} normalizes each token's features before the sublayer "
-            "(pre-norm). Keeps activation scales stable so the network trains "
-            f"deeply. Both sublayers in every layer are {norm}-normalized."
-        ),
+        "description": where.get(placement) or where["pre"],
     }
 
 

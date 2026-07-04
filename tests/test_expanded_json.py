@@ -482,9 +482,9 @@ def test_mllama_cross_attention_is_layer_variant_only():
     assert "cross_attention_states" in html
     assert "Projected image states" in html
     assert "Flatten spatial grid" in html
-    assert "Vision self-attention" in html
-    assert "vision_attn_scaled" in html
-    assert "vision_mlp_fc1" in html
+    assert 'data-id="vision_enc_g0_op_selfattn"' in html
+    assert "vision_enc_g0_attn_scaled_scores" in html
+    assert "vision_enc_g0_ffn_" in html
     assert "separate vision tower" in html
     assert "Vision context" not in html
 

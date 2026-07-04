@@ -198,7 +198,11 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         return Node(op.id, "linear", op.label or "Linear", static=static,
                     cache_ports=bool(op.meta.get("cached")))
     if op.kind == "activation":
-        label = op.label if op.label is not None else activation_label(op.fn or "silu")
+        # fn=None means the activation's IDENTITY is unproven (source-proven
+        # dense structure with an unnamed activation) — a bare "Activation"
+        # box is the honest label; defaulting to SiLU fabricated a fact.
+        label = op.label if op.label is not None else (
+            activation_label(op.fn) if op.fn else "Activation")
         return Node(op.id, "activation", label, static=static)
     if op.kind == "position":
         return Node(op.id, "embedding", op.label or "Position encoding", static=static)

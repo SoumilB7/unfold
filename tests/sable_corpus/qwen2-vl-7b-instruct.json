@@ -158,6 +158,23 @@
     "02f7afb2157dbc002163e20c1eec6cb7",
     "0722d68e8b7714f0ad5c5d7b9946ea36",
     "2c92800356c775ae2fb957d272c5ded4",
+    "4dda5c76b0ed456862579ed11f792711",
+    "5587f6c04c78a3bda4bec1e9937f1d36",
+    "765cf15f546a9349dfa4de85af879e64",
+    "86cb2fa423db6270e8a72babac4eda18",
+    "a9ee9abd46e65af2b59aa70d72e3a99b",
+    "b87789d90a5ef4f2300b571043c58d21",
+    "c7679bca24724d3fd277f8c5dee25ce4",
+    "d294b927141a6e9cc7d60a0edef39d56",
+    "ef485e6ad2cbd15238a27bfae758a9c3"
+  ],
+  "model": "Qwen2-VL-7B-Instruct",
+  "source": "local",
+  "superseded_hash_signature": [
+    "0119adc0a472b33e71e237cdd615e4bb",
+    "02f7afb2157dbc002163e20c1eec6cb7",
+    "0722d68e8b7714f0ad5c5d7b9946ea36",
+    "2c92800356c775ae2fb957d272c5ded4",
     "43637c4f3ca2ab6813ae9a9656e8040c",
     "4dda5c76b0ed456862579ed11f792711",
     "765cf15f546a9349dfa4de85af879e64",
@@ -168,8 +185,6 @@
     "d294b927141a6e9cc7d60a0edef39d56",
     "ef485e6ad2cbd15238a27bfae758a9c3"
   ],
-  "model": "Qwen2-VL-7B-Instruct",
-  "source": "local",
   "visual_evidence": {
     "gallery_dir": "galleries/qwen2-vl-7b-instruct",
     "manifest": true,

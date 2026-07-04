@@ -34,7 +34,6 @@ def vision_tower_evidence(
     from .conformance import (
         _component_block_classes,
         _component_source,
-        _direct_role_classes,
         _domain_block_classes,
     )
 
@@ -82,34 +81,11 @@ def vision_tower_evidence(
     variants: list[VisionLayerEvidence] = []
     for block in sorted(blocks):
         info = registry[block]
-        attn_classes = _direct_role_classes([block], registry, "attention", vocab)
-        ffn_classes = _direct_role_classes([block], registry, "ffn", vocab)
-        attn_name = sorted(attn_classes)[0] if attn_classes else ""
-        ffn_name = sorted(ffn_classes)[0] if ffn_classes else ""
-        attn = registry.get(attn_name)
-        ffn_ops = transitive_closure(ffn_name, registry, vocab)[0] if ffn_name else frozenset()
-        ffn_info = registry.get(ffn_name)
-        position_kind = "rope" if attn and _has_marker(attn.call_tokens, _ROPE_MARKERS) else "none"
-        norm_types = [class_name for class_name in info.field_types.values()
-                      if _role_of(class_name) == "norm"]
         base = VisionLayerEvidence(
             block_class=block,
             source_file=info.source_file,
             line=info.line,
-            norm_kind=_equivalent_norm_kind(norm_types),
-            norm_placement=_norm_placement(info),
-            ffn_gated="gate_mul" in ffn_ops,
-            residual_gated="gate_mul" in info.op_kinds,
-            attention_class=attn_name,
-            ffn_class=ffn_name,
-            projection_mode=_projection_mode(attn),
-            q_norm=_has_norm_field(attn, "q"),
-            k_norm=_has_norm_field(attn, "k"),
-            v_norm=_has_norm_field(attn, "v"),
-            post_rope_scale=_post_rope_scale(attn),
-            position_kind=position_kind,
-            attention_kind=_attention_kind(attn),
-            ffn_projection_mode=_ffn_projection_mode(ffn_info),
+            **layer_facts_from_block(block, registry, vocab),
         )
         instances = _configured_block_instances(owner, block, registry)
         if instances:
@@ -208,6 +184,64 @@ def _constructed_class(func: ast.AST) -> str:
         if isinstance(func.value, ast.Attribute):
             return func.value.attr
     return ""
+
+
+def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
+    """THE shared per-block typed-fact reader — the exact derivations the
+    vision variants have always used (dataflow-order norm placement, tri-state
+    projection modes, closure-proven FFN gating, gate activation only when the
+    block itself calls one), exported so every tower's evidence (audio,
+    refiners, any secondary stack) reads layer facts through ONE code path."""
+    from .conformance import _direct_role_classes
+
+    info = registry[block]
+    attn_classes = _direct_role_classes([block], registry, "attention", vocab)
+    ffn_classes = _direct_role_classes([block], registry, "ffn", vocab)
+    attn_name = sorted(attn_classes)[0] if attn_classes else ""
+    ffn_name = sorted(ffn_classes)[0] if ffn_classes else ""
+    attn = registry.get(attn_name)
+    ffn_ops = transitive_closure(ffn_name, registry, vocab)[0] if ffn_name else frozenset()
+    ffn_info = registry.get(ffn_name)
+    norm_types = [class_name for class_name in info.field_types.values()
+                  if _role_of(class_name) == "norm"]
+    # STANDARD-CELL signature: one attention + at most one FFN sublayer and no
+    # conv mixer INSIDE the block.  A conformer (macaron ff1/ff2 + LightConv)
+    # is NOT the standard [norm→attn→⊕; norm→ffn→⊕] cell — projecting it as
+    # one would be a structural lie; such towers keep their op-chain drawing.
+    ffn_role_fields = [cls for cls in info.field_types.values()
+                       if _role_of(cls) == "ffn"]
+    conv_role_fields = [cls for cls in info.field_types.values()
+                        if _role_of(cls) == "conv"]
+    standard_cell = len(ffn_role_fields) <= 1 and not conv_role_fields
+    if ffn_name:
+        ffn_gated = "gate_mul" in ffn_ops
+    else:
+        # Inline FFN (Whisper/OPT-style ``fc1 -> act -> fc2`` directly on the
+        # block): two+ linear-role fields prove a DENSE two-projection MLP —
+        # read from the constructor, never assumed; anything else stays unknown.
+        linear_fields = [f for f, cls in info.field_types.items()
+                         if _role_of(cls) == "linear"]
+        ffn_gated = False if len(linear_fields) >= 2 else None
+    return {
+        "norm_kind": _equivalent_norm_kind(norm_types),
+        "norm_placement": _norm_placement(info),
+        "ffn_gated": ffn_gated,
+        "residual_gated": "gate_mul" in info.op_kinds,
+        "gate_activation": ("tanh" if ("gate_mul" in info.op_kinds
+                                       and "tanh" in info.call_tokens) else None),
+        "attention_class": attn_name,
+        "ffn_class": ffn_name,
+        "projection_mode": _projection_mode(attn),
+        "q_norm": _has_norm_field(attn, "q"),
+        "k_norm": _has_norm_field(attn, "k"),
+        "v_norm": _has_norm_field(attn, "v"),
+        "post_rope_scale": _post_rope_scale(attn),
+        "position_kind": ("rope" if attn and _has_marker(attn.call_tokens, _ROPE_MARKERS)
+                          else "none"),
+        "attention_kind": _attention_kind(attn),
+        "ffn_projection_mode": _ffn_projection_mode(ffn_info),
+        "standard_cell": standard_cell,
+    }
 
 
 def _vision_owner(
@@ -537,6 +571,12 @@ def _norm_placement(info: CallableInfo) -> str:
     norm_indices = [i for i, role in enumerate(roles) if role == "norm"]
     attn_indices = [i for i, role in enumerate(roles) if role == "attention"]
     ffn_indices = [i for i, role in enumerate(roles) if role == "ffn"]
+    if not ffn_indices and attn_indices:
+        # Inline FFN (Whisper-style ``fc1 -> act -> fc2`` directly on the
+        # block): the FFN sublayer BEGINS at the first linear-role call after
+        # the attention — the same dataflow anchor, one level less nested.
+        ffn_indices = [i for i, role in enumerate(roles)
+                       if role == "linear" and i > attn_indices[0]][:1]
     if len(norm_indices) >= 4:
         return "double"
     if attn_indices and ffn_indices and all(
