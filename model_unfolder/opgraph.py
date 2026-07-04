@@ -173,9 +173,11 @@ def _fused_gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
                   template="fused_gated_mlp")
 
 
-#: Sana's GLUMBConv described as one honest leaf (its conv-gate internals differ
-#: enough from a Linear MLP that we name the structure in prose rather than fabricate
-#: Linear up/down boxes; resolved=True since this is KNOWN, not honest-unknown).
+#: Sana's GLUMBConv — the code-proven gated CONV Mix-FFN, drawn as its real op
+#: chain (1×1 expand ×2 → depthwise 3×3 → split value/gate → value·act(gate) →
+#: 1×1 project back).  Every op here is named by the class's own forward; the
+#: earlier single-opaque-leaf rendering hid a proven structure (and drew no
+#: input port at all).
 _GLUMBCONV_DESC = (
     "Sana's GLUMBConv — a GATED CONV Mix-FFN, not a Linear MLP: a 1×1 conv expands "
     "the width to 2× the inner channels, a depthwise 3×3 conv mixes locally, the "
@@ -185,11 +187,32 @@ _GLUMBCONV_DESC = (
 
 
 def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu") -> Region:
-    op = Op("block", "opaque", "Gated conv Mix-FFN",
-            in_features=hidden, out_features=hidden,
-            meta={"intermediate_size": inter, "desc": _GLUMBCONV_DESC})
-    return Region("ffn", "ffn", "Gated conv Mix-FFN", [op], [],
-                  template="conv_glu", source="opaque", resolved=True)
+    ops = [
+        Op("hidden", "input", out_features=hidden),
+        Op("conv_in", "conv", "Conv 1×1",
+           in_features=hidden, out_features=(2 * inter if inter else None),
+           meta={"desc": "Pointwise 1×1 convolution expanding the width to 2× the "
+                         "inner channels — value and gate lanes in one projection."}),
+        Op("dw_conv", "conv", "Depthwise Conv 3×3",
+           meta={"desc": "3×3 depthwise convolution mixing each channel locally "
+                         "across space — the spatial mixer inside the FFN."}),
+        Op("glu_split", "slice", "Split value / gate",
+           meta={"desc": "The doubled channels split in half: a value lane and a "
+                         "gate lane (the GLU pattern, conv-flavoured)."}),
+        Op("glu_act", "activation", fn=act),
+        Op("glu_mul", "elementwise", fn="mul"),
+        Op("conv_out", "conv", "Conv 1×1", in_features=inter, out_features=hidden,
+           meta={"desc": "Pointwise 1×1 convolution projecting back to the model "
+                         "width."}),
+    ]
+    edges = [
+        Edge("hidden", "conv_in"), Edge("conv_in", "dw_conv"),
+        Edge("dw_conv", "glu_split"),
+        Edge("glu_split", "glu_act"), Edge("glu_act", "glu_mul"),
+        Edge("glu_split", "glu_mul"), Edge("glu_mul", "conv_out"),
+    ]
+    return Region("ffn", "ffn", "Gated conv Mix-FFN", ops, edges,
+                  template="conv_glu", resolved=True)
 
 
 def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
@@ -328,21 +351,41 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
 
 
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
-                   *, scaled: bool = True) -> tuple[list[Op], list[Edge]]:
+                   *, scaled: bool = True,
+                   scale: float | None = None) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
 
     ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
     1/sqrt(d) into initialization and matmuls unscaled scores) — drawing the
     sqrt there would fabricate an op the forward() never performs.
+    ``scale`` is a config-DECLARED constant that REPLACES the default
+    1/sqrt(head_dim) (Granite's attention_multiplier, Gemma-2's
+    query_pre_attn_scalar^-0.5) — the drawn denominator must be the real one,
+    never sqrt(dim) when the code divides by something else.
     """
-    ops = [
-        Op("scaled_scores", "attention_core", fn="scaled_dot_product",
-           meta={"numerator": "Q K^T", "denominator": "sqrt(dim)",
-                 "formula": "QK^T/sqrt(dim)"} if scaled else
-           {"numerator": "Q K^T", "denominator": None, "formula": "QK^T",
+    if scale is not None:
+        inv = 1.0 / scale
+        denom = (f"{inv:,.0f}" if abs(inv - round(inv)) < 1e-6 else f"{inv:.4g}")
+        scores_meta = {
+            "numerator": "Q K^T", "denominator": denom,
+            "formula": f"QK^T/{denom}",
+            "desc": (f"Dot-product scores scaled by the config-declared constant "
+                     f"{scale:g} (= 1/{denom}) instead of the default "
+                     "1/sqrt(head_dim) — the forward pass multiplies QK^T by "
+                     "this declared value."),
+        }
+    elif scaled:
+        scores_meta = {"numerator": "Q K^T", "denominator": "sqrt(dim)",
+                       "formula": "QK^T/sqrt(dim)"}
+    else:
+        scores_meta = {
+            "numerator": "Q K^T", "denominator": None, "formula": "QK^T",
             "desc": "Raw dot-product attention scores QK^T — this family folds "
                     "the 1/sqrt(d) scaling into its weight initialization, so "
-                    "the forward pass adds no explicit scale."}),
+                    "the forward pass adds no explicit scale."}
+    ops = [
+        Op("scaled_scores", "attention_core", fn="scaled_dot_product",
+           meta=scores_meta),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
         # Merging per-head outputs back to model dim is a single-stream RESHAPE,
@@ -415,6 +458,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     core_ops, core_edges = _sdpa_core_ops(
         heads, head_dim, q_w, hidden,
         scaled=attn.get("scores_scaled") is not False,
+        scale=attn.get("scores_scale"),
     )
     ops += core_ops
     if not fused_qkv:

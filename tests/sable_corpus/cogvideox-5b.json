@@ -1,7 +1,7 @@
 {
   "checks": {
     "click_coupling": true,
-    "config_field_audit": false,
+    "config_field_audit": true,
     "dangling_connectors": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
@@ -158,6 +158,24 @@
   },
   "hash_signature": [
     "034c793ae3e5acd9fce6c0bd159ecd6a",
+    "053fcc78f071a8789407e54b117644d2",
+    "10d76b125cb25efa2bbbfcebf99525b9",
+    "1efec7c4e7629fbc685ea25b9413b797",
+    "68a15e11ae644cd2c62c97d9bb926534",
+    "6eabcdc83515c7b99964efc1de4da6d1",
+    "79014d44ce1efb8b5e5885c9236ab40e",
+    "9b87e79060d680606c06b299ed03b566",
+    "b08f4423fef372283566c0aea18020cf",
+    "b52492e9f2340abd8bb03a36c8116a80",
+    "b7eafb19db8b53e0f5790078c3d1f62a",
+    "c67c832fdc8ac2f77d08f7811fe6a56e",
+    "cdd40226ad21413bbe1904a814c8750b",
+    "ced2f58961b3e6ed5100fa28a4d2167d"
+  ],
+  "model": "CogVideoX-5b",
+  "source": "local",
+  "superseded_hash_signature": [
+    "034c793ae3e5acd9fce6c0bd159ecd6a",
     "05345b9d770885b0d1901419373a2c6e",
     "053fcc78f071a8789407e54b117644d2",
     "10d76b125cb25efa2bbbfcebf99525b9",
@@ -170,24 +188,6 @@
     "c67c832fdc8ac2f77d08f7811fe6a56e",
     "cdd40226ad21413bbe1904a814c8750b",
     "ced2f58961b3e6ed5100fa28a4d2167d",
-    "df5709939ae9ea83ad93306dea871bb8"
-  ],
-  "model": "CogVideoX-5b",
-  "source": "local",
-  "superseded_hash_signature": [
-    "034c793ae3e5acd9fce6c0bd159ecd6a",
-    "05345b9d770885b0d1901419373a2c6e",
-    "053fcc78f071a8789407e54b117644d2",
-    "10d76b125cb25efa2bbbfcebf99525b9",
-    "1efec7c4e7629fbc685ea25b9413b797",
-    "68a15e11ae644cd2c62c97d9bb926534",
-    "79014d44ce1efb8b5e5885c9236ab40e",
-    "b52492e9f2340abd8bb03a36c8116a80",
-    "b7eafb19db8b53e0f5790078c3d1f62a",
-    "c67c832fdc8ac2f77d08f7811fe6a56e",
-    "cdd40226ad21413bbe1904a814c8750b",
-    "ced2f58961b3e6ed5100fa28a4d2167d",
-    "d8231cdbb4fc341af6833070f3dd8d49",
     "df5709939ae9ea83ad93306dea871bb8"
   ],
   "visual_evidence": {

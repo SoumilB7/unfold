@@ -60,6 +60,8 @@
         "attn_logit_softcapping": 50.0,
         "bos_token_id": 2,
         "cache_implementation": "hybrid",
+        "chunk_size_feed_forward": 0,
+        "dtype": "bfloat16",
         "eos_token_id": [
           1,
           107
@@ -69,20 +71,65 @@
         "hidden_act": "gelu_pytorch_tanh",
         "hidden_activation": "gelu_pytorch_tanh",
         "hidden_size": 2304,
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
         "initializer_range": 0.02,
         "intermediate_size": 9216,
+        "is_encoder_decoder": false,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_types": [
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention",
+          "sliding_attention",
+          "full_attention"
+        ],
         "max_position_embeddings": 8192,
         "model_type": "gemma2",
         "num_attention_heads": 8,
         "num_hidden_layers": 26,
         "num_key_value_heads": 4,
+        "output_attentions": false,
+        "output_hidden_states": false,
         "pad_token_id": 0,
+        "problem_type": null,
         "query_pre_attn_scalar": 256,
+        "return_dict": true,
         "rms_norm_eps": 1e-06,
-        "rope_theta": 10000.0,
+        "rope_parameters": {
+          "rope_theta": 10000.0,
+          "rope_type": "default"
+        },
         "sliding_window": 4096,
-        "torch_dtype": "bfloat16",
-        "transformers_version": "4.46.0",
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
+        "use_bidirectional_attention": null,
         "use_cache": true,
         "vocab_size": 256000
       }
@@ -215,6 +262,23 @@
   },
   "hash_signature": [
     "2c4f2ec85716cffe17a4bd65683756c3",
+    "40a0c3994e214ec659950b03156af428",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "7aae01a2ba3277f8635e31fa6053b591",
+    "7b8543951da5d030f7fcbd979cd40049",
+    "7fa8ba3824ca9c1245b42b4764f65232",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "993c94306cef20344b85059d6d4127ae",
+    "b268ddb98d302b36f13866c181a485eb",
+    "c3b47dc7cf4b0422fe0b553c1dbe768b",
+    "f3479e573804486bdff98b7e00b91a9e",
+    "f86831e8fc8b40b82165edc86f0e5dc6"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
+    "2c4f2ec85716cffe17a4bd65683756c3",
     "44214a47b62afb95cf44b9c9a99c6eae",
     "453ff2334cd3f6708a3667f93d99ffd8",
     "6f3ff3d93134f0e32a666f32805babb4",
@@ -227,25 +291,9 @@
     "ecf21c98fc66bf5486863c305bc5c80b",
     "f3479e573804486bdff98b7e00b91a9e"
   ],
-  "model": "Sana_1600M_1024px_diffusers",
-  "source": "local",
-  "superseded_hash_signature": [
-    "2c4f2ec85716cffe17a4bd65683756c3",
-    "44214a47b62afb95cf44b9c9a99c6eae",
-    "453ff2334cd3f6708a3667f93d99ffd8",
-    "6417ca6cdf18114b520401dfa256692a",
-    "6f3ff3d93134f0e32a666f32805babb4",
-    "7aae01a2ba3277f8635e31fa6053b591",
-    "7b8543951da5d030f7fcbd979cd40049",
-    "7fa8ba3824ca9c1245b42b4764f65232",
-    "8a360c4f1e446063bd592a6f7c329e78",
-    "c3b47dc7cf4b0422fe0b553c1dbe768b",
-    "ecf21c98fc66bf5486863c305bc5c80b",
-    "f3479e573804486bdff98b7e00b91a9e"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/sana-1600m-1024px-diffusers",
     "manifest": true,
-    "png_count": 12
+    "png_count": 13
   }
 }

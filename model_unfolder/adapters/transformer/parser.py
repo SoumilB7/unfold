@@ -72,6 +72,25 @@ _FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
 _COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
 _HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
 
+def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
+    """The EFFECTIVE config-declared QK^T scale, or None when it equals the
+    default 1/sqrt(head_dim) (drawing sqrt(dim) is then exactly true).
+
+    Two declaration dialects, each with its own semantics:
+    * ``attention_multiplier`` (Granite family) — the scale directly;
+    * ``query_pre_attn_scalar`` (Gemma-2/3) — scale = value ** -0.5.
+    """
+    scale = None
+    if multiplier is not None:
+        scale = float(multiplier)
+    elif query_pre_attn_scalar:
+        scale = float(query_pre_attn_scalar) ** -0.5
+    if scale is None or not head_dim:
+        return None
+    default = float(head_dim) ** -0.5
+    return None if abs(scale - default) <= 1e-6 * default else scale
+
+
 def _resolve(cfg: Any, canonical: str, default=None):
     """Try every known alias for a field, return the first hit."""
     aliases = _ALIASES.get(canonical, [canonical])
@@ -378,6 +397,19 @@ def parse(cfg: Any, context=None) -> ModelIR:
     compress_ratios = _resolve(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
+    # Granite-style declared SCALE family: a constant multiplier on each
+    # sublayer's residual contribution (drawn as a × connector with its
+    # constant operand), plus embedding/attention/logits scales (card facts).
+    # An undrawn SPEECH stack (Qwen-Omni talker + token2wav) is a stated
+    # omission, never a silent one.
+    if _g(cfg, "talker_config") is not None:
+        warnings.append("Speech-generation stack (talker + token2wav vocoder) not "
+                        "drawn — the diagram shows the thinker (LM).")
+    residual_multiplier = _resolve(text_cfg, "residual_multiplier")
+    _resolve(text_cfg, "embedding_multiplier")
+    attention_multiplier = _resolve(text_cfg, "attention_multiplier")
+    query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
+    _resolve(text_cfg, "logits_scaling")
     norm_kind    = _norm_kind(text_cfg, get("norm_type"), context)
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
@@ -426,8 +458,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     qk_nope_head_dim = _g(text_cfg, "qk_nope_head_dim")
     qk_rope_head_dim = _g(text_cfg, "qk_rope_head_dim")
     v_head_dim_cfg   = _g(text_cfg, "v_head_dim")
-    has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
-    if has_multi_query_flag:
+    has_multi_query_flag = bool(_g(text_cfg, "multi_query")
+                                or _g(text_cfg, "multi_query_attention"))  # chatglm spelling
+    # The flag means "KV heads are shared", NOT "exactly one": ChatGLM declares
+    # multi_query_attention: true AND multi_query_group_num: 2 (a 2-group GQA).
+    # Only when NO explicit group count is declared does the flag default the
+    # KV count to 1 (Falcon-7B / GPT-BigCode true MQA).
+    if has_multi_query_flag and not get("num_key_value_heads"):
         num_kv_heads = 1
     # Hybrid linear-recurrent token mixers (for example a gated delta network)
     # carry geometry separate from the full-attention head fields.
@@ -470,10 +507,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
-    use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
+    use_attention_bias = bool(_resolve(text_cfg, "attention_bias")
+                              or _g(attn_cfg, "attention_bias"))
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").
-    _mlp_bias = _g(text_cfg, "mlp_bias")
+    _mlp_bias = _resolve(text_cfg, "mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
     # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
     # bidirectional attention — a MASK fact, consumed here so a positive value
@@ -614,6 +652,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             mrope_section=mrope_section,
             conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
             output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
+            scores_scale=_declared_scores_scale(
+                attention_multiplier, query_pre_attn_scalar,
+                layer_head_dim or (hidden_size // num_heads
+                                   if hidden_size and num_heads else None)),
             projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
                                              and not is_gated_delta) else None),
             variant=(
@@ -680,6 +722,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 norm_kind=norm_kind,
                 norm_placement=norm_placement,
                 extra_blocks=extra_blocks,
+                residual_scale=residual_multiplier,
             ))
 
     for lt in sorted(unknown_layer_types):
@@ -1134,7 +1177,12 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
     # when a higher channel (math) decides the KIND before the spelling hint.
     rms_eps = _g(cfg, "rms_norm_eps")
     ln_eps = _g(cfg, "layer_norm_epsilon")
-    ln_eps2 = _g(cfg, "layer_norm_eps")
+    ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
+    declared_rms = _g(cfg, "rmsnorm")            # chatglm boolean declaration
+    if declared_rms is True:
+        return "rmsnorm"
+    if declared_rms is False:
+        return "layernorm"
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
         if "rms" in nt:

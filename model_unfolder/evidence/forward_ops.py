@@ -92,6 +92,16 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
     # (PLE's gate_mul under ``if self.hidden_size_per_layer_input:``) is not
     # required of a diagram the parser correctly drew without it.
     occurrences = _forward_op_occurrences(forward, field_types)
+    # ``self.F = fn`` where fn is an init-LOCAL def (ChatGLM's swiglu bound to
+    # self.activation_func): the function body IS part of this class's forward
+    # behavior — fold its ops in, exactly like the transitive follower does.
+    for local_fn in _init_local_fn_bindings(init, forward):
+        occurrences += _forward_op_occurrences(local_fn, field_types)
+        for child in ast.walk(local_fn):
+            if isinstance(child, ast.Call):
+                name = _call_name(child.func)
+                if name:
+                    sig_tokens.add(name)
     op_kinds = {kind for kind, _gates in occurrences}
     unconditional = {kind for kind, gates in occurrences if not gates}
     gated_op_kinds: dict[str, list[frozenset[str]]] = {}
@@ -115,6 +125,34 @@ def _scan_class_forward(node: ast.ClassDef, source_file: str) -> ForwardOps | No
         init_class_refs=_init_class_refs(init),
         gated_op_kinds={k: tuple(v) for k, v in gated_op_kinds.items()},
     )
+
+
+def _init_local_fn_bindings(init: ast.FunctionDef | None,
+                            forward: ast.FunctionDef) -> list[ast.FunctionDef]:
+    """Init-local function defs bound to a self attribute the forward CALLS
+    (``def swiglu...; self.activation_func = swiglu`` -> ``self.activation_func(x)``)."""
+    if init is None:
+        return []
+    local_fns = {st.name: st for st in ast.walk(init)
+                 if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef))
+                 and st is not init}
+    if not local_fns:
+        return []
+    bound: dict[str, str] = {}
+    for st in ast.walk(init):
+        if (isinstance(st, ast.Assign) and len(st.targets) == 1
+                and isinstance(st.targets[0], ast.Attribute)
+                and isinstance(st.targets[0].value, ast.Name)
+                and st.targets[0].value.id == "self"
+                and isinstance(st.value, ast.Name)
+                and st.value.id in local_fns):
+            bound[st.targets[0].attr] = st.value.id
+    if not bound:
+        return []
+    called = {child.func.attr for child in ast.walk(forward)
+              if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
+              and isinstance(child.func.value, ast.Name) and child.func.value.id == "self"}
+    return [local_fns[fn] for fld, fn in bound.items() if fld in called]
 
 
 def _forward_op_occurrences(forward: ast.FunctionDef, field_types: dict[str, str]):

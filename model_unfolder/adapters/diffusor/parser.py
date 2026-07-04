@@ -1258,7 +1258,9 @@ def _cross_dit_variant(rope_note: str) -> dict:
     # attention) is labelled plainly — not "+ cross-attn".
     return {
         "short": "Self-Attn",
-        "tag": "self-attention",
+        # the strip legend prints "short · tag" — a tag that restates the short
+        # ("Self-Attn · self-attention") says nothing; name the VARIANT instead
+        "tag": "cross-attn DiT",
         "label": ["Self-Attention", "(image tokens)"],
         "title": "Self-attention — cross-attention DiT",
         "desc": (
@@ -1696,6 +1698,31 @@ def _uniquify_encoder_names(specs: list[dict]) -> None:
         s["name"] = f"{name} ({_fmt(hid)}-d)" if hid else f"{name} {nth[name]}"
 
 
+def _hydrate_encoder_config_facts(c: dict) -> dict:
+    """Fill config-class DEFAULTS invisible in a raw component config.json.
+
+    Gemma-2's sliding/global alternation lives in ``sliding_window_pattern=2``
+    — a default of ``configuration_gemma2.py`` that is NOT serialized, so a raw
+    fetched dict reads as all-sliding and the encoder tower flattens a real
+    heterogeneous stack.  The installed config class is code evidence (the same
+    rail by-id loading uses); raw keys always win over defaults.  Unknown
+    model_types keep the raw dict untouched."""
+    mt = c.get("model_type")
+    if not isinstance(c, dict) or not mt:
+        return c
+    try:
+        from transformers import AutoConfig
+        hydrated = AutoConfig.for_model(
+            mt, **{k: v for k, v in c.items()
+                   if not k.startswith("_") and k != "model_type"}).to_dict()
+    except Exception:
+        return c
+    for k, v in c.items():          # loader stamps / private context keys survive
+        if k.startswith("_"):
+            hydrated[k] = v
+    return hydrated
+
+
 def _normalize_encoder_config(c: dict, context=None) -> dict:
     """Read an encoder's shape off the ONE universal transformer adapter.
 
@@ -1713,6 +1740,7 @@ def _normalize_encoder_config(c: dict, context=None) -> dict:
     )
     from ..transformer.parser import parse as _parse_transformer
 
+    c = _hydrate_encoder_config_facts(c)
     try:
         if context is None:
             context = ParseContext.build(c, source="local")

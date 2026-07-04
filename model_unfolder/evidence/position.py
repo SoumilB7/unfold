@@ -73,6 +73,7 @@ def decoder_positional_evidence(
     attention_classes = _configured_attention_classes(
         blocks, registry, target, attention_classes
     )
+    attention_classes = _outermost_candidates(attention_classes, registry)
 
     model_stage = _model_stage_classes(architecture, blocks, registry)
     absolute = _absolute_embedding_mechanism(model_stage, registry)
@@ -195,6 +196,27 @@ def _model_stage_classes(
     return out
 
 
+def _outermost_candidates(
+    classes: set[str], registry: dict[str, CallableInfo]
+) -> set[str]:
+    """Drop candidates that are constructed as FIELDS of fellow candidates.
+
+    An inner attention kernel (ChatGLM's ``SelfAttention.core_attention =
+    CoreAttention``) is a sub-op of its owner, not an alternative mechanism —
+    keeping both makes the owner's RoPE read as a "disagreement" and the
+    positional fact collapse to ambiguous."""
+    nested: set[str] = set()
+    for name in classes:
+        info = registry.get(name)
+        if info is None:
+            continue
+        for cls in info.field_types.values():
+            if cls in classes and cls != name:
+                nested.add(cls)
+    remaining = classes - nested
+    return remaining or classes
+
+
 def _configured_attention_classes(
     blocks: list[str],
     registry: dict[str, CallableInfo],
@@ -213,7 +235,15 @@ def _configured_attention_classes(
                 continue
             value = mapping.get(str(requested))
             if value in registry:
-                selected.add(value)
+                # Layer-level dispatch (Llama: DecoderLayer.self_attn =
+                # ATTENTION_CLASSES[impl]) selects the configured attention
+                # class.  But when the dispatch lives INSIDE an attention-role
+                # class (ChatGLM: SelfAttention.core_attention =
+                # CORE_ATTENTION_CLASSES[impl]), the OWNER is the candidate —
+                # it performs the outer ops (RoPE) and its transitive closure
+                # already includes the configured kernel.  Selecting the inner
+                # kernel alone lost the rope application.
+                selected.add(block if block in fallback else value)
     return selected or fallback
 
 

@@ -85,6 +85,28 @@
   },
   "hash_signature": [
     "0751c0064be790891edf52f8bed807bb",
+    "1fed3d769e1f085bd217c7b68be0060c",
+    "43606bad901d2a12e1fbbacdfe62a3b0",
+    "48125ea1e7d6a56703533d06cb377d75",
+    "52c9cf92642b382085cff8f09bbb3704",
+    "565270f4d8543fb166a76073d87e00cc",
+    "6fe1482f7559ed0de0bdd32182140ce3",
+    "9b87e79060d680606c06b299ed03b566",
+    "a90de20e846dafb09ac1ab7b744f0556",
+    "b354d4cb12016360e1a9612e0000ac6e",
+    "ba0a8422185c20fb776481aa67bfa522",
+    "badaa1497d2255d8845e9ce6ea4314aa",
+    "c9190e7c6e47418f8f6b3283d2cd7bdf",
+    "ca5a7a3c7d12892f3d7d48a382c9e3ce",
+    "cab11650142d0a456aca749072e2d76c",
+    "d60af43a1ffcb96c22cc14c154615747",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
+  ],
+  "model": "FluxTransformer2DModel",
+  "source": "local",
+  "superseded_hash_signature": [
+    "0751c0064be790891edf52f8bed807bb",
     "161669abbe98a0e5446e0f9c701f23ec",
     "1fed3d769e1f085bd217c7b68be0060c",
     "43606bad901d2a12e1fbbacdfe62a3b0",
@@ -103,8 +125,6 @@
     "f3b14960315185f1921ac056d77d57be",
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
-  "model": "FluxTransformer2DModel",
-  "source": "local",
   "visual_evidence": {
     "gallery_dir": "galleries/fluxtransformer2dmodel",
     "manifest": true,

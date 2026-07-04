@@ -299,6 +299,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                 cx, top + block_h / 2, sym=layout.get("sym", "+"),
                 clickable=clickable,
             )
+            # A ×-by-labelled-CONSTANT draws its operand beside the glyph
+            # (Granite's residual_multiplier) — a bare × reads "× what?".
+            if block.get("sub"):
+                parts.append(_svg_text(
+                    geom["right"] + 10, geom["cy"], str(block["sub"]),
+                    {"dominant-baseline": "central", "fill": C["muted"],
+                     "font-family": FONT_MONO, "font-size": 12},
+                ))
         block_pos[block["id"]] = geom
         y_cursor = top - _BLOCK_GAP
 

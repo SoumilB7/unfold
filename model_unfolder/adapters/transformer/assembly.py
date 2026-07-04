@@ -22,10 +22,12 @@ def decoder_layer(
     extra_blocks: Iterable[dict] | None = None,
     norm_kind: str = "rmsnorm",
     norm_placement: str = "pre",
+    residual_scale=None,
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
     blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
-                                  norm_placement=norm_placement)
+                                  norm_placement=norm_placement,
+                                  residual_scale=residual_scale)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(

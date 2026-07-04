@@ -574,7 +574,7 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
         })
         has_mid_attention = bool(vae.get("mid_block_add_attention"))
         mid_ops = [
-            {"kind": "opaque", "label": "ResNet", "meta": {
+            {"kind": "opaque", "label": "ResNet", "in": channels[-1], "meta": {
                 "class_name": "ResNet", "desc": "First residual cell in the VAE decoder mid block."}},
             *([{"kind": "attention_core", "label": "Attention", "fn": "spatial attention",
                 "meta": {"desc": "Spatial self-attention in the decoder bottleneck."}}]
@@ -599,7 +599,10 @@ def _vae_decoder_children(vae: dict | None) -> list[Block]:
         })
     for idx, c in enumerate(reversed(channels), start=1):
         block_no = len(channels) - idx + 1
-        upsamples = idx > 1
+        # diffusers' Decoder: every up block upsamples EXCEPT the final one
+        # (add_upsample = not is_final_block).  idx counts execution order
+        # (1 = deepest), so the last-executed block (idx == n) has none.
+        upsamples = idx < len(channels)
         stage_type = up_types[idx - 1] if idx - 1 < len(up_types) else None
         card = {
             "id": f"vae_decoder_block_{block_no}",

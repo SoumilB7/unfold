@@ -127,11 +127,18 @@ def parse_unet(cfg: Any) -> dict:
     cad = _g(cfg, "cross_attention_dim")
     if isinstance(cad, (list, tuple)):
         cad = cad[0] if cad else None
+    # Declared encoder-width bridge: when encoder_hid_dim is set, the U-net
+    # projects the encoder's states to cross_attention_dim BEFORE any stage
+    # reads them (diffusers builds encoder_hid_proj; a bare encoder_hid_dim
+    # defaults the type to "text_proj" = one nn.Linear — same rule as the code).
+    ehd = _g(cfg, "encoder_hid_dim")
+    ehdt = _g(cfg, "encoder_hid_dim_type") or ("text_proj" if ehd else None)
     return {
         "in_channels": _g(cfg, "in_channels"),
         "out_channels": _g(cfg, "out_channels"),
         "block_out_channels": boc,
         "cross_attention_dim": cad,
+        "encoder_hid": ({"dim": ehd, "type": str(ehdt)} if ehd else None),
         "down": down, "mid": mid, "up": up,
         "downscale": 2 ** (n - 1) if n else None,
         "addition_embed_type": _g(cfg, "addition_embed_type"),
@@ -251,8 +258,11 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
     (the stage id) so a stage's heads/width survive the per-depth card dedup; the
     canonical SDPA op cards (q_proj …) stay shared and source/dim-neutral."""
     nh, hd, ch = st.get("num_heads"), st.get("head_dim"), st.get("channels")
+    # cached=False: spatial diffusion attention is bidirectional and runs per
+    # step — there is no autoregressive KV cache, so no cache ports.
     self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                              head_dim=hd, mask="full", no_rope=True)
+                              head_dim=hd, mask="full", no_rope=True,
+                              cached=False)
     # Cross-attention pulls K/V from the ENCODED TEXT, not the latent — give it a
     # real cross spec so its drilled view shows the text states entering (distinct
     # from self-attention), instead of an identical self-attention diagram.
@@ -467,6 +477,10 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
         widths = [e["hidden"] for e in encoders if e.get("hidden")]
         if len(widths) >= 2 and sum(widths) == cad:
             sum_note = " (" + " + ".join(f"{w:,}" for w in widths) + f" = {cad:,})"
+        ehid = unet.get("encoder_hid") or None
+        proj_note = (
+            f", projected to that width from the encoder's "
+            f"{ehid['dim']:,}-d features first" if ehid else "")
         card = {
             "id": "unet_text_cond",
             "title": "Text conditioning",
@@ -476,7 +490,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 f"read the same {cad}-d text states"
                 + (f", the {n_enc} text encoders' token features concatenated along "
                    f"the feature axis{sum_note}" if n_enc >= 2
-                   else " (in SDXL, the two CLIP encoders' features concatenated)")
+                   else (proj_note or
+                         " (in SDXL, the two CLIP encoders' features concatenated)"))
                 + ". The latent flows through the U vertically; this conditioning "
                 "enters each cross-attention stage from the side. Click to see how "
                 "the encoders combine. Declared by cross_attention_dim + the "
@@ -486,9 +501,31 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
         if encoders:
             card["view"] = "encoded_text_concat"
             card["detail"] = {"encoders": encoders, "cross_attention_dim": cad}
+            if ehid:
+                card["detail"]["projection"] = {**ehid, "out": cad}
+        children: list[dict] = []
+        if ehid and encoders:
+            # the clickable projection box in the concat view drills into this
+            is_linear = ehid["type"] == "text_proj"
+            children.append({
+                "id": "text_proj_op",
+                "title": "Text projection" if is_linear else "Encoder projection",
+                "description": (
+                    (f"A learned Linear maps the encoder's {ehid['dim']:,}-d token "
+                     f"features to the {cad:,}-d cross-attention width before any "
+                     "stage reads them — the encoder and the U-net were built at "
+                     "different widths, and this single matrix is the bridge"
+                     if is_linear else
+                     f"A code-defined projection ({ehid['type']}) maps the "
+                     f"encoder's {ehid['dim']:,}-d features to the {cad:,}-d "
+                     "cross-attention width before any stage reads them")
+                    + ". Applied once to the encoded prompt, not per stage. "
+                    "Declared by encoder_hid_dim + encoder_hid_dim_type."),
+                "facts": [f"{ehid['dim']:,} → {cad:,}"],
+            })
         if len(encoders) >= 2:
             # the clickable ‖ in the concat view drills into this card
-            card["children"] = [{
+            children.append({
                 "id": "text_concat_op",
                 "title": "Concatenate (feature axis)",
                 "description": (
@@ -503,7 +540,9 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                     "(torch.cat over the feature axis) as the U-net's skip "
                     "connections — which is why both use the ‖ connector, not ⊕."),
                 "facts": [f"→ {cad:,}-d K/V"],
-            }]
+            })
+        if children:
+            card["children"] = children
         cards.append(card)
     cards.append({
         "id": "unet_conv_out",

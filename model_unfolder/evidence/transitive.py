@@ -235,6 +235,23 @@ def _scan_class(node: ast.ClassDef, source_file: str,
     # often lives in ``_attn``/``_shape``. A ``self.X(...)`` whose X is another
     # method is FOLLOWED (folded); whose X is a sub-MODULE field is kept for the
     # cross-class transitive walk. Cycle-guarded by method name.
+    # ``self.F = fn`` bindings from __init__: the attribute holds a FUNCTION,
+    # not a module (ChatGLM: ``def swiglu(x): ...; self.activation_func =
+    # swiglu``).  A nested def is folded into this class's own scan; a
+    # module-level fn becomes a var binding the closure expands.
+    init_local_fns: dict[str, ast.FunctionDef] = {}
+    field_fn_assigns: dict[str, str] = {}
+    for body in init_bodies:
+        for st in ast.walk(body):
+            if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef)) and st is not body:
+                init_local_fns.setdefault(st.name, st)
+            if (isinstance(st, ast.Assign) and len(st.targets) == 1
+                    and isinstance(st.targets[0], ast.Attribute)
+                    and isinstance(st.targets[0].value, ast.Name)
+                    and st.targets[0].value.id == "self"
+                    and isinstance(st.value, ast.Name)):
+                field_fn_assigns.setdefault(st.targets[0].attr, st.value.id)
+
     ops: set[str] = set()
     tokens: set[str] = set()
     self_calls: set[str] = set()
@@ -253,8 +270,13 @@ def _scan_class(node: ast.ClassDef, source_file: str,
         iter_calls |= m_iter
         var_fns.update(m_vf)
         for fld in m_self:
+            bound = field_fn_assigns.get(fld)
             if fld in methods and fld not in seen_methods:
                 stack.append(methods[fld])       # self-method helper -> fold it in
+            elif bound and bound in init_local_fns:
+                stack.append(init_local_fns[bound])  # init-local fn bound to self.F
+            elif bound:
+                var_fns.setdefault(fld, bound)   # module-level fn -> closure expands
             elif fld not in methods:
                 self_calls.add(fld)              # self-module field -> cross-class walk
 

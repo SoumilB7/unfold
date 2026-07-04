@@ -15,6 +15,8 @@ hidden_act: [hidden_act, activation_function, hidden_activation, act_fn, activat
 vocab_size: [vocab_size, n_vocab, padded_vocab_size]
 max_position_embeddings: [max_position_embeddings, max_seq_len, n_positions, context_length, max_seq_length, seq_length, max_sequence_length]
 sliding_window: [sliding_window, attention_window, window_size]
+attention_bias: [attention_bias, add_qkv_bias]                                   # add_qkv_bias: chatglm spelling
+mlp_bias: [mlp_bias, add_bias_linear]                                            # add_bias_linear: chatglm spelling
 num_experts: [num_local_experts, num_experts, n_routed_experts, n_experts, moe_num_experts]
 num_experts_per_tok: [num_experts_per_tok, top_k_experts, top_k, num_selected_experts, num_experts_per_token, moe_top_k, experts_per_token]
 num_shared_experts: [num_shared_experts, n_shared_experts]
@@ -24,3 +26,10 @@ tie_word_embeddings: [tie_word_embeddings, tie_embeddings, tie_word_embedding_we
 norm_type: [norm_type]
 mlp_ratio: [mlp_ratio]
 compress_ratios: [compress_ratios, compress_rates]
+
+# Granite declared-scale family (constant multipliers; residual one is DRAWN
+# as a × connector, the rest are card facts).
+residual_multiplier: [residual_multiplier]
+embedding_multiplier: [embedding_multiplier]
+attention_multiplier: [attention_multiplier]
+logits_scaling: [logits_scaling, logit_scale]

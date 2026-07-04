@@ -29,6 +29,8 @@ timestep:
   - {field: time_embedding_act_fn, label: "embedding activation"}
   - {field: timestep_post_act, label: "post-activation"}
   - {field: time_cond_proj_dim, label: "conditioning projection dim"}
+  - {field: condition_dim, label: "condition embed dim"}                         # CogView4
+  - {field: guidance_embeds_scale, label: "guidance embed scale"}                # Sana-Sprint
 
 denoiser:
   - {field: eps, label: "norm ε"}
@@ -66,6 +68,8 @@ denoiser:
   - {field: center_input_sample, label: "centered input", noop: false}
   - {field: class_embeddings_concat, label: "class embeddings concatenated", noop: false}
   - {field: addition_embed_type_num_heads, label: "addition-embed heads"}
+  - {field: encoder_hid_dim, label: "text projection width"}                     # Kolors: ChatGLM features projected before cross-attn
+  - {field: encoder_hid_dim_type, label: "text projection", noop: text_proj}
 
 latent:
   - {field: sample_size, label: "sample size"}

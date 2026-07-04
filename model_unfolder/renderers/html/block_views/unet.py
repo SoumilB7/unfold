@@ -331,10 +331,14 @@ def build_encoded_text_concat_view(ir: dict, info: dict, mount_id: str, block: d
     two CLIP penultimate hidden states along the feature axis (768 + 1,280 =
     2,048) — the single tensor the U-net cross-attends.  Drawn as N encoder boxes
     feeding one ``‖`` concat connector (the SAME op as the U-net skips) → K/V.  A
-    single-encoder model (SD1.5) draws a straight pass-through (no concat)."""
+    single-encoder model (SD1.5) draws a straight pass-through (no concat).  A
+    declared ``encoder_hid_dim`` bridge (Kolors: ChatGLM 4,096-d → 2,048-d)
+    draws its projection box between the lane(s) and the K/V — a width change
+    is an OP, never a bare arrow."""
     d = block.get("detail") or {}
     encoders = d.get("encoders") or []
     cad = d.get("cross_attention_dim")
+    proj = d.get("projection") if isinstance(d.get("projection"), dict) else None
     arrow_id, shadow_id = _ids(mount_id, "txtconcat")
     parts: list[str] = []
     regions: list[dict] = []
@@ -342,6 +346,12 @@ def build_encoded_text_concat_view(ir: dict, info: dict, mount_id: str, block: d
     bw, bh, gap = 168.0, 58.0, 52.0
     n = max(len(encoders), 1)
     y_enc, y_concat, y_out = 196.0, 96.0, 36.0
+    if proj:                       # projection row: everything below shifts down
+        y_proj = 100.0
+        # A lone encoder tucks in under the projection; a concat lane keeps the
+        # full extra row (‖ sits where the projection's feed arrives).
+        y_enc += 96.0 if len(encoders) >= 2 else 26.0
+        y_concat += 96.0
     total = n * bw + (n - 1) * gap
     x0 = -total / 2 + bw / 2
 
@@ -356,6 +366,11 @@ def build_encoded_text_concat_view(ir: dict, info: dict, mount_id: str, block: d
         enc_g.append(g)
         regions.append(g)
 
+    # Whatever the lane(s) resolve to feeds either the projection (when the
+    # config declares one) or the K/V directly.  _box is TOP-anchored, so the
+    # box spans y_proj..y_proj+44; +10 keeps the arrowhead clear of its bottom
+    # edge AND the clickable highlight ring.
+    y_next = (y_proj + 44.0 + 10.0) if proj else y_out
     if len(encoders) >= 2:
         # the ‖ concat connector is clickable — opens a card explaining the op
         _concat_node(parts, 0.0, y_concat, node_id="text_concat_op")
@@ -368,9 +383,18 @@ def build_encoded_text_concat_view(ir: dict, info: dict, mount_id: str, block: d
                 parts.append(_path(
                     f"M {g['cx']} {g['top']} L {g['cx']} {y_concat} L {side} {y_concat}",
                     arrow_id))
-        parts.append(_v_seg(0.0, y_concat - 11, y_out, arrow_id))
-    else:                                            # single encoder: straight to K/V
-        parts.append(_v_seg(0.0, enc_g[0]["top"], y_out, arrow_id))
+        parts.append(_v_seg(0.0, y_concat - 11, y_next, arrow_id))
+    else:                                            # single encoder: straight up
+        parts.append(_v_seg(0.0, enc_g[0]["top"], y_next, arrow_id))
+
+    if proj:
+        # encoder_hid_proj: text_proj IS one nn.Linear; other declared types are
+        # code-defined modules — labelled as the bare op, dims live on the card.
+        pg = _box(parts, 0.0, y_proj, bw, 44.0,
+                  "Linear" if proj.get("type") == "text_proj" else "Projection",
+                  shadow_id, node_id="text_proj_op")
+        regions.append(pg)
+        parts.append(_v_seg(0.0, pg["top"], y_out, arrow_id))
 
     out_label = f"K/V ({cad:,})" if cad else "cross-attention K/V"
     parts.append(_svg_text(0.0, y_out - 10, out_label, {

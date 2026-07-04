@@ -146,6 +146,20 @@ keys:
   # Pipeline-level inference behavior, not architecture: whether an empty
   # prompt is encoded or zero-filled changes no drawn op (SDXL model_index).
   - force_zeros_for_empty_prompt
+  # chatglm implementation/precision/runtime flags — no drawn-op change.
+  - apply_query_key_layer_scaling
+  - attn_implementation
+  - bias_dropout_fusion
+  - fp32_residual_connection
+  - original_rope
+  # chatglm: final-norm presence flag (the final norm is drawn from shape).
+  - post_layer_norm
+  # Qwen-Omni pipeline OUTPUT toggles (speech on/off) — runtime switches for
+  # the undrawn speech stack (whose omission is a stated parser note).
+  - enable_audio_output
+  - enable_talker
+  # chatglm long-context rope theta ratio — positional tuning scalar.
+  - rope_ratio
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:
@@ -157,6 +171,12 @@ suffixes:
 # audit from pretending it owns every child option.  VAE config is deliberately
 # absent because the diffusion adapter renders and therefore owns its decoder.
 opaque_scopes:
+  # Qwen-Omni's SPEECH stack (talker + token2wav vocoder) — deliberately not
+  # drawn (the LM/thinker is the rendered model); the omission is stated as a
+  # parser note, never silent.
+  - talker_config
+  - token2wav_config
+  - code2wav_config
   - _scheduler_config
   - _text_encoder_configs
   # Addressing / weights-format payloads — never drawn facts.

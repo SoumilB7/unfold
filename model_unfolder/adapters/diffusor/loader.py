@@ -97,6 +97,14 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
             continue
         ec = _download_json(hf_hub_download, model_id, "config.json", token, subfolder=key)
         if isinstance(ec, dict):
+            # Hydrate through the installed config CLASS at load time: raw
+            # component JSON omits class-default facts (Gemma-2's sliding/global
+            # alternation lives only in configuration_gemma2.py).  Doing it HERE
+            # (address resolution) keeps the parse identity-free — the stored
+            # config already carries the facts, exactly like by-id LLM loads.
+            from .parser import _hydrate_encoder_config_facts
+            ec = _hydrate_encoder_config_facts(ec)
+            ec.setdefault("_repo_id", model_id)   # provenance for remote-code source
             enc_cfgs[key] = ec
     if enc_cfgs:
         cfg.setdefault("_text_encoder_configs", enc_cfgs)

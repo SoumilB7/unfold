@@ -13,6 +13,7 @@ from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 def decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
     norm_kind: str = "rmsnorm", norm_placement: str = "pre",
+    residual_scale=None,
 ) -> list[Block]:
     """Per-layer block topology for a sequential decoder layer.
 
@@ -25,10 +26,38 @@ def decoder_layer_blocks(
     * ``double`` — norm on BOTH ends (Gemma-2/3 sandwich):  ``r + post_ln(sub(pre_ln(h)))``
     """
     if norm_placement == "post":
-        return _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
-    if norm_placement == "double":
-        return _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
-    return _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+        blocks = _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    elif norm_placement == "double":
+        blocks = _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    else:
+        blocks = _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    if residual_scale not in (None, 1, 1.0):
+        blocks = _with_residual_scales(blocks, residual_scale)
+    return blocks
+
+
+def _with_residual_scales(blocks: list[Block], scale) -> list[Block]:
+    """Granite-style scaled residuals: ``r + sub(h) × residual_multiplier`` —
+    a × connector with its CONSTANT operand drawn beside the glyph (the one
+    allowed single-input ×), inserted before each residual ⊕."""
+    out: list[Block] = []
+    counter = 0
+    for block in blocks:
+        if block.get("kind") == "residual_add":
+            counter += 1
+            out.append({
+                "id": f"res_scale{counter}",
+                "role": "residual", "kind": "gate_mul",
+                "label": "\u00d7", "sub": f"\u00d7 {scale}",
+                "title": "Residual scale",
+                "description": (
+                    f"The sublayer output is multiplied by the constant "
+                    f"residual_multiplier = {scale} (config-declared, applied "
+                    "in the layer's forward) before the residual add."
+                ),
+            })
+        out.append(block)
+    return out
 
 
 def _add_block(block_id: str, residual_from: str, title: str, description: str) -> Block:

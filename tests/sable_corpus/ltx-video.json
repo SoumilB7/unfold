@@ -1,7 +1,7 @@
 {
   "checks": {
     "click_coupling": true,
-    "config_field_audit": false,
+    "config_field_audit": true,
     "dangling_connectors": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
@@ -41,6 +41,7 @@
         "architectures": [
           "T5EncoderModel"
         ],
+        "chunk_size_feed_forward": 0,
         "classifier_dropout": 0.0,
         "d_ff": 10240,
         "d_kv": 64,
@@ -48,23 +49,37 @@
         "decoder_start_token_id": 0,
         "dense_act_fn": "gelu_new",
         "dropout_rate": 0.1,
+        "dtype": "float32",
         "eos_token_id": 1,
         "feed_forward_proj": "gated-gelu",
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
         "initializer_factor": 1.0,
+        "is_decoder": false,
         "is_encoder_decoder": true,
         "is_gated_act": true,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
         "layer_norm_epsilon": 1e-06,
         "model_type": "t5",
         "num_decoder_layers": 24,
         "num_heads": 64,
         "num_layers": 24,
+        "output_attentions": false,
+        "output_hidden_states": false,
         "output_past": true,
         "pad_token_id": 0,
+        "problem_type": null,
         "relative_attention_max_distance": 128,
         "relative_attention_num_buckets": 32,
-        "tie_word_embeddings": false,
-        "torch_dtype": "float32",
-        "transformers_version": "4.46.2",
+        "return_dict": true,
+        "scale_decoder_outputs": false,
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
         "use_cache": true,
         "vocab_size": 32128
       }
@@ -141,7 +156,7 @@
     "125d0a42cb145fbbe563f068a0b13316",
     "2358e47255259136523f02cab857a2fc",
     "236dc74f7a71b505a592b154f63174fc",
-    "2a3f54a316a4b14bc4d12de1f10603e0",
+    "36973ef6bda51a1bba50fe15f859f23c",
     "49e1633d8e64698d8b55b6aba47456a7",
     "827b139178897fdcaae879dd731d7a7c",
     "85a7409550ac4cd62a30bb332658282b",
@@ -161,10 +176,10 @@
     "49e1633d8e64698d8b55b6aba47456a7",
     "827b139178897fdcaae879dd731d7a7c",
     "85a7409550ac4cd62a30bb332658282b",
+    "9b87e79060d680606c06b299ed03b566",
     "ba3983a841063a93922f6df9b89ed562",
     "bd56357e9127c33322064c9b9401ec96",
     "c4d53f4d586a05b6b6c9dbcd640e9e15",
-    "d8231cdbb4fc341af6833070f3dd8d49",
     "f7a05b6da2a5c9fc1824403377cf4fd4"
   ],
   "visual_evidence": {

@@ -1769,6 +1769,72 @@ def _with_fake_transformers(auto_config, fn):
             del sys.modules["transformers"]
 
 
+def test_residual_multiplier_draws_scale_connectors_with_the_constant():
+    """A declared residual_multiplier (Granite's depth-scaled residual:
+    h = residual + sublayer(h) * m) is a REAL per-sublayer multiply — drawn as
+    a × connector BEFORE each residual ⊕, with its constant operand painted
+    beside the glyph (the labelled-constant rule: a bare × reads "× what?").
+    GENERAL: keyed off the config field; absent field -> no glyph fabricated."""
+    from model_unfolder.block_schema import validate_click_coupling
+    cfg = dict(LLAMA3_8B_CONFIG, residual_multiplier=0.22)
+    html = unfold(cfg).to_html(standalone=True)
+    assert 'data-id="res_scale1"' in html and 'data-id="res_scale2"' in html
+    assert "× 0.22" in html                    # the constant, beside the glyph
+    assert validate_click_coupling(html) == []
+    # No declaration -> no scale connectors (nothing invented for llama).
+    plain = unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+    assert "res_scale" not in plain
+
+
+def test_declared_scores_scale_replaces_sqrt_in_the_drawing():
+    """A config-declared QK^T scale that DIFFERS from 1/sqrt(head_dim) must be
+    the drawn denominator — sqrt(dim) would be a lie (Granite scales by
+    attention_multiplier = 1/128, not 1/sqrt(128)).  Two declaration dialects,
+    each with its own semantics: attention_multiplier (the scale directly) and
+    query_pre_attn_scalar (Gemma-2: scale = value^-0.5).  A declaration EQUAL
+    to the default keeps sqrt(dim) — which is then exactly true (Gemma-2-2b:
+    qpas == head_dim) — so no blessed model drifts."""
+    from model_unfolder.block_schema import validate_click_coupling
+    # Granite dialect: direct multiplier, 1/0.0078125 = 128
+    cfg = dict(LLAMA3_8B_CONFIG, attention_multiplier=0.0078125)
+    html = unfold(cfg).to_html(standalone=True)
+    assert ">128<" in html and "sqrt(dim)" not in html
+    assert "config-declared" in html            # the card says WHY
+    assert validate_click_coupling(html) == []
+    # Gemma-2 dialect: qpas^-0.5, 144^-0.5 -> 1/12
+    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=144)
+    html = unfold(cfg).to_html(standalone=True)
+    assert ">12<" in html and "sqrt(dim)" not in html
+    # EQUAL to default -> unchanged sqrt(dim) (head_dim = 4096/32 = 128)
+    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=128)
+    assert "sqrt(dim)" in unfold(cfg).to_html(standalone=True)
+    # no declaration -> unchanged
+    assert "sqrt(dim)" in unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+
+
+def test_multi_query_flag_defers_to_declared_group_count():
+    """ChatGLM declares BOTH multi_query_attention: true AND
+    multi_query_group_num: 2 — the flag means "KV heads are shared", the group
+    count says how many.  Clobbering to 1 fabricated MQA (the Kolors encoder
+    claimed "1 K + 1 V reused by 32 Q" while the code runs 2-group GQA).  The
+    flag defaults to 1 ONLY when no group count is declared (Falcon-7B)."""
+    glm = {"model_type": "chatglm", "architectures": ["ChatGLMModel"],
+           "hidden_size": 4096, "num_layers": 28, "num_attention_heads": 32,
+           "multi_query_attention": True, "multi_query_group_num": 2,
+           "ffn_hidden_size": 13696, "padded_vocab_size": 65024,
+           "seq_length": 8192, "kv_channels": 128}
+    a = unfold(glm).to_ir()["layers"][0]["attention"]
+    assert (a["num_kv_heads"], a["kind"]) == (2, "gqa")
+    falcon = {"model_type": "falcon", "architectures": ["FalconForCausalLM"],
+              "hidden_size": 4544, "num_hidden_layers": 32,
+              "num_attention_heads": 71, "multi_query": True, "vocab_size": 65024}
+    a = unfold(falcon).to_ir()["layers"][0]["attention"]
+    assert (a["num_kv_heads"], a["kind"]) == (1, "mqa")
+    # chatglm bias spellings resolve through the alias rows (YAML, not code)
+    a = unfold(dict(glm, add_qkv_bias=True))        .to_ir()["layers"][0]["attention"]
+    assert a["bias"] is True
+
+
 def _restore_env(name, value):
     if value is None:
         os.environ.pop(name, None)

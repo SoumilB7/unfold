@@ -43,10 +43,8 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
     if ffn.kind == "conv_glu":
-        # Sana's GLUMBConv — a gated CONV Mix-FFN named as one honest leaf (its
-        # conv-gate internals are KNOWN but differ from a Linear MLP, so we describe
-        # the structure rather than fabricate Linear up/down boxes). The id matches
-        # the op-graph's opaque region node so the click target stays coupled.
+        # Sana's GLUMBConv — the code-proven gated CONV chain, one card per op
+        # (ids match the op-graph region's nodes so every drawn box drills).
         children = _conv_glu_ffn_child_blocks(hidden, inter)
     elif ffn.kind != "moe" and ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
@@ -73,19 +71,58 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
 
 
 def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
+    """One card per op of the GLUMBConv chain — ids match the conv_glu region."""
     return [
         {
-            "id": "block",
-            "label": "Gated conv Mix-FFN",
-            "title": "GLUMBConv (gated conv Mix-FFN)",
+            "id": "conv_in",
+            "title": "Conv 1×1 (expand)",
             "description": (
-                "Sana's GLUMBConv — a gated CONV feed-forward, not a Linear MLP: a "
-                "1×1 conv expands to 2× the inner width, a depthwise 3×3 conv mixes "
-                "locally, the result splits in half (value · SiLU(gate)), and a 1×1 "
-                "conv projects back. The conv FFN paired with linear attention is what "
-                "makes Sana efficient."
+                "Pointwise 1×1 convolution expanding the width to 2× the inner "
+                "channels — the value and gate lanes produced by one projection "
+                "(the conv twin of a fused gate+up Linear)."
             ),
-            "facts": [f"{hidden} → {inter} → {hidden}", "depthwise 3×3 + SiLU gate"],
+            "facts": [f"{hidden} → 2×{inter}"],
+        },
+        {
+            "id": "dw_conv",
+            "title": "Depthwise Conv 3×3",
+            "description": (
+                "3×3 depthwise convolution mixing each channel locally across "
+                "space — the spatial mixer inside the FFN, which is what lets "
+                "Sana pair a cheap linear attention with a conv feed-forward."
+            ),
+            "facts": ["per-channel 3×3"],
+        },
+        {
+            "id": "glu_split",
+            "title": "Split value / gate",
+            "description": (
+                "The doubled channels split in half: a value lane and a gate "
+                "lane — the GLU pattern, conv-flavoured."
+            ),
+            "facts": [f"2×{inter} → {inter} + {inter}"],
+        },
+        {
+            "id": "glu_act",
+            "title": "SiLU (gate)",
+            "description": "The gate lane passes through SiLU before gating.",
+        },
+        {
+            "id": "glu_mul",
+            "title": "Gate multiply",
+            "description": (
+                "Elementwise product: value · SiLU(gate) — the gated activation "
+                "of the conv GLU."
+            ),
+        },
+        {
+            "id": "conv_out",
+            "title": "Conv 1×1 (project back)",
+            "description": (
+                "Pointwise 1×1 convolution projecting the gated features back "
+                "to the model width."
+            ),
+            "facts": [f"{inter} → {hidden}"],
         },
     ]
 

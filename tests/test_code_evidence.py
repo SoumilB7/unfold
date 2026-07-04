@@ -850,3 +850,128 @@ def test_storage_fidelity_detectors_are_code_shaped(tmp_path):
     # A FINAL norm applied to a reused variable name is NOT an embedding-stage
     # norm — the order-aware dataflow must not misread llama-shaped code.
     assert embedding_stage_norm_from_files((split,)) is None
+
+_CHATGLM_SHAPED = """
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+
+def apply_rotary_pos_emb(x, rope_cache):
+    return x
+
+
+class CoreAttention(nn.Module):
+    def __init__(self, config, layer_number):
+        super().__init__()
+
+    def forward(self, query_layer, key_layer, value_layer, attention_mask):
+        scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
+        probs = F.softmax(scores, dim=-1)
+        return torch.matmul(probs, value_layer)
+
+
+class SelfAttention(nn.Module):
+    def __init__(self, config, layer_number):
+        super().__init__()
+        self.query_key_value = nn.Linear(config.hidden_size, 3 * config.hidden_size)
+        self.core_attention = CoreAttention(config, layer_number)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+
+    def forward(self, hidden_states, attention_mask, rotary_pos_emb):
+        mixed = self.query_key_value(hidden_states)
+        query_layer, key_layer, value_layer = mixed.split(3, dim=-1)
+        query_layer = apply_rotary_pos_emb(query_layer, rotary_pos_emb)
+        key_layer = apply_rotary_pos_emb(key_layer, rotary_pos_emb)
+        context = self.core_attention(query_layer, key_layer, value_layer, attention_mask)
+        return self.dense(context)
+
+
+class MLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.dense_h_to_4h = nn.Linear(config.hidden_size, config.ffn_hidden_size * 2)
+
+        def swiglu(x):
+            x = torch.chunk(x, 2, dim=-1)
+            return F.silu(x[0]) * x[1]
+
+        self.activation_func = swiglu
+        self.dense_4h_to_h = nn.Linear(config.ffn_hidden_size, config.hidden_size)
+
+    def forward(self, hidden_states):
+        intermediate = self.dense_h_to_4h(hidden_states)
+        intermediate = self.activation_func(intermediate)
+        return self.dense_4h_to_h(intermediate)
+
+
+class GLMBlock(nn.Module):
+    def __init__(self, config, layer_number):
+        super().__init__()
+        self.input_layernorm = nn.LayerNorm(config.hidden_size)
+        self.self_attention = SelfAttention(config, layer_number)
+        self.post_attention_layernorm = nn.LayerNorm(config.hidden_size)
+        self.mlp = MLP(config)
+
+    def forward(self, hidden_states, attention_mask, rotary_pos_emb):
+        out = self.input_layernorm(hidden_states)
+        out = self.self_attention(out, attention_mask, rotary_pos_emb)
+        hidden_states = hidden_states + out
+        out = self.post_attention_layernorm(hidden_states)
+        return hidden_states + self.mlp(out)
+"""
+
+
+def test_init_local_fn_and_inner_kernel_evidence(tmp_path):
+    """The ChatGLM-shaped code signatures, read GENERALLY (no names):
+
+    1. a nested fn bound to ``self.F`` in __init__ (swiglu) is FOLDED into the
+       class's op scan — so a 2-linear MLP that chunks one fused projection and
+       multiplies the halves is proven GATED with fused storage;
+    2. an inner attention kernel constructed as a FIELD of the attention class
+       (core_attention) is not a rival positional candidate — the owner's RoPE
+       application is proven, never "candidates disagree".
+    """
+    f = tmp_path / "modeling_x.py"
+    f.write_text(_CHATGLM_SHAPED)
+    files = (str(f),)
+
+    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
+    assert decoder_ffn_gated_from_files(files, cfg={}) is True
+
+    from model_unfolder.evidence.ffn import ffn_structure_evidence
+    ev = ffn_structure_evidence(files, expected_gated=True)
+    assert ev.status == "proven" and ev.projection_mode == "fused_gate_up"
+
+    from model_unfolder.evidence.position import decoder_positional_evidence
+    from model_unfolder.evidence.models import SourceBundle
+    bundle = SourceBundle(source="path", files=files,
+                          component_files={"root": files})
+    pos = decoder_positional_evidence({}, bundle=bundle)
+    assert pos.status == "proven"
+    assert any(m.kind == "rope" for m in pos.mechanisms)
+
+
+def test_remote_code_declaration_reaches_the_hub_rail(monkeypatch, tmp_path):
+    """A config that DECLARES auto_map (remote code) resolves its evidence from
+    the repo's own .py files when nothing is installed — the address is the
+    id, the DECLARATION is the config's, and offline failure stays honest."""
+    f = tmp_path / "modeling_x.py"
+    f.write_text(_CHATGLM_SHAPED)
+    import model_unfolder.evidence.sources as S
+    calls = {}
+
+    def fake_hub(target, *, token=None):
+        calls["hit"] = True
+        return S.SourceBundle(source="hub", files=(str(f),),
+                              component_files={"root": (str(f),)})
+    monkeypatch.setattr(S, "_hub_bundle", fake_hub)
+    cfg = {"model_type": "notinstalled_xyz", "auto_map": {"AutoModel": "modeling_x.X"},
+           "_name_or_path": "some/repo"}
+    bundle = S.resolve_source_files(cfg, source="local")
+    assert calls.get("hit") and bundle.files
+    # without the declaration, no hub attempt is made
+    calls.clear()
+    bundle = S.resolve_source_files({"model_type": "notinstalled_xyz"}, source="local")
+    assert not calls.get("hit")
+

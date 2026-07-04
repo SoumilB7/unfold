@@ -44,6 +44,10 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "output_gate": attention.output_gate,
         "projection_mode": attention.projection_mode,
         "variant": attention.variant,
+        # emitted only when DECLARED (same rule as the IR projection) so
+        # undeclared models' block detail stays byte-stable
+        **({"scores_scale": attention.scores_scale}
+           if attention.scores_scale is not None else {}),
     }
 
 
@@ -166,24 +170,34 @@ def _sdpa_detailed_child_blocks(
         w in cross_src.lower() for w in ("text", "prompt", "encoder", "caption"))
     kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads"
     group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
+    # A config-DECLARED scores scale replaces the default sqrt wording — the
+    # card must state the real divisor (Granite attention_multiplier).
+    if attention.scores_scale is not None:
+        inv = 1.0 / attention.scores_scale
+        scale_txt = (f"QK^T / {inv:,.0f}" if abs(inv - round(inv)) < 1e-6
+                     else f"QK^T × {attention.scores_scale:g}")
+        scale_note = f"scores use {scale_txt} (config-declared scale)"
+    else:
+        scale_txt = "QK^T / sqrt(dim)"
+        scale_note = "scores use QK^T / sqrt(dim)"
     scaled_title = "Scaled attention scores"
-    scaled_desc = "Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability."
+    scaled_desc = f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
     if cross_attention:
         scaled_title = "Cross-attention scores"
         scaled_desc = (
             f"Query heads attend over the {cross_src} (its K/V), not the latent "
-            "itself; scores use QK^T / sqrt(dim)."
+            f"itself; {scale_note}."
         )
     elif kind == "gqa":
         scaled_title = "Grouped scaled dot-product attention"
         scaled_desc = (
             "Query heads attend through a smaller set of shared K/V heads; "
-            "scores use QK^T / sqrt(dim)."
+            f"{scale_note}."
         )
     elif kind == "mqa":
         scaled_title = "Multi-query scaled dot-product attention"
         scaled_desc = (
-            "All query heads share one K/V stream; scores use QK^T / sqrt(dim)."
+            f"All query heads share one K/V stream; {scale_note}."
         )
 
     if generic:
@@ -331,11 +345,17 @@ def _sdpa_operation_meta(
     d_k: str,
     q_per_group: int | None,
 ) -> tuple[str, str]:
+    if attention.scores_scale is not None:
+        inv = 1.0 / attention.scores_scale
+        divisor = (f"{inv:,.0f}" if abs(inv - round(inv)) < 1e-6
+                   else f"1/{attention.scores_scale:g}")
+    else:
+        divisor = f"sqrt({d_k})"
     if attention.kind == "mqa":
         return (
             "Multi-query scaled dot-product attention",
             (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"scores = softmax(QK^T / {divisor}); "
                 f"{num_heads} query heads share one K/V head"
             ),
         )
@@ -348,14 +368,14 @@ def _sdpa_operation_meta(
         return (
             "Grouped scaled dot-product attention",
             (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"scores = softmax(QK^T / {divisor}); "
                 f"{num_heads} query heads attend through {num_kv_heads} shared KV heads{group}"
             ),
         )
     return (
         "Scaled dot-product attention",
         (
-            f"scores = softmax(QK^T / sqrt({d_k})); "
+            f"scores = softmax(QK^T / {divisor}); "
             "context = scores * V; "
             f"output shape [batch, {num_heads}, seq, {d_k}]"
         ),

@@ -58,6 +58,12 @@ def ffn_structure_evidence(
             for field in linear_fields
         )
         gated = fused or "gate_mul" in info.op_kinds or len(linear_fields) >= 3
+        # Name-free fused signature: a gated MLP with only TWO linears stores
+        # gate+up in ONE projection and chunks it in forward (ChatGLM's
+        # dense_h_to_4h -> swiglu).  Three linears = genuinely split.
+        if (gated and not fused and len(linear_fields) == 2
+                and ({"chunk", "split"} & set(info.signature_tokens))):
+            fused = True
         if expected_gated is not None and gated != expected_gated:
             continue
         mode = "fused_gate_up" if fused else "split" if gated else "dense"

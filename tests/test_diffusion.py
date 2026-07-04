@@ -1043,6 +1043,36 @@ def test_non_kl_vae_stays_honest():
     assert "× ResNet" not in html[i:i + 600]
 
 
+def test_vae_decoder_upsample_matches_diffusers_placement():
+    """diffusers' Decoder puts an upsampler on every up block EXCEPT the final
+    one (add_upsample = not is_final_block).  Execution order runs deepest ->
+    shallowest, and the drill ids count block_N (first executed) down to
+    block_1 (last).  So block_N..block_2 upsample; block_1 does NOT.  The old
+    drawing had this exactly reversed (missing on the first, fabricated on the
+    last) — in every AutoencoderKL gallery including blessed SDXL."""
+    cfg = dict(SDXL_UNET)
+    cfg["_vae_config"] = {
+        "_class_name": "AutoencoderKL",
+        "block_out_channels": [128, 256, 512, 512],
+        "layers_per_block": 2, "latent_channels": 4,
+        "up_block_types": ["UpDecoderBlock2D"] * 4,
+        "norm_num_groups": 32,
+    }
+    html = unfold(cfg).to_html(standalone=True)
+
+    def facts_of(cid: str) -> str:
+        i = html.find(f'data-card-id="{cid}"')
+        assert i > 0, cid
+        return html[i:i + 1200]
+
+    # first executed (deepest, 512 ch) DOES upsample …
+    assert "↑2× spatial" in facts_of("vae_decoder_block_4")
+    # … the final (128 ch) does NOT — nothing fabricated after it.
+    assert "↑2× spatial" not in facts_of("vae_decoder_block_1")
+    assert "↑2× spatial" in facts_of("vae_decoder_block_2")
+    assert validate_click_coupling(html) == []
+
+
 def test_swiglu_video_dit_ffn_is_gated():
     """Mochi declares activation_fn swiglu — the FFN is gated, drawn with the
     gate path, not a plain MLP."""
@@ -1339,6 +1369,35 @@ def test_encoded_text_box_drills_into_the_concat_view():
     assert 'data-id="text_concat_op"' in seg
     assert 'data-card-id="text_concat_op"' in html
     assert "torch.cat over the feature axis" in html
+    # SDXL declares no encoder_hid_dim — no projection box may be fabricated
+    assert 'data-id="text_proj_op"' not in html
+    assert validate_click_coupling(html) == []
+
+
+def test_encoder_hid_dim_draws_the_projection_in_the_text_cond_drill():
+    """A declared encoder-width bridge (encoder_hid_dim) is a REAL nn.Linear the
+    U-net applies to the encoded prompt before any cross-attention stage reads
+    it (diffusers' encoder_hid_proj; a bare encoder_hid_dim defaults the type to
+    "text_proj" — the code's own rule).  The drill must draw it as a clickable
+    box between the encoder lane and the K/V: a width change is an op, never a
+    bare arrow (Kolors: ChatGLM 4,096-d -> Linear -> 2,048-d K/V).  GENERAL:
+    keyed off the config field, never the repo."""
+    cfg = {k: v for k, v in SDXL_UNET.items()
+           if k not in ("_repo_id", "text_encoder_2", "addition_embed_type")}
+    cfg["encoder_hid_dim"] = 4096
+    cfg["_text_encoder_configs"] = {
+        "text_encoder": {"_class_name": "ChatGLMModel", "hidden_size": 4096,
+                         "num_layers": 28, "num_attention_heads": 32,
+                         "ffn_hidden_size": 13696, "vocab_size": 65024},
+    }
+    html = unfold(cfg).to_html(standalone=True)
+    i = html.find('data-card-id="unet_text_cond"')
+    assert i >= 0
+    seg = html[i:i + 8000]
+    assert 'data-id="text_proj_op"' in seg                # the box, in the drill
+    assert 'data-card-id="text_proj_op"' in html          # its card (coupling)
+    assert "4,096" in html and "2,048" in html            # dims live on the card
+    assert "encoder_hid_dim" in html                      # the declaring field
     assert validate_click_coupling(html) == []
 
 

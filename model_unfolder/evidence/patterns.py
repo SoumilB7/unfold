@@ -1155,6 +1155,14 @@ def decoder_ffn_gated_from_files(files, cfg=None) -> bool | None:
             if any("gate" in field.lower() for field in linear_fields):
                 return True
             if len(linear_fields) >= 2:
+                # TWO linears can still be gated when gate+up are FUSED in one
+                # projection: the forward chunks/splits that output in two and
+                # multiplies the halves (ChatGLM's dense_h_to_4h -> swiglu).
+                # Both signals are required — BLOOM's dormant tensor-parallel
+                # path multiplies and subscript-slices but never chunk()s.
+                if (("chunk" in info.signature_tokens or "split" in info.signature_tokens)
+                        and "gate_mul" in info.op_kinds):
+                    return True
                 return False
     return None
 

@@ -98,6 +98,28 @@ def resolve_source_files(target: Any, *, source: str = "local", token: Any = Non
         if diff is not None and diff.files:
             return diff
         if source == "local":
+            # Supporting-tower classes that ship INSIDE diffusers but outside
+            # models/ (Kolors' ChatGLMModel in pipelines/kolors/text_encoder.py)
+            # — found by the config's own ``architectures`` declaration.
+            arch_bundle = _installed_diffusers_arch_bundle(target)
+            if arch_bundle is not None and arch_bundle.files:
+                return arch_bundle
+            # REMOTE-CODE repos carry their own modeling source, and the config
+            # DECLARES that fact (auto_map).  That source is evidence exactly
+            # like an in-tree file — fetch the repo's .py files (cached by the
+            # hub client; offline after first resolve).  Without this, every
+            # trust_remote_code family (ChatGLM, ...) parsed evidence-blind:
+            # no RoPE box, split-drawn fused FFNs, pale encoder towers.
+            if _declares_remote_code(target):
+                try:
+                    hub = _hub_bundle(target, token=token)
+                except Exception as exc:      # offline / gated — honest fallback
+                    hub = SourceBundle(
+                        source="hub", model_type=_model_type(target),
+                        architecture=_architecture(target), model_id=_model_id(target),
+                        warnings=(f"remote-code source fetch failed: {exc}",))
+                if hub.files:
+                    return hub
             return diff if (diff is not None and diff.warnings) else local
 
     if source in {"hub", "auto"}:
@@ -337,6 +359,55 @@ def _looks_like_diffusion_class(cls: str) -> bool:
     return any(m in cls for m in markers)
 
 
+from functools import lru_cache
+
+
+@lru_cache(maxsize=64)
+def _diffusers_class_file(arch: str) -> str | None:
+    """Path of the installed diffusers file defining ``class <arch>`` — searched
+    across models/ AND pipelines/ (supporting encoders live under pipelines)."""
+    try:
+        import diffusers
+    except ImportError:
+        return None
+    import re
+    root = Path(diffusers.__file__).resolve().parent
+    pat = re.compile(rf"^class {re.escape(arch)}\b", re.M)
+    for sub in ("models", "pipelines"):
+        base = root / sub
+        if not base.exists():
+            continue
+        for f in sorted(base.rglob("*.py")):
+            try:
+                text = f.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if pat.search(text):
+                return str(f)
+    return None
+
+
+def _installed_diffusers_arch_bundle(target: Any) -> SourceBundle | None:
+    """Resolve a component by its DECLARED ``architectures`` inside the installed
+    diffusers tree — the in-tree twin of the remote-code rail for supporting
+    towers diffusers vendored (Kolors ChatGLMModel)."""
+    arch = _architecture(target)
+    if not arch:
+        return None
+    path = _diffusers_class_file(arch)
+    if path is None:
+        return None
+    return SourceBundle(
+        source="local",
+        files=(path,),
+        model_type=_model_type(target),
+        architecture=arch,
+        model_id=_model_id(target),
+        component_files={"root": (path,)},
+        component_architectures={"root": arch},
+    )
+
+
 def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
     """Resolve a diffusion model's modeling file in the installed ``diffusers``.
 
@@ -446,6 +517,23 @@ def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str |
     return None
 
 
+def _declares_remote_code(target: Any) -> bool:
+    """True when the config itself declares that its modeling code lives in the
+    repo (``auto_map`` — the trust_remote_code marker).  A config-declared fact,
+    never a name heuristic; nested component configs count (a pipeline whose
+    text encoder is remote-code)."""
+    if _get_value(target, "auto_map"):
+        return True
+    for key in ("text_config", "_text_encoder_configs"):
+        nested = _get_value(target, key)
+        if isinstance(nested, dict):
+            if nested.get("auto_map"):
+                return True
+            if any(isinstance(v, dict) and v.get("auto_map") for v in nested.values()):
+                return True
+    return False
+
+
 def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:
     model_id = _model_id(target)
     if not model_id:
@@ -508,7 +596,10 @@ def _model_id(target: Any) -> str | None:
     if isinstance(target, str) and not Path(target).exists():
         return target
     return (
-        _string_value(target, "_name_or_path")
+        # the loader's own provenance stamp — authoritative over _name_or_path,
+        # which exporters bake as a LOCAL path ("models/kolors")
+        _string_value(target, "_repo_id")
+        or _string_value(target, "_name_or_path")
         or _string_value(target, "name_or_path")
         or _string_value(target, "model_id")
         or _string_value(target, "repo_id")

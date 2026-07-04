@@ -55,6 +55,9 @@ class AttentionSpec:
     mrope_section: Optional[list] = None    # Qwen-VL multimodal RoPE [temporal, height, width] split
     conv_kernel_size: Optional[int] = None  # local causal depthwise conv in hybrid mixers
     output_gate: Optional[str] = None       # attention-output gate (e.g. sigmoid/swish)
+    scores_scale: Optional[float] = None    # config-DECLARED QK^T scale when it differs
+                                            # from the default 1/sqrt(head_dim) (Granite
+                                            # attention_multiplier, Gemma-2 query_pre_attn_scalar)
     projection_mode: Optional[str] = None   # code-proven Q/K/V STORAGE:
                                     # "fused_qkv" (one query_key_value/c_attn
                                     # matrix, split in forward) vs None (split
@@ -270,6 +273,8 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "output_gate": a.output_gate,
         "projection_mode": a.projection_mode,
         "variant": a.variant,
+        # emitted only when DECLARED so undeclared models' output is byte-stable
+        **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
     }
 
 
