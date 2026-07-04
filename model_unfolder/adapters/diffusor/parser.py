@@ -262,6 +262,83 @@ def matches(cfg: Any) -> bool:
     return False
 
 
+def _secondary_stack_specs(cfg: Any, context, hidden) -> list[dict]:
+    """GENERAL secondary stacks (token/noise refiners, any auxiliary
+    transformer stack): detected from construction evidence
+    (:mod:`~...evidence.stacks`), never from names.
+
+    * root stacks are excluded by COUNT FIELD — any stack whose depth binds to
+      a root-depth alias spelling is the main tower (class-based exclusion
+      would erase Lumina's refiners, which reuse the root block class);
+    * the depth is read from the CONFIG through the auditing getter — an
+      undeclared count is never drawn;
+    * the lane comes from the detector's raw forward-arg name through the
+      declared ``stack_lane_params`` vocabulary; an unmapped lane is skipped
+      with a note, never guessed;
+    * layer facts come from the ONE shared reader (standard-cell gate
+      included), the spec from the ONE tower spec builder — a refiner is just
+      another tower.
+    """
+    from ...everchanging import load_diffusion_typing
+    from ...evidence.conformance import _augment_diffusion_files
+    from ...evidence.stacks import secondary_stacks_from_files
+    from ...evidence.transitive import build_registry
+    from ...evidence.vision import layer_facts_from_block
+    from ..transformer.special_parts.modalities.schema import tower_submodel_spec
+
+    bundle = getattr(context, "source_bundle", None)
+    architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                    or getattr(bundle, "architecture", None))
+    files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                  or getattr(bundle, "files", ()) or ())
+    if not architecture or not files:
+        return []
+    files = _augment_diffusion_files(files)
+    root_depth_spellings = set(_ALIASES.get("num_layers") or []) | set(
+        _ALIASES.get("num_single_layers") or [])
+    lane_map = dict(pair.split("=", 1) for pair in
+                    load_diffusion_typing().get("stack_lane_params", [])
+                    if isinstance(pair, str) and "=" in pair)
+    try:
+        stacks = secondary_stacks_from_files(files, architecture)
+    except Exception:
+        return []
+    registry = build_registry([str(f) for f in files])
+    from ...everchanging import load_conformance_transitive
+    vocab = load_conformance_transitive()
+
+    out: list[dict] = []
+    for stack in stacks:
+        if not stack.count_field or stack.count_field in root_depth_spellings:
+            continue
+        count = _g(cfg, stack.count_field)
+        if not count:
+            continue                      # undeclared depth — never drawn
+        lane = lane_map.get(stack.lane_param or "")
+        if lane not in ("text", "latent"):
+            continue                      # unmapped lane — never guessed
+        facts = layer_facts_from_block(stack.block_class, registry, vocab)
+        if not facts.get("standard_cell"):
+            continue                      # non-standard block keeps op-chain honesty
+        row = {**facts, "repeat": int(count),
+               "block_class": stack.block_class,
+               "source_file": stack.source_file}
+        sub_model = tower_submodel_spec(
+            {"hidden_size": hidden, "num_layers": int(count)}, [row],
+            component="root")
+        out.append({
+            "lane": lane,
+            "count": int(count),
+            "entry_projection": stack.entry_projection,
+            "count_field": stack.count_field,
+            "block_class": stack.block_class,
+            "owner_class": stack.owner_class,
+            "source_file": stack.source_file,
+            "sub_model": sub_model,
+        })
+    return out
+
+
 def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
     """Read EVERY declared config-fact field (``everchanging/diffusor/
     config_facts.yaml``) and format the informative ones as per-stage card
@@ -425,6 +502,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
         "vae": _vae_geom(cfg),
+        "secondary_stacks": _secondary_stack_specs(cfg, context, hidden_size),
         "config_facts": _config_fact_chips(cfg),
         **_scheduler_geom(cfg),
     }
@@ -648,6 +726,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # In a cross-attention DiT the text enters the dedicated cross-attention
     # sublayer; otherwise it joins the (self/joint) attention.
     text_target = "cross_attn" if cond["cross_attn_sublayer"] else "attn"
+    # The ‖-join upgrade applies ONLY when the JOINED sequence is the model's
+    # ENTRY (every group self-attends over the joined stream — Lumina).  In a
+    # heterogeneous dual→single model (HYV/FLUX) the join happens MID-model,
+    # between the stacks — there the single-stream variant's frame caption is
+    # the honest representation, and an entry ‖ would be a wiring lie.
+    all_text_joined = bool(layers) and all(
+        bool((layer.attention.variant or {}).get("stack_note")) for layer in layers)
     for layer in layers:
         # The AdaLN conditioning fans into the gate × it drives (gate_msa/gate_mlp)
         # as well as the norm — so the × shows WHAT it multiplies by (the timestep
@@ -661,10 +746,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # caption). Drawing a per-block text rail there reads like cross-attention; it
         # is dropped (the one-time join is the variant's stack caption instead).
         text_joined = bool((layer.attention.variant or {}).get("stack_note"))
+        text_stack = next((stack for stack in geom["secondary_stacks"]
+                           if stack["lane"] == "text"), None)
         layer.blocks.extend(_conditioning_side_blocks(
             text_in_attention and not text_joined, pooled_in_adaln,
             bool(geom["guidance_embeds"]),
-            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
+            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids,
+            text_stack=text_stack,
+            joined_text_stack=(text_stack if (all_text_joined and text_joined) else None)))
+        if all_text_joined and text_joined and text_stack:
+            geom["join_concat"] = True
 
     # A diffusers pipeline may ship a SECOND denoiser for classifier-free
     # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
@@ -944,8 +1035,56 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     return out
 
 
+def _refiner_side_block(stack: dict, feeds: str) -> dict:
+    """The drawn block for a GENERAL text-lane secondary stack (a token
+    refiner): a Tier-1 rail stage between the text conditioning and the
+    attention.  Every fact on it is the detector's/config's own; the drill is
+    the one tower projection; the class is display provenance on the card."""
+    from ...submodel import submodel_cell_blocks
+    from .blocks import _encoder_norm_card, _encoder_residual_card
+
+    count = stack["count"]
+    sub_model = stack["sub_model"]
+    gated = bool((sub_model.get("groups") or [{}])[0].get("residual_gate"))
+    return {
+        "id": "text_refiner",
+        "role": "attention",
+        "kind": "conditioning",
+        "diffusion_stage": "text_conditioning",
+        "lane": "external_bottom_right",
+        "feeds": feeds,
+        "label": ["Token", "refiner"],
+        "title": f"Token refiner (\u00d7{count})",
+        "description": (
+            f"A small transformer stack applied once to the encoded text tokens "
+            f"before the blocks: each of its {count} layers runs full "
+            f"self-attention and a feed-forward over the prompt tokens"
+            + (", with a learned gate on each residual update." if gated else ".")
+        ),
+        "facts": [f"{count} refiner layers"]
+                 + (["input projection to model width"]
+                    if stack.get("entry_projection") else []),
+        "view": "refiner_tower",
+        "detail": {"sub_model": sub_model, "entry_label": "in (text tokens)",
+                   "class": stack.get("block_class")},
+        "source_owner": stack.get("block_class"),
+        "source_file": stack.get("source_file"),
+        "w": 190, "h": 52, "font": 14,
+        "children": submodel_cell_blocks(
+            sub_model, "text_refiner",
+            attn_description=("Full self-attention over the prompt token "
+                              "sequence inside the refiner layer."),
+            norm_fallback="Norm",
+            norm_card=_encoder_norm_card,
+            residual_card=_encoder_residual_card,
+        ),
+    }
+
+
 def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
                               guidance: bool, adaln_dim=None, text_target: str = "attn",
+                              text_stack: dict | None = None,
+                              joined_text_stack: dict | None = None,
                               gate_ids: list[str] | None = None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
@@ -972,14 +1111,48 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
         "facts": [f"AdaLN dim {int(adaln_dim):,}"] if adaln_dim else None,
         "w": 190, "h": 52, "font": 14,
     }]
+    if joined_text_stack:
+        # Joined-stream model WITH a drawn text-lane stack: the text lane now
+        # EXISTS as drawn structure, so the one-time join becomes a TRUE \u2016
+        # (strict two-input) instead of a caption — text conditioning feeds the
+        # context refiner, the refiner feeds the \u2016 in the entry chain.
+        refiner = _refiner_side_block(joined_text_stack, "join_concat")
+        refiner["title"] = f"Context refiner (\u00d7{joined_text_stack['count']})"
+        refiner["description"] = (
+            f"A small transformer stack applied once to the encoded text tokens "
+            f"before they are joined with the latent sequence: each of its "
+            f"{joined_text_stack['count']} layers runs full self-attention and a "
+            f"feed-forward over the prompt tokens."
+        )
+        blocks.append(refiner)
+        blocks.append({
+            "id": "join_text_cond",
+            "role": "attention",
+            "kind": "conditioning",
+            "diffusion_stage": "text_conditioning",
+            "lane": "external_bottom_right",
+            "feeds": "text_refiner",
+            "label": ["Text tokens", "conditioning"],
+            "title": "Text conditioning (joined sequence)",
+            "description": (
+                "The encoded prompt tokens; after the context refiner they are "
+                "concatenated with the latent tokens into ONE sequence (the \u2016 "
+                "join) that every block self-attends over."
+            ),
+            "w": 190, "h": 52, "font": 14,
+        })
     if text_in_attention:
+        # A detected text-lane secondary stack (token refiner) becomes a rail
+        # STAGE: the conditioning feeds the refiner, the refiner the attention.
+        if text_stack:
+            blocks.append(_refiner_side_block(text_stack, text_target))
         blocks.append({
             "id": "text_cond",
             "role": "attention",
             "kind": "conditioning",
             "diffusion_stage": "text_conditioning",
             "lane": "external_bottom_right",
-            "feeds": text_target,
+            "feeds": "text_refiner" if text_stack else text_target,
             "offset_y": 0,
             "label": ["Text tokens", "conditioning"],
             "title": "Text conditioning (attention)",

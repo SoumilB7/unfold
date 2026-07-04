@@ -89,6 +89,19 @@ CORPUS = {
     }},
     # An MoE text encoder — the canonical router/top-k/expert drill transplanted
     # into a supporting tower, checked by every universal net.
+    # Refiner-bearing DiT: exercises the GENERAL secondary-stack detection
+    # (config-count-bound ModuleList that is not the root stack) and the
+    # refiner_tower view — the token refiner drawn on the text rail.
+    "dit_refiner": {
+        "_class_name": "HunyuanVideoTransformer3DModel",
+        "num_layers": 2, "num_single_layers": 2, "num_refiner_layers": 2,
+        "num_attention_heads": 4, "attention_head_dim": 32,
+        "in_channels": 16, "out_channels": 16,
+        "patch_size": 2, "patch_size_t": 1, "mlp_ratio": 4.0,
+        "pooled_projection_dim": 64, "text_embed_dim": 128,
+        "qk_norm": "rms_norm", "rope_axes_dim": [8, 12, 12],
+        "rope_theta": 256.0, "guidance_embeds": True,
+    },
     "dit_moe_encoder": {**td.FLUX, "_text_encoder_configs": {
         "text_encoder": {
             "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],

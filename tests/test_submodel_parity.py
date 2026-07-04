@@ -236,3 +236,64 @@ def test_ownership_prefers_the_deepest_qualified_component():
     position = (sub.get("evidence") or {}).get("position") or {}
     if position.get("status") == "proven":
         assert str(position.get("component", "")).startswith("text_encoder.")
+
+
+# ---------------------------------------------------------------------------
+# HERO altitude — the ROOT model through the same projector dialect
+# ---------------------------------------------------------------------------
+
+_HERO_WITNESSES = ("llama-7b", "gemma-2-2b-it", "gpt-oss-20b", "deepseek-v3", "bloom")
+
+
+@pytest.mark.parametrize("slug", _HERO_WITNESSES)
+def test_hero_altitude_represents_the_root_losslessly(slug):
+    """The endgame lock of one-tower: ``submodel_spec(ir, altitude="hero")``
+    must carry the ROOT model's own facts with ZERO loss and ZERO transforms —
+    groups, layer schedules, attention facts (cache ports INCLUDED: a root
+    decoder caches; only the tower altitude strips that), norm kind AND
+    placement, FFN/expert geometry.  Any LayerSpec fact that doesn't flow
+    through the canonical serializers breaks this, which is exactly what makes
+    a future migration of the flagship view onto the projector safe."""
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.adapters.transformer.blocks.attention import attention_detail
+    from model_unfolder.ir import distinct_layer_groups
+    from model_unfolder.submodel import ALTITUDE_TRANSFORMS, submodel_spec
+
+    assert ALTITUDE_TRANSFORMS["hero"] == {}, "hero must apply NO fact transforms"
+
+    fixture = Path(__file__).parent / "sable_corpus" / f"{slug}.json"
+    if not fixture.exists():
+        pytest.skip(f"no blessed witness {slug}")
+    cfg = json.loads(fixture.read_text())["config"]
+    ir = config_to_ir(cfg)
+    spec = submodel_spec(ir, altitude="hero")
+    groups = distinct_layer_groups(ir.layers)
+
+    assert spec["altitude"] == "hero"
+    assert spec["layers"] == len(ir.layers)
+    assert spec["hidden"] == ir.hidden_size
+    assert len(spec["groups"]) == len(groups)
+    for spec_group, typed_group in zip(spec["groups"], groups):
+        layer = typed_group["layer"]
+        expected = attention_detail(layer.attention)
+        got = dict(spec_group["attention"])
+        assert got.pop("hidden") == ir.hidden_size
+        got.pop("scores_scaled", None)
+        assert got == expected, f"{slug}: attention fact loss in hero dialect"
+        assert spec_group["count"] == len(typed_group["indices"])
+        assert spec_group["layers"] == list(typed_group["indices"])
+        assert spec_group["norm_placement"] == layer.norm_placement
+        ffn = layer.ffn
+        if ffn.kind == "moe":
+            assert spec_group["ffn"].get("kind") == "moe"
+            assert spec_group["ffn"].get("num_experts") == ffn.num_experts
+            assert spec_group["ffn"].get("num_experts_per_tok") == ffn.num_experts_per_tok
+            assert spec_group["ffn"].get("expert_intermediate_size") == ffn.expert_intermediate_size
+        else:
+            assert spec_group["ffn"].get("intermediate_size") == ffn.intermediate_size
+    # The schedule reproduces the stack's exact layer-type sequence.
+    total = sum(count for _, count in spec["schedule"]["runs"])
+    assert total == len(ir.layers)

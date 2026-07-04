@@ -144,3 +144,18 @@ scheduler_flow_matching_markers:
 # or a 3-sequence patch_size.  NEVER a class-name substring (eradication I-10).
 temporal_forward_markers: [num_frames]
 temporal_config_fields: [sample_frames, num_frames, temporal_compression_ratio, temporal_interpolation_scale, patch_size_t, temporal_patch_size]
+
+# Which DENOISER forward argument a secondary stack refines — the lane the
+# refiner block is drawn on.  The names are diffusers' own forward-signature
+# conventions (the stack detector reports the RAW name; this maps it to a
+# drawn lane).  "name=lane"; lane ∈ text | latent.
+stack_lane_params:
+  - encoder_hidden_states=text
+  - caption_feats=text
+  - cap_feats=text
+  - context=text
+  - txt=text
+  - hidden_states=latent
+  - latents=latent
+  - x=latent
+  - img=latent

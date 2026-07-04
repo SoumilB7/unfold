@@ -203,3 +203,43 @@ stream isn't drawn as its own column. See `docs/diffusion_connection_audit.md` �
   change.
 - **New catalogue model →** add the id to `toserve.md`; `scripts/serve_audit.py`
   picks it up automatically (gated repos are marked `🔒` or self-detected at 401).
+
+
+---
+
+## Capstone II — ONE TOWER (2026-07-04/05)
+
+The convergence the block standard implied is now structural: **every
+transformer tower in the engine comes into existence the same way.**
+
+* **One fact dialect** — the recursive ``sub_model`` group spec (facts only),
+  extended with ``norm_placement`` and gate facts; produced by the shared
+  per-block reader (``evidence/vision.py::layer_facts_from_block``: dataflow
+  norm placement, closure-proven gating, gate-PRODUCER detection via
+  tuple-unpacked self-calls, standard-cell signature).
+* **One cell projector** — ``renderers/html/tower.py::tower_cell`` (pre / post /
+  double-sandwich placements, conditioning/learned residual gates,
+  honest-unknown); consumed by the text-encoder, vision, audio and refiner
+  towers.  Non-standard blocks (conformers) refuse the cell and keep their
+  truthful op-chain.
+* **One drill namespace** — canonical attention/FFN regions via
+  ``prefix_region``/``node_prefix``; the four hand rename-maps and the
+  hand-authored vision card mirror are deleted.
+* **Secondary stacks are detected, never designed** —
+  ``evidence/stacks.py`` finds config-count-bound ModuleLists of block-shaped
+  classes (constructor-chain count resolution, forward-arg lane), and the
+  HunyuanVideo token refiner / Lumina latent+context refiners fall out as
+  drawn instances (rail chains, the entry-stage slot, and the TRUE two-input
+  ``‖`` entry join for entry-joined models).
+* **Hero lock** — ``test_hero_altitude_represents_the_root_losslessly``: the
+  dialect provably carries the ROOT model with zero loss and zero transforms
+  for every blessed LLM witness, which is what makes a future migration of the
+  flagship view onto the projector a rendering decision, not a data risk.
+
+External measure (Unit 12, re-run 2026-07-04): **coverage audit — 35/35
+accessible target models parse with zero unparsed fields and zero
+partial-config reasons**; **serve audit — 92/105 catalogued models render
+clean end-to-end with zero schema and zero coupling problems**.  The remaining
+tail is repo-layout/loader territory (Pixtral ``params.json``, Qwen3-Omni
+nesting, Tencent repo JSON dialects, adapter-only repos: IP-Adapter, LCM-LoRA),
+not rendering defects.

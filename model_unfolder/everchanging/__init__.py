@@ -120,6 +120,7 @@ def load_diffusion_typing() -> dict[str, list[str]]:
         "scheduler_flow_matching_markers": data.get("scheduler_flow_matching_markers") or [],
         "norm_type_kind": data.get("norm_type_kind") or [],
         "temporal_forward_markers": data.get("temporal_forward_markers") or [],
+        "stack_lane_params": data.get("stack_lane_params") or [],
         "temporal_config_fields": data.get("temporal_config_fields") or [],
     }
 

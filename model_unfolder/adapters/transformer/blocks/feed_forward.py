@@ -56,7 +56,12 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         children = _dense_ffn_child_blocks(hidden, inter, activation,
                                            ffn.activation_assumed, ffn.activation_from_class)
     else:
-        children = _gated_ffn_child_blocks(hidden, inter, activation)
+        if ffn.kind != "moe" and ffn.projection_mode == "fused_gate_up":
+            # Source-proven FUSED storage: the drill draws one gate+up matrix
+            # then a split — cards must match those exact node ids.
+            children = _fused_gated_ffn_child_blocks(hidden, inter, activation)
+        else:
+            children = _gated_ffn_child_blocks(hidden, inter, activation)
         if ffn.kind == "moe":
             children.extend(_moe_child_blocks(ffn, hidden, inter))
     if generic:
@@ -136,6 +141,47 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
             "id": "down_proj",
             "label": "Linear (out)",
             "title": "Output projection",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{inter} \u2192 {hidden}"],
+        },
+    ]
+
+
+def _fused_gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
+    """Cards for the FUSED gate+up storage (one matrix, chunked in forward) —
+    Phi-3-style; ids match the canonical region's fused nodes exactly."""
+    return [
+        {
+            "id": "gate_up_proj",
+            "label": "Linear (gate+up)",
+            "title": "Fused gate+up projection",
+            "description": ("One Linear producing BOTH the gate and up paths — "
+                            "the two projections are stored as a single fused "
+                            "matrix and chunked in forward."),
+            "facts": [f"{hidden} \u2192 2\u00d7{inter}"],
+        },
+        {
+            "id": "gate_up_split",
+            "label": "split",
+            "title": "Split gate / up",
+            "description": "Chunks the fused projection into the gate and up halves.",
+        },
+        {
+            "id": "activation",
+            "label": activation,
+            "title": activation,
+            "description": "Element-wise non-linearity applied to the gate path.",
+        },
+        {
+            "id": "multiply",
+            "label": "x",
+            "title": "Gate product",
+            "description": f"{activation}(gate) \u00d7 up \u2014 combines the gated and ungated paths.",
+        },
+        {
+            "id": "down_proj",
+            "label": "Linear (down)",
+            "title": "Down projection",
             "description": "Linear back to the residual width.",
             "facts": [f"{inter} \u2192 {hidden}"],
         },

@@ -38,6 +38,7 @@ from .modalities import (
 from .modality_views.audio import build_audio_encoder_view
 from .modality_views.video import build_video_encoder_view
 from .modality_views.vision_details import build_vision_encoder_view
+from .refiner import build_refiner_tower_view
 from .mtp_head import build_mtp_head_view, build_mtp_transformer_block_view
 from .self_conditioning import build_self_conditioning_view
 from .per_layer_embedding import build_per_layer_embedding_view
@@ -222,5 +223,6 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "mla_kv_cache_path": _from_block(build_mla_kv_cache_view),
     "moe_expert": _from_block(build_moe_expert_view),
     "vision_encoder": _from_block(build_vision_encoder_view),
+    "refiner_tower": _from_block(build_refiner_tower_view),
     "mtp_transformer_block": _from_block(build_mtp_transformer_block_view),
 }

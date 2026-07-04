@@ -1,7 +1,7 @@
 {
   "checks": {
     "click_coupling": true,
-    "config_field_audit": false,
+    "config_field_audit": true,
     "dangling_connectors": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
@@ -55,13 +55,19 @@
     "vocab_size": 250880
   },
   "hash_signature": [
+    "5e2ea372ffa0d01247ea6e6642b1f03e",
+    "87dd661e5c59ae7cf3eb3a79cd23c871",
+    "9690073a99b038727d8ddfc9d75359d6",
+    "984432b9fa84629cfee5bcd871795b3f"
+  ],
+  "model": "bloom",
+  "source": "local",
+  "superseded_hash_signature": [
     "87dd661e5c59ae7cf3eb3a79cd23c871",
     "9690073a99b038727d8ddfc9d75359d6",
     "984432b9fa84629cfee5bcd871795b3f",
     "e4975778ea660557256a3095549b81a4"
   ],
-  "model": "bloom",
-  "source": "local",
   "visual_evidence": {
     "gallery_dir": "galleries/bloom",
     "manifest": true,

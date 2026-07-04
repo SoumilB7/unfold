@@ -814,7 +814,13 @@ def check_nested_conformance(
             source_owner = event_key[4] if len(event_key) > 4 else ""
             source_file = event_key[5] if len(event_key) > 5 else ""
             if source_owner and source_file:
-                bound_registry = build_registry((source_file,), component=event_key[2] or component)
+                # The owner's file plus ITS OWN construction imports — the same
+                # closure rule as everywhere else: a diffusers block's Attention/
+                # FeedForward live in shared library files, and a single-file
+                # registry would misread their projections as fabricated.
+                bound_registry = build_registry(
+                    _augment_diffusion_files((source_file,)),
+                    component=event_key[2] or component)
                 if source_owner in bound_registry:
                     closure = (
                         transitive_closure(source_owner, bound_registry, vocab)[0],
@@ -1409,9 +1415,21 @@ def _drawn_side_input_roles(spec: dict, stage_role: dict) -> set[str]:
     """The conditioning ROLES the diagram feeds into this block-type as external
     side-rails (text / timestep), read from each side block's ``diffusion_stage``."""
     roles: set[str] = set()
+    layer_ids = {str(b.get("id")) for b in (spec.get("blocks") or [])}
     for b in (spec.get("blocks") or []):
         if not str(b.get("lane", "")).startswith("external"):
             continue
+        # A rail is an input TO THIS BLOCK only if its arrow enters the block
+        # (feeds a layer-local target).  A chain stage feeding another rail
+        # block or a MODEL-level node (text -> refiner -> the entry ‖) is
+        # entry structure, not a per-block conditioning input.
+        feeds = str(b.get("feeds") or "")
+        if feeds and feeds not in ("attn", "cross_attn") and feeds not in layer_ids:
+            continue
+        if feeds in layer_ids and str(
+                next((x.get("lane", "") for x in spec["blocks"]
+                      if str(x.get("id")) == feeds), "")).startswith("external"):
+            continue                      # feeds a sibling rail stage, not the block
         role = stage_role.get(str(b.get("diffusion_stage") or ""))
         if role:
             roles.add(role)

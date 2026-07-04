@@ -156,18 +156,22 @@
   "hash_signature": [
     "1f9feb589dfed9eb1754bcc3eafcf0a6",
     "30d75a7d896bd43cf868c26b1b0ceaff",
-    "375b0fc6d963ed249b5fc6e7ce086d5b",
     "5ecbefdc7ad39904d54f066cbc0b1963",
     "6dc62a9559452e8afbb5c6772da97bc4",
     "72c72e56496f2ecf5c83d5192468a0e7",
     "7375adee755858aa914e5767ce8df371",
     "7d3443fd29ef5465e5722d3dea2ff019",
+    "7ea5872cd78ba9b590facdf0ca105987",
+    "7fea0fb220eb9681e406980b0ebb93d3",
+    "82ef609ff21c47126d85ad43cbb0e46c",
     "8a53e5b43e29b3ed06b4e0dc092a5c19",
     "94cbfcf9da084ac6fcd53a000af0ebd1",
     "a4bd9d4acf64c641ef5d7bbe32e79a7b",
     "b26496903a90d935f59b32446b1d93be",
     "c445b387e72b69a1bcb1cf0bc02975cc",
+    "d0acc15f723c014342914a22cbe32610",
     "e1641402bf13dfd461ecd0c0a7defd1c",
+    "e7881b8f2604586117c644e970fcbef3",
     "ead2500cfbe67a591bd8d16e60405d59"
   ],
   "model": "Lumina-Image-2.0",
@@ -175,23 +179,26 @@
   "superseded_hash_signature": [
     "1f9feb589dfed9eb1754bcc3eafcf0a6",
     "30d75a7d896bd43cf868c26b1b0ceaff",
-    "375b0fc6d963ed249b5fc6e7ce086d5b",
     "5ecbefdc7ad39904d54f066cbc0b1963",
-    "6417ca6cdf18114b520401dfa256692a",
     "6dc62a9559452e8afbb5c6772da97bc4",
     "72c72e56496f2ecf5c83d5192468a0e7",
+    "7375adee755858aa914e5767ce8df371",
     "7d3443fd29ef5465e5722d3dea2ff019",
+    "7ea5872cd78ba9b590facdf0ca105987",
+    "7fea0fb220eb9681e406980b0ebb93d3",
+    "82ef609ff21c47126d85ad43cbb0e46c",
     "8a53e5b43e29b3ed06b4e0dc092a5c19",
     "94cbfcf9da084ac6fcd53a000af0ebd1",
     "a4bd9d4acf64c641ef5d7bbe32e79a7b",
     "b26496903a90d935f59b32446b1d93be",
     "c445b387e72b69a1bcb1cf0bc02975cc",
     "e1641402bf13dfd461ecd0c0a7defd1c",
-    "ead2500cfbe67a591bd8d16e60405d59"
+    "ead2500cfbe67a591bd8d16e60405d59",
+    "fb3e2347597fc95720df6224f1633743"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/lumina-image-2-0",
     "manifest": true,
-    "png_count": 15
+    "png_count": 19
   }
 }

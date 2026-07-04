@@ -202,8 +202,14 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
     attn = registry.get(attn_name)
     ffn_ops = transitive_closure(ffn_name, registry, vocab)[0] if ffn_name else frozenset()
     ffn_info = registry.get(ffn_name)
-    norm_types = [class_name for class_name in info.field_types.values()
-                  if _role_of(class_name) == "norm"]
+    # A norm-role field whose output is TUPLE-UNPACKED in forward
+    # (``gate_msa, gate_mlp = self.norm_out(temb)``) is a MODULATION/GATE
+    # PRODUCER, not a data-path norm — it must not poison the cell-norm
+    # unanimity (the refiner cell IS LayerNorm; its AdaNorm produces gates).
+    gate_producer_fields = _tuple_unpacked_self_calls(info)
+    norm_types = [class_name for fld, class_name in info.field_types.items()
+                  if _role_of(class_name) == "norm"
+                  and fld not in gate_producer_fields]
     # STANDARD-CELL signature: one attention + at most one FFN sublayer and no
     # conv mixer INSIDE the block.  A conformer (macaron ff1/ff2 + LightConv)
     # is NOT the standard [norm→attn→⊕; norm→ffn→⊕] cell — projecting it as
@@ -229,6 +235,12 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
         "residual_gated": "gate_mul" in info.op_kinds,
         "gate_activation": ("tanh" if ("gate_mul" in info.op_kinds
                                        and "tanh" in info.call_tokens) else None),
+        # Where the gate VALUES come from: a producer call (conditioning-
+        # computed, e.g. from the timestep embedding) vs a learned static
+        # parameter — the caption's honesty hinges on this.
+        "gate_source": ("conditioning" if ("gate_mul" in info.op_kinds
+                                           and gate_producer_fields)
+                        else "parameter" if "gate_mul" in info.op_kinds else None),
         "attention_class": attn_name,
         "ffn_class": ffn_name,
         "projection_mode": _projection_mode(attn),
@@ -242,6 +254,26 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
         "ffn_projection_mode": _ffn_projection_mode(ffn_info),
         "standard_cell": standard_cell,
     }
+
+
+def _tuple_unpacked_self_calls(info: CallableInfo) -> set[str]:
+    """Fields whose forward call is assigned to a TUPLE target — the
+    modulation/gate-producer signature (``a, b = self.norm_out(temb)``)."""
+    node = _class_node(info.source_file, info.name)
+    forward = _method(node, "forward") if node else None
+    if forward is None:
+        return set()
+    out: set[str] = set()
+    for stmt in ast.walk(forward):
+        if not isinstance(stmt, ast.Assign) or not isinstance(stmt.value, ast.Call):
+            continue
+        target = stmt.targets[0] if stmt.targets else None
+        if not isinstance(target, ast.Tuple):
+            continue
+        fld = _self_field(stmt.value.func)
+        if fld:
+            out.add(fld)
+    return out
 
 
 def _vision_owner(

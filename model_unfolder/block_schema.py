@@ -49,6 +49,10 @@ class Block(TypedDict, total=False):
     view: str                     # drill-down archetype; MUST be a registered view
     children: "list[Block]"       # sub-blocks (recursed by the inspect panel)
     detail: dict                  # extra structured payload (e.g. MTP module counts)
+    # --- drill-oracle provenance (render events bind conformance by these) ---
+    source_component: str         # qualified owning component (e.g. "text_encoder.text_config")
+    source_owner: str             # the exact class the block's facts were read from
+    source_file: str              # that class's modeling file
     components: list[dict]        # typed sub-facts inside a compound stage
     # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
     static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join

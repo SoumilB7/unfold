@@ -149,6 +149,9 @@ class VisionLayerEvidence:
     #: the gate-mul (Gemma-3 vision: ``tanh``); None ⇒ evidence records only
     #: that a learned gate exists — captions must not name an activation.
     gate_activation: str | None = None
+    #: gate VALUES source: "conditioning" (computed by a producer, e.g. from
+    #: the timestep embedding) | "parameter" (learned static) | None (ungated).
+    gate_source: str | None = None
     #: True when the block IS the standard two-sublayer cell (one attention +
     #: at most one FFN, no in-block conv mixer) — a conformer is not, and must
     #: never be projected as one.
@@ -177,6 +180,7 @@ class VisionLayerEvidence:
             "residual_gated": self.residual_gated,
             "gate_activation": self.gate_activation,
             "standard_cell": self.standard_cell,
+            "gate_source": self.gate_source,
             "attention_class": self.attention_class,
             "ffn_class": self.ffn_class,
             "projection_mode": self.projection_mode,

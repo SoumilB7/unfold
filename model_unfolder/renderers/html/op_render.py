@@ -185,11 +185,19 @@ def _lane_out_label(lane: Lane, by_op: dict[str, Op]) -> str | None:
     return (top.meta or {}).get("out_label") if top else None
 
 
+def _dims_text(value) -> str:
+    """A width label for scalar OR list-valued dims (HiDream declares some
+    entry widths as lists — every element is a real declared width)."""
+    if isinstance(value, (list, tuple)):
+        return " / ".join(f"{int(v):,}" for v in value if v)
+    return f"{value:,}"
+
+
 def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     static = not clickable
     if op.kind == "input":
         if op.id == primary:
-            label = f"in ({op.out_features:,})" if op.out_features else "in"
+            label = f"in ({_dims_text(op.out_features)})" if op.out_features else "in"
             return Node(op.id, "port", label, static=True, meta=dict(op.meta))
         # A secondary input (cross-attention's text / image states) is drawn as a
         # solid block like everything else — not the light accent bookend.

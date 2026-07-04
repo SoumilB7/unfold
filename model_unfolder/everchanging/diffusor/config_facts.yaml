@@ -53,7 +53,7 @@ denoiser:
   - {field: temporal_interpolation_scale, label: "temporal pos-embed scale"}
   - {field: attention_out_bias, label: "attention out bias", noop: false}
   - {field: use_additional_conditions, label: "resolution/aspect conditioning", noop: false}
-  - {field: num_refiner_layers, label: "token-refiner layers", noop: 0}
+  - {field: num_refiner_layers, label: "token-refiner layers", noop: 0}   # joined-stream models (Lumina) keep the chip until their entry-chain refiner drawing lands; rail models (HYV) also DRAW the stack
   - {field: bottleneck_size, label: "bottleneck width"}
   - {field: theta, label: "rotary θ"}
   - {field: conv_in_kernel, label: "conv-in kernel", noop: 3}

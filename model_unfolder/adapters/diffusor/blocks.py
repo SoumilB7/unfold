@@ -819,6 +819,54 @@ def _text_encoder_ops(enc: str, text_dim, pooled, prefix: str, spec: dict | None
     ]
 
 
+def _entry_stage_blocks(geom: dict) -> list[Block]:
+    """A LATENT-lane secondary stack (Lumina's noise refiner) is an entry
+    stage: a small transformer applied once to the patchified latent tokens
+    before the main blocks.  Drawn in the entry chain (patchify -> refiner ->
+    stack); every fact is the detector's/config's own; the drill is the one
+    tower projection."""
+    from ...submodel import submodel_cell_blocks
+
+    stack = next((item for item in (geom.get("secondary_stacks") or [])
+                  if item.get("lane") == "latent"), None)
+    if not stack:
+        return []
+    count = stack["count"]
+    sub_model = stack["sub_model"]
+    gated = bool((sub_model.get("groups") or [{}])[0].get("residual_gate"))
+    return [{
+        "id": "entry_stage",
+        "role": "embedding",
+        "kind": "embedding",
+        "diffusion_stage": "patchify",
+        "label": ["Latent", "refiner"],
+        "title": f"Latent refiner (\u00d7{count})",
+        "description": (
+            f"A small transformer stack applied once to the patchified latent "
+            f"tokens before the main blocks: each of its {count} layers runs "
+            f"full self-attention and a feed-forward over the latent tokens"
+            + (", with a conditioning-computed gate on each residual update."
+               if gated else ".")
+        ),
+        "facts": [f"{count} refiner layers"]
+                 + (["input projection to model width"]
+                    if stack.get("entry_projection") else []),
+        "view": "refiner_tower",
+        "detail": {"sub_model": sub_model, "entry_label": "in (latent tokens)",
+                   "class": stack.get("block_class")},
+        "source_owner": stack.get("block_class"),
+        "source_file": stack.get("source_file"),
+        "children": submodel_cell_blocks(
+            sub_model, "entry_stage",
+            attn_description=("Full self-attention over the latent token "
+                              "sequence inside the refiner layer."),
+            norm_fallback="Norm",
+            norm_card=_encoder_norm_card,
+            residual_card=_encoder_residual_card,
+        ),
+    }]
+
+
 def _encoder_norm_card(prefix: str, norm: str, placement: str = "pre") -> Block:
     where = {
         "pre": (f"{norm} normalizes each token's features before the sublayer "
@@ -958,7 +1006,12 @@ def _encoder_roles(specs: list, entry_dims: list, pooled) -> list[set]:
     hiddens = [spec.get("hidden") for spec in (specs or [])]
     roles: list[set] = [set() for _ in hiddens]
     known = [h for h in hiddens if h]
-    for seq_target in {int(d) for d in (entry_dims or []) if d}:
+    # A LIST-valued declared width (HiDream's multi-encoder entry dims) means
+    # each element is a declared entry width — flatten before matching.
+    flat_dims: list = []
+    for d in (entry_dims or []):
+        flat_dims.extend(d if isinstance(d, (list, tuple)) else [d])
+    for seq_target in {int(d) for d in flat_dims if d}:
         if not known:
             break
         if len(known) > 1 and sum(known) == seq_target:
@@ -1074,6 +1127,20 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
                    "conditioning." if pooled else ".")
             ),
         },
+        *_entry_stage_blocks(geom),
+        *([{
+            "id": "join_concat",
+            "role": "residual",
+            "kind": "concat",
+            "diffusion_stage": "patchify",
+            "label": "\u2016",
+            "title": "Sequence join (\u2016)",
+            "description": (
+                "The refined text tokens and the latent patch tokens are "
+                "concatenated into ONE sequence here, once, before the stack — "
+                "every block then self-attends over the joined sequence."
+            ),
+        }] if geom.get("join_concat") else []),
         {
             "id": "final_rms",
             "role": "norm",
