@@ -247,6 +247,10 @@ def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
         sub = _g(cfg, key)
         if sub is None:
             continue
+        # A composite AutoConfig nests sub-configs as OBJECTS, not dicts
+        # (Qwen3-Omni's thinker_config) — same declaration, different carrier.
+        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
+            sub = sub.to_dict()
         if isinstance(sub, dict):
             if _has_transformer_shape(sub):
                 return sub

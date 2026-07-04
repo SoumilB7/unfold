@@ -255,15 +255,59 @@ def _classify_load_error(model_id: str, error: Exception) -> UnfoldError:
             "model's license on its Hugging Face page."
         )
     elif _is_not_found_error(msg):
-        err = ModelNotFoundError(
+        hint = _repo_layout_hint(model_id)
+        err = ModelNotFoundError(hint or (
             f"Couldn't find or recognize '{model_id}'. Check the model id; if it's a "
             "newly released architecture, update transformers "
             "(`pip install -U transformers`) — your installed version may not know it yet."
-        )
+        ))
     else:
         err = UnfoldError(f"Failed to load '{model_id}': {error}")
     _report_error(type(err).__name__, str(err), cause=error)
     return err
+
+
+def _repo_layout_hint(model_id: str) -> str | None:
+    """One honest, layout-derived sentence for a repo with no loadable root
+    config — read from the repo's FILE LISTING (evidence of what the repo IS;
+    nothing executed, nothing guessed):
+
+    * mistral original-release format (``params.json``) — handled upstream by
+      the normalizer, so no hint fires here;
+    * ADAPTER-ONLY repos (LoRA / IP-Adapter weight sets that modify a BASE
+      model) — say so, instead of a generic not-found;
+    * VARIANT-NESTED pipelines (``transformer/<variant>/config.json``) — name
+      the variants so the user can pick a single-variant repo/subfolder."""
+    try:
+        import json as _json
+        import urllib.request
+        url = f"https://huggingface.co/api/models/{model_id}"
+        request = urllib.request.Request(url, headers={"User-Agent": "model-unfolder"})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            files = [s.get("rfilename", "") for s in _json.load(response).get("siblings", [])]
+    except Exception:
+        return None
+    lowered = [f.lower() for f in files]
+    if any(("lora" in f or "ip-adapter" in f or "ip_adapter" in f)
+           and f.endswith((".safetensors", ".bin")) for f in lowered) and not any(
+            f == "config.json" or f == "model_index.json" for f in lowered):
+        return (
+            f"'{model_id}' is an ADAPTER-ONLY repo (LoRA / IP-Adapter weights that "
+            "modify a base model) — it carries no architecture of its own. Unfold "
+            "the BASE model the adapter is trained for instead."
+        )
+    variants = sorted({f.split("/")[1] for f in files
+                       if f.startswith("transformer/") and f.endswith("/config.json")
+                       and f.count("/") == 2})
+    if variants:
+        shown = ", ".join(variants[:6]) + ("…" if len(variants) > 6 else "")
+        return (
+            f"'{model_id}' nests its denoiser configs per VARIANT "
+            f"(transformer/<variant>/config.json: {shown}) — there is no single "
+            "denoiser to draw. Point unfold at a single-variant diffusers repo "
+            "for this model."
+        )
+    return None
 
 
 def _is_access_error(msg: str) -> bool:
@@ -350,6 +394,9 @@ def _should_fallback_to_raw_json(error: Exception) -> bool:
             # isn't valid JSON) — the repo may still be a diffusers pipeline
             # described by model_index.json, so fall through and try that.
             "not a valid json",
+            # json.JSONDecodeError spellings leaking through AutoConfig.
+            "expecting property name",
+            "expecting value",
         )
     )
 
@@ -394,10 +441,55 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
     kwargs: dict = {"repo_id": model_id, "filename": "config.json"}
     if auth_token is not None:
         kwargs["token"] = auth_token
-    path = hf_hub_download(**kwargs)
+    try:
+        path = hf_hub_download(**kwargs)
+    except Exception as exc:
+        # No config.json at all — a Mistral ORIGINAL-RELEASE repo ships
+        # ``params.json`` instead (a FORMAT, detected by layout).  Normalize it
+        # through the declared mapping; anything else re-raises for the
+        # layout-aware classifier.
+        params = _load_mistral_params_json(model_id, auth_token)
+        if params is not None:
+            return params
+        raise exc
     with open(path) as f:
         cfg = _parse_config_json_text(f.read())
     return _ensure_unfoldable_config(cfg, model_id)
+
+
+def _load_mistral_params_json(model_id: str, auth_token: Any) -> dict | None:
+    """Normalize a Mistral original-release ``params.json`` into transformers
+    spellings via the declared FORMAT vocabulary (everchanging/transformer/
+    mistral_params.yaml).  ``model_type`` is assigned as an ADDRESS from the
+    format itself (params.json IS Mistral's release format), exactly like a
+    diffusers ``_class_name`` — never used as an architectural fact."""
+    from .everchanging import load_mistral_params_map
+
+    try:
+        from huggingface_hub import hf_hub_download
+        kwargs: dict = {"repo_id": model_id, "filename": "params.json"}
+        if auth_token is not None:
+            kwargs["token"] = auth_token
+        with open(hf_hub_download(**kwargs)) as f:
+            import json as _json
+            params = _json.load(f)
+    except Exception:
+        return None
+    if not isinstance(params, dict) or "dim" not in params or "n_layers" not in params:
+        return None
+    mapping = load_mistral_params_map()
+    cfg = {dst: params[src] for src, dst in mapping.get("text", {}).items()
+           if src in params}
+    cfg["model_type"] = "mistral"
+    cfg["_name_or_path"] = model_id
+    vision = params.get("vision_encoder")
+    if isinstance(vision, dict):
+        cfg["vision_config"] = {dst: vision[src] for src, dst
+                                in mapping.get("vision", {}).items() if src in vision}
+        # STRUCTURE, never the repo name: a params.json carrying a
+        # vision_encoder IS the multimodal (pixtral-format) release.
+        cfg["model_type"] = "pixtral"
+    return cfg
 
 
 def _ensure_unfoldable_config(cfg, model_id: str) -> dict:

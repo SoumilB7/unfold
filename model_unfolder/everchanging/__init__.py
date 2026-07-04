@@ -95,6 +95,17 @@ def load_diffusion_aliases() -> dict[str, list[str]]:
     return load("diffusor", "aliases")
 
 
+def load_mistral_params_map() -> dict[str, dict[str, str]]:
+    """Mistral original-release ``params.json`` -> transformers spellings
+    (``transformer/mistral_params.yaml``): {"text": {src: dst}, "vision": …}."""
+    data = load("transformer", "mistral_params")
+    out: dict[str, dict[str, str]] = {}
+    for section, rows in (data or {}).items():
+        out[section] = dict(pair.split("=", 1) for pair in (rows or [])
+                            if isinstance(pair, str) and "=" in pair)
+    return out
+
+
 def load_diffusion_config_facts() -> dict[str, list[dict]]:
     """Declared config FACT fields (``diffusor/config_facts.yaml``): per-stage
     buckets of ``{field, label, noop?, silent?}`` rows.  Every present field is
