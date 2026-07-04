@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 #: Where blessed regression fixtures live (re-run by the CI lock test).
-DEFAULT_CORPUS = Path(__file__).resolve().parent.parent / "tests" / "sable_corpus"
+DEFAULT_CORPUS = Path(__file__).resolve().parent.parent / "tests" / "sable_test_corpus"
 
 #: The fixed checklist the per-view visual review scores each PNG against.  These
 #: are exactly the classes that slip past every mechanical net (they live in the
