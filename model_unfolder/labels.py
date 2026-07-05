@@ -126,7 +126,20 @@ def kind_short(attention: dict) -> str:
         tags.append("Shared")
     if attention.get("no_rope"):
         tags.append("NoPE")
+    if _partial_rope_dims(attention):
+        tags.append("Partial RoPE")
     return f"{short} ({', '.join(tags)})" if tags else short
+
+
+def _partial_rope_dims(attention: dict) -> tuple[int, int] | None:
+    """(rotated, head_dim) when the code rotates only a slice of each head
+    (GPT-NeoX/GPT-J/StableLM/Persimmon partial rotary).  MLA is excluded —
+    its rope/nope split is a different mechanism with its own drawing."""
+    rd, hd = attention.get("rope_dim"), attention.get("head_dim")
+    if (attention.get("kind") != "mla" and isinstance(rd, int)
+            and isinstance(hd, int) and 0 < rd < hd):
+        return rd, hd
+    return None
 
 
 def kind_long(attention: dict) -> str:
@@ -147,6 +160,9 @@ def kind_long(attention: dict) -> str:
         extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
+    _pr = _partial_rope_dims(attention)
+    if _pr:
+        extras.append(f"rotary on {_pr[0]} of {_pr[1]} head dims")
     if attention.get("no_rope"):
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
@@ -387,6 +403,9 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
             facts.append(chip)
+    _pr = _partial_rope_dims(attention)
+    if _pr:
+        facts.append(f"partial rotary — {_pr[0]} of {_pr[1]} head dims")
     return desc, facts
 
 
@@ -493,7 +512,12 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     if kind == "mqa":
         return _prefixed_label(prefix, "Multi-Query", "Attention")
     if kind == "gqa":
-        tag = "(QK-Norm)" if attention.qk_norm else "Attention"
+        gqa_tags = []
+        if attention.qk_norm:
+            gqa_tags.append("QK-Norm")
+        if _spec_partial_rope(attention):
+            gqa_tags.append("Partial RoPE")
+        tag = f"({', '.join(gqa_tags)})" if gqa_tags else "Attention"
         return _prefixed_label(prefix, "Grouped-Query", tag)
     if kind == "ssm":
         shared_tag = "(Shared)" if attention.shared else "Block"
@@ -512,9 +536,19 @@ def attention_label(attention: AttentionSpec) -> list[str]:
         tags.append("QK-Norm")
     if attention.no_rope:
         tags.append("NoPE")
+    if _spec_partial_rope(attention):
+        tags.append("Partial RoPE")
     if tags:
         return ["Multi-Head Attn", f"({', '.join(tags)})"]
     return ["Multi-Head", "Attention"]
+
+
+def _spec_partial_rope(attention: AttentionSpec) -> bool:
+    """True when the spec proves a partial head rotation (rope_dim strictly
+    inside head_dim; MLA's rope/nope split is its own mechanism)."""
+    return (attention.kind != "mla" and isinstance(attention.rope_dim, int)
+            and isinstance(attention.head_dim, int)
+            and 0 < attention.rope_dim < attention.head_dim)
 
 
 def attention_title(attention: AttentionSpec) -> str:

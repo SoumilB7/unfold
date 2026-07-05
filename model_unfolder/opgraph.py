@@ -534,10 +534,20 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     # RoPE: the real forward rotates Q and K before the scores (apply_rotary_pos_emb).
     # Show it on the Q and K lanes — unless the family doesn't use RoPE (ALiBi /
     # learned absolute) or this specific layer is NoPE (Llama-4 interleaved NoPE).
+    # PARTIAL rotary (GPT-NeoX/GPT-J/StableLM/Persimmon/ChatGLM): the code slices
+    # the head and rotates only ``rope_dim`` of ``head_dim`` dims, passing the
+    # rest through untouched — drawing a full rotation would fabricate math the
+    # forward never performs, so the op states the real fraction.
     if attn.get("rope", True) and not attn.get("no_rope") and not cross:
+        rope_dim = attn.get("rope_dim")
+        head_dim = attn.get("head_dim")
+        partial = (isinstance(rope_dim, int) and isinstance(head_dim, int)
+                   and 0 < rope_dim < head_dim)
+        rope_caption = ([f"rot {rope_dim} · pass {head_dim - rope_dim} dims"]
+                        if partial else [])
         ops += [
-            Op("q_rope", "rope", ["apply RoPE", "Q"]),
-            Op("k_rope", "rope", ["apply RoPE", "K"]),
+            Op("q_rope", "rope", ["apply RoPE", "Q"] + rope_caption),
+            Op("k_rope", "rope", ["apply RoPE", "K"] + rope_caption),
         ]
         edges += [
             Edge(q_source, "q_rope"), Edge("q_rope", "scaled_scores"),

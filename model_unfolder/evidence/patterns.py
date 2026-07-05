@@ -1504,6 +1504,106 @@ def _attention_qk_norm(node: ast.ClassDef) -> QKNormCodeEvidence | None:
         present=None, gate=tuple(sorted(atoms, key=lambda a: a.field)))
 
 
+def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
+    """The ROTATED head-width when the code constructs its rotary embedding
+    with an EXPLICIT dim argument computed from config arithmetic — ChatGLM's
+    ``RotaryEmbedding(rotary_dim // 2)`` with ``rotary_dim = hidden//heads if
+    kv_channels is None else kv_channels``: the fraction exists NOWHERE in the
+    config, only in this expression.  The evaluator handles config attributes,
+    prior local assigns, int constants, +,-,*,//,/ and the ``X if config.Y is
+    None else config.Y`` ternary — anything else returns None (a detector
+    failure is never permission to assert).  Modern classes that pass
+    ``config=config`` to their rotary (Llama/NeoX) have no dim argument and
+    return None here — their fraction is config-declared and already read."""
+
+    def _cfg_get(field):
+        if cfg is None:
+            return None
+        v = getattr(cfg, field, None)
+        if v is None and isinstance(cfg, dict):
+            v = cfg.get(field)
+        return v
+
+    def _cfg_field(e):
+        if isinstance(e, ast.Attribute):
+            base = e.value
+            if isinstance(base, ast.Name) and base.id in ("config", "cfg"):
+                return e.attr
+            if (isinstance(base, ast.Attribute) and base.attr == "config"
+                    and isinstance(base.value, ast.Name) and base.value.id == "self"):
+                return e.attr
+        return None
+
+    def _ev(e, local):
+        if isinstance(e, ast.Constant) and isinstance(e.value, (int, float)):
+            return e.value
+        if isinstance(e, ast.Name):
+            return local.get(e.id)
+        f = _cfg_field(e)
+        if f is not None:
+            return _cfg_get(f)
+        if isinstance(e, ast.BinOp):
+            l, r = _ev(e.left, local), _ev(e.right, local)
+            if l is None or r is None:
+                return None
+            try:
+                if isinstance(e.op, ast.FloorDiv):
+                    return l // r
+                if isinstance(e.op, ast.Div):
+                    return l / r
+                if isinstance(e.op, ast.Mult):
+                    return l * r
+                if isinstance(e.op, ast.Add):
+                    return l + r
+                if isinstance(e.op, ast.Sub):
+                    return l - r
+            except (ZeroDivisionError, TypeError):
+                return None
+            return None
+        if isinstance(e, ast.IfExp):
+            # ``A if config.X is None else B`` — the ChatGLM kv_channels ternary
+            t = e.test
+            if (isinstance(t, ast.Compare) and len(t.ops) == 1
+                    and isinstance(t.comparators[0], ast.Constant)
+                    and t.comparators[0].value is None):
+                f = _cfg_field(t.left)
+                if f is not None:
+                    is_none = _cfg_get(f) is None
+                    if isinstance(t.ops[0], ast.Is):
+                        return _ev(e.body if is_none else e.orelse, local)
+                    if isinstance(t.ops[0], ast.IsNot):
+                        return _ev(e.orelse if is_none else e.body, local)
+        if (isinstance(e, ast.Call) and isinstance(e.func, ast.Name)
+                and e.func.id == "int" and len(e.args) == 1):
+            v = _ev(e.args[0], local)
+            return int(v) if v is not None else None
+        return None
+
+    from .forward_ops import _method
+    vals: set[int] = set()
+    for node in _parse_defs(tuple(str(p) for p in (files or ()))).values():
+        init = _method(node, "__init__")
+        if init is None:
+            continue
+        local: dict = {}
+        for st in init.body:
+            if isinstance(st, ast.Assign) and len(st.targets) == 1 \
+                    and isinstance(st.targets[0], ast.Name):
+                local[st.targets[0].id] = _ev(st.value, local)
+            for call in ast.walk(st):
+                if not isinstance(call, ast.Call) or not call.args:
+                    continue
+                callee = call.func
+                name = callee.attr if isinstance(callee, ast.Attribute) else (
+                    callee.id if isinstance(callee, ast.Name) else "")
+                if "rotary" not in (name or "").lower():
+                    continue
+                v = _ev(call.args[0], local)
+                if isinstance(v, (int, float)) and v == int(v) and v > 0:
+                    vals.add(int(v))
+    return next(iter(vals)) if len(vals) == 1 else None
+
+
 def decoder_qk_norm_from_files(files) -> QKNormCodeEvidence | None:
     """Q/K normalisation READ FROM THE DECODER ATTENTION CLASS — code-first.
 

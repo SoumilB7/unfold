@@ -1312,3 +1312,119 @@ def test_tower_lane_norms_read_the_construction_site_not_field_presence(tmp_path
     plain = layer_facts_from_block("PlainBlock", registry, vocab)
     assert normed["q_norm"] is True and normed["k_norm"] is True
     assert plain["q_norm"] is False and plain["k_norm"] is False
+
+
+# ---------------------------------------------------------------------------
+# Partial rotary — surfaced from every dialect, incl. code-only (S1b)
+# ---------------------------------------------------------------------------
+
+_CHATGLM_ROTARY_INIT = '''
+import torch
+from torch import nn
+
+
+class RotaryEmbedding(nn.Module):
+    def __init__(self, dim, original_impl=False):
+        super().__init__()
+        self.dim = dim
+
+    def forward(self, x):
+        return x
+
+
+class XModel(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        rotary_dim = (
+            config.hidden_size // config.num_attention_heads
+            if config.kv_channels is None else config.kv_channels
+        )
+        self.rotary_pos_emb = RotaryEmbedding(rotary_dim // 2, original_impl=True)
+
+    def forward(self, x):
+        return self.rotary_pos_emb(x)
+'''
+
+_CONFIG_DRIVEN_ROTARY_INIT = '''
+from torch import nn
+
+
+class YRotaryEmbedding(nn.Module):
+    def __init__(self, config=None):
+        super().__init__()
+        self.config = config
+
+    def forward(self, x):
+        return x
+
+
+class YModel(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.rotary_emb = YRotaryEmbedding(config=config)
+
+    def forward(self, x):
+        return self.rotary_emb(x)
+'''
+
+
+def test_code_rope_dim_evaluates_the_constructor_arithmetic(tmp_path):
+    """ChatGLM shape: ``RotaryEmbedding(rotary_dim // 2)`` with the kv_channels
+    ternary — the halving exists nowhere in config; the evaluator reads it
+    from the code's own expression."""
+    from model_unfolder.evidence.patterns import decoder_rope_dim_from_files
+    f = tmp_path / "modeling_x.py"
+    f.write_text(_CHATGLM_ROTARY_INIT)
+    cfg = {"hidden_size": 4096, "num_attention_heads": 32, "kv_channels": 128}
+    assert decoder_rope_dim_from_files((str(f),), cfg=cfg) == 64
+    cfg_no_kv = {"hidden_size": 4096, "num_attention_heads": 32, "kv_channels": None}
+    assert decoder_rope_dim_from_files((str(f),), cfg=cfg_no_kv) == 64
+
+
+def test_code_rope_dim_ignores_config_driven_rotary(tmp_path):
+    """Modern classes pass ``config=config`` — no explicit dim argument, so
+    the code channel stays silent (the fraction is config-declared there)."""
+    from model_unfolder.evidence.patterns import decoder_rope_dim_from_files
+    f = tmp_path / "modeling_y.py"
+    f.write_text(_CONFIG_DRIVEN_ROTARY_INIT)
+    assert decoder_rope_dim_from_files((str(f),), cfg={"hidden_size": 64}) is None
+
+
+def test_partial_rotary_surfaces_in_drill_and_chips():
+    """StableLM (partial_rotary_factor=0.25): the RoPE op states the real
+    rot/pass split and the Partial RoPE chip appears; a full-rotary model
+    stays chip-free."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    doc = mu.unfold(AutoConfig.for_model("stablelm"))
+    html = doc.to_html()
+    assert "rot 20 · pass 60 dims" in html          # 0.25 × 80
+    assert "Partial RoPE" in html
+    full = mu.unfold(AutoConfig.for_model("llama")).to_html()
+    assert "Partial RoPE" not in full and "rot " not in full
+
+
+def test_nested_rope_parameters_dialect_carries_the_fraction():
+    """GPT-NeoX modern dialect: partial_rotary_factor nested INSIDE
+    rope_scaling/rope_parameters (the legacy top-level rotary_pct no longer
+    exists on the config class)."""
+    import model_unfolder as mu
+    cfg = {
+        "model_type": "gpt_neox", "hidden_size": 96 * 8, "num_attention_heads": 8,
+        "num_hidden_layers": 2, "vocab_size": 1000,
+        "rope_scaling": {"rope_type": "default", "partial_rotary_factor": 0.25},
+    }
+    ir = mu.config_to_ir(cfg)
+    assert ir.layers[0].attention.rope_dim == 24
+
+
+def test_qk_norm_draws_real_ops_in_the_drill():
+    """Her Eyes' lawfulness line: the drill may not omit an op its parent
+    label advertises — a QK-norm model's attention drill draws Q Norm/K Norm
+    on the lanes (projection → norm → RoPE); MLA latent norms never do."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    html = mu.unfold(AutoConfig.for_model("qwen3")).to_html()
+    assert html.count("Q Norm") >= 1 and html.count("K Norm") >= 1
+    mla = mu.unfold(AutoConfig.for_model("deepseek_v3")).to_html()
+    assert mla.count("Q Norm") == 0 and mla.count("K Norm") == 0

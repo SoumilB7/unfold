@@ -257,6 +257,18 @@ def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> li
     return per_layer
 
 
+def _code_rope_dim(cfg: Any, context=None) -> int | None:
+    """The rotated head-width read from an explicit-dim rotary CONSTRUCTION
+    (ChatGLM's ``RotaryEmbedding(rotary_dim // 2)``) — only consulted when
+    every config spelling of the fraction is silent.  Best-effort, never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_rope_dim_from_files
+        return decoder_rope_dim_from_files(_source_files(cfg, context), cfg=cfg)
+    except Exception:
+        return None
+
+
 def _code_expert_storage(cfg: Any, context=None) -> str | None:
     """Routed-EXPERT storage read from the source — independent of the plain
     MLP's storage (DeepSeek-V3: split MLP for dense/shared, fused stacked
@@ -538,10 +550,25 @@ def parse(cfg: Any, context=None) -> ModelIR:
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
-    rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
     # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
     _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
+    # The modern transformers rope dialect NESTS the partial factor inside the
+    # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
+    # exists on the config class) — same fact, newer spelling.
+    if partial_rotary_fac is None and isinstance(_rope_scaling, dict):
+        _nested_prf = _rope_scaling.get("partial_rotary_factor")
+        if _nested_prf is not None:
+            partial_rotary_fac = _nested_prf
+            debug.note_access("partial_rotary_factor")
+    rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
+    if rope_dim_value is None:
+        # Config silent on the fraction — the CODE may still state it (ChatGLM
+        # constructs ``RotaryEmbedding(rotary_dim // 2)``; the halving exists
+        # nowhere in config).  A full-width value is not "partial" — drop it.
+        _code_rd = _code_rope_dim(text_cfg, context)
+        if _code_rd and head_dim and 0 < _code_rd < head_dim:
+            rope_dim_value = _code_rd
     mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
     if mrope_section is not None:
         debug.note_access("mrope_section")   # consumed SUBKEY of the scaling dict

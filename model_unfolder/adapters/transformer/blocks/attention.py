@@ -25,6 +25,14 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "window_size": attention.window_size,
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
+        # Per-lane projection for the drill: QK-norm is two REAL ops in
+        # forward — the op-graph draws them on the Q and K lanes (between
+        # projection and RoPE), never chip-only at drill altitude.  SELF
+        # attention only: a cross sublayer's spec inherits qk_norm from the
+        # self spec by _replace, which is not per-sublayer evidence — drawing
+        # there would be the refiner attribution bug again.
+        "q_norm": bool(attention.qk_norm) and not attention.cross_attention,
+        "k_norm": bool(attention.qk_norm) and not attention.cross_attention,
         "rope": attention.rope,
         "position_kind": attention.position_kind,
         "position_application": attention.position_application,
@@ -297,14 +305,37 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if attention.qk_norm and not cross_attention:
+        # QK-norm is two REAL ops in forward; the drill draws them on the Q/K
+        # lanes (projection → norm → RoPE/scores), so each node needs its card.
+        # The spec carries presence, not the norm's arithmetic kind — the card
+        # states what the op does without asserting RMS vs LayerNorm.
+        cards += [
+            {"id": "q_norm", "title": "Query normalisation",
+             "description": "Normalizes the projected query heads before the attention "
+                            "scores — keeps the QK logits in a stable range."},
+            {"id": "k_norm", "title": "Key normalisation",
+             "description": "Normalizes the projected key heads before the attention "
+                            "scores — keeps the QK logits in a stable range."},
+        ]
     if attention.rope and not attention.no_rope and not cross_attention:
         # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
         # the two rope nodes the SDPA region now draws on the Q/K lanes.
+        _prd = attention.rope_dim
+        _hd = attention.head_dim
+        rot_note = (
+            f" Rotates only the first {_prd} of {_hd} head dims; the remaining "
+            f"{_hd - _prd} pass through unrotated (partial rotary)."
+            if (attention.kind != "mla" and isinstance(_prd, int)
+                and isinstance(_hd, int) and 0 < _prd < _hd) else ""
+        )
         cards += [
             {"id": "q_rope", "title": "Apply RoPE (Q)",
-             "description": "Rotary position embedding applied to the query heads before the scores."},
+             "description": "Rotary position embedding applied to the query heads before the scores."
+                            + rot_note},
             {"id": "k_rope", "title": "Apply RoPE (K)",
-             "description": "Rotary position embedding applied to the key heads before the scores."},
+             "description": "Rotary position embedding applied to the key heads before the scores."
+                            + rot_note},
         ]
     if (attention.position_kind == "alibi"
             and attention.position_application == "attention_bias" and not cross_attention):
