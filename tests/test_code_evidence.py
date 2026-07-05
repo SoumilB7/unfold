@@ -1710,7 +1710,10 @@ class XTopKRouter(nn.Module):
 
 def _router_ev(tmp_path, src):
     from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
-    f = tmp_path / "modeling_x.py"
+    import hashlib
+    # unique filename per distinct source: _parse_defs is lru_cached on path, so
+    # two calls to the same path in one test would reuse the first parse.
+    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
     f.write_text(src)
     return decoder_router_evidence_from_files((str(f),))
 
@@ -1783,3 +1786,46 @@ def test_deepseek_v3_declared_and_code_agree_no_drift():
             routing = l.ffn.routing
     assert routing["scoring_func"] == "sigmoid" and routing.get("bias_correction")
     assert "_scoring_declared" not in routing      # config and code agree
+
+
+def test_router_scoring_position_before_vs_after_topk(tmp_path):
+    """The score transform's POSITION relative to top-k is a code fact: DSV3/GLM
+    (softmax/sigmoid the full logits, THEN select) score before; gpt-oss/Granite
+    (top-k the raw logits, THEN softmax the winners) score after.  Drives whether
+    a scoring node is drawn before top-k — a node before top-k would misdraw
+    gpt-oss."""
+    before_shape = _DSV3_SHAPED_ROUTER                 # sigmoid() ... then torch.topk
+    after_shape = _GPTOSS_SHAPED_ROUTER                # torch.topk ... then softmax
+    assert _router_ev(tmp_path, before_shape).scoring_before_topk is True
+    assert _router_ev(tmp_path, after_shape).scoring_before_topk is False
+
+
+def test_router_ignores_framework_container_aux_loss_softmax(tmp_path):
+    """A ``*ForCausalLM`` wrapper that softmaxes router logits for the load-balance
+    STAT (output_router_logits) must not be read as the selection scoring — the
+    container is excluded, so a top-k-then-softmax block still resolves to
+    scoring-after-topk, not an ambiguous None."""
+    src = _GPTOSS_SHAPED_ROUTER + '''
+
+class XForCausalLM(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.router = XTopKRouter(config)
+
+    def forward(self, hidden_states):
+        router_logits = hidden_states
+        routing_weights = torch.nn.functional.softmax(router_logits, dim=-1)
+        return routing_weights
+'''
+    ev = _router_ev(tmp_path, src)
+    assert ev.scoring_fn == "softmax" and ev.scoring_before_topk is False
+
+
+def test_glm45_draws_the_sigmoid_scoring_node_before_topk():
+    """Her Eyes lawfulness fix: GLM-4.5's router draws the sigmoid score
+    transform as its OWN node between Linear (Gate) and Top-k, so the drill's
+    'expert scores' has a visible origin."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    html = mu.unfold(AutoConfig.for_model("glm4_moe")).to_html()
+    assert ">sigmoid<" in html                # a drawn node, not only a chip

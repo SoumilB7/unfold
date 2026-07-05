@@ -1254,6 +1254,11 @@ def _moe_routing(cfg: Any, context=None) -> dict | None:
             routing["bias_correction"] = True
         if code.sparsemixer:
             routing["sparsemixer"] = True
+        # The score transform is drawn as its OWN node only when the code runs it
+        # BEFORE the top-k (Mixtral/GLM/DSV3) — a node before top-k would misdraw
+        # gpt-oss/Granite, which top-k the raw logits and softmax the winners.
+        if code.scoring_fn and code.scoring_before_topk:
+            routing["scoring_before_topk"] = True
 
     return routing or None
 

@@ -48,6 +48,16 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
     nodes.append(Node("g_gate", "linear", "Linear (Gate)"))
     flow.append("g_gate")
 
+    # The score transform (sigmoid/softmax) is a REAL op — drawn as its own node
+    # when the code runs it BEFORE selection (code-derived), so the drill's
+    # "expert scores" input has a visible on-screen origin instead of appearing
+    # from nowhere.  A model that top-ks raw logits first (gpt-oss) has no node
+    # here — drawing one would misplace the op.
+    scoring = r.get("scoring_func")
+    if scoring and r.get("scoring_before_topk"):
+        nodes.append(Node("g_score", "activation", scoring))
+        flow.append("g_score")
+
     # Selection is one block on the router view; its card drills into the actual
     # torch sequence (two torch.topk calls + mask + gather) that boils N experts
     # down to k — what PyTorch really does, not a "select top-k" logic label.

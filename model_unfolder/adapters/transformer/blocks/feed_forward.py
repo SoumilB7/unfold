@@ -383,8 +383,17 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
                         f"({hidden} → {n_experts}); a {scoring} turns the logits into "
                         f"per-expert affinities.",
          "facts": [f"{n_experts} experts", scoring]},
-        select,
     ]
+    # The score-transform node (drawn only when the code scores BEFORE selection)
+    # needs its own card so the clickable node couples (click-coupling law).
+    if r.get("scoring_before_topk"):
+        _tfm = "squashes each logit to (0,1) independently" if scoring == "sigmoid" \
+            else "normalizes the logits into a distribution over experts"
+        cards.append({"id": "g_score", "title": f"{scoring} scores",
+                      "description": f"The gate logits pass through {scoring}, which {_tfm} — "
+                                     f"these are the per-expert scores the top-k selects on.",
+                      "facts": [scoring]})
+    cards.append(select)
     if r.get("norm_topk_prob"):
         cards.append({"id": "g_norm", "title": "Renormalize weights",
                       "description": "Divides the selected experts' gate weights by their sum "

@@ -1631,10 +1631,26 @@ class RouterCodeEvidence:
     bias_correction: bool = False
     sparsemixer: bool = False
     grouped: bool = False
+    # Whether the score transform runs BEFORE the top-k selection
+    # (Mixtral/Qwen3/GLM/DSV3: softmax/sigmoid the full logits, then select) vs
+    # AFTER (gpt-oss/Granite: top-k the raw logits, then softmax the winners).
+    # None when it can't be ordered (sparsemixer / one side missing).  Drives
+    # WHERE the scoring node is drawn — a node before top-k would mis-draw
+    # gpt-oss.
+    scoring_before_topk: bool | None = None
 
 
 _ROUTER_BIAS_MARKERS = frozenset({"e_score_correction_bias"})
 _ROUTER_GROUP_MARKERS = frozenset({"group_scores", "group_mask", "group_idx"})
+# transformers FRAMEWORK container-class suffixes (vocabulary, not model identity)
+# — the outer wrappers that hold a sub-model, never the router/MoE block itself.
+_CONTAINER_SUFFIXES = ("forcausallm", "forconditionalgeneration", "model",
+                       "pretrainedmodel", "forsequenceclassification",
+                       "fortokenclassification", "forquestionanswering")
+
+
+def _is_framework_container(name: str) -> bool:
+    return name.lower().endswith(_CONTAINER_SUFFIXES)
 # A tensor name that marks the ROUTING logits/scores — used to tell a score
 # transform (softmax/sigmoid over router logits) apart from an EXPERT activation.
 # Deliberately EXCLUDES bare "gate": gpt-oss experts compute
@@ -1644,51 +1660,60 @@ _ROUTER_GROUP_MARKERS = frozenset({"group_scores", "group_mask", "group_idx"})
 _ROUTER_LOGIT_HINTS = ("logit", "rout", "score")
 
 
-def _router_token_bag(node: ast.ClassDef, free_fns: dict) -> tuple[set, set, set]:
-    """(call-callee names, identifier/attribute names, score-transforms) reachable
-    from a routing class's methods, following module-level free functions it calls
-    (Phi's ``sparsemixer``) one hop.  A score-transform is a ``softmax``/``sigmoid``
-    applied to a ROUTING-logits-named tensor — so an expert-activation sigmoid
-    (gpt-oss) is NOT mistaken for the router's score transform."""
+def _router_token_bag(node: ast.ClassDef, free_fns: dict) -> tuple[set, set, set, set]:
+    """(call-callee names, identifier/attribute names, score-transforms,
+    before-topk verdicts) reachable from a routing class's methods, following
+    module-level free functions one hop.  A score-transform is a
+    ``softmax``/``sigmoid`` applied to a ROUTING-logits-named tensor (so an
+    expert-activation sigmoid is NOT mistaken for it).  ``befores`` collects a
+    per-method bool: does the score transform run before the first ``topk``
+    (Mixtral/GLM) or after it (gpt-oss/Granite)?  — decided by source order
+    within the method that holds both."""
     calls: set = set()
     names: set = set()
     scores: set = set()
-    _scanned: set = set()
+    befores: set = set()
 
-    def scan(fn_node):
+    def method_scan(fn_node, _scanned):
+        first_score = first_topk = None
         for n in ast.walk(fn_node):
-            if isinstance(n, ast.Call):
-                f = n.func
-                nm = f.attr if isinstance(f, ast.Attribute) else (
-                    f.id if isinstance(f, ast.Name) else None)
-                if nm:
-                    calls.add(nm)
-                    if nm in ("softmax", "sigmoid"):
-                        # the transformed tensor is EITHER the method receiver
-                        # (``x.sigmoid()``) OR the first arg (``F.softmax(x)``) —
-                        # check both, since ``f.value`` of ``F.softmax`` is the
-                        # torch module path, not the tensor.
-                        probe = list(n.args[:1])
-                        if isinstance(f, ast.Attribute):
-                            probe.append(f.value)
-                        rn = {m.id.lower() for c in probe for m in ast.walk(c)
-                              if isinstance(m, ast.Name)}
-                        if any(h in one for one in rn for h in _ROUTER_LOGIT_HINTS):
-                            scores.add(nm)
-                    if nm in free_fns and nm not in _scanned:
-                        _scanned.add(nm)
-                        scan(free_fns[nm])
-            elif isinstance(n, ast.Attribute):
-                names.add(n.attr)
-            elif isinstance(n, ast.Name):
-                names.add(n.id)
-            elif isinstance(n, ast.Constant) and isinstance(n.value, str):
-                names.add(n.value)      # register_buffer("e_score_correction_bias", …)
+            if not isinstance(n, ast.Call):
+                if isinstance(n, ast.Attribute):
+                    names.add(n.attr)
+                elif isinstance(n, ast.Name):
+                    names.add(n.id)
+                elif isinstance(n, ast.Constant) and isinstance(n.value, str):
+                    names.add(n.value)      # register_buffer("e_score_correction_bias", …)
+                continue
+            f = n.func
+            nm = f.attr if isinstance(f, ast.Attribute) else (
+                f.id if isinstance(f, ast.Name) else None)
+            if not nm:
+                continue
+            calls.add(nm)
+            ln = getattr(n, "lineno", None)
+            if nm in ("softmax", "sigmoid"):
+                probe = list(n.args[:1])
+                if isinstance(f, ast.Attribute):
+                    probe.append(f.value)
+                rn = {m.id.lower() for c in probe for m in ast.walk(c)
+                      if isinstance(m, ast.Name)}
+                if any(h in one for one in rn for h in _ROUTER_LOGIT_HINTS):
+                    scores.add(nm)
+                    if ln is not None and first_score is None:
+                        first_score = ln
+            elif nm == "topk" and ln is not None and first_topk is None:
+                first_topk = ln
+            if nm in free_fns and nm not in _scanned:
+                _scanned.add(nm)
+                method_scan(free_fns[nm], _scanned)
+        if first_score is not None and first_topk is not None:
+            befores.add(first_score < first_topk)
 
     for m in node.body:
         if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            scan(m)
-    return calls, names, scores
+            method_scan(m, set())
+    return calls, names, scores, befores
 
 
 def decoder_router_evidence_from_files(files) -> RouterCodeEvidence | None:
@@ -1716,19 +1741,24 @@ def decoder_router_evidence_from_files(files) -> RouterCodeEvidence | None:
     # buffer — ``DeepseekV3TopkRouter``) and the sparse-MoE block that runs the
     # selection algorithm (``DeepseekV3MoE.route_tokens_to_experts`` — sigmoid,
     # group scores, gather).  Scan the UNION so neither half is missed; a plain
-    # softmax MoE (Mixtral/Qwen3) has only the block.
+    # softmax MoE (Mixtral/Qwen3) has only the block.  EXCLUDE the framework
+    # container classes (``*ForCausalLM``/``*Model``/``*PreTrainedModel``) — their
+    # ``output_router_logits`` aux-loss path softmaxes router logits for STATS,
+    # not selection, and would pollute the scoring-order verdict (Granite).
     routers = [c for c in defs.values() if _role_of(c.name) == "route"]
     routers += [c for c in defs.values()
                 if _role_of(c.name) != "route"
+                and not _is_framework_container(c.name)
                 and _method(c, "forward") is not None
                 and _has_moe(set(_field_types(_method(c, "__init__")).keys()), c.name.lower())]
     if not routers:
         return None
 
     scorings: set = set()
+    befores: set = set()
     bias = sparse = grouped = False
     for node in routers:
-        calls, names, scores = _router_token_bag(node, free_fns)
+        calls, names, scores, node_befores = _router_token_bag(node, free_fns)
         if "sparsemixer" in calls or "sparsemixer" in names:
             sparse = True
         if _ROUTER_BIAS_MARKERS & names:
@@ -1742,9 +1772,14 @@ def decoder_router_evidence_from_files(files) -> RouterCodeEvidence | None:
             scorings.add("sigmoid")
         elif "softmax" in scores:
             scorings.add("softmax")
+        befores |= node_befores
     scoring_fn = next(iter(scorings)) if len(scorings) == 1 else None
+    # sparsemixer runs its own internal top-k, so a before/after verdict there is
+    # not the SELECTION order — only trust the order for non-sparsemixer routers.
+    before = next(iter(befores)) if (len(befores) == 1 and not sparse) else None
     return RouterCodeEvidence(
-        scoring_fn=scoring_fn, bias_correction=bias, sparsemixer=sparse, grouped=grouped)
+        scoring_fn=scoring_fn, bias_correction=bias, sparsemixer=sparse,
+        grouped=grouped, scoring_before_topk=before)
 
 
 def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> int | None:

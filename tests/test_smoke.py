@@ -896,10 +896,12 @@ def test_moe_routing_detail():
         "scoring_func": "sigmoid", "topk_method": "noaux_tc",
         "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
         "routed_scaling_factor": 2.5,
-        # code-derived resolved fact: the deepseek_v3 source enacts the
+        # code-derived resolved facts: the deepseek_v3 source enacts the
         # aux-loss-free e_score_correction_bias (agrees with the declared
-        # noaux_tc string), so the resolved boolean the render reads is present.
+        # noaux_tc string) and scores (sigmoid) BEFORE the top-k, so both
+        # resolved keys the render reads are present.
         "bias_correction": True,
+        "scoring_before_topk": True,
     }
     from model_unfolder.labels import router_facts
     facts = router_facts(ffn)
@@ -955,9 +957,14 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     gate = render_sub_block_detail(ir, info, "m", router)
     for token in ("Gate", "Top-k", "renormalize", "learned bias"):
         assert token in gate, f"router view missing label {token!r}"
-    # The descriptive text moved OFF the blocks (the user's "why not in description"):
-    # no scoring fn, no expert/group counts, no scale value painted on the diagram.
-    for leaked in ("sigmoid", "256 scores", "group-limited", "keep 4 of 8",
+    # The score transform is a REAL op node with a bare op-name label — the code
+    # scores (sigmoid) BEFORE selection, so it's drawn between Gate and Top-k so
+    # the "expert scores" the drill selects on have a visible origin (Her Eyes
+    # lawfulness: a real op is not hidden behind a chip).
+    assert "sigmoid" in gate, "the scoring transform must be a drawn op node"
+    # Counts/flags stay OFF the blocks (bare op names only): no expert/group
+    # counts, no scale value painted on the diagram.
+    for leaked in ("256 scores", "group-limited", "keep 4 of 8",
                    "select top-8", "routed scale"):
         assert leaked not in gate, f"label text {leaked!r} should be in a card, not the diagram"
 
