@@ -1990,6 +1990,150 @@ class _MoEGateEvaluator:
         return None
 
 
+_QKV_PROJ_NAMES = frozenset({
+    "q_proj", "k_proj", "v_proj",                       # split
+    "query_key_value", "qkv_proj", "c_attn", "wqkv", "qkv",  # fused
+    "query", "key", "value",
+})
+
+
+def _linear_bias_value(call: ast.Call, cfg):
+    """The bias of an ``nn.Linear(...)`` construction: True/False (literal),
+    the resolved value when ``bias=config.X`` / ``self.config.X``, True when the
+    kwarg is ABSENT (nn.Linear defaults bias=True), or None when unresolvable
+    (a bias gated on a non-config expression)."""
+    for kw in call.keywords:
+        if kw.arg != "bias":
+            continue
+        v = kw.value
+        if isinstance(v, ast.Constant):
+            return bool(v.value)
+        # bias=config.X / self.config.X → read the checkpoint value
+        if isinstance(v, ast.Attribute):
+            base = v.value
+            field = None
+            if isinstance(base, ast.Name) and base.id in ("config", "cfg"):
+                field = v.attr
+            elif (isinstance(base, ast.Attribute) and base.attr == "config"
+                  and isinstance(base.value, ast.Name) and base.value.id == "self"):
+                field = v.attr
+            if field is not None:
+                val = getattr(cfg, field, None) if not isinstance(cfg, dict) else cfg.get(field)
+                return None if val is None else bool(val)
+        return None                                      # bias=<other expr> → unresolvable
+    return True                                          # no bias kwarg → nn.Linear default True
+
+
+def decoder_parallel_norm_count_from_files(files) -> int | None:
+    """For a PARALLEL-residual decoder layer, how many DISTINCT input norms feed
+    the attention branch vs the FFN branch — 1 (SHARED: GPT-J's ``ln_1`` feeds
+    both) or 2 (SEPARATE: GPT-NeoX ``input_layernorm``+``post_attention_
+    layernorm``).  Read by DATAFLOW: the norm field whose result feeds the
+    attention call vs the FFN call (directly ``self.attn(self.norm(x))`` or via
+    a variable ``h = self.norm(x); self.attn(h)``); SAME field → 1, DIFFERENT →
+    2.  Returns None when not cleanly resolvable — the CONDITIONAL Falcon case
+    (gated on ``new_decoder_architecture``) falls back to the current drawing.
+    (GPT-J = the pinned negative control: genuinely 1, must not become 2.)"""
+    from .forward_ops import _method, _field_types, _role_of, _self_field
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    node, field_types = layer
+    fwd = _method(node, "forward")
+    if fwd is None:
+        return None
+    # A layer constructing MORE THAN TWO norm-role fields is the CONDITIONAL
+    # Falcon case (`ln_attn`+`ln_mlp`+`input_layernorm`+`post_attention_layernorm`,
+    # only 2 used per `new_decoder_architecture`) — unresolvable without the
+    # config gate → None (fall back to the current drawing).
+    norm_fields = [f for f, c in field_types.items() if _role_of(c) == "norm"]
+    if len(norm_fields) > 2:
+        return None
+
+    # assignments var -> the self.<norm> field applied to produce it
+    norm_of_var: dict = {}
+    for st in ast.walk(fwd):
+        if isinstance(st, ast.Assign) and len(st.targets) == 1 \
+                and isinstance(st.targets[0], ast.Name) and isinstance(st.value, ast.Call):
+            nf = _self_field(st.value.func)
+            if nf and _role_of(field_types.get(nf, "")) == "norm":
+                norm_of_var[st.targets[0].id] = nf
+
+    def feeding_norm(arg):
+        """The norm field that produced ``arg`` — inline call or via a var."""
+        if isinstance(arg, ast.Call):
+            nf = _self_field(arg.func)
+            if nf and _role_of(field_types.get(nf, "")) == "norm":
+                return nf
+        if isinstance(arg, ast.Name):
+            return norm_of_var.get(arg.id)
+        return None
+
+    attn_norm = ffn_norm = None
+    for call in ast.walk(fwd):
+        if not isinstance(call, ast.Call):
+            continue
+        field = _self_field(call.func)
+        if field is None:
+            continue
+        role = _role_of(field_types.get(field, ""))
+        arg = call.args[0] if call.args else (
+            next((k.value for k in call.keywords if k.arg in ("hidden_states", "x")), None))
+        nf = feeding_norm(arg) if arg is not None else None
+        if role == "attention" and nf and attn_norm is None:
+            attn_norm = nf
+        elif role == "ffn" and nf and ffn_norm is None:
+            ffn_norm = nf
+    if attn_norm is None or ffn_norm is None:
+        return None                       # couldn't resolve both branches' norms
+    return 1 if attn_norm == ffn_norm else 2
+
+
+def decoder_attention_bias_from_files(files, cfg) -> bool | None:
+    """Do the attention Q/K/V projections carry a BIAS — READ FROM THE ATTENTION
+    CLASS's construction, code-authoritative.  Bloom (`query_key_value =
+    nn.Linear(..., bias=True)`) and Qwen2 (`q_proj = nn.Linear(..., bias=True)`)
+    enact bias UNCONDITIONALLY while their config declares no `attention_bias`,
+    so the spelling reader draws them bias-less.  The construction is the truth:
+    a literal `bias=True/False` wins; `bias=config.X` resolves the checkpoint
+    value (Llama); an absent kwarg is nn.Linear's default True.  Returns the
+    unanimous QKV-projection bias, or None when no attention/QKV Linear is found
+    or the verdicts disagree/are unresolvable (→ caller falls back to config)."""
+    from .forward_ops import _method, _role_of, _self_field
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    _, layer_fields = layer
+    attn_classes = sorted({c for c in layer_fields.values() if _role_of(c) == "attention"})
+    if not attn_classes:
+        return None
+    defs = _parse_defs(tuple(str(p) for p in (files or ())))
+    verdicts: set = set()
+    for aname in attn_classes:
+        node = defs.get(aname)
+        init = _method(node, "__init__") if node else None
+        if init is None:
+            continue
+        for st in ast.walk(init):
+            if not (isinstance(st, ast.Assign) and isinstance(st.value, ast.Call)):
+                continue
+            field = _self_field(st.targets[0]) if st.targets else None
+            if field is None or field.lower() not in _QKV_PROJ_NAMES:
+                continue
+            callee = st.value.func
+            nm = callee.attr if isinstance(callee, ast.Attribute) else (
+                callee.id if isinstance(callee, ast.Name) else "")
+            if nm != "Linear":
+                continue                                 # only nn.Linear (Conv1D/others: skip)
+            b = _linear_bias_value(st.value, cfg)
+            if b is None:
+                return None                              # unresolvable QKV bias → doubt
+            verdicts.add(b)
+    if len(verdicts) != 1:
+        return None                                      # none found, or q/k/v disagree
+    return next(iter(verdicts))
+
+
 def decoder_moe_schedule_from_files(files, cfg):
     """Per-layer MoE?/dense verdict READ FROM THE DECODER LAYER's CONSTRUCTION —
     the code-authoritative replacement for the config schedule flags.  The layer

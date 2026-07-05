@@ -47,13 +47,16 @@ def parallel_decoder_layer(
     hidden_size: int,
     *,
     norm_kind: str = "rmsnorm",
+    norm_count: int = 1,
 ) -> LayerSpec:
     """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
 
-    Attention and FFN share a single input norm and their outputs are summed
-    into one residual add rather than two sequential adds.
+    ``norm_count`` = the distinct input norms the layer applies (code-derived):
+    1 = SHARED (GPT-J); 2 = SEPARATE norms before attention and the FFN (GPT-NeoX
+    ``input_layernorm``+``post_attention_layernorm``, drawn as two, not one).
     """
-    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size,
+                                           norm_kind=norm_kind, norm_count=norm_count)
     return LayerSpec(
         index=index,
         attention=attention,

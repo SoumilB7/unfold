@@ -128,42 +128,44 @@ def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block
 
 
 def parallel_decoder_layer_blocks(
-    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm",
+    norm_count: int = 1,
 ) -> list[Block]:
     """Blocks for parallel residual topology (GPT-NeoX / GPT-J / Falcon).
 
-    Attention and FFN share a single input norm. Their outputs are summed into
-    one residual add together with the direct bypass from the layer input.
-
-    Chain: norm -> attn -> add (residual_from=norm input)
-    Side : FFN taps from the attn input stem (= norm output), feeds into add.
+    ``norm_count`` (read from the code's dataflow) = the distinct INPUT norms the
+    layer applies: 1 = a SHARED pre-block norm feeds both attention and the FFN
+    (GPT-J ``ln_1``); 2 = SEPARATE norms — one before attention, one before the
+    FFN, BOTH applied to the layer input (GPT-NeoX ``input_layernorm``+
+    ``post_attention_layernorm``).  Their outputs are summed into one residual
+    add with the direct bypass from the layer input.
     """
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     ffn_block = _ffn_block(ffn, hidden_size)
-    ffn_block.update(
-        {
-            "lane": "left",
-            "tap_from": "attn",
-            "feeds": "add1",
-            "side_align": "tap",
-        }
-    )
+    ffn_block.update({"lane": "left", "tap_from": "attn", "feeds": "add1", "side_align": "tap"})
+    # ``norm_count`` (code-derived) distinguishes SHARED (1, GPT-J) from SEPARATE
+    # (2, GPT-NeoX input+post norms).  For count==2 the FACT is stated honestly in
+    # the norm's card; drawing the two norms as two boxes in the parallel side-lane
+    # layout is a scoped RENDER follow-up (the lane/tap engine needs layout work —
+    # the naive 2-block wiring hid the FFN in the hero view).
+    if norm_count == 2:
+        norm_title = "Pre-block norm"
+        norm_desc = _norm_desc(
+            norm_kind, "before attention; the code applies a SECOND separate norm of the "
+                       "same kind before the FFN (GPT-NeoX input_layernorm + "
+                       "post_attention_layernorm), both on the layer input")
+    else:
+        norm_title = "Pre-block norm (shared)"
+        norm_desc = _norm_desc(norm_kind, "feeding both attention and the FFN", shared=True)
     return [
-        _norm_block(
-            "rms1",
-            norm_label,
-            "Pre-block norm (shared)",
-            _norm_desc(norm_kind, "feeding both attention and the FFN", shared=True),
-            facts=[f"dim {hidden}"],
-        ),
+        _norm_block("rms1", norm_label, norm_title, norm_desc, facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
         {
             "id": "add1",
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
-            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add (parallel)",
             "description": "layer input + attention output + FFN output (one combined step)",

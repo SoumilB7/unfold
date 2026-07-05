@@ -2088,3 +2088,45 @@ def test_moe_schedule_matches_code_construction():
             continue
         drawn = [(l.ffn.kind == "moe") for l in mu.config_to_ir(cfg).layers]
         assert drawn == code[:len(drawn)], f"{mt}: drawn MoE schedule != code construction"
+
+
+# ---------------------------------------------------------------------------
+# Attention bias from construction (Group 2): code-authoritative QKV bias
+# ---------------------------------------------------------------------------
+
+def test_attention_bias_from_construction():
+    """The QKV-projection bias read from the attention class's construction:
+    Bloom/Qwen2 hardcode bias=True (config declares nothing → was drawn
+    bias-less); Llama gates on config.attention_bias; Phi-3 is bias=False."""
+    import transformers, pathlib
+    from transformers import AutoConfig
+    from model_unfolder.evidence.patterns import decoder_attention_bias_from_files
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    cases = [("bloom", "bloom/modeling_bloom.py", None, True),
+             ("qwen2", "qwen2/modeling_qwen2.py", None, True),
+             ("phi3", "phi3/modeling_phi3.py", None, False),
+             ("llama", "llama/modeling_llama.py", {"attention_bias": False}, False),
+             ("llama", "llama/modeling_llama.py", {"attention_bias": True}, True)]
+    for mt, ff, override, want in cases:
+        cfg = AutoConfig.for_model(mt)
+        if override:
+            for k, v in override.items():
+                setattr(cfg, k, v)
+        got = decoder_attention_bias_from_files((str(base / ff),), cfg)
+        assert got == want, f"{mt} {override}: got {got}, want {want}"
+
+
+def test_parallel_norm_count_from_construction():
+    """Parallel-residual input-norm count from the code dataflow: GPT-J shares
+    one norm (1 — the pinned negative control), GPT-NeoX applies two separate
+    norms (2 — the fix); Falcon's conditional 4-field case → None (fallback)."""
+    import transformers, pathlib
+    from model_unfolder.evidence.patterns import decoder_parallel_norm_count_from_files
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    for mt, ff, want in (("gptj", "gptj/modeling_gptj.py", 1),
+                         ("gpt_neox", "gpt_neox/modeling_gpt_neox.py", 2),
+                         ("falcon", "falcon/modeling_falcon.py", None)):
+        p = base / ff
+        if not p.exists():
+            continue
+        assert decoder_parallel_norm_count_from_files((str(p),)) == want, mt

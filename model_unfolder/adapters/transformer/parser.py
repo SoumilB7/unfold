@@ -257,6 +257,31 @@ def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> li
     return per_layer
 
 
+def _code_parallel_norm_count(cfg: Any, context=None):
+    """Distinct INPUT norms a parallel-residual decoder layer applies (1 shared
+    / 2 separate), READ FROM THE CODE dataflow — fixes GPT-NeoX's two norms
+    drawn as one shared.  None when unresolvable (Falcon conditional) → the
+    caller defaults to 1.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_parallel_norm_count_from_files
+        return decoder_parallel_norm_count_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_bias(cfg: Any, context=None):
+    """Whether the attention Q/K/V projections carry a BIAS, READ FROM THE
+    ATTENTION CLASS's construction — code-authoritative (Bloom/Qwen2 enact
+    `nn.Linear(..., bias=True)` while their config declares no `attention_bias`,
+    so the spelling reader draws them bias-less).  None when unresolvable →
+    caller keeps the config spelling.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_attention_bias_from_files
+        return decoder_attention_bias_from_files(_source_files(cfg, context), cfg)
+    except Exception:
+        return None
+
+
 def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
     """Per-layer MoE?/dense schedule READ FROM THE DECODER LAYER's CONSTRUCTION —
     the code-authoritative replacement for the config schedule flags: which
@@ -631,8 +656,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
+    # Config spelling first (ownership), then the CODE construction is
+    # authoritative: Bloom/Qwen2 hardcode `nn.Linear(..., bias=True)` on QKV
+    # while declaring no `attention_bias`, so the spelling reader drew them
+    # bias-less.  None keeps the spelling (config-gated families like Llama
+    # resolve their `bias=config.attention_bias` value through the reader anyway).
     use_attention_bias = bool(_resolve(text_cfg, "attention_bias")
                               or _g(attn_cfg, "attention_bias"))
+    _code_bias = _code_attention_bias(text_cfg, context)
+    if _code_bias is not None:
+        use_attention_bias = _code_bias
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").
     _mlp_bias = _resolve(text_cfg, "mlp_bias")
@@ -655,6 +688,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # `if`, so the config decides); else READ FROM the forward() when it is
     # UNCONDITIONAL structure with no flag (Cohere, GPT-J, Phi — all flagless,
     # all missed by the old model_type table, so all silently drawn sequential).
+    # Distinct INPUT norms a parallel-residual layer applies, read from the code
+    # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
+    # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
+    parallel_norm_count = _code_parallel_norm_count(text_cfg, context) or 1
     use_parallel_residual = bool(
         _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
         or (_code_topo or {}).get("parallel_residual")
@@ -868,7 +905,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             extra_blocks.append(_cross_attention_states_side_block())
 
         if use_parallel_residual:
-            layers.append(parallel_decoder_layer(i, attn, ffn, hidden_size, norm_kind=norm_kind))
+            layers.append(parallel_decoder_layer(
+                i, attn, ffn, hidden_size, norm_kind=norm_kind,
+                norm_count=parallel_norm_count))
         else:
             layers.append(decoder_layer(
                 i, attn, ffn, hidden_size,

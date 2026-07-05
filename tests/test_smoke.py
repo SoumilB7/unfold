@@ -862,9 +862,18 @@ def test_attention_bias_and_rope_theta():
     # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
     assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
 
-    # attention_bias absent/False -> not flagged.
-    assert not any(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
-    assert not any(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+    # CODE-AUTHORITATIVE bias: Qwen2's attention hardcodes `nn.Linear(..., bias=
+    # True)` on QKV and NEVER reads `config.attention_bias`, so a config
+    # `attention_bias=False` is a DEAD flag — the code truth (bias) wins.
+    assert all(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
+    assert all(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+
+    # A CONFIG-GATED family (Llama: `bias=config.attention_bias`) honors the
+    # flag through the same code reader — False disables it, True enables it.
+    llama = dict(model_type="llama", num_hidden_layers=2, hidden_size=64,
+                 num_attention_heads=8, intermediate_size=128, vocab_size=100, rms_norm_eps=1e-5)
+    assert not any(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": False}).to_ir()["layers"])
+    assert all(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": True}).to_ir()["layers"])
 
 
 def test_compress_rates_alias_derives_csa_hca_masks():
