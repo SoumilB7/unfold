@@ -212,6 +212,51 @@ def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
         return None
 
 
+def _code_qk_norm(cfg: Any, context=None):
+    """Q/K normalisation READ FROM THE MODELING SOURCE — code-first: the
+    attention class decides the SHAPE of the answer (unconditional / gated /
+    absent) and, when gated, NAMES the config field(s) whose values decide it
+    (``config.qk_layernorm``, ``config.use_qk_norm``, Llama-4's per-layer
+    ``config.no_rope_layers[layer_idx]``).  The config-spelling read survives
+    only as the no-oracle fallback — a declaration is still a declaration.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_qk_norm_from_files
+        return decoder_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> list[bool]:
+    """Per-layer Q/K-norm facts from the code evidence.
+
+    Code-first resolution: unconditional construction → True everywhere (the
+    config is not consulted); proven-absent → False everywhere EVEN IF a config
+    spelling claims otherwise (a flag the code never reads is dead — the code
+    wins); gated → AND of the values of the config fields the code itself
+    names, read from THIS checkpoint (per-layer when the code indexes by the
+    layer index); no source / unresolvable gate → the declared spelling."""
+    n = max(int(num_layers or 0), 0)
+    if code_ev is None:
+        return [declared] * n
+    if code_ev.present is True:
+        return [True] * n
+    if code_ev.present is False:
+        return [False] * n
+    per_layer = [True] * n
+    for atom in code_ev.gate:
+        raw = _g(cfg, atom.field)
+        if atom.per_layer:
+            if not isinstance(raw, (list, tuple)) or len(raw) < n:
+                return [declared] * n
+            per_layer = [p and bool(raw[i]) for i, p in enumerate(per_layer)]
+        else:
+            if raw is None:
+                return [declared] * n
+            per_layer = [p and bool(raw) for p in per_layer]
+    return per_layer
+
+
 def _code_expert_storage(cfg: Any, context=None) -> str | None:
     """Routed-EXPERT storage read from the source — independent of the plain
     MLP's storage (DeepSeek-V3: split MLP for dense/shared, fused stacked
@@ -488,6 +533,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # ---- Position encoding ----
     no_rope_interval     = _g(text_cfg, "no_rope_layer_interval") or 0
+    no_rope_list         = _g(text_cfg, "no_rope_layers")   # materialized per-layer use_rope flags
     _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
@@ -501,7 +547,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
         debug.note_access("mrope_section")   # consumed SUBKEY of the scaling dict
 
     # ---- QK-Norm ----
+    # Spelling read stays FIRST for config-ownership (all three aliases are
+    # audited) and as the no-oracle fallback; the code evidence then decides.
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
+    qk_norm_layers = _resolve_qk_norm_layers(
+        _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
     use_attention_bias = bool(_resolve(text_cfg, "attention_bias")
@@ -603,7 +653,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "gated_delta" if is_gated_delta
             else _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
         )
-        is_nope   = bool(no_rope_interval > 1 and i % no_rope_interval == 0)
+        # NoPE placement comes from the field the code actually indexes
+        # (``self.use_rope = config.no_rope_layers[layer_idx]`` — truthy means
+        # the layer USES rope), falling back to the interval rule with the
+        # config class's own phase: ``use_rope = (i + 1) % interval != 0`` puts
+        # NoPE at layers 3, 7, 11…, not 0, 4, 8….
+        if isinstance(no_rope_list, (list, tuple)) and i < len(no_rope_list):
+            is_nope = not bool(no_rope_list[i])
+        else:
+            is_nope = bool(no_rope_interval > 1 and (i + 1) % no_rope_interval == 0)
         is_cross_attn_layer = has_cross_attention_side_state and i in cross_attn_layer_set
 
         kv_source: int | None = None
@@ -631,7 +689,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             mask=mask,
             window_size=window,
             kv_source_layer=kv_source,
-            qk_norm=use_qk_norm,
+            qk_norm=qk_norm_layers[i] if i < len(qk_norm_layers) else use_qk_norm,
             rope=uses_rope and not is_gated_delta,
             position_kind=position_mechanism[0],
             position_application=position_mechanism[1],
@@ -955,7 +1013,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val
 
-    if use_qk_norm:
+    if any(qk_norm_layers) if qk_norm_layers else use_qk_norm:
         extras["qk_norm"] = True
 
     # Generic attention-side knobs surfaced as info-only annotations.

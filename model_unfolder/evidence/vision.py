@@ -244,9 +244,9 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
         "attention_class": attn_name,
         "ffn_class": ffn_name,
         "projection_mode": _projection_mode(attn),
-        "q_norm": _has_norm_field(attn, "q"),
-        "k_norm": _has_norm_field(attn, "k"),
-        "v_norm": _has_norm_field(attn, "v"),
+        "q_norm": _lane_norm_fact(info, attn, "q"),
+        "k_norm": _lane_norm_fact(info, attn, "k"),
+        "v_norm": _lane_norm_fact(info, attn, "v"),
         "post_rope_scale": _post_rope_scale(attn),
         "position_kind": ("rope" if attn and _has_marker(attn.call_tokens, _ROPE_MARKERS)
                           else "none"),
@@ -659,6 +659,128 @@ def _has_norm_field(info: CallableInfo | None, lane: str) -> bool:
         and (field.lower().startswith(f"{lane}_") or field.lower() in {f"norm_{lane}", f"{lane}norm"})
         for field, class_name in info.field_types.items()
     )
+
+
+def _lane_norm_fields(info: CallableInfo, lane: str) -> set[str]:
+    return {
+        field for field, class_name in info.field_types.items()
+        if _role_of(class_name) == "norm"
+        and (field.lower().startswith(f"{lane}_")
+             or field.lower() in {f"norm_{lane}", f"{lane}norm"})
+    }
+
+
+def _lane_norm_gate_param(attn_info: CallableInfo, lane: str) -> str | None:
+    """The attention class's own __init__ PARAM that gates the lane-norm
+    construction (diffusers ``Attention``: every ``self.norm_q = …`` sits in
+    an ``elif qk_norm == …`` branch ⇒ gate param ``qk_norm``).  None when any
+    construction site is unguarded (an unconditional norm — field presence IS
+    the fact) or the guards don't resolve to exactly one init param."""
+    node = _class_node(attn_info.source_file, attn_info.name)
+    init = _method(node, "__init__") if node else None
+    if init is None:
+        return None
+    params = {a.arg for a in init.args.args + init.args.kwonlyargs} - {"self"}
+    lane_fields = _lane_norm_fields(attn_info, lane)
+    if not lane_fields:
+        return None
+    gate_params: set[str] = set()
+    unguarded = False
+
+    def walk(stmts, guards):
+        nonlocal unguarded
+        for st in stmts:
+            if isinstance(st, ast.If):
+                walk(st.body, guards + [st.test])
+                walk(st.orelse, guards + [st.test])
+            elif isinstance(st, ast.Assign) and len(st.targets) == 1:
+                f = _self_field(st.targets[0])
+                if f in lane_fields and isinstance(st.value, ast.Call):
+                    names = {n.id for g in guards for n in ast.walk(g)
+                             if isinstance(n, ast.Name)}
+                    hit = names & params
+                    if not guards:
+                        unguarded = True
+                    elif hit:
+                        gate_params.update(hit)
+
+    walk(init.body, [])
+    if unguarded or len(gate_params) != 1:
+        return None
+    return next(iter(gate_params))
+
+
+def _ctor_kwarg_truthy(block_info: CallableInfo, attn_info: CallableInfo, param: str) -> bool | None:
+    """The VALUE the block passes for ``param`` at the attention construction
+    site (literal, or a variable resolved to the block-__init__ param default),
+    falling back to the attention class's OWN param default when the kwarg is
+    omitted.  None when the site or value cannot be resolved."""
+    node = _class_node(block_info.source_file, block_info.name)
+    init = _method(node, "__init__") if node else None
+    if init is None:
+        return None
+    defaults: dict[str, object] = {}
+    pos = init.args.args[1:]  # skip self
+    for a, d in zip(pos[len(pos) - len(init.args.defaults):], init.args.defaults):
+        if isinstance(d, ast.Constant):
+            defaults[a.arg] = d.value
+    for a, d in zip(init.args.kwonlyargs, init.args.kw_defaults):
+        if isinstance(d, ast.Constant):
+            defaults[a.arg] = d.value
+    for n in ast.walk(init):
+        if not isinstance(n, ast.Call):
+            continue
+        callee = n.func
+        name = callee.attr if isinstance(callee, ast.Attribute) else (
+            callee.id if isinstance(callee, ast.Name) else None)
+        if name != attn_info.name:
+            continue
+        kw = {k.arg: k.value for k in n.keywords if k.arg}
+        if param in kw:
+            v = kw[param]
+            if isinstance(v, ast.Constant):
+                return bool(v.value)
+            if isinstance(v, ast.Name) and v.id in defaults:
+                return bool(defaults[v.id])
+            return None
+        return _init_param_default_truthy(attn_info, param)
+    return None
+
+
+def _init_param_default_truthy(attn_info: CallableInfo, param: str) -> bool | None:
+    """The attention class's own __init__ default for ``param`` — the value in
+    force when the construction site omits the kwarg (looked up in the
+    attention class's OWN source file — a shared class never lives in the
+    block's file)."""
+    node = _class_node(attn_info.source_file, attn_info.name)
+    init = _method(node, "__init__") if node else None
+    if init is None:
+        return None
+    pos = init.args.args[1:]
+    for a, d in zip(pos[len(pos) - len(init.args.defaults):], init.args.defaults):
+        if a.arg == param and isinstance(d, ast.Constant):
+            return bool(d.value)
+    for a, d in zip(init.args.kwonlyargs, init.args.kw_defaults):
+        if a.arg == param and isinstance(d, ast.Constant):
+            return bool(d.value)
+    return None
+
+
+def _lane_norm_fact(block_info: CallableInfo, attn_info: CallableInfo | None, lane: str) -> bool:
+    """Per-lane norm fact, CONSTRUCTION-SITE aware.  A shared attention class
+    (diffusers ``Attention``) carries ``norm_q``/``norm_k`` fields for EVERY
+    caller — bare field presence fabricated QK-norm on HunyuanVideo's token
+    refiner, whose site passes no ``qk_norm``.  When the lane norm is gated on
+    an attention __init__ param, the fact is the value THIS block passes at
+    the construction site; only a PROVEN falsy value turns the lane off —
+    anything unresolvable keeps the presence verdict (never a guess)."""
+    if not _has_norm_field(attn_info, lane):
+        return False
+    gate = _lane_norm_gate_param(attn_info, lane)
+    if gate is None:
+        return True
+    val = _ctor_kwarg_truthy(block_info, attn_info, gate)
+    return True if val is None else bool(val)
 
 
 def _post_rope_scale(info: CallableInfo | None) -> bool:

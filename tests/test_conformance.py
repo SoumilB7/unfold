@@ -1417,7 +1417,8 @@ def test_component_storage_conformance_flags_encoder_tower_divergence():
     from pathlib import Path
     from model_unfolder.evidence.conformance import check_fact_conformance
 
-    cfg = json.loads((Path(__file__).parent / "sable_corpus" /
+    from model_unfolder.sable import DEFAULT_CORPUS
+    cfg = json.loads((DEFAULT_CORPUS /
                       "fluxtransformer2dmodel.json").read_text())["config"]
     ir = mu.config_to_ir(cfg).to_dict()
     assert not [p for p in check_fact_conformance(cfg, ir) if p.kind == "wrong_storage"]

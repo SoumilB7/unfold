@@ -21,7 +21,8 @@ def _diffusion_stacks(slug: str, architecture: str):
     )
     from model_unfolder.evidence.sources import resolve_source_files
 
-    fixture = pathlib.Path(__file__).parent / "sable_corpus" / f"{slug}.json"
+    from model_unfolder.sable import DEFAULT_CORPUS
+    fixture = DEFAULT_CORPUS / f"{slug}.json"
     config = json.loads(fixture.read_text())["config"]
     bundle = resolve_source_files(config, source="local")
     _component, files = _component_source(bundle, "text")

@@ -264,7 +264,8 @@ def test_hero_altitude_represents_the_root_losslessly(slug):
 
     assert ALTITUDE_TRANSFORMS["hero"] == {}, "hero must apply NO fact transforms"
 
-    fixture = Path(__file__).parent / "sable_corpus" / f"{slug}.json"
+    from model_unfolder.sable import DEFAULT_CORPUS
+    fixture = DEFAULT_CORPUS / f"{slug}.json"
     if not fixture.exists():
         pytest.skip(f"no blessed witness {slug}")
     cfg = json.loads(fixture.read_text())["config"]

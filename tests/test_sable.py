@@ -424,7 +424,7 @@ def test_sable_regression_corpus():
     expected_unresolved: dict[str, set] = {}
     corpus = load_corpus()
     if not corpus:
-        pytest.skip("no blessed models in tests/sable_corpus/ yet")
+        pytest.skip("no blessed models in the corpus yet")
     for filename, fixture in corpus:
         drift = check_regression(fixture)
         expected = expected_unresolved.get(filename, set())

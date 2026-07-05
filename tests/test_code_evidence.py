@@ -975,3 +975,340 @@ def test_remote_code_declaration_reaches_the_hub_rail(monkeypatch, tmp_path):
     bundle = S.resolve_source_files({"model_type": "notinstalled_xyz"}, source="local")
     assert not calls.get("hit")
 
+
+
+# ---------------------------------------------------------------------------
+# QK-norm — code-first (the code decides the SHAPE and names its own gate)
+# ---------------------------------------------------------------------------
+
+_QK_SCAFFOLD = '''
+import torch
+from torch import nn
+
+
+class XRMSNorm(nn.Module):
+    def __init__(self, dim, eps=1e-6):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(dim))
+
+    def forward(self, x):
+        v = x.pow(2).mean(-1, keepdim=True)
+        return self.weight * (x * torch.rsqrt(v + 1e-6))
+
+
+class XMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.gate_proj = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.up_proj = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
+
+    def forward(self, x):
+        return self.down_proj(torch.nn.functional.silu(self.gate_proj(x)) * self.up_proj(x))
+
+
+{attention}
+
+
+class XDecoderLayer(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.self_attn = XAttention(config, layer_idx)
+        self.mlp = XMLP(config)
+        self.input_layernorm = XRMSNorm(config.hidden_size)
+
+    def forward(self, hidden_states, past_key_values=None):
+        hidden_states = hidden_states + self.self_attn(self.input_layernorm(hidden_states))
+        return hidden_states + self.mlp(hidden_states)
+'''
+
+_QK_UNCONDITIONAL_ATTN = '''
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.q_norm = XRMSNorm(config.head_dim)
+        self.k_norm = XRMSNorm(config.head_dim)
+
+    def forward(self, hidden_states, past_key_values=None):
+        query_states = self.q_norm(self.q_proj(hidden_states))
+        key_states = self.k_norm(self.k_proj(hidden_states))
+        value_states = self.v_proj(hidden_states)
+        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
+        return self.o_proj(torch.matmul(attn, value_states))
+'''
+
+_QK_GATED_ATTN = '''
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.query_key_value = nn.Linear(config.hidden_size, 3 * config.hidden_size)
+        self.dense = nn.Linear(config.hidden_size, config.hidden_size)
+        self.qk_layernorm = config.qk_layernorm
+        if self.qk_layernorm:
+            self.q_layernorm = nn.LayerNorm(config.head_dim)
+            self.k_layernorm = nn.LayerNorm(config.head_dim)
+
+    def forward(self, hidden_states, past_key_values=None):
+        fused = self.query_key_value(hidden_states)
+        query_states, key_states, value_states = fused.chunk(3, dim=-1)
+        if self.qk_layernorm:
+            query_states = self.q_layernorm(query_states)
+            key_states = self.k_layernorm(key_states)
+        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
+        return self.dense(torch.matmul(attn, value_states))
+'''
+
+_QK_COMPOSITE_ATTN = '''
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.use_rope = config.no_rope_layers[layer_idx]
+        if config.use_qk_norm and self.use_rope:
+            self.qk_norm = XRMSNorm(config.head_dim)
+
+    def forward(self, hidden_states, past_key_values=None):
+        query_states = self.q_proj(hidden_states)
+        key_states = self.k_proj(hidden_states)
+        value_states = self.v_proj(hidden_states)
+        if hasattr(self, "qk_norm"):
+            query_states = self.qk_norm(query_states)
+            key_states = self.qk_norm(key_states)
+        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
+        return self.o_proj(torch.matmul(attn, value_states))
+'''
+
+_QK_PLAIN_ATTN = '''
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
+
+    def forward(self, hidden_states, past_key_values=None):
+        query_states = self.q_proj(hidden_states)
+        key_states = self.k_proj(hidden_states)
+        value_states = self.v_proj(hidden_states)
+        attn = torch.matmul(query_states, key_states.transpose(-1, -2)).softmax(-1)
+        return self.o_proj(torch.matmul(attn, value_states))
+'''
+
+_QK_MLA_LATENT_ATTN = '''
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.q_a_proj = nn.Linear(config.hidden_size, config.q_lora_rank)
+        self.q_a_layernorm = XRMSNorm(config.q_lora_rank)
+        self.q_b_proj = nn.Linear(config.q_lora_rank, config.hidden_size)
+        self.kv_a_proj_with_mqa = nn.Linear(config.hidden_size, config.kv_lora_rank)
+        self.kv_a_layernorm = XRMSNorm(config.kv_lora_rank)
+        self.kv_b_proj = nn.Linear(config.kv_lora_rank, config.hidden_size)
+        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
+
+    def forward(self, hidden_states, past_key_values=None):
+        q = self.q_b_proj(self.q_a_layernorm(self.q_a_proj(hidden_states)))
+        compressed = self.kv_a_proj_with_mqa(hidden_states)
+        kv = self.kv_b_proj(self.kv_a_layernorm(compressed))
+        attn = torch.matmul(q, kv.transpose(-1, -2)).softmax(-1)
+        return self.o_proj(torch.matmul(attn, kv))
+'''
+
+
+def _qk_files(tmp_path, attention_src):
+    f = tmp_path / "modeling_x.py"
+    f.write_text(_QK_SCAFFOLD.format(attention=attention_src))
+    return (str(f),)
+
+
+def test_qk_norm_unconditional_construction_is_present_without_config(tmp_path):
+    """Qwen3/OLMo-2 shape: q/k norms built unconditionally and applied on the
+    projection path ⇒ present, no config consulted (their configs are silent)."""
+    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
+    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_UNCONDITIONAL_ATTN))
+    assert ev is not None and ev.present is True and ev.gate == ()
+
+
+def test_qk_norm_gate_is_the_field_the_code_reads(tmp_path):
+    """StableLM/Persimmon shape: construction and application sit behind
+    ``self.qk_layernorm = config.qk_layernorm`` — the atom is the config field
+    the CODE names (never a spelling we guessed), through fused-QKV chunking."""
+    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
+    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_GATED_ATTN))
+    assert ev is not None and ev.present is None
+    assert [(a.field, a.per_layer) for a in ev.gate] == [("qk_layernorm", False)]
+
+
+def test_qk_norm_composite_gate_extracts_the_per_layer_term(tmp_path):
+    """Llama-4 shape: ``config.use_qk_norm and self.use_rope`` where use_rope
+    indexes ``config.no_rope_layers[layer_idx]`` — both atoms extracted, the
+    per-layer one marked so the parser evaluates it per layer.  The
+    ``hasattr(self, "qk_norm")`` application guard adds no atom."""
+    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
+    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_COMPOSITE_ATTN))
+    assert ev is not None and ev.present is None
+    assert [(a.field, a.per_layer) for a in ev.gate] == [
+        ("no_rope_layers", True), ("use_qk_norm", False)]
+
+
+def test_qk_norm_proven_absent_when_the_class_builds_none(tmp_path):
+    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
+    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_PLAIN_ATTN))
+    assert ev is not None and ev.present is False
+
+
+def test_qk_norm_mla_latent_norms_are_not_qk_norms(tmp_path):
+    """DeepSeek MLA shape: ``q_a_layernorm``/``kv_a_layernorm`` results feed
+    ANOTHER projection — intermediate norms by dataflow, so proven absent."""
+    from model_unfolder.evidence.patterns import decoder_qk_norm_from_files
+    ev = decoder_qk_norm_from_files(_qk_files(tmp_path, _QK_MLA_LATENT_ATTN))
+    assert ev is not None and ev.present is False
+
+
+def test_qk_norm_resolution_states():
+    """The parser-side 5-state resolution: code shape × checkpoint values."""
+    from model_unfolder.adapters.transformer.parser import _resolve_qk_norm_layers
+    from model_unfolder.evidence.patterns import QKNormCodeEvidence, QKNormGateAtom
+
+    # proven absent beats a declared spelling — a flag the code never reads is dead
+    assert _resolve_qk_norm_layers(
+        QKNormCodeEvidence(present=False), {"qk_layernorm": True}, True, 4
+    ) == [False] * 4
+    # unconditional: config not consulted
+    assert _resolve_qk_norm_layers(
+        QKNormCodeEvidence(present=True), {}, False, 3) == [True] * 3
+    # gated: the named field's VALUE decides
+    gated = QKNormCodeEvidence(
+        present=None, gate=(QKNormGateAtom("qk_layernorm"),))
+    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": True}, False, 2) == [True] * 2
+    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": False}, True, 2) == [False] * 2
+    # per-layer atom: the code indexes its own field by layer
+    comp = QKNormCodeEvidence(present=None, gate=(
+        QKNormGateAtom("no_rope_layers", per_layer=True),
+        QKNormGateAtom("use_qk_norm"),
+    ))
+    cfg = {"use_qk_norm": True, "no_rope_layers": [1, 1, 0, 1]}
+    assert _resolve_qk_norm_layers(comp, cfg, False, 4) == [True, True, False, True]
+    # unresolvable gate value -> honest fallback to the declared spelling
+    assert _resolve_qk_norm_layers(comp, {"use_qk_norm": True}, True, 4) == [True] * 4
+    # no source at all -> the declaration stands (a declaration is evidence)
+    assert _resolve_qk_norm_layers(None, {}, True, 2) == [True] * 2
+
+
+def test_qk_norm_ships_for_config_silent_oracle_models():
+    """The ship-path fix the 21-LLM sweep demanded: Qwen3/OLMo-2/Gemma-3 build
+    q/k norms unconditionally with SILENT configs — the default parse (no
+    inspect_code flag) must now carry the fact."""
+    from transformers import AutoConfig
+    for mt in ("qwen3", "olmo2", "gemma3_text"):
+        ir = config_to_ir(AutoConfig.for_model(mt))
+        assert ir.layers and all(l.attention.qk_norm for l in ir.layers), mt
+
+
+def test_qk_norm_declared_gate_still_decides_for_stablelm():
+    from transformers import AutoConfig
+    cfg = AutoConfig.for_model("stablelm")          # qk_layernorm defaults False
+    assert not any(l.attention.qk_norm for l in config_to_ir(cfg).layers)
+    cfg.qk_layernorm = True
+    assert all(l.attention.qk_norm for l in config_to_ir(cfg).layers)
+
+
+def test_llama4_qk_norm_skips_nope_layers_and_positions_follow_the_code():
+    """Fabrication half of the sweep finding + the positional bug the gate
+    exposed: NoPE placement must follow ``config.no_rope_layers`` (the field
+    the code indexes — NoPE at layers 3, 7, 11…), and QK-norm must sit on
+    exactly the rope layers."""
+    from transformers import AutoConfig
+    cfg = AutoConfig.for_model("llama4_text")
+    ir = config_to_ir(cfg)
+    qk = [bool(l.attention.qk_norm) for l in ir.layers]
+    nope = [bool(l.attention.no_rope) for l in ir.layers]
+    assert any(nope) and sum(nope) * 4 == len(ir.layers)
+    assert all(q == (not n) for q, n in zip(qk, nope))
+    assert [i for i, n in enumerate(nope) if n][:3] == [3, 7, 11]
+
+
+def test_qk_norm_stays_absent_for_mla_and_plain_oracle_models():
+    from transformers import AutoConfig
+    for mt in ("llama", "deepseek_v3", "gemma2", "gpt_neox", "bloom"):
+        ir = config_to_ir(AutoConfig.for_model(mt))
+        assert not any(l.attention.qk_norm for l in ir.layers), mt
+
+
+_SHARED_ATTENTION_TOWER = '''
+import torch
+from torch import nn
+
+
+class SharedAttention(nn.Module):
+    """diffusers-Attention-shaped: lane norms gated on an __init__ PARAM."""
+
+    def __init__(self, dim, heads=8, qk_norm=None):
+        super().__init__()
+        self.to_q = nn.Linear(dim, dim)
+        self.to_k = nn.Linear(dim, dim)
+        self.to_v = nn.Linear(dim, dim)
+        if qk_norm is None:
+            self.norm_q = None
+            self.norm_k = None
+        elif qk_norm == "rms_norm":
+            self.norm_q = nn.RMSNorm(dim)
+            self.norm_k = nn.RMSNorm(dim)
+
+    def forward(self, x):
+        q, k, v = self.to_q(x), self.to_k(x), self.to_v(x)
+        if self.norm_q is not None:
+            q = self.norm_q(q)
+            k = self.norm_k(k)
+        return torch.matmul(torch.matmul(q, k.transpose(-1, -2)).softmax(-1), v)
+
+
+class NormedBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(dim)
+        self.attn = SharedAttention(dim, qk_norm="rms_norm")
+        self.ff = nn.Linear(dim, dim)
+
+    def forward(self, x):
+        return x + self.ff(self.attn(self.norm1(x)))
+
+
+class PlainBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(dim)
+        self.attn = SharedAttention(dim)
+        self.ff = nn.Linear(dim, dim)
+
+    def forward(self, x):
+        return x + self.ff(self.attn(self.norm1(x)))
+'''
+
+
+def test_tower_lane_norms_read_the_construction_site_not_field_presence(tmp_path):
+    """The HunyuanVideo-refiner fabrication: a SHARED attention class carries
+    ``norm_q``/``norm_k`` fields for every caller — the per-lane tower fact
+    must come from the value THIS block passes at its construction site
+    (omitted kwarg ⇒ the class's own None default ⇒ no norm), not from bare
+    field presence."""
+    f = tmp_path / "modeling_shared_tower.py"
+    f.write_text(_SHARED_ATTENTION_TOWER)
+    from model_unfolder.evidence.transitive import build_registry
+    from model_unfolder.everchanging import load_conformance_transitive
+    from model_unfolder.evidence.vision import layer_facts_from_block
+
+    registry = build_registry([str(f)])
+    vocab = load_conformance_transitive()
+    normed = layer_facts_from_block("NormedBlock", registry, vocab)
+    plain = layer_facts_from_block("PlainBlock", registry, vocab)
+    assert normed["q_norm"] is True and normed["k_norm"] is True
+    assert plain["q_norm"] is False and plain["k_norm"] is False
