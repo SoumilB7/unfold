@@ -168,6 +168,10 @@ keys:
   - enable_talker
   # chatglm long-context rope theta ratio — positional tuning scalar.
   - rope_ratio
+  # phimoe: a bias on the output (lm_head) projection — a minor output-head
+  # detail we do not surface for any model (the output layer is drawn from its
+  # shape, not its bias presence).
+  - lm_head_bias
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:

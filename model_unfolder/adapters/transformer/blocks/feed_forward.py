@@ -269,13 +269,16 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
 
 
 def _routing_shape(r: dict) -> tuple[bool, bool, bool]:
-    """The two axes that decide the Top-k torch sequence, read from config:
-    ``grouped`` (group-limited / node-limited routing) and ``bias`` (the
-    aux-loss-free correction bias, which makes the SELECTION scores differ from
-    the WEIGHT scores → a real gather). ``greedy`` distinguishes the two known
-    grouped methods so we never claim DeepSeek-V3's top-2-sum for V2's max."""
+    """The two axes that decide the Top-k torch sequence: ``grouped``
+    (group-limited / node-limited routing, from the config ``n_group`` count) and
+    ``bias`` (the aux-loss-free correction bias, which makes the SELECTION scores
+    differ from the WEIGHT scores → a real gather). ``greedy`` distinguishes the
+    two known grouped methods so we never claim DeepSeek-V3's top-2-sum for V2's
+    max.  ``bias`` reads the resolved ``bias_correction`` (code-proven
+    ``e_score_correction_bias`` OR declared ``noaux_tc``) so GLM-4.5 — which
+    enacts the bias but omits the string — draws it."""
     grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
-    bias = r.get("topk_method") == "noaux_tc"
+    bias = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
     greedy = r.get("topk_method") == "group_limited_greedy"
     return grouped, bias, greedy
 
@@ -357,6 +360,17 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
                   "view": "topk_selection", "detail": {"ffn": ffn_detail(ffn)},
                   "children": _topk_selection_cards(scoring, n_experts, n_active, n_group,
                                                     topk_group, grouped=grouped, bias=bias, greedy=greedy)}
+    elif r.get("sparsemixer"):
+        # Phi's sparsemixer: a two-stage masked selection (mask the argmax,
+        # softmax the rest, sample) that keeps routing differentiable — NOT a
+        # plain top-k. Named at the selection altitude so the drill isn't a lie.
+        select = {"id": "g_topk", "title": "Sparsemixer selection",
+                  "description": f"Selection is Phi's sparsemixer (not a plain top-k): a "
+                                 f"two-stage masked routing — mask the argmax, softmax the "
+                                 f"rest, sample — repeated to pick {n_active} experts, keeping "
+                                 f"the router differentiable. Gate weights are gathered from "
+                                 f"these masked softmaxes.",
+                  "facts": [f"top-{n_active}", "2-stage", "masked softmax"]}
     else:
         select = {"id": "g_topk", "title": "Top-k selection",
                   "description": f"torch.topk(scores, k={n_active}) keeps the {n_active} highest-"
@@ -375,7 +389,7 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
         cards.append({"id": "g_norm", "title": "Renormalize weights",
                       "description": "Divides the selected experts' gate weights by their sum "
                                      "so they add to 1 (norm_topk_prob)."})
-    if r.get("topk_method") == "noaux_tc":
+    if bias:
         cards.append({"id": "g_bias", "title": "Learned bias (load-balancing)",
                       "description": "A learned per-expert bias vector (DeepSeek's "
                                      "e_score_correction_bias) ADDED TO THE SCORES FOR "

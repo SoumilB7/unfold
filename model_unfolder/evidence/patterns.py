@@ -1504,19 +1504,20 @@ def _attention_qk_norm(node: ast.ClassDef) -> QKNormCodeEvidence | None:
         present=None, gate=tuple(sorted(atoms, key=lambda a: a.field)))
 
 
-def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
-    """The ROTATED head-width when the code constructs its rotary embedding
-    with an EXPLICIT dim argument computed from config arithmetic — ChatGLM's
-    ``RotaryEmbedding(rotary_dim // 2)`` with ``rotary_dim = hidden//heads if
-    kv_channels is None else kv_channels``: the fraction exists NOWHERE in the
-    config, only in this expression.  The evaluator handles config attributes,
-    prior local assigns, int constants, +,-,*,//,/ and the ``X if config.Y is
-    None else config.Y`` ternary — anything else returns None (a detector
-    failure is never permission to assert).  Modern classes that pass
-    ``config=config`` to their rotary (Llama/NeoX) have no dim argument and
-    return None here — their fraction is config-declared and already read."""
+class _ConfigExprEvaluator:
+    """Evaluate a small __init__ expression against a config — the shared engine
+    for CODE-DERIVED constants the config omits but the source COMPUTES: ChatGLM's
+    rotary dim (``RotaryEmbedding(rotary_dim // 2)``) and the GPT-J/GPT-2/CodeGen
+    FFN width (``n_inner=None -> 4*n_embd``).  Handles config attributes
+    (``config.X`` / ``self.config.X``), prior local assigns, int/float constants,
+    ``+ - * // /``, the ``A if config.Y is [not] None else B`` default ternary,
+    and ``int(...)``.  Anything else -> None (a detector failure never asserts)."""
 
-    def _cfg_get(field):
+    def __init__(self, cfg):
+        self._cfg = cfg
+
+    def cfg_get(self, field):
+        cfg = self._cfg
         if cfg is None:
             return None
         v = getattr(cfg, field, None)
@@ -1524,7 +1525,7 @@ def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
             v = cfg.get(field)
         return v
 
-    def _cfg_field(e):
+    def cfg_field(self, e):
         if isinstance(e, ast.Attribute):
             base = e.value
             if isinstance(base, ast.Name) and base.id in ("config", "cfg"):
@@ -1534,16 +1535,16 @@ def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
                 return e.attr
         return None
 
-    def _ev(e, local):
+    def eval(self, e, local):
         if isinstance(e, ast.Constant) and isinstance(e.value, (int, float)):
             return e.value
         if isinstance(e, ast.Name):
             return local.get(e.id)
-        f = _cfg_field(e)
+        f = self.cfg_field(e)
         if f is not None:
-            return _cfg_get(f)
+            return self.cfg_get(f)
         if isinstance(e, ast.BinOp):
-            l, r = _ev(e.left, local), _ev(e.right, local)
+            l, r = self.eval(e.left, local), self.eval(e.right, local)
             if l is None or r is None:
                 return None
             try:
@@ -1561,25 +1562,35 @@ def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
                 return None
             return None
         if isinstance(e, ast.IfExp):
-            # ``A if config.X is None else B`` — the ChatGLM kv_channels ternary
+            # ``A if config.X is [not] None else B`` — the config-default ternary
             t = e.test
             if (isinstance(t, ast.Compare) and len(t.ops) == 1
                     and isinstance(t.comparators[0], ast.Constant)
                     and t.comparators[0].value is None):
-                f = _cfg_field(t.left)
+                f = self.cfg_field(t.left)
                 if f is not None:
-                    is_none = _cfg_get(f) is None
+                    is_none = self.cfg_get(f) is None
                     if isinstance(t.ops[0], ast.Is):
-                        return _ev(e.body if is_none else e.orelse, local)
+                        return self.eval(e.body if is_none else e.orelse, local)
                     if isinstance(t.ops[0], ast.IsNot):
-                        return _ev(e.orelse if is_none else e.body, local)
+                        return self.eval(e.orelse if is_none else e.body, local)
         if (isinstance(e, ast.Call) and isinstance(e.func, ast.Name)
                 and e.func.id == "int" and len(e.args) == 1):
-            v = _ev(e.args[0], local)
+            v = self.eval(e.args[0], local)
             return int(v) if v is not None else None
         return None
 
+
+def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
+    """The ROTATED head-width when the code constructs its rotary embedding
+    with an EXPLICIT dim argument computed from config arithmetic — ChatGLM's
+    ``RotaryEmbedding(rotary_dim // 2)`` with ``rotary_dim = hidden//heads if
+    kv_channels is None else kv_channels``: the fraction exists NOWHERE in the
+    config, only in this expression.  Uses the shared ``_ConfigExprEvaluator``.
+    Modern classes that pass ``config=config`` to their rotary (Llama/NeoX) have
+    no dim argument and return None here — their fraction is config-declared."""
     from .forward_ops import _method
+    ev = _ConfigExprEvaluator(cfg)
     vals: set[int] = set()
     for node in _parse_defs(tuple(str(p) for p in (files or ()))).values():
         init = _method(node, "__init__")
@@ -1589,7 +1600,7 @@ def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
         for st in init.body:
             if isinstance(st, ast.Assign) and len(st.targets) == 1 \
                     and isinstance(st.targets[0], ast.Name):
-                local[st.targets[0].id] = _ev(st.value, local)
+                local[st.targets[0].id] = ev.eval(st.value, local)
             for call in ast.walk(st):
                 if not isinstance(call, ast.Call) or not call.args:
                     continue
@@ -1598,10 +1609,181 @@ def decoder_rope_dim_from_files(files, cfg=None) -> int | None:
                     callee.id if isinstance(callee, ast.Name) else "")
                 if "rotary" not in (name or "").lower():
                     continue
-                v = _ev(call.args[0], local)
+                v = ev.eval(call.args[0], local)
                 if isinstance(v, (int, float)) and v == int(v) and v > 0:
                     vals.add(int(v))
     return next(iter(vals)) if len(vals) == 1 else None
+
+
+@dataclass(frozen=True)
+class RouterCodeEvidence:
+    """MoE router behaviour read from the routing forward — the code channel for
+    facts modern checkpoints leave OUT of config (GLM-4.5 copied DeepSeek-V3's
+    routing CODE — ``.sigmoid()`` + ``e_score_correction_bias`` — but not its
+    ``scoring_func``/``topk_method`` config STRINGS, so the string reader draws
+    softmax and drops the bias).  ``scoring_fn`` is the enacted score transform;
+    ``bias_correction`` is the aux-loss-free ``e_score_correction_bias`` steering
+    selection while weights gather the raw scores; ``sparsemixer`` is Phi's
+    two-stage masked selection; ``grouped`` marks a group-limited code path
+    (informational — the config ``n_group`` count stays authoritative)."""
+
+    scoring_fn: str | None = None      # "sigmoid" | "softmax" | None (ambiguous/unreadable)
+    bias_correction: bool = False
+    sparsemixer: bool = False
+    grouped: bool = False
+
+
+_ROUTER_BIAS_MARKERS = frozenset({"e_score_correction_bias"})
+_ROUTER_GROUP_MARKERS = frozenset({"group_scores", "group_mask", "group_idx"})
+# A tensor name that marks the ROUTING logits/scores — used to tell a score
+# transform (softmax/sigmoid over router logits) apart from an EXPERT activation.
+# Deliberately EXCLUDES bare "gate": gpt-oss experts compute
+# ``glu = gate * torch.sigmoid(gate * alpha)`` — an expert GLU, not routing.
+# Every real routing tensor carries one of these (router_logits,
+# router_top_value, top_k_logits, concatenated_gate_logits, scores_for_choice).
+_ROUTER_LOGIT_HINTS = ("logit", "rout", "score")
+
+
+def _router_token_bag(node: ast.ClassDef, free_fns: dict) -> tuple[set, set, set]:
+    """(call-callee names, identifier/attribute names, score-transforms) reachable
+    from a routing class's methods, following module-level free functions it calls
+    (Phi's ``sparsemixer``) one hop.  A score-transform is a ``softmax``/``sigmoid``
+    applied to a ROUTING-logits-named tensor — so an expert-activation sigmoid
+    (gpt-oss) is NOT mistaken for the router's score transform."""
+    calls: set = set()
+    names: set = set()
+    scores: set = set()
+    _scanned: set = set()
+
+    def scan(fn_node):
+        for n in ast.walk(fn_node):
+            if isinstance(n, ast.Call):
+                f = n.func
+                nm = f.attr if isinstance(f, ast.Attribute) else (
+                    f.id if isinstance(f, ast.Name) else None)
+                if nm:
+                    calls.add(nm)
+                    if nm in ("softmax", "sigmoid"):
+                        # the transformed tensor is EITHER the method receiver
+                        # (``x.sigmoid()``) OR the first arg (``F.softmax(x)``) —
+                        # check both, since ``f.value`` of ``F.softmax`` is the
+                        # torch module path, not the tensor.
+                        probe = list(n.args[:1])
+                        if isinstance(f, ast.Attribute):
+                            probe.append(f.value)
+                        rn = {m.id.lower() for c in probe for m in ast.walk(c)
+                              if isinstance(m, ast.Name)}
+                        if any(h in one for one in rn for h in _ROUTER_LOGIT_HINTS):
+                            scores.add(nm)
+                    if nm in free_fns and nm not in _scanned:
+                        _scanned.add(nm)
+                        scan(free_fns[nm])
+            elif isinstance(n, ast.Attribute):
+                names.add(n.attr)
+            elif isinstance(n, ast.Name):
+                names.add(n.id)
+            elif isinstance(n, ast.Constant) and isinstance(n.value, str):
+                names.add(n.value)      # register_buffer("e_score_correction_bias", …)
+
+    for m in node.body:
+        if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            scan(m)
+    return calls, names, scores
+
+
+def decoder_router_evidence_from_files(files) -> RouterCodeEvidence | None:
+    """MoE routing behaviour read from the modeling source.  The routing lives
+    EITHER in a dedicated router class (``*TopkRouter``/``*MoEGate`` — role
+    ``route``: GLM-4.5/DeepSeek-V3) OR inline in the sparse-MoE block
+    (Mixtral/Phi/Qwen3/Granite).  We scan whichever carries it, following the
+    ``sparsemixer`` free function one hop, and classify the score transform +
+    aux-loss-free bias + sparsemixer.  Returns None when no routing class is
+    found (caller keeps the config strings)."""
+    from .forward_ops import _field_types, _method, _role_of
+
+    defs = _parse_defs(tuple(str(p) for p in (files or ())))
+    free_fns = {}
+    for path in (files or ()):
+        try:
+            tree = ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for n in tree.body:
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                free_fns[n.name] = n
+
+    # Routing can be SPLIT across a dedicated router class (gate + aux-loss bias
+    # buffer — ``DeepseekV3TopkRouter``) and the sparse-MoE block that runs the
+    # selection algorithm (``DeepseekV3MoE.route_tokens_to_experts`` — sigmoid,
+    # group scores, gather).  Scan the UNION so neither half is missed; a plain
+    # softmax MoE (Mixtral/Qwen3) has only the block.
+    routers = [c for c in defs.values() if _role_of(c.name) == "route"]
+    routers += [c for c in defs.values()
+                if _role_of(c.name) != "route"
+                and _method(c, "forward") is not None
+                and _has_moe(set(_field_types(_method(c, "__init__")).keys()), c.name.lower())]
+    if not routers:
+        return None
+
+    scorings: set = set()
+    bias = sparse = grouped = False
+    for node in routers:
+        calls, names, scores = _router_token_bag(node, free_fns)
+        if "sparsemixer" in calls or "sparsemixer" in names:
+            sparse = True
+        if _ROUTER_BIAS_MARKERS & names:
+            bias = True
+        if _ROUTER_GROUP_MARKERS & names:
+            grouped = True
+        # score transform over the routing logits (sigmoid distinctive to
+        # sigmoid-scored routers; else softmax) — expert-activation sigmoids
+        # were already filtered out by the routing-name check.
+        if "sigmoid" in scores:
+            scorings.add("sigmoid")
+        elif "softmax" in scores:
+            scorings.add("softmax")
+    scoring_fn = next(iter(scorings)) if len(scorings) == 1 else None
+    return RouterCodeEvidence(
+        scoring_fn=scoring_fn, bias_correction=bias, sparsemixer=sparse, grouped=grouped)
+
+
+def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> int | None:
+    """The FFN intermediate width when the config FIELD is absent but the
+    modeling source COMPUTES a default expression — GPT-J/GPT-2/CodeGen:
+    ``inner_dim = config.n_inner if config.n_inner is not None else 4*config.n_embd``
+    (``n_inner=None`` in config → the layer uses ``4×hidden``).  Reading that
+    expression (not a per-model table) fixes the param undercount without
+    fabrication.  Anchored on the decoder layer's ``__init__`` (structure-found),
+    keyed on the ``intermediate_size`` config vocabulary so ONLY that default is
+    evaluated (a sibling rope-dim ternary in the same __init__ is ignored)."""
+    from .forward_ops import _method
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    cls_node, _ = layer
+    init = _method(cls_node, "__init__")
+    if init is None:
+        return None
+    ev = _ConfigExprEvaluator(cfg)
+    aliases = {str(a).lower() for a in (intermediate_aliases or ())}
+    local: dict = {}
+    for st in init.body:
+        if not (isinstance(st, ast.Assign) and len(st.targets) == 1
+                and isinstance(st.targets[0], ast.Name)):
+            continue
+        val = st.value
+        local[st.targets[0].id] = ev.eval(val, local)   # chain refs (hidden_size = config.n_embd)
+        if isinstance(val, ast.IfExp):
+            t = val.test
+            if (isinstance(t, ast.Compare) and len(t.ops) == 1
+                    and isinstance(t.comparators[0], ast.Constant)
+                    and t.comparators[0].value is None):
+                f = ev.cfg_field(t.left)
+                if f and f.lower() in aliases:
+                    r = ev.eval(val, local)
+                    if isinstance(r, (int, float)) and r == int(r) and r > 0:
+                        return int(r)
+    return None
 
 
 def decoder_qk_norm_from_files(files) -> QKNormCodeEvidence | None:

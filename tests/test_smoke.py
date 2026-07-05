@@ -896,6 +896,10 @@ def test_moe_routing_detail():
         "scoring_func": "sigmoid", "topk_method": "noaux_tc",
         "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
         "routed_scaling_factor": 2.5,
+        # code-derived resolved fact: the deepseek_v3 source enacts the
+        # aux-loss-free e_score_correction_bias (agrees with the declared
+        # noaux_tc string), so the resolved boolean the render reads is present.
+        "bias_correction": True,
     }
     from model_unfolder.labels import router_facts
     facts = router_facts(ffn)

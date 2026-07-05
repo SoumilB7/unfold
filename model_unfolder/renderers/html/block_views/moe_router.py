@@ -33,7 +33,9 @@ def build_moe_router_view(ir: dict, info: dict, mount_id: str, block: dict | Non
     r = (ffn_from_block(block, info).get("routing")) or {}
     norm = bool(r.get("norm_topk_prob"))
     scale = r.get("routed_scaling_factor")
-    bias_corrected = r.get("topk_method") == "noaux_tc"
+    # Resolved aux-loss-free bias: code-proven (e_score_correction_bias) OR the
+    # declared noaux_tc string — GLM-4.5 enacts it in code without the string.
+    bias_corrected = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
 
     # Gate C de-blocked: the GATE and the SELECTION are the only named compute
     # here — everything else is a property or wiring. Labels stay the bare op name
@@ -95,7 +97,7 @@ def build_topk_selection_view(ir: dict, info: dict, mount_id: str, block: dict |
     route_tokens_to_experts``.)"""
     r = (ffn_from_block(block, info).get("routing")) or {}
     grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
-    bias = r.get("topk_method") == "noaux_tc"
+    bias = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
 
     nodes: list[Node] = [Node("ts_in", "port", "expert scores", static=True)]
     flow = ["ts_in"]

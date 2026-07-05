@@ -1428,3 +1428,358 @@ def test_qk_norm_draws_real_ops_in_the_drill():
     assert html.count("Q Norm") >= 1 and html.count("K Norm") >= 1
     mla = mu.unfold(AutoConfig.for_model("deepseek_v3")).to_html()
     assert mla.count("Q Norm") == 0 and mla.count("K Norm") == 0
+
+
+# ---------------------------------------------------------------------------
+# Code-derived FFN intermediate width (GPT-J/GPT-2/CodeGen n_inner=None -> 4*hidden)
+# ---------------------------------------------------------------------------
+
+_GPTJ_SHAPED_INNER = '''
+import torch
+from torch import nn
+
+
+class XMLP(nn.Module):
+    def __init__(self, intermediate_size, config):
+        super().__init__()
+        self.fc_in = nn.Linear(config.n_embd, intermediate_size)
+        self.fc_out = nn.Linear(intermediate_size, config.n_embd)
+
+    def forward(self, x):
+        return self.fc_out(torch.nn.functional.gelu(self.fc_in(x)))
+
+
+class XAttention(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.q_proj = nn.Linear(config.n_embd, config.n_embd)
+        self.k_proj = nn.Linear(config.n_embd, config.n_embd)
+        self.v_proj = nn.Linear(config.n_embd, config.n_embd)
+        self.out_proj = nn.Linear(config.n_embd, config.n_embd)
+
+    def forward(self, hidden_states, layer_past=None, use_cache=None):
+        q, k, v = self.q_proj(hidden_states), self.k_proj(hidden_states), self.v_proj(hidden_states)
+        return self.out_proj(v)
+
+
+class XBlock(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        inner_dim = config.n_inner if config.n_inner is not None else 4 * config.n_embd
+        self.ln_1 = nn.LayerNorm(config.n_embd)
+        self.attn = XAttention(config)
+        self.mlp = XMLP(inner_dim, config)
+
+    def forward(self, hidden_states, layer_past=None, use_cache=None):
+        return hidden_states + self.mlp(self.attn(self.ln_1(hidden_states)))
+'''
+
+
+def test_intermediate_size_from_the_constructor_default_expression(tmp_path):
+    """GPT-J shape: ``inner_dim = config.n_inner if config.n_inner is not None
+    else 4 * config.n_embd`` — with n_inner absent, the FFN width is read from
+    the code's own default expression (4×hidden), never a per-model table."""
+    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
+    f = tmp_path / "modeling_x.py"
+    f.write_text(_GPTJ_SHAPED_INNER)
+    files = (str(f),)
+    aliases = ("intermediate_size", "n_inner", "d_ff", "ffn_hidden_size")
+    # n_inner absent -> 4 * n_embd
+    assert decoder_intermediate_size_from_files(files, {"n_embd": 4096}, aliases) == 16384
+    # n_inner present -> the ternary yields it (code default not applied)
+    assert decoder_intermediate_size_from_files(
+        files, {"n_embd": 4096, "n_inner": 9000}, aliases) == 9000
+
+
+def test_intermediate_size_reader_ignores_a_sibling_rope_ternary(tmp_path):
+    """The reader is keyed on the intermediate_size vocabulary, so a different
+    config-default ternary in the same __init__ is not mistaken for the FFN
+    width."""
+    src = _GPTJ_SHAPED_INNER.replace(
+        "        self.ln_1 = nn.LayerNorm(config.n_embd)",
+        "        rot = config.rotary_dim if config.rotary_dim is not None else 64\n"
+        "        self.ln_1 = nn.LayerNorm(config.n_embd)")
+    f = tmp_path / "modeling_y.py"
+    f.write_text(src)
+    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
+    aliases = ("intermediate_size", "n_inner")
+    # rotary_dim ternary must NOT be picked; n_inner default (4*n_embd) wins
+    assert decoder_intermediate_size_from_files(
+        (str(f),), {"n_embd": 1024, "rotary_dim": None}, aliases) == 4096
+
+
+def test_gptj_family_derives_the_ffn_width_end_to_end():
+    """GPT-J/CodeGen/GPT-2 carry ``n_inner=None`` and compute 4×hidden — the
+    parse must surface the real FFN width, not undercount it to zero."""
+    from transformers import AutoConfig
+    for mt, embd_field in (("gptj", "n_embd"), ("codegen", "n_embd"), ("gpt2", "n_embd")):
+        cfg = AutoConfig.for_model(mt)
+        cfg.n_inner = None
+        ir = config_to_ir(cfg)
+        hidden = getattr(cfg, "hidden_size", None) or getattr(cfg, embd_field)
+        assert ir.layers[0].ffn.intermediate_size == 4 * hidden, mt
+
+
+def test_declared_intermediate_size_is_never_overridden_by_code():
+    """The code reader fires ONLY when the config field is absent — a declared
+    intermediate_size (Llama) is authoritative and untouched."""
+    from transformers import AutoConfig
+    cfg = AutoConfig.for_model("llama")
+    ir = config_to_ir(cfg)
+    assert ir.layers[0].ffn.intermediate_size == cfg.intermediate_size
+
+
+# ---------------------------------------------------------------------------
+# Norm-kind: code MATH outranks BOTH eps spellings (PhiMoE/Persimmon)
+# ---------------------------------------------------------------------------
+
+def test_norm_kind_math_outranks_the_rms_eps_spelling():
+    """PhiMoE constructs ``nn.LayerNorm`` while carrying ``rms_norm_eps`` — the
+    RMS eps spelling lies, the code math (torch-builtin LayerNorm) tells the
+    truth; and T5 (``layer_norm_epsilon`` + RMS math) stays RMS.  Every plain
+    RMS/LN control is unchanged."""
+    from transformers import AutoConfig
+    expect = {"phimoe": "LayerNorm", "t5": "RMSNorm", "llama": "RMSNorm",
+              "bloom": "LayerNorm", "gemma2": "RMSNorm", "qwen3": "RMSNorm"}
+    for mt, want in expect.items():
+        ir = config_to_ir(AutoConfig.for_model(mt))
+        drawn = {b.get("label") for l in ir.layers for b in (l.blocks or [])
+                 if isinstance(b, dict) and b.get("kind") == "norm"}
+        assert drawn == {want}, f"{mt}: drew {drawn}, expected {want}"
+
+
+def test_norm_math_verdict_maps_torch_builtin_names():
+    """The math reader classifies a torch-builtin norm by its API name (fixed
+    library math), so a class with no in-file forward still resolves."""
+    from model_unfolder.evidence.patterns import _norm_math_verdict
+    import ast as _ast
+    assert _norm_math_verdict(None, {}, "LayerNorm", _ast) == "layernorm"
+    assert _norm_math_verdict(None, {}, "RMSNorm", _ast) == "rmsnorm"
+    assert _norm_math_verdict(None, {}, "SomethingElse", _ast) is None
+
+
+# ---------------------------------------------------------------------------
+# Raw-JSON rung: config-class default hydration (identity-as-address at load)
+# ---------------------------------------------------------------------------
+
+def test_raw_json_hydration_fills_class_defaults_and_preserves_raw_and_stamps():
+    from model_unfolder.parser import _hydrate_config_class_defaults as H
+    raw = {"model_type": "gemma2", "num_hidden_layers": 4, "hidden_size": 256,
+           "num_attention_heads": 8, "_repo_id": "stamp/keep"}
+    h = H(raw)
+    assert h.get("query_pre_attn_scalar") is not None      # class default materialized
+    assert h["num_hidden_layers"] == 4                      # raw wins over any default
+    assert h["_repo_id"] == "stamp/keep"                    # loader stamp survives
+    assert h["model_type"] == "gemma2"
+
+
+def test_raw_json_hydration_raw_value_overrides_a_class_default():
+    from model_unfolder.parser import _hydrate_config_class_defaults as H
+    over = {"model_type": "gemma2", "sliding_window": 999, "num_hidden_layers": 2,
+            "hidden_size": 256, "num_attention_heads": 8}
+    assert H(over)["sliding_window"] == 999
+
+
+def test_raw_json_hydration_is_a_noop_for_unknown_or_typeless_configs():
+    from model_unfolder.parser import _hydrate_config_class_defaults as H
+    unk = {"model_type": "totally_unknown_xyz", "hidden_size": 128}
+    assert H(unk) == unk
+    assert H({"hidden_size": 128}) == {"hidden_size": 128}
+    assert H("not a dict") == "not a dict"
+
+
+# ---------------------------------------------------------------------------
+# MoE router facts from code (GLM-4.5 sigmoid+bias; Phi sparsemixer)
+# ---------------------------------------------------------------------------
+
+_DSV3_SHAPED_ROUTER = '''
+import torch
+from torch import nn
+import torch.nn.functional as F
+
+
+class XTopkRouter(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.top_k = config.num_experts_per_tok
+        self.n_group = config.n_group
+        self.topk_group = config.topk_group
+        self.weight = nn.Parameter(torch.empty((config.n_routed_experts, config.hidden_size)))
+        self.register_buffer("e_score_correction_bias", torch.zeros((config.n_routed_experts)))
+
+    def forward(self, hidden_states):
+        return hidden_states
+
+
+class XMoE(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.gate = XTopkRouter(config)
+        self.experts = nn.ModuleList()
+
+    def route_tokens_to_experts(self, hidden_states):
+        router_logits = F.linear(hidden_states.type(torch.float32), self.gate.weight)
+        router_logits = router_logits.sigmoid()
+        router_logits_for_choice = router_logits + self.gate.e_score_correction_bias
+        group_scores = router_logits_for_choice.view(-1, self.gate.n_group, 4).topk(2, dim=-1)[0].sum(-1)
+        group_idx = torch.topk(group_scores, k=self.gate.topk_group, dim=-1)[1]
+        group_mask = torch.zeros_like(group_scores)
+        topk_indices = torch.topk(router_logits_for_choice, k=self.gate.top_k, dim=-1)[1]
+        topk_weights = router_logits.gather(1, topk_indices)
+        return topk_indices, topk_weights
+
+    def forward(self, hidden_states):
+        return hidden_states
+'''
+
+_MIXTRAL_SHAPED_ROUTER = '''
+import torch
+from torch import nn
+
+
+class XSparseMoeBlock(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.gate = nn.Linear(config.hidden_size, config.num_local_experts, bias=False)
+        self.top_k = config.num_experts_per_tok
+
+    def forward(self, hidden_states):
+        router_logits = self.gate(hidden_states)
+        routing_weights = torch.nn.functional.softmax(router_logits, dim=1, dtype=torch.float)
+        routing_weights, selected_experts = torch.topk(routing_weights, self.top_k, dim=-1)
+        return routing_weights
+'''
+
+_SPARSEMIXER_SHAPED_ROUTER = '''
+import torch
+from torch import nn
+
+
+def sparsemixer(scores, top_k, jitter_eps):
+    masked_scores = scores.masked_fill(scores < 0, float("-inf"))
+    masked_scores = torch.softmax(masked_scores, dim=-1)
+    selected = torch.topk(masked_scores, top_k, dim=-1)[1]
+    weights = masked_scores.gather(dim=-1, index=selected)
+    return weights, selected
+
+
+class XPhiMoeBlock(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.gate = nn.Linear(config.hidden_size, config.num_local_experts, bias=False)
+        self.top_k = config.num_experts_per_tok
+
+    def forward(self, hidden_states):
+        router_logits = self.gate(hidden_states)
+        routing_weights, selected_experts = sparsemixer(router_logits, self.top_k, jitter_eps=0.01)
+        return routing_weights
+'''
+
+_GPTOSS_SHAPED_ROUTER = '''
+import torch
+from torch import nn
+import torch.nn.functional as F
+
+
+class XExperts(nn.Module):
+    """Expert compute uses a sigmoid GLU — must NOT be read as router scoring."""
+    def __init__(self, config):
+        super().__init__()
+        self.alpha = 1.702
+        self.gate_up_proj = nn.Parameter(torch.empty(config.num_local_experts, config.hidden_size, 2))
+
+    def forward(self, hidden_states, routing_weights):
+        gate = hidden_states
+        glu = gate * torch.sigmoid(gate * self.alpha)
+        return glu * routing_weights
+
+
+class XTopKRouter(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.top_k = config.num_experts_per_tok
+        self.weight = nn.Parameter(torch.empty(config.num_local_experts, config.hidden_size))
+
+    def forward(self, hidden_states):
+        router_logits = F.linear(hidden_states, self.weight)
+        router_top_value, router_indices = torch.topk(router_logits, self.top_k, dim=-1)
+        router_scores = torch.nn.functional.softmax(router_top_value, dim=1)
+        return router_scores, router_indices
+'''
+
+
+def _router_ev(tmp_path, src):
+    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
+    f = tmp_path / "modeling_x.py"
+    f.write_text(src)
+    return decoder_router_evidence_from_files((str(f),))
+
+
+def test_router_sigmoid_and_aux_free_bias_from_split_router_and_block(tmp_path):
+    """DeepSeek-V3/GLM-4.5 shape: the bias buffer lives in the router class, the
+    sigmoid + group + gather in the MoE block's route_tokens_to_experts — the
+    reader scans the UNION and reports sigmoid + bias + grouped."""
+    ev = _router_ev(tmp_path, _DSV3_SHAPED_ROUTER)
+    assert ev is not None
+    assert ev.scoring_fn == "sigmoid" and ev.bias_correction and ev.grouped
+    assert not ev.sparsemixer
+
+
+def test_router_plain_softmax_topk(tmp_path):
+    ev = _router_ev(tmp_path, _MIXTRAL_SHAPED_ROUTER)
+    assert ev.scoring_fn == "softmax"
+    assert not ev.bias_correction and not ev.grouped and not ev.sparsemixer
+
+
+def test_router_sparsemixer_followed_into_the_free_function(tmp_path):
+    """Phi shape: routing delegates to a module-level ``sparsemixer`` — the
+    reader follows it one hop, reports sparsemixer + its softmax scoring."""
+    ev = _router_ev(tmp_path, _SPARSEMIXER_SHAPED_ROUTER)
+    assert ev.sparsemixer and ev.scoring_fn == "softmax"
+    assert not ev.bias_correction
+
+
+def test_router_ignores_expert_activation_sigmoid(tmp_path):
+    """gpt-oss shape: the EXPERT GLU uses ``torch.sigmoid(gate * alpha)`` — an
+    activation, not routing.  The score-transform detector keys on routing-logit
+    NAMES, so scoring resolves to the router's softmax, never the expert sigmoid."""
+    ev = _router_ev(tmp_path, _GPTOSS_SHAPED_ROUTER)
+    assert ev.scoring_fn == "softmax", f"expert sigmoid leaked: {ev}"
+    assert not ev.bias_correction and not ev.sparsemixer
+
+
+def test_router_none_for_dense_model(tmp_path):
+    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
+    f = tmp_path / "modeling_dense.py"
+    f.write_text("import torch\nfrom torch import nn\n\nclass XMLP(nn.Module):\n"
+                 "    def __init__(self, config):\n        super().__init__()\n"
+                 "        self.fc = nn.Linear(4, 4)\n    def forward(self, x):\n        return self.fc(x)\n")
+    assert decoder_router_evidence_from_files((str(f),)) is None
+
+
+def test_glm45_router_draws_sigmoid_bias_and_gather_from_code():
+    """The headline S2 fix: GLM-4.5's config lacks scoring_func/topk_method but
+    its code enacts DeepSeek-V3 routing — the drawn router must be sigmoid with
+    the aux-loss-free bias and the raw-weight gather, not a plain softmax."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    html = mu.unfold(AutoConfig.for_model("glm4_moe")).to_html()
+    assert "sigmoid" in html
+    assert "load-balancing" in html          # aux-loss-free bias card
+    assert "Gather weights" in html          # raw-weight gather step
+    assert "softmax gating" not in html
+
+
+def test_deepseek_v3_declared_and_code_agree_no_drift():
+    """DSV3 declares scoring_func='sigmoid'+topk_method='noaux_tc' AND enacts
+    them — code agrees with config, so no disagreement note is recorded."""
+    import json
+    from model_unfolder.sable import DEFAULT_CORPUS
+    import model_unfolder as mu
+    cfg = json.loads((DEFAULT_CORPUS / "deepseek-v3.json").read_text())["config"]
+    routing = None
+    for l in mu.config_to_ir(cfg).layers:
+        if l.ffn.routing:
+            routing = l.ffn.routing
+    assert routing["scoring_func"] == "sigmoid" and routing.get("bias_correction")
+    assert "_scoring_declared" not in routing      # config and code agree

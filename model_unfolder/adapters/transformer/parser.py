@@ -257,6 +257,32 @@ def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> li
     return per_layer
 
 
+def _code_router(cfg: Any, context=None):
+    """MoE routing behaviour READ FROM THE MODELING SOURCE — the code channel
+    for the score transform / aux-loss-free bias / sparsemixer that modern
+    checkpoints leave out of config (GLM-4.5 copied DeepSeek-V3's routing code
+    but not its ``scoring_func``/``topk_method`` strings).  Best-effort, never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_router_evidence_from_files
+        return decoder_router_evidence_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_intermediate_size(cfg: Any, context=None) -> int | None:
+    """FFN intermediate width from the modeling source's OWN default expression
+    when the config field is absent (GPT-J/GPT-2/CodeGen ``n_inner=None →
+    4×n_embd``) — fixes the param undercount without a per-model table.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_intermediate_size_from_files
+        return decoder_intermediate_size_from_files(
+            _source_files(cfg, context), cfg, _ALIASES.get("intermediate_size", ()))
+    except Exception:
+        return None
+
+
 def _code_rope_dim(cfg: Any, context=None) -> int | None:
     """The rotated head-width read from an explicit-dim rotary CONSTRUCTION
     (ChatGLM's ``RotaryEmbedding(rotary_dim // 2)``) — only consulted when
@@ -418,6 +444,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
         mlp_ratio = get("mlp_ratio")
         if mlp_ratio and hidden_size:
             intermediate_size = int(hidden_size * float(mlp_ratio))
+    # GPT-J/GPT-2/CodeGen: config's ``n_inner`` is None and the layer computes
+    # ``4 * n_embd`` itself — read that default EXPRESSION from the source so the
+    # FFN width (and thus the param count) isn't undercounted to zero.
+    if not intermediate_size:
+        code_inter = _code_intermediate_size(text_cfg, context)
+        if code_inter:
+            intermediate_size = code_inter
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
     activation_raw = get("hidden_act")
     if isinstance(activation_raw, dict):
@@ -632,7 +665,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     ])
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
-    moe_routing = _moe_routing(text_cfg) if moe_active else None
+    moe_routing = _moe_routing(text_cfg, context) if moe_active else None
     # gpt-oss clamps its SwiGLU activation to ±swiglu_limit — a Tier-3 property.
     activation_clip = _g(text_cfg, "swiglu_limit")
 
@@ -1185,12 +1218,17 @@ def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[st
     return None
 
 
-def _moe_routing(cfg: Any) -> dict | None:
+def _moe_routing(cfg: Any, context=None) -> dict | None:
     """Collect the MoE router knobs that decide *how* experts get picked.
 
-    Returns only the fields the config actually declares (DeepSeek/Kimi/GLM use
-    the full set; Qwen3-MoE just ``norm_topk_prob``), or ``None`` when none are.
-    """
+    Config strings first (DeepSeek/Kimi declare the full set), then the CODE
+    channel fills/overrides the two facts modern checkpoints omit: GLM-4.5
+    copied DeepSeek-V3's routing CODE (``.sigmoid()`` + ``e_score_correction_bias``)
+    but not its ``scoring_func``/``topk_method`` STRINGS, so the string reader
+    drew softmax and dropped the bias.  Code is the enacted truth: it decides the
+    score transform and the aux-loss-free bias; a declared string that agrees is
+    confirmation, one that disagrees loses to the code (with a recorded note).
+    ``None`` when neither channel declares anything."""
     routing = {
         "scoring_func":          _g(cfg, "scoring_func"),          # sigmoid | softmax
         "topk_method":           _g(cfg, "topk_method"),           # noaux_tc, group_limited_greedy, ...
@@ -1200,6 +1238,23 @@ def _moe_routing(cfg: Any) -> dict | None:
         "routed_scaling_factor": _g(cfg, "routed_scaling_factor"),  # scale on routed-expert output
     }
     routing = {k: v for k, v in routing.items() if v is not None}
+
+    code = _code_router(cfg, context)
+    if code is not None:
+        # Score transform: code decides; a declared string only confirms.
+        if code.scoring_fn:
+            declared = routing.get("scoring_func")
+            if declared and str(declared).lower() != code.scoring_fn:
+                routing["_scoring_declared"] = declared      # disagreement note (audit)
+            routing["scoring_func"] = code.scoring_fn
+        # Aux-loss-free bias correction: code proof (e_score_correction_bias) OR
+        # a declared ``noaux_tc``.  A resolved boolean the render reads directly,
+        # so a checkpoint that enacts the bias without the string still draws it.
+        if code.bias_correction or routing.get("topk_method") == "noaux_tc":
+            routing["bias_correction"] = True
+        if code.sparsemixer:
+            routing["sparsemixer"] = True
+
     return routing or None
 
 
@@ -1245,12 +1300,17 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
     """The norm kind from EVIDENCE only — None when nothing states it (the
     caller chooses its default and KNOWS it is a default).  Channel order:
 
-    1. an explicit ``norm_type`` config declaration;
-    2. ``rms_norm_eps`` — a spelling only RMS implementations carry;
-    3. the norm class's ``forward()`` MATH from the modeling source — this
-       outranks the ambiguous ``layer_norm_eps*`` spelling because T5's config
-       declares ``layer_norm_epsilon`` while ``T5LayerNorm`` computes a
-       variance-only rescale (RMS): the spelling lies, the math never does;
+    1. an explicit ``rmsnorm`` bool / ``norm_type`` config declaration;
+    2. the norm class's ``forward()`` MATH from the modeling source — the
+       only channel that never lies, so it outranks BOTH eps spellings:
+       PhiMoE/Persimmon construct ``nn.LayerNorm`` while carrying
+       ``rms_norm_eps`` (the RMS spelling lies about the kind), and T5 carries
+       ``layer_norm_epsilon`` while ``T5LayerNorm`` computes a variance-only
+       rescale (RMS).  ``_norm_math_verdict`` also maps the torch-builtin API
+       names (``nn.LayerNorm``/``nn.RMSNorm``) as fixed library math — reading
+       the library, not the model — so a norm with no in-file forward still
+       classifies here;
+    3. ``rms_norm_eps`` spelling — RMS when no source math is readable;
     4. the ``layer_norm_eps*`` spelling hint;
     5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
     """
@@ -1271,11 +1331,11 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
             return "rmsnorm"
         if "layer" in nt:
             return "layernorm"
-    if rms_eps is not None:
-        return "rmsnorm"
     math_kind = _code_norm_math(cfg, context)
     if math_kind:
         return math_kind
+    if rms_eps is not None:
+        return "rmsnorm"
     if ln_eps is not None or ln_eps2 is not None:
         return "layernorm"
     return _code_norm_kind(cfg, context)

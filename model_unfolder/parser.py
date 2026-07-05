@@ -454,7 +454,39 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
         raise exc
     with open(path) as f:
         cfg = _parse_config_json_text(f.read())
+    cfg = _hydrate_config_class_defaults(cfg)
     return _ensure_unfoldable_config(cfg, model_id)
+
+
+def _hydrate_config_class_defaults(cfg):
+    """Fill config-CLASS defaults invisible in a RAW-fetched config.json.
+
+    A config downloaded on this rung (registry-predating / remote-code repos)
+    is a bare dict that never saw its config class, so class defaults that
+    upstream chose NOT to serialize are absent — Gemma-2's
+    ``sliding_window_pattern=2`` reads as all-sliding, flattening a real
+    heterogeneous stack.  The installed config class is code evidence (the
+    SAME rail an by-id AutoConfig load uses), so when ``model_type`` is a known
+    address we hydrate through it; raw keys always win over defaults, loader
+    stamps (``_``-prefixed) survive, and an unknown/unregistered type keeps the
+    raw dict untouched.  Identity-as-address at LOAD time — the parse itself
+    stays name-blind (the defaults arrive as data)."""
+    if not isinstance(cfg, dict):
+        return cfg
+    mt = cfg.get("model_type")
+    if not mt:
+        return cfg
+    try:
+        from transformers import AutoConfig
+        hydrated = AutoConfig.for_model(
+            mt, **{k: v for k, v in cfg.items()
+                   if not k.startswith("_") and k != "model_type"}).to_dict()
+    except Exception:
+        return cfg
+    for k, v in cfg.items():          # loader stamps / private context keys survive
+        if k.startswith("_"):
+            hydrated[k] = v
+    return hydrated
 
 
 def _load_mistral_params_json(model_id: str, auth_token: Any) -> dict | None:
