@@ -1829,3 +1829,262 @@ def test_glm45_draws_the_sigmoid_scoring_node_before_topk():
     import model_unfolder as mu
     html = mu.unfold(AutoConfig.for_model("glm4_moe")).to_html()
     assert ">sigmoid<" in html                # a drawn node, not only a chip
+
+
+# ---------------------------------------------------------------------------
+# MoE-vs-dense layer SCHEDULE from construction evidence (code-authoritative)
+# ---------------------------------------------------------------------------
+
+_MOE_SCAFFOLD = '''
+import torch
+from torch import nn
+
+
+class XExperts(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.num_experts = config.num_experts
+        self.experts = nn.ModuleList()
+        self.gate = nn.Linear(config.hidden_size, config.num_experts)
+
+    def forward(self, x):
+        return x
+
+
+class XMoE(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.experts = XExperts(config)
+
+    def forward(self, x):
+        return self.experts(x)
+
+
+class XMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.gate_proj = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.up_proj = nn.Linear(config.hidden_size, config.intermediate_size)
+        self.down_proj = nn.Linear(config.intermediate_size, config.hidden_size)
+
+    def forward(self, x):
+        return self.down_proj(self.gate_proj(x))
+
+
+class XAttention(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.o_proj = nn.Linear(config.hidden_size, config.hidden_size)
+
+    def forward(self, hidden_states, past_key_values=None):
+        return self.o_proj(self.v_proj(hidden_states))
+
+
+class XDecoderLayer(nn.Module):
+    def __init__(self, config, layer_idx):
+        super().__init__()
+        self.self_attn = XAttention(config, layer_idx)
+        self.input_layernorm = nn.RMSNorm(config.hidden_size)
+{ffn_ctor}
+
+    def forward(self, hidden_states, past_key_values=None):
+        return hidden_states + self.mlp(self.self_attn(self.input_layernorm(hidden_states)))
+'''
+
+# Gate forms — each substitutes the FFN-field construction block:
+_CTOR_UNCONDITIONAL = "        self.mlp = XMoE(config)"
+_CTOR_THRESHOLD = (
+    "        if layer_idx >= config.first_k_dense_replace:\n"
+    "            self.mlp = XMoE(config)\n"
+    "        else:\n"
+    "            self.mlp = XMLP(config)")
+_CTOR_MEMBERSHIP_SELFFLAG = (
+    "        self.is_moe_layer = layer_idx in config.moe_layers\n"
+    "        if self.is_moe_layer:\n"
+    "            self.mlp = XMoE(config)\n"
+    "        else:\n"
+    "            self.mlp = XMLP(config)")
+_CTOR_EXCLUSION_AND = (
+    "        if (layer_idx not in config.mlp_only_layers) and (config.num_experts > 0):\n"
+    "            self.mlp = XMoE(config)\n"
+    "        else:\n"
+    "            self.mlp = XMLP(config)")
+_CTOR_MODULO_AND = (
+    "        if ((layer_idx + 1) % config.moe_layer_interval == 0) and (layer_idx >= config.moe_layer_start_index):\n"
+    "            self.mlp = XMoE(config)\n"
+    "        else:\n"
+    "            self.mlp = XMLP(config)")
+_CTOR_TERNARY = (
+    "        self.mlp = XMoE(config) if layer_idx >= config.first_k_dense_replace else XMLP(config)")
+_CTOR_DENSE = "        self.mlp = XMLP(config)"
+# a MoE class MISLEADINGLY named MLP (gpt-oss shape) — must still read MoE
+_CTOR_MISNAMED = "        self.mlp = XExperts(config)"   # XExperts builds experts → MoE despite call
+# hybrid: two ffn fields (shared + moe) → ambiguous → None
+_CTOR_MULTI = (
+    "        self.shared_mlp = XMLP(config)\n"
+    "        self.mlp = XMoE(config)")
+
+
+def _sched(tmp_path, ctor, cfg):
+    from model_unfolder.evidence.patterns import decoder_moe_schedule_from_files
+    import hashlib
+    f = tmp_path / f"modeling_{hashlib.md5(ctor.encode()).hexdigest()[:8]}.py"
+    f.write_text(_MOE_SCAFFOLD.format(ffn_ctor=ctor))
+    return decoder_moe_schedule_from_files((str(f),), cfg)
+
+
+def test_moe_schedule_unconditional_all_moe(tmp_path):
+    assert _sched(tmp_path, _CTOR_UNCONDITIONAL, {"num_hidden_layers": 4}) == [True]*4
+
+
+def test_moe_schedule_threshold_dense_prefix(tmp_path):
+    cfg = {"num_hidden_layers": 5, "first_k_dense_replace": 2}
+    assert _sched(tmp_path, _CTOR_THRESHOLD, cfg) == [False, False, True, True, True]
+
+
+def test_moe_schedule_membership_via_self_flag(tmp_path):
+    """Llama-4 shape: self.is_moe_layer = layer_idx in config.moe_layers."""
+    cfg = {"num_hidden_layers": 4, "moe_layers": [1, 3]}
+    assert _sched(tmp_path, _CTOR_MEMBERSHIP_SELFFLAG, cfg) == [False, True, False, True]
+
+
+def test_moe_schedule_exclusion_and_threshold(tmp_path):
+    """Qwen shape: (layer_idx not in mlp_only_layers) and (num_experts > 0)."""
+    cfg = {"num_hidden_layers": 4, "mlp_only_layers": [2], "num_experts": 8}
+    assert _sched(tmp_path, _CTOR_EXCLUSION_AND, cfg) == [True, True, False, True]
+    cfg0 = {"num_hidden_layers": 3, "mlp_only_layers": [], "num_experts": 0}
+    assert _sched(tmp_path, _CTOR_EXCLUSION_AND, cfg0) == [False, False, False]
+
+
+def test_moe_schedule_modulo_and_threshold(tmp_path):
+    """Ernie shape: (layer_idx+1) % interval == 0 and layer_idx >= start."""
+    cfg = {"num_hidden_layers": 6, "moe_layer_interval": 2, "moe_layer_start_index": 1}
+    # (i+1)%2==0 → i in {1,3,5}; AND i>=1 → all of them
+    assert _sched(tmp_path, _CTOR_MODULO_AND, cfg) == [False, True, False, True, False, True]
+
+
+def test_moe_schedule_ternary(tmp_path):
+    cfg = {"num_hidden_layers": 4, "first_k_dense_replace": 1}
+    assert _sched(tmp_path, _CTOR_TERNARY, cfg) == [False, True, True, True]
+
+
+def test_moe_schedule_dense_model_all_false(tmp_path):
+    assert _sched(tmp_path, _CTOR_DENSE, {"num_hidden_layers": 3}) == [False]*3
+
+
+def test_moe_schedule_detects_misnamed_moe_class(tmp_path):
+    """gpt-oss shape: the MoE class is named like an MLP but builds experts —
+    structural (name-independent) detection must still resolve MoE."""
+    assert _sched(tmp_path, _CTOR_MISNAMED, {"num_hidden_layers": 2}) == [True]*2
+
+
+def test_moe_schedule_multiple_ffn_fields_returns_none(tmp_path):
+    """Ambiguous (shared_mlp + moe — hybrid shape) → None → config fallback."""
+    assert _sched(tmp_path, _CTOR_MULTI, {"num_hidden_layers": 4}) is None
+
+
+def test_moe_schedule_unresolvable_gate_returns_none(tmp_path):
+    """A gate referencing an absent config field → None (never a wrong guess)."""
+    cfg = {"num_hidden_layers": 4}   # first_k_dense_replace missing
+    assert _sched(tmp_path, _CTOR_THRESHOLD, cfg) is None
+
+
+def test_llama4_moe_schedule_now_drawn_moe_end_to_end():
+    """The headline fix: Llama-4's MoE was drawn all-dense (moe_layers unread +
+    interleave==1 inversion); the code schedule now draws it MoE."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    ir = mu.config_to_ir(AutoConfig.for_model("llama4_text"))
+    moe = sum(1 for l in ir.layers if l.ffn.kind == "moe")
+    assert moe == len(ir.layers) and moe > 0, f"only {moe}/{len(ir.layers)} MoE"
+
+
+def test_ernie_moe_schedule_first_layer_dense_from_code():
+    """The bug the sweep FOUND: Ernie's config path drew all-MoE; the code gate
+    ((i+1)%interval==0 and i>=start=1) makes layer 0 dense."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    ir = mu.config_to_ir(AutoConfig.for_model("ernie4_5_moe"))
+    kinds = [l.ffn.kind for l in ir.layers]
+    assert kinds[0] == "dense" and kinds[1] == "moe"
+
+
+def test_moe_schedule_working_families_unchanged():
+    """The 12 agreeing families must stay MoE exactly as before (byte-stable):
+    DeepSeek dense-prefix, Mixtral/Qwen3/gpt-oss all-MoE."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    ds = [l.ffn.kind for l in mu.config_to_ir(AutoConfig.for_model("deepseek_v3")).layers]
+    assert ds[:3] == ["dense"]*3 and all(k == "moe" for k in ds[3:])
+    for mt in ("mixtral", "qwen3_moe", "gpt_oss"):
+        ir = mu.config_to_ir(AutoConfig.for_model(mt))
+        assert all(l.ffn.kind == "moe" for l in ir.layers), mt
+
+
+def test_moe_schedule_hybrid_returns_none_falls_back():
+    """granitemoehybrid (Mamba-MoE) → code=None → config path (no crash)."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    ir = mu.config_to_ir(AutoConfig.for_model("granitemoehybrid"))  # must not raise
+    assert ir.layers
+
+
+# ---------------------------------------------------------------------------
+# Per-layer SCHEDULE conformance lock (Group 1): the drawn per-layer type
+# schedule must match the code's AUTHORITATIVE per-layer list — the net that
+# would have caught the MoE interleave==1 inversion, locking sliding/NoPE/MoE
+# against future re-derivation drift.
+# ---------------------------------------------------------------------------
+
+def test_sliding_schedule_matches_code_layer_types():
+    """Every model declaring ``layer_types`` (the list the attention class reads
+    as ``config.layer_types[layer_idx] == 'sliding_attention'``) must have its
+    drawn per-layer sliding schedule EXACTLY match that list."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    for mt in ("gemma2", "gemma3_text", "cohere2", "gpt_oss", "qwen2", "qwen3"):
+        cfg = AutoConfig.for_model(mt)
+        lt = getattr(cfg, "layer_types", None)
+        if not lt:
+            continue
+        drawn = [("slid" in str(l.attention.mask).lower())
+                 for l in mu.config_to_ir(cfg).layers]
+        code = [(x == "sliding_attention") for x in lt][:len(drawn)]
+        assert drawn == code, f"{mt}: sliding schedule diverged from code layer_types"
+
+
+def test_nope_schedule_matches_code_no_rope_layers():
+    """A model with a ``no_rope_layers`` list (Llama-4 iRoPE) must draw NoPE on
+    exactly the layers the code marks (``no_rope_layers[i]`` truthy = uses rope)."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    for mt in ("llama4_text",):
+        cfg = AutoConfig.for_model(mt)
+        nrl = getattr(cfg, "no_rope_layers", None)
+        if not isinstance(nrl, (list, tuple)):
+            continue
+        drawn = [bool(l.attention.no_rope) for l in mu.config_to_ir(cfg).layers]
+        code = [not bool(x) for x in nrl][:len(drawn)]
+        assert drawn == code, f"{mt}: NoPE schedule diverged from code no_rope_layers"
+
+
+def test_moe_schedule_matches_code_construction():
+    """The MoE schedule (now code-authoritative) must match the code's per-layer
+    experts-class construction — the exact regression the interleave==1 bug was."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    from model_unfolder.evidence.patterns import decoder_moe_schedule_from_files
+    import transformers, pathlib
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    for mt, ff in (("llama4_text", "llama4/modeling_llama4.py"),
+                   ("deepseek_v3", "deepseek_v3/modeling_deepseek_v3.py"),
+                   ("ernie4_5_moe", "ernie4_5_moe/modeling_ernie4_5_moe.py")):
+        cfg = AutoConfig.for_model(mt)
+        code = decoder_moe_schedule_from_files((str(base / ff),), cfg)
+        if code is None:
+            continue
+        drawn = [(l.ffn.kind == "moe") for l in mu.config_to_ir(cfg).layers]
+        assert drawn == code[:len(drawn)], f"{mt}: drawn MoE schedule != code construction"

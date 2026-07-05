@@ -329,7 +329,15 @@ def _call_op_kind(call: ast.Call, field_types: dict[str, str]) -> str | None:
     if name is None:
         return None
     if name in _OP_TOKENS:
-        return _OP_TOKENS[name] or None     # "" sentinel = ignore
+        kind = _OP_TOKENS[name] or None     # "" sentinel = ignore
+        # A matmul/bmm/einsum CALL over a stacked weight Parameter is a FUSED
+        # projection (Llama-4 experts: ``torch.bmm(x, self.gate_up_proj)``) — the
+        # call-form twin of the ``x @ self.gate_up_proj`` BinOp case handled in
+        # _binop_op_kind: a linear, not a dot-product.  Ordinary ``matmul(Q, K)``
+        # of two activations has no proj/weight operand and stays dot_product.
+        if kind == "dot_product" and any(_projection_operand(a) for a in call.args):
+            return "linear"
+        return kind
     return None
 
 

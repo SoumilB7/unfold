@@ -26,9 +26,13 @@ from __future__ import annotations
 
 import ast
 import functools
+import operator as op
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+
+# module-level sentinel for the MoE-schedule / config-expr evaluators
+_UNRESOLVED = object()
 
 from .ast_scanner import _call_name
 from .models import ClassEvidence, CodeEvidence, CodeFinding, SourceBundle
@@ -1858,6 +1862,267 @@ def decoder_qk_norm_from_files(files) -> QKNormCodeEvidence | None:
     if len({(v.present, v.gate) for v in verdicts}) > 1:
         return None          # candidates disagree — ambiguity is not evidence
     return verdicts[0]
+
+
+# ---------------------------------------------------------------------------
+# MoE-vs-dense LAYER SCHEDULE from construction evidence — which layers build
+# an experts class as their FFN field, name-independently, per layer.
+# ---------------------------------------------------------------------------
+
+def _class_builds_experts(classname: str, defs: dict) -> bool | None:
+    """Is the constructed FFN class STRUCTURALLY an MoE — does it build MULTIPLE
+    EXPERTS, regardless of its NAME?  gpt-oss's MoE is named ``GptOssMLP`` (True);
+    a plain MLP builds gate/up/down only (False).  AST-only (no source-segment,
+    which would misalign across separately-parsed files): a field/attribute/name
+    named ``*expert*`` or a ``num_experts``/``num_local_experts`` reference in
+    the class body.  None when the class def isn't found (unknown → caller
+    treats as doubt)."""
+    from .forward_ops import _method, _field_types
+    node = defs.get(classname)
+    if node is None:
+        return None
+    init = _method(node, "__init__")
+    if init is not None and any("expert" in f.lower()
+                                for f in _field_types(init).keys()):
+        return True
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Attribute) and "expert" in sub.attr.lower():
+            return True
+        if isinstance(sub, ast.Name) and "expert" in sub.id.lower():
+            return True
+        if isinstance(sub, ast.Constant) and isinstance(sub.value, str) \
+                and "expert" in sub.value.lower():
+            return True
+    return False
+
+
+class _MoEGateEvaluator:
+    """Evaluate a per-layer boolean MoE gate against a config.  Covers the gate
+    forms the recon found (2026-07-05): threshold ``layer_idx >= config.INT``
+    (+ other comparisons), membership ``layer_idx in config.LIST``, exclusion
+    ``not in``, modulo ``(layer_idx [+k]) % config.INT [== 0]``, a bare
+    ``config.INT > 0`` (uniform), and AND/OR of these.  ``at(i)`` → True/False,
+    or None when ANYTHING is unresolvable (a wrong per-layer verdict is never
+    emitted — the caller falls back to config)."""
+
+    _CMP = {ast.Gt: op.gt, ast.GtE: op.ge, ast.Lt: op.lt, ast.LtE: op.le,
+            ast.Eq: op.eq, ast.NotEq: op.ne}
+
+    def __init__(self, cfg, layer_params, flags):
+        self._cfg = cfg
+        self._params = layer_params      # __init__ params that ARE the layer index
+        self._flags = flags              # self.<flag> -> assigned gate expr
+
+    def _cfg_get(self, e):
+        # config.X / self.config.X -> value; else None
+        if isinstance(e, ast.Attribute):
+            base = e.value
+            if isinstance(base, ast.Name) and base.id in ("config", "cfg"):
+                return self._cfg_val(e.attr)
+            if (isinstance(base, ast.Attribute) and base.attr == "config"
+                    and isinstance(base.value, ast.Name) and base.value.id == "self"):
+                return self._cfg_val(e.attr)
+        return _UNRESOLVED
+
+    def _cfg_val(self, field):
+        cfg = self._cfg
+        v = getattr(cfg, field, None)
+        if v is None and isinstance(cfg, dict):
+            v = cfg.get(field)
+        return v if v is not None else _UNRESOLVED
+
+    def _num(self, e, i):
+        """Evaluate an arithmetic expr over layer_idx / config to a number."""
+        if isinstance(e, ast.Name):
+            return i if e.id in self._params else _UNRESOLVED
+        if isinstance(e, ast.Constant) and isinstance(e.value, (int, float)):
+            return e.value
+        c = self._cfg_get(e)
+        if c is not _UNRESOLVED:
+            return c
+        if isinstance(e, ast.BinOp):
+            l, r = self._num(e.left, i), self._num(e.right, i)
+            if l is _UNRESOLVED or r is _UNRESOLVED or not isinstance(l, (int, float)) \
+                    or not isinstance(r, (int, float)):
+                return _UNRESOLVED
+            try:
+                if isinstance(e.op, ast.Add): return l + r
+                if isinstance(e.op, ast.Sub): return l - r
+                if isinstance(e.op, ast.Mult): return l * r
+                if isinstance(e.op, ast.FloorDiv): return l // r
+                if isinstance(e.op, ast.Mod): return l % r
+            except (ZeroDivisionError, TypeError):
+                return _UNRESOLVED
+        return _UNRESOLVED
+
+    def at(self, test, i):
+        """True/False for layer i, or None if unresolvable."""
+        if isinstance(test, ast.BoolOp):
+            vals = [self.at(v, i) for v in test.values]
+            if any(v is None for v in vals):
+                return None
+            return all(vals) if isinstance(test.op, ast.And) else any(vals)
+        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            v = self.at(test.operand, i)
+            return None if v is None else (not v)
+        # self.<flag> indirection: resolve to its assigned gate expression
+        f = _qk_self_attr(test)
+        if f is not None and f in self._flags:
+            return self.at(self._flags[f], i)
+        if isinstance(test, ast.Compare) and len(test.ops) == 1:
+            left, cop, right = test.left, test.ops[0], test.comparators[0]
+            # membership: layer_idx in config.LIST  /  not in
+            if isinstance(cop, (ast.In, ast.NotIn)):
+                if not (isinstance(left, ast.Name) and left.id in self._params):
+                    return None
+                container = self._cfg_get(right)
+                if container is _UNRESOLVED or not isinstance(container, (list, tuple, set)):
+                    return None
+                inside = i in container
+                return inside if isinstance(cop, ast.In) else (not inside)
+            # numeric comparison: layer_idx >= config.INT ; (i+1)%step == 0 ; config.X > 0
+            a, b = self._num(left, i), self._num(right, i)
+            fn = self._CMP.get(type(cop))
+            if a is _UNRESOLVED or b is _UNRESOLVED or fn is None \
+                    or not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+                return None
+            return bool(fn(a, b))
+        return None
+
+
+def decoder_moe_schedule_from_files(files, cfg):
+    """Per-layer MoE?/dense verdict READ FROM THE DECODER LAYER's CONSTRUCTION —
+    the code-authoritative replacement for the config schedule flags.  The layer
+    builds its FFN field EITHER unconditionally as one class OR conditionally
+    (if / ternary) as an experts-class vs a plain-MLP class; ``moe`` is decided
+    STRUCTURALLY (the class builds experts — name-independent: gpt-oss's MoE is
+    ``GptOssMLP``), and the per-layer gate is evaluated by ``_MoEGateEvaluator``.
+
+    Returns ``list[bool]`` (len = num layers, True = MoE) when the whole schedule
+    resolves, else ``None`` (caller falls back to the config path).  None is
+    returned on ANY doubt — a wrong per-layer verdict is never emitted:
+      * no decoder layer / no source → None;
+      * MULTIPLE ffn-role fields in the layer (shared_mlp + moe + mamba —
+        granitemoehybrid) → ambiguous → None;
+      * a variable-class construction (jamba ``ffn_layer_class``) → None;
+      * an unresolvable gate atom (unknown field, exotic form) → None.
+    """
+    from .forward_ops import _method, _role_of
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    node, _ = layer
+    init = _method(node, "__init__")
+    if init is None:
+        return None
+    n = _cfg_num_layers(cfg)
+    if not n:
+        return None
+    files_t = tuple(str(p) for p in (files or ()))
+    defs = _parse_defs(files_t)
+    layer_params = frozenset(
+        a.arg for a in init.args.args + init.args.kwonlyargs
+        if a.arg in ("layer_idx", "block_idx", "i", "idx"))
+    flags: dict = {}                      # self.<flag> = <gate expr>
+    ffn_ctors: list = []                  # (moe?: bool|None, gate|None) per ffn-field construction site
+    ffn_fields: set = set()               # distinct self.<field> that are ffn/route role
+
+    def classify_call(call):
+        f = call.func
+        nm = f.attr if isinstance(f, ast.Attribute) else (f.id if isinstance(f, ast.Name) else None)
+        if nm is None or _role_of(nm) not in ("ffn", "route"):
+            return None                   # not an ffn-field construction
+        return _class_builds_experts(nm, defs)        # True / False / None(unknown class)
+
+    def walk(body, gate):
+        for st in body:
+            if isinstance(st, ast.If):
+                walk(st.body, (st.test, True))
+                walk(st.orelse, (st.test, False))
+                continue
+            if not isinstance(st, ast.Assign) or len(st.targets) != 1:
+                continue
+            tgt = st.targets[0]
+            field = _qk_self_attr(tgt)
+            # collect self.<flag> = <expr> (for indirection), but NOT ffn ctors
+            if field is not None and not isinstance(st.value, (ast.Call, ast.IfExp)):
+                flags[field] = st.value
+            # ternary ffn field: self.x = MoE(...) if <g> else MLP(...)
+            if field is not None and isinstance(st.value, ast.IfExp):
+                bm = classify_call(st.value.body) if isinstance(st.value.body, ast.Call) else None
+                em = classify_call(st.value.orelse) if isinstance(st.value.orelse, ast.Call) else None
+                if bm is None and em is None:
+                    continue              # neither branch is an ffn field
+                ffn_fields.add(field)
+                if bm is None or em is None:
+                    ffn_ctors.append((None, None))   # variable/unknown branch → doubt
+                else:
+                    ffn_ctors.append(("ternary", st.value.test, bm, em, gate))
+                continue
+            # plain ffn field: self.x = SomeClass(...)
+            if field is not None and isinstance(st.value, ast.Call):
+                moe = classify_call(st.value)
+                if moe is None:
+                    continue              # not an ffn field (attention/norm/etc.)
+                ffn_fields.add(field)
+                ffn_ctors.append(("plain", moe, gate))
+
+    walk(init.body, None)
+
+    if not ffn_ctors or len(ffn_fields) != 1:
+        return None                       # no ffn field, or MULTIPLE (hybrid) → ambiguous
+    if any(c[0] == "ternary" and (c[2] is None or c[3] is None) for c in ffn_ctors) \
+            or any(c[0] is None for c in ffn_ctors):
+        return None                       # variable-class / unknown → doubt
+
+    ev = _MoEGateEvaluator(cfg, layer_params, flags)
+    result = [None] * n
+    for c in ffn_ctors:
+        if c[0] == "plain":
+            _, moe, gate = c
+            for i in range(n):
+                g = _gate_holds(ev, gate, i)
+                if g is None:
+                    return None
+                if g and result[i] is None:
+                    result[i] = bool(moe)
+        else:  # ternary: MoE(body) if test else MLP(orelse), under an outer gate too
+            _, test, bm, em, gate = c
+            for i in range(n):
+                outer = _gate_holds(ev, gate, i)
+                if outer is None:
+                    return None
+                if not outer:
+                    continue
+                inner = ev.at(test, i)
+                if inner is None:
+                    return None
+                if result[i] is None:
+                    result[i] = bool(bm if inner else em)
+    if any(r is None for r in result):
+        return None
+    return result
+
+
+def _gate_holds(ev, gate, i):
+    """An outer if-gate (test, want) holds for layer i? None-when-unresolvable;
+    True when there is no gate (unconditional)."""
+    if gate is None:
+        return True
+    test, want = gate
+    v = ev.at(test, i)
+    return None if v is None else (v == want)
+
+
+def _cfg_num_layers(cfg):
+    for k in ("num_hidden_layers", "n_layer", "n_layers", "num_layers"):
+        v = getattr(cfg, k, None) if not isinstance(cfg, dict) else cfg.get(k)
+        if v:
+            try:
+                return int(v)
+            except (TypeError, ValueError):
+                pass
+    return 0
 
 
 def embedding_stage_norm_from_files(files) -> str | None:

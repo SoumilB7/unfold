@@ -257,6 +257,23 @@ def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> li
     return per_layer
 
 
+def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
+    """Per-layer MoE?/dense schedule READ FROM THE DECODER LAYER's CONSTRUCTION —
+    the code-authoritative replacement for the config schedule flags: which
+    layers build an experts class (name-independent) as their FFN field, gated
+    per layer.  Returns ``list[bool]`` (len num_layers) or None on any doubt
+    (hybrid SSM-MoE, exotic gate, no source) → caller falls back to config.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_moe_schedule_from_files
+        sched = decoder_moe_schedule_from_files(_source_files(cfg, context), cfg)
+        if sched is not None and num_layers and len(sched) == num_layers:
+            return sched
+        return None
+    except Exception:
+        return None
+
+
 def _code_router(cfg: Any, context=None):
     """MoE routing behaviour READ FROM THE MODELING SOURCE — the code channel
     for the score transform / aux-loss-free bias / sparsemixer that modern
@@ -657,12 +674,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # explicit ``mlp_only_layers`` which stay dense.
     decoder_sparse_step = _g(text_cfg, "decoder_sparse_step") or 0
     mlp_only_layers     = set(_g(text_cfg, "mlp_only_layers") or [])
+    # Llama-4's explicit MoE-layer LIST — the code schedule reads its VALUE, so
+    # record ownership here (the audit tracks _g access); also the direct config
+    # fallback (layer i is MoE iff i in moe_layers) for a source-less parse.
+    moe_layers_list     = _g(text_cfg, "moe_layers")
     moe_every_layer     = moe_active and not any([
         first_k_dense,
         interleave_moe_step,
         decoder_sparse_step and decoder_sparse_step > 1,
         mlp_only_layers,
     ])
+    # CODE-AUTHORITATIVE per-layer MoE schedule (which layers build an experts
+    # class as their FFN field) — read from the decoder layer's construction,
+    # name-independent.  Supplies the per-layer SHAPE; ``moe_active``
+    # (num_experts>0) stays the is-this-MoE-at-all geometry gate.  None when the
+    # code can't resolve it (hybrid SSM-MoE / exotic gate / no source) → the
+    # config ``_is_dense_at_layer`` path is used unchanged (the 12 agreeing
+    # families stay byte-identical; llama-4 + ernie are the code-right fixes).
+    code_moe_schedule   = _code_moe_schedule(text_cfg, context, num_layers) if moe_active else None
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
     moe_routing = _moe_routing(text_cfg, context) if moe_active else None
@@ -788,15 +817,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
             ),
         )
 
-        is_dense_at_layer = _is_dense_at_layer(
-            i,
-            moe_active=moe_active,
-            first_k_dense=first_k_dense,
-            interleave_moe_step=interleave_moe_step,
-            moe_layer_freq=moe_layer_freq,
-            decoder_sparse_step=decoder_sparse_step,
-            mlp_only_layers=mlp_only_layers,
-        )
+        # Code decides the per-layer shape when it resolved the construction;
+        # else the config schedule path (unchanged).  moe_active is the shared
+        # is-this-MoE gate in both branches.
+        if code_moe_schedule is not None:
+            is_dense_at_layer = not code_moe_schedule[i]
+        elif isinstance(moe_layers_list, (list, tuple, set)):
+            # config fallback for the explicit MoE-layer list (Llama-4 w/o source)
+            is_dense_at_layer = i not in moe_layers_list
+        else:
+            is_dense_at_layer = _is_dense_at_layer(
+                i,
+                moe_active=moe_active,
+                first_k_dense=first_k_dense,
+                interleave_moe_step=interleave_moe_step,
+                moe_layer_freq=moe_layer_freq,
+                decoder_sparse_step=decoder_sparse_step,
+                mlp_only_layers=mlp_only_layers,
+            )
 
         if moe_active and not is_dense_at_layer:
             ffn = FFNSpec(
