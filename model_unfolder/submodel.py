@@ -89,8 +89,12 @@ def submodel_spec(
         fact = attention_detail(group_layer.attention)
         fact.update(attn_overrides)
         fact["hidden"] = ir.hidden_size
-        if scores_scaled is not None:
-            fact["scores_scaled"] = scores_scaled
+        # ONE emission discipline package-wide (ir/detail/here): only a False
+        # verdict is information — True IS the sqrt(dim) status quo, and
+        # emitting it broke embedded ≡ standalone parity once the main path
+        # learned the same fact (B1).
+        if scores_scaled is False:
+            fact["scores_scaled"] = False
         return fact
 
     def _ffn_fact(group_layer) -> dict:

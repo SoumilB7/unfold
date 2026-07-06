@@ -70,11 +70,21 @@ def _resolve(cfg: Any, canonical: str, default=None):
 
 
 def _source_files(cfg: Any, context=None):
-    """Use the one source bundle resolved for this parse."""
+    """The ROOT component's source files for this parse — never the pipeline
+    union.  A pipeline bundle folds text-encoder files (Gemma-2 for Sana) into
+    ``bundle.files``; every ``_code_*`` fact here describes the DENOISER, so
+    reading the union lets an encoder's rotary/norm markers fabricate a DiT
+    fact (the Sana RoPE leak).  ``component_files["root"]`` holds exactly the
+    denoiser's own file; encoder towers re-scope for themselves in
+    ``_normalize_encoder_config``."""
     if context is not None:
-        return context.source_bundle.files
+        bundle = context.source_bundle
+        root = (getattr(bundle, "component_files", {}) or {}).get("root")
+        return tuple(root) if root else bundle.files
     from ...evidence.sources import resolve_source_files
-    return resolve_source_files(cfg, source="local").files
+    bundle = resolve_source_files(cfg, source="local")
+    root = (getattr(bundle, "component_files", {}) or {}).get("root")
+    return tuple(root) if root else bundle.files
 
 
 def _code_ffn_activation(cfg: Any, context=None):
@@ -168,6 +178,99 @@ def _code_qk_norm(cfg: Any, context=None):
     try:
         from ...evidence.patterns import diffusion_qk_norm_from_files
         return diffusion_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_scores_scaled(cfg: Any, context=None):
+    """Whether the denoiser's attention forward SCALES its scores, READ FROM THE
+    MODELING SOURCE — the same verdict the encoder-tower path draws (T5 raw
+    QK^T).  False ⇒ no scale op in forward; True/None keep the sqrt(dim) card.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import attention_score_scaling_from_files
+        return attention_score_scaling_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_cross_qk_norm(cfg: Any, context=None):
+    """The Q/K-norm the CROSS-attention sublayer applies, read PER-SITE from
+    the cross class's own construction (Wan's ``attn2`` RMS-norms Q/K
+    unconditionally) — never inherited from the self spec.  None when the
+    cross class is shared/imported or its lane norms are ctor-gated (PixArt/
+    SD3): only positive per-site evidence draws the op.  Best-effort."""
+    try:
+        from ...evidence.patterns import diffusion_cross_qk_norm_from_files
+        return diffusion_cross_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_block_norm_placement(cfg: Any, context=None) -> str | None:
+    """The MAIN DiT block's norm placement from ITS OWN forward dataflow —
+    'double'/'post' when proven, else None.  Uses the SAME stack detector and
+    fact reader the refiners use (the root stack is the one whose depth binds
+    a root-depth spelling), with the A5 ctor-kwargs prune.  A proven sandwich
+    is stated on the norm CARDS — the cell layout is not flipped here (the
+    2-box parallel-norm render regression is the recorded lesson: fact first,
+    layout only as its own scoped, pixel-reviewed change)."""
+    try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.stacks import secondary_stacks_from_files
+        from ...evidence.transitive import build_registry
+        from ...evidence.vision import layer_facts_from_block
+        from ...everchanging import load_conformance_transitive
+        bundle = getattr(context, "source_bundle", None)
+        architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                        or getattr(bundle, "architecture", None))
+        files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        if not architecture or not files:
+            return None
+        files = _augment_diffusion_files(files)
+        root_depth = set(_ALIASES.get("num_layers") or []) | set(
+            _ALIASES.get("num_single_layers") or [])
+        stacks = [s for s in secondary_stacks_from_files(files, architecture)
+                  if s.count_field in root_depth]
+        if not stacks:
+            return None
+        registry = build_registry([str(f) for f in files])
+        vocab = load_conformance_transitive()
+        verdicts = set()
+        for s in stacks:
+            facts = layer_facts_from_block(s.block_class, registry, vocab,
+                                           ctor_kwargs=s.ctor_kwargs)
+            # STANDARD-CELL, SINGLE-attention only: the dataflow placement
+            # reader assumes one [norm→attn; norm→ffn] lane.  A dual-stream
+            # MMDiT block (ff + ff_context, SD3) or a cross-attn block
+            # (norm→attn1→norm→attn2→norm→ff, PixArt) interleaves more
+            # sublayers and reads as a false "double".  Never a wrong verdict.
+            from ...evidence.forward_ops import _role_of as _role
+            info = registry.get(s.block_class)
+            attn_fields = [c for c in (info.field_types or {}).values()
+                           if _role(c) == "attention"] if info else []
+            if facts.get("standard_cell") and len(attn_fields) == 1:
+                verdicts.add(facts.get("norm_placement"))
+        verdicts.discard(None)
+        if len(verdicts) == 1 and next(iter(verdicts)) in ("double", "post"):
+            return next(iter(verdicts))
+        return None
+    except Exception:
+        return None
+
+
+def _code_norm_kind(cfg: Any, context=None):
+    """The DiT block-norm's base kind READ FROM THE MODEL CLASSES
+    (``AdaLayerNormZero``/``…RMSNorm`` constructions) when the config carries
+    no explicit ``norm_type`` signal — ``(base_kind, class_name)`` or None.
+    ROOT-scoped (the A1 discipline): a text encoder's LayerNorm classes in the
+    pipeline union must never decide the denoiser's norm.  Best-effort."""
+    try:
+        from ...evidence.ast_scanner import scan_python_files
+        from ...evidence.patterns import diffusion_norm_from_classes
+        files = tuple(str(f) for f in (_source_files(cfg, context) or ()))
+        return diffusion_norm_from_classes(scan_python_files(files))
     except Exception:
         return None
 
@@ -317,7 +420,11 @@ def _secondary_stack_specs(cfg: Any, context, hidden) -> list[dict]:
         lane = lane_map.get(stack.lane_param or "")
         if lane not in ("text", "latent"):
             continue                      # unmapped lane — never guessed
-        facts = layer_facts_from_block(stack.block_class, registry, vocab)
+        # The construction site's literal kwargs make a SHARED block class
+        # instance-honest: a `modulation=False` refiner must not inherit the
+        # class's gated-branch facts (the Lumina2 context-refiner over-draw).
+        facts = layer_facts_from_block(stack.block_class, registry, vocab,
+                                       ctor_kwargs=stack.ctor_kwargs)
         if not facts.get("standard_cell"):
             continue                      # non-standard block keeps op-chain honesty
         row = {**facts, "repeat": int(count),
@@ -446,8 +553,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
     code_ffn_kind = _code_ffn_kind(cfg, context)
     code_gate_via_norm = _code_gate_via_norm(cfg, context)
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
-    # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
+    # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.  When
+    # the config is silent the CLASSES still are one (AdaLayerNormZero ⇒
+    # LayerNorm): resolve from the root-scoped source and annotate provenance —
+    # the pale "Normalization" label was honest but under-informative on every
+    # config-silent DiT (SD3.5/FLUX/Sana/Lumina).
     norm_kind = _dit_norm_kind(cfg)
+    code_norm_kind = _code_norm_kind(cfg, context) if norm_kind == "unknown" else None
+    # A code-proven sandwich/post placement on the MAIN block is stated on the
+    # norm cards (the assembled cell stays pre-norm — layout flips are their
+    # own scoped, pixel-reviewed change; the dropped Lumina post-norms were
+    # invisible even to the nets, so the FACT lands first).
+    code_block_placement = _code_block_norm_placement(cfg, context)
     # These two diffusers spellings are different structures, not aliases:
     # PixArt ``caption_channels`` builds PixArtAlphaTextProjection
     # (Linear -> GELU -> Linear); SD3/AuraFlow ``caption_projection_dim`` builds
@@ -655,13 +772,31 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # softmax (mha); only the self path changes. The attention ALGORITHM is READ FROM
     # THE SOURCE (the SAME *LinearAttn* signal fact-conformance reads); unreadable
     # source falls to the default softmax MHA.
-    self_attn_kind = _code_attn_kind(cfg, context) or "mha"
+    _code_kind = _code_attn_kind(cfg, context)
+    self_attn_kind = _code_kind or "mha"
+    # B5: "mha" without a code verdict is the asserted default (correct on
+    # every tested DiT, but an assertion — tagged so the machine layer knows).
+    dit_attn_asserted = ("attention_kind",) if _code_kind is None else ()
+
+    # Code-proven scores-scaling verdict for the DENOISER's own attention —
+    # the same oracle the encoder towers already draw (T5 raw QK^T).  Only a
+    # False verdict changes rendering; True/None keep the sqrt(dim) card.
+    code_scores_scaled = _code_scores_scaled(cfg, context)
+    # Per-SITE cross-attention Q/K-norm (Wan's attn2 RMS-norms unconditionally);
+    # None (shared/gated cross class) keeps the cross sublayer norm-less.
+    code_cross_qk_norm = _code_cross_qk_norm(cfg, context) if cond["cross_attn_sublayer"] else None
+    # Projection bias is a DECLARED constructor value on the diffusers side
+    # (PixArt `attention_bias: true`) — reading it here both draws the true
+    # bias fact and claims the field for the config-ownership audit.
+    dit_attention_bias = bool(_resolve(cfg, "attention_bias"))
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
-                                   rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
+                                   rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
+                                   scores_scaled=code_scores_scaled, bias=dit_attention_bias,
+                                   asserted=dit_attn_asserted)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
@@ -674,7 +809,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if cond["cross_attn_sublayer"]:
             layer.blocks = _insert_cross_attention(
                 layer.blocks, attn_spec, hidden_size, norm_kind,
-                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm)
+                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm,
+                cross_qk_norm=code_cross_qk_norm)
         # Timestep gating of each sublayer output before its residual add comes in
         # two code dialects: the common AdaLN-Zero one multiplies by a bare gate
         # (h = h + gate · sublayer(...)) → Tier-2 × connectors; Mochi instead FOLDS
@@ -688,6 +824,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             layer.blocks = _insert_adaln_gates(layer.blocks)
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+        _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+        _annotate_block_placement(layer.blocks, code_block_placement)
         layers.append(layer)
         idx += 1
     # Single-stream topology is a code fact (the block class): Flux 1 fuses only the
@@ -703,7 +841,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     for _ in range(num_single):
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
-                                rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads)
+                                rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
+                                scores_scaled=code_scores_scaled, bias=dit_attention_bias,
+                                asserted=dit_attn_asserted)
         s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
                          code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
@@ -713,6 +853,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             layer.blocks = _insert_adaln_gates(layer.blocks)
             _annotate_adaln_norms(layer.blocks)
             _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+            _annotate_block_placement(layer.blocks, code_block_placement)
             layers.append(layer)
         else:
             # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
@@ -720,6 +862,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             layer = single_stream_decoder_layer(
                 idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in)
             _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+            _annotate_block_placement(layer.blocks, code_block_placement)
             layers.append(layer)
         idx += 1
 
@@ -757,16 +901,31 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if all_text_joined and text_joined and text_stack:
             geom["join_concat"] = True
 
-    # A diffusers pipeline may ship a SECOND denoiser for classifier-free
-    # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
-    # conditional denoiser — say so rather than silently dropping the twin.
-    # This is a deliberate rendering choice, NOT a config gap → it's a note,
-    # so it doesn't mislabel a healthy parse as "⚠ partial config".
-    if _g(cfg, "unconditional_transformer") is not None:
-        notes.append(
-            "Pipeline declares a separate `unconditional_transformer` (the CFG "
-            "twin) — the diagram shows the conditional denoiser; the twin shares "
-            "its architecture and is not drawn separately.")
+    # A diffusers pipeline may ship a COMPANION denoiser beside the rendered
+    # one.  We render one denoiser — SAY the twin exists rather than silently
+    # dropping it (Wan 2.2's defining A14B mechanism was invisible while this
+    # handler keyed on one hardcoded spelling).  The key vocabulary and note
+    # flavour live in everchanging/diffusor/typing.yaml (project law: spellings
+    # are data).  This is a deliberate rendering choice, NOT a config gap →
+    # a note, so it doesn't mislabel a healthy parse as "⚠ partial config".
+    _typing = load_diffusion_typing()
+    for entry in _typing.get("companion_denoiser_fields") or ():
+        key, _, kind = str(entry).partition("=")
+        if _g(cfg, key) is None:
+            continue
+        if kind == "expert_switch":
+            boundary = _resolve(cfg, "boundary_ratio")
+            at = (f" swapped in at the σ = {boundary} boundary of the noise "
+                  f"schedule" if boundary is not None else " swapped in "
+                  "mid-schedule")
+            notes.append(
+                f"Pipeline declares a second denoiser expert (`{key}`){at} — "
+                "the diagram shows one; both experts share this architecture.")
+        else:
+            notes.append(
+                f"Pipeline declares a separate `{key}` (the CFG twin) — the "
+                "diagram shows the conditional denoiser; the twin shares its "
+                "architecture and is not drawn separately.")
 
     extras: dict = {"render": diffusion_render_spec(geom)}
     diffusion_meta = {k: v for k, v in {
@@ -811,7 +970,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
                    qk_norm: bool = False, rope_3d: bool = False,
                    has_pos_embed: bool = False, kind: str = "mha",
-                   num_kv_heads: int | None = None) -> AttentionSpec:
+                   num_kv_heads: int | None = None,
+                   scores_scaled: bool | None = None,
+                   bias: bool = False,
+                   asserted: tuple = ()) -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
@@ -832,7 +994,12 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
         no_rope=rope_dim is None and not has_pos_embed,
         rope_3d=rope_3d,        # 3D (T·H·W) axial RoPE — surfaces the temporal axis chip
         qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
+        bias=bias,              # config-declared Q/K/V/out projection bias (PixArt
+                                # attention_bias=true) — a diffusers config is a
+                                # constructor record, so the declared value IS the fact
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
+        scores_scaled=scores_scaled,  # code-proven verdict; only False changes rendering
+        asserted=asserted,            # B5: defaults tagged, JSON-only
         variant=variant,
     )
 
@@ -941,9 +1108,60 @@ def _annotate_norm_affine(blocks: list[dict], affine) -> None:
             facts.append(fact)
 
 
+_NORM_SILENT_NOTE = (" The config does not declare whether this is RMSNorm or "
+                     "LayerNorm — that lives in the model's code.")
+
+
+def _annotate_block_placement(blocks: list[dict], placement: str | None) -> None:
+    """State a code-proven non-pre placement on the norm cards, in place.
+
+    The cell keeps its pre-norm assembly; each drawn norm card gains the
+    sandwich/post sentence so the real layout is SAID even where it is not yet
+    drawn (Lumina2's main block norms its sublayer OUTPUTS too — dropped
+    silently before this)."""
+    if placement not in ("double", "post"):
+        return
+    sentence = (" The block's forward also norms this sublayer's OUTPUT "
+                "(sandwich placement, read from the model code) — the cell "
+                "draws the pre-norm; the refiner drill shows the full sandwich."
+                if placement == "double" else
+                " The block's forward norms the sublayer OUTPUT (post-norm "
+                "placement, read from the model code).")
+    for b in blocks:
+        if b.get("kind") == "norm":
+            b["description"] = (b.get("description") or "").rstrip() + sentence
+
+
+def _annotate_code_norm_kind(blocks: list[dict], code_norm) -> None:
+    """Resolve a config-silent block norm from CLASS evidence, in place.
+
+    ``code_norm`` is ``(base_kind, class_name)`` from
+    ``diffusion_norm_from_classes`` (root-scoped source) or None.  Only blocks
+    still labelled with the honest-unknown "Normalization" flip; their silent
+    note becomes the code-provenance sentence.  This is the deep, in-adapter
+    replacement for the retired top-level ``_apply_code_norm`` repair pass,
+    whose shallow ``ir.layers[].blocks[]`` walk never reached the DiT norms it
+    was written for."""
+    if not code_norm:
+        return
+    base, cls = code_norm
+    code_note = (f" Its type ({base}, from diffusers `{cls}`) is read from the "
+                 "model code, not the config.")
+    for block in blocks:
+        if block.get("kind") != "norm" or block.get("label") != "Normalization":
+            continue
+        block["label"] = base
+        desc = block.get("description") or ""
+        if _NORM_SILENT_NOTE in desc:
+            block["description"] = desc.replace(_NORM_SILENT_NOTE, code_note)
+        elif desc:
+            block["description"] = desc.rstrip() + code_note
+
+
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
                             hidden_size: int, norm_kind: str, *, cross_dim=None,
-                            pre_norm: bool = True) -> list[dict]:
+                            pre_norm: bool = True,
+                            cross_qk_norm: str | None = None) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
     Wan / Hunyuan-DiT / Lumina).  Conformed to
@@ -966,10 +1184,14 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     heads_fact = f"{self_spec.num_heads} heads" if self_spec.num_heads else None
     # Cross spec = the self spec, but K/V come from the text (no RoPE on the cross
     # path, full bidirectional, non-cached) — the canonical region draws the text
-    # K/V source node and drops the cache/RoPE for it.
+    # K/V source node and drops the cache/RoPE for it.  qk_norm is NEVER inherited
+    # from the self spec (inheritance is not per-sublayer evidence — the refiner
+    # attribution bug); it is set only from the cross class's OWN construction
+    # (Wan's attn2 RMS-norms Q/K unconditionally; PixArt/SD3 stay norm-less).
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
                           kind="mha",   # cross-attn is softmax even when self-attn is linear (Sana)
+                          qk_norm=bool(cross_qk_norm),
                           no_rope=True, rope_dim=None, rope_3d=False, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
     # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
@@ -1540,7 +1762,10 @@ def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
     try:
         from ...evidence.patterns import denoiser_temporal_axis_from_files
         bundle = getattr(context, "source_bundle", None)
-        files = getattr(bundle, "files", None)
+        # Root-scoped, like every _code_* read: a pipeline's text-encoder file
+        # in the union must never decide whether the DENOISER is video.
+        files = ((getattr(bundle, "component_files", {}) or {}).get("root")
+                 or getattr(bundle, "files", None))
         architecture = getattr(bundle, "architecture", None) or (str(cls) if cls else None)
         verdict = denoiser_temporal_axis_from_files(files, architecture)
         if verdict is not None:

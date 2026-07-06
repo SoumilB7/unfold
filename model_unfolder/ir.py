@@ -30,6 +30,15 @@ class AttentionSpec:
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
+    sinks: bool = False             # learned sink logits joining the softmax (an extra
+                                    # column whose probability mass is discarded after
+                                    # normalisation — a head can attend to "nothing").
+                                    # Config-silent, code-proven; drawn as a sink lane
+                                    # into the softmax.  Emitted only when True.
+    logit_softcap: Optional[float] = None   # attn_logit_softcapping (Gemma-2 ±50):
+                                    # scores/cap → tanh → ×cap between QK^T and the
+                                    # softmax — a REAL forward op, drawn as a node.
+                                    # Emitted only when declared.
     rope: bool = True               # applies rotary position embedding to Q/K before scores
                                     # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
     position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
@@ -58,6 +67,12 @@ class AttentionSpec:
     scores_scale: Optional[float] = None    # config-DECLARED QK^T scale when it differs
                                             # from the default 1/sqrt(head_dim) (Granite
                                             # attention_multiplier, Gemma-2 query_pre_attn_scalar)
+    scores_scaled: Optional[bool] = None    # code-PROVEN scores-scaling verdict from the
+                                            # attention forward (attention_score_scaling_
+                                            # from_files): False ⇒ raw QK^T, no scale op
+                                            # (T5 family); True/None keep the sqrt(dim)
+                                            # rendering.  Emitted ONLY when False so every
+                                            # scaled model stays byte-identical.
     projection_mode: Optional[str] = None   # code-proven Q/K/V STORAGE:
                                     # "fused_qkv" (one query_key_value/c_attn
                                     # matrix, split in forward) vs None (split
@@ -66,6 +81,11 @@ class AttentionSpec:
     # vocabulary can't name on its own (e.g. MM-DiT dual-stream vs single-stream
     # joint attention). Keys: short, tag, label (list[str]), title, desc.
     variant: Optional[dict] = None
+    # B5: fact names whose VALUE fell through to a generic default (mask →
+    # "causal", scores → sqrt(dim), diffusion attention kind → "mha") — the
+    # machine-readable line between declared/read facts and asserted
+    # conventions (Part 4 §6).  Emitted only when non-empty.
+    asserted: tuple = ()
 
 
 @dataclass
@@ -100,6 +120,10 @@ class FFNSpec:
     num_shared_experts: int = 0
     expert_intermediate_size: Optional[int] = None
     routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
+    asserted: tuple = ()            # B5: facts that fell to generic defaults
+                                    # (activation → "silu", norm_kind →
+                                    # "rmsnorm", storage → split); emitted
+                                    # only when non-empty
     activation_clip: Optional[float] = None  # clamp bound on the (Swi)GLU activation
                                     # (gpt-oss ``swiglu_limit``) — a Tier-3 property
 
@@ -275,11 +299,21 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "variant": a.variant,
         # emitted only when DECLARED so undeclared models' output is byte-stable
         **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
+        # emitted only when the code PROVES the scores are unscaled (raw QK^T,
+        # T5 family) — True/None are the status-quo sqrt(dim) rendering
+        **({"scores_scaled": False} if a.scores_scaled is False else {}),
+        # emitted only when code proves learned sink logits join the softmax
+        **({"sinks": True} if a.sinks else {}),
+        # emitted only when DECLARED (attn_logit_softcapping) — a real op node
+        **({"logit_softcap": a.logit_softcap} if a.logit_softcap else {}),
+        # B5: defaults distinguishable-from-declared, only-when-non-empty
+        **({"asserted": list(a.asserted)} if a.asserted else {}),
     }
 
 
 def _ffn_to_dict(f: FFNSpec) -> dict:
     return {
+        **({"asserted": list(f.asserted)} if f.asserted else {}),
         "kind": f.kind,
         "activation": f.activation,
         "activation_assumed": f.activation_assumed,

@@ -114,6 +114,27 @@ class SableReport:
         return "\n".join(lines)
 
 
+def _asserted_fact_findings(ir: dict) -> list[str]:
+    """ADVISORY list of facts whose value fell through to a generic default —
+    the spec-level `asserted` tuples (B5: defaults distinguishable-from-
+    declared).  One line per distinct (group, component, fact) so a render
+    states its conventions instead of wearing them silently."""
+    findings: list[str] = []
+    seen: set[tuple] = set()
+    for idx, layer in enumerate(ir.get("layers") or []):
+        for component in ("attention", "ffn"):
+            spec = layer.get(component) if isinstance(layer, dict) else None
+            for fact in (spec or {}).get("asserted") or []:
+                key = (component, str(fact))
+                if key in seen:
+                    continue
+                seen.add(key)
+                findings.append(
+                    f"layer[{idx}].{component}: '{fact}' is a generic default "
+                    "(no config declaration and no code verdict backs it)")
+    return findings
+
+
 def _ambiguous_evidence_findings(ir: dict) -> list[str]:
     """Every block whose ``detail.evidence`` envelope reports ``ambiguous``.
 
@@ -275,6 +296,15 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck(
             "evidence_ambiguity",
             _ambiguous_evidence_findings(ir),
+        ),
+        # ADVISORY (non-blocking): every fact whose value fell through to a
+        # generic default (spec `asserted` tuples, B5) — the per-render view
+        # of the generic-assertion hunt-list.  mask="causal" on plain
+        # decoders is expected; anything else deserves a look before bless.
+        SableCheck(
+            "asserted_facts",
+            _asserted_fact_findings(ir),
+            blocking=False,
         ),
     ]
 

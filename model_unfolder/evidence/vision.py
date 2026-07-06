@@ -186,15 +186,27 @@ def _constructed_class(func: ast.AST) -> str:
     return ""
 
 
-def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
+def layer_facts_from_block(block: str, registry: dict, vocab: dict,
+                           ctor_kwargs=None) -> dict:
     """THE shared per-block typed-fact reader — the exact derivations the
     vision variants have always used (dataflow-order norm placement, tri-state
     projection modes, closure-proven FFN gating, gate activation only when the
     block itself calls one), exported so every tower's evidence (audio,
-    refiners, any secondary stack) reads layer facts through ONE code path."""
+    refiners, any secondary stack) reads layer facts through ONE code path.
+
+    ``ctor_kwargs`` is the CONSTRUCTION SITE's literal kwargs for this
+    instance of the block (SecondaryStack.ctor_kwargs).  A shared class read
+    statically carries every branch's facts; when a branch is gated on
+    ``if self.<attr>:`` whose backing __init__ param this site passes a
+    proven-FALSY literal for, that branch is dead HERE and its gate facts are
+    pruned (Lumina2's context_refiner is built ``modulation=False`` yet the
+    class's ``gate.tanh()*…`` branch used to stamp a tanh gate on it).  Only a
+    proven-falsy literal prunes — anything unresolvable keeps the class fact
+    (an honest over-draw beats a wrong prune)."""
     from .conformance import _direct_role_classes
 
     info = registry[block]
+    gate_dead = _instance_gate_dead(info, block, ctor_kwargs)
     attn_classes = _direct_role_classes([block], registry, "attention", vocab)
     ffn_classes = _direct_role_classes([block], registry, "ffn", vocab)
     attn_name = sorted(attn_classes)[0] if attn_classes else ""
@@ -232,15 +244,16 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
         "norm_kind": _equivalent_norm_kind(norm_types),
         "norm_placement": _norm_placement(info),
         "ffn_gated": ffn_gated,
-        "residual_gated": "gate_mul" in info.op_kinds,
-        "gate_activation": ("tanh" if ("gate_mul" in info.op_kinds
+        "residual_gated": ("gate_mul" in info.op_kinds) and not gate_dead,
+        "gate_activation": ("tanh" if ("gate_mul" in info.op_kinds and not gate_dead
                                        and "tanh" in info.call_tokens) else None),
         # Where the gate VALUES come from: a producer call (conditioning-
         # computed, e.g. from the timestep embedding) vs a learned static
         # parameter — the caption's honesty hinges on this.
-        "gate_source": ("conditioning" if ("gate_mul" in info.op_kinds
+        "gate_source": ("conditioning" if ("gate_mul" in info.op_kinds and not gate_dead
                                            and gate_producer_fields)
-                        else "parameter" if "gate_mul" in info.op_kinds else None),
+                        else "parameter" if ("gate_mul" in info.op_kinds
+                                             and not gate_dead) else None),
         "attention_class": attn_name,
         "ffn_class": ffn_name,
         "projection_mode": _projection_mode(attn),
@@ -254,6 +267,57 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict) -> dict:
         "ffn_projection_mode": _ffn_projection_mode(ffn_info),
         "standard_cell": standard_cell,
     }
+
+
+def _instance_gate_dead(info: CallableInfo, block: str, ctor_kwargs) -> bool:
+    """Whether THIS instance's residual gate is provably dead: the class's
+    only gate arithmetic lives under ``if self.<attr>:`` branches whose
+    backing __init__ params the construction site passes FALSY literals for.
+
+    Structural, never name-keyed: (1) map init params → the self attributes
+    they are stored on (``self.modulation = modulation``); (2) an attr is DEAD
+    when its param appears in ``ctor_kwargs`` with a falsy literal; (3) walk
+    the forward SKIPPING ``if self.<dead attr>:`` subtrees — if no multiply
+    survives outside them, the gate cannot run here.  Any surviving multiply
+    (even an unrelated one) keeps the class facts: only a proven-dead branch
+    prunes."""
+    if not ctor_kwargs or "gate_mul" not in info.op_kinds:
+        return False
+    kwargs = dict(ctor_kwargs)
+    node = _class_node(info.source_file, block)
+    init = _method(node, "__init__") if node else None
+    fwd = _method(node, "forward") if node else None
+    if init is None or fwd is None:
+        return False
+    attr_of_param: dict[str, str] = {}
+    for st in ast.walk(init):
+        if (isinstance(st, ast.Assign) and len(st.targets) == 1
+                and isinstance(st.targets[0], ast.Attribute)
+                and isinstance(st.targets[0].value, ast.Name)
+                and st.targets[0].value.id == "self"
+                and isinstance(st.value, ast.Name)):
+            attr_of_param[st.value.id] = st.targets[0].attr
+    dead_attrs = {attr for param, attr in attr_of_param.items()
+                  if param in kwargs
+                  and isinstance(kwargs[param], (bool, int, float, str))
+                  and not kwargs[param]}
+    if not dead_attrs:
+        return False
+
+    def _is_dead_test(test) -> bool:
+        return (isinstance(test, ast.Attribute)
+                and isinstance(test.value, ast.Name)
+                and test.value.id == "self" and test.attr in dead_attrs)
+
+    def _live_mult(n) -> bool:
+        if isinstance(n, ast.If) and _is_dead_test(n.test):
+            # the guarded body is dead HERE; the else branch stays live
+            return any(_live_mult(c) for c in n.orelse)
+        if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Mult):
+            return True
+        return any(_live_mult(c) for c in ast.iter_child_nodes(n))
+
+    return not any(_live_mult(st) for st in fwd.body)
 
 
 def _tuple_unpacked_self_calls(info: CallableInfo) -> set[str]:

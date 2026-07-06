@@ -352,7 +352,8 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
 
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
                    *, scaled: bool = True,
-                   scale: float | None = None) -> tuple[list[Op], list[Edge]]:
+                   scale: float | None = None,
+                   softcap: float | None = None) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
 
     ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
@@ -395,6 +396,17 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
     ]
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),
              Edge("attn_apply_v", "concat_heads"), Edge("concat_heads", "o_proj")]
+    if softcap:
+        # attn_logit_softcapping (Gemma-2): scores/cap → tanh → ×cap runs
+        # BETWEEN the scores and the softmax in the forward — a real op, so it
+        # is a drawn node on the spine, never a chip-only annotation.
+        ops.insert(1, Op(
+            "attn_softcap", "activation", f"tanh softcap ±{softcap:g}", fn="tanh",
+            meta={"desc": (f"Soft caps the attention logits: scores/{softcap:g} "
+                           f"→ tanh → ×{softcap:g}, bounding them to "
+                           f"±{softcap:g} without hard clipping.")}))
+        edges[0] = Edge("scaled_scores", "attn_softcap")
+        edges.insert(1, Edge("attn_softcap", "attn_softmax"))
     return ops, edges
 
 
@@ -459,11 +471,25 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         heads, head_dim, q_w, hidden,
         scaled=attn.get("scores_scaled") is not False,
         scale=attn.get("scores_scale"),
+        softcap=attn.get("logit_softcap"),
     )
     ops += core_ops
     if not fused_qkv:
         edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
     edges += core_edges
+    if attn.get("sinks") and not cross:
+        # Learned sink logits: an extra per-head column concatenated onto the
+        # scores BEFORE the softmax; after normalisation its probability mass
+        # is dropped — a head can attend to "nothing".  A real forward op
+        # (config-silent, code-proven), so it is a drawn lane, never chip-only.
+        ops.append(Op(
+            "attention_sinks", "input", "Learned sink logits",
+            meta={"desc": "A learned per-head logit column joins the "
+                          "attention scores as an extra softmax entry; its "
+                          "probability share is discarded after normalisation, "
+                          "letting a head place weight on nothing instead of "
+                          "being forced to attend somewhere."}))
+        edges.append(Edge("attention_sinks", "attn_softmax"))
     if attn.get("output_gate"):
         projected_q = q_source
         ops += [

@@ -104,6 +104,7 @@ def decoder_extras(
     tie_word_embeddings: bool,
     *extra_maps: Mapping[str, Any] | None,
     embed_norm: str | None = None,
+    final_logit_softcap: float | None = None,
 ) -> dict:
     """Build top-level extras shared by decoder-only transformer models."""
     extras = {
@@ -112,6 +113,7 @@ def decoder_extras(
             hidden_size,
             tie_word_embeddings,
             embed_norm=embed_norm,
+            final_logit_softcap=final_logit_softcap,
         )
     }
     for extra in extra_maps:

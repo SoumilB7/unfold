@@ -312,6 +312,33 @@ def _code_router(cfg: Any, context=None):
         return None
 
 
+def _code_scores_scaled(cfg: Any, context=None) -> bool | None:
+    """Whether the attention forward SCALES its scores, READ FROM THE MODELING
+    SOURCE (``attention_score_scaling_from_files``) — the same verdict the
+    encoder-tower path already draws (T5's raw ``QK^T``).  False ⇒ the forward
+    performs no scale (folded into init); True/None keep the sqrt(dim)
+    rendering.  Wiring this on the MAIN path removes the one asserted default
+    that had a live, unread oracle.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import attention_score_scaling_from_files
+        return attention_score_scaling_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_sinks(cfg: Any, context=None) -> bool:
+    """Learned sink logits joining the attention softmax, READ FROM THE
+    MODELING SOURCE — a config-silent fact (no config field exists for it).
+    Vocabulary lives in fact_markers.yaml; bare spellings are gated on
+    attention-compute evidence.  False on silence — a lost oracle can never
+    fabricate a sink lane.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_attention_sinks_from_files
+        return decoder_attention_sinks_from_files(_source_files(cfg, context))
+    except Exception:
+        return False
+
+
 def _code_intermediate_size(cfg: Any, context=None) -> int | None:
     """FFN intermediate width from the modeling source's OWN default expression
     when the config field is absent (GPT-J/GPT-2/CodeGen ``n_inner=None →
@@ -503,6 +530,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             activation_raw = nested_act.get("name")
     if activation_raw is None:
         activation_raw = _code_ffn_activation(text_cfg, context)
+    # B5: a fact that fell through to the generic default is TAGGED in the
+    # spec (`asserted`) — machine-distinguishable from a declared/read value.
+    activation_defaulted = activation_raw is None
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
@@ -539,7 +569,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     attention_multiplier = _resolve(text_cfg, "attention_multiplier")
     query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
     _resolve(text_cfg, "logits_scaling")
-    norm_kind    = _norm_kind(text_cfg, get("norm_type"), context)
+    _norm_kind_ev = _norm_kind_evidence(text_cfg, get("norm_type"), context)
+    norm_kind    = _norm_kind_ev or "rmsnorm"
+    norm_kind_defaulted = _norm_kind_ev is None      # B5: tag the modern-LM default
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
@@ -552,7 +584,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _code_expert_fused = _code_expert_storage(text_cfg, context)
     _code_fused_qkv = _code_attention_fused_qkv(text_cfg, context)
     _code_position_evidence = _code_position(cfg, context)
-    norm_placement = (_code_topo or {}).get("norm_placement") or "pre"
+    # Placement: proven value, else the conventional pre cell TAGGED asserted
+    # (B5).  An earlier draft drew a norm-less "unknown" cell on reader
+    # abstention — wrong by principle 5 (unresolvable → conventional fallback,
+    # never a DIFFERENT drawing): the reader abstains on whole IDIOMS (T5's
+    # ModuleList-appended sublayers), and dropping every such family's norms
+    # traded a latent hazard for a real regression.  The tag keeps the
+    # assertion machine-visible; the advisory net lists it per render.
+    norm_placement = (_code_topo or {}).get("norm_placement")
+    norm_placement_defaulted = not norm_placement
+    if not norm_placement:
+        norm_placement = "pre"
     # Position scheme: only configured source evidence may assert a mechanism.
     # Missing source stays unknown; a family convention is not evidence.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
@@ -666,6 +708,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _code_bias = _code_attention_bias(text_cfg, context)
     if _code_bias is not None:
         use_attention_bias = _code_bias
+    # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).  A
+    # config-DECLARED scale is a stronger, load-bearing statement: when one
+    # exists the declared float wins and the silent-scale read is ignored.
+    code_scores_scaled = _code_scores_scaled(text_cfg, context)
+    # Learned sink logits in the softmax — config-silent, code-only.
+    code_attention_sinks = _code_attention_sinks(text_cfg, context)
+    # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
+    # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
+    attn_logit_softcap = _g(text_cfg, "attn_logit_softcapping")
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").
     _mlp_bias = _resolve(text_cfg, "mlp_bias")
@@ -837,6 +888,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 attention_multiplier, query_pre_attn_scalar,
                 layer_head_dim or (hidden_size // num_heads
                                    if hidden_size and num_heads else None)),
+            # only a False verdict changes rendering, and only when no config-
+            # declared scale contradicts it (declared float > silent-scale read)
+            scores_scaled=(False if (code_scores_scaled is False
+                                     and attention_multiplier is None
+                                     and not query_pre_attn_scalar) else None),
+            sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
+            logit_softcap=attn_logit_softcap,
+            # B5: the universal floor, machine-tagged (JSON-only — bless
+            # signatures hash SVGs, so this adds zero gallery drift): mask
+            # stayed the dataclass "causal" when no layer-type schedule
+            # decided it; the sqrt(dim) scores denominator is asserted when
+            # neither a declared scale nor the code verdict backs it.
+            asserted=tuple(
+                (["mask"] if (mask == "causal" and not layer_types
+                              and not sliding_window) else [])
+                + (["scores_scale"] if (code_scores_scaled is None
+                                        and attention_multiplier is None
+                                        and not query_pre_attn_scalar) else [])),
             projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
                                              and not is_gated_delta) else None),
             variant=(
@@ -888,6 +957,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
                 expert_projection_mode=_code_expert_fused,
+                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                asserted=tuple(
+                    (["activation"] if activation_defaulted else [])
+                    + (["norm_kind"] if norm_kind_defaulted else [])
+                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
         else:
             ffn = FFNSpec(
@@ -898,6 +973,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
+                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                asserted=tuple(
+                    (["activation"] if activation_defaulted else [])
+                    + (["norm_kind"] if norm_kind_defaulted else [])
+                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
@@ -974,6 +1055,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
         modality_extras,
         embed_norm=_code_embedding_norm(text_cfg, context),
+        # Gemma-2's final_logit_softcapping is a REAL pre-sampling op — the LM
+        # head card states it (only-when-present; everyone else byte-stable).
+        final_logit_softcap=_g(text_cfg, "final_logit_softcapping"),
     )
     final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
     if residual_post_layernorm:
@@ -1336,6 +1420,23 @@ def _moe_routing(cfg: Any, context=None) -> dict | None:
         # gpt-oss/Granite, which top-k the raw logits and softmax the winners.
         if code.scoring_fn and code.scoring_before_topk:
             routing["scoring_before_topk"] = True
+
+    # BOTH channels silent on the score transform while the modeling source IS
+    # installed ⇒ an extractor/vocabulary gap, not an honest absence — stamp
+    # the ambiguity envelope the BLOCKING evidence_ambiguity net reads (the
+    # honest replacement for the old render-side `or "softmax"` assertion).
+    # No source at all stays exempt (oracle_missing discipline).
+    if "scoring_func" not in routing and code is None:
+        try:
+            has_source = bool(_source_files(cfg, context))
+        except Exception:
+            has_source = False
+        if has_source:
+            routing["evidence"] = {
+                "status": "ambiguous", "component": "router",
+                "reason": "score transform not declared in config and no "
+                          "router class resolved from the installed source",
+            }
 
     return routing or None
 

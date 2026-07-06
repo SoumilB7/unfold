@@ -7,11 +7,14 @@ from ..common import format_dim as _fmt
 
 
 def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
-                             embed_norm: str | None = None) -> dict:
+                             embed_norm: str | None = None,
+                             final_logit_softcap: float | None = None) -> dict:
     return {
         "family": "transformer",
         "layout": "decoder_only",
-        "model_blocks": decoder_model_blocks(vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm),
+        "model_blocks": decoder_model_blocks(
+            vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm,
+            final_logit_softcap=final_logit_softcap),
     }
 
 
@@ -260,7 +263,8 @@ def block_diffusion_loop_blocks(
 
 
 def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
-                         embed_norm: str | None = None) -> list[Block]:
+                         embed_norm: str | None = None,
+                         final_logit_softcap: float | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
     return [
@@ -308,10 +312,23 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "id": "lm_head",
             "role": "output",
             "kind": "output",
-            "label": "Linear output layer",
-            "title": "LM head",
-            "description": "Projects the final hidden state into vocabulary logits"
-                           + (" — weights tied with the embedding." if tie_word_embeddings else "."),
-            "facts": [f"{hidden} \u2192 {vocab}"],
+            "label": ("Linear output layer · softcap"
+                      if final_logit_softcap else "Linear output layer"),
+            "title": ("LM head · logit softcap" if final_logit_softcap else "LM head"),
+            # The softcap branch is a REAL forward op (config-declared
+            # final_logit_softcapping): logits/cap → tanh → ×cap before
+            # sampling — drawn where it runs, not parked in an extras bag.
+            "description": (
+                f"Projects the final hidden state into vocabulary logits, then "
+                f"softcaps them: logits = tanh(logits / {final_logit_softcap:g}) "
+                f"× {final_logit_softcap:g}, bounding magnitude to "
+                f"±{final_logit_softcap:g} without hard clipping"
+                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+            ) if final_logit_softcap else (
+                "Projects the final hidden state into vocabulary logits"
+                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+            ),
+            "facts": [f"{hidden} \u2192 {vocab}"] + (
+                [f"softcap ±{final_logit_softcap:g}"] if final_logit_softcap else []),
         },
     ]

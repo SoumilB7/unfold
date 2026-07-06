@@ -333,7 +333,10 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
     enables, and unused cards are harmless (never orphaned). Labels stay bare op
     names — every count/dim/flag is a chip here, not on the block."""
     r = ffn.routing or {}
-    scoring = r.get("scoring_func") or "softmax"
+    # NO generic fallback here: an unresolved score transform (config silent,
+    # source unparsable) stays UNNAMED — the router block carries a BLOCKING
+    # evidence_ambiguity envelope instead of a silently asserted softmax.
+    scoring = r.get("scoring_func")
     n_group, topk_group = r.get("n_group") or 0, r.get("topk_group")
     grouped, bias, greedy = _routing_shape(r)
     # Top-k drills into the real torch sequence when there's structure to show —
@@ -379,10 +382,15 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
                   "facts": [f"top-{n_active}"]}
     cards = [
         {"id": "g_gate", "title": "Linear (Gate)",
-         "description": f"nn.Linear projecting each token to one score per expert "
-                        f"({hidden} → {n_experts}); a {scoring} turns the logits into "
-                        f"per-expert affinities.",
-         "facts": [f"{n_experts} experts", scoring]},
+         "description": (f"nn.Linear projecting each token to one score per expert "
+                         f"({hidden} → {n_experts}); a {scoring} turns the logits into "
+                         f"per-expert affinities."
+                         if scoring else
+                         f"nn.Linear projecting each token to one score per expert "
+                         f"({hidden} → {n_experts}). The score transform is not "
+                         f"declared in the config and could not be read from the "
+                         f"source — it is left unnamed rather than assumed."),
+         "facts": [f"{n_experts} experts"] + ([scoring] if scoring else ["transform unread"])},
     ]
     # The score-transform node (drawn only when the code scores BEFORE selection)
     # needs its own card so the clickable node couples (click-coupling law).
@@ -449,6 +457,11 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     if router_detail:
         router_desc = f"Scores every expert per token and keeps the top-k \u2014 {router_detail}."
     router_facts = [f"{hidden} \u2192 {n_experts}", f"top-{n_active}"]
+    # An UNRESOLVED router (config silent AND source installed but no router
+    # class parsed) travels as an evidence envelope on the router block \u2014
+    # caught by the BLOCKING evidence_ambiguity net instead of a silently
+    # asserted softmax (the dead `or "softmax"` this replaces).
+    routing_evidence = (ffn.routing or {}).get("evidence")
     blocks: list[Block] = [
         {
             "id": "router",
@@ -458,7 +471,9 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             # Drill into the gating policy (score \u2192 [group-limit] \u2192 top-k \u2192
             # [renorm] \u2192 [\u00d7scale]); built from the routing facts below.
             "view": "moe_router",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": ffn_detail(ffn),
+                       **({"evidence": routing_evidence}
+                          if isinstance(routing_evidence, dict) else {})},
             # Cards for the clickable gate steps (the \u00d7scale is a static connector).
             "children": _moe_router_step_cards(ffn, hidden, n_experts, n_active),
         },

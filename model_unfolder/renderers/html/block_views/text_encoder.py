@@ -91,11 +91,16 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
             group = groups[k]
             attn = group.get("attention") or {}
             label = _attn_label(attn)
+            # Tri-state pass-through: an absent placement goes to tower_cell's
+            # honest-unknown branch ("Code-defined block"), never `or "pre"` —
+            # the same silent assertion killed on the main path (B2).
+            placement = group.get("norm_placement")
             return _cell(f"{pfx}_g{k}",
                          attn_label=label, attn_sub=group.get("tag"),
                          norm_label=group.get("norm") or norm,
                          ffn_kind=(group.get("ffn") or {}).get("kind"),
-                         placement=group.get("norm_placement") or "pre")
+                         placement=placement if placement in ("pre", "post", "double")
+                         else "unknown")
 
         runs = [tuple(run) for run in (schedule.get("runs") or [])]
         period = schedule.get("period")

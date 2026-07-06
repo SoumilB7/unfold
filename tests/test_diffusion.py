@@ -889,11 +889,17 @@ def test_dit_norm_type_resolved_from_config_not_generic():
     assert "xattn_norm" not in by
     by_wn = {b["id"]: b for b in unfold({**PIXART, "cross_attn_norm": True}).ir.layers[0].blocks}
     assert "plain norm" in by_wn["xattn_norm"]["description"]
-    # rms_norm config → RMSNorm; an undeclared norm stays generic (honest-unknown).
+    # rms_norm config → RMSNorm (an explicit declaration always wins).
     rms = {**PIXART, "norm_type": "rms_norm"}
     assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
+    # An UNDECLARED norm no longer stays pale when the model's own classes are
+    # readable: C4 resolves it in-adapter (root-scoped) WITH code provenance —
+    # the generic "Normalization" survives only when config AND source are both
+    # silent (covered by test_dit_norm_kind_resolved_from_classes_when_config_silent).
     bare = {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")}
-    assert any(b.get("label") == "Normalization" for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm")
+    bare_norms = [b for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm"]
+    assert bare_norms and all(b.get("label") == "LayerNorm" for b in bare_norms)
+    assert any("read from the model code" in (b.get("description") or "") for b in bare_norms)
 
 
 def test_clickable_highlight_is_image_only():
@@ -913,11 +919,10 @@ def test_clickable_highlight_is_image_only():
 def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
     """When the config is silent on the norm type (FLUX & most DiTs), `inspect_code`
     reads it from the diffusers BLOCK class (AdaLayerNormZero → LayerNorm), tier-2 —
-    so the norm card stops saying 'Normalization' and is marked code-derived. Without
-    the flag it stays honest-'Normalization' (config-only)."""
-    silent = sorted({b["label"] for b in unfold(FLUX).ir.layers[0].blocks if b.get("kind") == "norm"})
-    assert silent == ["Normalization"], silent
-
+    so the norm card stops saying 'Normalization' and is marked code-derived.
+    Since C4 the resolution is ALWAYS-ON in the diffusor adapter (root-scoped
+    class evidence) — it no longer hides behind the inspect_code flag, so the
+    plain unfold resolves too whenever the source is installed."""
     import importlib.util
     if importlib.util.find_spec("diffusers") is None:
         return  # diffusers not installed — the code path can't run

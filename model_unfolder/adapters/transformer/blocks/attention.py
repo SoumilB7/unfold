@@ -27,12 +27,16 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "qk_norm": attention.qk_norm,
         # Per-lane projection for the drill: QK-norm is two REAL ops in
         # forward — the op-graph draws them on the Q and K lanes (between
-        # projection and RoPE), never chip-only at drill altitude.  SELF
-        # attention only: a cross sublayer's spec inherits qk_norm from the
-        # self spec by _replace, which is not per-sublayer evidence — drawing
-        # there would be the refiner attribution bug again.
-        "q_norm": bool(attention.qk_norm) and not attention.cross_attention,
-        "k_norm": bool(attention.qk_norm) and not attention.cross_attention,
+        # projection and RoPE), never chip-only at drill altitude.  The spec
+        # value is TRUSTED for cross sublayers too: every cross-spec creation
+        # site sets qk_norm deliberately (per-SITE code evidence in
+        # _insert_cross_attention — Wan's attn2 really RMS-norms Q/K; False
+        # everywhere unproven).  Inheriting the self value without evidence
+        # was the refiner attribution bug — that guard now lives at PARSE
+        # time, where the evidence is, not as a render-time suppression that
+        # drops real ops.
+        "q_norm": bool(attention.qk_norm),
+        "k_norm": bool(attention.qk_norm),
         "rope": attention.rope,
         "position_kind": attention.position_kind,
         "position_application": attention.position_application,
@@ -56,6 +60,15 @@ def attention_detail(attention: AttentionSpec) -> dict:
         # undeclared models' block detail stays byte-stable
         **({"scores_scale": attention.scores_scale}
            if attention.scores_scale is not None else {}),
+        # emitted only when code PROVES the forward performs no scale (raw
+        # QK^T) — the opgraph spine reads this key to drop the denominator
+        **({"scores_scaled": False} if attention.scores_scaled is False else {}),
+        # emitted only when code proves learned sink logits join the softmax
+        # (the opgraph draws the sink lane from this key)
+        **({"sinks": True} if attention.sinks else {}),
+        # emitted only when DECLARED — the opgraph draws the tanh softcap node
+        **({"logit_softcap": attention.logit_softcap}
+           if attention.logit_softcap else {}),
     }
 
 
@@ -179,17 +192,27 @@ def _sdpa_detailed_child_blocks(
     kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads"
     group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
     # A config-DECLARED scores scale replaces the default sqrt wording — the
-    # card must state the real divisor (Granite attention_multiplier).
+    # card must state the real divisor (Granite attention_multiplier).  A
+    # code-PROVEN unscaled forward (T5 family) drops the denominator entirely
+    # — drawing sqrt(dim) there would fabricate an op the forward never runs.
     if attention.scores_scale is not None:
         inv = 1.0 / attention.scores_scale
         scale_txt = (f"QK^T / {inv:,.0f}" if abs(inv - round(inv)) < 1e-6
                      else f"QK^T × {attention.scores_scale:g}")
         scale_note = f"scores use {scale_txt} (config-declared scale)"
+    elif attention.scores_scaled is False:
+        scale_txt = "QK^T"
+        scale_note = ("scores use raw QK^T — this family folds the scale into "
+                      "its weight initialization; the forward adds no explicit "
+                      "scale (read from the model code)")
     else:
         scale_txt = "QK^T / sqrt(dim)"
         scale_note = "scores use QK^T / sqrt(dim)"
-    scaled_title = "Scaled attention scores"
-    scaled_desc = f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
+    scaled_title = ("Attention scores" if attention.scores_scaled is False
+                    and attention.scores_scale is None else "Scaled attention scores")
+    scaled_desc = (f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
+                   if scale_txt != "QK^T" else
+                   f"Per head: {scale_txt} — raw dot-product scores; no explicit scale in the forward.")
     if cross_attention:
         scaled_title = "Cross-attention scores"
         scaled_desc = (
@@ -305,11 +328,14 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
-    if attention.qk_norm and not cross_attention:
+    if attention.qk_norm:
         # QK-norm is two REAL ops in forward; the drill draws them on the Q/K
         # lanes (projection → norm → RoPE/scores), so each node needs its card.
         # The spec carries presence, not the norm's arithmetic kind — the card
-        # states what the op does without asserting RMS vs LayerNorm.
+        # states what the op does without asserting RMS vs LayerNorm.  Cross
+        # sublayers reach here only when their spec carries per-SITE evidence
+        # (parse-time discipline in _insert_cross_attention), so the old
+        # render-time cross suppression would now only drop real ops (Wan).
         cards += [
             {"id": "q_norm", "title": "Query normalisation",
              "description": "Normalizes the projected query heads before the attention "
@@ -318,6 +344,31 @@ def _sdpa_detailed_child_blocks(
              "description": "Normalizes the projected key heads before the attention "
                             "scores — keeps the QK logits in a stable range."},
         ]
+    if attention.sinks and not cross_attention:
+        # The sink lane is a REAL forward op (scores ∥ sinks → softmax → drop
+        # the sink column) — its drawn node needs a card like any other op.
+        cards.append({
+            "id": "attention_sinks", "title": "Learned sink logits",
+            "description": ("A learned per-head logit column appended to the "
+                            "attention scores before the softmax; after "
+                            "normalisation its probability share is discarded, "
+                            "so a head can place weight on “nothing” "
+                            "instead of being forced to attend somewhere. Set "
+                            "in the model class, not the config."),
+        })
+    if attention.logit_softcap:
+        # The tanh softcap is a REAL forward op between QK^T and the softmax
+        # (config-declared attn_logit_softcapping) — its node needs a card.
+        _cap = attention.logit_softcap
+        cards.append({
+            "id": "attn_softcap", "title": f"Logit softcap ±{_cap:g}",
+            "description": (f"Soft caps the attention logits before the "
+                            f"softmax: scores/{_cap:g} → tanh → ×{_cap:g}. "
+                            f"Bounds every logit to ±{_cap:g} without hard "
+                            f"clipping, keeping gradients healthy at the "
+                            f"extremes (declared by attn_logit_softcapping)."),
+            "facts": [f"±{_cap:g}"],
+        })
     if attention.rope and not attention.no_rope and not cross_attention:
         # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
         # the two rope nodes the SDPA region now draws on the Q/K lanes.

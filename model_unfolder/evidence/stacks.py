@@ -43,6 +43,12 @@ class SecondaryStack:
     lane_param: str | None = None         # raw forward arg name feeding the stack
     entry_projection: bool = False        # a chain OWNER applies a linear before the stack
     path: tuple = ()                      # ((class, field), ...) from architecture to owner
+    ctor_kwargs: tuple = ()               # ((kwarg, literal), ...) the construction site
+                                          # passes the block ctor — a SHARED block class
+                                          # is instance-parameterized by these (Lumina2's
+                                          # context_refiner is built modulation=False);
+                                          # facts read statically off the class must be
+                                          # pruned by the value THIS site passes.
 
     def to_dict(self) -> dict:
         return {
@@ -51,6 +57,7 @@ class SecondaryStack:
             "count_field": self.count_field, "count_value": self.count_value,
             "lane_param": self.lane_param, "entry_projection": self.entry_projection,
             "path": [list(hop) for hop in self.path],
+            "ctor_kwargs": {k: v for k, v in self.ctor_kwargs},
         }
 
 
@@ -97,16 +104,50 @@ def secondary_stacks_from_files(files, architecture: str) -> list[SecondaryStack
                 _role_of(cls) == "linear"
                 for chain_cls in chain_owners if chain_cls in registry
                 for cls in registry[chain_cls].field_types.values())
+            block_class = sorted(blocks)[0]
             out.append(SecondaryStack(
                 owner_class=owner, field_name=fld,
-                block_class=sorted(blocks)[0],
+                block_class=block_class,
                 source_file=info.source_file,
                 count_field=count_field, count_value=count_value,
                 lane_param=_lane_param(architecture, top_field, registry),
                 entry_projection=entry_projection,
                 path=path,
+                ctor_kwargs=_block_ctor_kwargs(owner, fld, block_class, registry),
             ))
     return sorted(out, key=lambda s: (len(s.path), s.owner_class, s.field_name))
+
+
+def _block_ctor_kwargs(owner: str, fld: str, block_class: str, registry) -> tuple:
+    """The LITERAL kwargs ``owner.__init__`` passes the block constructor at
+    THIS ModuleList site (``self.<fld> = ModuleList([Block(..., modulation=False)
+    for _ in range(...)])``) — the per-instance parameterization of a SHARED
+    block class.  Only ``ast.Constant`` values are captured (a computed kwarg
+    is not proof of anything); everything else is simply absent."""
+    info = registry.get(owner)
+    node = _class_node(info.source_file, owner) if info else None
+    if node is None:
+        return ()
+    for method in (m for m in node.body
+                   if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef))):
+        for stmt in ast.walk(method):
+            if not (isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call)):
+                continue
+            target = stmt.targets[0] if stmt.targets else None
+            if not (isinstance(target, ast.Attribute) and target.attr == fld):
+                continue
+            for call in ast.walk(stmt.value):
+                if not isinstance(call, ast.Call):
+                    continue
+                callee = call.func
+                name = (callee.attr if isinstance(callee, ast.Attribute)
+                        else getattr(callee, "id", None))
+                if name != block_class:
+                    continue
+                return tuple(sorted(
+                    (kw.arg, kw.value.value) for kw in (call.keywords or [])
+                    if kw.arg and isinstance(kw.value, ast.Constant)))
+    return ()
 
 
 # ---------------------------------------------------------------------------

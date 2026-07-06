@@ -147,6 +147,13 @@ def parse_unet(cfg: Any) -> dict:
         # the model code, not the config — the caller surfaces that honestly rather
         # than letting the absent lists read as "no attention anywhere".
         "declares_block_types": bool(down_types or up_types),
+        # ResNet/conv activation: a diffusers config is a constructor record —
+        # act_fn drives every ResnetBlock2D non_linearity and the conv_out
+        # activation.  An absent field falls to the CLASS default ("silu"),
+        # carried with default-provenance so the prose never presents the
+        # convention as a declared fact (the old hardcoded "SiLU" strings did).
+        "act_fn": str(_g(cfg, "act_fn") or "silu"),
+        "act_declared": _g(cfg, "act_fn") is not None,
     }
 
 
@@ -220,19 +227,23 @@ def _stage_detail(st: dict, direction) -> dict:
             "direction": direction, "sample": st.get("sample")}
 
 
-def _unet_resnet_ops() -> list[dict]:
+def _unet_resnet_ops(act_label: str = "SiLU", act_note: str = "") -> list[dict]:
     """Cards for the ResNet residual cell.
 
     The real ResnetBlock2D.forward() is:
-      norm1 + SiLU → conv1 → (⊕ timestep emb) → norm2 + SiLU → conv2 → (input ⊕ hidden)
+      norm1 + act → conv1 → (⊕ timestep emb) → norm2 + act → conv2 → (input ⊕ hidden)
     The residual bypass goes around the ENTIRE cell (from the block's raw input), not
-    from norm1's output.  The timestep injection sits between conv1 and norm2."""
-    norm_desc = ("Group normalization then a SiLU (swish) activation, applied before "
-                 "each convolution so the conv sees a well-scaled signal.")
+    from norm1's output.  The timestep injection sits between conv1 and norm2.
+    ``act_label``/``act_note`` come from the config's ``act_fn`` (a constructor
+    record) with its provenance — the old hardcoded "SiLU" strings asserted the
+    class default as if it were read."""
+    norm_desc = (f"Group normalization then a {act_label} activation, applied before "
+                 "each convolution so the conv sees a well-scaled signal. GroupNorm "
+                 f"is fixed in the ResnetBlock2D class; the activation is {act_note}.")
     conv_desc = ("A 3×3 convolution (stride 1, padding 1): mixes each position with its "
-                 "spatial neighbours — the cell runs GroupNorm+SiLU → Conv 3×3 twice.")
+                 f"spatial neighbours — the cell runs GroupNorm+{act_label} → Conv 3×3 twice.")
     return [
-        {"id": "unet_op_norm1", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "unet_op_norm1", "title": f"GroupNorm + {act_label}", "description": norm_desc},
         {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_temb", "title": "⊕ Timestep embedding",
          "description": ("The linear-projected timestep embedding is added here "
@@ -240,7 +251,7 @@ def _unet_resnet_ops() -> list[dict]:
                          "This is the mechanism by which a UNet ResNet receives the current noise "
                          "level — distinct from DiT/AdaLN, which gates normalization parameters. "
                          "The projection adjusts the channel width to match the residual branch.")},
-        {"id": "unet_op_norm2", "title": "GroupNorm + SiLU", "description": norm_desc},
+        {"id": "unet_op_norm2", "title": f"GroupNorm + {act_label}", "description": norm_desc},
         {"id": "unet_op_conv2", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_residual", "title": "Residual add",
          "description": ("Adds the block's raw input back onto the convolved output — "
@@ -270,8 +281,13 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
                                head_dim=hd, mask="full", no_rope=True,
                                cross_attention=True,
                                cross_kv_source="encoded text prompt")
-    ff_spec = FFNSpec(kind="dense", activation="gelu",
-                      intermediate_size=(ch * 4 if ch else 0), gated=True)
+    # Honest-undeclared FFN: neither the UNet config nor its ROOT source
+    # declares the Transformer2D FFN's inner shape (BasicTransformerBlock
+    # lives in a shared module; a vote across the import closure proved the
+    # WRONG family's activation).  gated=None draws "inner structure not
+    # declared" — never the old hardcoded GEGLU assertion.
+    ff_spec = FFNSpec(kind="dense", activation=None, activation_assumed=True,
+                      intermediate_size=(ch * 4 if ch else 0), gated=None)
     hidden = ch or 0
     # Each inner op (Q/K/V proj, scaled scores, softmax, apply-V, concat, output
     # proj) is ATOMIC — it gets a description card, not a further view. Supplying
@@ -311,25 +327,29 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
          "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
          "children": cross_children},
         {"id": f"{prefix}__ff", "title": "Feed-forward",
-         "description": "Position-wise GEGLU feed-forward sublayer, applied after attention.",
+         "description": ("Position-wise feed-forward sublayer, applied after "
+                         "attention. The config does not declare its inner "
+                         "structure (gate/activation live in the model code)."),
          "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)},
          # generic (dim-neutral) op cards, shared across stages — clickable Linear/act/×.
          "children": ffn_child_blocks(ff_spec, hidden, generic=True)},
     ]
 
 
-def _resnet_card(sid: str, st: dict, rn_label: str = "") -> dict:
+def _resnet_card(sid: str, st: dict, rn_label: str = "", act_label: str = "SiLU",
+                 act_note: str = "the class default") -> dict:
     """One ResNet block card, scoped by stage id.  Both the description and children
     now name the timestep injection (the ⊕ between conv1 and norm2)."""
     return {
         "id": f"{sid}__resnet", "title": "ResNet block",
-        "description": ("GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 "
+        "description": (f"GroupNorm+{act_label} → Conv 3×3 → ⊕ timestep emb → "
+                        f"GroupNorm+{act_label} → Conv 3×3 "
                         "→ residual add (identity shortcut, or 1×1 conv when channels change). "
                         "The timestep embedding is projected and added after the first conv, "
                         "injecting the current noise level into the residual branch."
                         + (f" {rn_label} per stage (layers_per_block)." if rn_label else "")),
         "view": "unet_resnet", "detail": {"channels": st.get("channels")},
-        "children": _unet_resnet_ops(),
+        "children": _unet_resnet_ops(act_label, act_note),
     }
 
 
@@ -350,7 +370,8 @@ def _transformer_card(sid: str, st: dict, t, cross_dim) -> dict:
     }
 
 
-def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
+def _unet_stage_children(st: dict, direction, cross_dim, act_label: str = "SiLU",
+                         act_note: str = "the class default") -> list[dict]:
     """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
     for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
     plus the resample.  Real nested blocks — not a flat op list.
@@ -371,21 +392,24 @@ def _unet_stage_children(st: dict, direction, cross_dim) -> list[dict]:
     if direction is None and st.get("attn"):
         # Mid block: ResNet₀ → Transformer → ResNet₁  (UNetMidBlock2DCrossAttn.forward)
         return [
-            {**_resnet_card(sid, st), "id": f"{sid}__resnet_pre",
+            {**_resnet_card(sid, st, act_label=act_label, act_note=act_note),
+             "id": f"{sid}__resnet_pre",
              "title": "ResNet block (pre)",
              "description": ("First ResNet of the bottleneck sandwich: runs before the "
-                             "Transformer2D. GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb "
-                             "→ GroupNorm+SiLU → Conv 3×3 → residual add.")},
+                             f"Transformer2D. GroupNorm+{act_label} → Conv 3×3 → ⊕ timestep emb "
+                             f"→ GroupNorm+{act_label} → Conv 3×3 → residual add.")},
             _transformer_card(sid, st, t, cross_dim),
-            {**_resnet_card(sid, st), "id": f"{sid}__resnet_post",
+            {**_resnet_card(sid, st, act_label=act_label, act_note=act_note),
+             "id": f"{sid}__resnet_post",
              "title": "ResNet block (post)",
              "description": ("Second ResNet of the bottleneck sandwich: runs after the "
-                             "Transformer2D. Same cell as the first — GroupNorm+SiLU → "
-                             "Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 → "
+                             f"Transformer2D. Same cell as the first — GroupNorm+{act_label} → "
+                             f"Conv 3×3 → ⊕ timestep emb → GroupNorm+{act_label} → Conv 3×3 → "
                              "residual add.")},
         ]
 
-    children: list[dict] = [_resnet_card(sid, st, str(rn) if rn else "")]
+    children: list[dict] = [_resnet_card(sid, st, str(rn) if rn else "",
+                                         act_label=act_label, act_note=act_note)]
     if st.get("attn"):
         children.append(_transformer_card(sid, st, t, cross_dim))
     if st.get("sample"):
@@ -407,6 +431,13 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
     boc = unet.get("block_out_channels") or []
     in_ch, out_ch = unet.get("in_channels"), unet.get("out_channels")
     down, up, mid = unet.get("down") or [], unet.get("up") or [], unet.get("mid") or {}
+    # ResNet/conv activation from the config's act_fn (constructor record) with
+    # provenance — the class default is stated as a default, never as a read.
+    from ...labels import activation_label
+    act_label = activation_label(unet.get("act_fn") or "silu")
+    act_note = ("declared by the config's act_fn"
+                if unet.get("act_declared")
+                else "the diffusers class default (the config declares no act_fn)")
     cards: list[dict] = [{
         "id": "unet_conv_in",
         "title": "Conv in",
@@ -430,7 +461,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "down"),
-            "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim")),
+            "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim"),
+                                             act_label, act_note),
         })
     if mid:
         ch = mid.get("channels")
@@ -445,7 +477,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 if ch else "U-net bottleneck stage."),
             "facts": _stage_facts(mid) or None,
             "view": "unet_stage", "detail": _stage_detail(mid, None),
-            "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim")),
+            "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim"),
+                                             act_label, act_note),
         })
     for st in up:
         ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
@@ -461,7 +494,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
-            "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim")),
+            "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim"),
+                                             act_label, act_note),
         })
     cad = unet.get("cross_attention_dim")
     if cad and (any(s.get("attn") for s in down + up) or mid.get("attn")):
@@ -548,8 +582,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
         "id": "unet_conv_out",
         "title": "Conv out",
         "description": (
-            f"Output GroupNorm + SiLU + 3×3 convolution: normalises (conv_norm_out, GroupNorm "
-            f"over {boc[0] if boc else '?'} channels), activates (conv_act, SiLU), then projects "
+            f"Output GroupNorm + {act_label} + 3×3 convolution: normalises (conv_norm_out, GroupNorm "
+            f"over {boc[0] if boc else '?'} channels), activates (conv_act, {act_label} — {act_note}), then projects "
             f"back to {out_ch} channels — the predicted noise (ε̂). "
             "Declared by out_channels / norm_num_groups."
             if out_ch else "Output normalisation and convolution to the predicted noise."),

@@ -319,13 +319,36 @@ def _detect_multi_token_prediction(cls, fields, calls, refs, name, add) -> None:
         tuple(sorted(mtp_field_signals | mtp_ref_signals)) or (cls.name,))
 
 
+def _sink_signals(fields: set, calls: set, refs: set) -> tuple[str, ...]:
+    """Sink-marker hits on one class (vocabulary in fact_markers.yaml).
+
+    The BARE spellings (``sinks``/``s_aux``…) only count when the class also
+    shows attention-compute evidence — Q/K/V projection fields or a
+    softmax/matmul-family call — so a ``sinks`` field on an unrelated class
+    never fires (gpt-oss's signal is a bare ``self.sinks`` nn.Parameter on its
+    attention class; the long spellings were the only vocabulary before and
+    missed it entirely)."""
+    from ..everchanging import load_conformance_fact_markers
+    markers = load_conformance_fact_markers()
+    strong = set(markers.get("sink_markers") or ())
+    bare = set(markers.get("sink_markers_bare") or ())
+    hits = (fields | refs) & strong
+    bare_hits = (fields & bare) - hits
+    if bare_hits:
+        attention_evidence = (
+            fields & {"q_proj", "k_proj", "v_proj", "qkv_proj",
+                      "query_key_value", "Wqkv", "c_attn"}
+            or calls & {"softmax", "scaled_dot_product_attention",
+                        "matmul", "bmm", "einsum"})
+        if attention_evidence:
+            hits |= bare_hits
+    return tuple(sorted(hits))
+
+
 def _detect_attention_sinks(cls, fields, calls, refs, name, add) -> None:
-    sink_signals = (
-        fields & {"attention_sinks", "sink_token", "sink_token_index"}
-        | refs & {"attention_sinks", "sink_size", "num_sink_tokens"}
-    )
+    sink_signals = _sink_signals(fields, calls, refs)
     if sink_signals:
-        add("feature", "attention_sinks", 0.85, tuple(sorted(sink_signals)))
+        add("feature", "attention_sinks", 0.85, sink_signals)
 
 
 # ---------------------------------------------------------------------------
@@ -776,6 +799,81 @@ def diffusion_qk_norm_from_files(files) -> str | None:
     if not cands:
         return None
     return Counter(cands).most_common(1)[0][0]
+
+
+def diffusion_cross_qk_norm_from_files(files) -> str | None:
+    """The Q/K-norm the CROSS-attention sublayer applies, PER-SITE, or None.
+
+    The self spec's qk_norm must never be inherited by the cross sublayer as
+    if it were evidence (the refiner attribution bug) — but a blanket
+    "cross never QK-norms" convention drops a real op on families whose cross
+    attention normalises Q/K unconditionally (Wan's ``attn2`` RMS-norms both).
+    So the CROSS verdict is read from the cross class itself:
+
+    1. find the block: a class whose ``forward`` calls one of its own
+       attention-role fields with a text-role argument (the cross site —
+       argument spellings from ``wiring_roles.yaml``, never a field name);
+    2. resolve THAT field's constructed class; it must be defined in the same
+       source (an imported shared ``Attention`` stays unproven → None);
+    3. the verdict is the norm class of an UNCONDITIONAL top-level
+       ``self.norm_q/q_norm/norm_added_q`` assign in its ``__init__`` —
+       a guarded assign (ctor-selectable lane norm) stays None: only positive,
+       per-site evidence draws the op.  Unanimous across blocks, else None."""
+    import ast as _ast
+    from collections import Counter
+    from .forward_ops import _method, _field_types, _role_of
+    from ..everchanging import load_conformance_wiring_roles
+    _, role_params = load_conformance_wiring_roles()
+    text_subs = tuple(role_params.get("text") or ())
+    if not text_subs:
+        return None
+
+    def _names_in(call: "_ast.Call"):
+        for a in list(call.args) + [kw.value for kw in (call.keywords or [])]:
+            for n in _ast.walk(a):
+                if isinstance(n, _ast.Name):
+                    yield n.id.lower()
+                elif isinstance(n, _ast.Attribute):
+                    yield n.attr.lower()
+
+    defs = _parse_defs(files)
+    verdicts: list[str] = []
+    for cls_node in defs.values():
+        init = _method(cls_node, "__init__")
+        fwd = _method(cls_node, "forward")
+        if init is None or fwd is None:
+            continue
+        fields = _field_types(init)
+        cross_fields = set()
+        for n in _ast.walk(fwd):
+            if (isinstance(n, _ast.Call) and isinstance(n.func, _ast.Attribute)
+                    and isinstance(n.func.value, _ast.Name)
+                    and n.func.value.id == "self"):
+                fld = n.func.attr
+                cls = fields.get(fld)
+                if (cls and _role_of(cls) == "attention"
+                        and any(s in name for name in _names_in(n) for s in text_subs)):
+                    cross_fields.add(cls)
+        for cross_cls in cross_fields:
+            node = defs.get(cross_cls)
+            cross_init = _method(node, "__init__") if node else None
+            if cross_init is None:
+                continue                      # imported/shared class → unproven
+            for st in cross_init.body:        # TOP-LEVEL only: unconditional
+                if (isinstance(st, _ast.Assign) and isinstance(st.value, _ast.Call)):
+                    for tgt in st.targets:
+                        if (isinstance(tgt, _ast.Attribute)
+                                and tgt.attr in ("norm_q", "q_norm", "norm_added_q")):
+                            fnc = st.value.func
+                            nm = (fnc.attr if isinstance(fnc, _ast.Attribute)
+                                  else getattr(fnc, "id", ""))
+                            kind = _qk_norm_type(nm)
+                            if kind:
+                                verdicts.append(kind)
+    if not verdicts:
+        return None
+    top = Counter(verdicts).most_common()
+    return top[0][0] if len({v for v in verdicts}) == 1 else None
 
 
 def diffusion_single_stream_fusion_from_files(files) -> str | None:
@@ -1786,25 +1884,10 @@ def decoder_router_evidence_from_files(files) -> RouterCodeEvidence | None:
         grouped=grouped, scoring_before_topk=before)
 
 
-def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> int | None:
-    """The FFN intermediate width when the config FIELD is absent but the
-    modeling source COMPUTES a default expression — GPT-J/GPT-2/CodeGen:
-    ``inner_dim = config.n_inner if config.n_inner is not None else 4*config.n_embd``
-    (``n_inner=None`` in config → the layer uses ``4×hidden``).  Reading that
-    expression (not a per-model table) fixes the param undercount without
-    fabrication.  Anchored on the decoder layer's ``__init__`` (structure-found),
-    keyed on the ``intermediate_size`` config vocabulary so ONLY that default is
-    evaluated (a sibling rope-dim ternary in the same __init__ is ignored)."""
-    from .forward_ops import _method
-    layer = _find_decoder_layer(files, ast)
-    if layer is None:
-        return None
-    cls_node, _ = layer
-    init = _method(cls_node, "__init__")
-    if init is None:
-        return None
-    ev = _ConfigExprEvaluator(cfg)
-    aliases = {str(a).lower() for a in (intermediate_aliases or ())}
+def _intermediate_from_ternary(init, ev, aliases) -> int | None:
+    """The ``X if config.<alias> is None else k*hidden`` idiom inside ONE
+    ``__init__`` — the GPT-J/GPT-2/CodeGen default expression.  Returns the
+    evaluated width or None; also used for the FFN class's own init."""
     local: dict = {}
     for st in init.body:
         if not (isinstance(st, ast.Assign) and len(st.targets) == 1
@@ -1823,6 +1906,98 @@ def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> in
                     if isinstance(r, (int, float)) and r == int(r) and r > 0:
                         return int(r)
     return None
+
+
+def _intermediate_from_linear_args(init, ev) -> int | None:
+    """The inline widened-``Linear`` idiom inside an FFN class's ``__init__`` —
+    BLOOM: ``nn.Linear(hidden_size, 4 * hidden_size)`` with no config field and
+    no named width anywhere.  Evidence rule: evaluate every ``Linear(in, out)``
+    construction whose BOTH width arguments resolve to config-derived ints
+    (locals chained through plain assigns first); the up-projections are those
+    with ``out > in``.  EXACTLY ONE distinct widened value → that is the
+    intermediate width; zero or several distinct → None (never a guess)."""
+    local: dict = {}
+    for st in init.body:
+        if (isinstance(st, ast.Assign) and len(st.targets) == 1
+                and isinstance(st.targets[0], ast.Name)):
+            local[st.targets[0].id] = ev.eval(st.value, local)
+    widened: set[int] = set()
+    for n in ast.walk(init):
+        if not isinstance(n, ast.Call) or len(n.args) < 2:
+            continue
+        f = n.func
+        callee = f.attr if isinstance(f, ast.Attribute) else (
+            f.id if isinstance(f, ast.Name) else None)
+        if callee != "Linear":
+            continue
+        fan_in = ev.eval(n.args[0], local)
+        fan_out = ev.eval(n.args[1], local)
+        if (isinstance(fan_in, (int, float)) and isinstance(fan_out, (int, float))
+                and fan_in == int(fan_in) and fan_out == int(fan_out)
+                and 0 < fan_in < fan_out):
+            widened.add(int(fan_out))
+    return widened.pop() if len(widened) == 1 else None
+
+
+def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> int | None:
+    """The FFN intermediate width when the config FIELD is absent but the
+    modeling source COMPUTES it — three general idioms, tried in order:
+
+    1. the alias-keyed ternary in the DECODER LAYER's ``__init__``
+       (GPT-J/GPT-2/CodeGen: ``inner_dim = config.n_inner if config.n_inner is
+       not None else 4*config.n_embd``);
+    2. the same ternary one level down, in the FFN-role field's own class
+       ``__init__`` (families that move the default into the MLP);
+    3. the inline widened-Linear in that FFN class
+       (BLOOM: ``nn.Linear(hidden_size, 4 * hidden_size)``) — accepted only
+       when exactly ONE distinct widened value exists.
+
+    Reading the expression (never a per-model table) fixes the param
+    undercount without fabrication; any ambiguity returns None.  The FFN class
+    is found STRUCTURALLY: the layer's field whose constructed class has the
+    ffn role — never by name."""
+    from .forward_ops import _method, _field_types, _role_of
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    cls_node, _ = layer
+    init = _method(cls_node, "__init__")
+    if init is None:
+        return None
+    ev = _ConfigExprEvaluator(cfg)
+    aliases = {str(a).lower() for a in (intermediate_aliases or ())}
+    r = _intermediate_from_ternary(init, ev, aliases)
+    if r is not None:
+        return r
+    # Follow the FFN-role field into its own class (the recurse-into-field
+    # pattern _class_builds_experts / decoder_qk_norm_from_files use).
+    defs = _parse_defs(files)
+    ffn_classes = [c for c in _field_types(init).values()
+                   if _role_of(c) == "ffn" and c in defs]
+    if len(set(ffn_classes)) != 1:
+        return None                     # zero or rival FFN fields → never guess
+    ffn_init = _method(defs[ffn_classes[0]], "__init__")
+    if ffn_init is None:
+        return None
+    r = _intermediate_from_ternary(ffn_init, ev, aliases)
+    if r is not None:
+        return r
+    return _intermediate_from_linear_args(ffn_init, ev)
+
+
+def decoder_attention_sinks_from_files(files) -> bool:
+    """Whether the decoder's attention carries LEARNED SINK logits joining the
+    softmax — a config-silent, code-only fact (gpt-oss: ``self.sinks``
+    nn.Parameter concatenated onto the attention weights, softmaxed, then the
+    sink column dropped).  Same signal logic as the code-evidence feature chip
+    (``_sink_signals`` — vocabulary in fact_markers.yaml, bare spellings gated
+    on attention-compute evidence).  False on silence: only a positive signal
+    draws the sink lane, so absence can never fabricate one."""
+    from .ast_scanner import scan_python_files
+    for cls in scan_python_files(tuple(str(f) for f in (files or ()))):
+        if _sink_signals(set(cls.fields), set(cls.calls), set(cls.config_refs)):
+            return True
+    return False
 
 
 def decoder_qk_norm_from_files(files) -> QKNormCodeEvidence | None:

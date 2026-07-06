@@ -159,3 +159,15 @@ stack_lane_params:
   - latents=latent
   - x=latent
   - img=latent
+
+# Pipeline-index keys that declare a COMPANION denoiser beside the rendered
+# one — same architecture, not drawn separately, but its existence must be
+# SAID (silently dropping the twin misrepresents the checkpoint).  "key=kind";
+# kind names the note flavour:
+#   cfg_twin       — a classifier-free-guidance twin (Ideogram-4's
+#                    unconditional_transformer);
+#   expert_switch  — a second expert swapped in mid-schedule (Wan 2.2 A14B's
+#                    transformer_2, switched at boundary_ratio).
+companion_denoiser_fields:
+  - unconditional_transformer=cfg_twin
+  - transformer_2=expert_switch

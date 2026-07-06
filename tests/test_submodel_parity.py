@@ -108,10 +108,12 @@ def test_derivation_parity_spec_facts_equal_standalone_serializers(name, cfg):
         expected = attention_detail(typed_group["layer"].attention)
         expected.update(tower)                       # the DECLARED transform
         got = dict(spec_group["attention"])
-        # hidden + scores_scaled are evidence-resolved extras the standalone
-        # serializer does not carry; everything else must match exactly.
+        # hidden is a tower-injected extra; everything else must match exactly
+        # — INCLUDING scores_scaled, which the standalone serializer now
+        # carries from the same code oracle the tower always had (B1: the
+        # unscaled-scores verdict wired onto the main path).  The old
+        # exemption here was the doc'd asymmetry, not a law.
         assert got.pop("hidden") == standalone.hidden_size
-        got.pop("scores_scaled", None)
         assert got == expected
         assert spec_group["count"] == len(typed_group["indices"])
         assert spec_group["layers"] == list(typed_group["indices"])
