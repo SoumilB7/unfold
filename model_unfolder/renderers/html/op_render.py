@@ -48,7 +48,14 @@ def region_to_graph(
         pred.setdefault(e.dst, []).append(e.src)
 
     inputs = [o.id for o in region.ops if o.kind == "input"]
-    primary = "hidden" if "hidden" in by_op else (inputs[0] if inputs else region.ops[0].id)
+    # The primary input is identified by CANONICAL identity, not the raw id —
+    # a namespaced region instance (``<ns>hidden``) keeps its original id in
+    # meta["canonical_id"], so rename depth can never detach the spine root.
+    primary = next(
+        (o.id for o in region.ops
+         if (o.meta or {}).get("canonical_id", o.id) == "hidden"),
+        inputs[0] if inputs else region.ops[0].id,
+    )
     op_order = {o.id: i for i, o in enumerate(region.ops)}
 
     def is_merge(n: str) -> bool:
@@ -103,6 +110,13 @@ def region_to_graph(
         new_lanes: list[Lane] = []
         spine_ids: list[str] | None = None
         for b in branches:
+            # A direct edge from the branch point to a later merge is a real
+            # skip lane with no operation node of its own (residual identity).
+            # Treating the merge as a one-node output lane loses the arriving
+            # edge and leaves a visually dangling ⊕.
+            if is_merge(b):
+                new_lanes.append(Lane([], dst=[b], src=cur))
+                continue
             ids, dsts, pure = chase(b)
             if pure:
                 new_lanes.append(Lane(ids, dst=dsts))
@@ -171,12 +185,20 @@ def _lane_out_label(lane: Lane, by_op: dict[str, Op]) -> str | None:
     return (top.meta or {}).get("out_label") if top else None
 
 
+def _dims_text(value) -> str:
+    """A width label for scalar OR list-valued dims (HiDream declares some
+    entry widths as lists — every element is a real declared width)."""
+    if isinstance(value, (list, tuple)):
+        return " / ".join(f"{int(v):,}" for v in value if v)
+    return f"{value:,}"
+
+
 def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     static = not clickable
     if op.kind == "input":
         if op.id == primary:
-            label = f"in ({op.out_features:,})" if op.out_features else "in"
-            return Node(op.id, "port", label, static=True)
+            label = f"in ({_dims_text(op.out_features)})" if op.out_features else "in"
+            return Node(op.id, "port", label, static=True, meta=dict(op.meta))
         # A secondary input (cross-attention's text / image states) is drawn as a
         # solid block like everything else — not the light accent bookend.
         return Node(op.id, "embedding", op.label, w=250, h=46, static=static)
@@ -184,9 +206,17 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
         return Node(op.id, "linear", op.label or "Linear", static=static,
                     cache_ports=bool(op.meta.get("cached")))
     if op.kind == "activation":
-        label = op.label if op.label is not None else activation_label(op.fn or "silu")
+        # fn=None means the activation's IDENTITY is unproven (source-proven
+        # dense structure with an unnamed activation) — a bare "Activation"
+        # box is the honest label; defaulting to SiLU fabricated a fact.
+        label = op.label if op.label is not None else (
+            activation_label(op.fn) if op.fn else "Activation")
         return Node(op.id, "activation", label, static=static)
+    if op.kind == "position":
+        return Node(op.id, "embedding", op.label or "Position encoding", static=static)
     if op.kind == "elementwise":
+        if op.fn not in {"mul", "add", "matmul"} and op.label:
+            return Node(op.id, "activation", op.label, static=static)
         kind = {"mul": "gate_mul", "add": "residual_add"}.get(op.fn or "", "dot_product")
         return Node(op.id, kind, static=static)
     if op.kind == "attention_core":

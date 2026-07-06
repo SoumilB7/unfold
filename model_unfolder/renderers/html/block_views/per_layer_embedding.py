@@ -12,7 +12,6 @@ from ..svg import (
     _v_line,
 )
 from ..theme import C, FONT_MONO, GAP
-from ..utils import _fmt_int
 
 
 def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
@@ -27,10 +26,6 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
     parts: list[str] = []
 
     ids = _node_ids(block)
-    hidden_size = detail.get("hidden_size") or ir.get("hidden_size")
-    embedding_dim = detail.get("embedding_dim") or (
-        ((ir.get("extras") or {}).get("per_layer_embeddings") or {}).get("hidden")
-    )
     cx = 0  # fit_svg translates + centres content; absolute centre is irrelevant
     base = 660  # vertical layout origin (canvas auto-fits, not this value)
     y_shift = -24
@@ -98,26 +93,12 @@ def build_per_layer_embedding_view(ir: dict, info: dict, mount_id: str, block: d
         "x1": external["left"] - GAP, "y1": external["cy"],
         "x2": mul["cx"] + mul["r"] + GAP, "y2": mul["cy"],
         "stroke": "#1F9E78", "stroke-width": 1.6, "stroke-linecap": "round",
-        "stroke-dasharray": "5 4",
         "marker-end": f"url(#{arrow_id})",
     }))
     parts.append(_svg_text(
         external["cx"], external["bottom"] + 16,
         "(outside stack)",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 9},
-    ))
-
-    parts.append(_svg_text(
-        gate["right"] + 14, gate["cy"],
-        f"{_fmt_int(hidden_size)}  ->  {_fmt_int(embedding_dim)}" if embedding_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
-    ))
-    parts.append(_svg_text(
-        proj["right"] + 14, proj["cy"],
-        f"{_fmt_int(embedding_dim)}  ->  {_fmt_int(hidden_size)}" if embedding_dim else "",
-        {"dominant-baseline": "central", "fill": C["muted"],
-         "font-family": FONT_MONO, "font-size": 10},
     ))
 
     regions = [
@@ -164,7 +145,6 @@ def _external_tensor_block(
             "fill": C["badge_bg"],
             "stroke": "#1F9E78",
             "stroke-width": 1,
-            "stroke-dasharray": "4 3",
             "filter": f"url(#{shadow_id})",
         }),
         _svg_text(

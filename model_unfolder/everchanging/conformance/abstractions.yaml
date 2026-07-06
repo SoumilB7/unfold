@@ -10,7 +10,7 @@
 # scale_shift_table into shift/scale/gate (or a pre-attention qkv split) — drawn
 # as the × gate fed by the conditioning side-input, never a slice box. (Attention
 # DRILL views, when added, will re-scope `slice` since head-splitting differs.)
-omit_global: [reshape, elementwise, repeat, embedding, slice]
+omit_global: [reshape, elementwise, repeat, embedding, slice, dot_product]
 
 # Scoped omissions: "<family>/<view>=op" — drawn nowhere in THIS view only.
 omit_scoped: []

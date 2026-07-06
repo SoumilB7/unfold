@@ -64,4 +64,6 @@ def _connector_label(projector: dict, grid_vision: bool):
         return "Patch merger"
     if kind and "mlp" in str(kind):
         return "MLP projector"
-    return "Linear"
+    if kind in {"linear_projector", "linear"}:
+        return "Linear"
+    return "Projector"

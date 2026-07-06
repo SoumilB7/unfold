@@ -40,3 +40,9 @@ htmlcov/
 
 # Notebooks scratch
 .ipynb_checkpoints/
+
+# Previewer
+previews/
+
+# Corpuses
+sable_test_corpus

@@ -22,6 +22,8 @@ from model_unfolder.block_schema import (
     KNOWN_BLOCK_KEYS,
     validate_block_tree,
     validate_click_coupling,
+    validate_no_dotted_arrows,
+    validate_no_dotted_boundaries,
 )
 
 _BASE = dict(
@@ -96,6 +98,75 @@ def test_click_coupling_flags_orphan_node():
     assert not validate_click_coupling('<g data-id="router"></g><div data-card-id="router"></div>')
 
 
+def test_click_coupling_is_scoped_to_the_immediate_target_panel():
+    """A same-id card at the wrong depth must not mask a broken interaction."""
+    broken = (
+        '<details class="uf-section-arch"><g data-id="attn"></g></details>'
+        '<div class="uf-inspect-panel" data-depth="2">'
+        '  <div data-card-id="default"></div>'
+        '  <div data-card-id="ffn"><svg><g data-id="gate"></g></svg></div>'
+        '</div>'
+        '<div class="uf-inspect-panel" data-depth="3">'
+        '  <div data-card-id="attn"></div>'  # wrong depth for architecture click
+        '  <div data-card-id="gate"></div>'
+        '</div>'
+    )
+    problems = validate_click_coupling(broken)
+    assert any("attn" in p and "target panel depth 2" in p for p in problems)
+    assert not any("gate" in p for p in problems)  # depth-2 node resolves at depth 3
+
+
+def test_click_coupling_accepts_each_node_at_its_real_next_depth():
+    valid = (
+        '<details class="uf-section-arch"><g data-id="attn"></g></details>'
+        '<div class="uf-inspect-panel" data-depth="2">'
+        '  <div data-card-id="attn"><svg><g data-id="q_proj"></g></svg></div>'
+        '</div>'
+        '<div class="uf-inspect-panel" data-depth="3">'
+        '  <div data-card-id="q_proj"></div>'
+        '</div>'
+    )
+    assert validate_click_coupling(valid) == []
+
+
+def test_dotted_arrow_validator_flags_generated_flow_lines():
+    html = '<line stroke-dasharray="5 4" marker-end="url(#arrow-x)" />'
+    assert validate_no_dotted_arrows(html)
+    # Attribute order and quote style must not create a hole in the net.
+    assert validate_no_dotted_arrows(
+        "<path marker-end='url(#arrow-y)' stroke-dasharray='2 2' />"
+    )
+    assert not validate_no_dotted_arrows('<line marker-end="url(#arrow-x)" />')
+
+
+def test_dotted_boundary_validator_flags_regions_without_double_reporting_arrows():
+    assert validate_no_dotted_boundaries('<rect stroke-dasharray="4 3" />')
+    arrow = '<line stroke-dasharray="5 4" marker-end="url(#arrow-x)" />'
+    assert not validate_no_dotted_boundaries(arrow)
+
+
+def test_per_layer_embedding_uses_solid_wiring():
+    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+    assert validate_no_dotted_arrows(html) == []
+
+
+def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks():
+    """PLE projection widths are card facts, never text beside diagram boxes."""
+    import re
+
+    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+    match = re.search(
+        r'<svg[^>]*aria-label="[^"]*per-layer embeddings block".*?</svg>',
+        html,
+        re.S,
+    )
+    assert match
+    svg = match.group(0)
+    assert "64  -&gt;  128" not in svg
+    assert "128  -&gt;  64" not in svg
+    assert "64 → 128" in html and "128 → 64" in html  # retained as card chips
+
+
 def test_known_keys_cover_the_real_tree():
     # Every key the real render tree emits must be in the schema, else valid
     # blocks would be falsely flagged as typos.
@@ -163,3 +234,8 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
     gqa_in_mha_context = render_block_detail(gqa_ir, _make_info(mha_ir), "attn-gqa", gqa_block)
     assert "grouped-query attention" in gqa_in_mha_context
     assert _gqa_marker.search(gqa_in_mha_context)
+
+    # A direct detail render is a complete render call, not an ambient capture.
+    # Its events must not become the first events returned by a later Diagram.
+    from model_unfolder.renderers.html.render_context import current_render_context
+    assert current_render_context() is None

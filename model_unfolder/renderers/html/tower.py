@@ -28,12 +28,91 @@ _KIND_TO_NODE = {
     "moe": "ffn",
     "embedding": "embedding",
     "linear": "linear",
+    "conv": "conv",
+    "activation": "activation",
+    "reshape": "reshape",
+    "slice": "slice",
+    "opaque": "opaque",
     "residual_add": "residual_add",
     "gate_mul": "gate_mul",
     "port": "port",
     "source": "source",
     "output": "output",
 }
+
+
+def tower_cell(
+    prefix: str,
+    *,
+    attn_label,
+    norm_label,
+    placement: str = "pre",
+    attn_sub=None,
+    ffn_kind=None,
+    ffn_label=None,
+    input_id: str | None = None,
+    attn_gate: str | None = None,
+    ffn_gate: str | None = None,
+    unknown_label=None,
+) -> list[dict]:
+    """THE transformer-layer cell — one projection of ``[norm → mixer → ⊕ ;
+    norm → FFN → ⊕]`` for every tower (text encoder, vision, audio, refiner,
+    any secondary stack), so norm PLACEMENT, residual GATES and labels can
+    never diverge between towers.
+
+    * ``placement`` — ``pre`` (norm before the op; the skip taps the norm's
+      input), ``post`` (op → ⊕ → norm; BERT — the first skip needs
+      ``input_id``), ``double`` (sandwich: pre-norm AND a post-norm between
+      the op and its ⊕; Gemma-2).  Anything else renders the honest-unknown
+      single node (``unknown_label``) — a cell is never guessed.
+    * ``attn_gate`` / ``ffn_gate`` — a ``×`` gate between the sublayer output
+      and its ⊕ (conditioning-derived or learned residual gates); the value is
+      the gate's short operand caption (drawn beside the glyph, Gate C).
+    * ids follow the ONE scheme: ``{prefix}_op_norm / _op_selfattn / _op_add /
+      _op_norm2 / _op_ffn / _op_add2`` (+ ``_post`` norms, ``_gate`` muls) —
+      cards and drills key on these, identically in every tower.
+    """
+    if placement not in ("pre", "post", "double"):
+        return [{"id": f"{prefix}_op_unknown", "kind": "norm",
+                 "label": unknown_label or "Code-defined block", "resolved": False}]
+    ffn_text = ffn_label or (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
+                             else "Feed-forward (FFN)")
+
+    def _sublayer(op_block: dict, n: str, add_id: str, skip_from: str,
+                  gate: str | None, align: dict) -> list[dict]:
+        out: list[dict] = []
+        if placement in ("pre", "double"):
+            out.append({"id": n, "kind": "norm", "label": norm_label, **align.get(n, {})})
+        out.append(op_block)
+        if placement == "double":
+            # The post-norm aliases the cell's ONE norm card (same ``target``
+            # scheme norm2 uses) — the card's prose states the placement.
+            out.append({"id": f"{n}_post", "kind": "norm", "label": norm_label,
+                        "target": f"{prefix}_op_norm"})
+        if gate:
+            out.append({"id": f"{op_block['id']}_gate", "kind": "gate_mul",
+                        "label": "×", "sub": gate})
+        out.append({"id": add_id, "kind": "residual_add",
+                    "residual_from": skip_from, **align.get(add_id, {})})
+        if placement == "post":
+            out.append({"id": n, "kind": "norm", "label": norm_label, **align.get(n, {})})
+        return out
+
+    norm1, norm2 = f"{prefix}_op_norm", f"{prefix}_op_norm2"
+    add1, add2 = f"{prefix}_op_add", f"{prefix}_op_add2"
+    attn = {"id": f"{prefix}_op_selfattn", "kind": "attention",
+            "label": attn_label, "sub": attn_sub}
+    ffn = {"id": f"{prefix}_op_ffn", "kind": "ffn", "label": ffn_text}
+    if placement == "post":
+        # BERT shape: h = norm(h + op(h)) — the first skip taps the cell input.
+        skip1 = input_id or f"{prefix}_op_in"
+        skip2 = norm1
+    else:
+        # pre / double: the skip taps the pre-norm's input.
+        skip1, skip2 = norm1, norm2
+    align = {norm2: {"target": norm1}, add2: {"target": add1}}
+    return (_sublayer(attn, norm1, add1, skip1, attn_gate, align)
+            + _sublayer(ffn, norm2, add2, skip2, ffn_gate, align))
 
 
 def tower_graph(spec: dict) -> Graph:
@@ -73,7 +152,16 @@ def tower_graph(spec: dict) -> Graph:
             default_kind="port", static=source.get("static", True))
     for block in spec.get("pre") or []:
         add(block)
-    cell_ids = [add(block) for block in spec.get("cell") or []]
+    cell_groups: list[tuple[list[str], object, object]] = []
+    if spec.get("cells"):
+        cell_ids = []
+        for cell_spec in spec.get("cells") or []:
+            ids = [add(block) for block in cell_spec.get("cell") or []]
+            cell_ids.extend(ids)
+            cell_groups.append((ids, cell_spec.get("repeat"), cell_spec.get("repeat_label")))
+    else:
+        cell_ids = [add(block) for block in spec.get("cell") or []]
+        cell_groups.append((cell_ids, spec.get("repeat"), spec.get("repeat_label")))
     for block in spec.get("post") or []:
         add(block)
     output = spec.get("output")
@@ -94,15 +182,15 @@ def tower_graph(spec: dict) -> Graph:
         side_inputs.append(SideInput(nb["id"], si["target"], si.get("side", "right")))
 
     # A ``cell`` is a repeated stack: it frames with an "× N" pill (a known count,
-    # or "× N" when the count is unknown).  The ONE case with no pill is a cell
-    # that runs exactly once (× 1 is noise) — unless it carries an explicit label.
+    # or "× N" when the count is unknown).  A cell that runs exactly once earns
+    # neither the pill NOR the repeat frame — even if a caller supplies a label.
+    # A semantic caption must not fabricate repeated-region presentation.
     # (A genuinely non-repeated unit, like a ResNet residual cell, is declared as
     # ``pre`` instead of ``cell`` so it never frames as a repeat.)
     groups = []
-    repeat = spec.get("repeat")
-    repeat_label = spec.get("repeat_label")
-    if cell_ids and (repeat_label or repeat != 1):
-        groups.append(Group(cell_ids, repeat=repeat, label=repeat_label))
+    for ids, repeat, repeat_label in cell_groups:
+        if ids and repeat != 1:
+            groups.append(Group(ids, repeat=repeat, label=repeat_label))
     return Graph(nodes=nodes, flow=flow, edges=edges, groups=groups,
                  side_inputs=side_inputs, note=spec.get("note"))
 

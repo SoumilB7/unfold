@@ -24,6 +24,7 @@ class Diagram:
         self._ir_cache: dict | None = None
         self._html_cache: dict[bool, str] = {}
         self._json_cache: dict | None = None
+        self._render_contexts: dict[bool, object] = {}
 
     def to_ir(self) -> dict:
         """Return the underlying IR (plus param estimates) as a plain dict."""
@@ -73,11 +74,19 @@ class Diagram:
         Re-renders every baked graph and returns one message per connector
         (⊕ / × / ⊙) drawn with a missing input (empty list = clean). Treat a
         non-empty result as a build-blocking bug, not a warning."""
-        from .renderers.html.graph_engine import reset_wiring_log, drain_wiring_log
-        reset_wiring_log()
+        from .renderers.html.render_context import RenderContext, activate_render_context
+        context = RenderContext(theme=self._theme_name())
         self._html_cache.pop(True, None)         # force a fresh render so the detector runs
-        self.to_html(standalone=True)
-        return drain_wiring_log()
+        with activate_render_context(context):
+            self.to_html(standalone=True)
+        return list(context.wiring_findings)
+
+    def render_events(self):
+        """Typed, call-local graph events emitted by the latest full render."""
+        if True not in self._html_cache:
+            self.to_html(standalone=True)
+        context = self._render_contexts.get(True)
+        return list(getattr(context, "events", ()))
 
     def to_png(self, path: str, *, scale: float = 2.0, background: str = "white",
                highlight_clickable: bool = True) -> str:
@@ -140,11 +149,30 @@ class Diagram:
 
     def _html(self, standalone: bool) -> str:
         if standalone not in self._html_cache:
-            if standalone:
-                self._html_cache[standalone] = render_document(self.to_ir(), self._mount_id)
+            from .renderers.html.render_context import (
+                RenderContext,
+                activate_render_context,
+                current_render_context,
+            )
+            context = current_render_context()
+            if context is None:
+                context = RenderContext(theme=self._theme_name())
+                with activate_render_context(context):
+                    rendered = (
+                        render_document(self.to_ir(), self._mount_id) if standalone
+                        else render_fragment(self.to_ir(), self._mount_id)
+                    )
             else:
-                self._html_cache[standalone] = render_fragment(self.to_ir(), self._mount_id)
+                rendered = (
+                    render_document(self.to_ir(), self._mount_id) if standalone
+                    else render_fragment(self.to_ir(), self._mount_id)
+                )
+            self._html_cache[standalone] = rendered
+            self._render_contexts[standalone] = context
         return self._html_cache[standalone]
+
+    def _theme_name(self) -> str:
+        return str((((self.to_ir().get("extras") or {}).get("render") or {}).get("theme")) or "teal")
 
     def __repr__(self) -> str:
         s = (

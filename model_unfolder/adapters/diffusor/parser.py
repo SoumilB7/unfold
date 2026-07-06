@@ -27,7 +27,6 @@ from typing import Any
 
 from ...everchanging import (
     load_diffusion_aliases,
-    load_diffusion_class_defaults,
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
@@ -42,10 +41,6 @@ from .unet import is_unet, parse_unet, unet_geom, unet_render_spec
 
 _ALIASES: dict[str, list[str]] = load_diffusion_aliases()
 
-#: Facts hardcoded in the diffusers model class but absent from config — surfaced
-#: (marked code-derived) only when the config is silent. {field: {class: value}}.
-_CLASS_DEFAULTS: dict[str, dict[str, str]] = load_diffusion_class_defaults()
-
 #: Detection + labelling vocabulary — data, edited in ``everchanging/diffusor/``.
 #: ``_class_name`` substrings marking a diffusion-transformer backbone, and the
 #: diffusers text-encoder class name -> friendly family label map.
@@ -54,6 +49,9 @@ _SCHEDULER_DISPLAY = dict(
     pair.split("=", 1) for pair in load_diffusion_typing().get("scheduler_display", [])
     if isinstance(pair, str) and "=" in pair
 )
+#: scheduler-class substrings that mark a flow-matching integrator (data, not a
+#: hardcoded magic string) — the scheduler declares its own algorithm by class.
+_FLOW_MATCHING_MARKERS = tuple(load_diffusion_typing().get("scheduler_flow_matching_markers", []))
 #: norm_type substring -> base norm kind (ada_norm* etc. → layernorm), from typing.yaml.
 _NORM_TYPE_KIND = [
     tuple(pair.split("=", 1)) for pair in load_diffusion_typing().get("norm_type_kind", [])
@@ -71,33 +69,298 @@ def _resolve(cfg: Any, canonical: str, default=None):
     return default
 
 
-def _class_default(cls: Any, field: str):
-    """Code-hardcoded value for ``field`` fixed in model class ``cls`` (from
-    class_defaults.yaml), or ``None``. Used ONLY as a fallback when the config is
-    silent — the result is surfaced marked as code-derived, never overriding a
-    declared config value."""
-    return _CLASS_DEFAULTS.get(field, {}).get(str(cls))
+def _source_files(cfg: Any, context=None):
+    """The ROOT component's source files for this parse — never the pipeline
+    union.  A pipeline bundle folds text-encoder files (Gemma-2 for Sana) into
+    ``bundle.files``; every ``_code_*`` fact here describes the DENOISER, so
+    reading the union lets an encoder's rotary/norm markers fabricate a DiT
+    fact (the Sana RoPE leak).  ``component_files["root"]`` holds exactly the
+    denoiser's own file; encoder towers re-scope for themselves in
+    ``_normalize_encoder_config``."""
+    if context is not None:
+        bundle = context.source_bundle
+        root = (getattr(bundle, "component_files", {}) or {}).get("root")
+        return tuple(root) if root else bundle.files
+    from ...evidence.sources import resolve_source_files
+    bundle = resolve_source_files(cfg, source="local")
+    root = (getattr(bundle, "component_files", {}) or {}).get("root")
+    return tuple(root) if root else bundle.files
+
+
+def _code_ffn_activation(cfg: Any, context=None):
+    """The DiT FFN's activation_fn READ FROM THE MODELING SOURCE — the pure
+    code-based replacement for the ``ffn_activation_fn`` class-defaults table.
+    Best-effort and silent on failure (no source → honest-undeclared FFN); never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import diffusion_ffn_activation_from_files
+        return diffusion_ffn_activation_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_has_rope(cfg: Any, context=None) -> bool:
+    """Whether the denoiser applies rotary position embedding, READ FROM THE
+    MODELING SOURCE — the pure code-based replacement for the ``rope_3d`` table.
+    Uses the SAME evidence fact-conformance reads to CATCH a fabricated NoPE
+    (forward rotary markers), so the parser derives what the net checks. Best-effort,
+    silent on failure (no source → no rope claim, an honest negative)."""
+    try:
+        from ...evidence.patterns import diffusion_rope_from_files
+        return diffusion_rope_from_files(_source_files(cfg, context))
+    except Exception:
+        return False
+
+
+def _code_attn_kind(cfg: Any, context=None):
+    """The attention ALGORITHM (linear vs softmax) READ FROM THE MODELING SOURCE —
+    the code-based replacement for the ``self_attn_kind`` table. Returns "linear" or
+    None (None ⇒ caller's softmax default). Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_attn_kind_from_files
+        return diffusion_attn_kind_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_ffn_kind(cfg: Any, context=None):
+    """The FFN KIND (gated conv Mix-FFN vs Linear MLP) READ FROM THE MODELING SOURCE
+    — "conv_glu" when the block builds Sana's GLUMBConv, else None. The code-based
+    replacement for the ``ffn_kind`` table. Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_ffn_kind_from_files
+        return diffusion_ffn_kind_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_gate_via_norm(cfg: Any, context=None) -> bool:
+    """Whether the block folds its timestep gate into a modulated norm of the
+    sublayer output (Mochi) rather than a × gate — READ FROM THE MODELING SOURCE.
+    The code-based replacement for the ``gate_via_norm`` table. Best-effort."""
+    try:
+        from ...evidence.patterns import diffusion_gate_via_norm_from_files
+        return diffusion_gate_via_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return False
+
+
+def _code_axes_dims_rope(cfg: Any, context=None):
+    """The axial-RoPE per-axis dims fixed in the model __init__ default (Flux
+    axes_dims_rope=(16,56,56)) READ FROM THE MODELING SOURCE — the code-based
+    replacement for the ``axes_dims_rope`` table. Returns list[int] or None.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_axes_dims_rope_from_files
+        return diffusion_axes_dims_rope_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_single_fusion(cfg: Any, context=None):
+    """The single-stream block's fusion topology (parallel / sequential /
+    concat_fused) READ FROM THE MODELING SOURCE, or None (no single blocks / default
+    fused). The code-based replacement for the ``single_stream_fusion`` table.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_single_stream_fusion_from_files
+        return diffusion_single_stream_fusion_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_qk_norm(cfg: Any, context=None):
+    """The Q/K-norm TYPE ("rms_norm"/"layer_norm") the attention applies, READ FROM
+    THE MODELING SOURCE — for DiTs whose config is silent on qk_norm but whose
+    attention norms Q/K (Flux/Flux2/QwenImage/Lumina2/PRX/CogVideoX/AuraFlow). The
+    code-based replacement for the ``qk_norm`` table. Returns None when the block
+    does not norm Q/K. Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import diffusion_qk_norm_from_files
+        return diffusion_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_scores_scaled(cfg: Any, context=None):
+    """Whether the denoiser's attention forward SCALES its scores, READ FROM THE
+    MODELING SOURCE — the same verdict the encoder-tower path draws (T5 raw
+    QK^T).  False ⇒ no scale op in forward; True/None keep the sqrt(dim) card.
+    Best-effort, silent on failure."""
+    try:
+        from ...evidence.patterns import attention_score_scaling_from_files
+        return attention_score_scaling_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_cross_qk_norm(cfg: Any, context=None):
+    """The Q/K-norm the CROSS-attention sublayer applies, read PER-SITE from
+    the cross class's own construction (Wan's ``attn2`` RMS-norms Q/K
+    unconditionally) — never inherited from the self spec.  None when the
+    cross class is shared/imported or its lane norms are ctor-gated (PixArt/
+    SD3): only positive per-site evidence draws the op.  Best-effort."""
+    try:
+        from ...evidence.patterns import diffusion_cross_qk_norm_from_files
+        return diffusion_cross_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_block_norm_placement(cfg: Any, context=None) -> str | None:
+    """The MAIN DiT block's norm placement from ITS OWN forward dataflow —
+    'double'/'post' when proven, else None.  Uses the SAME stack detector and
+    fact reader the refiners use (the root stack is the one whose depth binds
+    a root-depth spelling), with the A5 ctor-kwargs prune.  A proven sandwich
+    is stated on the norm CARDS — the cell layout is not flipped here (the
+    2-box parallel-norm render regression is the recorded lesson: fact first,
+    layout only as its own scoped, pixel-reviewed change)."""
+    try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.stacks import secondary_stacks_from_files
+        from ...evidence.transitive import build_registry
+        from ...evidence.vision import layer_facts_from_block
+        from ...everchanging import load_conformance_transitive
+        bundle = getattr(context, "source_bundle", None)
+        architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                        or getattr(bundle, "architecture", None))
+        files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        if not architecture or not files:
+            return None
+        files = _augment_diffusion_files(files)
+        root_depth = set(_ALIASES.get("num_layers") or []) | set(
+            _ALIASES.get("num_single_layers") or [])
+        stacks = [s for s in secondary_stacks_from_files(files, architecture)
+                  if s.count_field in root_depth]
+        if not stacks:
+            return None
+        registry = build_registry([str(f) for f in files])
+        vocab = load_conformance_transitive()
+        verdicts = set()
+        for s in stacks:
+            facts = layer_facts_from_block(s.block_class, registry, vocab,
+                                           ctor_kwargs=s.ctor_kwargs)
+            # STANDARD-CELL, SINGLE-attention only: the dataflow placement
+            # reader assumes one [norm→attn; norm→ffn] lane.  A dual-stream
+            # MMDiT block (ff + ff_context, SD3) or a cross-attn block
+            # (norm→attn1→norm→attn2→norm→ff, PixArt) interleaves more
+            # sublayers and reads as a false "double".  Never a wrong verdict.
+            from ...evidence.forward_ops import _role_of as _role
+            info = registry.get(s.block_class)
+            attn_fields = [c for c in (info.field_types or {}).values()
+                           if _role(c) == "attention"] if info else []
+            if facts.get("standard_cell") and len(attn_fields) == 1:
+                verdicts.add(facts.get("norm_placement"))
+        verdicts.discard(None)
+        if len(verdicts) == 1 and next(iter(verdicts)) in ("double", "post"):
+            return next(iter(verdicts))
+        return None
+    except Exception:
+        return None
+
+
+def _code_norm_kind(cfg: Any, context=None):
+    """The DiT block-norm's base kind READ FROM THE ROOT BLOCK CLASS's own
+    constructed norm fields — ``(base_kind, class_name)`` or None.
+
+    BLOCK-scoped, not file-wide: a file-wide vote let a MODEL-level
+    conditioner outvote the block's own norms (LTX constructs an
+    AdaLayerNormSingle at the model level while its block's norm1/norm2 are
+    plain RMSNorm — the vote said LayerNorm; the U5 pixel pass caught the
+    wrong label).  Resolution: root stack's block class → its norm-role
+    fields → ONE base kind = the verdict; MIXED kinds → None (never a vote);
+    block unresolvable → the file-wide class read as a last resort.  Also
+    ROOT-scoped (A1): encoder files never participate."""
+    try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.stacks import secondary_stacks_from_files
+        from ...evidence.transitive import build_registry
+        from ...evidence.forward_ops import _role_of
+
+        def _base(name: str) -> str:
+            return ("RMSNorm" if ("RMS" in name and "LayerNorm" not in name)
+                    else "LayerNorm")
+
+        bundle = getattr(context, "source_bundle", None)
+        architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                        or getattr(bundle, "architecture", None))
+        files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        if architecture and files:
+            aug = _augment_diffusion_files(files)
+            root_depth = set(_ALIASES.get("num_layers") or []) | set(
+                _ALIASES.get("num_single_layers") or [])
+            stacks = [s for s in secondary_stacks_from_files(aug, architecture)
+                      if s.count_field in root_depth]
+            if stacks:
+                registry = build_registry([str(f) for f in aug])
+                norm_classes = sorted({
+                    cls for s in stacks
+                    for cls in (registry.get(s.block_class).field_types or {}).values()
+                    if s.block_class in registry and _role_of(cls) == "norm"})
+                kinds = {_base(c) for c in norm_classes}
+                if len(kinds) == 1:
+                    best = max(norm_classes, key=len)   # the most specific class name
+                    return (next(iter(kinds)), best)
+                if kinds:
+                    return None                         # mixed block norms — never a vote
+        from ...evidence.ast_scanner import scan_python_files
+        from ...evidence.patterns import diffusion_norm_from_classes
+        return diffusion_norm_from_classes(
+            scan_python_files(tuple(str(f) for f in (_source_files(cfg, context) or ()))))
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
 
-def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str]) -> ModelIR:
+def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=None) -> ModelIR:
     """Build the IR for a UNet denoiser: no flat layer stack — the U-net
     structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
     unet = parse_unet(cfg)
+    # The Transformer2D FFN's inner shape, ANCHORED to the block classes the
+    # config's own block-type strings name (identity-as-address) — restores
+    # the evidence-backed GEGLU an import-closure vote could not prove.
+    # None keeps the honest-undeclared FFN card.
+    try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.patterns import unet_transformer_ffn_activation_from_files
+        bundle = getattr(context, "source_bundle", None)
+        _root = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        _types = (list(_g(cfg, "down_block_types") or [])
+                  + list(_g(cfg, "up_block_types") or [])
+                  + [_g(cfg, "mid_block_type") or ""])
+        unet["transformer_ffn_act"] = (
+            unet_transformer_ffn_activation_from_files(
+                _augment_diffusion_files(_root), _types) if _root else None)
+    except Exception:
+        unet["transformer_ffn_act"] = None
     boc = unet["block_out_channels"]
     if not boc:
         warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
+    if boc and not unet.get("declares_block_types"):
+        cad = unet.get("cross_attention_dim")
+        warnings.append(
+            "This UNet config declares no down_block_types/up_block_types — per-stage "
+            "attention placement is defined in the model code, not the config, so the "
+            "denoiser is shown as a convolutional U skeleton"
+            + (f" with text cross-attention (dim {cad}) entering at code-defined stages"
+               if cad else "")
+            + "."
+        )
     hidden = max(boc) if boc else 0
     text_encoders = _detect_text_encoders(cfg)
-    text_encoder_specs = _text_encoder_specs(cfg)
+    text_encoder_specs = _text_encoder_specs(cfg, context=context)
     geom = unet_geom(cfg, unet, text_encoders=text_encoders,
                      scheduler_geom=_scheduler_geom(cfg),
                      text_encoder_specs=text_encoder_specs)
     geom["vae"] = _vae_geom(cfg)
     geom["text_encoder_specs"] = text_encoder_specs
+    geom["config_facts"] = _config_fact_chips(cfg)
 
     extras: dict = {"render": unet_render_spec(geom), "unet": unet}
     meta = {k: v for k, v in {
@@ -158,7 +421,148 @@ def matches(cfg: Any) -> bool:
     return False
 
 
-def parse(cfg: Any) -> ModelIR:
+def _secondary_stack_specs(cfg: Any, context, hidden) -> list[dict]:
+    """GENERAL secondary stacks (token/noise refiners, any auxiliary
+    transformer stack): detected from construction evidence
+    (:mod:`~...evidence.stacks`), never from names.
+
+    * root stacks are excluded by COUNT FIELD — any stack whose depth binds to
+      a root-depth alias spelling is the main tower (class-based exclusion
+      would erase Lumina's refiners, which reuse the root block class);
+    * the depth is read from the CONFIG through the auditing getter — an
+      undeclared count is never drawn;
+    * the lane comes from the detector's raw forward-arg name through the
+      declared ``stack_lane_params`` vocabulary; an unmapped lane is skipped
+      with a note, never guessed;
+    * layer facts come from the ONE shared reader (standard-cell gate
+      included), the spec from the ONE tower spec builder — a refiner is just
+      another tower.
+    """
+    from ...everchanging import load_diffusion_typing
+    from ...evidence.conformance import _augment_diffusion_files
+    from ...evidence.stacks import secondary_stacks_from_files
+    from ...evidence.transitive import build_registry
+    from ...evidence.vision import layer_facts_from_block
+    from ..transformer.special_parts.modalities.schema import tower_submodel_spec
+
+    bundle = getattr(context, "source_bundle", None)
+    architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                    or getattr(bundle, "architecture", None))
+    files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                  or getattr(bundle, "files", ()) or ())
+    if not architecture or not files:
+        return []
+    files = _augment_diffusion_files(files)
+    root_depth_spellings = set(_ALIASES.get("num_layers") or []) | set(
+        _ALIASES.get("num_single_layers") or [])
+    lane_map = dict(pair.split("=", 1) for pair in
+                    load_diffusion_typing().get("stack_lane_params", [])
+                    if isinstance(pair, str) and "=" in pair)
+    try:
+        stacks = secondary_stacks_from_files(files, architecture)
+    except Exception:
+        return []
+    registry = build_registry([str(f) for f in files])
+    from ...everchanging import load_conformance_transitive
+    vocab = load_conformance_transitive()
+
+    out: list[dict] = []
+    for stack in stacks:
+        if not stack.count_field or stack.count_field in root_depth_spellings:
+            continue
+        count = _g(cfg, stack.count_field)
+        if not count:
+            continue                      # undeclared depth — never drawn
+        lane = lane_map.get(stack.lane_param or "")
+        if lane not in ("text", "latent"):
+            continue                      # unmapped lane — never guessed
+        # The construction site's literal kwargs make a SHARED block class
+        # instance-honest: a `modulation=False` refiner must not inherit the
+        # class's gated-branch facts (the Lumina2 context-refiner over-draw).
+        facts = layer_facts_from_block(stack.block_class, registry, vocab,
+                                       ctor_kwargs=stack.ctor_kwargs)
+        if not facts.get("standard_cell"):
+            continue                      # non-standard block keeps op-chain honesty
+        row = {**facts, "repeat": int(count),
+               "block_class": stack.block_class,
+               "source_file": stack.source_file}
+        sub_model = tower_submodel_spec(
+            {"hidden_size": hidden, "num_layers": int(count)}, [row],
+            component="root")
+        out.append({
+            "lane": lane,
+            "count": int(count),
+            "entry_projection": stack.entry_projection,
+            "count_field": stack.count_field,
+            "block_class": stack.block_class,
+            "owner_class": stack.owner_class,
+            "source_file": stack.source_file,
+            "sub_model": sub_model,
+        })
+    return out
+
+
+def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
+    """Read EVERY declared config-fact field (``everchanging/diffusor/
+    config_facts.yaml``) and format the informative ones as per-stage card
+    chips.  The READ is the point even when no chip results: each lookup
+    records ownership for the config-field audit, so a field is either parsed,
+    chipped, or consciously declared silent/no-op in YAML — never silently
+    dropped.  ``vae`` rows read from the pipeline's embedded VAE sub-config."""
+    from ...everchanging import load_diffusion_config_facts
+    table = load_diffusion_config_facts()
+    vae_cfg = _g(cfg, "_vae_config")
+    out: dict[str, list[str]] = {}
+    for bucket, rows in table.items():
+        src = vae_cfg if bucket == "vae" else cfg
+        if src is None:
+            continue
+        chips: list[str] = []
+        for row in rows:
+            value = _g(src, row["field"])
+            if value is None or row.get("silent"):
+                continue
+            if "noop" in row and _fact_is_noop(value, row["noop"]):
+                continue
+            chips.append(_fact_chip(row["label"], value))
+        if chips:
+            out[bucket] = chips
+    return out
+
+
+def _fact_is_noop(value, noop) -> bool:
+    if isinstance(value, bool) or isinstance(noop, bool):
+        return isinstance(value, bool) and isinstance(noop, bool) and value == noop
+    if isinstance(value, (int, float)) and isinstance(noop, (int, float)):
+        return float(value) == float(noop)
+    return str(value).strip().lower() == str(noop).strip().lower()
+
+
+def _fact_chip(label: str, value) -> str:
+    if value is True:
+        return label
+    if isinstance(value, (list, tuple)):
+        flat = list(value)
+        if all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in flat):
+            return f"{label} {'·'.join(_fmt(v) if isinstance(v, int) else str(v) for v in flat)}"
+        uniq: list[str] = []
+        for v in flat:
+            text = str(v)
+            if text not in uniq:
+                uniq.append(text)
+        shown = "/".join(uniq[:4]) + ("…" if len(uniq) > 4 else "")
+        return f"{label} {shown}"
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    if isinstance(value, int):
+        return f"{label} {_fmt(value)}"
+    return f"{label} {value}"
+
+
+def parse(cfg: Any, context=None) -> ModelIR:
+    if context is None:
+        from ...evidence.context import ParseContext
+        context = ParseContext.build(cfg, source="local")
     warnings: list[str] = []   # config GAPS → "⚠ partial config"
     notes: list[str] = []      # by-design advisories → neutral ⓘ (not a deficiency)
     cls = _g(cfg, "_class_name") or "diffusion"
@@ -167,12 +571,16 @@ def parse(cfg: Any) -> ModelIR:
     # UNet denoisers (SD1.5/SD2/SDXL/Kandinsky) are a different shape — a conv
     # U-net, not a transformer stack — so they get their own structure + view.
     if is_unet(cfg):
-        return _parse_unet_model(cfg, arch_name, warnings)
+        return _parse_unet_model(cfg, arch_name, warnings, context=context)
 
     # ---- Denoiser geometry ----
     num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)
     num_single   = int(_resolve(cfg, "num_single_layers", 0) or 0)
     num_heads    = int(_resolve(cfg, "num_attention_heads", 0) or 0)
+    # Grouped-query attention: KV heads from config when declared (Lumina-Next
+    # num_kv_heads:8), else None → the spec falls back to Q heads (plain MHA). Never
+    # hardcode 32 — that silently dropped GQA.
+    num_kv_heads = int(_resolve(cfg, "num_kv_heads", 0) or 0) or None
     head_dim     = int(_resolve(cfg, "attention_head_dim", 0) or 0)
     # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
     # hidden_size directly without a per-head dim — derive the head dim from it.
@@ -193,9 +601,33 @@ def parse(cfg: Any) -> ModelIR:
     declared_act = next((_resolve(cfg, k, None) for k in
                          ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
                          if _resolve(cfg, k, None)), None)
+    # The DiT FFN's activation/gating is almost never in the config — it lives in
+    # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
+    # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
+    # the source isn't resolvable the FFN renders honestly as undeclared.
+    code_ffn_act = _code_ffn_activation(cfg, context) if declared_act is None else None
+    code_ffn_kind = _code_ffn_kind(cfg, context)
+    code_gate_via_norm = _code_gate_via_norm(cfg, context)
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
-    # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.
+    # is used by both RMSNorm and LayerNorm DiTs, so it is NOT a signal.  When
+    # the config is silent the CLASSES still are one (AdaLayerNormZero ⇒
+    # LayerNorm): resolve from the root-scoped source and annotate provenance —
+    # the pale "Normalization" label was honest but under-informative on every
+    # config-silent DiT (SD3.5/FLUX/Sana/Lumina).
     norm_kind = _dit_norm_kind(cfg)
+    code_norm_kind = _code_norm_kind(cfg, context) if norm_kind == "unknown" else None
+    # A code-proven sandwich/post placement on the MAIN block is stated on the
+    # norm cards (the assembled cell stays pre-norm — layout flips are their
+    # own scoped, pixel-reviewed change; the dropped Lumina post-norms were
+    # invisible even to the nets, so the FACT lands first).
+    code_block_placement = _code_block_norm_placement(cfg, context)
+    # These two diffusers spellings are different structures, not aliases:
+    # PixArt ``caption_channels`` builds PixArtAlphaTextProjection
+    # (Linear -> GELU -> Linear); SD3/AuraFlow ``caption_projection_dim`` builds
+    # one context Linear.  Carry that distinction into the loop op graph.
+    caption_input_dim = _resolve(cfg, "caption_input_dim")
+    caption_projection_dim = _resolve(cfg, "caption_projection_dim")
+    norm_elementwise_affine = _g(cfg, "norm_elementwise_affine")
 
     if not num_layers and not num_single:
         warnings.append(
@@ -233,13 +665,18 @@ def parse(cfg: Any) -> ModelIR:
         # facts that must be captured, not dropped.
         "adaln_dim": _resolve(cfg, "adaln_dim"),
         "llm_features_dim": _resolve(cfg, "llm_features_dim"),
-        "video": "3D" in str(cls),
+        "caption_input_dim": caption_input_dim,
+        "caption_projection_dim": caption_projection_dim,
+        "norm_elementwise_affine": norm_elementwise_affine,
+        "video": _temporal_axis(cfg, cls, context),
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
-        "text_encoder_specs": _text_encoder_specs(cfg),
+        "text_encoder_specs": _text_encoder_specs(cfg, context=context),
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
         "vae": _vae_geom(cfg),
+        "secondary_stacks": _secondary_stack_specs(cfg, context, hidden_size),
+        "config_facts": _config_fact_chips(cfg),
         **_scheduler_geom(cfg),
     }
 
@@ -250,18 +687,16 @@ def parse(cfg: Any) -> ModelIR:
     axes_dims_rope = _resolve(cfg, "axes_dims_rope")
     mrope_section = _resolve(cfg, "mrope_section")
     rope_theta = _resolve(cfg, "rope_theta")
-    # Code-derived fallback: when the config declares no RoPE but the model class
-    # fixes axial dims (Flux), surface them — MARKED as code-derived (class_defaults
-    # .yaml). Never overrides a declared config value.
+    # Code-derived: when the config declares no RoPE but the model class fixes axial
+    # dims (Flux), surface them READ FROM THE MODELING SOURCE (code -> fact). Never
+    # overrides a declared config value.
     axes_from_class = False
     if axes_dims_rope is None:
-        _cd = _class_default(cls, "axes_dims_rope")
-        if _cd:
-            try:
-                axes_dims_rope = [int(x) for x in _cd.split(",")]
-                axes_from_class = True
-            except ValueError:
-                axes_dims_rope = None
+        # Config silent — READ the axial dims from the model __init__ default
+        # (code -> fact). No table fallback: unreadable source stays NoPE.
+        _code_axes = _code_axes_dims_rope(cfg, context)
+        if _code_axes:
+            axes_dims_rope, axes_from_class = _code_axes, True
     rope_dim = None
     if isinstance(axes_dims_rope, (list, tuple)):
         try:
@@ -279,12 +714,18 @@ def parse(cfg: Any) -> ModelIR:
     # axial rotary over (temporal · height · width) to Q/K but declare NO rope dims
     # in config (it's in the model class), so without help the block reads as NoPE —
     # a fabricated negative. The signal is a CONFIG flag (CogVideoX:
-    # use_rotary_positional_embeddings) or a CODE fact (class_defaults.yaml::rope_3d).
+    # use_rotary_positional_embeddings) or a CODE fact read from the modeling source.
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
     rope_3d_from_config = bool(_resolve(cfg, "use_rotary_positional_embeddings"))
+    # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
+    # nothing in config) — read from the SAME evidence fact-conformance reads, so the
+    # parser asserts rope exactly when the net would flag its absence as fabricated.
+    # When the source can't be read the block stays NoPE (never identity-guessed).
+    # We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
+    # per-axis split (head-dim dependent).
     rope_3d_from_class = False
-    if not has_rope and head_dim and (rope_3d_from_config or _class_default(cls, "rope_3d")):
+    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)):
         rope_dim = head_dim
         has_rope = True
         rope_3d_from_class = not rope_3d_from_config
@@ -327,15 +768,17 @@ def parse(cfg: Any) -> ModelIR:
     # QK-norm: per-head Q/K normalisation before the dot product. SD3.5 declares
     # qk_norm: "rms_norm"; some DiTs spell it use_qk_norm / qk_layernorm. A
     # declared, non-null value surfaces the QK-norm annotation on the attention.
-    # Code-derived fallback: Flux's FluxAttention RMS-norms Q/K unconditionally
-    # but declares nothing in config — surfaced (marked) via class_defaults.yaml.
+    # Code-derived: Flux's FluxAttention RMS-norms Q/K unconditionally but declares
+    # nothing in config — surfaced by reading the modeling source (code -> fact).
     _empty_qk = (None, False, "", "none", "None", 0)
     _qk = _resolve(cfg, "qk_norm")
     qk_from_class = False
     if _qk in _empty_qk:
-        _cd = _class_default(cls, "qk_norm")
-        if _cd:
-            _qk, qk_from_class = _cd, True
+        # Config silent — READ the Q/K-norm TYPE from the modeling source (the
+        # attention's norm_q class / qk_norm kwarg). No table fallback.
+        _code_qk = _code_qk_norm(cfg, context)
+        if _code_qk:
+            _qk, qk_from_class = _code_qk, True
     has_qk_norm = _qk not in _empty_qk
     if qk_from_class:
         # Mark the code-derived QK-norm in the attention description (the chip
@@ -377,26 +820,43 @@ def parse(cfg: Any) -> ModelIR:
     # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
     # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
     _can = _resolve(cfg, "cross_attn_norm")
-    if _can is None:
-        _can_cd = _class_default(cls, "cross_attn_norm")
-        if _can_cd is not None:
-            _can = str(_can_cd).lower() not in ("false", "0", "none", "no")
     cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
 
     # Self-attention kind: standard softmax MHA unless the model class fixes a
     # non-softmax processor with the config silent (Sana = ReLU-kernel LINEAR
-    # attention via SanaLinearAttnProcessor) — a code fact (class_defaults). The
-    # CROSS attention stays softmax (mha); only the self path changes.
-    self_attn_kind = _class_default(cls, "self_attn_kind") or "mha"
+    # attention via SanaLinearAttnProcessor) — a code fact. The CROSS attention stays
+    # softmax (mha); only the self path changes. The attention ALGORITHM is READ FROM
+    # THE SOURCE (the SAME *LinearAttn* signal fact-conformance reads); unreadable
+    # source falls to the default softmax MHA.
+    _code_kind = _code_attn_kind(cfg, context)
+    self_attn_kind = _code_kind or "mha"
+    # B5: "mha" without a code verdict is the asserted default (correct on
+    # every tested DiT, but an assertion — tagged so the machine layer knows).
+    dit_attn_asserted = ("attention_kind",) if _code_kind is None else ()
+
+    # Code-proven scores-scaling verdict for the DENOISER's own attention —
+    # the same oracle the encoder towers already draw (T5 raw QK^T).  Only a
+    # False verdict changes rendering; True/None keep the sqrt(dim) card.
+    code_scores_scaled = _code_scores_scaled(cfg, context)
+    # Per-SITE cross-attention Q/K-norm (Wan's attn2 RMS-norms unconditionally);
+    # None (shared/gated cross class) keeps the cross sublayer norm-less.
+    code_cross_qk_norm = _code_cross_qk_norm(cfg, context) if cond["cross_attn_sublayer"] else None
+    # Projection bias is a DECLARED constructor value on the diffusers side
+    # (PixArt `attention_bias: true`) — reading it here both draws the true
+    # bias fact and claims the field for the config-ownership audit.
+    dit_attention_bias = bool(_resolve(cfg, "attention_bias"))
 
     layers = []
     idx = 0
     for _ in range(num_layers):
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
-                                   rope_3d, has_pos_embed, self_attn_kind)
+                                   rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
+                                   scores_scaled=code_scores_scaled, bias=dit_attention_bias,
+                                   asserted=dit_attn_asserted)
         layer = decoder_layer(
             idx, attn_spec,
-            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls),
+            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
+                     code_ffn_kind=code_ffn_kind),
             hidden_size, norm_kind=norm_kind,
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
@@ -405,19 +865,23 @@ def parse(cfg: Any) -> ModelIR:
         if cond["cross_attn_sublayer"]:
             layer.blocks = _insert_cross_attention(
                 layer.blocks, attn_spec, hidden_size, norm_kind,
-                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm)
+                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm,
+                cross_qk_norm=code_cross_qk_norm)
         # Timestep gating of each sublayer output before its residual add comes in
         # two code dialects: the common AdaLN-Zero one multiplies by a bare gate
         # (h = h + gate · sublayer(...)) → Tier-2 × connectors; Mochi instead FOLDS
         # the gate into a modulated RMSNorm of the sublayer output
         # (h = h + ModulatedRMSNorm(sublayer(...), gate)) → a post-sublayer norm box,
         # NOT a ×. Drawing a × for Mochi fabricates a gate_mul the forward never does
-        # (op-conformance catches it). The dialect is a code fact (class_defaults).
-        if _class_default(cls, "gate_via_norm"):
+        # (op-conformance catches it). The dialect is a code fact read from source.
+        if code_gate_via_norm:
             layer.blocks = _insert_output_gated_norms(layer.blocks)
         else:
             layer.blocks = _insert_adaln_gates(layer.blocks)
         _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
+        _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+        _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+        _annotate_block_placement(layer.blocks, code_block_placement)
         layers.append(layer)
         idx += 1
     # Single-stream topology is a code fact (the block class): Flux 1 fuses only the
@@ -427,31 +891,48 @@ def parse(cfg: Any) -> ModelIR:
     # the joined [text+image] sequence (joined once upstream), so it renders as a
     # concat-joint block, not a fused parallel one (drawing fusion would fabricate a
     # concat + a fused linear the forward never does).
-    single_fusion = _class_default(cls, "single_stream_fusion")
+    single_fusion = _code_single_fusion(cfg, context)
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single):
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
-                                rope_3d, has_pos_embed, self_attn_kind)
-        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls)
+                                rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
+                                scores_scaled=code_scores_scaled, bias=dit_attention_bias,
+                                asserted=dit_attn_asserted)
+        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
+                         code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
             # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
             layer = decoder_layer(idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind)
             layer.blocks = _insert_adaln_gates(layer.blocks)
             _annotate_adaln_norms(layer.blocks)
+            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+            _annotate_block_placement(layer.blocks, code_block_placement)
             layers.append(layer)
         else:
             # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
             # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block).
-            layers.append(single_stream_decoder_layer(
-                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in))
+            layer = single_stream_decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in)
+            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+            _annotate_block_placement(layer.blocks, code_block_placement)
+            layers.append(layer)
         idx += 1
 
     # In a cross-attention DiT the text enters the dedicated cross-attention
     # sublayer; otherwise it joins the (self/joint) attention.
     text_target = "cross_attn" if cond["cross_attn_sublayer"] else "attn"
+    # The ‖-join upgrade applies ONLY when the JOINED sequence is the model's
+    # ENTRY (every group self-attends over the joined stream — Lumina).  In a
+    # heterogeneous dual→single model (HYV/FLUX) the join happens MID-model,
+    # between the stacks — there the single-stream variant's frame caption is
+    # the honest representation, and an entry ‖ would be a wiring lie.
+    all_text_joined = bool(layers) and all(
+        bool((layer.attention.variant or {}).get("stack_note")) for layer in layers)
     for layer in layers:
         # The AdaLN conditioning fans into the gate × it drives (gate_msa/gate_mlp)
         # as well as the norm — so the × shows WHAT it multiplies by (the timestep
@@ -465,21 +946,42 @@ def parse(cfg: Any) -> ModelIR:
         # caption). Drawing a per-block text rail there reads like cross-attention; it
         # is dropped (the one-time join is the variant's stack caption instead).
         text_joined = bool((layer.attention.variant or {}).get("stack_note"))
+        text_stack = next((stack for stack in geom["secondary_stacks"]
+                           if stack["lane"] == "text"), None)
         layer.blocks.extend(_conditioning_side_blocks(
             text_in_attention and not text_joined, pooled_in_adaln,
             bool(geom["guidance_embeds"]),
-            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids))
+            geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids,
+            text_stack=text_stack,
+            joined_text_stack=(text_stack if (all_text_joined and text_joined) else None)))
+        if all_text_joined and text_joined and text_stack:
+            geom["join_concat"] = True
 
-    # A diffusers pipeline may ship a SECOND denoiser for classifier-free
-    # guidance (Ideogram-4: `unconditional_transformer`).  We render the one
-    # conditional denoiser — say so rather than silently dropping the twin.
-    # This is a deliberate rendering choice, NOT a config gap → it's a note,
-    # so it doesn't mislabel a healthy parse as "⚠ partial config".
-    if _g(cfg, "unconditional_transformer") is not None:
-        notes.append(
-            "Pipeline declares a separate `unconditional_transformer` (the CFG "
-            "twin) — the diagram shows the conditional denoiser; the twin shares "
-            "its architecture and is not drawn separately.")
+    # A diffusers pipeline may ship a COMPANION denoiser beside the rendered
+    # one.  We render one denoiser — SAY the twin exists rather than silently
+    # dropping it (Wan 2.2's defining A14B mechanism was invisible while this
+    # handler keyed on one hardcoded spelling).  The key vocabulary and note
+    # flavour live in everchanging/diffusor/typing.yaml (project law: spellings
+    # are data).  This is a deliberate rendering choice, NOT a config gap →
+    # a note, so it doesn't mislabel a healthy parse as "⚠ partial config".
+    _typing = load_diffusion_typing()
+    for entry in _typing.get("companion_denoiser_fields") or ():
+        key, _, kind = str(entry).partition("=")
+        if _g(cfg, key) is None:
+            continue
+        if kind == "expert_switch":
+            boundary = _resolve(cfg, "boundary_ratio")
+            at = (f" swapped in at the σ = {boundary} boundary of the noise "
+                  f"schedule" if boundary is not None else " swapped in "
+                  "mid-schedule")
+            notes.append(
+                f"Pipeline declares a second denoiser expert (`{key}`){at} — "
+                "the diagram shows one; both experts share this architecture.")
+        else:
+            notes.append(
+                f"Pipeline declares a separate `{key}` (the CFG twin) — the "
+                "diagram shows the conditional denoiser; the twin shares its "
+                "architecture and is not drawn separately.")
 
     extras: dict = {"render": diffusion_render_spec(geom)}
     diffusion_meta = {k: v for k, v in {
@@ -492,6 +994,9 @@ def parse(cfg: Any) -> ModelIR:
         "joint_attention_dim": geom["joint_attention_dim"],
         "cross_attention_dim": geom["cross_attention_dim"],
         "pooled_projection_dim": geom["pooled_projection_dim"],
+        "caption_input_dim": geom["caption_input_dim"],
+        "caption_projection_dim": geom["caption_projection_dim"],
+        "norm_elementwise_affine": geom["norm_elementwise_affine"],
         "guidance_embeds": geom["guidance_embeds"],
         "text_encoders": geom["text_encoders"] or None,
         "scheduler": geom.get("scheduler"),
@@ -520,7 +1025,11 @@ def parse(cfg: Any) -> ModelIR:
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
                    qk_norm: bool = False, rope_3d: bool = False,
-                   has_pos_embed: bool = False, kind: str = "mha") -> AttentionSpec:
+                   has_pos_embed: bool = False, kind: str = "mha",
+                   num_kv_heads: int | None = None,
+                   scores_scaled: bool | None = None,
+                   bias: bool = False,
+                   asserted: tuple = ()) -> AttentionSpec:
     # DiT attention is FULL bidirectional multi-head attention (no causal mask;
     # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
     # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
@@ -533,7 +1042,7 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
     return AttentionSpec(
         kind=kind,
         num_heads=num_heads,
-        num_kv_heads=num_heads,
+        num_kv_heads=num_kv_heads or num_heads,   # config GQA when declared, else MHA
         head_dim=head_dim or None,
         mask="full",
         rope_dim=rope_dim,
@@ -541,7 +1050,12 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
         no_rope=rope_dim is None and not has_pos_embed,
         rope_3d=rope_3d,        # 3D (T·H·W) axial RoPE — surfaces the temporal axis chip
         qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
+        bias=bias,              # config-declared Q/K/V/out projection bias (PixArt
+                                # attention_bias=true) — a diffusers config is a
+                                # constructor record, so the declared value IS the fact
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
+        scores_scaled=scores_scaled,  # code-proven verdict; only False changes rendering
+        asserted=asserted,            # B5: defaults tagged, JSON-only
         variant=variant,
     )
 
@@ -630,9 +1144,80 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
             b["description"] = (b.get("description") or "").rstrip() + adaln
 
 
+def _annotate_norm_affine(blocks: list[dict], affine) -> None:
+    """Surface diffusers' ``norm_elementwise_affine`` as a card fact.
+
+    This flag changes the parameterization of the block norms even when their
+    placement is unchanged.  It belongs on cards (Tier 3), not in topology or
+    painted into the block label.  Output-gated custom norms are excluded: the
+    BasicTransformerBlock flag does not describe those separate modules.
+    """
+    if affine is None:
+        return
+    fact = ("learned affine scale + bias" if bool(affine)
+            else "non-affine (elementwise_affine = false)")
+    for block in blocks:
+        if block.get("kind") != "norm" or str(block.get("id", "")).startswith("out_norm"):
+            continue
+        facts = block.setdefault("facts", [])
+        if fact not in facts:
+            facts.append(fact)
+
+
+_NORM_SILENT_NOTE = (" The config does not declare whether this is RMSNorm or "
+                     "LayerNorm — that lives in the model's code.")
+
+
+def _annotate_block_placement(blocks: list[dict], placement: str | None) -> None:
+    """State a code-proven non-pre placement on the norm cards, in place.
+
+    The cell keeps its pre-norm assembly; each drawn norm card gains the
+    sandwich/post sentence so the real layout is SAID even where it is not yet
+    drawn (Lumina2's main block norms its sublayer OUTPUTS too — dropped
+    silently before this)."""
+    if placement not in ("double", "post"):
+        return
+    sentence = (" The block's forward also norms this sublayer's OUTPUT "
+                "(sandwich placement, read from the model code) — the cell "
+                "draws the pre-norm; the refiner drill shows the full sandwich."
+                if placement == "double" else
+                " The block's forward norms the sublayer OUTPUT (post-norm "
+                "placement, read from the model code).")
+    for b in blocks:
+        if b.get("kind") == "norm":
+            b["description"] = (b.get("description") or "").rstrip() + sentence
+
+
+def _annotate_code_norm_kind(blocks: list[dict], code_norm) -> None:
+    """Resolve a config-silent block norm from CLASS evidence, in place.
+
+    ``code_norm`` is ``(base_kind, class_name)`` from
+    ``diffusion_norm_from_classes`` (root-scoped source) or None.  Only blocks
+    still labelled with the honest-unknown "Normalization" flip; their silent
+    note becomes the code-provenance sentence.  This is the deep, in-adapter
+    replacement for the retired top-level ``_apply_code_norm`` repair pass,
+    whose shallow ``ir.layers[].blocks[]`` walk never reached the DiT norms it
+    was written for."""
+    if not code_norm:
+        return
+    base, cls = code_norm
+    code_note = (f" Its type ({base}, from diffusers `{cls}`) is read from the "
+                 "model code, not the config.")
+    for block in blocks:
+        if block.get("kind") != "norm" or block.get("label") != "Normalization":
+            continue
+        block["label"] = base
+        desc = block.get("description") or ""
+        if _NORM_SILENT_NOTE in desc:
+            block["description"] = desc.replace(_NORM_SILENT_NOTE, code_note)
+        elif desc:
+            block["description"] = desc.rstrip() + code_note
+
+
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
                             hidden_size: int, norm_kind: str, *, cross_dim=None,
-                            pre_norm: bool = True) -> list[dict]:
+                            pre_norm: bool = True,
+                            cross_qk_norm: str | None = None) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
     Wan / Hunyuan-DiT / Lumina).  Conformed to
@@ -655,10 +1240,14 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     heads_fact = f"{self_spec.num_heads} heads" if self_spec.num_heads else None
     # Cross spec = the self spec, but K/V come from the text (no RoPE on the cross
     # path, full bidirectional, non-cached) — the canonical region draws the text
-    # K/V source node and drops the cache/RoPE for it.
+    # K/V source node and drops the cache/RoPE for it.  qk_norm is NEVER inherited
+    # from the self spec (inheritance is not per-sublayer evidence — the refiner
+    # attribution bug); it is set only from the cross class's OWN construction
+    # (Wan's attn2 RMS-norms Q/K unconditionally; PixArt/SD3 stay norm-less).
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
                           kind="mha",   # cross-attn is softmax even when self-attn is linear (Sana)
+                          qk_norm=bool(cross_qk_norm),
                           no_rope=True, rope_dim=None, rope_3d=False, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
     # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
@@ -724,8 +1313,56 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     return out
 
 
+def _refiner_side_block(stack: dict, feeds: str) -> dict:
+    """The drawn block for a GENERAL text-lane secondary stack (a token
+    refiner): a Tier-1 rail stage between the text conditioning and the
+    attention.  Every fact on it is the detector's/config's own; the drill is
+    the one tower projection; the class is display provenance on the card."""
+    from ...submodel import submodel_cell_blocks
+    from .blocks import _encoder_norm_card, _encoder_residual_card
+
+    count = stack["count"]
+    sub_model = stack["sub_model"]
+    gated = bool((sub_model.get("groups") or [{}])[0].get("residual_gate"))
+    return {
+        "id": "text_refiner",
+        "role": "attention",
+        "kind": "conditioning",
+        "diffusion_stage": "text_conditioning",
+        "lane": "external_bottom_right",
+        "feeds": feeds,
+        "label": ["Token", "refiner"],
+        "title": f"Token refiner (\u00d7{count})",
+        "description": (
+            f"A small transformer stack applied once to the encoded text tokens "
+            f"before the blocks: each of its {count} layers runs full "
+            f"self-attention and a feed-forward over the prompt tokens"
+            + (", with a learned gate on each residual update." if gated else ".")
+        ),
+        "facts": [f"{count} refiner layers"]
+                 + (["input projection to model width"]
+                    if stack.get("entry_projection") else []),
+        "view": "refiner_tower",
+        "detail": {"sub_model": sub_model, "entry_label": "in (text tokens)",
+                   "class": stack.get("block_class")},
+        "source_owner": stack.get("block_class"),
+        "source_file": stack.get("source_file"),
+        "w": 190, "h": 52, "font": 14,
+        "children": submodel_cell_blocks(
+            sub_model, "text_refiner",
+            attn_description=("Full self-attention over the prompt token "
+                              "sequence inside the refiner layer."),
+            norm_fallback="Norm",
+            norm_card=_encoder_norm_card,
+            residual_card=_encoder_residual_card,
+        ),
+    }
+
+
 def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
                               guidance: bool, adaln_dim=None, text_target: str = "attn",
+                              text_stack: dict | None = None,
+                              joined_text_stack: dict | None = None,
                               gate_ids: list[str] | None = None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
@@ -752,14 +1389,48 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
         "facts": [f"AdaLN dim {int(adaln_dim):,}"] if adaln_dim else None,
         "w": 190, "h": 52, "font": 14,
     }]
+    if joined_text_stack:
+        # Joined-stream model WITH a drawn text-lane stack: the text lane now
+        # EXISTS as drawn structure, so the one-time join becomes a TRUE \u2016
+        # (strict two-input) instead of a caption — text conditioning feeds the
+        # context refiner, the refiner feeds the \u2016 in the entry chain.
+        refiner = _refiner_side_block(joined_text_stack, "join_concat")
+        refiner["title"] = f"Context refiner (\u00d7{joined_text_stack['count']})"
+        refiner["description"] = (
+            f"A small transformer stack applied once to the encoded text tokens "
+            f"before they are joined with the latent sequence: each of its "
+            f"{joined_text_stack['count']} layers runs full self-attention and a "
+            f"feed-forward over the prompt tokens."
+        )
+        blocks.append(refiner)
+        blocks.append({
+            "id": "join_text_cond",
+            "role": "attention",
+            "kind": "conditioning",
+            "diffusion_stage": "text_conditioning",
+            "lane": "external_bottom_right",
+            "feeds": "text_refiner",
+            "label": ["Text tokens", "conditioning"],
+            "title": "Text conditioning (joined sequence)",
+            "description": (
+                "The encoded prompt tokens; after the context refiner they are "
+                "concatenated with the latent tokens into ONE sequence (the \u2016 "
+                "join) that every block self-attends over."
+            ),
+            "w": 190, "h": 52, "font": 14,
+        })
     if text_in_attention:
+        # A detected text-lane secondary stack (token refiner) becomes a rail
+        # STAGE: the conditioning feeds the refiner, the refiner the attention.
+        if text_stack:
+            blocks.append(_refiner_side_block(text_stack, text_target))
         blocks.append({
             "id": "text_cond",
             "role": "attention",
             "kind": "conditioning",
             "diffusion_stage": "text_conditioning",
             "lane": "external_bottom_right",
-            "feeds": text_target,
+            "feeds": "text_refiner" if text_stack else text_target,
             "offset_y": 0,
             "label": ["Text tokens", "conditioning"],
             "title": "Text conditioning (attention)",
@@ -865,7 +1536,9 @@ def _cross_dit_variant(rope_note: str) -> dict:
     # attention) is labelled plainly — not "+ cross-attn".
     return {
         "short": "Self-Attn",
-        "tag": "self-attention",
+        # the strip legend prints "short · tag" — a tag that restates the short
+        # ("Self-Attn · self-attention") says nothing; name the VARIANT instead
+        "tag": "cross-attn DiT",
         "label": ["Self-Attention", "(image tokens)"],
         "title": "Self-attention — cross-attention DiT",
         "desc": (
@@ -914,24 +1587,31 @@ def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
 
 
 def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
-             cls: Any = None) -> FFNSpec:
+             cls: Any = None, code_activation: Any = None, code_ffn_kind: Any = None) -> FFNSpec:
+    # ``code_activation`` is the FFN activation_fn READ FROM THE MODELING SOURCE
+    # (the block's ``FeedForward(activation_fn=…)`` / named SwiGLU class) — the pure
+    # code-based replacement for the old per-model ``class_defaults`` table. The
+    # config almost never declares the DiT FFN's activation/gating; the code always
+    # does, so we read it there.
+    moe_act = declared_activation or code_activation
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
     if num_experts > 1:
         return FFNSpec(
             kind="moe",
-            activation=(str(declared_activation).lower() if declared_activation else None),
-            activation_assumed=declared_activation is None,
+            activation=(str(moe_act).lower() if moe_act else None),
+            activation_assumed=moe_act is None,
             intermediate_size=intermediate_size,
             gated=False,
             num_experts=num_experts,
             num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
     # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
-    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. A code
-    # fact (the block builds self.ff = GLUMBConv); class_defaults ffn_kind=conv_glu.
-    if cls is not None and _class_default(cls, "ffn_kind") == "conv_glu":
+    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
+    # THE SOURCE (the block builds self.ff = GLUMBConv); unreadable source falls to
+    # the honest default (a Linear MLP), never an identity guess.
+    if code_ffn_kind == "conv_glu":
         return FFNSpec(
             kind="conv_glu",
             activation=(str(declared_activation).lower() if declared_activation else "silu"),
@@ -939,16 +1619,17 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
             intermediate_size=intermediate_size,
             gated=True,
         )
-    # Code-derived fallback: when the config declares no activation but the model
-    # class fixes it (Flux's FeedForward / single-stream MLP are gelu-approximate),
-    # surface the activation_fn name from class_defaults.yaml — MARKED code-derived.
-    # In diffusers the activation_fn name fully specifies the FFN, so this also
-    # resolves the gating below; never overrides a config-declared value.
+    # Code-derived: when the config declares no activation but the model class fixes
+    # it (Flux's FeedForward is gelu-approximate; HiDream/Lumina build a SwiGLU FFN),
+    # surface the activation_fn READ FROM THE SOURCE. In diffusers the activation_fn
+    # name fully specifies the FFN, so this also resolves the gating below; never
+    # overrides a config-declared value. When the SOURCE can't be read the activation
+    # stays unknown/assumed, never identity-guessed from a class-name table.
     from_class = False
-    if declared_activation is None and cls is not None:
-        _cd = _class_default(cls, "ffn_activation_fn")
-        if _cd:
-            declared_activation, from_class = _cd, True
+    if declared_activation is None:
+        resolved = code_activation
+        if resolved:
+            declared_activation, from_class = resolved, True
     if declared_activation is None:
         # Honest-unknown: no activation is declared (config OR class), so the gating
         # (gate-or-not, i.e. 2 vs 3 projections) is not a fact we have either — it
@@ -1065,7 +1746,7 @@ def _scheduler_geom(cfg: Any) -> dict:
             display = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", " ", display)
         out["scheduler"] = display
         out["scheduler_class"] = cls
-        out["scheduler_flow_matching"] = "FlowMatch" in cls
+        out["scheduler_flow_matching"] = any(m in cls for m in _FLOW_MATCHING_MARKERS)
     sched_cfg = _g(cfg, "_scheduler_config")
     if isinstance(sched_cfg, dict):
         for key, field in (
@@ -1076,8 +1757,9 @@ def _scheduler_geom(cfg: Any) -> dict:
             ("scheduler_beta_schedule", "beta_schedule"),
             ("scheduler_timestep_spacing", "timestep_spacing"),
         ):
-            if sched_cfg.get(field) is not None:
-                out[key] = sched_cfg[field]
+            value = _g(sched_cfg, field)
+            if value is not None:
+                out[key] = value
     return out
 
 
@@ -1090,28 +1772,68 @@ def _vae_geom(cfg: Any) -> dict | None:
 
     def _v(canonical):
         for alias in _ALIASES.get(canonical, [canonical]):
-            if vcfg.get(alias) is not None:
-                return vcfg[alias]
+            value = _g(vcfg, alias)
+            if value is not None:
+                return value
         return None
 
     boc = _v("block_out_channels")
     if not isinstance(boc, (list, tuple)):
         # Wan/Qwen 3D-causal VAEs parameterize stages as base_dim × dim_mult.
-        base, mult = vcfg.get("base_dim"), vcfg.get("dim_mult")
+        base, mult = _g(vcfg, "base_dim"), _g(vcfg, "dim_mult")
         if isinstance(base, int) and isinstance(mult, (list, tuple)):
             boc = [base * m for m in mult if isinstance(m, int)]
     lpb = _v("layers_per_block")
     out = {
         "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
         "latent_channels": _v("latent_channels"),
-        "out_channels": vcfg.get("out_channels"),
+        "out_channels": _g(vcfg, "out_channels"),
         # Per-stage depth must be a declared scalar — DC-AE's per-stage *lists*
         # mix block types (ResBlock/EViT), so a single count would be invented.
         "layers_per_block": lpb if isinstance(lpb, int) else None,
-        "scaling_factor": vcfg.get("scaling_factor"),
-        "class": vcfg.get("_class_name"),
+        "scaling_factor": _g(vcfg, "scaling_factor"),
+        "shift_factor": _g(vcfg, "shift_factor"),
+        "latents_mean": _g(vcfg, "latents_mean"),
+        "latents_std": _g(vcfg, "latents_std"),
+        "norm_num_groups": _g(vcfg, "norm_num_groups"),
+        "down_block_types": _g(vcfg, "down_block_types"),
+        "up_block_types": _g(vcfg, "up_block_types"),
+        "use_quant_conv": _g(vcfg, "use_quant_conv"),
+        "use_post_quant_conv": _g(vcfg, "use_post_quant_conv"),
+        "mid_block_add_attention": _g(vcfg, "mid_block_add_attention"),
+        "class": _g(vcfg, "_class_name"),
     }
     return {k: v for k, v in out.items() if v is not None} or None
+
+
+def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
+    """VIDEO denoiser detection from EVIDENCE, never the class name (I-10).
+
+    Primary: the resolved root class's own forward() processes a frames axis
+    (``num_frames`` — a perfect discriminator across diffusers video vs image
+    transformers).  Config corroboration when source is unreadable: declared
+    temporal fields, or a 3-sequence ``patch_size``.  Silence stays False —
+    an image denoiser, never a guessed video one.
+    """
+    try:
+        from ...evidence.patterns import denoiser_temporal_axis_from_files
+        bundle = getattr(context, "source_bundle", None)
+        # Root-scoped, like every _code_* read: a pipeline's text-encoder file
+        # in the union must never decide whether the DENOISER is video.
+        files = ((getattr(bundle, "component_files", {}) or {}).get("root")
+                 or getattr(bundle, "files", None))
+        architecture = getattr(bundle, "architecture", None) or (str(cls) if cls else None)
+        verdict = denoiser_temporal_axis_from_files(files, architecture)
+        if verdict is not None:
+            return verdict
+    except Exception:
+        pass
+    from ...everchanging import load_diffusion_typing
+    fields = load_diffusion_typing().get("temporal_config_fields") or []
+    if any(_g(cfg, field) is not None for field in fields):
+        return True
+    patch = _g(cfg, "patch_size")
+    return isinstance(patch, (list, tuple)) and len(patch) == 3
 
 
 def _detect_text_encoders(cfg: Any) -> list[str]:
@@ -1119,7 +1841,55 @@ def _detect_text_encoders(cfg: Any) -> list[str]:
     return [s["name"] for s in _text_encoder_specs(cfg)]
 
 
-def _text_encoder_specs(cfg: Any) -> list[dict]:
+def _slot_context(root_context, slot: str):
+    """A ParseContext for one pipeline SLOT (text_encoder / text_encoder_2 / …),
+    derived from the root's ALREADY-RESOLVED bundle.  The sub-parse must not
+    re-resolve source from its own sub-config: the pipeline resolution already
+    qualified this component's files, and a fresh resolve from the sub-config
+    alone silently degrades whenever that sub-config loses its address (the
+    name-blind harness scrubs it; a minimal frozen config never had it).
+    None when the root carries no files for the slot — the caller then builds
+    its own context exactly as before."""
+    if root_context is None:
+        return None
+    from ...evidence.context import ParseContext
+    from ...evidence.models import SourceBundle
+    bundle = getattr(root_context, "source_bundle", None)
+    all_files = getattr(bundle, "component_files", {}) or {}
+    if not all_files.get(slot):
+        return None
+    # Graft the slot's whole QUALIFIED SUBTREE, re-rooted: the slot itself
+    # becomes "root" and inner delegations keep their relative paths
+    # (``text_encoder.text_config`` → ``text_config``), so a wrapper encoder's
+    # delegated stack (Mistral3 → Mistral) stays resolvable in the sub-parse.
+    prefix = slot + "."
+    def _reroot(mapping: dict) -> dict:
+        out = {}
+        for key, value in (mapping or {}).items():
+            if key == slot:
+                out["root"] = value
+            elif key.startswith(prefix):
+                out[key[len(prefix):]] = value
+        return out
+    component_files = {k: tuple(v) for k, v in _reroot(all_files).items()}
+    files: list[str] = []
+    for group in component_files.values():
+        files.extend(f for f in group if f not in files)
+    component_model_types = _reroot(getattr(bundle, "component_model_types", {}) or {})
+    component_architectures = _reroot(getattr(bundle, "component_architectures", {}) or {})
+    sub_bundle = SourceBundle(
+        source=bundle.source,
+        files=tuple(files),
+        model_type=component_model_types.get("root"),
+        architecture=component_architectures.get("root"),
+        component_files=component_files,
+        component_model_types=component_model_types,
+        component_architectures=component_architectures,
+    )
+    return ParseContext(source_bundle=sub_bundle, source=root_context.source)
+
+
+def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
     """One spec per text encoder: its friendly name plus the real depth/width/
     heads/FFN parsed from its own ``config.json`` *when the loader fetched it*
     (stashed under ``_text_encoder_configs``).  Numeric fields are simply absent
@@ -1144,10 +1914,30 @@ def _text_encoder_specs(cfg: Any) -> list[dict]:
         # CLIP-L + OpenCLIP-bigG (both map to "CLIP"); SD3 is CLIP-L + CLIP-G + T5.
         # Folding same-family encoders into one drops a real, distinct encoder —
         # and the fact that their outputs concatenate into the cross-attn width.
-        spec = {"name": friendly}
+        # ``family`` is the bare operation/module label drawn on the diagram.
+        # ``name`` may later be disambiguated for cards/prose when a pipeline has
+        # two encoders from the same family (SDXL/SD3's two CLIPs).  Keeping both
+        # prevents a config fact such as hidden width from leaking into the box.
+        spec = {"name": friendly, "family": friendly}
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
-            spec.update(_normalize_encoder_config(sub))
+            spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
+            # QUALIFY ownership onto the sub-model spec, recursively — inner
+            # component paths (a VL wrapper's ``text_config``) become dotted
+            # (``text_encoder.text_config``), which the source bundle
+            # qualifies, so every projected block/event binds to its exact
+            # oracle by construction.  The flat envelopes get the same
+            # treatment for prose/back-compat consumers.
+            from ...submodel import qualify_component
+            if isinstance(spec.get("sub_model"), dict):
+                qualify_component(spec["sub_model"], key)
+            for envelope_key in ("ffn_evidence", "position_evidence"):
+                evidence = spec.get(envelope_key)
+                if isinstance(evidence, dict):
+                    evidence = dict(evidence)
+                    inner = str(evidence.get("component") or "root")
+                    evidence["component"] = key if inner == "root" else f"{key}.{inner}"
+                    spec[envelope_key] = evidence
         specs.append(spec)
     _uniquify_encoder_names(specs)
     return specs
@@ -1173,8 +1963,10 @@ def _clean_encoder_name(cls: str) -> str:
 
 def _uniquify_encoder_names(specs: list[dict]) -> None:
     """Disambiguate encoders that share a family name (SDXL: CLIP + CLIP) so each
-    box reads distinctly — by hidden width when the loader fetched it, else a
-    1-based ordinal.  Singletons keep their clean family name."""
+    card/prose reference reads distinctly — by hidden width when the loader
+    fetched it, else a 1-based ordinal.  The separate ``family`` value remains
+    the bare SVG block label; numeric facts never enter a box.  Singletons keep
+    their clean family name."""
     from collections import Counter
     counts = Counter(s["name"] for s in specs)
     nth: dict[str, int] = {}
@@ -1187,7 +1979,32 @@ def _uniquify_encoder_names(specs: list[dict]) -> None:
         s["name"] = f"{name} ({_fmt(hid)}-d)" if hid else f"{name} {nth[name]}"
 
 
-def _normalize_encoder_config(c: dict) -> dict:
+def _hydrate_encoder_config_facts(c: dict) -> dict:
+    """Fill config-class DEFAULTS invisible in a raw component config.json.
+
+    Gemma-2's sliding/global alternation lives in ``sliding_window_pattern=2``
+    — a default of ``configuration_gemma2.py`` that is NOT serialized, so a raw
+    fetched dict reads as all-sliding and the encoder tower flattens a real
+    heterogeneous stack.  The installed config class is code evidence (the same
+    rail by-id loading uses); raw keys always win over defaults.  Unknown
+    model_types keep the raw dict untouched."""
+    mt = c.get("model_type")
+    if not isinstance(c, dict) or not mt:
+        return c
+    try:
+        from transformers import AutoConfig
+        hydrated = AutoConfig.for_model(
+            mt, **{k: v for k, v in c.items()
+                   if not k.startswith("_") and k != "model_type"}).to_dict()
+    except Exception:
+        return c
+    for k, v in c.items():          # loader stamps / private context keys survive
+        if k.startswith("_"):
+            hydrated[k] = v
+    return hydrated
+
+
+def _normalize_encoder_config(c: dict, context=None) -> dict:
     """Read an encoder's shape off the ONE universal transformer adapter.
 
     A pipeline's text-encoder config *is* a transformers config (CLIP, T5,
@@ -1196,43 +2013,130 @@ def _normalize_encoder_config(c: dict) -> dict:
     ``text_config``, GQA, norm kind — and the neutral spec is projected from
     the resulting IR.  No second field-extraction vocabulary lives here.
     """
+    from ...evidence.context import ParseContext
+    from ...evidence.ffn import ffn_structure_evidence
+    from ...evidence.patterns import (
+        attention_score_scaling_from_files,
+        decoder_ffn_activation_from_files,
+    )
     from ..transformer.parser import parse as _parse_transformer
 
+    c = _hydrate_encoder_config_facts(c)
     try:
-        ir = _parse_transformer(c)
+        if context is None:
+            context = ParseContext.build(c, source="local")
+        ir = _parse_transformer(c, context=context)
     except Exception:
         return {}
     if not ir.layers:
         return {}
-    layer = ir.layers[0]
-    attn, ffn = layer.attention, layer.ffn
+    # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
+    # type, and a heterogeneous stack (sliding/global alternation, hybrid
+    # full/linear mixers) additionally carries one entry per distinct signature
+    # so the tower renders every real layer type — same collapse the main
+    # architecture view uses (ir.distinct_layer_groups).
+    from ...ir import distinct_layer_groups
+    groups = distinct_layer_groups(ir.layers)
+    dominant = max(groups, key=lambda group: len(group["indices"]))
+    layer = dominant["layer"]
+    ffn = layer.ffn
 
     # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
     # config is silent — right for decoder LLMs, invented facts for encoders.
-    # Carry norm/gated only when the config gives an explicit signal.
+    # Carry norm/gated only when EVIDENCE states them (config declaration, eps
+    # spelling, or the norm class's forward() math — the same channel stack the
+    # universal parser uses, so a frozen minimal config with no eps field still
+    # gets its norm from the installed modeling source, never from a default).
     inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
     def _has(*keys):
         return any(k in src for src in (c, inner) for k in keys)
-    norm = None
-    if _has("norm_type", "rms_norm_eps", "layer_norm_eps", "layer_norm_epsilon"):
-        norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-            str(getattr(layer, "norm_kind", "") or "").lower())
-    act = (ffn.activation or "").lower()
-    gated_explicit = (_has("is_gated_act", "feed_forward_proj")
-                      or "glu" in act or act in ("silu", "swish", "gelu_pytorch_tanh"))
+    from ..transformer.parser import _norm_kind_evidence, _unwrap_text
+    text_cfg = _unwrap_text(c)
+    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+        str(_norm_kind_evidence(
+            text_cfg,
+            (inner.get("norm_type") if isinstance(inner, dict) else None)
+            or c.get("norm_type"),
+            context) or "").lower())
+    # Gating and projection storage are code/config facts, never encoder-family
+    # conventions.  A config may explicitly select a gated branch (T5's
+    # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must
+    # resolve the callable.  Missing/ambiguous source stays tri-state unknown.
+    explicit_gated = None
+    for src in (c, inner):
+        if "is_gated_act" in src:
+            explicit_gated = bool(src.get("is_gated_act"))
+            break
+        proj = src.get("feed_forward_proj")
+        if isinstance(proj, str):
+            explicit_gated = proj.lower().startswith("gated-")
+            break
+    bundle = context.source_bundle
+    component_files = bundle.component_files or {"root": bundle.files}
+    text_components = [name for name in component_files
+                       if name == "text_config" or name.endswith(".text_config")]
+    component = text_components[0] if len(text_components) == 1 else "root"
+    files = component_files.get(component, bundle.files)
+    architecture = (bundle.component_architectures or {}).get(component) or bundle.architecture
+    ffn_evidence = ffn_structure_evidence(
+        files, expected_gated=explicit_gated, component=component,
+        architecture=architecture,
+    )
+    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else explicit_gated
+
+    activation_explicit = _has(
+        "hidden_act", "hidden_activation", "activation_function", "activation_fn",
+        "dense_act_fn", "feed_forward_proj", "ffn_act_fn",
+    )
+    code_activation = decoder_ffn_activation_from_files(files)
+    act = (ffn.activation if activation_explicit else code_activation) or None
+    # Flat fields are PROSE/legacy-display only — attention geometry lives on
+    # the sub-model spec's typed facts (attention_detail per group), never
+    # duplicated here.
     fields = {
         "layers": len(ir.layers),
         "hidden": ir.hidden_size,
-        "kind": attn.kind,
-        "heads": attn.num_heads,
-        "kv_heads": attn.num_kv_heads,
-        "head_dim": attn.head_dim,
         "ffn": ffn.intermediate_size,
-        "activation": ffn.activation,
+        "activation": act,
         "vocab": ir.vocab_size,
         "max_pos": ir.max_position_embeddings,
         "norm": norm,
     }
     out = {k: v for k, v in fields.items() if v}
-    out["gated"] = bool(ffn.gated) if gated_explicit else False
+    if gated is not None:
+        out["gated"] = bool(gated)
+    out["ffn_evidence"] = ffn_evidence.to_dict()
+    if ffn_evidence.status == "proven":
+        out["ffn_projection_mode"] = ffn_evidence.projection_mode
+    scaled = attention_score_scaling_from_files(files)
+    position = (ir.extras or {}).get("position_encoding")
+
+    # The ONE facts-only sub-model spec — groups, schedule, per-group typed
+    # attention/FFN facts, evidence envelopes — replaces every hand-plumbed
+    # structural key.  Drill children/cards/regions derive from it at
+    # projection time through the same canonical builders the root uses, so a
+    # new IR fact reaches every embedded context (at any nesting depth) with
+    # zero relay edits here.
+    from ...submodel import submodel_spec
+    out["sub_model"] = submodel_spec(
+        ir,
+        altitude="tower",
+        scores_scaled=scaled,
+        norm_label=norm,
+        activation=act,
+        gated=gated,
+        structure_status=ffn_evidence.status,
+        projection_mode=(ffn_evidence.projection_mode
+                         if ffn_evidence.status == "proven" else None),
+        position_evidence=position if isinstance(position, dict) else None,
+        ffn_evidence=ffn_evidence.to_dict(),
+    )
+    # Flat prose fields (title/chips wording) derive from the spec's dominant
+    # group — never hand-built a second time.
+    spec_groups = out["sub_model"]["groups"]
+    dominant_group = max(spec_groups, key=lambda group: group["count"])
+    out["attention_detail"] = dominant_group["attention"]
+    if isinstance(position, dict):
+        out["position_evidence"] = position
+
     return out

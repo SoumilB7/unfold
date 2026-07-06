@@ -15,6 +15,9 @@ num_single_layers: [num_single_layers, num_single_dit_layers, num_single_blocks]
 # Attention shape.  DiT hidden = num_attention_heads * attention_head_dim; some
 # (Hunyuan-DiT) instead declare hidden_size directly and the head dim is derived.
 num_attention_heads: [num_attention_heads, num_heads, n_heads]
+# KV heads for grouped-query attention (Lumina-Next declares num_kv_heads:8); most
+# DiTs are plain MHA (absent => KV heads == Q heads, set by the parser).
+num_kv_heads: [num_kv_heads, num_key_value_heads, n_kv_heads]
 attention_head_dim: [attention_head_dim, head_dim, attention_dim_head]
 hidden_size: [hidden_size, inner_dim, d_model, dim]
 
@@ -42,7 +45,12 @@ joint_attention_dim: [joint_attention_dim]          # text stream width (Flux/SD
 text_embed_dim: [text_embed_dim, cap_feat_dim]       # concatenated-joint text width (CogVideoX/Mochi/HunyuanVideo; Lumina2 cap_feat_dim — caption features CONCATENATED into the sequence + self-attended, NOT cross-attended)
 cross_attention_dim: [cross_attention_dim, text_dim]  # cross-attn text width (PixArt; Wan: text_dim)
 kv_join_dim: [context_in_dim]                        # text-K/V-join width (PRX: context_in_dim — text projected to extra K/V, CONCATENATED into the attention's K/V each block; image-only Q, no text stream)
-caption_projection_dim: [caption_projection_dim, caption_channels]
+# These are deliberately NOT aliases.  Diffusers gives them different code
+# signatures: PixArt ``caption_channels`` feeds a two-linear GELU projector,
+# while SD3/AuraFlow ``caption_projection_dim`` is the output width of one
+# context Linear.  Collapsing them loses a real operation.
+caption_input_dim: [caption_channels]
+caption_projection_dim: [caption_projection_dim]
 pooled_projection_dim: [pooled_projection_dim]
 guidance_embeds: [guidance_embeds]
 

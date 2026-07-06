@@ -26,6 +26,7 @@ def config_to_ir(
     *,
     inspect_code: bool = False,
     code_source: str = "local",
+    parse_context: Any = None,
 ) -> ModelIR:
     """Parse anything HF-shaped into an IR.
 
@@ -50,6 +51,9 @@ def config_to_ir(
         inspection downloads source files only and should be requested explicitly.
     """
     cfg = _coerce(cfg_or_id, token=token)
+    if parse_context is None:
+        from .evidence.context import ParseContext
+        parse_context = ParseContext.build(cfg, source="local", token=token)
     adapter = find_adapter(cfg)
     if adapter is None:
         arches = (
@@ -63,7 +67,32 @@ def config_to_ir(
         )
         _report_error("ModelNotFoundError", str(err))
         raise err
-    ir = adapter.parse(cfg)
+    # First-class config ownership audit. This is capture-only: it prints
+    # nothing and changes no parsing decisions. Nested component parses remain
+    # inside the outer capture even if their legacy debug tracker resets.
+    from .adapters.transformer import debug as _config_debug
+    with _config_debug.capture_accesses() as accessed_fields:
+        ir = adapter.parse(cfg, context=parse_context)
+    bundle = parse_context.source_bundle
+    component_files = getattr(bundle, "component_files", {}) or {}
+    component_architectures = getattr(bundle, "component_architectures", {}) or {}
+    ir.extras["source_provenance"] = {
+        "source": bundle.source,
+        "components": {
+            component: {
+                "architecture": component_architectures.get(component),
+                "files": list(files),
+            }
+            for component, files in component_files.items()
+        },
+    }
+    unread = _config_debug.unparsed_fields(
+        [cfg], touched=accessed_fields, recursive=True
+    )
+    ir.extras["config_audit"] = {
+        "unread": unread,
+        "accessed": sorted(accessed_fields),
+    }
     _ensure_parsable(ir, cfg_or_id)
     _debug_validate_blocks(ir)
     if inspect_code:
@@ -107,36 +136,6 @@ def _ensure_parsable(ir: ModelIR, ref: Any) -> None:
     raise err
 
 
-def _apply_code_norm(ir: ModelIR, evidence: Any) -> None:
-    """Fill a config-silent norm type from the model code (tier-2).
-
-    diffusion DiTs never state the norm type in config.json — it lives in the
-    diffusers block class. When `inspect_code` scanned that class, resolve the
-    norm op from it and upgrade the (otherwise "Normalization") norm cards,
-    rewriting the "config doesn't declare it" note to say it's CODE-derived."""
-    from .evidence.ast_scanner import scan_python_files
-    from .evidence.patterns import diffusion_norm_from_classes
-
-    # evidence.classes is filtered to attention/MLP classes (LLM inference), which
-    # drops the diffusion transformer BLOCK where the norm class is instantiated —
-    # so re-scan the bundle's files to see every class.
-    all_classes = scan_python_files(getattr(evidence, "files", ()) or ())
-    res = diffusion_norm_from_classes(all_classes)
-    if not res:
-        return
-    label, cls = res
-    silent_note = (" The config does not declare whether this is RMSNorm or LayerNorm "
-                   "— that lives in the model's code.")
-    code_note = (f" Its type ({label}, from diffusers `{cls}`) is read from the model "
-                 "code, not the config.")
-    for layer in getattr(ir, "layers", None) or []:
-        for b in getattr(layer, "blocks", None) or []:
-            if isinstance(b, dict) and b.get("kind") == "norm" and b.get("label") == "Normalization":
-                b["label"] = label
-                if b.get("description"):
-                    b["description"] = b["description"].replace(silent_note, code_note)
-
-
 def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: str = "local") -> None:
     from .evidence import inspect_model_code, validate_ir_with_evidence
 
@@ -153,7 +152,10 @@ def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: s
         evidence_dict["warnings"] = combined
 
     ir.extras["code_evidence"] = evidence_dict
-    _apply_code_norm(ir, evidence)
+    # (The old _apply_code_norm repair pass lived here — retired: the diffusor
+    # adapter now resolves a config-silent norm kind IN-adapter from the
+    # ROOT-scoped classes (_annotate_code_norm_kind), deep and leak-free; the
+    # shallow union-scanning walk never reached the nested DiT norms anyway.)
 
     # Source-scan warnings are advisory and already live in the Code Evidence
     # panel. Only promote true code/config mismatch warnings to the global IR
@@ -226,15 +228,59 @@ def _classify_load_error(model_id: str, error: Exception) -> UnfoldError:
             "model's license on its Hugging Face page."
         )
     elif _is_not_found_error(msg):
-        err = ModelNotFoundError(
+        hint = _repo_layout_hint(model_id)
+        err = ModelNotFoundError(hint or (
             f"Couldn't find or recognize '{model_id}'. Check the model id; if it's a "
             "newly released architecture, update transformers "
             "(`pip install -U transformers`) — your installed version may not know it yet."
-        )
+        ))
     else:
         err = UnfoldError(f"Failed to load '{model_id}': {error}")
     _report_error(type(err).__name__, str(err), cause=error)
     return err
+
+
+def _repo_layout_hint(model_id: str) -> str | None:
+    """One honest, layout-derived sentence for a repo with no loadable root
+    config — read from the repo's FILE LISTING (evidence of what the repo IS;
+    nothing executed, nothing guessed):
+
+    * mistral original-release format (``params.json``) — handled upstream by
+      the normalizer, so no hint fires here;
+    * ADAPTER-ONLY repos (LoRA / IP-Adapter weight sets that modify a BASE
+      model) — say so, instead of a generic not-found;
+    * VARIANT-NESTED pipelines (``transformer/<variant>/config.json``) — name
+      the variants so the user can pick a single-variant repo/subfolder."""
+    try:
+        import json as _json
+        import urllib.request
+        url = f"https://huggingface.co/api/models/{model_id}"
+        request = urllib.request.Request(url, headers={"User-Agent": "model-unfolder"})
+        with urllib.request.urlopen(request, timeout=15) as response:
+            files = [s.get("rfilename", "") for s in _json.load(response).get("siblings", [])]
+    except Exception:
+        return None
+    lowered = [f.lower() for f in files]
+    if any(("lora" in f or "ip-adapter" in f or "ip_adapter" in f)
+           and f.endswith((".safetensors", ".bin")) for f in lowered) and not any(
+            f == "config.json" or f == "model_index.json" for f in lowered):
+        return (
+            f"'{model_id}' is an ADAPTER-ONLY repo (LoRA / IP-Adapter weights that "
+            "modify a base model) — it carries no architecture of its own. Unfold "
+            "the BASE model the adapter is trained for instead."
+        )
+    variants = sorted({f.split("/")[1] for f in files
+                       if f.startswith("transformer/") and f.endswith("/config.json")
+                       and f.count("/") == 2})
+    if variants:
+        shown = ", ".join(variants[:6]) + ("…" if len(variants) > 6 else "")
+        return (
+            f"'{model_id}' nests its denoiser configs per VARIANT "
+            f"(transformer/<variant>/config.json: {shown}) — there is no single "
+            "denoiser to draw. Point unfold at a single-variant diffusers repo "
+            "for this model."
+        )
+    return None
 
 
 def _is_access_error(msg: str) -> bool:
@@ -321,6 +367,9 @@ def _should_fallback_to_raw_json(error: Exception) -> bool:
             # isn't valid JSON) — the repo may still be a diffusers pipeline
             # described by model_index.json, so fall through and try that.
             "not a valid json",
+            # json.JSONDecodeError spellings leaking through AutoConfig.
+            "expecting property name",
+            "expecting value",
         )
     )
 
@@ -365,10 +414,87 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
     kwargs: dict = {"repo_id": model_id, "filename": "config.json"}
     if auth_token is not None:
         kwargs["token"] = auth_token
-    path = hf_hub_download(**kwargs)
+    try:
+        path = hf_hub_download(**kwargs)
+    except Exception as exc:
+        # No config.json at all — a Mistral ORIGINAL-RELEASE repo ships
+        # ``params.json`` instead (a FORMAT, detected by layout).  Normalize it
+        # through the declared mapping; anything else re-raises for the
+        # layout-aware classifier.
+        params = _load_mistral_params_json(model_id, auth_token)
+        if params is not None:
+            return params
+        raise exc
     with open(path) as f:
         cfg = _parse_config_json_text(f.read())
+    cfg = _hydrate_config_class_defaults(cfg)
     return _ensure_unfoldable_config(cfg, model_id)
+
+
+def _hydrate_config_class_defaults(cfg):
+    """Fill config-CLASS defaults invisible in a RAW-fetched config.json.
+
+    A config downloaded on this rung (registry-predating / remote-code repos)
+    is a bare dict that never saw its config class, so class defaults that
+    upstream chose NOT to serialize are absent — Gemma-2's
+    ``sliding_window_pattern=2`` reads as all-sliding, flattening a real
+    heterogeneous stack.  The installed config class is code evidence (the
+    SAME rail an by-id AutoConfig load uses), so when ``model_type`` is a known
+    address we hydrate through it; raw keys always win over defaults, loader
+    stamps (``_``-prefixed) survive, and an unknown/unregistered type keeps the
+    raw dict untouched.  Identity-as-address at LOAD time — the parse itself
+    stays name-blind (the defaults arrive as data)."""
+    if not isinstance(cfg, dict):
+        return cfg
+    mt = cfg.get("model_type")
+    if not mt:
+        return cfg
+    try:
+        from transformers import AutoConfig
+        hydrated = AutoConfig.for_model(
+            mt, **{k: v for k, v in cfg.items()
+                   if not k.startswith("_") and k != "model_type"}).to_dict()
+    except Exception:
+        return cfg
+    for k, v in cfg.items():          # loader stamps / private context keys survive
+        if k.startswith("_"):
+            hydrated[k] = v
+    return hydrated
+
+
+def _load_mistral_params_json(model_id: str, auth_token: Any) -> dict | None:
+    """Normalize a Mistral original-release ``params.json`` into transformers
+    spellings via the declared FORMAT vocabulary (everchanging/transformer/
+    mistral_params.yaml).  ``model_type`` is assigned as an ADDRESS from the
+    format itself (params.json IS Mistral's release format), exactly like a
+    diffusers ``_class_name`` — never used as an architectural fact."""
+    from .everchanging import load_mistral_params_map
+
+    try:
+        from huggingface_hub import hf_hub_download
+        kwargs: dict = {"repo_id": model_id, "filename": "params.json"}
+        if auth_token is not None:
+            kwargs["token"] = auth_token
+        with open(hf_hub_download(**kwargs)) as f:
+            import json as _json
+            params = _json.load(f)
+    except Exception:
+        return None
+    if not isinstance(params, dict) or "dim" not in params or "n_layers" not in params:
+        return None
+    mapping = load_mistral_params_map()
+    cfg = {dst: params[src] for src, dst in mapping.get("text", {}).items()
+           if src in params}
+    cfg["model_type"] = "mistral"
+    cfg["_name_or_path"] = model_id
+    vision = params.get("vision_encoder")
+    if isinstance(vision, dict):
+        cfg["vision_config"] = {dst: vision[src] for src, dst
+                                in mapping.get("vision", {}).items() if src in vision}
+        # STRUCTURE, never the repo name: a params.json carrying a
+        # vision_encoder IS the multimodal (pixtral-format) release.
+        cfg["model_type"] = "pixtral"
+    return cfg
 
 
 def _ensure_unfoldable_config(cfg, model_id: str) -> dict:

@@ -5,7 +5,6 @@ from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
 from .metadata import _block_label, _indices_summary, _signature
 from .svg import (
-    _block_top_to_block_bottom,
     _branch_dot,
     _defs,
     _elbow_hv,
@@ -84,6 +83,9 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     is_diffusion = _is_diffusion_architecture(ir)
     spec = info["dominant"]["spec"]
     layer_blocks = list(spec.get("blocks") or [])
+    group_indices = (info.get("dominant") or {}).get("indices")
+    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
+    repeated_region = repeat_n != 1
 
     # Side blocks live OFF the central column.  They share a row with the block
     # they feed but get their own offset x-position and explicit connections.
@@ -94,6 +96,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
+    position_evidence = ((ir.get("extras") or {}).get("position_encoding") or {})
+    position_mechanisms = position_evidence.get("mechanisms") or [] \
+        if isinstance(position_evidence, dict) else []
+    has_absolute_position = any(
+        item.get("kind") in {"learned_absolute", "fixed_absolute"}
+        and item.get("application") == "embedding_add"
+        for item in position_mechanisms if isinstance(item, dict)
+    )
     modality_inputs = modalities.get("inputs") or {}
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
@@ -153,22 +163,61 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     inner_y = 200 + mtp_pad
     has_audio_fusion = has_modality_fusion and "audio" in modality_inputs
+    position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
+    # An embedding-stage norm (BLOOM's word-embedding LayerNorm) adds one quiet
+    # bookend box between the embedding and the stack — reserve its slot.
+    has_embed_norm = bool((info.get("blocks") or {}).get("embed_norm"))
+    embed_norm_pad = 64 if has_embed_norm else 0
+    # A model-level ENTRY STAGE (a latent refiner between patchify and the
+    # stack — the general secondary-stack slot): one more chain block.
+    entry_stage = (info.get("blocks") or {}).get("entry_stage")
+    embed_norm_pad += 84 if entry_stage else 0
+    embed_norm_pad += 66 if (info.get("blocks") or {}).get("join_concat") else 0
     if has_modality_fusion and not has_cross_attention_fusion:
-        h = inner_y + inner_h + (360 if has_audio_fusion else 292)
+        h = inner_y + inner_h + (360 if has_audio_fusion else 292) + embed_norm_pad
     else:
-        h = inner_y + inner_h + 232
+        h = inner_y + inner_h + 232 + position_pad + embed_norm_pad
     w = 960 if needs_wide_arch else 720
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
+    block_pos: dict[str, dict] = {}
     parts = [_defs(arrow_id, shadow_id)]
     parts.append(_region_rect(40, 26, w - 80, h - 52, C["bg_outer"]))
-    parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
+    if repeated_region:
+        parts.append(_region_rect(inner_x, inner_y, inner_w, inner_h, C["bg_inner"]))
 
     # --- 2. Model-level scaffold (positions tracked by total height h) ---
+    entry_chain = None
     if has_modality_fusion:
         tok_text, embed, stack_input = draw_multimodal_input_scaffold(
             parts, info, shadow_id, arrow_id, cx, inner_y, inner_h, h, modalities,
         )
+    elif has_absolute_position:
+        tok_text = _rect_block(parts, info, shadow_id, "tok_text",
+                               cx - 280, h - 100, 220, 44,
+                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
+                               resolved=True)
+        position_ids = _rect_block(parts, info, shadow_id, "position_ids",
+                                   cx + 60, h - 100, 220, 44,
+                                   _block_label(info, "position_ids", "Position IDs"), font_size=17,
+                                   resolved=True)
+        embed = _rect_block(parts, info, shadow_id, "embed",
+                            cx - 300, h - 174, 260, 44,
+                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
+                            resolved=True)
+        position_embed = _rect_block(parts, info, shadow_id, "position_embed",
+                                     cx + 40, h - 174, 260, 44,
+                                     _block_label(info, "position_embed", "Learned Position Embedding"),
+                                     font_size=15, resolved=True)
+        position_add = _plus_block(parts, info, shadow_id, "position_add",
+                                   cx, h - 230, sym="+", clickable=True)
+        parts.append(_v_line(tok_text, embed, arrow_id))
+        parts.append(_v_line(position_ids, position_embed, arrow_id))
+        parts.append(_elbow_vh(embed["cx"], embed["top"],
+                               position_add["left"] - GAP, position_add["cy"], arrow_id))
+        parts.append(_elbow_vh(position_embed["cx"], position_embed["top"],
+                               position_add["right"] + GAP, position_add["cy"], arrow_id))
+        stack_input = position_add
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
@@ -179,6 +228,35 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                             _block_label(info, "embed", "Token Embedding layer"), font_size=17,
                             resolved=_is_resolved_diffusion_block(is_diffusion, info, "embed"))
         stack_input = embed
+        # The ENTRY CHAIN in scaffold order — part 4 draws its consecutive
+        # segments, so an intermediate entry block (embed_norm, an entry-stage
+        # refiner, the ‖ join) is a real hop, never a block a long
+        # tok_text→stack_input line cuts straight through.
+        entry_chain = [tok_text, embed]
+        if has_embed_norm:
+            embed_norm = _rect_block(parts, info, shadow_id, "embed_norm",
+                                     cx - 90, h - 232, 180, 36,
+                                     _block_label(info, "embed_norm", "LayerNorm"),
+                                     font_size=16)
+            stack_input = embed_norm
+            entry_chain.append(embed_norm)
+        if entry_stage:
+            stage = _rect_block(parts, info, shadow_id, "entry_stage",
+                                cx - 95, stack_input["top"] - 84, 190, 52,
+                                _block_label(info, "entry_stage", entry_stage.get("label")),
+                                font_size=15)
+            stack_input = stage
+            entry_chain.append(stage)
+        if (info.get("blocks") or {}).get("join_concat"):
+            # The one-time text+latent JOIN as a TRUE ‖ (strict two-input):
+            # the latent flow enters from below; the drawn text lane's rail
+            # bends into it from the side (part 6 targets it via block_pos).
+            join = _plus_block(parts, info, shadow_id, "join_concat",
+                               cx, stack_input["top"] - 46, sym="\u2016",
+                               clickable=True)
+            block_pos["join_concat"] = join
+            stack_input = join
+            entry_chain.append(join)
     final_rms = _rect_block(parts, info, shadow_id, "final_rms",
                             cx - 90, 140 + mtp_pad, 180, 36,
                             _block_label(info, "final_rms", "Final RMSNorm"), font_size=16,
@@ -189,7 +267,6 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                           resolved=_is_resolved_diffusion_block(is_diffusion, info, "lm_head"))
 
     # --- 3. Layer body (data-driven, stacked bottom-up) ---
-    block_pos: dict[str, dict] = {}
     free = inner_h - stack_h
     y_cursor = inner_y + inner_h - free / 2
     for block in chain_blocks:
@@ -222,13 +299,21 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                 cx, top + block_h / 2, sym=layout.get("sym", "+"),
                 clickable=clickable,
             )
+            # A ×-by-labelled-CONSTANT draws its operand beside the glyph
+            # (Granite's residual_multiplier) — a bare × reads "× what?".
+            if block.get("sub"):
+                parts.append(_svg_text(
+                    geom["right"] + 10, geom["cy"], str(block["sub"]),
+                    {"dominant-baseline": "central", "fill": C["muted"],
+                     "font-family": FONT_MONO, "font-size": 12},
+                ))
         block_pos[block["id"]] = geom
         y_cursor = top - _BLOCK_GAP
 
     # --- 4. Linear chain arrows ---
     chain = [stack_input] + [block_pos[b["id"]] for b in chain_blocks] + [final_rms, lm_head]
-    if not has_modality_fusion:
-        chain.insert(0, tok_text)
+    if entry_chain:
+        chain = entry_chain + chain[1:]
     merge_geom = block_pos.get(merge_id) if merge_id else None
     for src, dst in zip(chain, chain[1:]):
         # The split source → ⊕ merge segment is drawn by the branch fan-out/merge
@@ -277,12 +362,31 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # Bottom-origin side blocks sit on the input row (aligned with the embed/
     # Patchify block) so the inputs read as one tier.
     input_cy = embed["cy"] if isinstance(embed, dict) else (inner_y + inner_h + 86)
+    # Bottom-rail CHAINS: a bottom-lane block whose ``feeds`` is a SIBLING
+    # bottom-lane block (text conditioning -> token refiner -> attention) is a
+    # rail with stages — the sibling is drawn stacked above its feeder on the
+    # reserved side lane, and only the TOP block bends into the layer target.
+    bottom_ids = {b["id"]: b for b in side_blocks
+                  if str(b.get("lane", "")).startswith("external_bottom")}
+    chained = set()
+    chains: dict[str, list[dict]] = {}
+    for b in side_blocks:
+        links = []
+        nxt = bottom_ids.get(b.get("feeds"))
+        while nxt is not None and nxt["id"] not in chained and b["id"] not in chained:
+            links.append(nxt)
+            chained.add(nxt["id"])
+            nxt = bottom_ids.get(nxt.get("feeds"))
+        if links:
+            chains[b["id"]] = links
     for block in side_blocks:
+        if block["id"] in chained:
+            continue                     # drawn as part of its base's chain
         _draw_side_block(
             parts, info, shadow_id,
             block, block_pos,
             inner_x, inner_w, inner_y, inner_h, input_cy, stack_input, arrow_id, branch_taps,
-            is_diffusion,
+            is_diffusion, chain=chains.get(block["id"]),
         )
 
     # --- 7. × N badge over the inner region ---
@@ -292,24 +396,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # group's layer count — not the global total — to stay consistent with its
     # own toggle pill ("L3–L60 · 58×"). Falls back to the total when no group
     # indices are available (single homogeneous stack ⇒ identical anyway).
-    group_indices = (info.get("dominant") or {}).get("indices")
-    repeat_n = len(group_indices) if group_indices else len(ir.get("layers", []))
-    parts.append(_svg_tag("rect", {
-        "x": inner_x + inner_w - 78, "y": inner_y + 12,
-        "width": 66, "height": 26, "rx": 13, "ry": 13,
-        "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
-    }))
-    parts.append(_svg_text(
-        inner_x + inner_w - 45, inner_y + 25,
-        f"x {repeat_n}",
-        {"text-anchor": "middle", "dominant-baseline": "central",
-         "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
-    ))
+    if repeated_region:
+        parts.append(_svg_tag("rect", {
+            "x": inner_x + inner_w - 78, "y": inner_y + 12,
+            "width": 66, "height": 26, "rx": 13, "ry": 13,
+            "fill": "rgba(255,255,255,0.65)", "stroke": C["border"], "stroke-width": 0.5,
+        }))
+        parts.append(_svg_text(
+            inner_x + inner_w - 45, inner_y + 25,
+            f"x {repeat_n}",
+            {"text-anchor": "middle", "dominant-baseline": "central",
+             "fill": C["text"], "font-family": FONT_HEAD, "font-size": 20},
+        ))
     # Optional caption under the × N badge — clarifies what the repeat means when
     # one stack plays several roles (e.g. a shared encoder/decoder), right-aligned
     # to the badge so it reads as a footnote to the repeat count.
     repeat_note = ((ir.get("extras") or {}).get("render") or {}).get("repeat_note")
-    if repeat_note:
+    if repeat_note and repeated_region:
         note_y = inner_y + 50
         for line in (repeat_note if isinstance(repeat_note, list) else [repeat_note]):
             parts.append(_svg_text(
@@ -351,7 +454,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # dual.  Anchored bottom-left (the input side — it reads as "before the
     # stack"), short lines kept clear of the centre spine and the × N badge.
     stack_note = ((spec.get("attention") or {}).get("variant") or {}).get("stack_note")
-    if stack_note:
+    if stack_note and not (info.get("blocks") or {}).get("join_concat"):
         note_lines = stack_note if isinstance(stack_note, list) else [stack_note]
         note_y = inner_y + inner_h - 14 * len(note_lines) - 6
         for line in note_lines:
@@ -523,6 +626,7 @@ def _draw_side_block(
     arrow_id: str,
     branch_taps: set[tuple[float, float]],
     is_diffusion: bool = False,
+    chain: list[dict] | None = None,
 ) -> None:
     """Render a block that lives OFF the central chain.
 
@@ -539,6 +643,9 @@ def _draw_side_block(
     feeds_id = block.get("feeds")
     tap_id = block.get("tap_from")
 
+    # A chained rail resolves its TRUE layer target from the LAST link.
+    if chain:
+        feeds_id = chain[-1].get("feeds")
     feeds_geom = block_pos.get(feeds_id) if feeds_id else None
     tap_geom = block_pos.get(tap_id) if tap_id else None
     # Bottom-origin side block (e.g. diffusion conditioning): drawn at the bottom
@@ -548,6 +655,7 @@ def _draw_side_block(
             parts, info, shadow_id, block, feeds_geom,
             inner_x, inner_w, input_cy, input_geom, arrow_id,
             block_w, block_h, font_size, is_diffusion, block_pos,
+            chain=chain,
         )
         return
     if feeds_geom and str(block.get("lane", "")).startswith("external"):
@@ -639,9 +747,15 @@ def _draw_bottom_side_block(
     font_size: int,
     is_diffusion: bool = False,
     block_pos: dict | None = None,
+    chain: list[dict] | None = None,
 ) -> None:
     """A side input drawn at the BOTTOM (aligned with the main input row), routed
     up the outside of the inner region and bent into the target's near edge.
+
+    ``chain`` — rail STAGES (a token refiner between the text conditioning and
+    the attention): each is drawn stacked above its feeder along the reserved
+    side lane with a short vertical arrow, and only the TOP block bends into
+    the layer target.
 
     Used for conditioning rails (timestep -> AdaLN, text -> attention): they read
     as inputs entering from below, not as states floating in from the sides.
@@ -677,8 +791,29 @@ def _draw_bottom_side_block(
         font_size=font_size,
         resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
     )
+    top_geom = geom
+    for link in (chain or []):
+        link_w = link.get("w") or block_w
+        link_h = link.get("h") or block_h
+        link_y = top_geom["top"] - 44 - link_h
+        link_geom = _rect_block(
+            parts, info, shadow_id, link["id"],
+            geom["cx"] - link_w / 2, link_y, link_w, link_h,
+            _block_label(info, link["id"], link.get("label")),
+            font_size=link.get("font") or font_size,
+            resolved=_is_resolved_diffusion_block(is_diffusion, info, link["id"], link),
+        )
+        parts.append(_svg_tag("line", {
+            "x1": top_geom["cx"], "y1": top_geom["top"],
+            "x2": top_geom["cx"], "y2": link_geom["bottom"] + GAP,
+            "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
+            "marker-end": f"url(#{arrow_id})", "fill": "none",
+        }))
+        if block_pos is not None:
+            block_pos[link["id"]] = link_geom
+        top_geom = link_geom
     # Up the outside, then a single bend horizontally into the target edge.
-    parts.append(_elbow_vh(geom["cx"], geom["top"], target_x, feeds_geom["cy"], arrow_id))
+    parts.append(_elbow_vh(top_geom["cx"], top_geom["top"], target_x, feeds_geom["cy"], arrow_id))
     # Fan into the gate × nodes this conditioning drives (AdaLN gate_msa/gate_mlp):
     # a shared trunk up the block's left, bending into each gate's left edge at the
     # gate's height (mirror of the right-side residual loops) — so each × shows the

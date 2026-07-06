@@ -32,6 +32,9 @@ def ffn_detail(ffn: FFNSpec) -> dict:
         "expert_intermediate_size": ffn.expert_intermediate_size,
         "routing": ffn.routing,
         "activation_clip": ffn.activation_clip,
+        "bias": ffn.bias,
+        "projection_mode": ffn.projection_mode,
+        "expert_projection_mode": ffn.expert_projection_mode,
     }
 
 
@@ -40,10 +43,8 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
     inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
     activation = activation_label(ffn.activation)
     if ffn.kind == "conv_glu":
-        # Sana's GLUMBConv — a gated CONV Mix-FFN named as one honest leaf (its
-        # conv-gate internals are KNOWN but differ from a Linear MLP, so we describe
-        # the structure rather than fabricate Linear up/down boxes). The id matches
-        # the op-graph's opaque region node so the click target stays coupled.
+        # Sana's GLUMBConv — the code-proven gated CONV chain, one card per op
+        # (ids match the op-graph region's nodes so every drawn box drills).
         children = _conv_glu_ffn_child_blocks(hidden, inter)
     elif ffn.kind != "moe" and ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
@@ -53,7 +54,12 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         children = _dense_ffn_child_blocks(hidden, inter, activation,
                                            ffn.activation_assumed, ffn.activation_from_class)
     else:
-        children = _gated_ffn_child_blocks(hidden, inter, activation)
+        if ffn.kind != "moe" and ffn.projection_mode == "fused_gate_up":
+            # Source-proven FUSED storage: the drill draws one gate+up matrix
+            # then a split — cards must match those exact node ids.
+            children = _fused_gated_ffn_child_blocks(hidden, inter, activation)
+        else:
+            children = _gated_ffn_child_blocks(hidden, inter, activation)
         if ffn.kind == "moe":
             children.extend(_moe_child_blocks(ffn, hidden, inter))
     if generic:
@@ -65,19 +71,58 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
 
 
 def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
+    """One card per op of the GLUMBConv chain — ids match the conv_glu region."""
     return [
         {
-            "id": "block",
-            "label": "Gated conv Mix-FFN",
-            "title": "GLUMBConv (gated conv Mix-FFN)",
+            "id": "conv_in",
+            "title": "Conv 1×1 (expand)",
             "description": (
-                "Sana's GLUMBConv — a gated CONV feed-forward, not a Linear MLP: a "
-                "1×1 conv expands to 2× the inner width, a depthwise 3×3 conv mixes "
-                "locally, the result splits in half (value · SiLU(gate)), and a 1×1 "
-                "conv projects back. The conv FFN paired with linear attention is what "
-                "makes Sana efficient."
+                "Pointwise 1×1 convolution expanding the width to 2× the inner "
+                "channels — the value and gate lanes produced by one projection "
+                "(the conv twin of a fused gate+up Linear)."
             ),
-            "facts": [f"{hidden} → {inter} → {hidden}", "depthwise 3×3 + SiLU gate"],
+            "facts": [f"{hidden} → 2×{inter}"],
+        },
+        {
+            "id": "dw_conv",
+            "title": "Depthwise Conv 3×3",
+            "description": (
+                "3×3 depthwise convolution mixing each channel locally across "
+                "space — the spatial mixer inside the FFN, which is what lets "
+                "Sana pair a cheap linear attention with a conv feed-forward."
+            ),
+            "facts": ["per-channel 3×3"],
+        },
+        {
+            "id": "glu_split",
+            "title": "Split value / gate",
+            "description": (
+                "The doubled channels split in half: a value lane and a gate "
+                "lane — the GLU pattern, conv-flavoured."
+            ),
+            "facts": [f"2×{inter} → {inter} + {inter}"],
+        },
+        {
+            "id": "glu_act",
+            "title": "SiLU (gate)",
+            "description": "The gate lane passes through SiLU before gating.",
+        },
+        {
+            "id": "glu_mul",
+            "title": "Gate multiply",
+            "description": (
+                "Elementwise product: value · SiLU(gate) — the gated activation "
+                "of the conv GLU."
+            ),
+        },
+        {
+            "id": "conv_out",
+            "title": "Conv 1×1 (project back)",
+            "description": (
+                "Pointwise 1×1 convolution projecting the gated features back "
+                "to the model width."
+            ),
+            "facts": [f"{inter} → {hidden}"],
         },
     ]
 
@@ -139,6 +184,47 @@ def _dense_ffn_child_blocks(hidden: str, inter: str, activation: str,
     ]
 
 
+def _fused_gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
+    """Cards for the FUSED gate+up storage (one matrix, chunked in forward) —
+    Phi-3-style; ids match the canonical region's fused nodes exactly."""
+    return [
+        {
+            "id": "gate_up_proj",
+            "label": "Linear (gate+up)",
+            "title": "Fused gate+up projection",
+            "description": ("One Linear producing BOTH the gate and up paths — "
+                            "the two projections are stored as a single fused "
+                            "matrix and chunked in forward."),
+            "facts": [f"{hidden} \u2192 2\u00d7{inter}"],
+        },
+        {
+            "id": "gate_up_split",
+            "label": "split",
+            "title": "Split gate / up",
+            "description": "Chunks the fused projection into the gate and up halves.",
+        },
+        {
+            "id": "activation",
+            "label": activation,
+            "title": activation,
+            "description": "Element-wise non-linearity applied to the gate path.",
+        },
+        {
+            "id": "multiply",
+            "label": "x",
+            "title": "Gate product",
+            "description": f"{activation}(gate) \u00d7 up \u2014 combines the gated and ungated paths.",
+        },
+        {
+            "id": "down_proj",
+            "label": "Linear (down)",
+            "title": "Down projection",
+            "description": "Linear back to the residual width.",
+            "facts": [f"{inter} \u2192 {hidden}"],
+        },
+    ]
+
+
 def _gated_ffn_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
     return [
         {
@@ -183,13 +269,16 @@ def _ffn_routing_dict(ffn: FFNSpec) -> dict:
 
 
 def _routing_shape(r: dict) -> tuple[bool, bool, bool]:
-    """The two axes that decide the Top-k torch sequence, read from config:
-    ``grouped`` (group-limited / node-limited routing) and ``bias`` (the
-    aux-loss-free correction bias, which makes the SELECTION scores differ from
-    the WEIGHT scores → a real gather). ``greedy`` distinguishes the two known
-    grouped methods so we never claim DeepSeek-V3's top-2-sum for V2's max."""
+    """The two axes that decide the Top-k torch sequence: ``grouped``
+    (group-limited / node-limited routing, from the config ``n_group`` count) and
+    ``bias`` (the aux-loss-free correction bias, which makes the SELECTION scores
+    differ from the WEIGHT scores → a real gather). ``greedy`` distinguishes the
+    two known grouped methods so we never claim DeepSeek-V3's top-2-sum for V2's
+    max.  ``bias`` reads the resolved ``bias_correction`` (code-proven
+    ``e_score_correction_bias`` OR declared ``noaux_tc``) so GLM-4.5 — which
+    enacts the bias but omits the string — draws it."""
     grouped = (r.get("n_group") or 0) > 1 and bool(r.get("topk_group"))
-    bias = r.get("topk_method") == "noaux_tc"
+    bias = bool(r.get("bias_correction")) or r.get("topk_method") == "noaux_tc"
     greedy = r.get("topk_method") == "group_limited_greedy"
     return grouped, bias, greedy
 
@@ -244,7 +333,10 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
     enables, and unused cards are harmless (never orphaned). Labels stay bare op
     names — every count/dim/flag is a chip here, not on the block."""
     r = ffn.routing or {}
-    scoring = r.get("scoring_func") or "softmax"
+    # NO generic fallback here: an unresolved score transform (config silent,
+    # source unparsable) stays UNNAMED — the router block carries a BLOCKING
+    # evidence_ambiguity envelope instead of a silently asserted softmax.
+    scoring = r.get("scoring_func")
     n_group, topk_group = r.get("n_group") or 0, r.get("topk_group")
     grouped, bias, greedy = _routing_shape(r)
     # Top-k drills into the real torch sequence when there's structure to show —
@@ -271,6 +363,17 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
                   "view": "topk_selection", "detail": {"ffn": ffn_detail(ffn)},
                   "children": _topk_selection_cards(scoring, n_experts, n_active, n_group,
                                                     topk_group, grouped=grouped, bias=bias, greedy=greedy)}
+    elif r.get("sparsemixer"):
+        # Phi's sparsemixer: a two-stage masked selection (mask the argmax,
+        # softmax the rest, sample) that keeps routing differentiable — NOT a
+        # plain top-k. Named at the selection altitude so the drill isn't a lie.
+        select = {"id": "g_topk", "title": "Sparsemixer selection",
+                  "description": f"Selection is Phi's sparsemixer (not a plain top-k): a "
+                                 f"two-stage masked routing — mask the argmax, softmax the "
+                                 f"rest, sample — repeated to pick {n_active} experts, keeping "
+                                 f"the router differentiable. Gate weights are gathered from "
+                                 f"these masked softmaxes.",
+                  "facts": [f"top-{n_active}", "2-stage", "masked softmax"]}
     else:
         select = {"id": "g_topk", "title": "Top-k selection",
                   "description": f"torch.topk(scores, k={n_active}) keeps the {n_active} highest-"
@@ -279,17 +382,31 @@ def _moe_router_step_cards(ffn: FFNSpec, hidden: str, n_experts: str, n_active) 
                   "facts": [f"top-{n_active}"]}
     cards = [
         {"id": "g_gate", "title": "Linear (Gate)",
-         "description": f"nn.Linear projecting each token to one score per expert "
-                        f"({hidden} → {n_experts}); a {scoring} turns the logits into "
-                        f"per-expert affinities.",
-         "facts": [f"{n_experts} experts", scoring]},
-        select,
+         "description": (f"nn.Linear projecting each token to one score per expert "
+                         f"({hidden} → {n_experts}); a {scoring} turns the logits into "
+                         f"per-expert affinities."
+                         if scoring else
+                         f"nn.Linear projecting each token to one score per expert "
+                         f"({hidden} → {n_experts}). The score transform is not "
+                         f"declared in the config and could not be read from the "
+                         f"source — it is left unnamed rather than assumed."),
+         "facts": [f"{n_experts} experts"] + ([scoring] if scoring else ["transform unread"])},
     ]
+    # The score-transform node (drawn only when the code scores BEFORE selection)
+    # needs its own card so the clickable node couples (click-coupling law).
+    if r.get("scoring_before_topk"):
+        _tfm = "squashes each logit to (0,1) independently" if scoring == "sigmoid" \
+            else "normalizes the logits into a distribution over experts"
+        cards.append({"id": "g_score", "title": f"{scoring} scores",
+                      "description": f"The gate logits pass through {scoring}, which {_tfm} — "
+                                     f"these are the per-expert scores the top-k selects on.",
+                      "facts": [scoring]})
+    cards.append(select)
     if r.get("norm_topk_prob"):
         cards.append({"id": "g_norm", "title": "Renormalize weights",
                       "description": "Divides the selected experts' gate weights by their sum "
                                      "so they add to 1 (norm_topk_prob)."})
-    if r.get("topk_method") == "noaux_tc":
+    if bias:
         cards.append({"id": "g_bias", "title": "Learned bias (load-balancing)",
                       "description": "A learned per-expert bias vector (DeepSeek's "
                                      "e_score_correction_bias) ADDED TO THE SCORES FOR "
@@ -312,7 +429,23 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
     activation = activation_label(ffn.activation)
-    expert_children = _moe_expert_child_blocks(hidden, inter, activation)
+    if ffn.expert_projection_mode == "fused_gate_up":
+        # Code-proven fused storage: the expert cards derive from the SAME
+        # canonical region the drill draws (fused Linear(gate+up) -> split),
+        # so ids can never drift — a hand-authored split card set here would
+        # be the exact fabrication the storage evidence exists to prevent.
+        from ....labels import cards_from_region
+        from ....opgraph import ffn_region, rename_ops
+        from ....renderers.html.block_views.mixture_of_experts import _EXPERT_IDS
+        region = ffn_region(
+            {"kind": "dense", "gated": True, "activation": ffn.activation,
+             "intermediate_size": ffn.expert_intermediate_size or ffn.intermediate_size,
+             "projection_mode": "fused_gate_up"},
+            None,
+        )
+        expert_children = cards_from_region(rename_ops(region, _EXPERT_IDS))
+    else:
+        expert_children = _moe_expert_child_blocks(hidden, inter, activation)
     expert_desc = (
         "One dense FFN expert \u2014 only the routed tokens pass through it"
         + (f"; {n_shared} shared expert(s) are always active" if n_shared else "")
@@ -324,6 +457,11 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     if router_detail:
         router_desc = f"Scores every expert per token and keeps the top-k \u2014 {router_detail}."
     router_facts = [f"{hidden} \u2192 {n_experts}", f"top-{n_active}"]
+    # An UNRESOLVED router (config silent AND source installed but no router
+    # class parsed) travels as an evidence envelope on the router block \u2014
+    # caught by the BLOCKING evidence_ambiguity net instead of a silently
+    # asserted softmax (the dead `or "softmax"` this replaces).
+    routing_evidence = (ffn.routing or {}).get("evidence")
     blocks: list[Block] = [
         {
             "id": "router",
@@ -333,7 +471,9 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             # Drill into the gating policy (score \u2192 [group-limit] \u2192 top-k \u2192
             # [renorm] \u2192 [\u00d7scale]); built from the routing facts below.
             "view": "moe_router",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": ffn_detail(ffn),
+                       **({"evidence": routing_evidence}
+                          if isinstance(routing_evidence, dict) else {})},
             # Cards for the clickable gate steps (the \u00d7scale is a static connector).
             "children": _moe_router_step_cards(ffn, hidden, n_experts, n_active),
         },

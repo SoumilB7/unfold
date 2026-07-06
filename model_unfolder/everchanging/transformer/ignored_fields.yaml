@@ -7,14 +7,51 @@
 
 # Exact key names to ignore.
 keys:
+  # --- classification-head label maps + duplicate/derived geometry + numerics ---
+  # id2label/label2id: task-head label names, never architecture.
+  - id2label
+  - label2id
+  # qk_head_dim: derived duplicate of qk_nope_head_dim + qk_rope_head_dim (both read).
+  - qk_head_dim
+  # spatial_patch_size: duplicate spelling beside patch_size (read) on Qwen-VL vision.
+  - spatial_patch_size
+  # rope_interleave: rotate-half vs interleaved WEIGHT LAYOUT — an implementation
+  # storage detail with identical math; the drawn RoPE op is unchanged.
+  - rope_interleave
+  # initial_context_length: pretraining context note; the scaling facts are read
+  # from rope_parameters (factor / original_max_position_embeddings).
+  - initial_context_length
+  # YaRN interpolation coefficients inside the (consumed) rope scaling dict —
+  # the surfaced facts are the scaling TYPE, FACTOR and original context length;
+  # these remaining numbers shape the interpolation curve only.
+  - beta_fast
+  - beta_slow
+  - mscale
+  - mscale_all_dim
+  - truncate
+  # BLOOM numerics/perf switches (softmax dtype, fused kernels, exactness trade).
+  - attention_softmax_in_fp32
+  - masked_softmax_fusion
+  - slow_but_exact
   # --- identity / dtype / generic ---
   - model_type
   - architectures
   - transformers_version
+  - _diffusers_version
   - torch_dtype
   - dtype
   - _name_or_path
   - name_or_path
+  # Diffusers model_index identity/component references. Their fetched configs
+  # are audited separately under _vae_config / _text_encoder_configs.
+  - _pipeline_class_name
+  - tokenizer
+  - tokenizer_2
+  - tokenizer_3
+  - transformer
+  - transformer_2
+  - unet
+  - vae
   - use_cache
   - return_dict
   - output_attentions
@@ -23,6 +60,8 @@ keys:
   - _attn_implementation
   - _attn_implementation_autoset
   - pretraining_tp
+  # Numerical stability tolerance; does not alter the named op/topology.
+  - norm_eps
   # --- dropout ---
   - attention_dropout
   - hidden_dropout
@@ -31,7 +70,15 @@ keys:
   - embd_pdrop
   - attn_pdrop
   - dropout
+  # activation_dropout / encoder_layerdrop: Whisper-family training
+  # regularization on the (Omni) audio encoder — never structure.
+  - activation_dropout
+  - encoder_layerdrop
   # --- HF/training/serving plumbing ---
+  # init_std / ignore_index: weight-init scale and loss label mask — training
+  # constants (Qwen-Omni thinker/vision/audio scopes), never drawn structure.
+  - init_std
+  - ignore_index
   - auto_map
   - id2label
   - label2id
@@ -49,6 +96,8 @@ keys:
   - tf_legacy_loss
   - torchscript
   - use_bfloat16
+  # Execution precision policy; it changes dtype, not the operation graph.
+  - force_upcast
   - tokenizer_class
   # --- HF GenerationConfig defaults dumped into config.json (decoding, not shape) ---
   - do_sample
@@ -102,8 +151,46 @@ keys:
   - initializer_factor
   - projection_dim
   - scalable_attention
+  # Pipeline-level inference behavior, not architecture: whether an empty
+  # prompt is encoded or zero-filled changes no drawn op (SDXL model_index).
+  - force_zeros_for_empty_prompt
+  # chatglm implementation/precision/runtime flags — no drawn-op change.
+  - apply_query_key_layer_scaling
+  - attn_implementation
+  - bias_dropout_fusion
+  - fp32_residual_connection
+  - original_rope
+  # chatglm: final-norm presence flag (the final norm is drawn from shape).
+  - post_layer_norm
+  # Qwen-Omni pipeline OUTPUT toggles (speech on/off) — runtime switches for
+  # the undrawn speech stack (whose omission is a stated parser note).
+  - enable_audio_output
+  - enable_talker
+  # chatglm long-context rope theta ratio — positional tuning scalar.
+  - rope_ratio
+  # phimoe: a bias on the output (lm_head) projection — a minor output-head
+  # detail we do not surface for any model (the output layer is drawn from its
+  # shape, not its bias presence).
+  - lm_head_bias
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:
   - _token_id
   - _token_ids
+
+# Nested component configs whose internals are owned by another adapter/domain.
+# The containing key must still be read; this only prevents the parent model's
+# audit from pretending it owns every child option.  VAE config is deliberately
+# absent because the diffusion adapter renders and therefore owns its decoder.
+opaque_scopes:
+  # Qwen-Omni's SPEECH stack (talker + token2wav vocoder) — deliberately not
+  # drawn (the LM/thinker is the rendered model); the omission is stated as a
+  # parser note, never silent.
+  - talker_config
+  - token2wav_config
+  - code2wav_config
+  - _scheduler_config
+  - _text_encoder_configs
+  # Addressing / weights-format payloads — never drawn facts.
+  - auto_map
+  - quantization_config

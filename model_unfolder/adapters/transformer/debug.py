@@ -21,6 +21,8 @@ from __future__ import annotations
 
 import os
 import sys
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import Any
 
 from ...everchanging import load_ignored_fields
@@ -38,8 +40,12 @@ DEBUG: bool = os.environ.get("MODEL_UNFOLDER_DEBUG", "0").lower() in (
 _ignored = load_ignored_fields()
 _IGNORED_KEYS: frozenset[str] = frozenset(_ignored["keys"])
 _IGNORED_SUFFIXES: tuple[str, ...] = tuple(_ignored["suffixes"])
+_OPAQUE_SCOPES: frozenset[str] = frozenset(_ignored["opaque_scopes"])
 
 _touched: set[str] = set()
+_captures: ContextVar[tuple[set[str], ...]] = ContextVar(
+    "model_unfolder_config_access_captures", default=()
+)
 
 
 def reset() -> None:
@@ -50,19 +56,83 @@ def reset() -> None:
 def note_access(name: str) -> None:
     """Record that the parser looked up config field ``name`` (any alias)."""
     _touched.add(name)
+    # Add to every active capture so an outer model audit includes legitimate
+    # work performed by nested component parses (diffusion text encoders), while
+    # each nested capture can still be inspected independently. ContextVar keeps
+    # concurrent parses isolated; parser-level ``reset()`` cannot erase a Sable
+    # capture wrapped around the whole model parse.
+    for touched in _captures.get():
+        touched.add(name)
+
+
+@contextmanager
+def capture_accesses():
+    """Capture config key names read inside this context, including nested parses."""
+    touched: set[str] = set()
+    token = _captures.set((*_captures.get(), touched))
+    try:
+        yield touched
+    finally:
+        _captures.reset(token)
+
+
+def _value_at(cfg: Any, path: str):
+    """The value at a dotted path in a dict-like config (None when unreachable)."""
+    node = cfg
+    for segment in path.split("."):
+        if isinstance(node, dict):
+            node = node.get(segment)
+        else:
+            node = getattr(node, segment, None)
+        if node is None:
+            return None
+    return node
+
+
+def unparsed_fields(
+    cfgs: list[Any], *, touched: set[str] | None = None, recursive: bool = False
+) -> list[str]:
+    """Return present non-ignored config fields no accessor looked up.
+
+    ``recursive=False`` preserves the legacy top-level diagnostic. Sable uses
+    ``recursive=True`` so nested component ownership is visible as dotted paths.
+    Matching is by key name because parsers may materialize/copy nested HF config
+    objects; dotted paths remain in the finding so a human can locate ownership.
+    """
+    reads = _touched if touched is None else touched
+    present: dict[str, str] = {}
+    for cfg in cfgs:
+        for path, key in _config_entries(cfg, recursive=recursive):
+            # A present-but-null field DECLARES A FEATURE ABSENT
+            # (``class_embed_type: null``, ``encoder_hid_dim: null``) — there is
+            # no fact to parse and no structure to draw, so an unread null is
+            # not coverage debt.  Safe by construction: any null a parser DOES
+            # derive meaning from (``num_key_value_heads: null`` ⇒ MHA) is read,
+            # hence touched, hence never in this set to begin with.
+            if _value_at(cfg, path) is None:
+                continue
+            present[path] = key
+    def _owned_by_declaration(path: str) -> bool:
+        # A declared-ignored key and an opaque scope both OWN their subtree:
+        # `id2label` ignored ⇒ `id2label.0` is not a finding; an opaque scope
+        # (`quantization_config`) is owned elsewhere ⇒ neither the parent
+        # access nor its descendants are this parser's unread debt.
+        return any(segment in _IGNORED_KEYS or segment in _OPAQUE_SCOPES
+                   for segment in path.split("."))
+
+    return sorted(
+        path for path, key in present.items()
+        if key not in reads
+        and not key.endswith(_IGNORED_SUFFIXES)
+        and not _owned_by_declaration(path)
+    )
 
 
 def report_unparsed(cfgs: list[Any], *, model: str = "") -> list[str]:
     """Print top-level fields present in ``cfgs`` that no lookup ever touched."""
     if not DEBUG:
         return []
-    present: set[str] = set()
-    for cfg in cfgs:
-        present |= _config_keys(cfg)
-    unparsed = sorted(
-        k for k in present - _touched - _IGNORED_KEYS
-        if not k.endswith(_IGNORED_SUFFIXES)
-    )
+    unparsed = unparsed_fields(cfgs)
     if unparsed:
         _emit(f"{_prefix(model)}{len(unparsed)} config field(s) not parsed: "
               + ", ".join(unparsed))
@@ -93,17 +163,36 @@ def report_error(kind: str, message: str, *, cause: BaseException | None = None)
 
 # --- internals ------------------------------------------------------------
 
-def _config_keys(cfg: Any) -> set[str]:
+def _config_entries(cfg: Any, *, recursive: bool, prefix: str = ""):
+    mapping = _config_mapping(cfg)
+    for key, value in mapping.items():
+        key = str(key)
+        path = f"{prefix}.{key}" if prefix else key
+        yield path, key
+        if recursive and key in _OPAQUE_SCOPES:
+            continue
+        if recursive and isinstance(value, dict):
+            yield from _config_entries(value, recursive=True, prefix=path)
+        elif recursive and isinstance(value, (list, tuple)):
+            for index, item in enumerate(value):
+                if isinstance(item, dict):
+                    yield from _config_entries(
+                        item, recursive=True, prefix=f"{path}[{index}]"
+                    )
+
+
+def _config_mapping(cfg: Any) -> dict:
     if isinstance(cfg, dict):
-        return set(cfg.keys())
+        return cfg
     if hasattr(cfg, "to_dict"):
         try:
-            return set(cfg.to_dict().keys())
+            value = cfg.to_dict()
+            return value if isinstance(value, dict) else {}
         except Exception:
             pass
     if hasattr(cfg, "__dict__"):
-        return {k for k in vars(cfg) if not k.startswith("__")}
-    return set()
+        return {k: v for k, v in vars(cfg).items() if not k.startswith("__")}
+    return {}
 
 
 def _prefix(model: str) -> str:
@@ -114,4 +203,7 @@ def _emit(msg: str) -> None:
     print(msg, file=sys.stderr)
 
 
-__all__ = ["DEBUG", "reset", "note_access", "report_unparsed", "report_partial", "report_error"]
+__all__ = [
+    "DEBUG", "reset", "note_access", "capture_accesses", "unparsed_fields",
+    "report_unparsed", "report_partial", "report_error",
+]

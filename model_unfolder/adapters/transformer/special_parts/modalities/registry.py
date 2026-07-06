@@ -18,7 +18,7 @@ A spec declares:
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, Optional
 
 from .accessors import nested

@@ -17,7 +17,10 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     spec = info["dominant"]["spec"]
     layer_blocks = spec.get("blocks") or []
 
-    for node_id in ("tok_text", "embed"):
+    for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
+                    "position_ids", "position_embed", "position_add"):
+        if node_id not in info.get("blocks", {}) and node_id not in {"tok_text", "embed"}:
+            continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     for node_id in ("vision_path", "video_path", "audio_path", "fusion"):
@@ -56,6 +59,15 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
 
     for node_id in ("final_rms", "lm_head"):
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
+
+    entry_block = info.get("blocks", {}).get("entry_stage")
+    if entry_block:
+        svg = block_detail_svg(ir, info, mount_id, entry_block)
+        title, desc, facts = _meta(info, "entry_stage")
+        if svg:
+            panels.append(_rich_card("entry_stage", title, desc, svg, facts))
+        else:
+            panels.append(_simple_card("entry_stage", title, desc, facts))
 
     mtp_block = info.get("blocks", {}).get("mtp")
     if mtp_block:
@@ -177,7 +189,11 @@ def _card_size(svg: str | None) -> tuple[str, int | None, int | None]:
 def _sub_inspect_children(info: dict) -> list[dict]:
     children: list[dict] = []
     for block in info.get("blocks", {}).values():
-        if block.get("role") in {"modality_input", "fusion", "mtp"}:
+        # The enumerated MODEL-LEVEL drill hosts: modality paths, MTP, and the
+        # entry-stage refiner slot.  (A blanket view-and-children rule pulled
+        # pipeline blocks' children into an extra nested depth.)
+        if (block.get("role") in {"modality_input", "fusion", "mtp"}
+                or block.get("id") == "entry_stage"):
             children.extend(block.get("children") or [])
     for block in (info["dominant"]["spec"].get("blocks") or []):
         children.extend(block.get("children") or [])
@@ -224,13 +240,34 @@ def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
             {"id": "down_proj", "title": "Output projection", "description": f"Linear · {inter} → {h}"},
         ]
 
+    if ffn.get("projection_mode") == "fused_gate_up":
+        # Source-proven FUSED storage: one gate+up matrix, split in forward —
+        # the drill draws gate_up_proj + gate_up_split, so those ids get the
+        # cards (Phi-3/phi-4; any fused-proven root).
+        first = [
+            {
+                "id": "gate_up_proj",
+                "title": "Fused gate+up projection",
+                "description": (f"One Linear · {h} → 2×{inter} — the gate and up "
+                                "projections stored as a single fused matrix."),
+            },
+            {
+                "id": "gate_up_split",
+                "title": "Split gate / up",
+                "description": "Chunks the fused projection into the gate and up halves.",
+            },
+        ]
+    else:
+        first = [
+            {
+                "id": "gate_proj",
+                "title": "Gate projection",
+                "description": f"Linear · {h} → {inter} (gated path through {activation})",
+            },
+            {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
+        ]
     panels = [
-        {
-            "id": "gate_proj",
-            "title": "Gate projection",
-            "description": f"Linear · {h} → {inter} (gated path through {activation})",
-        },
-        {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
+        *first,
         {
             "id": "activation",
             "title": activation,

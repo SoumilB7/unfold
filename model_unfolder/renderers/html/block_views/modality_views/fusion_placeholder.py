@@ -1,13 +1,14 @@
 """Placeholder-replacement modality fusion detail SVG."""
 from __future__ import annotations
 
-from ...stack_view import fit_svg
+from ...stack_view import StackView, fit_svg
 from ...svg import _ids, _rect_block, _svg_tag, _svg_text
 from ...theme import C, FONT_HEAD, GAP
 from ...utils import _fmt_int
 from .common import audio_input, fusion_spec, row_label, slot, video_input, vision_input
 from .fusion_cross_attention import build_cross_attention_fusion_view
 from .fusion_grid import build_unified_stream_view
+from .fusion_prefix import build_prefix_fusion_view
 
 
 def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: dict) -> str:
@@ -17,6 +18,13 @@ def build_multimodal_fusion_view(ir: dict, info: dict, mount_id: str, _block: di
         return build_cross_attention_fusion_view(ir, info, mount_id, fusion)
     if fusion.get("kind") == "unified_multimodal_stream":
         return build_unified_stream_view(ir, info, mount_id, fusion)
+    if fusion.get("kind") == "prefix_soft_tokens":
+        return build_prefix_fusion_view(ir, info, mount_id)
+    if fusion.get("kind") != "placeholder_replace":
+        view = StackView(info, mount_id, "unknown-multimodal-fusion",
+                         f"{ir.get('name', 'model')} code-defined fusion")
+        view.block("fusion_unknown", "Code-defined fusion", w=300, h=56)
+        return view.render()
 
     vision_spec = vision_input(ir)
     video_spec = video_input(ir)
@@ -212,4 +220,3 @@ def fusion_surface(parts: list[str], fusion: dict, box: dict, vision: dict, audi
         slot(parts, aud_x + 88, mixed_y, 36, "...", node_id="fusion_mixed_stream")
         slot(parts, eoa_x, mixed_y, guard_w, "EOA", node_id="fusion_eoa")
     slot(parts, tok3_x, mixed_y, tok_w, "tok", node_id="fusion_mixed_stream")
-

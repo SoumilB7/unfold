@@ -6,11 +6,15 @@ from ....block_schema import Block
 from ..common import format_dim as _fmt
 
 
-def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> dict:
+def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+                             embed_norm: str | None = None,
+                             final_logit_softcap: float | None = None) -> dict:
     return {
         "family": "transformer",
         "layout": "decoder_only",
-        "model_blocks": decoder_model_blocks(vocab_size, hidden_size, tie_word_embeddings),
+        "model_blocks": decoder_model_blocks(
+            vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm,
+            final_logit_softcap=final_logit_softcap),
     }
 
 
@@ -188,10 +192,17 @@ def block_diffusion_loop_blocks(
                  )},
                 {"id": "sc_act", "title": "GELU (gate activation)",
                  "description": "GELU applied to gate_proj output. Forms the gating weights."},
+                {"id": "sc_gate_up", "title": "Self-conditioning gate product",
+                 "description": "Element-wise GELU(gate_proj) × up_proj; the two SwiGLU branches join here."},
                 {"id": "sc_down", "title": "down_proj",
                  "description": (
                      f"Projects from {_fmt(sc_int)} → {_fmt(hidden_size)}. "
                      f"Produces the self-conditioning signal added to the canvas embeddings."
+                 )},
+                {"id": "sc_add", "title": "Canvas residual add",
+                 "description": (
+                     "Adds the projected previous-step self-conditioning signal to "
+                     "the current canvas embeddings (inputs_embeds)."
                  )},
                 {"id": "sc_post_norm", "title": "post_norm (RMSNorm, no learned scale)",
                  "description": (
@@ -251,10 +262,11 @@ def block_diffusion_loop_blocks(
     ]
 
 
-def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool) -> list[Block]:
+def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+                         embed_norm: str | None = None,
+                         final_logit_softcap: float | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
-    tied = " (tied with output)" if tie_word_embeddings else ""
     return [
         {
             "id": "tok_text",
@@ -275,6 +287,18 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
                            + (" — weights tied with the output head." if tie_word_embeddings else "."),
             "facts": [f"{vocab} vocab", f"{hidden}-d"],
         },
+        *([{
+            "id": "embed_norm",
+            "role": "norm",
+            "kind": "norm",
+            "label": embed_norm,
+            "title": "Embedding norm",
+            "description": (
+                f"{embed_norm} applied to the token embeddings BEFORE the layer "
+                "stack — a code-level stage of this family (BLOOM's "
+                "word-embedding LayerNorm), read from the modeling source."
+            ),
+        }] if embed_norm else []),
         {
             "id": "final_rms",
             "role": "norm",
@@ -288,10 +312,26 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "id": "lm_head",
             "role": "output",
             "kind": "output",
+            # Box label stays STABLE: the softcap suffix overflowed the hero
+            # pill (caught by the U5 pixel pass — text wider than the box).
+            # The fact lives in the title, description, and fact chip; the
+            # drawn OP node is the attention drill's tanh softcap.
             "label": "Linear output layer",
-            "title": "LM head",
-            "description": "Projects the final hidden state into vocabulary logits"
-                           + (" — weights tied with the embedding." if tie_word_embeddings else "."),
-            "facts": [f"{hidden} \u2192 {vocab}"],
+            "title": ("LM head · logit softcap" if final_logit_softcap else "LM head"),
+            # The softcap branch is a REAL forward op (config-declared
+            # final_logit_softcapping): logits/cap → tanh → ×cap before
+            # sampling — drawn where it runs, not parked in an extras bag.
+            "description": (
+                f"Projects the final hidden state into vocabulary logits, then "
+                f"softcaps them: logits = tanh(logits / {final_logit_softcap:g}) "
+                f"× {final_logit_softcap:g}, bounding magnitude to "
+                f"±{final_logit_softcap:g} without hard clipping"
+                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+            ) if final_logit_softcap else (
+                "Projects the final hidden state into vocabulary logits"
+                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+            ),
+            "facts": [f"{hidden} \u2192 {vocab}"] + (
+                [f"softcap ±{final_logit_softcap:g}"] if final_logit_softcap else []),
         },
     ]

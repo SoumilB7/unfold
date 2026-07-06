@@ -53,6 +53,7 @@ _KIND_SHORT = {
     "ssm": "SSM",
     "recurrent": "LRU",
     "linear": "Lin-Attn",
+    "gated_delta": "Gated-Delta",
     "rwkv": "RWKV",
 }
 _KIND_LONG = {
@@ -63,6 +64,7 @@ _KIND_LONG = {
     "ssm": "Selective state-space model (Mamba)",
     "recurrent": "Linear Recurrent Unit (LRU)",
     "linear": "Linear attention",
+    "gated_delta": "Gated DeltaNet recurrent mixer",
     "rwkv": "RWKV token-mixing",
 }
 _ACTIVATION_LABELS = {
@@ -75,6 +77,7 @@ _ACTIVATION_LABELS = {
     "swish": "SiLU",
     "geglu": "GEGLU",
     "swiglu": "SwiGLU",
+    "glu": "GLU",
 }
 
 
@@ -123,7 +126,20 @@ def kind_short(attention: dict) -> str:
         tags.append("Shared")
     if attention.get("no_rope"):
         tags.append("NoPE")
+    if _partial_rope_dims(attention):
+        tags.append("Partial RoPE")
     return f"{short} ({', '.join(tags)})" if tags else short
+
+
+def _partial_rope_dims(attention: dict) -> tuple[int, int] | None:
+    """(rotated, head_dim) when the code rotates only a slice of each head
+    (GPT-NeoX/GPT-J/StableLM/Persimmon partial rotary).  MLA is excluded —
+    its rope/nope split is a different mechanism with its own drawing."""
+    rd, hd = attention.get("rope_dim"), attention.get("head_dim")
+    if (attention.get("kind") != "mla" and isinstance(rd, int)
+            and isinstance(hd, int) and 0 < rd < hd):
+        return rd, hd
+    return None
 
 
 def kind_long(attention: dict) -> str:
@@ -144,6 +160,9 @@ def kind_long(attention: dict) -> str:
         extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
+    _pr = _partial_rope_dims(attention)
+    if _pr:
+        extras.append(f"rotary on {_pr[0]} of {_pr[1]} head dims")
     if attention.get("no_rope"):
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
@@ -234,6 +253,11 @@ def describe_attention(attention: dict) -> str:
             f"{attention.get('num_kv_heads')} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
+    elif kind == "gated_delta":
+        text = (
+            "Gated delta-rule recurrence; causal depthwise convolution; "
+            f"{attention.get('num_kv_heads')} K / {attention.get('num_heads')} V heads"
+        )
     else:
         text = (
             f"Multi-head; {attention.get('num_heads')} heads; "
@@ -323,6 +347,12 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     elif kind == "linear":
         desc = "Linear attention — kernelized scores accumulate in linear time."
         _head_facts(attention, facts)
+    elif kind == "gated_delta":
+        desc = ("Gated DeltaNet — causal depthwise convolution feeds a gated "
+                "delta-rule recurrence with cached recurrent state.")
+        if attention.get("conv_kernel_size"):
+            facts.append(f"conv kernel {attention.get('conv_kernel_size')}")
+        _head_facts(attention, facts)
     else:
         desc = "Multi-head self-attention — every head attends over the sequence."
         facts.append(f"{attention.get('num_heads')} heads")
@@ -357,10 +387,25 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         # as a chip so the block reads as VIDEO (a 3rd, time, dimension) without
         # drilling into the attention's "apply RoPE" leaves.
         facts.append("3D RoPE · T·H·W")
+    if attention.get("output_gate"):
+        facts.append(f"{attention['output_gate']} output gate")
+    position_kind = attention.get("position_kind")
+    if position_kind == "alibi":
+        facts.append("ALiBi")
+    # Learned/fixed absolute positions are model-input operations.  Their
+    # embedding + add blocks live before the repeated decoder stack; repeating
+    # the fact on an attention card assigns it to the wrong computation stage.
+    elif position_kind == "none" and not attention.get("no_rope"):
+        facts.append("no positional transform")
+    elif position_kind == "unknown":
+        facts.append("position scheme unresolved")
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
             facts.append(chip)
+    _pr = _partial_rope_dims(attention)
+    if _pr:
+        facts.append(f"partial rotary — {_pr[0]} of {_pr[1]} head dims")
     return desc, facts
 
 
@@ -395,6 +440,8 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
         facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
         if ffn.get("activation_clip"):
             facts.append(f"clamped ±{ffn['activation_clip']:g}")
+        if ffn.get("bias"):
+            facts.append("learned bias")
         return desc, facts
     if ffn.get("gated") is None:
         # Config declares the FFN and its inner width, but not whether it gates
@@ -465,7 +512,12 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     if kind == "mqa":
         return _prefixed_label(prefix, "Multi-Query", "Attention")
     if kind == "gqa":
-        tag = "(QK-Norm)" if attention.qk_norm else "Attention"
+        gqa_tags = []
+        if attention.qk_norm:
+            gqa_tags.append("QK-Norm")
+        if _spec_partial_rope(attention):
+            gqa_tags.append("Partial RoPE")
+        tag = f"({', '.join(gqa_tags)})" if gqa_tags else "Attention"
         return _prefixed_label(prefix, "Grouped-Query", tag)
     if kind == "ssm":
         shared_tag = "(Shared)" if attention.shared else "Block"
@@ -476,15 +528,27 @@ def attention_label(attention: AttentionSpec) -> list[str]:
         return ["RWKV", "Token-Mixing"]
     if kind == "linear":
         return ["Linear", "Attention"]
+    if kind == "gated_delta":
+        return ["Gated DeltaNet", "Token Mixer"]
 
     tags = []
     if attention.qk_norm:
         tags.append("QK-Norm")
     if attention.no_rope:
         tags.append("NoPE")
+    if _spec_partial_rope(attention):
+        tags.append("Partial RoPE")
     if tags:
         return ["Multi-Head Attn", f"({', '.join(tags)})"]
     return ["Multi-Head", "Attention"]
+
+
+def _spec_partial_rope(attention: AttentionSpec) -> bool:
+    """True when the spec proves a partial head rotation (rope_dim strictly
+    inside head_dim; MLA's rope/nope split is its own mechanism)."""
+    return (attention.kind != "mla" and isinstance(attention.rope_dim, int)
+            and isinstance(attention.head_dim, int)
+            and 0 < attention.rope_dim < attention.head_dim)
 
 
 def attention_title(attention: AttentionSpec) -> str:
@@ -507,6 +571,7 @@ def attention_title(attention: AttentionSpec) -> str:
             "recurrent": "Linear Recurrent Unit (LRU)",
             "rwkv": "RWKV token-mixing",
             "linear": "Linear attention",
+            "gated_delta": "Gated DeltaNet token mixer",
         }.get(attention.kind, "Attention")
     base = _prefixed_title(_attention_mask_title_prefix(attention), base)
     extras = []
@@ -572,6 +637,7 @@ _OP_SENTENCES = {
     "reshape": "Regroups one tensor into a new shape (no learned weights).",
     "slice": "Splits the tensor into named lanes.",
     "rope": "Applies rotary position encoding to this lane.",
+    "position": "Constructs or applies positional information at this stage.",
     "cache": "Stored tensor reused across steps (write on entry, read on reuse).",
     "subgraph": "Compound block with its own internal structure.",
     "opaque": "Internals not declared by the config — drawn as one honest block.",

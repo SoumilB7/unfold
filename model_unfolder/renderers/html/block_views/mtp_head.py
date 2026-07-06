@@ -90,24 +90,30 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
     cn2 = norms[1] if len(norms) > 1 else {}
     ca = next((c for c in children if c.get("kind") == "attention"), {})
     cf = next((c for c in children if c.get("kind") == "ffn"), {})
+    adds = [c for c in children if c.get("kind") == "residual_add"]
 
     norm1_id = cn1.get("id", "mtp_block_norm1")
     norm2_id = cn2.get("id", "mtp_block_norm2")
+    add1_id = adds[0].get("id", "mtp_block_add1") if adds else "mtp_block_add1"
+    add2_id = adds[1].get("id", "mtp_block_add2") if len(adds) > 1 else "mtp_block_add2"
     graph = tower_graph({
         "source": {"id": "mtp_block_in", "kind": "port", "label": "from eh_proj  (d)"},
         "cell": [
             {"id": norm1_id, "kind": "norm", "label": cn1.get("label") or "RMSNorm"},
             {"id": ca.get("id", "mtp_block_attn"), "kind": "attention",
              "label": ca.get("label") or "Attention"},
-            {"id": "mtp_block_add1", "kind": "residual_add", "static": True,
+            {"id": add1_id, "kind": "residual_add",
              "residual_from": norm1_id},
             {"id": norm2_id, "kind": "norm", "label": cn2.get("label") or "RMSNorm"},
             {"id": cf.get("id", "mtp_block_ffn"), "kind": "ffn",
              "label": cf.get("label") or "Feed-Forward"},
-            {"id": "mtp_block_add2", "kind": "residual_add", "static": True,
+            {"id": add2_id, "kind": "residual_add",
              "residual_from": norm2_id},
         ],
-        "repeat_label": "decoder layer",
+        # One MTP module owns exactly one decoder block.  Declaring repeat=1
+        # suppresses both repeat frame and pill; "decoder layer" is a card title,
+        # not a repetition count.
+        "repeat": 1,
         "output": {"id": "mtp_block_out", "kind": "port",
                    "label": "to shared output head", "static": True},
     })

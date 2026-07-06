@@ -74,19 +74,17 @@ def validate_ir_with_evidence(ir: ModelIR, evidence: CodeEvidence) -> list[str]:
 
 
 def _looks_like_multi_variant_file(evidence: CodeEvidence) -> bool:
-    """Heuristic: families whose single source file covers many variants."""
-    files = evidence.files or ()
-    if any(name in ("gemma3", "gemma3n", "gemma4", "llama4") for f in files
-           for name in [str(f).rsplit("/", 2)[-2] if "/" in str(f) else ""]):
-        return True
-    # Fallback: detect "looks like multimodal wrapper" — multiple distinct
-    # attention/ffn variants in one file is a strong signal.
-    components = getattr(evidence, "components", {}) or {}
-    if len(components.get("attention") or []) >= 3:
-        return True
-    if len(components.get("ffn") or []) >= 2:
-        return True
-    return False
+    """Whether the modeling source covers many variants in one file — so a
+    code→IR topology warning for whichever variant lacks a feature would be a
+    false positive.  Read STRUCTURALLY (code -> structure), not from a family
+    name: a multimodal/multi-variant file defines ≥2 distinct LAYER classes
+    (text decoder + vision/audio encoder layers); a single-tower decoder file
+    defines exactly one."""
+    from .patterns import layer_class_count_from_files
+    try:
+        return layer_class_count_from_files(evidence.files or ()) >= 2
+    except Exception:
+        return False
 
 
 # ---------------------------------------------------------------------------

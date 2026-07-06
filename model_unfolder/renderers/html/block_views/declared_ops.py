@@ -10,6 +10,7 @@ reductions — all compositions of existing ops, never new view code.  Leaf view
 from __future__ import annotations
 
 from ....opgraph import ops_region
+from ..graph import Group
 from ..graph_engine import render_graph
 from ..op_render import region_to_graph
 
@@ -21,8 +22,17 @@ def build_declared_ops_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     region = ops_region(declared, rid=rid, label=title)
     # Op nodes are drill targets whenever cards exist for them — and they
     # always do: the lookup derives per-op cards from this same region.
+    graph = region_to_graph(region, clickable=bool(block.get("children")))
+    for index, op in enumerate(declared):
+        if "repeat" not in op or op.get("repeat") == 1:
+            continue
+        repeat = op.get("repeat")
+        graph.groups.append(Group(
+            [op.get("id") or f"{rid}_op{index}"],
+            repeat=repeat if isinstance(repeat, int) and repeat > 1 else None,
+        ))
     return render_graph(
-        region_to_graph(region, clickable=bool(block.get("children"))),
+        graph,
         info, mount_id, f"ops_{rid}",
         f"{ir.get('name', 'model')} {title}", min_width=640,
     )

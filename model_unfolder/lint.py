@@ -19,6 +19,8 @@ are correct, so duplicate-label detection is left to the visual rubric).
 """
 from __future__ import annotations
 
+import re
+
 from .labels import activation_label
 
 #: clean activation display names the renderer is allowed to draw (the values of
@@ -38,6 +40,28 @@ _RAW_CLASS_SUFFIXES = (
     "ForImageGeneration", "ForSequenceClassification",
 )
 
+_CONNECTOR_KINDS = frozenset({"residual_add", "gate_mul", "dot_product", "concat"})
+
+# Numeric facts belong on cards/chips, never block labels.  Keep this deliberately
+# targeted: real PyTorch op names like ``Conv2d`` / ``Conv3d`` are allowed, while
+# dimensions/counts/tokens painted on boxes are not.
+_FACTY_NUMBER = re.compile(
+    r"("
+    r"×\s*\d"                                  # Encoder ×30
+    # A *dimension* is hyphenated (768-d / 1,280-d) or a ≥2-digit run (1024d).
+    # NOTE: a bare single-digit + D (2D / 3D / axial 3D) is a TOPOLOGY descriptor
+    # (N-dimensional RoPE / patches), not a channel dimension — it must NOT flag.
+    r"|\b\d[\d,]*\s*-\s*d\b"                   # 768-d / 1,280-d
+    r"|\b\d[\d,]+\s*d\b"                       # 1024d  (≥2-digit dimension)
+    r"|\b\d[\d,]*\s*(?:tokens?|heads?|experts?|layers?|blocks?|channels?)\b"
+    r"|\b\d[\d,]*\s*(?:→|->)"                  # 1024 -> ...
+    r"|(?:→|->)\s*\d[\d,]*"                    # ... -> 4096
+    r")",
+    re.IGNORECASE,
+)
+_ALLOWED_NUMERIC_OP_LABELS = frozenset({"Conv1d", "Conv2d", "Conv3d"})
+_BACKEND_ALTERNATIVE = re.compile(r"\b(?:Linear|Conv[123]d)\s*/\s*(?:Linear|Conv[123]d)\b")
+
 
 def lint_labels(ir: dict) -> list[str]:
     """Every block-label offence in ``ir`` (``Diagram.to_ir()``), as messages.
@@ -52,6 +76,10 @@ def lint_labels(ir: dict) -> list[str]:
 def _lint_block(block: dict) -> list[str]:
     out: list[str] = []
     bid = block.get("id", "?")
+    if _is_static_connector(block):
+        out.append(
+            f"block {bid!r}: Tier-2 connector kind {block.get('kind')!r} is static — "
+            "connectors must be clickable glyphs with a one-line card; only ports/layout helpers are static.")
     for part in _label_parts(block.get("label")):
         # 1. Nested / doubled parentheses — a block label is a short name with at
         #    most one parenthetical; ``"(MM-DiT (dual-stream))"`` is a tag wrapped
@@ -66,7 +94,18 @@ def _lint_block(block: dict) -> list[str]:
             out.append(
                 f"block {bid!r}: label part {part!r} is a raw model class name — "
                 "map it to a clean family name (e.g. an everchanging text_encoders row).")
-    # 2. Activation-role blocks must draw the clean math name, never the config's
+        # 3. Backend alternatives are not operation labels.  The parser/source
+        #    evidence must resolve the real op or render an honest unknown.
+        if _BACKEND_ALTERNATIVE.search(part):
+            out.append(
+                f"block {bid!r}: label part {part!r} hedges between backend ops — "
+                "draw the real code op, or mark the block honestly unknown.")
+        # 4. Counts/dimensions/tokens are facts, not operation identity.
+        if _leaks_numeric_fact(part):
+            out.append(
+                f"block {bid!r}: label part {part!r} includes dimensions/counts — "
+                "move numeric facts to card chips, not the block label.")
+    # 5. Activation-role blocks must draw the clean math name, never the config's
     #    backend spelling (gelu-approximate / gelu_pytorch_tanh / quick_gelu …).
     if _is_activation_block(block):
         label = " ".join(_label_parts(block.get("label"))).strip()
@@ -76,6 +115,18 @@ def _lint_block(block: dict) -> list[str]:
                 f"block {bid!r}: activation label {label!r} is a raw backend "
                 f"spelling — draw the clean math name (e.g. {clean!r}).")
     return out
+
+
+def _is_static_connector(block: dict) -> bool:
+    return block.get("kind") in _CONNECTOR_KINDS and block.get("static") is True
+
+
+def _leaks_numeric_fact(part: str) -> bool:
+    if part in _ALLOWED_NUMERIC_OP_LABELS:
+        return False
+    # Allow clean ordinal-free operator names with digits embedded only in the
+    # PyTorch ConvNd family above; all architecture dimensions/counts are chips.
+    return bool(_FACTY_NUMBER.search(part))
 
 
 def _is_activation_block(block: dict) -> bool:

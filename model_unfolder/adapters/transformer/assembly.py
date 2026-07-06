@@ -22,10 +22,12 @@ def decoder_layer(
     extra_blocks: Iterable[dict] | None = None,
     norm_kind: str = "rmsnorm",
     norm_placement: str = "pre",
+    residual_scale=None,
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
     blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
-                                  norm_placement=norm_placement)
+                                  norm_placement=norm_placement,
+                                  residual_scale=residual_scale)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(
@@ -45,13 +47,16 @@ def parallel_decoder_layer(
     hidden_size: int,
     *,
     norm_kind: str = "rmsnorm",
+    norm_count: int = 1,
 ) -> LayerSpec:
     """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
 
-    Attention and FFN share a single input norm and their outputs are summed
-    into one residual add rather than two sequential adds.
+    ``norm_count`` = the distinct input norms the layer applies (code-derived):
+    1 = SHARED (GPT-J); 2 = SEPARATE norms before attention and the FFN (GPT-NeoX
+    ``input_layernorm``+``post_attention_layernorm``, drawn as two, not one).
     """
-    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind)
+    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size,
+                                           norm_kind=norm_kind, norm_count=norm_count)
     return LayerSpec(
         index=index,
         attention=attention,
@@ -98,6 +103,8 @@ def decoder_extras(
     hidden_size: int,
     tie_word_embeddings: bool,
     *extra_maps: Mapping[str, Any] | None,
+    embed_norm: str | None = None,
+    final_logit_softcap: float | None = None,
 ) -> dict:
     """Build top-level extras shared by decoder-only transformer models."""
     extras = {
@@ -105,6 +112,8 @@ def decoder_extras(
             vocab_size,
             hidden_size,
             tie_word_embeddings,
+            embed_norm=embed_norm,
+            final_logit_softcap=final_logit_softcap,
         )
     }
     for extra in extra_maps:

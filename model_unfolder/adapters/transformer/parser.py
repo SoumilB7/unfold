@@ -38,7 +38,7 @@ from __future__ import annotations
 from typing import Any
 
 from . import debug
-from ...everchanging import load_aliases, load_layer_type_labels, load_layer_topology
+from ...everchanging import load_aliases, load_layer_type_labels
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -48,6 +48,9 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_extras,
 )
 from .special_parts.modalities import multimodal_extras
+from .special_parts.modalities.fusion import apply_fusion_evidence
+from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
+from .special_parts.modalities.audio import apply_audio_evidence
 from .special_parts.modalities.detect import cross_attention_layers as _cross_attention_layers
 
 
@@ -69,9 +72,23 @@ _FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
 _COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
 _HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
 
-# Per-family macro-topology (post/sandwich norm, flag-less parallel residual) —
-# data, not code (everchanging/transformer/layer_topology.yaml).
-_LAYER_TOPOLOGY = load_layer_topology()
+def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
+    """The EFFECTIVE config-declared QK^T scale, or None when it equals the
+    default 1/sqrt(head_dim) (drawing sqrt(dim) is then exactly true).
+
+    Two declaration dialects, each with its own semantics:
+    * ``attention_multiplier`` (Granite family) — the scale directly;
+    * ``query_pre_attn_scalar`` (Gemma-2/3) — scale = value ** -0.5.
+    """
+    scale = None
+    if multiplier is not None:
+        scale = float(multiplier)
+    elif query_pre_attn_scalar:
+        scale = float(query_pre_attn_scalar) ** -0.5
+    if scale is None or not head_dim:
+        return None
+    default = float(head_dim) ** -0.5
+    return None if abs(scale - default) <= 1e-6 * default else scale
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
@@ -89,10 +106,311 @@ def _resolve(cfg: Any, canonical: str, default=None):
     return default
 
 
-_TEXT_WRAPPER_KEYS = (
-    "text_config", "language_config", "llm_config", "text_model_config",
-    "thinker_config",  # Qwen3-Omni nests the LM under thinker_config.text_config
-)
+def _source_files(cfg: Any, context=None):
+    """Return this parse's already-resolved source files.
+
+    Direct adapter callers still get a complete parse: ``parse`` creates the
+    context once before any detector runs.  The fallback is retained only for
+    isolated helper tests and third-party calls to these private helpers.
+    """
+    if context is not None:
+        return context.source_bundle.files
+    from ...evidence.sources import resolve_source_files
+    return resolve_source_files(cfg, source="local").files
+
+
+def _code_layer_topology(cfg: Any, context=None) -> dict | None:
+    """The decoder layer's macro-topology (norm placement + parallel residual)
+    READ FROM THE MODELING SOURCE — the code-based replacement for the
+    ``layer_topology.yaml`` model_type table.  "code -> structure": where the
+    norms sit and whether attention ∥ FFN is wiring the forward() states, not a
+    per-family lookup.  Returns ``{"norm_placement", "parallel_residual"}`` or
+    None (no source / no layer class found → caller falls back to the table
+    cache, then the safe pre/sequential default).  Best-effort, never raises into
+    the parse."""
+    try:
+        from ...evidence.patterns import decoder_layer_topology_from_files
+        files = _source_files(cfg, context)
+        return decoder_layer_topology_from_files(files)
+    except Exception:
+        return None
+
+
+def _code_norm_kind(cfg: Any, context=None) -> str | None:
+    """The decoder's norm KIND (rmsnorm/layernorm) READ FROM THE MODELING SOURCE
+    — used only as a config-silent fallback (no eps field), replacing the legacy
+    model_type family-set.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_norm_kind_from_files
+        return decoder_norm_kind_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_norm_math(cfg: Any, context=None) -> str | None:
+    """The decoder's norm KIND read from the norm class's forward() MATH —
+    outranks the eps-field spelling (T5: ``layer_norm_epsilon`` in config,
+    variance-only RMS in code).  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import norm_kind_from_files_math
+        return norm_kind_from_files_math(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_ffn_gated(cfg: Any, context=None) -> bool | None:
+    """Whether the decoder's plain MLP is gated (gate·up) READ FROM THE MODELING
+    SOURCE — overrides the ``rmsnorm -> gated`` heuristic, which mis-gates a dense
+    RMSNorm decoder (Phi: ``PhiMLP`` is dense). Same code-evidence rail that feeds
+    the nested-conformance net, so the drawing and the net never diverge.
+    Best-effort, never raises into the parse; None keeps the heuristic."""
+    try:
+        from ...evidence.patterns import decoder_ffn_gated_from_files
+        return decoder_ffn_gated_from_files(_source_files(cfg, context), cfg=cfg)
+    except Exception:
+        return None
+
+
+def _code_ffn_storage_mode(cfg: Any, context=None, *, expected_gated=None) -> str | None:
+    """FFN projection STORAGE read from the modeling source: split gate/up/down
+    modules vs a fused ``gate_up_proj`` that is chunked in forward (Mixtral /
+    DeepSeek-V3 naive MoE / gpt-oss experts).  A whiteboard-equivalent split
+    drawing is NOT code-faithful when the source stores fused — the drill must
+    show the fused projection + split (anti-overlook rule).  None keeps the
+    default split rendering (unproven storage stays the conventional shape only
+    for the ALREADY-drawn gated structure; the gate-or-not fact itself remains
+    evidence/tri-state via ``_code_ffn_gated``)."""
+    try:
+        from ...evidence.ffn import ffn_structure_evidence
+        evidence = ffn_structure_evidence(
+            _source_files(cfg, context), expected_gated=expected_gated)
+        if evidence.status == "proven":
+            return evidence.projection_mode
+        return None
+    except Exception:
+        return None
+
+
+def _code_embedding_norm(cfg: Any, context=None) -> str | None:
+    """A norm applied to the embedding OUTPUT before the stack (BLOOM's
+    word-embedding LayerNorm) — a real drawn bookend read from the source."""
+    try:
+        from ...evidence.patterns import embedding_stage_norm_from_files
+        return embedding_stage_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
+    """Fused Q/K/V storage (one ``query_key_value``/``c_attn`` projection) read
+    from the source — the drill draws Linear (QKV) + splits, never three
+    fabricated projections."""
+    try:
+        from ...evidence.patterns import attention_fused_qkv_from_files
+        return attention_fused_qkv_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_qk_norm(cfg: Any, context=None):
+    """Q/K normalisation READ FROM THE MODELING SOURCE — code-first: the
+    attention class decides the SHAPE of the answer (unconditional / gated /
+    absent) and, when gated, NAMES the config field(s) whose values decide it
+    (``config.qk_layernorm``, ``config.use_qk_norm``, Llama-4's per-layer
+    ``config.no_rope_layers[layer_idx]``).  The config-spelling read survives
+    only as the no-oracle fallback — a declaration is still a declaration.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_qk_norm_from_files
+        return decoder_qk_norm_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> list[bool]:
+    """Per-layer Q/K-norm facts from the code evidence.
+
+    Code-first resolution: unconditional construction → True everywhere (the
+    config is not consulted); proven-absent → False everywhere EVEN IF a config
+    spelling claims otherwise (a flag the code never reads is dead — the code
+    wins); gated → AND of the values of the config fields the code itself
+    names, read from THIS checkpoint (per-layer when the code indexes by the
+    layer index); no source / unresolvable gate → the declared spelling."""
+    n = max(int(num_layers or 0), 0)
+    if code_ev is None:
+        return [declared] * n
+    if code_ev.present is True:
+        return [True] * n
+    if code_ev.present is False:
+        return [False] * n
+    per_layer = [True] * n
+    for atom in code_ev.gate:
+        raw = _g(cfg, atom.field)
+        if atom.per_layer:
+            if not isinstance(raw, (list, tuple)) or len(raw) < n:
+                return [declared] * n
+            per_layer = [p and bool(raw[i]) for i, p in enumerate(per_layer)]
+        else:
+            if raw is None:
+                return [declared] * n
+            per_layer = [p and bool(raw) for p in per_layer]
+    return per_layer
+
+
+def _code_parallel_norm_count(cfg: Any, context=None):
+    """Distinct INPUT norms a parallel-residual decoder layer applies (1 shared
+    / 2 separate), READ FROM THE CODE dataflow — fixes GPT-NeoX's two norms
+    drawn as one shared.  None when unresolvable (Falcon conditional) → the
+    caller defaults to 1.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_parallel_norm_count_from_files
+        return decoder_parallel_norm_count_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_bias(cfg: Any, context=None):
+    """Whether the attention Q/K/V projections carry a BIAS, READ FROM THE
+    ATTENTION CLASS's construction — code-authoritative (Bloom/Qwen2 enact
+    `nn.Linear(..., bias=True)` while their config declares no `attention_bias`,
+    so the spelling reader draws them bias-less).  None when unresolvable →
+    caller keeps the config spelling.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_attention_bias_from_files
+        return decoder_attention_bias_from_files(_source_files(cfg, context), cfg)
+    except Exception:
+        return None
+
+
+def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
+    """Per-layer MoE?/dense schedule READ FROM THE DECODER LAYER's CONSTRUCTION —
+    the code-authoritative replacement for the config schedule flags: which
+    layers build an experts class (name-independent) as their FFN field, gated
+    per layer.  Returns ``list[bool]`` (len num_layers) or None on any doubt
+    (hybrid SSM-MoE, exotic gate, no source) → caller falls back to config.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_moe_schedule_from_files
+        sched = decoder_moe_schedule_from_files(_source_files(cfg, context), cfg)
+        if sched is not None and num_layers and len(sched) == num_layers:
+            return sched
+        return None
+    except Exception:
+        return None
+
+
+def _code_router(cfg: Any, context=None):
+    """MoE routing behaviour READ FROM THE MODELING SOURCE — the code channel
+    for the score transform / aux-loss-free bias / sparsemixer that modern
+    checkpoints leave out of config (GLM-4.5 copied DeepSeek-V3's routing code
+    but not its ``scoring_func``/``topk_method`` strings).  Best-effort, never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_router_evidence_from_files
+        return decoder_router_evidence_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_scores_scaled(cfg: Any, context=None) -> bool | None:
+    """Whether the attention forward SCALES its scores, READ FROM THE MODELING
+    SOURCE (``attention_score_scaling_from_files``) — the same verdict the
+    encoder-tower path already draws (T5's raw ``QK^T``).  False ⇒ the forward
+    performs no scale (folded into init); True/None keep the sqrt(dim)
+    rendering.  Wiring this on the MAIN path removes the one asserted default
+    that had a live, unread oracle.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import attention_score_scaling_from_files
+        return attention_score_scaling_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_mlp_bias(cfg: Any, context=None) -> bool | None:
+    """MLP projection bias READ FROM THE FFN CLASS's Linear constructions —
+    the twin of _code_attention_bias.  None on doubt (Conv1D layouts, rival
+    FFN fields) → the config spelling stands.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_mlp_bias_from_files
+        return decoder_mlp_bias_from_files(_source_files(cfg, context), cfg)
+    except Exception:
+        return None
+
+
+def _code_attention_sinks(cfg: Any, context=None) -> bool:
+    """Learned sink logits joining the attention softmax, READ FROM THE
+    MODELING SOURCE — a config-silent fact (no config field exists for it).
+    Vocabulary lives in fact_markers.yaml; bare spellings are gated on
+    attention-compute evidence.  False on silence — a lost oracle can never
+    fabricate a sink lane.  Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_attention_sinks_from_files
+        return decoder_attention_sinks_from_files(_source_files(cfg, context))
+    except Exception:
+        return False
+
+
+def _code_intermediate_size(cfg: Any, context=None) -> int | None:
+    """FFN intermediate width from the modeling source's OWN default expression
+    when the config field is absent (GPT-J/GPT-2/CodeGen ``n_inner=None →
+    4×n_embd``) — fixes the param undercount without a per-model table.
+    Best-effort, never raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_intermediate_size_from_files
+        return decoder_intermediate_size_from_files(
+            _source_files(cfg, context), cfg, _ALIASES.get("intermediate_size", ()))
+    except Exception:
+        return None
+
+
+def _code_rope_dim(cfg: Any, context=None) -> int | None:
+    """The rotated head-width read from an explicit-dim rotary CONSTRUCTION
+    (ChatGLM's ``RotaryEmbedding(rotary_dim // 2)``) — only consulted when
+    every config spelling of the fraction is silent.  Best-effort, never
+    raises into the parse."""
+    try:
+        from ...evidence.patterns import decoder_rope_dim_from_files
+        return decoder_rope_dim_from_files(_source_files(cfg, context), cfg=cfg)
+    except Exception:
+        return None
+
+
+def _code_expert_storage(cfg: Any, context=None) -> str | None:
+    """Routed-EXPERT storage read from the source — independent of the plain
+    MLP's storage (DeepSeek-V3: split MLP for dense/shared, fused stacked
+    ``gate_up_proj`` for the routed experts)."""
+    try:
+        from ...evidence.patterns import expert_fused_gate_up_from_files
+        fused = expert_fused_gate_up_from_files(_source_files(cfg, context))
+        return "fused_gate_up" if fused else None
+    except Exception:
+        return None
+
+
+def _code_ffn_activation(cfg: Any, context=None) -> str | None:
+    """Config-silent FFN activation read from the exact modeling source."""
+    try:
+        from ...evidence.patterns import decoder_ffn_activation_from_files
+        return decoder_ffn_activation_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_position(cfg: Any, context=None):
+    """Typed positional evidence shared verbatim with fact-conformance."""
+    try:
+        from ...evidence.position import decoder_positional_evidence
+        bundle = context.source_bundle if context is not None else None
+        return decoder_positional_evidence(cfg, source="local", bundle=bundle)
+    except Exception:
+        # A detector failure is not permission to assert a source-derived fact.
+        # Treat it as present-but-unresolved; fact-conformance will expose the
+        # same state when the source oracle is available.
+        from ...evidence.models import PositionalEvidence
+        return PositionalEvidence("ambiguous", reason="positional detector raised")
+
+
+from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
 
 
 def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
@@ -108,6 +426,10 @@ def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
         sub = _g(cfg, key)
         if sub is None:
             continue
+        # A composite AutoConfig nests sub-configs as OBJECTS, not dicts
+        # (Qwen3-Omni's thinker_config) — same declaration, different carrier.
+        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
+            sub = sub.to_dict()
         if isinstance(sub, dict):
             if _has_transformer_shape(sub):
                 return sub
@@ -166,7 +488,10 @@ def matches(_cfg: Any) -> bool:
     return True  # the only adapter — must be registered last in the global list
 
 
-def parse(cfg: Any) -> ModelIR:
+def parse(cfg: Any, context=None) -> ModelIR:
+    if context is None:
+        from ...evidence.context import ParseContext
+        context = ParseContext.build(cfg, source="local")
     debug.reset()  # start a fresh field-access record for this parse
     warnings: list[str] = []
     model_type = (_g(cfg, "model_type") or "unknown").lower()
@@ -199,6 +524,13 @@ def parse(cfg: Any) -> ModelIR:
         mlp_ratio = get("mlp_ratio")
         if mlp_ratio and hidden_size:
             intermediate_size = int(hidden_size * float(mlp_ratio))
+    # GPT-J/GPT-2/CodeGen: config's ``n_inner`` is None and the layer computes
+    # ``4 * n_embd`` itself — read that default EXPRESSION from the source so the
+    # FFN width (and thus the param count) isn't undercounted to zero.
+    if not intermediate_size:
+        code_inter = _code_intermediate_size(text_cfg, context)
+        if code_inter:
+            intermediate_size = code_inter
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
     activation_raw = get("hidden_act")
     if isinstance(activation_raw, dict):
@@ -207,6 +539,11 @@ def parse(cfg: Any) -> ModelIR:
         nested_act = _g(ffn_cfg, "ffn_act_fn")
         if isinstance(nested_act, dict):
             activation_raw = nested_act.get("name")
+    if activation_raw is None:
+        activation_raw = _code_ffn_activation(text_cfg, context)
+    # B5: a fact that fell through to the generic default is TAGGED in the
+    # spec (`asserted`) — machine-distinguishable from a declared/read value.
+    activation_defaulted = activation_raw is None
     activation   = (activation_raw or "silu").lower()
     sliding_window = get("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
@@ -219,24 +556,71 @@ def parse(cfg: Any) -> ModelIR:
         sliding_window = None
         max_window_layers = None
     layer_types  = _g(text_cfg, "layer_types") or []
+    full_attention_interval = _g(text_cfg, "full_attention_interval") or 0
+    if not layer_types and full_attention_interval and num_layers:
+        layer_types = [
+            "linear_attention" if (i + 1) % int(full_attention_interval) else "full_attention"
+            for i in range(num_layers)
+        ]
     # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
     # are picked up — see everchanging/aliases.yaml.
     compress_ratios = _resolve(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
-    norm_kind    = _norm_kind(text_cfg, get("norm_type"))
-    # Norm placement (pre / post / double-sandwich) is architectural for a few
-    # families and carries no config flag — looked up by model_type from data.
-    _mt_candidates = {model_type, str(_g(text_cfg, "model_type") or "").lower()}
-    norm_placement = next(
-        (_LAYER_TOPOLOGY["norm_placement"][mt] for mt in _mt_candidates
-         if mt in _LAYER_TOPOLOGY["norm_placement"]),
-        "pre",
-    )
-    # RoPE is the default for decoder LLMs; ALiBi / learned-absolute families
-    # (BLOOM/MPT/GPT-2/OPT) don't apply it — drawing a RoPE step there would be
-    # fabricated wiring.
-    uses_rope = not (_mt_candidates & set(_LAYER_TOPOLOGY["no_rope"]))
+    # Granite-style declared SCALE family: a constant multiplier on each
+    # sublayer's residual contribution (drawn as a × connector with its
+    # constant operand), plus embedding/attention/logits scales (card facts).
+    # An undrawn SPEECH stack (Qwen-Omni talker + token2wav) is a stated
+    # omission, never a silent one.
+    if _g(cfg, "talker_config") is not None:
+        warnings.append("Speech-generation stack (talker + token2wav vocoder) not "
+                        "drawn — the diagram shows the thinker (LM).")
+    residual_multiplier = _resolve(text_cfg, "residual_multiplier")
+    _resolve(text_cfg, "embedding_multiplier")
+    attention_multiplier = _resolve(text_cfg, "attention_multiplier")
+    query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
+    _resolve(text_cfg, "logits_scaling")
+    _norm_kind_ev = _norm_kind_evidence(text_cfg, get("norm_type"), context)
+    norm_kind    = _norm_kind_ev or "rmsnorm"
+    norm_kind_defaulted = _norm_kind_ev is None      # B5: tag the modern-LM default
+    # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
+    # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
+    # structure), the general replacement for the model_type identity table.
+    _code_topo = _code_layer_topology(text_cfg, context)
+    # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — overrides the
+    # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
+    # the code (and the nested-conformance net).  None keeps the heuristic.
+    _code_gated = _code_ffn_gated(text_cfg, context)
+    _code_storage_mode = _code_ffn_storage_mode(text_cfg, context, expected_gated=_code_gated)
+    _code_expert_fused = _code_expert_storage(text_cfg, context)
+    _code_fused_qkv = _code_attention_fused_qkv(text_cfg, context)
+    _code_position_evidence = _code_position(cfg, context)
+    # Placement: proven value, else the conventional pre cell TAGGED asserted
+    # (B5).  An earlier draft drew a norm-less "unknown" cell on reader
+    # abstention — wrong by principle 5 (unresolvable → conventional fallback,
+    # never a DIFFERENT drawing): the reader abstains on whole IDIOMS (T5's
+    # ModuleList-appended sublayers), and dropping every such family's norms
+    # traded a latent hazard for a real regression.  The tag keeps the
+    # assertion machine-visible; the advisory net lists it per render.
+    norm_placement = (_code_topo or {}).get("norm_placement")
+    norm_placement_defaulted = not norm_placement
+    if not norm_placement:
+        norm_placement = "pre"
+    # Position scheme: only configured source evidence may assert a mechanism.
+    # Missing source stays unknown; a family convention is not evidence.
+    _position_mechanisms = list(_code_position_evidence.mechanisms)
+    if _code_position_evidence.status == "proven":
+        uses_rope = "rope" in _code_position_evidence.kinds
+    else:
+        uses_rope = False
+        if _code_position_evidence.status == "oracle_missing":
+            warnings.append(
+                "Modeling source is unavailable; the positional scheme remains unknown."
+            )
+        else:
+            warnings.append(
+                "Modeling source is present but the configured positional scheme is unresolved."
+            )
 
     if not num_layers:
         warnings.append("Config missing num_hidden_layers (and aliases) — layer list will be empty.")
@@ -256,9 +640,23 @@ def parse(cfg: Any) -> ModelIR:
     qk_nope_head_dim = _g(text_cfg, "qk_nope_head_dim")
     qk_rope_head_dim = _g(text_cfg, "qk_rope_head_dim")
     v_head_dim_cfg   = _g(text_cfg, "v_head_dim")
-    has_multi_query_flag = bool(_g(text_cfg, "multi_query"))
-    if has_multi_query_flag:
+    has_multi_query_flag = bool(_g(text_cfg, "multi_query")
+                                or _g(text_cfg, "multi_query_attention"))  # chatglm spelling
+    # The flag means "KV heads are shared", NOT "exactly one": ChatGLM declares
+    # multi_query_attention: true AND multi_query_group_num: 2 (a 2-group GQA).
+    # Only when NO explicit group count is declared does the flag default the
+    # KV count to 1 (Falcon-7B / GPT-BigCode true MQA).
+    if has_multi_query_flag and not get("num_key_value_heads"):
         num_kv_heads = 1
+    # Hybrid linear-recurrent token mixers (for example a gated delta network)
+    # carry geometry separate from the full-attention head fields.
+    linear_num_k_heads = _g(text_cfg, "linear_num_key_heads")
+    linear_num_v_heads = _g(text_cfg, "linear_num_value_heads")
+    linear_k_head_dim = _g(text_cfg, "linear_key_head_dim")
+    linear_v_head_dim = _g(text_cfg, "linear_value_head_dim")
+    linear_conv_kernel = _g(text_cfg, "linear_conv_kernel_dim")
+    attn_output_gate = _g(text_cfg, "attn_output_gate")
+    _g(text_cfg, "output_gate_type")  # ownership acknowledged; source applies sigmoid
     # Determine if the stack mixes sliding + full layers — affects mask labeling
     # (a full layer in a sliding stack is labeled "global", not "causal").
     sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
@@ -275,27 +673,96 @@ def parse(cfg: Any) -> ModelIR:
 
     # ---- Position encoding ----
     no_rope_interval     = _g(text_cfg, "no_rope_layer_interval") or 0
+    no_rope_list         = _g(text_cfg, "no_rope_layers")   # materialized per-layer use_rope flags
+    _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
-    rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
     # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
     _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
+    # The modern transformers rope dialect NESTS the partial factor inside the
+    # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
+    # exists on the config class) — same fact, newer spelling.
+    if partial_rotary_fac is None and isinstance(_rope_scaling, dict):
+        _nested_prf = _rope_scaling.get("partial_rotary_factor")
+        if _nested_prf is not None:
+            partial_rotary_fac = _nested_prf
+            debug.note_access("partial_rotary_factor")
+    rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
+    if rope_dim_value is None:
+        # Config silent on the fraction — the CODE may still state it (ChatGLM
+        # constructs ``RotaryEmbedding(rotary_dim // 2)``; the halving exists
+        # nowhere in config).  A full-width value is not "partial" — drop it.
+        _code_rd = _code_rope_dim(text_cfg, context)
+        if _code_rd and head_dim and 0 < _code_rd < head_dim:
+            rope_dim_value = _code_rd
     mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
+    if mrope_section is not None:
+        debug.note_access("mrope_section")   # consumed SUBKEY of the scaling dict
 
     # ---- QK-Norm ----
+    # Spelling read stays FIRST for config-ownership (all three aliases are
+    # audited) and as the no-oracle fallback; the code evidence then decides.
     use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
+    qk_norm_layers = _resolve_qk_norm_layers(
+        _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
-    use_attention_bias = bool(_g(text_cfg, "attention_bias") or _g(attn_cfg, "attention_bias"))
+    # Config spelling first (ownership), then the CODE construction is
+    # authoritative: Bloom/Qwen2 hardcode `nn.Linear(..., bias=True)` on QKV
+    # while declaring no `attention_bias`, so the spelling reader drew them
+    # bias-less.  None keeps the spelling (config-gated families like Llama
+    # resolve their `bias=config.attention_bias` value through the reader anyway).
+    use_attention_bias = bool(_resolve(text_cfg, "attention_bias")
+                              or _g(attn_cfg, "attention_bias"))
+    _code_bias = _code_attention_bias(text_cfg, context)
+    if _code_bias is not None:
+        use_attention_bias = _code_bias
+    # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).  A
+    # config-DECLARED scale is a stronger, load-bearing statement: when one
+    # exists the declared float wins and the silent-scale read is ignored.
+    code_scores_scaled = _code_scores_scaled(text_cfg, context)
+    # Learned sink logits in the softmax — config-silent, code-only.
+    code_attention_sinks = _code_attention_sinks(text_cfg, context)
+    # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
+    # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
+    attn_logit_softcap = _g(text_cfg, "attn_logit_softcapping")
+    # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
+    # True; None keeps "config does not declare it").  Code-authoritative like
+    # its twin: Bloom's MLP Linears default to bias=True with a silent config;
+    # `bias=config.mlp_bias` families still honor the checkpoint value through
+    # the reader; Conv1D layouts abstain → the config spelling stands.
+    _mlp_bias = _resolve(text_cfg, "mlp_bias")
+    use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
+    _code_mlp = _code_mlp_bias(text_cfg, context)
+    if _code_mlp is not None:
+        use_mlp_bias = _code_mlp
+    # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
+    # bidirectional attention — a MASK fact, consumed here so a positive value
+    # can never be silently dropped.
+    if _g(text_cfg, "use_bidirectional_attention"):
+        forced_bidirectional = True
+    else:
+        forced_bidirectional = False
+    # BLOOM-family topology switch: when TRUE the residual taps the POST-LN
+    # output instead of the raw hidden state — surfaced as a layer annotation
+    # (the tap is a wiring fact; False is the drawn default).
+    residual_post_layernorm = bool(_g(text_cfg, "apply_residual_connection_post_layernorm"))
 
     # ---- Layer topology ----
-    # Parallel residual is usually a config flag, but some families (Cohere) are
-    # architecturally parallel with no flag — recognised by model_type from data.
+    # Parallel residual: a config flag when the family TOGGLES it (Falcon
+    # new_decoder_architecture / GPT-NeoX use_parallel_residual — gated inside an
+    # `if`, so the config decides); else READ FROM the forward() when it is
+    # UNCONDITIONAL structure with no flag (Cohere, GPT-J, Phi — all flagless,
+    # all missed by the old model_type table, so all silently drawn sequential).
+    # Distinct INPUT norms a parallel-residual layer applies, read from the code
+    # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
+    # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
+    parallel_norm_count = _code_parallel_norm_count(text_cfg, context) or 1
     use_parallel_residual = bool(
         _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
-        or _mt_candidates & set(_LAYER_TOPOLOGY["parallel_residual"])
+        or (_code_topo or {}).get("parallel_residual")
     )
 
     # ---- MoE ----
@@ -312,15 +779,27 @@ def parse(cfg: Any) -> ModelIR:
     # explicit ``mlp_only_layers`` which stay dense.
     decoder_sparse_step = _g(text_cfg, "decoder_sparse_step") or 0
     mlp_only_layers     = set(_g(text_cfg, "mlp_only_layers") or [])
+    # Llama-4's explicit MoE-layer LIST — the code schedule reads its VALUE, so
+    # record ownership here (the audit tracks _g access); also the direct config
+    # fallback (layer i is MoE iff i in moe_layers) for a source-less parse.
+    moe_layers_list     = _g(text_cfg, "moe_layers")
     moe_every_layer     = moe_active and not any([
         first_k_dense,
         interleave_moe_step,
         decoder_sparse_step and decoder_sparse_step > 1,
         mlp_only_layers,
     ])
+    # CODE-AUTHORITATIVE per-layer MoE schedule (which layers build an experts
+    # class as their FFN field) — read from the decoder layer's construction,
+    # name-independent.  Supplies the per-layer SHAPE; ``moe_active``
+    # (num_experts>0) stays the is-this-MoE-at-all geometry gate.  None when the
+    # code can't resolve it (hybrid SSM-MoE / exotic gate / no source) → the
+    # config ``_is_dense_at_layer`` path is used unchanged (the 12 agreeing
+    # families stay byte-identical; llama-4 + ernie are the code-right fixes).
+    code_moe_schedule   = _code_moe_schedule(text_cfg, context, num_layers) if moe_active else None
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
-    moe_routing = _moe_routing(text_cfg) if moe_active else None
+    moe_routing = _moe_routing(text_cfg, context) if moe_active else None
     # gpt-oss clamps its SwiGLU activation to ±swiglu_limit — a Tier-3 property.
     activation_clip = _g(text_cfg, "swiglu_limit")
 
@@ -350,6 +829,8 @@ def parse(cfg: Any) -> ModelIR:
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types, max_window_layers,
         )
+        if forced_bidirectional and mask in ("causal", "global"):
+            mask = "bidirectional"       # encoder-reuse switch: a MASK fact
         compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
         # Per-layer dual KV: full layers in a sliding stack use the global counts.
@@ -360,9 +841,28 @@ def parse(cfg: Any) -> ModelIR:
             layer_kv_heads = num_kv_heads
             layer_head_dim = head_dim
 
-        attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
-        is_nope   = bool(no_rope_interval > 1 and i % no_rope_interval == 0)
-        is_cross_attn_layer = has_cross_attention_side_state and i in cross_attn_layer_set
+        layer_type = layer_types[i] if i < len(layer_types) else None
+        is_gated_delta = layer_type == "linear_attention"
+        attn_kind = (
+            "gated_delta" if is_gated_delta
+            else _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
+        )
+        # NoPE placement comes from the field the code actually indexes
+        # (``self.use_rope = config.no_rope_layers[layer_idx]`` — truthy means
+        # the layer USES rope), falling back to the interval rule with the
+        # config class's own phase: ``use_rope = (i + 1) % interval != 0`` puts
+        # NoPE at layers 3, 7, 11…, not 0, 4, 8….
+        if isinstance(no_rope_list, (list, tuple)) and i < len(no_rope_list):
+            is_nope = not bool(no_rope_list[i])
+        else:
+            is_nope = bool(no_rope_interval > 1 and (i + 1) % no_rope_interval == 0)
+        # The layer TYPE follows the declared schedule alone: a bare component
+        # config (mllama_text_model) declares cross_attention_layers without a
+        # vision_config sibling, and its cross layers ARE cross-attention
+        # layers — suppressing them drew 8 wrong layer types on the standalone
+        # parse (caught by the U4 schedule lock).  The vision gate only decides
+        # what the side-state SOURCE honestly says.
+        is_cross_attn_layer = i in cross_attn_layer_set
 
         kv_source: int | None = None
         if i >= first_shared_layer:
@@ -372,26 +872,34 @@ def parse(cfg: Any) -> ModelIR:
                     CrossLayerEdge(kind="kv_share", from_layer=kv_source, to_layer=i, shared=["K", "V"])
                 )
 
+        position_mechanism = _position_for_layer(
+            _code_position_evidence, is_gated_delta=is_gated_delta,
+        )
         attn = AttentionSpec(
             kind=attn_kind,
-            num_heads=num_heads,
-            num_kv_heads=layer_kv_heads,
-            head_dim=layer_head_dim,
+            num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
+            num_kv_heads=(linear_num_k_heads or layer_kv_heads) if is_gated_delta else layer_kv_heads,
+            head_dim=(linear_k_head_dim or layer_head_dim) if is_gated_delta else layer_head_dim,
             kv_lora_rank=kv_lora_rank if is_mla else None,
             q_lora_rank=q_lora_rank if is_mla else None,
             qk_nope_head_dim=qk_nope_head_dim if is_mla else None,
             qk_rope_head_dim=qk_rope_head_dim if is_mla else None,
-            v_head_dim=v_head_dim_cfg if is_mla else None,
+            v_head_dim=(linear_v_head_dim if is_gated_delta else v_head_dim_cfg if is_mla else None),
             rope_dim=rope_dim_value,
             mask=mask,
             window_size=window,
             kv_source_layer=kv_source,
-            qk_norm=use_qk_norm,
-            rope=uses_rope,
+            qk_norm=qk_norm_layers[i] if i < len(qk_norm_layers) else use_qk_norm,
+            rope=uses_rope and not is_gated_delta,
+            position_kind=position_mechanism[0],
+            position_application=position_mechanism[1],
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
-            cross_kv_source="projected image states" if is_cross_attn_layer else None,
+            cross_kv_source=(("projected image states"
+                              if has_cross_attention_side_state else
+                              "external encoder states (encoder not in this config)")
+                             if is_cross_attn_layer else None),
             compress_ratio=compress_ratio,
             # Sparse-attention indexer fan-in. CSA declares it alongside a
             # compress_ratio; DeepSeek-V3.2 DSA declares its own indexer geometry
@@ -400,38 +908,103 @@ def parse(cfg: Any) -> ModelIR:
             index_n_heads=_g(text_cfg, "index_n_heads"),
             index_head_dim=_g(text_cfg, "index_head_dim"),
             mrope_section=mrope_section,
+            conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
+            output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
+            scores_scale=_declared_scores_scale(
+                attention_multiplier, query_pre_attn_scalar,
+                layer_head_dim or (hidden_size // num_heads
+                                   if hidden_size and num_heads else None)),
+            # only a False verdict changes rendering, and only when no config-
+            # declared scale contradicts it (declared float > silent-scale read)
+            scores_scaled=(False if (code_scores_scaled is False
+                                     and attention_multiplier is None
+                                     and not query_pre_attn_scalar) else None),
+            sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
+            logit_softcap=attn_logit_softcap,
+            # B5: the universal floor, machine-tagged (JSON-only — bless
+            # signatures hash SVGs, so this adds zero gallery drift): mask
+            # stayed the dataclass "causal" when no layer-type schedule
+            # decided it; the sqrt(dim) scores denominator is asserted when
+            # neither a declared scale nor the code verdict backs it.
+            asserted=tuple(
+                (["mask"] if (mask == "causal" and not layer_types
+                              and not sliding_window) else [])
+                + (["scores_scale"] if (code_scores_scaled is None
+                                        and attention_multiplier is None
+                                        and not query_pre_attn_scalar) else [])),
+            projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
+                                             and not is_gated_delta) else None),
+            variant=(
+                {
+                    "short": "Gated DeltaNet",
+                    "tag": "linear recurrent mixer",
+                    "label": ["Gated DeltaNet", "Token Mixer"],
+                    "title": "Gated DeltaNet token mixer",
+                    "desc": (
+                        "Causal depthwise convolution feeds a gated delta-rule recurrence; "
+                        "cached decoding switches to the recurrent update path."
+                    ),
+                }
+                if is_gated_delta else None
+            ),
         )
 
-        is_dense_at_layer = _is_dense_at_layer(
-            i,
-            moe_active=moe_active,
-            first_k_dense=first_k_dense,
-            interleave_moe_step=interleave_moe_step,
-            moe_layer_freq=moe_layer_freq,
-            decoder_sparse_step=decoder_sparse_step,
-            mlp_only_layers=mlp_only_layers,
-        )
+        # Code decides the per-layer shape when it resolved the construction;
+        # else the config schedule path (unchanged).  moe_active is the shared
+        # is-this-MoE gate in both branches.
+        if code_moe_schedule is not None:
+            is_dense_at_layer = not code_moe_schedule[i]
+        elif isinstance(moe_layers_list, (list, tuple, set)):
+            # config fallback for the explicit MoE-layer list (Llama-4 w/o source)
+            is_dense_at_layer = i not in moe_layers_list
+        else:
+            is_dense_at_layer = _is_dense_at_layer(
+                i,
+                moe_active=moe_active,
+                first_k_dense=first_k_dense,
+                interleave_moe_step=interleave_moe_step,
+                moe_layer_freq=moe_layer_freq,
+                decoder_sparse_step=decoder_sparse_step,
+                mlp_only_layers=mlp_only_layers,
+            )
 
         if moe_active and not is_dense_at_layer:
             ffn = FFNSpec(
                 kind="moe",
                 activation=activation,
                 intermediate_size=intermediate_size or moe_intermediate_size,
-                gated=_is_gated(activation, norm_kind),
+                gated=_is_gated(activation, norm_kind, _code_gated),
                 num_experts=num_experts,
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
                 expert_intermediate_size=moe_intermediate_size or intermediate_size,
                 routing=moe_routing,
                 activation_clip=activation_clip,
+                bias=use_mlp_bias,
+                projection_mode=_code_storage_mode,
+                expert_projection_mode=_code_expert_fused,
+                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                asserted=tuple(
+                    (["activation"] if activation_defaulted else [])
+                    + (["norm_kind"] if norm_kind_defaulted else [])
+                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
         else:
             ffn = FFNSpec(
                 kind="dense",
                 activation=activation,
                 intermediate_size=intermediate_size,
-                gated=_is_gated(activation, norm_kind),
+                gated=_is_gated(activation, norm_kind, _code_gated),
                 activation_clip=activation_clip,
+                bias=use_mlp_bias,
+                projection_mode=_code_storage_mode,
+                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                asserted=tuple(
+                    (["activation"] if activation_defaulted else [])
+                    + (["norm_kind"] if norm_kind_defaulted else [])
+                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
@@ -439,13 +1012,16 @@ def parse(cfg: Any) -> ModelIR:
             extra_blocks.append(_cross_attention_states_side_block())
 
         if use_parallel_residual:
-            layers.append(parallel_decoder_layer(i, attn, ffn, hidden_size, norm_kind=norm_kind))
+            layers.append(parallel_decoder_layer(
+                i, attn, ffn, hidden_size, norm_kind=norm_kind,
+                norm_count=parallel_norm_count))
         else:
             layers.append(decoder_layer(
                 i, attn, ffn, hidden_size,
                 norm_kind=norm_kind,
                 norm_placement=norm_placement,
                 extra_blocks=extra_blocks,
+                residual_scale=residual_multiplier,
             ))
 
     for lt in sorted(unknown_layer_types):
@@ -454,23 +1030,124 @@ def parse(cfg: Any) -> ModelIR:
     vocab_size = get("vocab_size", 0)
     tie_word_embeddings = bool(get("tie_word_embeddings", False))
 
+    modality_extras = multimodal_extras(cfg, text_cfg, hidden_size)
+    if modality_extras:
+        try:
+            from ...evidence.audio import audio_tower_evidence
+            modality_extras = apply_audio_evidence(
+                modality_extras,
+                audio_tower_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # Missing/ambiguous source keeps one honest opaque audio tower and
+            # connector.  It never revives the former family-labelled sketch.
+            pass
+        try:
+            from ...evidence.vision import vision_tower_evidence
+            modality_extras = apply_vision_evidence(
+                modality_extras,
+                vision_tower_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # A failed source extractor must leave the path honestly generic;
+            # it is never permission to restore a family-derived structure.
+            pass
+        try:
+            from ...evidence.fusion import fusion_evidence
+            modality_extras = apply_fusion_evidence(
+                modality_extras,
+                fusion_evidence(cfg, bundle=context.source_bundle),
+                cfg,
+                text_cfg,
+            )
+        except Exception:
+            # Fusion structure is wrapper-code evidence.  Failure must leave the
+            # base payload opaque, never revive a family/config guess.
+            pass
+        try:
+            from ...evidence.projector import projector_evidence
+            modality_extras = apply_projector_evidence(
+                modality_extras,
+                projector_evidence(cfg, bundle=context.source_bundle),
+            )
+        except Exception:
+            # As with the tower extractor, failure leaves one honest generic
+            # connector.  Config dimensions survive; callable structure does not.
+            pass
     extras = decoder_extras(
         vocab_size,
         hidden_size,
         tie_word_embeddings,
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
-        multimodal_extras(cfg, text_cfg, hidden_size),
+        modality_extras,
+        embed_norm=_code_embedding_norm(text_cfg, context),
+        # Gemma-2's final_logit_softcapping is a REAL pre-sampling op — the LM
+        # head card states it (only-when-present; everyone else byte-stable).
+        final_logit_softcap=_g(text_cfg, "final_logit_softcapping"),
     )
+    final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    if residual_post_layernorm:
+        extras["render"].setdefault("layer_annotations", []).append(
+            "residual taps the post-LayerNorm output")
+    for block in extras["render"]["model_blocks"]:
+        if block.get("id") == "final_rms":
+            block.update({
+                "label": f"Final {final_norm_name}",
+                "description": (
+                    f"{final_norm_name} over the last hidden state before the output head."
+                ),
+            })
+    extras["position_encoding"] = {
+        **_code_position_evidence.to_dict(),
+    }
+    absolute_item = next((item for item in _position_mechanisms
+                          if item.kind in {"learned_absolute", "fixed_absolute"}), None)
+    if absolute_item is not None:
+        learned = absolute_item.kind == "learned_absolute"
+        position_label = "Learned Position Embedding" if learned else "Fixed Position Encoding"
+        extras["render"]["model_blocks"].extend([
+            {
+                "id": "position_ids", "role": "input", "kind": "source",
+                "label": "Position IDs", "title": "Position indices",
+                "description": "Sequence-position indices used to look up learned positional vectors.",
+            },
+            {
+                "id": "position_embed", "role": "embedding", "kind": "embedding",
+                "label": position_label, "title": position_label,
+                "description": (
+                    "Looks up one learned positional vector for each sequence position."
+                    if learned else
+                    "Selects a deterministic sinusoidal vector for each sequence position."
+                ),
+            },
+            {
+                "id": "position_add", "role": "residual", "kind": "residual_add",
+                "label": "+", "title": "Token + position embedding",
+                "description": (
+                    "Adds the learned positional vector to the token embedding before the decoder stack."
+                    if learned else
+                    "Adds the fixed positional vector to the token embedding before the decoder stack."
+                ),
+            },
+        ])
 
-    # ---- Block diffusion (DiffusionGemma) ----------------------------------------
-    # Top-level model_type is "diffusion_gemma"; the inner text_config is parsed as
-    # a normal transformer for the per-layer IR.  We then override:
+    # ---- Block diffusion (masked/canvas-denoising text LMs) ----------------------
+    # Detected by EVIDENCE, not one exact model_type string: a block-diffusion LM
+    # declares a denoising CANVAS (``canvas_length``) and/or sits in the diffusion
+    # architecture family — so a sibling block-diffusion model (not just
+    # diffusion_gemma) routes here too.  The inner text_config is parsed as a
+    # normal transformer for the per-layer IR; we then override:
     #   1. The render layout (block_diffusion loop view).
-    #   2. Per-layer blocks: DiffusionGemma has post-attention norm, parallel
+    #   2. Per-layer blocks: this family has post-attention norm, parallel
     #      dense-MLP + MoE, post-FFN norm, and a per-layer learned scalar —
-    #      none of which the generic decoder_layer topology expresses.
+    #      none of which the generic decoder_layer topology expresses (the block
+    #      builder is the opaque-source fallback for these research models).
     #   3. qk_norm: Q/K/V norms are unconditional in __init__ (not a config flag).
-    if model_type == "diffusion_gemma":
+    # Block-diffusion layout is a CONFIG fact (canvas_length declares the
+    # denoising canvas) — never a model_type spelling.  A block-diffusion
+    # config without canvas_length renders as the plain decoder its config
+    # declares; identity must not fill the gap (eradication plan I-07).
+    if _g(cfg, "canvas_length") is not None:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
@@ -564,6 +1241,12 @@ def parse(cfg: Any) -> ModelIR:
             "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
+        # These SUBKEYS are consumed above via plain dict reads — record them so
+        # the ownership audit reflects consumption, not just the parent lookup.
+        for consumed in ("rope_type", "type", "factor",
+                         "original_max_position_embeddings", "rope_theta"):
+            if consumed in rope_params:
+                debug.note_access(consumed)
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.
@@ -577,7 +1260,7 @@ def parse(cfg: Any) -> ModelIR:
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val
 
-    if use_qk_norm:
+    if any(qk_norm_layers) if qk_norm_layers else use_qk_norm:
         extras["qk_norm"] = True
 
     # Generic attention-side knobs surfaced as info-only annotations.
@@ -722,12 +1405,17 @@ def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[st
     return None
 
 
-def _moe_routing(cfg: Any) -> dict | None:
+def _moe_routing(cfg: Any, context=None) -> dict | None:
     """Collect the MoE router knobs that decide *how* experts get picked.
 
-    Returns only the fields the config actually declares (DeepSeek/Kimi/GLM use
-    the full set; Qwen3-MoE just ``norm_topk_prob``), or ``None`` when none are.
-    """
+    Config strings first (DeepSeek/Kimi declare the full set), then the CODE
+    channel fills/overrides the two facts modern checkpoints omit: GLM-4.5
+    copied DeepSeek-V3's routing CODE (``.sigmoid()`` + ``e_score_correction_bias``)
+    but not its ``scoring_func``/``topk_method`` STRINGS, so the string reader
+    drew softmax and dropped the bias.  Code is the enacted truth: it decides the
+    score transform and the aux-loss-free bias; a declared string that agrees is
+    confirmation, one that disagrees loses to the code (with a recorded note).
+    ``None`` when neither channel declares anything."""
     routing = {
         "scoring_func":          _g(cfg, "scoring_func"),          # sigmoid | softmax
         "topk_method":           _g(cfg, "topk_method"),           # noaux_tc, group_limited_greedy, ...
@@ -737,6 +1425,45 @@ def _moe_routing(cfg: Any) -> dict | None:
         "routed_scaling_factor": _g(cfg, "routed_scaling_factor"),  # scale on routed-expert output
     }
     routing = {k: v for k, v in routing.items() if v is not None}
+
+    code = _code_router(cfg, context)
+    if code is not None:
+        # Score transform: code decides; a declared string only confirms.
+        if code.scoring_fn:
+            declared = routing.get("scoring_func")
+            if declared and str(declared).lower() != code.scoring_fn:
+                routing["_scoring_declared"] = declared      # disagreement note (audit)
+            routing["scoring_func"] = code.scoring_fn
+        # Aux-loss-free bias correction: code proof (e_score_correction_bias) OR
+        # a declared ``noaux_tc``.  A resolved boolean the render reads directly,
+        # so a checkpoint that enacts the bias without the string still draws it.
+        if code.bias_correction or routing.get("topk_method") == "noaux_tc":
+            routing["bias_correction"] = True
+        if code.sparsemixer:
+            routing["sparsemixer"] = True
+        # The score transform is drawn as its OWN node only when the code runs it
+        # BEFORE the top-k (Mixtral/GLM/DSV3) — a node before top-k would misdraw
+        # gpt-oss/Granite, which top-k the raw logits and softmax the winners.
+        if code.scoring_fn and code.scoring_before_topk:
+            routing["scoring_before_topk"] = True
+
+    # BOTH channels silent on the score transform while the modeling source IS
+    # installed ⇒ an extractor/vocabulary gap, not an honest absence — stamp
+    # the ambiguity envelope the BLOCKING evidence_ambiguity net reads (the
+    # honest replacement for the old render-side `or "softmax"` assertion).
+    # No source at all stays exempt (oracle_missing discipline).
+    if "scoring_func" not in routing and code is None:
+        try:
+            has_source = bool(_source_files(cfg, context))
+        except Exception:
+            has_source = False
+        if has_source:
+            routing["evidence"] = {
+                "status": "ambiguous", "component": "router",
+                "reason": "score transform not declared in config and no "
+                          "router class resolved from the installed source",
+            }
+
     return routing or None
 
 
@@ -778,30 +1505,67 @@ def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag:
     return "gqa"
 
 
-def _norm_kind(cfg: Any, explicit_norm_type: Any = None) -> str:
-    """Pick LayerNorm vs RMSNorm from config — first explicit field, then eps hints."""
+def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) -> str | None:
+    """The norm kind from EVIDENCE only — None when nothing states it (the
+    caller chooses its default and KNOWS it is a default).  Channel order:
+
+    1. an explicit ``rmsnorm`` bool / ``norm_type`` config declaration;
+    2. the norm class's ``forward()`` MATH from the modeling source — the
+       only channel that never lies, so it outranks BOTH eps spellings:
+       PhiMoE/Persimmon construct ``nn.LayerNorm`` while carrying
+       ``rms_norm_eps`` (the RMS spelling lies about the kind), and T5 carries
+       ``layer_norm_epsilon`` while ``T5LayerNorm`` computes a variance-only
+       rescale (RMS).  ``_norm_math_verdict`` also maps the torch-builtin API
+       names (``nn.LayerNorm``/``nn.RMSNorm``) as fixed library math — reading
+       the library, not the model — so a norm with no in-file forward still
+       classifies here;
+    3. ``rms_norm_eps`` spelling — RMS when no source math is readable;
+    4. the ``layer_norm_eps*`` spelling hint;
+    5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
+    """
+    # Both eps spellings are read UP FRONT: they are real config facts (the
+    # epsilon in use) and must record their access for the ownership audit even
+    # when a higher channel (math) decides the KIND before the spelling hint.
+    rms_eps = _g(cfg, "rms_norm_eps")
+    ln_eps = _g(cfg, "layer_norm_epsilon")
+    ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
+    declared_rms = _g(cfg, "rmsnorm")            # chatglm boolean declaration
+    if declared_rms is True:
+        return "rmsnorm"
+    if declared_rms is False:
+        return "layernorm"
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
         if "rms" in nt:
             return "rmsnorm"
         if "layer" in nt:
             return "layernorm"
-    if _g(cfg, "rms_norm_eps") is not None:
+    math_kind = _code_norm_math(cfg, context)
+    if math_kind:
+        return math_kind
+    if rms_eps is not None:
         return "rmsnorm"
-    if _g(cfg, "layer_norm_epsilon") is not None or _g(cfg, "layer_norm_eps") is not None:
+    if ln_eps is not None or ln_eps2 is not None:
         return "layernorm"
-    # Legacy decoder-only families predate RMSNorm — they universally use LayerNorm.
-    model_type = (_g(cfg, "model_type") or "").lower()
-    if model_type in {"gpt_neox", "gptj", "gpt2", "bloom", "mpt", "falcon", "opt", "phi"}:
-        return "layernorm"
-    return "rmsnorm"
+    return _code_norm_kind(cfg, context)
 
 
-def _is_gated(activation: str, norm_kind: str | None = None) -> bool:
+def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
+    """LayerNorm vs RMSNorm — evidence channels first, modern-LM default last."""
+    return _norm_kind_evidence(cfg, explicit_norm_type, context) or "rmsnorm"
+
+
+def _is_gated(activation: str, norm_kind: str | None = None,
+              code_gated: bool | None = None) -> bool:
     """Whether the FFN has a separate gate projection (SwiGLU/GeGLU style).
 
-    Heuristics, in order:
+    Evidence order (code > config-signal > heuristic):
 
+    * ``code_gated`` — the MLP class's ``forward()`` either does a ``gate_mul`` or
+      not (read from the modeling source). The ground truth: it wins whenever
+      available, so a dense RMSNorm decoder (Phi) is no longer mis-gated by the
+      heuristic below. This is the SAME evidence the nested-conformance net reads,
+      so the drawing and the net cannot diverge.
     * Activation explicitly says so: ``silu``/``swish`` (Llama/Mistral/Qwen/
       DeepSeek/GPT-OSS style), anything with ``glu`` in the name, or
       ``gelu_pytorch_tanh`` (Gemma family — uses gate/up/down despite the
@@ -812,6 +1576,8 @@ def _is_gated(activation: str, norm_kind: str | None = None) -> bool:
       MPT / OPT / Falcon / Phi-1/2) end up here and are correctly
       classified as non-gated.
     """
+    if code_gated is not None:
+        return code_gated
     a = (activation or "").lower()
     if "glu" in a or a in {"silu", "swish", "gelu_pytorch_tanh"}:
         return True
@@ -827,6 +1593,28 @@ def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | 
     if partial_rotary_factor and head_dim:
         return int(head_dim * float(partial_rotary_factor))
     return None
+
+
+def _position_for_layer(evidence, *, is_gated_delta: bool) -> tuple[str, str]:
+    """Project model evidence onto one concrete layer without moving altitudes."""
+    if evidence.status == "proven":
+        mechanisms = list(evidence.mechanisms)
+        if is_gated_delta:
+            selected = next((item for item in mechanisms if item.kind == "none"), None)
+            if selected is not None:
+                return selected.kind, selected.application
+        # Attention-stage mechanisms take precedence on the attention card.  A
+        # model may independently add an absolute position vector before the
+        # stack; that operation remains represented by the model-level blocks.
+        selected = next((item for item in mechanisms
+                         if item.kind in {"rope", "alibi", "none"}), None)
+        if selected is None and mechanisms:
+            selected = mechanisms[0]
+        if selected is not None:
+            return selected.kind, selected.application
+    if evidence.status == "ambiguous":
+        return "unknown", "none"
+    return "unknown", "none"
 
 
 def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:

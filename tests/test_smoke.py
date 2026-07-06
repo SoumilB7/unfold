@@ -34,6 +34,129 @@ KIMI_K2_CONFIG = {
     "moe_layer_freq": 1,
 }
 
+
+def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately():
+    cfg = {
+        "model_type": "qwen3_5_text",
+        "architectures": ["Qwen3_5ForCausalLM"],
+        "vocab_size": 1000,
+        "hidden_size": 512,
+        "intermediate_size": 1024,
+        "num_hidden_layers": 8,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "head_dim": 64,
+        "hidden_act": "silu",
+        "layer_types": [
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+            "linear_attention", "linear_attention", "linear_attention", "full_attention",
+        ],
+        "linear_num_key_heads": 4,
+        "linear_num_value_heads": 8,
+        "linear_key_head_dim": 64,
+        "linear_value_head_dim": 64,
+        "linear_conv_kernel_dim": 4,
+        "attn_output_gate": True,
+        "output_gate_type": "swish",
+    }
+    ir = unfold(cfg).to_ir()
+    assert [ir["layers"][i]["attention"]["kind"] for i in (0, 3)] == ["gated_delta", "gqa"]
+    delta = ir["layers"][0]["attention"]
+    assert delta["rope"] is False and delta["conv_kernel_size"] == 4
+    assert delta["output_gate"] is None
+    assert ir["layers"][3]["attention"]["output_gate"] == "sigmoid"
+    assert len({layer.signature() for layer in parse(cfg).layers}) == 2
+    html = unfold(cfg).to_html(standalone=True)
+    assert "Gated DeltaNet" in html
+    assert "Causal depthwise Conv1d" in html
+    assert "Gate attention output" in html
+
+
+def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    cfg = {
+        "model_type": "bloom", "vocab_size": 100, "hidden_size": 64,
+        "intermediate_size": 128, "num_hidden_layers": 1,
+        "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg, _context=None: PositionalEvidence("ambiguous", reason="negative control"),
+    )
+    ir = parser_module.parse(cfg)
+    assert ir.layers[0].attention.position_kind == "unknown"
+    assert ir.layers[0].attention.rope is False
+    assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
+
+
+def test_oracle_missing_position_is_unknown_independent_of_model_identity(monkeypatch):
+    from model_unfolder.evidence.models import PositionalEvidence
+    from model_unfolder.adapters.transformer import parser as parser_module
+
+    base = {
+        "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 4, "hidden_act": "gelu",
+    }
+    monkeypatch.setattr(
+        parser_module, "_code_position",
+        lambda _cfg, _context=None: PositionalEvidence("oracle_missing", reason="negative control"),
+    )
+    bloom = parser_module.parse({**base, "model_type": "bloom"})
+    unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
+    assert bloom.layers[0].attention.rope is False
+    assert unknown.layers[0].attention.rope is False
+    assert bloom.layers[0].attention.position_kind == "unknown"
+    assert unknown.layers[0].attention.position_kind == "unknown"
+    assert "fallback_rope" not in bloom.extras["position_encoding"]
+    assert "fallback_rope" not in unknown.extras["position_encoding"]
+    assert any("source is unavailable" in warning for warning in bloom.warnings)
+
+
+def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("gpt_bigcode").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "learned_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Learned Position Embedding" in html
+    assert "Token + position embedding" in html
+    from model_unfolder.labels import attention_summary
+    assert "learned positions" not in attention_summary(ir["layers"][0]["attention"])[1]
+
+
+def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
+    from transformers import AutoConfig
+
+    diagram = unfold(AutoConfig.for_model("xglm").to_dict())
+    ir = diagram.to_ir()
+    ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
+    assert {"position_ids", "position_embed", "position_add"} <= ids
+    assert ir["layers"][0]["attention"]["position_kind"] == "fixed_absolute"
+    assert ir["layers"][0]["attention"]["rope"] is False
+    assert diagram.wiring_problems() == []
+    html = diagram.to_html(standalone=True)
+    assert "Fixed Position Encoding" in html
+    assert "Adds the fixed positional vector" in html
+    from model_unfolder.labels import attention_summary
+    assert "fixed positions" not in attention_summary(ir["layers"][0]["attention"])[1]
+
+
+def test_final_norm_label_uses_the_code_derived_norm_class():
+    from transformers import AutoConfig
+
+    layernorm = unfold(AutoConfig.for_model("gpt_bigcode").to_dict()).to_html()
+    rmsnorm = unfold(AutoConfig.for_model("llama").to_dict()).to_html()
+    assert "Final LayerNorm" in layernorm
+    assert "Final RMSNorm" not in layernorm
+    assert "Final RMSNorm" in rmsnorm
+
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
     "model_type": "deepseek_v3",
@@ -455,15 +578,15 @@ def _arch_variant_badges(html):
 
 def test_layer_repeat_badge_is_per_variant_not_global_total():
     """A heterogeneous model renders one architecture variant per layer type; the
-    ``x N`` badge on each must count THAT group's layers (matching its own toggle
-    pill), never the global total. Regression: the badge hardcoded
-    len(ir["layers"]) so every DeepSeek-V3 variant wrongly read "x 61"."""
-    # 1 dense + 3 MoE layers ⇒ neither group equals the total (4), so a global
-    # leak (both "x 4") is unmistakably distinguishable from the correct 1 / 3.
+    ``x N`` badge must count THAT group's layers, never the global total.  A
+    one-off variant is not a repeated region, so it deliberately has no badge."""
+    # 1 dense + 3 MoE layers: only the genuinely repeated MoE region earns x 3.
     cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1}
-    badges = _arch_variant_badges(unfold(cfg).to_html(standalone=True))
-    assert sorted(badges.values()) == [1, 3], badges
-    assert sum(badges.values()) == cfg["num_hidden_layers"]
+    html = unfold(cfg).to_html(standalone=True)
+    badges = _arch_variant_badges(html)
+    assert sorted(badges.values()) == [3], badges
+    assert html.count('class="uf-arch-variant ') == 2
+    assert ">x 1<" not in html
 
     # A homogeneous stack still shows the total on its single variant.
     homo = _arch_variant_badges(unfold(LLAMA3_8B_CONFIG).to_html(standalone=True))
@@ -504,8 +627,9 @@ def test_mtp_head_detected_and_rendered():
     assert 'data-card-id="mtp"' in html
     assert "eh_proj" in html  # detail-view internals rendered
 
-    # The transformer block opens into its own tower (like the vision encoder).
-    assert "decoder layer" in html
+    # The transformer block opens into its own tower (like the vision encoder),
+    # but it is ONE block — no repeat pill/frame pretending it is a region.
+    assert "decoder layer" not in html
     assert "Multi-Head Latent" in html
 
     # The block REUSES the real decoder-layer blocks as its children (no
@@ -738,9 +862,18 @@ def test_attention_bias_and_rope_theta():
     # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
     assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
 
-    # attention_bias absent/False -> not flagged.
-    assert not any(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
-    assert not any(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+    # CODE-AUTHORITATIVE bias: Qwen2's attention hardcodes `nn.Linear(..., bias=
+    # True)` on QKV and NEVER reads `config.attention_bias`, so a config
+    # `attention_bias=False` is a DEAD flag — the code truth (bias) wins.
+    assert all(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
+    assert all(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
+
+    # A CONFIG-GATED family (Llama: `bias=config.attention_bias`) honors the
+    # flag through the same code reader — False disables it, True enables it.
+    llama = dict(model_type="llama", num_hidden_layers=2, hidden_size=64,
+                 num_attention_heads=8, intermediate_size=128, vocab_size=100, rms_norm_eps=1e-5)
+    assert not any(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": False}).to_ir()["layers"])
+    assert all(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": True}).to_ir()["layers"])
 
 
 def test_compress_rates_alias_derives_csa_hca_masks():
@@ -772,6 +905,12 @@ def test_moe_routing_detail():
         "scoring_func": "sigmoid", "topk_method": "noaux_tc",
         "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
         "routed_scaling_factor": 2.5,
+        # code-derived resolved facts: the deepseek_v3 source enacts the
+        # aux-loss-free e_score_correction_bias (agrees with the declared
+        # noaux_tc string) and scores (sigmoid) BEFORE the top-k, so both
+        # resolved keys the render reads are present.
+        "bias_correction": True,
+        "scoring_before_topk": True,
     }
     from model_unfolder.labels import router_facts
     facts = router_facts(ffn)
@@ -827,9 +966,14 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     gate = render_sub_block_detail(ir, info, "m", router)
     for token in ("Gate", "Top-k", "renormalize", "learned bias"):
         assert token in gate, f"router view missing label {token!r}"
-    # The descriptive text moved OFF the blocks (the user's "why not in description"):
-    # no scoring fn, no expert/group counts, no scale value painted on the diagram.
-    for leaked in ("sigmoid", "256 scores", "group-limited", "keep 4 of 8",
+    # The score transform is a REAL op node with a bare op-name label — the code
+    # scores (sigmoid) BEFORE selection, so it's drawn between Gate and Top-k so
+    # the "expert scores" the drill selects on have a visible origin (Her Eyes
+    # lawfulness: a real op is not hidden behind a chip).
+    assert "sigmoid" in gate, "the scoring transform must be a drawn op node"
+    # Counts/flags stay OFF the blocks (bare op names only): no expert/group
+    # counts, no scale value painted on the diagram.
+    for leaked in ("256 scores", "group-limited", "keep 4 of 8",
                    "select top-8", "routed scale"):
         assert leaked not in gate, f"label text {leaked!r} should be in a card, not the diagram"
 
@@ -1115,8 +1259,9 @@ def test_gemma4_ple_uses_reusable_part_contract():
 def test_gemma4_multimodal_fusion_render():
     d = unfold(_gemma4_e2b_vision_config())
     ir = d.to_ir()
-    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "gemma4_vision"
-    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "gemma4_audio"
+    assert ir["extras"]["modalities"]["inputs"]["vision"]["encoder"]["kind"] == "vision_encoder"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["kind"] == "audio_encoder"
+    assert ir["extras"]["modalities"]["inputs"]["audio"]["encoder"]["source_owner"] == "Gemma4AudioModel"
     assert ir["extras"]["modalities"]["inputs"]["audio"]["tokens"]["ms_per_token"] == 40
     assert ir["extras"]["modalities"]["fusion"]["kind"] == "placeholder_replace"
     assert ir["extras"]["modalities"]["fusion"]["mechanism"]["kind"] == "scatter_many"
@@ -1206,10 +1351,12 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     def vision_attn_svg(cfg):
         d = unfold(cfg); ir = d.to_ir(); info = _make_info(ir)
         blocks = info.get("blocks", {})
-        idx = next((b for b in blocks.values() if b.get("view") == "vision_self_attention"), None)
+        idx = next((b for b in blocks.values()
+                    if str(b.get("id", "")).startswith("vision_enc")
+                    and str(b.get("id", "")).endswith("_op_selfattn")), None)
         if idx is None:  # find it nested under the vision encoder
             for l, s in __import__("model_unfolder.preview", fromlist=["svg_views"]).svg_views(d.to_html(standalone=True)):
-                if l == "vision_encoder_attn":
+                if l.startswith("vision_enc") and l.endswith("_op_selfattn"):
                     return s
             return ""
         return render_sub_block_detail(ir, info, "v", idx)
@@ -1217,7 +1364,8 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     # SigLIP-style learned table → NO RoPE in vision attention.
     siglip = dict(model_type="gemma3", num_hidden_layers=2, hidden_size=128,
                   num_attention_heads=8, num_key_value_heads=4, intermediate_size=256,
-                  vocab_size=1000, vision_config={"hidden_size": 128, "num_hidden_layers": 2,
+                  vocab_size=1000, vision_config={"model_type": "siglip_vision_model",
+                  "architectures": ["SiglipVisionModel"], "hidden_size": 128, "num_hidden_layers": 2,
                   "num_attention_heads": 8, "intermediate_size": 256, "patch_size": 14,
                   "image_size": 224, "num_positions": 256})
     assert "apply RoPE" not in vision_attn_svg(siglip), "SigLIP vision must NOT draw RoPE"
@@ -1226,9 +1374,24 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
     qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
                 num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                 vocab_size=1000, image_token_id=4,
-                vision_config={"depth": 2, "hidden_size": 128, "num_heads": 8,
+                vision_config={"model_type": "qwen2_vl",
+                               "architectures": ["Qwen2VisionTransformerPretrainedModel"],
+                               "depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
     assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
+
+    # Vision RoPE leaves are namespaced and carded at the next drill depth. The
+    # old bare q_rope/k_rope ids were accidentally validated by text-attention
+    # cards elsewhere in the document, while vision clicks opened nothing.
+    from model_unfolder.block_schema import validate_click_coupling
+    from model_unfolder.preview import svg_views
+    qwen_html = unfold(qwen).to_html(standalone=True)
+    vision_svg = next(svg for label, svg in svg_views(qwen_html)
+                      if label.startswith("vision_enc") and label.endswith("_op_selfattn"))
+    for node_id in ("vision_enc_attn_q_rope", "vision_enc_attn_k_rope"):
+        assert f'data-id="{node_id}"' in vision_svg
+        assert f'data-card-id="{node_id}"' in qwen_html
+    assert validate_click_coupling(qwen_html) == []
 
 
 def test_gemma4_video_token_does_not_create_grid_video_path():
@@ -1366,7 +1529,13 @@ def test_new_should_support_family_routes():
         ir = d.to_ir()
         layer = ir["layers"][0]
 
-        assert not ir["warnings"]
+        if cfg is YI_34B_CONFIG:
+            assert ir["warnings"] == [
+                "Modeling source is unavailable; the positional scheme remains unknown."
+            ]
+            assert layer["attention"]["position_kind"] == "unknown"
+        else:
+            assert not ir["warnings"]
         assert layer["attention"]["kind"] == attn_kind
         assert layer["ffn"]["kind"] == ffn_kind
         assert layer["norm_kind"] == norm_kind
@@ -1618,6 +1787,148 @@ def _with_fake_transformers(auto_config, fn):
             sys.modules["transformers"] = previous
         else:
             del sys.modules["transformers"]
+
+
+def test_residual_multiplier_draws_scale_connectors_with_the_constant():
+    """A declared residual_multiplier (Granite's depth-scaled residual:
+    h = residual + sublayer(h) * m) is a REAL per-sublayer multiply — drawn as
+    a × connector BEFORE each residual ⊕, with its constant operand painted
+    beside the glyph (the labelled-constant rule: a bare × reads "× what?").
+    GENERAL: keyed off the config field; absent field -> no glyph fabricated."""
+    from model_unfolder.block_schema import validate_click_coupling
+    cfg = dict(LLAMA3_8B_CONFIG, residual_multiplier=0.22)
+    html = unfold(cfg).to_html(standalone=True)
+    assert 'data-id="res_scale1"' in html and 'data-id="res_scale2"' in html
+    assert "× 0.22" in html                    # the constant, beside the glyph
+    assert validate_click_coupling(html) == []
+    # No declaration -> no scale connectors (nothing invented for llama).
+    plain = unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+    assert "res_scale" not in plain
+
+
+def test_declared_scores_scale_replaces_sqrt_in_the_drawing():
+    """A config-declared QK^T scale that DIFFERS from 1/sqrt(head_dim) must be
+    the drawn denominator — sqrt(dim) would be a lie (Granite scales by
+    attention_multiplier = 1/128, not 1/sqrt(128)).  Two declaration dialects,
+    each with its own semantics: attention_multiplier (the scale directly) and
+    query_pre_attn_scalar (Gemma-2: scale = value^-0.5).  A declaration EQUAL
+    to the default keeps sqrt(dim) — which is then exactly true (Gemma-2-2b:
+    qpas == head_dim) — so no blessed model drifts."""
+    from model_unfolder.block_schema import validate_click_coupling
+    # Granite dialect: direct multiplier, 1/0.0078125 = 128
+    cfg = dict(LLAMA3_8B_CONFIG, attention_multiplier=0.0078125)
+    html = unfold(cfg).to_html(standalone=True)
+    assert ">128<" in html and "sqrt(dim)" not in html
+    assert "config-declared" in html            # the card says WHY
+    assert validate_click_coupling(html) == []
+    # Gemma-2 dialect: qpas^-0.5, 144^-0.5 -> 1/12
+    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=144)
+    html = unfold(cfg).to_html(standalone=True)
+    assert ">12<" in html and "sqrt(dim)" not in html
+    # EQUAL to default -> unchanged sqrt(dim) (head_dim = 4096/32 = 128)
+    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=128)
+    assert "sqrt(dim)" in unfold(cfg).to_html(standalone=True)
+    # no declaration -> unchanged
+    assert "sqrt(dim)" in unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+
+
+def test_multi_query_flag_defers_to_declared_group_count():
+    """ChatGLM declares BOTH multi_query_attention: true AND
+    multi_query_group_num: 2 — the flag means "KV heads are shared", the group
+    count says how many.  Clobbering to 1 fabricated MQA (the Kolors encoder
+    claimed "1 K + 1 V reused by 32 Q" while the code runs 2-group GQA).  The
+    flag defaults to 1 ONLY when no group count is declared (Falcon-7B)."""
+    glm = {"model_type": "chatglm", "architectures": ["ChatGLMModel"],
+           "hidden_size": 4096, "num_layers": 28, "num_attention_heads": 32,
+           "multi_query_attention": True, "multi_query_group_num": 2,
+           "ffn_hidden_size": 13696, "padded_vocab_size": 65024,
+           "seq_length": 8192, "kv_channels": 128}
+    a = unfold(glm).to_ir()["layers"][0]["attention"]
+    assert (a["num_kv_heads"], a["kind"]) == (2, "gqa")
+    falcon = {"model_type": "falcon", "architectures": ["FalconForCausalLM"],
+              "hidden_size": 4544, "num_hidden_layers": 32,
+              "num_attention_heads": 71, "multi_query": True, "vocab_size": 65024}
+    a = unfold(falcon).to_ir()["layers"][0]["attention"]
+    assert (a["num_kv_heads"], a["kind"]) == (1, "mqa")
+    # chatglm bias spellings resolve through the alias rows (YAML, not code)
+    a = unfold(dict(glm, add_qkv_bias=True))        .to_ir()["layers"][0]["attention"]
+    assert a["bias"] is True
+
+
+def test_modality_host_looks_through_declared_wrappers():
+    """An Omni-style composite hides the WHOLE multimodal host one declared
+    wrapper down (thinker_config carries vision_config/audio_config AND the
+    modality token ids).  The host walk descends the SAME wrapper vocabulary
+    the LM unwrap uses — general, never a name for one family.  Flat
+    multimodal configs keep resolving at the root."""
+    nested = {
+        "model_type": "composite_xyz",
+        "architectures": ["CompositeForConditionalGeneration"],
+        "thinker_config": {
+            "model_type": "inner_xyz",
+            "audio_token_index": 151646,
+            "vision_config": {"model_type": "inner_vit", "depth": 4,
+                              "hidden_size": 128, "num_heads": 4,
+                              "patch_size": 14, "spatial_merge_size": 2},
+            "audio_config": {"model_type": "inner_audio", "d_model": 128,
+                             "encoder_layers": 2, "encoder_attention_heads": 4,
+                             "num_mel_bins": 128},
+            "text_config": {"model_type": "llama", "hidden_size": 256,
+                            "num_hidden_layers": 2, "num_attention_heads": 4,
+                            "intermediate_size": 512, "vocab_size": 1000},
+        },
+    }
+    ir = unfold(nested).to_ir()
+    inputs = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    assert "vision" in inputs and "audio" in inputs
+    # flat host (vision at root) still resolves at the root level
+    flat = {"model_type": "llava", "architectures": ["LlavaForConditionalGeneration"],
+            "vision_config": {"model_type": "clip_vision_model", "hidden_size": 128,
+                              "num_hidden_layers": 2, "num_attention_heads": 4,
+                              "image_size": 224, "patch_size": 14},
+            "text_config": {"model_type": "llama", "hidden_size": 256,
+                            "num_hidden_layers": 2, "num_attention_heads": 4,
+                            "intermediate_size": 512, "vocab_size": 1000}}
+    ir = unfold(flat).to_ir()
+    inputs = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+    assert "vision" in inputs
+
+
+def test_stale_architecture_anchor_recovers_to_construction_root(tmp_path):
+    """Upstream renames leave configs declaring classes the installed source no
+    longer defines (Qwen2.5-Omni: config says Qwen2_5OmniModel, the file defines
+    ...ForConditionalGeneration — an init-only container whose sub-models are
+    built in an init-delegated helper).  The anchor must recover STRUCTURALLY:
+    container classes enter the registry, and the unique construction root
+    replaces the stale name.  Ambiguity keeps the declared value (honest fail)."""
+    f = tmp_path / "modeling_y.py"
+    f.write_text("""
+import torch.nn as nn
+
+class Inner(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.linear = nn.Linear(4, 4)
+    def forward(self, x):
+        return self.linear(x)
+
+class Wrapper(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.inner = Inner(config)
+        if config.enable_extra:
+            self.enable_extra()
+    def enable_extra(self):
+        self.extra = Inner(self.config)
+""")
+    from model_unfolder.evidence.transitive import build_registry, resolve_architecture_anchor
+    reg = build_registry([str(f)])
+    assert "Wrapper" in reg                      # container entered the registry
+    assert reg["Wrapper"].field_types.get("inner") == "Inner"
+    assert reg["Wrapper"].field_types.get("extra") == "Inner"   # init-helper folded
+    assert resolve_architecture_anchor(reg, "RenamedAwayModel") == "Wrapper"
+    # declared-and-present name always wins
+    assert resolve_architecture_anchor(reg, "Inner") == "Inner"
 
 
 def _restore_env(name, value):

@@ -13,6 +13,7 @@ from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 def decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
     norm_kind: str = "rmsnorm", norm_placement: str = "pre",
+    residual_scale=None,
 ) -> list[Block]:
     """Per-layer block topology for a sequential decoder layer.
 
@@ -25,10 +26,38 @@ def decoder_layer_blocks(
     * ``double`` — norm on BOTH ends (Gemma-2/3 sandwich):  ``r + post_ln(sub(pre_ln(h)))``
     """
     if norm_placement == "post":
-        return _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
-    if norm_placement == "double":
-        return _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
-    return _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+        blocks = _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    elif norm_placement == "double":
+        blocks = _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    else:
+        blocks = _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    if residual_scale not in (None, 1, 1.0):
+        blocks = _with_residual_scales(blocks, residual_scale)
+    return blocks
+
+
+def _with_residual_scales(blocks: list[Block], scale) -> list[Block]:
+    """Granite-style scaled residuals: ``r + sub(h) × residual_multiplier`` —
+    a × connector with its CONSTANT operand drawn beside the glyph (the one
+    allowed single-input ×), inserted before each residual ⊕."""
+    out: list[Block] = []
+    counter = 0
+    for block in blocks:
+        if block.get("kind") == "residual_add":
+            counter += 1
+            out.append({
+                "id": f"res_scale{counter}",
+                "role": "residual", "kind": "gate_mul",
+                "label": "\u00d7", "sub": f"\u00d7 {scale}",
+                "title": "Residual scale",
+                "description": (
+                    f"The sublayer output is multiplied by the constant "
+                    f"residual_multiplier = {scale} (config-declared, applied "
+                    "in the layer's forward) before the residual add."
+                ),
+            })
+        out.append(block)
+    return out
 
 
 def _add_block(block_id: str, residual_from: str, title: str, description: str) -> Block:
@@ -99,42 +128,44 @@ def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block
 
 
 def parallel_decoder_layer_blocks(
-    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm"
+    attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "rmsnorm",
+    norm_count: int = 1,
 ) -> list[Block]:
     """Blocks for parallel residual topology (GPT-NeoX / GPT-J / Falcon).
 
-    Attention and FFN share a single input norm. Their outputs are summed into
-    one residual add together with the direct bypass from the layer input.
-
-    Chain: norm -> attn -> add (residual_from=norm input)
-    Side : FFN taps from the attn input stem (= norm output), feeds into add.
+    ``norm_count`` (read from the code's dataflow) = the distinct INPUT norms the
+    layer applies: 1 = a SHARED pre-block norm feeds both attention and the FFN
+    (GPT-J ``ln_1``); 2 = SEPARATE norms — one before attention, one before the
+    FFN, BOTH applied to the layer input (GPT-NeoX ``input_layernorm``+
+    ``post_attention_layernorm``).  Their outputs are summed into one residual
+    add with the direct bypass from the layer input.
     """
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     ffn_block = _ffn_block(ffn, hidden_size)
-    ffn_block.update(
-        {
-            "lane": "left",
-            "tap_from": "attn",
-            "feeds": "add1",
-            "side_align": "tap",
-        }
-    )
+    ffn_block.update({"lane": "left", "tap_from": "attn", "feeds": "add1", "side_align": "tap"})
+    # ``norm_count`` (code-derived) distinguishes SHARED (1, GPT-J) from SEPARATE
+    # (2, GPT-NeoX input+post norms).  For count==2 the FACT is stated honestly in
+    # the norm's card; drawing the two norms as two boxes in the parallel side-lane
+    # layout is a scoped RENDER follow-up (the lane/tap engine needs layout work —
+    # the naive 2-block wiring hid the FFN in the hero view).
+    if norm_count == 2:
+        norm_title = "Pre-block norm"
+        norm_desc = _norm_desc(
+            norm_kind, "before attention; the code applies a SECOND separate norm of the "
+                       "same kind before the FFN (GPT-NeoX input_layernorm + "
+                       "post_attention_layernorm), both on the layer input")
+    else:
+        norm_title = "Pre-block norm (shared)"
+        norm_desc = _norm_desc(norm_kind, "feeding both attention and the FFN", shared=True)
     return [
-        _norm_block(
-            "rms1",
-            norm_label,
-            "Pre-block norm (shared)",
-            _norm_desc(norm_kind, "feeding both attention and the FFN", shared=True),
-            facts=[f"dim {hidden}"],
-        ),
+        _norm_block("rms1", norm_label, norm_title, norm_desc, facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
         {
             "id": "add1",
             "role": "residual",
             "kind": "residual_add",
             "residual_from": "rms1",
-            # Tier-2 connector: a glyph on the join (not a box), clickable for its card.
             "label": "+",
             "title": "Residual add (parallel)",
             "description": "layer input + attention output + FFN output (one combined step)",
@@ -181,8 +212,8 @@ def single_stream_decoder_layer_blocks(
     attn_branch.update({"branch_side": "left", "feeds": "ss_concat"})
 
     # The MLP's activation is never fabricated. When the config declares it, or the
-    # model class fixes it (Flux's gelu-approximate, surfaced via class_defaults and
-    # MARKED code-derived), name it; when nothing declares it, say so honestly
+    # model class fixes it (Flux's gelu-approximate, surfaced by reading the modeling
+    # source and MARKED code-derived), name it; when nothing declares it, say so honestly
     # (mirrors the standard FFN card). The label uses the clean math name (GELU),
     # never the backend spelling (gelu-approximate).
     act = getattr(ffn, "activation", None)

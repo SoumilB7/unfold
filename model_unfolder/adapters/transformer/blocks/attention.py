@@ -25,7 +25,21 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "window_size": attention.window_size,
         "kv_source_layer": attention.kv_source_layer,
         "qk_norm": attention.qk_norm,
+        # Per-lane projection for the drill: QK-norm is two REAL ops in
+        # forward — the op-graph draws them on the Q and K lanes (between
+        # projection and RoPE), never chip-only at drill altitude.  The spec
+        # value is TRUSTED for cross sublayers too: every cross-spec creation
+        # site sets qk_norm deliberately (per-SITE code evidence in
+        # _insert_cross_attention — Wan's attn2 really RMS-norms Q/K; False
+        # everywhere unproven).  Inheriting the self value without evidence
+        # was the refiner attribution bug — that guard now lives at PARSE
+        # time, where the evidence is, not as a render-time suppression that
+        # drops real ops.
+        "q_norm": bool(attention.qk_norm),
+        "k_norm": bool(attention.qk_norm),
         "rope": attention.rope,
+        "position_kind": attention.position_kind,
+        "position_application": attention.position_application,
         "rope_3d": attention.rope_3d,
         "bias": attention.bias,
         "shared": attention.shared,
@@ -38,7 +52,23 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "index_n_heads": attention.index_n_heads,
         "index_head_dim": attention.index_head_dim,
         "mrope_section": attention.mrope_section,
+        "conv_kernel_size": attention.conv_kernel_size,
+        "output_gate": attention.output_gate,
+        "projection_mode": attention.projection_mode,
         "variant": attention.variant,
+        # emitted only when DECLARED (same rule as the IR projection) so
+        # undeclared models' block detail stays byte-stable
+        **({"scores_scale": attention.scores_scale}
+           if attention.scores_scale is not None else {}),
+        # emitted only when code PROVES the forward performs no scale (raw
+        # QK^T) — the opgraph spine reads this key to drop the denominator
+        **({"scores_scaled": False} if attention.scores_scaled is False else {}),
+        # emitted only when code proves learned sink logits join the softmax
+        # (the opgraph draws the sink lane from this key)
+        **({"sinks": True} if attention.sinks else {}),
+        # emitted only when DECLARED — the opgraph draws the tanh softcap node
+        **({"logit_softcap": attention.logit_softcap}
+           if attention.logit_softcap else {}),
     }
 
 
@@ -58,6 +88,7 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     source-neutral set — match it to the region's ``node_prefix``."""
     builders = {
         "mla": _mla_child_blocks,
+        "gated_delta": _gated_delta_child_blocks,
         "ssm": _ssm_child_blocks,
         "recurrent": _recurrent_child_blocks,
         "rwkv": _rwkv_child_blocks,
@@ -71,6 +102,16 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
     if id_prefix:
         for c in cards:
             c["id"] = f"{id_prefix}{c['id']}"
+    if attention.output_gate:
+        cards.extend([
+            {"id": "q_gate_split", "title": "Split query and output gate",
+             "description": "Splits the widened query projection into Q and a per-head output-gate lane."},
+            {"id": "attn_output_gate", "title": "Attention output gate",
+             "description": "Applies sigmoid to the projected gate before it modulates the attention output.",
+             "facts": [str(attention.output_gate)]},
+            {"id": "attn_output_mul", "title": "Gate attention output",
+             "description": "Multiplies the concatenated attention output by the learned gate before output projection."},
+        ])
     return cards
 
 
@@ -150,24 +191,44 @@ def _sdpa_detailed_child_blocks(
         w in cross_src.lower() for w in ("text", "prompt", "encoder", "caption"))
     kv_chip = "1 shared KV head" if kind == "mqa" else f"{num_kv_heads} KV heads"
     group_fact = [f"{q_per_group} Q per KV head"] if (q_per_group and num_kv_heads > 1) else []
-    scaled_title = "Scaled attention scores"
-    scaled_desc = "Per head: QK^T / sqrt(dim) — dot-product scores scaled for numerical stability."
+    # A config-DECLARED scores scale replaces the default sqrt wording — the
+    # card must state the real divisor (Granite attention_multiplier).  A
+    # code-PROVEN unscaled forward (T5 family) drops the denominator entirely
+    # — drawing sqrt(dim) there would fabricate an op the forward never runs.
+    if attention.scores_scale is not None:
+        inv = 1.0 / attention.scores_scale
+        scale_txt = (f"QK^T / {inv:,.0f}" if abs(inv - round(inv)) < 1e-6
+                     else f"QK^T × {attention.scores_scale:g}")
+        scale_note = f"scores use {scale_txt} (config-declared scale)"
+    elif attention.scores_scaled is False:
+        scale_txt = "QK^T"
+        scale_note = ("scores use raw QK^T — this family folds the scale into "
+                      "its weight initialization; the forward adds no explicit "
+                      "scale (read from the model code)")
+    else:
+        scale_txt = "QK^T / sqrt(dim)"
+        scale_note = "scores use QK^T / sqrt(dim)"
+    scaled_title = ("Attention scores" if attention.scores_scaled is False
+                    and attention.scores_scale is None else "Scaled attention scores")
+    scaled_desc = (f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
+                   if scale_txt != "QK^T" else
+                   f"Per head: {scale_txt} — raw dot-product scores; no explicit scale in the forward.")
     if cross_attention:
         scaled_title = "Cross-attention scores"
         scaled_desc = (
             f"Query heads attend over the {cross_src} (its K/V), not the latent "
-            "itself; scores use QK^T / sqrt(dim)."
+            f"itself; {scale_note}."
         )
     elif kind == "gqa":
         scaled_title = "Grouped scaled dot-product attention"
         scaled_desc = (
             "Query heads attend through a smaller set of shared K/V heads; "
-            "scores use QK^T / sqrt(dim)."
+            f"{scale_note}."
         )
     elif kind == "mqa":
         scaled_title = "Multi-query scaled dot-product attention"
         scaled_desc = (
-            "All query heads share one K/V stream; scores use QK^T / sqrt(dim)."
+            f"All query heads share one K/V stream; {scale_note}."
         )
 
     if generic:
@@ -182,7 +243,40 @@ def _sdpa_detailed_child_blocks(
         # No cache ports for cross-attention or explicitly non-cached (diffusion/ViT) attention.
         cache_facts = [] if (cross_attention or attention.cached is False) else [CACHE_PORT_FACT]
     cross_chip = ["from cross-attention source"] if cross_attention else []
-    cards = [
+    if attention.projection_mode == "fused_qkv" and not cross_attention:
+        # Code-proven FUSED storage (BLOOM query_key_value / GPT-2 c_attn):
+        # one projection matrix, split in forward — drawing three separate
+        # projections would fabricate modules the code does not hold.
+        projection_cards = [
+            {
+                "id": "qkv_proj",
+                "title": "Fused QKV projection",
+                "description": f"ONE linear over {q_src} producing queries, keys and "
+                               "values together — this family stores Q/K/V as a "
+                               "single fused matrix, split after the projection.",
+                "facts": [f"{num_heads} Q heads", kv_chip],
+            },
+            {
+                "id": "q_split",
+                "title": "Split queries",
+                "description": "Slices the fused projection into the per-head queries.",
+                "facts": [f"→ {q_out}", f"head dim {d_k}"],
+            },
+            {
+                "id": "k_split",
+                "title": "Split keys",
+                "description": "Slices the fused projection into the keys.",
+                "facts": [f"→ {kv_out}", kv_chip, *cache_facts],
+            },
+            {
+                "id": "v_split",
+                "title": "Split values",
+                "description": "Slices the fused projection into the values.",
+                "facts": [f"→ {kv_out}", kv_chip, *cache_facts],
+            },
+        ]
+    else:
+        projection_cards = [
         {
             "id": "q_proj",
             "title": "Query projection",
@@ -201,6 +295,9 @@ def _sdpa_detailed_child_blocks(
             "description": f"Linear over {kv_src} producing the values.",
             "facts": [f"{hidden} → {kv_out}", kv_chip, *cross_chip, *cache_facts],
         },
+        ]
+    cards = [
+        *projection_cards,
         {
             "id": "scaled_scores",
             "title": scaled_title,
@@ -231,14 +328,89 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if attention.qk_norm:
+        # QK-norm is two REAL ops in forward; the drill draws them on the Q/K
+        # lanes (projection → norm → RoPE/scores), so each node needs its card.
+        # The spec carries presence, not the norm's arithmetic kind — the card
+        # states what the op does without asserting RMS vs LayerNorm.  Cross
+        # sublayers reach here only when their spec carries per-SITE evidence
+        # (parse-time discipline in _insert_cross_attention), so the old
+        # render-time cross suppression would now only drop real ops (Wan).
+        cards += [
+            {"id": "q_norm", "title": "Query normalisation",
+             "description": "Normalizes the projected query heads before the attention "
+                            "scores — keeps the QK logits in a stable range."},
+            {"id": "k_norm", "title": "Key normalisation",
+             "description": "Normalizes the projected key heads before the attention "
+                            "scores — keeps the QK logits in a stable range."},
+        ]
+    if attention.sinks and not cross_attention:
+        # ONE spine card matching the ONE spine op: the sink logits are
+        # learned PARAMETERS of the append op (weights are never input
+        # nodes in this grammar), so there is no separate input card.
+        cards.append({
+            "id": "sink_concat", "title": "Append sink column",
+            "description": ("Concatenates a learned per-head sink logit onto "
+                            "the score matrix as one extra column, so the "
+                            "softmax normalises over scores ∥ sink; the sink "
+                            "column is dropped after normalisation — its "
+                            "share lets a head attend to “nothing”. Set in "
+                            "the model class, not the config."),
+        })
+    if attention.logit_softcap:
+        # The tanh softcap is a REAL forward op between QK^T and the softmax
+        # (config-declared attn_logit_softcapping) — its node needs a card.
+        _cap = attention.logit_softcap
+        cards.append({
+            "id": "attn_softcap", "title": f"Logit softcap ±{_cap:g}",
+            "description": (f"Soft caps the attention logits before the "
+                            f"softmax: scores/{_cap:g} → tanh → ×{_cap:g}. "
+                            f"Bounds every logit to ±{_cap:g} without hard "
+                            f"clipping, keeping gradients healthy at the "
+                            f"extremes (declared by attn_logit_softcapping)."),
+            "facts": [f"±{_cap:g}"],
+        })
     if attention.rope and not attention.no_rope and not cross_attention:
         # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
         # the two rope nodes the SDPA region now draws on the Q/K lanes.
+        _prd = attention.rope_dim
+        _hd = attention.head_dim
+        rot_note = (
+            f" Rotates only the first {_prd} of {_hd} head dims; the remaining "
+            f"{_hd - _prd} pass through unrotated (partial rotary)."
+            if (attention.kind != "mla" and isinstance(_prd, int)
+                and isinstance(_hd, int) and 0 < _prd < _hd) else ""
+        )
         cards += [
             {"id": "q_rope", "title": "Apply RoPE (Q)",
-             "description": "Rotary position embedding applied to the query heads before the scores."},
+             "description": "Rotary position embedding applied to the query heads before the scores."
+                            + rot_note},
             {"id": "k_rope", "title": "Apply RoPE (K)",
-             "description": "Rotary position embedding applied to the key heads before the scores."},
+             "description": "Rotary position embedding applied to the key heads before the scores."
+                            + rot_note},
+        ]
+    if (attention.position_kind == "alibi"
+            and attention.position_application == "attention_bias" and not cross_attention):
+        cards += [
+            {"id": "alibi_offsets", "title": "Relative positions",
+             "description": "Relative token offsets used to construct the head-specific ALiBi slopes."},
+            {"id": "alibi_bias", "title": "ALiBi positional bias",
+             "description": "Head-specific linear position bias added to attention scores."},
+            {"id": "score_bias_add", "title": "Add ALiBi to scores",
+             "description": "Adds the ALiBi bias to the QK attention scores before softmax."},
+        ]
+    if (attention.position_kind == "relative_bias"
+            and attention.position_application == "attention_bias" and not cross_attention):
+        cards += [
+            {"id": "rel_bias_offsets", "title": "Relative positions",
+             "description": "Bucketed relative token distances looked up by the learned bias embedding."},
+            {"id": "rel_pos_bias", "title": "Relative position bias",
+             "description": "A learned embedding over bucketed relative distances, added to the "
+                            "attention scores before softmax. Computed once by the first layer "
+                            "and shared down the stack."},
+            {"id": "score_bias_add", "title": "Add position bias to scores",
+             "description": "Adds the learned relative-position bias to the QK attention scores "
+                            "before softmax."},
         ]
     if generic:
         # These cards are SHARED across stages of different width (the panel dedups
@@ -256,11 +428,17 @@ def _sdpa_operation_meta(
     d_k: str,
     q_per_group: int | None,
 ) -> tuple[str, str]:
+    if attention.scores_scale is not None:
+        inv = 1.0 / attention.scores_scale
+        divisor = (f"{inv:,.0f}" if abs(inv - round(inv)) < 1e-6
+                   else f"1/{attention.scores_scale:g}")
+    else:
+        divisor = f"sqrt({d_k})"
     if attention.kind == "mqa":
         return (
             "Multi-query scaled dot-product attention",
             (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"scores = softmax(QK^T / {divisor}); "
                 f"{num_heads} query heads share one K/V head"
             ),
         )
@@ -273,14 +451,14 @@ def _sdpa_operation_meta(
         return (
             "Grouped scaled dot-product attention",
             (
-                f"scores = softmax(QK^T / sqrt({d_k})); "
+                f"scores = softmax(QK^T / {divisor}); "
                 f"{num_heads} query heads attend through {num_kv_heads} shared KV heads{group}"
             ),
         )
     return (
         "Scaled dot-product attention",
         (
-            f"scores = softmax(QK^T / sqrt({d_k})); "
+            f"scores = softmax(QK^T / {divisor}); "
             "context = scores * V; "
             f"output shape [batch, {num_heads}, seq, {d_k}]"
         ),
@@ -657,4 +835,43 @@ def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -
             "description": "Linear back to the residual width.",
             "facts": [f"{q_out} → {hidden}"],
         },
+    ]
+
+
+def _gated_delta_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
+    hidden = _fmt(hidden_size)
+    kernel = attention.conv_kernel_size
+    geometry = [f for f in (
+        f"{attention.num_kv_heads} K heads" if attention.num_kv_heads else "",
+        f"{attention.num_heads} V heads" if attention.num_heads else "",
+        f"K dim {_fmt(attention.head_dim)}" if attention.head_dim else "",
+        f"V dim {_fmt(attention.v_head_dim)}" if attention.v_head_dim else "",
+    ) if f]
+    return [
+        {"id": "delta_qkv_proj", "title": "Q/K/V projection",
+         "description": "Joint linear projection for query, key and value streams.",
+         "facts": [f"input {hidden}", *geometry]},
+        {"id": "delta_z_proj", "title": "Output-gate projection",
+         "description": "Projects z, the gate consumed by the gated output normalization."},
+        {"id": "delta_beta_proj", "title": "Beta projection",
+         "description": "Projects the learned delta-update strength before sigmoid."},
+        {"id": "delta_decay_proj", "title": "Decay projection",
+         "description": "Projects the recurrent decay parameter before softplus/exponential shaping."},
+        {"id": "delta_conv", "title": "Causal depthwise convolution",
+         "description": "Mixes local Q/K/V context before the recurrent delta update.",
+         "facts": [f"kernel {kernel}"] if kernel else []},
+        {"id": "delta_qkv_split", "title": "Split Q, K and V",
+         "description": "Separates the convolved joint projection into query, key and value streams."},
+        {"id": "delta_beta", "title": "Sigmoid beta",
+         "description": "Bounds the learned delta-update strength."},
+        {"id": "delta_decay", "title": "Decay gate",
+         "description": "Builds the negative recurrent decay from A, softplus(a + dt_bias)."},
+        {"id": "delta_rule", "title": "Gated delta-rule recurrence",
+         "description": "Uses the chunk kernel for sequences and the recurrent kernel for one-token cached decode.",
+         "facts": geometry},
+        {"id": "delta_gated_norm", "title": "Gated RMSNorm",
+         "description": "Normalizes the delta-rule output while applying the projected z gate."},
+        {"id": "delta_out_proj", "title": "Output projection",
+         "description": "Projects the recurrent mixer output back to the residual width.",
+         "facts": [f"→ {hidden}"]},
     ]

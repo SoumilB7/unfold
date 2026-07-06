@@ -17,74 +17,135 @@ T5 don't share a drill card — see ``_text_encoder_ops`` in
 from __future__ import annotations
 
 from ..graph_engine import render_graph
-from ..tower import tower_graph
+from ..tower import tower_cell, tower_graph
 
 
 def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     d = block.get("detail") or {}
     name = str(d.get("name") or block.get("title") or "Text encoder")
-    text_dim, pooled = d.get("text_dim"), d.get("pooled")
-    layers, hidden, heads, ffn = d.get("layers"), d.get("hidden"), d.get("heads"), d.get("ffn")
-    vocab = d.get("vocab")
+    layers = d.get("layers")
     pfx = d.get("node_prefix") or block.get("id") or "encoder"
-    upper = name.upper()
-    is_clip, is_t5 = "CLIP" in upper, "T5" in upper
     is_unet = d.get("denoiser_family") == "unet"
 
-    # The encoder's own config wins (Qwen-VL-style LM encoders are RMSNorm +
-    # rotary); the CLIP/T5 conventions are only the fallback.
-    norm = d.get("norm") or ("RMSNorm" if is_t5 else "LayerNorm")
-    no_learned_pos = is_t5 or (d.get("norm") == "RMSNorm" and not is_t5)
-    embed_main = ("Token embedding" if no_learned_pos
-                  else ["Token + positional", "embedding"])   # two lines — fits the node
-    embed_sub = " · ".join(s for s in (
-        f"{_n(vocab)} vocab" if vocab else "", f"{_n(hidden)}-d" if hidden else "") if s) or None
+    # EVERY fact here is evidence-keyed, never family-name-keyed: the norm
+    # label is the fetched config's own (bare "Norm" when unfetched), the
+    # embedding label follows the PROVEN position mechanism, and the exit note
+    # follows the encoder's dimension-routed pipeline ROLE.
+    sub_model = d.get("sub_model") if isinstance(d.get("sub_model"), dict) else {}
+    sm_groups = sub_model.get("groups") or []
+    dominant = max(sm_groups, key=lambda g: g.get("count") or 0) if sm_groups else {}
+    pos_kind = (dominant.get("attention") or {}).get("position_kind")
+    norm = d.get("norm") or "Norm"
+    embed_main = (["Token + positional", "embedding"]   # two lines — fits the node
+                  if pos_kind in ("learned_absolute", "fixed_absolute")
+                  else "Token embedding")
+    # Where the encoder's output ENTERS the denoiser (the exit-arrow caption):
+    # a UNet consumes token features via cross-attention K/V; a pooled-role
+    # encoder contributes the AdaLN vector; a sequence-role encoder feeds the
+    # joint/cross attention.
+    role = set(d.get("conditioning_role") or [])
     if is_unet:
-        # A UNet (SD/SDXL) consumes the encoder's TOKEN features through
-        # cross-attention — not a pooled vector through AdaLN (a DiT mechanism).
-        out_main = "Token sequence"
-        out_sub = (f"tokens × {_n(hidden)}-d" if hidden
-                   else "per-token features")
         note = "→ cross-attention K/V"
-    elif is_clip:
-        out_main = "Pooled embedding"
-        out_sub = f"1 × {_n(pooled)}-d global vector" if pooled else "global prompt vector"
+    elif "pooled" in role:
         note = "→ global AdaLN conditioning"
-    elif is_t5:
-        out_main = "Token sequence"
-        out_sub = f"tokens × {_n(text_dim)}-d" if text_dim else "per-token embeddings"
+    elif "sequence" in role:
         note = "→ joint / cross attention"
     else:
-        out_main = "Prompt embedding"
-        out_sub = f"width {_n(text_dim)}" if text_dim else "conditioning embedding"
         note = "→ denoiser conditioning"
 
-    graph = tower_graph({
+    spec: dict = {
         "source": {"id": f"{pfx}_tokens", "label": "in (prompt tokens)"},
         "pre": [
             {"id": f"{pfx}_op_embed", "kind": "embedding", "label": embed_main},
         ],
-        "cell": [
-            {"id": f"{pfx}_op_norm", "kind": "norm", "label": norm},
-            {"id": f"{pfx}_op_selfattn", "kind": "attention",
-             "label": "Multi-head self-attention"},
-            {"id": f"{pfx}_op_add", "kind": "residual_add",
-             "residual_from": f"{pfx}_op_norm"},
-            {"id": f"{pfx}_op_norm2", "kind": "norm", "label": norm,
-             "target": f"{pfx}_op_norm"},
-            {"id": f"{pfx}_op_ffn", "kind": "ffn", "label": "Feed-forward (FFN)"},
-            {"id": f"{pfx}_op_add2", "kind": "residual_add",
-             "residual_from": f"{pfx}_op_norm2", "target": f"{pfx}_op_add"},
-        ],
-        "repeat": layers,
         "output": {"id": f"{pfx}_out", "static": True},
         "note": note,
-    })
+    }
+
+    def _cell(prefix: str, *, attn_label, attn_sub=None, norm_label=norm,
+              ffn_kind=None, placement="pre", input_id=None) -> list[dict]:
+        # THE one cell projector (tower.py) — placement comes from the
+        # sub-parse's code-derived norm_placement fact, never assumed.
+        return tower_cell(prefix, attn_label=attn_label, attn_sub=attn_sub,
+                          norm_label=norm_label, ffn_kind=ffn_kind,
+                          placement=placement, input_id=input_id)
+
+    sub_model = d.get("sub_model") if isinstance(d.get("sub_model"), dict) else {}
+    groups = sub_model.get("groups") if isinstance(sub_model.get("groups"), list) else None
+    schedule = sub_model.get("schedule") if isinstance(sub_model.get("schedule"), dict) else {}
+    # Nested sub-models (a tower inside this tower) become clickable post-stack
+    # nodes; their cards recurse through the same projector, unbounded depth.
+    for j, nested in enumerate(sub_model.get("sub_models") or []):
+        if isinstance(nested, dict):
+            spec.setdefault("post", []).append({
+                "id": f"{pfx}_s{j}", "kind": "embedding",
+                "label": str(nested.get("component") or "sub-model").split(".")[-1],
+            })
+    if groups and len(groups) > 1:
+        # Grouped rendering — every DISTINCT layer type gets its own cell, the
+        # same collapse the main tower uses.  Three honest schedule shapes:
+        # contiguous runs -> stacked frames; a periodic alternation -> ONE frame
+        # containing the period's cells, badged by cycle count; an irregular
+        # interleave -> per-type frames plus an explicit note.
+        def group_cell(k: int) -> list[dict]:
+            group = groups[k]
+            attn = group.get("attention") or {}
+            label = _attn_label(attn)
+            # Tri-state pass-through: an absent placement goes to tower_cell's
+            # honest-unknown branch ("Code-defined block"), never `or "pre"` —
+            # the same silent assertion killed on the main path (B2).
+            placement = group.get("norm_placement")
+            return _cell(f"{pfx}_g{k}",
+                         attn_label=label, attn_sub=group.get("tag"),
+                         norm_label=group.get("norm") or norm,
+                         ffn_kind=(group.get("ffn") or {}).get("kind"),
+                         placement=placement if placement in ("pre", "post", "double")
+                         else "unknown")
+
+        runs = [tuple(run) for run in (schedule.get("runs") or [])]
+        period = schedule.get("period")
+        total = schedule.get("total") or layers
+        layer_seq = [k for k, count in runs for _ in range(int(count or 0))]
+        pattern = layer_seq[:period] if period else []
+        if len(runs) == len(groups):
+            # Contiguous pattern (e.g. 1 dense + N MoE): one frame per run.
+            spec["cells"] = [{"cell": group_cell(k), "repeat": count}
+                             for k, count in runs]
+        elif (period and total and total % period == 0
+              and sorted(pattern) == list(range(len(groups)))):
+            # True alternation (each layer type exactly once per cycle): ONE
+            # frame holding the period's cells in schedule order — exactly the
+            # code's loop body — repeated cycle-count times.  The once-per-cycle
+            # condition also guarantees the frame never duplicates a cell's ids.
+            spec["cells"] = [{
+                "cell": [block for k in pattern for block in group_cell(k)],
+                "repeat": total // period,
+            }]
+        else:
+            spec["cells"] = [{"cell": group_cell(k), "repeat": groups[k].get("count")}
+                             for k in range(len(groups))]
+            spec["note"] = "layer types interleave across the stack · " + note
+    else:
+        single = (groups[0] if groups else {})
+        spec["cell"] = _cell(pfx, attn_label="Multi-head self-attention",
+                             ffn_kind=(single.get("ffn") or {}).get("kind"),
+                             placement=single.get("norm_placement") or "pre",
+                             input_id=f"{pfx}_op_embed")
+        spec["repeat"] = layers
+
+    graph = tower_graph(spec)
     return render_graph(graph, info, mount_id, "txtenc", f"{name} text encoder")
 
 
-def _n(v) -> str:
-    try:
-        return f"{int(v):,}"
-    except (TypeError, ValueError):
-        return str(v)
+def _attn_label(attn: dict):
+    """Bare mixer-op label for a grouped cell — the operation, never the facts."""
+    kind = str(attn.get("kind") or "")
+    if kind == "gated_delta":
+        return ["Gated DeltaNet", "token mixer"]
+    if kind in ("linear",):
+        return ["Linear attention"]
+    if kind in ("gqa", "mqa"):
+        return ["Grouped-query self-attention"] if kind == "gqa" else ["Multi-query self-attention"]
+    return "Multi-head self-attention"
+
+

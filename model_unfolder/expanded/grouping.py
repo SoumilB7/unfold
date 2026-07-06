@@ -7,8 +7,6 @@ be diffed against the dominant by callers.
 """
 from __future__ import annotations
 
-from typing import Any
-
 
 _SIG_ATTN = (
     "kind", "num_heads", "num_kv_heads", "head_dim",

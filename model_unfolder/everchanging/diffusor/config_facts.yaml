@@ -1,0 +1,107 @@
+# Declared config FACT fields — the general "read every owned field" mechanism
+# (Unit 11).  Every row is READ whenever present (recording the ownership-audit
+# access) and rendered as a numeric/spec CHIP on the owning stage's card.
+#
+# Row keys:
+#   field  — the config spelling (bare key; the audit matches by key name)
+#   label  — the chip's human wording (bare op vocabulary, no model names)
+#   noop   — value meaning "feature off / at-default": READ but NOT chipped
+#            (a chip saying "dual cross-attention: false" states the obvious)
+#   silent — read-only: a per-stage boolean/tuple table too granular for a chip
+#            (stated in prose/detail if ever drawn deeper); the read still
+#            records ownership so the audit cannot flag it as missed.
+#
+# Buckets map to pipeline stage cards: timestep -> the Timestep card,
+# denoiser -> the denoiser card, latent -> the initial-noise card,
+# conditioning -> the Text prompt card, vae -> the VAE-decoder card (vae rows
+# are read from the pipeline's embedded VAE sub-config).
+
+timestep:
+  - {field: flip_sin_to_cos, label: "sin-cos frequency order", silent: true}   # ordering convention inside the sinusoid, not a drawable op
+  - {field: freq_shift, label: "frequency shift", noop: 0}
+  - {field: time_embed_dim, label: "time embed dim"}
+  - {field: time_embedding_type, label: "time embedding", noop: positional}
+  - {field: timestep_activation_fn, label: "activation"}
+  - {field: freq_dim, label: "sinusoidal dim"}
+  - {field: time_factor, label: "time factor"}
+  - {field: time_max_period, label: "max period", noop: 10000}
+  - {field: timestep_guidance_channels, label: "guidance channels"}
+  - {field: time_embedding_act_fn, label: "embedding activation"}
+  - {field: timestep_post_act, label: "post-activation"}
+  - {field: time_cond_proj_dim, label: "conditioning projection dim"}
+  - {field: condition_dim, label: "condition embed dim"}                         # CogView4
+  - {field: guidance_embeds_scale, label: "guidance embed scale"}                # Sana-Sprint
+
+denoiser:
+  - {field: eps, label: "norm ε"}
+  - {field: use_linear_projection, label: "linear patch projection", noop: false}
+  - {field: only_cross_attention, label: "cross-attention only", noop: false}
+  - {field: dual_cross_attention, label: "dual cross-attention", noop: false}
+  - {field: double_self_attention, label: "double self-attention", noop: false}
+  - {field: attention_type, label: "attention type", noop: default}
+  - {field: upcast_attention, label: "fp32 attention softmax", noop: false}
+  - {field: num_embeds_ada_norm, label: "AdaLN class embeddings"}
+  - {field: cross_attention_head_dim, label: "cross-attn head dim"}
+  - {field: num_cross_attention_heads, label: "cross-attn heads"}
+  - {field: axes_lens, label: "RoPE axes lengths"}
+  - {field: ffn_dim_multiplier, label: "FFN dim multiplier"}
+  - {field: multiple_of, label: "FFN dim multiple"}
+  - {field: rope_max_seq_len, label: "RoPE max positions"}
+  - {field: pos_embed_seq_len, label: "positional table length"}
+  - {field: added_kv_proj_dim, label: "added K/V width"}
+  - {field: image_dim, label: "image embedding width"}
+  - {field: boundary_ratio, label: "expert switch boundary"}
+  - {field: spatial_interpolation_scale, label: "spatial pos-embed scale"}
+  - {field: temporal_interpolation_scale, label: "temporal pos-embed scale"}
+  - {field: attention_out_bias, label: "attention out bias", noop: false}
+  - {field: use_additional_conditions, label: "resolution/aspect conditioning", noop: false}
+  - {field: num_refiner_layers, label: "token-refiner layers", noop: 0}   # joined-stream models (Lumina) keep the chip until their entry-chain refiner drawing lands; rail models (HYV) also DRAW the stack
+  - {field: bottleneck_size, label: "bottleneck width"}
+  - {field: theta, label: "rotary θ"}
+  - {field: conv_in_kernel, label: "conv-in kernel", noop: 3}
+  - {field: conv_out_kernel, label: "conv-out kernel", noop: 3}
+  - {field: downsample_padding, label: "downsample padding", noop: 1}
+  - {field: mid_block_scale_factor, label: "mid-block scale", noop: 1}
+  - {field: resnet_out_scale_factor, label: "resnet out scale", noop: 1}
+  - {field: resnet_time_scale_shift, label: "resnet time conditioning", noop: default}
+  - {field: resnet_skip_time_act, label: "resnet skips time activation", noop: false}
+  - {field: center_input_sample, label: "centered input", noop: false}
+  - {field: class_embeddings_concat, label: "class embeddings concatenated", noop: false}
+  - {field: addition_embed_type_num_heads, label: "addition-embed heads"}
+  - {field: encoder_hid_dim, label: "text projection width"}                     # Kolors: ChatGLM features projected before cross-attn
+  - {field: encoder_hid_dim_type, label: "text projection", noop: text_proj}
+
+latent:
+  - {field: sample_size, label: "sample size"}
+  - {field: default_sample_size, label: "default sample size"}
+
+conditioning:
+  - {field: max_text_seq_length, label: "max text tokens"}
+  - {field: resolution_embeds, label: "resolution embeddings", noop: false}
+
+vae:
+  - {field: decoder_block_types, label: "decoder blocks"}
+  - {field: encoder_block_types, label: "encoder blocks"}
+  - {field: decoder_act_fns, label: "decoder activations"}
+  - {field: decoder_norm_types, label: "decoder norms"}
+  - {field: decoder_layers_per_block, label: "decoder layers/block"}
+  - {field: encoder_layers_per_block, label: "encoder layers/block"}
+  - {field: encoder_block_out_channels, label: "encoder channels"}
+  - {field: decoder_qkv_multiscales, label: "decoder QKV multiscales"}
+  - {field: encoder_qkv_multiscales, label: "encoder QKV multiscales"}
+  - {field: downsample_block_type, label: "downsample", noop: Conv}
+  - {field: upsample_block_type, label: "upsample", noop: Conv}
+  - {field: add_attention_block, label: "attention-block schedule", silent: true}  # per-stage bool table — drawn when the VAE interior gains stages
+  - {field: attn_scales, label: "attention scales", silent: true}                  # per-stage float table (Wan/Qwen VAE) — same category as the schedules above
+  - {field: decoder_causal, label: "causal decoder conv", noop: false}
+  - {field: encoder_causal, label: "causal encoder conv", noop: false}
+  - {field: spatio_temporal_scaling, label: "spatio-temporal scaling", silent: true}  # per-stage bool table
+  - {field: temperal_downsample, label: "temporal downsample schedule", silent: true}  # per-stage bool table (diffusers' own spelling)
+  - {field: temporal_expansions, label: "temporal expansion"}
+  - {field: spatial_expansions, label: "spatial expansion"}
+  - {field: spatial_compression_ratio, label: "spatial compression"}
+  - {field: resnet_norm_eps, label: "norm ε"}
+  - {field: batch_norm_eps, label: "batch-norm ε"}
+  - {field: batch_norm_momentum, label: "batch-norm momentum", silent: true}   # training-time statistic, not architecture
+  - {field: invert_scale_latents, label: "inverted latent scaling", noop: false}
+  - {field: sample_size, label: "sample size"}

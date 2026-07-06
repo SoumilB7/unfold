@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
 from model_unfolder.renderers.html.graph_engine import render_graph
+from model_unfolder.renderers.html.graph import Graph, Node, Parallel
 from model_unfolder.renderers.html.tower import tower_graph
 
 SPEC = {
@@ -40,9 +41,45 @@ def test_custom_tower_renders_with_no_view_code():
         assert marker in svg
 
 
-def test_audio_and_video_encoders_open_honest_towers():
-    """Encoders known only by depth/width/heads get the backbone with a
-    norm-free cell — no fabricated norm placement."""
+def test_single_cell_never_draws_repeat_frame_or_pill_even_with_a_label():
+    spec = {
+        "cell": [{"id": "only", "kind": "attention", "label": "One block"}],
+        "repeat": 1,
+        "repeat_label": "decoder layer",
+    }
+    graph = tower_graph(spec)
+    assert graph.groups == []
+    svg = render_graph(graph, {}, "single", "single-tower", "single tower")
+    assert "decoder layer" not in svg and "× 1" not in svg
+
+
+def test_parallel_circle_fanin_distributes_arrowheads_around_connector_edge():
+    """Several expert lanes must not stack arrowheads into one X-shaped blot."""
+    import re
+
+    graph = Graph(
+        nodes=[
+            Node("src", "router"),
+            *[Node(f"expert_{i}", "expert") for i in range(5)],
+            Node("sum", "residual_add"),
+            Node("out", "port", static=True),
+        ],
+        flow=["src", "sum", "out"],
+        parallels=[Parallel("src", "sum", [[f"expert_{i}"] for i in range(5)])],
+    )
+    svg = render_graph(graph, {}, "fanin", "fanin", "fanin")
+    paths = re.findall(r'<path\s+d="([^"]+)"[^>]*marker-end=', svg)
+    endpoints = []
+    for path in paths:
+        coords = re.findall(r'L\s+(-?[\d.]+)\s+(-?[\d.]+)', path)
+        if coords:
+            endpoints.append(coords[-1])
+    assert len(endpoints) == len(set(endpoints)), "two routes stack arrowheads at one connector point"
+
+
+def test_unknown_audio_encoder_opens_an_honest_tower():
+    """An encoder known only by depth/width/heads gets a norm-free cell — no
+    fabricated norm placement."""
     from model_unfolder.renderers.html.block_views.modality_views.audio import encoder_tower_spec
 
     spec = encoder_tower_spec(
@@ -53,6 +90,13 @@ def test_audio_and_video_encoders_open_honest_towers():
     assert kinds["enc_attn"] == "attention" and kinds["enc_ffn"] == "ffn"
     assert "norm" not in set(kinds.values())
     assert {"audio_encoder", "video_encoder"} <= set(VIEW_REGISTRY)
+
+
+def test_video_encoder_reuses_the_canonical_vision_backbone():
+    import inspect
+    from model_unfolder.renderers.html.block_views.modality_views.video import build_video_encoder_view
+
+    assert "build_vision_encoder_view(" in inspect.getsource(build_video_encoder_view)
 
 
 def test_all_three_builtin_towers_route_through_the_backbone():

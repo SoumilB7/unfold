@@ -40,3 +40,13 @@ def format_dim(value: Any) -> str:
         return f"{int(value):,}"
     except (TypeError, ValueError):
         return str(value)
+
+
+#: Composite-wrapper keys that hide the LM (and, for Omni-style composites,
+#: the whole multimodal host) one declared level down.  ONE vocabulary for the
+#: text unwrap and the modality-host walk — the wrapper that hides the LM is
+#: the wrapper that hides its towers.
+TEXT_WRAPPER_KEYS = (
+    "text_config", "language_config", "llm_config", "text_model_config",
+    "thinker_config",  # Qwen-Omni nests the LM under thinker_config.text_config
+)

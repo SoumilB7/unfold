@@ -32,7 +32,14 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
 
     index = _download_json(hf_hub_download, model_id, "model_index.json", token)
     if not isinstance(index, dict):
-        return None
+        # Layout dialect: some pipelines put the index in the ROOT config.json
+        # (HunyuanVideo-1.5: ``_class_name: …Pipeline`` + component pairs).
+        root = _download_json(hf_hub_download, model_id, "config.json", token)
+        if (isinstance(root, dict)
+                and str(root.get("_class_name") or "").endswith("Pipeline")):
+            index = root
+        else:
+            return None
 
     denoiser_key = next(
         (k for k in _DENOISER_KEYS if isinstance(index.get(k), (list, tuple))),
@@ -45,6 +52,14 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
         hf_hub_download, model_id, "config.json", token, subfolder=denoiser_key
     )
     if not isinstance(cfg, dict):
+        # The denoiser may be VARIANT-NESTED (transformer/<variant>/config.json)
+        # — there is no single denoiser to draw; say so honestly instead of
+        # letting the pipeline index fall through to a confusing no-layers parse.
+        from ...parser import _repo_layout_hint
+        hint = _repo_layout_hint(model_id)
+        if hint:
+            from ...errors import ModelNotFoundError
+            raise ModelNotFoundError(hint)
         return None
 
     # Merge the pipeline component wiring (text_encoder, vae, scheduler, ...) into
@@ -82,6 +97,14 @@ def load_diffusion_config_by_id(model_id: str, token: Any = None) -> dict | None
             continue
         ec = _download_json(hf_hub_download, model_id, "config.json", token, subfolder=key)
         if isinstance(ec, dict):
+            # Hydrate through the installed config CLASS at load time: raw
+            # component JSON omits class-default facts (Gemma-2's sliding/global
+            # alternation lives only in configuration_gemma2.py).  Doing it HERE
+            # (address resolution) keeps the parse identity-free — the stored
+            # config already carries the facts, exactly like by-id LLM loads.
+            from .parser import _hydrate_encoder_config_facts
+            ec = _hydrate_encoder_config_facts(ec)
+            ec.setdefault("_repo_id", model_id)   # provenance for remote-code source
             enc_cfgs[key] = ec
     if enc_cfgs:
         cfg.setdefault("_text_encoder_configs", enc_cfgs)
