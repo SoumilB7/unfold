@@ -33,8 +33,10 @@ class AttentionSpec:
     sinks: bool = False             # learned sink logits joining the softmax (an extra
                                     # column whose probability mass is discarded after
                                     # normalisation — a head can attend to "nothing").
-                                    # Config-silent, code-proven; drawn as a sink lane
-                                    # into the softmax.  Emitted only when True.
+                                    # Config-silent, code-proven; drawn as ONE spine op
+                                    # ("Append sink column" between scores and softmax —
+                                    # the logits are PARAMETERS of that op; weights are
+                                    # never input nodes).  Emitted only when True.
     logit_softcap: Optional[float] = None   # attn_logit_softcapping (Gemma-2 ±50):
                                     # scores/cap → tanh → ×cap between QK^T and the
                                     # softmax — a REAL forward op, drawn as a node.
