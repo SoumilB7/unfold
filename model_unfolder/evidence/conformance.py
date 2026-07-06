@@ -483,6 +483,30 @@ def check_fact_conformance(
         family, ir, files, representatives, check_bookend=bool(_model_type(target))))
     problems.extend(_check_component_storage_facts(family, ir, bundle))
     if _model_type(target):
+        # Attention-KIND cross-check (Group-2 item 3, insurance): a code-MLA
+        # whose config is silent on the latent ranks would draw GQA — the
+        # structural detector (_has_mla on the attention class's constructed
+        # fields) existed only behind the optional inspect_code pass; here it
+        # polices the SHIP path both directions.  Structural fields, never a
+        # class name.
+        from .ast_scanner import scan_python_files
+        from .patterns import _has_mla
+        from .forward_ops import _role_of as _role
+        code_mla = any(
+            _role(cls.name) == "attention" and _has_mla(set(cls.fields))
+            for cls in scan_python_files(tuple(str(f) for f in files)))
+        drawn_kinds_all = {(spec.get("attention") or {}).get("kind")
+                          for spec in representatives.values()}
+        drawn_mla = "mla" in drawn_kinds_all
+        if code_mla and not drawn_mla:
+            problems.append(ConformanceProblem(
+                "wrong_attention", "mla", f"{family}/attention_kind",
+                source_component=component))
+        elif drawn_mla and not code_mla:
+            problems.append(ConformanceProblem(
+                "fabricated_attention", "mla", f"{family}/attention_kind",
+                source_component=component))
+    if _model_type(target):
         from .position import decoder_positional_evidence
         position = decoder_positional_evidence(target, source=source, bundle=bundle)
         if position.status == "ambiguous":

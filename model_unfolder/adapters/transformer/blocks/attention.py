@@ -345,16 +345,17 @@ def _sdpa_detailed_child_blocks(
                             "scores — keeps the QK logits in a stable range."},
         ]
     if attention.sinks and not cross_attention:
-        # The sink lane is a REAL forward op (scores ∥ sinks → softmax → drop
-        # the sink column) — its drawn node needs a card like any other op.
+        # ONE spine card matching the ONE spine op: the sink logits are
+        # learned PARAMETERS of the append op (weights are never input
+        # nodes in this grammar), so there is no separate input card.
         cards.append({
-            "id": "attention_sinks", "title": "Learned sink logits",
-            "description": ("A learned per-head logit column appended to the "
-                            "attention scores before the softmax; after "
-                            "normalisation its probability share is discarded, "
-                            "so a head can place weight on “nothing” "
-                            "instead of being forced to attend somewhere. Set "
-                            "in the model class, not the config."),
+            "id": "sink_concat", "title": "Append sink column",
+            "description": ("Concatenates a learned per-head sink logit onto "
+                            "the score matrix as one extra column, so the "
+                            "softmax normalises over scores ∥ sink; the sink "
+                            "column is dropped after normalisation — its "
+                            "share lets a head attend to “nothing”. Set in "
+                            "the model class, not the config."),
         })
     if attention.logit_softcap:
         # The tanh softcap is a REAL forward op between QK^T and the softmax

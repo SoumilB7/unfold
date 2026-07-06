@@ -876,6 +876,76 @@ def diffusion_cross_qk_norm_from_files(files) -> str | None:
     return top[0][0] if len({v for v in verdicts}) == 1 else None
 
 
+def unet_transformer_ffn_activation_from_files(files, declared_block_types) -> str | None:
+    """The UNet Transformer2D FFN's activation, ANCHORED — or None.
+
+    A Counter-vote across the import closure proves the WRONG family's
+    activation (transformer_flux.py rides in via imports), so the read must be
+    anchored to the blocks THIS config builds:
+
+    1. the config's ``down/up/mid_block_types`` strings NAME the block classes
+       (identity-as-ADDRESS — the lawful single use: a constructor record
+       locating source, exactly like ``architectures``);
+    2. BFS the CONSTRUCTION edges (field_types + sub_module_classes) from
+       those classes;
+    3. among reachable classes, the BLOCK-shaped ones (an attention-role AND
+       an ffn-role field) yield their FFN construction's ``activation_fn``
+       kwarg — literal, param-default, or IfExp constants;
+    4. unanimous → the activation (SDXL: BasicTransformerBlock's default
+       ``geglu``); mixed or empty → None (honest-undeclared, never a vote)."""
+    import ast as _ast
+    from .transitive import build_registry
+    from .forward_ops import _method, _role_of
+    from .vision import _class_node
+
+    declared = [str(t) for t in (declared_block_types or ()) if t]
+    if not declared or not files:
+        return None
+    registry = build_registry([str(f) for f in files])
+    seen = {t for t in declared if t in registry}
+    queue = list(seen)
+    while queue:
+        info = registry.get(queue.pop(0))
+        if info is None:
+            continue
+        kids = set((info.field_types or {}).values())
+        for elems in (info.sub_module_classes or {}).values():
+            kids |= set(elems)
+        for child in kids:
+            if child in registry and child not in seen:
+                seen.add(child)
+                queue.append(child)
+    verdicts: set[str] = set()
+    for cls in sorted(seen):
+        fields = (registry[cls].field_types or {}).values()
+        if not (any(_role_of(x) == "attention" for x in fields)
+                and any(_role_of(x) == "ffn" for x in fields)):
+            continue
+        node = _class_node(registry[cls].source_file, cls)
+        init = _method(node, "__init__") if node else None
+        if init is None:
+            continue
+        defaults = {a.arg: d.value for a, d in
+                    zip(init.args.args[::-1], (init.args.defaults or [])[::-1])
+                    if isinstance(d, _ast.Constant) and isinstance(d.value, str)}
+        for n in _ast.walk(init):
+            if not isinstance(n, _ast.Call):
+                continue
+            for kw in (n.keywords or []):
+                if kw.arg != "activation_fn":
+                    continue
+                v = kw.value
+                if isinstance(v, _ast.Constant) and isinstance(v.value, str):
+                    verdicts.add(v.value.lower())
+                elif isinstance(v, _ast.Name) and v.id in defaults:
+                    verdicts.add(defaults[v.id].lower())
+                elif isinstance(v, _ast.IfExp):
+                    for sub in (v.body, v.orelse):
+                        if isinstance(sub, _ast.Constant) and isinstance(sub.value, str):
+                            verdicts.add(sub.value.lower())
+    return next(iter(verdicts)) if len(verdicts) == 1 else None
+
+
 def diffusion_single_stream_fusion_from_files(files) -> str | None:
     """How the denoiser's SINGLE-STREAM block fuses, READ FROM THE MODELING SOURCE,
     or None when the model has no single-stream blocks.  The code-based replacement
@@ -2306,6 +2376,49 @@ def decoder_attention_bias_from_files(files, cfg) -> bool | None:
             verdicts.add(b)
     if len(verdicts) != 1:
         return None                                      # none found, or q/k/v disagree
+    return next(iter(verdicts))
+
+
+def decoder_mlp_bias_from_files(files, cfg) -> bool | None:
+    """Do the FFN's Linear projections carry a BIAS — READ FROM THE FFN
+    CLASS's construction, code-authoritative (the exact twin of
+    ``decoder_attention_bias_from_files``: Bloom's MLP Linears default to
+    bias=True while its config declares no ``mlp_bias``, so the spelling
+    reader leaves the fact silent).  A literal ``bias=True/False`` wins;
+    ``bias=config.X`` resolves the checkpoint value (Llama's ``mlp_bias``);
+    an absent kwarg is nn.Linear's default True.  Returns the unanimous
+    verdict across the FFN's Linears, or None (no FFN class resolved, a
+    non-Linear projection, or disagreement → caller keeps the config value)."""
+    from .forward_ops import _method, _role_of
+    layer = _find_decoder_layer(files, ast)
+    if layer is None:
+        return None
+    _, layer_fields = layer
+    ffn_classes = sorted({c for c in layer_fields.values() if _role_of(c) == "ffn"})
+    if len(ffn_classes) != 1:
+        return None                                     # zero or rival FFN fields
+    defs = _parse_defs(tuple(str(p) for p in (files or ())))
+    node = defs.get(ffn_classes[0])
+    init = _method(node, "__init__") if node else None
+    if init is None:
+        return None
+    verdicts: set = set()
+    found_any = False
+    for n in ast.walk(init):
+        if not isinstance(n, ast.Call):
+            continue
+        callee = n.func
+        nm = callee.attr if isinstance(callee, ast.Attribute) else (
+            callee.id if isinstance(callee, ast.Name) else "")
+        if nm != "Linear":
+            continue                                    # Conv1D/other layouts: abstain
+        found_any = True
+        b = _linear_bias_value(n, cfg)
+        if b is None:
+            return None                                 # unresolvable → doubt
+        verdicts.add(b)
+    if not found_any or len(verdicts) != 1:
+        return None
     return next(iter(verdicts))
 
 

@@ -2412,11 +2412,18 @@ class GraphPooler(nn.Module):
     assert d["sinks"] is True
     region = attention_region(d, 512)
     ids = {op.id for op in region.ops}
-    assert "attention_sinks" in ids
-    assert any(e.src == "attention_sinks" and e.dst == "attn_softmax"
+    # ONE spine box between scores and softmax — the sink logits are learned
+    # PARAMETERS of the append op, never a side input node (side inputs made
+    # the layout duplicate the downstream chain; U5 caught it twice)
+    assert "sink_concat" in ids and "attention_sinks" not in ids
+    assert any(e.src == "scaled_scores" and e.dst == "sink_concat"
                for e in region.edges)
+    assert any(e.src == "sink_concat" and e.dst == "attn_softmax"
+               for e in region.edges)
+    assert not any(e.src == "scaled_scores" and e.dst == "attn_softmax"
+                   for e in region.edges)
     card_ids = {c["id"] for c in attention_child_blocks(sunk, 512)}
-    assert "attention_sinks" in card_ids
+    assert "sink_concat" in card_ids and "attention_sinks" not in card_ids
 
 
 def test_instance_gate_pruned_by_construction_site(tmp_path):
@@ -2798,3 +2805,122 @@ def test_asserted_facts_tagged_and_advisory():
     fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / "llama-7b.json").read_text())
     ir2 = unfold(fx["config"], inspect_code=True, code_source="local").to_ir()
     assert "asserted" not in ir2["layers"][0]["ffn"]
+
+
+def test_unet_ffn_activation_anchored_to_declared_blocks():
+    """U1: the UNet Transformer2D FFN activation is read from the block class
+    the config's block-type strings NAME (identity-as-address), never from an
+    import-closure vote (which proves the wrong family) — SDXL proves geglu;
+    no declared types or no source → None (honest-undeclared card stays)."""
+    import json, pathlib
+    from model_unfolder.sable import DEFAULT_CORPUS
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.conformance import _augment_diffusion_files
+    from model_unfolder.evidence.patterns import unet_transformer_ffn_activation_from_files
+
+    fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
+                     / "stable-diffusion-xl-base-1-0.json").read_text())
+    cfg = fx["config"]
+    ctx = ParseContext.build(cfg, source="local")
+    root = (ctx.source_bundle.component_files or {}).get("root") or ctx.source_bundle.files
+    files = _augment_diffusion_files(tuple(root))
+    types = list(cfg.get("down_block_types") or []) + list(cfg.get("up_block_types") or []) \
+        + [cfg.get("mid_block_type") or ""]
+    assert unet_transformer_ffn_activation_from_files(files, types) == "geglu"
+    assert unet_transformer_ffn_activation_from_files(files, []) is None
+    assert unet_transformer_ffn_activation_from_files((), types) is None
+
+    # end-to-end: the drawn FFN is geglu-with-provenance, and the naive vote's
+    # wrong answer (flux's gelu-approximate) appears nowhere on the UNet card
+    from model_unfolder import unfold
+    html = unfold(cfg, inspect_code=True, code_source="local").to_html()
+    assert "GEGLU" in html and "block types name" in html
+    assert "does not declare its inner structure" not in html
+
+
+def test_mlp_bias_from_construction():
+    """U2: MLP bias read from the FFN class's Linears, code-authoritative —
+    Bloom (nn.Linear default True, silent config) → True; Qwen2/Gemma2
+    literal False; Llama resolves `bias=config.mlp_bias` (False); GPT-2's
+    Conv1D layout abstains (None → config spelling stands)."""
+    import transformers, pathlib
+    from transformers import AutoConfig
+    from model_unfolder.evidence.patterns import decoder_mlp_bias_from_files
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    want = {"bloom": True, "qwen2": False, "llama": False,
+            "gpt2": None, "gemma2": False}
+    for mt, w in want.items():
+        ff = base / mt / f"modeling_{mt}.py"
+        got = decoder_mlp_bias_from_files((str(ff),), AutoConfig.for_model(mt))
+        assert got is w or got == w, (mt, got, w)
+    # llama with mlp_bias=True in config → reader resolves the gate to True
+    cfg = AutoConfig.for_model("llama"); cfg.mlp_bias = True
+    assert decoder_mlp_bias_from_files(
+        (str(base / "llama/modeling_llama.py"),), cfg) is True
+
+
+def test_mla_kind_cross_check_both_directions(tmp_path):
+    """U3: fact-conformance polices the attention KIND — a code-MLA drawn as
+    GQA flags wrong_attention; drawn-MLA with no code MLA flags fabricated;
+    agreeing models (DeepSeek drawn+code MLA, Llama neither) stay clean."""
+    import json, pathlib
+    from model_unfolder.sable import DEFAULT_CORPUS
+    from model_unfolder.evidence.conformance import check_fact_conformance
+    from model_unfolder import unfold
+
+    for stem in ("deepseek-v3", "llama-7b"):
+        fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / f"{stem}.json").read_text())
+        d = unfold(fx["config"], inspect_code=True, code_source="local")
+        probs = [p for p in check_fact_conformance(fx["config"], d.to_ir())
+                 if "attention_kind" in (p.view or "")]
+        assert not probs, (stem, [p.message for p in probs])
+
+    # a code-MLA whose config hides the latent ranks: drawn GQA must flag
+    fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / "deepseek-v3.json").read_text())
+    hidden = {k: v for k, v in fx["config"].items()
+              if k not in ("kv_lora_rank", "q_lora_rank",
+                           "qk_nope_head_dim", "qk_rope_head_dim")}
+    d2 = unfold(hidden, inspect_code=True, code_source="local")
+    kinds = {(l.get("attention") or {}).get("kind") for l in d2.to_ir()["layers"]}
+    if "mla" not in kinds:                      # config path indeed drew GQA/MHA
+        probs2 = check_fact_conformance(hidden, d2.to_ir())
+        assert any(p.kind == "wrong_attention" and "attention_kind" in (p.view or "")
+                   for p in probs2), [p.message for p in probs2]
+
+
+def test_cross_attention_schedule_matches_declared_layers():
+    """U4a: the drawn cross-attention layer schedule EXACTLY matches the
+    declared ``cross_attention_layers`` list — on the wrapper AND on the bare
+    component config (whose cross layers were silently suppressed by a
+    vision_config gate until this lock caught it)."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    for mt in ("mllama", "mllama_text_model"):
+        cfg = AutoConfig.for_model(mt)
+        text = getattr(cfg, "text_config", None) or cfg
+        declared = list(getattr(text, "cross_attention_layers", None) or [])
+        if not declared:
+            continue
+        ir = mu.config_to_ir(cfg)
+        drawn = [i for i, l in enumerate(ir.layers) if l.attention.cross_attention]
+        assert drawn == declared[:len(ir.layers)], \
+            f"{mt}: cross schedule diverged (drawn {drawn[:6]}… vs declared {declared[:6]}…)"
+
+
+def test_hybrid_mixer_schedule_matches_code_layer_types():
+    """U4b: the linear-mixer vs full-attention schedule matches the
+    ``layer_types`` list the attention/mixer classes read per index
+    (qwen3_next: gated_delta on 'linear_attention', softmax kinds on
+    'full_attention')."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    for mt in ("qwen3_next",):
+        cfg = AutoConfig.for_model(mt)
+        lt = list(getattr(cfg, "layer_types", None) or [])
+        if not lt:
+            continue
+        ir = mu.config_to_ir(cfg)
+        drawn = [l.attention.kind in ("gated_delta", "linear", "ssm", "rwkv")
+                 for l in ir.layers]
+        code = [x == "linear_attention" for x in lt][:len(drawn)]
+        assert drawn == code, f"{mt}: mixer schedule diverged from layer_types"

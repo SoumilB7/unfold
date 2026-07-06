@@ -261,16 +261,54 @@ def _code_block_norm_placement(cfg: Any, context=None) -> str | None:
 
 
 def _code_norm_kind(cfg: Any, context=None):
-    """The DiT block-norm's base kind READ FROM THE MODEL CLASSES
-    (``AdaLayerNormZero``/``…RMSNorm`` constructions) when the config carries
-    no explicit ``norm_type`` signal — ``(base_kind, class_name)`` or None.
-    ROOT-scoped (the A1 discipline): a text encoder's LayerNorm classes in the
-    pipeline union must never decide the denoiser's norm.  Best-effort."""
+    """The DiT block-norm's base kind READ FROM THE ROOT BLOCK CLASS's own
+    constructed norm fields — ``(base_kind, class_name)`` or None.
+
+    BLOCK-scoped, not file-wide: a file-wide vote let a MODEL-level
+    conditioner outvote the block's own norms (LTX constructs an
+    AdaLayerNormSingle at the model level while its block's norm1/norm2 are
+    plain RMSNorm — the vote said LayerNorm; the U5 pixel pass caught the
+    wrong label).  Resolution: root stack's block class → its norm-role
+    fields → ONE base kind = the verdict; MIXED kinds → None (never a vote);
+    block unresolvable → the file-wide class read as a last resort.  Also
+    ROOT-scoped (A1): encoder files never participate."""
     try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.stacks import secondary_stacks_from_files
+        from ...evidence.transitive import build_registry
+        from ...evidence.forward_ops import _role_of
+
+        def _base(name: str) -> str:
+            return ("RMSNorm" if ("RMS" in name and "LayerNorm" not in name)
+                    else "LayerNorm")
+
+        bundle = getattr(context, "source_bundle", None)
+        architecture = ((getattr(bundle, "component_architectures", {}) or {}).get("root")
+                        or getattr(bundle, "architecture", None))
+        files = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        if architecture and files:
+            aug = _augment_diffusion_files(files)
+            root_depth = set(_ALIASES.get("num_layers") or []) | set(
+                _ALIASES.get("num_single_layers") or [])
+            stacks = [s for s in secondary_stacks_from_files(aug, architecture)
+                      if s.count_field in root_depth]
+            if stacks:
+                registry = build_registry([str(f) for f in aug])
+                norm_classes = sorted({
+                    cls for s in stacks
+                    for cls in (registry.get(s.block_class).field_types or {}).values()
+                    if s.block_class in registry and _role_of(cls) == "norm"})
+                kinds = {_base(c) for c in norm_classes}
+                if len(kinds) == 1:
+                    best = max(norm_classes, key=len)   # the most specific class name
+                    return (next(iter(kinds)), best)
+                if kinds:
+                    return None                         # mixed block norms — never a vote
         from ...evidence.ast_scanner import scan_python_files
         from ...evidence.patterns import diffusion_norm_from_classes
-        files = tuple(str(f) for f in (_source_files(cfg, context) or ()))
-        return diffusion_norm_from_classes(scan_python_files(files))
+        return diffusion_norm_from_classes(
+            scan_python_files(tuple(str(f) for f in (_source_files(cfg, context) or ()))))
     except Exception:
         return None
 
@@ -283,6 +321,24 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
     """Build the IR for a UNet denoiser: no flat layer stack — the U-net
     structure lives in ``extras["unet"]`` and is drawn by the UNet view."""
     unet = parse_unet(cfg)
+    # The Transformer2D FFN's inner shape, ANCHORED to the block classes the
+    # config's own block-type strings name (identity-as-address) — restores
+    # the evidence-backed GEGLU an import-closure vote could not prove.
+    # None keeps the honest-undeclared FFN card.
+    try:
+        from ...evidence.conformance import _augment_diffusion_files
+        from ...evidence.patterns import unet_transformer_ffn_activation_from_files
+        bundle = getattr(context, "source_bundle", None)
+        _root = tuple((getattr(bundle, "component_files", {}) or {}).get("root")
+                      or getattr(bundle, "files", ()) or ())
+        _types = (list(_g(cfg, "down_block_types") or [])
+                  + list(_g(cfg, "up_block_types") or [])
+                  + [_g(cfg, "mid_block_type") or ""])
+        unet["transformer_ffn_act"] = (
+            unet_transformer_ffn_activation_from_files(
+                _augment_diffusion_files(_root), _types) if _root else None)
+    except Exception:
+        unet["transformer_ffn_act"] = None
     boc = unet["block_out_channels"]
     if not boc:
         warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")

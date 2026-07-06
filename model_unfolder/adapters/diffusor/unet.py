@@ -262,7 +262,8 @@ def _unet_resnet_ops(act_label: str = "SiLU", act_note: str = "") -> list[dict]:
     ]
 
 
-def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> list[dict]:
+def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
+                                ffn_act: str | None = None) -> list[dict]:
     """The three sub-blocks of a Transformer2D layer — each REUSES the canonical
     attention / feed-forward opener (the same view a transformer attention/FFN
     block opens), instead of a bespoke leaf.  Block ids are scoped by ``prefix``
@@ -281,13 +282,18 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
                                head_dim=hd, mask="full", no_rope=True,
                                cross_attention=True,
                                cross_kv_source="encoded text prompt")
-    # Honest-undeclared FFN: neither the UNet config nor its ROOT source
-    # declares the Transformer2D FFN's inner shape (BasicTransformerBlock
-    # lives in a shared module; a vote across the import closure proved the
-    # WRONG family's activation).  gated=None draws "inner structure not
-    # declared" — never the old hardcoded GEGLU assertion.
-    ff_spec = FFNSpec(kind="dense", activation=None, activation_assumed=True,
-                      intermediate_size=(ch * 4 if ch else 0), gated=None)
+    # FFN inner shape: ANCHORED code evidence when available (the block class
+    # the config's block-type strings name — SDXL proves geglu), else the
+    # honest-undeclared card.  Never a hardcoded assertion, never an
+    # import-closure vote (it proves the wrong family's activation).
+    if ffn_act:
+        ff_spec = FFNSpec(kind="dense", activation=ffn_act,
+                          activation_from_class=True,
+                          intermediate_size=(ch * 4 if ch else 0),
+                          gated="glu" in ffn_act)
+    else:
+        ff_spec = FFNSpec(kind="dense", activation=None, activation_assumed=True,
+                          intermediate_size=(ch * 4 if ch else 0), gated=None)
     hidden = ch or 0
     # Each inner op (Q/K/V proj, scaled scores, softmax, apply-V, concat, output
     # proj) is ATOMIC — it gets a description card, not a further view. Supplying
@@ -327,9 +333,14 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet") -> li
          "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
          "children": cross_children},
         {"id": f"{prefix}__ff", "title": "Feed-forward",
-         "description": ("Position-wise feed-forward sublayer, applied after "
-                         "attention. The config does not declare its inner "
-                         "structure (gate/activation live in the model code)."),
+         "description": ((f"Position-wise {ffn_act.upper() if 'glu' in ffn_act else ffn_act} "
+                          "feed-forward sublayer, applied after attention. Its "
+                          "structure is read from the block class the config's "
+                          "block types name, not from a config field.")
+                         if ffn_act else
+                         ("Position-wise feed-forward sublayer, applied after "
+                          "attention. The config does not declare its inner "
+                          "structure (gate/activation live in the model code).")),
          "view": ffn_view(ff_spec), "detail": {"ffn": ffn_detail(ff_spec)},
          # generic (dim-neutral) op cards, shared across stages — clickable Linear/act/×.
          "children": ffn_child_blocks(ff_spec, hidden, generic=True)},
@@ -353,7 +364,7 @@ def _resnet_card(sid: str, st: dict, rn_label: str = "", act_label: str = "SiLU"
     }
 
 
-def _transformer_card(sid: str, st: dict, t, cross_dim) -> dict:
+def _transformer_card(sid: str, st: dict, t, cross_dim, ffn_act: str | None = None) -> dict:
     """One Transformer2D block card, scoped by stage id."""
     nh = st.get("num_heads")
     return {
@@ -366,12 +377,13 @@ def _transformer_card(sid: str, st: dict, t, cross_dim) -> dict:
         "view": "unet_transformer",
         "detail": {"transformers": t, "num_heads": nh, "head_dim": st.get("head_dim"),
                    "channels": st.get("channels"), "cross_dim": cross_dim, "prefix": sid},
-        "children": _unet_transformer_subblocks(st, cross_dim, sid),
+        "children": _unet_transformer_subblocks(st, cross_dim, sid, ffn_act=ffn_act),
     }
 
 
 def _unet_stage_children(st: dict, direction, cross_dim, act_label: str = "SiLU",
-                         act_note: str = "the class default") -> list[dict]:
+                         act_note: str = "the class default",
+                         ffn_act: str | None = None) -> list[dict]:
     """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
     for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
     plus the resample.  Real nested blocks — not a flat op list.
@@ -398,7 +410,7 @@ def _unet_stage_children(st: dict, direction, cross_dim, act_label: str = "SiLU"
              "description": ("First ResNet of the bottleneck sandwich: runs before the "
                              f"Transformer2D. GroupNorm+{act_label} → Conv 3×3 → ⊕ timestep emb "
                              f"→ GroupNorm+{act_label} → Conv 3×3 → residual add.")},
-            _transformer_card(sid, st, t, cross_dim),
+            _transformer_card(sid, st, t, cross_dim, ffn_act=ffn_act),
             {**_resnet_card(sid, st, act_label=act_label, act_note=act_note),
              "id": f"{sid}__resnet_post",
              "title": "ResNet block (post)",
@@ -411,7 +423,7 @@ def _unet_stage_children(st: dict, direction, cross_dim, act_label: str = "SiLU"
     children: list[dict] = [_resnet_card(sid, st, str(rn) if rn else "",
                                          act_label=act_label, act_note=act_note)]
     if st.get("attn"):
-        children.append(_transformer_card(sid, st, t, cross_dim))
+        children.append(_transformer_card(sid, st, t, cross_dim, ffn_act=ffn_act))
     if st.get("sample"):
         if direction == "down":
             children.append({"id": f"{sid}__downsample", "title": "Downsample",
@@ -462,7 +474,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "down"),
             "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim"),
-                                             act_label, act_note),
+                                             act_label, act_note,
+                                             ffn_act=unet.get("transformer_ffn_act")),
         })
     if mid:
         ch = mid.get("channels")
@@ -478,7 +491,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
             "facts": _stage_facts(mid) or None,
             "view": "unet_stage", "detail": _stage_detail(mid, None),
             "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim"),
-                                             act_label, act_note),
+                                             act_label, act_note,
+                                             ffn_act=unet.get("transformer_ffn_act")),
         })
     for st in up:
         ch, rn, attn, t = st.get("channels"), st.get("resnets"), st.get("attn"), st.get("transformers")
@@ -495,7 +509,8 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
             "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim"),
-                                             act_label, act_note),
+                                             act_label, act_note,
+                                             ffn_act=unet.get("transformer_ffn_act")),
         })
     cad = unet.get("cross_attention_dim")
     if cad and (any(s.get("attn") for s in down + up) or mid.get("attn")):

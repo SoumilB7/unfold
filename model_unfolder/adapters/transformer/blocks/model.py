@@ -312,8 +312,11 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "id": "lm_head",
             "role": "output",
             "kind": "output",
-            "label": ("Linear output layer · softcap"
-                      if final_logit_softcap else "Linear output layer"),
+            # Box label stays STABLE: the softcap suffix overflowed the hero
+            # pill (caught by the U5 pixel pass — text wider than the box).
+            # The fact lives in the title, description, and fact chip; the
+            # drawn OP node is the attention drill's tanh softcap.
+            "label": "Linear output layer",
             "title": ("LM head · logit softcap" if final_logit_softcap else "LM head"),
             # The softcap branch is a REAL forward op (config-declared
             # final_logit_softcapping): logits/cap → tanh → ×cap before

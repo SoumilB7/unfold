@@ -326,6 +326,17 @@ def _code_scores_scaled(cfg: Any, context=None) -> bool | None:
         return None
 
 
+def _code_mlp_bias(cfg: Any, context=None) -> bool | None:
+    """MLP projection bias READ FROM THE FFN CLASS's Linear constructions —
+    the twin of _code_attention_bias.  None on doubt (Conv1D layouts, rival
+    FFN fields) → the config spelling stands.  Best-effort, never raises."""
+    try:
+        from ...evidence.patterns import decoder_mlp_bias_from_files
+        return decoder_mlp_bias_from_files(_source_files(cfg, context), cfg)
+    except Exception:
+        return None
+
+
 def _code_attention_sinks(cfg: Any, context=None) -> bool:
     """Learned sink logits joining the attention softmax, READ FROM THE
     MODELING SOURCE — a config-silent fact (no config field exists for it).
@@ -718,9 +729,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
     attn_logit_softcap = _g(text_cfg, "attn_logit_softcapping")
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
-    # True; None keeps "config does not declare it").
+    # True; None keeps "config does not declare it").  Code-authoritative like
+    # its twin: Bloom's MLP Linears default to bias=True with a silent config;
+    # `bias=config.mlp_bias` families still honor the checkpoint value through
+    # the reader; Conv1D layouts abstain → the config spelling stands.
     _mlp_bias = _resolve(text_cfg, "mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
+    _code_mlp = _code_mlp_bias(text_cfg, context)
+    if _code_mlp is not None:
+        use_mlp_bias = _code_mlp
     # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
     # bidirectional attention — a MASK fact, consumed here so a positive value
     # can never be silently dropped.
@@ -839,7 +856,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
             is_nope = not bool(no_rope_list[i])
         else:
             is_nope = bool(no_rope_interval > 1 and (i + 1) % no_rope_interval == 0)
-        is_cross_attn_layer = has_cross_attention_side_state and i in cross_attn_layer_set
+        # The layer TYPE follows the declared schedule alone: a bare component
+        # config (mllama_text_model) declares cross_attention_layers without a
+        # vision_config sibling, and its cross layers ARE cross-attention
+        # layers — suppressing them drew 8 wrong layer types on the standalone
+        # parse (caught by the U4 schedule lock).  The vision gate only decides
+        # what the side-state SOURCE honestly says.
+        is_cross_attn_layer = i in cross_attn_layer_set
 
         kv_source: int | None = None
         if i >= first_shared_layer:
@@ -873,7 +896,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer,
-            cross_kv_source="projected image states" if is_cross_attn_layer else None,
+            cross_kv_source=(("projected image states"
+                              if has_cross_attention_side_state else
+                              "external encoder states (encoder not in this config)")
+                             if is_cross_attn_layer else None),
             compress_ratio=compress_ratio,
             # Sparse-attention indexer fan-in. CSA declares it alongside a
             # compress_ratio; DeepSeek-V3.2 DSA declares its own indexer geometry

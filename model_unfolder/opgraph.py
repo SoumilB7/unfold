@@ -478,18 +478,28 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
     edges += core_edges
     if attn.get("sinks") and not cross:
-        # Learned sink logits: an extra per-head column concatenated onto the
-        # scores BEFORE the softmax; after normalisation its probability mass
-        # is dropped — a head can attend to "nothing".  A real forward op
-        # (config-silent, code-proven), so it is a drawn lane, never chip-only.
+        # Learned sink logits: an extra per-head column CONCATENATED onto the
+        # scores before the softmax; after normalisation its share is dropped
+        # — a head can attend to "nothing".  ONE spine box: the sink logits
+        # are LEARNED PARAMETERS of this op, and the diagram's grammar never
+        # draws weights as input nodes (Linear boxes don't either) — a side
+        # input node made the layout duplicate the downstream chain in its
+        # own lane (twice caught by the U5 pixel pass).
         ops.append(Op(
-            "attention_sinks", "input", "Learned sink logits",
-            meta={"desc": "A learned per-head logit column joins the "
-                          "attention scores as an extra softmax entry; its "
-                          "probability share is discarded after normalisation, "
-                          "letting a head place weight on nothing instead of "
-                          "being forced to attend somewhere."}))
-        edges.append(Edge("attention_sinks", "attn_softmax"))
+            "sink_concat", "reshape", "Append sink column",
+            meta={"desc": "Concatenates a LEARNED per-head sink logit as one "
+                          "extra column of the score matrix — the softmax "
+                          "then normalises over scores ∥ sink and the sink "
+                          "column is dropped afterwards; its share is the "
+                          "“attend to nothing” mass. The sink values are "
+                          "parameters of this op (config-silent, read from "
+                          "the model class)."}))
+        edges = [edge for edge in edges
+                 if not (edge.src == "scaled_scores" and edge.dst == "attn_softmax")]
+        edges += [
+            Edge("scaled_scores", "sink_concat"),
+            Edge("sink_concat", "attn_softmax"),
+        ]
     if attn.get("output_gate"):
         projected_q = q_source
         ops += [
