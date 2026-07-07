@@ -2924,3 +2924,43 @@ def test_hybrid_mixer_schedule_matches_code_layer_types():
                  for l in ir.layers]
         code = [x == "linear_attention" for x in lt][:len(drawn)]
         assert drawn == code, f"{mt}: mixer schedule diverged from layer_types"
+
+
+def test_patch_ops_humanized_and_plumbing_collapsed():
+    """Theme-L (all three Her Eyes DISLIKEs): a raw implementation CLASS NAME
+    is never a drawn patch-op label (structure names the op; the class rides
+    as provenance), and CONSECUTIVE reshape-kind plumbing collapses into one
+    step whose card enumerates every move — the Tower-Census fallback rule."""
+    from transformers import AutoConfig
+    import model_unfolder as mu
+    from model_unfolder.evidence.models import SourceOp
+    from model_unfolder.evidence.vision import _collapse_plumbing_runs
+
+    # collapse: 3 consecutive reshapes → 1 op, description enumerates in order
+    ops = [SourceOp("conv", "Patch convolution", "X", "f.py", 1),
+           SourceOp("reshape", "Flatten spatial grid", "X", "f.py", 2),
+           SourceOp("reshape", "Transpose to tokens", "X", "f.py", 3),
+           SourceOp("reshape", "Regroup patch tokens", "X", "f.py", 4),
+           SourceOp("norm", "LayerNorm", "X", "f.py", 5)]
+    got = _collapse_plumbing_runs(ops)
+    assert [o.kind for o in got] == ["conv", "reshape", "norm"]
+    assert "Flatten spatial grid → Transpose to tokens → Regroup patch tokens" \
+        in got[1].description
+    # single reshapes pass through untouched
+    assert _collapse_plumbing_runs(ops[:2])[1].label == "Flatten spatial grid"
+
+    # end-to-end: no camelCase class-name labels in any modality op list
+    for mt in ("llama4", "gemma3", "qwen2_vl"):
+        try:
+            cfg = AutoConfig.for_model(mt)
+        except Exception:
+            continue
+        ir = mu.unfold(cfg, inspect_code=True, code_source="local").to_ir()
+        mods = ((ir.get("extras") or {}).get("modalities") or {}).get("inputs") or {}
+        for name in ("vision", "video"):
+            for op in ((mods.get(name) or {}).get("embedding") or {}).get("ops") or []:
+                label = op["label"]
+                assert not (label[:1].isupper() and any(c.islower() for c in label)
+                            and any(c.isupper() for c in label[1:])
+                            and " " not in label and label not in ("LayerNorm", "RMSNorm")), \
+                    f"{mt}/{name}: class-name-like label {label!r}"

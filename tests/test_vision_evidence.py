@@ -38,8 +38,14 @@ def test_siglip_and_clip_are_dense_layernorm_towers_with_real_conv_order():
         evidence = _evidence(cfg)
         assert evidence.status == "proven"
         assert evidence.position_kind == "learned_absolute"
-        assert [op.label for op in evidence.patch_ops[:3]] == [
-            "Conv2d", "Flatten spatial grid", "Transpose to tokens"]
+        # Humanized structural label (a raw torch class name on a box was
+        # the Theme-L leak) + the flatten/transpose pair collapsed into ONE
+        # regroup step — CONV ORDER still locked: conv first, then the
+        # regroup whose card enumerates the moves in execution order.
+        assert evidence.patch_ops[0].label == "Patch convolution"
+        assert evidence.patch_ops[1].kind == "reshape"
+        assert ("Flatten spatial grid → Transpose to tokens"
+                in evidence.patch_ops[1].description)
         layer = evidence.variants[0]
         assert (layer.norm_kind, layer.ffn_gated, layer.projection_mode) == (
             "LayerNorm", False, "separate_qkv")

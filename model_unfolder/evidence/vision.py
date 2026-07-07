@@ -374,6 +374,79 @@ def _vision_owner(
     return parents[0] if parents else blocks[0]
 
 
+def _patch_impl_label(field_type: str, registry: dict) -> str:
+    """Human, STRUCTURAL label for a patch-embedding implementation class.
+
+    The class NAME is provenance (it rides in SourceOp.class_name for the
+    card), never the drawn label — a raw ``Llama4UnfoldConvolution`` box was
+    the flagship identity leak, and Her Eyes' most-disliked pages all carried
+    class-name or repeated-plumbing boxes.  Structure decides the words:
+    an unfold token in the class's own calls → "Patch unfold + project";
+    otherwise it reached here through a conv-typed field → "Patch
+    convolution"."""
+    info = registry.get(field_type)
+    tokens = {str(t).lower() for t in (getattr(info, "call_tokens", ()) or ())}
+    if "unfold" in tokens:
+        return "Patch unfold + project"
+    return "Patch convolution"
+
+
+# OUR OWN canonical shape-op labels that are pure AXIS PLUMBING — safe to
+# fold into one drawn step.  Semantic reshapes (merge/split/join/extract —
+# the ops that change what the tokens ARE) are deliberately absent: they must
+# stand out, never collapse (Her Eyes: "the two ops that matter").  This is a
+# closed vocabulary WE author in _shape_label/_owner_patch_flow_ops — keying
+# on it is self-vocabulary, not model identity.
+_PLUMBING_LABELS = frozenset({
+    "Reorder tensor axes", "Transpose tensor axes", "Transpose to tokens",
+    "Flatten tokens", "Flatten spatial grid", "Flatten merge windows",
+    "Arrange spatial grid", "Regroup patch tokens", "Reshape patches",
+    "Crop patches",
+})
+
+
+def _collapse_plumbing_runs(ops: list[SourceOp]) -> list[SourceOp]:
+    """Collapse CONSECUTIVE plumbing reshape-kind ops into one drawn step.
+
+    A ladder of near-identical Reorder/Reshape/Flatten boxes buries the ops
+    that matter (all three Her Eyes DISLIKEs) — and the Tower-Census fallback
+    rule already decided this: draw the meaningful ops, filter the tensor
+    plumbing.  HONESTY IS KEPT: every collapsed step is enumerated, in order,
+    in the survivor's description (op-presence conformance is set-based, so a
+    single reshape still carries the kind).  Runs of length 1 pass through
+    untouched."""
+    out: list[SourceOp] = []
+    run: list[SourceOp] = []
+
+    def _flush() -> None:
+        if not run:
+            return
+        if len(run) == 1:
+            out.append(run[0])
+        else:
+            labels = [op.label for op in run]
+            unique = sorted(set(labels), key=labels.index)
+            label = unique[0] if len(unique) == 1 else "Regroup patch tokens"
+            first = run[0]
+            out.append(SourceOp(
+                "reshape", label, first.class_name, first.source_file,
+                first.line,
+                description=("One regrouping step drawn for the consecutive "
+                             "tensor moves the code performs here: "
+                             + " → ".join(labels) + "."),
+            ))
+        run.clear()
+
+    for op in ops:
+        if op.kind == "reshape" and op.label in _PLUMBING_LABELS:
+            run.append(op)
+        else:
+            _flush()
+            out.append(op)
+    _flush()
+    return out
+
+
 def _patch_ops(
     owner: str,
     blocks: list[str],
@@ -403,7 +476,7 @@ def _patch_ops(
     # Operations immediately after a primitive patch field (flatten/transpose/
     # pre-stack norm) live in the owner forward rather than a patch submodule.
     out.extend(_owner_patch_flow_ops(owner, info, registry))
-    return _dedupe_ops(out)
+    return _collapse_plumbing_runs(_dedupe_ops(out))
 
 
 def _owner_patch_flow_ops(
@@ -460,7 +533,10 @@ def _owner_patch_flow_ops(
             field_type = info.field_types.get(field or "", "")
             token = _call_name(call.func).lower()
             if patch_calls and call in patch_calls and "conv" in field_type.lower():
-                out.append(SourceOp("conv", field_type, class_name, info.source_file, call.lineno))
+                out.append(SourceOp(
+                    "conv", _patch_impl_label(field_type, registry),
+                    class_name, info.source_file, call.lineno,
+                    description=f"Implemented by {field_type} in the modeling source."))
             elif field and _role_of(field_type) == "norm":
                 out.append(SourceOp("norm", _norm_label(field_type), class_name,
                                     info.source_file, call.lineno))
@@ -533,7 +609,10 @@ def _ordered_patch_callable(
         if field and (_is_patch_field(field) or "conv" in low_type):
             seen_patch = True
             if "conv" in low_type:
-                out.append(SourceOp("conv", field_type, class_name, info.source_file, call.lineno))
+                out.append(SourceOp(
+                    "conv", _patch_impl_label(field_type, registry),
+                    class_name, info.source_file, call.lineno,
+                    description=f"Implemented by {field_type} in the modeling source."))
             elif expand_patch_fields and field_type in registry:
                 out.extend(_ordered_patch_callable(
                     field_type, registry[field_type], registry, blocks=blocks,
@@ -541,7 +620,11 @@ def _ordered_patch_callable(
                 ))
             continue
         if (patch_callable or seen_patch) and field and _role_of(field_type) == "linear":
-            out.append(SourceOp("linear", field_type or "Linear", class_name,
+            # a CUSTOM Linear-role class name is provenance, not a label; a
+            # plain nn.Linear was already human — keep its short label
+            _lin_label = ("Linear" if field_type in ("", "Linear")
+                          else "Linear projection")
+            out.append(SourceOp("linear", _lin_label, class_name,
                                 info.source_file, call.lineno))
             continue
         if not seen_patch and not patch_callable and class_name == info.name:

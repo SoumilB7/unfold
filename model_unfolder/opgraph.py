@@ -861,6 +861,12 @@ def ops_region(declared: list[dict], *, rid: str = "ops", label: str = "ops") ->
             continue
         if d.get("formula"):
             meta["formula"] = d["formula"]
+        # A declared per-op description is the card's prose (meta.desc — the
+        # same key every canonical region uses).  It was silently dropped
+        # before, which turned the plumbing-collapse's step enumeration
+        # invisible — an honesty gap: a collapsed step MUST list its moves.
+        if d.get("description") and "desc" not in meta:
+            meta["desc"] = d["description"]
         ops.append(Op(oid, kind, d.get("label"),
                       in_features=d.get("in"), out_features=d.get("out"),
                       fn=d.get("fn"), meta=meta))

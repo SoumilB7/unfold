@@ -246,12 +246,15 @@ def _owner_segment_ops(
                     item.kind, label, item.class_name,
                     item.source_file, item.line, fn=item.fn,
                     op_id=f"{prefix}_{index}",
+                    description=item.description,   # keep backend/enumeration provenance
                 ))
             continue
         index += 1
         out.append(SourceOp(
             _kind_for(field, cls), _label_for(field, cls), cls,
             info.source_file, call.lineno, op_id=f"{prefix}_{index}",
+            description=(f"Implemented by {cls} in the modeling source."
+                         if _role_of(cls) == "conv" else ""),
         ))
 
     # Fixed embeddings can be read through ``self.embed_positions.weight`` and
@@ -504,7 +507,15 @@ def _label_for(field: str, cls: str) -> str:
     if role == "norm":
         return "RMSNorm" if "rms" in cls.lower() else "LayerNorm"
     if role == "conv":
-        return cls.replace("Gemma4Audio", "").replace("Causal", "Depthwise ")
+        # Neutral structural noun — a raw torch/model class on a box was the
+        # Theme-L leak, and the old model-prefix strip here was a hardcoded
+        # per-family string in a GENERAL reader.  Depthwise-vs-dense is a real
+        # structural distinction worth the label, read from the developer's
+        # OWN declarations (the field name `self.depthwise_conv1d` or the
+        # class) — the concrete class rides as provenance.
+        return ("Depthwise convolution"
+                if "depthwise" in f"{low} {cls.lower()}"
+                else "Convolution")
     if role == "linear":
         return "Linear (out)" if any(token in low for token in ("out", "fc2")) else \
             "Linear (in)" if any(token in low for token in ("fc1", "input")) else "Linear"

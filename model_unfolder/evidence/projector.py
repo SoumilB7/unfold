@@ -111,7 +111,18 @@ def _callable_ops(name: str, info: CallableInfo, registry: dict[str, CallableInf
             out.append(SourceOp("linear", _linear_label(field), name,
                                 info.source_file, call.lineno))
         elif role == "conv":
-            out.append(SourceOp("conv", cls, name, info.source_file, call.lineno))
+            # Neutral structural noun — this builder serves projector AND
+            # audio towers, where "patch" would be the wrong word; the
+            # concrete backend (Conv2d/Conv3d) is provenance in the card.
+            _ctor = next(
+                (c for c in ast.walk(_class_node(info.source_file, name) or ast.Module(body=[], type_ignores=[]))
+                 if isinstance(c, ast.Call)
+                 and (getattr(c.func, "attr", None) or getattr(c.func, "id", "")) == cls),
+                None)
+            out.append(SourceOp(
+                "conv", _conv_flavor(_ctor), name,
+                info.source_file, call.lineno,
+                description=f"Implemented by {cls} in the modeling source."))
         elif role == "embedding":
             out.append(SourceOp("position", cls, name, info.source_file, call.lineno))
         elif role == "attention":
@@ -166,7 +177,10 @@ def _callable_ops(name: str, info: CallableInfo, registry: dict[str, CallableInf
                 # Putting it on this ordered spine would draw a false edge.
                 continue
             out.append(SourceOp("reshape", label, name, info.source_file, call.lineno))
-    return out if preserve_shape_chain else _dedupe(out)
+    if preserve_shape_chain:
+        return out
+    from .vision import _collapse_plumbing_runs
+    return _collapse_plumbing_runs(_dedupe(out))
 
 
 def _is_projector_field(field: str, cls: str, info: CallableInfo,
@@ -238,6 +252,22 @@ def _nested_shape_receiver(call: ast.Call, parents: dict[ast.AST, ast.AST]) -> b
     grand = parents.get(parent) if parent is not None else None
     return (isinstance(parent, ast.Attribute) and parent.value is call
             and isinstance(grand, ast.Call) and grand.func is parent)
+
+
+def _conv_flavor(ctor_call: ast.Call | None) -> str:
+    """Structural conv label from the CONSTRUCTION SITE's ``groups=`` kwarg —
+    never from words in the class name (the old ``Causal``→``Depthwise``
+    rename was a hardcoded pun that happened to be true, and a Conv subclass
+    may have no ``__init__`` of its own at all, so the caller's ctor call is
+    the only place the fact lives).  ``groups`` tied to a symbol (the channel
+    count) → depthwise; a literal >1 → grouped; absent/1 → plain."""
+    for kw in (getattr(ctor_call, "keywords", None) or []):
+        if kw.arg == "groups":
+            if isinstance(kw.value, ast.Constant):
+                return ("Convolution" if kw.value.value in (1, None)
+                        else "Grouped convolution")
+            return "Depthwise convolution"
+    return "Convolution"
 
 
 def _shape_label(call: ast.Call) -> str:

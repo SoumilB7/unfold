@@ -64,15 +64,19 @@ def test_real_audio_towers_resolve_distinct_source_graphs():
     gemma_labels = [op.label for op in gemma.variants[0].ops]
     assert gemma_labels == [
         "Feed-forward 1", "Clamp", "RMSNorm", "Self-attention", "Clamp",
-        "RMSNorm", "Residual add", "LightConv1d", "Feed-forward 2",
+        "RMSNorm", "Residual add", "Convolution", "Feed-forward 2",
         "Clamp", "RMSNorm",
     ]
     qwen_kinds = [op.kind for op in qwen.variants[0].ops]
     assert qwen_kinds.count("elementwise") == 2
+    # raw torch class labels retired (Theme-L): subsample convs carry the
+    # neutral structural noun; the concrete backend is card provenance.
     assert [op.label for op in qwen.frontend_ops][:4] == [
-        "Conv1d", "GELU", "Conv1d", "GELU",
+        "Convolution", "GELU", "Convolution", "GELU",
     ]
-    assert [op.label for op in gemma.frontend_ops].count("Conv2d") == 2
+    assert "Conv1d" in (qwen.frontend_ops[0].description or "")
+    assert [op.label for op in gemma.frontend_ops].count("Convolution") == 2
+    assert any("Conv2d" in (op.description or "") for op in gemma.frontend_ops)
     assert gemma.frontend_ops[0].label == "Add channel axis"
     assert gemma.frontend_ops[-2].label == "Flatten subsampled features"
     light_conv = next(item for item in gemma.variants[0].callables
@@ -101,8 +105,8 @@ def test_audio_ir_and_fact_net_consume_the_same_record():
 
 def test_audio_rendering_is_source_shaped_and_wiring_clean():
     for cfg, required in (
-        (GEMMA_AUDIO, ("Feed-forward 1", "LightConv1d", "Relative positions", "GLU")),
-        (QWEN_AUDIO, ("Conv1d", "Fixed positions", "Temporal average pool")),
+        (GEMMA_AUDIO, ("Feed-forward 1", "Convolution", "Relative positions", "GLU")),
+        (QWEN_AUDIO, ("Convolution", "Fixed positions", "Temporal average pool")),
     ):
         diagram = unfold(cfg)
         html = diagram.to_html(standalone=True)

@@ -107,13 +107,25 @@ def test_patch_merger_card_declares_its_ops():
 def test_vision_patch_profiles_preserve_source_order_and_concrete_backend():
     pixtral = unfold(PIXTRAL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
     qwen = unfold(QWEN2VL_STYLE).to_ir()["extras"]["modalities"]["inputs"]["vision"]
-    assert [op["label"] for op in pixtral["embedding"]["ops"]] == [
-        "Conv2d", "Crop patches", "Flatten spatial grid",
-        "Transpose to tokens", "Join patch sequences", "RMSNorm"
+    # Labels are humanized STRUCTURAL names (a raw torch class on a box was
+    # the Theme-L leak); the concrete backend survives as card provenance in
+    # the conv op's description, and consecutive tensor moves collapse into
+    # ONE regroup step whose description enumerates them in source order.
+    pix_ops = pixtral["embedding"]["ops"]
+    # SEMANTIC reshapes (the variable-size image JOIN) stand alone — only the
+    # axis plumbing (flatten/transpose) folds into the regroup step.
+    assert [op["label"] for op in pix_ops] == [
+        "Patch convolution", "Crop patches", "Regroup patch tokens",
+        "Join patch sequences", "RMSNorm"
     ]
-    assert [op["label"] for op in qwen["embedding"]["ops"]] == [
-        "Reshape patches", "Conv3d", "Flatten tokens"
+    assert "Conv2d" in (pix_ops[0].get("description") or "")
+    assert ("Flatten spatial grid → Transpose to tokens"
+            in (pix_ops[2].get("description") or ""))
+    qwen_ops = qwen["embedding"]["ops"]
+    assert [op["label"] for op in qwen_ops] == [
+        "Reshape patches", "Patch convolution", "Flatten tokens"
     ]
+    assert "Conv3d" in (qwen_ops[1].get("description") or "")
     for cfg in (PIXTRAL_STYLE, QWEN2VL_STYLE):
         html = unfold(cfg).to_html(standalone=True)
         assert "Linear / Conv2d" not in html
@@ -149,8 +161,11 @@ def test_mistral3_projector_includes_norm_patch_merge_and_two_linear_mlp():
 def test_qwen_video_path_reuses_the_same_conv3d_and_patch_merger_profiles():
     cfg = {**QWEN2VL_STYLE, "video_token_id": 151656}
     video = unfold(cfg).to_ir()["extras"]["modalities"]["inputs"]["video"]
+    # "Conv3d" (a raw torch class on a box) became the humanized structural
+    # label — the Theme-L leak fix; the video path still reuses the exact
+    # same three-op profile as the image path.
     assert [op["label"] for op in video["embedding"]["ops"]] == [
-        "Reshape patches", "Conv3d", "Flatten tokens"
+        "Reshape patches", "Patch convolution", "Flatten tokens"
     ]
     assert "profile" not in video["projector"]
     assert video["projector"]["source_class"] == "PatchMerger"
