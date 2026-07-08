@@ -1847,3 +1847,32 @@ def test_moe_text_encoder_opens_the_canonical_moe_drill():
     flat = unfold(FLUX).to_html()
     flat_seg = flat.split('data-card-id="encoder_0_op_ffn"', 1)[1].split("</svg>", 1)[0]
     assert "router" not in flat_seg
+
+
+def test_scalar_sample_size_never_fabricates_a_square_grid():
+    """U-D0 (audio plan): a square side may only be inferred from a scalar
+    sample_size when 2D-ness is evidenced — a declared patchify (DiT) or a
+    conv-UNet family.  A bare scalar on anything else is just a length:
+    Stable Audio's sample_size=1024 is 1-D latent frames, and the old code
+    drew a fabricated 1024 x 1024 grid from it."""
+    from model_unfolder.adapters.diffusor.blocks import diffusion_loop_blocks
+
+    def latent_facts(geom):
+        blocks = {b["id"]: b for b in diffusion_loop_blocks(geom)}
+        return " ".join(blocks["latent"].get("facts") or [])
+
+    # 1-D shaped: no patch_size, not a UNet -> honest channels + declared length.
+    audio = latent_facts({"in_channels": 64, "sample_size": 1024,
+                          "denoiser_family": "dit"})
+    assert "1,024" in audio and "x 1,024" not in audio and "x 1024" not in audio
+    assert "64 channels" in audio
+
+    # Declared patchify keeps the square (PixArt: 128 / patch 2 = 64).
+    dit = latent_facts({"in_channels": 4, "sample_size": 128, "patch_size": 2,
+                        "denoiser_family": "dit"})
+    assert "4 × 64 x 64" in dit
+
+    # A conv-UNet's constructor reads scalar sample_size as H = W.
+    unet = latent_facts({"in_channels": 4, "sample_size": 128,
+                         "denoiser_family": "unet"})
+    assert "4 × 128 x 128" in unet

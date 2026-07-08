@@ -1,0 +1,92 @@
+# Declared component SLOTS of composite / seq2seq wrapper configs.
+#
+# Hugging Face's composite contract has TWO spellings: fields named *_config
+# (walked unconditionally by evidence/sources._component_configs) and bare
+# slot names whose value is a config dict carrying its own model_type
+# (MusicGen: text_encoder / audio_encoder / decoder; the generic
+# EncoderDecoderModel: encoder / decoder).  This vocabulary names the bare
+# slots and the ROLE each plays, so parsers and the source walk can descend
+# them WITHOUT guessing from arbitrary dicts — a slot only counts when its
+# value actually declares a model_type (evidence, not the name alone).
+#
+# Roles:
+#   main    - the primary generative stack (parsed as the model itself)
+#   encoder - a conditioning encoder tower (drawn as a supporting panel)
+#   codec   - an audio codec (tokenizer/detokenizer tower, census §4)
+slots:
+  - decoder=main
+  - encoder=encoder
+  - text_encoder=encoder
+  - audio_encoder=codec
+
+# Constructor field names that hold a decoder layer's CROSS-attention module.
+# Used by the construction reader: a decoder-layer class that assigns one of
+# these unconditionally in __init__ proves cross-attention on EVERY layer
+# (MusicGen's encoder_attn) — the schedule comes from the code, never assumed.
+cross_attn_fields:
+  - encoder_attn
+  - cross_attn
+  - crossattention
+  - cross_attention
+
+# Config fields that DECLARE speech-synthesis components the diagram does not
+# draw yet (audio plan U-E) — their presence must produce a STATED omission,
+# never a silent one (VITS flows/duration/HiFiGAN; SpeechT5 pre/post-nets).
+undrawn_component_fields:
+  # VITS
+  - prior_encoder_num_flows=normalizing flows (prior encoder)
+  - prior_encoder_num_wavenet_layers=normalizing flows (prior encoder)
+  - flow_size=normalizing flows (prior encoder)
+  - wavenet_kernel_size=normalizing flows (prior encoder)
+  - wavenet_dilation_rate=normalizing flows (prior encoder)
+  - wavenet_dropout=normalizing flows (prior encoder)
+  - posterior_encoder_num_wavenet_layers=posterior encoder (training-time)
+  - duration_predictor_num_flows=duration predictor
+  - use_stochastic_duration_prediction=duration predictor
+  - duration_predictor_kernel_size=duration predictor
+  - duration_predictor_filter_channels=duration predictor
+  - duration_predictor_flow_bins=duration predictor
+  - duration_predictor_tail_bound=duration predictor
+  - duration_predictor_dropout=duration predictor
+  - depth_separable_channels=duration predictor
+  - depth_separable_num_layers=duration predictor
+  - upsample_rates=HiFiGAN-style waveform decoder (upsample ladder)
+  - upsample_initial_channel=HiFiGAN-style waveform decoder (upsample ladder)
+  - upsample_kernel_sizes=HiFiGAN-style waveform decoder (upsample ladder)
+  - resblock_kernel_sizes=HiFiGAN-style waveform decoder (upsample ladder)
+  - resblock_dilation_sizes=HiFiGAN-style waveform decoder (upsample ladder)
+  - leaky_relu_slope=HiFiGAN-style waveform decoder (upsample ladder)
+  - spectrogram_bins=HiFiGAN-style waveform decoder (upsample ladder)
+  - sampling_rate=HiFiGAN-style waveform decoder (upsample ladder)
+  - num_speakers=speaker conditioning
+  - speaker_embedding_size=speaker conditioning
+  - window_size=relative-position attention window
+  # SpeechT5
+  - speech_decoder_prenet_units=speech-decoder prenet
+  - speech_decoder_prenet_layers=speech-decoder prenet
+  - speech_decoder_prenet_dropout=speech-decoder prenet
+  - speech_decoder_postnet_units=speech-decoder postnet
+  - speech_decoder_postnet_layers=speech-decoder postnet
+  - speech_decoder_postnet_kernel=speech-decoder postnet
+  - speech_decoder_postnet_dropout=speech-decoder postnet
+  - conv_dim=speech-encoder prenet (feature extractor)
+  - conv_kernel=speech-encoder prenet (feature extractor)
+  - conv_stride=speech-encoder prenet (feature extractor)
+  - conv_bias=speech-encoder prenet (feature extractor)
+  - num_feat_extract_layers=speech-encoder prenet (feature extractor)
+  - feat_extract_norm=speech-encoder prenet (feature extractor)
+  - feat_extract_activation=speech-encoder prenet (feature extractor)
+  - num_conv_pos_embeddings=speech-encoder prenet (feature extractor)
+  - num_conv_pos_embedding_groups=speech-encoder prenet (feature extractor)
+  - num_mel_bins=mel-spectrogram interface
+  - decoder_attention_heads=seq2seq decoder half
+  - decoder_ffn_dim=seq2seq decoder half
+  - reduction_factor=speech-decoder half (mel output)
+  - max_speech_positions=speech-decoder half (mel output)
+  - speaker_embedding_dim=speaker conditioning
+  - encoder_max_relative_position=relative-position attention window
+  # VITS drawn-FFN structure gap (drill pending — see SURGICAL_PLAN_AUDIO U-E
+  # ledger: the FFN is CONVOLUTIONAL; the linear drill is retired with U-E)
+  - ffn_kernel_size=convolutional FFN structure (drill pending)
+  # Parler-TTS
+  - prompt_cross_attention=prompt-token routing (prepend vs cross-attention)

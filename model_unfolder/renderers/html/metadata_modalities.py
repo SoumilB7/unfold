@@ -127,6 +127,14 @@ _MODALITY_BLOCK_SPECS = (
         "label": lambda p: "Video \u2192 grid", "title": lambda p: "Video to grid tokens",
         "describe": lambda p: _video_description(p), "children": lambda p: _video_children(p),
     },
+    {
+        "key": "conditioning", "block_id": "conditioning_path", "view": "conditioning_path",
+        "kind": lambda p: p.get("kind") or "prompt_to_cross_attention_states",
+        "label": lambda p: ["Prompt", "encoder"],
+        "title": lambda p: "Prompt conditioning encoder",
+        "describe": lambda p: _conditioning_description(p),
+        "children": lambda p: _conditioning_children(p),
+    },
 )
 
 
@@ -155,12 +163,17 @@ def _multimodal_block_lookup(ir: dict) -> dict:
 
     if fusion:
         cross_attention = fusion.get("kind") == "cross_attention"
+        # Cross-attention wording names the actual side source: a conditioning
+        # (prompt-encoder) composite is NOT vision.
+        cross_label = ("Encoder cross-attention"
+                       if "conditioning" in inputs and "vision" not in inputs
+                       else "Vision cross-attention")
         blocks["fusion"] = {
             "id": "fusion",
             "role": "fusion",
             "kind": "fusion",
-            "label": "Vision cross-attention" if cross_attention else "Multimodal fusion",
-            "title": "Vision cross-attention" if cross_attention else "Multimodal fusion",
+            "label": cross_label if cross_attention else "Multimodal fusion",
+            "title": cross_label if cross_attention else "Multimodal fusion",
             "description": _fusion_description(fusion)[0],
             "facts": _fusion_description(fusion)[1],
             "view": "multimodal_fusion",
@@ -538,6 +551,122 @@ def _audio_children(audio: dict) -> list[dict]:
     ]
 
 
+def _conditioning_description(cond: dict) -> tuple[str, list[str]]:
+    encoder = cond.get("encoder") or {}
+    projector = cond.get("projector") or {}
+    tokens = cond.get("tokens") or {}
+    name = str(encoder.get("model_type") or "conditioning").upper() \
+        if encoder.get("model_type") else "conditioning"
+    bits = []
+    if encoder.get("num_layers"):
+        bits.append(f"{_fmt_int(encoder.get('num_layers'))} layers")
+    if encoder.get("hidden_size"):
+        bits.append(f"hidden {_fmt_int(encoder.get('hidden_size'))}")
+    if projector.get("out_features"):
+        bits.append(f"projected to width {_fmt_int(projector.get('out_features'))}")
+    cross = tokens.get("kind") == "cross_attention_states"
+    return (
+        f"The {name} encoder turns the text prompt into a sequence of states"
+        + (" the decoder reads through cross-attention on every step."
+           if cross else " that condition the decoder."),
+        bits,
+    )
+
+
+def _conditioning_norm_card(prefix: str, norm: str, placement: str = "pre"):
+    where = {
+        "pre": "before each sublayer (pre-norm)",
+        "double": ("on each sublayer's input AND output before the residual "
+                   "add (sandwich placement)"),
+        "post": "after each sublayer's residual add (post-norm)",
+    }
+    return {
+        "id": f"{prefix}_op_norm",
+        "title": norm,
+        "description": (f"{norm} normalizes prompt-token features "
+                        f"{where.get(placement) or where['pre']} inside each "
+                        "repeated encoder layer."),
+    }
+
+
+def _conditioning_residual_card(prefix: str):
+    return {
+        "id": f"{prefix}_op_add",
+        "title": "Residual add",
+        "description": ("Adds the sublayer input back onto its output; both the "
+                        "attention and feed-forward sublayers of the encoder "
+                        "layer are wrapped in this residual."),
+    }
+
+
+def _conditioning_children(cond: dict) -> list[dict]:
+    input_spec = cond.get("input") or {}
+    encoder = cond.get("encoder") or {}
+    projector = cond.get("projector") or {}
+    tokens = cond.get("tokens") or {}
+    sub_model = encoder.get("sub_model") if isinstance(encoder.get("sub_model"), dict) else {}
+    cross = tokens.get("kind") == "cross_attention_states"
+
+    children: list[dict] = [{
+        "id": "prompt_tokens",
+        "title": "Prompt tokens",
+        "description": "The tokenized text prompt, input to the conditioning encoder.",
+        "facts": [f for f in (
+            f"{_fmt_int(input_spec.get('vocab_size'))} vocab"
+            if input_spec.get("vocab_size") else "",
+        ) if f],
+    }]
+    if sub_model.get("groups"):
+        # The SAME recursive projector every embedded tower uses (embedded ≡
+        # standalone): the whole encoder is one clickable tower block.
+        from ...submodel import submodel_block
+        tower = submodel_block(
+            sub_model, "conditioning_encoder",
+            name=str(encoder.get("model_type") or "prompt encoder"),
+            attn_description="Self-attention over the prompt token sequence.",
+            norm_fallback="Norm",
+            norm_card=_conditioning_norm_card,
+            residual_card=_conditioning_residual_card,
+        )
+        tower["title"] = "Prompt conditioning encoder"
+        tower["description"] = _conditioning_description(cond)[0]
+        tower["detail"]["exit_note"] = "→ decoder cross-attention K/V"
+        children.append(tower)
+    else:
+        children.append({
+            "id": "conditioning_encoder",
+            "title": "Prompt conditioning encoder",
+            "description": _conditioning_description(cond)[0],
+            "facts": [f for f in (
+                f"{_fmt_int(encoder.get('num_layers'))} layers"
+                if encoder.get("num_layers") else "",
+                f"hidden {_fmt_int(encoder.get('hidden_size'))}"
+                if encoder.get("hidden_size") else "",
+            ) if f],
+        })
+    if projector:
+        children.append({
+            "id": "conditioning_projector",
+            **_projector_card_fields(projector),
+        })
+    children.append({
+        # The exact tensor id when it feeds cross-attention: the card the
+        # per-layer side block's click lands on.
+        "id": "cross_attention_states" if cross else "encoder_states",
+        "title": ("Encoder states (cross-attention K/V)"
+                  if cross else "Encoder states"),
+        "description": (
+            "The encoder's output sequence — the decoder's cross-attention "
+            "layers read it as K/V at every generation step."
+            if cross else
+            "The encoder's output sequence, conditioning the decoder."),
+        "facts": [f for f in (
+            f"width {_fmt_int(tokens.get('width'))}" if tokens.get("width") else "",
+        ) if f],
+    })
+    return children
+
+
 def _slug_identifier(value: str) -> str:
     import re
     return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
@@ -781,6 +910,12 @@ def _join_desc(bits: list[str]) -> str:
     return "; ".join(bit for bit in bits if bit)
 
 
+def _is_conditioning_fusion(fusion: dict) -> bool:
+    """Cross-attention whose side source is a CONDITIONING (prompt-encoder)
+    composite, per the fusion's own sources — never guessed from wording."""
+    return any("conditioning" in str(s) for s in fusion.get("sources") or [])
+
+
 def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
     kind = (fusion.get("kind") or "fusion").replace("_", " ")
     output = fusion.get("output") or {}
@@ -792,6 +927,9 @@ def _fusion_description(fusion: dict) -> tuple[str, list[str]]:
             f"{_fmt_int(n_layers)} cross-attention layers" if n_layers else "",
             f"decoder width {_fmt_int(width)}" if width else "",
         ) if f]
+        if _is_conditioning_fusion(fusion):
+            return ("Encoded prompt states condition the decoder layers through "
+                    "cross-attention \u2014 they stay a separate stream.", facts)
         return ("Projected image states condition selected decoder layers through "
                 "cross-attention \u2014 they stay a separate stream.", facts)
     if fusion.get("kind") == "unified_multimodal_stream":
@@ -830,6 +968,37 @@ def _fusion_children(fusion: dict, inputs: dict) -> list[dict]:
              "description": "The concatenated visual-prefix and text sequence."},
         ]
     if fusion.get("kind") == "cross_attention":
+        if _is_conditioning_fusion(fusion):
+            return [
+                {
+                    "id": "embed",
+                    "title": "hidden_states",
+                    "description": "The main decoder stream supplies Q to its cross-attention layers.",
+                },
+                {
+                    "id": "conditioning_path",
+                    "title": "Prompt to encoder states",
+                    "description": "The text prompt is encoded (and width-projected) before cross-attention reads it.",
+                },
+                {
+                    "id": "cross_attention_states",
+                    "title": "encoder_hidden_states",
+                    "description": "Encoded prompt states stay separate from the audio-token stream and supply K/V to the decoder's cross-attention layers.",
+                },
+                {
+                    "id": "cross_attention_adapter",
+                    "title": "Cross-attention layers",
+                    "description": (
+                        "Encoded prompt states stay separate; the decoder layers read them with "
+                        "cross-attention instead of inserting them into the input sequence."
+                    ),
+                },
+                {
+                    "id": "stack_input",
+                    "title": "updated hidden_states",
+                    "description": "Decoder hidden states after cross-attention has read the encoded prompt states.",
+                },
+            ]
         return [
             {
                 "id": "embed",

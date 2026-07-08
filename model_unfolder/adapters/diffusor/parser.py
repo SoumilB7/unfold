@@ -134,6 +134,24 @@ def _code_ffn_kind(cfg: Any, context=None):
         return None
 
 
+def _code_block_conditioning(cfg: Any, context=None) -> bool | None:
+    """Does the stack block take per-block timestep conditioning?  Root-scoped
+    source read (denoiser_block_timestep_conditioning_from_files); None when
+    the block class can't be resolved — callers keep the conventional cell."""
+    try:
+        from ...evidence.patterns import (
+            denoiser_block_timestep_conditioning_from_files,
+        )
+        bundle = getattr(context, "source_bundle", None)
+        files = ((getattr(bundle, "component_files", {}) or {}).get("root")
+                 or getattr(bundle, "files", None))
+        architecture = (getattr(bundle, "architecture", None)
+                        or _g(cfg, "_class_name"))
+        return denoiser_block_timestep_conditioning_from_files(files, architecture)
+    except Exception:
+        return None
+
+
 def _code_gate_via_norm(cfg: Any, context=None) -> bool:
     """Whether the block folds its timestep gate into a modulated norm of the
     sublayer output (Mochi) rather than a × gate — READ FROM THE MODELING SOURCE.
@@ -640,6 +658,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "geometry will be incomplete."
         )
 
+    # PER-BLOCK timestep conditioning is a code fact: the stack block's own
+    # forward takes a temb/timestep (AdaLN dialects) or it does not (Stable
+    # Audio's plain pre-LN block — its conditioning is a global PREPENDED
+    # token).  Only a POSITIVE False changes the drawing; None keeps the
+    # conventional AdaLN cell (every image DiT tested).
+    code_block_conditioning = _code_block_conditioning(cfg, context)
+
     geom = {
         "denoiser_family": "dit",
         "hidden_size": hidden_size,
@@ -669,6 +694,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "caption_projection_dim": caption_projection_dim,
         "norm_elementwise_affine": norm_elementwise_affine,
         "video": _temporal_axis(cfg, cls, context),
+        "audio": _audio_latent_domain(cfg),
+        "block_conditioning": code_block_conditioning,
         "guidance_embeds": _g(cfg, "guidance_embeds"),
         "text_encoders": _detect_text_encoders(cfg),
         "text_encoder_specs": _text_encoder_specs(cfg, context=context),
@@ -803,7 +830,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Conditioning topology is DERIVED from which conditioning-dim fields the
     # config declares (a presence-set), not a fixed priority cascade — so a new
     # combination falls out of the same rules instead of needing a new branch.
-    cond = _conditioning(geom, num_single, rope_note)
+    cond = _conditioning(geom, num_single, rope_note,
+                         block_conditioning=code_block_conditioning)
     double_variant = cond["variant"]
     single_variant = cond["single_variant"]
     text_in_attention = cond["text_in_attention"]
@@ -876,9 +904,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # (op-conformance catches it). The dialect is a code fact read from source.
         if code_gate_via_norm:
             layer.blocks = _insert_output_gated_norms(layer.blocks)
+            _annotate_adaln_norms(layer.blocks)
+        elif code_block_conditioning is False:
+            pass    # plain pre-LN block: no timestep gates, no AdaLN naming
         else:
             layer.blocks = _insert_adaln_gates(layer.blocks)
-        _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
+            _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
         _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
         _annotate_code_norm_kind(layer.blocks, code_norm_kind)
         _annotate_block_placement(layer.blocks, code_block_placement)
@@ -953,7 +984,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             bool(geom["guidance_embeds"]),
             geom["adaln_dim"], text_target=text_target, gate_ids=gate_ids,
             text_stack=text_stack,
-            joined_text_stack=(text_stack if (all_text_joined and text_joined) else None)))
+            joined_text_stack=(text_stack if (all_text_joined and text_joined) else None),
+            block_conditioning=code_block_conditioning))
         if all_text_joined and text_joined and text_stack:
             geom["join_concat"] = True
 
@@ -1363,11 +1395,16 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
                               guidance: bool, adaln_dim=None, text_target: str = "attn",
                               text_stack: dict | None = None,
                               joined_text_stack: dict | None = None,
-                              gate_ids: list[str] | None = None) -> list[dict]:
+                              gate_ids: list[str] | None = None,
+                              block_conditioning: bool | None = None) -> list[dict]:
     """External side-rails marking where each conditioning input enters a block:
     timestep (+ optional pooled text) -> AdaLN at the norm; and, only when the
-    config says attention consumes text, the text token sequence -> the attention."""
-    blocks: list[dict] = [{
+    config says attention consumes text, the text token sequence -> the attention.
+
+    ``block_conditioning is False`` (code-proven: the block's forward takes NO
+    timestep — Stable Audio) DROPS the per-block timestep rail: the block
+    genuinely receives none; the timestep story stays on the loop view."""
+    blocks: list[dict] = [] if block_conditioning is False else [{
         "id": "adaln_cond",
         "role": "norm",
         "kind": "adaln",
@@ -1529,9 +1566,15 @@ def _kv_joint_variant(rope_note: str) -> dict:
     }
 
 
-def _cross_dit_variant(rope_note: str) -> dict:
+def _cross_dit_variant(rope_note: str, *, adaln: bool = True,
+                       tokens: str = "image") -> dict:
     """Cross-attention DiT block (PixArt / Hunyuan-DiT / Wan / LTX / Allegro):
-    latent tokens self-attend, then read the text through cross-attention."""
+    latent tokens self-attend, then read the text through cross-attention.
+
+    ``adaln=False`` (code-proven: the block's forward takes NO timestep —
+    Stable Audio's plain pre-LN block, conditioned by a global PREPENDED
+    token) drops the modulation claim; ``tokens`` names the latent domain
+    ("latent" for a 1-D audio sequence — they are not image patches)."""
     # The cross-attention is drawn as its OWN sublayer block, so this (the self-
     # attention) is labelled plainly — not "+ cross-attn".
     return {
@@ -1539,13 +1582,17 @@ def _cross_dit_variant(rope_note: str) -> dict:
         # the strip legend prints "short · tag" — a tag that restates the short
         # ("Self-Attn · self-attention") says nothing; name the VARIANT instead
         "tag": "cross-attn DiT",
-        "label": ["Self-Attention", "(image tokens)"],
+        "label": ["Self-Attention", f"({tokens} tokens)"],
         "title": "Self-attention — cross-attention DiT",
         "desc": (
-            "Latent patch tokens attend to each other (full bidirectional "
+            ("Latent patch tokens" if tokens == "image" else "Latent tokens")
+            + " attend to each other (full bidirectional "
             "self-attention); the encoded text is read by the separate "
-            "cross-attention sublayer above. Modulated by the timestep via "
-            "AdaLN. " + rope_note
+            "cross-attention sublayer above. "
+            + ("Modulated by the timestep via AdaLN. " if adaln else
+               "No per-block timestep modulation — the block's norms are plain "
+               "(conditioning enters the token sequence itself). ")
+            + rope_note
         ),
     }
 
@@ -1679,7 +1726,8 @@ def _dit_norm_kind(cfg: Any) -> str:
     return "unknown"
 
 
-def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
+def _conditioning(geom: dict, num_single: int, rope_note: str,
+                  block_conditioning: bool | None = None) -> dict:
     """Derive the block's conditioning topology from WHICH conditioning-dim fields
     the config declares — a presence-set, not a fixed priority cascade.
 
@@ -1702,7 +1750,10 @@ def _conditioning(geom: dict, num_single: int, rope_note: str) -> dict:
     elif has_concat:
         variant = _concat_joint_variant(rope_note)
     elif has_cross:
-        variant = _cross_dit_variant(rope_note)
+        variant = _cross_dit_variant(
+            rope_note,
+            adaln=block_conditioning is not False,
+            tokens="latent" if geom.get("audio") else "image")
     else:
         variant = _plain_dit_variant(
             rope_note, pre_block_fusion=has_fusion, pooled_in_adaln=has_pooled,
@@ -1783,6 +1834,12 @@ def _vae_geom(cfg: Any) -> dict | None:
         base, mult = _g(vcfg, "base_dim"), _g(vcfg, "dim_mult")
         if isinstance(base, int) and isinstance(mult, (list, tuple)):
             boc = [base * m for m in mult if isinstance(m, int)]
+    if not isinstance(boc, (list, tuple)):
+        # Oobleck-style 1-D audio VAEs parameterize stages as
+        # decoder_channels × channel_multiples (same constructor-record rail).
+        base, mult = _g(vcfg, "decoder_channels"), _g(vcfg, "channel_multiples")
+        if isinstance(base, int) and isinstance(mult, (list, tuple)):
+            boc = [base * m for m in mult if isinstance(m, int)]
     lpb = _v("layers_per_block")
     out = {
         "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
@@ -1801,9 +1858,29 @@ def _vae_geom(cfg: Any) -> dict | None:
         "use_quant_conv": _g(vcfg, "use_quant_conv"),
         "use_post_quant_conv": _g(vcfg, "use_post_quant_conv"),
         "mid_block_add_attention": _g(vcfg, "mid_block_add_attention"),
+        # 1-D audio VAE declarations (oobleck): the temporal up-ladder ratios
+        # and the waveform channel count/rate — carried only when declared.
+        "audio_channels": _g(vcfg, "audio_channels"),
+        "sampling_rate": _g(vcfg, "sampling_rate"),
+        "decoder_input_channels": _g(vcfg, "decoder_input_channels"),
+        "upsampling_ratios": (_g(vcfg, "upsampling_ratios")
+                              or _g(vcfg, "downsampling_ratios")),
         "class": _g(vcfg, "_class_name"),
     }
     return {k: v for k, v in out.items() if v is not None} or None
+
+
+def _audio_latent_domain(cfg: Any) -> bool:
+    """AUDIO latent domain from the pipeline's OWN VAE declaration (oobleck's
+    audio_channels/sampling_rate — no 2D image VAE declares either), never a
+    class name.  Silence stays False: an image denoiser, not a guessed audio
+    one."""
+    vcfg = _g(cfg, "_vae_config")
+    if not isinstance(vcfg, dict):
+        return False
+    from ...everchanging import load_diffusion_typing
+    fields = load_diffusion_typing().get("audio_vae_fields") or []
+    return any(vcfg.get(field) is not None for field in fields)
 
 
 def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
@@ -1979,164 +2056,12 @@ def _uniquify_encoder_names(specs: list[dict]) -> None:
         s["name"] = f"{name} ({_fmt(hid)}-d)" if hid else f"{name} {nth[name]}"
 
 
-def _hydrate_encoder_config_facts(c: dict) -> dict:
-    """Fill config-class DEFAULTS invisible in a raw component config.json.
-
-    Gemma-2's sliding/global alternation lives in ``sliding_window_pattern=2``
-    — a default of ``configuration_gemma2.py`` that is NOT serialized, so a raw
-    fetched dict reads as all-sliding and the encoder tower flattens a real
-    heterogeneous stack.  The installed config class is code evidence (the same
-    rail by-id loading uses); raw keys always win over defaults.  Unknown
-    model_types keep the raw dict untouched."""
-    mt = c.get("model_type")
-    if not isinstance(c, dict) or not mt:
-        return c
-    try:
-        from transformers import AutoConfig
-        hydrated = AutoConfig.for_model(
-            mt, **{k: v for k, v in c.items()
-                   if not k.startswith("_") and k != "model_type"}).to_dict()
-    except Exception:
-        return c
-    for k, v in c.items():          # loader stamps / private context keys survive
-        if k.startswith("_"):
-            hydrated[k] = v
-    return hydrated
+# The encoder round-trip is adapter-neutral — it lives in encoder_panel so the
+# transformer side's conditioning towers use the SAME implementation (parity).
+from ...encoder_panel import (
+    hydrate_encoder_config_facts as _hydrate_encoder_config_facts,
+    normalize_encoder_config as _normalize_encoder_config,
+)
 
 
-def _normalize_encoder_config(c: dict, context=None) -> dict:
-    """Read an encoder's shape off the ONE universal transformer adapter.
 
-    A pipeline's text-encoder config *is* a transformers config (CLIP, T5,
-    Qwen-VL pressed into prompt-encoding duty), so it goes through the same
-    parser that handles those models standalone — every dialect, nested
-    ``text_config``, GQA, norm kind — and the neutral spec is projected from
-    the resulting IR.  No second field-extraction vocabulary lives here.
-    """
-    from ...evidence.context import ParseContext
-    from ...evidence.ffn import ffn_structure_evidence
-    from ...evidence.patterns import (
-        attention_score_scaling_from_files,
-        decoder_ffn_activation_from_files,
-    )
-    from ..transformer.parser import parse as _parse_transformer
-
-    c = _hydrate_encoder_config_facts(c)
-    try:
-        if context is None:
-            context = ParseContext.build(c, source="local")
-        ir = _parse_transformer(c, context=context)
-    except Exception:
-        return {}
-    if not ir.layers:
-        return {}
-    # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
-    # type, and a heterogeneous stack (sliding/global alternation, hybrid
-    # full/linear mixers) additionally carries one entry per distinct signature
-    # so the tower renders every real layer type — same collapse the main
-    # architecture view uses (ir.distinct_layer_groups).
-    from ...ir import distinct_layer_groups
-    groups = distinct_layer_groups(ir.layers)
-    dominant = max(groups, key=lambda group: len(group["indices"]))
-    layer = dominant["layer"]
-    ffn = layer.ffn
-
-    # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
-    # config is silent — right for decoder LLMs, invented facts for encoders.
-    # Carry norm/gated only when EVIDENCE states them (config declaration, eps
-    # spelling, or the norm class's forward() math — the same channel stack the
-    # universal parser uses, so a frozen minimal config with no eps field still
-    # gets its norm from the installed modeling source, never from a default).
-    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
-    def _has(*keys):
-        return any(k in src for src in (c, inner) for k in keys)
-    from ..transformer.parser import _norm_kind_evidence, _unwrap_text
-    text_cfg = _unwrap_text(c)
-    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-        str(_norm_kind_evidence(
-            text_cfg,
-            (inner.get("norm_type") if isinstance(inner, dict) else None)
-            or c.get("norm_type"),
-            context) or "").lower())
-    # Gating and projection storage are code/config facts, never encoder-family
-    # conventions.  A config may explicitly select a gated branch (T5's
-    # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must
-    # resolve the callable.  Missing/ambiguous source stays tri-state unknown.
-    explicit_gated = None
-    for src in (c, inner):
-        if "is_gated_act" in src:
-            explicit_gated = bool(src.get("is_gated_act"))
-            break
-        proj = src.get("feed_forward_proj")
-        if isinstance(proj, str):
-            explicit_gated = proj.lower().startswith("gated-")
-            break
-    bundle = context.source_bundle
-    component_files = bundle.component_files or {"root": bundle.files}
-    text_components = [name for name in component_files
-                       if name == "text_config" or name.endswith(".text_config")]
-    component = text_components[0] if len(text_components) == 1 else "root"
-    files = component_files.get(component, bundle.files)
-    architecture = (bundle.component_architectures or {}).get(component) or bundle.architecture
-    ffn_evidence = ffn_structure_evidence(
-        files, expected_gated=explicit_gated, component=component,
-        architecture=architecture,
-    )
-    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else explicit_gated
-
-    activation_explicit = _has(
-        "hidden_act", "hidden_activation", "activation_function", "activation_fn",
-        "dense_act_fn", "feed_forward_proj", "ffn_act_fn",
-    )
-    code_activation = decoder_ffn_activation_from_files(files)
-    act = (ffn.activation if activation_explicit else code_activation) or None
-    # Flat fields are PROSE/legacy-display only — attention geometry lives on
-    # the sub-model spec's typed facts (attention_detail per group), never
-    # duplicated here.
-    fields = {
-        "layers": len(ir.layers),
-        "hidden": ir.hidden_size,
-        "ffn": ffn.intermediate_size,
-        "activation": act,
-        "vocab": ir.vocab_size,
-        "max_pos": ir.max_position_embeddings,
-        "norm": norm,
-    }
-    out = {k: v for k, v in fields.items() if v}
-    if gated is not None:
-        out["gated"] = bool(gated)
-    out["ffn_evidence"] = ffn_evidence.to_dict()
-    if ffn_evidence.status == "proven":
-        out["ffn_projection_mode"] = ffn_evidence.projection_mode
-    scaled = attention_score_scaling_from_files(files)
-    position = (ir.extras or {}).get("position_encoding")
-
-    # The ONE facts-only sub-model spec — groups, schedule, per-group typed
-    # attention/FFN facts, evidence envelopes — replaces every hand-plumbed
-    # structural key.  Drill children/cards/regions derive from it at
-    # projection time through the same canonical builders the root uses, so a
-    # new IR fact reaches every embedded context (at any nesting depth) with
-    # zero relay edits here.
-    from ...submodel import submodel_spec
-    out["sub_model"] = submodel_spec(
-        ir,
-        altitude="tower",
-        scores_scaled=scaled,
-        norm_label=norm,
-        activation=act,
-        gated=gated,
-        structure_status=ffn_evidence.status,
-        projection_mode=(ffn_evidence.projection_mode
-                         if ffn_evidence.status == "proven" else None),
-        position_evidence=position if isinstance(position, dict) else None,
-        ffn_evidence=ffn_evidence.to_dict(),
-    )
-    # Flat prose fields (title/chips wording) derive from the spec's dominant
-    # group — never hand-built a second time.
-    spec_groups = out["sub_model"]["groups"]
-    dominant_group = max(spec_groups, key=lambda group: group["count"])
-    out["attention_detail"] = dominant_group["attention"]
-    if isinstance(position, dict):
-        out["position_evidence"] = position
-
-    return out

@@ -285,11 +285,21 @@ def _transformers_file_for_class(models_root: str, class_name: str) -> str | Non
 def _component_configs(target: Any):
     """Yield ``(qualified_path, config)`` for root and nested component configs.
 
-    Only fields named ``*_config`` are traversed.  This follows Hugging Face's
-    composite-config contract without mistaking arbitrary dictionaries (rope
-    scaling, quantization settings, generation options) for model components.
+    Hugging Face's composite-config contract has TWO spellings, and both are
+    followed here without mistaking arbitrary dictionaries (rope scaling,
+    quantization settings, generation options) for model components:
+
+    * fields named ``*_config`` — traversed unconditionally (the suffix IS the
+      declaration), and
+    * bare slot names from the ``composite_slots`` vocabulary (MusicGen's
+      ``text_encoder``/``audio_encoder``/``decoder``, EncoderDecoderModel's
+      ``encoder``/``decoder``) — traversed only when the child itself declares
+      a ``model_type`` (the evidence, since the name alone is ambiguous).
+
     Object identity guards recursive/shared config objects.
     """
+    from ..everchanging import load_composite_slots
+    slot_names = set((load_composite_slots().get("slots") or {}))
     seen: set[int] = set()
 
     def walk(value: Any, path: str):
@@ -303,7 +313,11 @@ def _component_configs(target: Any):
         items = value.items() if isinstance(value, dict) else vars(value).items() \
             if hasattr(value, "__dict__") else ()
         for name, child in items:
-            if str(name).endswith("_config") and child is not None:
+            if child is None:
+                continue
+            if str(name).endswith("_config") or (
+                str(name) in slot_names and _own_model_type(child)
+            ):
                 child_path = str(name) if path == "root" else f"{path}.{name}"
                 yield from walk(child, child_path)
 

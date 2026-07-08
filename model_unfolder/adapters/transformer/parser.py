@@ -411,6 +411,7 @@ def _code_position(cfg: Any, context=None):
 
 
 from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
+from ...everchanging import load_composite_slots as _load_composite_slots
 
 
 def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
@@ -442,7 +443,45 @@ def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
                 return nested
         elif _has_transformer_shape(sub):
             return sub
+    # Composite/seq2seq wrapper (MusicGen): the MAIN stack is a declared BARE
+    # slot (``decoder`` — composite_slots vocabulary), not a ``*_config`` key.
+    # A slot only counts when its child declares its own model_type; sparse
+    # dicts are completed through HF's config registry like any nested LM.
+    from ...everchanging import load_composite_slots
+    for key, role in (load_composite_slots().get("slots") or {}).items():
+        if role != "main":
+            continue
+        sub = _g(cfg, key)
+        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
+            sub = sub.to_dict()
+        if not isinstance(sub, dict) or not sub.get("model_type"):
+            continue
+        if _has_transformer_shape(sub):
+            return sub
+        completed = _complete_config_from_transformers_registry(sub)
+        if _has_transformer_shape(completed):
+            return completed
     return cfg
+
+
+def _composite_encoder_model_type(cfg: Any) -> str | None:
+    """The declared encoder-role slot's own model_type string, or None.
+
+    Evidence chain for seq2seq composites: the slot NAME comes from the
+    composite_slots vocabulary and only counts when the child itself declares
+    a ``model_type`` (MusicGen's ``text_encoder: {model_type: t5, ...}``).
+    The returned string is the config's own declaration — used for side-state
+    wording, never for structural decisions."""
+    from ...everchanging import load_composite_slots
+    for key, role in (load_composite_slots().get("slots") or {}).items():
+        if role != "encoder":
+            continue
+        sub = _g(cfg, key)
+        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
+            sub = sub.to_dict()
+        if isinstance(sub, dict) and sub.get("model_type"):
+            return str(sub.get("model_type"))
+    return None
 
 
 def _complete_config_from_transformers_registry(text_cfg: dict) -> dict:
@@ -575,6 +614,38 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if _g(cfg, "talker_config") is not None:
         warnings.append("Speech-generation stack (talker + token2wav vocoder) not "
                         "drawn — the diagram shows the thinker (LM).")
+    # Declared-but-undrawn speech components (VITS flows / duration predictor /
+    # HiFiGAN ladder; SpeechT5 pre/post-nets) — STATED omissions, never silent.
+    _undrawn = _load_composite_slots().get("undrawn_component_fields") or {}
+    _undrawn_labels = sorted({label for field, label in _undrawn.items()
+                              if _g(cfg, field) not in (None, False)})
+    if _undrawn_labels:
+        warnings.append(
+            "Config declares speech-synthesis components not drawn yet — "
+            + ", ".join(_undrawn_labels)
+            + " — only the main transformer stack is drawn (audio plan U-E).")
+    # A FLAT seq2seq config (SpeechT5: encoder_layers + decoder_layers, no
+    # composite slots) is drawn as ONE stack today — say which half.
+    if (bool(_g(cfg, "is_encoder_decoder"))
+            and _composite_encoder_model_type(cfg) is None
+            and _g(cfg, "encoder_layers") and _g(cfg, "decoder_layers")):
+        warnings.append(
+            f"Flat seq2seq config: the drawn stack is the encoder half; the "
+            f"{_g(cfg, 'decoder_layers')}-layer decoder (and any task "
+            "pre/post-nets) is not drawn (audio plan U-E).")
+    # A codec-role composite slot (MusicGen's audio_encoder/EnCodec) is a STATED
+    # omission until the codec tower lands (audio plan U-C) — never silent.
+    for _slot_key, _slot_role in (_load_composite_slots().get("slots") or {}).items():
+        if _slot_role != "codec":
+            continue
+        _codec_sub = _g(cfg, _slot_key)
+        if not isinstance(_codec_sub, dict) and hasattr(_codec_sub, "to_dict"):
+            _codec_sub = _codec_sub.to_dict()
+        if isinstance(_codec_sub, dict) and _codec_sub.get("model_type"):
+            warnings.append(
+                f"Audio codec ({_codec_sub.get('model_type')}) not drawn — it "
+                "tokenizes/decodes the audio-token streams this decoder "
+                "generates (waveform ↔ codebook tokens).")
     residual_multiplier = _resolve(text_cfg, "residual_multiplier")
     _resolve(text_cfg, "embedding_multiplier")
     attention_multiplier = _resolve(text_cfg, "attention_multiplier")
@@ -814,10 +885,51 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # ---- Decoder layers that read external modality states through cross-attention ----
     cross_attn_layer_set = set(_cross_attention_layers(cfg, text_cfg) or [])
+    # Seq2seq composite (MusicGen): the schedule is CONSTRUCTION evidence —
+    # the decoder-layer class builds its cross-attention module
+    # unconditionally in __init__, so EVERY layer cross-attends the declared
+    # encoder's states.  The config alone cannot say (MusicGen's decoder
+    # sub-config even carries add_cross_attention: false); the declared
+    # is_encoder_decoder + encoder-role slot scope the source read.
+    composite_encoder_type = _composite_encoder_model_type(cfg)
+    # ADDITIVE cross-attention: the construction reader requires BOTH a
+    # self-attention and a cross-attention field on the layer class, so the
+    # proven shape keeps self-attention AND gains a cross sublayer — unlike a
+    # declared mllama schedule, whose cross layers REPLACE self-attention.
+    cross_attention_additive = False
+    if (not cross_attn_layer_set and num_layers
+            and bool(_g(cfg, "is_encoder_decoder")) and composite_encoder_type):
+        from ...evidence.patterns import decoder_cross_attention_all_layers_from_files
+        _bundle = getattr(context, "source_bundle", None)
+        _comp_files = getattr(_bundle, "component_files", {}) or {}
+        _main_files = (_comp_files.get("decoder") or _comp_files.get("root")
+                       or getattr(_bundle, "files", None))
+        if decoder_cross_attention_all_layers_from_files(_main_files):
+            cross_attn_layer_set = set(range(num_layers))
+            cross_attention_additive = True
+        else:
+            # Declared enc-dec composite whose decoder SOURCE we can't read
+            # (custom package not installed — Parler-TTS): the schedule stays
+            # unproven and nothing is drawn, but never silently.
+            warnings.append(
+                "Cross-attention schedule unproven (the decoder's modeling "
+                "source is not installed) — the declared encoder conditioning "
+                "is shown, but no per-layer cross-attention is drawn.")
+    has_vision_side_state = (_g(cfg, "vision_config") is not None
+                             or _g(cfg, "vision_model_config") is not None)
     has_cross_attention_side_state = bool(
-        cross_attn_layer_set
-        and (_g(cfg, "vision_config") is not None or _g(cfg, "vision_model_config") is not None)
+        cross_attn_layer_set and (has_vision_side_state or composite_encoder_type)
     )
+
+    # Declared decoder-scope flags (Parler/MusicGen lineage): read them so the
+    # ownership audit sees them; each is folded only where it is a proven fact.
+    _scale_embedding = _g(text_cfg, "scale_embedding")     # embeddings × sqrt(d)
+    _declared_rope = _g(text_cfg, "rope_embeddings")       # declared positional flag
+    _cross_kv_heads_declared = _g(text_cfg, "num_cross_attention_key_value_heads")
+    if _declared_rope and _code_position_evidence.status != "proven":
+        warnings.append(
+            "Config declares rope_embeddings but the positional drawing is "
+            "unresolved from source — the declared flag is not yet folded in.")
 
     # ---- Walk the layer stack ----
     unknown_layer_types: set[str] = set()
@@ -895,11 +1007,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
             position_application=position_mechanism[1],
             bias=use_attention_bias,
             no_rope=is_nope,
-            cross_attention=is_cross_attn_layer,
+            cross_attention=is_cross_attn_layer and not cross_attention_additive,
             cross_kv_source=(("projected image states"
+                              if has_vision_side_state and has_cross_attention_side_state
+                              else f"encoded prompt states (the {composite_encoder_type} "
+                                   "encoder tower)"
                               if has_cross_attention_side_state else
                               "external encoder states (encoder not in this config)")
-                             if is_cross_attn_layer else None),
+                             if is_cross_attn_layer and not cross_attention_additive
+                             else None),
             compress_ratio=compress_ratio,
             # Sparse-attention indexer fan-in. CSA declares it alongside a
             # compress_ratio; DeepSeek-V3.2 DSA declares its own indexer geometry
@@ -1007,9 +1123,35 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
 
+        # The ADDITIVE cross sublayer's own spec: same construction-declared
+        # geometry, K/V from the encoder's states (full over the prompt, no
+        # positional claim asserted).
+        cross_spec = None
+        if is_cross_attn_layer and cross_attention_additive:
+            # Parler declares a separate KV-head count for the CROSS sublayer
+            # (num_cross_attention_key_value_heads) — its own GQA geometry.
+            cross_spec = AttentionSpec(
+                kind=attn_kind,
+                num_heads=num_heads,
+                num_kv_heads=(int(_cross_kv_heads_declared)
+                              if _cross_kv_heads_declared else layer_kv_heads),
+                head_dim=layer_head_dim,
+                mask="full",
+                rope=False,
+                bias=use_attention_bias,
+                cross_attention=True,
+                cross_kv_source=(f"encoded prompt states (the "
+                                 f"{composite_encoder_type} encoder tower)"),
+            )
+
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
         if is_cross_attn_layer:
-            extra_blocks.append(_cross_attention_states_side_block())
+            extra_blocks.append(_cross_attention_states_side_block(
+                "conditioning" if (composite_encoder_type and not has_vision_side_state)
+                else "vision",
+                encoder_type=composite_encoder_type,
+                feeds="cross_attn" if cross_spec is not None else "attn",
+            ))
 
         if use_parallel_residual:
             layers.append(parallel_decoder_layer(
@@ -1022,6 +1164,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 norm_placement=norm_placement,
                 extra_blocks=extra_blocks,
                 residual_scale=residual_multiplier,
+                cross_attention_spec=cross_spec,
             ))
 
     for lt in sorted(unknown_layer_types):
@@ -1074,6 +1217,25 @@ def parse(cfg: Any, context=None) -> ModelIR:
             # As with the tower extractor, failure leaves one honest generic
             # connector.  Config dimensions survive; callable structure does not.
             pass
+    # Multi-codebook token streams (MusicGen family): K is the decoder
+    # config's OWN num_codebooks; the summed-embeddings / stacked-heads SHAPE
+    # comes from construction+forward evidence — only-when-present so every
+    # single-stream decoder stays byte-stable.
+    codebooks = None
+    _num_codebooks = _g(text_cfg, "num_codebooks")
+    if isinstance(_num_codebooks, int) and _num_codebooks > 1:
+        from ...evidence.patterns import decoder_codebook_streams_from_files
+        _cb_bundle = getattr(context, "source_bundle", None)
+        _cb_comp = getattr(_cb_bundle, "component_files", {}) or {}
+        _cb_files = (_cb_comp.get("decoder") or _cb_comp.get("root")
+                     or getattr(_cb_bundle, "files", None))
+        streams = decoder_codebook_streams_from_files(_cb_files)
+        codebooks = {
+            "num": _num_codebooks,
+            "vocab_per_book": vocab_size,
+            "audio_channels": _g(text_cfg, "audio_channels"),
+            **streams,
+        }
     extras = decoder_extras(
         vocab_size,
         hidden_size,
@@ -1084,11 +1246,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # Gemma-2's final_logit_softcapping is a REAL pre-sampling op — the LM
         # head card states it (only-when-present; everyone else byte-stable).
         final_logit_softcap=_g(text_cfg, "final_logit_softcapping"),
+        codebooks=codebooks,
     )
     final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
     if residual_post_layernorm:
         extras["render"].setdefault("layer_annotations", []).append(
             "residual taps the post-LayerNorm output")
+    if _scale_embedding:
+        for block in extras["render"]["model_blocks"]:
+            if block.get("id") == "embed":
+                block["facts"] = (block.get("facts") or []) + [
+                    "scaled × √d (scale_embedding)"]
     for block in extras["render"]["model_blocks"]:
         if block.get("id") == "final_rms":
             block.update({
@@ -1628,8 +1796,36 @@ def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
     return None
 
 
-def _cross_attention_states_side_block() -> dict:
-    """Layer-local projected image states read by cross-attention layers."""
+def _cross_attention_states_side_block(source_kind: str = "vision",
+                                       encoder_type: str | None = None,
+                                       feeds: str = "attn") -> dict:
+    """Layer-local external states read by cross-attention layers.
+
+    ``source_kind`` follows the SAME evidence that words ``cross_kv_source``:
+    a vision sibling ⇒ projected image states; a declared encoder-role
+    composite slot (MusicGen's t5) ⇒ the encoder's prompt states.  ``feeds``
+    targets the ADDITIVE cross sublayer's own block when one exists."""
+    if source_kind == "conditioning":
+        return {
+            "id": "cross_attention_states",
+            "role": "conditioning",
+            "kind": "conditioning",
+            "diffusion_stage": "cross_attention",
+            "lane": "external_left",
+            "feeds": feeds,
+            "offset_y": 0,
+            "label": ["Encoded prompt", "states"],
+            "title": "Encoded prompt states",
+            "description": (
+                f"encoder_outputs: the {encoder_type or 'conditioning'} encoder's "
+                "output states (see the prompt-encoder panel); this tensor "
+                "supplies K/V to the decoder's cross-attention layers."
+            ),
+            "view": "conditioning_path",
+            "w": 250,
+            "h": 50,
+            "font": 15,
+        }
     return {
         "id": "cross_attention_states",
         "role": "vision",

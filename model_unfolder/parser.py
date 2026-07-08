@@ -362,6 +362,11 @@ def _should_fallback_to_raw_json(error: Exception) -> bool:
         for marker in (
             "model_type",
             "unrecognized model",
+            # Current transformers spelling for a registry miss ("has model
+            # type `parler_tts` but Transformers does not recognize this
+            # architecture") — the raw config.json is still a full declared
+            # composite our walk can parse.
+            "does not recognize",
             "should have a",
             # A broken/foreign ROOT config.json (HunyuanVideo ships one that
             # isn't valid JSON) — the repo may still be a diffusers pipeline

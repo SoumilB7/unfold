@@ -28,11 +28,14 @@ timestep:
   - {field: timestep_guidance_channels, label: "guidance channels"}
   - {field: time_embedding_act_fn, label: "embedding activation"}
   - {field: timestep_post_act, label: "post-activation"}
+  - {field: time_proj_dim, label: "time projection dim"}          # Stable Audio: timestep -> global-cond projection width
   - {field: time_cond_proj_dim, label: "conditioning projection dim"}
   - {field: condition_dim, label: "condition embed dim"}                         # CogView4
   - {field: guidance_embeds_scale, label: "guidance embed scale"}                # Sana-Sprint
 
 denoiser:
+  - {field: global_states_input_dim, label: "global conditioning input"}   # Stable Audio: prepended global token's input width
+  - {field: cross_attention_input_dim, label: "cross-attention input width"}  # encoder-side width entering cross K/V
   - {field: eps, label: "norm ε"}
   - {field: use_linear_projection, label: "linear patch projection", noop: false}
   - {field: only_cross_attention, label: "cross-attention only", noop: false}

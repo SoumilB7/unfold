@@ -99,6 +99,20 @@ def _analyze_wrapper(name: str, info: CallableInfo) -> FusionEvidence | None:
             ),),
         )
 
+    if _has_encoder_hidden_states_route(forward):
+        # The classic seq2seq conditioning route (MusicGen/Parler): the wrapper
+        # OWNS the encoder states and passes them as ``encoder_hidden_states=``
+        # into its decoder call — the conditioning-modality cross route.
+        return FusionEvidence(
+            "proven", owner_class=name, source_file=info.source_file,
+            line=forward.lineno, kind="cross_attention",
+            operation="condition_decoder_hidden_states",
+            routes=(FusionRouteEvidence(
+                "conditioning", "cross_attention_states",
+                info.source_file, forward.lineno,
+            ),),
+        )
+
     prefix_routes = []
     for call in (item for item in ast.walk(forward) if isinstance(item, ast.Call)):
         if str(_call_name(call.func) or "").lower() != "cat":
@@ -136,6 +150,22 @@ def _has_cross_attention_route(forward: ast.AST) -> bool:
         if any(keyword.arg == "cross_attention_states" for keyword in call.keywords):
             return True
     return False
+
+
+def _has_encoder_hidden_states_route(forward: ast.AST) -> bool:
+    """Does the wrapper's forward OWN encoder states (assigns
+    ``encoder_hidden_states``) and pass them as a keyword into a sub-module
+    call?  Structural, no class names — the enc-dec conditioning contract."""
+    owns = any(
+        isinstance(node, (ast.Assign, ast.AnnAssign))
+        and _assigns_name(node, "encoder_hidden_states")
+        for node in ast.walk(forward))
+    if not owns:
+        return False
+    return any(
+        isinstance(item, ast.Call)
+        and any(kw.arg == "encoder_hidden_states" for kw in item.keywords)
+        for item in ast.walk(forward))
 
 
 def _assigns_name(node: ast.Assign | ast.AnnAssign, name: str) -> bool:

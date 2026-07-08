@@ -23,6 +23,7 @@ from typing import Any, Callable, Optional
 
 from .accessors import nested
 from .audio import audio_path
+from .conditioning import conditioning_path, conditioning_slot_keys, declared_component
 from .detect import has_video_input, is_unified_grid_stream
 from .vision import video_path, vision_path
 
@@ -36,12 +37,15 @@ class ModalitySpec:
     config_keys: tuple[str, ...]
     build: PathBuilder
     companion: Optional[Companion] = None
+    #: Extra presence evidence beyond the key resolving (a bare composite slot
+    #: like ``text_encoder`` only counts when the child declares model_type).
+    validate: Optional[Callable[[Any], bool]] = None
 
     def resolve_config(self, cfg: Any) -> Any:
         """Return the first present sub-config dict, or None."""
         for key in self.config_keys:
             sub = nested(cfg, key)
-            if sub is not None:
+            if sub is not None and (self.validate is None or self.validate(sub)):
                 return sub
         return None
 
@@ -73,6 +77,15 @@ MODALITY_REGISTRY: list[ModalitySpec] = [
         name="audio",
         config_keys=("audio_config", "audio_model_config"),
         build=_audio_build,
+    ),
+    ModalitySpec(
+        name="conditioning",
+        # Encoder-role composite slots (MusicGen text_encoder) — names from
+        # the composite_slots vocabulary, presence proven by the child's own
+        # model_type declaration, never by the bare key.
+        config_keys=conditioning_slot_keys(),
+        build=conditioning_path,
+        validate=lambda sub: declared_component(sub) is not None,
     ),
 ]
 

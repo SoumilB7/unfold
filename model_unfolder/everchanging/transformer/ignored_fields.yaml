@@ -7,6 +7,27 @@
 
 # Exact key names to ignore.
 keys:
+
+# Training-time augmentation / losses and inference-time sampling knobs —
+# never architecture (audio/TTS families).  scale_decoder_outputs belongs to
+# the conditioning encoder's UNUSED decoder half (MusicGen carries a t5 row).
+  - apply_spec_augment
+  - mask_time_prob
+  - mask_time_length
+  - mask_time_min_masks
+  - mask_feature_prob
+  - mask_feature_length
+  - mask_feature_min_masks
+  - use_guided_attention_loss
+  - guided_attention_loss_num_heads
+  - guided_attention_loss_scale
+  - guided_attention_loss_sigma
+  - feat_proj_dropout
+  - positional_dropout
+  - noise_scale
+  - noise_scale_duration
+  - speaking_rate
+  - scale_decoder_outputs
   # --- classification-head label maps + duplicate/derived geometry + numerics ---
   # id2label/label2id: task-head label names, never architecture.
   - id2label
@@ -175,6 +196,7 @@ keys:
 
 # Key-name suffixes to ignore (special-token ids are never architectural).
 suffixes:
+  - layerdrop        # stochastic-depth training knob (layerdrop / encoder_layerdrop / …)
   - _token_id
   - _token_ids
 
@@ -187,6 +209,10 @@ opaque_scopes:
   # drawn (the LM/thinker is the rendered model); the omission is stated as a
   # parser note, never silent.
   - talker_config
+  # Codec-role composite slot (MusicGen/Parler audio_encoder — EnCodec/DAC):
+  # the tower is a STATED omission until audio-plan U-C draws it; the slot key
+  # itself is read by the codec warning.  REMOVE this row when U-C lands.
+  - audio_encoder
   - token2wav_config
   - code2wav_config
   - _scheduler_config

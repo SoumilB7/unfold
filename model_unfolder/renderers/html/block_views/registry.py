@@ -36,6 +36,7 @@ from .modalities import (
     build_vision_path_view,
 )
 from .modality_views.audio import build_audio_encoder_view
+from .modality_views.conditioning import build_conditioning_path_view
 from .modality_views.video import build_video_encoder_view
 from .modality_views.vision_details import build_vision_encoder_view
 from .refiner import build_refiner_tower_view
@@ -196,6 +197,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),
     "audio_path": _from_block(build_audio_path_view),
+    "conditioning_path": _from_block(build_conditioning_path_view),
     "audio_encoder": _from_block(build_audio_encoder_view),
     "video_path": _from_block(build_video_path_view),
     "video_encoder": _from_block(build_video_encoder_view),

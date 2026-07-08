@@ -137,14 +137,20 @@ def _wrap_two_lines(text: str) -> list[str]:
     return [" ".join(words[:best]), " ".join(words[best:])]
 
 
-def _timestep_mechanism(family: str | None) -> str:
+def _timestep_mechanism(family: str | None, block_conditioning: bool | None = None) -> str:
     """How the timestep conditions the denoiser — the mechanism differs by family:
     a UNet projects-and-adds the time embedding inside each ResNet block; a DiT
-    modulates each block's norm via AdaLN.  Never assert one for the other."""
+    modulates each block's norm via AdaLN.  Never assert one for the other.
+    ``block_conditioning is False`` (code-proven: the stack block's forward
+    takes no timestep — Stable Audio) drops the per-block claim."""
     if family == "unet":
         return ("Embedded, then projected and added inside every ResNet block "
                 "(and the mid block) — a U-net conditions on the noise level "
                 "additively, not through AdaLN.")
+    if block_conditioning is False:
+        return ("Embedded and applied at the SEQUENCE level — the stack "
+                "block's own forward takes no timestep (no per-block AdaLN; "
+                "read from the modeling source).")
     return "Embedded and fed to every block as AdaLN modulation."
 
 
@@ -193,9 +199,18 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
     elif in_ch and isinstance(sample, (list, tuple)):
         sides = [int(x) // int(patch) if patch else int(x) for x in sample if isinstance(x, int)]
         latent_shape = " \u00d7 ".join([_fmt(in_ch), *map(str, sides)])
-    elif in_ch and sample:
+    elif in_ch and sample and geom.get("audio"):
+        # 1-D audio latent (oobleck-declared domain): channels × frames.
+        latent_shape = f"{_fmt(in_ch)} ch × {_fmt(sample)} latent frames"
+    elif in_ch and sample and (geom.get("patch_size") or family == "unet"):
+        # A square side may only be inferred when 2D-ness is evidenced: a
+        # declared spatial patchify, or a conv-UNet (whose constructor reads a
+        # scalar sample_size as H = W).  A bare scalar on anything else is
+        # just a length (Stable Audio: sample_size=1024 is 1-D latent frames).
         side = int(sample) // int(patch) if patch else int(sample)
         latent_shape = f"{_fmt(in_ch)} × {side} x {side}"
+    elif in_ch and sample:
+        latent_shape = f"{_fmt(in_ch)} channels · sample_size {_fmt(sample)}"
     elif in_ch:
         latent_shape = f"{_fmt(in_ch)} channels"
     else:
@@ -239,6 +254,13 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             vae_facts.append("encoder quant 1x1 conv")
         if vae.get("mid_block_add_attention"):
             vae_facts.append("attention-bearing mid block")
+        if vae.get("sampling_rate"):
+            vae_facts.append(f"{int(vae['sampling_rate']):,} Hz")
+        if vae.get("audio_channels"):
+            vae_facts.append(f"{vae['audio_channels']}-channel audio")
+        if vae.get("upsampling_ratios"):
+            vae_facts.append("temporal ↑" + "·".join(
+                str(r) for r in vae["upsampling_ratios"]))
     cf = geom.get("config_facts") or {}
     vae_facts.extend(cf.get("vae") or [])
     blocks_out = [
@@ -251,9 +273,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "title": "Initial noise",
             "description": (
                 f"z_T: random Gaussian latent, shape [{latent_shape}], sampled in "
-                "the VAE latent space. (Image-to-image instead starts from an "
-                "encoded input image.) This is the latent the loop iteratively "
-                "denoises."
+                "the VAE latent space. "
+                + ("" if geom.get("audio") else
+                   "(Image-to-image instead starts from an encoded input image.) ")
+                + "This is the latent the loop iteratively denoises."
             ),
         },
         {
@@ -266,7 +289,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "description": (
                 "The current step's noise level t (decreasing T -> 0)"
                 + (", plus a guidance scale" if guidance else "")
-                + ". " + _timestep_mechanism(family)
+                + ". " + _timestep_mechanism(family, geom.get("block_conditioning"))
                 + _added_cond_sentence(added)
             ),
             "facts": cf.get("timestep") or None,
@@ -342,7 +365,9 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "title": "VAE decoder",
             "description": (
                 "Once the loop reaches z_0 (clean latent), the VAE decoder maps it "
-                "from latent space back to a full-resolution pixel image."
+                + ("from latent space back to the audio waveform."
+                   if geom.get("audio") else
+                   "from latent space back to a full-resolution pixel image.")
                 + (" Click to open its architecture." if vae else "")
             ),
             "facts": vae_facts,
@@ -360,9 +385,13 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "role": "output",
             "kind": "source",
             "diffusion_stage": "image_output",
-            "label": "Frames" if geom.get("video") else "Image",
-            "title": "Output frames" if geom.get("video") else "Output image",
-            "description": ("The generated video frames in pixel space."
+            "label": ("Waveform" if geom.get("audio")
+                      else "Frames" if geom.get("video") else "Image"),
+            "title": ("Output waveform" if geom.get("audio")
+                      else "Output frames" if geom.get("video") else "Output image"),
+            "description": ("The generated audio waveform."
+                            if geom.get("audio") else
+                            "The generated video frames in pixel space."
                             if geom.get("video") else
                             "The generated image in pixel space."),
         },
@@ -1080,6 +1109,10 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
     hidden = _fmt(geom["hidden_size"])
     in_ch = geom.get("in_channels")
     patch = geom.get("patch_size") or 1
+    # An AUDIO denoiser with NO declared patch_size enters through a plain
+    # projection over the 1-D latent sequence — drawing "Patchify (1x1)"
+    # would fabricate a patch grid (Stable Audio: Conv1d + Linear in).
+    no_patchify = bool(geom.get("audio")) and not geom.get("patch_size")
     pooled = geom.get("pooled_projection_dim")
     text_dim = geom.get("joint_attention_dim") or geom.get("cross_attention_dim")
     guidance = geom.get("guidance_embeds")
@@ -1111,8 +1144,11 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
                 + (f", width {_fmt(text_dim)}" if text_dim else "")
                 + ") and on a sinusoidal timestep"
                 + (" + guidance" if guidance else "")
-                + f" embedding that drives AdaLN modulation across the stack. The "
-                "denoiser predicts the noise/velocity to remove."
+                + (" embedding applied at the sequence level (the block's own "
+                   "forward takes no timestep — no per-block AdaLN). The "
+                   if geom.get("block_conditioning") is False else
+                   " embedding that drives AdaLN modulation across the stack. The ")
+                + "denoiser predicts the noise/velocity to remove."
                 + fusion_note
             ),
         },
@@ -1121,14 +1157,17 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "role": "embedding",
             "kind": "embedding",
             "diffusion_stage": "patchify",
-            "label": "Patchify",
-            "title": "Patch embedding",
+            "label": "Input projection" if no_patchify else "Patchify",
+            "title": "Input projection" if no_patchify else "Patch embedding",
             "description": (
+                f"Projects the latent channels to {hidden}-d tokens along the "
+                "1-D latent sequence — no patchify (none declared; the "
+                "sequence is already one-dimensional)"
+                if no_patchify else
                 f"Linear/conv patchify (patch {patch}\u00d7{patch}) projecting latent "
                 f"patches to {hidden}-d tokens; positional embedding added"
-                + (f". Pooled text vector ({_fmt(pooled)}) joins the timestep "
-                   "conditioning." if pooled else ".")
-            ),
+            ) + (f". Pooled text vector ({_fmt(pooled)}) joins the timestep "
+                 "conditioning." if pooled else "."),
         },
         *_entry_stage_blocks(geom),
         *([{
@@ -1161,13 +1200,19 @@ def diffusion_model_blocks(geom: dict) -> list[Block]:
             "role": "output",
             "kind": "output",
             "diffusion_stage": "unpatchify",
-            "label": "Unpatchify",
-            "title": "Unpatchify \u2192 predicted noise",
+            "label": "To latent channels" if no_patchify else "Unpatchify",
+            "title": ("Output projection → predicted noise" if no_patchify
+                      else "Unpatchify \u2192 predicted noise"),
             "description": (
-                "Reassemble predicted patches into the latent grid: the denoiser's "
-                "output for this step — the noise (or velocity) eps(z_t, t) to "
-                "remove. The scheduler (in the sampling loop) uses it to step "
-                "z_t -> z_{t-1}."
+                ("Projects tokens back to the latent channels: the denoiser's "
+                 "output for this step — the noise (or velocity) eps(z_t, t) "
+                 "to remove. The scheduler (in the sampling loop) uses it to "
+                 "step z_t -> z_{t-1}.")
+                if no_patchify else
+                ("Reassemble predicted patches into the latent grid: the denoiser's "
+                 "output for this step — the noise (or velocity) eps(z_t, t) to "
+                 "remove. The scheduler (in the sampling loop) uses it to step "
+                 "z_t -> z_{t-1}.")
             ),
         },
     ]

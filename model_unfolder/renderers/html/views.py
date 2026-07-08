@@ -36,6 +36,7 @@ _KIND_LAYOUT = {
     "ffn":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
     "ple":          {"shape": "rect",   "w": 160, "h": 44, "font": 17},
     "vision":       {"shape": "rect",   "w": 210, "h": 46, "font": 15},
+    "conditioning": {"shape": "rect",   "w": 210, "h": 46, "font": 15},
     "fusion":       {"shape": "rect",   "w": 230, "h": 50, "font": 15},
     "residual_add": {"shape": "circle", "w": 28,  "h": 28, "sym": "+"},
     "gate_mul":     {"shape": "circle", "w": 28,  "h": 28, "sym": "×"},

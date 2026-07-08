@@ -506,7 +506,11 @@ def attention_label(attention: AttentionSpec) -> list[str]:
     kind = attention.kind
     prefix = _attention_mask_prefix(attention)
     if attention.cross_attention:
-        return _prefixed_label(prefix, "Vision", "Cross-Attention")
+        # Name the actual side source (from the spec's own cross_kv_source):
+        # a seq2seq composite's K/V are encoded PROMPT states, not vision.
+        side = ("Prompt" if "prompt states" in str(attention.cross_kv_source or "")
+                else "Vision")
+        return _prefixed_label(prefix, side, "Cross-Attention")
     if kind == "mla":
         return _prefixed_label(prefix, "Multi-Head Latent", "Attention")
     if kind == "mqa":

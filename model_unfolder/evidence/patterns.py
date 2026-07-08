@@ -2754,6 +2754,17 @@ def _linearize_forward(
                 role = _role_of(field_types.get(field, ""))
                 if role in ("norm", "attention", "ffn"):
                     toks.append(role)
+                    # CLASSIC post-norm (original Transformer / BERT / VITS):
+                    # the norm WRAPS the residual add — ``norm(residual + x)``.
+                    # The add is an argument, not a statement, so the statement
+                    # walk below never sees it; without this the two sublayers
+                    # fuse into one segment and misread as PARALLEL + double
+                    # (caught on VITS).  Emitting the segment break after the
+                    # norm keeps the norm attached to ITS sublayer (post).
+                    if role == "norm" and any(
+                            isinstance(sub, _ast.BinOp) and isinstance(sub.op, _ast.Add)
+                            for arg in node.args for sub in _ast.walk(arg)):
+                        toks.append("add")
                     # BLOOM-style helpers take the residual explicitly and
                     # perform dropout_add internally. Preserve that real stage
                     # boundary even though the parent block has no visible `+`.
@@ -2792,6 +2803,18 @@ def _classify_topology(seq: list[str]) -> dict:
     if cur:
         segments.append(cur)
 
+    # CLASSIC post-norm split across statements (original Transformer /
+    # SpeechT5: ``x = residual + sub(x)`` then ``x = norm(x)``): the
+    # segment-LEADING norm closes the PREVIOUS sublayer, it does not open the
+    # next one.  Reassign only when the FIRST sublayer runs bare (no norm
+    # before it) — pre-norm families keep their leading norms untouched.
+    first_sub = next((i for i, tok in enumerate(seq)
+                      if tok in ("attention", "ffn")), None)
+    if first_sub is not None and "norm" not in seq[:first_sub]:
+        for k in range(1, len(segments)):
+            while segments[k] and segments[k][0] == "norm":
+                segments[k - 1].append(segments[k].pop(0))
+
     placements: set[str] = set()
     parallel = False
     for seg in segments:
@@ -2802,8 +2825,194 @@ def _classify_topology(seq: list[str]) -> dict:
                 i = seg.index(sub)
                 pre = "norm" in seg[:i]
                 post = "norm" in seg[i + 1:]
+                if not pre and not post:
+                    continue          # a norm-less sublayer is NOT evidence of pre
                 placements.add("double" if (pre and post) else "post" if post else "pre")
     placement = ("double" if "double" in placements
                  else "post" if placements == {"post"}
                  else "pre")
     return {"norm_placement": placement, "parallel_residual": parallel}
+
+
+def decoder_cross_attention_all_layers_from_files(files) -> bool | None:
+    """Does the decoder LAYER class construct a cross-attention module
+    UNCONDITIONALLY in ``__init__`` (MusicGen's ``encoder_attn``)?
+
+    The composite config often can't say (MusicGen's decoder sub-config even
+    carries ``add_cross_attention: false`` while the layer class builds
+    ``encoder_attn`` on every layer) — construction is the truth.  A layer
+    qualifies structurally: it has a ``forward``, assigns a field named in the
+    ``cross_attn_fields`` vocabulary, AND assigns another attention field
+    (the self-attention) — the dual-attention decoder-layer shape, no class
+    names consulted.  ``True`` only for a TOP-LEVEL (unconditional) cross
+    assignment ⇒ every layer has it; a conditional build or no match stays
+    ``None`` — never a guessed schedule.
+    """
+    import ast as _ast
+    from ..everchanging import load_composite_slots
+    from .forward_ops import _method
+    markers = {str(m).lower() for m in
+               (load_composite_slots().get("cross_attn_fields") or ())}
+    if not markers:
+        return None
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            init = _method(node, "__init__")
+            if init is None or _method(node, "forward") is None:
+                continue
+
+            def _self_fields(stmts):
+                out = set()
+                for stmt in stmts:
+                    if isinstance(stmt, _ast.Assign):
+                        for target in stmt.targets:
+                            if (isinstance(target, _ast.Attribute)
+                                    and isinstance(target.value, _ast.Name)
+                                    and target.value.id == "self"):
+                                out.add(target.attr.lower())
+                return out
+
+            top_fields = _self_fields(init.body)
+            all_fields = _self_fields(
+                [n for n in _ast.walk(init) if isinstance(n, _ast.Assign)])
+            self_attn = {f for f in all_fields - markers
+                         if "attn" in f or "attention" in f}
+            if not (all_fields & markers) or not self_attn:
+                continue
+            if top_fields & markers:
+                return True
+    return None
+
+
+def decoder_codebook_streams_from_files(files) -> dict:
+    """Multi-codebook token streams READ FROM CONSTRUCTION + forward dataflow.
+
+    MusicGen-family decoders hold K parallel codebook streams: a ModuleList of
+    K ``nn.Embedding`` tables whose looked-up vectors are SUMMED into one
+    token vector (modeling_musicgen ``sum([self.embed_tokens[k](...)...])``),
+    and a ModuleList of K ``nn.Linear`` heads whose logits are STACKED
+    (``torch.stack([head(h) for head in self.lm_heads])``).  Purely
+    structural — field roles come from the constructed classes (Embedding /
+    Linear inside a ModuleList), never from class or field names.  Each fact
+    is tri-state: ``True`` only when the forward PROVES the sum/stack over
+    that same field; otherwise ``None`` (never guessed).
+    """
+    import ast as _ast
+    from .forward_ops import _method
+
+    verdict = {"embeddings_summed": None, "heads_stacked": None}
+
+    def _modulelist_of(call: _ast.Call, ctor: str) -> bool:
+        # nn.ModuleList([nn.Embedding(...) for ...]) / ModuleList([... nn.Linear ...])
+        callee = call.func
+        name = callee.attr if isinstance(callee, _ast.Attribute) else \
+            callee.id if isinstance(callee, _ast.Name) else ""
+        if name != "ModuleList":
+            return False
+        for arg in call.args:
+            for node in _ast.walk(arg):
+                if isinstance(node, _ast.Call):
+                    f = node.func
+                    inner = f.attr if isinstance(f, _ast.Attribute) else \
+                        f.id if isinstance(f, _ast.Name) else ""
+                    if inner == ctor:
+                        return True
+        return False
+
+    def _field_refs(tree, field: str):
+        for node in _ast.walk(tree):
+            if (isinstance(node, _ast.Attribute) and node.attr == field
+                    and isinstance(node.value, _ast.Name) and node.value.id == "self"):
+                yield node
+
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for cls in _ast.walk(tree):
+            if not isinstance(cls, _ast.ClassDef):
+                continue
+            init = _method(cls, "__init__")
+            forward = _method(cls, "forward")
+            if init is None or forward is None:
+                continue
+            embed_banks, head_banks = [], []
+            for node in _ast.walk(init):
+                if not isinstance(node, _ast.Assign) or not isinstance(node.value, _ast.Call):
+                    continue
+                targets = [t for t in node.targets
+                           if isinstance(t, _ast.Attribute)
+                           and isinstance(t.value, _ast.Name) and t.value.id == "self"]
+                if not targets:
+                    continue
+                if _modulelist_of(node.value, "Embedding"):
+                    embed_banks.extend(t.attr for t in targets)
+                elif _modulelist_of(node.value, "Linear"):
+                    head_banks.extend(t.attr for t in targets)
+            # forward PROOF: a sum(...) whose body reads the embedding bank
+            for node in _ast.walk(forward):
+                if not isinstance(node, _ast.Call):
+                    continue
+                f = node.func
+                fname = f.attr if isinstance(f, _ast.Attribute) else \
+                    f.id if isinstance(f, _ast.Name) else ""
+                if fname == "sum" and any(
+                        any(True for _ in _field_refs(node, bank))
+                        for bank in embed_banks):
+                    verdict["embeddings_summed"] = True
+                if fname in {"stack", "cat"} and any(
+                        any(True for _ in _field_refs(node, bank))
+                        for bank in head_banks):
+                    verdict["heads_stacked"] = True
+    return verdict
+
+
+def denoiser_block_timestep_conditioning_from_files(files, architecture) -> bool | None:
+    """Does the denoiser's STACK BLOCK receive PER-BLOCK timestep conditioning
+    (an AdaLN-style ``temb``/``timestep`` forward param, or an Ada-norm field)?
+
+    Stable Audio's block is plain pre-LN — its conditioning is a GLOBAL token
+    prepended to the sequence at model level — so drawing AdaLN ×-gates on it
+    fabricates a mechanism (caught by the rigorous-gate pixel pass).  ``True``/
+    ``False`` from the block's own code; ``None`` when the block cannot be
+    resolved (callers keep the conventional AdaLN drawing).
+    """
+    import ast as _ast
+    from ..everchanging import load_diffusion_typing
+    from .forward_ops import extract_forward_ops, _method
+    markers = [str(m).lower() for m in
+               (load_diffusion_typing().get("adaln_forward_markers")
+                or ["temb", "timestep", "time_emb", "t_emb", "adaln_input"])]
+    if not architecture:
+        return None
+    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    root = ops.get(architecture)
+    if root is None:
+        return None
+    block_names = set((root.module_list_elems or {}).values())
+    block_names |= set((root.field_types or {}).values())
+    if not block_names:
+        return None
+    verdicts: set[bool] = set()
+    for name in sorted(block_names):
+        info = ops.get(name)
+        if info is None:
+            continue
+        # A block, structurally: it constructs an attention-role submodule.
+        from .forward_ops import _role_of
+        if not any(_role_of(c) == "attention" for c in info.field_types.values()):
+            continue
+        params = {p.lower() for p in (info.forward_params or ())}
+        takes_temb = any(any(m in p for m in markers) for p in params)
+        ada_field = any("ada" in str(c).lower() for c in info.field_types.values())
+        verdicts.add(bool(takes_temb or ada_field))
+    if len(verdicts) == 1:
+        return verdicts.pop()
+    return None          # mixed or unresolved — keep the conventional drawing

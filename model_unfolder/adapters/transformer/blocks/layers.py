@@ -13,7 +13,7 @@ from .feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 def decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
     norm_kind: str = "rmsnorm", norm_placement: str = "pre",
-    residual_scale=None,
+    residual_scale=None, cross_attention: AttentionSpec | None = None,
 ) -> list[Block]:
     """Per-layer block topology for a sequential decoder layer.
 
@@ -30,7 +30,8 @@ def decoder_layer_blocks(
     elif norm_placement == "double":
         blocks = _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
     else:
-        blocks = _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
+        blocks = _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind,
+                                        cross_attention=cross_attention)
     if residual_scale not in (None, 1, 1.0):
         blocks = _with_residual_scales(blocks, residual_scale)
     return blocks
@@ -70,14 +71,27 @@ def _add_block(block_id: str, residual_from: str, title: str, description: str) 
     }
 
 
-def _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:
+def _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind,
+                           cross_attention=None) -> list[Block]:
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
+    # ADDITIVE cross-attention (seq2seq decoders): its own pre-norm + residual
+    # sublayer between self-attention and the FFN — exactly the constructed
+    # order (self_attn → encoder_attn → fc1/fc2 in MusicGen's layer forward).
+    cross = [] if cross_attention is None else [
+        _norm_block("rms_cross", norm_label, "Pre-cross-attention norm",
+                    _norm_desc(norm_kind, "before cross-attention"),
+                    facts=[f"dim {hidden}"]),
+        _attention_block(cross_attention, hidden_size, block_id="cross_attn"),
+        _add_block("add_cross", "rms_cross", "Residual add",
+                   "post-self-attention + cross-attention output"),
+    ]
     return [
         _norm_block("rms1", norm_label, "Pre-attention norm",
                     _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
         _attention_block(attention, hidden_size),
         _add_block("add1", "rms1", "Residual add", "block input + attention output"),
+        *cross,
         _norm_block("rms2", norm_label, "Pre-FFN norm",
                     _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
@@ -279,10 +293,11 @@ def single_stream_decoder_layer_blocks(
     ]
 
 
-def _attention_block(attention: AttentionSpec, hidden_size: int) -> Block:
+def _attention_block(attention: AttentionSpec, hidden_size: int,
+                     block_id: str = "attn") -> Block:
     desc, facts = attention_summary(attention_detail(attention))
     return {
-        "id": "attn",
+        "id": block_id,
         "role": "attention",
         "kind": "attention",
         "label": attention_label(attention),

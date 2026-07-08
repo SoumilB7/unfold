@@ -23,11 +23,13 @@ def decoder_layer(
     norm_kind: str = "rmsnorm",
     norm_placement: str = "pre",
     residual_scale=None,
+    cross_attention_spec: AttentionSpec | None = None,
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
     blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
                                   norm_placement=norm_placement,
-                                  residual_scale=residual_scale)
+                                  residual_scale=residual_scale,
+                                  cross_attention=cross_attention_spec)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(
@@ -37,6 +39,7 @@ def decoder_layer(
         norm_kind=norm_kind,
         norm_placement=norm_placement,
         blocks=blocks,
+        cross_attention=cross_attention_spec,
     )
 
 
@@ -105,6 +108,7 @@ def decoder_extras(
     *extra_maps: Mapping[str, Any] | None,
     embed_norm: str | None = None,
     final_logit_softcap: float | None = None,
+    codebooks: dict | None = None,
 ) -> dict:
     """Build top-level extras shared by decoder-only transformer models."""
     extras = {
@@ -114,8 +118,11 @@ def decoder_extras(
             tie_word_embeddings,
             embed_norm=embed_norm,
             final_logit_softcap=final_logit_softcap,
+            codebooks=codebooks,
         )
     }
+    if codebooks:
+        extras["codebooks"] = dict(codebooks)   # only-when-present (byte-stable)
     for extra in extra_maps:
         if not extra:
             continue

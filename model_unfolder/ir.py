@@ -140,6 +140,10 @@ class LayerSpec:
                                     # gives no norm-type signal — don't assert one)
     norm_placement: str = "pre"     # "pre" | "post" | "double"
     blocks: list = field(default_factory=list)
+    #: ADDITIVE cross-attention sublayer (seq2seq decoders — MusicGen builds
+    #: encoder_attn IN ADDITION to self_attn).  Distinct from
+    #: attention.cross_attention=True, which REPLACES self-attention (mllama).
+    cross_attention: Optional[AttentionSpec] = None
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
@@ -150,6 +154,7 @@ class LayerSpec:
             a.qk_norm, a.shared, a.no_rope, a.output_gate,
             a.position_kind, a.position_application,
             a.cross_attention,
+            self.cross_attention is not None,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
             # Parallel-residual topology (a side-lane FFN) is a structural
@@ -342,6 +347,9 @@ def _layer_to_dict(layer: LayerSpec) -> dict:
         "norm_kind": layer.norm_kind,
         "norm_placement": layer.norm_placement,
         "blocks": layer.blocks,
+        # Only-when-present: single-attention layers stay byte-identical.
+        **({"cross_attention": _attention_to_dict(layer.cross_attention)}
+           if layer.cross_attention is not None else {}),
     }
 
 

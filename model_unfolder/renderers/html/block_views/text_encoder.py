@@ -44,7 +44,9 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     # encoder contributes the AdaLN vector; a sequence-role encoder feeds the
     # joint/cross attention.
     role = set(d.get("conditioning_role") or [])
-    if is_unet:
+    if d.get("exit_note"):
+        note = str(d["exit_note"])      # host-declared (seq2seq composites)
+    elif is_unet:
         note = "→ cross-attention K/V"
     elif "pooled" in role:
         note = "→ global AdaLN conditioning"

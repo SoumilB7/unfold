@@ -48,7 +48,10 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
         sub_cfg = spec.resolve_config(host)
         if sub_cfg is None:
             continue
-        modalities[spec.name] = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
+        path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
+        if not path:
+            continue                     # a builder may veto on closer evidence
+        modalities[spec.name] = path
         if spec.companion is not None:
             extra = spec.companion(host, sub_cfg, text_hidden_size)
             if extra:

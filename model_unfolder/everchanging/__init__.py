@@ -72,6 +72,30 @@ def load_layer_type_labels() -> dict[str, list[str]]:
             for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
 
 
+def load_composite_slots() -> dict:
+    """Declared component slots of composite/seq2seq configs
+    (``transformer/composite_slots.yaml``).
+
+    Returns ``{"slots": {slot_key: role}, "cross_attn_fields": [name, ...]}``
+    where role is ``main`` / ``encoder`` / ``codec``.  A slot only counts as a
+    component when its config value actually declares a ``model_type`` —
+    callers must apply that evidence gate; this is just the name vocabulary."""
+    data = load("transformer", "composite_slots")
+    slots: dict[str, str] = {}
+    for item in data.get("slots") or []:
+        if isinstance(item, str) and "=" in item:
+            key, _, role = item.partition("=")
+            slots[key.strip()] = role.strip()
+    undrawn: dict[str, str] = {}
+    for item in data.get("undrawn_component_fields") or []:
+        if isinstance(item, str) and "=" in item:
+            field, _, label = item.partition("=")
+            undrawn[field.strip()] = label.strip()
+    return {"slots": slots,
+            "cross_attn_fields": list(data.get("cross_attn_fields") or []),
+            "undrawn_component_fields": undrawn}
+
+
 def load_layer_topology() -> dict:
     """Per-family macro-topology (``transformer/layer_topology.yaml``): which
     model_types use post/sandwich norm placement or flag-less parallel residual.
@@ -134,6 +158,7 @@ def load_diffusion_typing() -> dict[str, list[str]]:
         "stack_lane_params": data.get("stack_lane_params") or [],
         "temporal_config_fields": data.get("temporal_config_fields") or [],
         "companion_denoiser_fields": data.get("companion_denoiser_fields") or [],
+        "audio_vae_fields": data.get("audio_vae_fields") or [],
     }
 
 

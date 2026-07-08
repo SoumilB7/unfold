@@ -11,6 +11,7 @@ from .vision import grid_runtime_inputs
 def fusion_path(cfg: Any, text_cfg: Any, modalities: dict[str, Any], text_hidden_size: int) -> dict:
     """Return semantic facts for how modality tokens/states meet the decoder."""
     kind = "code_defined_fusion"
+    target = "unknown"
     placeholder_map = placeholders(cfg)
     placeholder = placeholder_map.get("image") or placeholder_map.get("audio")
     source_ids = ["io.token_embedding"]
@@ -20,12 +21,21 @@ def fusion_path(cfg: Any, text_cfg: Any, modalities: dict[str, Any], text_hidden
         source_ids.append("modalities.inputs.video.tokens")
     if "audio" in modalities:
         source_ids.append("modalities.inputs.audio.tokens")
+    if "conditioning" in modalities:
+        source_ids.append("modalities.inputs.conditioning.tokens")
+        # A seq2seq composite DECLARES how its encoder meets the decoder:
+        # is_encoder_decoder means the states feed cross-attention, never the
+        # input embeddings (the per-layer schedule stays construction-proven).
+        cond_tokens = (modalities["conditioning"].get("tokens") or {})
+        if cond_tokens.get("kind") == "cross_attention_states":
+            kind = "cross_attention"
+            target = "decoder.cross_attention_layers"
 
     return drop_none({
         "kind": kind,
         "operation": "unknown",
         "sources": source_ids,
-        "target": "unknown",
+        "target": target,
         "placeholder": placeholder,
         "placeholders": placeholder_map or None,
         # Time-aligned multimodal positions (Qwen-Omni): audio/video tokens are
@@ -70,6 +80,12 @@ def apply_fusion_evidence(payload: dict | None, evidence, cfg: Any,
     fusion["source_owner"] = evidence.owner_class
     fusion["source_component"] = evidence.component
     if evidence.status != "proven":
+        if (fusion.get("kind") == "cross_attention"
+                and fusion.get("target") == "decoder.cross_attention_layers"):
+            # A seq2seq composite DECLARES its topology (is_encoder_decoder →
+            # encoder states feed cross-attention); an unproven wrapper-route
+            # overlay must not erase a declared fact with "code_defined".
+            return payload
         fusion.update({
             "kind": "code_defined_fusion", "operation": "unknown",
             "target": "unknown", "mechanism": None,

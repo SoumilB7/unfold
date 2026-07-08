@@ -8,13 +8,14 @@ from ..common import format_dim as _fmt
 
 def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
                              embed_norm: str | None = None,
-                             final_logit_softcap: float | None = None) -> dict:
+                             final_logit_softcap: float | None = None,
+                             codebooks: dict | None = None) -> dict:
     return {
         "family": "transformer",
         "layout": "decoder_only",
         "model_blocks": decoder_model_blocks(
             vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm,
-            final_logit_softcap=final_logit_softcap),
+            final_logit_softcap=final_logit_softcap, codebooks=codebooks),
     }
 
 
@@ -264,28 +265,50 @@ def block_diffusion_loop_blocks(
 
 def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
                          embed_norm: str | None = None,
-                         final_logit_softcap: float | None = None) -> list[Block]:
+                         final_logit_softcap: float | None = None,
+                         codebooks: dict | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
+    # Multi-codebook token streams (MusicGen-family): K is the config's own
+    # num_codebooks; the summed-embeddings / stacked-heads SHAPE is only
+    # stated when the construction+forward reader proved it (tri-state).
+    cb = codebooks or {}
+    k_books = cb.get("num")
+    summed = bool(cb.get("embeddings_summed"))
+    stacked = bool(cb.get("heads_stacked"))
+    channels = cb.get("audio_channels")
     return [
         {
             "id": "tok_text",
             "role": "input",
             "kind": "source",
-            "label": "Tokenized text",
-            "title": "Tokenized text",
-            "description": "Input token IDs.",
-            "facts": ["shape [batch, seq_len]"],
+            "label": ["Audio tokens", "(codebooks)"] if k_books else "Tokenized text",
+            "title": f"Audio codebook tokens (×{k_books})" if k_books else "Tokenized text",
+            "description": (
+                f"{k_books} parallel streams of audio-codec token IDs — one per "
+                "RVQ codebook of the audio tokenizer — generated with a "
+                "per-book delay so book k at step t conditions on books < k."
+                if k_books else "Input token IDs."),
+            "facts": ([f"shape [batch, {k_books}, seq_len]"]
+                      + ([f"{channels} audio channels"] if channels and channels > 1 else [])
+                      if k_books else ["shape [batch, seq_len]"]),
         },
         {
             "id": "embed",
             "role": "embedding",
             "kind": "embedding",
             "label": "Token Embedding layer",
-            "title": "Token embedding",
-            "description": "Maps each token id to its vector"
-                           + (" — weights tied with the output head." if tie_word_embeddings else "."),
-            "facts": [f"{vocab} vocab", f"{hidden}-d"],
+            "title": (f"Codebook embeddings (×{k_books}, summed)"
+                      if k_books and summed else "Token embedding"),
+            "description": (
+                f"Each of the {k_books} codebooks has its OWN embedding table; "
+                "the K looked-up vectors are summed into one token vector "
+                "(read from the decoder's construction and forward)."
+                if k_books and summed else
+                "Maps each token id to its vector"
+                + (" — weights tied with the output head." if tie_word_embeddings else ".")),
+            "facts": ([f"{k_books} × ({vocab} vocab)", f"{hidden}-d", "summed"]
+                      if k_books and summed else [f"{vocab} vocab", f"{hidden}-d"]),
         },
         *([{
             "id": "embed_norm",
@@ -308,7 +331,21 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "description": "RMSNorm over the last hidden state before the output head.",
             "facts": [f"dim {hidden}"],
         },
-        {
+        *([{
+            "id": "lm_head",
+            "role": "output",
+            "kind": "output",
+            "label": ["Audio-token", "heads"],
+            "title": f"Audio-token heads (×{k_books}, one per codebook)",
+            "description": (
+                f"{k_books} parallel linear heads project the final hidden "
+                "state into per-codebook logits, stacked "
+                f"[{k_books}, seq, {vocab}] — one next-token distribution per "
+                "codebook each step (read from the decoder's construction "
+                "and forward)."
+            ),
+            "facts": [f"{k_books} × ({hidden} → {vocab})"],
+        }] if k_books and stacked else [{
             "id": "lm_head",
             "role": "output",
             "kind": "output",
@@ -333,5 +370,5 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             ),
             "facts": [f"{hidden} \u2192 {vocab}"] + (
                 [f"softcap ±{final_logit_softcap:g}"] if final_logit_softcap else []),
-        },
+        }]),
     ]

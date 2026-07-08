@@ -34,6 +34,7 @@ from model_unfolder.block_schema import (
 )
 from model_unfolder.renderers.html.block_views import registry as reg
 import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / PixArt / SDXL UNet)
+import test_audio_composite as ta  # audio-gen witnesses (MusicGen composite, Stable Audio DiT)
 
 _BASE = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
              num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
@@ -70,6 +71,8 @@ CORPUS = {
                                        "encoder_attention_heads": 8}),             # audio_path/encoder
     "video":        dict(_BASE, model_type="qwen2_vl", vision_config=_GRID_VISION,
                          image_token_id=4, video_token_id=5),                      # video_path/encoder
+    "codec_lm":     ta.MUSICGEN_SMALL,  # conditioning_path + text_encoder tower, K-codebook heads
+    "dit_audio":    ta.STABLE_AUDIO,    # 1-D audio latent, no patchify, oobleck ladder
     "dit_mmdit":    td.FLUX,        # attention, ffn, scheduler_step, vae_decoder(_block), text_encoder, encoded_text_concat
     "dit_cross":    td.PIXART,      # cross_attention
     "unet":         td.SDXL_UNET,   # unet, unet_stage, unet_resnet, unet_transformer

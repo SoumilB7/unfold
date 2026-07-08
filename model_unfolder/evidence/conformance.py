@@ -1509,10 +1509,21 @@ def resolve_view_code(family: str, view: str, spec: dict,
     reachable = _reachable_forward_ops(architecture, forward_ops)
 
     # 1. General: the model names its block classes via ModuleLists in __init__.
+    #    EXACT ownership first — the architecture's OWN ModuleLists.  A shared
+    #    library shim can make another model's block "reachable" (diffusers
+    #    attention_processor imports transformer_flux), and since candidates
+    #    key by FIELD NAME, a foreign "transformer_blocks" entry can shadow
+    #    the true one (caught on Stable Audio at the rigorous gate).
     block_elems = {field: cls for fo in forward_ops.values()
                    for field, cls in fo.module_list_elems.items()
                    if _is_block_class(cls) and cls in forward_ops}
-    if reachable:
+    own = {field: cls
+           for field, cls in (forward_ops[architecture].module_list_elems.items()
+                              if architecture and architecture in forward_ops else ())
+           if _is_block_class(cls, forward_ops) and cls in forward_ops}
+    if own:
+        block_elems = own
+    elif reachable:
         anchored = {field: cls for fo in forward_ops.values()
                     if fo.class_name in reachable
                     for field, cls in fo.module_list_elems.items()
@@ -1528,7 +1539,12 @@ def resolve_view_code(family: str, view: str, spec: dict,
     if override and override.split(".")[0] in forward_ops:
         return forward_ops[override.split(".")[0]]
 
-    # 3. Name heuristic, disambiguated by the single-stream markers.
+    # 3. Name heuristic, disambiguated by the single-stream markers.  This
+    #    tier deliberately KEEPS the conservative name test: with no
+    #    module-list evidence at all (an uninstalled custom package — Parler),
+    #    the structural test would bind a sublayer WRAPPER from another
+    #    component's file (T5LayerSelfAttention); unresolved is the honest
+    #    state there.
     cands = [c for c in forward_ops if _is_block_class(c)
              and (any(m in c for m in markers) == (view == "single_stream"))]
     if reachable:
@@ -1615,7 +1631,23 @@ def classify_group(spec: dict) -> str:
 # helpers
 # ---------------------------------------------------------------------------
 
-def _is_block_class(name: str) -> bool:
+def _is_block_class(name: str, forward_ops: dict | None = None) -> bool:
+    """A stack-block class, STRUCTURALLY when possible: it constructs an
+    attention-role submodule (what a transformer block IS).  The old
+    name-suffix test rejected StableAudioDiTBlock — the model's OWN block —
+    which let a shared-shim FluxTransformerBlock entry win the resolve
+    (caught at the rigorous gate).  Structural is used ONLY where ownership
+    is already exact (the architecture's OWN ModuleLists) — in the wider
+    anchored/global/name tiers the conservative suffix stands, because a
+    shim-reachable foreign block (IPAdapter's, another model's) could
+    otherwise shadow the true one under the same field name."""
+    if forward_ops is not None:
+        info = forward_ops.get(name)
+        if info is not None:
+            from .forward_ops import _role_of
+            if any(_role_of(c) == "attention"
+                   for c in (info.field_types or {}).values()):
+                return True
     return name.endswith(("DecoderLayer", "TransformerBlock"))
 
 
