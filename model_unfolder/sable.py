@@ -182,6 +182,147 @@ def _ambiguous_evidence_findings(ir: dict) -> list[str]:
     return unique
 
 
+# U2 P4 net #13 — flip to blocking once the whole corpus witnesses every
+# evidenced drawable-family fact (config_field_audit / evidence_ambiguity
+# staging precedent).  Verified clean across all 25 fixtures on landing.
+_PROJECTION_AUDIT_BLOCKING = True
+
+# U2 P4 net #14 — the doctrine-allowed asserted facts.  A zero-evidence parse
+# (no modeling source, config stripped to numbers+address) must fall to
+# honest-unknown for every OTHER family; only these three still carry a generic
+# default (a fused-vs-split projection, a sqrt(head_dim) scale, a
+# concatenated-vs-separate FFN storage — presentation conventions, not fabricated
+# structure).  Keyed on the fact LEAF name (last dotted segment).
+_CENSUS_ALLOWED = frozenset({"scores_scale", "ffn_storage", "projection_mode"})
+
+# The census D-quadrant config (CONFIG_ABLATION_CENSUS.md appendix): identity is
+# kept as ADDRESS (so source/class-default channels can still resolve by it) and
+# numeric checkpoint values survive; every string / bool / dict / list
+# DECLARATION is stripped, so nothing but numbers+address remains to decide
+# structure from.
+_CENSUS_ADDRESS_KEYS = (
+    "model_type", "architectures", "_repo_id", "_name_or_path", "auto_map",
+)
+
+
+def _projection_audit_findings(ir: dict, render_log) -> list[str]:
+    """Every evidenced structural fact on a drawable family must have a DRAWN
+    witness (U2 P4 net #13).  Diffs the ledger's code/config-proven facts against
+    the union of ``RenderEvent.facts_projected`` — a fact read from the modeling
+    source but projected NOWHERE is the granite-score-multiplier class: a value
+    the model uses that the picture silently drops.  ``unknown`` / ``asserted`` /
+    ``oracle_missing`` owe no witness (they render pale-honest / are the census
+    net's target)."""
+    from .renderers.html.fact_projection import (
+        PROJECTED_STATUSES, DRAWABLE_FAMILY_SEGMENTS, family_segment,
+    )
+    fp = ((ir.get("extras") or {}).get("fact_provenance")) or {}
+    projected: set[str] = set()
+    for event in render_log:
+        projected |= set(getattr(event, "facts_projected", ()) or ())
+    findings: list[str] = []
+    for key, rec in sorted(fp.items()):
+        if (rec or {}).get("status") not in PROJECTED_STATUSES:
+            continue
+        if family_segment(key) not in DRAWABLE_FAMILY_SEGMENTS:
+            continue
+        if key not in projected:
+            findings.append(
+                f"ledger fact {key!r} ({rec.get('status')}) is proven from evidence "
+                "but no render surface projects it — add its leaf to the surface's "
+                "facts_projected (a proven fact the diagram silently drops)")
+    return findings
+
+
+def _numbers_only(cfg_dict: dict) -> dict:
+    """The census D-quadrant config: address keys verbatim + numeric fields only.
+
+    Strings / bools / dicts / lists are structural DECLARATIONS — stripped so the
+    parse must decide structure from evidence (code/class) or fall to unknown;
+    ints/floats are checkpoint VALUES (dims, counts) and survive."""
+    out: dict = {}
+    for key, value in (cfg_dict or {}).items():
+        if key in _CENSUS_ADDRESS_KEYS:
+            out[key] = value
+        elif isinstance(value, bool):
+            continue
+        elif isinstance(value, (int, float)):
+            out[key] = value
+    return out
+
+
+def _zero_asserted_census_findings(cfg, source: str) -> list[str]:
+    """The permanent measuring stick (U2 P4 net #14, CONFIG_ABLATION_CENSUS).
+
+    Strip the model's own config to numbers+address, re-parse against an EMPTY
+    SourceBundle (constructed directly — no monkeypatch), and assert the ledger's
+    ``asserted`` set (defaults presented as fact) is a subset of the
+    doctrine-allowed leaves.  A model that cannot even be parsed from numbers-only
+    (its structure is entirely config-declared — nested pipelines, multimodal
+    wrappers) asserts NOTHING, so it is skipped, not failed."""
+    from .parser import config_to_ir
+    from .evidence.context import ParseContext, _installed_config_defaults
+    from .evidence.decoderness import declared_decoderness
+    from .evidence.models import SourceBundle
+    from .errors import UnfoldError
+
+    stripped = _numbers_only(_config_dict(cfg))
+    if not stripped:
+        return []
+    context = ParseContext(
+        source_bundle=SourceBundle(source="local", files=()),
+        source=source,
+        # Address survives the strip, so the class-default hydration channel and
+        # the config's decoder-ness declaration can still resolve — those are
+        # legitimate evidence tiers, NOT the asserted defaults this net polices.
+        class_defaults=_installed_config_defaults(stripped),
+        declared_decoderness=declared_decoderness(stripped),
+    )
+    try:
+        config_to_ir(stripped, parse_context=context)
+    except UnfoldError:
+        return []              # numbers-only cannot reconstruct this model — nothing asserted
+    except Exception:          # a synthetic parse must never crash a bless; degrade to skip
+        return []
+    findings: list[str] = []
+    seen: set[str] = set()
+    for key in context.facts.asserted():
+        leaf = key.rsplit(".", 1)[-1]
+        if leaf in _CENSUS_ALLOWED or leaf in seen:
+            continue
+        seen.add(leaf)
+        findings.append(
+            f"zero-evidence parse asserts {leaf!r} (e.g. {key!r}) as a default — with "
+            "no code and a numbers-only config it must fall to honest-unknown; only "
+            f"{sorted(_CENSUS_ALLOWED)} are doctrine-allowed")
+    return findings
+
+
+def _accessed_unprojected_findings(ir: dict) -> list[str]:
+    """ADVISORY: config fields read but never CONSUMED into a spec field (U2 P4
+    config_field_audit upgrade — the granite-multiplier detector).
+
+    ``debug`` marks a field ``consumed`` only when its value flows into a spec.
+    A field ``accessed`` (for a branch test, then discarded) but never consumed
+    was looked-up-not-used — coverage the plain ``config_field_audit`` (which
+    only knows "was it read") is blind to.  Gated on the consumed census being
+    available: the accessor rail supports ``intent='consumed'`` but production
+    decision sites are still migrating, so absence of a consumed census means the
+    signal is not yet computable — the finding class stays inert (like the
+    consumed census the parser only publishes when non-empty)."""
+    extras = ir.get("extras") or {}
+    consumed = set(extras.get("config_consumed") or [])
+    if not consumed:
+        return []
+    accessed = set((extras.get("config_audit") or {}).get("accessed") or [])
+    return [
+        f"config field {field!r} was accessed but never consumed into a spec field — "
+        "it drove a branch or was discarded; wire it to a spec/ledger fact or record "
+        "it inspected-only"
+        for field in sorted(accessed - consumed)
+    ]
+
+
 def sable(model_or_id, *, token=None, source: str = "local",
           outdir: str | None = None, render_images: bool = True) -> SableReport:
     """Run the full mechanical pass over a model and render its view gallery.
@@ -208,13 +349,11 @@ def sable(model_or_id, *, token=None, source: str = "local",
     from .preview import svg_views, _visual_hash
 
     cfg = _coerce(model_or_id, token=token)
-    # Keep the source id ON the config so a hub source lookup can find it: a
-    # trust_remote_code model (HunyuanImage-3, Ideogram-4) ships its modeling .py
-    # in the HF repo, not in the diffusers/transformers package, and _coerce drops
-    # the id. Harmless for source="local" (which resolves by class, not id).
-    if isinstance(model_or_id, str) and isinstance(cfg, dict) and not any(
-            cfg.get(k) for k in ("_name_or_path", "name_or_path", "model_id", "repo_id")):
-        cfg = {**cfg, "_name_or_path": model_or_id}
+    # Source-id provenance is stamped by the LOADER (raw-JSON and diffusers
+    # rungs both set ``_repo_id``), so the harness audits the SAME
+    # source-resolved parse the ship path draws. Sable must never be
+    # better-informed than unfold() — a harness-side stamp hid every
+    # remote-code evidence miss behind a green audit (run_77 R1).
     context = ParseContext.build(cfg, source=source, token=token)
     diagram = Diagram(config_to_ir(cfg, parse_context=context))
     ir = diagram.to_ir()
@@ -304,6 +443,33 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck(
             "asserted_facts",
             _asserted_fact_findings(ir),
+            blocking=False,
+        ),
+        # U2 P4 net #13 — projection-audit: every code/config-proven structural
+        # fact on a drawable family must have a DRAWN witness (a
+        # RenderEvent.facts_projected entry).  Kills the read-but-never-drawn
+        # class (the granite score-multiplier) forever.  Blocking once the whole
+        # corpus witnesses every evidenced fact (verified clean on landing).
+        SableCheck(
+            "projection_audit",
+            _projection_audit_findings(ir, render_log),
+            blocking=_PROJECTION_AUDIT_BLOCKING,
+        ),
+        # U2 P4 net #14 — zero-asserted census (the permanent measuring stick):
+        # strip this model's config to numbers+address, re-parse against an EMPTY
+        # source bundle, and require the asserted-facts set fall within the
+        # doctrine-allowed leaves.  Blocking from day one (post-P1 the families
+        # are clean across the corpus).
+        SableCheck(
+            "zero_asserted_census",
+            _zero_asserted_census_findings(cfg, source),
+        ),
+        # U2 P4 config_field_audit upgrade — accessed-but-unprojected: a config
+        # field looked up but never consumed into a spec field.  ADVISORY and
+        # inert until the consumed rail is populated (see helper).
+        SableCheck(
+            "config_accessed_unprojected",
+            _accessed_unprojected_findings(ir),
             blocking=False,
         ),
     ]

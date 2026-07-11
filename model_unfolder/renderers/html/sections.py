@@ -76,6 +76,12 @@ def _stats_banner(ir: dict) -> str:
         if params.get("is_sparse")
         else params.get("total_h", "?")
     )
+    # U2: an estimate that had to pick a counting convention for an UNKNOWN
+    # fact (tie / FFN gating) says so — starred value with the conventions in
+    # the hover title, never a silently-branched number.
+    _assumption_note = "; ".join(params.get("assumptions") or [])
+    if _assumption_note:
+        param_text = f"~{param_text}*"
     extras = ir.get("extras") or {}
     if (extras.get("render") or {}).get("family") == "diffusion":
         items = _diffusion_stats(ir, extras, param_text)
@@ -89,8 +95,10 @@ def _stats_banner(ir: dict) -> str:
         ]
     cells = []
     for key, value in items:
+        title = (f' title="{_attr("estimate uses conventions for unknowns: " + _assumption_note)}"'
+                 if (_assumption_note and value == param_text) else "")
         cells.append(
-            '<div class="uf-stat">'
+            f'<div class="uf-stat"{title}>'
             f'<div class="uf-stat-key">{_html(key.upper())}</div>'
             f'<div class="uf-stat-val">{_html(value)}</div>'
             "</div>"

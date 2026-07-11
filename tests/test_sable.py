@@ -210,6 +210,19 @@ def test_config_field_audit_is_blocking():
     assert not report.mechanical_passed
 
 
+def test_u2_projection_and_census_nets_are_wired_blocking_and_clean():
+    """U2 P4: net #13 (projection-audit) and net #14 (zero-asserted census) are
+    both blocking mechanical nets and both pass on a real decoder; the
+    accessed-but-unprojected upgrade is advisory."""
+    report = sable(LLAMA, render_images=False)
+    by_name = {c.name: c for c in report.checks}
+    assert by_name["projection_audit"].blocking is True
+    assert by_name["projection_audit"].passed, by_name["projection_audit"].findings
+    assert by_name["zero_asserted_census"].blocking is True
+    assert by_name["zero_asserted_census"].passed, by_name["zero_asserted_census"].findings
+    assert by_name["config_accessed_unprojected"].blocking is False
+
+
 # --------------------------------------------------------------------------- #
 # wiring-conformance
 # --------------------------------------------------------------------------- #

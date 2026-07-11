@@ -976,6 +976,70 @@ def test_remote_code_declaration_reaches_the_hub_rail(monkeypatch, tmp_path):
     assert not calls.get("hit")
 
 
+# ---------------------------------------------------------------------------
+# UNIT 1 — SOURCE PARITY (run_77 R1/R2/R3): the loader stamps the address,
+# unknown model_type falls through to the declared class, and the true
+# refusal cause is never masked. One resolution context for ship AND audit.
+# ---------------------------------------------------------------------------
+
+
+def test_raw_json_loader_stamps_repo_id(monkeypatch, tmp_path):
+    """The raw-JSON rung (remote-code / registry-predating repos) must stamp
+    ``_repo_id`` so ``resolve_source_files`` can fetch the repo's own modeling
+    source — without it every model on this rung parses evidence-blind."""
+    cfg_file = tmp_path / "config.json"
+    cfg_file.write_text(
+        '{"model_type": "notinstalled_xyz", "hidden_size": 64, '
+        '"num_hidden_layers": 2, "auto_map": {"AutoModel": "modeling_x.X"}}'
+    )
+    import model_unfolder.parser as P
+
+    def fake_download(**kwargs):
+        assert kwargs["repo_id"] == "some/remote-repo"
+        return str(cfg_file)
+
+    import huggingface_hub
+    monkeypatch.setattr(huggingface_hub, "hf_hub_download", fake_download)
+    cfg = P._load_raw_config_json("some/remote-repo", None)
+    assert cfg["_repo_id"] == "some/remote-repo"
+    # the stamp is exactly what the source resolver's id lookup prioritizes
+    import model_unfolder.evidence.sources as S
+    assert S._model_id(cfg) == "some/remote-repo"
+
+
+def test_unknown_model_type_falls_through_to_declared_class():
+    """A PRESENT-but-unregistered model_type (the rebrand pattern: kimi_k2
+    running the installed DeepseekV3 class) must resolve source by the
+    declared architecture, exactly as an ABSENT model_type already does."""
+    import model_unfolder.evidence.sources as S
+    cfg = {"model_type": "totally_unknown_rebrand_zz",
+           "architectures": ["LlamaForCausalLM"]}
+    bundle = S._installed_transformers_bundle(cfg)
+    assert bundle.files, bundle.warnings
+    assert any("modeling_llama" in f for f in bundle.files)
+    assert bundle.component_architectures.get("root") == "LlamaForCausalLM"
+    # absent architecture keeps the honest no-source warning
+    empty = S._installed_transformers_bundle({"model_type": "totally_unknown_rebrand_zz"})
+    assert not empty.files and empty.warnings
+
+
+def test_fileless_hub_warning_is_not_masked(monkeypatch):
+    """When the remote-code hub lookup fails (offline/gated/id-less), its TRUE
+    cause must surface beside the local fallback warning instead of being
+    replaced by the generic 'no installed source' line."""
+    import model_unfolder.evidence.sources as S
+
+    def failing_hub(target, *, token=None):
+        raise RuntimeError("simulated offline")
+
+    monkeypatch.setattr(S, "_hub_bundle", failing_hub)
+    cfg = {"model_type": "notinstalled_xyz",
+           "auto_map": {"AutoModel": "modeling_x.X"}}
+    bundle = S.resolve_source_files(cfg, source="local")
+    assert not bundle.files
+    assert any("remote-code source fetch failed" in w for w in bundle.warnings)
+
+
 
 # ---------------------------------------------------------------------------
 # QK-norm — code-first (the code decides the SHAPE and names its own gate)
@@ -2705,12 +2769,18 @@ def test_gemma2_softcaps_drawn_not_parked():
     assert heads and "softcap" in (heads[0].get("title") or "").lower()
 
 
-def test_norm_placement_defaults_tagged_not_redrawn():
-    """B2 (corrected): reader abstention keeps the CONVENTIONAL pre cell —
-    principle 5, unresolvable → fallback, never a different drawing (T5's
-    ModuleList idiom made a norm-less "unknown" cell a real regression) —
-    but the assertion is TAGGED in the spec; a proven DiT sandwich is stated
-    on the norm cards (cell stays pre)."""
+def test_norm_placement_defaults_two_unknown_tiers():
+    """B2 (U2 endpoint): placement has TWO unknown tiers.
+
+    * source ABSENT (oracle_missing / zero evidence) → the pale
+      "code-defined wiring" block — no fabricated pre-norm cells, no
+      residual-tap claims (the tower_cell primitive on the main path);
+    * source PRESENT but the reader abstained on the idiom → the
+      conventional pre cell stays DRAWN (the op/nested-conformance oracle
+      still checks its norms/residual ops against the readable forward())
+      — recorded ambiguous + tagged asserted;
+    * a proven placement (real source) carries no tag at all; a proven DiT
+      sandwich is stated on the norm cards."""
     import json, pathlib
     from model_unfolder.adapters.transformer.parser import parse as parse_transformer
     from model_unfolder.evidence.context import ParseContext
@@ -2719,17 +2789,22 @@ def test_norm_placement_defaults_tagged_not_redrawn():
     cfg = {"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
            "num_attention_heads": 8, "num_key_value_heads": 8,
            "intermediate_size": 512, "vocab_size": 1000}
+    # Tier 1: no source at all → pale wiring block, nothing conventional.
     ctx = ParseContext(source_bundle=SourceBundle(source="local", files=()),
                        source="local")
     ir = parse_transformer(cfg, context=ctx)
-    blocks = [b for b in ir.layers[0].blocks if isinstance(b, dict)]
-    assert "norm" in [b.get("kind") for b in blocks]          # conventional cell kept
-    assert "norm_placement" in (ir.layers[0].ffn.asserted or ())  # ...and tagged
+    assert ir.layers[0].norm_placement == "unknown"
+    ids = [b.get("id") for b in ir.layers[0].blocks if isinstance(b, dict)]
+    assert "wiring_unresolved" in ids and "rms1" not in ids
+    assert ctx.facts.records["decoder.layer.norm_placement"].status == "oracle_missing"
 
-    # proven placement (real source) → no tag
+    # Tier 2/proven: real source (llama's topology reader proves pre) → the
+    # concrete cell, no tag, code_proven ledger status.
     ctx2 = ParseContext.build(cfg, source="local")
     ir2 = parse_transformer(cfg, context=ctx2)
+    assert ir2.layers[0].norm_placement == "pre"
     assert "norm_placement" not in (ir2.layers[0].ffn.asserted or ())
+    assert ctx2.facts.records["decoder.layer.norm_placement"].status == "code_proven"
 
     # proven DiT sandwich → stated on the norm cards
     from model_unfolder.sable import DEFAULT_CORPUS
@@ -2782,24 +2857,42 @@ def test_unet_prose_on_code_evidence_rail():
 
 
 def test_asserted_facts_tagged_and_advisory():
-    """B5: generic defaults land in the spec's `asserted` tuple (JSON-only;
-    key absent when everything is backed) and the advisory sable listing
-    reports them; declared/code-backed facts are never tagged."""
+    """B5 (U2): the `asserted` tuple now carries ONLY the drawn conventions
+    the doctrine keeps (sqrt(dim) scores, split storage, kept-pre placement) —
+    everything else is either evidence-backed or a TYPED unknown, never a
+    default presented as fact. mask specifically (strengthened by P2d): no
+    architectures + no is_decoder, but the INSTALLED llama source
+    unconditionally builds a causal mask — CODE-PROVEN causal now outranks
+    the undeclared config (was a typed unknown before the reader existed);
+    still no asserted tag either way."""
     import json, pathlib
     from model_unfolder import unfold
     from model_unfolder.sable import DEFAULT_CORPUS, _asserted_fact_findings
 
-    # a bare source-less-style config: mask stays the conventional causal
+    # bare llama-typed config WITHOUT architectures: decoder-ness undeclared
+    # by CONFIG, but code-proven causal by the P2d reader — evidence-backed,
+    # never a default presented as fact, no asserted tag.
     d = unfold({"model_type": "llama", "hidden_size": 256, "num_hidden_layers": 2,
                 "num_attention_heads": 8, "num_key_value_heads": 8,
                 "intermediate_size": 512, "vocab_size": 1000})
     ir = d.to_ir()
     attn = ir["layers"][0]["attention"]
-    assert "mask" in (attn.get("asserted") or [])
+    assert attn["mask"] == "causal"
+    prov = (ir.get("extras") or {}).get("fact_provenance") or {}
+    assert prov["decoder.attention.mask"]["status"] == "code_proven"
+    assert "mask" not in (attn.get("asserted") or [])
     # scores_scale NOT tagged: the B1 code read backs sqrt(dim) (source installed)
     assert "scores_scale" not in (attn.get("asserted") or [])
-    findings = _asserted_fact_findings(ir)
-    assert any("'mask'" in f for f in findings)
+
+    # the SAME config with the real checkpoint's declaration draws causal
+    # with no tag (config_declared, not asserted).
+    d2 = unfold({"model_type": "llama", "architectures": ["LlamaForCausalLM"],
+                 "hidden_size": 256, "num_hidden_layers": 2,
+                 "num_attention_heads": 8, "num_key_value_heads": 8,
+                 "intermediate_size": 512, "vocab_size": 1000})
+    attn2 = d2.to_ir()["layers"][0]["attention"]
+    assert attn2["mask"] == "causal"
+    assert "mask" not in (attn2.get("asserted") or [])
 
     # a fully declared+code-backed model: FFN carries no asserted key at all
     fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / "llama-7b.json").read_text())
@@ -2964,3 +3057,427 @@ def test_patch_ops_humanized_and_plumbing_collapsed():
                             and any(c.isupper() for c in label[1:])
                             and " " not in label and label not in ("LayerNorm", "RMSNorm")), \
                     f"{mt}/{name}: class-name-like label {label!r}"
+
+
+# ---------------------------------------------------------------------------
+# U2 P2a — attention-bias reader: tmp-file constructor witnesses (the reader
+# was wired in P1; these pin its tri-state on synthetic ctor shapes so the
+# contract survives transformers refactors of the installed sources).
+# ---------------------------------------------------------------------------
+
+_BIAS_LAYER_TEMPLATE = """
+class FakeAttention:
+    def __init__(self, config):
+        self.q_proj = nn.Linear(4, 4, bias={bias})
+        self.k_proj = nn.Linear(4, 4, bias={bias})
+        self.v_proj = nn.Linear(4, 4, bias={bias})
+    def forward(self, x):
+        return x
+
+class FakeMLP:
+    def __init__(self, config):
+        self.up_proj = nn.Linear(4, 8)
+        self.down_proj = nn.Linear(8, 4)
+    def forward(self, x):
+        return x
+
+class FakeDecoderLayer:
+    def __init__(self, config):
+        self.self_attn = FakeAttention(config)
+        self.mlp = FakeMLP(config)
+    def forward(self, x, past_key_value=None):
+        return x
+"""
+
+
+def test_attention_bias_reader_tmpfile_ctor_tristate(tmp_path):
+    """Literal bias=True/False on the QKV Linears is code-proven either way;
+    ``bias=config.X`` resolves the checkpoint value and stays None (doubt)
+    when the config is silent; an absent source is an honest None."""
+    from model_unfolder.evidence.patterns import decoder_attention_bias_from_files
+
+    biased = tmp_path / "biased.py"
+    biased.write_text(_BIAS_LAYER_TEMPLATE.format(bias="True"))
+    unbiased = tmp_path / "unbiased.py"
+    unbiased.write_text(_BIAS_LAYER_TEMPLATE.format(bias="False"))
+    gated = tmp_path / "gated.py"
+    gated.write_text(_BIAS_LAYER_TEMPLATE.format(bias="config.attention_bias"))
+
+    assert decoder_attention_bias_from_files((str(biased),), {}) is True
+    assert decoder_attention_bias_from_files((str(unbiased),), {}) is False
+    # bias=config.X: the checkpoint value decides; silent config = doubt
+    assert decoder_attention_bias_from_files(
+        (str(gated),), {"attention_bias": True}) is True
+    assert decoder_attention_bias_from_files(
+        (str(gated),), {"attention_bias": False}) is False
+    assert decoder_attention_bias_from_files((str(gated),), {}) is None
+    # source absent → None, never a fabricated verdict
+    assert decoder_attention_bias_from_files((), {}) is None
+
+
+# ---------------------------------------------------------------------------
+# U2 P2b — lm_head tying reader: unconditional manual assignment is proof;
+# _tied_weights_keys is CAPABILITY and must never count (the mandatory
+# negative — post_init ties gated on the config flag, so treating the class
+# attribute as proof would fabricate tying on every llama).
+# ---------------------------------------------------------------------------
+
+def test_lm_head_tying_reader_unconditional_assign_is_proof(tmp_path):
+    from model_unfolder.evidence.patterns import lm_head_tying_from_files
+
+    tied = tmp_path / "tied.py"
+    tied.write_text(
+        "class FakeForCausalLM:\n"
+        "    def __init__(self, config):\n"
+        "        self.transformer = FakeModel(config)\n"
+        "        self.lm_head = nn.Linear(4, 8, bias=False)\n"
+        "        self.lm_head.weight = self.transformer.embed_tokens.weight\n"
+        "    def forward(self, x):\n"
+        "        return self.lm_head(self.transformer(x))\n"
+    )
+    assert lm_head_tying_from_files((str(tied),)) is True
+
+    # deep chains and legacy field spellings resolve the same way
+    wte = tmp_path / "wte.py"
+    wte.write_text(
+        "class LegacyLMHeadModel:\n"
+        "    def __init__(self, config):\n"
+        "        self.output_layer.weight = self.model.decoder.wte.weight\n"
+    )
+    assert lm_head_tying_from_files((str(wte),)) is True
+
+
+def test_lm_head_tying_capability_is_never_proof(tmp_path):
+    """THE mandatory negative: _tied_weights_keys alone (llama's shape —
+    tying happens in post_init gated on config.tie_word_embeddings) must
+    yield None, not True."""
+    from model_unfolder.evidence.patterns import lm_head_tying_from_files
+
+    capability = tmp_path / "capability.py"
+    capability.write_text(
+        "class FakeForCausalLM:\n"
+        "    _tied_weights_keys = [\"lm_head.weight\"]\n"
+        "    def __init__(self, config):\n"
+        "        self.model = FakeModel(config)\n"
+        "        self.lm_head = nn.Linear(4, 8, bias=False)\n"
+        "        self.post_init()\n"
+        "    def forward(self, x):\n"
+        "        return self.lm_head(self.model(x))\n"
+    )
+    assert lm_head_tying_from_files((str(capability),)) is None
+
+
+def test_lm_head_tying_conditional_assign_is_config_gated_not_proof(tmp_path):
+    """An if-nested manual tie is the config's decision, not code truth."""
+    from model_unfolder.evidence.patterns import lm_head_tying_from_files
+
+    gated = tmp_path / "gated.py"
+    gated.write_text(
+        "class FakeForCausalLM:\n"
+        "    def __init__(self, config):\n"
+        "        self.model = FakeModel(config)\n"
+        "        self.lm_head = nn.Linear(4, 8, bias=False)\n"
+        "        if config.tie_word_embeddings:\n"
+        "            self.lm_head.weight = self.model.embed_tokens.weight\n"
+    )
+    assert lm_head_tying_from_files((str(gated),)) is None
+    # source absent → honest None
+    assert lm_head_tying_from_files(()) is None
+
+
+# ---------------------------------------------------------------------------
+# U2 P2c — ACT2FN dispatch reader: code proves THAT an activation applies and
+# NAMES the deciding config field; config supplies WHICH (code_and_config).
+# ---------------------------------------------------------------------------
+
+def test_ffn_activation_dispatch_field_reader(tmp_path):
+    from model_unfolder.evidence.patterns import (
+        ffn_activation_dispatch_field_from_files,
+    )
+
+    dispatch = tmp_path / "dispatch.py"
+    dispatch.write_text(
+        "class FakeAttention:\n"
+        "    def __init__(self, config):\n"
+        "        self.q_proj = nn.Linear(4, 4)\n"
+        "        self.k_proj = nn.Linear(4, 4)\n"
+        "        self.v_proj = nn.Linear(4, 4)\n"
+        "    def forward(self, x):\n"
+        "        return x\n"
+        "class FakeMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.up_proj = nn.Linear(4, 8)\n"
+        "        self.down_proj = nn.Linear(8, 4)\n"
+        "        self.act_fn = ACT2FN[config.hidden_act]\n"
+        "    def forward(self, x):\n"
+        "        return self.down_proj(self.act_fn(self.up_proj(x)))\n"
+        "class FakeDecoderLayer:\n"
+        "    def __init__(self, config):\n"
+        "        self.self_attn = FakeAttention(config)\n"
+        "        self.mlp = FakeMLP(config)\n"
+        "    def forward(self, x, past_key_value=None):\n"
+        "        return x\n"
+    )
+    assert ffn_activation_dispatch_field_from_files((str(dispatch),)) == "hidden_act"
+
+    # get_activation(config.X) — the diffusers/self.config spelling
+    getact = tmp_path / "getact.py"
+    getact.write_text(
+        "class OtherAttention:\n"
+        "    def __init__(self, config):\n"
+        "        self.q_proj = nn.Linear(4, 4)\n"
+        "    def forward(self, x):\n"
+        "        return x\n"
+        "class OtherMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.fc1 = nn.Linear(4, 8)\n"
+        "        self.fc2 = nn.Linear(8, 4)\n"
+        "        self.act = get_activation(self.config.activation_function)\n"
+        "    def forward(self, x):\n"
+        "        return self.fc2(self.act(self.fc1(x)))\n"
+        "class OtherDecoderLayer:\n"
+        "    def __init__(self, config):\n"
+        "        self.self_attn = OtherAttention(config)\n"
+        "        self.mlp = OtherMLP(config)\n"
+        "    def forward(self, x, past_key_value=None):\n"
+        "        return x\n"
+    )
+    assert (ffn_activation_dispatch_field_from_files((str(getact),))
+            == "activation_function")
+
+    # HARDCODED module (BLOOM shape): the dispatch reader abstains — that is
+    # the name-match reader's fact (code_proven), not code_and_config.
+    hardcoded = tmp_path / "hardcoded.py"
+    hardcoded.write_text(
+        "class HardAttention:\n"
+        "    def __init__(self, config):\n"
+        "        self.q_proj = nn.Linear(4, 4)\n"
+        "    def forward(self, x):\n"
+        "        return x\n"
+        "class HardMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.fc1 = nn.Linear(4, 8)\n"
+        "        self.gelu_impl = FastGelu()\n"
+        "        self.fc2 = nn.Linear(8, 4)\n"
+        "    def forward(self, x):\n"
+        "        return self.fc2(self.gelu_impl(self.fc1(x)))\n"
+        "class HardDecoderLayer:\n"
+        "    def __init__(self, config):\n"
+        "        self.self_attn = HardAttention(config)\n"
+        "        self.mlp = HardMLP(config)\n"
+        "    def forward(self, x, past_key_value=None):\n"
+        "        return x\n"
+    )
+    assert ffn_activation_dispatch_field_from_files((str(hardcoded),)) is None
+    # source absent → None
+    assert ffn_activation_dispatch_field_from_files(()) is None
+
+
+def test_activation_dispatch_installed_witnesses():
+    """Installed-source witnesses: llama names hidden_act; gpt2 names
+    activation_function (the alias spelling its own code reads)."""
+    import transformers, pathlib
+    from model_unfolder.evidence.patterns import (
+        ffn_activation_dispatch_field_from_files,
+    )
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    for ff, want in (("llama/modeling_llama.py", "hidden_act"),
+                     ("gpt2/modeling_gpt2.py", "activation_function")):
+        p = base / ff
+        if not p.exists():
+            continue
+        assert ffn_activation_dispatch_field_from_files((str(p),)) == want, ff
+
+
+def test_moe_container_defers_to_expert_class_gating(tmp_path):
+    """U2 P2c extension: a routing container is not the FFN — its EXPERT
+    classes are. Gated experts (3-linear or Parameter-fused gate_up) prove
+    True; dense 2-linear experts prove False; an unresolvable container
+    still abstains (None)."""
+    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
+
+    def _file(name, expert_body):
+        p = tmp_path / name
+        p.write_text(
+            "class FakeAttention:\n"
+            "    def __init__(self, config):\n"
+            "        self.q_proj = nn.Linear(4, 4)\n"
+            "    def forward(self, x):\n"
+            "        return x\n"
+            + expert_body +
+            "class FakeDecoderLayer:\n"
+            "    def __init__(self, config):\n"
+            "        self.self_attn = FakeAttention(config)\n"
+            "        self.mlp = FakeMoEBlock(config)\n"
+            "    def forward(self, x, past_key_value=None):\n"
+            "        return x\n"
+        )
+        return (str(p),)
+
+    gated = _file("gated.py",
+        "class ExpertMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.gate_proj = nn.Linear(4, 8)\n"
+        "        self.up_proj = nn.Linear(4, 8)\n"
+        "        self.down_proj = nn.Linear(8, 4)\n"
+        "    def forward(self, x):\n"
+        "        return self.down_proj(act(self.gate_proj(x)) * self.up_proj(x))\n"
+        "class FakeMoEBlock:\n"
+        "    def __init__(self, config):\n"
+        "        self.experts = ExpertMLP(config)\n"
+        "        self.router = nn.Linear(4, 8)\n"
+        "    def forward(self, x):\n"
+        "        weights, idx = topk(softmax(self.router(x)), 2)\n"
+        "        return self.experts(x) * weights\n")
+    assert decoder_ffn_gated_from_files(gated, cfg={}) is True
+
+    dense = _file("dense.py",
+        "class ExpertMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.fc1 = nn.Linear(4, 8)\n"
+        "        self.fc2 = nn.Linear(8, 4)\n"
+        "    def forward(self, x):\n"
+        "        return self.fc2(relu(self.fc1(x)))\n"
+        "class FakeMoEBlock:\n"
+        "    def __init__(self, config):\n"
+        "        self.experts = ExpertMLP(config)\n"
+        "        self.router = nn.Linear(4, 8)\n"
+        "    def forward(self, x):\n"
+        "        weights, idx = topk(softmax(self.router(x)), 2)\n"
+        "        return self.experts(x) * weights\n")
+    assert decoder_ffn_gated_from_files(dense, cfg={}) is False
+
+    # Parameter-fused experts (gpt-oss shape): gate-named Parameter + gate_mul
+    fused = _file("fused.py",
+        "class FusedExpertsMLP:\n"
+        "    def __init__(self, config):\n"
+        "        self.gate_up_proj = nn.Parameter(t)\n"
+        "        self.down_proj = nn.Parameter(t)\n"
+        "    def forward(self, x):\n"
+        "        gate = x[..., ::2]\n"
+        "        up = x[..., 1::2]\n"
+        "        return (up * glu(gate)) @ self.down_proj\n"
+        "class FakeMoEBlock:\n"
+        "    def __init__(self, config):\n"
+        "        self.experts = FusedExpertsMLP(config)\n"
+        "        self.router = nn.Linear(4, 8)\n"
+        "    def forward(self, x):\n"
+        "        weights, idx = topk(softmax(self.router(x)), 2)\n"
+        "        return self.experts(x) * weights\n")
+    assert decoder_ffn_gated_from_files(fused, cfg={}) is True
+
+
+# ---------------------------------------------------------------------------
+# U2 P2d — attention causality reader (the mask direction): machinery calls
+# with config-resolved is_decoder gates; is_causal literals; the sdpa
+# is_causal=False trap stays OUT of bidirectional evidence.
+# ---------------------------------------------------------------------------
+
+def test_attention_causality_same_source_flips_with_config(tmp_path):
+    """Counterexample class 1: ONE source file (is_decoder-gated machinery,
+    the BERT/T5 shape) yields bidirectional for the plain checkpoint and
+    causal for an is_decoder=True checkpoint."""
+    from model_unfolder.evidence.patterns import attention_causality_from_files
+
+    gated = tmp_path / "gated.py"
+    gated.write_text(
+        "class FakeModel:\n"
+        "    def _make_masks(self, attention_mask, embedding_output):\n"
+        "        if self.config.is_decoder:\n"
+        "            attention_mask = create_causal_mask(config=self.config)\n"
+        "        else:\n"
+        "            attention_mask = create_bidirectional_mask(config=self.config)\n"
+        "        return attention_mask\n"
+    )
+    assert attention_causality_from_files((str(gated),), {}) == "bidirectional"
+    assert attention_causality_from_files((str(gated),),
+                                          {"is_decoder": True}) == "causal"
+
+
+def test_attention_causality_unconditional_and_literals(tmp_path):
+    from model_unfolder.evidence.patterns import attention_causality_from_files
+
+    # unconditional machinery ignores the config entirely (llama shape)
+    uncond = tmp_path / "uncond.py"
+    uncond.write_text(
+        "class FakeModel:\n"
+        "    def forward(self, x):\n"
+        "        mask = create_causal_mask(config=self.config)\n"
+        "        return mask\n"
+    )
+    assert attention_causality_from_files((str(uncond),), {}) == "causal"
+    assert attention_causality_from_files((str(uncond),),
+                                          {"is_decoder": False}) == "causal"
+
+    # self.is_causal = True literal in an attention class (no machinery)
+    literal = tmp_path / "literal.py"
+    literal.write_text(
+        "class FakeAttention:\n"
+        "    def __init__(self, config):\n"
+        "        self.is_causal = True\n"
+        "    def forward(self, x):\n"
+        "        return x\n"
+    )
+    assert attention_causality_from_files((str(literal),), {}) == "causal"
+
+    # source absent → None (counterexample class 4)
+    assert attention_causality_from_files((), {}) is None
+
+
+def test_attention_causality_traps_stay_unproven(tmp_path):
+    """is_causal=False is NOT bidirectional evidence (cross-attn and
+    sdpa-with-additive-mask both spell it); mixed machinery is honest None;
+    a cross-attn bidirectional mask gated on encoder inputs is skipped."""
+    from model_unfolder.evidence.patterns import attention_causality_from_files
+
+    trap = tmp_path / "trap.py"
+    trap.write_text(
+        "class FakeAttention:\n"
+        "    def __init__(self, config):\n"
+        "        self.is_causal = False\n"
+        "    def forward(self, q, k, v, mask):\n"
+        "        return scaled_dot_product_attention(q, k, v, attn_mask=mask,\n"
+        "                                            is_causal=False)\n"
+    )
+    assert attention_causality_from_files((str(trap),), {}) is None
+
+    mixed = tmp_path / "mixed.py"
+    mixed.write_text(
+        "class EncModel:\n"
+        "    def forward(self, x):\n"
+        "        return create_bidirectional_mask(config=self.config)\n"
+        "class DecModel:\n"
+        "    def forward(self, x):\n"
+        "        return create_causal_mask(config=self.config)\n"
+    )
+    assert attention_causality_from_files((str(mixed),), {}) is None
+
+    crossattn = tmp_path / "crossattn.py"
+    crossattn.write_text(
+        "class FakeModel:\n"
+        "    def forward(self, x, encoder_hidden_states=None):\n"
+        "        mask = create_causal_mask(config=self.config)\n"
+        "        if encoder_hidden_states is not None:\n"
+        "            enc_mask = create_bidirectional_mask(config=self.config)\n"
+        "        return mask\n"
+    )
+    assert attention_causality_from_files((str(crossattn),), {}) == "causal"
+
+
+def test_attention_causality_installed_witnesses():
+    """Installed-source witnesses across the counterexample classes: same
+    arch family ≠ same verdict (bert vs bert-as-decoder), similar config ≠
+    same source (gpt2 vs bert)."""
+    import pathlib, transformers
+    from model_unfolder.evidence.patterns import attention_causality_from_files
+    base = pathlib.Path(transformers.__file__).parent / "models"
+    cases = [("bert/modeling_bert.py", {}, "bidirectional"),
+             ("bert/modeling_bert.py", {"is_decoder": True}, "causal"),
+             ("gpt2/modeling_gpt2.py", {}, "causal"),
+             ("llama/modeling_llama.py", {}, "causal"),
+             ("t5/modeling_t5.py", {}, "bidirectional")]
+    for ff, cfg, want in cases:
+        p = base / ff
+        if not p.exists():
+            continue
+        assert attention_causality_from_files((str(p),), cfg) == want, (ff, cfg)

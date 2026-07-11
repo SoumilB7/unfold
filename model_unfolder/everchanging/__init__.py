@@ -72,6 +72,18 @@ def load_layer_type_labels() -> dict[str, list[str]]:
             for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
 
 
+def load_decoderness() -> dict[str, list[str]]:
+    """Config-declared decoder-ness vocabulary (``transformer/decoderness.yaml``):
+    the ``architectures[]`` class-role suffixes that declare an autoregressive
+    decoder (causal-LM heads; decoder-only generation wrappers, honored only
+    without ``is_encoder_decoder``). U2 mask default-kill."""
+    data = load("transformer", "decoderness")
+    return {
+        "causal_lm_suffixes": data.get("causal_lm_suffixes") or [],
+        "wrapper_generation_suffixes": data.get("wrapper_generation_suffixes") or [],
+    }
+
+
 def load_composite_slots() -> dict:
     """Declared component slots of composite/seq2seq configs
     (``transformer/composite_slots.yaml``).
@@ -326,6 +338,9 @@ def load_conformance_transitive() -> dict:
             "relative_bias": [s.lower() for s in _list("semantic_relative_bias_markers")],
         },
         "score_scale_markers": frozenset(s.lower() for s in _list("score_scale_markers")),
+        # U2 P2d mask reader: mask-machinery call tokens, split by direction.
+        "causal_mask_call_tokens": frozenset(_list("causal_mask_call_tokens")),
+        "bidirectional_mask_call_tokens": frozenset(_list("bidirectional_mask_call_tokens")),
         "library_helpers": helpers,
         "drill_role_markers": _kv_list("drill_role_markers"),
         "component_view_markers": _kv_list("component_view_markers"),

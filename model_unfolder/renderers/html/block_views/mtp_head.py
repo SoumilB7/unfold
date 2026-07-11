@@ -85,6 +85,41 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
     handed to it as ``block['children']`` — the attention/FFN render through the
     same router and drill into the same MLA / MoE views as the main stack."""
     children = block.get("children") or []
+    unresolved_wiring = next(
+        (c for c in children if c.get("id") == "wiring_unresolved"
+         or c.get("resolved") is False),
+        None,
+    )
+    if unresolved_wiring is not None:
+        # The representative layer deliberately refused to assert pre/post
+        # norm and residual placement.  Do not reconstruct the conventional
+        # two-norm/two-add MTP cell here: that would reintroduce the exact lie
+        # the main layer removed, and it creates clickable nodes with no facts.
+        # Render only the declared sublayers plus the same pale wiring node.
+        cell = [
+            {
+                "id": child["id"],
+                "kind": child.get("kind") or "norm",
+                "label": child.get("label") or child.get("title") or child["id"],
+                "resolved": child.get("resolved", True),
+                "static": child.get("static", False),
+            }
+            for child in children
+            if child.get("id")
+        ]
+        graph = tower_graph({
+            "source": {"id": "mtp_block_in", "kind": "port",
+                       "label": "from eh_proj  (d)"},
+            "cell": cell,
+            "repeat": 1,
+            "output": {"id": "mtp_block_out", "kind": "port",
+                       "label": "to shared output head", "static": True},
+        })
+        return render_graph(
+            graph, info, mount_id, "mtp-transformer-block",
+            f"{ir.get('name', 'model')} MTP transformer block",
+        )
+
     norms = [c for c in children if c.get("kind") == "norm"]
     cn1 = norms[0] if norms else {}
     cn2 = norms[1] if len(norms) > 1 else {}

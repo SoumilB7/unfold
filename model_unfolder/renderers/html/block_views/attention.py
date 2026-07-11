@@ -13,6 +13,7 @@ from __future__ import annotations
 from ....labels import describe_attention, kv_shared, mask_long
 from ....opgraph import attention_region, mla_kv_region, mla_query_region, prefix_region
 from ..graph_engine import render_graph
+from ..fact_projection import attention_facts
 from ..utils import _html, facts_html
 from ..op_render import region_to_graph
 
@@ -62,6 +63,7 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
     return render_graph(
         graph, info, mount_id, key,
         f"{ir.get('name', 'model')} {title}", min_width=640,
+        facts_projected=attention_facts(ir),
     )
 
 
@@ -73,6 +75,7 @@ def build_mla_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) 
     return render_graph(
         graph, info, mount_id, "mla-query",
         f"{ir.get('name', 'model')} MLA query path", min_width=640,
+        facts_projected=attention_facts(ir),
     )
 
 
@@ -84,6 +87,7 @@ def build_mla_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) ->
     return render_graph(
         graph, info, mount_id, "mla-kv",
         f"{ir.get('name', 'model')} MLA KV cache path", min_width=720,
+        facts_projected=attention_facts(ir),
     )
 
 

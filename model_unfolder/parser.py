@@ -93,6 +93,26 @@ def config_to_ir(
         "unread": unread,
         "accessed": sorted(accessed_fields),
     }
+    # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
+    # tags into the call-local FactLedger and serialize it.  This is accounting,
+    # not yet the projection-audit: that gate is complete only after renderers
+    # emit witnesses for the ledger keys they visibly project.
+    ledger = getattr(parse_context, "facts", None)
+    if ledger is not None:
+        for i, layer in enumerate(getattr(ir, "layers", []) or []):
+            for part in ("attention", "ffn"):
+                spec = getattr(layer, part, None)
+                for fact in (getattr(spec, "asserted", ()) or ()):
+                    ledger.record(f"layers[{i}].{part}", fact,
+                                  getattr(spec, fact, None), "asserted",
+                                  source="spec.asserted")
+        ir.extras["fact_provenance"] = ledger.to_dict()
+        consumed = sorted(_config_debug.consumed_fields())
+        # Do not publish a misleading empty "consumed" census.  The accessor
+        # rail supports intent="consumed", but production decision sites are
+        # still being migrated; absence says the census is not available yet.
+        if consumed:
+            ir.extras["config_consumed"] = consumed
     _ensure_parsable(ir, cfg_or_id)
     _debug_validate_blocks(ir)
     if inspect_code:
@@ -433,6 +453,14 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
     with open(path) as f:
         cfg = _parse_config_json_text(f.read())
     cfg = _hydrate_config_class_defaults(cfg)
+    if isinstance(cfg, dict):
+        # Identity-as-ADDRESS at load time: the entry id is the only channel
+        # through which a remote-code repo's own modeling .py can be fetched
+        # (auto_map → hub snapshot). ``_repo_id`` is the loader's provenance
+        # stamp — authoritative over exporter-baked ``_name_or_path`` junk —
+        # and mirrors the diffusor loader + Mistral-params rungs. Without it
+        # every repo on this rung parses blind to its own shipped source.
+        cfg["_repo_id"] = model_id
     return _ensure_unfoldable_config(cfg, model_id)
 
 

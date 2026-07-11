@@ -10,6 +10,9 @@ use site is a reviewed act, never an accident:
   type-roles (RMSNorm -> norm);
 * declared-component markers read a diffusers config's OWN ``_class_name``
   constructor declaration (like ``architectures[0]``), never a per-model table.
+* declared-role markers read a general task-role suffix from the config's own
+  ``architectures[]`` declaration. They are pinned as an interim config tier,
+  not misrepresented as code-derived structure.
 """
 from __future__ import annotations
 
@@ -64,6 +67,14 @@ EXPECTED_DECLARED_VOCABULARY = {
      "declared_class_vocabulary",
      "runtime access to declared class vocabulary 'dit_class_markers' "
      "(declared-component: reads the config's own _class_name declaration)"): 1,
+    ("model_unfolder/evidence/decoderness.py",
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'causal_lm_suffixes' "
+     "(declared-role: reads the config's own architectures task declaration)"): 1,
+    ("model_unfolder/evidence/decoderness.py",
+     "declared_class_vocabulary",
+     "runtime access to declared class vocabulary 'wrapper_generation_suffixes' "
+     "(declared-role: reads the config's own architectures task declaration)"): 1,
     ("model_unfolder/everchanging/conformance/conformance_map.yaml",
      "declared_vocabulary_table",
      "populated declared class vocabulary 'single_stream_class_markers' (code-shape)"): 1,
@@ -83,6 +94,13 @@ EXPECTED_DECLARED_VOCABULARY = {
      "declared_vocabulary_table",
      "populated declared class vocabulary 'scheduler_flow_matching_markers' "
      "(declared-component)"): 1,
+    ("model_unfolder/everchanging/transformer/decoderness.yaml",
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'causal_lm_suffixes' (declared-role)"): 1,
+    ("model_unfolder/everchanging/transformer/decoderness.yaml",
+     "declared_vocabulary_table",
+     "populated declared class vocabulary 'wrapper_generation_suffixes' "
+     "(declared-role)"): 1,
 }
 
 

@@ -43,6 +43,10 @@ _IGNORED_SUFFIXES: tuple[str, ...] = tuple(_ignored["suffixes"])
 _OPAQUE_SCOPES: frozenset[str] = frozenset(_ignored["opaque_scopes"])
 
 _touched: set[str] = set()
+# U2: fields whose VALUE flowed into a fact/spec (not merely looked at). A
+# field in _touched but never in _consumed is the "accessed-but-unprojected"
+# class the run_77 audit could not see (granite multipliers, PM-2).
+_consumed: set[str] = set()
 _captures: ContextVar[tuple[set[str], ...]] = ContextVar(
     "model_unfolder_config_access_captures", default=()
 )
@@ -51,11 +55,18 @@ _captures: ContextVar[tuple[set[str], ...]] = ContextVar(
 def reset() -> None:
     """Clear the per-parse record of which fields were read."""
     _touched.clear()
+    _consumed.clear()
 
 
-def note_access(name: str) -> None:
-    """Record that the parser looked up config field ``name`` (any alias)."""
+def note_access(name: str, intent: str = "inspected") -> None:
+    """Record that the parser looked up config field ``name`` (any alias).
+
+    ``intent="consumed"`` additionally records that the returned value flowed
+    into a fact — the projection-audit net diffs the two sets.
+    """
     _touched.add(name)
+    if intent == "consumed":
+        _consumed.add(name)
     # Add to every active capture so an outer model audit includes legitimate
     # work performed by nested component parses (diffusion text encoders), while
     # each nested capture can still be inspected independently. ContextVar keeps
@@ -63,6 +74,11 @@ def note_access(name: str) -> None:
     # capture wrapped around the whole model parse.
     for touched in _captures.get():
         touched.add(name)
+
+
+def consumed_fields() -> frozenset[str]:
+    """Fields whose value reached a fact this parse (U2 projection accounting)."""
+    return frozenset(_consumed)
 
 
 @contextmanager

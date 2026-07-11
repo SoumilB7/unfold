@@ -79,6 +79,9 @@ LLAMA = {
     "hidden_size": 4096, "num_hidden_layers": 32, "num_attention_heads": 32,
     "num_key_value_heads": 8, "intermediate_size": 14336, "vocab_size": 128256,
     "rms_norm_eps": 1e-5,
+    # Real Llama checkpoints declare this; with the U2 default-kill an
+    # omitted activation is a typed unknown, never a silent silu.
+    "hidden_act": "silu",
 }
 
 

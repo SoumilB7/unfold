@@ -105,14 +105,22 @@ def build_io(raw: dict) -> dict[str, Any]:
         "normalized_shape": hidden,
         "trace":            {"ir_path": "extras.render.model_blocks.final_rms"},
     })
-    out["lm_head"] = drop_none({
+    lm_head = drop_none({
         "operation":               "linear",
         "in_features":             hidden,
         "out_features":            vocab,
         "weight_shape":            shape(vocab, hidden),
-        "tied_to_token_embedding": bool(raw.get("tie_word_embeddings")),
+        # U2 tri-state: a bool() here would fabricate an "untied" claim.
+        "tied_to_token_embedding": (bool(raw["tie_word_embeddings"])
+                                    if raw.get("tie_word_embeddings") is not None
+                                    else None),
         "trace":                   {"ir_path": "extras.render.model_blocks.lm_head"},
     })
+    # ``drop_none`` intentionally removes ordinary absent fields, but this one
+    # is a typed architectural unknown and must remain explicit in machine JSON.
+    if raw.get("tie_word_embeddings") is None:
+        lm_head["tied_to_token_embedding"] = None
+    out["lm_head"] = lm_head
     return out
 
 

@@ -228,7 +228,19 @@ def _unique_children(children: list[dict]) -> list[dict]:
 def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
     h = _fmt_int(ir.get("hidden_size"))
     inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    activation = activation_label(ffn.get("activation") or "silu")
+    # U2: no render-time silu re-assert; an unnamed activation gets the honest
+    # generic "Activation" label.
+    activation = activation_label(ffn.get("activation"))
+    if ffn.get("kind") != "moe" and ffn.get("gated", True) is None:
+        # Inner structure undeclared (typed unknown) — one honest card, the
+        # same shape the drill's _undeclared_ffn_child_blocks presents.
+        return [
+            {"id": "block", "title": "Feed-forward (structure not declared)",
+             "description": ("Expands the residual width to an inner width and "
+                             "projects back. Whether it gates, and its "
+                             "activation, live in the model's code and are "
+                             "unresolved — not drawn rather than guessed.")},
+        ]
     if ffn.get("kind") != "moe" and not ffn.get("gated", True):
         return [
             {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},

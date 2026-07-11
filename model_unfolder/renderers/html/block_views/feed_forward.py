@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from ....opgraph import ffn_region, rename_ops
 from ..graph_engine import render_graph
+from ..fact_projection import ffn_facts
 from ..op_render import region_to_graph
 from .block_facts import ffn_from_block
 
@@ -37,6 +38,7 @@ def build_ffn_view(ir: dict, info: dict, mount_id: str, block: dict | None = Non
     return render_graph(
         region_to_graph(region, clickable=clickable), info, mount_id, "ffn",
         f"{ir.get('name', 'model')} feed-forward block", min_width=640,
+        facts_projected=ffn_facts(ir),
     )
 
 

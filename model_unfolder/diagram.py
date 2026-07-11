@@ -39,6 +39,9 @@ class Diagram:
             "total_h": humanize(p["total"]),
             "active_h": humanize(p["active"]),
             "is_sparse": p["is_sparse"],
+            # U2: unknown-tier counting conventions ride into the count card —
+            # only-when-present so resolved models stay byte-stable.
+            **({"assumptions": p["assumptions"]} if p.get("assumptions") else {}),
         }
         self._ir_cache = d
         return d

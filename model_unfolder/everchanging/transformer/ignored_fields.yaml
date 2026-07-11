@@ -162,10 +162,12 @@ keys:
   # --- text-encoder (T5/CLIP) internals merged in from diffusion component
   # configs --- the diffusion adapter draws the encoder as a tower (depth/width),
   # not its T5-specific internals, so these are noise on the denoiser diagnostic.
+  # U2 P3b: feed_forward_proj / is_gated_act are NO LONGER ignored — they are
+  # positive FFN-gate/activation declarations read by the gated + activation
+  # decisions (t5-base dense-relu truth; flan gated-gelu).  A scoped ignore
+  # (per-surface) remains the U7 design.
   - d_kv
   - dropout_rate
-  - feed_forward_proj
-  - is_gated_act
   - num_decoder_layers
   - relative_attention_num_buckets
   - relative_attention_max_distance

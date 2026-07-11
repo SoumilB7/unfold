@@ -11,6 +11,7 @@ from __future__ import annotations
 from ....opgraph import ffn_region, rename_ops
 from ..graph import Graph, Lane, Node, Parallel
 from ..graph_engine import render_graph
+from ..fact_projection import ffn_facts
 from ..op_render import region_to_graph
 from .block_facts import ffn_from_block
 
@@ -79,7 +80,10 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
         ffn_region(
             {
                 "kind": "dense",
-                "gated": bool(ffn.get("gated", True)),
+                # U2: tri-state pass-through — an undeclared expert structure
+                # (gated None) draws the honest undeclared-FFN region, never a
+                # bool()-fabricated dense expert.
+                "gated": ffn.get("gated", True),
                 "activation": ffn.get("activation"),
                 "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
                 # Code-proven fused gate_up storage flows into the expert drill —
@@ -91,7 +95,11 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
         _EXPERT_IDS,
     )
     graph = region_to_graph(expert, clickable=True, out_label="→ weighted sum")
+    # The expert IS a dense FFN — it draws the same activation / gate / projection
+    # ops.  For an MoE-only model (gpt-oss draws no top-level ``ffn`` view) this is
+    # the surface that witnesses the FFN-family facts for net #13.
     return render_graph(
         graph, info, mount_id, child.get("id", "expert"),
         f"{ir.get('name', 'model')} MoE expert feed-forward", min_width=640,
+        facts_projected=ffn_facts(ir),
     )

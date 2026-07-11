@@ -61,7 +61,11 @@ def _as_count(v, default: int = 0) -> int:
 
 
 def _ffn_params(f: FFNSpec, hidden: int) -> tuple:
-    """Returns (total_params, active_params_per_token)."""
+    """Returns (total_params, active_params_per_token).
+
+    ``gated is None`` (U2 typed unknown) counts the 2-projection floor — the
+    caller (``estimate_params``) ANNOTATES the estimate so an unknown never
+    silently picks a branch (blast_radius found a −33% FFN hazard here)."""
     g = 3 if f.gated else 2
     hidden = _as_count(hidden)
     if f.kind == "moe":
@@ -94,8 +98,17 @@ def estimate_params(ir: ModelIR) -> dict:
     h = ir.hidden_size
     v = ir.vocab_size
 
+    # U2 unknown policy: an unknown never silently picks a branch — the
+    # estimate keeps a deterministic convention AND says so (``assumptions``
+    # rides into the count card). tie=None counts an untied head (upper
+    # bound); gated=None counts the 2-projection floor.
+    assumptions: list[str] = []
+
     embed = v * h
     output = 0 if ir.tie_word_embeddings else v * h
+    if ir.tie_word_embeddings is None:
+        assumptions.append(
+            "embedding/head tying unknown — output head counted untied")
     final_norm = h
 
     per_layer = []
@@ -108,6 +121,8 @@ def estimate_params(ir: ModelIR) -> dict:
         f_total, f_active = _ffn_params(layer.ffn, h)
         if layer.ffn.kind == "moe":
             is_sparse = True
+        if layer.ffn.gated is None and _GATED_NOTE not in assumptions:
+            assumptions.append(_GATED_NOTE)
         norm_p = 2 * h
         t = a_p + f_total + norm_p
         ac = a_p + f_active + norm_p
@@ -125,7 +140,14 @@ def estimate_params(ir: ModelIR) -> dict:
         "output": output,
         "per_layer": per_layer,
         "is_sparse": is_sparse,
+        # Only-when-present so every fully-resolved model stays byte-stable.
+        **({"assumptions": assumptions} if assumptions else {}),
     }
+
+
+#: U2: the one-line annotation for an unknown FFN gate structure.
+_GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
+               "(a gated FFN would add hidden x inner per layer)")
 
 
 def humanize(n: int) -> str:

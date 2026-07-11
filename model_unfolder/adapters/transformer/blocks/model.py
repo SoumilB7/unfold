@@ -6,7 +6,7 @@ from ....block_schema import Block
 from ..common import format_dim as _fmt
 
 
-def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                              embed_norm: str | None = None,
                              final_logit_softcap: float | None = None,
                              codebooks: dict | None = None) -> dict:
@@ -23,7 +23,7 @@ def mtp_head_block(
     num_modules: int,
     hidden_size: int,
     vocab_size: int,
-    tie_word_embeddings: bool,
+    tie_word_embeddings: bool | None,
     block_children: list | None = None,
 ) -> Block:
     """Model-level Multi-Token Prediction head stack (DeepSeek-V3 style).
@@ -37,7 +37,9 @@ def mtp_head_block(
     hidden = _fmt(hidden_size)
     wide = _fmt(2 * hidden_size)
     vocab = _fmt(vocab_size)
-    shared = " (shared)" if tie_word_embeddings else " (shared with main head)"
+    shared = (" (embedding/head tied)" if tie_word_embeddings is True else
+              " (head shared across MTP modules)" if tie_word_embeddings is False else
+              " (head shared across MTP modules; embedding tie unresolved)")
     plural = "s" if num_modules != 1 else ""
     return {
         "id": "mtp",
@@ -57,7 +59,9 @@ def mtp_head_block(
             "num_modules": num_modules,
             "hidden_size": hidden_size,
             "vocab_size": vocab_size,
-            "tied": bool(tie_word_embeddings),
+            # Tri-state: None must not become a fabricated ``False`` in the
+            # drill payload.  Renderers can state that tying is unresolved.
+            "tied": tie_word_embeddings,
         },
         "children": [
             {"id": "mtp_hnorm", "title": "Hidden-state norm",
@@ -263,7 +267,7 @@ def block_diffusion_loop_blocks(
     ]
 
 
-def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool,
+def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                          embed_norm: str | None = None,
                          final_logit_softcap: float | None = None,
                          codebooks: dict | None = None) -> list[Block]:
@@ -277,6 +281,20 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
     summed = bool(cb.get("embeddings_summed"))
     stacked = bool(cb.get("heads_stacked"))
     channels = cb.get("audio_channels")
+    embed_tie_sentence = (
+        " — weights tied with the output head."
+        if tie_word_embeddings is True else
+        "."
+        if tie_word_embeddings is False else
+        " — whether these weights are tied to the output head is unresolved."
+    )
+    head_tie_sentence = (
+        " — weights tied with the embedding."
+        if tie_word_embeddings is True else
+        "."
+        if tie_word_embeddings is False else
+        " — whether these weights are tied to the embedding is unresolved."
+    )
     return [
         {
             "id": "tok_text",
@@ -305,8 +323,7 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
                 "the K looked-up vectors are summed into one token vector "
                 "(read from the decoder's construction and forward)."
                 if k_books and summed else
-                "Maps each token id to its vector"
-                + (" — weights tied with the output head." if tie_word_embeddings else ".")),
+                "Maps each token id to its vector" + embed_tie_sentence),
             "facts": ([f"{k_books} × ({vocab} vocab)", f"{hidden}-d", "summed"]
                       if k_books and summed else [f"{vocab} vocab", f"{hidden}-d"]),
         },
@@ -363,10 +380,9 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
                 f"softcaps them: logits = tanh(logits / {final_logit_softcap:g}) "
                 f"× {final_logit_softcap:g}, bounding magnitude to "
                 f"±{final_logit_softcap:g} without hard clipping"
-                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+                + head_tie_sentence
             ) if final_logit_softcap else (
-                "Projects the final hidden state into vocabulary logits"
-                + (" — weights tied with the embedding." if tie_word_embeddings else ".")
+                "Projects the final hidden state into vocabulary logits" + head_tie_sentence
             ),
             "facts": [f"{hidden} \u2192 {vocab}"] + (
                 [f"softcap ±{final_logit_softcap:g}"] if final_logit_softcap else []),

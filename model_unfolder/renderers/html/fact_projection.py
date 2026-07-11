@@ -1,0 +1,92 @@
+"""U2 P4 — the fact-projection witness channel (projection-audit net #13).
+
+The FactLedger (``ir.extras['fact_provenance']``) records WHICH evidence channel
+decided every structural fact.  This module is the other half of the contract:
+each render surface declares which ledger keys it VISIBLY carries into
+``RenderEvent.facts_projected``, so the projection-audit net can prove that every
+code/config-proven fact reached a drawn surface — nothing is read from the
+modeling source and then silently dropped (the granite score-multiplier class:
+a value the model uses that the picture never shows).
+
+The declaration is at KEY granularity.  A surface lists the fact *leaf names* it
+draws (``DRAWN`` sets below); :func:`projected_keys` intersects those with the
+ledger's real keys for that owner family.  Adding a NEW evidenced fact leaf that
+no surface lists here is exactly what net #13 flags — the wiring is forced, not
+assumed.  Value-level drift (the same key with a new mechanism) is out of scope
+for a key-granularity net and stays the visual review's job.
+"""
+from __future__ import annotations
+
+# The provenance tiers that OWE a drawn witness: a fact read from real evidence
+# must be visible somewhere.  ``unknown`` / ``oracle_missing`` / ``ambiguous``
+# render pale-honest (no witness owed); ``asserted`` is the census net's (#14)
+# target, not this one's; ``derived`` is computed, not independently drawn.
+PROJECTED_STATUSES = frozenset({
+    "code_proven", "config_declared", "class_default", "code_and_config",
+})
+
+# The owner family-segments that have a v1 render surface.  A ledger key like
+# ``decoder.attention.scores_scale`` has family segment ``attention`` (the
+# second-to-last dotted segment); ``model.tie_word_embeddings`` -> ``model``.
+DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
+
+# Per-surface: the fact LEAF names each surface visibly draws today.
+#   * the attention detail draws the Q/K/V projections (projection_mode), the
+#     score formula + its denominator (scores_scale), the mask / sliding-window
+#     strip (mask), the +bias / QK-Norm / RoPE nodes, and the region shape that
+#     names the family (attention_kind);
+#   * the FFN / expert detail draws in->act->out or gate||up->x->down
+#     (activation, gated, projection_mode);
+#   * the architecture view draws the norm cells (norm_kind), their pre/post
+#     placement (norm_placement), and the head-tying note (tie_word_embeddings).
+ATTENTION_DRAWN = frozenset({
+    "scores_scale", "projection_mode", "mask", "bias", "position_kind",
+    "qk_norm", "q_norm", "k_norm", "attention_kind", "sinks", "logit_softcap",
+})
+FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
+LAYER_DRAWN = frozenset({"norm_kind", "norm_placement"})
+MODEL_DRAWN = frozenset({"tie_word_embeddings"})
+
+
+def family_segment(key: str) -> str:
+    """The owner family of a ledger key: its second-to-last dotted segment."""
+    parts = key.split(".")
+    return parts[-2] if len(parts) >= 2 else ""
+
+
+def fact_provenance(ir) -> dict:
+    extras = ir.get("extras") if isinstance(ir, dict) else getattr(ir, "extras", None)
+    return (extras or {}).get("fact_provenance") or {}
+
+
+def projected_keys(ir, family: str, drawn_leaves) -> frozenset:
+    """The real ledger keys this surface declares as drawn: every fact whose
+    owner family matches ``family`` and whose leaf name the surface draws.
+
+    Returns actual ``fact_provenance`` keys so the audit union compares
+    like-for-like against the ledger — no key is invented."""
+    out = set()
+    for key in fact_provenance(ir):
+        if family_segment(key) == family and key.rsplit(".", 1)[-1] in drawn_leaves:
+            out.add(key)
+    return frozenset(out)
+
+
+def attention_facts(ir) -> frozenset:
+    return projected_keys(ir, "attention", ATTENTION_DRAWN)
+
+
+def ffn_facts(ir) -> frozenset:
+    return projected_keys(ir, "ffn", FFN_DRAWN)
+
+
+def layer_and_model_facts(ir) -> frozenset:
+    return projected_keys(ir, "layer", LAYER_DRAWN) | projected_keys(ir, "model", MODEL_DRAWN)
+
+
+__all__ = [
+    "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
+    "ATTENTION_DRAWN", "FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN",
+    "family_segment", "fact_provenance", "projected_keys",
+    "attention_facts", "ffn_facts", "layer_and_model_facts",
+]

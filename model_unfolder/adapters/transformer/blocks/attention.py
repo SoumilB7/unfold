@@ -56,6 +56,12 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "output_gate": attention.output_gate,
         "projection_mode": attention.projection_mode,
         "variant": attention.variant,
+        # U2 P3a: emitted only on the config-declared position fallback so
+        # every code-proven model's block detail stays byte-stable
+        **({"position_declared": True} if attention.position_declared else {}),
+        **({"rope_theta_declared": attention.rope_theta_declared}
+           if attention.position_declared
+           and attention.rope_theta_declared is not None else {}),
         # emitted only when DECLARED (same rule as the IR projection) so
         # undeclared models' block detail stays byte-stable
         **({"scores_scale": attention.scores_scale}

@@ -60,6 +60,16 @@ semantic_relative_bias_markers: [relative_attention_bias, compute_bias, position
 # scores" fact (T5 folds 1/sqrt(d) into init and matmuls raw Q.K^T).
 score_scale_markers: [scaling, scale, sqrt, rsqrt, softmax_scale]
 
+# --- attention causality (U2 P2d mask reader) --------------------------------
+# Mask-MACHINERY call tokens: constructing a causal mask (any spelling across
+# transformers generations — masking_utils, the legacy converter, the old
+# private helpers) vs constructing an explicitly bidirectional/full mask.
+# Library entry points only, never a model symbol.  The reader resolves
+# ``if config.is_decoder:`` gates around these calls from the checkpoint
+# config, so ONE source file honestly yields either direction (BERT/T5).
+causal_mask_call_tokens: [create_causal_mask, create_sliding_window_causal_mask, _update_causal_mask, _make_causal_mask, make_causal_mask, _prepare_4d_causal_attention_mask, AttentionMaskConverter]
+bidirectional_mask_call_tokens: [create_bidirectional_mask]
+
 # Library-helper call tokens whose op-kinds we know without a body (terminal).
 # Kept tiny + general: each is a torch/stdlib primitive, not a model symbol.
 # "name=op[,op]"; an empty RHS means the helper contributes no op (pure plumbing).

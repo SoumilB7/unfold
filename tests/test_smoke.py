@@ -287,6 +287,10 @@ YI_34B_CONFIG = {
     "max_position_embeddings": 4096,
     "tie_word_embeddings": False,
     "hidden_act": "silu",
+    # The real 01-ai/Yi-34B config.json declares this — with the U2 default
+    # layer killed, the rms spelling is the (derived) channel that names the
+    # norm kind for this source-unavailable family.
+    "rms_norm_eps": 1e-05,
 }
 
 OLMO_7B_CONFIG = {
@@ -788,6 +792,9 @@ def test_sliding_window_toggle_and_split():
         model_type="qwen2", num_hidden_layers=6, hidden_size=64,
         num_attention_heads=8, intermediate_size=128, vocab_size=100,
         rms_norm_eps=1e-5,
+        # U2: causal is drawn only when the config declares decoder-ness —
+        # real qwen2 checkpoints declare it exactly like this.
+        architectures=["Qwen2ForCausalLM"],
     )
 
     # Window declared but explicitly disabled -> every layer is full attention.
@@ -843,7 +850,11 @@ def test_omni_nested_thinker_text_config_unwrapped():
     ir = unfold(cfg).to_ir()
     assert len(ir["layers"]) == 4
     assert ir["layers"][0]["attention"]["num_heads"] == 8
-    assert not ir.get("warnings")
+    # U2: this stripped-down synthetic inner config leaves several code-owned
+    # facts honestly unresolved — that banner line is expected; anything else
+    # (missing geometry, dropped nesting) is a real unwrap failure.
+    assert not [w for w in ir.get("warnings", [])
+                if not w.startswith("Unresolved code-defined facts")]
 
 
 def test_attention_bias_and_rope_theta():
@@ -1529,13 +1540,18 @@ def test_new_should_support_family_routes():
         ir = d.to_ir()
         layer = ir["layers"][0]
 
+        # U2: the honest "Unresolved code-defined facts" banner line is an
+        # EXPECTED companion for configs whose bias/gating the source can't
+        # prove — only other warning classes indicate a routing problem here.
+        hard = [w for w in ir["warnings"]
+                if not w.startswith("Unresolved code-defined facts")]
         if cfg is YI_34B_CONFIG:
-            assert ir["warnings"] == [
+            assert hard == [
                 "Modeling source is unavailable; the positional scheme remains unknown."
             ]
             assert layer["attention"]["position_kind"] == "unknown"
         else:
-            assert not ir["warnings"]
+            assert not hard
         assert layer["attention"]["kind"] == attn_kind
         assert layer["ffn"]["kind"] == ffn_kind
         assert layer["norm_kind"] == norm_kind
@@ -1555,7 +1571,10 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     ir = d.to_ir()
     layer = ir["layers"][0]
 
-    assert not ir["warnings"]
+    # U2: DBRX's fused-Wqkv bias can't be proven by the ctor reader and the
+    # config is silent — the honest unresolved-facts banner is expected.
+    assert not [w for w in ir["warnings"]
+                if not w.startswith("Unresolved code-defined facts")]
     assert ir["name"] == "dbrx-base"
     assert len(ir["layers"]) == 40
     assert layer["attention"]["kind"] == "gqa"

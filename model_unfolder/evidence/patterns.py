@@ -1302,16 +1302,48 @@ def decoder_ffn_gated_from_files(files, cfg=None) -> bool | None:
     heuristic default)."""
     import ast as _ast
     from .forward_ops import _role_of, extract_forward_ops
-    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
-    if layer is None:
-        return None
-    _, field_types = layer
     fo = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
+    # No MLP-submodule layer at all → fall through to the inline fc1/fc2
+    # branch below (OPT/MusicGen lineage keeps its FFN Linears ON the layer).
+    field_types = layer[1] if layer is not None else {}
     for cls_name in field_types.values():
         if _role_of(cls_name) != "ffn":
             continue
         info = fo.get(cls_name)
-        if info is None or "route" in info.op_kinds:   # MoE container — not this reader's job
+        if info is None:
+            continue
+        if "route" in info.op_kinds:
+            # MoE container (U2 P2c extension): the container routes, its
+            # EXPERT classes hold the FFN shape — recurse ONE hop into the
+            # container's ffn-role members (experts / shared_experts) and
+            # read the same constructor/op signals there.  Parameter-fused
+            # experts (gpt-oss ``gate_up_proj = Parameter``) carry no
+            # Linear-role field, so the expert test also accepts a
+            # gate-named field + a ``gate_mul`` op as gate proof.  Unanimous
+            # verdict across resolved members wins; no resolved member →
+            # fall through (the caller's channels decide, as before).
+            member_verdicts: set[bool] = set()
+            for member_cls in info.field_types.values():
+                if _role_of(member_cls) != "ffn":
+                    continue
+                minfo = fo.get(member_cls)
+                if minfo is None or "route" in minfo.op_kinds:
+                    continue
+                mlin = [f for f, c in minfo.field_types.items()
+                        if _role_of(c) == "linear"]
+                if len(mlin) >= 3 or any("gate" in f.lower() for f in mlin):
+                    member_verdicts.add(True)
+                elif ("gate_mul" in minfo.op_kinds
+                      and any("gate" in f.lower() for f in minfo.field_types)):
+                    member_verdicts.add(True)
+                elif len(mlin) >= 2:
+                    member_verdicts.add(bool(
+                        ("chunk" in minfo.signature_tokens
+                         or "split" in minfo.signature_tokens)
+                        and "gate_mul" in minfo.op_kinds))
+            if len(member_verdicts) == 1:
+                return next(iter(member_verdicts))
             continue
         if "linear" in info.op_kinds:
             # A generic tensor multiplication is not sufficient evidence of a
@@ -1337,7 +1369,33 @@ def decoder_ffn_gated_from_files(files, cfg=None) -> bool | None:
                         and "gate_mul" in info.op_kinds):
                     return True
                 return False
-    return None
+    # fc1/fc2 ON THE LAYER (OPT / MusicGen / Whisper / BART lineage): the FFN
+    # is not a submodule class — the decoder layer itself owns its projection
+    # Linears (the attention projections live inside the attention class, so
+    # layer-level linear FIELDS are the FFN's). Same constructor-shape
+    # signals as the submodule branch; without this, killing the rmsnorm
+    # heuristic (U2) would have paled a whole code-provable dense lineage.
+    inline = _find_decoder_layer(files, _ast, required_roles=("attention", "norm"))
+    if inline is None:
+        return None
+    node, layer_fields = inline
+    inline_linears = [
+        field for field, class_name in layer_fields.items()
+        if _role_of(class_name) == "linear"
+    ]
+    if len(inline_linears) < 2:
+        return None
+    if len(inline_linears) >= 3:
+        return True
+    if any("gate" in field.lower() for field in inline_linears):
+        return True
+    layer_info = fo.get(getattr(node, "name", None))
+    if (layer_info is not None
+            and ("chunk" in layer_info.signature_tokens
+                 or "split" in layer_info.signature_tokens)
+            and "gate_mul" in layer_info.op_kinds):
+        return True
+    return False
 
 
 def decoder_ffn_activation_from_files(files) -> str | None:
@@ -1373,6 +1431,79 @@ def decoder_ffn_activation_from_files(files) -> str | None:
                 return "gelu"
             if "relu" in name:
                 return "relu"
+    return None
+
+
+def ffn_activation_dispatch_field_from_files(files) -> str | None:
+    """The config FIELD NAME the FFN's activation dispatch reads — the modern
+    ``self.act_fn = ACT2FN[config.hidden_act]`` / ``get_activation(config.X)``
+    idiom (U2 P2c, extending the name-match reader above).
+
+    Doctrine-exact split: the CODE proves THAT an activation applies and names
+    the deciding config field; the CONFIG supplies WHICH activation.  The
+    parser records the pair as ``code_and_config``.  Returns the field name
+    (``"hidden_act"``, ``"activation_function"``, …) or ``None`` when no FFN
+    class resolves / the FFN hardcodes a module (the name-match reader's job).
+    """
+    import ast as _ast
+    from .forward_ops import _method, _role_of
+
+    def _config_field(expr) -> str | None:
+        # config.X / cfg.X / self.config.X → "X"
+        if isinstance(expr, _ast.Attribute):
+            base = expr.value
+            if isinstance(base, _ast.Name) and base.id in ("config", "cfg"):
+                return expr.attr
+            if (isinstance(base, _ast.Attribute) and base.attr == "config"
+                    and isinstance(base.value, _ast.Name)
+                    and base.value.id == "self"):
+                return expr.attr
+        return None
+
+    def _dispatch_field(init) -> str | None:
+        if init is None:
+            return None
+        for st in _ast.walk(init):
+            if not (isinstance(st, _ast.Assign) and len(st.targets) == 1):
+                continue
+            v = st.value
+            # ACT2FN[config.X] / ACT2CLS[config.X]
+            if isinstance(v, _ast.Subscript):
+                b = v.value
+                nm = (b.id if isinstance(b, _ast.Name)
+                      else b.attr if isinstance(b, _ast.Attribute) else "")
+                if nm in ("ACT2FN", "ACT2CLS"):
+                    field = _config_field(v.slice)
+                    if field:
+                        return field
+            # get_activation(config.X)
+            if isinstance(v, _ast.Call):
+                fn = v.func
+                nm = (fn.id if isinstance(fn, _ast.Name)
+                      else fn.attr if isinstance(fn, _ast.Attribute) else "")
+                if nm == "get_activation" and v.args:
+                    field = _config_field(v.args[0])
+                    if field:
+                        return field
+        return None
+
+    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
+    defs = _parse_defs(tuple(str(p) for p in (files or ())))
+    if layer is not None:
+        _, field_types = layer
+        for cls_name in field_types.values():
+            if _role_of(cls_name) != "ffn":
+                continue
+            field = _dispatch_field(_method(defs.get(cls_name), "__init__")
+                                    if defs.get(cls_name) else None)
+            if field:
+                return field
+    # Inline-FFN lineage (OPT/MusicGen: the layer owns fc1/fc2 and the
+    # dispatch): read the LAYER's own __init__.
+    inline = _find_decoder_layer(files, _ast, required_roles=("attention", "norm"))
+    if inline is not None:
+        node, _ = inline
+        return _dispatch_field(_method(node, "__init__"))
     return None
 
 
@@ -2422,6 +2553,74 @@ def decoder_mlp_bias_from_files(files, cfg) -> bool | None:
     return next(iter(verdicts))
 
 
+# Field-name markers for the tying idiom's two ends (code-side vocabulary,
+# the _QKV_PROJ_NAMES precedent): the OUTPUT head field and the INPUT
+# embedding field the assignment connects.
+_HEAD_FIELD_MARKERS = ("lm_head", "embed_out", "output_layer", "head")
+_EMBED_FIELD_MARKERS = ("embed", "wte", "word_embeddings", "tok_embeddings")
+
+
+def lm_head_tying_from_files(files) -> bool | None:
+    """Is the OUTPUT head's weight UNCONDITIONALLY tied to the input embedding
+    by manual assignment in the modeling source —
+    ``self.lm_head.weight = self.model.embed_tokens.weight`` (legacy/remote-code
+    idiom)?  ``True`` on proof; ``None`` otherwise.
+
+    ⚠ Capability is NOT proof: transformers' ``_tied_weights_keys`` class
+    attribute only declares that tying is POSSIBLE — the actual tie happens in
+    ``post_init()`` gated on ``config.tie_word_embeddings`` — so that attribute
+    is deliberately ignored here.  Likewise an assignment nested under an
+    ``if`` (``if config.tie_word_embeddings: ...``) is config-gated, not code
+    truth: the config channel already owns that decision → ``None``.
+
+    There is no code-proven ``False``: absence of the manual idiom never
+    proves untied (post_init may still tie) — the caller falls through to the
+    class-default tier."""
+    for path in (files or ()):
+        try:
+            tree = ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            for item in node.body:
+                if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    continue
+                # TOP-LEVEL statements only: an If-nested assignment is
+                # config-gated capability, never unconditional proof.
+                for st in item.body:
+                    if not (isinstance(st, ast.Assign) and len(st.targets) == 1):
+                        continue
+                    tgt, val = st.targets[0], st.value
+                    if not (isinstance(tgt, ast.Attribute) and tgt.attr == "weight"
+                            and isinstance(val, ast.Attribute) and val.attr == "weight"):
+                        continue
+                    tgt_chain = _attr_chain(tgt.value)
+                    val_chain = _attr_chain(val.value)
+                    if not (tgt_chain and val_chain):
+                        continue
+                    tgt_leaf = tgt_chain[-1].lower()
+                    if not any(m in tgt_leaf for m in _HEAD_FIELD_MARKERS):
+                        continue
+                    if any(any(m in part.lower() for m in _EMBED_FIELD_MARKERS)
+                           for part in val_chain):
+                        return True
+    return None
+
+
+def _attr_chain(node) -> list[str]:
+    """``self.model.embed_tokens`` -> ``["model", "embed_tokens"]`` (attribute
+    parts after the rooting ``self``/name); ``[]`` when not a plain chain."""
+    parts: list[str] = []
+    while isinstance(node, ast.Attribute):
+        parts.append(node.attr)
+        node = node.value
+    if isinstance(node, ast.Name):
+        return list(reversed(parts))
+    return []
+
+
 def decoder_moe_schedule_from_files(files, cfg):
     """Per-layer MoE?/dense verdict READ FROM THE DECODER LAYER's CONSTRUCTION —
     the code-authoritative replacement for the config schedule flags.  The layer
@@ -2734,6 +2933,162 @@ def attention_score_scaling_from_files(files) -> bool | None:
             if value is not None:
                 verdicts.add(value)
     return next(iter(verdicts)) if len(verdicts) == 1 else None
+
+
+def attention_causality_from_files(files, cfg) -> str | None:
+    """The attention mask's DIRECTION read from the modeling source (U2 P2d):
+    ``"causal"`` / ``"bidirectional"`` / ``None``.
+
+    Signals, in priority order:
+
+    1. **Mask-machinery calls** (tokens in ``transitive.yaml``): constructing a
+       causal mask (``create_causal_mask`` and its generational spellings) vs an
+       explicitly bidirectional one (``create_bidirectional_mask``).  A call
+       nested under an ``if …is_decoder…`` gate is resolved from the CHECKPOINT
+       config — the same one source file honestly yields causal for a BERT
+       decoder and bidirectional for plain BERT/T5-encoder (``is_decoder`` is a
+       ``PretrainedConfig`` base attribute whose universal default is False, so
+       an absent key resolves False exactly as the code would at runtime).
+       Unanimous direction wins; both directions reachable → ``None`` (mixed).
+    2. **``self.is_causal = True``** literal in an attention-role class
+       (Llama's shape) → causal.  The inverse literal is deliberately NOT
+       bidirectional evidence: ``is_causal=False`` also appears on cross-attn
+       and on SDPA calls that pass an additive causal mask — a known trap.
+
+    ``None`` ⇒ the caller falls to the config-decoderness channel."""
+    import ast as _ast
+    from ..everchanging import load_conformance_transitive
+    from .ast_scanner import _call_name
+    from .forward_ops import _role_of
+    vocab = load_conformance_transitive()
+    causal_tokens = set(vocab.get("causal_mask_call_tokens") or ())
+    bidir_tokens = set(vocab.get("bidirectional_mask_call_tokens") or ())
+
+    # PretrainedConfig BASE attributes with a universal default of False —
+    # resolving an absent key to False is exactly what the code does at
+    # runtime (``config.is_decoder`` on a plain BERT reads the base default).
+    # A tiny code-semantics set, the _QKV_PROJ_NAMES precedent.
+    _FLAG_DEFAULTS = {"is_decoder": False, "add_cross_attention": False}
+
+    def _flag(name: str) -> bool:
+        if isinstance(cfg, dict):
+            return bool(cfg.get(name, _FLAG_DEFAULTS[name]))
+        v = getattr(cfg, name, None)
+        return _FLAG_DEFAULTS[name] if v is None else bool(v)
+
+    def _flag_of(node) -> str | None:
+        """``self.is_decoder`` / ``config.add_cross_attention`` /
+        ``self.config.is_decoder`` → the flag name, else None."""
+        if isinstance(node, _ast.Attribute) and node.attr in _FLAG_DEFAULTS:
+            return node.attr
+        if isinstance(node, _ast.Name) and node.id in _FLAG_DEFAULTS:
+            return node.id
+        return None
+
+    def _static_eval(test) -> bool | None:
+        """The test's value when decided by the resolvable flags alone."""
+        name = _flag_of(test)
+        if name is not None:
+            return _flag(name)
+        if isinstance(test, _ast.UnaryOp) and isinstance(test.op, _ast.Not):
+            inner = _static_eval(test.operand)
+            return None if inner is None else (not inner)
+        if isinstance(test, _ast.BoolOp):
+            vals = [_static_eval(v) for v in test.values]
+            if isinstance(test.op, _ast.And):
+                if any(v is False for v in vals):
+                    return False
+                if all(v is True for v in vals):
+                    return True
+                return None
+            if any(v is True for v in vals):
+                return True
+            if all(v is False for v in vals):
+                return False
+        return None
+
+    causal_hit = bidir_hit = False
+    is_causal_literal = False
+
+    # Cross-attention plumbing names (universal transformers spellings): a
+    # bidirectional-mask call gated on the PRESENCE of encoder-side inputs
+    # masks the CROSS-attention over the encoder's states — it says nothing
+    # about this stack's own self-attention direction.
+    _CROSS_ATTN_INPUTS = {"encoder_hidden_states", "encoder_attention_mask"}
+
+    def _mentions_cross_inputs(test) -> bool:
+        for child in _ast.walk(test):
+            if isinstance(child, _ast.Name) and child.id in _CROSS_ATTN_INPUTS:
+                return True
+            if isinstance(child, _ast.Attribute) and child.attr in _CROSS_ATTN_INPUTS:
+                return True
+        return False
+
+    def _visit(stmts, skip_bidir: bool = False) -> None:
+        """Statement-list walk that PRUNES branches a resolvable decoderness
+        gate turns off; every other construct is visited conservatively."""
+        nonlocal causal_hit, bidir_hit
+        for st in stmts:
+            if isinstance(st, _ast.If):
+                gate = _static_eval(st.test)
+                branch_skip = skip_bidir or _mentions_cross_inputs(st.test)
+                if gate is not False:
+                    _visit(st.body, branch_skip)
+                if gate is not True:
+                    _visit(st.orelse, branch_skip)
+                continue
+            if isinstance(st, (_ast.For, _ast.AsyncFor, _ast.While)):
+                _visit(st.body, skip_bidir)
+                _visit(st.orelse, skip_bidir)
+                continue
+            if isinstance(st, (_ast.With, _ast.AsyncWith)):
+                _visit(st.body, skip_bidir)
+                continue
+            if isinstance(st, _ast.Try):
+                _visit(st.body, skip_bidir)
+                for h in st.handlers:
+                    _visit(h.body, skip_bidir)
+                _visit(st.orelse, skip_bidir)
+                _visit(st.finalbody, skip_bidir)
+                continue
+            for child in _ast.walk(st):
+                if isinstance(child, _ast.Call):
+                    name = _call_name(child.func)
+                    if name in causal_tokens:
+                        causal_hit = True
+                    elif name in bidir_tokens and not skip_bidir:
+                        bidir_hit = True
+
+    for path in (files or ()):
+        try:
+            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        for node in _ast.walk(tree):
+            if not isinstance(node, _ast.ClassDef):
+                continue
+            for item in node.body:
+                if isinstance(item, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                    _visit(item.body)
+            if _role_of(node.name) == "attention":
+                for item in node.body:
+                    if not isinstance(item, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                        continue
+                    for st in item.body:            # top-level: unconditional
+                        if (isinstance(st, _ast.Assign) and len(st.targets) == 1
+                                and isinstance(st.targets[0], _ast.Attribute)
+                                and st.targets[0].attr == "is_causal"
+                                and isinstance(st.value, _ast.Constant)
+                                and st.value.value is True):
+                            is_causal_literal = True
+
+    if causal_hit and not bidir_hit:
+        return "causal"
+    if bidir_hit and not causal_hit:
+        return "bidirectional"
+    if causal_hit and bidir_hit:
+        return None                                  # mixed — honestly unproven
+    return "causal" if is_causal_literal else None
 
 
 def _linearize_forward(

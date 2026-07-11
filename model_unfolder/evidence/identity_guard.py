@@ -75,7 +75,16 @@ _CODE_SHAPE_MARKER_TABLES = frozenset({
 _DECLARED_COMPONENT_TABLES = frozenset({
     "dit_class_markers", "scheduler_flow_matching_markers",
 })
-_DECLARED_VOCABULARY_TABLES = _CODE_SHAPE_MARKER_TABLES | _DECLARED_COMPONENT_TABLES
+# * DECLARED-ROLE suffixes interpret the config's own ``architectures[]`` task
+#   declaration (causal-LM / conditional-generation wrapper).  This is NOT
+#   code-derived structure and is intentionally pinned as an interim config
+#   declaration so it cannot disappear behind the zero-debt headline.
+_DECLARED_ROLE_TABLES = frozenset({
+    "causal_lm_suffixes", "wrapper_generation_suffixes",
+})
+_DECLARED_VOCABULARY_TABLES = (
+    _CODE_SHAPE_MARKER_TABLES | _DECLARED_COMPONENT_TABLES | _DECLARED_ROLE_TABLES
+)
 
 _CLASS_MARKER_TABLES = _DECLARED_VOCABULARY_TABLES
 
@@ -90,7 +99,7 @@ _ARCHITECTURAL_FACT_TABLES = frozenset({
 _ADDRESS_OR_DISPLAY_FUNCTIONS = frozenset({
     "_complete_config_from_transformers_registry", "architecture", "architecture_name",
     "model_name", "matches", "_clean_encoder_name", "_scheduler_geom",
-    "_text_encoder_specs",
+    "_text_encoder_specs", "_installed_config_defaults",
 })
 
 
@@ -153,9 +162,13 @@ def scan_identity_source(source: str, *, path: str = "<memory>") -> list[Identit
                 "class-name/domain substring controls an architectural branch")
 
         if isinstance(node, ast.Constant) and node.value in _CLASS_MARKER_TABLES:
-            category = ("code-shape: classifies a class resolved from init evidence"
-                        if node.value in _CODE_SHAPE_MARKER_TABLES else
-                        "declared-component: reads the config's own _class_name declaration")
+            category = (
+                "code-shape: classifies a class resolved from init evidence"
+                if node.value in _CODE_SHAPE_MARKER_TABLES else
+                "declared-role: reads the config's own architectures task declaration"
+                if node.value in _DECLARED_ROLE_TABLES else
+                "declared-component: reads the config's own _class_name declaration"
+            )
             add(node, "declared_class_vocabulary",
                 f"runtime access to declared class vocabulary {node.value!r} ({category})")
 
@@ -258,8 +271,11 @@ def scan_identity_yaml_source(source: str, *, path: str = "<memory>.yaml") -> li
             continue
         line = next((i for i, text in enumerate(lines, 1) if text.startswith(f"{key}:")), 1)
         if key in _DECLARED_VOCABULARY_TABLES:
-            category = ("code-shape" if key in _CODE_SHAPE_MARKER_TABLES
-                        else "declared-component")
+            category = (
+                "code-shape" if key in _CODE_SHAPE_MARKER_TABLES else
+                "declared-role" if key in _DECLARED_ROLE_TABLES else
+                "declared-component"
+            )
             findings.append(IdentityViolation(
                 path, line, "declared_vocabulary_table",
                 f"populated declared class vocabulary {key!r} ({category})"))

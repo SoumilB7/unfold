@@ -3,7 +3,9 @@ from __future__ import annotations
 
 from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
+from .fact_projection import layer_and_model_facts
 from .metadata import _block_label, _indices_summary, _signature
+from .render_context import current_render_context
 from .svg import (
     _branch_dot,
     _defs,
@@ -55,13 +57,17 @@ def _is_resolved_diffusion_block(is_diffusion: bool, info: dict, node_id: str, b
 
     Unknown diffusion nodes are still drawn and clickable, but pale, so a new
     adapter fact cannot quietly become a first-class block until we bless its
-    stage or slot here.
+    stage or slot here.  Additionally (U2/B2): ANY block that carries an
+    explicit ``resolved: False`` renders pale on every family — the generic
+    honest-unknown switch (the tower_cell "Code-defined block" primitive).
     """
-    if not is_diffusion:
-        return True
     data = dict(info.get("blocks", {}).get(node_id, {}))
     if block:
         data.update(block)
+    if data.get("resolved") is False:
+        return False
+    if not is_diffusion:
+        return True
     stage = data.get("diffusion_stage")
     if stage is not None:
         return stage in DIFFUSION_STAGES
@@ -465,6 +471,16 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                  "font-family": FONT_MONO, "font-size": 11},
             ))
             note_y += 15
+
+    # U2 P4 net #13: the architecture view is the surface that visibly carries
+    # the layer- and model-level facts — the norm cells (norm_kind), their
+    # pre/post placement (norm_placement) and the head-tying note
+    # (tie_word_embeddings).  Those never pass through the graph engine (this
+    # view is raw SVG), so witness them here.  ``current_render_context`` is only
+    # active inside a full render (sable / to_html); a lone view call is a no-op.
+    ctx = current_render_context()
+    if ctx is not None:
+        ctx.note_facts_projected("architecture", layer_and_model_facts(ir))
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
 

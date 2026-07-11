@@ -1,6 +1,7 @@
 """Source discovery for static Hugging Face modeling-code inspection."""
 from __future__ import annotations
 
+import dataclasses
 import functools
 import os
 import re
@@ -120,6 +121,16 @@ def resolve_source_files(target: Any, *, source: str = "local", token: Any = Non
                         warnings=(f"remote-code source fetch failed: {exc}",))
                 if hub.files:
                     return hub
+                if hub.warnings:
+                    # A fileless hub bundle still knows the TRUE refusal cause
+                    # ("fetch failed: …" / "needs a model id") — surface it
+                    # beside the local fallback's warning instead of letting
+                    # the generic "no installed source" line mask it.
+                    fallback = diff if (diff is not None and diff.warnings) else local
+                    return dataclasses.replace(
+                        fallback,
+                        warnings=tuple(fallback.warnings) + tuple(hub.warnings),
+                    )
             return diff if (diff is not None and diff.warnings) else local
 
     if source in {"hub", "auto"}:
@@ -250,6 +261,26 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             if value not in seen_files:
                 seen_files.add(value)
                 files.append(value)
+
+    if not files and architecture:
+        # A PRESENT-but-unregistered model_type (the rebrand pattern:
+        # ``kimi_k2`` running the installed ``DeepseekV3ForCausalLM``) must
+        # fall through to the same class-address lookup an ABSENT model_type
+        # already gets above — unknown is not evidence of absence. The class
+        # name only locates the file; AST evidence still decides structure.
+        class_file = _transformers_file_for_class(str(models_root), architecture)
+        if class_file:
+            class_files = (class_file,)
+            return SourceBundle(
+                source="local",
+                files=class_files,
+                model_type=model_type,
+                architecture=architecture,
+                model_id=model_id,
+                warnings=tuple(warnings),
+                component_files={"root": class_files},
+                component_architectures={"root": architecture},
+            )
 
     return SourceBundle(
         source="local",
@@ -627,8 +658,19 @@ def _hub_bundle(target: Any, *, token: Any = None) -> SourceBundle:
     clean_token = _clean_token(token)
     if clean_token is not None:
         kwargs["token"] = clean_token
-    root = Path(snapshot_download(**kwargs))
-    files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
+    # Cache-first: the hub client caches every snapshot, so an offline/gated
+    # session with the repo already on disk must still get its evidence. Fall
+    # to the network only when the cached snapshot carries no .py files (a
+    # config-only cache from an earlier hf_hub_download is common).
+    files: tuple[str, ...] = ()
+    try:
+        root = Path(snapshot_download(**kwargs, local_files_only=True))
+        files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
+    except Exception:
+        files = ()
+    if not files:
+        root = Path(snapshot_download(**kwargs))
+        files = tuple(str(p) for p in sorted(root.rglob("*.py")) if p.is_file())
     return SourceBundle(
         source="hub",
         files=files,

@@ -104,9 +104,24 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     ffn = spec.get("ffn", {})
     hidden = _fmt_int(ir.get("hidden_size"))
     vocab = _fmt_int(ir.get("vocab_size"))
-    activation = activation_label(ffn.get("activation") or "silu")
+    # U2: never re-assert silu at render time — an unnamed activation stays
+    # the honest generic "Activation" label (the parser's typed unknown).
+    activation = activation_label(ffn.get("activation"))
     inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    tied = bool(ir.get("tie_word_embeddings"))
+    tied = ir.get("tie_word_embeddings")
+    embed_tie = (" — weights tied with the output head." if tied is True else
+                 "." if tied is False else
+                 " — output-head tying is unresolved.")
+    head_tie = (" — weights tied with the embedding." if tied is True else
+                "." if tied is False else
+                " — embedding tying is unresolved.")
+    # U2: the norm tooltips name the LAYER's actual norm kind (bloom is
+    # LayerNorm; unknown says so) instead of a hardcoded "RMSNorm" string.
+    _norm_word = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(
+        spec.get("norm_kind"), "Normalization")
+    _norm_note = ("" if spec.get("norm_kind") in ("layernorm", "rmsnorm")
+                  else " The norm kind is not declared by the config — it lives"
+                       " in the model's code.")
     attn_desc, attn_facts = _attention_summary(attention)
     ffn_desc, ffn_facts = _ffn_summary(ffn)
     expert = ("One expert — a dense FFN; only the routed tokens pass through it.",
@@ -114,17 +129,23 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     fallback = {
         "tok_text": ("Tokenized text", "Input token IDs.", ["shape [batch, seq_len]"]),
         "embed": ("Token embedding",
-                  "Maps each token id to its vector" + (" — weights tied with the output head." if tied else "."),
+                  "Maps each token id to its vector" + embed_tie,
                   [f"{vocab} vocab", f"{hidden}-d"]),
-        "rms1": ("Pre-attention norm", "RMSNorm keeps activation scales stable before attention.", [f"dim {hidden}"]),
+        "rms1": ("Pre-attention norm",
+                 f"{_norm_word} keeps activation scales stable before attention.{_norm_note}",
+                 [f"dim {hidden}"]),
         "attn": ("Attention", attn_desc, attn_facts),
         "add1": ("Residual add", "block input + attention output", []),
-        "rms2": ("Pre-FFN norm", "RMSNorm keeps activation scales stable before the FFN.", [f"dim {hidden}"]),
+        "rms2": ("Pre-FFN norm",
+                 f"{_norm_word} keeps activation scales stable before the FFN.{_norm_note}",
+                 [f"dim {hidden}"]),
         "ffn": ("Mixture of experts" if ffn.get("kind") == "moe" else "Feed-forward", ffn_desc, ffn_facts),
         "add2": ("Residual add", "post-attention + FFN output", []),
-        "final_rms": ("Final norm", "RMSNorm over the last hidden state before the output head.", [f"dim {hidden}"]),
+        "final_rms": ("Final norm",
+                      f"{_norm_word} over the last hidden state before the output head.{_norm_note}",
+                      [f"dim {hidden}"]),
         "lm_head": ("LM head",
-                    "Projects the final hidden state into vocabulary logits" + (" — weights tied with the embedding." if tied else "."),
+                    "Projects the final hidden state into vocabulary logits" + head_tie,
                     [f"{hidden} → {vocab}"]),
         "router": ("Router", "Scores every expert per token and keeps the top-k.", _router_facts(ffn)),
         "add_moe": ("Weighted sum", "Combines selected expert outputs, weighted by router probabilities.", []),

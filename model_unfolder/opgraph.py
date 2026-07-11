@@ -125,12 +125,11 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
                             or ffn.get("structure_status") == "proven")
     if kind in (None, "dense", "mlp", "ffn") and (inter is not None or structure_proven):
         gated = bool(ffn.get("gated", True))
-        act = ffn.get("activation")
-        if not act:
-            # Config-tier builds keep the family convention; a SOURCE-proven
-            # structure with an unnamed activation stays honestly unlabeled —
-            # naming gelu there would be a fabricated fact.
-            act = None if structure_proven else ("silu" if gated else "gelu")
+        # U2: an unnamed activation stays honestly unlabeled (generic
+        # "Activation" node) on EVERY tier — the old config-tier
+        # silu/gelu family convention was a render-layer default-from-default
+        # (blast_radius Q4 #5) and is killed with the parser's default layer.
+        act = ffn.get("activation") or None
         if gated and ffn.get("projection_mode") == "fused_gate_up":
             return _fused_gated_mlp(hidden, inter, act)
         return _gated_mlp(hidden, inter, act) if gated else _dense_mlp(hidden, inter, act)
@@ -270,7 +269,9 @@ def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("router", "route", in_features=hidden, meta={"num_experts": n, "top_k": k}),
-        Op("expert", "opaque", "Expert FFN", meta={"gated": bool(ffn.get("gated", True)),
+        # U2: gated rides tri-state (None = undeclared) — never coerced to a
+        # concrete claim by bool().
+        Op("expert", "opaque", "Expert FFN", meta={"gated": ffn.get("gated", True),
                                                    "intermediate_size": inter}),
         Op("weighted_sum", "elementwise", fn="add"),
     ]

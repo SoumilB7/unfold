@@ -66,15 +66,21 @@ def render_graph(
     *,
     min_width: int = 560,
     pad: int = 46,
+    facts_projected=frozenset(),
 ) -> str:
     context = ensure_render_context()
     by_id = graph.by_id()
     for _p in wiring_problems(graph):           # Dable: flag dangling connectors
         context.wiring_findings.append(f"{view_key}: {_p}")
+    # ``facts_projected`` (U2 P4 net #13): the ledger keys this graph visibly
+    # carries — the projection-audit net proves every code/config-proven fact
+    # reached a drawn surface (kills the read-but-never-drawn / granite-
+    # multiplier class).  It rides the render event, never the SVG bytes.
     context.record_graph(
         view_key,
         (n.kind for n in graph.nodes),
         (n.id for n in graph.nodes),
+        facts_projected=facts_projected,
     )
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []

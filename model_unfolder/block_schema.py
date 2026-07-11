@@ -54,6 +54,10 @@ class Block(TypedDict, total=False):
     source_owner: str             # the exact class the block's facts were read from
     source_file: str              # that class's modeling file
     components: list[dict]        # typed sub-facts inside a compound stage
+    resolved: bool                # honest-unknown switch (U2/B2): False renders the
+                                  # block PALE on any family — the fact/structure is
+                                  # not evidence-backed (tower_cell's "Code-defined
+                                  # block" primitive, generalized). Absent ⇒ solid.
     # --- block-worthiness paradigm (Gate C tiers; see docs/BLOCK_STANDARD.md) ---
     static: bool                  # Tier-2 CONNECTOR: render as a glyph on the join
                                   # (residual ⊕, gate ×, split, concat), NON-clickable,

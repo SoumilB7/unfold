@@ -1963,7 +1963,24 @@ def _slot_context(root_context, slot: str):
         component_model_types=component_model_types,
         component_architectures=component_architectures,
     )
-    return ParseContext(source_bundle=sub_bundle, source=root_context.source)
+    # U2: the slot context must carry the SAME pre-resolved declaration
+    # channels ParseContext.build gives a standalone parse (class defaults;
+    # decoder-ness), or embedded ≠ standalone (the parity net's law). They
+    # derive from the BUNDLE's own per-component records — resolved once at
+    # root resolution, so a scrubbed (name-blind) sub-config cannot change
+    # them, exactly like the pre-resolved source files.
+    from ...evidence.context import _installed_config_defaults
+    from ...evidence.decoderness import declared_decoderness
+    _slot_identity = {
+        "model_type": component_model_types.get("root"),
+        "architectures": ([component_architectures.get("root")]
+                          if component_architectures.get("root") else None),
+    }
+    return ParseContext(
+        source_bundle=sub_bundle, source=root_context.source,
+        class_defaults=_installed_config_defaults(_slot_identity),
+        declared_decoderness=declared_decoderness(_slot_identity),
+    )
 
 
 def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
@@ -2062,6 +2079,5 @@ from ...encoder_panel import (
     hydrate_encoder_config_facts as _hydrate_encoder_config_facts,
     normalize_encoder_config as _normalize_encoder_config,
 )
-
 
 

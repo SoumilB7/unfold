@@ -22,6 +22,7 @@ _MASK_SHORT = {
     "global": "full",
     "full": "full",
     "causal": "causal",
+    "bidirectional": "bidirectional",
     "chunked": "chunked",
     "compressed_sparse": "CSA",
     "heavily_compressed": "HCA",
@@ -31,6 +32,7 @@ _MASK_LONG = {
     "global": "Full / global",
     "full": "Full (bidirectional)",
     "causal": "Causal",
+    "bidirectional": "Bidirectional",
     "chunked": "Chunked",
     "compressed_sparse": "Compressed sparse",
     "heavily_compressed": "Hierarchical compressed",
@@ -40,6 +42,8 @@ _MASK_TITLE = {
     "global": "Full-context attention",
     "full": "Full bidirectional attention (no causal mask)",
     "causal": "Causal attention",
+    "bidirectional": "Bidirectional attention (no causal mask — every token "
+                     "attends to every token)",
     "chunked": "Chunked attention",
     "compressed_sparse": "Compressed sparse attention",
     "heavily_compressed": "Hierarchical compressed attention",
@@ -82,18 +86,32 @@ _ACTIVATION_LABELS = {
 
 
 def mask_short(attention: dict) -> str:
-    """Compact mask tag — ``"SWA"`` / ``"full"`` / ``"causal"``."""
-    return _MASK_SHORT.get(attention.get("mask", "causal"), "causal")
+    """Compact mask tag — ``"SWA"`` / ``"full"`` / ``"causal"``.
+
+    U2: an unresolved mask (``None``/``"unknown"``) says so instead of
+    re-asserting the causal default the parser just refused to fabricate."""
+    mask = attention.get("mask", "causal")
+    if mask in (None, "unknown"):
+        return "unresolved"
+    return _MASK_SHORT.get(mask, "causal")
 
 
 def mask_long(attention: dict) -> str:
     """Human-readable mask label — ``"Sliding-window"`` / ``"Full / global"``."""
-    return _MASK_LONG.get(attention.get("mask", "causal"), "Causal")
+    mask = attention.get("mask", "causal")
+    if mask in (None, "unknown"):
+        return "Mask unresolved"
+    return _MASK_LONG.get(mask, "Causal")
 
 
 def mask_title(attention: dict) -> str:
     """Tooltip-style mask description."""
-    return _MASK_TITLE.get(attention.get("mask", "causal"), "Causal attention")
+    mask = attention.get("mask", "causal")
+    if mask in (None, "unknown"):
+        return ("Attention mask unresolved — the config does not declare "
+                "whether this stack is a causal decoder, and the mask is not "
+                "read from code yet; nothing is asserted")
+    return _MASK_TITLE.get(mask, "Causal attention")
 
 
 def mask_chip(attention: dict) -> str:
@@ -399,10 +417,23 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append("no positional transform")
     elif position_kind == "unknown":
         facts.append("position scheme unresolved")
+    # U2 P3a: the config-declared RoPE fallback states its TIER — the θ chip
+    # replaces the honest-unknown banner, never a silent assertion.
+    if attention.get("position_declared"):
+        theta = attention.get("rope_theta_declared")
+        facts.append(f"RoPE θ={_fmt_int(theta)} (config-declared)" if theta
+                     else "RoPE (config-declared)")
+    # U2 honest-unknown chips (the position-chip discipline, generalized):
+    # an unresolved mask/bias states itself instead of silently rendering
+    # like the evidence-backed causal/bias-less case.
+    if attention.get("mask") in (None, "unknown"):
+        facts.append("mask unresolved")
     for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
             facts.append(chip)
+    if attention.get("bias") is None and "bias" in attention:
+        facts.append("bias unresolved")
     _pr = _partial_rope_dims(attention)
     if _pr:
         facts.append(f"partial rotary — {_pr[0]} of {_pr[1]} head dims")

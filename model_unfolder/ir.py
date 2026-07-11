@@ -26,7 +26,11 @@ class AttentionSpec:
     qk_nope_head_dim: Optional[int] = None
     qk_rope_head_dim: Optional[int] = None
     v_head_dim: Optional[int] = None
-    mask: str = "causal"            # "causal" | "sliding" | "chunked" | "global"
+    mask: Optional[str] = None      # "causal" | "sliding" | "chunked" | "global" |
+                                    # "unknown". U2 default-kill: no dataclass
+                                    # "causal" — the parser sets causal only when
+                                    # evidence/config declares decoder-ness;
+                                    # None/"unknown" renders an unresolved chip.
     window_size: Optional[int] = None
     kv_source_layer: Optional[int] = None   # for cross-layer KV sharing
     qk_norm: bool = False           # per-head Q/K normalisation (Cohere, OLMo-2, StableLM)
@@ -45,7 +49,19 @@ class AttentionSpec:
                                     # (False for ALiBi/learned-absolute families: BLOOM/MPT/GPT-2/OPT)
     position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
     position_application: Optional[str] = None  # qk_rotation | attention_bias | embedding_add | none
-    bias: bool = False              # bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi)
+    position_declared: bool = False  # U2 P3a: the positional scheme comes from the
+                                    # CONFIG's declaration (rope_theta/rope_scaling),
+                                    # consulted only when code evidence is
+                                    # oracle_missing/ambiguous — the chip states
+                                    # "(config-declared)".  Emitted only when True
+                                    # so every code-proven model stays byte-identical.
+    rope_theta_declared: Optional[float] = None  # the declared θ carried onto the chip
+                                    # (emitted only alongside position_declared).
+    bias: Optional[bool] = False    # bias terms on the Q/K/V/O projections (Qwen2,
+                                    # GPT-2, Phi). Tri-state (U2): True/False are
+                                    # evidence-backed (config or code); None ⇒ no
+                                    # channel decided — cards say "bias unresolved"
+                                    # instead of silently drawing bias-less.
     shared: bool = False            # weight-shared layer reused across positions (Zamba)
     no_rope: bool = False           # no positional encoding on this layer (Llama 4 iRoPE NoPE)
     rope_3d: bool = False            # 3D axial RoPE over (temporal·height·width) — video DiTs
@@ -94,7 +110,10 @@ class AttentionSpec:
 class FFNSpec:
     """Specification of the feed-forward block within a layer."""
     kind: str                       # "dense" | "moe"
-    activation: str                 # "silu" | "gelu" | "relu" | "geglu" | "swiglu"
+    activation: Optional[str]       # "silu" | "gelu" | "relu" | "geglu" | "swiglu";
+                                    # None ⇒ neither config nor code names it (U2
+                                    # typed unknown) — render/JSON must say so,
+                                    # never assert a silu convention
     intermediate_size: int
     gated: Optional[bool] = True    # SwiGLU/GeGLU style gated MLP. None ⇒ the
                                     # config does not declare the FFN's inner
@@ -185,7 +204,10 @@ class ModelIR:
     vocab_size: int
     hidden_size: int
     max_position_embeddings: Optional[int]
-    tie_word_embeddings: bool
+    tie_word_embeddings: Optional[bool]  # True/False = config-declared or the
+                                    # installed config CLASS default (U2 hydration
+                                    # tier); None ⇒ unknown — the param estimate
+                                    # annotates, never silently picks a branch
     layers: list                    # list[LayerSpec]
     cross_layer_edges: list = field(default_factory=list)
     extras: dict = field(default_factory=dict)
@@ -304,6 +326,11 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "output_gate": a.output_gate,
         "projection_mode": a.projection_mode,
         "variant": a.variant,
+        # U2 P3a: emitted only on the config-declared fallback so every
+        # code-proven model stays byte-identical.
+        **({"position_declared": True} if a.position_declared else {}),
+        **({"rope_theta_declared": a.rope_theta_declared}
+           if a.position_declared and a.rope_theta_declared is not None else {}),
         # emitted only when DECLARED so undeclared models' output is byte-stable
         **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
         # emitted only when the code PROVES the scores are unscaled (raw QK^T,

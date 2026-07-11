@@ -104,7 +104,7 @@ def single_stream_decoder_layer(
 def decoder_extras(
     vocab_size: int,
     hidden_size: int,
-    tie_word_embeddings: bool,
+    tie_word_embeddings: bool | None,
     *extra_maps: Mapping[str, Any] | None,
     embed_norm: str | None = None,
     final_logit_softcap: float | None = None,

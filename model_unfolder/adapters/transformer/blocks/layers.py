@@ -29,6 +29,13 @@ def decoder_layer_blocks(
         blocks = _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
     elif norm_placement == "double":
         blocks = _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind)
+    elif norm_placement == "unknown":
+        # U2/B2: placement carries no config flag and the source didn't prove
+        # it — draw the config-declared sublayers plus ONE pale honest block
+        # for the norm/residual wiring (the tower_cell "Code-defined block"
+        # primitive ported to the main path), never an asserted pre shape.
+        blocks = _unknown_placement_layer_blocks(attention, ffn, hidden_size,
+                                                 cross_attention=cross_attention)
     else:
         blocks = _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind,
                                         cross_attention=cross_attention)
@@ -96,6 +103,41 @@ def _pre_norm_layer_blocks(attention, ffn, hidden_size, norm_kind,
                     _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
         _ffn_block(ffn, hidden_size),
         _add_block("add2", "rms2", "Residual add", "post-attention + FFN output"),
+    ]
+
+
+def _unknown_placement_layer_blocks(attention, ffn, hidden_size,
+                                    cross_attention=None) -> list[Block]:
+    """Honest-unknown layer wiring (U2/B2 pale port).
+
+    The config declares WHICH sublayers exist (attention geometry, FFN width);
+    where the norms sit and how the residual stream wires them is a CODE fact
+    the reader could not resolve.  Draw the declared sublayers and one PALE
+    block stating the wiring is code-defined — no fabricated pre-norm cells,
+    no asserted residual taps (the exact tower_cell ``placement=unknown``
+    discipline, text_encoder.py's B2 rule, on the main path)."""
+    cross = [] if cross_attention is None else [
+        _attention_block(cross_attention, hidden_size, block_id="cross_attn"),
+    ]
+    return [
+        _attention_block(attention, hidden_size),
+        *cross,
+        {
+            "id": "wiring_unresolved",
+            "role": "norm",
+            "kind": "norm",
+            "label": "Code-defined wiring",
+            "resolved": False,
+            "title": "Norm placement unresolved",
+            "description": (
+                "The layer's normalization and residual wiring live in the "
+                "model's code (they carry no config flag), and the modeling "
+                "source could not resolve them — where the norms sit "
+                "(pre / post / sandwich) and how the skips tap are NOT drawn "
+                "rather than guessed."
+            ),
+        },
+        _ffn_block(ffn, hidden_size),
     ]
 
 

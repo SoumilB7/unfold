@@ -396,6 +396,41 @@ def _code_ffn_activation(cfg: Any, context=None) -> str | None:
         return None
 
 
+def _code_lm_head_tying(cfg: Any, context=None) -> bool | None:
+    """Unconditional manual lm_head↔embedding tying read from the source
+    (legacy/remote-code idiom).  ``_tied_weights_keys`` is capability, never
+    proof — the reader ignores it by design (U2 P2b)."""
+    try:
+        from ...evidence.patterns import lm_head_tying_from_files
+        return lm_head_tying_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_ffn_activation_dispatch(cfg: Any, context=None) -> str | None:
+    """The config field the FFN's ``ACT2FN[...]``/``get_activation(...)``
+    dispatch reads (U2 P2c) — names the deciding field so a config-supplied
+    activation can be recorded ``code_and_config``, not merely declared."""
+    try:
+        from ...evidence.patterns import ffn_activation_dispatch_field_from_files
+        return ffn_activation_dispatch_field_from_files(_source_files(cfg, context))
+    except Exception:
+        return None
+
+
+def _code_attention_causality(cfg: Any, context=None) -> str | None:
+    """The mask DIRECTION read from mask-machinery calls / ``self.is_causal``
+    literals in the modeling source (U2 P2d) — ``"causal"`` /
+    ``"bidirectional"`` / ``None``.  ``if …is_decoder…`` gates around the
+    calls are resolved from the checkpoint config, so one source file
+    honestly yields either direction (BERT / T5-encoder)."""
+    try:
+        from ...evidence.patterns import attention_causality_from_files
+        return attention_causality_from_files(_source_files(cfg, context), cfg)
+    except Exception:
+        return None
+
+
 def _code_position(cfg: Any, context=None):
     """Typed positional evidence shared verbatim with fact-conformance."""
     try:
@@ -533,6 +568,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
         context = ParseContext.build(cfg, source="local")
     debug.reset()  # start a fresh field-access record for this parse
     warnings: list[str] = []
+
+    # ---- U2 P1: per-fact provenance (the FactLedger) ----
+    # The first high-risk structural families record WHICH channel decided
+    # them at their decision point.  This ledger is deliberately incremental;
+    # facts not registered here are not silently claimed as covered.
+    # ``oracle_missing`` vs ``ambiguous`` says WHY a registered fact is unknown.
+    _facts = getattr(context, "facts", None)
+    _source_present = bool(getattr(getattr(context, "source_bundle", None),
+                                   "files", ()) or ())
+
+    def _note_fact(owner: str, name: str, value, status: str, source=None):
+        if _facts is not None:
+            _facts.record(owner, name, value, status, source)
+
+    _unknown_status = "ambiguous" if _source_present else "oracle_missing"
     model_type = (_g(cfg, "model_type") or "unknown").lower()
     arch_name  = architecture_name(cfg, model_type)
 
@@ -578,12 +628,59 @@ def parse(cfg: Any, context=None) -> ModelIR:
         nested_act = _g(ffn_cfg, "ffn_act_fn")
         if isinstance(nested_act, dict):
             activation_raw = nested_act.get("name")
+    _activation_status, _activation_src = "config_declared", "hidden_act"
+    if activation_raw is None:
+        # U2 P3b: the T5-family declaration — ``feed_forward_proj`` names the
+        # activation (with an optional "gated-" prefix owned by the gate
+        # decision below).  Un-ignored: a positive declaration, never noise.
+        _ffp_for_act = _g(text_cfg, "feed_forward_proj")
+        if isinstance(_ffp_for_act, str) and _ffp_for_act:
+            activation_raw = _ffp_for_act.lower()
+            if activation_raw.startswith("gated-"):
+                activation_raw = activation_raw[len("gated-"):]
+            _activation_status, _activation_src = (
+                "config_declared", "feed_forward_proj")
     if activation_raw is None:
         activation_raw = _code_ffn_activation(text_cfg, context)
-    # B5: a fact that fell through to the generic default is TAGGED in the
-    # spec (`asserted`) — machine-distinguishable from a declared/read value.
+        _activation_status, _activation_src = (
+            "code_proven", "decoder_ffn_activation_from_files")
+        if activation_raw is None:
+            # U2 P3b class_default tier (the hydration channel): the installed
+            # config CLASS's own activation default decides before the typed
+            # unknown (t5-base: dense_act_fn='relu' — the dense-relu truth).
+            _cd_for_act = getattr(context, "class_defaults", None) or {}
+            _cd_act = _resolve(_cd_for_act, "hidden_act")
+            _cd_src = "hidden_act family"
+            if not isinstance(_cd_act, str):
+                _cd_ffp = _cd_for_act.get("feed_forward_proj")
+                if isinstance(_cd_ffp, str) and _cd_ffp:
+                    _cd_act = _cd_ffp.lower()
+                    if _cd_act.startswith("gated-"):
+                        _cd_act = _cd_act[len("gated-"):]
+                    _cd_src = "feed_forward_proj"
+            if isinstance(_cd_act, str) and _cd_act:
+                activation_raw = _cd_act
+                _activation_status, _activation_src = (
+                    "class_default",
+                    f"installed config-class default ({_cd_src})")
+    elif _activation_status == "config_declared" and _activation_src == "hidden_act":
+        # U2 P2c: the config supplied the value — when the source also proves
+        # the ACT2FN/get_activation dispatch, the fact is CODE-AND-CONFIG:
+        # code proves an activation applies and NAMES the deciding field,
+        # config supplies which (the endorsed envelope's fourth tier).
+        _dispatch_field = _code_ffn_activation_dispatch(text_cfg, context)
+        if _dispatch_field:
+            _activation_status = "code_and_config"
+            _activation_src = f"ACT2FN[config.{_dispatch_field}]"
+    # U2 default-kill: when neither config nor code names the activation it is
+    # a typed UNKNOWN (None), never a silent ``silu`` — the render tier shows
+    # an unresolved activation instead of a confident label.
     activation_defaulted = activation_raw is None
-    activation   = (activation_raw or "silu").lower()
+    activation = activation_raw.lower() if isinstance(activation_raw, str) else None
+    if activation_defaulted:
+        _activation_status, _activation_src = _unknown_status, None
+    _note_fact("decoder.ffn", "activation", activation,
+               _activation_status, _activation_src)
     sliding_window = get("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
     # A config may declare a window size but turn SWA *off* (use_sliding_window
@@ -651,37 +748,128 @@ def parse(cfg: Any, context=None) -> ModelIR:
     attention_multiplier = _resolve(text_cfg, "attention_multiplier")
     query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
     _resolve(text_cfg, "logits_scaling")
-    _norm_kind_ev = _norm_kind_evidence(text_cfg, get("norm_type"), context)
-    norm_kind    = _norm_kind_ev or "rmsnorm"
-    norm_kind_defaulted = _norm_kind_ev is None      # B5: tag the modern-LM default
+    _norm_kind_ev, _norm_kind_prov = _norm_kind_evidence_src(
+        text_cfg, get("norm_type"), context)
+    # U2 default-kill: no channel → typed "unknown" (generic Normalization
+    # label + honest card prose), never a silent modern-LM rmsnorm.
+    norm_kind    = _norm_kind_ev or "unknown"
+    _note_fact("decoder.layer", "norm_kind", norm_kind,
+               *( _norm_kind_prov if _norm_kind_prov else (_unknown_status, None)))
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
     _code_topo = _code_layer_topology(text_cfg, context)
-    # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — overrides the
-    # rmsnorm heuristic so a dense RMSNorm decoder (Phi) is drawn dense, matching
-    # the code (and the nested-conformance net).  None keeps the heuristic.
+    # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — code wins;
+    # a gate-family activation string is the config-derived second channel; NO
+    # channel ⇒ typed unknown (None) drawn as the honest undeclared-FFN block,
+    # never derived from norm_kind (the census cascade, killed in U2).
     _code_gated = _code_ffn_gated(text_cfg, context)
+    # Some configs declare gate-ness directly (T5's is_gated_act /
+    # feed_forward_proj).  These are semantic declarations, unlike a plain
+    # activation such as ``silu`` which does NOT by itself prove a third gate
+    # projection.  Source remains authoritative when present.
+    _declared_gated = _g(text_cfg, "is_gated_act")
+    _feed_forward_proj = _g(text_cfg, "feed_forward_proj")
+    if _declared_gated is not None:
+        _config_gated = bool(_declared_gated)
+        _config_gated_source = "is_gated_act"
+    elif isinstance(_feed_forward_proj, str):
+        _config_gated = "gated" in _feed_forward_proj.lower()
+        _config_gated_source = "feed_forward_proj"
+    else:
+        _config_gated = None
+        _config_gated_source = None
+    # U2 P3b class_default tier: the installed config CLASS's own gate
+    # declaration (T5Config: is_gated_act=False / feed_forward_proj='relu' —
+    # t5-base omits both keys yet IS dense-relu).  Sits below the checkpoint
+    # declaration, above the derived activation-family signal.
+    _clsdef_gated = None
+    _clsdef_gated_source = None
+    if _config_gated is None:
+        _cd_for_gate = getattr(context, "class_defaults", None) or {}
+        _cd_gate_flag = _cd_for_gate.get("is_gated_act")
+        _cd_gate_ffp = _cd_for_gate.get("feed_forward_proj")
+        if _cd_gate_flag is not None:
+            _clsdef_gated = bool(_cd_gate_flag)
+            _clsdef_gated_source = ("installed config-class default "
+                                    "(is_gated_act)")
+        elif isinstance(_cd_gate_ffp, str) and _cd_gate_ffp:
+            _clsdef_gated = "gated" in _cd_gate_ffp.lower()
+            _clsdef_gated_source = ("installed config-class default "
+                                    "(feed_forward_proj)")
+    if _code_gated is not None:
+        ffn_gated = bool(_code_gated)
+    elif _config_gated is not None:
+        ffn_gated = _config_gated
+    elif _clsdef_gated is not None:
+        ffn_gated = _clsdef_gated
+    else:
+        ffn_gated = _is_gated(activation, norm_kind, None)
+    _note_fact("decoder.ffn", "gated", ffn_gated,
+               "code_proven" if _code_gated is not None
+               else "config_declared" if _config_gated is not None
+               else "class_default" if _clsdef_gated is not None
+               else "derived" if ffn_gated is not None
+               else _unknown_status,
+               source=("decoder_ffn_gated_from_files" if _code_gated is not None
+                       else _config_gated_source if _config_gated is not None
+                       else _clsdef_gated_source if _clsdef_gated is not None
+                       else "explicit GLU activation name (hidden_act)"
+                       if ffn_gated is not None else None))
     _code_storage_mode = _code_ffn_storage_mode(text_cfg, context, expected_gated=_code_gated)
     _code_expert_fused = _code_expert_storage(text_cfg, context)
     _code_fused_qkv = _code_attention_fused_qkv(text_cfg, context)
     _code_position_evidence = _code_position(cfg, context)
-    # Placement: proven value, else the conventional pre cell TAGGED asserted
-    # (B5).  An earlier draft drew a norm-less "unknown" cell on reader
-    # abstention — wrong by principle 5 (unresolvable → conventional fallback,
-    # never a DIFFERENT drawing): the reader abstains on whole IDIOMS (T5's
-    # ModuleList-appended sublayers), and dropping every such family's norms
-    # traded a latent hazard for a real regression.  The tag keeps the
-    # assertion machine-visible; the advisory net lists it per render.
+    _note_fact("decoder.ffn", "projection_mode",
+               _code_storage_mode if _code_storage_mode is not None else "split",
+               "code_proven" if _code_storage_mode is not None else "asserted",
+               source=("ffn_structure_evidence" if _code_storage_mode is not None
+                       else "split convention kept (storage unproven)"))
+    _note_fact("decoder.attention", "projection_mode",
+               "fused_qkv" if _code_fused_qkv else "split",
+               "code_proven" if _code_fused_qkv is not None else "asserted",
+               source=("attention_fused_qkv_from_files" if _code_fused_qkv is not None
+                       else "split convention kept (storage unproven)"))
+    # Placement (B2, U2 default-kill), two unknown tiers:
+    # * source ABSENT (oracle_missing) → typed "unknown": the layer draws its
+    #   declared sublayers plus ONE pale "code-defined wiring" block (the
+    #   tower_cell honest-unknown primitive ported to the main path) — never
+    #   an asserted pre-norm shape at zero evidence.
+    # * source PRESENT but the reader abstained on the idiom (T5's ModuleList
+    #   sublayers, MusicGen's interleaved cross-attn) → AMBIGUOUS: the
+    #   conventional pre cell stays DRAWN — the op/nested-conformance oracle
+    #   still checks its norms/residual ops against the readable forward()
+    #   (dropping them here made the net flag code-proven residual_adds as
+    #   omitted) — recorded ambiguous, tagged asserted, and bannered.
     norm_placement = (_code_topo or {}).get("norm_placement")
     norm_placement_defaulted = not norm_placement
+    _note_fact("decoder.layer", "norm_placement",
+               norm_placement or ("pre" if _source_present else "unknown"),
+               "code_proven" if norm_placement else _unknown_status,
+               source=("decoder_layer_topology_from_files" if norm_placement
+                       else "pre convention kept (reader abstained on the idiom)"
+                       if _source_present else None))
+    norm_placement_conventional = norm_placement_defaulted and _source_present
     if not norm_placement:
-        norm_placement = "pre"
-    # Position scheme: only configured source evidence may assert a mechanism.
-    # Missing source stays unknown; a family convention is not evidence.
+        norm_placement = "pre" if _source_present else "unknown"
+    # Position scheme: configured source evidence asserts a mechanism when it
+    # can (code_proven).  U2 P3a — the CONFIG-DECLARED fallback: when the code
+    # channel is oracle_missing/ambiguous but the config itself declares RoPE
+    # (a θ / a scaling dict, alias spellings in aliases.yaml), RoPE is drawn
+    # as CONFIG-DECLARED — a "θ=… (config-declared)" chip states the tier,
+    # replacing the honest-unknown banner.  A family convention is still not
+    # evidence: no declaration ⇒ typed unknown, exactly as before.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
+    _declared_theta = _resolve(text_cfg, "rope_theta")
+    _declared_scaling = _resolve(text_cfg, "rope_scaling")
+    _rope_config_declared = False
     if _code_position_evidence.status == "proven":
         uses_rope = "rope" in _code_position_evidence.kinds
+    elif _declared_theta is not None or isinstance(_declared_scaling, dict):
+        uses_rope = True
+        _rope_config_declared = True
+        _note_fact("decoder.attention", "position", "rope", "config_declared",
+                   "rope_theta" if _declared_theta is not None else "rope_scaling")
     else:
         uses_rope = False
         if _code_position_evidence.status == "oracle_missing":
@@ -770,7 +958,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             rope_dim_value = _code_rd
     mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
     if mrope_section is not None:
-        debug.note_access("mrope_section")   # consumed SUBKEY of the scaling dict
+        # Plain nested-dict reads bypass _g; register inspection so the owned
+        # subkey is visible to the config audit. Projection consumption remains
+        # a separate, not-yet-complete receipt rail.
+        debug.note_access("mrope_section")
 
     # ---- QK-Norm ----
     # Spelling read stays FIRST for config-ownership (all three aliases are
@@ -780,20 +971,54 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
-    # Config spelling first (ownership), then the CODE construction is
-    # authoritative: Bloom/Qwen2 hardcode `nn.Linear(..., bias=True)` on QKV
-    # while declaring no `attention_bias`, so the spelling reader drew them
-    # bias-less.  None keeps the spelling (config-gated families like Llama
-    # resolve their `bias=config.attention_bias` value through the reader anyway).
-    use_attention_bias = bool(_resolve(text_cfg, "attention_bias")
-                              or _g(attn_cfg, "attention_bias"))
+    # CODE construction is authoritative (Bloom/Qwen2 hardcode
+    # `nn.Linear(..., bias=True)` on QKV while declaring no `attention_bias`);
+    # the config spelling is the declared channel behind it. U2 default-kill:
+    # when BOTH are silent the bias is a typed UNKNOWN (None) — never a
+    # silent False indistinguishable from proven-False.
+    _declared_attn_bias = _resolve(text_cfg, "attention_bias")
+    if _declared_attn_bias is None:
+        _declared_attn_bias = _g(attn_cfg, "attention_bias")
     _code_bias = _code_attention_bias(text_cfg, context)
+    # class_default tier: ``Linear(bias=config.attention_bias)`` reads the
+    # config ATTRIBUTE at runtime — an absent key resolves to the installed
+    # config class's default, real evidence (the hydration channel) and the
+    # same value the hydrated embedded/sub-model rail sees (parity net).
+    _cls_defaults = getattr(context, "class_defaults", None) or {}
     if _code_bias is not None:
-        use_attention_bias = _code_bias
+        use_attention_bias = bool(_code_bias)
+        _note_fact("decoder.attention", "bias", use_attention_bias,
+                   "code_proven", "decoder_attention_bias_from_files")
+    elif _declared_attn_bias is not None:
+        use_attention_bias = bool(_declared_attn_bias)
+        _note_fact("decoder.attention", "bias", use_attention_bias,
+                   "config_declared", "attention_bias")
+    elif _cls_defaults.get("attention_bias") is not None:
+        use_attention_bias = bool(_cls_defaults["attention_bias"])
+        _note_fact("decoder.attention", "bias", use_attention_bias,
+                   "class_default",
+                   "installed config-class default (AutoConfig.for_model)")
+    else:
+        use_attention_bias = None
+        _note_fact("decoder.attention", "bias", None, _unknown_status, None)
     # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).  A
     # config-DECLARED scale is a stronger, load-bearing statement: when one
     # exists the declared float wins and the silent-scale read is ignored.
     code_scores_scaled = _code_scores_scaled(text_cfg, context)
+    _note_fact("decoder.attention", "scores_scale",
+               "declared" if (attention_multiplier is not None
+                              or query_pre_attn_scalar) else
+               ("unscaled (raw QK^T)" if code_scores_scaled is False
+                else "sqrt(head_dim)"),
+               "config_declared" if (attention_multiplier is not None
+                                     or query_pre_attn_scalar)
+               else "code_proven" if code_scores_scaled is not None
+               else "asserted",
+               source=("attention_multiplier/query_pre_attn_scalar"
+                       if (attention_multiplier is not None or query_pre_attn_scalar)
+                       else "attention_score_scaling_from_files"
+                       if code_scores_scaled is not None
+                       else "sqrt(dim) convention kept"))
     # Learned sink logits in the softmax — config-silent, code-only.
     code_attention_sinks = _code_attention_sinks(text_cfg, context)
     # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
@@ -805,6 +1030,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # `bias=config.mlp_bias` families still honor the checkpoint value through
     # the reader; Conv1D layouts abstain → the config spelling stands.
     _mlp_bias = _resolve(text_cfg, "mlp_bias")
+    # class_default tier (the attention twin's rule): an absent mlp_bias key
+    # resolves to the installed config class's default at runtime.
+    if _mlp_bias is None:
+        _mlp_bias = (getattr(context, "class_defaults", None)
+                     or {}).get("mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
     _code_mlp = _code_mlp_bias(text_cfg, context)
     if _code_mlp is not None:
@@ -816,6 +1046,43 @@ def parse(cfg: Any, context=None) -> ModelIR:
         forced_bidirectional = True
     else:
         forced_bidirectional = False
+    # U2 mask default-kill: "causal" may only be DRAWN when the config
+    # declares decoder-ness (is_decoder / causal-LM architecture suffix /
+    # decoder-only wrapper / composite decoder slot — general vocabulary in
+    # everchanging/transformer/decoderness.yaml). Otherwise the mask is a
+    # typed "unknown" (pale chip) — BERT/T5 encoders stop being drawn causal.
+    # The declaration is RESOLVED ON THE CONTEXT (ParseContext.build), so the
+    # name-blind guard's scrubbed parse consumes the identical declaration;
+    # a nested text-scope is_decoder flag (never scrubbed) still counts.
+    _decoderness_src = (getattr(context, "declared_decoderness", None)
+                        or ("is_decoder"
+                            if _g(text_cfg, "is_decoder") is True else None))
+    # U2 P2d — the CODE channel, wired ABOVE config-decoderness: mask-machinery
+    # calls (is_decoder gates resolved from the checkpoint) / is_causal
+    # literals.  BERT/T5-encoder become code-proven BIDIRECTIONAL; plain
+    # decoders code-proven causal.  One honest discard: on a flat enc-dec
+    # config with no declared decoder slot the drawn stack is the ENCODER
+    # half, while the file provably also contains the (undrawn) decoder —
+    # a causal-only verdict there is the other half's machinery (Whisper),
+    # never this stack's fact.
+    _code_causality = _code_attention_causality(text_cfg, context)
+    if (_code_causality == "causal" and bool(_g(cfg, "is_encoder_decoder"))
+            and not _decoderness_src):
+        _code_causality = None
+    if forced_bidirectional:
+        _note_fact("decoder.attention", "mask", "bidirectional",
+                   "config_declared", "use_bidirectional_attention")
+    elif _code_causality is not None:
+        _note_fact("decoder.attention", "mask", _code_causality,
+                   "code_proven", "attention_causality_from_files")
+    elif _decoderness_src:
+        _note_fact("decoder.attention", "mask", "causal",
+                   "config_declared", _decoderness_src)
+    elif layer_types or sliding_window:
+        _note_fact("decoder.attention", "mask", "windowed schedule",
+                   "config_declared", "layer_types/sliding_window")
+    else:
+        _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None)
     # BLOOM-family topology switch: when TRUE the residual taps the POST-LN
     # output instead of the raw hidden state — surfaced as a layer annotation
     # (the tap is a wiring fact; False is the drawn default).
@@ -943,6 +1210,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
         if forced_bidirectional and mask in ("causal", "global"):
             mask = "bidirectional"       # encoder-reuse switch: a MASK fact
+        elif _code_causality == "bidirectional" and mask in ("causal", "global"):
+            # U2 P2d: the source PROVES this stack's self-attention is
+            # bidirectional (BERT/T5-encoder machinery, is_decoder resolved
+            # from the checkpoint) — same flip as the declared switch above.
+            mask = "bidirectional"
+        elif mask == "causal" and not _decoderness_src and _code_causality != "causal":
+            # U2 default-kill: nothing declared OR code-proved this stack a
+            # decoder — the causal fall-through is a typed unknown, not an
+            # asserted fact (the census's headline: T5/BERT drawn causal).
+            mask = "unknown"
         compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
 
         # Per-layer dual KV: full layers in a sliding stack use the global counts.
@@ -987,6 +1264,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
         position_mechanism = _position_for_layer(
             _code_position_evidence, is_gated_delta=is_gated_delta,
         )
+        if (_rope_config_declared and position_mechanism[0] == "unknown"
+                and not is_gated_delta):
+            # U2 P3a: the config-declared RoPE fallback projects onto the
+            # layer (chip carries the declared tier), replacing the
+            # position-unresolved chip.
+            position_mechanism = ("rope", "qk_rotation")
         attn = AttentionSpec(
             kind=attn_kind,
             num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
@@ -1005,6 +1288,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
             rope=uses_rope and not is_gated_delta,
             position_kind=position_mechanism[0],
             position_application=position_mechanism[1],
+            # U2 P3a: the declared-tier marker + θ ride the spec only on the
+            # config-declared fallback (chip says "(config-declared)").
+            position_declared=(_rope_config_declared
+                               and position_mechanism[0] == "rope"),
+            rope_theta_declared=(
+                float(_declared_theta)
+                if (_rope_config_declared and position_mechanism[0] == "rope"
+                    and isinstance(_declared_theta, (int, float)))
+                else None),
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer and not cross_attention_additive,
@@ -1037,17 +1329,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
                                      and not query_pre_attn_scalar) else None),
             sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
             logit_softcap=attn_logit_softcap,
-            # B5: the universal floor, machine-tagged (JSON-only — bless
-            # signatures hash SVGs, so this adds zero gallery drift): mask
-            # stayed the dataclass "causal" when no layer-type schedule
-            # decided it; the sqrt(dim) scores denominator is asserted when
-            # neither a declared scale nor the code verdict backs it.
+            # B5/U2: mask is no longer taggable-asserted — it is either
+            # evidence-backed (decoder-ness / schedule / bidirectional flag)
+            # or a typed "unknown" drawn honestly. The sqrt(dim) scores
+            # denominator remains asserted when neither a declared scale nor
+            # the code verdict backs it (JSON-only; SVG-hash stable).
             asserted=tuple(
-                (["mask"] if (mask == "causal" and not layer_types
-                              and not sliding_window) else [])
-                + (["scores_scale"] if (code_scores_scaled is None
-                                        and attention_multiplier is None
-                                        and not query_pre_attn_scalar) else [])),
+                ["scores_scale"] if (code_scores_scaled is None
+                                     and attention_multiplier is None
+                                     and not query_pre_attn_scalar) else []),
             projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
                                              and not is_gated_delta) else None),
             variant=(
@@ -1089,7 +1379,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 kind="moe",
                 activation=activation,
                 intermediate_size=intermediate_size or moe_intermediate_size,
-                gated=_is_gated(activation, norm_kind, _code_gated),
+                gated=ffn_gated,
                 num_experts=num_experts,
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
@@ -1099,11 +1389,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
                 expert_projection_mode=_code_expert_fused,
-                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                # B5/U2: unbacked activation/norm-kind facts are typed
+                # unknowns (drawn honestly), never "asserted". Two DRAWN
+                # conventions remain tagged: split storage (layout unproven)
+                # and the pre cell kept when source is present but the
+                # topology reader abstained on the idiom.
                 asserted=tuple(
-                    (["activation"] if activation_defaulted else [])
-                    + (["norm_kind"] if norm_kind_defaulted else [])
-                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    (["norm_placement"] if norm_placement_conventional else [])
                     + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
         else:
@@ -1111,15 +1403,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 kind="dense",
                 activation=activation,
                 intermediate_size=intermediate_size,
-                gated=_is_gated(activation, norm_kind, _code_gated),
+                gated=ffn_gated,
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
-                # B5: defaults tagged in the spec (JSON-only, zero SVG drift)
+                # B5/U2: see the MoE branch — only the two DRAWN conventions
+                # (kept-pre placement, split storage) remain asserted.
                 asserted=tuple(
-                    (["activation"] if activation_defaulted else [])
-                    + (["norm_kind"] if norm_kind_defaulted else [])
-                    + (["norm_placement"] if norm_placement_defaulted else [])
+                    (["norm_placement"] if norm_placement_conventional else [])
                     + (["ffn_storage"] if _code_storage_mode is None else [])),
             )
 
@@ -1171,7 +1462,33 @@ def parse(cfg: Any, context=None) -> ModelIR:
         warnings.append(f"Config layer_types contains unrecognized value {lt!r} — treated as causal.")
 
     vocab_size = get("vocab_size", 0)
-    tie_word_embeddings = bool(get("tie_word_embeddings", False))
+    # U2 default-kill (the live wrong-value fix): absence of the tie flag is
+    # NOT "untied" — the installed config CLASS default decides (gpt2 / t5 /
+    # bert / bloom / falcon all omit the key and tie by class default). Tiers
+    # (U2 P2b): declared flag → CODE (unconditional manual tying idiom, the
+    # remote-code channel; ``_tied_weights_keys`` is capability, never proof)
+    # → class default (context.class_defaults, resolved once at context
+    # build) → typed unknown (param count annotates, never picks).
+    _tie_raw = get("tie_word_embeddings")
+    if _tie_raw is not None:
+        tie_word_embeddings = bool(_tie_raw)
+        _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
+                   "config_declared", "tie_word_embeddings")
+    elif _code_lm_head_tying(text_cfg, context):
+        tie_word_embeddings = True
+        _note_fact("model", "tie_word_embeddings", True,
+                   "code_proven", "lm_head_tying_from_files")
+    else:
+        _tie_cls = (getattr(context, "class_defaults", None)
+                    or {}).get("tie_word_embeddings")
+        if _tie_cls is not None:
+            tie_word_embeddings = bool(_tie_cls)
+            _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
+                       "class_default",
+                       "installed config-class default (AutoConfig.for_model)")
+        else:
+            tie_word_embeddings = None
+            _note_fact("model", "tie_word_embeddings", None, _unknown_status, None)
 
     modality_extras = multimodal_extras(cfg, text_cfg, hidden_size)
     if modality_extras:
@@ -1248,7 +1565,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
         final_logit_softcap=_g(text_cfg, "final_logit_softcapping"),
         codebooks=codebooks,
     )
-    final_norm_name = "LayerNorm" if norm_kind == "layernorm" else "RMSNorm"
+    # U2: an unknown norm kind must not print "Final RMSNorm" — the short
+    # generic label keeps the pill width; the card prose says why it is
+    # generic (metadata's kind-aware tooltip).
+    final_norm_name = {"layernorm": "LayerNorm",
+                       "rmsnorm": "RMSNorm"}.get(norm_kind, "Norm")
     if residual_post_layernorm:
         extras["render"].setdefault("layer_annotations", []).append(
             "residual taps the post-LayerNorm output")
@@ -1409,12 +1730,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
-        # These SUBKEYS are consumed above via plain dict reads — record them so
-        # the ownership audit reflects consumption, not just the parent lookup.
-        for consumed in ("rope_type", "type", "factor",
-                         "original_max_position_embeddings", "rope_theta"):
-            if consumed in rope_params:
-                debug.note_access(consumed)
+        # These SUBKEYS are inspected above via plain dict reads. Record the
+        # inspection so ownership is visible; do not label it consumption until
+        # the corresponding rendered-fact receipts exist.
+        for inspected in ("rope_type", "type", "factor",
+                          "original_max_position_embeddings", "rope_theta"):
+            if inspected in rope_params:
+                debug.note_access(inspected)
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.
@@ -1452,6 +1774,22 @@ def parse(cfg: Any, context=None) -> ModelIR:
         val = _g(text_cfg, flag)
         if val:
             extras[flag] = val
+
+    # U2: ONE consolidated banner line for every fact the ledger left
+    # unresolved (position warns separately, unchanged) — the render tier
+    # draws these pale; the banner says why.
+    if _facts is not None:
+        _pale_facts = sorted({
+            key.rsplit(".", 1)[1].replace("_", " ")
+            for key, rec in _facts.records.items()
+            if rec.status in ("unknown", "ambiguous", "oracle_missing")
+        })
+        if _pale_facts:
+            warnings.append(
+                "Unresolved code-defined facts (drawn honestly, never asserted): "
+                + ", ".join(_pale_facts)
+                + (" — modeling source is present but unresolved."
+                   if _source_present else " — modeling source is unavailable."))
 
     ir = ModelIR(
         name=model_name(cfg, arch_name),
@@ -1691,6 +2029,13 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
     4. the ``layer_norm_eps*`` spelling hint;
     5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
     """
+    return _norm_kind_evidence_src(cfg, explicit_norm_type, context)[0]
+
+
+def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
+                            context=None) -> tuple:
+    """``(kind|None, (status, source)|None)`` — the kind PLUS which channel
+    decided it, for the FactLedger (U2). Channel order as documented above."""
     # Both eps spellings are read UP FRONT: they are real config facts (the
     # epsilon in use) and must record their access for the ownership audit even
     # when a higher channel (math) decides the KIND before the spelling hint.
@@ -1699,57 +2044,68 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
     ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
     declared_rms = _g(cfg, "rmsnorm")            # chatglm boolean declaration
     if declared_rms is True:
-        return "rmsnorm"
+        return "rmsnorm", ("config_declared", "rmsnorm flag")
     if declared_rms is False:
-        return "layernorm"
+        return "layernorm", ("config_declared", "rmsnorm flag")
     if explicit_norm_type:
         nt = str(explicit_norm_type).lower()
         if "rms" in nt:
-            return "rmsnorm"
+            return "rmsnorm", ("config_declared", "norm_type")
         if "layer" in nt:
-            return "layernorm"
+            return "layernorm", ("config_declared", "norm_type")
     math_kind = _code_norm_math(cfg, context)
     if math_kind:
-        return math_kind
+        return math_kind, ("code_proven", "norm_kind_from_files_math")
+    # The eps SPELLING is a hint derived from a field NAME, not a declaration
+    # of the kind (PhiMoE carries rms_norm_eps but constructs nn.LayerNorm) —
+    # recorded as ``derived`` so the ledger never upgrades a spelling to fact.
     if rms_eps is not None:
-        return "rmsnorm"
+        return "rmsnorm", ("derived", "rms_norm_eps spelling")
     if ln_eps is not None or ln_eps2 is not None:
-        return "layernorm"
-    return _code_norm_kind(cfg, context)
+        return "layernorm", ("derived", "layer_norm_eps spelling")
+    name_kind = _code_norm_kind(cfg, context)
+    if name_kind:
+        return name_kind, ("code_proven", "decoder_norm_kind_from_files")
+    return None, None
 
 
-def _norm_kind(cfg: Any, explicit_norm_type: Any = None, context=None) -> str:
-    """LayerNorm vs RMSNorm — evidence channels first, modern-LM default last."""
-    return _norm_kind_evidence(cfg, explicit_norm_type, context) or "rmsnorm"
-
-
-def _is_gated(activation: str, norm_kind: str | None = None,
-              code_gated: bool | None = None) -> bool:
+def _is_gated(activation: str | None, norm_kind: str | None = None,
+              code_gated: bool | None = None) -> bool | None:
     """Whether the FFN has a separate gate projection (SwiGLU/GeGLU style).
 
-    Evidence order (code > config-signal > heuristic):
+    Evidence order (code > config-signal > ABSTAIN):
 
     * ``code_gated`` — the MLP class's ``forward()`` either does a ``gate_mul`` or
       not (read from the modeling source). The ground truth: it wins whenever
-      available, so a dense RMSNorm decoder (Phi) is no longer mis-gated by the
-      heuristic below. This is the SAME evidence the nested-conformance net reads,
-      so the drawing and the net cannot diverge.
-    * Activation explicitly says so: ``silu``/``swish`` (Llama/Mistral/Qwen/
-      DeepSeek/GPT-OSS style), anything with ``glu`` in the name, or
-      ``gelu_pytorch_tanh`` (Gemma family — uses gate/up/down despite the
-      GELU name).
-    * Otherwise, default to gated when the model uses ``RMSNorm`` (a strong
-      "modern decoder" signal — modern LMs almost universally use
-      gate/up/down).  Legacy LayerNorm models (GPT-2 / NeoX / J / BLOOM /
-      MPT / OPT / Falcon / Phi-1/2) end up here and are correctly
-      classified as non-gated.
+      available, so a dense RMSNorm decoder (Phi) is no longer mis-gated.
+      This is the SAME evidence the nested-conformance net reads, so the
+      drawing and the net cannot diverge.
+    * An activation whose NAME explicitly declares a GLU (``swiglu``,
+      ``geglu``). A plain elementwise activation such as ``silu``/``gelu`` is
+      deliberately insufficient: both dense and gated FFNs use those
+      nonlinearities. Direct config declarations (``is_gated_act`` /
+      ``feed_forward_proj``) are handled at the caller before this helper.
+    * Otherwise ABSTAIN (``None``). Gate-or-not is a CODE fact; the old
+      ``norm_kind == "rmsnorm"`` terminal fabricated a gate for dense RMSNorm
+      decoders at zero evidence — the census's cascade (a defaulted norm_kind
+      feeding a structural guess). ``None`` draws the honest undeclared-FFN
+      block instead (U2 default-kill).  ``norm_kind`` stays in the signature
+      only so call sites read naturally; it no longer decides anything.
     """
     if code_gated is not None:
         return code_gated
     a = (activation or "").lower()
-    if "glu" in a or a in {"silu", "swish", "gelu_pytorch_tanh"}:
+    if "glu" in a:
         return True
-    return norm_kind == "rmsnorm"
+    # U2 P2c/P3b RETIRED the gate-family activation tier (silu/swish/tanh-GELU
+    # → True): plain elementwise spellings are used by dense AND gated FFNs,
+    # so they were never proof.  The tier existed only to keep the blessed
+    # MoE fixtures' expert drills drawn — the MoE expert-hop in
+    # decoder_ffn_gated_from_files now code-proves those (deepseek-v3 /
+    # glm-4-5 / gpt-oss), and the corpus audit shows ZERO derived-tier
+    # reliance, so retirement is drift-free.  Strict rule: no evidence ⇒
+    # abstain (the honest undeclared-FFN block).
+    return None
 
 
 def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | None:
