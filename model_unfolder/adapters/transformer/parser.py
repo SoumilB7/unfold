@@ -38,7 +38,8 @@ from __future__ import annotations
 from typing import Any
 
 from . import debug
-from ...everchanging import load_aliases, load_layer_type_labels
+from ...everchanging import (load_aliases, load_layer_type_labels,
+                            load_layer_schedules)
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
 from .blocks import mtp_head_block
@@ -71,6 +72,15 @@ _SLIDING_LABELS = set(_LAYER_TYPE_LABELS["sliding"])
 _FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
 _COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
 _HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
+
+# Per-layer TYPE-SCHEDULE vocabulary — the six config spellings of "which type
+# is layer i" normalized into the canonical layer_types / MoE-membership readers
+# (everchanging/transformer/layer_schedules.yaml).  Data, not code — a new
+# dialect is a row there.  U3.
+_LAYER_SCHEDULES = load_layer_schedules()
+# canonical layer_types token -> the token-MIXER cell it draws (non-softmax
+# mixer that replaces attention on that layer).
+_MIXER_KINDS: dict[str, str] = _LAYER_SCHEDULES["mixer_kinds"]
 
 def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
     """The EFFECTIVE config-declared QK^T scale, or None when it equals the
@@ -703,6 +713,22 @@ def parse(cfg: Any, context=None) -> ModelIR:
     compress_ratios = _resolve(text_cfg, "compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
+    # U3: the six per-layer TYPE-SCHEDULE spellings (attn_type_list / block_types
+    # / attention_types / dense_attention_every_n_layers) normalize into the SAME
+    # layer_types list the working schedules flow through — the config channel,
+    # consulted ONLY when no canonical layer_types list exists (so families that
+    # build it stay byte-identical).  A remote-code model whose modeling oracle
+    # is missing (MiniMax-Text-01 / Phi-3-small) is served this config-declared
+    # schedule rather than a fabricated uniform tower.
+    _schedule_source = None
+    if not layer_types:
+        _sched, _schedule_source = _normalize_layer_schedule(
+            text_cfg, num_layers, sliding_window)
+        layer_types = _sched or []
+        if _schedule_source:
+            _note_fact("decoder.layer", "layer_schedule",
+                       f"{len(set(layer_types))} layer types over {num_layers}",
+                       "config_declared", _schedule_source)
     # Granite-style declared SCALE family: a constant multiplier on each
     # sublayer's residual contribution (drawn as a × connector with its
     # constant operand), plus embedding/attention/logits scales (card facts).
@@ -1121,6 +1147,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # record ownership here (the audit tracks _g access); also the direct config
     # fallback (layer i is MoE iff i in moe_layers) for a source-less parse.
     moe_layers_list     = _g(text_cfg, "moe_layers")
+    # U3: step3 spells the same MoE-layer membership as a comma-STRING
+    # (``moe_layers_enum = "4,5,…,60"``) — parse it into the SAME list the
+    # ``moe_layers`` reader consumes so layers 0-3 stay dense instead of being
+    # fabricated as MoE.  Only when the explicit list is absent.
+    if moe_layers_list is None:
+        _enum_moe = _moe_layers_from_enum(text_cfg)
+        if _enum_moe is not None:
+            moe_layers_list = _enum_moe
+            _note_fact("decoder.ffn", "moe_schedule",
+                       f"{len(_enum_moe)} MoE layers over {num_layers}",
+                       "config_declared", "moe_layers_enum")
     moe_every_layer     = moe_active and not any([
         first_k_dense,
         interleave_moe_step,
@@ -1202,8 +1239,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
     unknown_layer_types: set[str] = set()
     cross_layer_edges: list[CrossLayerEdge] = []
 
+    # U3: Nemotron-NAS per-layer sublayer PRESENCE + WIDTH from block_configs —
+    # the one genuinely new role-dimension (config-derivable, no source needed).
+    # The search DELETES whole attention/FFN sublayers and shrinks the survivors,
+    # so a homogeneous tower is a fabrication of ~179 sublayers that don't exist.
+    block_presence = _block_configs_presence(text_cfg, num_layers, hidden_size)
+    if block_presence is not None:
+        _n_no_attn = sum(1 for b in block_presence if not b["has_attention"])
+        _n_no_ffn = sum(1 for b in block_presence if not b["has_ffn"])
+        _note_fact("decoder.layer", "block_configs",
+                   f"{_n_no_attn} attention-free + {_n_no_ffn} FFN-free of "
+                   f"{num_layers}", "config_declared", "block_configs")
+
     layers = []
     for i in range(num_layers):
+        # Nemotron-NAS per-layer presence + width (default: everything present).
+        _bp = block_presence[i] if block_presence else None
+        has_attention_i = _bp["has_attention"] if _bp else True
+        has_ffn_i = _bp["has_ffn"] if _bp else True
+        layer_intermediate = (_bp["intermediate_size"]
+                              if _bp and _bp["intermediate_size"]
+                              else intermediate_size)
         mask, window, is_full_in_sliding_stack = _layer_mask(
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types, max_window_layers,
@@ -1231,11 +1287,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
             layer_head_dim = head_dim
 
         layer_type = layer_types[i] if i < len(layer_types) else None
-        is_gated_delta = layer_type == "linear_attention"
-        attn_kind = (
-            "gated_delta" if is_gated_delta
-            else _attention_kind(is_mla, num_heads, layer_kv_heads, has_multi_query_flag)
-        )
+        # U3: a canonical layer_types token may name a NON-softmax token mixer
+        # (Qwen3-Next linear_attention -> gated_delta; MiniMax lightning ->
+        # linear; recurrentgemma recurrent -> recurrent).  is_gated_delta keeps
+        # its exact meaning for byte-stability; is_mixer covers all three.
+        mixer_kind = _mixer_kind_for(layer_type)
+        is_gated_delta = mixer_kind == "gated_delta"
+        is_mixer = mixer_kind is not None
+        if mixer_kind:
+            attn_kind = mixer_kind
+        else:
+            attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads,
+                                        has_multi_query_flag)
         # NoPE placement comes from the field the code actually indexes
         # (``self.use_rope = config.no_rope_layers[layer_idx]`` — truthy means
         # the layer USES rope), falling back to the interval rule with the
@@ -1262,10 +1325,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 )
 
         position_mechanism = _position_for_layer(
-            _code_position_evidence, is_gated_delta=is_gated_delta,
+            _code_position_evidence, mixer_kind=mixer_kind,
         )
         if (_rope_config_declared and position_mechanism[0] == "unknown"
-                and not is_gated_delta):
+                and not is_mixer):
             # U2 P3a: the config-declared RoPE fallback projects onto the
             # layer (chip carries the declared tier), replacing the
             # position-unresolved chip.
@@ -1285,7 +1348,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=qk_norm_layers[i] if i < len(qk_norm_layers) else use_qk_norm,
-            rope=uses_rope and not is_gated_delta,
+            rope=uses_rope and not is_mixer,
             position_kind=position_mechanism[0],
             position_application=position_mechanism[1],
             # U2 P3a: the declared-tier marker + θ ride the spec only on the
@@ -1340,19 +1403,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                                      and not query_pre_attn_scalar) else []),
             projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
                                              and not is_gated_delta) else None),
-            variant=(
-                {
-                    "short": "Gated DeltaNet",
-                    "tag": "linear recurrent mixer",
-                    "label": ["Gated DeltaNet", "Token Mixer"],
-                    "title": "Gated DeltaNet token mixer",
-                    "desc": (
-                        "Causal depthwise convolution feeds a gated delta-rule recurrence; "
-                        "cached decoding switches to the recurrent update path."
-                    ),
-                }
-                if is_gated_delta else None
-            ),
+            variant=_mixer_variant(mixer_kind),
         )
 
         # Code decides the per-layer shape when it resolved the construction;
@@ -1402,7 +1453,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             ffn = FFNSpec(
                 kind="dense",
                 activation=activation,
-                intermediate_size=intermediate_size,
+                # U3: Nemotron-NAS shrinks each surviving FFN to its own width
+                # (ffn_mult × hidden, DeciLM's rule); else the shared config width.
+                intermediate_size=layer_intermediate,
                 gated=ffn_gated,
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
@@ -1456,6 +1509,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 extra_blocks=extra_blocks,
                 residual_scale=residual_multiplier,
                 cross_attention_spec=cross_spec,
+                has_attention=has_attention_i,
+                has_ffn=has_ffn_i,
             ))
 
     for lt in sorted(unknown_layer_types):
@@ -1848,7 +1903,9 @@ def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_slid
         if _is_full_label(lt):
             mask = "global" if has_sliding_in_stack else "causal"
             return mask, None, has_sliding_in_stack
-        if lt == "linear_attention":
+        if _mixer_kind_for(lt):
+            # A token-MIXER (linear_attention / lightning / recurrent) replaces
+            # attention — it carries no attention mask (drawn as its own cell).
             return "causal", None, False
         unknown.add(lt)
         return "causal", None, False
@@ -1909,6 +1966,209 @@ def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[st
         if _is_heavily_compressed_label(lt):
             return 128
     return None
+
+
+# ---------------------------------------------------------------------------
+# Per-layer TYPE-SCHEDULE normalizers (U3) — one engine, six spellings.
+# Each config dialect below answers the SAME question ("which type is layer i?")
+# in a different vocabulary; all normalize into the canonical layer_types list
+# (mixer/mask dimension) or the MoE membership list the per-layer walk already
+# consumes.  The vocabulary (fields, forms, value maps) lives in
+# everchanging/transformer/layer_schedules.yaml — data, not code.
+# ---------------------------------------------------------------------------
+
+def _mixer_kind_for(layer_type) -> str | None:
+    """Return the safest IR kind justified by a scheduled mixer token.
+
+    A schedule proves placement and its declared type name, not the internal
+    operation graph. Source-unresolved types therefore resolve to an opaque
+    ``declared_*`` kind. ``gated_delta`` is the pre-existing legacy path.
+    """
+    if not isinstance(layer_type, str):
+        return None
+    return _MIXER_KINDS.get(layer_type.lower())
+
+
+def _mixer_variant(mixer_kind: str | None) -> dict | None:
+    """The variant card for a scheduled token-mixer layer."""
+    if mixer_kind == "gated_delta":
+        return {
+            "short": "Gated DeltaNet",
+            "tag": "linear recurrent mixer",
+            "label": ["Gated DeltaNet", "Token Mixer"],
+            "title": "Gated DeltaNet token mixer",
+            "desc": (
+                "Causal depthwise convolution feeds a gated delta-rule recurrence; "
+                "cached decoding switches to the recurrent update path."
+            ),
+        }
+    if mixer_kind == "declared_lightning_mixer":
+        return {
+            "short": "Lightning Attention",
+            "tag": "declared mixer; internals unresolved",
+            "label": ["Lightning Attention", "Token Mixer"],
+            "title": "Lightning attention (config-declared)",
+            "desc": (
+                "The per-layer config schedule declares a Lightning-attention "
+                "mixer here. Its operation graph was not resolved from source, "
+                "so no kernel, state, mask, or positional mechanism is invented."
+            ),
+        }
+    if mixer_kind == "declared_recurrent_mixer":
+        return {
+            "short": "Recurrent mixer",
+            "tag": "declared mixer; internals unresolved",
+            "label": ["Recurrent block", "Token Mixer"],
+            "title": "Recurrent mixer (config-declared)",
+            "desc": (
+                "The per-layer config schedule declares a recurrent mixer here. "
+                "Its recurrence, convolution, state, and gating graph were not "
+                "resolved from source and are intentionally not drawn."
+            ),
+        }
+    return None
+
+
+def _schedule_alias(token) -> str:
+    """Normalize one raw per-layer schedule token (int / string) to its canonical
+    layer_types value via layer_schedules.yaml value_aliases (identity when no
+    alias is declared)."""
+    key = str(token).strip().lower()
+    return _LAYER_SCHEDULES["value_aliases"].get(key, key)
+
+
+def _expand_nested_tile(raw) -> list[str] | None:
+    """gpt-neo ``attention_types = [[["global","local"], N], …]`` -> the flat
+    per-layer token list (the pattern repeated N times, concatenated).  None when
+    the value isn't the nested ``[[pattern, repeat], …]`` form (None-on-doubt)."""
+    if not isinstance(raw, (list, tuple)) or not raw:
+        return None
+    out: list[str] = []
+    for item in raw:
+        if not (isinstance(item, (list, tuple)) and len(item) == 2):
+            return None
+        pattern, repeat = item
+        if not isinstance(pattern, (list, tuple)) or not isinstance(repeat, int):
+            return None
+        for _ in range(int(repeat)):
+            out.extend(_schedule_alias(t) for t in pattern)
+    return out or None
+
+
+def _fit_schedule(tokens, num_layers: int) -> list[str] | None:
+    """Fit a per-layer token list to ``num_layers`` — exact, or truncate a longer
+    list.  None when shorter than the stack (a partial schedule is doubt)."""
+    if not num_layers or not tokens or len(tokens) < num_layers:
+        return None
+    return list(tokens[:num_layers])
+
+
+def _normalize_layer_schedule(text_cfg, num_layers: int, sliding_window):
+    """Normalize the per-layer TYPE-SCHEDULE spellings into the canonical
+    ``layer_types`` list — the CONFIG channel, consulted ONLY when the canonical
+    ``layer_types`` list is absent (so families that already build it stay
+    byte-identical).  Returns ``(layer_types, source_field)`` or ``(None, None)``;
+    None-on-doubt so an unresolvable shape never fabricates a schedule."""
+    sched = _LAYER_SCHEDULES
+    # value_list (attn_type_list): the field IS the per-layer list.
+    for field in sched["value_list_fields"]:
+        raw = _g(text_cfg, field)
+        if isinstance(raw, (list, tuple)) and raw:
+            fitted = _fit_schedule([_schedule_alias(t) for t in raw], num_layers)
+            if fitted is not None:
+                return fitted, field
+    # pattern_tile (block_types): a short pattern tiled to num_layers.
+    for field in sched["pattern_tile_fields"]:
+        raw = _g(text_cfg, field)
+        if isinstance(raw, (list, tuple)) and raw and num_layers:
+            pat = [_schedule_alias(t) for t in raw]
+            tiled = (pat * (num_layers // len(pat) + 1))[:num_layers]
+            # Griffin/Hawk hybrid: the "attention" blocks are LOCAL (windowed)
+            # when the config declares a window (recurrentgemma
+            # attention_window_size) — only in a stack that also has recurrent
+            # mixer layers, so the plain full-attention "attention" label of a
+            # non-hybrid stack is never touched.
+            if sliding_window and any(_mixer_kind_for(t) for t in tiled):
+                tiled = ["sliding_attention" if t in ("attention", "full_attention")
+                         else t for t in tiled]
+            return list(tiled), field
+    # nested_tile (attention_types): [[pattern, repeat], …].
+    for field in sched["nested_tile_fields"]:
+        expanded = _expand_nested_tile(_g(text_cfg, field))
+        fitted = _fit_schedule(expanded, num_layers) if expanded else None
+        if fitted is not None:
+            return fitted, field
+    # dense_interval (dense_attention_every_n_layers): i % N == 0 -> dense.
+    for field in sched["dense_interval_fields"]:
+        n = _g(text_cfg, field)
+        if isinstance(n, int) and n > 0 and num_layers:
+            on, off = sched["dense_interval_on"], sched["dense_interval_off"]
+            return [on if i % n == 0 else off for i in range(num_layers)], field
+    return None, None
+
+
+def _moe_layers_from_enum(text_cfg) -> list[int] | None:
+    """step3 ``moe_layers_enum = "4,5,…,60"`` -> the MoE-layer membership list the
+    ``moe_layers`` reader already consumes.  None when absent/unparseable."""
+    for field in _LAYER_SCHEDULES["moe_comma_string_fields"]:
+        raw = _g(text_cfg, field)
+        if isinstance(raw, str) and raw.strip():
+            try:
+                return [int(x) for x in raw.strip().split(",") if x.strip()]
+            except ValueError:
+                return None
+    return None
+
+
+def _find_multiple(n: int, k: int = 256) -> int:
+    """Round ``n`` up to the nearest multiple of ``k`` (DeciLM's own rule)."""
+    if n <= 0:
+        return 0
+    return n + (k - n % k) % k
+
+
+def _block_configs_presence(text_cfg, num_layers: int,
+                            hidden_size: int) -> list[dict] | None:
+    """Nemotron-NAS per-layer PRESENCE + WIDTH read from ``block_configs`` — the
+    NEW role-dimension.  A neural-architecture-search-compressed Llama DELETES
+    whole attention / FFN sublayers and shrinks the survivors, per index::
+
+        block_configs[i] = {attention: {no_op, replace_with_linear, …},
+                            ffn: {no_op, replace_with_linear, ffn_mult, …}}
+
+    Returns one ``{has_attention, has_ffn, intermediate_size, attn_linear,
+    ffn_linear}`` dict per layer, or None when the field is absent/malformed
+    (None-on-doubt — the uniform path stands rather than a fabricated schedule).
+    The field IS the schedule, so this is config-derivable without source."""
+    bc = _g(text_cfg, "block_configs")
+    if not isinstance(bc, (list, tuple)) or len(bc) != num_layers or not num_layers:
+        return None
+    out: list[dict] = []
+    for entry in bc:
+        entry = entry.to_dict() if hasattr(entry, "to_dict") else entry
+        if not isinstance(entry, dict):
+            return None
+        att = entry.get("attention") or {}
+        ffn = entry.get("ffn") or {}
+        att = att.to_dict() if hasattr(att, "to_dict") else att
+        ffn = ffn.to_dict() if hasattr(ffn, "to_dict") else ffn
+        has_att = not bool(att.get("no_op"))
+        has_ffn = not bool(ffn.get("no_op"))
+        mult = ffn.get("ffn_mult")
+        inter = None
+        if has_ffn and isinstance(mult, (int, float)) and hidden_size:
+            # DeciLM's OWN width definition (``_ffn_mult_to_intermediate_size``):
+            # ``ffn_mult`` is meaningful only through this rule, so the derived
+            # width is a config VALUE, not a gated-ness assumption.
+            inter = _find_multiple(int(2 * float(mult) * hidden_size / 3), 256)
+        out.append({
+            "has_attention": has_att,
+            "has_ffn": has_ffn,
+            "intermediate_size": inter,
+            "attn_linear": bool(att.get("replace_with_linear")),
+            "ffn_linear": bool(ffn.get("replace_with_linear")),
+        })
+    return out
 
 
 def _moe_routing(cfg: Any, context=None) -> dict | None:
@@ -2119,11 +2379,16 @@ def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | 
     return None
 
 
-def _position_for_layer(evidence, *, is_gated_delta: bool) -> tuple[str, str]:
-    """Project model evidence onto one concrete layer without moving altitudes."""
+def _position_for_layer(evidence, *, mixer_kind: str | None) -> tuple[str, str]:
+    """Project model evidence onto one concrete layer without moving altitudes.
+    An opaque scheduled mixer has unknown internals, so model-level attention
+    evidence must not be projected into it. The legacy gated-delta path may
+    select a proven ``none`` mechanism as before."""
+    if mixer_kind and mixer_kind != "gated_delta":
+        return "unknown", "none"
     if evidence.status == "proven":
         mechanisms = list(evidence.mechanisms)
-        if is_gated_delta:
+        if mixer_kind == "gated_delta":
             selected = next((item for item in mechanisms if item.kind == "none"), None)
             if selected is not None:
                 return selected.kind, selected.application

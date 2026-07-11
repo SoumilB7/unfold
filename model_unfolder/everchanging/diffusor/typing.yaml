@@ -26,6 +26,7 @@ stages:
   - pooled_embed           # pooled text vector (CLIP pooled) — global conditioning
   - controlnet             # ControlNet structural conditioning
   - ip_adapter             # image-prompt (IP-Adapter) conditioning
+  - image_conditioning     # image/hint embedding conditioning (Kandinsky-2.2 image_proj)
 
   # ── Pipeline stages ──────────────────────────────────────────────
   - vae_encode             # image -> latent (image-to-image)

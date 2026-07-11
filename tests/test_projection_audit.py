@@ -25,7 +25,10 @@ from model_unfolder.sable import (
     _CENSUS_ALLOWED,
     _PROJECTION_AUDIT_BLOCKING,
 )
-from tests.test_diffusion import LLAMA, FLUX
+try:                                     # `tests` is not always an importable package
+    from tests.test_diffusion import LLAMA, FLUX
+except ImportError:                       # isolated collection: tests/ is on sys.path
+    from test_diffusion import LLAMA, FLUX
 
 
 def _event(facts):

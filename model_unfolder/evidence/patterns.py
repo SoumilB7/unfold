@@ -946,6 +946,200 @@ def unet_transformer_ffn_activation_from_files(files, declared_block_types) -> s
     return next(iter(verdicts)) if len(verdicts) == 1 else None
 
 
+def unet_stage_temporal_from_files(files, block_type) -> bool | None:
+    """Does a UNet resolution-stage block process a TEMPORAL axis, DERIVED from the
+    resolved block class's construction — never the class name (F3).
+
+    A spatio-temporal block (SVD ``*SpatioTemporal``) builds a ``SpatioTemporalResBlock``
+    / ``TransformerSpatioTemporalModel`` whose construction reaches a ``Conv3d``
+    (a 1-D conv over frames) and/or an ``AlphaBlender`` (the learned spatial/temporal
+    mix) — structural invariants absent from any 2-D ``ResnetBlock2D``/``Transformer2D``.
+    Returns ``True`` only from a positive construction witness. A traversal that
+    does not encounter a marker is incomplete negative evidence and returns
+    ``None``; callers must not turn that into a 2-D verdict."""
+    from .transitive import build_registry
+    bt = str(block_type or "")
+    if not bt or not files:
+        return None
+    registry = build_registry([str(f) for f in files])
+    if bt not in registry:
+        return None
+    seen = {bt}
+    queue = [bt]
+    temporal_markers = {"conv3d", "alphablender"}
+    while queue:
+        info = registry.get(queue.pop(0))
+        if info is None:
+            continue
+        constructed = set((info.field_types or {}).values())
+        for elems in (info.sub_module_classes or {}).values():
+            constructed |= set(elems)
+        if any(any(m in str(c).lower() for m in temporal_markers) for c in constructed):
+            return True
+        for child in constructed:
+            if child in registry and child not in seen:
+                seen.add(child)
+                queue.append(child)
+    return None
+
+
+def unet_stage_attn_cell_from_files(files, block_type) -> str | None:
+    """The attention CELL a UNet resolution-stage block constructs, DERIVED from the
+    resolved block class's construction — never a class-name bucket.
+
+    The config's block-type string is used only as an ADDRESS to locate the class;
+    the verdict comes from what the class BUILDS (same BFS rail as
+    ``unet_transformer_ffn_activation_from_files``):
+      * ``transformer2d`` — a reachable block-shaped class constructs BOTH an
+        attention-role AND an ffn-role submodule (a Transformer2D wrapping
+        self->cross->FFN: SD/SDXL ``CrossAttn*Block2D``);
+      * ``None``          — the class/source is unresolvable (caller draws
+        honest-unknown, never a class-name guess)."""
+    from .transitive import build_registry
+    from .forward_ops import _role_of
+    bt = str(block_type or "")
+    if not bt or not files:
+        return None
+    registry = build_registry([str(f) for f in files])
+    if bt not in registry:
+        return None
+    seen = {bt}
+    queue = [bt]
+    while queue:
+        info = registry.get(queue.pop(0))
+        if info is None:
+            continue
+        kids = set((info.field_types or {}).values())
+        for elems in (info.sub_module_classes or {}).values():
+            kids |= set(elems)
+        for child in kids:
+            if child in registry and child not in seen:
+                seen.add(child)
+                queue.append(child)
+    has_transformer_block = False
+    for cls in seen:
+        info = registry[cls]
+        classes = list((info.field_types or {}).values())
+        for elems in (info.sub_module_classes or {}).values():
+            classes.extend(elems)
+        roles = {_role_of(x) for x in classes}
+        if "attention" in roles:
+            if "ffn" in roles:
+                has_transformer_block = True
+    if has_transformer_block:
+        return "transformer2d"
+    # Attention-without-a-seen-FFN is not proof of a plain cross-attention cell:
+    # the FFN may be constructed through a helper, inherited, or stored under a
+    # role the traversal did not resolve. Keep the cell opaque until its exact
+    # forward/closure is positively proven.
+    return None
+
+
+def unet_code_attention_placement_from_files(files, architecture) -> dict | None:
+    """Per-level attention placement of a conv-U denoiser whose config declares NO
+    block-type lists (Kandinsky3UNet), read from the class's own ``__init__``.
+
+    Kandinsky3UNet hardcodes ``add_cross_attention = (False, True, True, True)`` and
+    ``add_self_attention = (...)`` — the per-level attention placement lives in the
+    MODEL CODE, not the config, so a config-only parser draws no attention at all.
+    Returns ``{"cross": [bool,...], "self": [bool,...]}`` from the tuple/list
+    constants, or ``None`` when the class or fields are unreadable."""
+    import ast as _ast
+    from .forward_ops import _method
+    from .vision import _class_node
+    if not architecture:
+        return None
+    out: dict[str, list] = {}
+    for path in (files or ()):
+        node = _class_node(str(path), architecture)
+        if node is None:
+            continue
+        init = _method(node, "__init__")
+        if init is None:
+            continue
+        for child in _ast.walk(init):
+            if not isinstance(child, _ast.Assign):
+                continue
+            for tgt in child.targets:
+                name = getattr(tgt, "id", None)
+                key = ("cross" if name == "add_cross_attention"
+                       else "self" if name == "add_self_attention" else None)
+                if key is None or not isinstance(child.value, (_ast.Tuple, _ast.List)):
+                    continue
+                vals = [bool(e.value) for e in child.value.elts
+                        if isinstance(e, _ast.Constant) and isinstance(e.value, bool)]
+                if vals:
+                    out[key] = vals
+        if out:
+            return out
+    return out or None
+
+
+def unet_mid_block_present_from_files(files, architecture) -> bool | None:
+    """Does the resolved conv-U denoiser class CONSTRUCT a mid (bottleneck) block?
+
+    ``UNet2DConditionModel`` builds ``self.mid_block``; ``Kandinsky3UNet`` builds
+    NONE — its forward is ``conv_in -> down -> up -> conv_out`` with no bottleneck.
+    So a fabricated mid stage (drawn today for every conv-U) is a false structure
+    for the whole non-``UNet2DConditionModel`` family.  ``True``/``False`` read
+    from the class's own ``__init__`` field construction; ``None`` when the class
+    or source is unavailable (caller then falls to the config: a declared
+    ``mid_block_type`` means a mid exists)."""
+    import ast as _ast
+    from .forward_ops import extract_forward_ops, _method
+    from .vision import _class_node
+    if not architecture:
+        return None
+    ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
+    root = ops.get(architecture)
+    if root is None:
+        return None
+    fields = set(root.field_types or {})
+    fields |= set(root.module_list_elems or {})
+    if not fields:
+        return None
+    if any("mid" in str(f).lower() for f in fields):
+        return True
+    # Absence in __init__ is not proof. A negative verdict additionally requires
+    # the exact architecture's own forward to directly execute both down and up
+    # paths while never calling a mid/bottleneck field. Helper-only forwards and
+    # inherited forwards abstain because their call graph is incomplete here.
+    for path in (files or ()):
+        node = _class_node(str(path), architecture)
+        forward = _method(node, "forward") if node is not None else None
+        if forward is None:
+            continue
+        names: set[str] = set()
+        # ModuleLists are normally invoked through ``for block in
+        # self.down_blocks: block(...)``; the call target is then a local name,
+        # so the exact owner is carried by the loop iterable rather than Call.
+        for loop in (n for n in _ast.walk(forward)
+                     if isinstance(n, (_ast.For, _ast.AsyncFor))):
+            it = loop.iter
+            if (isinstance(it, _ast.Call) and isinstance(it.func, _ast.Name)
+                    and it.func.id in {"enumerate", "iter"} and it.args):
+                it = it.args[0]
+            if (isinstance(it, _ast.Attribute)
+                    and isinstance(it.value, _ast.Name)
+                    and it.value.id == "self"):
+                names.add(it.attr.lower())
+        for call in (n for n in _ast.walk(forward) if isinstance(n, _ast.Call)):
+            func = call.func
+            if isinstance(func, _ast.Attribute):
+                names.add(func.attr.lower())
+                value = func.value
+                if (isinstance(value, _ast.Attribute)
+                        and isinstance(value.value, _ast.Name)
+                        and value.value.id == "self"):
+                    names.add(value.attr.lower())
+        has_down = any("down" in name for name in names)
+        has_up = any("up" in name for name in names)
+        has_mid = any("mid" in name or "bottleneck" in name for name in names)
+        if has_down and has_up and not has_mid:
+            return False
+    return None
+
+
 def diffusion_single_stream_fusion_from_files(files) -> str | None:
     """How the denoiser's SINGLE-STREAM block fuses, READ FROM THE MODELING SOURCE,
     or None when the model has no single-stream blocks.  The code-based replacement

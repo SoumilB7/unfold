@@ -283,7 +283,43 @@ def scan_identity_yaml_source(source: str, *, path: str = "<memory>.yaml") -> li
         findings.append(IdentityViolation(
             path, line, "identity_table",
             f"populated architectural fact table {key!r} is keyed outside source evidence"))
+
+    # HARDENING (U6): the fixed _ARCHITECTURAL_FACT_TABLES list only knows key
+    # NAMES, so a NEW class-name-keyed structural table (a `*_markers` list of
+    # block / scheduler / VAE class names, e.g. the ones this unit briefly added)
+    # passes falsely green. Also flag ANY list-valued key OUTSIDE the approved
+    # vocabulary whose entries look like class names — a probable
+    # identity->structure table that must instead be derived from
+    # construction/forward evidence, or consciously pinned as reviewed vocabulary.
+    #
+    # EXCEPTION: the ``conformance/`` domain is the guard's blessed CODE-SHAPE role
+    # home — its ``type_roles``/``fact_markers`` tables classify a class ALREADY
+    # RESOLVED from construction (the forward_ops RMSNorm->norm category the guard
+    # has always allowed), so they are not the hole.  The check applies to the
+    # architectural domains (diffusor / transformer / …) where a class-name list
+    # would be selecting structure without resolution.
+    if "conformance/" not in path.replace("\\", "/"):
+        for key, table in value.items() if isinstance(value, dict) else ():
+            if key in _ARCHITECTURAL_FACT_TABLES or not isinstance(table, list):
+                continue
+            classish = [t for t in table if isinstance(t, str) and _looks_like_class_name(t)]
+            if len(classish) >= 2:
+                line = next((i for i, text in enumerate(lines, 1)
+                             if text.startswith(f"{key}:")), 1)
+                findings.append(IdentityViolation(
+                    path, line, "identity_table",
+                    f"name-keyed structural table {key!r}: a list of class-name-like "
+                    "values may control structure — derive from construction/forward "
+                    "evidence, or pin as reviewed vocabulary in "
+                    "identity_guard._ARCHITECTURAL_FACT_TABLES with a category justification"))
     return findings
+
+
+def _looks_like_class_name(s: str) -> bool:
+    """A PascalCase Python identifier with >=2 capitals — a class name, not a
+    snake_case field, a human label, or a config-value string."""
+    return (bool(s) and s.isidentifier() and s[0].isupper()
+            and sum(1 for c in s if c.isupper()) >= 2)
 
 
 def scrub_semantic_identity(value: Any) -> Any:

@@ -168,6 +168,19 @@ def _added_cond_sentence(added: dict | None) -> str:
             + " — to this timestep embedding (addition_embed_type = text_time).")
 
 
+def _added_time_ids_sentence(added: dict | None) -> str:
+    """SVD-style ``added_time_ids`` micro-conditioning (F3): fps / motion-bucket /
+    noise-augmentation strength are sinusoidally embedded (addition_time_embed_dim)
+    and ADDED to the timestep embedding.  Stated only when the config declares it."""
+    if not isinstance(added, dict):
+        return ""
+    proj = added.get("proj_in")
+    return (" A video micro-conditioning embedding — the fps, motion-bucket id and "
+            "noise-augmentation strength ('added_time_ids')"
+            + (f", projected from {_fmt(proj)}-d" if proj else "")
+            + " — is also added to this timestep embedding.")
+
+
 def diffusion_loop_blocks(geom: dict) -> list[Block]:
     """The sampling-loop nodes — the hero view. The ``denoiser`` node opens the
     DiT network (``model_blocks``) as its drill-down."""
@@ -215,6 +228,10 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
         latent_shape = f"{_fmt(in_ch)} channels"
     else:
         latent_shape = "VAE-space latent"
+    # F3: a spatio-temporal (video) UNet carries a FRAMES axis on the latent — the
+    # entire reason it is a video model. Prepend it so the drawing isn't flat-2D.
+    if geom.get("video") and geom.get("num_frames") and family == "unet":
+        latent_shape = f"{_fmt(geom['num_frames'])} frames × {latent_shape}"
 
     double = geom.get("double_stream_layers")
     single = geom.get("single_stream_layers")
@@ -291,6 +308,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
                 + (", plus a guidance scale" if guidance else "")
                 + ". " + _timestep_mechanism(family, geom.get("block_conditioning"))
                 + _added_cond_sentence(added)
+                + _added_time_ids_sentence(geom.get("added_time_ids"))
             ),
             "facts": cf.get("timestep") or None,
         },
@@ -301,6 +319,7 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             entry_dims=[geom.get(k) for k in (
                 "cross_attention_dim", "caption_input_dim",
                 "joint_attention_dim", "text_embed_dim", "kv_join_dim")],
+            conditioning=geom.get("conditioning"),
         ),
         *(_text_context_blocks(geom)),
         *(_text_projection_blocks(geom)),
@@ -361,10 +380,11 @@ def diffusion_loop_blocks(geom: dict) -> list[Block]:
             "role": "output",
             "kind": "output",
             "diffusion_stage": "vae_decode",
-            "label": "VAE decode",
-            "title": "VAE decoder",
+            "label": _vae_decode_label(vae),
+            "title": _vae_decode_title(vae),
             "description": (
-                "Once the loop reaches z_0 (clean latent), the VAE decoder maps it "
+                "Once the loop reaches z_0 (clean latent), the "
+                + _vae_decode_word(vae) + " maps it "
                 + ("from latent space back to the audio waveform."
                    if geom.get("audio") else
                    "from latent space back to a full-resolution pixel image.")
@@ -553,6 +573,31 @@ def _scheduler_step_view(geom: dict) -> dict:
                             "one denoising step toward z_{t-1} (the ⊕ glyph)."},
         ],
     }
+
+
+def _vae_class_kind(vae: dict | None) -> str | None:
+    """The VAE decoder kind from CONFIG-DECLARED evidence (F6/F7b), never a
+    class-name bucket: ``vq`` when the VAE config declares vector-quantization
+    (``num_vq_embeddings`` / ``vq_embed_dim`` — a genuine VQ declaration, present
+    only on VQ/MoVQ decoders), else ``None`` (unknown; the default 2-D KL wording
+    is kept only because it is the neutral fallback, not an asserted fact)."""
+    v = vae or {}
+    if v.get("num_vq_embeddings") is not None or v.get("vq_embed_dim") is not None:
+        return "vq"
+    return None
+
+
+def _vae_decode_label(vae: dict | None) -> str:
+    # VQ fields prove vector quantisation, not the more specific MoVQ family.
+    return "VQ decode" if _vae_class_kind(vae) == "vq" else "VAE decode"
+
+
+def _vae_decode_title(vae: dict | None) -> str:
+    return "VQ decoder" if _vae_class_kind(vae) == "vq" else "VAE decoder"
+
+
+def _vae_decode_word(vae: dict | None) -> str:
+    return "VQ decoder" if _vae_class_kind(vae) == "vq" else "VAE decoder"
 
 
 def _vae_decoder_children(vae: dict | None) -> list[Block]:
@@ -931,18 +976,75 @@ def _encoder_residual_card(prefix: str) -> Block:
     }
 
 
+def _image_conditioning_block(conditioning: dict, text_dim) -> Block:
+    """The conditioning SOURCE for an image/hint-conditioned denoiser (F1).
+
+    Declared by ``encoder_hid_dim_type`` (image_proj / ip_image_proj / …): the
+    cross-attention K/V is an IMAGE embedding (Kandinsky-2.2 takes the CLIP image
+    embedding from the prior pipeline), NOT a text prompt — so we draw the honest
+    image-conditioning source, never a fabricated text-encoder tower.  The prior
+    that produces the embedding is a separate pipeline (not fetched here), so the
+    source stays a single honest card: the declared projector + K/V width, no
+    invented encoder layers."""
+    modality = conditioning.get("kv_modality")
+    kv_label = conditioning.get("kv_label") or "External conditioning"
+    projector = conditioning.get("projector")
+    ehdt = conditioning.get("encoder_hid_dim_type")
+    is_image = modality in ("image", "image_prompt", "image_hint")
+    what = ("image embedding" if modality == "image"
+            else "image-prompt embedding" if modality == "image_prompt"
+            else "external conditioning embedding")
+    desc = (
+        f"This denoiser is conditioned on {'an ' if is_image else ''}{what}, not a "
+        "text prompt"
+        + (f" (encoder_hid_dim_type = {ehdt})" if ehdt else "")
+        + ". "
+        + ("The image embedding is produced by a separate prior pipeline (a CLIP "
+           "image encoder + prior), then projected and read as the cross-attention "
+           "keys/values every step."
+           if is_image else
+           "Its source module lives outside this component and is not fetched here.")
+    )
+    facts = [f for f in (
+        f"K/V: {kv_label}",
+        f"via {projector}" if projector else "",
+        f"width {_fmt(text_dim)}" if text_dim else "",
+    ) if f]
+    block: Block = {
+        "id": "text_encoder",            # the conditioning-source slot (edges key on it)
+        "role": "embedding",
+        "kind": "embedding",
+        "diffusion_stage": "image_conditioning",
+        "label": ["Image embeds", "(from prior)"] if is_image else ["External", "conditioning"],
+        "title": ("Image conditioning" if is_image else "External conditioning"),
+        "description": desc,
+        "facts": facts or None,
+    }
+    return block
+
+
 def _text_conditioning_blocks(encoders: list, text_dim, pooled, specs: list | None = None,
                               *, family: str | None = None,
                               cross_attention_dim=None,
-                              entry_dims: list | None = None) -> list[Block]:
+                              entry_dims: list | None = None,
+                              conditioning: dict | None = None) -> list[Block]:
     """One block per real text encoder (+ a shared prompt source), so the diagram
     shows the actual number of encoders (Flux: CLIP + T5; SDXL: CLIP-L + CLIP-G;
     SD3: CLIP-L + CLIP-G + T5) instead of a single combined block.  ``specs``
     (aligned with ``encoders``) carries each encoder's real config dims when the
     loader fetched them; ``family`` ("unet" / "dit") selects the correct
-    conditioning-mechanism wording."""
+    conditioning-mechanism wording.  ``conditioning`` (F1) carries the resolved
+    modality — an image-conditioned decoder with no text encoder draws an image
+    source, never a text tower."""
     specs = specs or []
+    cond = conditioning or {}
     if not encoders:
+        # F1: when the conditioning modality is declared NON-text (image/hint/
+        # unknown), draw the honest declared source — NEVER a fabricated
+        # text-encoder tower for a component this pipeline does not own.
+        modality = cond.get("kv_modality")
+        if modality and modality != "text":
+            return [_image_conditioning_block(cond, text_dim)]
         return [{
             "id": "text_encoder",
             "role": "embedding",

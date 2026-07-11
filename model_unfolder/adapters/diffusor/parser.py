@@ -27,6 +27,7 @@ from typing import Any
 
 from ...everchanging import (
     load_diffusion_aliases,
+    load_diffusion_conditioning,
     load_diffusion_text_encoders,
     load_diffusion_typing,
 )
@@ -357,6 +358,68 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
                 _augment_diffusion_files(_root), _types) if _root else None)
     except Exception:
         unet["transformer_ffn_act"] = None
+    # F2: the mid (bottleneck) block is drawn ONLY when the denoiser class
+    # constructs one.  UNet2DConditionModel builds `self.mid_block`; Kandinsky3UNet
+    # builds none (its forward is conv_in -> down -> up -> conv_out).  Source is
+    # authoritative; config's declared mid_block_type is the fallback; unknown
+    # keeps the current bottleneck (but never claims false provenance).
+    declares_mid = _g(cfg, "mid_block_type") is not None
+    bundle = getattr(context, "source_bundle", None)
+    _mroot = ((getattr(bundle, "component_files", {}) or {}).get("root")
+              or getattr(bundle, "files", None))
+    _march = getattr(bundle, "architecture", None) or arch_name
+    mid_present = None
+    try:
+        from ...evidence.patterns import unet_mid_block_present_from_files
+        mid_present = unet_mid_block_present_from_files(_mroot, _march)
+    except Exception:
+        mid_present = None
+    unet["declares_mid_block_type"] = declares_mid
+    unet["mid_present"] = mid_present
+    if not declares_mid and mid_present is not True:
+        # Without a declaration, only positive source evidence may create a
+        # bottleneck. A proven negative or source-unknown result must not retain
+        # the generic fabricated mid stage.
+        unet["mid"] = {}
+        unet["mid_dropped"] = True
+        if mid_present is None:
+            unet["mid_unresolved"] = True
+    # F2: when the config declares no block-type lists, the per-level attention
+    # placement lives in the model CODE (Kandinsky3's add_cross_attention tuple),
+    # not the config — read it so the attention this model is known for is shown,
+    # rather than an all-attn=False skeleton.
+    if not unet.get("declares_block_types"):
+        try:
+            from ...evidence.patterns import unet_code_attention_placement_from_files
+            _apply_code_attention_placement(
+                unet, unet_code_attention_placement_from_files(_mroot, _march))
+        except Exception:
+            pass
+    # F2: the attention CELL of each declared stage is DERIVED from the resolved
+    # block class's construction (Transformer2D wrapper vs plain cross-Attention) —
+    # the block-type string is only the ADDRESS.  Unresolvable -> None (honest-
+    # unknown, drawn pale), NEVER a class-name guess.
+    if unet.get("declares_block_types"):
+        try:
+            from ...evidence.conformance import _augment_diffusion_files
+            from ...evidence.patterns import (unet_stage_attn_cell_from_files,
+                                              unet_stage_temporal_from_files)
+            _dfiles = _augment_diffusion_files(tuple(_mroot)) if _mroot else ()
+            for st in (unet.get("down") or []) + ([unet.get("mid")] if unet.get("mid") else []) + (unet.get("up") or []):
+                if st.get("stage_type"):
+                    if st.get("attn"):
+                        st["attn_kind"] = unet_stage_attn_cell_from_files(_dfiles, st["stage_type"])
+                    # F3: temporal branch DERIVED per stage from the block class's
+                    # construction (Conv3d / AlphaBlender), not a root-level stamp.
+                    tv = unet_stage_temporal_from_files(_dfiles, st["stage_type"])
+                    if tv is not None:
+                        st["temporal"] = tv
+        except Exception:
+            pass
+    # F3: is this a VIDEO denoiser at all (the Video U-Net label / frames axis)?
+    # Root-level fact from EVIDENCE (the class's forward processes a frames axis),
+    # never the class name.  Per-stage temporal OPS come from each stage class above.
+    unet["temporal"] = bool(_temporal_axis(cfg, arch_name, context))
     boc = unet["block_out_channels"]
     if not boc:
         warnings.append("UNet config missing block_out_channels — denoiser structure unknown.")
@@ -366,6 +429,8 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
             "This UNet config declares no down_block_types/up_block_types — per-stage "
             "attention placement is defined in the model code, not the config, so the "
             "denoiser is shown as a convolutional U skeleton"
+            + (" with no bottleneck (the denoiser class constructs no mid block)"
+               if unet.get("mid_dropped") else "")
             + (f" with text cross-attention (dim {cad}) entering at code-defined stages"
                if cad else "")
             + "."
@@ -373,11 +438,18 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
     hidden = max(boc) if boc else 0
     text_encoders = _detect_text_encoders(cfg)
     text_encoder_specs = _text_encoder_specs(cfg, context=context)
+    conditioning = _resolve_conditioning(cfg, text_encoders)
+    # The cross-attention K/V label the UNet view draws follows the resolved
+    # conditioning modality (image_proj -> "Image embeds", never "Encoded text").
+    # Set BEFORE unet_geom: it builds the denoiser cards from ``unet`` in-place.
+    unet["kv_label"] = conditioning.get("kv_label")
+    unet["kv_modality"] = conditioning.get("kv_modality")
     geom = unet_geom(cfg, unet, text_encoders=text_encoders,
                      scheduler_geom=_scheduler_geom(cfg),
                      text_encoder_specs=text_encoder_specs)
     geom["vae"] = _vae_geom(cfg)
     geom["text_encoder_specs"] = text_encoder_specs
+    geom["conditioning"] = conditioning
     geom["config_facts"] = _config_fact_chips(cfg)
 
     extras: dict = {"render": unet_render_spec(geom), "unet": unet}
@@ -389,6 +461,7 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
         "text_encoders": text_encoders or None,
         "scheduler": geom.get("scheduler"),
         "scheduler_train_timesteps": geom.get("scheduler_train_timesteps"),
+        "conditioning": conditioning,
     }.items() if v is not None}
     if meta:
         extras["diffusion"] = meta
@@ -404,6 +477,35 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
         extras=extras,
         warnings=warnings,
     )
+
+
+def _apply_code_attention_placement(unet: dict, placement: dict | None) -> None:
+    """Set per-stage attention from a CODE-READ per-level placement (F2): a conv-U
+    that declares no block-type lists (Kandinsky3) carries ``add_cross_attention``/
+    ``add_self_attention`` tuples in its class ``__init__``.  Down stage i is level
+    i; up stage j (channels reversed) is level n-1-j.  The attention CELL is
+    ``code_defined`` (a Kandinsky3AttentionBlock: self + cross attention with a
+    conv 1x1 FFN — NOT a Transformer2D and NOT a plain SimpleCrossAttn)."""
+    if not placement or not placement.get("cross"):
+        return
+    cross = placement.get("cross") or []
+    selfa = placement.get("self") or cross
+    down, up = unet.get("down") or [], unet.get("up") or []
+    n = len(unet.get("block_out_channels") or [])
+
+    def _mark(st, level):
+        hc = bool(level < len(cross) and cross[level])
+        hs = bool(level < len(selfa) and selfa[level])
+        st["attn"] = hc or hs
+        st["has_cross"], st["has_self"] = hc, hs
+        st["attn_kind"] = "code_defined" if (hc or hs) else st.get("attn_kind")
+        st["transformers"] = 1 if (hc or hs) else 0
+
+    for i, st in enumerate(down):
+        _mark(st, i)
+    for j, st in enumerate(up):
+        _mark(st, n - 1 - j)
+    unet["code_attention_placement"] = True
 
 
 def _diffusion_name(cfg: Any, arch_name: str) -> str:
@@ -1865,6 +1967,10 @@ def _vae_geom(cfg: Any) -> dict | None:
         "decoder_input_channels": _g(vcfg, "decoder_input_channels"),
         "upsampling_ratios": (_g(vcfg, "upsampling_ratios")
                               or _g(vcfg, "downsampling_ratios")),
+        # Vector-quantization is CONFIG-DECLARED (present only on VQ/MoVQ decoders):
+        # the decode label reads these fields, not the class name (F7b).
+        "num_vq_embeddings": _g(vcfg, "num_vq_embeddings"),
+        "vq_embed_dim": _g(vcfg, "vq_embed_dim"),
         "class": _g(vcfg, "_class_name"),
     }
     return {k: v for k, v in out.items() if v is not None} or None
@@ -1916,6 +2022,56 @@ def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
 def _detect_text_encoders(cfg: Any) -> list[str]:
     """Friendly text-encoder names from a diffusers pipeline index, if present."""
     return [s["name"] for s in _text_encoder_specs(cfg)]
+
+
+def _resolve_conditioning(cfg: Any, encoders: list) -> dict:
+    """The denoiser's conditioning STORY, resolved from the DECLARED config enums
+    (``encoder_hid_dim_type`` for the cross-attention K/V + its projector;
+    ``addition_embed_type`` for the vector added to the timestep) plus the set of
+    pipeline components that actually exist — never a hardcoded text assumption
+    (F1).  An image-conditioned decoder (Kandinsky-2.2: ``image_proj``/``image``,
+    no text encoder) is drawn as image conditioning, not a fabricated text tower.
+
+    Resolution order for the cross-attention K/V modality:
+      1. a declared, RECOGNISED ``encoder_hid_dim_type`` names the modality;
+      2. a declared-but-unrecognised type -> honest-unknown (never text);
+      3. no type declared but text encoders exist -> text (SDXL/PixArt today);
+      4. nothing -> unknown.
+    """
+    vocab = load_diffusion_conditioning()
+    enc_map = vocab["encoder_hid_dim_type"]
+    add_map = vocab["addition_embed_type"]
+    ehdt = _g(cfg, "encoder_hid_dim_type")
+    aet = _g(cfg, "addition_embed_type")
+    has_text = bool(encoders)
+    out: dict = {
+        "encoder_hid_dim_type": ehdt,
+        "addition_embed_type": aet,
+        "has_text_encoder": has_text,
+    }
+    kv = enc_map.get(str(ehdt)) if ehdt else None
+    if kv:
+        out["kv_modality"] = kv.get("modality")
+        out["kv_label"] = kv.get("kv_label")
+        out["projector"] = kv.get("projector")
+        out["kv_text"] = bool(kv.get("text"))
+    elif ehdt:                                   # declared but unmapped: honest-unknown
+        out["kv_modality"] = "unknown"
+        out["kv_label"] = "External conditioning"
+        out["kv_text"] = False
+    elif has_text:                               # conventional text conditioning
+        out["kv_modality"] = "text"
+        out["kv_label"] = "Encoded text"
+        out["kv_text"] = True
+    else:
+        out["kv_modality"] = "unknown"
+        out["kv_label"] = "External conditioning"
+        out["kv_text"] = False
+    add = add_map.get(str(aet)) if aet else None
+    if add:
+        out["add_modality"] = add.get("modality")
+        out["add_label"] = add.get("add_label")
+    return out
 
 
 def _slot_context(root_context, slot: str):
@@ -2079,5 +2235,4 @@ from ...encoder_panel import (
     hydrate_encoder_config_facts as _hydrate_encoder_config_facts,
     normalize_encoder_config as _normalize_encoder_config,
 )
-
 

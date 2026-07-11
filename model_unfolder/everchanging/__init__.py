@@ -124,6 +124,42 @@ def load_layer_topology() -> dict:
             "parallel_residual": list(data.get("parallel_residual") or [])}
 
 
+def _pairs(rows) -> dict[str, str]:
+    """``["raw=canonical", …]`` -> ``{"raw": "canonical"}`` (lowercased keys)."""
+    out: dict[str, str] = {}
+    for item in rows or []:
+        if isinstance(item, str) and "=" in item:
+            k, _, v = item.partition("=")
+            out[k.strip().lower()] = v.strip()
+    return out
+
+
+def load_layer_schedules() -> dict:
+    """Per-layer TYPE-SCHEDULE spellings (``transformer/layer_schedules.yaml``):
+    the config keys that encode "which type is layer i", grouped by their input
+    FORM, plus the canonical value map and the mixer-kind map.  U3.
+
+    Returns ``{"value_list_fields": [...], "pattern_tile_fields": [...],
+    "nested_tile_fields": [...], "dense_interval_fields": [...],
+    "dense_interval_on": str, "dense_interval_off": str,
+    "moe_comma_string_fields": [...], "value_aliases": {raw: canonical},
+    "mixer_kinds": {canonical_token: mixer_cell}}``."""
+    data = load("transformer", "layer_schedules")
+    on = (data.get("dense_interval_on") or ["full_attention"])
+    off = (data.get("dense_interval_off") or ["compressed_sparse_attention"])
+    return {
+        "value_list_fields": list(data.get("value_list_fields") or []),
+        "pattern_tile_fields": list(data.get("pattern_tile_fields") or []),
+        "nested_tile_fields": list(data.get("nested_tile_fields") or []),
+        "dense_interval_fields": list(data.get("dense_interval_fields") or []),
+        "dense_interval_on": (on[0] if isinstance(on, list) else on),
+        "dense_interval_off": (off[0] if isinstance(off, list) else off),
+        "moe_comma_string_fields": list(data.get("moe_comma_string_fields") or []),
+        "value_aliases": _pairs(data.get("value_aliases")),
+        "mixer_kinds": _pairs(data.get("mixer_kinds")),
+    }
+
+
 # --- diffusor domain --------------------------------------------------------
 
 def load_diffusion_aliases() -> dict[str, list[str]]:
@@ -178,6 +214,18 @@ def load_diffusion_text_encoders() -> dict[str, str]:
     """Text-encoder class name -> friendly label (``diffusor/text_encoders.yaml``;
     the whole file is the flat map)."""
     return {k: v for k, v in load("diffusor", "text_encoders").items() if isinstance(v, str)}
+
+
+def load_diffusion_conditioning() -> dict[str, dict]:
+    """Conditioning-MODALITY vocabulary (``diffusor/conditioning.yaml``): the
+    declared ``encoder_hid_dim_type`` / ``addition_embed_type`` enum values mapped
+    to their {modality, kv_label / add_label, projector} story.  An unmapped value
+    falls to honest-unknown, never to text."""
+    data = load("diffusor", "conditioning")
+    return {
+        "encoder_hid_dim_type": data.get("encoder_hid_dim_type") or {},
+        "addition_embed_type": data.get("addition_embed_type") or {},
+    }
 
 
 # --- conformance domain (op-conformance diff: diagram structure vs HF forward) ---
@@ -422,7 +470,9 @@ __all__ = [
     "load_transformer_typing",
     "load_layer_type_labels",
     "load_layer_topology",
+    "load_layer_schedules",
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",
+    "load_diffusion_conditioning",
 ]

@@ -14,6 +14,7 @@ def decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int,
     norm_kind: str = "rmsnorm", norm_placement: str = "pre",
     residual_scale=None, cross_attention: AttentionSpec | None = None,
+    has_attention: bool = True, has_ffn: bool = True,
 ) -> list[Block]:
     """Per-layer block topology for a sequential decoder layer.
 
@@ -24,7 +25,15 @@ def decoder_layer_blocks(
     * ``pre``    — norm on the sublayer INPUT  (Llama/Mistral/Qwen/…): ``r + sub(norm(h))``
     * ``post``   — norm on the sublayer OUTPUT (OLMo-2):                ``r + norm(sub(h))``
     * ``double`` — norm on BOTH ends (Gemma-2/3 sandwich):  ``r + post_ln(sub(pre_ln(h)))``
+
+    ``has_attention`` / ``has_ffn`` (Nemotron-NAS block_configs): a False flag
+    means the search pruned that whole sublayer, so it is not drawn at all — the
+    layer is a pure FFN (attention removed) or pure attention (FFN removed) block.
     """
+    if not has_attention or not has_ffn:
+        return _pruned_sublayer_layer_blocks(
+            attention, ffn, hidden_size, norm_kind,
+            has_attention=has_attention, has_ffn=has_ffn)
     if norm_placement == "post":
         blocks = _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind)
     elif norm_placement == "double":
@@ -139,6 +148,58 @@ def _unknown_placement_layer_blocks(attention, ffn, hidden_size,
         },
         _ffn_block(ffn, hidden_size),
     ]
+
+
+def _pruned_sublayer_layer_blocks(attention, ffn, hidden_size, norm_kind, *,
+                                  has_attention: bool, has_ffn: bool) -> list[Block]:
+    """Nemotron-NAS layer with a whole sublayer removed by the architecture
+    search.  Draw ONLY the sublayer(s) that exist (pre-norm + sublayer +
+    residual), plus one pale marker naming what the search pruned — never a
+    fabricated attention/FFN cell for the missing half."""
+    hidden = _fmt(hidden_size)
+    norm_label = _norm_label(norm_kind)
+    blocks: list[Block] = []
+    if has_attention:
+        blocks += [
+            _norm_block("rms1", norm_label, "Pre-attention norm",
+                        _norm_desc(norm_kind, "before attention"), facts=[f"dim {hidden}"]),
+            _attention_block(attention, hidden_size),
+            _add_block("add1", "rms1", "Residual add", "block input + attention output"),
+        ]
+    else:
+        blocks.append({
+            "id": "attn_pruned", "role": "norm", "kind": "norm",
+            "label": "Attention removed", "resolved": False,
+            "title": "Attention sublayer pruned (NAS)",
+            "description": (
+                "The neural-architecture search that compressed this model "
+                "DELETED this layer's attention sublayer (block_configs: "
+                "attention.no_op) — the layer is a pure feed-forward block. "
+                "No attention is drawn because none runs here."
+            ),
+        })
+    if has_ffn:
+        blocks += [
+            _norm_block("rms2", norm_label, "Pre-FFN norm",
+                        _norm_desc(norm_kind, "before the FFN"), facts=[f"dim {hidden}"]),
+            _ffn_block(ffn, hidden_size),
+            _add_block("add2", "rms2", "Residual add",
+                       "block input + FFN output" if not has_attention
+                       else "post-attention + FFN output"),
+        ]
+    else:
+        blocks.append({
+            "id": "ffn_pruned", "role": "norm", "kind": "norm",
+            "label": "FFN removed", "resolved": False,
+            "title": "Feed-forward sublayer pruned (NAS)",
+            "description": (
+                "The neural-architecture search that compressed this model "
+                "DELETED this layer's feed-forward sublayer (block_configs: "
+                "ffn.no_op) — the layer is a pure attention block. No FFN is "
+                "drawn because none runs here."
+            ),
+        })
+    return blocks
 
 
 def _post_norm_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block]:

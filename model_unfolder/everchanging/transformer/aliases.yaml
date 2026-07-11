@@ -14,7 +14,7 @@ intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim, ffn_hidden_s
 hidden_act: [hidden_act, activation_function, hidden_activation, act_fn, activation, activation_type, dense_act_fn]
 vocab_size: [vocab_size, n_vocab, padded_vocab_size]
 max_position_embeddings: [max_position_embeddings, max_seq_len, n_positions, context_length, max_seq_length, seq_length, max_sequence_length, max_text_positions]
-sliding_window: [sliding_window, attention_window, window_size]
+sliding_window: [sliding_window, attention_window, window_size, attention_window_size]  # attention_window_size: recurrentgemma GRIFFIN local-attention window
 attention_bias: [attention_bias, add_qkv_bias, use_qkv_bias, use_bias, bias, qkv_bias]     # add_qkv_bias: chatglm · use_qkv_bias: stablelm · bias: internlm · qkv_bias: qwen1
 mlp_bias: [mlp_bias, add_bias_linear]                                            # add_bias_linear: chatglm spelling
 num_experts: [num_local_experts, num_experts, n_routed_experts, n_experts, moe_num_experts]

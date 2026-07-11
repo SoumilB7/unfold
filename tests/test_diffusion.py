@@ -645,6 +645,213 @@ def test_sdxl_unet_conditioning_is_honest():
     assert ir.extras["unet"]["mid"]["transformers"] == 10
 
 
+KANDINSKY_2_2_DECODER = {
+    # kandinsky-community/kandinsky-2-2-decoder unet config: an image-conditioned
+    # UNet2DConditionModel — cross-attention K/V is the CLIP IMAGE embedding from
+    # the prior pipeline (encoder_hid_dim_type=image_proj), NO text encoder at all.
+    "_class_name": "UNet2DConditionModel", "_repo_id": "kandinsky-community/kandinsky-2-2-decoder",
+    "in_channels": 4, "out_channels": 8, "block_out_channels": [384, 768, 1536, 3072],
+    "layers_per_block": 3, "cross_attention_dim": 768,
+    "encoder_hid_dim": 1280, "encoder_hid_dim_type": "image_proj", "addition_embed_type": "image",
+    "down_block_types": ["ResnetDownsampleBlock2D", "SimpleCrossAttnDownBlock2D",
+                         "SimpleCrossAttnDownBlock2D", "SimpleCrossAttnDownBlock2D"],
+    "up_block_types": ["SimpleCrossAttnUpBlock2D", "SimpleCrossAttnUpBlock2D",
+                       "SimpleCrossAttnUpBlock2D", "ResnetUpsampleBlock2D"],
+    "mid_block_type": "UNetMidBlock2DSimpleCrossAttn", "num_attention_heads": 64,
+    "scheduler": ["diffusers", "DDPMScheduler"],
+}
+
+
+def test_image_conditioned_unet_draws_no_text_tower():
+    """F1: an image-conditioned decoder (encoder_hid_dim_type=image_proj, no text
+    encoder) must draw the declared IMAGE conditioning source and image-embed K/V
+    — never a fabricated text-encoder tower, never 'Encoded text'."""
+    ir = config_to_ir(KANDINSKY_2_2_DECODER)
+    cond = ir.extras["diffusion"]["conditioning"]
+    assert cond["kv_modality"] == "image"
+    assert cond["kv_label"] == "Image embeds"
+    assert cond["has_text_encoder"] is False
+
+    html = unfold(KANDINSKY_2_2_DECODER).to_html(standalone=True)
+    # No fabricated text conditioning tower / K/V for a component this pipeline
+    # does not own.
+    assert "Encoded text" not in html
+    assert ">Text conditioning<" not in html
+    # The declared image-conditioning story is drawn instead.
+    assert "Image conditioning" in html
+    assert "Image embeds" in html
+    assert "image cross-attention" in html
+    assert "image embedding" in html
+
+
+def test_kandinsky3_mid_block_dropped_from_source_evidence():
+    """F2: Kandinsky3UNet constructs NO mid block (forward is conv_in -> down -> up
+    -> conv_out). With the class source resolved, no bottleneck stage is drawn and
+    the false 'Declared by mid_block_type' provenance never appears."""
+    kand3 = {
+        "_class_name": "Kandinsky3UNet", "_repo_id": "kandinsky-community/kandinsky-3",
+        "block_out_channels": [384, 768, 1536, 3072], "layers_per_block": 3,
+        "attention_head_dim": 64, "cross_attention_dim": 4096, "in_channels": 4, "out_channels": 4,
+        "scheduler": ["diffusers", "DDPMScheduler"],
+    }
+    ir = config_to_ir(kand3)
+    u = ir.extras["unet"]
+    # Source-proven: the class builds no mid block.
+    assert u.get("mid_present") is False
+    assert u.get("mid_dropped") is True
+    assert u.get("mid") == {}
+    html = unfold(kand3).to_html(standalone=True)
+    assert "Mid stage" not in html
+    assert "unet_mid" not in html
+    assert "Declared by mid_block_type" not in html
+    assert any("no mid block" in w for w in ir.warnings)
+
+
+def test_kandinsky3_attention_placement_read_from_code():
+    """F2: Kandinsky3UNet declares NO block-type lists — its per-level attention
+    placement lives in the class code (add_cross_attention=(F,T,T,T)). Read it so
+    the attention this model is known for is SHOWN, as a code-defined self+cross
+    cell (Kandinsky3AttentionBlock), never a fabricated Transformer2D/GEGLU."""
+    kand3 = {
+        "_class_name": "Kandinsky3UNet", "_repo_id": "kandinsky-community/kandinsky-3",
+        "block_out_channels": [384, 768, 1536, 3072], "layers_per_block": 3,
+        "attention_head_dim": 64, "cross_attention_dim": 4096, "in_channels": 4, "out_channels": 4,
+        "scheduler": ["diffusers", "DDPMScheduler"],
+    }
+    ir = config_to_ir(kand3)
+    u = ir.extras["unet"]
+    assert u.get("code_attention_placement") is True
+    # Level 0 has no attention; levels 1-3 do (add_cross_attention = F,T,T,T).
+    assert [s.get("attn") for s in u["down"]] == [False, True, True, True]
+    assert all(s.get("attn_kind") == "code_defined" for s in u["down"] if s.get("attn"))
+    html = unfold(kand3).to_html(standalone=True)
+    assert "code-PLACED" in html or "code-defined" in html
+    # placement is code-proven; the cell internals stay honest-unknown (not GEGLU).
+    assert "unresolved" in html
+    assert "Transformer block" not in html          # no fabricated Transformer2D
+
+
+def test_vq_decoder_labelled_from_config_declared_vq():
+    """F7b: VQ fields prove vector quantization, not the narrower MoVQ family."""
+    from model_unfolder.adapters.diffusor.blocks import _vae_decode_label, _vae_class_kind
+    assert _vae_class_kind({"num_vq_embeddings": 16384}) == "vq"
+    assert _vae_decode_label({"num_vq_embeddings": 16384}) == "VQ decode"
+    # class name alone (no VQ config field) is NOT enough — never a class-name bucket.
+    assert _vae_class_kind({"class": "VQModel"}) is None
+    assert _vae_decode_label({"latent_channels": 4}) == "VAE decode"
+
+
+def test_simple_cross_attn_blocks_stay_opaque_without_complete_cell_evidence():
+    """A familiar type name cannot fill in an unproven internal cell."""
+    deepfloyd = {
+        "_class_name": "UNet2DConditionModel", "in_channels": 3, "out_channels": 6,
+        "block_out_channels": [320, 640, 1280, 1280], "layers_per_block": 3,
+        "cross_attention_dim": 4096, "num_attention_heads": 64,
+        "encoder_hid_dim": 4096, "encoder_hid_dim_type": "text_proj",
+        "down_block_types": ["ResnetDownsampleBlock2D", "SimpleCrossAttnDownBlock2D",
+                             "SimpleCrossAttnDownBlock2D", "SimpleCrossAttnDownBlock2D"],
+        "up_block_types": ["SimpleCrossAttnUpBlock2D", "SimpleCrossAttnUpBlock2D",
+                           "SimpleCrossAttnUpBlock2D", "ResnetUpsampleBlock2D"],
+        "mid_block_type": "UNetMidBlock2DSimpleCrossAttn",
+        "scheduler": ["diffusers", "DDPMScheduler"],
+    }
+    html = unfold(deepfloyd).to_html(standalone=True)
+    assert "Transformer block" not in html          # no fabricated Transformer2D cell
+    assert "structure unresolved" in html
+    assert "geglu" not in html.lower()               # no fabricated GEGLU FFN
+    # The block IS text-conditioned here (text_proj), so K/V stays encoded text.
+    assert "Encoded text" in html
+
+
+SVD_UNET = {
+    "_class_name": "UNetSpatioTemporalConditionModel",
+    "_repo_id": "stabilityai/stable-video-diffusion-img2vid-xt",
+    "block_out_channels": [320, 640, 1280, 1280],
+    "down_block_types": ["CrossAttnDownBlockSpatioTemporal", "CrossAttnDownBlockSpatioTemporal",
+                         "CrossAttnDownBlockSpatioTemporal", "DownBlockSpatioTemporal"],
+    "up_block_types": ["UpBlockSpatioTemporal", "CrossAttnUpBlockSpatioTemporal",
+                       "CrossAttnUpBlockSpatioTemporal", "CrossAttnUpBlockSpatioTemporal"],
+    "cross_attention_dim": 1024, "num_frames": 25, "addition_time_embed_dim": 256,
+    "projection_class_embeddings_input_dim": 768, "layers_per_block": 2,
+    "in_channels": 8, "out_channels": 4, "num_attention_heads": [5, 10, 20, 20],
+    "scheduler": ["diffusers", "EulerDiscreteScheduler"], "_scheduler_config": {"num_train_timesteps": 1000},
+}
+
+
+def test_spatio_temporal_unet_draws_temporal_branch():
+    """F3: a spatio-temporal (video) UNet must draw the temporal ResNet branch +
+    AlphaBlender time-mix and the frames axis — never a flat 2D UNet. Detected
+    from evidence (the class forward processes num_frames), never the class name."""
+    ir = config_to_ir(SVD_UNET)
+    assert ir.extras["unet"].get("temporal") is True
+    html = unfold(SVD_UNET).to_html(standalone=True)
+    assert "Spatio-temporal ResNet" in html
+    assert "AlphaBlender" in html
+    assert "Temporal transformer" in html
+    assert "TemporalResnetBlock" in html
+    # The latent carries the frames axis (the reason it is a video model).
+    assert "25 frames" in html
+    # SVD added_time_ids micro-conditioning surfaced.
+    assert "added_time_ids" in html and "motion-bucket" in html
+    # Video output labelling.
+    assert "Output frames" in html
+
+
+def test_image_unet_is_not_temporal():
+    """F3 negative control: SDXL (UNet2DConditionModel) has no frames axis — it must
+    stay a flat 2D UNet, no temporal ops fabricated."""
+    ir = config_to_ir(SDXL_UNET)
+    assert ir.extras["unet"].get("temporal") is False
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert "AlphaBlender" not in html
+    assert "Temporal transformer" not in html
+    assert "Spatio-temporal" not in html
+
+
+def test_sdxl_still_draws_transformer2d_cell():
+    """F2 negative control: SDXL's CrossAttn*Block2D stages keep the Transformer2D
+    cell (self -> cross -> FFN), derived from the RESOLVED block class construction
+    (a Transformer2D wrapper) — the simple-cross/unknown paths must not disturb it."""
+    ir = config_to_ir(SDXL_UNET)
+    kinds = [s.get("attn_kind") for s in ir.extras["unet"]["down"] if s.get("attn")]
+    assert kinds and all(k == "transformer2d" for k in kinds)   # source-derived
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert "Transformer block" in html               # SDXL keeps its Transformer2D cell
+
+
+def test_attn_cell_kind_is_source_derived_not_class_name():
+    """F2 (Law-1): the cell family is DERIVED from the resolved block class's
+    construction (Transformer2D wrapper vs plain Attention), with class name used
+    only as an ADDRESS. Unresolvable -> None (honest-unknown), never a name guess."""
+    import os, diffusers
+    from model_unfolder.evidence.patterns import unet_stage_attn_cell_from_files
+    from model_unfolder.evidence.conformance import _augment_diffusion_files
+    base = os.path.dirname(diffusers.__file__)
+    files = _augment_diffusion_files((
+        os.path.join(base, "models/unets/unet_2d_blocks.py"),
+        os.path.join(base, "models/unets/unet_3d_blocks.py"),
+        os.path.join(base, "models/attention_processor.py"),
+        os.path.join(base, "models/attention.py")))
+    assert unet_stage_attn_cell_from_files(files, "CrossAttnDownBlock2D") == "transformer2d"
+    # Seeing attention but not seeing an FFN is incomplete negative evidence;
+    # the exact plain-cross cell remains opaque until its forward is proven.
+    assert unet_stage_attn_cell_from_files(files, "SimpleCrossAttnDownBlock2D") is None
+    assert unet_stage_attn_cell_from_files(files, "DownBlock2D") is None       # no attention
+    assert unet_stage_attn_cell_from_files(files, "NopeBlock") is None         # unresolvable
+    assert unet_stage_attn_cell_from_files((), "CrossAttnDownBlock2D") is None  # no source
+
+
+def test_text_conditioned_unet_still_says_encoded_text():
+    """F1 negative control: a text-conditioned UNet (SDXL) is unchanged — the K/V
+    source stays 'Encoded text', never disturbed by the modality resolution."""
+    ir = config_to_ir(SDXL_UNET)
+    cond = ir.extras["diffusion"]["conditioning"]
+    assert cond["kv_modality"] == "text"
+    html = unfold(SDXL_UNET).to_html(standalone=True)
+    assert "Encoded text" in html
+    assert "text cross-attention" in html
+
+
 def test_unet_stage_part_kinds_resolve_for_all_block_variants():
     """Every down/up stage of a real UNet is a recognised part_kind (solid), even
     the Resnet*sample / Simple* block variants (DeepFloyd / Kandinsky) — they're

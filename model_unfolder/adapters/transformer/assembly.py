@@ -24,12 +24,20 @@ def decoder_layer(
     norm_placement: str = "pre",
     residual_scale=None,
     cross_attention_spec: AttentionSpec | None = None,
+    has_attention: bool = True,
+    has_ffn: bool = True,
 ) -> LayerSpec:
-    """Build a decoder layer from parsed specs plus optional reusable parts."""
+    """Build a decoder layer from parsed specs plus optional reusable parts.
+
+    ``has_attention`` / ``has_ffn`` (Nemotron-NAS block_configs) omit a sublayer
+    the search pruned — the block topology draws only the sublayers that exist,
+    never a fabricated attention/FFN cell.
+    """
     blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
                                   norm_placement=norm_placement,
                                   residual_scale=residual_scale,
-                                  cross_attention=cross_attention_spec)
+                                  cross_attention=cross_attention_spec,
+                                  has_attention=has_attention, has_ffn=has_ffn)
     if extra_blocks:
         blocks.extend(extra_blocks)
     return LayerSpec(
@@ -40,6 +48,8 @@ def decoder_layer(
         norm_placement=norm_placement,
         blocks=blocks,
         cross_attention=cross_attention_spec,
+        has_attention=has_attention,
+        has_ffn=has_ffn,
     )
 
 

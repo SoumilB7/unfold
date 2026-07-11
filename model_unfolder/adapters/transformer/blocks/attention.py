@@ -100,7 +100,25 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
         "rwkv": _rwkv_child_blocks,
         "linear": _linear_attention_child_blocks,
     }
-    builder = builders.get(attention.kind, _sdpa_child_blocks)
+    # Only known SDPA kinds may use the Q/K/V child-card vocabulary. Falling an
+    # unrecognised mixer through to SDPA makes an honest opaque op graph open
+    # into fabricated softmax-attention internals.
+    builder = builders.get(attention.kind)
+    if builder is None and attention.kind in {"mha", "gqa", "mqa"}:
+        builder = _sdpa_child_blocks
+    if builder is None:
+        label = ((attention.variant or {}).get("short")
+                 or str(attention.kind or "Custom attention"))
+        return [{
+            "id": "opaque_mixer",
+            "title": f"{label} internals unresolved",
+            "description": (
+                "This layer's mixer type is known, but its internal forward "
+                "graph was not resolved from source. No Q/K/V projections, "
+                "softmax, recurrence, or state update are asserted."
+            ),
+            "resolved": False,
+        }]
     if builder is _sdpa_child_blocks:
         cards = _sdpa_child_blocks(attention, hidden_size, generic=generic)
     else:
