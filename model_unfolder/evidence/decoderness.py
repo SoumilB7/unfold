@@ -54,7 +54,7 @@ def declared_decoderness(cfg: Any) -> str | None:
                 sub = sub.to_dict()
             if isinstance(sub, dict) and sub.get("model_type"):
                 return f"composite '{key}' slot"
-    except Exception:
+    except (AttributeError, TypeError, KeyError):  # H5: typed config-walk failure
         return None
     return None
 

@@ -1753,7 +1753,7 @@ def _as_mapping(cfg) -> dict:
             value = cfg.to_dict()
             if isinstance(value, dict):
                 return value
-        except Exception:
+        except (AttributeError, TypeError, ValueError):  # H5: typed, not blanket
             pass
     if hasattr(cfg, "__dict__"):
         return {k: v for k, v in vars(cfg).items() if not k.startswith("__")}
