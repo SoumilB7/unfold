@@ -351,6 +351,41 @@ def validate_typed_write(fact) -> list[str]:
     return problems
 
 
+@dataclass(frozen=True)
+class PendingProjectionFact:
+    """H7 (§16.5/§16.6) — a diffusion config fact acknowledged as TYPED debt with
+    its projection still PENDING.  §16.5 removed three audit-clearing diffusion
+    reads because they had no structural consumer; they may return only "through
+    H7 typed facts with actual projections OR declared pending debt".  This is the
+    declared-pending-debt path: the fact is registered (named, owned, reasoned),
+    so it is no longer a silent read NOR a forgotten removal — the H7-full reader
+    + its render projection are the named next step."""
+
+    name: str
+    owner: str          # root.denoiser / root.vae
+    canonical: str      # the config field it reads
+    reason: str
+    projection: str     # the render surface it will draw on when H7-full lands
+
+
+# The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
+# pending-projection debt (registered typed facts, projection pending H7-full).
+PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
+    PendingProjectionFact("denoiser_max_sequence", "root.denoiser", "max_sequence_length",
+                          "max text-token sequence the denoiser conditions on (Mochi) — "
+                          "a declared conditioning limit",
+                          "the conditioning card on the denoiser view"),
+    PendingProjectionFact("vae_activation", "root.vae", "act_fn",
+                          "the VAE decoder's convolution activation (video VAEs) — a "
+                          "constructor record",
+                          "the VAE-decoder ResNet cells' activation chip"),
+    PendingProjectionFact("vae_temporal_compression", "root.vae", "temporal_compression_ratio",
+                          "the VAE's own temporal compression (HunyuanVideo/Wan) — "
+                          "distinct from the denoiser-level ratio",
+                          "the VAE latent-depth / temporal-axis chip"),
+)
+
+
 # The audit/ledger INFRASTRUCTURE extras keys — the census machinery itself,
 # not raw structural writes.  Excluded from the raw-structural-write census.
 INFRA_EXTRAS_KEYS = frozenset({
@@ -379,4 +414,5 @@ __all__ = [
     "FactDefinition", "REGISTRY", "census_problems", "fact_definition",
     "new_raw_structural_extras", "validate_typed_write",
     "DrawnUnledgeredFact", "DRAWN_UNLEDGERED_DEBT",
+    "PendingProjectionFact", "PENDING_PROJECTION_DEBT",
 ]
