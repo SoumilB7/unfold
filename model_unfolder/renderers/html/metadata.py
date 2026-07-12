@@ -280,10 +280,6 @@ def _signature(layer: dict) -> str:
     return "|".join(
         str(value)
         for value in (
-            # Sublayer PRESENCE (Nemotron-NAS): an attention-free / FFN-free
-            # layer is structurally distinct and must not fold with a full one.
-            layer.get("has_attention", True),
-            layer.get("has_ffn", True),
             attention.get("kind"),
             attention.get("mask"),
             attention.get("window_size"),

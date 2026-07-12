@@ -91,7 +91,7 @@ def test_generic_projection_requires_execution_shaped_wrapper_proof(tmp_path):
 
 
 def test_projector_fact_conformance_is_bidirectional():
-    from tests.test_declared_ops import QWEN2VL_STYLE
+    from test_support import QWEN2VL_STYLE
 
     diagram = unfold(QWEN2VL_STYLE)
     bundle = resolve_source_files(QWEN2VL_STYLE)
@@ -111,7 +111,7 @@ def test_projector_fact_conformance_is_bidirectional():
 
 
 def test_projector_ir_has_no_family_profile_or_family_title():
-    from tests.test_declared_ops import MISTRAL3_STYLE
+    from test_support import MISTRAL3_STYLE
 
     diagram = unfold(MISTRAL3_STYLE)
     projector = diagram.to_ir()["extras"]["modalities"]["inputs"]["vision"]["projector"]

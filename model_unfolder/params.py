@@ -117,17 +117,11 @@ def estimate_params(ir: ModelIR) -> dict:
     is_sparse = False
 
     for layer in ir.layers:
-        # Nemotron-NAS: a pruned sublayer (has_attention/has_ffn False) has zero
-        # parameters — count only the sublayers that actually exist.
-        a_p = _attn_params(layer.attention, h) if getattr(layer, "has_attention", True) else 0
-        if getattr(layer, "has_ffn", True):
-            f_total, f_active = _ffn_params(layer.ffn, h)
-        else:
-            f_total, f_active = 0, 0
-        if getattr(layer, "has_ffn", True) and layer.ffn.kind == "moe":
+        a_p = _attn_params(layer.attention, h)
+        f_total, f_active = _ffn_params(layer.ffn, h)
+        if layer.ffn.kind == "moe":
             is_sparse = True
-        if (getattr(layer, "has_ffn", True) and layer.ffn.gated is None
-                and _GATED_NOTE not in assumptions):
+        if layer.ffn.gated is None and _GATED_NOTE not in assumptions:
             assumptions.append(_GATED_NOTE)
         norm_p = 2 * h
         t = a_p + f_total + norm_p

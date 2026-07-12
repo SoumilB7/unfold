@@ -42,12 +42,30 @@ _IGNORED_KEYS: frozenset[str] = frozenset(_ignored["keys"])
 _IGNORED_SUFFIXES: tuple[str, ...] = tuple(_ignored["suffixes"])
 _OPAQUE_SCOPES: frozenset[str] = frozenset(_ignored["opaque_scopes"])
 
+# H3 — the config-access INTENT rail (plan §7-H3.1).  Every lookup lands in
+# ``_touched`` (the union, so the unread diagnostic is unchanged); the two
+# stronger intents route additionally into their own set:
+#   * inspected — read while exploring (the default; ``_touched`` only);
+#   * bound     — resolved source/schema proves this field owns a branch or
+#                 expression for the current owner (H3.2/3.3, I-2);
+#   * consumed  — the returned value DECIDED a fact or geometry (H3.1).
+# ``projected`` (reached a drawn/machine consumer) and ``ignored`` (scoped
+# reason+owner) are the other two mandatory intents, but they are DERIVED
+# elsewhere — ``projected`` by joining ``consumed`` with the #13 projection
+# receipts at IR assembly, ``ignored`` by the scoped ignore rules — not marked
+# in this hot accessor.  A field in ``_touched`` but never in ``_consumed`` is
+# the accessed-but-unconsumed class the run-77 audit could not see (granite
+# multipliers, PM-2).
+_RAIL_INTENTS: frozenset[str] = frozenset({"inspected", "bound", "consumed"})
 _touched: set[str] = set()
-# U2: fields whose VALUE flowed into a fact/spec (not merely looked at). A
-# field in _touched but never in _consumed is the "accessed-but-unprojected"
-# class the run_77 audit could not see (granite multipliers, PM-2).
+_bound: set[str] = set()
 _consumed: set[str] = set()
-_captures: ContextVar[tuple[set[str], ...]] = ContextVar(
+# Each active capture is a ``(touched, consumed)`` pair of sets.  A capture
+# survives a NESTED parse's ``reset()`` (which only clears the module globals),
+# so the root's config_to_ir sees the UNION of consumed fields across the root
+# and its embedded component parses — the module-global ``_consumed`` alone is
+# clobbered by a nested reset (the qwen2-vl / diffusion-text-encoder case).
+_captures: ContextVar[tuple[tuple[set[str], set[str]], ...]] = ContextVar(
     "model_unfolder_config_access_captures", default=()
 )
 
@@ -55,39 +73,60 @@ _captures: ContextVar[tuple[set[str], ...]] = ContextVar(
 def reset() -> None:
     """Clear the per-parse record of which fields were read."""
     _touched.clear()
+    _bound.clear()
     _consumed.clear()
 
 
 def note_access(name: str, intent: str = "inspected") -> None:
     """Record that the parser looked up config field ``name`` (any alias).
 
-    ``intent="consumed"`` additionally records that the returned value flowed
-    into a fact — the projection-audit net diffs the two sets.
+    ``intent`` is one of ``inspected`` (default) / ``bound`` / ``consumed``
+    (see the rail note above).  ``bound`` and ``consumed`` additionally route
+    into their own set; every intent still lands in ``_touched``.  An unknown
+    intent is a loud error — a typo must never silently degrade to inspected.
     """
+    if intent not in _RAIL_INTENTS:
+        raise ValueError(
+            f"unknown config-access intent {intent!r}; expected one of "
+            f"{sorted(_RAIL_INTENTS)} (projected/ignored are derived, not marked here)")
     _touched.add(name)
-    if intent == "consumed":
+    if intent == "bound":
+        _bound.add(name)
+    elif intent == "consumed":
         _consumed.add(name)
     # Add to every active capture so an outer model audit includes legitimate
     # work performed by nested component parses (diffusion text encoders), while
     # each nested capture can still be inspected independently. ContextVar keeps
     # concurrent parses isolated; parser-level ``reset()`` cannot erase a Sable
     # capture wrapped around the whole model parse.
-    for touched in _captures.get():
+    for touched, consumed in _captures.get():
         touched.add(name)
+        if intent == "consumed":
+            consumed.add(name)
+
+
+def bound_fields() -> frozenset[str]:
+    """Fields a resolved source reader named as owning a branch/expression
+    for the current owner (H3.2 — the I-2 ownership binding)."""
+    return frozenset(_bound)
 
 
 def consumed_fields() -> frozenset[str]:
-    """Fields whose value reached a fact this parse (U2 projection accounting)."""
+    """Fields whose value reached a fact this parse (H3.1 consumption)."""
     return frozenset(_consumed)
 
 
 @contextmanager
 def capture_accesses():
-    """Capture config key names read inside this context, including nested parses."""
+    """Capture config field names read inside this context, including nested
+    parses.  Yields the ``(touched, consumed)`` pair of sets; both keep
+    accumulating across nested parses and survive their ``reset()`` calls, so
+    the root parse's audit reflects every component it built."""
     touched: set[str] = set()
-    token = _captures.set((*_captures.get(), touched))
+    consumed: set[str] = set()
+    token = _captures.set((*_captures.get(), (touched, consumed)))
     try:
-        yield touched
+        yield touched, consumed
     finally:
         _captures.reset(token)
 
@@ -220,6 +259,7 @@ def _emit(msg: str) -> None:
 
 
 __all__ = [
-    "DEBUG", "reset", "note_access", "capture_accesses", "unparsed_fields",
+    "DEBUG", "reset", "note_access", "bound_fields", "consumed_fields",
+    "capture_accesses", "unparsed_fields",
     "report_unparsed", "report_partial", "report_error",
 ]

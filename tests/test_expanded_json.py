@@ -24,43 +24,8 @@ LLAMA_TINY_CONFIG = {
     "hidden_act": "silu",
 }
 
-GEMMA4_VISION_TINY_CONFIG = {
-    "architectures": ["Gemma4ForConditionalGeneration"],
-    "model_type": "gemma4",
-    "_name_or_path": "google/gemma-4-e2b",
-    "image_token_id": 262144,
-    "image_seq_length": 280,
-    "image_token_count_options": [70, 140, 280, 560, 1120],
-    "projector_hidden_act": "gelu_pytorch_tanh",
-    "text_config": {
-        "architectures": ["Gemma4ForCausalLM"],
-        "model_type": "gemma4_text",
-        "vocab_size": 262208,
-        "hidden_size": 64,
-        "intermediate_size": 256,
-        "num_hidden_layers": 2,
-        "num_attention_heads": 4,
-        "num_key_value_heads": 1,
-        "max_position_embeddings": 1024,
-        "tie_word_embeddings": True,
-        "hidden_activation": "gelu_pytorch_tanh",
-    },
-    "vision_config": {
-        "architectures": ["Gemma4VisionModel"],
-        "model_type": "gemma4_vision",
-        "hidden_size": 32,
-        "num_hidden_layers": 3,
-        "num_attention_heads": 4,
-        "image_size": 896,
-        "patch_size": 16,
-        # Real gemma-4 vision structure: learned 2D positions + 2D RoPE, and a
-        # k×k average pool that reduces the token count after the encoder.
-        "position_embedding_size": 256,
-        "rope_parameters": {"rope_theta": 100.0, "rope_type": "default"},
-        "pooling_kernel_size": 3,
-        "global_head_dim": 8,
-    },
-}
+# Shared vision fixtures live in the importable test_support package (§16.1).
+from test_support import GEMMA4_VISION_TINY_CONFIG, MLLAMA_VISION_TINY_CONFIG
 
 
 QWEN2_AUDIO_SPARSE_CONFIG = {
@@ -85,37 +50,6 @@ QWEN2_AUDIO_SPARSE_CONFIG = {
         "rms_norm_eps": 1e-5,
         "sliding_window": 32768,
         "vocab_size": 156032,
-    },
-}
-
-
-MLLAMA_VISION_TINY_CONFIG = {
-    "architectures": ["MllamaForConditionalGeneration"],
-    "model_type": "mllama",
-    "_name_or_path": "meta-llama/Llama-3.2-11B-Vision",
-    "image_token_index": 128256,
-    "vision_config": {
-        "model_type": "mllama_vision_model",
-        "hidden_size": 1280,
-        "vision_output_dim": 7680,
-        "num_hidden_layers": 32,
-        "num_global_layers": 8,
-        "attention_heads": 16,
-        "image_size": 448,
-        "patch_size": 14,
-        "max_num_tiles": 4,
-    },
-    "text_config": {
-        "model_type": "mllama_text_model",
-        "vocab_size": 128256,
-        "hidden_size": 4096,
-        "intermediate_size": 14336,
-        "num_hidden_layers": 40,
-        "num_attention_heads": 32,
-        "num_key_value_heads": 8,
-        "cross_attention_layers": [3, 8, 13, 18, 23, 28, 33, 38],
-        "max_position_embeddings": 131072,
-        "hidden_act": "silu",
     },
 }
 

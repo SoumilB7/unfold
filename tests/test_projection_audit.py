@@ -25,10 +25,7 @@ from model_unfolder.sable import (
     _CENSUS_ALLOWED,
     _PROJECTION_AUDIT_BLOCKING,
 )
-try:                                     # `tests` is not always an importable package
-    from tests.test_diffusion import LLAMA, FLUX
-except ImportError:                       # isolated collection: tests/ is on sys.path
-    from test_diffusion import LLAMA, FLUX
+from test_support import LLAMA, FLUX
 
 
 def _event(facts):
@@ -189,11 +186,24 @@ def test_census_allowed_set_is_the_three_presentation_conventions():
 # --------------------------------------------------------------------------- #
 
 def test_accessed_unprojected_is_inert_without_a_consumed_census():
-    """The consumed rail is not populated in production yet; without it the
-    accessed-but-unprojected signal is not computable, so it stays silent."""
-    ir = mu.unfold(LLAMA).to_ir()
-    assert "config_consumed" not in (ir.get("extras") or {})
+    """Without a consumed census the accessed-but-unprojected signal is not
+    computable, so the net stays silent.  (Since H3 Phase B, a real transformer
+    parse DOES publish a consumed census — see
+    ``test_real_transformer_parse_publishes_a_consumed_census`` — so the inert
+    case is exercised synthetically, an extras block that carries no
+    ``config_consumed``: an adapter/path H3 has not yet migrated.)"""
+    ir = {"extras": {"config_audit": {"accessed": ["hidden_size", "sliding_window"]}}}
+    assert "config_consumed" not in ir["extras"]
     assert _accessed_unprojected_findings(ir) == []
+
+
+def test_real_transformer_parse_publishes_a_consumed_census():
+    """H3 Phase B activation (§11 step 4): the geometry/embedding family is
+    migrated to ``consume()``, so a real transformer parse now publishes a
+    non-empty ``config_consumed`` — the net is no longer inert in production."""
+    ir = mu.unfold(LLAMA).to_ir()
+    consumed = (ir.get("extras") or {}).get("config_consumed") or []
+    assert "hidden_size" in consumed and "num_hidden_layers" in consumed
 
 
 def test_accessed_unprojected_fires_once_a_consumed_census_exists():

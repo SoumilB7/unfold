@@ -11,78 +11,9 @@ from model_unfolder.adapters.transformer import parser as transformer
 from model_unfolder.block_schema import validate_block_tree, validate_click_coupling
 
 
-# Real FLUX.1-dev transformer/config.json values (+ pipeline wiring the by-ID
-# loader merges in: text encoders, scheduler, scheduler config).
-FLUX = {
-    "_class_name": "FluxTransformer2DModel",
-    "_diffusers_version": "0.30.0",
-    "attention_head_dim": 128,
-    "axes_dims_rope": [16, 56, 56],
-    "guidance_embeds": True,
-    "in_channels": 64,
-    "joint_attention_dim": 4096,
-    "num_attention_heads": 24,
-    "num_layers": 19,
-    "num_single_layers": 38,
-    "patch_size": 1,
-    "pooled_projection_dim": 768,
-    "scheduler": ["diffusers", "FlowMatchEulerDiscreteScheduler"],
-    "text_encoder": ["transformers", "CLIPTextModel"],
-    "text_encoder_2": ["transformers", "T5EncoderModel"],
-    "_scheduler_config": {"num_train_timesteps": 1000, "shift": 3.0},
-    "_vae_config": {
-        "_class_name": "AutoencoderKL",
-        "block_out_channels": [128, 256, 512, 512],
-        "latent_channels": 16,
-        "out_channels": 3,
-        "layers_per_block": 2,
-        "scaling_factor": 0.3611,
-    },
-    # Real text-encoder configs the by-ID loader pulls from text_encoder/ and
-    # text_encoder_2/ (CLIP ViT-L/14 + T5-v1.1-XXL encoder).
-    "_text_encoder_configs": {
-        "text_encoder": {
-            "_class_name": "CLIPTextModel", "architectures": ["CLIPTextModel"],
-            "model_type": "clip_text_model",
-            "num_hidden_layers": 12, "hidden_size": 768,
-            "num_attention_heads": 12, "intermediate_size": 3072, "hidden_act": "quick_gelu",
-            "max_position_embeddings": 77, "vocab_size": 49408,
-        },
-        "text_encoder_2": {
-            "_class_name": "T5EncoderModel", "architectures": ["T5EncoderModel"],
-            "model_type": "t5", "num_layers": 24, "d_model": 4096,
-            "num_heads": 64, "d_ff": 10240, "dense_act_fn": "gelu_new", "vocab_size": 32128,
-            "is_gated_act": True, "feed_forward_proj": "gated-gelu",
-        },
-    },
-}
-
-# Real PixArt-alpha transformer config (single-stream, cross-attention to text).
-PIXART = {
-    "_class_name": "PixArtTransformer2DModel",
-    "_diffusers_version": "0.27.0",
-    "num_layers": 28,
-    "num_attention_heads": 16,
-    "attention_head_dim": 72,
-    "cross_attention_dim": 1152,
-    "caption_channels": 4096,
-    "patch_size": 2,
-    "in_channels": 4,
-    "sample_size": 128,
-    "norm_type": "ada_norm_single",
-    "norm_elementwise_affine": False,
-    "norm_eps": 1e-6,
-}
-
-LLAMA = {
-    "architectures": ["LlamaForCausalLM"], "model_type": "llama",
-    "hidden_size": 4096, "num_hidden_layers": 32, "num_attention_heads": 32,
-    "num_key_value_heads": 8, "intermediate_size": 14336, "vocab_size": 128256,
-    "rms_norm_eps": 1e-5,
-    # Real Llama checkpoints declare this; with the U2 default-kill an
-    # omitted activation is a typed unknown, never a silent silu.
-    "hidden_act": "silu",
-}
+# Shared model fixtures live in the importable top-level test_support package
+# (§16.1 fixture isolation) — no test module imports another test module.
+from test_support import FLUX, PIXART, LLAMA, SDXL_UNET, HYBRID_ENC, MOE_ENC
 
 
 def test_diffusor_matches_dit_not_transformer():
@@ -563,16 +494,6 @@ def test_diffusion_blocks_and_clicks_valid(cfg):
 
 
 # Real SDXL-base UNet config shape (+ pipeline wiring).
-SDXL_UNET = {
-    "_class_name": "UNet2DConditionModel", "_repo_id": "stabilityai/stable-diffusion-xl-base-1.0",
-    "in_channels": 4, "out_channels": 4, "block_out_channels": [320, 640, 1280],
-    "layers_per_block": 2, "cross_attention_dim": 2048, "transformer_layers_per_block": [1, 2, 10],
-    "down_block_types": ["DownBlock2D", "CrossAttnDownBlock2D", "CrossAttnDownBlock2D"],
-    "up_block_types": ["CrossAttnUpBlock2D", "CrossAttnUpBlock2D", "UpBlock2D"],
-    "mid_block_type": "UNetMidBlock2DCrossAttn", "addition_embed_type": "text_time",
-    "scheduler": ["diffusers", "EulerDiscreteScheduler"], "_scheduler_config": {"num_train_timesteps": 1000},
-    "text_encoder": ["transformers", "CLIPTextModel"], "text_encoder_2": ["transformers", "CLIPTextModelWithProjection"],
-}
 
 
 def test_unet_is_claimed_by_diffusor_not_transformer():
@@ -1929,17 +1850,6 @@ def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
     assert bare_attn.get("description")
 
 
-HYBRID_ENC = {**FLUX, "_text_encoder_configs": {
-    "text_encoder": {
-        "_class_name": "LlamaModel", "architectures": ["LlamaForCausalLM"],
-        "model_type": "llama", "num_hidden_layers": 24, "hidden_size": 2048,
-        "num_attention_heads": 16, "num_key_value_heads": 4,
-        "intermediate_size": 5632, "hidden_act": "silu", "rms_norm_eps": 1e-5,
-        "vocab_size": 32000, "max_position_embeddings": 8192,
-        "rope_theta": 10000.0, "sliding_window": 4096,
-        "layer_types": ["sliding_attention", "full_attention"] * 12,
-    },
-}}
 
 
 def test_heterogeneous_encoder_renders_grouped_layer_types():
@@ -2012,16 +1922,6 @@ def test_distinct_layer_groups_and_period_detection():
     assert detect_layer_period([sigs[0]] * 6) == 1
 
 
-MOE_ENC = {**FLUX, "_text_encoder_configs": {
-    "text_encoder": {
-        "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],
-        "model_type": "mixtral", "num_hidden_layers": 32, "hidden_size": 4096,
-        "num_attention_heads": 32, "num_key_value_heads": 8,
-        "intermediate_size": 14336, "hidden_act": "silu", "rms_norm_eps": 1e-5,
-        "vocab_size": 32000, "max_position_embeddings": 32768, "rope_theta": 1e6,
-        "num_local_experts": 8, "num_experts_per_tok": 2,
-    },
-}}
 
 
 def test_moe_text_encoder_opens_the_canonical_moe_drill():

@@ -387,108 +387,11 @@ DIFFUSION_GEMMA_CONFIG = {
     },
 }
 
-GEMMA4_31B_LAYER_TYPES = [
-    "sliding_attention" if (i % 6) != 5 else "full_attention" for i in range(60)
-]
-GEMMA4_31B_CONFIG = {
-    "architectures": ["Gemma4ForConditionalGeneration"],
-    "model_type": "gemma4",
-    "_name_or_path": "google/gemma-4-31B",
-    "tie_word_embeddings": True,
-    "text_config": {
-        "model_type": "gemma4_text",
-        "vocab_size": 262144,
-        "hidden_size": 5376,
-        "intermediate_size": 21504,
-        "num_hidden_layers": 60,
-        "num_attention_heads": 32,
-        "num_key_value_heads": 16,
-        "num_global_key_value_heads": 4,
-        "head_dim": 256,
-        "global_head_dim": 512,
-        "sliding_window": 1024,
-        "max_position_embeddings": 262144,
-        "tie_word_embeddings": True,
-        "hidden_activation": "gelu_pytorch_tanh",
-        "layer_types": GEMMA4_31B_LAYER_TYPES,
-        "enable_moe_block": False,
-        "attention_k_eq_v": True,
-    },
-}
-
-
-def _gemma4_e4b_config():
-    cfg = dict(GEMMA4_31B_CONFIG)
-    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
-    text_cfg.update(
-        {
-            "num_hidden_layers": 42,
-            "layer_types": [
-                "sliding_attention" if (i % 6) != 5 else "full_attention"
-                for i in range(42)
-            ],
-            "hidden_size_per_layer_input": 1024,
-            "vocab_size_per_layer_input": text_cfg["vocab_size"],
-        }
-    )
-    cfg["_name_or_path"] = "google/gemma-4-E4B"
-    cfg["text_config"] = text_cfg
-    return cfg
-
-
-def _gemma4_e2b_vision_config():
-    cfg = dict(GEMMA4_31B_CONFIG)
-    text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
-    text_cfg.update(
-        {
-            "hidden_size": 1536,
-            "intermediate_size": 6144,
-            "num_hidden_layers": 4,
-            "num_attention_heads": 8,
-            "num_key_value_heads": 1,
-            "num_global_key_value_heads": 1,
-            "head_dim": 256,
-            "global_head_dim": 256,
-            "layer_types": ["sliding_attention", "sliding_attention", "sliding_attention", "full_attention"],
-            "max_position_embeddings": 131072,
-        }
-    )
-    cfg.update(
-        {
-            "_name_or_path": "google/gemma-4-E2B",
-            "image_token_id": 258880,
-            "audio_token_id": 258881,
-            "boi_token_id": 255999,
-            "boa_token_id": 256000,
-            "eoi_token_id": 258882,
-            "eoa_token_id": 258883,
-            "image_seq_length": 280,
-            "audio_seq_length": 750,
-            "audio_ms_per_token": 40,
-            "image_token_count_options": [70, 140, 280, 560, 1120],
-            "projector_hidden_act": "gelu_pytorch_tanh",
-            "text_config": text_cfg,
-            "vision_config": {
-                "architectures": ["Gemma4VisionModel"],
-                "model_type": "gemma4_vision",
-                "hidden_size": 768,
-                "num_hidden_layers": 16,
-                "num_attention_heads": 12,
-                "image_size": 896,
-                "patch_size": 16,
-            },
-            "audio_config": {
-                "architectures": ["Gemma4AudioModel"],
-                "model_type": "gemma4_audio",
-                "hidden_size": 1024,
-                "num_hidden_layers": 12,
-                "num_attention_heads": 8,
-                "output_proj_dims": 1536,
-                "feature_size": 128,
-            },
-        }
-    )
-    return cfg
+# Shared gemma-4 base config + builders live in test_support (§16.1).
+from test_support import (  # noqa: E402
+    GEMMA4_31B_LAYER_TYPES, GEMMA4_31B_CONFIG,
+    _gemma4_e4b_config, _gemma4_e2b_vision_config,
+)
 
 
 QWEN2_AUDIO_SPARSE_CONFIG = {

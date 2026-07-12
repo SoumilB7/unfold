@@ -1,0 +1,71 @@
+"""§16.1 fixture-isolation static gate.
+
+No test file — and no production file — may import another test MODULE.  A test
+module's collection must never depend on a *different* test module importing
+cleanly (that is exactly what made the grouped hardening gate invalid:
+``test_sable`` imported ``tests.test_diffusion``).  Shared fixtures live in the
+importable top-level ``test_support`` package instead, so every audit/hardening
+file collects and runs alone.
+
+A "test module" is any importable name whose top segment is ``test_*`` (a
+``test_*.py`` file) or any ``tests.test_*`` dotted path.  ``test_support`` is the
+one lawful shared package and is explicitly allowed.
+"""
+from __future__ import annotations
+
+import ast
+import pathlib
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+_ALLOWED = {"test_support"}
+
+
+def _is_test_module(dotted: str) -> bool:
+    if not dotted:
+        return False
+    top = dotted.split(".")[0]
+    if dotted.startswith("tests.test_"):
+        return True
+    return top.startswith("test_") and top not in _ALLOWED
+
+
+def _offending_imports(path: pathlib.Path) -> list[str]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except SyntaxError:
+        return []
+    out: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and _is_test_module(node.module or ""):
+            out.append(f"{path.name}:{node.lineno} from {node.module} import ...")
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                if _is_test_module(alias.name):
+                    out.append(f"{path.name}:{node.lineno} import {alias.name}")
+    return out
+
+
+def test_no_module_imports_another_test_module():
+    """Blocking: production and tests may not import a test module."""
+    scanned = list((ROOT / "tests").rglob("*.py")) + list((ROOT / "model_unfolder").rglob("*.py"))
+    offenders: list[str] = []
+    for path in scanned:
+        if path.name == "test_isolation.py":
+            continue
+        offenders.extend(_offending_imports(path))
+    assert not offenders, (
+        "test-module imports are forbidden (§16.1 fixture isolation); move the "
+        "shared symbol into the top-level test_support package and import from "
+        "there:\n" + "\n".join(offenders))
+
+
+def test_the_gate_actually_fires_on_a_poison(tmp_path):
+    """Anti-vacuous control: the detector flags a real test-module import."""
+    poison = tmp_path / "test_poison.py"
+    poison.write_text("from tests.test_diffusion import FLUX\nimport test_smoke\n")
+    hits = _offending_imports(poison)
+    assert len(hits) == 2
+    # …and the lawful shared package is NOT flagged.
+    ok = tmp_path / "test_ok.py"
+    ok.write_text("from test_support import FLUX\n")
+    assert _offending_imports(ok) == []

@@ -18,6 +18,8 @@ from collections import Counter
 import pytest
 
 from model_unfolder.parser import config_to_ir
+from model_unfolder.adapters.transformer.blocks.attention import attention_child_blocks
+from model_unfolder.opgraph import attention_region
 
 HUB = os.path.expanduser("~/.cache/huggingface/hub")
 
@@ -71,6 +73,22 @@ def test_attn_type_list_int_codes_split_lightning_and_full():
     assert all(a.position_kind == "unknown" for a in mixers)
     fact = _sched_fact(ir)
     assert fact and fact["status"] == "config_declared" and fact["source"] == "attn_type_list"
+
+
+def test_declared_mixer_cannot_fall_through_to_familiar_internals():
+    """Name/placement evidence must remain opaque at both operation and card depth."""
+    cfg = {
+        "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 1, "num_attention_heads": 8, "vocab_size": 128,
+        "attn_type_list": [0],
+    }
+    attn = config_to_ir(cfg).layers[0].attention
+    region = attention_region({"kind": attn.kind}, 64)
+    assert region.template == "opaque"
+    assert len(region.ops) == 1
+    cards = attention_child_blocks(attn, 64)
+    assert [card["id"] for card in cards] == ["opaque_mixer"]
+    assert cards[0].get("resolved") is False
 
 
 def test_attn_type_list_all_full_stays_uniform():
@@ -227,6 +245,35 @@ def test_linear_attention_token_still_gated_delta():
     assert _kinds(ir)["gated_delta"] == 2
     gd = next(l for l in ir.layers if l.attention.kind == "gated_delta")
     assert (gd.attention.variant or {}).get("short") == "Gated DeltaNet"
+
+
+def test_block_configs_nas_projection_is_quarantined_until_source_bound():
+    """A config schedule alone may not invent NAS topology or width formulas.
+
+    This deliberately pins the pre-H8 quarantine: once the exact model source
+    binds no_op/replacement/width/norm semantics, this test must be replaced by
+    source-backed counterexamples rather than weakened.
+    """
+    base = {
+        "hidden_size": 64, "intermediate_size": 128,
+        "num_hidden_layers": 2, "num_attention_heads": 8, "vocab_size": 128,
+    }
+    declared = {
+        **base,
+        "block_configs": [
+            {"attention": {"no_op": True},
+             "ffn": {"ffn_mult": 3.5}},
+            {"attention": {"replace_with_linear": True},
+             "ffn": {"replace_with_linear": True}},
+        ],
+    }
+    plain_ir = config_to_ir(base)
+    declared_ir = config_to_ir(declared)
+    assert [layer.signature() for layer in declared_ir.layers] == [
+        layer.signature() for layer in plain_ir.layers
+    ]
+    assert all("pruned" not in str(layer.blocks).lower()
+               for layer in declared_ir.layers)
 
 
 # ---------------------------------------------------------------------------

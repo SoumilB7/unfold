@@ -6,8 +6,8 @@ from model_unfolder.evidence.conformance import check_fact_conformance
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.vision import vision_tower_evidence
-from tests.test_declared_ops import PIXTRAL_STYLE, QWEN2VL_STYLE
-from tests.test_expanded_json import GEMMA4_VISION_TINY_CONFIG, MLLAMA_VISION_TINY_CONFIG
+from test_support import PIXTRAL_STYLE, QWEN2VL_STYLE
+from test_support import GEMMA4_VISION_TINY_CONFIG, MLLAMA_VISION_TINY_CONFIG
 
 
 def _wrapper(root_type, root_arch, vision_type, vision_arch):

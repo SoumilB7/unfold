@@ -23,7 +23,7 @@ from model_unfolder.evidence.conformance import diff_conformance, resolve_view_c
 from model_unfolder.evidence.sources import resolve_source_files
 from model_unfolder.everchanging import load_conformance_abstractions, load_conformance_map
 
-from tests.test_diffusion import FLUX, PIXART
+from test_support import FLUX, PIXART
 from tests import test_coverage as tc
 
 

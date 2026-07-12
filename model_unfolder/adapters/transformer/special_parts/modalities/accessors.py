@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...common import get_config_value as _g
+from .....evidence.identity_roles import identity_display
 
 
 def first(cfg: Any, *keys: str) -> Any:
@@ -21,6 +22,7 @@ def nested(cfg: Any, key: str) -> Any:
     return value if isinstance(value, dict) or value is not None else None
 
 
+@identity_display
 def architecture(cfg: Any) -> str | None:
     """Return the first declared architecture or the model type."""
     architectures = _g(cfg, "architectures") or []

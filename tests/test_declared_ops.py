@@ -16,42 +16,8 @@ from model_unfolder import unfold
 from model_unfolder.opgraph import ops_region
 from model_unfolder.renderers.html.block_views.registry import VIEW_REGISTRY
 
-PIXTRAL_STYLE = {
-    "architectures": ["LlavaForConditionalGeneration"], "model_type": "llava",
-    "image_token_index": 10, "projector_hidden_act": "gelu",
-    "text_config": {"model_type": "mistral", "hidden_size": 5120, "num_hidden_layers": 4,
-                    "num_attention_heads": 32, "num_key_value_heads": 8,
-                    "intermediate_size": 14336, "vocab_size": 131072,
-                    "rms_norm_eps": 1e-5, "head_dim": 128},
-    "vision_config": {"model_type": "pixtral", "hidden_size": 1024, "image_size": 1024,
-                      "patch_size": 16, "num_hidden_layers": 24,
-                      "num_attention_heads": 16, "intermediate_size": 4096},
-}
-
-QWEN2VL_STYLE = {
-    "architectures": ["Qwen2VLForConditionalGeneration"], "model_type": "qwen2_vl",
-    "image_token_id": 151655,
-    "text_config": {"model_type": "qwen2", "hidden_size": 3584, "num_hidden_layers": 4,
-                    "num_attention_heads": 28, "num_key_value_heads": 4,
-                    "intermediate_size": 18944, "vocab_size": 152064,
-                    "rms_norm_eps": 1e-6},
-    "vision_config": {"model_type": "qwen2_vl_vision", "embed_dim": 1280,
-                      "hidden_size": 3584, "patch_size": 14, "temporal_patch_size": 2,
-                      "spatial_merge_size": 2, "depth": 32, "num_heads": 16},
-}
-
-MISTRAL3_STYLE = {
-    "architectures": ["Mistral3ForConditionalGeneration"], "model_type": "mistral3",
-    "image_token_index": 10, "spatial_merge_size": 2,
-    "projector_hidden_act": "gelu", "vision_feature_layer": -1,
-    "text_config": {"model_type": "mistral", "hidden_size": 5120, "num_hidden_layers": 4,
-                    "num_attention_heads": 32, "num_key_value_heads": 8,
-                    "intermediate_size": 14336, "vocab_size": 131072,
-                    "rms_norm_eps": 1e-5, "head_dim": 128},
-    "vision_config": {"model_type": "pixtral", "hidden_size": 1024, "image_size": 1024,
-                      "patch_size": 16, "num_hidden_layers": 24,
-                      "num_attention_heads": 16, "intermediate_size": 4096},
-}
+# Shared fixtures live in the importable test_support package (§16.1).
+from test_support import PIXTRAL_STYLE, QWEN2VL_STYLE, MISTRAL3_STYLE
 
 
 def test_ops_region_builds_a_chain_with_implicit_wiring():

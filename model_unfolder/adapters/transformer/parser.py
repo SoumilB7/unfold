@@ -49,6 +49,7 @@ from .special_parts.per_layer_embedding import (
     per_layer_embedding_extras,
 )
 from .special_parts.modalities import multimodal_extras
+from ...evidence.identity_roles import identity_address
 from .special_parts.modalities.fusion import apply_fusion_evidence
 from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
 from .special_parts.modalities.audio import apply_audio_evidence
@@ -107,11 +108,16 @@ def _resolve(cfg: Any, canonical: str, default=None):
     for alias in aliases:
         val = _g(cfg, alias)
         if val is not None:
-            # The field is handled — treat all its spellings as parsed so a
+            # The field is handled — mark the PRESENT spellings parsed so a
             # redundant sibling alias also present in the config (e.g. both
             # num_experts and n_routed_experts) isn't flagged as unparsed.
+            # Only present ones: an ABSENT alias spelling was never a real
+            # field to read, and marking every spelling inflated the accessed
+            # set with hundreds of phantom aliases a model never carries,
+            # drowning the accessed-but-unconsumed signal the H3 net surfaces.
             for a in aliases:
-                debug.note_access(a)
+                if (a in cfg) if isinstance(cfg, dict) else hasattr(cfg, a):
+                    debug.note_access(a)
             return val
     return default
 
@@ -529,6 +535,7 @@ def _composite_encoder_model_type(cfg: Any) -> str | None:
     return None
 
 
+@identity_address
 def _complete_config_from_transformers_registry(text_cfg: dict) -> dict:
     """Materialize sparse nested configs through HF's generic config registry."""
     model_type = str(text_cfg.get("model_type") or "").lower()
@@ -604,7 +611,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     ffn_cfg  = _nested(text_cfg, "ffn_config")
 
     def get(field, default=None):
-        """Resolve from text_cfg, falling back to nested sub-configs."""
+        """Resolve from text_cfg, falling back to nested sub-configs (intent:
+        INSPECTED — the value may drive a branch and be discarded)."""
         val = _resolve(text_cfg, field)
         if val is None:
             val = _resolve(attn_cfg, field)
@@ -612,15 +620,25 @@ def parse(cfg: Any, context=None) -> ModelIR:
             val = _resolve(ffn_cfg, field)
         return default if val is None else val
 
-    num_layers   = get("num_hidden_layers", 0)
-    hidden_size  = get("hidden_size", 0)
-    num_heads    = get("num_attention_heads", 0)
-    num_kv_heads = get("num_key_value_heads") or num_heads
-    head_dim     = get("head_dim") or (hidden_size // num_heads if num_heads else None)
-    intermediate_size = get("intermediate_size", 0)
+    def consume(field, default=None):
+        """Resolve a config field whose value FLOWS INTO the spec (intent:
+        CONSUMED — H3.1).  Same resolution as :func:`get`, but records the
+        field consumed so the accessed-but-unconsumed net can tell a value that
+        reached the architecture from one read for a branch and discarded.
+        Mark the field consumed whether present or absent: reading it (even to
+        find it absent → a default geometry) is what decided the spec value."""
+        debug.note_access(field, intent="consumed")
+        return get(field, default)
+
+    num_layers   = consume("num_hidden_layers", 0)
+    hidden_size  = consume("hidden_size", 0)
+    num_heads    = consume("num_attention_heads", 0)
+    num_kv_heads = consume("num_key_value_heads") or num_heads
+    head_dim     = consume("head_dim") or (hidden_size // num_heads if num_heads else None)
+    intermediate_size = consume("intermediate_size", 0)
     # OLMo-style: intermediate_size derived from mlp_ratio * hidden_size.
     if not intermediate_size:
-        mlp_ratio = get("mlp_ratio")
+        mlp_ratio = consume("mlp_ratio")
         if mlp_ratio and hidden_size:
             intermediate_size = int(hidden_size * float(mlp_ratio))
     # GPT-J/GPT-2/CodeGen: config's ``n_inner`` is None and the layer computes
@@ -631,7 +649,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if code_inter:
             intermediate_size = code_inter
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
-    activation_raw = get("hidden_act")
+    activation_raw = consume("hidden_act")
     if isinstance(activation_raw, dict):
         activation_raw = activation_raw.get("name")
     if activation_raw is None:
@@ -691,7 +709,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _activation_status, _activation_src = _unknown_status, None
     _note_fact("decoder.ffn", "activation", activation,
                _activation_status, _activation_src)
-    sliding_window = get("sliding_window")
+    sliding_window = consume("sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
     # A config may declare a window size but turn SWA *off* (use_sliding_window
     # = False); honor that, otherwise we'd draw sliding attention on what is
@@ -1130,10 +1148,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
 
     # ---- MoE ----
-    num_experts         = get("num_experts", 0)
-    num_experts_per_tok = get("num_experts_per_tok", 0)
-    num_shared_experts  = get("num_shared_experts", 0)
-    moe_intermediate_size = get("moe_intermediate_size", 0)
+    num_experts         = consume("num_experts", 0)
+    num_experts_per_tok = consume("num_experts_per_tok", 0)
+    num_shared_experts  = consume("num_shared_experts", 0)
+    moe_intermediate_size = consume("moe_intermediate_size", 0)
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
     first_k_dense       = _g(text_cfg, "first_k_dense_replace") or 0
@@ -1239,27 +1257,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     unknown_layer_types: set[str] = set()
     cross_layer_edges: list[CrossLayerEdge] = []
 
-    # U3: Nemotron-NAS per-layer sublayer PRESENCE + WIDTH from block_configs —
-    # the one genuinely new role-dimension (config-derivable, no source needed).
-    # The search DELETES whole attention/FFN sublayers and shrinks the survivors,
-    # so a homogeneous tower is a fabrication of ~179 sublayers that don't exist.
-    block_presence = _block_configs_presence(text_cfg, num_layers, hidden_size)
-    if block_presence is not None:
-        _n_no_attn = sum(1 for b in block_presence if not b["has_attention"])
-        _n_no_ffn = sum(1 for b in block_presence if not b["has_ffn"])
-        _note_fact("decoder.layer", "block_configs",
-                   f"{_n_no_attn} attention-free + {_n_no_ffn} FFN-free of "
-                   f"{num_layers}", "config_declared", "block_configs")
-
     layers = []
     for i in range(num_layers):
-        # Nemotron-NAS per-layer presence + width (default: everything present).
-        _bp = block_presence[i] if block_presence else None
-        has_attention_i = _bp["has_attention"] if _bp else True
-        has_ffn_i = _bp["has_ffn"] if _bp else True
-        layer_intermediate = (_bp["intermediate_size"]
-                              if _bp and _bp["intermediate_size"]
-                              else intermediate_size)
         mask, window, is_full_in_sliding_stack = _layer_mask(
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types, max_window_layers,
@@ -1453,9 +1452,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             ffn = FFNSpec(
                 kind="dense",
                 activation=activation,
-                # U3: Nemotron-NAS shrinks each surviving FFN to its own width
-                # (ffn_mult × hidden, DeciLM's rule); else the shared config width.
-                intermediate_size=layer_intermediate,
+                intermediate_size=intermediate_size,
                 gated=ffn_gated,
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
@@ -1509,14 +1506,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 extra_blocks=extra_blocks,
                 residual_scale=residual_multiplier,
                 cross_attention_spec=cross_spec,
-                has_attention=has_attention_i,
-                has_ffn=has_ffn_i,
             ))
 
     for lt in sorted(unknown_layer_types):
         warnings.append(f"Config layer_types contains unrecognized value {lt!r} — treated as causal.")
 
-    vocab_size = get("vocab_size", 0)
+    vocab_size = consume("vocab_size", 0)
     # U2 default-kill (the live wrong-value fix): absence of the tie flag is
     # NOT "untied" — the installed config CLASS default decides (gpt2 / t5 /
     # bert / bloom / falcon all omit the key and tie by class default). Tiers
@@ -1524,7 +1519,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # remote-code channel; ``_tied_weights_keys`` is capability, never proof)
     # → class default (context.class_defaults, resolved once at context
     # build) → typed unknown (param count annotates, never picks).
-    _tie_raw = get("tie_word_embeddings")
+    _tie_raw = consume("tie_word_embeddings")
     if _tie_raw is not None:
         tie_word_embeddings = bool(_tie_raw)
         _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
@@ -1695,7 +1690,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
-        final_softcap = get("final_logit_softcapping")
+        final_softcap = consume("final_logit_softcapping")
         extras["render"]["layout"] = "block_diffusion"
         extras["render"]["loop_blocks"] = block_diffusion_loop_blocks(
             n_layers=num_layers,
@@ -1851,7 +1846,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         architecture=arch_name,
         vocab_size=vocab_size,
         hidden_size=hidden_size,
-        max_position_embeddings=get("max_position_embeddings"),
+        max_position_embeddings=consume("max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
         cross_layer_edges=cross_layer_edges,
@@ -2118,57 +2113,6 @@ def _moe_layers_from_enum(text_cfg) -> list[int] | None:
             except ValueError:
                 return None
     return None
-
-
-def _find_multiple(n: int, k: int = 256) -> int:
-    """Round ``n`` up to the nearest multiple of ``k`` (DeciLM's own rule)."""
-    if n <= 0:
-        return 0
-    return n + (k - n % k) % k
-
-
-def _block_configs_presence(text_cfg, num_layers: int,
-                            hidden_size: int) -> list[dict] | None:
-    """Nemotron-NAS per-layer PRESENCE + WIDTH read from ``block_configs`` — the
-    NEW role-dimension.  A neural-architecture-search-compressed Llama DELETES
-    whole attention / FFN sublayers and shrinks the survivors, per index::
-
-        block_configs[i] = {attention: {no_op, replace_with_linear, …},
-                            ffn: {no_op, replace_with_linear, ffn_mult, …}}
-
-    Returns one ``{has_attention, has_ffn, intermediate_size, attn_linear,
-    ffn_linear}`` dict per layer, or None when the field is absent/malformed
-    (None-on-doubt — the uniform path stands rather than a fabricated schedule).
-    The field IS the schedule, so this is config-derivable without source."""
-    bc = _g(text_cfg, "block_configs")
-    if not isinstance(bc, (list, tuple)) or len(bc) != num_layers or not num_layers:
-        return None
-    out: list[dict] = []
-    for entry in bc:
-        entry = entry.to_dict() if hasattr(entry, "to_dict") else entry
-        if not isinstance(entry, dict):
-            return None
-        att = entry.get("attention") or {}
-        ffn = entry.get("ffn") or {}
-        att = att.to_dict() if hasattr(att, "to_dict") else att
-        ffn = ffn.to_dict() if hasattr(ffn, "to_dict") else ffn
-        has_att = not bool(att.get("no_op"))
-        has_ffn = not bool(ffn.get("no_op"))
-        mult = ffn.get("ffn_mult")
-        inter = None
-        if has_ffn and isinstance(mult, (int, float)) and hidden_size:
-            # DeciLM's OWN width definition (``_ffn_mult_to_intermediate_size``):
-            # ``ffn_mult`` is meaningful only through this rule, so the derived
-            # width is a config VALUE, not a gated-ness assumption.
-            inter = _find_multiple(int(2 * float(mult) * hidden_size / 3), 256)
-        out.append({
-            "has_attention": has_att,
-            "has_ffn": has_ffn,
-            "intermediate_size": inter,
-            "attn_linear": bool(att.get("replace_with_linear")),
-            "ffn_linear": bool(ffn.get("replace_with_linear")),
-        })
-    return out
 
 
 def _moe_routing(cfg: Any, context=None) -> dict | None:

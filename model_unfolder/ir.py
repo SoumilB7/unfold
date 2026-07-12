@@ -163,12 +163,6 @@ class LayerSpec:
     #: encoder_attn IN ADDITION to self_attn).  Distinct from
     #: attention.cross_attention=True, which REPLACES self-attention (mllama).
     cross_attention: Optional[AttentionSpec] = None
-    #: Per-layer SUBLAYER PRESENCE (Nemotron-NAS block_configs — a NAS search
-    #: DELETES whole attention / FFN sublayers to hit a latency budget).  Default
-    #: True keeps every ordinary layer byte-identical; False means the sublayer
-    #: is genuinely absent and is NOT drawn (never fabricated as present).
-    has_attention: bool = True
-    has_ffn: bool = True
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
@@ -182,9 +176,6 @@ class LayerSpec:
             self.cross_attention is not None,
             f.kind, f.gated, f.num_experts,
             self.norm_kind, self.norm_placement,
-            # Sublayer PRESENCE (Nemotron-NAS): an attention-free / FFN-free
-            # layer is structurally distinct — it must not fold with a full one.
-            self.has_attention, self.has_ffn,
             # Parallel-residual topology (a side-lane FFN) is a structural
             # difference the spec fields above don't capture — it distinguishes
             # e.g. Flux double-stream (sequential) from single-stream (parallel).
@@ -386,10 +377,6 @@ def _layer_to_dict(layer: LayerSpec) -> dict:
         # Only-when-present: single-attention layers stay byte-identical.
         **({"cross_attention": _attention_to_dict(layer.cross_attention)}
            if layer.cross_attention is not None else {}),
-        # Only-when-absent (Nemotron-NAS): a present sublayer omits the key, so
-        # every ordinary layer's dict is byte-identical.
-        **({"has_attention": False} if not layer.has_attention else {}),
-        **({"has_ffn": False} if not layer.has_ffn else {}),
     }
 
 

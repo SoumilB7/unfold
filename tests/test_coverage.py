@@ -33,89 +33,11 @@ from model_unfolder.block_schema import (
     validate_unique_ref_ids,
 )
 from model_unfolder.renderers.html.block_views import registry as reg
-import test_diffusion as td   # reuse the offline diffusion fixtures (FLUX / PixArt / SDXL UNet)
-import test_audio_composite as ta  # audio-gen witnesses (MusicGen composite, Stable Audio DiT)
+from test_support import _BASE, _VISION_CFG, _GRID_VISION, CORPUS  # §16.1 shared fixtures
 
-_BASE = dict(num_hidden_layers=2, hidden_size=128, num_attention_heads=8,
-             num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5)
 
-_VISION_CFG = {"model_type": "qwen2_vl", "architectures": ["Qwen2VisionTransformerPretrainedModel"],
-               "depth": 4, "hidden_size": 128, "num_heads": 8, "patch_size": 14, "in_channels": 3}
-_GRID_VISION = {**_VISION_CFG, "spatial_merge_size": 2, "temporal_patch_size": 2}
 
 # A corpus designed to span EVERY view archetype (offline — synthetic + diffusion dicts).
-CORPUS = {
-    "dense_gated":  dict(_BASE, model_type="llama", hidden_act="silu"),          # attention, gated_ffn
-    "dense_mlp":    dict(_BASE, model_type="phi", num_key_value_heads=8, hidden_act="gelu_new"),  # dense_ffn
-    "moe_mla_mtp":  dict(_BASE, model_type="deepseek_v3", kv_lora_rank=64, q_lora_rank=96,
-                         qk_nope_head_dim=64, qk_rope_head_dim=32, n_routed_experts=8,
-                         num_experts_per_tok=2, moe_intermediate_size=128, first_k_dense_replace=1,
-                         n_shared_experts=1, scoring_func="sigmoid", topk_method="noaux_tc",
-                         n_group=4, topk_group=2, norm_topk_prob=True, routed_scaling_factor=2.5,
-                         num_nextn_predict_layers=1),  # moe, moe_router, moe_expert, mla_*, mtp_*
-    "dsa":          dict(_BASE, model_type="deepseek_v32", kv_lora_rank=64, q_lora_rank=96,
-                         qk_nope_head_dim=64, qk_rope_head_dim=32, n_routed_experts=8,
-                         num_experts_per_tok=2, moe_intermediate_size=128, first_k_dense_replace=1,
-                         index_topk=2048, index_n_heads=64, index_head_dim=128),  # dsa_indexer
-    "ple":          dict(_BASE, model_type="m", hidden_size_per_layer_input=64,
-                         vocab_size_per_layer_input=1000),                         # per_layer_embedding
-    "self_cond":    dict(model_type="diffusion_gemma", canvas_length=256,
-                         text_config=dict(_BASE, n_routed_experts=8, num_experts_per_tok=2,
-                                          moe_intermediate_size=128)),             # self_conditioning
-                         # canvas_length is what the REAL config declares — block-diffusion
-                         # detection is config-first, never a model_type spelling.
-    "vision":       dict(_BASE, model_type="qwen2_vl", vision_config=_VISION_CFG,
-                         image_token_id=4),  # vision_path/encoder/self_attention/mlp/patch_embedding, multimodal_fusion
-    "audio":        dict(_BASE, model_type="qwen2_audio",
-                         audio_config={"num_hidden_layers": 4, "d_model": 128,
-                                       "encoder_attention_heads": 8}),             # audio_path/encoder
-    "video":        dict(_BASE, model_type="qwen2_vl", vision_config=_GRID_VISION,
-                         image_token_id=4, video_token_id=5),                      # video_path/encoder
-    "codec_lm":     ta.MUSICGEN_SMALL,  # conditioning_path + text_encoder tower, K-codebook heads
-    "dit_audio":    ta.STABLE_AUDIO,    # 1-D audio latent, no patchify, oobleck ladder
-    "dit_mmdit":    td.FLUX,        # attention, ffn, scheduler_step, vae_decoder(_block), text_encoder, encoded_text_concat
-    "dit_cross":    td.PIXART,      # cross_attention
-    "unet":         td.SDXL_UNET,   # unet, unet_stage, unet_resnet, unet_transformer
-    # A pipeline whose text encoder is a HETEROGENEOUS stack (sliding/global
-    # alternation) — exercises the grouped encoder tower (per-layer-type cells
-    # + per-group drills) through every universal net.
-    "dit_hybrid_encoder": {**td.FLUX, "_text_encoder_configs": {
-        "text_encoder": {
-            "_class_name": "LlamaModel", "architectures": ["LlamaForCausalLM"],
-            "model_type": "llama", "num_hidden_layers": 24, "hidden_size": 2048,
-            "num_attention_heads": 16, "num_key_value_heads": 4,
-            "intermediate_size": 5632, "hidden_act": "silu", "rms_norm_eps": 1e-5,
-            "vocab_size": 32000, "max_position_embeddings": 8192,
-            "rope_theta": 10000.0, "sliding_window": 4096,
-            "layer_types": ["sliding_attention", "full_attention"] * 12,
-        },
-    }},
-    # An MoE text encoder — the canonical router/top-k/expert drill transplanted
-    # into a supporting tower, checked by every universal net.
-    # Refiner-bearing DiT: exercises the GENERAL secondary-stack detection
-    # (config-count-bound ModuleList that is not the root stack) and the
-    # refiner_tower view — the token refiner drawn on the text rail.
-    "dit_refiner": {
-        "_class_name": "HunyuanVideoTransformer3DModel",
-        "num_layers": 2, "num_single_layers": 2, "num_refiner_layers": 2,
-        "num_attention_heads": 4, "attention_head_dim": 32,
-        "in_channels": 16, "out_channels": 16,
-        "patch_size": 2, "patch_size_t": 1, "mlp_ratio": 4.0,
-        "pooled_projection_dim": 64, "text_embed_dim": 128,
-        "qk_norm": "rms_norm", "rope_axes_dim": [8, 12, 12],
-        "rope_theta": 256.0, "guidance_embeds": True,
-    },
-    "dit_moe_encoder": {**td.FLUX, "_text_encoder_configs": {
-        "text_encoder": {
-            "_class_name": "MixtralModel", "architectures": ["MixtralForCausalLM"],
-            "model_type": "mixtral", "num_hidden_layers": 32, "hidden_size": 4096,
-            "num_attention_heads": 32, "num_key_value_heads": 8,
-            "intermediate_size": 14336, "hidden_act": "silu", "rms_norm_eps": 1e-5,
-            "vocab_size": 32000, "max_position_embeddings": 32768,
-            "rope_theta": 1e6, "num_local_experts": 8, "num_experts_per_tok": 2,
-        },
-    }},
-}
 
 # Registered FALLBACK views with no built-in model emitter — exercised by their own
 # unit tests, not by a catalogue model. The only views allowed to be model-unexercised.
@@ -288,4 +210,4 @@ def test_fallback_views_have_dedicated_coverage():
     assert _FALLBACK_VIEWS <= {k for k in reg.VIEW_REGISTRY if k}
     # tower: tests/test_tower.py ; ops: tests/test_declared_ops.py ;
     # ffn (generic dispatch): build_ffn_view exercised via gated_ffn/dense_ffn in test_smoke.
-    import test_tower, test_declared_ops  # noqa: F401  (importable ⇒ their suites run)
+    # test_tower / test_declared_ops are collected by pytest directly; no import needed (§16.1).

@@ -28,6 +28,13 @@ Repository = "https://github.com/SoumilB7/unfold"
 hf = ["transformers>=4.40"]
 dev = ["pytest>=7", "transformers>=4.40"]
 
+[tool.pytest.ini_options]
+# Put the package root on sys.path so the importable top-level `test_support`
+# package (shared fixtures, §16.1 fixture isolation) resolves from ANY test
+# file, whether collected alone or in the grouped gate. No test module imports
+# another test module (enforced by tests/test_isolation.py).
+pythonpath = ["."]
+
 [tool.setuptools.packages.find]
 include = ["model_unfolder*"]
 

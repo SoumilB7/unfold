@@ -787,6 +787,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
         "text_embed_dim": _resolve(cfg, "text_embed_dim"),
         "kv_join_dim": _resolve(cfg, "kv_join_dim"),
+        # max_sequence_length (Mochi denoiser conditioning limit): NOT read here.
+        # §16.5 removed the audit-clearing read — it had no structural consumer;
+        # the config_field_audit advisory declares it as pending-H7 debt, and H7
+        # reintroduces it as a typed fact WITH a projection (never a silent read).
         # AdaLN modulation width, and the text-encoder feature width fed in as
         # conditioning (e.g. Ideogram-4's Qwen3-VL llm_features_dim) — declared
         # facts that must be captured, not dropped.
@@ -1954,6 +1958,12 @@ def _vae_geom(cfg: Any) -> dict | None:
         "shift_factor": _g(vcfg, "shift_factor"),
         "latents_mean": _g(vcfg, "latents_mean"),
         "latents_std": _g(vcfg, "latents_std"),
+        # VAE act_fn and the VAE's own temporal_compression_ratio: NOT read here.
+        # §16.5 removed both audit-clearing reads — neither had a structural
+        # consumer (no VAE render draws them; the denoiser-level
+        # temporal_compression_ratio at line ~784 is a DISTINCT, consumed read).
+        # The config_field_audit advisory declares them as pending-H7 debt; H7
+        # reintroduces them as typed VAE facts WITH projections.
         "norm_num_groups": _g(vcfg, "norm_num_groups"),
         "down_block_types": _g(vcfg, "down_block_types"),
         "up_block_types": _g(vcfg, "up_block_types"),

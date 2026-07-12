@@ -34,7 +34,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import test_diffusion as td
+import test_support as td
 
 from model_unfolder import unfold
 from model_unfolder.adapters.diffusor import parser as diffusor

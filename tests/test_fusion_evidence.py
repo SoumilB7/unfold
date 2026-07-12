@@ -104,7 +104,7 @@ def test_unknown_wrapper_is_ambiguous_instead_of_receiving_a_template(tmp_path):
 
 
 def test_multi_input_wrapper_keeps_only_configured_modality_routes():
-    from tests.test_smoke import _gemma4_e2b_vision_config
+    from test_support import _gemma4_e2b_vision_config
 
     fusion = unfold(_gemma4_e2b_vision_config()).to_ir()["extras"]["modalities"]["fusion"]
     assert fusion["mechanism"]["kind"] == "scatter_many"
@@ -116,7 +116,7 @@ def test_multi_input_wrapper_keeps_only_configured_modality_routes():
 
 
 def test_fusion_fact_conformance_catches_kind_operation_and_routes():
-    from tests.test_declared_ops import QWEN2VL_STYLE
+    from test_support import QWEN2VL_STYLE
 
     diagram = unfold(QWEN2VL_STYLE)
     bundle = resolve_source_files(QWEN2VL_STYLE)

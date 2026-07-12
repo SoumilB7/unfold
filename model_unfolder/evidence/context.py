@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from .identity_roles import identity_address
 from .models import SourceBundle
 from .sources import resolve_source_files
 
@@ -57,12 +58,52 @@ class FactLedger:
     """
 
     records: dict[str, FactRecord] = field(default_factory=dict)
+    # H1: typed EvidenceFact instances, keyed like ``records``.  Populated only
+    # through :meth:`record_typed`, which derives the legacy row FROM the typed
+    # fact — one author, so the two views cannot diverge for typed keys.
+    typed: dict[str, Any] = field(default_factory=dict)
 
     def record(self, owner: str, fact: str, value: Any, status: str,
                source: str | None = None) -> None:
         if status not in FACT_STATUSES:
             raise ValueError(f"unknown fact status {status!r}")
         self.records[f"{owner}.{fact}"] = FactRecord(value, status, source)
+
+    def record_typed(self, fact: Any) -> None:
+        """Record one :class:`~.facts.EvidenceFact`; the serialized legacy row
+        is derived from it (H1.1 — the typed object is the single author).
+
+        §16.4: the write is validated against the closed fact registry
+        (key/owner/status/value-type/negative-completeness) before it is
+        recorded, so a typed write cannot bypass the registry by choosing a
+        different representation."""
+        from .facts import EvidenceFact
+        if not isinstance(fact, EvidenceFact):
+            raise TypeError(f"record_typed wants an EvidenceFact, got {type(fact)!r}")
+        from .registry import validate_typed_write
+        problems = validate_typed_write(fact)
+        if problems:
+            raise ValueError(
+                "typed write violates the fact registry (H2): " + "; ".join(problems))
+        key = fact.ledger_key()
+        self.typed[key] = fact
+        self.records[key] = fact.to_record()
+
+    def typed_records(self) -> dict[str, Any]:
+        """Every fact as an :class:`~.facts.EvidenceFact`: natively-typed keys
+        as recorded; legacy rows lifted on demand (H1 representability)."""
+        from .facts import EvidenceFact
+        out = dict(self.typed)
+        for key, rec in self.records.items():
+            if key not in out:
+                out[key] = EvidenceFact.from_record(key, rec)
+        return out
+
+    def strength(self, key: str) -> int:
+        """I-5 resolver over this ledger: a derived fact is as strong as its
+        weakest premise, recursively; absent premises and cycles resolve to 0."""
+        from .facts import resolve_strength
+        return resolve_strength(key, self.typed_records())
 
     def asserted(self) -> tuple[str, ...]:
         return tuple(sorted(k for k, r in self.records.items()
@@ -118,6 +159,7 @@ class ParseContext:
         )
 
 
+@identity_address
 def _installed_config_defaults(target: Any) -> dict | None:
     """The installed config CLASS defaults for the target's declared
     ``model_type`` — the hydration channel (parser's

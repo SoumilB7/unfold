@@ -71,7 +71,7 @@ def config_to_ir(
     # nothing and changes no parsing decisions. Nested component parses remain
     # inside the outer capture even if their legacy debug tracker resets.
     from .adapters.transformer import debug as _config_debug
-    with _config_debug.capture_accesses() as accessed_fields:
+    with _config_debug.capture_accesses() as (accessed_fields, consumed_fields):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}
@@ -107,10 +107,13 @@ def config_to_ir(
                                   getattr(spec, fact, None), "asserted",
                                   source="spec.asserted")
         ir.extras["fact_provenance"] = ledger.to_dict()
-        consumed = sorted(_config_debug.consumed_fields())
-        # Do not publish a misleading empty "consumed" census.  The accessor
-        # rail supports intent="consumed", but production decision sites are
-        # still being migrated; absence says the census is not available yet.
+        # Read consumed from the CAPTURE (nesting-safe: a nested component
+        # parse's reset() clears the module global but not the capture), so a
+        # multimodal/pipeline root reflects consumption across every component.
+        consumed = sorted(consumed_fields)
+        # Do not publish a misleading empty "consumed" census.  H3 is migrating
+        # decision sites to intent="consumed" one family at a time; absence says
+        # the census is not yet available for this adapter/path.
         if consumed:
             ir.extras["config_consumed"] = consumed
     _ensure_parsable(ir, cfg_or_id)

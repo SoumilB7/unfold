@@ -918,11 +918,12 @@ Status meanings:
 
 | Unit | Status | Outcome |
 |---|---|---|
-| H0 Baseline and unsafe-path quarantine | READY | Freeze metrics; classify active U6 changes; prevent new identity maps |
-| H1 Evidence primitives and negative-proof law | PENDING | Typed fact/completeness/failure types; compatibility serialization |
-| H2 Closed fact registry and legacy census | PENDING | Every structural fact registered; raw-author census blocking against growth |
-| H3 Config ownership and consumption | PENDING | source-bound config reads; inspected/consumed/projected intents |
-| H4 Semantic identity/taint guard | PENDING | arbitrary class-keyed structural maps blocked independent of names |
+| NAS quarantine (H0 sub-unit) | DONE | Unsafe `block_configs` config-only NAS projection removed (Soumil's 6-file edit) + pinning test; 0 corpus fixtures use it |
+| H0 Baseline and unsafe-path quarantine | REPAIRED (§16.2 exit green; awaiting Soumil's commit) | Lawful-resource manifest (`_LAWFUL_TABLES`, 21 tables, each path·table·category·permitted-consumers·content-fingerprint); blanket `conformance/` exemption REMOVED (registered tables only); single-entry + single-capital + dict-comprehension detection; typed `@identity_address`/`@identity_display` wrappers replace the function-name set (3 sites); 12 E-criteria poison controls. Fixed a would-be regression: `role=Class` marker tables (`component_class_markers`, `drill_class_markers`) surfaced + manifested. Verified: 25 alone + 145 blast-radius (`test_h4_taint`/`test_smoke`/`test_conformance`), tree quiescent. The 12 exit criteria are the poison controls in `tests/test_identity_guard.py`. |
+| H1 Evidence primitives and negative-proof law | REPAIRED (§16.3 exit green; awaiting Soumil's commit) | `migrated_legacy` is now `init=False` INTERNAL provenance set only by the private `_lift` path (reached via `from_record`), so a native caller can no longer opt out of the negative-proof law; a derived NEGATIVE requires effective completeness `complete`; `reason` (human) separated from a stable `legacy_source` label — a reason is never serialized as `FactRecord.source`; structured `SourceSpan`/config paths survive the typed channel. Verified: 330 passed alone (incl. FactLedger/`context.py` blast-radius + corpus round-trip), tree quiescent. Exit criteria are the tests in `tests/test_evidence_facts.py`. |
+| H2 Closed fact registry and legacy census | DONE (§16.4 exit green; awaiting Soumil's commit) | **Part A (write-side):** `FactLedger.record_typed` validates every typed write against the registry (key/owner/status/value-type/negative-completeness); typed `legacy_asserted` is REPRESENTED (projection_mode/ffn_storage/attention_kind), not laundered into `asserted` (still serializes `asserted` for baseline stability). **Part B (StructuralWrite census):** `evidence/structural_writes.py` — a line-insensitive census keyed by sink·target (module·symbol provenance) over a **202-entry surface**: `ledger`, `spec` (5 classes), `spec_field` (78 dataclass fields), `extras` (27 incl. nested leaves), `opgraph` (88 Op/Region kinds), `card`, `params`. Static no-growth + no-stale gate (`new_structural_writes`/`stale_surface_entries`), a structured legacy register (`LegacyExtrasWrite`, 18 rows each carrying owner·reason·unit·deletion — replaces the bare `RAW_EXTRAS_BASELINE`), a runtime top-level gate over the corpus, and **5 poisons** (new nested-extras/spec-field/opgraph-kind/card-claim/param-formula). A new structural author cannot bypass the registry via a different representation. Renderer free-text label fabrication-defaults are scoped to H8 (the opgraph/label fallbacks). Verified: 359 + 41 passed, corpus `asserted` baseline unchanged (641), tree quiescent. Exit criteria = `tests/test_structural_writes.py` + `tests/test_fact_registry.py`. |
+| H3 Config ownership and consumption | RESTART IN PROGRESS (§16.5): steps 1-2 landed, step 3 (wiring) remains | **Step 1 (remove the 3 audit-clearing diffusion reads) DONE** — `max_sequence_length`, VAE `act_fn`, VAE `temporal_compression_ratio` removed with pending-H7 markers; each confirmed to have NO structural consumer (the denoiser-level temporal read is a distinct, consumed one that stays); `config_field_audit` is non-blocking advisory, so the honest unread state IS the declared pending debt. **Step 2 (the owner-scoped ledger substrate) DONE** — `evidence/config_access.py`: `ConfigAccessEvent` (10 §16.5 fields), `ConfigAccessLedger` with owner-qualified `bound`/`consumed`/`accessed`/`ignored` joins (NOT global set subtraction), the 2 nets (accessed-but-unconsumed; consumed-but-unprojected clearing on projection/pending), `resolve_aliases` (records the actual spelling; unequal aliases → ambiguous, not first-wins; absent → default premise, never fictional consumed), a `current_owner` ContextVar, and derived compat name-views. **16 counterexamples PASS** (the 7 §16.5 cases — aliases/missing/conflicting/sibling-same-key/nested/concurrency/source-missing — + constructor laws + owner-qualified nets + compat). **Step 3 (REMAINING, high-conflict per §8.1):** wire the accessor to emit owner-scoped events, set `current_owner` in every parsing scope, DELETE the global `_touched/_bound/_consumed` (derive from the ledger), rewrite the 2 live nets owner-qualified, full-corpus verify. |
+| H4 Semantic identity/taint guard | ACTIVE, early slice only (§16.6) | Fact-provenance rule + negative controls exist; full semantic taint (identity/config-name sources → structural sinks, interprocedural, YAML keys+values) and the renderer/parser dependency firewall remain |
 | H5 Typed source failures and reader consolidation | PENDING | broad exception removal; unified registry/construction extraction |
 | H6 Symmetric projection and renderer firewall | PENDING | evidence→projection and projection→evidence across all domains |
 | H7 Diffusion vertical migration | PENDING | conditioning, UNet stages, temporal, VAE, scheduler all evidence-backed |
@@ -961,6 +962,11 @@ Status meanings:
    - **do not ship or reintroduce as structural truth:** `unet_blocks.yaml`,
      `vae_classes.yaml`, `schedulers.yaml`, terminal Transformer2D/KL defaults;
    - **strengthen before cutover:** mid absence, cell internals, stage temporal facts.
+   Quarantine the contemporaneous config-only `block_configs` NAS projection as
+   pre-H0 cleanup: it hardcodes one width formula, ignores `replace_with_linear`,
+   forces pre-norm topology, and creates phantom removed-sublayer blocks. Preserve
+   the raw field for H8, but do not project NAS structure until source binds the
+   exact per-layer construction and replacement semantics.
 6. Add a temporary no-growth gate for class-name marker tables that produce structural
    values.
 
@@ -971,6 +977,11 @@ behavioral deletion yet.
 
 1. Extend/refactor `FactLedger` into typed `EvidenceFact` records while keeping the
    existing serialized dictionary stable for consumers.
+   A compatibility lift of a legacy `code_proven=False/None` row must **not**
+   manufacture `completeness="complete"` from the status. Mark its completeness
+   as legacy-unknown/uninspected and mark the fact as migrated debt; enforce the
+   negative-proof constructor law on native facts. Representability is not
+   permission to invent epistemic metadata the old row never recorded.
 2. Add distinct `RawObservation`/`BoundObservation` types so a literal AST signal cannot
    be passed where an architectural fact is required.
 3. Add completeness, source spans, config paths, premises, and typed failure reason.
@@ -1003,6 +1014,11 @@ FactLedger record.
    - new legacy structural write;
    - drawable fact without projection policy;
    - parameter consumer without unknown policy.
+   The registry and census may not be a vacuous scaffold: `REGISTRY` must be
+   non-empty, every ledger fact emitted by the blessed corpus must be checked
+   against it, and a poisoned unregistered fact/owner/status must make the
+   corpus census fail. A test module that validates only `FactDefinition`
+   constructor errors does not satisfy H2 even if it is green.
 5. Never key the registry on model family. Keys describe mechanisms.
 
 **Exit:** debt may remain, but cannot grow or hide.
@@ -1194,6 +1210,9 @@ scheduler gets a generic opaque step, not Euler. Delete structural `schedulers.y
 
 1. Migrate remaining raw/default facts into the registry.
 2. Complete source-bound schedule expressions for all six Run 77 spellings.
+   This includes `block_configs`: source must bind `no_op`,
+   `replace_with_linear`, `ffn_mult`, width rounding, surviving norm/residual
+   topology, and parameter ownership before any of them may change a layer drawing.
 3. Project embedding/logit multipliers and RoPE/context-stretch dialect facts.
 4. Bind router order/renormalization and shared experts to exact construction/forward.
 5. Complete encoder-decoder topology ownership and wrapper-local head facts.
@@ -1249,6 +1268,110 @@ and corpus green; all changed pixels reviewed.
 
 This checklist is deliberately explicit so a lower-intelligence reviewer has enough
 guardrails to catch local-but-ungeneral fixes.
+
+### 8.1 Mandatory pre-change renderer-preservation gate
+
+This gate runs **before production code is edited**. Evidence hardening is not
+permission to damage a correct renderer. A principled change can still regress an
+existing model through a shared fallback, grouping fingerprint, block/card id,
+registry dispatch, parameter estimator, source-resolution mode, or layout contract.
+
+#### Pre-check P-1 — Freeze the exact baseline without re-blessing
+
+Record, for the affected witness set:
+
+- IR JSON and structural signatures;
+- selected evidence values, status, owner, source, and completeness;
+- top-level and nested block ids, view keys, child ids, and click targets;
+- SVG/HTML hashes and existing blessed regression state;
+- parameter totals and assumption ledger;
+- warnings, unresolved findings, conformance results, and config-consumption audit;
+- source provenance and whether the witness is code-resolved or fallback-only.
+
+Never regenerate blessings during this gate. A moving baseline cannot detect damage.
+
+#### Pre-check P-2 — Build a consumer and blast-radius graph
+
+For every field/function/type being changed, use call-site search to enumerate:
+
+```text
+producer → binder → fact/IR field → semantic builder → renderer/card/JSON
+         → grouping/signature → params → conformance → corpus/blessing
+```
+
+Explicitly inspect these high-risk boundaries:
+
+1. a default/fallback shared by several mechanisms;
+2. unknown-kind dispatch at both summary and drill depth;
+3. owner qualification across root/component/layer/stage;
+4. `signature()` changes that merge or split block types;
+5. block ids/view keys that control click routing and card deduplication;
+6. parameter code that assumes a detailed mechanism;
+7. source-present versus source-missing behavior;
+8. serialization keys consumed outside the edited adapter;
+9. global/context render state and concurrent renders;
+10. visual layout assumptions such as required mid/stage/card nodes.
+
+The pre-check is incomplete until every consumer is either covered by a control or
+listed as an unresolved risk to Soumil.
+
+#### Pre-check P-3 — Select witnesses by mechanism and evidence state
+
+The minimum matrix is not “the model being fixed plus one popular model.” Include:
+
+- the failing witness;
+- an equivalent model with the same mechanism but different identity;
+- a same-name/same-config-shaped counterexample with different internals;
+- an unaffected model using the shared renderer/builder;
+- dense and gated, attention and mixer, 2-D and temporal, or other applicable
+  sibling mechanisms;
+- source-present, source-partial, source-missing, and ambiguous cases;
+- one blessed corpus witness for each touched view archetype;
+- one nested drill witness, not merely the closed top-level diagram.
+
+#### Pre-check P-4 — Predict and classify every expected delta
+
+Before implementation, write an expected-delta ledger:
+
+| Delta class | Meaning | Release treatment |
+|---|---|---|
+| preservation | already-correct output must remain byte/structure/pixel stable | any drift is a blocker |
+| correctness repair | a proved wrong claim becomes correct or honestly opaque | requires source evidence and Soumil visual review |
+| provenance-only | pixels stable; evidence status/owner/source improves | mechanical + ledger review |
+| intentional editorial | truth unchanged but presentation changes | Gate C and explicit blessing decision |
+| unexplained | not predicted by the ledger | always a blocker |
+
+“The tests changed because the new law is stricter” is not a classification. Every
+changed model/card/op must have a fact-level reason.
+
+#### Pre-check P-5 — Run the no-break sequence in increasing radius
+
+1. reader/binder unit tests and counterexamples;
+2. affected adapter tests in isolation;
+3. shared builder, block-schema, view-registry, and click-card tests;
+4. `test_projection_audit.py`, conformance, config ownership, and identity nets;
+5. parameter and serialization tests;
+6. `test_coverage.py` to exercise every registered view;
+7. `test_sable.py` regression corpus without blessing;
+8. full suite;
+9. before/after galleries for only the predicted visual deltas;
+10. Dable review of top-level and every affected nested drill.
+
+If any preservation witness moves, stop and diagnose before continuing. Do not widen
+the accepted diff, alter a golden, weaken the assertion, or hide the delta behind an
+opaque fallback merely to make the suite green.
+
+#### Pre-check P-6 — Two-key release rule
+
+A change may ship only when both are true:
+
+1. **fidelity key:** every changed claim is supported by correctly scoped evidence;
+2. **preservation key:** every already-correct control is unchanged across all
+   affected consumers, or its deliberate change was separately approved by Soumil.
+
+The fidelity key cannot excuse renderer breakage. The preservation key cannot preserve
+a known lie. When they conflict, keep the code unblessed, show Soumil the exact source,
+IR, card/pixel delta, and risk, and request the product decision.
 
 1. State the architectural fact in one sentence without a model name.
 2. Name its exact owner path.
@@ -1783,3 +1906,252 @@ The project should optimize for this outcome:
 > A future implementer does not need exceptional architectural judgment to avoid
 > fabrication. The types, dependency graph, evidence statuses, counterexample harness,
 > and reporting contract make the honest implementation the easiest implementation.
+
+# ------------------------------ STUFFF STARTSSS NOW ---------------------------------
+
+# 16. Independent audit correction and binding recovery plan (AUTHORITATIVE)
+
+**This Section 16 is AUTHORITATIVE. It supersedes every conflicting status and
+direction claim in Sections 6 (tracker), 14 (completion log), and 15 (judgment
+handoff) without deleting their historical record.** Where §6/§14/§15 say a unit
+is DONE and §16 says ACTIVE/RESTART, §16 wins. The implementer follows §16's
+execution order and acceptance conditions exactly; nothing in §14/§15 authorizes
+skipping a §16 requirement.
+
+## Summary
+
+No current H0–H4 unit may remain marked `DONE` until the corrected exit criteria below pass. Hold the entire uncommitted implementation; split it into reviewed commits only after recovery.
+
+Verified audit facts to record:
+
+- Current collection: **1004 tests**.
+- Hardening subset excluding Sable: **423 passed**.
+- The prescribed grouped gate is currently invalid: `test_sable.py` fails collection because it imports `tests.test_diffusion`.
+- H0 display-map pinning does not detect added entries.
+- H1 permits a public `migrated_legacy=True` negative-proof bypass.
+- H1 permits a derived negative from presence-only premises.
+- H1 drops structured source spans when serializing a native fact.
+- H2 accepts a code-proven negative without completeness.
+- H2 sees top-level `extras` keys only; nested structural additions remain invisible.
+- H3 records absent canonical fields as accessed and consumed.
+- H3 loses the actual alias that supplied a value.
+- H3 unions bare field names across components, allowing sibling components to clear each other’s debt.
+- Three diffusion reads were added to clear audit findings but have no structural consumer.
+- Existing parser/render/default seams can still turn unknown evidence into conventional architecture.
+
+## Corrected Status and Decisions
+
+Append this authoritative status table:
+
+| Unit | Corrected status | Reason |
+|---|---|---|
+| NAS quarantine | DONE sub-unit | Unsafe `block_configs` projection removed and pinned |
+| H0 | ACTIVE | Baseline exists, but display pins, broad exemptions, single-entry maps and helper/dataflow evasions remain |
+| H1 | ACTIVE | Useful types exist, but legacy bypass, derived-negative completeness and provenance serialization are unsound |
+| H2 | DONE (repaired) | record_typed registry gate + typed legacy_asserted (Part A); StructuralWrite census over all author surfaces, static+runtime, structured legacy register, 5 poisons (Part B) — 359 + 41 passed |
+| H3 | RESTART IN PROGRESS | Steps 1-2 landed (3 reads removed; owner-scoped `ConfigAccessEvent` ledger substrate + 16 counterexamples); step 3 (accessor/owner/net wiring, delete global sets) remains |
+| H4 | ACTIVE, early slice only | Provenance rule exists; full semantic taint and dependency firewall remain |
+| H5–H10 | PENDING | Do not build domain migrations on the incomplete substrate |
+
+Lock the four decisions from Section 15:
+
+- **D1:** Preserve present-only access semantics, but replace the current bare-name implementation with a scoped event ledger.
+- **D2:** Do not move to H7. Complete corrected H3, full H4, H5 and H6 first.
+- **D3:** Top-level `extras` census is insufficient. Cover nested extras, specs, opgraph, blocks/cards, renderer claims and parameter consumers.
+- **D4:** Hold the combined commit. Land small unit commits after their own stable gates.
+
+## Recovery Implementation
+
+### 1. Stabilize verification and fixture boundaries
+
+- Move shared model fixtures into an importable top-level `test_support` package.
+- Remove every `from tests.*` import from Sable, conformance and vision tests.
+- Add a static gate forbidding production or tests from importing another test module.
+- Run every hardening/audit test file alone and in the official grouped gate.
+- Record a tree fingerprint before and after every full run. A test result is invalid if tracked or untracked source files changed during execution.
+- A completion-log test claim must include tree fingerprint, collection count, command, result and duration.
+
+### 2. Repair H0’s provisional guard
+
+- Replace table-name exemptions with an exact lawful-resource manifest containing path, table, category, permitted consumers and canonical content fingerprint.
+- A display-table entry change must alter the fingerprint and fail until reviewed.
+- Remove the blanket `conformance/` exemption; exempt only exact registered code-role vocabularies and consumers.
+- Detect single-entry class maps and single-capital class names where they reach structural sinks.
+- Remove function-name-wide address/display exemptions. Use typed address/display wrappers instead.
+- Add poison controls for:
+  - one-entry maps;
+  - display-map population growth;
+  - dict comprehensions;
+  - renamed tables;
+  - helper-returned enums;
+  - structural data hidden under a lawful display table;
+  - mappings moved into conformance or aliases files.
+
+H0 is complete only when all observed identity-table growth paths are blocking and no exemption is based solely on a filename or table name.
+
+### 3. Make H1’s evidence types sound
+
+- Make legacy lifting an internal constructor path. Remove `migrated_legacy` from the public initializer.
+- Native callers must be unable to opt out of the negative-proof law.
+- Reject derived negative facts unless the derived fact’s effective completeness is `complete`.
+- Separate `reason` from legacy `source`; never serialize a reason as source provenance.
+- Define a stable legacy source label and preserve structured `SourceSpan`/config paths in the typed channel.
+- Require:
+  - code facts to carry source provenance;
+  - config facts to carry exact config paths;
+  - derived facts to carry premises;
+  - failure facts to carry typed failure context.
+- Add tests proving:
+  - public legacy bypass is impossible;
+  - derived false from presence-only evidence raises;
+  - native source spans survive typed ledger storage;
+  - reason and source do not alias;
+  - legacy lifts remain countable debt without claiming completeness.
+
+### 4. Complete H2 across every structural author
+
+Introduce a line-insensitive `StructuralWrite` census keyed by module, enclosing symbol, sink kind and normalized target.
+
+Cover:
+
+- typed and legacy ledger writes;
+- IR/spec/dataclass construction and mutation;
+- every nested `ir.extras` leaf;
+- opgraph `Region`/`Op` construction;
+- block/card structural keys;
+- renderer structural phrases and kinds;
+- parameter-estimator structural reads and assumptions.
+
+Use both static and runtime gates:
+
+- Static scanning catches unused/new code paths.
+- Corpus runtime scanning proves exercised values, owners and types.
+- Every legacy entry must include owner, reason, migration unit and intended deletion—not merely a string in an allowlist.
+- `FactLedger.record_typed` must validate key, owner, status, value type, completeness and parameter/projection policy against the registry.
+- The registry must represent typed `legacy_asserted` debt rather than silently translating it into ordinary `asserted`.
+- Add poisons for a nested extras field, new spec field, new opgraph default, card claim and parameter formula.
+
+H2 is complete only when a new structural author cannot bypass the registry by choosing a different representation.
+
+### 5. Replace H3 with an owner-scoped config event ledger
+
+Delete the global `_touched/_bound/_consumed` truth model. Store audit state call-locally on `ParseContext`.
+
+Add:
+
+```text
+ConfigAccessEvent
+- component path
+- config path
+- canonical field
+- actual alias/path used
+- present/absent
+- intent
+- exact fact/spec owner
+- fact key or geometry target
+- source-binding reader
+- reason
+```
+
+Required semantics:
+
+- An absent field produces a default/class-default premise, not a fictional accessed/consumed config field.
+- Alias resolution records the actual spelling that supplied the value.
+- Multiple aliases with unequal values are ambiguous and cannot silently choose the first.
+- Equal redundant aliases are recorded explicitly; only the selected source path is consumed.
+- Root, text, vision, audio, VAE and denoiser fields remain separate even when their leaf keys match.
+- `bound`, `consumed`, `projected` and `ignored` are owner-qualified joins—not global set subtraction.
+- Ignore rules require adapter/component/owner and a reason.
+- Preserve old diagnostic lists only as derived compatibility views during migration.
+
+Remove the three audit-clearing diffusion reads for `max_sequence_length`, VAE `act_fn` and VAE temporal compression. Reintroduce them only through H7 typed facts with actual projections or declared pending debt.
+
+Add counterexamples for aliases, missing fields, conflicting aliases, same key in sibling components, nested parses, concurrency and source-missing cases.
+
+The two blocking nets become:
+
+- accessed/bound but neither consumed nor scoped-ignored;
+- consumed but neither projected nor registered as shrinking pending-projection debt.
+
+### 6. Finish H4, then build H5/H6 before domain migration
+
+Complete H4’s semantic taint system:
+
+- identity/config-name sources;
+- local/interprocedural propagation;
+- mapping lookups and intermediate enums;
+- spec/opgraph/block/renderer/params sinks;
+- YAML keys and values;
+- renderer/parser dependency firewall;
+- lawful typed address and display sinks.
+
+Then complete:
+
+- **H5:** one raw program index, owner-bound program graph, typed reader failures, completeness and no broad reader exceptions.
+- **H6:** registry-driven projection obligations, reverse fabrication audit, structural prose receipts and renderer firewall.
+- **H9-core:** reusable metamorphic harness before H7/H8, so every migrated reader must provide rename, collision, partial-source, missing-source and equivalent-control tests.
+
+Only after these foundations pass should H7 diffusion and H8 transformer/modalities resume.
+
+## Existing Nonlinear Seams That Must Not Be Extended
+
+Record these as forbidden foundations:
+
+- Transformer facts use specs plus a partial ledger; diffusion uses raw extras; modalities use separate evidence objects; renderers and params still infer independently.
+- The transformer parser interleaves observation, binding, interpretation, normalization, projection and diagnostics.
+- `config_facts.yaml` reads fields and emits chips without registered architecture facts; dismantle it into typed facts or scoped non-architectural ignores.
+- Class markers, scheduler markers, topology fallbacks and detailed mixer mappings remain transitional structural config debt.
+- Aliases may remain only as syntax vocabulary. They cannot prove mechanism semantics.
+- Conditioning enums may provide an opaque declared fallback; detailed projector/operation graphs require source binding.
+- Opgraph and labels still contain default-to-MHA, causal, RoPE, gated, split-storage, SiLU and transformer fallbacks.
+- Parameter estimates consume raw specs and conventions independently from evidence.
+- There are still 69 broad exception catches; evidence-reader failures can collapse into fallbacks.
+- Raw extraction is duplicated across forward, transitive and specialized readers.
+- Corpus-only gates miss unused code and unseen mechanisms.
+- Test fixtures and collection order currently hide isolation failures.
+
+Every migrated unit must delete or quarantine the corresponding old path. “New reader plus old fallback forever” is not completion.
+
+## Execution Order and Commit Gates
+
+1. Append Section 16 and mark it authoritative.
+2. Fix fixture isolation and verification quiescence.
+3. Commit the already-reviewed NAS quarantine separately.
+4. Repair and commit H0.
+5. Repair and commit H1.
+6. Complete and commit H2.
+7. Replace H3 with the scoped event ledger in shadow mode.
+8. Clean corpus accounting and flip H3 nets blocking.
+9. Complete H4.
+10. Complete H5, H6 and H9-core.
+11. Migrate H7 one fact family at a time.
+12. Migrate H8 one mechanism at a time.
+13. Finish H9 frontier matrices and H10 release/Dable closure.
+
+Only one high-conflict unit may modify parser/evidence infrastructure at a time.
+
+## Acceptance and Stop Conditions
+
+A unit is complete only when:
+
+- its anti-vacuous poison tests fire;
+- each audit file passes alone;
+- targeted and full suites pass on the same unchanged tree fingerprint;
+- corpus and conformance are green;
+- preservation witnesses remain unchanged;
+- every intentional image/card delta is inspected;
+- no blessing is modified without Soumil’s decision;
+- old paths and temporary allowlists shrink as specified.
+
+Stop immediately when:
+
+- the tree changes during verification;
+- a new allowlist entry lacks an owner and deletion unit;
+- a renderer or params path needs raw config/source access;
+- a weak fact would be projected as a stronger mechanism;
+- a fix requires a new interpreter capability outside the current unit;
+- a test is changed merely to accept an unexplained delta.
+
+Final achieved output:
+
+> Every architectural claim is an owner-qualified typed fact backed by exact source/config evidence, all structural consumers use that fact, unknown remains unknown at every drill depth, identity/config vocabulary cannot select architecture, and no new model can require a renderer branch or family table to become accurate.

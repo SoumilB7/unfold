@@ -16,7 +16,7 @@ import pytest
 import model_unfolder as mu
 from model_unfolder import lint_labels, sable, bless, check_regression, load_corpus
 from model_unfolder.evidence import check_fact_conformance, check_wiring_conformance
-from tests.test_diffusion import FLUX, PIXART, LLAMA
+from test_support import FLUX, PIXART, LLAMA
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
 
@@ -187,7 +187,7 @@ def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
         "vision_config": {"hidden_size": 128, "new_architecture_switch": True},
         "torch_dtype": "float16",  # intentionally ignored vocabulary
     }
-    with debug.capture_accesses() as touched:
+    with debug.capture_accesses() as (touched, consumed):
         debug.note_access("model_type")
         debug.note_access("vision_config")
         debug.reset()  # a nested parser's legacy reset must not erase capture

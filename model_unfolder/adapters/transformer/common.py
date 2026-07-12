@@ -10,12 +10,26 @@ def get_config_value(cfg: Any, name: str, default=None):
     """Get a config value from a dict or a HuggingFace config object.
 
     Every field lookup funnels through here, so this is where we record the
-    access for the unparsed-fields diagnostic (see :mod:`.debug`).
-    """
-    debug.note_access(name)
+    access for the config diagnostics (see :mod:`.debug`).
+
+    The access is recorded only when the field is actually PRESENT.  An alias
+    probe that misses (``_resolve`` tries several spellings until one hits) is
+    not a meaningful read: recording it inflated the accessed set with hundreds
+    of phantom alias spellings a model never carries, which drowned the
+    accessed-but-unconsumed signal (the granite-multiplier class) the H3 net
+    exists to surface.  The unread diagnostic is unchanged — an absent alias is
+    not in the config's present keys either way.  ``consume()`` marks its field
+    regardless of presence, because an ABSENT field can still decide a fact
+    (num_key_value_heads absent ⇒ MHA)."""
     if isinstance(cfg, dict):
-        return cfg.get(name, default)
-    return getattr(cfg, name, default)
+        present = name in cfg
+        value = cfg.get(name, default)
+    else:
+        present = hasattr(cfg, name)
+        value = getattr(cfg, name, default)
+    if present:
+        debug.note_access(name)
+    return value
 
 
 def architecture_name(cfg: Any, fallback: str) -> str:

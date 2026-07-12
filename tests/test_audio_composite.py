@@ -15,50 +15,14 @@ from model_unfolder.block_schema import validate_click_coupling
 
 # facebook/musicgen-small config.json — the composite contract: bare slots
 # text_encoder / audio_encoder / decoder, each declaring its own model_type.
-MUSICGEN_SMALL = {
-    "model_type": "musicgen",
-    "architectures": ["MusicgenForConditionalGeneration"],
-    "is_encoder_decoder": True,
-    "text_encoder": {
-        "model_type": "t5", "d_model": 768, "num_layers": 12, "num_heads": 12,
-        "d_ff": 3072, "d_kv": 64, "vocab_size": 32128,
-        "feed_forward_proj": "relu", "dense_act_fn": "relu", "is_gated_act": False,
-        "relative_attention_num_buckets": 32,
-    },
-    "audio_encoder": {
-        "model_type": "encodec", "sampling_rate": 32000, "audio_channels": 1,
-        "num_filters": 64, "upsampling_ratios": [8, 5, 4, 4],
-        "codebook_size": 2048, "codebook_dim": 128, "num_lstm_layers": 2,
-        "hidden_size": 128, "num_residual_layers": 1,
-    },
-    "decoder": {
-        "model_type": "musicgen_decoder", "vocab_size": 2048,
-        "max_position_embeddings": 2048, "num_hidden_layers": 24,
-        "ffn_dim": 4096, "num_attention_heads": 16, "hidden_size": 1024,
-        "activation_function": "gelu", "num_codebooks": 4, "audio_channels": 1,
-        "scale_embedding": False, "tie_word_embeddings": False,
-    },
-}
 
 # stabilityai/stable-audio-open-1.0 — 1-D audio-latent DiT + oobleck VAE.
-STABLE_AUDIO = {
-    "_class_name": "StableAudioDiTModel",
-    "sample_size": 1024, "in_channels": 64, "out_channels": 64,
-    "num_layers": 24, "attention_head_dim": 64, "num_attention_heads": 24,
-    "num_key_value_attention_heads": 12,
-    "cross_attention_dim": 768, "cross_attention_input_dim": 768,
-    "global_states_input_dim": 1536, "time_proj_dim": 256,
-    "text_encoder": ["transformers", "T5EncoderModel"],
-    "_vae_config": {
-        "_class_name": "AutoencoderOobleck", "audio_channels": 2,
-        "sampling_rate": 44100, "decoder_channels": 128,
-        "channel_multiples": [1, 2, 4, 8, 16],
-        "downsampling_ratios": [2, 4, 4, 8, 8], "decoder_input_channels": 64,
-    },
-}
 
 
 # ---- U-A: composite wrapper walk -------------------------------------------
+
+from test_support import MUSICGEN_SMALL, STABLE_AUDIO
+
 
 def test_musicgen_composite_parses_the_decoder_stack():
     ir = config_to_ir(MUSICGEN_SMALL)
@@ -190,7 +154,7 @@ def test_stable_audio_has_no_fabricated_patchify():
     assert "no patchify" in blocks["embed"]["description"]
     assert blocks["lm_head"]["label"] == "To latent channels"
     # An image DiT with a DECLARED patch keeps its Patchify labels.
-    import test_diffusion as td
+    import test_support as td
     pix = config_to_ir(td.PIXART)
     pix_blocks = {b["id"]: b for b in pix.extras["render"]["model_blocks"]}
     assert pix_blocks["embed"]["label"] == "Patchify"

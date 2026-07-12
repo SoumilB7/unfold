@@ -54,9 +54,11 @@ def test_parse_folds_asserted_tags_into_extras():
     assert mask_rec.get("source") == "attention_causality_from_files"
     asserted = [k for k, rec in prov.items() if rec["status"] == "asserted"]
     assert not any(k.endswith(".mask") for k in asserted)
-    # Consumption/projection receipts are a later gate.  Publishing [] would
-    # falsely claim a complete census in which no field reached a fact.
-    assert "config_consumed" not in ir.extras
+    # H3 Phase B activation (§11 step 4): the geometry/embedding family is
+    # migrated to consume(), so a real parse now publishes a NON-empty consumed
+    # census (never the misleading empty [] the earlier gate guarded against).
+    assert "config_consumed" in ir.extras
+    assert "hidden_size" in ir.extras["config_consumed"]
 
 
 def test_ledger_is_call_local():
