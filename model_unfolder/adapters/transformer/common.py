@@ -28,7 +28,7 @@ def get_config_value(cfg: Any, name: str, default=None):
         present = hasattr(cfg, name)
         value = getattr(cfg, name, default)
     if present:
-        debug.note_access(name)
+        debug.note_access(name)   # marks the legacy set AND emits the owner-scoped event
     return value
 
 

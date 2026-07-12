@@ -50,6 +50,7 @@ from .special_parts.per_layer_embedding import (
 )
 from .special_parts.modalities import multimodal_extras
 from ...evidence.identity_roles import identity_address
+from ...evidence import config_access as _config_access
 from .special_parts.modalities.fusion import apply_fusion_evidence
 from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
 from .special_parts.modalities.audio import apply_audio_evidence
@@ -622,12 +623,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     def consume(field, default=None):
         """Resolve a config field whose value FLOWS INTO the spec (intent:
-        CONSUMED — H3.1).  Same resolution as :func:`get`, but records the
-        field consumed so the accessed-but-unconsumed net can tell a value that
-        reached the architecture from one read for a branch and discarded.
-        Mark the field consumed whether present or absent: reading it (even to
-        find it absent → a default geometry) is what decided the spec value."""
-        debug.note_access(field, intent="consumed")
+        CONSUMED — H3.1).  Same resolution as :func:`get`, but records the field
+        consumed so the accessed-but-unconsumed net can tell a value that reached
+        the architecture from one read for a branch and discarded.
+
+        Legacy (unchanged): the bare-name ``_consumed`` set marks the field
+        whether present or absent.  Owner-scoped (§16.5): a PRESENT field is a
+        ``consumed`` event; an ABSENT one is an ``absent_default`` premise (a
+        default geometry decided it — never a fictional consumed config field)."""
+        present = any(
+            ((a in c) if isinstance(c, dict) else hasattr(c, a))
+            for c in (text_cfg, attn_cfg, ffn_cfg) if c is not None
+            for a in _ALIASES.get(field, [field]))
+        # ONE call marks the legacy set AND emits the owner-scoped event: present
+        # -> consumed, absent -> absent_default premise (§16.5).
+        debug.note_access(field, intent="consumed", present=present)
         return get(field, default)
 
     num_layers   = consume("num_hidden_layers", 0)

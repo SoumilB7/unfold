@@ -49,7 +49,7 @@ _OPGRAPH_CTORS = frozenset({"Op", "Region"})
 # structural writes (kept in sync with registry.INFRA_EXTRAS_KEYS).
 _INFRA_EXTRAS = frozenset({
     "config_audit", "config_consumed", "fact_provenance", "source_provenance",
-    "code_evidence",
+    "code_evidence", "config_access",
 })
 # Structural card/block dict keys (an ``id``/``kind``/``lane``/``role``/``tag``
 # claim on a drawn card is a structural assertion; free-text keys are not).

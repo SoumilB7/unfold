@@ -71,7 +71,9 @@ def config_to_ir(
     # nothing and changes no parsing decisions. Nested component parses remain
     # inside the outer capture even if their legacy debug tracker resets.
     from .adapters.transformer import debug as _config_debug
-    with _config_debug.capture_accesses() as (accessed_fields, consumed_fields):
+    from .evidence import config_access as _config_access
+    with _config_access.capture_events() as _access_ledger, \
+            _config_access.owner_scope("root"):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}
@@ -86,12 +88,35 @@ def config_to_ir(
             for component, files in component_files.items()
         },
     }
+    # H3 (§16.5): config_audit is DERIVED from the owner-scoped ledger — the old
+    # module-global ``_touched``/``_consumed`` are DELETED.  The compat bare-name
+    # ``accessed`` set is present-accessed UNION absent-default (an absent consume
+    # was in the old ``_touched`` too), so the unread diagnostic is unchanged.
+    _absent_names = {field for _, field in _access_ledger.absent_defaults()}
+    _accessed_compat = set(_access_ledger.touched_names()) | _absent_names
     unread = _config_debug.unparsed_fields(
-        [cfg], touched=accessed_fields, recursive=True
+        [cfg], touched=_accessed_compat, recursive=True
     )
     ir.extras["config_audit"] = {
         "unread": unread,
-        "accessed": sorted(accessed_fields),
+        "accessed": sorted(_accessed_compat),
+    }
+    # The OWNER-SCOPED view of the same audit: every access qualified by the
+    # component that made it, so a sibling never clears another's debt.
+    def _q(pairs):
+        return sorted(f"{owner}:{field}" for owner, field in pairs)
+    # Gate net-1 to owners that actually HAVE a consumed census: an owner with no
+    # consumed events (e.g. a diffusion adapter still on inspected-only reads) is
+    # not yet computable, so it stays inert rather than flooding every accessed
+    # field as "unconsumed" (the old net's ``if not consumed`` gate, now per-owner).
+    _owners_with_consumed = {owner for owner, _ in _access_ledger.consumed()}
+    _gated_unconsumed = {of for of in _access_ledger.accessed_but_unconsumed()
+                         if of[0] in _owners_with_consumed}
+    ir.extras["config_access"] = {
+        "accessed": _q(_access_ledger.accessed()),
+        "consumed": _q(_access_ledger.consumed()),
+        "absent_default": _q(_access_ledger.absent_defaults()),
+        "accessed_unconsumed": _q(_gated_unconsumed),
     }
     # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
     # tags into the call-local FactLedger and serialize it.  This is accounting,
@@ -107,10 +132,9 @@ def config_to_ir(
                                   getattr(spec, fact, None), "asserted",
                                   source="spec.asserted")
         ir.extras["fact_provenance"] = ledger.to_dict()
-        # Read consumed from the CAPTURE (nesting-safe: a nested component
-        # parse's reset() clears the module global but not the capture), so a
-        # multimodal/pipeline root reflects consumption across every component.
-        consumed = sorted(consumed_fields)
+        # Consumed census DERIVED from the owner-scoped ledger (compat bare names:
+        # present-consumed UNION absent-default, matching the deleted _consumed).
+        consumed = sorted(set(_access_ledger.consumed_names()) | _absent_names)
         # Do not publish a misleading empty "consumed" census.  H3 is migrating
         # decision sites to intent="consumed" one family at a time; absence says
         # the census is not yet available for this adapter/path.

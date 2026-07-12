@@ -314,7 +314,7 @@ def validate_typed_write(fact) -> list[str]:
 # not raw structural writes.  Excluded from the raw-structural-write census.
 INFRA_EXTRAS_KEYS = frozenset({
     "config_audit", "source_provenance", "fact_provenance", "config_consumed",
-    "code_evidence",
+    "code_evidence", "config_access",
 })
 
 

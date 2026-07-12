@@ -19,9 +19,11 @@ accessor wiring and the net cutover land incrementally on top (as H1/H2 did).
 """
 from __future__ import annotations
 
+import functools
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 
 # The owner path of the component whose parse is currently reading config.  Set
@@ -47,6 +49,19 @@ INTENTS = frozenset({
 })
 
 _PRESENT_ACCESS = frozenset({"inspected", "bound", "consumed", "ambiguous", "ignored"})
+
+# Address/identity/metadata config keys: read to LOCATE source or LABEL a card,
+# never to decide structure (I-1).  An INSPECTED read of one of these is recorded
+# as ``ignored`` (a scoped ignore, with a reason), so it does not show up as
+# accessed-but-unconsumed debt — the lawful counterpart to H0's typed
+# address/display wrappers, applied to the config-access ledger.
+_ADDRESS_KEYS = frozenset({
+    "model_type", "architectures", "_class_name", "_name_or_path", "name_or_path",
+    "model_id", "repo_id", "family", "family_hint", "vision_family", "audio_family",
+    "profile", "auto_map", "_diffusers_version", "transformers_version",
+    "torch_dtype", "_commit_hash", "_vae_config", "_scheduler_config",
+    "_text_encoder_configs", "_name", "id2label", "label2id",
+})
 
 
 @dataclass(frozen=True)
@@ -207,7 +222,97 @@ def resolve_aliases(cfg: Any, canonical: str, aliases: Iterable[str], *,
                 if len(present) > 1 else ""))
 
 
+# --------------------------------------------------------------------------- #
+# Runtime emission — the accessor appends owner-scoped events to every active
+# ledger.  Nesting- and concurrency-safe via a ContextVar (the same discipline
+# the legacy capture used, but owner-scoped events instead of bare names): a
+# nested component parse appends to every enclosing ledger AND its own.
+# --------------------------------------------------------------------------- #
+_active_ledgers: ContextVar[tuple["ConfigAccessLedger", ...]] = ContextVar(
+    "model_unfolder_config_access_ledgers", default=())
+
+
+@contextmanager
+def capture_events():
+    """Capture owner-scoped config-access events for one parse (nested component
+    parses append to every enclosing ledger, so a multimodal root reflects every
+    component's accesses).  Yields the fresh :class:`ConfigAccessLedger`."""
+    ledger = ConfigAccessLedger()
+    token = _active_ledgers.set((*_active_ledgers.get(), ledger))
+    try:
+        yield ledger
+    finally:
+        _active_ledgers.reset(token)
+
+
+@contextmanager
+def owner_scope(owner: str):
+    """Set :data:`current_owner` for the enclosed parse region (a component
+    boundary — root/text/vision/audio/vae/denoiser), so accesses inside are
+    attributed to that owner even when a sibling shares the leaf spelling."""
+    token = current_owner.set(owner)
+    try:
+        yield
+    finally:
+        current_owner.reset(token)
+
+
+def owner_scoped(owner: str) -> Callable:
+    """Decorator form of :func:`owner_scope` — every config access made inside
+    the decorated reader is attributed to ``owner`` (used where the reads are
+    spread through a function body, e.g. the diffusor VAE geometry reader)."""
+    def decorate(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            with owner_scope(owner):
+                return func(*args, **kwargs)
+        return wrapper
+    return decorate
+
+
+def active_ledger() -> "ConfigAccessLedger | None":
+    """The innermost active ledger (or None outside a capture)."""
+    ledgers = _active_ledgers.get()
+    return ledgers[-1] if ledgers else None
+
+
+def active_touched_names() -> frozenset[str]:
+    """Compat ``_touched`` set from the active ledger — present-accessed UNION
+    absent-default names (an absent consume was in the old ``_touched`` too), so
+    the derived config diagnostics match the deleted module global exactly.
+    Empty outside a capture."""
+    led = active_ledger()
+    if led is None:
+        return frozenset()
+    return led.touched_names() | frozenset(f for _, f in led.absent_defaults())
+
+
+def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None,
+         fact_owner: str = "", fact_key: str = "", reader: str = "",
+         reason: str = "", component: str | None = None) -> None:
+    """Append one owner-scoped event to every active ledger (a no-op outside a
+    capture, so the accessor stays cheap when no audit is running).  The owner
+    comes from :data:`current_owner` unless given explicitly."""
+    ledgers = _active_ledgers.get()
+    if not ledgers:
+        return
+    owner = component if component is not None else current_owner.get()
+    # An INSPECTED read of an address/identity key is a lawful scoped ignore, not
+    # accessed-but-unconsumed debt (it located source or labelled a card).
+    if intent == "inspected" and canonical in _ADDRESS_KEYS:
+        intent = "ignored"
+        reason = reason or "identity/address read — locates source or labels, not structure"
+    event = ConfigAccessEvent(
+        component=owner, config_path=f"{owner}:{alias or canonical}",
+        canonical=canonical, alias=(alias or canonical) if present else None,
+        present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
+        reader=reader, reason=reason)
+    for ledger in ledgers:
+        ledger.record(event)
+
+
 __all__ = [
     "ConfigAccessEvent", "ConfigAccessLedger", "INTENTS", "current_owner",
-    "resolve_aliases",
+    "resolve_aliases", "capture_events", "owner_scope", "owner_scoped", "emit",
+    "active_ledger", "active_touched_names",
 ]

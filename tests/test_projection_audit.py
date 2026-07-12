@@ -186,15 +186,14 @@ def test_census_allowed_set_is_the_three_presentation_conventions():
 # --------------------------------------------------------------------------- #
 
 def test_accessed_unprojected_is_inert_without_a_consumed_census():
-    """Without a consumed census the accessed-but-unprojected signal is not
-    computable, so the net stays silent.  (Since H3 Phase B, a real transformer
-    parse DOES publish a consumed census — see
-    ``test_real_transformer_parse_publishes_a_consumed_census`` — so the inert
-    case is exercised synthetically, an extras block that carries no
-    ``config_consumed``: an adapter/path H3 has not yet migrated.)"""
-    ir = {"extras": {"config_audit": {"accessed": ["hidden_size", "sliding_window"]}}}
-    assert "config_consumed" not in ir["extras"]
+    """H3 (§16.5): the net reads the OWNER-SCOPED ``config_access`` ledger, whose
+    ``accessed_unconsumed`` is already gated at parse time to owners that have a
+    consumed census.  An extras block with no such ledger entry (an adapter/owner
+    on inspected-only reads) is inert."""
+    ir = {"extras": {"config_access": {"accessed_unconsumed": []}}}
     assert _accessed_unprojected_findings(ir) == []
+    # and a legacy extras block with no config_access at all is likewise inert
+    assert _accessed_unprojected_findings({"extras": {"config_audit": {}}}) == []
 
 
 def test_real_transformer_parse_publishes_a_consumed_census():
@@ -207,14 +206,18 @@ def test_real_transformer_parse_publishes_a_consumed_census():
 
 
 def test_accessed_unprojected_fires_once_a_consumed_census_exists():
-    """When the consumed census IS available, a field accessed but not consumed
-    into a spec is surfaced (the granite-multiplier class)."""
-    ir = {"extras": {
-        "config_consumed": ["hidden_size"],
-        "config_audit": {"accessed": ["hidden_size", "sliding_window"]},
-    }}
+    """When the owner-scoped ledger surfaces an accessed-but-unconsumed field,
+    the net reports it — OWNER-QUALIFIED (``owner:field``), so a sibling's
+    consumption of the same leaf key does not clear it (the granite-multiplier
+    class, now free of the flat-global collision)."""
+    ir = {"extras": {"config_access": {
+        "accessed_unconsumed": ["root:sliding_window", "root.vision:hidden_size"],
+    }}}
     findings = _accessed_unprojected_findings(ir)
-    assert len(findings) == 1 and "sliding_window" in findings[0]
+    assert len(findings) == 2
+    assert any("root:sliding_window" in f for f in findings)
+    # the vision hidden_size is flagged for vision even though text consumed one
+    assert any("root.vision:hidden_size" in f for f in findings)
 
 
 def test_accessed_unprojected_is_wired_advisory_not_blocking():

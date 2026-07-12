@@ -26,6 +26,7 @@ from contextvars import ContextVar
 from typing import Any
 
 from ...everchanging import load_ignored_fields
+from ...evidence import config_access as _config_access
 
 # --- the one switch -------------------------------------------------------
 # Off by default. Turn the parse-time diagnostics back on by setting DEBUG = True
@@ -42,93 +43,54 @@ _IGNORED_KEYS: frozenset[str] = frozenset(_ignored["keys"])
 _IGNORED_SUFFIXES: tuple[str, ...] = tuple(_ignored["suffixes"])
 _OPAQUE_SCOPES: frozenset[str] = frozenset(_ignored["opaque_scopes"])
 
-# H3 — the config-access INTENT rail (plan §7-H3.1).  Every lookup lands in
-# ``_touched`` (the union, so the unread diagnostic is unchanged); the two
-# stronger intents route additionally into their own set:
-#   * inspected — read while exploring (the default; ``_touched`` only);
-#   * bound     — resolved source/schema proves this field owns a branch or
-#                 expression for the current owner (H3.2/3.3, I-2);
-#   * consumed  — the returned value DECIDED a fact or geometry (H3.1).
-# ``projected`` (reached a drawn/machine consumer) and ``ignored`` (scoped
-# reason+owner) are the other two mandatory intents, but they are DERIVED
-# elsewhere — ``projected`` by joining ``consumed`` with the #13 projection
-# receipts at IR assembly, ``ignored`` by the scoped ignore rules — not marked
-# in this hot accessor.  A field in ``_touched`` but never in ``_consumed`` is
-# the accessed-but-unconsumed class the run-77 audit could not see (granite
-# multipliers, PM-2).
+# H3 (§16.5): config-access audit is the OWNER-SCOPED ledger in
+# ``evidence/config_access.py`` — the single truth model.  The old module-global
+# ``_touched``/``_bound``/``_consumed`` sets and their ``capture_accesses`` are
+# DELETED.  The intent rail (inspected / bound / consumed) survives as the
+# accessor's vocabulary; ``note_access`` funnels every lookup into the ledger.
+# The old name-list API (``bound_fields``/``consumed_fields``/``unparsed_fields``)
+# is retained ONLY as a DERIVED compatibility view over the active ledger.
 _RAIL_INTENTS: frozenset[str] = frozenset({"inspected", "bound", "consumed"})
-_touched: set[str] = set()
-_bound: set[str] = set()
-_consumed: set[str] = set()
-# Each active capture is a ``(touched, consumed)`` pair of sets.  A capture
-# survives a NESTED parse's ``reset()`` (which only clears the module globals),
-# so the root's config_to_ir sees the UNION of consumed fields across the root
-# and its embedded component parses — the module-global ``_consumed`` alone is
-# clobbered by a nested reset (the qwen2-vl / diffusion-text-encoder case).
-_captures: ContextVar[tuple[tuple[set[str], set[str]], ...]] = ContextVar(
-    "model_unfolder_config_access_captures", default=()
-)
 
 
 def reset() -> None:
-    """Clear the per-parse record of which fields were read."""
-    _touched.clear()
-    _bound.clear()
-    _consumed.clear()
+    """No-op: audit state is call-local on the config-access ledger (a fresh one
+    per ``config_access.capture_events`` scope) — no module global to clear."""
 
 
-def note_access(name: str, intent: str = "inspected") -> None:
-    """Record that the parser looked up config field ``name`` (any alias).
+def note_access(name: str, intent: str = "inspected", *, present: bool = True) -> None:
+    """Record a config-field lookup into the owner-scoped ledger — the ONE funnel,
+    so every access site on this hot path is covered.
 
-    ``intent`` is one of ``inspected`` (default) / ``bound`` / ``consumed``
-    (see the rail note above).  ``bound`` and ``consumed`` additionally route
-    into their own set; every intent still lands in ``_touched``.  An unknown
-    intent is a loud error — a typo must never silently degrade to inspected.
-    """
+    ``intent`` is ``inspected`` (default) / ``bound`` / ``consumed``; an unknown
+    intent is a loud error.  ``present`` is True for every present-only accessor
+    (``get_config_value``/``_resolve``) and False only for a ``consume`` of an
+    ABSENT field — which the ledger records as an ``absent_default`` premise, never
+    a fictional consumed config field.  ``bound`` degrades to inspected here (its
+    source-binding reader is named where the accessor migrates to
+    ``resolve_aliases``); the net still counts it on net-1's accessed side.
+    A no-op outside a capture."""
     if intent not in _RAIL_INTENTS:
         raise ValueError(
             f"unknown config-access intent {intent!r}; expected one of "
             f"{sorted(_RAIL_INTENTS)} (projected/ignored are derived, not marked here)")
-    _touched.add(name)
-    if intent == "bound":
-        _bound.add(name)
-    elif intent == "consumed":
-        _consumed.add(name)
-    # Add to every active capture so an outer model audit includes legitimate
-    # work performed by nested component parses (diffusion text encoders), while
-    # each nested capture can still be inspected independently. ContextVar keeps
-    # concurrent parses isolated; parser-level ``reset()`` cannot erase a Sable
-    # capture wrapped around the whole model parse.
-    for touched, consumed in _captures.get():
-        touched.add(name)
-        if intent == "consumed":
-            consumed.add(name)
+    ledger_intent = ("absent_default" if (intent == "consumed" and not present)
+                     else "inspected" if intent == "bound" else intent)
+    _config_access.emit(name, intent=ledger_intent, present=present)
 
 
 def bound_fields() -> frozenset[str]:
-    """Fields a resolved source reader named as owning a branch/expression
-    for the current owner (H3.2 — the I-2 ownership binding)."""
-    return frozenset(_bound)
+    """DERIVED compat: fields marked ``bound`` in the active ledger (true bindings
+    come from ``resolve_aliases``; the ``note_access`` funnel degrades to
+    inspected, so this is empty until the accessors migrate)."""
+    led = _config_access.active_ledger()
+    return frozenset() if led is None else led.bound_names()
 
 
 def consumed_fields() -> frozenset[str]:
-    """Fields whose value reached a fact this parse (H3.1 consumption)."""
-    return frozenset(_consumed)
-
-
-@contextmanager
-def capture_accesses():
-    """Capture config field names read inside this context, including nested
-    parses.  Yields the ``(touched, consumed)`` pair of sets; both keep
-    accumulating across nested parses and survive their ``reset()`` calls, so
-    the root parse's audit reflects every component it built."""
-    touched: set[str] = set()
-    consumed: set[str] = set()
-    token = _captures.set((*_captures.get(), (touched, consumed)))
-    try:
-        yield touched, consumed
-    finally:
-        _captures.reset(token)
+    """DERIVED compat: fields whose value reached a fact this parse."""
+    led = _config_access.active_ledger()
+    return frozenset() if led is None else led.consumed_names()
 
 
 def _value_at(cfg: Any, path: str):
@@ -154,7 +116,7 @@ def unparsed_fields(
     Matching is by key name because parsers may materialize/copy nested HF config
     objects; dotted paths remain in the finding so a human can locate ownership.
     """
-    reads = _touched if touched is None else touched
+    reads = _config_access.active_touched_names() if touched is None else touched
     present: dict[str, str] = {}
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
@@ -260,6 +222,5 @@ def _emit(msg: str) -> None:
 
 __all__ = [
     "DEBUG", "reset", "note_access", "bound_fields", "consumed_fields",
-    "capture_accesses", "unparsed_fields",
-    "report_unparsed", "report_partial", "report_error",
+    "unparsed_fields", "report_unparsed", "report_partial", "report_error",
 ]

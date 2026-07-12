@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .....evidence import config_access as _config_access
 from ...common import TEXT_WRAPPER_KEYS, get_config_value as _g
 from .fusion import fusion_path
 from .registry import MODALITY_REGISTRY
@@ -48,14 +49,19 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
         sub_cfg = spec.resolve_config(host)
         if sub_cfg is None:
             continue
-        path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
-        if not path:
-            continue                     # a builder may veto on closer evidence
-        modalities[spec.name] = path
-        if spec.companion is not None:
-            extra = spec.companion(host, sub_cfg, text_hidden_size)
-            if extra:
-                modalities.update(extra)
+        # H3 (§16.5): attribute this tower's config reads to its OWN owner, so a
+        # vision ``hidden_size`` and the text ``hidden_size`` are distinct ledger
+        # entries and one sibling never clears another's accessed-but-unconsumed
+        # debt.  Generic over the registry — the loop still names no modality.
+        with _config_access.owner_scope(f"root.{spec.name}"):
+            path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
+            if not path:
+                continue                 # a builder may veto on closer evidence
+            modalities[spec.name] = path
+            if spec.companion is not None:
+                extra = spec.companion(host, sub_cfg, text_hidden_size)
+                if extra:
+                    modalities.update(extra)
 
     if not modalities:
         return None

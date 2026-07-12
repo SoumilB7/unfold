@@ -299,27 +299,20 @@ def _zero_asserted_census_findings(cfg, source: str) -> list[str]:
 
 
 def _accessed_unprojected_findings(ir: dict) -> list[str]:
-    """ADVISORY: config fields read but never CONSUMED into a spec field (U2 P4
-    config_field_audit upgrade — the granite-multiplier detector).
-
-    ``debug`` marks a field ``consumed`` only when its value flows into a spec.
-    A field ``accessed`` (for a branch test, then discarded) but never consumed
-    was looked-up-not-used — coverage the plain ``config_field_audit`` (which
-    only knows "was it read") is blind to.  Gated on the consumed census being
-    available: the accessor rail supports ``intent='consumed'`` but production
-    decision sites are still migrating, so absence of a consumed census means the
-    signal is not yet computable — the finding class stays inert (like the
-    consumed census the parser only publishes when non-empty)."""
-    extras = ir.get("extras") or {}
-    consumed = set(extras.get("config_consumed") or [])
-    if not consumed:
-        return []
-    accessed = set((extras.get("config_audit") or {}).get("accessed") or [])
+    """ADVISORY: config fields accessed/bound but neither CONSUMED into a spec
+    field NOR scoped-ignored — the looked-up-but-unused class (granite
+    multipliers).  §16.5 net 1, now OWNER-QUALIFIED: it reads the owner-scoped
+    ``config_access`` ledger, so a field consumed by a SIBLING component (a
+    vision ``hidden_size`` vs the text ``hidden_size``) never clears this owner's
+    debt — the flat-global set-subtraction the restart removed.  Already gated at
+    parse time to owners that have a consumed census, so an adapter still on
+    inspected-only reads stays inert instead of flooding."""
+    ca = (ir.get("extras") or {}).get("config_access") or {}
     return [
-        f"config field {field!r} was accessed but never consumed into a spec field — "
-        "it drove a branch or was discarded; wire it to a spec/ledger fact or record "
-        "it inspected-only"
-        for field in sorted(accessed - consumed)
+        f"config field {entry!r} was accessed but never consumed into a spec field "
+        "(owner-qualified) — it drove a branch or was discarded; wire it to a "
+        "spec/ledger fact, or record it inspected-only / scoped-ignored"
+        for entry in sorted(ca.get("accessed_unconsumed") or [])
     ]
 
 

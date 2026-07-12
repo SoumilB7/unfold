@@ -32,6 +32,7 @@ from ...everchanging import (
     load_diffusion_typing,
 )
 from dataclasses import replace as _replace
+from ...evidence import config_access as _config_access
 from ...ir import AttentionSpec, FFNSpec, ModelIR
 from ..transformer.assembly import decoder_layer, single_stream_decoder_layer
 from ..transformer.blocks.attention import attention_child_blocks, attention_detail
@@ -1920,9 +1921,13 @@ def _scheduler_geom(cfg: Any) -> dict:
     return out
 
 
+@_config_access.owner_scoped("root.vae")
 def _vae_geom(cfg: Any) -> dict | None:
     """Structural facts from the VAE's own config (when the loader fetched it),
-    for the VAE-decoder drill view: channel stages, latent depth, upsampling."""
+    for the VAE-decoder drill view: channel stages, latent depth, upsampling.
+
+    H3 (§16.5): owner-scoped to ``root.vae`` so a VAE ``norm_num_groups`` /
+    ``act_fn`` stays distinct from a denoiser field of the same name."""
     vcfg = _g(cfg, "_vae_config")
     if not isinstance(vcfg, dict):
         return None
@@ -1986,6 +1991,7 @@ def _vae_geom(cfg: Any) -> dict | None:
     return {k: v for k, v in out.items() if v is not None} or None
 
 
+@_config_access.owner_scoped("root.vae")
 def _audio_latent_domain(cfg: Any) -> bool:
     """AUDIO latent domain from the pipeline's OWN VAE declaration (oobleck's
     audio_channels/sampling_rate — no 2D image VAE declares either), never a
