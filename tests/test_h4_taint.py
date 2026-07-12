@@ -12,10 +12,11 @@ later.  This slice proves two things mechanically:
 * item 6 — the known evasions (rename, relocate Python<->YAML, intermediate
   enum, helper-hidden) cannot slip past the shape net.
 
-The one evasion the early slice does NOT yet close — a substring comparison on
-a class name that is not a domain marker, whose result flows to structure — is
-covered by an EXPLICIT xfail-style control (not silent omission): it is the
-full dataflow net's job (item 2), and this test documents the open boundary.
+Item 2 (§16.6) has now LANDED: the dataflow/taint net catches a class-name
+comparison whose branch WRITES A STRUCTURAL SINK — closing the substring-nonmarker
+boundary the early slice documented.  It distinguishes UNLAWFUL identity->structure
+(a structural sink) from LAWFUL code-shape (returns a role string/bool), so the
+clean production tree stays at zero identity debt (the net is preventive).
 """
 from __future__ import annotations
 
@@ -115,13 +116,11 @@ def test_generator_over_class_markers_with_domain_word_is_caught():
     assert any(f.kind == "class_identity_branch" for f in findings)
 
 
-def test_open_boundary_substring_nonmarker_is_deferred_to_dataflow_net():
-    """EXPLICIT open-boundary control (not silent omission): a substring test on
-    a class name that is NOT a domain marker ("SimpleCrossAttn" in cls), whose
-    result flows to a structural kind, is NOT caught by the current static
-    guard.  Closing it is the full dataflow/taint net's job (H4 item 2).  This
-    test PINS the present gap so the day the dataflow net lands, this flips to
-    an assertion that it IS caught — the boundary can never be forgotten."""
+def test_substring_nonmarker_to_structural_sink_is_now_caught():
+    """H4 item 2 (§16.6) — the taint net LANDED, so the boundary the early slice
+    documented now FLIPS: a substring test on a class name that is NOT a domain
+    marker ("SimpleCrossAttn" in cls), whose branch WRITES A STRUCTURAL SINK, is
+    caught as ``class_identity_branch`` (identity fabricating structure)."""
     findings = scan_identity_source(
         "def kind(cls):\n"
         "    if 'SimpleCrossAttn' in cls:\n"
@@ -129,11 +128,82 @@ def test_open_boundary_substring_nonmarker_is_deferred_to_dataflow_net():
         "    return {'cell': 'transformer2d'}\n",
         path="model_unfolder/adapters/diffusor/newdet.py",
     )
-    # Present behavior: NOT yet caught (documented gap, owned by item 2).
+    assert any(f.kind == "class_identity_branch" for f in findings)
+
+
+def test_taint_catches_class_name_to_spec_constructor():
+    findings = scan_identity_source(
+        "def build(cls):\n"
+        "    if 'Flux' in cls:\n"
+        "        return AttentionSpec(kind='mha', num_heads=8)\n",
+        path="model_unfolder/adapters/diffusor/x.py")
+    assert any(f.kind == "class_identity_branch" for f in findings)
+
+
+def test_taint_does_not_flag_lawful_code_shape_returning_a_role():
+    """The crucial non-false-positive: classifying a RESOLVED class to a ROLE
+    string/bool (the RMSNorm->norm code-shape category) is NOT a structural sink,
+    so it is lawful and uncaught — production stays clean."""
+    for body in ("        return 'norm'\n", "        return True\n"):
+        findings = scan_identity_source(
+            "def role(name):\n"
+            "    if 'norm' in name.lower():\n" + body,
+            path="model_unfolder/evidence/patterns.py")
+        assert not any(f.kind == "class_identity_branch" for f in findings)
+
+
+def test_taint_exempts_a_typed_display_wrapper():
+    findings = scan_identity_source(
+        "@identity_display\n"
+        "def label(cls):\n"
+        "    if 'Flux' in cls:\n"
+        "        return {'kind': 'flux'}\n")
     assert not any(f.kind == "class_identity_branch" for f in findings)
 
 
+def test_taint_net_adds_no_debt_to_the_clean_production_tree():
+    """H4 is PREVENTIVE: the real tree has zero identity->structural-sink flows
+    (all class-name comparisons are lawful code-shape), so landing the net keeps
+    identity debt at zero — it guards the future, it does not manufacture debt."""
+    from model_unfolder.evidence.identity_guard import scan_identity_debt
+    assert scan_identity_debt() == []
+
+
 # --- item 1: the corpus invariant (real facts, not synthetic) -----------------
+
+def test_renderer_parser_dependency_firewall():
+    """H4 (§16.6) — the renderer/parser firewall: the renderer consumes the IR,
+    never raw config or the parser.  No ``renderers/`` module may import the
+    parser/adapter layer or a config accessor — so a lying render can only come
+    from a wrong IR, never from the renderer re-reading and re-guessing config.
+    Currently clean; this gate keeps it so."""
+    import ast
+    import pathlib
+
+    import model_unfolder
+
+    renderers = pathlib.Path(model_unfolder.__file__).parent / "renderers"
+    forbidden_names = {"get_config_value", "note_access", "config_access",
+                       "resolve_source_files"}
+    violations: list[str] = []
+    for path in renderers.rglob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if isinstance(node, ast.ImportFrom):
+                if node.module and ("adapters" in node.module
+                                    or node.module.endswith("parser")
+                                    or node.module.endswith("transformer.debug")):
+                    violations.append(f"{path.name}:{node.lineno} imports {node.module}")
+                for alias in node.names:
+                    if alias.name in forbidden_names:
+                        violations.append(f"{path.name}:{node.lineno} imports {alias.name}")
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    if "adapters" in alias.name or alias.name in forbidden_names:
+                        violations.append(f"{path.name}:{node.lineno} imports {alias.name}")
+    assert not violations, (
+        "renderer/parser firewall breached — the renderer must consume the IR, "
+        "not raw config/source:\n" + "\n".join(violations))
+
 
 def test_no_corpus_fact_cites_identity_as_its_deciding_source():
     """The fact-provenance rule as a BLOCKING corpus invariant: every blessed

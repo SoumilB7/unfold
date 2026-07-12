@@ -347,6 +347,20 @@ def scan_identity_source(source: str, *, path: str = "<memory>") -> list[Identit
                 continue
             if names & _IDENTITY_NAMES or _calls_named(test, _IDENTITY_HELPERS):
                 add(test, "identity_branch", "identity-derived predicate controls a branch")
+            # H4 (§16.6) — the identity->structure TAINT signature: a class-name
+            # value tested against ANY string (not only a domain marker) whose
+            # branch WRITES A STRUCTURAL SINK (a spec/opgraph ctor, or a dict keyed
+            # by a structural term).  This is the fabrication the domain-marker
+            # predicate misses; lawful code-shape returns a role string/bool, not a
+            # structural sink, so it is NOT caught (production is clean — 0).
+            if (isinstance(node, ast.If)
+                    and _compares_class_identity_to_string(test)
+                    and not _class_domain_predicate(test)
+                    and _branch_writes_structural_sink(node)):
+                add(test, "class_identity_branch",
+                    "a class-name comparison decides a structural sink — resolve the "
+                    "class from construction and derive from its forward, never "
+                    "fabricate structure from the name (H4 taint)")
 
         if isinstance(node, (ast.Dict, ast.Subscript)):
             text = ast.get_source_segment(source, node) or ""
@@ -761,6 +775,44 @@ def _is_class_string_expr(node: ast.AST) -> bool:
             return _is_class_string_expr(node.func.value)
         if isinstance(node.func, ast.Name) and node.func.id == "str" and len(node.args) == 1:
             return _is_class_string_expr(node.args[0])
+    return False
+
+
+# H4 (§16.6) — the identity->structure taint sink vocabulary.  A structural SINK
+# is a dict keyed by one of these terms, or a spec/opgraph constructor; a branch
+# that writes one of these BASED ON a class-name comparison is fabricating
+# structure from a name.  Lawful code-shape returns a role string/bool instead.
+_TAINT_STRUCT_KEYS = frozenset({
+    "cell", "kind", "mixer", "norm_kind", "norm_placement", "gated", "activation",
+    "mask", "projection_mode", "attention_kind", "ffn_kind", "fusion_kind",
+    "position_kind", "self_attn_kind", "output_gate", "cross_kv_source",
+    "cross_attention",
+})
+_TAINT_SPEC_CTORS = frozenset({"AttentionSpec", "FFNSpec", "LayerSpec", "Op", "Region"})
+
+
+def _compares_class_identity_to_string(test: ast.AST) -> bool:
+    """A comparison/membership test that pits a class-identity value against a
+    string literal (``'X' in cls`` / ``cls == 'X'`` / ``cls.lower() == 'x'``)."""
+    for cmp in ast.walk(test):
+        if isinstance(cmp, ast.Compare) and _compare_uses_class_string(cmp):
+            if any(isinstance(x, ast.Constant) and isinstance(x.value, str)
+                   for x in ast.walk(cmp)):
+                return True
+    return False
+
+
+def _branch_writes_structural_sink(if_node: ast.If) -> bool:
+    """True when an ``if`` body constructs a structural sink — a dict literal keyed
+    by a structural term, or a spec/opgraph constructor."""
+    for n in ast.walk(if_node):
+        if isinstance(n, ast.Dict) and any(
+                isinstance(k, ast.Constant) and k.value in _TAINT_STRUCT_KEYS
+                for k in n.keys):
+            return True
+        if (isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+                and n.func.id in _TAINT_SPEC_CTORS):
+            return True
     return False
 
 
