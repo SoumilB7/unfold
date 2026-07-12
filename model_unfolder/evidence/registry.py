@@ -243,6 +243,47 @@ def fact_definition(fact_name: str) -> FactDefinition | None:
     return REGISTRY.get(fact_name)
 
 
+@dataclass(frozen=True)
+class DrawnUnledgeredFact:
+    """H6 (§16.6) reverse-fabrication debt: a leaf name the RENDERER draws for
+    which no ledger writer exists yet (census §0.6).  It is drawn from an
+    AttentionSpec tri-state field, so it is not fabricated from nothing — but it
+    is not a registered fact with provenance either, so it is pinned here with an
+    owner, a reason, the H8 unit that gives it a writer, and the fact it becomes.
+    A drawn leaf that is NEITHER registered NOR in this register is fabrication."""
+
+    name: str
+    surface: str
+    reason: str
+    unit: str
+    becomes: str
+
+
+# The six drawn-but-unledgered leaves (H2 census §0.6).  Drawn from the spec's
+# tri-state; H8 gives each a ledger writer, at which point it moves to REGISTRY.
+DRAWN_UNLEDGERED_DEBT: tuple[DrawnUnledgeredFact, ...] = (
+    DrawnUnledgeredFact("position_kind", "attention_detail",
+                        "positional scheme (rope/alibi/learned/none) drawn from the "
+                        "AttentionSpec tri-state; no ledger writer yet",
+                        "H8", "registered position_kind fact"),
+    DrawnUnledgeredFact("qk_norm", "attention_detail",
+                        "per-head Q/K normalisation drawn from spec.qk_norm",
+                        "H8", "registered qk_norm fact"),
+    DrawnUnledgeredFact("q_norm", "attention_detail",
+                        "separate Q-norm variant drawn from spec", "H8",
+                        "registered q_norm fact (or folded into qk_norm)"),
+    DrawnUnledgeredFact("k_norm", "attention_detail",
+                        "separate K-norm variant drawn from spec", "H8",
+                        "registered k_norm fact (or folded into qk_norm)"),
+    DrawnUnledgeredFact("sinks", "attention_detail",
+                        "learned attention-sink column drawn from spec.sinks",
+                        "H8", "registered sinks fact"),
+    DrawnUnledgeredFact("logit_softcap", "attention_detail",
+                        "logit soft-cap op drawn from spec.logit_softcap",
+                        "H8", "registered logit_softcap fact"),
+)
+
+
 def census_problems(rows, registry: dict[str, FactDefinition] | None = None) -> list[str]:
     """Closed-world census over produced ledger rows (H2.4).
 
@@ -337,4 +378,5 @@ __all__ = [
     "PROJECTION_SURFACES", "UNKNOWN_POLICIES", "INFRA_EXTRAS_KEYS",
     "FactDefinition", "REGISTRY", "census_problems", "fact_definition",
     "new_raw_structural_extras", "validate_typed_write",
+    "DrawnUnledgeredFact", "DRAWN_UNLEDGERED_DEBT",
 ]
