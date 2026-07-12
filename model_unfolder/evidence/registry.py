@@ -166,6 +166,18 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         conformance="fact_markers",
     ),
     FactDefinition(
+        key="sinks",
+        value_types=frozenset({"bool"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        unknown_policy="omit",            # absent ⇒ no sink column drawn
+        negative_requires_complete=True,  # presence-proven; only ever recorded True
+        conformance="fact_markers",
+        notes="H8: migrated from drawn-but-unledgered to a code-proven fact "
+              "(decoder_attention_sinks_from_files); gpt-oss witnesses it",
+    ),
+    FactDefinition(
         key="norm_kind",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({"code_proven"}),
@@ -275,9 +287,6 @@ DRAWN_UNLEDGERED_DEBT: tuple[DrawnUnledgeredFact, ...] = (
     DrawnUnledgeredFact("k_norm", "attention_detail",
                         "separate K-norm variant drawn from spec", "H8",
                         "registered k_norm fact (or folded into qk_norm)"),
-    DrawnUnledgeredFact("sinks", "attention_detail",
-                        "learned attention-sink column drawn from spec.sinks",
-                        "H8", "registered sinks fact"),
     DrawnUnledgeredFact("logit_softcap", "attention_detail",
                         "logit soft-cap op drawn from spec.logit_softcap",
                         "H8", "registered logit_softcap fact"),

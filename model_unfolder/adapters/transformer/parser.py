@@ -1075,6 +1075,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
                        else "sqrt(dim) convention kept"))
     # Learned sink logits in the softmax — config-silent, code-only.
     code_attention_sinks = _code_attention_sinks(text_cfg, context)
+    # H8 (§16.6) — migrate ``sinks`` from drawn-but-unledgered to a REGISTERED
+    # code-proven fact.  Presence-proven from the attention forward, so recorded
+    # only when True (no negative-proof obligation); its drawn witness is the
+    # attention drill's sink column, so the projection-audit is satisfied.
+    if code_attention_sinks:
+        _note_fact("decoder.attention", "sinks", True, "code_proven",
+                   "decoder_attention_sinks_from_files")
     # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
     # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
     attn_logit_softcap = _g(text_cfg, "attn_logit_softcapping")
