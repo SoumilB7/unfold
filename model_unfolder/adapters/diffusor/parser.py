@@ -789,9 +789,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "text_embed_dim": _resolve(cfg, "text_embed_dim"),
         "kv_join_dim": _resolve(cfg, "kv_join_dim"),
         # max_sequence_length (Mochi denoiser conditioning limit): NOT read here.
-        # §16.5 removed the audit-clearing read — it had no structural consumer;
-        # the config_field_audit advisory declares it as pending-H7 debt, and H7
-        # reintroduces it as a typed fact WITH a projection (never a silent read).
+        # ``procedure 2`` removed the audit-clearing read — it has no structural
+        # consumer.  It is REGISTERED as a pending-projection fact (registry:
+        # denoiser_max_sequence), and the BLOCKING config_field_audit EXCUSES a
+        # field registered as pending-projection debt (a declared classification),
+        # so the honest "removed until H7-full draws it" state holds with no silent
+        # re-read.  (procedure 9 re-vet corrected the false "audit is advisory"
+        # premise that had left this red on the render-suite regression net.)
         # AdaLN modulation width, and the text-encoder feature width fed in as
         # conditioning (e.g. Ideogram-4's Qwen3-VL llm_features_dim) — declared
         # facts that must be captured, not dropped.
@@ -1964,11 +1968,16 @@ def _vae_geom(cfg: Any) -> dict | None:
         "latents_mean": _g(vcfg, "latents_mean"),
         "latents_std": _g(vcfg, "latents_std"),
         # VAE act_fn and the VAE's own temporal_compression_ratio: NOT read here.
-        # §16.5 removed both audit-clearing reads — neither had a structural
-        # consumer (no VAE render draws them; the denoiser-level
+        # ``procedure 2`` removed both audit-clearing reads — neither has a
+        # structural consumer (no VAE render draws them; the denoiser-level
         # temporal_compression_ratio at line ~784 is a DISTINCT, consumed read).
-        # The config_field_audit advisory declares them as pending-H7 debt; H7
-        # reintroduces them as typed VAE facts WITH projections.
+        # They are REGISTERED as pending-projection facts (registry:
+        # vae_activation / vae_temporal_compression), and the BLOCKING
+        # config_field_audit EXCUSES a field registered as pending-projection debt
+        # (a declared classification — a fourth resolution beside parse / chip /
+        # ignore), so the honest "removed until the H7-full reader draws them"
+        # state holds without a silent re-read.  (procedure 9 re-vet: the audit was
+        # BLOCKING, not advisory — the removal + registration alone left it red.)
         "norm_num_groups": _g(vcfg, "norm_num_groups"),
         "down_block_types": _g(vcfg, "down_block_types"),
         "up_block_types": _g(vcfg, "up_block_types"),

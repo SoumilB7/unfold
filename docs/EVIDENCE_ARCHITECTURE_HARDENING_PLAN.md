@@ -1949,9 +1949,14 @@ Append this authoritative status table:
 | H0 | ACTIVE | Baseline exists, but display pins, broad exemptions, single-entry maps and helper/dataflow evasions remain |
 | H1 | ACTIVE | Useful types exist, but legacy bypass, derived-negative completeness and provenance serialization are unsound |
 | H2 | DONE (repaired) | record_typed registry gate + typed legacy_asserted (Part A); StructuralWrite census over all author surfaces, static+runtime, structured legacy register, 5 poisons (Part B) — 359 + 41 passed |
-| H3 | RESTART IN PROGRESS | Steps 1-2 landed (3 reads removed; owner-scoped `ConfigAccessEvent` ledger substrate + 16 counterexamples); step 3 (accessor/owner/net wiring, delete global sets) remains |
-| H4 | ACTIVE, early slice only | Provenance rule exists; full semantic taint and dependency firewall remain |
-| H5–H10 | PENDING | Do not build domain migrations on the incomplete substrate |
+| H3 | DONE (procedure 2, 22ddaf0) | RESTART cutover complete: owner-scoped `ConfigAccessEvent` ledger is the single source; global `_touched/_bound/_consumed` + `capture_accesses` DELETED; `config_audit` DERIVED (compat==old). Re-vet (proc 9) fixed one un-ported `capture_accesses` test the fast smoke had skipped |
+| H4 | DONE (procedure 3, ea15aff) | Taint net: class-name→structural-sink caught (production=0, boundary flipped); code-shape exempt; renderer/parser dependency-firewall gate. Interprocedural/mapping-lookup preventive-future (0 real flows) |
+| H5 | DONE-core (procedure 4, 706818b) | No-broad-reader-exception RATCHET (shrink-only) + 2 evidence readers typed (8→6). Full program-index is the ratchet's shrink-work |
+| H6 | DONE (procedure 5, a969b0f) | Registry-driven reverse-fabrication audit (drawn ⊆ registered ∪ DRAWN_UNLEDGERED_DEBT) + projection obligation; firewall in H4; prose-receipts via label-lint |
+| H9-core | DONE (procedure 6, 6447e42) | Reusable metamorphic harness: 5 relations, proven on decoder+multimodal+diffusion; missing-source FIRES |
+| H7 | RAIL + slice (procedure 7, 6ed88a3) | 3 removed reads → registered typed facts w/ pending-projection debt; metamorphic on FLUX. Per-family migration ongoing |
+| H8 | RAIL + slice (procedure 8, 10f6fa5) | `sinks`: drawn-but-unledgered → registered code-proven fact (gpt-oss witness), census intact. Per-mechanism migration ongoing |
+| H9/H10 | DONE (procedure 9) | H9 frontier metamorphic matrix (5 archetypes, 6 passed). FORESEER RE-VET found + fixed TWO real defects, both in `test_sable.py` (the file every fast smoke skipped): (1) proc-2's un-ported `capture_accesses` call — ported to the `capture_events()` ledger, suite-wide sweep found no siblings; (2) the 3 diffusion reads proc-2 removed on a FALSE "audit is advisory" premise (it is BLOCKING) — 10 corpus regressions across 8 models; fixed by teaching `config_field_audit` to EXCUSE registry `PENDING_PROJECTION_DEBT` canonicals (a declared classification — reads stay removed, proc-7's guard holds, a NEW unread field still blocks) + `test_config_field_audit_excuses_the_pending_projection_fields`; verified test_h7 5-passed / units 50-passed / corpus blast 0-drift. H10 = full-suite release run (first pass 986/1 CAUGHT defect 2; final re-run with both fixes = the green gate) |
 
 Lock the four decisions from Section 15:
 

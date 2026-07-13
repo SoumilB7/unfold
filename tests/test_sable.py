@@ -179,19 +179,26 @@ def test_numeric_lint_separates_dimensions_from_topology_descriptors():
 
 
 def test_config_access_capture_survives_nested_reset_and_reports_dotted_paths():
-    """Sable's outer audit cannot be erased by a nested component parser."""
+    """Sable's outer audit cannot be erased by a nested component parser.
+
+    Post-H3 the capture is the owner-scoped ``capture_events()`` ledger and
+    ``debug.reset()`` is a no-op — so this is now a regression guard proving a
+    nested parser's legacy ``reset()`` still cannot erase the enclosing capture.
+    """
     from model_unfolder.adapters.transformer import debug
+    from model_unfolder.evidence.config_access import capture_events
 
     cfg = {
         "model_type": "outer",
         "vision_config": {"hidden_size": 128, "new_architecture_switch": True},
         "torch_dtype": "float16",  # intentionally ignored vocabulary
     }
-    with debug.capture_accesses() as (touched, consumed):
+    with capture_events() as ledger:
         debug.note_access("model_type")
         debug.note_access("vision_config")
-        debug.reset()  # a nested parser's legacy reset must not erase capture
+        debug.reset()  # a nested parser's legacy reset() (now a no-op) must not erase the outer capture
         debug.note_access("hidden_size")
+    touched = ledger.touched_names()
     assert "model_type" in touched and "hidden_size" in touched
     assert debug.unparsed_fields([cfg], touched=touched, recursive=True) == [
         "vision_config.new_architecture_switch"

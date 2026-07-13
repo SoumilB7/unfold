@@ -49,6 +49,25 @@ def test_the_three_reads_are_still_removed_from_the_diffusor():
     assert '"temporal_compression_ratio": _g(vcfg, "temporal_compression_ratio")' not in parser
 
 
+def test_config_field_audit_excuses_the_pending_projection_fields():
+    """The reads stay removed, so the BLOCKING config_field_audit must EXCUSE a
+    field registered as pending-projection debt — a declared classification, not
+    unread coverage debt.  Regression guard for the ``procedure 9`` re-vet finding:
+    ``procedure 2`` removed these reads assuming the audit was advisory; it is
+    blocking (the render-suite regression net that the fast smoke had skipped
+    caught it), so the removal alone left it red until the registry is recognized.
+    """
+    import model_unfolder as mu
+
+    ir = mu.unfold(FLUX).to_ir()  # FLUX carries _vae_config.act_fn, a pending fact
+    unread = ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
+    pending = {e.canonical for e in PENDING_PROJECTION_DEBT}
+    offending = [p for p in unread if p.rsplit(".", 1)[-1] in pending]
+    assert not offending, (
+        "a pending-projection field is a DECLARED classification and must not be "
+        f"reported as unread config debt; got {offending}")
+
+
 def test_metamorphic_harness_holds_on_a_diffusion_reference():
     """H9-core contract on diffusion: rename-invariance, provenance integrity, and
     owner-separated siblings all hold on FLUX — so every diffusion family

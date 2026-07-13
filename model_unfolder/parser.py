@@ -97,6 +97,20 @@ def config_to_ir(
     unread = _config_debug.unparsed_fields(
         [cfg], touched=_accessed_compat, recursive=True
     )
+    # procedure 9 re-vet: a field REGISTERED as pending-projection debt is a
+    # DECLARED classification, not unread coverage debt — the registry names the
+    # fact, its owner, and its render projection (the H7-full reader draws it).
+    # The BLOCKING config_field_audit therefore excuses exactly those registered
+    # canonicals, so the honest "removed until drawn" state holds without a silent
+    # audit-clearing re-read.  (``procedure 2`` removed these diffusion reads
+    # ASSUMING the audit was advisory; it is blocking — caught by the render-suite
+    # regression net that the fast smoke had skipped — so the registration is
+    # recognized here.)  Bounded to the small registry list; a NEW unread field is
+    # still flagged.  Key-based match, consistent with unparsed_fields' own design.
+    from .evidence.registry import PENDING_PROJECTION_DEBT
+    _pending_canonicals = {e.canonical for e in PENDING_PROJECTION_DEBT}
+    unread = [path for path in unread
+              if path.rsplit(".", 1)[-1] not in _pending_canonicals]
     ir.extras["config_audit"] = {
         "unread": unread,
         "accessed": sorted(_accessed_compat),
