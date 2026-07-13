@@ -1,0 +1,208 @@
+"""REC-1 (§7) — the deterministic preservation harness (shadow mode).
+
+Produces CANONICAL witness surfaces for a corpus model from the production
+APIs, canonicalizes the frozen U0 baseline the same way, and diffs the two.
+The live 25-model comparison stays SHADOW (report-only) until REC-7 flips it
+to blocking after REC-4/REC-5 restore structural parity; the synthetic poison
+machinery is blocking from day one.
+
+Canonical rules (§7.4/§7.5):
+- The structural IR separates ONLY the five exact audit-sidecar roots below —
+  they move to the ledger surface, never disappear.  No substring/regex
+  filtering: everything else (specs, schedules, extras.diffusion, modality
+  paths, geometry, warnings, render policy) stays structural.
+- HTML is normalized by replacing the ONE generated ``uf-<uuid>`` mount id
+  with ``<MOUNT>`` everywhere it appears; every other id is preserved.
+"""
+from __future__ import annotations
+
+import copy
+import hashlib
+import json
+import pathlib
+import re
+from typing import Any
+
+# §7.4 — the EXACT audit-sidecar roots (a closed list, never pattern-matched).
+AUDIT_ROOTS = (
+    "config_access",
+    "config_audit",
+    "config_consumed",
+    "fact_provenance",
+    "source_provenance",
+)
+
+# The generated mount token is ``uf-<hex>`` (currently 10 hex chars from a
+# UUID; bounded wide enough to survive length changes, word-bounded so real
+# view suffixes like ``-g0-attn-1`` are preserved).
+_MOUNT_RE = re.compile(r"uf-[0-9a-f]{6,32}\b")
+
+STRUCTURAL_SURFACES = ("ir", "expanded", "params", "html_meta", "gallery")
+EVIDENCE_SURFACES = ("ledgers", "sable")
+ALL_SURFACES = STRUCTURAL_SURFACES + EVIDENCE_SURFACES
+
+
+def split_structural_ir(ir: dict) -> tuple[dict, dict]:
+    """(structural_ir, audit_sidecar) — exact-root separation only."""
+    structural = copy.deepcopy(ir)
+    sidecar: dict[str, Any] = {}
+    extras = structural.get("extras")
+    if isinstance(extras, dict):
+        for root in AUDIT_ROOTS:
+            if root in extras:
+                sidecar[root] = extras.pop(root)
+    return structural, sidecar
+
+
+def normalize_mount(html: str) -> str:
+    """Replace the generated mount UUID consistently with ``<MOUNT>``.
+
+    Production keeps its UUID behavior; only the WITNESS is normalized.  Every
+    occurrence of each distinct mount token is replaced with the same stable
+    token so ids, URL refs, CSS selectors, and click wiring stay coupled.
+    """
+    mounts = sorted(set(_MOUNT_RE.findall(html)))
+    for index, mount in enumerate(mounts):
+        token = "<MOUNT>" if index == 0 else f"<MOUNT{index + 1}>"
+        html = html.replace(mount, token)
+    return html
+
+
+def html_meta(html: str) -> dict:
+    normalized = normalize_mount(html)
+    return {
+        "structural_sha256": hashlib.sha256(normalized.encode()).hexdigest(),
+        "view_ids": sorted(set(re.findall(r'id="([^"]+)"', normalized))),
+        "click_targets": sorted(
+            set(re.findall(r'data-(?:target|drill|view)="([^"]+)"', normalized))
+            | set(re.findall(r'href="#([^"]+)"', normalized))),
+    }
+
+
+def canonical_surfaces(cfg: dict) -> dict[str, Any]:
+    """The 7 canonical witness surfaces, generated from PRODUCTION APIs."""
+    import model_unfolder as mu
+    from model_unfolder.params import estimate_params
+    from model_unfolder.sable import sable
+
+    diagram = mu.unfold(cfg)
+    ir = diagram.to_ir()
+    structural, sidecar = split_structural_ir(ir)
+    report = sable(cfg, render_images=False)
+    return {
+        "ir": structural,
+        "ledgers": sidecar,
+        "expanded": diagram.to_json(),
+        "params": estimate_params(diagram.ir),
+        "html_meta": html_meta(diagram.to_html(standalone=True)),
+        "sable": {
+            "mechanical_passed": getattr(report, "mechanical_passed", None),
+            "checks": [
+                {"name": c.name, "blocking": getattr(c, "blocking", None),
+                 "passed": getattr(c, "passed", None),
+                 "findings": list(getattr(c, "findings", []) or [])}
+                for c in report.checks
+            ],
+        },
+        "gallery": None,  # blessed PNGs are compared by the baseline hashes
+    }
+
+
+def _normalize_id_list(ids):
+    """Apply the SAME mount normalization to a stored id/target list (the U0
+    freeze captured RAW ids carrying the generated mount UUID)."""
+    if ids is None:
+        return None
+    return sorted({_MOUNT_RE.sub("<MOUNT>", str(item)) for item in ids})
+
+
+def canonicalize_baseline(baseline_dir: pathlib.Path) -> dict[str, Any]:
+    """Canonicalize one frozen U0 baseline dir through the SAME rules."""
+    def _load(name: str):
+        path = baseline_dir / name
+        return json.loads(path.read_text()) if path.exists() else None
+
+    raw_ir = _load("ir.json") or {}
+    structural, sidecar_from_ir = split_structural_ir(raw_ir)
+    ledgers = _load("ledgers.json") or {}
+    baseline_html = _load("html_meta.json") or {}
+    sable_doc = _load("sable.json") or {}
+    return {
+        "ir": structural,
+        "ledgers": {**{k: v for k, v in ledgers.items() if v is not None},
+                    **sidecar_from_ir},
+        "expanded": _load("expanded.json"),
+        "params": _load("params.json"),
+        "html_meta": {
+            # U0 hashed RAW html (mount UUID included) — that sha is known
+            # non-canonical and is excluded from comparison until REC-7
+            # regenerates committed canonical witnesses.  The stored id lists
+            # carry the raw mount UUID too — normalize them the same way.
+            "structural_sha256": None,
+            "view_ids": _normalize_id_list(baseline_html.get("view_ids")),
+            "click_targets": _normalize_id_list(baseline_html.get("click_targets")),
+        },
+        "sable": {
+            "mechanical_passed": sable_doc.get("mechanical_passed"),
+            "checks": [
+                {"name": c.get("name"), "blocking": c.get("blocking"),
+                 "passed": c.get("passed"), "findings": c.get("findings", [])}
+                for c in sable_doc.get("checks", [])
+            ],
+        },
+        "gallery": _load("gallery.json"),
+    }
+
+
+def _canon_bytes(doc: Any) -> bytes:
+    return json.dumps(doc, sort_keys=True, default=str).encode()
+
+
+def diff_surfaces(expected: dict, actual: dict,
+                  surfaces: tuple[str, ...] = ALL_SURFACES) -> list[str]:
+    """Surface names whose canonical bytes differ (None expected = skipped)."""
+    out = []
+    for surface in surfaces:
+        exp = expected.get(surface)
+        if exp is None:
+            continue
+        if surface == "html_meta" and isinstance(exp, dict):
+            exp = {k: v for k, v in exp.items() if v is not None}
+            act = {k: (actual.get(surface) or {}).get(k) for k in exp}
+        else:
+            act = actual.get(surface)
+        if _canon_bytes(exp) != _canon_bytes(act):
+            out.append(surface)
+    return out
+
+
+def gallery_witness(corpus_dir: pathlib.Path, slug: str) -> dict:
+    """The blessed-gallery surface, hashed from disk (a bless artifact — it is
+    compared, never regenerated, by this harness)."""
+    gallery_dir = corpus_dir / "galleries" / slug
+    return {
+        "present": gallery_dir.is_dir(),
+        "images": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                   for p in sorted(gallery_dir.glob("*")) if p.is_file()}
+        if gallery_dir.is_dir() else {},
+    }
+
+
+def compare_model(slug: str, corpus_dir: pathlib.Path,
+                  baseline_root: pathlib.Path) -> dict:
+    """One model's shadow comparison: current production vs frozen baseline."""
+    cfg = json.loads((corpus_dir / f"{slug}.json").read_text())["config"]
+    current = canonical_surfaces(cfg)
+    current["gallery"] = gallery_witness(corpus_dir, slug)
+    baseline_dir = baseline_root / slug
+    if not baseline_dir.is_dir():
+        return {"slug": slug, "baseline": "MISSING", "drift": []}
+    expected = canonicalize_baseline(baseline_dir)
+    drift = diff_surfaces(expected, current)
+    return {
+        "slug": slug,
+        "baseline": "present",
+        "drift": drift,
+        "structural_drift": [s for s in drift if s in STRUCTURAL_SURFACES],
+        "evidence_drift": [s for s in drift if s in EVIDENCE_SURFACES],
+    }
