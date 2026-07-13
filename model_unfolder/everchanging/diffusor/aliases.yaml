@@ -61,7 +61,7 @@ patch_size: [patch_size]
 sample_size: [sample_size]
 
 # FFN width (when declared explicitly; otherwise derived from mlp_ratio * hidden).
-intermediate_size: [intermediate_size, ffn_dim, mlp_dim, inner_dim]
+intermediate_size: [intermediate_size, ffn_dim, mlp_dim]   # REC-4 §10.4: inner_dim REMOVED — in diffusers it is the ATTENTION inner width (heads*head_dim), a rival concept, never an FFN synonym
 mlp_ratio: [mlp_ratio]
 hidden_act: [hidden_act, activation_fn, act_fn]
 

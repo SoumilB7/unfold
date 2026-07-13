@@ -392,6 +392,37 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
                           "the VAE's own temporal compression (HunyuanVideo/Wan) — "
                           "distinct from the denoiser-level ratio",
                           "the VAE latent-depth / temporal-axis chip"),
+    # REC-4 (§10.3): the U1 config-authored card rows are DELETED; the fields
+    # they were papering over return as EXACT visible debt — owner + path +
+    # reason + target + deletion unit (U11/U12 derive these from source).
+    PendingProjectionFact("vae_in_channels", "root.vae", "in_channels",
+                          "VAE encoder input channels — awaits the source-derived "
+                          "VAE component graph (deletion unit U12/V-02)",
+                          "the VAE encoder intake chip"),
+    PendingProjectionFact("vae_sample_height", "root.vae", "sample_height",
+                          "VAE declared sample height (CogVideoX) — U12/V-02",
+                          "the VAE sample-geometry chip"),
+    PendingProjectionFact("vae_sample_width", "root.vae", "sample_width",
+                          "VAE declared sample width (CogVideoX) — U12/V-02",
+                          "the VAE sample-geometry chip"),
+    PendingProjectionFact("vae_patch_size", "root.vae", "patch_size",
+                          "patchified VAE spatial patch (FLUX.2/LTX) — U12/V-03",
+                          "the VAE patchify chip"),
+    PendingProjectionFact("vae_patch_size_t", "root.vae", "patch_size_t",
+                          "patchified VAE temporal patch (LTX) — U12/V-03",
+                          "the VAE temporal-patchify chip"),
+    PendingProjectionFact("vae_attention_head_dim", "root.vae", "attention_head_dim",
+                          "DC-AE decoder attention head width (Sana) — U12/V-05",
+                          "the VAE decoder attention chip"),
+    PendingProjectionFact("denoiser_norm_num_groups", "root.denoiser", "norm_num_groups",
+                          "GroupNorm group count declared on UNet/legacy-DiT "
+                          "denoisers — U11/U-06 derives the cell norm from source",
+                          "the UNet ResNet-cell norm chip"),
+    PendingProjectionFact("denoiser_scaling_factor", "root.denoiser", "scaling_factor",
+                          "pipeline-level latent-scale duplicate on the denoiser "
+                          "config (Lumina); the VAE's own scaling_factor is the "
+                          "drawn read — U12 latent-IO fact",
+                          "the latent scale chip (VAE-owned)"),
 )
 
 

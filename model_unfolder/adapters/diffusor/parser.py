@@ -62,16 +62,29 @@ _NORM_TYPE_KIND = [
 _ENCODER_NAMES = load_diffusion_text_encoders()
 
 
-def _resolve(cfg: Any, canonical: str, default=None):
-    """One exact alias resolution (U1 Contract A, D-02) — replaces the first-hit
-    loop.  The shared resolver records the ONE owner-scoped event (present under
-    the EXACT supplying spelling / absent premise / typed ambiguity); unequal
-    simultaneous aliases stay UNCHOSEN and the caller proceeds with its default
-    (an unknown fact, never a coin-flip winner)."""
+def _inspect(cfg: Any, canonical: str, default=None):
+    """EXPLICIT inspect-intent resolution (REC-4 §10.2 — the first-hit
+    ``_resolve`` is DELETED).  Records the one owner-scoped event under the
+    exact supplying spelling; absent -> ``default``; AMBIGUOUS -> ``default``
+    with the typed ambiguity recorded and the model failed outright by the
+    blocking ``config_ambiguity`` net — a value coerced here can only reach a
+    diagram that Sable has already refused."""
     res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
-    if res.state != "present":
+    if res.state != "present" or res.value is None:
         return default
     return res.value
+
+
+def _consume_geom(cfg: Any, canonical: str, fact_owner: str, fact_key: str,
+                  default=None):
+    """CONSUME a denoiser geometry declaration into its exact fact target
+    (§10.2's census table) — ambiguity stays unchosen (None), absence is a
+    typed premise carrying the fact linkage."""
+    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
+    if res.ambiguous:
+        return None
+    value = res.consume(fact_owner=fact_owner, fact_key=fact_key)
+    return default if value is None else value
 
 
 def _source_files(cfg: Any, context=None):
@@ -712,33 +725,33 @@ def parse(cfg: Any, context=None) -> ModelIR:
         return _parse_unet_model(cfg, arch_name, warnings, context=context)
 
     # ---- Denoiser geometry ----
-    num_layers   = int(_resolve(cfg, "num_layers", 0) or 0)
-    num_single   = int(_resolve(cfg, "num_single_layers", 0) or 0)
-    num_heads    = int(_resolve(cfg, "num_attention_heads", 0) or 0)
+    num_layers   = int(_consume_geom(cfg, "num_layers", "denoiser.stack", "num_layers", 0) or 0)
+    num_single   = int(_consume_geom(cfg, "num_single_layers", "denoiser.stack", "num_single_layers", 0) or 0)
+    num_heads    = int(_consume_geom(cfg, "num_attention_heads", "denoiser.attention", "num_heads", 0) or 0)
     # Grouped-query attention: KV heads from config when declared (Lumina-Next
     # num_kv_heads:8), else None → the spec falls back to Q heads (plain MHA). Never
     # hardcode 32 — that silently dropped GQA.
-    num_kv_heads = int(_resolve(cfg, "num_kv_heads", 0) or 0) or None
-    head_dim     = int(_resolve(cfg, "attention_head_dim", 0) or 0)
+    num_kv_heads = int(_consume_geom(cfg, "num_kv_heads", "denoiser.attention", "num_kv_heads", 0) or 0) or None
+    head_dim     = int(_consume_geom(cfg, "attention_head_dim", "denoiser.attention", "head_dim", 0) or 0)
     # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
     # hidden_size directly without a per-head dim — derive the head dim from it.
-    hidden_decl  = int(_resolve(cfg, "hidden_size", 0) or 0)
+    hidden_decl  = int(_consume_geom(cfg, "hidden_size", "denoiser.geometry", "hidden_size", 0) or 0)
     if not head_dim and hidden_decl and num_heads:
         head_dim = hidden_decl // num_heads
     hidden_size  = num_heads * head_dim or hidden_decl
 
-    intermediate_size = int(_resolve(cfg, "intermediate_size", 0) or 0)
+    intermediate_size = int(_consume_geom(cfg, "intermediate_size", "denoiser.ffn", "intermediate_size", 0) or 0)
     if not intermediate_size and hidden_size:
         # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
-        mlp_ratio = float(_resolve(cfg, "mlp_ratio", 4.0) or 4.0)
+        mlp_ratio = float(_inspect(cfg, "mlp_ratio", 4.0) or 4.0)
         intermediate_size = int(hidden_size * mlp_ratio)
     # Read the activation from any key a DiT might use.  We do NOT fall back to a
     # convention: when no activation is declared the FFN's inner structure
     # (activation AND gating) is simply not a config fact — ``_dit_ffn`` renders it
     # honestly as undeclared rather than asserting a GELU/non-gated default.
-    declared_act = next((_resolve(cfg, k, None) for k in
+    declared_act = next((_inspect(cfg, k, None) for k in
                          ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
-                         if _resolve(cfg, k, None)), None)
+                         if _inspect(cfg, k, None)), None)
     # The DiT FFN's activation/gating is almost never in the config — it lives in
     # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
@@ -763,8 +776,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # PixArt ``caption_channels`` builds PixArtAlphaTextProjection
     # (Linear -> GELU -> Linear); SD3/AuraFlow ``caption_projection_dim`` builds
     # one context Linear.  Carry that distinction into the loop op graph.
-    caption_input_dim = _resolve(cfg, "caption_input_dim")
-    caption_projection_dim = _resolve(cfg, "caption_projection_dim")
+    caption_input_dim = _inspect(cfg, "caption_input_dim")
+    caption_projection_dim = _inspect(cfg, "caption_projection_dim")
     norm_elementwise_affine = _g(cfg, "norm_elementwise_affine")
 
     if not num_layers and not num_single:
@@ -790,21 +803,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "hidden_size": hidden_size,
         "num_attention_heads": num_heads,
         "attention_head_dim": head_dim,
-        "in_channels": _resolve(cfg, "in_channels"),
-        "out_channels": _resolve(cfg, "out_channels"),
-        "patch_size": _resolve(cfg, "patch_size"),
-        "sample_size": _resolve(cfg, "sample_size"),
-        "sample_height": _resolve(cfg, "sample_height"),
-        "sample_width": _resolve(cfg, "sample_width"),
-        "sample_frames": _resolve(cfg, "sample_frames"),
-        "sample_size_t": _resolve(cfg, "sample_size_t"),
-        "patch_size_t": _resolve(cfg, "patch_size_t"),
-        "temporal_compression_ratio": _resolve(cfg, "temporal_compression_ratio"),
-        "pooled_projection_dim": _resolve(cfg, "pooled_projection_dim"),
-        "joint_attention_dim": _resolve(cfg, "joint_attention_dim"),
-        "cross_attention_dim": _resolve(cfg, "cross_attention_dim"),
-        "text_embed_dim": _resolve(cfg, "text_embed_dim"),
-        "kv_join_dim": _resolve(cfg, "kv_join_dim"),
+        "in_channels": _consume_geom(cfg, "in_channels", "denoiser.patch", "in_channels"),
+        "out_channels": _inspect(cfg, "out_channels"),
+        "patch_size": _consume_geom(cfg, "patch_size", "denoiser.patch", "patch_size"),
+        "sample_size": _inspect(cfg, "sample_size"),
+        "sample_height": _inspect(cfg, "sample_height"),
+        "sample_width": _inspect(cfg, "sample_width"),
+        "sample_frames": _inspect(cfg, "sample_frames"),
+        "sample_size_t": _inspect(cfg, "sample_size_t"),
+        "patch_size_t": _consume_geom(cfg, "patch_size_t", "denoiser.patch", "patch_size_t"),
+        "temporal_compression_ratio": _inspect(cfg, "temporal_compression_ratio"),
+        "pooled_projection_dim": _inspect(cfg, "pooled_projection_dim"),
+        "joint_attention_dim": _inspect(cfg, "joint_attention_dim"),
+        "cross_attention_dim": _inspect(cfg, "cross_attention_dim"),
+        "text_embed_dim": _inspect(cfg, "text_embed_dim"),
+        "kv_join_dim": _inspect(cfg, "kv_join_dim"),
         # max_sequence_length (Mochi denoiser conditioning limit): NOT read here.
         # ``procedure 2`` removed the audit-clearing read — it has no structural
         # consumer.  It is REGISTERED as a pending-projection fact (registry:
@@ -816,8 +829,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # AdaLN modulation width, and the text-encoder feature width fed in as
         # conditioning (e.g. Ideogram-4's Qwen3-VL llm_features_dim) — declared
         # facts that must be captured, not dropped.
-        "adaln_dim": _resolve(cfg, "adaln_dim"),
-        "llm_features_dim": _resolve(cfg, "llm_features_dim"),
+        "adaln_dim": _inspect(cfg, "adaln_dim"),
+        "llm_features_dim": _inspect(cfg, "llm_features_dim"),
         "caption_input_dim": caption_input_dim,
         "caption_projection_dim": caption_projection_dim,
         "norm_elementwise_affine": norm_elementwise_affine,
@@ -839,9 +852,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # mean the blocks are NOT NoPE: Flux-style axial RoPE (axes_dims_rope sums
     # to the head dim), multimodal 3D RoPE (mrope_section lists per-axis
     # half-dims, so the rotary span is twice their sum), or a bare rope_theta.
-    axes_dims_rope = _resolve(cfg, "axes_dims_rope")
-    mrope_section = _resolve(cfg, "mrope_section")
-    rope_theta = _resolve(cfg, "rope_theta")
+    axes_dims_rope = _inspect(cfg, "axes_dims_rope")
+    mrope_section = _inspect(cfg, "mrope_section")
+    rope_theta = _inspect(cfg, "rope_theta")
     # Code-derived: when the config declares no RoPE but the model class fixes axial
     # dims (Flux), surface them READ FROM THE MODELING SOURCE (code -> fact). Never
     # overrides a declared config value.
@@ -872,7 +885,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # use_rotary_positional_embeddings) or a CODE fact read from the modeling source.
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
-    rope_3d_from_config = bool(_resolve(cfg, "use_rotary_positional_embeddings"))
+    rope_3d_from_config = bool(_inspect(cfg, "use_rotary_positional_embeddings"))
     # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
     # nothing in config) — read from the SAME evidence fact-conformance reads, so the
     # parser asserts rope exactly when the net would flag its absence as fabricated.
@@ -896,7 +909,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # not evidence of NoPE: Flux carries axial RoPE in the model class, not the
     # config, so a "no rotary" claim with no config signal would be a fabricated
     # negative. We therefore only describe a position scheme we can see.
-    has_pos_embed = _resolve(cfg, "pos_embed_max_size") is not None
+    has_pos_embed = _inspect(cfg, "pos_embed_max_size") is not None
     _from_class = " (set in the model class, not the config)" if axes_from_class else ""
     if rope_3d:
         if rope_3d_from_config:
@@ -926,7 +939,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Code-derived: Flux's FluxAttention RMS-norms Q/K unconditionally but declares
     # nothing in config — surfaced by reading the modeling source (code -> fact).
     _empty_qk = (None, False, "", "none", "None", 0)
-    _qk = _resolve(cfg, "qk_norm")
+    _qk = _inspect(cfg, "qk_norm")
     qk_from_class = False
     if _qk in _empty_qk:
         # Config silent — READ the Q/K-norm TYPE from the modeling source (the
@@ -975,7 +988,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declares cross_attn_norm=True in config; any other verified case is a class
     # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
     # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
-    _can = _resolve(cfg, "cross_attn_norm")
+    _can = _inspect(cfg, "cross_attn_norm")
     cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
 
     # Self-attention kind: standard softmax MHA unless the model class fixes a
@@ -1000,7 +1013,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Projection bias is a DECLARED constructor value on the diffusers side
     # (PixArt `attention_bias: true`) — reading it here both draws the true
     # bias fact and claims the field for the config-ownership audit.
-    dit_attention_bias = bool(_resolve(cfg, "attention_bias"))
+    dit_attention_bias = bool(_inspect(cfg, "attention_bias"))
 
     layers = []
     idx = 0
@@ -1130,7 +1143,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if _g(cfg, key) is None:
             continue
         if kind == "expert_switch":
-            boundary = _resolve(cfg, "boundary_ratio")
+            boundary = _inspect(cfg, "boundary_ratio")
             at = (f" swapped in at the σ = {boundary} boundary of the noise "
                   f"schedule" if boundary is not None else " swapped in "
                   "mid-schedule")
@@ -1771,7 +1784,7 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
     moe_act = declared_activation or code_activation
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
-    num_experts = int(_resolve(cfg, "num_experts", 0) or 0) if cfg is not None else 0
+    num_experts = int(_inspect(cfg, "num_experts", 0) or 0) if cfg is not None else 0
     if num_experts > 1:
         return FFNSpec(
             kind="moe",
@@ -1780,7 +1793,7 @@ def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
             intermediate_size=intermediate_size,
             gated=False,
             num_experts=num_experts,
-            num_experts_per_tok=int(_resolve(cfg, "num_experts_per_tok", 0) or 0) or None,
+            num_experts_per_tok=int(_inspect(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
     # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
     # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
@@ -1956,10 +1969,15 @@ def _vae_geom(cfg: Any) -> dict | None:
         return None
 
     def _v(canonical):
-        # U1 Contract A: the VAE's own alias resolution goes through the exact
-        # resolver too (owner ``root.vae`` via this function's owner_scope).
-        res = _config_access.resolve(vcfg, canonical, _ALIASES.get(canonical, ()))
-        return res.value if res.state == "present" else None
+        # REC-4 (§10.2): the VAE's structural declarations are CONSUMED into
+        # their exact VAE fact targets (owner ``root.vae`` via owner_scope) —
+        # the diffusion consumed census covers the VAE, not only the denoiser.
+        res = _config_access.resolve(vcfg, canonical, _ALIASES.get(canonical, ()),
+                                     path=("_vae_config",))
+        if res.ambiguous:
+            return None
+        value = res.consume(fact_owner="vae.geometry", fact_key=canonical)
+        return value
 
     boc = _v("block_out_channels")
     if not isinstance(boc, (list, tuple)):
