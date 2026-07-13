@@ -475,6 +475,14 @@ def sable(model_or_id, *, token=None, source: str = "local",
                  .get("consumed_unprojected") or []),
             blocking=False,
         ),
+        # REC-3 (§12.5): conflicting checkpoint declarations BLOCK from their
+        # first production use — an ambiguous field is an unknown fact plus
+        # this finding, never a silently chosen value.
+        SableCheck(
+            "config_ambiguity",
+            [f"{row['component']}: {row['reason']}"
+             for row in ((ir.get("extras") or {}).get("config_ambiguity") or [])],
+        ),
     ]
 
     # Deterministic per-view SVG hashes (the CI-lock key) — dedup by visual hash so

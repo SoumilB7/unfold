@@ -140,6 +140,16 @@ def config_to_ir(
         "accessed": sorted(_accessed_compat),
         **({"pending_projection": pending_projection} if pending_projection else {}),
     }
+    # REC-3 (§9.6/§12.5): conflicting checkpoint declarations are STRUCTURED
+    # and PUBLIC — the parse continues with an unknown fact, the record names
+    # the exact rival occurrences, and the blocking ``config_ambiguity`` net
+    # fails the model (never a silently defaulted value).
+    _ambiguity_rows = [
+        {"component": e.component, "canonical": e.canonical,
+         "path": e.config_path, "reason": e.reason}
+        for e in _access_ledger.events if e.intent == "ambiguous"]
+    if _ambiguity_rows:
+        ir.extras["config_ambiguity"] = _ambiguity_rows
     # The OWNER-SCOPED view of the same audit: every access qualified by the
     # component that made it, so a sibling never clears another's debt.
     def _q(pairs):

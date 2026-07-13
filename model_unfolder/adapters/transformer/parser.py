@@ -103,18 +103,17 @@ def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
     return None if abs(scale - default) <= 1e-6 * default else scale
 
 
-def _resolve(cfg: Any, canonical: str, default=None):
-    """One exact alias resolution (U1 Contract A, T-01) — replaces the first-hit
-    loop.  ``evidence.config_access.resolve`` records the ONE owner-scoped event
-    (present under the EXACT supplying spelling / absent premise / typed
-    ambiguity) and returns the typed decision; unequal simultaneous aliases are
-    AMBIGUOUS — no value is silently chosen and the caller proceeds with its
-    default (an unknown fact, never a coin-flip winner)."""
-    from ...evidence import config_access as _config_access
-    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
-    if res.state != "present":
-        return default
-    return res.value
+def _spellings(canonical: str) -> list[str]:
+    """The declared true-synonym spellings for one canonical field."""
+    return list(dict.fromkeys([canonical, *_ALIASES.get(canonical, ())]))
+
+
+def _carries(cfg: Any, canonical: str) -> bool:
+    """Pure OCCURRENCE-membership probe (no value read, no event) — used for
+    adapter-shape dispatch, never for a value decision (REC-3 §9.2: the
+    first-hit value resolver is DELETED, not wrapped)."""
+    return any((s in cfg) if isinstance(cfg, dict) else hasattr(cfg, s)
+               for s in _spellings(canonical))
 
 
 def _source_files(cfg: Any, context=None):
@@ -555,7 +554,7 @@ def _complete_config_from_transformers_registry(text_cfg: dict) -> dict:
 
 def _has_transformer_shape(cfg: Any) -> bool:
     return any(
-        _resolve(cfg, field) is not None
+        _carries(cfg, field)
         for field in ("num_hidden_layers", "hidden_size", "num_attention_heads")
     )
 
@@ -607,55 +606,80 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     from ...evidence import config_access as _config_access
 
-    def _tiered(field):
-        """U1 Contract A over the DBRX-style tier cascade: the FIRST tier
-        (text -> attn -> ffn) carrying any spelling of ``field`` resolves it —
-        tier scoping is real structure, not an alias conflict, so ambiguity is
-        detected WITHIN the winning tier and a conflicted tier must NOT fall
-        through to a sibling tier's value (that would be a hidden coin flip).
-        Exactly ONE base event is recorded either way."""
-        aliases = _ALIASES.get(field, (field,))
-        for tier in (text_cfg, attn_cfg, ffn_cfg):
-            if tier is None:
+    def _wrapper_path(root_cfg, target, _depth=0):
+        """The EXACT container path of the unwrapped text config (Law B) —
+        identity-walked over the known wrapper keys ('' when unwrapped)."""
+        if target is root_cfg or _depth > 3:
+            return ()
+        for key in _TEXT_WRAPPER_KEYS:
+            sub = (root_cfg.get(key) if isinstance(root_cfg, dict)
+                   else getattr(root_cfg, key, None))
+            if sub is None:
                 continue
-            carries = any(
-                (tier.get(a) is not None) if isinstance(tier, dict)
-                else getattr(tier, a, None) is not None
-                for a in dict.fromkeys([field, *aliases]))
-            if carries:
-                return _config_access.resolve(tier, field, aliases)
+            if sub is target:
+                return (key,)
+            deeper = _wrapper_path(sub, target, _depth + 1)
+            if deeper:
+                return (key, *deeper)
+        return ()
+
+    _text_path = _wrapper_path(cfg, text_cfg)
+    _TIERS = (
+        (text_cfg, _text_path),
+        (attn_cfg, (*_text_path, "attn_config")),
+        (ffn_cfg, (*_text_path, "ffn_config")),
+    )
+
+    def _scoped(field):
+        """REC-3 (§9.2/§9.3): text_config / attn_config / ffn_config are
+        STRUCTURAL SCOPES, not aliases of one unordered object — the FIRST
+        scope carrying any spelling resolves the field with its EXACT
+        container path; a conflicted scope stops the search (typed ambiguity,
+        never a sibling-scope coin flip); all-absent premises once against
+        the text scope."""
+        names = _spellings(field)
+        for tier_cfg, tier_path in _TIERS:
+            if tier_cfg is None:
+                continue
+            if any((s in tier_cfg) if isinstance(tier_cfg, dict)
+                   else hasattr(tier_cfg, s) for s in names):
+                return _config_access.resolve(
+                    tier_cfg, field, _ALIASES.get(field, ()), path=tier_path)
         return _config_access.resolve(
-            text_cfg if text_cfg is not None else {}, field, aliases)
+            text_cfg if text_cfg is not None else {}, field,
+            _ALIASES.get(field, ()), path=_text_path)
 
     def get(field, default=None):
-        """Resolve from text_cfg, falling back to nested sub-configs (intent:
-        INSPECTED — the value may drive a branch and be discarded)."""
-        res = _tiered(field)
-        return res.value if res.state == "present" else default
+        """Inspect a scoped value (a branch may read and discard it).  An
+        ambiguous or absent or explicit-null occurrence yields ``default`` —
+        lawful ONLY because the typed ambiguity event is recorded and the
+        blocking ``config_ambiguity`` net fails the model outright."""
+        res = _scoped(field)
+        if res.state == "present" and res.value is not None:
+            return res.value
+        return default
 
-    def consume(field, default=None):
-        """Resolve a config field whose value FLOWS INTO the spec (intent:
-        CONSUMED — H3.1, exact under U1 Contract A): a PRESENT field is consumed
-        under the EXACT supplying spelling (never a fictional canonical read);
-        an ABSENT one is an ``absent_default`` premise carrying the fact
-        linkage; an AMBIGUOUS one stays UNCHOSEN — the typed ambiguity event is
-        already recorded and the caller proceeds with its default (an unknown
-        fact, not a coin-flip winner)."""
-        res = _tiered(field)
+    def consume(field, default=None, *, fact_owner="model", fact_key=None):
+        """A value that FLOWS INTO a fact/geometry — consumed under the exact
+        supplying occurrence with its fact owner/key (§9.3).  AMBIGUOUS stays
+        unchosen: ``None`` back to the caller, the typed event recorded, the
+        model blocked by the ambiguity net — never a defaulted structural
+        claim (Law E).  Absent consumes are typed premises."""
+        res = _scoped(field)
         if res.ambiguous:
-            return default
-        value = res.consume(fact_key=field)
+            return None
+        value = res.consume(fact_owner=fact_owner, fact_key=fact_key or field)
         return default if value is None else value
 
-    num_layers   = consume("num_hidden_layers", 0)
-    hidden_size  = consume("hidden_size", 0)
-    num_heads    = consume("num_attention_heads", 0)
-    num_kv_heads = consume("num_key_value_heads") or num_heads
-    head_dim     = consume("head_dim") or (hidden_size // num_heads if num_heads else None)
-    intermediate_size = consume("intermediate_size", 0)
+    num_layers   = consume("num_hidden_layers", 0, fact_owner="model", fact_key="num_layers") or 0
+    hidden_size  = consume("hidden_size", 0, fact_owner="model", fact_key="hidden_size") or 0
+    num_heads    = consume("num_attention_heads", 0, fact_owner="decoder.attention", fact_key="num_heads") or 0
+    num_kv_heads = consume("num_key_value_heads", fact_owner="decoder.attention", fact_key="num_kv_heads") or num_heads
+    head_dim     = consume("head_dim", fact_owner="decoder.attention", fact_key="head_dim") or (hidden_size // num_heads if (num_heads and hidden_size) else None)
+    intermediate_size = consume("intermediate_size", 0, fact_owner="decoder.ffn", fact_key="intermediate_size") or 0
     # OLMo-style: intermediate_size derived from mlp_ratio * hidden_size.
     if not intermediate_size:
-        mlp_ratio = consume("mlp_ratio")
+        mlp_ratio = consume("mlp_ratio", fact_owner="decoder.ffn", fact_key="mlp_ratio")
         if mlp_ratio and hidden_size:
             intermediate_size = int(hidden_size * float(mlp_ratio))
     # GPT-J/GPT-2/CodeGen: config's ``n_inner`` is None and the layer computes
@@ -666,7 +690,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if code_inter:
             intermediate_size = code_inter
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
-    activation_raw = consume("hidden_act")
+    activation_raw = consume("hidden_act", fact_owner="decoder.ffn", fact_key="activation")
     if isinstance(activation_raw, dict):
         activation_raw = activation_raw.get("name")
     if activation_raw is None:
@@ -694,7 +718,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             # config CLASS's own activation default decides before the typed
             # unknown (t5-base: dense_act_fn='relu' — the dense-relu truth).
             _cd_for_act = getattr(context, "class_defaults", None) or {}
-            _cd_act = _resolve(_cd_for_act, "hidden_act")
+            _cd_act = next((_cd_for_act.get(s) for s in _spellings("hidden_act")
+                            if _cd_for_act.get(s) is not None), None)
             _cd_src = "hidden_act family"
             if not isinstance(_cd_act, str):
                 _cd_ffp = _cd_for_act.get("feed_forward_proj")
@@ -726,7 +751,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _activation_status, _activation_src = _unknown_status, None
     _note_fact("decoder.ffn", "activation", activation,
                _activation_status, _activation_src)
-    sliding_window = consume("sliding_window")
+    sliding_window = consume("sliding_window", fact_owner="decoder.attention", fact_key="sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
     # A config may declare a window size but turn SWA *off* (use_sliding_window
     # = False); honor that, otherwise we'd draw sliding attention on what is
@@ -745,7 +770,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         ]
     # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
     # are picked up — see everchanging/aliases.yaml.
-    compress_ratios = _resolve(text_cfg, "compress_ratios") or []
+    compress_ratios = get("compress_ratios") or []
     if not layer_types and compress_ratios:
         layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
     # U3: the six per-layer TYPE-SCHEDULE spellings (attn_type_list / block_types
@@ -804,11 +829,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 f"Audio codec ({_codec_sub.get('model_type')}) not drawn — it "
                 "tokenizes/decodes the audio-token streams this decoder "
                 "generates (waveform ↔ codebook tokens).")
-    residual_multiplier = _resolve(text_cfg, "residual_multiplier")
-    _resolve(text_cfg, "embedding_multiplier")
-    attention_multiplier = _resolve(text_cfg, "attention_multiplier")
+    residual_multiplier = get("residual_multiplier")
+    get("embedding_multiplier")
+    attention_multiplier = get("attention_multiplier")
     query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
-    _resolve(text_cfg, "logits_scaling")
+    get("logits_scaling")
     _norm_kind_ev, _norm_kind_prov = _norm_kind_evidence_src(
         text_cfg, get("norm_type"), context)
     # U2 default-kill: no channel → typed "unknown" (generic Normalization
@@ -921,8 +946,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # replacing the honest-unknown banner.  A family convention is still not
     # evidence: no declaration ⇒ typed unknown, exactly as before.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
-    _declared_theta = _resolve(text_cfg, "rope_theta")
-    _declared_scaling = _resolve(text_cfg, "rope_scaling")
+    _declared_theta = get("rope_theta")
+    _declared_scaling = get("rope_scaling")
     _rope_config_declared = False
     if _code_position_evidence.status == "proven":
         uses_rope = "rope" in _code_position_evidence.kinds
@@ -942,10 +967,26 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 "Modeling source is present but the configured positional scheme is unresolved."
             )
 
+    # REC-3 (§9.6, Law D): a CONFLICTED field is not a MISSING field — the
+    # warning names the true condition; the structured record + blocking
+    # ``config_ambiguity`` net carry the exact rival occurrences.
+    def _ambiguous_here(field: str) -> bool:
+        led = _config_access.active_ledger()
+        return led is not None and any(
+            e.intent == "ambiguous" and e.canonical == field for e in led.events)
+
     if not num_layers:
-        warnings.append("Config missing num_hidden_layers (and aliases) — layer list will be empty.")
+        warnings.append(
+            "Config declares conflicting num_hidden_layers values — layer list "
+            "withheld until the checkpoint is unambiguous."
+            if _ambiguous_here("num_hidden_layers") else
+            "Config missing num_hidden_layers (and aliases) — layer list will be empty.")
     if not hidden_size:
-        warnings.append("Config missing hidden_size (and aliases) — geometry will be incomplete.")
+        warnings.append(
+            "Config declares conflicting hidden_size values — geometry withheld "
+            "until the checkpoint is unambiguous."
+            if _ambiguous_here("hidden_size") else
+            "Config missing hidden_size (and aliases) — geometry will be incomplete.")
 
     # ---- Per-layer dual KV (Gemma 4 sliding vs global; might appear elsewhere) ----
     num_kv_global   = _g(text_cfg, "num_global_key_value_heads") or num_kv_heads
@@ -1037,7 +1078,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # the config spelling is the declared channel behind it. U2 default-kill:
     # when BOTH are silent the bias is a typed UNKNOWN (None) — never a
     # silent False indistinguishable from proven-False.
-    _declared_attn_bias = _resolve(text_cfg, "attention_bias")
+    _declared_attn_bias = get("attention_bias")
     if _declared_attn_bias is None:
         _declared_attn_bias = _g(attn_cfg, "attention_bias")
     _code_bias = _code_attention_bias(text_cfg, context)
@@ -1097,7 +1138,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # its twin: Bloom's MLP Linears default to bias=True with a silent config;
     # `bias=config.mlp_bias` families still honor the checkpoint value through
     # the reader; Conv1D layouts abstain → the config spelling stands.
-    _mlp_bias = _resolve(text_cfg, "mlp_bias")
+    _mlp_bias = get("mlp_bias")
     # class_default tier (the attention twin's rule): an absent mlp_bias key
     # resolves to the installed config class's default at runtime.
     if _mlp_bias is None:
@@ -1172,10 +1213,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
 
     # ---- MoE ----
-    num_experts         = consume("num_experts", 0)
-    num_experts_per_tok = consume("num_experts_per_tok", 0)
-    num_shared_experts  = consume("num_shared_experts", 0)
-    moe_intermediate_size = consume("moe_intermediate_size", 0)
+    num_experts         = consume("num_experts", 0, fact_owner="decoder.ffn", fact_key="num_experts") or 0
+    num_experts_per_tok = consume("num_experts_per_tok", 0, fact_owner="decoder.ffn", fact_key="num_experts_per_tok") or 0
+    num_shared_experts  = consume("num_shared_experts", 0, fact_owner="decoder.ffn", fact_key="num_shared_experts") or 0
+    moe_intermediate_size = consume("moe_intermediate_size", 0, fact_owner="decoder.ffn", fact_key="moe_intermediate_size") or 0
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
     first_k_dense       = _g(text_cfg, "first_k_dense_replace") or 0
@@ -1535,7 +1576,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     for lt in sorted(unknown_layer_types):
         warnings.append(f"Config layer_types contains unrecognized value {lt!r} — treated as causal.")
 
-    vocab_size = consume("vocab_size", 0)
+    vocab_size = consume("vocab_size", 0, fact_owner="model", fact_key="vocab_size") or 0
     # U2 default-kill (the live wrong-value fix): absence of the tie flag is
     # NOT "untied" — the installed config CLASS default decides (gpt2 / t5 /
     # bert / bloom / falcon all omit the key and tie by class default). Tiers
@@ -1543,7 +1584,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # remote-code channel; ``_tied_weights_keys`` is capability, never proof)
     # → class default (context.class_defaults, resolved once at context
     # build) → typed unknown (param count annotates, never picks).
-    _tie_raw = consume("tie_word_embeddings")
+    _tie_raw = consume("tie_word_embeddings", fact_owner="model", fact_key="tie_word_embeddings")
     if _tie_raw is None and text_cfg is not cfg:
         # U1 (unmasked by the exact resolver): a multimodal WRAPPER declares the
         # text head's tying at WRAPPER level (qwen2-vl: top-level
@@ -1725,7 +1766,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
-        final_softcap = consume("final_logit_softcapping")
+        final_softcap = consume("final_logit_softcapping", fact_owner="model", fact_key="final_logit_softcapping")
         extras["render"]["layout"] = "block_diffusion"
         extras["render"]["loop_blocks"] = block_diffusion_loop_blocks(
             n_layers=num_layers,
@@ -1881,7 +1922,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         architecture=arch_name,
         vocab_size=vocab_size,
         hidden_size=hidden_size,
-        max_position_embeddings=consume("max_position_embeddings"),
+        max_position_embeddings=consume("max_position_embeddings", fact_owner="model", fact_key="max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
         cross_layer_edges=cross_layer_edges,
