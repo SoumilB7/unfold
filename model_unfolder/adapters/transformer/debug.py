@@ -137,11 +137,11 @@ def component_prefix_owners(root_owner: str = "root") -> dict[str, str]:
     }
     try:
         from .special_parts.modalities.registry import MODALITY_REGISTRY
-        for spec in MODALITY_REGISTRY:
-            for key in getattr(spec, "config_keys", ()) or ():
-                owners.setdefault(key, f"root.{spec.name}")
-    except Exception:
-        pass  # registry unavailable in an isolated helper context — statics hold
+    except ImportError:  # isolated helper context / import cycle — statics hold
+        return owners
+    for spec in MODALITY_REGISTRY:
+        for key in getattr(spec, "config_keys", ()) or ():
+            owners.setdefault(key, f"root.{spec.name}")
     return owners
 
 

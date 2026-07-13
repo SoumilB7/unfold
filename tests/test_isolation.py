@@ -106,3 +106,44 @@ def test_tree_fingerprint_gate_rejects_a_mutated_tree(tmp_path):
     (root / "__pycache__").mkdir()
     (root / "__pycache__" / "junk.pyc").write_bytes(b"\x00")
     assert tree_state.manifest(root) == after
+
+
+def test_tree_fingerprint_excludes_only_the_worktree_prefix(tmp_path):
+    """REC-0 (§6.2/§6.3): ONLY ``.claude/worktrees/`` (exact root-relative
+    prefix) is harness-owned; a project-owned ``.claude`` configuration —
+    at the root or nested in a package — is real tree content and MUST be
+    fingerprinted.  Normal untracked add/modify/delete/exec-bit all count."""
+    from test_support import tree_state
+
+    root = tmp_path / "tree"
+    (root / "pkg").mkdir(parents=True)
+    (root / "pkg" / "mod.py").write_text("VALUE = 1\n")
+    fp0 = tree_state.fingerprint(root)
+
+    # 1) harness worktrees are excluded
+    worktree = root / ".claude" / "worktrees" / "session"
+    worktree.mkdir(parents=True)
+    (worktree / "file.py").write_text("x = 1\n")
+    assert tree_state.fingerprint(root) == fp0
+
+    # 2) root-level project-owned .claude config IS fingerprinted
+    (root / ".claude" / "project-settings.json").write_text("{}\n")
+    fp1 = tree_state.fingerprint(root)
+    assert fp1 != fp0
+
+    # 3) a nested .claude dir inside a package IS fingerprinted
+    nested = root / "some_package" / ".claude"
+    nested.mkdir(parents=True)
+    (nested / "schema.json").write_text("{}\n")
+    fp2 = tree_state.fingerprint(root)
+    assert fp2 != fp1
+
+    # 4) untracked-file lifecycle: modify, exec-bit, delete each change it
+    (root / "pkg" / "mod.py").write_text("VALUE = 2\n")
+    fp3 = tree_state.fingerprint(root)
+    assert fp3 != fp2
+    (root / "pkg" / "mod.py").chmod(0o755)
+    fp4 = tree_state.fingerprint(root)
+    assert fp4 != fp3
+    (nested / "schema.json").unlink()
+    assert tree_state.fingerprint(root) != fp4

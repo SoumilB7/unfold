@@ -27,6 +27,17 @@ _EXCLUDED_DIRS = frozenset({
 })
 _EXCLUDED_SUFFIXES = (".pyc", ".pyo")
 
+# REC-0 (§6.2): EXACT root-relative prefixes, never basename-wide — only the
+# harness-owned session worktrees are excluded.  A project-owned ``.claude``
+# configuration (root or nested) IS fingerprinted.
+_EXCLUDED_RELATIVE_PREFIXES = (".claude/worktrees/",)
+
+
+def _excluded_relative(rel: str) -> bool:
+    normalized = rel.rstrip("/") + "/"
+    return any(normalized.startswith(prefix)
+               for prefix in _EXCLUDED_RELATIVE_PREFIXES)
+
 
 class TreeChanged(AssertionError):
     """The tree changed during a gated run — the run is INVALID."""
@@ -37,7 +48,12 @@ def manifest(root: str | os.PathLike = ".") -> dict[str, tuple[int, str]]:
     base = pathlib.Path(root).resolve()
     out: dict[str, tuple[int, str]] = {}
     for dirpath, dirnames, filenames in os.walk(base):
-        dirnames[:] = sorted(d for d in dirnames if d not in _EXCLUDED_DIRS)
+        rel_dir = pathlib.Path(dirpath).relative_to(base).as_posix()
+        rel_prefix = "" if rel_dir == "." else rel_dir + "/"
+        dirnames[:] = sorted(
+            d for d in dirnames
+            if d not in _EXCLUDED_DIRS
+            and not _excluded_relative(rel_prefix + d))
         for fname in sorted(filenames):
             if fname.endswith(_EXCLUDED_SUFFIXES) or fname == ".DS_Store":
                 continue
