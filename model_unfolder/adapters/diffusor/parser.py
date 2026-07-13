@@ -705,6 +705,10 @@ def _fact_chip(label: str, value) -> str:
     return f"{label} {value}"
 
 
+# REC-6 (§12.3): a diffusion parse's root IS the denoiser — DECLARED here.
+ROOT_COMPONENT = "root.denoiser"
+
+
 @_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
     # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —

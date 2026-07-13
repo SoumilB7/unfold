@@ -100,16 +100,24 @@ def config_to_ir(
     # subtraction let a text ``hidden_size`` clear a sibling component's
     # unread ``hidden_size``, §5.2).  Adapter kind is a code-shape fact about
     # the ADAPTER module (a diffusion parse's root is the denoiser).
-    _adapter_module = getattr(adapter, "__name__", type(adapter).__module__)
-    _root_owner = "root.denoiser" if "diffusor" in _adapter_module else "root"
+    # REC-6 (§12.3): the ADAPTER DECLARES its root component — never a module
+    # name guess.
+    _root_owner = getattr(adapter, "ROOT_COMPONENT", "root")
     _owner_touched: dict[str, set] = {}
+    _owner_paths: dict[str, set] = {}
+    _owner_exact_leaves: dict[str, set] = {}
     for _ev in _access_ledger.events:
-        if _ev.present:
-            _owner_touched.setdefault(_ev.component, set()).add(
-                _ev.alias or _ev.canonical)
+        if not _ev.present:
+            continue
+        leaf = _ev.alias or _ev.canonical
+        _owner_touched.setdefault(_ev.component, set()).add(leaf)
+        if ":" not in _ev.config_path:   # an EXACT dotted occurrence (REC-2+)
+            _owner_paths.setdefault(_ev.component, set()).add(_ev.config_path)
+            _owner_exact_leaves.setdefault(_ev.component, set()).add(leaf)
     unread = _config_debug.unparsed_fields(
         [cfg], recursive=True, owner_touched=_owner_touched,
-        root_owner=_root_owner,
+        root_owner=_root_owner, owner_paths=_owner_paths,
+        owner_exact_leaves=_owner_exact_leaves,
     )
     # U1 (§5.4 Decision, R2): a field REGISTERED as pending-projection debt is a
     # DECLARED classification, not unread coverage debt — but the excusal is
@@ -157,18 +165,20 @@ def config_to_ir(
     # component that made it, so a sibling never clears another's debt.
     def _q(pairs):
         return sorted(f"{owner}:{field}" for owner, field in pairs)
-    # Gate net-1 to owners that actually HAVE a consumed census: an owner with no
-    # consumed events (e.g. a diffusion adapter still on inspected-only reads) is
-    # not yet computable, so it stays inert rather than flooding every accessed
-    # field as "unconsumed" (the old net's ``if not consumed`` gate, now per-owner).
+    # REC-6 (§12.6): net-1 is UNGATED — every owner's accessed-but-unconsumed
+    # occurrences publish; an owner with NO consumed census cannot pass as
+    # empty-clean and is named in the explicitly-staged ``audit_incomplete``
+    # condition instead (empty data is not clean data).
+    _all_owners = {e.component for e in _access_ledger.events if e.present}
     _owners_with_consumed = {owner for owner, _ in _access_ledger.consumed()}
-    _gated_unconsumed = {of for of in _access_ledger.accessed_but_unconsumed()
-                         if of[0] in _owners_with_consumed}
+    _audit_incomplete = sorted(_all_owners - _owners_with_consumed)
+    _gated_unconsumed = _access_ledger.accessed_but_unconsumed()
     ir.extras["config_access"] = {
         "accessed": _q(_access_ledger.accessed()),
         "consumed": _q(_access_ledger.consumed()),
         "absent_default": _q(_access_ledger.absent_defaults()),
         "accessed_unconsumed": _q(_gated_unconsumed),
+        **({"audit_incomplete": _audit_incomplete} if _audit_incomplete else {}),
         # U1 (§20.4.9): net-2 published owner-qualified — consumed reads whose
         # fact target is neither projected nor registered pending debt.  With
         # projection RECEIPTS not yet live (U2), ``projected`` is empty, so this

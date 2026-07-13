@@ -301,3 +301,56 @@ def test_p13_consumed_but_unprojected_net_is_published():
     names = {check.name for check in report.checks}
     assert any(("consumed" in name and "unprojected" in name) for name in names), (
         f"no published consumed-but-unprojected net among checks: {sorted(names)}")
+
+
+def test_p13_content_exact_unreceipted_targets():
+    """REC-6 (§12.8): net-2 asserts CONTENT — known exact consumed targets on
+    both adapters, and the primitive clears ONLY a matching receipt."""
+    import json
+    import pathlib
+
+    import model_unfolder as mu
+    from model_unfolder.evidence.config_access import (
+        ConfigAccessEvent, ConfigAccessLedger)
+
+    ir = mu.unfold(LLAMA).to_ir()
+    net2 = ((ir.get("extras") or {}).get("config_access") or {}).get(
+        "consumed_unprojected") or []
+    assert "root:num_hidden_layers" in net2, net2[:6]
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    flux = json.loads((corpus / "flux-2-dev.json").read_text())["config"]
+    ir2 = mu.unfold(flux).to_ir()
+    net2d = ((ir2.get("extras") or {}).get("config_access") or {}).get(
+        "consumed_unprojected") or []
+    assert "root.denoiser:num_layers" in net2d, net2d[:6]
+
+    # primitive: a synthetic exact receipt clears ONLY its own target
+    ev = ConfigAccessEvent(component="root", config_path="hidden_size",
+                           canonical="hidden_size", alias="hidden_size",
+                           present=True, intent="consumed",
+                           fact_owner="model", fact_key="hidden_size")
+    ev2 = ConfigAccessEvent(component="root", config_path="vocab_size",
+                            canonical="vocab_size", alias="vocab_size",
+                            present=True, intent="consumed",
+                            fact_owner="model", fact_key="vocab_size")
+    led = ConfigAccessLedger([ev, ev2])
+    left = led.consumed_but_unprojected(projected={("model", "hidden_size")})
+    assert ("root", "vocab_size") in left and ("root", "hidden_size") not in left
+
+
+def test_audit_incomplete_names_unmigrated_owners():
+    """REC-6 (§12.6): an owner with zero consumed events is NAMED, never
+    empty-clean."""
+    import json
+    import pathlib
+
+    import model_unfolder as mu
+    from model_unfolder.sable import sable
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    flux = json.loads((corpus / "flux-2-dev.json").read_text())["config"]
+    rep = sable(flux, render_images=False)
+    check = next(c for c in rep.checks if c.name == "config_audit_incomplete")
+    assert check.blocking is False          # explicitly staged, not silent
+    assert "root.scheduler" in check.findings, check.findings

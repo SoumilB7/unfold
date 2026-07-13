@@ -573,6 +573,11 @@ def matches(_cfg: Any) -> bool:
     return True  # the only adapter — must be registered last in the global list
 
 
+# REC-6 (§12.3): this adapter's parse root, DECLARED (never guessed from a
+# module name).
+ROOT_COMPONENT = "root"
+
+
 def parse(cfg: Any, context=None) -> ModelIR:
     if context is None:
         from ...evidence.context import ParseContext

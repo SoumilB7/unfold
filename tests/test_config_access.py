@@ -448,3 +448,15 @@ def test_reason_and_selected_path_survive_serialization():
     assert rows[0]["config_path"] == "ffn_config.num_experts"
     assert "redundant equal aliases" in rows[0]["reason"]
     assert rows[1]["config_path"] == "ffn_config.n_routed_experts"
+
+
+def test_same_owner_nested_paths_stay_distinct():
+    """REC-6 (§12.2, R-04): once the root resolves ``hidden_size`` at an EXACT
+    path, a same-owner sibling container's ``hidden_size`` cannot ride that
+    read — occurrence identity, not leaf names."""
+    import model_unfolder as mu
+    from test_support import LLAMA
+
+    cfg = {**LLAMA, "attn_config": {"hidden_size": 4096}}
+    audit = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_audit", {})
+    assert "attn_config.hidden_size" in (audit.get("unread") or []), audit.get("unread")

@@ -168,6 +168,8 @@ def _owner_of_path(path: str, prefixes: dict[str, str],
 def unparsed_fields(
     cfgs: list[Any], *, touched: set[str] | None = None, recursive: bool = False,
     owner_touched: dict[str, set[str]] | None = None, root_owner: str = "root",
+    owner_paths: dict[str, set[str]] | None = None,
+    owner_exact_leaves: dict[str, set[str]] | None = None,
 ) -> list[str]:
     """Return present non-ignored config fields no accessor looked up.
 
@@ -179,10 +181,18 @@ def unparsed_fields(
     the same leaf key can no longer clear another component's unread debt
     (§5.2).  Without it, the legacy flat key-name subtraction applies (kept
     for ledger-less helper callers).
+
+    REC-6 (§12.2, R-04): pass ``owner_paths`` ({owner -> exact dotted config
+    paths read}) and occurrence identity becomes the truth: EXACT-PATH events
+    take precedence per (owner, leaf) — once an owner has resolved a leaf at
+    an exact path, ONLY exact paths clear that leaf for that owner (two
+    same-owner nested ``hidden_size`` containers stay distinct); the legacy
+    leaf fallback survives only for leaves with no exact event yet (the
+    un-migrated ``note_access``/``_g`` funnel — deleted with it).
     """
     reads = _config_access.active_touched_names() if touched is None else touched
     prefixes = (component_prefix_owners(root_owner)
-                if owner_touched is not None else None)
+                if owner_touched is not None or owner_paths is not None else None)
     present: dict[str, str] = {}
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
@@ -204,12 +214,18 @@ def unparsed_fields(
                    for segment in path.split("."))
 
     def _cleared(path: str, key: str) -> bool:
-        if owner_touched is None:
+        if owner_touched is None and owner_paths is None:
             return key in reads
         owner = _owner_of_path(path, prefixes, root_owner)
         if owner is None:
             return False        # unmapped container: no owner may clear it
-        return key in (owner_touched.get(owner) or ())
+        if owner_paths is not None:
+            if path in (owner_paths.get(owner) or ()):
+                return True     # exact occurrence identity (§12.2)
+            if key in (owner_exact_leaves or {}).get(owner, ()):
+                return False    # this owner resolved the leaf EXACTLY elsewhere
+                                # — a sibling container cannot ride that read
+        return key in (owner_touched or {}).get(owner, ())
 
     return sorted(
         path for path, key in present.items()

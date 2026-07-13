@@ -478,6 +478,14 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # REC-3 (§12.5): conflicting checkpoint declarations BLOCK from their
         # first production use — an ambiguous field is an unknown fact plus
         # this finding, never a silently chosen value.
+        # REC-6 (§12.6): owners with NO consumed census are NAMED — staged
+        # advisory until every adapter's consumption migrates (then blocking).
+        SableCheck(
+            "config_audit_incomplete",
+            list(((ir.get("extras") or {}).get("config_access") or {})
+                 .get("audit_incomplete") or []),
+            blocking=False,
+        ),
         SableCheck(
             "config_ambiguity",
             [f"{row['component']}: {row['reason']}"
