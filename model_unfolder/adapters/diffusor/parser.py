@@ -63,12 +63,15 @@ _ENCODER_NAMES = load_diffusion_text_encoders()
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
-    """First hit among a canonical field's known spellings (see aliases YAML)."""
-    for alias in _ALIASES.get(canonical, [canonical]):
-        val = _g(cfg, alias)
-        if val is not None:
-            return val
-    return default
+    """One exact alias resolution (U1 Contract A, D-02) — replaces the first-hit
+    loop.  The shared resolver records the ONE owner-scoped event (present under
+    the EXACT supplying spelling / absent premise / typed ambiguity); unequal
+    simultaneous aliases stay UNCHOSEN and the caller proceeds with its default
+    (an unknown fact, never a coin-flip winner)."""
+    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
+    if res.state != "present":
+        return default
+    return res.value
 
 
 def _source_files(cfg: Any, context=None):
@@ -630,6 +633,8 @@ def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
     records ownership for the config-field audit, so a field is either parsed,
     chipped, or consciously declared silent/no-op in YAML — never silently
     dropped.  ``vae`` rows read from the pipeline's embedded VAE sub-config."""
+    from contextlib import nullcontext
+
     from ...everchanging import load_diffusion_config_facts
     table = load_diffusion_config_facts()
     vae_cfg = _g(cfg, "_vae_config")
@@ -639,13 +644,20 @@ def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
         if src is None:
             continue
         chips: list[str] = []
-        for row in rows:
-            value = _g(src, row["field"])
-            if value is None or row.get("silent"):
-                continue
-            if "noop" in row and _fact_is_noop(value, row["noop"]):
-                continue
-            chips.append(_fact_chip(row["label"], value))
+        # U1 (§20.4.3): a bucket's reads attribute to the CONTAINER they read
+        # from — the ``vae`` rows read the embedded VAE sub-config, so their
+        # ownership is ``root.vae`` (previously they were recorded under the
+        # caller's denoiser owner, and the owner-join then flagged the very
+        # fields these rows exist to classify).
+        with (_config_access.owner_scope("root.vae") if bucket == "vae"
+              else nullcontext()):
+            for row in rows:
+                value = _g(src, row["field"])
+                if value is None or row.get("silent"):
+                    continue
+                if "noop" in row and _fact_is_noop(value, row["noop"]):
+                    continue
+                chips.append(_fact_chip(row["label"], value))
         if chips:
             out[bucket] = chips
     return out
@@ -680,7 +692,12 @@ def _fact_chip(label: str, value) -> str:
     return f"{label} {value}"
 
 
+@_config_access.owner_scoped("root.denoiser")
 def parse(cfg: Any, context=None) -> ModelIR:
+    # U1 (§20.4.3): a diffusion parse's ROOT config IS the denoiser's config —
+    # its reads attribute to ``root.denoiser`` (pipeline components re-scope
+    # inside: ``root.vae`` / ``root.scheduler`` / encoder towers), so the
+    # owner-tight pending-debt join and both nets see the true owner.
     if context is None:
         from ...evidence.context import ParseContext
         context = ParseContext.build(cfg, source="local")
@@ -1890,9 +1907,11 @@ def _conditioning(geom: dict, num_single: int, rope_note: str,
     }
 
 
+@_config_access.owner_scoped("root.scheduler")
 def _scheduler_geom(cfg: Any) -> dict:
     """Scheduler facts for the loop: friendly name (from the pipeline index) and
-    real config values (from the merged scheduler/config.json, when fetched)."""
+    real config values (from the merged scheduler/config.json, when fetched).
+    U1 (§20.4.3): scheduler reads attribute to ``root.scheduler``."""
     out: dict = {}
     entry = _g(cfg, "scheduler")
     cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
@@ -1937,11 +1956,10 @@ def _vae_geom(cfg: Any) -> dict | None:
         return None
 
     def _v(canonical):
-        for alias in _ALIASES.get(canonical, [canonical]):
-            value = _g(vcfg, alias)
-            if value is not None:
-                return value
-        return None
+        # U1 Contract A: the VAE's own alias resolution goes through the exact
+        # resolver too (owner ``root.vae`` via this function's owner_scope).
+        res = _config_access.resolve(vcfg, canonical, _ALIASES.get(canonical, ()))
+        return res.value if res.state == "present" else None
 
     boc = _v("block_out_channels")
     if not isinstance(boc, (list, tuple)):
@@ -2196,7 +2214,12 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
         spec = {"name": friendly, "family": friendly}
         sub = enc_cfgs.get(key)
         if isinstance(sub, dict):
-            spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
+            # U1 (§20.4.3): the nested encoder's own parse attributes to its
+            # SLOT owner (root.text_encoder / _2 / _3) — the same key
+            # ``qualify_component`` stamps on the sub-model spec, so ledger
+            # events and projected blocks bind to one owner by construction.
+            with _config_access.owner_scope(f"root.{key}"):
+                spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted
             # (``text_encoder.text_config``), which the source bundle

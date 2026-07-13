@@ -465,6 +465,16 @@ def sable(model_or_id, *, token=None, source: str = "local",
             _accessed_unprojected_findings(ir),
             blocking=False,
         ),
+        # U1 (§20.4.9): net-2 — consumed-but-unprojected, owner-qualified.
+        # ADVISORY until projection receipts (U2) and the corpus debt migration
+        # land (§20.4.10): a consumed config value with no recorded projection
+        # receipt is the read-but-never-drawn class.
+        SableCheck(
+            "config_consumed_unprojected",
+            list(((ir.get("extras") or {}).get("config_access") or {})
+                 .get("consumed_unprojected") or []),
+            blocking=False,
+        ),
     ]
 
     # Deterministic per-view SVG hashes (the CI-lock key) — dedup by visual hash so

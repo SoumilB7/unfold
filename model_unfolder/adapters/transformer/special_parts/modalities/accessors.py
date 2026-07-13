@@ -8,7 +8,13 @@ from .....evidence.identity_roles import identity_display
 
 
 def first(cfg: Any, *keys: str) -> Any:
-    """Return the first present config value from ``keys``."""
+    """Return the first present config value from ``keys``.
+
+    U1 note: this is a PRIORITY CHAIN over semantically DISTINCT fields
+    (qwen2-vl vision: ``embed_dim``=1280 internal width vs ``hidden_size``=3584
+    merger output) — NOT an alias family, so it must never route through the
+    exact alias resolver (unequal priorities are not a conflict).  Each present
+    hit still records its own owner-scoped event via the ``_g`` funnel."""
     for key in keys:
         value = _g(cfg, key)
         if value is not None:

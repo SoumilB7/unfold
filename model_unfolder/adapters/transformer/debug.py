@@ -106,17 +106,83 @@ def _value_at(cfg: Any, path: str):
     return node
 
 
+# Dot-less pipeline-slot keys whose top-level entry is read by the component's
+# own scoped reader (see _owner_of_path; container keys own only children).
+_TOP_LEVEL_SLOT_OWNERS = {"scheduler": "root.scheduler"}
+
+
+def component_prefix_owners(root_owner: str = "root") -> dict[str, str]:
+    """The GENERAL nested-config-prefix -> owner map (U1, §20.4.8) — derived
+    from the modality registry plus the structural pipeline slots; never a
+    per-model table.  Tier sub-configs (``text_config``/``attn_config``/
+    ``ffn_config``) belong to the parse root; component sub-configs belong to
+    their component owner."""
+    owners: dict[str, str] = {
+        "text_config": root_owner,
+        "attn_config": root_owner,
+        "ffn_config": root_owner,
+        "generation_config": root_owner,
+        # HF's modern rope dialect nests the rotary parameters in a ROOT-tier
+        # container (the parser reads its subkeys under the parse root).
+        "rope_parameters": root_owner,
+        "rope_scaling": root_owner,
+        "_vae_config": "root.vae",
+        "_scheduler_config": "root.scheduler",
+        # The top-level pipeline SLOT key is read by its component's reader
+        # under that component's scope (dot-less keys hit this map too).
+        "scheduler": "root.scheduler",
+        "_text_encoder_configs.text_encoder": "root.text_encoder",
+        "_text_encoder_configs.text_encoder_2": "root.text_encoder_2",
+        "_text_encoder_configs.text_encoder_3": "root.text_encoder_3",
+    }
+    try:
+        from .special_parts.modalities.registry import MODALITY_REGISTRY
+        for spec in MODALITY_REGISTRY:
+            for key in getattr(spec, "config_keys", ()) or ():
+                owners.setdefault(key, f"root.{spec.name}")
+    except Exception:
+        pass  # registry unavailable in an isolated helper context — statics hold
+    return owners
+
+
+def _owner_of_path(path: str, prefixes: dict[str, str],
+                   root_owner: str) -> str | None:
+    """Exact-path owner attribution: two-segment prefixes first, then one; a
+    top-level leaf belongs to the parse root; a nested path under an UNMAPPED
+    container has NO owner — no component's reads may clear it (§5.2)."""
+    if "." not in path:
+        # Dot-less: only the STATIC pipeline-slot keys re-own a top-level leaf
+        # (scheduler).  Registry container keys (vision_config, conditioning
+        # slots like text_encoder) own their CHILDREN, not the top-level slot
+        # entry itself — a diffusion pipeline reads the slot entry at its root.
+        return _TOP_LEVEL_SLOT_OWNERS.get(path, root_owner)
+    segments = path.split(".")
+    two = ".".join(segments[:2])
+    if two in prefixes and len(segments) > 2:
+        return prefixes[two]
+    if segments[0] in prefixes:
+        return prefixes[segments[0]]
+    return None
+
+
 def unparsed_fields(
-    cfgs: list[Any], *, touched: set[str] | None = None, recursive: bool = False
+    cfgs: list[Any], *, touched: set[str] | None = None, recursive: bool = False,
+    owner_touched: dict[str, set[str]] | None = None, root_owner: str = "root",
 ) -> list[str]:
     """Return present non-ignored config fields no accessor looked up.
 
     ``recursive=False`` preserves the legacy top-level diagnostic. Sable uses
     ``recursive=True`` so nested component ownership is visible as dotted paths.
-    Matching is by key name because parsers may materialize/copy nested HF config
-    objects; dotted paths remain in the finding so a human can locate ownership.
+
+    U1 (§20.4.8): pass ``owner_touched`` ({owner -> present spellings that
+    owner read}) for the EXACT-PATH/OWNER JOIN — a sibling component's read of
+    the same leaf key can no longer clear another component's unread debt
+    (§5.2).  Without it, the legacy flat key-name subtraction applies (kept
+    for ledger-less helper callers).
     """
     reads = _config_access.active_touched_names() if touched is None else touched
+    prefixes = (component_prefix_owners(root_owner)
+                if owner_touched is not None else None)
     present: dict[str, str] = {}
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
@@ -137,9 +203,17 @@ def unparsed_fields(
         return any(segment in _IGNORED_KEYS or segment in _OPAQUE_SCOPES
                    for segment in path.split("."))
 
+    def _cleared(path: str, key: str) -> bool:
+        if owner_touched is None:
+            return key in reads
+        owner = _owner_of_path(path, prefixes, root_owner)
+        if owner is None:
+            return False        # unmapped container: no owner may clear it
+        return key in (owner_touched.get(owner) or ())
+
     return sorted(
         path for path, key in present.items()
-        if key not in reads
+        if not _cleared(path, key)
         and not key.endswith(_IGNORED_SUFFIXES)
         and not _owned_by_declaration(path)
     )

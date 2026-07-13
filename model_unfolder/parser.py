@@ -72,7 +72,9 @@ def config_to_ir(
     # inside the outer capture even if their legacy debug tracker resets.
     from .adapters.transformer import debug as _config_debug
     from .evidence import config_access as _config_access
-    with _config_access.capture_events() as _access_ledger, \
+    # U1 (§20.4.2): the ledger LIVES on the ParseContext; the capture ContextVar
+    # only routes nested calls to it (never a second truth store).
+    with _config_access.capture_events(parse_context.config_access) as _access_ledger, \
             _config_access.owner_scope("root"):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
@@ -88,32 +90,55 @@ def config_to_ir(
             for component, files in component_files.items()
         },
     }
-    # H3 (§16.5): config_audit is DERIVED from the owner-scoped ledger — the old
-    # module-global ``_touched``/``_consumed`` are DELETED.  The compat bare-name
-    # ``accessed`` set is present-accessed UNION absent-default (an absent consume
-    # was in the old ``_touched`` too), so the unread diagnostic is unchanged.
-    _absent_names = {field for _, field in _access_ledger.absent_defaults()}
-    _accessed_compat = set(_access_ledger.touched_names()) | _absent_names
+    # U1 (§5.1 Decision): ``accessed`` is PRESENT-ONLY — absence lives only in
+    # ``absent_default`` premises, never in accessed/touched/config_consumed.
+    # (The unread diagnostic is unchanged either way: unread subtracts from
+    # PRESENT paths, and an absent field was never a present path.)
+    _accessed_compat = set(_access_ledger.touched_names())
+    # U1 (§20.4.8): unread coverage is an EXACT-PATH/OWNER JOIN — each present
+    # dotted path is cleared only by ITS owner's reads (the flat key
+    # subtraction let a text ``hidden_size`` clear a sibling component's
+    # unread ``hidden_size``, §5.2).  Adapter kind is a code-shape fact about
+    # the ADAPTER module (a diffusion parse's root is the denoiser).
+    _adapter_module = getattr(adapter, "__name__", type(adapter).__module__)
+    _root_owner = "root.denoiser" if "diffusor" in _adapter_module else "root"
+    _owner_touched: dict[str, set] = {}
+    for _ev in _access_ledger.events:
+        if _ev.present:
+            _owner_touched.setdefault(_ev.component, set()).add(
+                _ev.alias or _ev.canonical)
     unread = _config_debug.unparsed_fields(
-        [cfg], touched=_accessed_compat, recursive=True
+        [cfg], recursive=True, owner_touched=_owner_touched,
+        root_owner=_root_owner,
     )
-    # procedure 9 re-vet: a field REGISTERED as pending-projection debt is a
-    # DECLARED classification, not unread coverage debt — the registry names the
-    # fact, its owner, and its render projection (the H7-full reader draws it).
-    # The BLOCKING config_field_audit therefore excuses exactly those registered
-    # canonicals, so the honest "removed until drawn" state holds without a silent
-    # audit-clearing re-read.  (``procedure 2`` removed these diffusion reads
-    # ASSUMING the audit was advisory; it is blocking — caught by the render-suite
-    # regression net that the fast smoke had skipped — so the registration is
-    # recognized here.)  Bounded to the small registry list; a NEW unread field is
-    # still flagged.  Key-based match, consistent with unparsed_fields' own design.
+    # U1 (§5.4 Decision, R2): a field REGISTERED as pending-projection debt is a
+    # DECLARED classification, not unread coverage debt — but the excusal is
+    # OWNER-TIGHT (exact owner + canonical join, never a bare leaf key: a
+    # transformer-root ``temporal_compression_ratio`` is NOT excused by the
+    # ``root.vae`` entry) and the excused paths stay VISIBLE as
+    # ``pending_projection`` diagnostics — they never silently vanish from
+    # unread accounting.  Path→owner mapping: ``_vae_config.*`` belongs to
+    # ``root.vae``; a top-level field belongs to the parse root, which for a
+    # DIFFUSION parse is the denoiser (adapter-kind is a code-shape fact about
+    # the ADAPTER module, never model identity).  A NEW unread field is still
+    # flagged; a stale registry entry no longer matching any path costs nothing.
     from .evidence.registry import PENDING_PROJECTION_DEBT
-    _pending_canonicals = {e.canonical for e in PENDING_PROJECTION_DEBT}
-    unread = [path for path in unread
-              if path.rsplit(".", 1)[-1] not in _pending_canonicals]
+
+    def _unread_path_owner(path: str) -> str:
+        if path.startswith("_vae_config."):
+            return "root.vae"
+        return _root_owner
+
+    _pending_pairs = {(entry.owner, entry.canonical)
+                      for entry in PENDING_PROJECTION_DEBT}
+    pending_projection = sorted(
+        path for path in unread
+        if (_unread_path_owner(path), path.rsplit(".", 1)[-1]) in _pending_pairs)
+    unread = [path for path in unread if path not in set(pending_projection)]
     ir.extras["config_audit"] = {
         "unread": unread,
         "accessed": sorted(_accessed_compat),
+        **({"pending_projection": pending_projection} if pending_projection else {}),
     }
     # The OWNER-SCOPED view of the same audit: every access qualified by the
     # component that made it, so a sibling never clears another's debt.
@@ -131,6 +156,13 @@ def config_to_ir(
         "consumed": _q(_access_ledger.consumed()),
         "absent_default": _q(_access_ledger.absent_defaults()),
         "accessed_unconsumed": _q(_gated_unconsumed),
+        # U1 (§20.4.9): net-2 published owner-qualified — consumed reads whose
+        # fact target is neither projected nor registered pending debt.  With
+        # projection RECEIPTS not yet live (U2), ``projected`` is empty, so this
+        # is the honest full read-but-not-yet-receipted census; it turns
+        # blocking only after receipts + corpus debt migration (§20.4.10).
+        "consumed_unprojected": _q(_access_ledger.consumed_but_unprojected(
+            pending=_pending_pairs)),
     }
     # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
     # tags into the call-local FactLedger and serialize it.  This is accounting,
@@ -146,9 +178,10 @@ def config_to_ir(
                                   getattr(spec, fact, None), "asserted",
                                   source="spec.asserted")
         ir.extras["fact_provenance"] = ledger.to_dict()
-        # Consumed census DERIVED from the owner-scoped ledger (compat bare names:
-        # present-consumed UNION absent-default, matching the deleted _consumed).
-        consumed = sorted(set(_access_ledger.consumed_names()) | _absent_names)
+        # Consumed census DERIVED from the owner-scoped ledger. U1 (§20.4.7):
+        # PRESENT-ONLY — an absent field is an ``absent_default`` premise and
+        # never enters accessed, touched, or config_consumed.
+        consumed = sorted(_access_ledger.consumed_names())
         # Do not publish a misleading empty "consumed" census.  H3 is migrating
         # decision sites to intent="consumed" one family at a time; absence says
         # the census is not yet available for this adapter/path.

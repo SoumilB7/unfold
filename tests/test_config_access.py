@@ -194,9 +194,151 @@ def test_net2_consumed_but_unprojected_clears_on_projection_or_pending():
 def test_derived_compat_name_views():
     consumed = _event(canonical="hidden_size", alias="n_embd", intent="consumed")
     bound = _event(component="root.vision", canonical="patch_size",
-                   intent="bound", reader="vision_reader")
+                   alias="patch_size", intent="bound", reader="vision_reader")
     absent = resolve_aliases({}, "gone", [], component="root")
     ledger = ConfigAccessLedger([consumed, bound, absent])
-    assert ledger.touched_names() == {"hidden_size", "patch_size"}   # absent NOT touched
-    assert ledger.consumed_names() == {"hidden_size"}
+    # U1: touched speaks FILE SPELLINGS (unparsed_fields key-matches the
+    # config's PRESENT keys — an alias-supplied read clears ``n_embd``, the key
+    # the file actually carries, never the absent canonical label).
+    assert ledger.touched_names() == {"n_embd", "patch_size"}   # absent NOT touched
+    assert ledger.consumed_names() == {"hidden_size"}           # semantic label view
     assert ledger.bound_names() == {"patch_size"}
+
+
+# --------------------------------------------------------------------------- #
+# U1 — Contract A (§20.1): ConfigResolution + resolve(), the ONE resolution API
+# --------------------------------------------------------------------------- #
+
+from model_unfolder.evidence.config_access import (  # noqa: E402
+    ConfigResolution,
+    capture_events,
+    resolve,
+)
+
+
+def _events_of(ledger, intent=None):
+    return [e for e in ledger.events if intent is None or e.intent == intent]
+
+
+def test_resolve_present_canonical_records_exactly_one_inspected_event():
+    with capture_events() as ledger:
+        res = resolve({"hidden_size": 64}, "hidden_size", ["n_embd"], component="root")
+    assert (res.state, res.value, res.selected_alias) == ("present", 64, "hidden_size")
+    assert res.selected_path == "root:hidden_size" and res.source_kind == "checkpoint"
+    assert len(ledger.events) == 1 and ledger.events[0].intent == "inspected"
+
+
+def test_resolve_alias_only_selects_the_real_spelling_not_the_canonical():
+    with capture_events() as ledger:
+        res = resolve({"n_embd": 64}, "hidden_size", ["n_embd"], component="root")
+    assert (res.state, res.value, res.selected_alias) == ("present", 64, "n_embd")
+    [event] = ledger.events
+    assert event.canonical == "hidden_size" and event.alias == "n_embd"
+    assert event.config_path == "root:n_embd"  # the exact path, never fictional
+
+
+def test_resolve_equal_redundant_aliases_select_by_declared_order():
+    with capture_events() as ledger:
+        res = resolve({"num_experts": 8, "n_routed_experts": 8},
+                      "num_experts", ["n_routed_experts"], component="root")
+    assert res.selected_alias == "num_experts" and res.value == 8
+    assert res.present_aliases == (("num_experts", 8), ("n_routed_experts", 8))
+    assert "redundant equal aliases" in res.reason
+    # §20.4.5: EVERY occurrence recorded — the selected read plus a scoped
+    # ignore per redundant spelling (clears unread for the keys the file
+    # carries; the redundant spelling can never become debt or a second read).
+    assert [(e.intent, e.alias) for e in ledger.events] == [
+        ("inspected", "num_experts"), ("ignored", "n_routed_experts")]
+    assert ledger.touched_names() == {"num_experts", "n_routed_experts"}
+    assert ledger.accessed_but_unconsumed() == set()  # ignored ≠ debt
+
+
+def test_resolve_unequal_aliases_are_typed_ambiguity_and_cannot_be_consumed():
+    with capture_events() as ledger:
+        res = resolve({"hidden_size": 96, "n_embd": 64},
+                      "hidden_size", ["n_embd"], component="root")
+    assert res.state == "ambiguous" and res.value is None
+    assert res.present_aliases == (("hidden_size", 96), ("n_embd", 64))
+    [event] = ledger.events
+    assert event.intent == "ambiguous" and "hidden_size=96" in event.reason
+    with pytest.raises(ValueError, match="ambiguous"):
+        res.consume(fact_key="hidden_size")
+
+
+def test_resolve_absent_is_a_premise_never_a_fictional_read():
+    with capture_events() as ledger:
+        res = resolve({}, "num_key_value_heads", [], component="root")
+    assert res.state == "absent" and res.value is None and res.selected_alias is None
+    [event] = ledger.events
+    assert event.intent == "absent_default" and event.present is False
+    assert ledger.touched_names() == frozenset()  # absent is NOT touched
+
+
+def test_resolve_class_default_is_distinguishable_from_checkpoint_truth():
+    with capture_events() as ledger:
+        res = resolve({}, "hidden_act", [], component="root",
+                      class_defaults={"hidden_act": "silu"})
+    assert res.state == "absent"            # absent FROM THE CHECKPOINT
+    assert res.value == "silu" and res.source_kind == "class_default"
+    [event] = ledger.events
+    assert event.intent == "absent_default" and "class default" in event.reason
+
+
+def test_consume_present_emits_under_the_selected_spelling_with_fact_linkage():
+    with capture_events() as ledger:
+        res = resolve({"n_embd": 64}, "hidden_size", ["n_embd"], component="root")
+        value = res.consume(fact_owner="root", fact_key="hidden_size")
+    assert value == 64
+    [consumed] = _events_of(ledger, "consumed")
+    assert consumed.alias == "n_embd" and consumed.canonical == "hidden_size"
+    assert consumed.fact_key == "hidden_size" and consumed.present is True
+    assert ("root", "hidden_size") in ledger.consumed()
+
+
+def test_consume_absent_is_an_absent_default_premise_with_fact_linkage():
+    with capture_events() as ledger:
+        res = resolve({}, "num_key_value_heads", [], component="root")
+        value = res.consume(fact_owner="root.attention", fact_key="kv_heads")
+    assert value is None
+    assert _events_of(ledger, "consumed") == []   # never a fictional consumed read
+    premises = _events_of(ledger, "absent_default")
+    assert len(premises) == 2                      # resolve premise + consume premise
+    assert premises[-1].fact_key == "kv_heads"
+
+
+def test_bind_records_the_reader_and_counts_as_consumed():
+    with capture_events() as ledger:
+        res = resolve({"rope_theta": 10000.0}, "rope_theta", [], component="root")
+        res.bind("decoder_rotary_from_files", fact_owner="root.attention",
+                 fact_key="rope_theta")
+    [consumed] = _events_of(ledger, "consumed")
+    assert consumed.reader == "decoder_rotary_from_files"
+
+
+def test_ignore_is_a_scoped_conscious_classification():
+    with capture_events() as ledger:
+        res = resolve({"attention_dropout": 0.1}, "attention_dropout", [],
+                      component="root")
+        res.ignore("training-time dropout — not drawn architecture")
+    assert [e.intent for e in ledger.events] == ["inspected", "ignored"]
+    assert ledger.events[-1].reason.startswith("training-time dropout")
+
+
+def test_resolve_address_key_reads_stay_scoped_ignores():
+    """The emit-layer address remap holds through the new resolver: inspecting
+    torch_dtype (an address/serialization key) is a lawful scoped ignore, not
+    accessed-but-unconsumed debt."""
+    with capture_events() as ledger:
+        resolve({"torch_dtype": "bf16"}, "torch_dtype", [], component="root")
+    assert [e.intent for e in ledger.events] == ["ignored"]
+
+
+def test_capture_events_existing_routes_to_the_parse_context_ledger():
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.models import SourceBundle
+
+    context = ParseContext(source_bundle=SourceBundle(files=(), source="local"))
+    with capture_events(context.config_access) as ledger:
+        assert ledger is context.config_access      # no second truth store
+        resolve({"hidden_size": 64}, "hidden_size", [], component="root")
+    assert len(context.config_access.events) == 1  # events live ON the context

@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from .config_access import ConfigAccessLedger
 from .identity_roles import identity_address
 from .models import SourceBundle
 from .sources import resolve_source_files
@@ -128,6 +129,10 @@ class ParseContext:
     registries: dict[tuple[str, tuple[str, ...]], dict] = field(default_factory=dict)
     # U2: per-fact provenance, filled at the parser's decision points.
     facts: FactLedger = field(default_factory=FactLedger)
+    # U1 (§20.4.2): the call-local config-access ledger LIVES here; the
+    # capture ContextVar only routes nested calls to this context's ledger and
+    # is never a second truth store.  Compat bare-name views derive from it.
+    config_access: ConfigAccessLedger = field(default_factory=ConfigAccessLedger)
     # U2 class_default tier: the installed config CLASS's own defaults,
     # resolved ONCE at context build (identity-as-ADDRESS — the same rail
     # source resolution uses; the class is code evidence and the parse stays

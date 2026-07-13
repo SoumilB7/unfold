@@ -35,6 +35,8 @@ timestep:
 
 denoiser:
   - {field: global_states_input_dim, label: "global conditioning input"}   # Stable Audio: prepended global token's input width
+  - {field: norm_num_groups, label: "norm groups"}                     # GroupNorm group count declared on the denoiser (UNet/legacy DiT)
+  - {field: scaling_factor, label: "latent scale", silent: true}       # duplicated pipeline-level declaration; the VAE's own scaling_factor is the drawn read
   - {field: cross_attention_input_dim, label: "cross-attention input width"}  # encoder-side width entering cross K/V
   - {field: eps, label: "norm ε"}
   - {field: use_linear_projection, label: "linear patch projection", noop: false}
@@ -76,6 +78,12 @@ denoiser:
 
 latent:
   - {field: sample_size, label: "sample size"}
+  - {field: sample_height, label: "sample height"}
+  - {field: sample_width, label: "sample width"}
+  - {field: in_channels, label: "input channels"}
+  - {field: patch_size, label: "patchify", noop: 1}
+  - {field: patch_size_t, label: "temporal patchify", noop: 1}
+  - {field: attention_head_dim, label: "attention head dim"}
   - {field: default_sample_size, label: "default sample size"}
 
 conditioning:
@@ -108,3 +116,9 @@ vae:
   - {field: batch_norm_momentum, label: "batch-norm momentum", silent: true}   # training-time statistic, not architecture
   - {field: invert_scale_latents, label: "inverted latent scaling", noop: false}
   - {field: sample_size, label: "sample size"}
+  - {field: sample_height, label: "sample height"}
+  - {field: sample_width, label: "sample width"}
+  - {field: in_channels, label: "input channels"}
+  - {field: patch_size, label: "patchify", noop: 1}
+  - {field: patch_size_t, label: "temporal patchify", noop: 1}
+  - {field: attention_head_dim, label: "attention head dim"}

@@ -104,23 +104,17 @@ def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
 
 
 def _resolve(cfg: Any, canonical: str, default=None):
-    """Try every known alias for a field, return the first hit."""
-    aliases = _ALIASES.get(canonical, [canonical])
-    for alias in aliases:
-        val = _g(cfg, alias)
-        if val is not None:
-            # The field is handled — mark the PRESENT spellings parsed so a
-            # redundant sibling alias also present in the config (e.g. both
-            # num_experts and n_routed_experts) isn't flagged as unparsed.
-            # Only present ones: an ABSENT alias spelling was never a real
-            # field to read, and marking every spelling inflated the accessed
-            # set with hundreds of phantom aliases a model never carries,
-            # drowning the accessed-but-unconsumed signal the H3 net surfaces.
-            for a in aliases:
-                if (a in cfg) if isinstance(cfg, dict) else hasattr(cfg, a):
-                    debug.note_access(a)
-            return val
-    return default
+    """One exact alias resolution (U1 Contract A, T-01) — replaces the first-hit
+    loop.  ``evidence.config_access.resolve`` records the ONE owner-scoped event
+    (present under the EXACT supplying spelling / absent premise / typed
+    ambiguity) and returns the typed decision; unequal simultaneous aliases are
+    AMBIGUOUS — no value is silently chosen and the caller proceeds with its
+    default (an unknown fact, never a coin-flip winner)."""
+    from ...evidence import config_access as _config_access
+    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
+    if res.state != "present":
+        return default
+    return res.value
 
 
 def _source_files(cfg: Any, context=None):
@@ -611,34 +605,47 @@ def parse(cfg: Any, context=None) -> ModelIR:
     attn_cfg = _nested(text_cfg, "attn_config")
     ffn_cfg  = _nested(text_cfg, "ffn_config")
 
+    from ...evidence import config_access as _config_access
+
+    def _tiered(field):
+        """U1 Contract A over the DBRX-style tier cascade: the FIRST tier
+        (text -> attn -> ffn) carrying any spelling of ``field`` resolves it —
+        tier scoping is real structure, not an alias conflict, so ambiguity is
+        detected WITHIN the winning tier and a conflicted tier must NOT fall
+        through to a sibling tier's value (that would be a hidden coin flip).
+        Exactly ONE base event is recorded either way."""
+        aliases = _ALIASES.get(field, (field,))
+        for tier in (text_cfg, attn_cfg, ffn_cfg):
+            if tier is None:
+                continue
+            carries = any(
+                (tier.get(a) is not None) if isinstance(tier, dict)
+                else getattr(tier, a, None) is not None
+                for a in dict.fromkeys([field, *aliases]))
+            if carries:
+                return _config_access.resolve(tier, field, aliases)
+        return _config_access.resolve(
+            text_cfg if text_cfg is not None else {}, field, aliases)
+
     def get(field, default=None):
         """Resolve from text_cfg, falling back to nested sub-configs (intent:
         INSPECTED — the value may drive a branch and be discarded)."""
-        val = _resolve(text_cfg, field)
-        if val is None:
-            val = _resolve(attn_cfg, field)
-        if val is None:
-            val = _resolve(ffn_cfg, field)
-        return default if val is None else val
+        res = _tiered(field)
+        return res.value if res.state == "present" else default
 
     def consume(field, default=None):
         """Resolve a config field whose value FLOWS INTO the spec (intent:
-        CONSUMED — H3.1).  Same resolution as :func:`get`, but records the field
-        consumed so the accessed-but-unconsumed net can tell a value that reached
-        the architecture from one read for a branch and discarded.
-
-        Legacy (unchanged): the bare-name ``_consumed`` set marks the field
-        whether present or absent.  Owner-scoped (§16.5): a PRESENT field is a
-        ``consumed`` event; an ABSENT one is an ``absent_default`` premise (a
-        default geometry decided it — never a fictional consumed config field)."""
-        present = any(
-            ((a in c) if isinstance(c, dict) else hasattr(c, a))
-            for c in (text_cfg, attn_cfg, ffn_cfg) if c is not None
-            for a in _ALIASES.get(field, [field]))
-        # ONE call marks the legacy set AND emits the owner-scoped event: present
-        # -> consumed, absent -> absent_default premise (§16.5).
-        debug.note_access(field, intent="consumed", present=present)
-        return get(field, default)
+        CONSUMED — H3.1, exact under U1 Contract A): a PRESENT field is consumed
+        under the EXACT supplying spelling (never a fictional canonical read);
+        an ABSENT one is an ``absent_default`` premise carrying the fact
+        linkage; an AMBIGUOUS one stays UNCHOSEN — the typed ambiguity event is
+        already recorded and the caller proceeds with its default (an unknown
+        fact, not a coin-flip winner)."""
+        res = _tiered(field)
+        if res.ambiguous:
+            return default
+        value = res.consume(fact_key=field)
+        return default if value is None else value
 
     num_layers   = consume("num_hidden_layers", 0)
     hidden_size  = consume("hidden_size", 0)
@@ -1537,6 +1544,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # → class default (context.class_defaults, resolved once at context
     # build) → typed unknown (param count annotates, never picks).
     _tie_raw = consume("tie_word_embeddings")
+    if _tie_raw is None and text_cfg is not cfg:
+        # U1 (unmasked by the exact resolver): a multimodal WRAPPER declares the
+        # text head's tying at WRAPPER level (qwen2-vl: top-level
+        # ``tie_word_embeddings: false`` while text_config lacks the field).
+        # The old absent-union hid this unread declaration; the checkpoint's
+        # explicit value belongs to rung 1 of the ladder, above code/class
+        # rungs.  Owner stays root — it is the wrapper's declaration.
+        _wrap_tie = _config_access.resolve(
+            cfg, "tie_word_embeddings", _ALIASES.get("tie_word_embeddings", ()))
+        if _wrap_tie.state == "present":
+            _tie_raw = _wrap_tie.consume(fact_key="tie_word_embeddings")
     if _tie_raw is not None:
         tie_word_embeddings = bool(_tie_raw)
         _note_fact("model", "tie_word_embeddings", tie_word_embeddings,

@@ -53,38 +53,40 @@ def _unread(cfg) -> list[str]:
 # §5.1 — H3's live path does not use the exact alias resolver (unit U1 / T-01)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.1/U1(T-01): the live _resolve funnel "
-                   "records the CANONICAL as consumed even though that spelling "
-                   "is absent from the checkpoint — a fictional consumed field")
-def test_p1_absent_canonicals_are_never_recorded_consumed():
+def test_p1_every_consumed_event_cites_a_spelling_present_in_the_config():
+    """FIXED by U1 (Contract A resolver): permanent guard — a consumed event
+    cites the exact supplying spelling, never an absent canonical name."""
     ledger, _ = _capture(GPT2_ALIASED)
-    fictional = _CANONICALS & set(ledger.consumed_names())
-    assert fictional == set(), f"canonicals consumed without existing: {sorted(fictional)}"
+    fictional = sorted({
+        (e.alias or e.canonical) for e in ledger.events
+        if e.intent == "consumed" and (e.alias or e.canonical) not in GPT2_ALIASED
+    })
+    assert not fictional, f"consumed events citing absent spellings: {fictional}"
 
 
-@pytest.mark.xfail(strict=True, reason="§5.1/U1(T-01): the spelling that actually "
-                   "supplied the value must be the consumed read; today the real "
-                   "aliases land in accessed-but-unconsumed debt")
 def test_p2_the_supplying_alias_spelling_is_the_consumed_read():
+    """FIXED by U1: permanent guard — the supplying spelling IS the recorded
+    consumed read; the real aliases never sit in accessed-but-unconsumed."""
     ledger, _ = _capture(GPT2_ALIASED)
-    missing = _ALIASES - set(ledger.consumed_names())
-    assert missing == set(), f"supplying spellings not recorded consumed: {sorted(missing)}"
+    consumed_spellings = {e.alias for e in ledger.events if e.intent == "consumed"}
+    missing = _ALIASES - consumed_spellings
+    assert missing == set(), (
+        f"supplying spellings not cited by any consumed event: {sorted(missing)}; "
+        f"cited instead: {sorted(s for s in consumed_spellings if s)}")
 
 
-@pytest.mark.xfail(strict=True, reason="§5.1 Decision/U1: accessed is PRESENT-ONLY; "
-                   "absence lives only in absent_default — today absent canonicals "
-                   "are inserted into the compat accessed list")
 def test_p3_absent_fields_never_enter_accessed():
+    """FIXED by U1 (§5.1 Decision): permanent guard — accessed is PRESENT-ONLY
+    file spellings; absence lives only in absent_default premises."""
     _, ir = _capture(GPT2_ALIASED)
     accessed = set(((ir.get("extras") or {}).get("config_audit") or {}).get("accessed", []))
     leaked = _CANONICALS & accessed
     assert leaked == set(), f"absent canonicals inside accessed: {sorted(leaked)}"
 
 
-@pytest.mark.xfail(strict=True, reason="§5.1/U1: simultaneous unequal aliases must "
-                   "become a typed ambiguity (no silent winner); today one value is "
-                   "silently chosen and no ambiguous event exists")
 def test_p4_conflicting_aliases_become_typed_ambiguity():
+    """FIXED by U1: permanent guard — unequal simultaneous aliases record a
+    typed ambiguity and no value is silently chosen."""
     ledger, _ = _capture({**GPT2_ALIASED, "hidden_size": 96})  # 96 vs n_embd=64
     ambiguous = [e for e in ledger.events
                  if e.intent == "ambiguous" and e.canonical == "hidden_size"]
@@ -95,10 +97,10 @@ def test_p4_conflicting_aliases_become_typed_ambiguity():
 # §5.2 — blocking unread coverage is bare-key based (unit U1)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.2/U1: unread coverage subtracts a flat "
-                   "leaf-name set, so the root's hidden_size read clears a nested "
-                   "sibling component's UNREAD hidden_size")
 def test_p5_a_sibling_scope_cannot_clear_nested_unread_debt():
+    """FIXED by U1 (§20.4.8): permanent guard — unread coverage is an
+    exact-path/owner join; a nested path under an unmapped container has no
+    owner, so no sibling's read can clear it."""
     unread = _unread({**LLAMA, "aux_tower_config": {"hidden_size": 123}})
     assert "aux_tower_config.hidden_size" in unread, (
         "the nested component's unread hidden_size was cleared by the root's read")
@@ -108,10 +110,11 @@ def test_p5_a_sibling_scope_cannot_clear_nested_unread_debt():
 # §5.4 — pending-projection debt is excused by leaf key (unit U1 step 5 / R2)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.4/U1: the pending-debt excusal ignores "
-                   "the registered owner (root.vae), so a ROOT-owner field of the "
-                   "same name is silently excused from unread accounting")
 def test_p6_pending_debt_excusal_is_owner_tight():
+    """FIXED by U1 (§5.4 Decision): permanent guard — the excusal joins on the
+    registered owner + canonical (root.vae's act_fn never excuses a
+    transformer-root field), and excused paths stay visible as
+    ``pending_projection`` diagnostics."""
     unread = _unread({**LLAMA, "temporal_compression_ratio": 4})
     assert "temporal_compression_ratio" in unread, (
         "a transformer-root temporal_compression_ratio was excused by the "
@@ -288,10 +291,10 @@ def test_p12_sinks_reader_binds_to_the_decoder_owner():
 # §5.3 — the promised nets are not live (unit U1 steps 9-10)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.3/U1: consumed-but-unprojected exists as "
-                   "a unit-tested ledger method but is not published as a Sable "
-                   "check; both owner-qualified nets must be live")
 def test_p13_consumed_but_unprojected_net_is_published():
+    """FIXED by U1 (§20.4.9): permanent guard — net-2 is published as the
+    advisory ``config_consumed_unprojected`` Sable check (owner-qualified);
+    it turns blocking after U2 receipts + the corpus debt migration."""
     from model_unfolder.sable import sable
 
     report = sable(LLAMA, render_images=False)
