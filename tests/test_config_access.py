@@ -224,7 +224,7 @@ def test_resolve_present_canonical_records_exactly_one_inspected_event():
     with capture_events() as ledger:
         res = resolve({"hidden_size": 64}, "hidden_size", ["n_embd"], component="root")
     assert (res.state, res.value, res.selected_alias) == ("present", 64, "hidden_size")
-    assert res.selected_path == "root:hidden_size" and res.source_kind == "checkpoint"
+    assert res.selected_path == "hidden_size" and res.source_kind == "checkpoint"
     assert len(ledger.events) == 1 and ledger.events[0].intent == "inspected"
 
 
@@ -234,7 +234,7 @@ def test_resolve_alias_only_selects_the_real_spelling_not_the_canonical():
     assert (res.state, res.value, res.selected_alias) == ("present", 64, "n_embd")
     [event] = ledger.events
     assert event.canonical == "hidden_size" and event.alias == "n_embd"
-    assert event.config_path == "root:n_embd"  # the exact path, never fictional
+    assert event.config_path == "n_embd"       # the exact path, never fictional
 
 
 def test_resolve_equal_redundant_aliases_select_by_declared_order():
@@ -242,7 +242,9 @@ def test_resolve_equal_redundant_aliases_select_by_declared_order():
         res = resolve({"num_experts": 8, "n_routed_experts": 8},
                       "num_experts", ["n_routed_experts"], component="root")
     assert res.selected_alias == "num_experts" and res.value == 8
-    assert res.present_aliases == (("num_experts", 8), ("n_routed_experts", 8))
+    assert res.selected_path == "num_experts"
+    assert [(o.spelling, o.value) for o in res.present_aliases] == [
+        ("num_experts", 8), ("n_routed_experts", 8)]
     assert "redundant equal aliases" in res.reason
     # §20.4.5: EVERY occurrence recorded — the selected read plus a scoped
     # ignore per redundant spelling (clears unread for the keys the file
@@ -258,9 +260,12 @@ def test_resolve_unequal_aliases_are_typed_ambiguity_and_cannot_be_consumed():
         res = resolve({"hidden_size": 96, "n_embd": 64},
                       "hidden_size", ["n_embd"], component="root")
     assert res.state == "ambiguous" and res.value is None
-    assert res.present_aliases == (("hidden_size", 96), ("n_embd", 64))
+    assert [(o.spelling, o.value) for o in res.present_aliases] == [
+        ("hidden_size", 96), ("n_embd", 64)]
     [event] = ledger.events
-    assert event.intent == "ambiguous" and "hidden_size=96" in event.reason
+    assert event.intent == "ambiguous"
+    assert "conflicting checkpoint declarations" in event.reason
+    assert "hidden_size=96" in event.reason
     with pytest.raises(ValueError, match="ambiguous"):
         res.consume(fact_key="hidden_size")
 
@@ -306,13 +311,20 @@ def test_consume_absent_is_an_absent_default_premise_with_fact_linkage():
     assert premises[-1].fact_key == "kv_heads"
 
 
-def test_bind_records_the_reader_and_counts_as_consumed():
+def test_bind_is_bound_never_consumed():
+    """REC-2 (R-02, Law C): source code NAMING a read is ``bound`` — it must
+    populate ``ledger.bound()`` and never ``ledger.consumed()``."""
     with capture_events() as ledger:
         res = resolve({"rope_theta": 10000.0}, "rope_theta", [], component="root")
         res.bind("decoder_rotary_from_files", fact_owner="root.attention",
                  fact_key="rope_theta")
-    [consumed] = _events_of(ledger, "consumed")
-    assert consumed.reader == "decoder_rotary_from_files"
+    [bound] = _events_of(ledger, "bound")
+    assert bound.reader == "decoder_rotary_from_files"
+    assert _events_of(ledger, "consumed") == []
+    assert ("root", "rope_theta") in ledger.bound()
+    assert ledger.consumed() == set()
+    with pytest.raises(ValueError, match="reader"):
+        res.bind("")
 
 
 def test_ignore_is_a_scoped_conscious_classification():
@@ -342,3 +354,97 @@ def test_capture_events_existing_routes_to_the_parse_context_ledger():
         assert ledger is context.config_access      # no second truth store
         resolve({"hidden_size": 64}, "hidden_size", [], component="root")
     assert len(context.config_access.events) == 1  # events live ON the context
+
+
+# --------------------------------------------------------------------------- #
+# REC-2 (§8.7) — exact occurrences, null semantics, equality, re-entrancy
+# --------------------------------------------------------------------------- #
+
+def test_explicit_null_is_present_and_distinguishable_from_absent():
+    """REC-2 (R-06, Law D): ``num_key_value_heads: null`` is a PRESENT
+    checkpoint declaration — path retained, value None, never an absent
+    premise; its consumer interprets the null."""
+    with capture_events() as ledger:
+        res = resolve({"num_key_value_heads": None}, "num_key_value_heads", [],
+                      component="root")
+    assert res.state == "present" and res.value is None
+    assert res.selected_path == "num_key_value_heads"
+    [event] = ledger.events
+    assert event.intent == "inspected" and event.present is True
+    # ...and consuming the declared null is a real consumed read
+    with capture_events() as ledger2:
+        res2 = resolve({"num_key_value_heads": None}, "num_key_value_heads", [],
+                       component="root")
+        assert res2.consume(fact_owner="decoder.attention",
+                            fact_key="num_kv_heads") is None
+    assert ("root", "num_key_value_heads") in ledger2.consumed()
+
+
+def test_null_occurrence_never_contests_a_non_null_value():
+    """An explicit null beside a real value is retained, recorded as a scoped
+    ignore, and does NOT fabricate a conflict (GPT-2's ``n_inner: null``)."""
+    with capture_events() as ledger:
+        res = resolve({"intermediate_size": None, "n_inner": 256},
+                      "intermediate_size", ["n_inner"], component="root")
+    assert res.state == "present" and res.value == 256
+    assert res.selected_path == "n_inner"
+    assert [(o.spelling, o.value) for o in res.present_aliases] == [
+        ("intermediate_size", None), ("n_inner", 256)]
+    intents = [(e.intent, e.alias) for e in ledger.events]
+    assert ("inspected", "n_inner") in intents
+    assert ("ignored", "intermediate_size") in intents
+
+
+def test_equal_dicts_with_different_key_order_are_not_ambiguous():
+    """REC-2 (R-07, §8.4): semantic equality, never repr coincidence."""
+    cfg = {"rope_scaling": {"type": "yarn", "factor": 2.0},
+           "rope_parameters": {"factor": 2.0, "type": "yarn"}}
+    with capture_events():
+        res = resolve(cfg, "rope_scaling", ["rope_parameters"], component="root")
+    assert res.state == "present" and res.value == {"type": "yarn", "factor": 2.0}
+
+
+def test_bool_never_equates_with_int():
+    with capture_events():
+        res = resolve({"tie_word_embeddings": True, "tie_embeddings": 1},
+                      "tie_word_embeddings", ["tie_embeddings"], component="root")
+    assert res.state == "ambiguous"
+    assert "conflicting checkpoint declarations" in res.reason
+
+
+def test_resolution_carries_the_exact_container_path():
+    """REC-2 (R-03, Law B): ``root.vision + vision_config.hidden_size`` is
+    exact; the event's config_path is the full dotted path."""
+    with capture_events() as ledger:
+        res = resolve({"hidden_size": 1024}, "hidden_size", [],
+                      component="root.vision", path=("vision_config",))
+    assert res.selected_path == "vision_config.hidden_size"
+    [event] = ledger.events
+    assert event.config_path == "vision_config.hidden_size"
+    assert event.component == "root.vision"
+
+
+def test_same_ledger_reentrant_capture_records_one_event():
+    """REC-2 (R-08, §8.6): re-activating the SAME ledger is idempotent."""
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.models import SourceBundle
+
+    context = ParseContext(source_bundle=SourceBundle(files=(), source="local"))
+    with capture_events(context.config_access) as outer:
+        with capture_events(context.config_access) as inner:
+            assert inner is outer is context.config_access
+            resolve({"hidden_size": 64}, "hidden_size", [], component="root")
+    assert len(context.config_access.events) == 1
+
+
+def test_reason_and_selected_path_survive_serialization():
+    """REC-2 (§8.7.12): the exact path and reason are on the immutable event."""
+    import dataclasses
+    with capture_events() as ledger:
+        resolve({"num_experts": 8, "n_routed_experts": 8},
+                "num_experts", ["n_routed_experts"], component="root",
+                path=("ffn_config",))
+    rows = [dataclasses.asdict(e) for e in ledger.events]
+    assert rows[0]["config_path"] == "ffn_config.num_experts"
+    assert "redundant equal aliases" in rows[0]["reason"]
+    assert rows[1]["config_path"] == "ffn_config.n_routed_experts"

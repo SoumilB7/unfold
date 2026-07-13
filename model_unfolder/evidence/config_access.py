@@ -241,18 +241,74 @@ def resolve_aliases(cfg: Any, canonical: str, aliases: Iterable[str], *,
 # event-constructor predecessor until U15 deletes it.
 # --------------------------------------------------------------------------- #
 
+# REC-2 (§8.3): presence is occurrence-membership, never ``is not None`` — an
+# explicit ``field: null`` in the checkpoint is a PRESENT declaration the
+# field's consumer interprets; only the resolver may not guess.
+MISSING = object()
+
+
+@dataclass(frozen=True)
+class ConfigOccurrence:
+    """One EXACT config occurrence: component + container path + spelling."""
+
+    component: str
+    path: tuple[str, ...]                # container path, e.g. ("text_config",)
+    spelling: str                        # exact key at that path
+    value: Any
+
+    @property
+    def dotted_path(self) -> str:
+        return ".".join((*self.path, self.spelling))
+
+
+def _values_equal(a: Any, b: Any) -> bool | None:
+    """Semantic equality over the JSON/config value domain (REC-2 §8.4).
+
+    ``None`` means UNSUPPORTED comparison (typed outcome — never a textual
+    ``repr`` coincidence): the caller treats it as ambiguity with a reason.
+    ``bool`` never equates with ``int`` (Python's ``True == 1`` is a trap);
+    int/float compare numerically; mappings compare recursively regardless of
+    insertion order; sequences compare in order.
+    """
+    if isinstance(a, bool) or isinstance(b, bool):
+        return isinstance(a, bool) and isinstance(b, bool) and a is b
+    if a is None or b is None:
+        return a is None and b is None
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return float(a) == float(b)
+    if isinstance(a, str) and isinstance(b, str):
+        return a == b
+    if isinstance(a, dict) and isinstance(b, dict):
+        if set(a) != set(b):
+            return False
+        for key in a:
+            inner = _values_equal(a[key], b[key])
+            if inner is not True:
+                return inner
+        return True
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        if len(a) != len(b):
+            return False
+        for left, right in zip(a, b):
+            inner = _values_equal(left, right)
+            if inner is not True:
+                return inner
+        return True
+    return None
+
+
 @dataclass(frozen=True)
 class ConfigResolution:
     """The typed outcome of resolving ONE canonical field for ONE owner."""
 
     component: str
     canonical: str
-    selected_path: str | None            # "owner:spelling" or None
+    selected_path: str | None            # EXACT dotted config path, or None
     selected_alias: str | None           # the exact spelling that supplied value
-    value: Any                           # None when absent (checkpoint) / ambiguous
+    value: Any                           # None when absent / ambiguous / null
     state: str                           # present | absent | ambiguous
-    present_aliases: tuple[tuple[str, Any], ...]  # every present (spelling, value)
-    source_kind: str                     # checkpoint | class_default
+    present_aliases: tuple[ConfigOccurrence, ...]  # every exact occurrence
+    source_kind: str                     # checkpoint | class_default | unresolved
     reason: str = ""
 
     @property
@@ -278,22 +334,28 @@ class ConfigResolution:
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=fact_owner or self.component, fact_key=fact_key,
-             component=self.component,
+             component=self.component, config_path=self.selected_path,
              reason=self.reason if self.state == "present" else (
                  self.reason or "absent — a default/class-default premise"))
         return self.value
 
     def bind(self, reader: str, fact_owner: str = "", fact_key: str = "") -> Any:
-        """The value is bound by a SOURCE reader (code names the gate/field)."""
+        """SOURCE CODE NAMES this config read (REC-2, R-02): a ``bound`` event,
+        NEVER ``consumed`` — inspect != bind != consume != project (Law C).  A
+        value that is both code-bound and consumed gets BOTH explicit
+        transitions from its caller."""
         if self.state == "ambiguous":
             raise ValueError(
                 f"cannot bind ambiguous {self.canonical!r} for "
                 f"{self.component!r}: {self.reason}")
+        if not reader:
+            raise ValueError("bind() requires the source reader's name")
         emit(self.canonical,
-             intent="consumed" if self.state == "present" else "absent_default",
+             intent="bound" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=fact_owner or self.component, fact_key=fact_key,
-             reader=reader, component=self.component, reason=self.reason)
+             reader=reader, component=self.component, reason=self.reason,
+             config_path=self.selected_path)
         return self.value
 
     def ignore(self, reason: str) -> None:
@@ -303,33 +365,38 @@ class ConfigResolution:
 
 
 def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
-            component: str | None = None,
-            class_defaults: Any = None) -> ConfigResolution:
-    """Contract A: resolve ``canonical`` through its alias spellings, record
-    exactly ONE base event, and return the typed decision.
+            component: str | None = None, class_defaults: Any = None,
+            path: tuple[str, ...] = ()) -> ConfigResolution:
+    """Contract A + REC-2 (§8): resolve ``canonical`` through its alias
+    spellings at ONE exact container ``path``, record exactly one base event,
+    and return the typed decision.
 
-    - no present spelling  -> ``absent`` (an ``absent_default`` premise event;
-      never a fictional consumed read).  When ``class_defaults`` carries the
-      canonical, its value is returned with ``source_kind="class_default"`` —
-      distinguishable from checkpoint truth, still an absent-from-checkpoint
-      premise (Contract A.6).
-    - unequal present values -> ``ambiguous`` (typed; NO value is selected and
-      no structural fact may be emitted — Contract A.3).
-    - equal redundant values -> deterministic selection by declared alias
-      order; every present spelling retained in ``present_aliases`` while only
-      the selected path is the read (Contract A.4).
+    - presence is OCCURRENCE membership (``MISSING`` sentinel, §8.3): an
+      explicit ``field: null`` is PRESENT with value ``None`` — the field's
+      consumer interprets what null means; the resolver never guesses.
+    - no occurrence -> ``absent`` premise (never a fictional read); a
+      ``class_defaults`` value rides along as ``source_kind="class_default"``.
+    - unequal ACCEPTED (non-null) occurrences -> typed ``ambiguous``; no value
+      or path is selected.  Equality is SEMANTIC (§8.4) — an unsupported
+      comparison is itself a typed ambiguity reason, never a repr coincidence.
+    - equal accepted occurrences -> deterministic selection by declared alias
+      order; every exact occurrence is retained and each redundant spelling is
+      a scoped ignore (§20.4.5).  Null occurrences never CONTEST a non-null
+      value: they are retained while selection runs over accepted values.
     """
     owner = component if component is not None else current_owner.get()
     spellings = list(dict.fromkeys([canonical, *aliases]))
-    present: list[tuple[str, Any]] = []
+    occurrences: list[ConfigOccurrence] = []
     for spelling in spellings:
         if isinstance(cfg, dict):
-            if spelling in cfg and cfg[spelling] is not None:
-                present.append((spelling, cfg[spelling]))
-        elif getattr(cfg, spelling, None) is not None:
-            present.append((spelling, getattr(cfg, spelling)))
+            raw = cfg.get(spelling, MISSING)
+        else:
+            raw = getattr(cfg, spelling) if hasattr(cfg, spelling) else MISSING
+        if raw is not MISSING:
+            occurrences.append(ConfigOccurrence(
+                component=owner, path=path, spelling=spelling, value=raw))
 
-    if not present:
+    if not occurrences:
         default_value, source_kind, reason = None, "checkpoint", ""
         if isinstance(class_defaults, dict) and class_defaults.get(canonical) is not None:
             default_value = class_defaults[canonical]
@@ -342,38 +409,53 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
             selected_alias=None, value=default_value, state="absent",
             present_aliases=(), source_kind=source_kind, reason=reason)
 
-    distinct = {repr(value) for _, value in present}
-    if len(distinct) > 1:
-        conflict = ", ".join(f"{s}={v!r}" for s, v in present)
-        emit(canonical, intent="ambiguous", present=True,
-             alias=present[0][0], component=owner,
-             reason=f"conflicting aliases {conflict}")
+    accepted = [occ for occ in occurrences if occ.value is not None]
+    contest = accepted if accepted else occurrences   # all-null: select a null
+    first = contest[0]
+    conflict_reason = ""
+    for other in contest[1:]:
+        equal = _values_equal(first.value, other.value)
+        if equal is None:
+            conflict_reason = (f"unsupported comparison between "
+                               f"{first.dotted_path} and {other.dotted_path}")
+            break
+        if equal is False:
+            conflict_reason = "conflicting checkpoint declarations " + ", ".join(
+                f"{occ.dotted_path}={occ.value!r}" for occ in contest)
+            break
+    if conflict_reason:
+        emit(canonical, intent="ambiguous", present=True, alias=first.spelling,
+             component=owner, config_path=first.dotted_path,
+             reason=conflict_reason)
         return ConfigResolution(
             component=owner, canonical=canonical, selected_path=None,
             selected_alias=None, value=None, state="ambiguous",
-            present_aliases=tuple(present), source_kind="checkpoint",
-            reason=f"conflicting aliases {conflict}")
+            present_aliases=tuple(occurrences), source_kind="checkpoint",
+            reason=conflict_reason)
 
-    selected, value = present[0]
-    reason = ("redundant equal aliases " + ", ".join(s for s, _ in present)
-              if len(present) > 1 else "")
-    emit(canonical, intent="inspected", present=True, alias=selected,
-         component=owner, reason=reason)
-    # §20.4.5: equal aliases record EVERY occurrence while only the selected
-    # path is the read — each redundant spelling is a scoped ignore (it clears
-    # unread coverage for the key the file actually carries, and can never
-    # become accessed-but-unconsumed debt or a second consumed path).
-    for spelling, _redundant_value in present[1:]:
-        emit(canonical, intent="ignored", present=True, alias=spelling,
-             component=owner,
-             reason=f"redundant equal alias of {canonical!r} — selected {selected!r}")
+    selected = first
+    reason = ("redundant equal aliases " + ", ".join(o.spelling for o in contest)
+              if len(contest) > 1 else "")
+    emit(canonical, intent="inspected", present=True, alias=selected.spelling,
+         component=owner, config_path=selected.dotted_path, reason=reason)
+    # §20.4.5: every occurrence recorded — redundant spellings (equal values,
+    # plus retained explicit nulls) are scoped ignores: they clear unread
+    # coverage for the keys the file actually carries and can never become
+    # debt or a second read.
+    for occ in occurrences:
+        if occ is selected:
+            continue
+        note = ("explicit null occurrence beside the selected value"
+                if occ.value is None and accepted else
+                f"redundant equal alias of {canonical!r} — selected {selected.spelling!r}")
+        emit(canonical, intent="ignored", present=True, alias=occ.spelling,
+             component=owner, config_path=occ.dotted_path, reason=note)
     return ConfigResolution(
         component=owner, canonical=canonical,
-        selected_path=f"{owner}:{selected}", selected_alias=selected,
-        value=value, state="present", present_aliases=tuple(present),
-        source_kind="checkpoint", reason=reason)
-
-
+        selected_path=selected.dotted_path, selected_alias=selected.spelling,
+        value=selected.value, state="present",
+        present_aliases=tuple(occurrences), source_kind="checkpoint",
+        reason=reason)
 # --------------------------------------------------------------------------- #
 # Runtime emission — the accessor appends owner-scoped events to every active
 # ledger.  Nesting- and concurrency-safe via a ContextVar (the same discipline
@@ -392,9 +474,18 @@ def capture_events(existing: "ConfigAccessLedger | None" = None):
 
     U1 (§20.4.2): pass ``existing`` to activate a ledger that LIVES on the
     ``ParseContext`` — the ContextVar then only routes nested calls to the
-    call-local context and is never a second truth store."""
+    call-local context and is never a second truth store.
+
+    REC-2 (§8.6, R-08): re-entrant activation of the SAME ledger object is
+    idempotent — it is yielded without a second route, so one parse context
+    entered twice records each event exactly once.  Distinct nested ledgers
+    still receive enclosing events."""
     ledger = existing if existing is not None else ConfigAccessLedger()
-    token = _active_ledgers.set((*_active_ledgers.get(), ledger))
+    active = _active_ledgers.get()
+    if any(entry is ledger for entry in active):
+        yield ledger
+        return
+    token = _active_ledgers.set((*active, ledger))
     try:
         yield ledger
     finally:
@@ -447,7 +538,8 @@ def active_touched_names() -> frozenset[str]:
 
 def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None,
          fact_owner: str = "", fact_key: str = "", reader: str = "",
-         reason: str = "", component: str | None = None) -> None:
+         reason: str = "", component: str | None = None,
+         config_path: str | None = None) -> None:
     """Append one owner-scoped event to every active ledger (a no-op outside a
     capture, so the accessor stays cheap when no audit is running).  The owner
     comes from :data:`current_owner` unless given explicitly."""
@@ -461,7 +553,11 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         intent = "ignored"
         reason = reason or "identity/address read — locates source or labels, not structure"
     event = ConfigAccessEvent(
-        component=owner, config_path=f"{owner}:{alias or canonical}",
+        component=owner,
+        # REC-2 (Law B): the EXACT dotted config path when the caller resolved
+        # one; the legacy owner:leaf label survives only for un-migrated
+        # note_access callers until REC-3/4/5 retire them.
+        config_path=config_path or f"{owner}:{alias or canonical}",
         canonical=canonical, alias=(alias or canonical) if present else None,
         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
         reader=reader, reason=reason)
@@ -470,7 +566,8 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
 
 
 __all__ = [
-    "ConfigAccessEvent", "ConfigAccessLedger", "ConfigResolution", "INTENTS",
+    "ConfigAccessEvent", "ConfigAccessLedger", "ConfigOccurrence",
+    "ConfigResolution", "INTENTS", "MISSING",
     "current_owner", "resolve",
     "resolve_aliases", "capture_events", "owner_scope", "owner_scoped", "emit",
     "active_ledger", "active_touched_names",
