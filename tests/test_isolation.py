@@ -16,6 +16,8 @@ from __future__ import annotations
 import ast
 import pathlib
 
+import pytest
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 _ALLOWED = {"test_support"}
 
@@ -69,3 +71,38 @@ def test_the_gate_actually_fires_on_a_poison(tmp_path):
     ok = tmp_path / "test_ok.py"
     ok.write_text("from test_support import FLUX\n")
     assert _offending_imports(ok) == []
+
+
+def test_tree_fingerprint_gate_rejects_a_mutated_tree(tmp_path):
+    """U0 (§20.3 step 5): deliberately mutate a copied tree mid-"run" and prove
+    the unchanged-tree gate REJECTS the result — content, new-file, and
+    exec-bit drift all count; an identical tree fingerprints identically."""
+    from test_support import tree_state
+
+    root = tmp_path / "tree"
+    (root / "pkg").mkdir(parents=True)
+    (root / "pkg" / "mod.py").write_text("VALUE = 1\n")
+    (root / "notes.md").write_text("baseline\n")
+
+    before = tree_state.manifest(root)
+    fp_before = tree_state.fingerprint(root)
+    assert tree_state.fingerprint(root) == fp_before  # deterministic
+
+    # a "run" that silently edits the tree, adds a file, and flips an exec bit
+    (root / "pkg" / "mod.py").write_text("VALUE = 2\n")
+    (root / "pkg" / "sneaky.py").write_text("x = 1\n")
+    (root / "notes.md").chmod(0o755)
+
+    after = tree_state.manifest(root)
+    assert tree_state.fingerprint(root) != fp_before
+    delta = tree_state.changed_paths(before, after)
+    assert "CHANGED pkg/mod.py" in delta
+    assert "ADDED   pkg/sneaky.py" in delta
+    assert any(line.endswith("notes.md") for line in delta)  # exec-bit drift
+    with pytest.raises(tree_state.TreeChanged):
+        tree_state.assert_unchanged(before, after)
+
+    # …and declared artifacts (e.g. __pycache__) never poison the gate
+    (root / "__pycache__").mkdir()
+    (root / "__pycache__" / "junk.pyc").write_bytes(b"\x00")
+    assert tree_state.manifest(root) == after

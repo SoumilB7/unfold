@@ -1,5 +1,13 @@
 # EVIDENCE ARCHITECTURE HARDENING PLAN
 
+> **SUPERSEDED AS TRACKER (2026-07-13).** The authoritative tracker and
+> execution plan is now `docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md`
+> (independent audit of commits `daf056f`..`d475d87` + the binding §20 runbook
+> U0→U15 and the §21 live tracker). Where any status, sequence, or completion
+> claim below conflicts with that document, **that document wins**. This file
+> remains the historical record and rationale for §16 and the nine
+> `procedure N` commits.
+
 *A root-level plan for making architectural fabrication difficult by construction,
 not merely forbidden by doctrine. Written 2026-07-12 after the Run 77 campaign,
 the U1/U2 evidence work, and the review of the active U6 diffusion changes.*

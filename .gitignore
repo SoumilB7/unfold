@@ -46,3 +46,5 @@ previews/
 
 # Corpuses
 sable_test_corpus
+# U0 frozen preservation witnesses (artifacts on disk; hashes committed in tests/preservation_manifest.json)
+tests/preservation_baseline/

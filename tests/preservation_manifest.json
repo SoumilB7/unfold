@@ -1,0 +1,258 @@
+{
+ "corpus_inputs": {
+  "auraflow-v0-3.json": "107d2a3cd013c2c49a8d1d4eab84420d1c64dbb06c7442951fc2e62762d820b5",
+  "bloom.json": "81a754c9faa10d6b2893c8e11e591068f0df5ca0b03f75508a355c97387bf580",
+  "cogvideox-5b.json": "4efbeb4af52232cf9adb6ea612ff91ab9f3491df6f6d14be47410f2ae8808a07",
+  "deepseek-v3.json": "d60c619fdf58338a5a239a247f15a06452557fe97fd0a2c016111c1d4f3cf775",
+  "flux-2-dev.json": "bac578c5c85e79d82cdb6709df07583e57369beb14710c64a0264a8d377d7d60",
+  "fluxtransformer2dmodel.json": "fb982b98b5a17bd6b6ad2c56f69b8d61b5c72bca958fc0c6d1ae3aa9d135448a",
+  "gemma-2-2b-it.json": "f23fccfe95eb51f35461995b5911d86acea1d632e88ce4ac8933026606f6a778",
+  "glm-4-5.json": "f8b42b7b8e7ddc6d52acc661dc2d2cf907ca2b6cb0dc012e63a81c00211e0f0b",
+  "gpt-oss-20b.json": "fba2f20422e37220e7cf6ba6ca0a55a622793dc57840b1f54d04c758238f408e",
+  "hunyuanvideo.json": "f032e76da694e0aca636ed7f1923013d7fe02a42fe8e6cc5b3c1401398272db1",
+  "llama-7b.json": "df6bf0fcbeb5f417fb85595604dc2db1f278702c0a925c62a0688b7757e8015c",
+  "ltx-video.json": "020fb53b2b739e9c69b1ceb6250d12e32b722c2a8898cea3557b4aa7f486bcd9",
+  "lumina-image-2-0.json": "13f5559da47c5cee57ac67b02dc5363c62764647f5a7ca381e1a20ba316f949d",
+  "mochi-1-preview.json": "8827c13c2736c2e77d40168f43cf587165347a92b772aeb830eccb55e6d44094",
+  "olmo-2-1124-7b.json": "9aa89cf5ec93638b5143d45715541166f50325b435f64ed2bc6b100ac00b47e6",
+  "pixart-sigma-xl-2-1024-ms.json": "529b2de8d37315e49492c3d02af974a4b30e328c154e08fd3e3c79b42e4b9cd3",
+  "prxpixel-t2i.json": "b75e958b1a4ae7f4b5835f2e505c938881ccae9b10c728595c9c48abf152e619",
+  "qwen-image.json": "0652a11493cb2ce560a49e3a0e8c3bcc75fef28c9c338035791b416a26504b71",
+  "qwen2-vl-7b-instruct.json": "118613f4db7e1eba9aad854ff87585d2d96a07de10fddef1d2d9a65559e342c5",
+  "qwen3-8b.json": "af07ba425791c3adff0ecdc562e96679ccca8be23344e9b1cd49e50e4eba18ec",
+  "sana-1600m-1024px-diffusers.json": "53d2fea176a64464f8010c37c8b19f4934c7be85c9e6be08df7f84cb0c24995a",
+  "stable-diffusion-3-5-large.json": "854194137777cf55588b8f3e7d928d383ff9e3e51acf7cea90ab2f49d927d7fc",
+  "stable-diffusion-xl-base-1-0.json": "52e70629b038b6ddaebe581ed106e3023fd7a748e32ac167578db153af4a684e",
+  "stablelm-2-1-6b.json": "5ad7d57ed94b9e42210498cd1aaf80c82154c7cce34059397d58e18c334d8434",
+  "wan2-2-t2v-a14b-diffusers.json": "64f8942b3021e4c6ec031abcd1159c2e8eceaa15f8681332b319411432350d9c"
+ },
+ "created_utc": "2026-07-13T10:23:05Z",
+ "failures": [],
+ "witnesses": {
+  "auraflow-v0-3": {
+   "expanded.json": "0b2c67d96f3600d6a64d7da09dd2fafe6244313f8cdf1d4d14731ee97147c992",
+   "gallery.json": "5ca107c6eae13b9a18f40d02271d2a928bc8e389f3e05568bd15c14a0fc408dd",
+   "html_meta.json": "5750eb088a419965283d1c0a66b353fafcdc8c18aa5bc0973873146ab8f2d0c8",
+   "ir.json": "203ec3fc0cd926304b1609b74066925d2cdcdc2b9c15c986ebb0ad75e2ad88f6",
+   "ledgers.json": "5d41423199f98c18c394de02e9189bdcc3b3605af18bddfbaf044b3385e6d20f",
+   "params.json": "6b1918ad9f591544dd50656f4e780508971f2d0a401d3eb05b2123b4cba5a0f9",
+   "sable.json": "30c66e0bc656943a63b10d9f5e21f149bfe29971cc6031ca267dca494b3c64cd"
+  },
+  "bloom": {
+   "expanded.json": "eeb76a78326118922bd192e974f617c3d54748310848f1b5e40d3ac6cab41016",
+   "gallery.json": "f5fbca23f5ea6343f7ff71180eabc5c1d0821967123485e7a314e2f253292bba",
+   "html_meta.json": "0b6938b3dd97277d551fad53d35241da4cca5146678dbc99a066cb0e08d6211f",
+   "ir.json": "d73c864732dc347585d4f15de3976f81a5aa08acb540b1a53a063337bef9fb97",
+   "ledgers.json": "5a0acdeb62e6d5fdf776132d566fd2f990614137245148361b218e6fb3f082d0",
+   "params.json": "2ed6133068251856c45dbdbff5554eae958341c04ec4aa2015e2259dc7ca0b7e",
+   "sable.json": "9091e83a06435d720e93e70ff757c0a413c65dec39afd0703cd15c40d1c3c1a6"
+  },
+  "cogvideox-5b": {
+   "expanded.json": "4e6a0e65b720154be7db2047016b5e273d39ce9e92cee46889ec18f674ee4241",
+   "gallery.json": "dafb00c3c506c324e117187e5403da6da94299af0abb6838bdd4bc285b18131b",
+   "html_meta.json": "6befad934a79c5c2f1d4bcab4e722a2de9236474f830625340a3212fb19034eb",
+   "ir.json": "e6a20d9c3c0872a48e412fe9bf38a58ba5ff80f89b73e9dfd28bef3fc15cf79c",
+   "ledgers.json": "2d78de47b3927e782b7bb52a3e549f529d88670a060fc2a391ed5d72f11145fb",
+   "params.json": "634c34f3fe2079e5d8e47dc15a2748817c0ef6cf9f26f04836892d5d0672a682",
+   "sable.json": "688bac65ac730b1ba5f9db4ce216a4450469bf80f29b6b35cf05fd8f47cdab43"
+  },
+  "deepseek-v3": {
+   "expanded.json": "9765e857406689b5a11027da1a7f70732bd501b14f7a98b7a53d973dc4c3a53e",
+   "gallery.json": "f1e0b6fafdcd50792eaf4432f3dfb0229c8987116475e0c9625390a71d8024bf",
+   "html_meta.json": "1331867e68b858611a48c80e895ae1c83144a3501e10dc2adc3a7ef731cc1fa7",
+   "ir.json": "764f1a36abe2796004a1ccb4b462db547d3f63f2d35419ffc8a84b0eb00b6769",
+   "ledgers.json": "23a0b2ab7e5bf8c7304c0aa09b30f0f1cd6a059b65b08f84772d3ff0d4ab483e",
+   "params.json": "89e47fb9e59051e20c328cc15282dd4e5ce2128e520183f5a4c54c77513e44e4",
+   "sable.json": "636c719ccbe13d8d2f07d76f3aed4de3af507bc3ad8bab404c2828e56d405018"
+  },
+  "flux-2-dev": {
+   "expanded.json": "40e83b7a7ded8a555d6d85f6dfa5783cf5c99e62661676edc6f5f054a9b27683",
+   "gallery.json": "02c77be49cb559c9a7bc08d075773f27b925bb86b2d860ce2fbc1d67ea0c16b5",
+   "html_meta.json": "2b93b19da2f53530f15d3ca94801aae275f0e65af39fc127dc73004c08d8a68e",
+   "ir.json": "e0abce678652ca26860fd3afac45e9db4567ecd8ba77e672d939b2d83f0a3a40",
+   "ledgers.json": "6fa617c9b1ddc694864eafa4c5b67448cb9c11f2c79bad51594f5815a533bcd4",
+   "params.json": "2ed326315c2d96d093c864f04ecadafd211016793103bc34e4493a4d24fb9b20",
+   "sable.json": "7bc70ecd41db2c7a8729cb333a5b56fa03d52ce4496278e5eda3401f6391be10"
+  },
+  "fluxtransformer2dmodel": {
+   "expanded.json": "b64cf92dd3a13a3eb82bafda21c330c68f95d4b68f7d33021f9f9c1a63366fc9",
+   "gallery.json": "96308ff295c5e26bf4214f34c040e322a75a2a00bc0d432133d274480a3ab13d",
+   "html_meta.json": "1b4f0434cbd8ea3e961b6899e2ee3484c034646b07efc1597ae5d1330b6b3676",
+   "ir.json": "c708ba0473c5e273e348c4429fb167c62b2011f1237c69ee2ed4dd4ea98cdbd1",
+   "ledgers.json": "bdb779cd481b4d6af01dd7a10ac66077ae78d94198ef3c84df9b0237705569d3",
+   "params.json": "869a550b912ec2f86ffce933ff09fb1589df3f28f6627aaaf879308d3e70ed30",
+   "sable.json": "1072c736012ac821d4a65a184eeb164b946a689fb47710434d0148a55ccb37f9"
+  },
+  "gemma-2-2b-it": {
+   "expanded.json": "0a4b8652ee80705b78446da7265eda1cda63967f3b4662e0cc531d4c1f1ce1e2",
+   "gallery.json": "bffa18cf678e6a1a24f47a78da230949cfbabdbacdd5b4f5efe082c07d438348",
+   "html_meta.json": "1f3d6961d23beb9912e47063283e99bc286faf23a0842c8f0d34e503ce522103",
+   "ir.json": "f7252af51c04c4f54308e96f2db20d1eb21d316c9da2eee642ae5b64ad458e7b",
+   "ledgers.json": "9c709652c079d224263186332bc7a7306d118bcc1eae4076bd77a31a7bb54c7e",
+   "params.json": "c65d9ff2bd0e348a85fbff97895734a50843b6970d8c5a9c9d525a46af778b2b",
+   "sable.json": "4a421ee2f6ac10e30dc0bfee27a76852545de4483c6cbc25d0f01c98ef052fd8"
+  },
+  "glm-4-5": {
+   "expanded.json": "115c398b49c31e31d05d4f68d71878302c5ba7b6f92c6b1b02f21ff69c1bb9cc",
+   "gallery.json": "7173c906386af47184dcdfbe03a125ab1ec34b21b0f861c5b65cf30d8b9dcbbc",
+   "html_meta.json": "30d78254ba52ca0447807fd24f13754839b7d5e61e17de4578d3ed64e7d26570",
+   "ir.json": "2a19583fb3ad4c748e9c7e4b6962c24f3600f61d01a349655667f185acb8589d",
+   "ledgers.json": "29268383ade23510e7ab3bd5b81c58705859fed0e0063d1a33423b1b241cf9fa",
+   "params.json": "acec28e4f0604b74c8fdadb98e25d48f87881193bb50d175b7807ece41cb9349",
+   "sable.json": "6400b04d827e5a4cb2a6e121bcf9041806895f962b1e53ff19b324447051ed96"
+  },
+  "gpt-oss-20b": {
+   "expanded.json": "9387c2e545c2833036a6343dfda685fc9fe967363e6ac35690184d35ef6470df",
+   "gallery.json": "1b8cc18bebe2466fd34b76efac24febc2470a0f8005ee5165921c78a3d5cc071",
+   "html_meta.json": "755c823ded395cbebda9645eeecbc989aab57ad178e27b6529519b07ad30927f",
+   "ir.json": "152d0f888379cdcfb2fbc7cb5a055ee67d89f984f5d7a7c574bfcb4043ffd10d",
+   "ledgers.json": "eac73ed468211defdd999d78dfff67c3b79271a2dacb3704464ba14ae2ec35b1",
+   "params.json": "4ca018033428903f730ba486a701b08a84a03dcc364e743baca145fc23ce37d9",
+   "sable.json": "feafa9ecd8781d1984a3ac5240129f1b6c5ba8647b54584956bcf7c7034d3e5c"
+  },
+  "hunyuanvideo": {
+   "expanded.json": "994200181e28d437f3e3bbda0ebfcc37e2005fabc678f3fcc3480c6052e08500",
+   "gallery.json": "536f0ba0cc7dd76de2cbe4c7ab249fb42c215d179f1f8272877ebecccca8d391",
+   "html_meta.json": "3fd71f249758e8fc140afc6846ae871f98f469c6fbb09f34903074fdba5d445b",
+   "ir.json": "3d8c90d491af8f3b4c21a453d581ad9ff0fbb3baaae78f278785a9ff7e0e65d0",
+   "ledgers.json": "eeb8fd5569b0c87ed5586db57a8d3a5c67352248cab33f1b8cd2205bbd3cd757",
+   "params.json": "e5bb2141b51a83d456f5ee4f2657150d32e8d26dabaa9c797f925e222f0908ab",
+   "sable.json": "fb0973437d8af254d06f705a886c4185b81f09dc54d8bfc7927cc3b86f5440b2"
+  },
+  "llama-7b": {
+   "expanded.json": "5128c7a0e23f0190d353dee735e457eae064cb06125e8ec0100a74703a3ab9fc",
+   "gallery.json": "7fa8234e5e639648a06754c6be023d0637b332c46286c3df4667ec5333757397",
+   "html_meta.json": "6fe3d91b7659a4c1414ab5d1bb5073c49209022159965a646a58b6e8330079cb",
+   "ir.json": "04e6d10868ade98d883e69107e0a75542d067956a0cf009fa24cc21137790f22",
+   "ledgers.json": "2081abe30ad94c82d45be72c0754c77acdef1e557657b02ad35fad6b54d3dac6",
+   "params.json": "07ea589f712a0cbfc027e3b9eb8995d150464d28933891e721a7031c0849d40a",
+   "sable.json": "afb72e87673e43a9d26bdaf4b873d2961320e84638a57ad7bf180de3b9df31de"
+  },
+  "ltx-video": {
+   "expanded.json": "f8c8f1bfa9d3ae5253c5c34f7a2d9f177f04d3aefb52aa135c612bc8dc37e01d",
+   "gallery.json": "6722b56f388305fbd44b7d47e7a08c8fa37c458f78cbd4569107a5933ce01e4f",
+   "html_meta.json": "377785258b98616b34314396bcd6ecc13a40c3c27c11f1abead818e49370a29d",
+   "ir.json": "e2673c570188bf07454f7a07562afb17a9556a3d00e91904bdd976d07fc5cd68",
+   "ledgers.json": "4034a9e2f59be0c29bee1fe5dbbef780d43fb90cad6119d40d4ea1f0ff0ce9db",
+   "params.json": "fc83ff5ed0a2209b59962b42837fbfbc0f698238cdf33baa45547c19353af4e6",
+   "sable.json": "2a01b950ceb37ef12d76910ed5f8f5bae673ca897aaf6c2469e3af303c96a917"
+  },
+  "lumina-image-2-0": {
+   "expanded.json": "fdcb527f8d227a9c8c831278810e246bce86932bfc275d5e9258082931715cbc",
+   "gallery.json": "40574b6140d6e7aa187fe9ce93b7c435d595a726d0002b23f249fdd418d0ca67",
+   "html_meta.json": "a2c9696ed2ad38bc5596d68f7e5ad537bb128e3f430dc3c16e303619e685a2a1",
+   "ir.json": "8cc77c5f088ef460eb0f510b428477a35b96c21534dc0040d2f53ce5bc33a825",
+   "ledgers.json": "6f2a17ffdf0e17fd57bbb8562223440aa15beb6c13ad35d4c4b60b607e940135",
+   "params.json": "7914b119ae67e98772d38721fd570149e03ecd1cec0e232e2ee751a86fc50bfe",
+   "sable.json": "3708da15ae873e7ca0c745f5cf6bd1878ddc17d323f4f6d8611c6269fbb16190"
+  },
+  "mochi-1-preview": {
+   "expanded.json": "c4dd3b44349fec8ee0e01f4dd9cd8b2cd38454f59232e3e709bc327d75268b65",
+   "gallery.json": "97d3f4eb887d3bb317e877e25d7ea37dc631bc1ca4b33f436e1d59ce0aae1cf7",
+   "html_meta.json": "774ff2d8534e9c93ddc284ca2568a1e0a6b43360a67746fdabf7393eae079d9d",
+   "ir.json": "11b74df6b7706069be0e36c0f68ab24821f4779fb6b654771000762e295efc66",
+   "ledgers.json": "9a8127d40f5bd3e3ddfb12b4a86d84890c811f633ad1b4e83d89d142c0575b2d",
+   "params.json": "001ab6dc84e272dc5110b5b5a422e533625510397555354b3921fdf6b9592387",
+   "sable.json": "4f4f5a28926c574996ada92b35cf35c9e8b33f5e6e3ed0805ae6bc93aedda313"
+  },
+  "olmo-2-1124-7b": {
+   "expanded.json": "6b0d83a1c5348aae64c3d642951f9b93864b1c6d155936a284b67bf9b0f5c5ba",
+   "gallery.json": "16d478496599a95247f4cf52e99b4448fa9aefaab81d45e7aa814c42b98ad09f",
+   "html_meta.json": "47c6c97271aae8434a8208551dd12dbb99907c6cf66695cc84e54e9022d0d3fb",
+   "ir.json": "03210b3ed0add94fcceda9a90b274ae4571eb0ccb634785a1e6afba1a5535670",
+   "ledgers.json": "d39b2998eac8b9181ce91559d76ae2fa5b0a5a65bedeb8c86062aa2c761379b4",
+   "params.json": "38ca68ad09d4bc3c146343f7e0bc7f459353c0e653ad8e9e2ea4c32554d10446",
+   "sable.json": "47df6d56a43fd8552f63c2737aecf02cbb21a78b60778eece8e8996607f7ca67"
+  },
+  "pixart-sigma-xl-2-1024-ms": {
+   "expanded.json": "99c9366d45f7067fa1a5eb642d079454c7723ec401fd1afd68f874c5d56579e2",
+   "gallery.json": "61a9d25101b1960289ed096a470180bd5afeb954b4055e441a56ee84581433a0",
+   "html_meta.json": "ac30742f653ff39fa21a42e8fff1b76a8c19dc9e7af865708678ef0794d35506",
+   "ir.json": "0220790cf42c3eb9cb9b9c4dd28525b46f89b0efd71b431bfedcdc47ab3f7d64",
+   "ledgers.json": "84e2029636032a84b7a136b188105e99cd2a670fccd9ce99eed590dcf94e012d",
+   "params.json": "b10675c27a9e88a6830387e5356f2891de4ac08446fe2b968a3719bcb7804570",
+   "sable.json": "4171349b68d04b1a19ee9e87ed6a0ad82d20a6d07dc84fc82621c6176d5a9f31"
+  },
+  "prxpixel-t2i": {
+   "expanded.json": "76379e57cad7efa135740fbd5da579bce34cf96e5bd1b2e32b92ac92c4b75a72",
+   "gallery.json": "f0639b8dbd7ce08a5c284d35a3f6a509024013f69cdcfd1df820613b6517b6e8",
+   "html_meta.json": "030e31a6bb8874eecd4971f6b234e41b9aa6210ea2a3cad7d1cbf74b817fce9f",
+   "ir.json": "4c6ddfe439376fe0613495038c768b73532fb57879945e7dad3f50bc44f6a056",
+   "ledgers.json": "90e90420fdb1f9547ae8c94246d8f3358b4c9f00941cb1dd02a18b436659b04b",
+   "params.json": "12117d3d38b0bf3457f277510c18910ebc42e44d7b4bd16595cedeb20e2735d3",
+   "sable.json": "4b1e6500b83ce0b85de7bb1990146b63fe81df9d7fe3b7b1dedcc792e4fd89ff"
+  },
+  "qwen-image": {
+   "expanded.json": "a61eb36a04b17eba0908b29d8d05fd36baad079b35241101457a7d72ee167d65",
+   "gallery.json": "f34d98bdbfebcd87bae5e1a58e1d9b60bc90212674f300c85d1c9cd5c5d7125e",
+   "html_meta.json": "622643bfebf420be41cc9f9325bc1fb7c48ea5f48e14650793cb739e4b83ad36",
+   "ir.json": "c53e90cad207cd969117450a748f1e59aa35d4913b8755425af03de20f515867",
+   "ledgers.json": "6adedd5c723fcaceef94e368e790da24ce8424bd94ea3d6e3c38066faa6326a9",
+   "params.json": "e5bb2141b51a83d456f5ee4f2657150d32e8d26dabaa9c797f925e222f0908ab",
+   "sable.json": "9bdabd2c48d65f8b4c7f11ead78d07805feb25dd72f2a7081ec10d7c4d1b52ac"
+  },
+  "qwen2-vl-7b-instruct": {
+   "expanded.json": "d2152990b87e7944a305a436f26b615013df50b7b60dacedbb295028fc9f44d6",
+   "gallery.json": "8e2da152aa0f96bc7dcc9c12e78fd2f76aa1aa6545ecf6ce90d062d266351f1e",
+   "html_meta.json": "f942a306353a206115956a276e25b564c364b6b3571b72b0cc68defc254f88fe",
+   "ir.json": "09fb4b37ff855f0d90f7713261c538d27acbef057392f36e7898932f5570c200",
+   "ledgers.json": "42a671c34a4f9fcb52a678ea4dfe28a2954784be83a7373754fca0a84493aa77",
+   "params.json": "1c884271334fac64b28c7afa65d33b2632fb623878160f3cbb7fa284e4127f1e",
+   "sable.json": "4ae3d1db4c90f502f8f17535f5ca02bf68297580ff7cf7976c1abb77773af2d4"
+  },
+  "qwen3-8b": {
+   "expanded.json": "b11aaad385689b4c7e785db56d68b4bb9c2923a76437f0ac3167cab777094554",
+   "gallery.json": "e7003a18e4c667aba71e62fbf311163e9daa14ec6b6d660c4144f64b3530f5f3",
+   "html_meta.json": "514ec646983c78064b4a7bb9b662a6740ec3fe1891080e2e9589898293718bb8",
+   "ir.json": "7f6e8197b122ee10a902eb84c7a7c63252833b4bfafd189fffd73f533ed64d2e",
+   "ledgers.json": "a80e25931f930f77f6410055fca4ecdb2afa55c802f97f2db808eebaaafb15eb",
+   "params.json": "9598472850e97cd988c3c3ab7e150ceec19f7222ce2e56e817774f5b935a012d",
+   "sable.json": "67b5123ade1d6c6040c47a41e2665e5a5dccc37bffdc484d29d5f383fb24d7fd"
+  },
+  "sana-1600m-1024px-diffusers": {
+   "expanded.json": "446016aba4d7fd061e58690afbcbcc4b07c1ddddbd8cab1c32d0de8f8ea5e45d",
+   "gallery.json": "cc7fb637496c191eb6cf5bf57c6398986699d11741239d9f7b66c8e2c53e749c",
+   "html_meta.json": "e2e9328ae466eee70114d2f5aef179661b069df26c39cc66a10b5c1866e23f05",
+   "ir.json": "f1457460dba7465d04a654777ccf21e0006d8c138ef496f61ce210b6e31992ab",
+   "ledgers.json": "39c4c8a3e84e70e3651a59cbf6b8a70f74ae17dea6860582c6bcc01a15b6cb47",
+   "params.json": "5d50146c06578173189a9fc2d6fd5ecd4872f628ac09647e6907c26446d9b645",
+   "sable.json": "2dce894a92e1e94de8816df1d870459d95defbd8f5600c83fa48d9a8ffe92158"
+  },
+  "stable-diffusion-3-5-large": {
+   "expanded.json": "3eb8a8a2de48ba9ee0ebebffbdd77a7af8d23559c5cd43dfe460f69506e73df7",
+   "gallery.json": "cacd74dbe8437855c0c92a16fab4c3b295f976112a3e1189b55444a77ff1602a",
+   "html_meta.json": "a740c2daedd817bec2e3a97c2d49e44a7a77471082d78bdd30f309a4c9b597f7",
+   "ir.json": "c73baad9834b23d3c5eca8d0d3da4d760a0673387200fee465d28b797d2f24e3",
+   "ledgers.json": "ab4f41f631885b0a021aef65324f4754f882b9ee3cd5cd14e76fdf417ed46fb4",
+   "params.json": "b61ea346545f9d08644b408d33f57e88dfeea5c058204e154f88dc03372182f7",
+   "sable.json": "3e7def32c22ad1e4d4d12ffb9fce17f919d6fe0bb9c26e04ba9c822a1fb6bfde"
+  },
+  "stable-diffusion-xl-base-1-0": {
+   "expanded.json": "f23d7be8ba2592dc881586962d6af60a8d763cf3803daadc1723f86794138acc",
+   "gallery.json": "197031147f3372e6acfc1bdc3f211bc73c642f7a4c7ca873f968701535ca2279",
+   "html_meta.json": "555ac7bb597953e64624d20ef472c2abe30de1874d95c121234b4607170d8aa5",
+   "ir.json": "783b67906d03257a5e0b781b1767035a9f8ad5e4ed4e26226e49a03b563cf267",
+   "ledgers.json": "92670a3eb43c8c6d4c8746ba1e040cb445d4cdbd17a2478d501cbfeac2bea7f3",
+   "params.json": "16f9a3c239ea1d064b10e1171f4438c38ca206ec3a82b27e39ff4117522b28c6",
+   "sable.json": "a367d0959b60508d0e7ce17bce0a515939747f6896b1493aec572ddd374a5c1d"
+  },
+  "stablelm-2-1-6b": {
+   "expanded.json": "396efa1e99c1a2e29fffa0091c1af69f3d0a6eda12a7399c2d0fa8113b0066c1",
+   "gallery.json": "1c3587a12ce59059e8f53c8d752b236c94dd0f7c84e1d62ff98abd0e70430e58",
+   "html_meta.json": "60fcbcd18fec696a879801fe68c2c83bd27325c43bee4aaf583c113b4ca97f28",
+   "ir.json": "507353b453d1e874683442ba38c7753bb6a91e8c99185b2e669b99df3f0e806c",
+   "ledgers.json": "927745fa86405cc5c0ce16c7a58c319a002c84c27fb63d854b5bc1b1d37b5635",
+   "params.json": "fec6710425e3df79115ef8074ce69ee0adcc2e9ec0bb548c867259b3b8a655f0",
+   "sable.json": "627a88e1679e95db0f7ef2adfc5c08137abbc7289b4470100ff4d04ec54c75f2"
+  },
+  "wan2-2-t2v-a14b-diffusers": {
+   "expanded.json": "a01e9e054136b35cf05f83e72ab36ee282f6362829c0d722d2abc385663fe9f5",
+   "gallery.json": "7a238cf417e3729358fd0d5ef7a09c6d551f94b0d70316df7da4d60f8a34d8c2",
+   "html_meta.json": "395dc71f9640b7e21fbf94a01c3dfe50b8aff6cfdeb6c9295488061fe9c84f95",
+   "ir.json": "246a70bcc3e2da8b70361ec285efcea235287fa873846d56982546b8df221d9f",
+   "ledgers.json": "41505007701f7643bafc0ebcf0a1b773dd89c981797e32c4454d2dc33cd9558c",
+   "params.json": "feb833cb0749972b80b6a8b92d4d58ca641c617515a7c7c188259c943cea2ce2",
+   "sable.json": "7bb3f14c65dc42599a17824689c172effb2e148304d0198d6109ebd962817447"
+  }
+ }
+}
