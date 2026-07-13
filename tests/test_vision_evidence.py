@@ -210,3 +210,30 @@ def test_vision_fact_conformance_consumes_the_same_typed_evidence():
     problems = check_fact_conformance(PIXTRAL_STYLE, broken, bundle=context.source_bundle)
     assert any(problem.kind == "wrong_vision_fact" and "norm_kind" in problem.op
                for problem in problems)
+
+
+def test_rec5_projector_width_is_code_bound_or_honest_debt():
+    """REC-5 (§11.2/§11.4, R-10): the width-comparison heuristic is DELETED at
+    source level (no family branch may replace it); qwen2-vl's declared vision
+    hidden_size is EXACT VISIBLE debt (owner root.vision) that cannot clear a
+    sibling, and the model parses clean."""
+    import json
+    import pathlib
+
+    import model_unfolder as mu
+    from model_unfolder.evidence.registry import PENDING_PROJECTION_DEBT
+
+    src = (pathlib.Path(mu.__file__).parent / "adapters" / "transformer" /
+           "special_parts" / "modalities" / "vision.py").read_text()
+    assert "_resolve_out_width" not in src   # the heuristic (and any wrapper)
+
+    owners = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}
+    assert ("root.vision", "hidden_size") in owners
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    cfg = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
+    audit = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_audit", {})
+    assert audit.get("unread") == []
+    assert "vision_config.hidden_size" in (audit.get("pending_projection") or [])
+    # the root.vision entry cannot excuse a TRANSFORMER-root hidden_size —
+    # a root-level unread hidden_size would still flag (P5/P6 family guard).

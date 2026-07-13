@@ -418,6 +418,12 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
                           "GroupNorm group count declared on UNet/legacy-DiT "
                           "denoisers — U11/U-06 derives the cell norm from source",
                           "the UNet ResNet-cell norm chip"),
+    PendingProjectionFact("vision_out_width", "root.vision", "hidden_size",
+                          "the vision config's declared merger/output width "
+                          "(qwen2-vl: 3584 beside internal embed_dim=1280) — a "
+                          "config comparison may NOT infer its meaning; awaits "
+                          "the source-bound projector owner (U3/U9)",
+                          "the projector output-width chip"),
     PendingProjectionFact("denoiser_scaling_factor", "root.denoiser", "scaling_factor",
                           "pipeline-level latent-scale duplicate on the denoiser "
                           "config (Lumina); the VAE's own scaling_factor is the "

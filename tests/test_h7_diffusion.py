@@ -34,7 +34,9 @@ def test_pending_projection_debt_covers_the_three_removed_reads():
 
 
 def test_pending_projection_debt_is_fully_qualified():
-    owners = {"root.denoiser", "root.vae"}
+    # REC-4/REC-5 grew the exact-debt ledger across owners; every entry still
+    # carries a real component owner from the fixed vocabulary.
+    owners = {"root.denoiser", "root.vae", "root.vision"}
     for entry in PENDING_PROJECTION_DEBT:
         assert entry.name and entry.canonical and entry.reason and entry.projection
         assert entry.owner in owners, entry

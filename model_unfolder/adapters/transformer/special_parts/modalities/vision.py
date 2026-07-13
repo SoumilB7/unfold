@@ -131,25 +131,6 @@ def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
     return payload
 
 
-def _resolve_out_width(vision_cfg: Any, encoder_hidden_size: Any):
-    """The vision config's DECLARED merger/output width, exactly resolved.
-
-    ``out_hidden_size`` when present; else ``hidden_size`` ONLY when it is not
-    the encoder's own internal width (CLIP-style towers use ``hidden_size`` AS
-    the internal width — that read is the encoder's, already recorded).  The
-    peek is event-free; the resolver records the read only when the field IS
-    the distinct output-width declaration (qwen2-vl)."""
-    from .....evidence.config_access import resolve
-    res = resolve(vision_cfg, "out_hidden_size", ())
-    if res.state == "present":
-        return res.value
-    peek = (vision_cfg.get("hidden_size") if isinstance(vision_cfg, dict)
-            else getattr(vision_cfg, "hidden_size", None))
-    if peek is not None and peek != encoder_hidden_size:
-        return resolve(vision_cfg, "hidden_size", ()).value
-    return None
-
-
 def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return image/vision intake as semantic facts."""
     cross_attn = has_cross_attention_adapter(cfg, text_cfg)
@@ -159,14 +140,11 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     input_channels = first(vision_cfg, "in_channels", "num_channels")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
     projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn, unified_grid)
-    # U1: the vision config may DECLARE its merger/projector output width
-    # (qwen2-vl: vision ``hidden_size``=3584 alongside internal
-    # ``embed_dim``=1280).  Resolve the declaration so the read is owned by the
-    # vision component (never cleared by the text sibling's same-named field);
-    # it supplies the value only when the derived width is missing.
-    _declared_out = _resolve_out_width(vision_cfg, hidden_size)
-    if projector_out is None and _declared_out is not None:
-        projector_out = _declared_out
+    # REC-5 (§11.2, R-10): the U1 width-comparison heuristic is DELETED — a
+    # config-value comparison can never infer projector-output meaning.  The
+    # declared vision ``hidden_size`` stays EXACT VISIBLE DEBT (registry:
+    # vision_out_width) until the source-bound projector owner exists (U3/U9);
+    # the generic projector-out derivation above is the pre-U1 behavior.
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
     num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
     num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")

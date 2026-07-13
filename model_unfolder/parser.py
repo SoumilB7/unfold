@@ -125,9 +125,12 @@ def config_to_ir(
     from .evidence.registry import PENDING_PROJECTION_DEBT
 
     def _unread_path_owner(path: str) -> str:
-        if path.startswith("_vae_config."):
-            return "root.vae"
-        return _root_owner
+        # REC-5: the SAME owner attribution the unread join uses — two
+        # divergent maps would just recreate the sibling-clear bug between
+        # the audit and its excusal.
+        owner = _config_debug._owner_of_path(
+            path, _config_debug.component_prefix_owners(_root_owner), _root_owner)
+        return owner if owner is not None else _root_owner
 
     _pending_pairs = {(entry.owner, entry.canonical)
                       for entry in PENDING_PROJECTION_DEBT}
