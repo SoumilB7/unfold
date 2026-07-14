@@ -206,3 +206,21 @@ def compare_model(slug: str, corpus_dir: pathlib.Path,
         "structural_drift": [s for s in drift if s in STRUCTURAL_SURFACES],
         "evidence_drift": [s for s in drift if s in EVIDENCE_SURFACES],
     }
+
+
+def generate_baseline(corpus_dir, out_dir) -> None:
+    """REC-7 (§13.2): the committed clean-checkout generator — regenerates
+    every canonical witness surface from the production APIs, so the
+    preservation gate never depends on uncommitted local artifacts."""
+    corpus_dir = pathlib.Path(corpus_dir)
+    out_dir = pathlib.Path(out_dir)
+    for path in sorted(corpus_dir.glob("*.json")):
+        cfg = json.loads(path.read_text())["config"]
+        docs = canonical_surfaces(cfg)
+        docs["gallery"] = gallery_witness(corpus_dir, path.stem)
+        target = out_dir / path.stem
+        target.mkdir(parents=True, exist_ok=True)
+        for surface, doc in docs.items():
+            if doc is not None:
+                (target / f"{surface}.json").write_text(
+                    json.dumps(doc, indent=1, sort_keys=True, default=str) + "\n")

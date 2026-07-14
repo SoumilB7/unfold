@@ -24,13 +24,11 @@ _BASELINE = pathlib.Path(mu.__file__).parent.parent / "tests" / "preservation_ba
 # §2.3 — the known, UNAPPROVED U1 structural drift (all diffusion witnesses).
 # Shadow law: the live report may show AT MOST these, on the ``ir`` surface
 # only.  Anything new fails; models recovering to parity shrink this green.
-KNOWN_U1_IR_DRIFT = frozenset({
-    "auraflow-v0-3", "cogvideox-5b", "flux-2-dev", "fluxtransformer2dmodel",
-    "hunyuanvideo", "ltx-video", "lumina-image-2-0", "mochi-1-preview",
-    "pixart-sigma-xl-2-1024-ms", "prxpixel-t2i", "qwen-image",
-    "sana-1600m-1024px-diffusers", "stable-diffusion-3-5-large",
-    "stable-diffusion-xl-base-1-0", "wan2-2-t2v-a14b-diffusers",
-})
+KNOWN_U1_IR_DRIFT: frozenset = frozenset()  # REC-7 (§13.2): EMPTY — the
+# recovery restored all 15 diffusion witnesses to U0 parity (REC-4/REC-5);
+# the live comparison is now a BLOCKING zero-drift gate.  Any structural
+# drift on any surface fails; evidence surfaces (ledgers/sable) remain
+# documented intentional recovery deltas until re-baselined with Soumil.
 
 
 def _fake_surfaces() -> dict:
@@ -147,10 +145,9 @@ def test_canonical_surfaces_are_deterministic_end_to_end():
 # --------------------------------------------------------------------------- #
 
 def test_live_corpus_comparison_shadow_report():
-    """SHADOW: report the drift, allow AT MOST the known U1 ``ir`` drift, and
-    fail on any NEW structural drift (surface or model).  Evidence surfaces
-    (ledgers/sable) are documented intentional U1 deltas.  REC-7 flips this
-    to a fully-blocking zero-drift gate."""
+    """BLOCKING (REC-7 §13.2): zero structural drift across all 25 witnesses
+    and every structural surface.  Evidence surfaces (ledgers/sable) remain
+    documented intentional recovery deltas until re-baselined with Soumil."""
     if not _BASELINE.is_dir():
         pytest.skip("no local U0 baseline (clean checkout) — the committed "
                     "canonical-expected cutover lands in REC-7")
