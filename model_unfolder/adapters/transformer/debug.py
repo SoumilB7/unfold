@@ -58,7 +58,8 @@ def reset() -> None:
     per ``config_access.capture_events`` scope) — no module global to clear."""
 
 
-def note_access(name: str, intent: str = "inspected", *, present: bool = True) -> None:
+def note_access(name: str, intent: str = "inspected", *, present: bool = True,
+                value_state: str | None = None) -> None:
     """Record a config-field lookup into the owner-scoped ledger — the ONE funnel,
     so every access site on this hot path is covered.
 
@@ -68,7 +69,7 @@ def note_access(name: str, intent: str = "inspected", *, present: bool = True) -
     ABSENT field — which the ledger records as an ``absent_default`` premise, never
     a fictional consumed config field.  ``bound`` degrades to inspected here (its
     source-binding reader is named where the accessor migrates to
-    ``resolve_aliases``); the net still counts it on net-1's accessed side.
+    ``resolve``); the net still counts it on net-1's accessed side.
     A no-op outside a capture."""
     if intent not in _RAIL_INTENTS:
         raise ValueError(
@@ -76,12 +77,13 @@ def note_access(name: str, intent: str = "inspected", *, present: bool = True) -
             f"{sorted(_RAIL_INTENTS)} (projected/ignored are derived, not marked here)")
     ledger_intent = ("absent_default" if (intent == "consumed" and not present)
                      else "inspected" if intent == "bound" else intent)
-    _config_access.emit(name, intent=ledger_intent, present=present)
+    _config_access.emit(name, intent=ledger_intent, present=present,
+                        value_state=value_state)
 
 
 def bound_fields() -> frozenset[str]:
     """DERIVED compat: fields marked ``bound`` in the active ledger (true bindings
-    come from ``resolve_aliases``; the ``note_access`` funnel degrades to
+    come from ``resolve``; the ``note_access`` funnel degrades to
     inspected, so this is empty until the accessors migrate)."""
     led = _config_access.active_ledger()
     return frozenset() if led is None else led.bound_names()
@@ -196,14 +198,10 @@ def unparsed_fields(
     present: dict[str, str] = {}
     for cfg in cfgs:
         for path, key in _config_entries(cfg, recursive=recursive):
-            # A present-but-null field DECLARES A FEATURE ABSENT
-            # (``class_embed_type: null``, ``encoder_hid_dim: null``) — there is
-            # no fact to parse and no structure to draw, so an unread null is
-            # not coverage debt.  Safe by construction: any null a parser DOES
-            # derive meaning from (``num_key_value_heads: null`` ⇒ MHA) is read,
-            # hence touched, hence never in this set to begin with.
-            if _value_at(cfg, path) is None:
-                continue
+            # COR-1 (§6): an explicit null is a PRESENT declaration — it is
+            # covered by the exact read events like any other occurrence,
+            # never globally skipped (missing keys were never yielded here,
+            # so this loop's paths are all real occurrences).
             present[path] = key
     def _owned_by_declaration(path: str) -> bool:
         # A declared-ignored key and an opaque scope both OWN their subtree:

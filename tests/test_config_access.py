@@ -16,8 +16,17 @@ from model_unfolder.evidence.config_access import (
     ConfigAccessEvent,
     ConfigAccessLedger,
     current_owner,
-    resolve_aliases,
+    resolve,
 )
+
+
+def _resolved_event(cfg, canonical, aliases, component=None):
+    """COR-1 migration shim for the old single-event tests: run the ONE
+    primitive inside a scratch capture and return its base event."""
+    from model_unfolder.evidence.config_access import capture_events
+    with capture_events() as ledger:
+        resolve(cfg, canonical, aliases, component=component)
+    return ledger.events[0]
 
 
 def _event(**kw) -> ConfigAccessEvent:
@@ -56,9 +65,9 @@ def test_unknown_intent_is_rejected():
 # --------------------------------------------------------------------------- #
 
 def test_alias_records_the_actual_spelling():
-    ev = resolve_aliases({"n_embd": 768}, "hidden_size", ["n_embd", "d_model"],
+    ev = _resolved_event({"n_embd": 768}, "hidden_size", ["n_embd", "d_model"],
                          component="root")
-    assert ev.present and ev.intent == "consumed"
+    assert ev.present and ev.intent == "inspected"     # consumption is EXPLICIT now
     assert ev.alias == "n_embd"                        # not the canonical "hidden_size"
     assert ev.canonical == "hidden_size"
 
@@ -68,7 +77,7 @@ def test_alias_records_the_actual_spelling():
 # --------------------------------------------------------------------------- #
 
 def test_absent_field_is_a_default_premise_not_consumed():
-    ev = resolve_aliases({"num_heads": 12}, "hidden_size", ["n_embd"], component="root")
+    ev = _resolved_event({"num_heads": 12}, "hidden_size", ["n_embd"], component="root")
     assert not ev.present and ev.intent == "absent_default" and ev.alias is None
     ledger = ConfigAccessLedger([ev])
     assert ledger.consumed() == set()                  # NOT consumed
@@ -81,16 +90,16 @@ def test_absent_field_is_a_default_premise_not_consumed():
 # --------------------------------------------------------------------------- #
 
 def test_conflicting_aliases_are_ambiguous_not_silently_first():
-    ev = resolve_aliases({"num_attention_heads": 32, "n_head": 16}, "num_heads",
+    ev = _resolved_event({"num_attention_heads": 32, "n_head": 16}, "num_heads",
                          ["num_attention_heads", "n_head"], component="root")
     assert ev.intent == "ambiguous" and "conflicting" in ev.reason
     assert ConfigAccessLedger([ev]).consumed() == set()   # ambiguity is not consumption
 
 
 def test_equal_redundant_aliases_consume_only_the_selected_spelling():
-    ev = resolve_aliases({"num_attention_heads": 32, "n_head": 32}, "num_heads",
+    ev = _resolved_event({"num_attention_heads": 32, "n_head": 32}, "num_heads",
                          ["num_attention_heads", "n_head"], component="root")
-    assert ev.intent == "consumed" and ev.alias == "num_attention_heads"
+    assert ev.intent == "inspected" and ev.alias == "num_attention_heads"
     assert "redundant" in ev.reason
 
 
@@ -99,13 +108,13 @@ def test_equal_redundant_aliases_consume_only_the_selected_spelling():
 # --------------------------------------------------------------------------- #
 
 def test_same_key_in_sibling_components_is_distinct():
-    text = resolve_aliases({"hidden_size": 4096}, "hidden_size", [], component="root.text")
-    vision = resolve_aliases({"hidden_size": 1024}, "hidden_size", [], component="root.vision")
+    text = _resolved_event({"hidden_size": 4096}, "hidden_size", [], component="root.text")
+    vision = _resolved_event({"hidden_size": 1024}, "hidden_size", [], component="root.vision")
     ledger = ConfigAccessLedger([text, vision])
-    assert ledger.consumed("root.text") == {("root.text", "hidden_size")}
-    assert ledger.consumed("root.vision") == {("root.vision", "hidden_size")}
+    assert ledger.accessed("root.text") == {("root.text", "hidden_size")}
+    assert ledger.accessed("root.vision") == {("root.vision", "hidden_size")}
     # a text-scoped view does NOT see the vision sibling's entry
-    assert ("root.vision", "hidden_size") not in ledger.consumed("root.text")
+    assert ("root.vision", "hidden_size") not in ledger.accessed("root.text")
 
 
 # --------------------------------------------------------------------------- #
@@ -115,7 +124,7 @@ def test_same_key_in_sibling_components_is_distinct():
 def test_nested_parse_owner_comes_from_the_scope():
     token = current_owner.set("root.vision")
     try:
-        ev = resolve_aliases({"patch_size": 16}, "patch_size", [])   # no explicit component
+        ev = _resolved_event({"patch_size": 16}, "patch_size", [])   # no explicit component
     finally:
         current_owner.reset(token)
     assert ev.component == "root.vision"
@@ -131,7 +140,7 @@ def test_concurrent_parses_do_not_leak_owner():
     def parse(owner: str, key: str) -> None:
         token = current_owner.set(owner)
         try:
-            results[owner] = resolve_aliases({key: 1}, key, []).component
+            results[owner] = _resolved_event({key: 1}, key, []).component
         finally:
             current_owner.reset(token)
 
@@ -150,7 +159,7 @@ def test_concurrent_parses_do_not_leak_owner():
 # --------------------------------------------------------------------------- #
 
 def test_source_missing_field_is_honest_absent():
-    ev = resolve_aliases({}, "rope_theta", ["theta"], component="root")
+    ev = _resolved_event({}, "rope_theta", ["theta"], component="root")
     assert not ev.present and ev.intent == "absent_default"
     assert ConfigAccessLedger([ev]).accessed() == set()
 
@@ -195,7 +204,7 @@ def test_derived_compat_name_views():
     consumed = _event(canonical="hidden_size", alias="n_embd", intent="consumed")
     bound = _event(component="root.vision", canonical="patch_size",
                    alias="patch_size", intent="bound", reader="vision_reader")
-    absent = resolve_aliases({}, "gone", [], component="root")
+    absent = _resolved_event({}, "gone", [], component="root")
     ledger = ConfigAccessLedger([consumed, bound, absent])
     # U1: touched speaks FILE SPELLINGS (unparsed_fields key-matches the
     # config's PRESENT keys — an alias-supplied read clears ``n_embd``, the key
@@ -380,19 +389,26 @@ def test_explicit_null_is_present_and_distinguishable_from_absent():
     assert ("root", "num_key_value_heads") in ledger2.consumed()
 
 
-def test_null_occurrence_never_contests_a_non_null_value():
-    """An explicit null beside a real value is retained, recorded as a scoped
-    ignore, and does NOT fabricate a conflict (GPT-2's ``n_inner: null``)."""
+def test_null_beside_value_is_ambiguous_by_default():
+    """COR-1 (§6, Law D): an explicit null BESIDE a value is a checkpoint
+    contradiction — blocking ambiguity unless a NAMED source-justified policy
+    permits the pair (corpus-measured: zero such pairs exist today)."""
     with capture_events() as ledger:
         res = resolve({"intermediate_size": None, "n_inner": 256},
                       "intermediate_size", ["n_inner"], component="root")
-    assert res.state == "present" and res.value == 256
-    assert res.selected_path == "n_inner"
-    assert [(o.spelling, o.value) for o in res.present_aliases] == [
-        ("intermediate_size", None), ("n_inner", 256)]
-    intents = [(e.intent, e.alias) for e in ledger.events]
-    assert ("inspected", "n_inner") in intents
+    assert res.state == "ambiguous" and res.value is None
+    assert "explicit null beside a value" in res.reason
+    with pytest.raises(ValueError):
+        res.consume(fact_owner="decoder.ffn", fact_key="intermediate_size")
+
+    with capture_events() as ledger2:
+        res2 = resolve({"intermediate_size": None, "n_inner": 256},
+                       "intermediate_size", ["n_inner"], component="root",
+                       null_policy="test-documented-coexistence")
+    assert res2.state == "present" and res2.value == 256
+    intents = [(e.intent, e.alias) for e in ledger2.events]
     assert ("ignored", "intermediate_size") in intents
+    assert any("test-documented-coexistence" in e.reason for e in ledger2.events)
 
 
 def test_equal_dicts_with_different_key_order_are_not_ambiguous():
@@ -460,3 +476,44 @@ def test_same_owner_nested_paths_stay_distinct():
     cfg = {**LLAMA, "attn_config": {"hidden_size": 4096}}
     audit = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_audit", {})
     assert "attn_config.hidden_size" in (audit.get("unread") or []), audit.get("unread")
+
+
+
+def test_values_equal_never_rounds_big_ints_through_float():
+    from model_unfolder.evidence.config_access import _values_equal
+    big = 2 ** 53
+    assert _values_equal(big, big + 1) is False
+    assert _values_equal(big + 1, big + 1) is True
+    assert _values_equal(4, 4.0) is True
+    assert _values_equal(big * 2, float(big * 2)) is False  # beyond exact range
+
+
+def test_consume_requires_an_exact_target():
+    with capture_events():
+        res = resolve({"hidden_size": 64}, "hidden_size", [], component="root")
+        with pytest.raises(ValueError, match="target"):
+            res.consume(fact_owner="model", fact_key="")
+
+
+def test_ignore_refuses_absent_and_ambiguous():
+    with capture_events():
+        absent = resolve({}, "gone", [], component="root")
+        with pytest.raises(ValueError, match="ignorable"):
+            absent.ignore("not architecture")
+        conflicted = resolve({"hidden_size": 96, "n_embd": 64},
+                             "hidden_size", ["n_embd"], component="root")
+        with pytest.raises(ValueError, match="ignorable"):
+            conflicted.ignore("not architecture")
+
+
+def test_event_value_state_law():
+    with pytest.raises(ValueError):
+        _event(value_state="banana")
+    with pytest.raises(ValueError):
+        _event(present=True, value_state="missing")
+    with pytest.raises(ValueError):
+        _event(intent="consumed", present=False, alias=None,
+               value_state="missing")   # cannot consume what is not there
+    ok = _event(intent="consumed", value_state="explicit_null",
+                fact_owner="model", fact_key="kv")
+    assert ok.value_state == "explicit_null"

@@ -146,10 +146,22 @@ def config_to_ir(
         path for path in unread
         if (_unread_path_owner(path), path.rsplit(".", 1)[-1]) in _pending_pairs)
     unread = [path for path in unread if path not in set(pending_projection)]
+    # COR-1/COR-2: EXACT-path pending classifications (an occurrence whose
+    # consumer does not exist yet) — joined on owner + exact dotted path,
+    # visible in diagnostics, never a bare leaf.
+    from .evidence.registry import PENDING_CONFIG_CLASSIFICATION
+    _pending_cls = {(entry.owner, entry.config_path)
+                    for entry in PENDING_CONFIG_CLASSIFICATION}
+    pending_classification = sorted(
+        path for path in unread
+        if (_unread_path_owner(path), path) in _pending_cls)
+    unread = [path for path in unread if path not in set(pending_classification)]
     ir.extras["config_audit"] = {
         "unread": unread,
         "accessed": sorted(_accessed_compat),
         **({"pending_projection": pending_projection} if pending_projection else {}),
+        **({"pending_classification": pending_classification}
+           if pending_classification else {}),
     }
     # REC-3 (§9.6/§12.5): conflicting checkpoint declarations are STRUCTURED
     # and PUBLIC — the parse continues with an unknown fact, the record names

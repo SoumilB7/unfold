@@ -379,6 +379,54 @@ class PendingProjectionFact:
 
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
 # pending-projection debt (registered typed facts, projection pending H7-full).
+@dataclass(frozen=True)
+class PendingConfigClassification:
+    """COR-1/COR-2 (§7 correction plan): an EXACT config occurrence not yet
+    interpreted — owner + exact dotted path + reason + deletion unit.  Distinct
+    from PendingProjectionFact (a typed fact awaiting its drawing): here the
+    OCCURRENCE itself awaits its consumer.  Never a bare leaf key."""
+
+    name: str
+    owner: str
+    config_path: str          # exact dotted path in the checkpoint document
+    reason: str
+    deletion_unit: str
+
+    def __post_init__(self) -> None:
+        if not all((self.name, self.owner, self.config_path, self.reason,
+                    self.deletion_unit)):
+            raise ValueError(f"pending classification {self.name!r} must carry "
+                             "owner, exact path, reason, and deletion unit")
+
+
+# The explicit-null feature-absence declarations the COR-1 null-flip unmasked
+# (nothing reads them yet; U11's source-derived UNet binds the non-null paths).
+PENDING_CONFIG_CLASSIFICATION: tuple[PendingConfigClassification, ...] = (
+    PendingConfigClassification(
+        "pixart_num_vector_embeds", "root.denoiser", "num_vector_embeds",
+        "explicit-null VQ-embedding declaration on the legacy DiT config", "U11"),
+    PendingConfigClassification(
+        "unet_add_watermarker", "root.denoiser", "add_watermarker",
+        "explicit-null pipeline watermark flag on the UNet config", "U11"),
+    PendingConfigClassification(
+        "unet_class_embed_type", "root.denoiser", "class_embed_type",
+        "explicit-null class-conditioning declaration (feature absent)", "U11"),
+    PendingConfigClassification(
+        "unet_cross_attention_norm", "root.denoiser", "cross_attention_norm",
+        "explicit-null cross-attention norm declaration", "U11"),
+    PendingConfigClassification(
+        "unet_mid_block_only_cross_attention", "root.denoiser",
+        "mid_block_only_cross_attention",
+        "explicit-null mid-block attention-mode declaration", "U11"),
+    PendingConfigClassification(
+        "unet_num_class_embeds", "root.denoiser", "num_class_embeds",
+        "explicit-null class-embedding count declaration", "U11"),
+    PendingConfigClassification(
+        "unet_time_embedding_dim", "root.denoiser", "time_embedding_dim",
+        "explicit-null timestep-embedding width declaration", "U11"),
+)
+
+
 PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
     PendingProjectionFact("denoiser_max_sequence", "root.denoiser", "max_sequence_length",
                           "max text-token sequence the denoiser conditions on (Mochi) — "
