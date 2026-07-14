@@ -213,7 +213,13 @@ def test_expanded_json_carries_structured_multimodal_inputs():
         "kernel_size": 3,
         "reduces_tokens_by": 9,
     }
-    assert vision["projector"]["out_features"] == 64
+    # COR-4/COR-5 (§9/§10): the embedder projects through a raw Parameter
+    # einsum — no construction-site Linear proves the output width, so the
+    # v1 binder refuses (out_width_source="unavailable") and the card
+    # carries NO out_features rather than the old text-width fabrication.
+    # The decoder-side token width below stays 64 (interface truth).
+    assert "out_features" not in vision["projector"]
+    assert vision["projector"]["source_evidence"]["out_width_source"] == "unavailable"
     assert vision["tokens"] == {
         "kind": "soft_visual_tokens",
         "count": 280,

@@ -465,10 +465,25 @@ def sable(model_or_id, *, token=None, source: str = "local",
             _accessed_unprojected_findings(ir),
             blocking=False,
         ),
-        # U1 (§20.4.9): net-2 — consumed-but-unprojected, owner-qualified.
-        # ADVISORY until projection receipts (U2) and the corpus debt migration
-        # land (§20.4.10): a consumed config value with no recorded projection
-        # receipt is the read-but-never-drawn class.
+        # COR-5 (§10): Net 1 for CLAIMED scopes — a migration claim names its
+        # exact (owner, mechanism, paths) and every violation inside a claimed
+        # scope BLOCKS immediately.  Unclaimed reads stay visible above as
+        # advisory migration debt; the poison suite proves a violated or
+        # bare-funnel claim cannot pass, so an empty violation list is earned,
+        # never vacuous.
+        SableCheck(
+            "config_migration_claims",
+            [violation
+             for row in (((ir.get("extras") or {}).get("config_access") or {})
+                         .get("migration_claims") or [])
+             for violation in row.get("violations") or []],
+        ),
+        # U1 (§20.4.9) as cut over by COR-5 (§10): net-2 — consumed-but-
+        # unprojected, owner-qualified.  BLOCKING exactly where the parse
+        # declares projection receipts available: a path that claims receipts
+        # while carrying unreceipted obligations fails, and a path that leaves
+        # receipts unavailable keeps the honest advisory census (U2 lands the
+        # real receipts).
         SableCheck(
             "config_consumed_unprojected",
             [f"{row['source']['component']}:{row['source']['path']} -> "
@@ -480,7 +495,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
                   "proof until U2 emits real receipts"
                   if not ((ir.get("extras") or {}).get("config_access") or {})
                   .get("projection_receipts_available") else ""),
-            blocking=False,
+            blocking=bool(((ir.get("extras") or {}).get("config_access") or {})
+                          .get("projection_receipts_available")),
         ),
         # REC-3 (§12.5): conflicting checkpoint declarations BLOCK from their
         # first production use — an ambiguous field is an unknown fact plus

@@ -191,12 +191,56 @@ def config_to_ir(
     _owners_with_consumed = {owner for owner, _ in _access_ledger.consumed()}
     _audit_incomplete = sorted(_all_owners - _owners_with_consumed)
     _gated_unconsumed = _access_ledger.accessed_but_unconsumed()
+    # COR-5 (§10): migration claims — Net 1 BLOCKS each claimed exact
+    # (owner, mechanism) scope immediately.  Within a claimed scope every
+    # present read must carry an exact path and be consumed, scoped-ignored,
+    # or precisely classified; violations are structured rows the blocking
+    # net reads.  Unclaimed reads stay visible advisory debt above.
+    from .evidence.registry import MIGRATED_SCOPES
+    _consumed_paths = {(e.component, e.config_path)
+                       for e in _access_ledger.events if e.intent == "consumed"}
+    _ignored_paths = {(e.component, e.config_path)
+                      for e in _access_ledger.events if e.intent == "ignored"}
+    _classified_paths = {(entry.owner, entry.config_path)
+                         for entry in PENDING_CONFIG_CLASSIFICATION}
+    _claim_rows = []
+    for _claim in MIGRATED_SCOPES:
+        _scope_events = [e for e in _access_ledger.events
+                         if e.component == _claim.owner
+                         and e.config_path in _claim.config_paths]
+        _violations = []
+        for e in _scope_events:
+            if not getattr(e, "path_exact", False):
+                _violations.append(
+                    f"{_claim.owner}/{_claim.mechanism}: inexact read of "
+                    f"{e.config_path!r} — a claimed scope may not read through "
+                    "the bare funnel")
+            elif (e.present and e.intent in {"inspected", "bound"}
+                    and (e.component, e.config_path) not in _consumed_paths
+                    and (e.component, e.config_path) not in _ignored_paths
+                    and (e.component, e.config_path) not in _classified_paths):
+                _violations.append(
+                    f"{_claim.owner}/{_claim.mechanism}: present read of "
+                    f"{e.config_path!r} is neither consumed, scoped-ignored, "
+                    "nor precisely classified")
+        _claim_rows.append({
+            "scope": f"{_claim.owner}/{_claim.mechanism}",
+            "claimed_by": _claim.claimed_by,
+            "config_paths": list(_claim.config_paths),
+            "observed_events": len(_scope_events),
+            "violations": sorted(set(_violations)),
+        })
     ir.extras["config_access"] = {
         "accessed": _q(_access_ledger.accessed()),
         "consumed": _q(_access_ledger.consumed()),
         "absent_default": _q(_access_ledger.absent_defaults()),
         "accessed_unconsumed": _q(_gated_unconsumed),
         **({"audit_incomplete": _audit_incomplete} if _audit_incomplete else {}),
+        # COR-5 (§10): the structured claim register for this parse — one row
+        # per claimed (owner, mechanism) scope; the blocking net reads the
+        # violation lists, and a claim with zero observed events is visible
+        # here rather than silently green.
+        "migration_claims": _claim_rows,
         # U1 (§20.4.9): net-2 published owner-qualified — consumed reads whose
         # fact target is neither projected nor registered pending debt.  With
         # projection RECEIPTS not yet live (U2), ``projected`` is empty, so this

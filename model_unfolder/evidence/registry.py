@@ -384,6 +384,58 @@ class PendingProjectionFact:
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
 # pending-projection debt (registered typed facts, projection pending H7-full).
 @dataclass(frozen=True)
+class MigrationClaim:
+    """COR-5 (§10): a declaration that ONE exact (owner, mechanism) scope has
+    completed its config-consumption migration.
+
+    A claim is a checkable promise, never an adapter- or file-wide flag: it
+    names the exact component owner, the mechanism (fact family) inside it,
+    and the exact dotted config paths that mechanism reads.  Net 1 BLOCKS the
+    claimed scope immediately — within it every present read must carry an
+    exact path and be consumed, scoped-ignored, or precisely classified;
+    ambiguities stay blocking regardless.  Unclaimed rows remain visible
+    migration debt (the advisory census), and Net 2 independently verifies
+    projection afterward.  An empty declaration is a constructor error, and
+    the poison suite proves a violated claim cannot pass."""
+
+    owner: str                       # exact component owner, e.g. "root.vision"
+    mechanism: str                   # fact family inside the owner
+    claimed_by: str                  # the unit that completed the migration
+    config_paths: tuple[str, ...]    # exact dotted paths from the ROOT config
+
+    def __post_init__(self) -> None:
+        if not (self.owner and self.mechanism and self.claimed_by
+                and self.config_paths and all(self.config_paths)):
+            raise ValueError(
+                "a migration claim must name its exact owner, mechanism, "
+                "claiming unit, and non-empty config paths — an empty "
+                "declaration cannot be valid")
+
+
+# The live claim register.  First claimants:
+# * COR-4's source-authoritative projector out-width — the construction site
+#   proves ownership and the consumer CONSUMES the exact path (fact
+#   projector_out_features) on both the vision and video lanes.
+# * COR-5's encoder width — the winning spelling of the tower-width priority
+#   chain is consumed (fact hidden_size), covering both the qwen2-vl shape
+#   (internal embed_dim beside a merger-out hidden_size) and the 2.5 shape
+#   (hidden_size IS the internal width, e.g. inside FLUX/Qwen-Image embedded
+#   encoders).  Paths are exact under the canonical wrapper spelling; a
+#   witness under an alternate wrapper spelling extends these tuples.
+MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
+    MigrationClaim("root.vision", "projector_out_width", "COR-4",
+                   ("vision_config.hidden_size",)),
+    MigrationClaim("root.video", "projector_out_width", "COR-4",
+                   ("vision_config.hidden_size",)),
+    MigrationClaim("root.vision", "encoder_width", "COR-5",
+                   ("vision_config.embed_dim",
+                    "vision_config.vision_hidden_size",
+                    "vision_config.width",
+                    "vision_config.hidden_size")),
+)
+
+
+@dataclass(frozen=True)
 class PendingConfigClassification:
     """COR-1/COR-2 (§7 correction plan): an EXACT config occurrence not yet
     interpreted — owner + exact dotted path + reason + deletion unit.  Distinct

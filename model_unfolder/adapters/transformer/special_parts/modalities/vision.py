@@ -400,10 +400,27 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
 
 
 def vision_encoder_hidden_size(cfg: Any, vision_cfg: Any, unified_grid: bool) -> Any:
-    """Return the width used inside the visual encoder itself."""
-    if unified_grid:
-        return first(vision_cfg, "embed_dim", "vision_hidden_size", "width", "hidden_size")
-    return first(vision_cfg, "hidden_size", "vision_hidden_size", "width", "embed_dim")
+    """Return the width used inside the visual encoder itself.
+
+    COR-5 (§10): the WINNING spelling is CONSUMED — this value authors the
+    drawn tower width (encoder card / sub-model spec), so the read is a fact
+    consumption, not an inspection.  The chain stays a priority over DISTINCT
+    fields (grid streams: internal ``embed_dim`` beside a merger-out
+    ``hidden_size``), so only the winner consumes; losing spellings that are
+    absent never event, and a present-but-unread sibling stays the unread
+    audit's business."""
+    keys = (("embed_dim", "vision_hidden_size", "width", "hidden_size")
+            if unified_grid
+            else ("hidden_size", "vision_hidden_size", "width", "embed_dim"))
+    for key in keys:
+        value = first(vision_cfg, key)
+        if value is not None:
+            _config_access.emit(
+                key, intent="consumed", present=True, alias=key,
+                fact_owner=_config_access.current_owner.get(),
+                fact_key="hidden_size", reader="vision_encoder_hidden_size")
+            return value
+    return None
 
 
 def vision_projector_in(vision_cfg: Any, encoder_hidden_size: Any, cross_attn: bool, unified_grid: bool) -> Any:

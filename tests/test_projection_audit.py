@@ -224,3 +224,102 @@ def test_accessed_unprojected_is_wired_advisory_not_blocking():
     report = sable(LLAMA, render_images=False)
     check = next(c for c in report.checks if c.name == "config_accessed_unprojected")
     assert check.blocking is False
+
+
+# --------------------------------------------------------------------------- #
+# COR-5 (§10) — migration claims: Net 1 blocks claimed exact scopes; poisons
+# prove a violated, bare-funnel, or fabricated-receipt state cannot pass.
+# --------------------------------------------------------------------------- #
+
+def test_cor5_migration_claim_constructor_rejects_empty_declarations():
+    from model_unfolder.evidence.registry import MigrationClaim
+
+    with pytest.raises(ValueError):
+        MigrationClaim("root.vision", "projector_out_width", "COR-4", ())
+    with pytest.raises(ValueError):
+        MigrationClaim("", "projector_out_width", "COR-4", ("a.b",))
+    with pytest.raises(ValueError):
+        MigrationClaim("root.vision", "", "COR-4", ("a.b",))
+    with pytest.raises(ValueError):
+        MigrationClaim("root.vision", "projector_out_width", "COR-4", ("a.b", ""))
+
+
+def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
+    """POISON: a claim over a path the parse reads without consuming MUST fire
+    — proves the blocking net cannot be vacuously green."""
+    from model_unfolder.evidence import registry as reg
+
+    poisoned = (reg.MigrationClaim(
+        "root", "norm_epsilon", "POISON",
+        ("rms_norm_eps",),
+    ),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    rep = sable(LLAMA, render_images=False)
+    check = next(c for c in rep.checks if c.name == "config_migration_claims")
+    assert check.blocking
+    assert not check.passed
+    assert any("rms_norm_eps" in f for f in check.findings)
+    assert not rep.mechanical_passed
+
+
+def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation(monkeypatch):
+    """A claimed scope may not read through the bare funnel: llama's
+    ``rms_norm_eps`` read is path-inexact today, so the SAME poison must name
+    the inexact-read law (not only unconsumed-ness)."""
+    from model_unfolder.evidence import registry as reg
+
+    poisoned = (reg.MigrationClaim(
+        "root", "norm_epsilon", "POISON", ("rms_norm_eps",)),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    ir = mu.unfold(LLAMA).to_ir()
+    rows = ir["extras"]["config_access"]["migration_claims"]
+    assert len(rows) == 1
+    assert rows[0]["observed_events"] >= 1
+    assert any("inexact read" in v or "neither consumed" in v
+               for v in rows[0]["violations"])
+
+
+def test_cor5_real_claim_is_earned_on_the_multimodal_witness():
+    """The COR-4 projector-width claim holds on the source-present witness:
+    events observed, zero violations, and the claimed path actually consumed."""
+    import json
+    import pathlib
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    cfg = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
+    ir = mu.unfold(cfg).to_ir()
+    ca = ir["extras"]["config_access"]
+    rows = {row["scope"]: row for row in ca["migration_claims"]}
+    for scope in ("root.vision/projector_out_width", "root.video/projector_out_width"):
+        assert rows[scope]["observed_events"] > 0
+        assert rows[scope]["violations"] == []
+    assert "root.vision:hidden_size" in ca["consumed"]
+    assert "root.video:hidden_size" in ca["consumed"]
+
+
+def test_cor5_net2_blocks_exactly_when_receipts_are_declared_available(monkeypatch):
+    """Net 2 is advisory while ``projection_receipts_available=False`` and
+    BLOCKING the moment a parse claims receipts: claiming with unreceipted
+    obligations standing must fail — completion cannot be claimed on an
+    unavailable ledger."""
+    rep = sable(LLAMA, render_images=False)
+    net2 = next(c for c in rep.checks if c.name == "config_consumed_unprojected")
+    assert net2.blocking is False
+    assert "projection_receipts_unavailable" in (net2.note or "")
+
+    from model_unfolder.evidence import context as ctx_mod
+
+    real_build = ctx_mod.ParseContext.build
+
+    def claiming_build(*args, **kwargs):
+        built = real_build(*args, **kwargs)
+        built.projection_receipts_available = True   # fabricated claim
+        return built
+
+    monkeypatch.setattr(ctx_mod.ParseContext, "build", claiming_build)
+    rep2 = sable(LLAMA, render_images=False)
+    net2b = next(c for c in rep2.checks if c.name == "config_consumed_unprojected")
+    assert net2b.blocking is True
+    assert net2b.findings, "unreceipted obligations must surface as findings"
+    assert not net2b.passed
+    assert not rep2.mechanical_passed

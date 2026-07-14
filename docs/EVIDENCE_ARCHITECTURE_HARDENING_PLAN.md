@@ -2168,3 +2168,142 @@ Stop immediately when:
 Final achieved output:
 
 > Every architectural claim is an owner-qualified typed fact backed by exact source/config evidence, all structural consumers use that fact, unknown remains unknown at every drill depth, identity/config vocabulary cannot select architecture, and no new model can require a renderer branch or family table to become accurate.
+
+---
+
+# 17. COR-5 superseding completion receipt (2026-07-14)
+
+This receipt supersedes every earlier U0/U1 status line in this document. The
+binding authority for the corrections is
+`docs/U0_U1_FINAL_RECOVERY_CORRECTION_PLAN.md` (COR-0 through COR-5); the
+historical REC log above is preserved unedited as history.
+
+## Correction commits
+
+| Unit | Commit | Content |
+|---|---|---|
+| COR-0 | `602dcb0` | clean-checkout anti-vacuous preservation (committed corpus inputs, authoritative 25-witness manifest, zero-skip verifier, poison matrix, git-archive isolation) |
+| COR-1 | `b8cea8c` | config access primitive repair (value_state law, semantic equality incl. the 2^53 trap, null-beside-value ambiguity, consume/ignore/bind laws) |
+| COR-2 | `7cd9066` | exact occurrence-to-projection accounting (ConfigOccurrenceKey primary join, structured obligations, receipts-unavailable honesty) |
+| COR-3 | `ff92b4a` | unknown-safe transformer and diffusion projection (hidden_size unknowable stays None at every depth; params incomplete-not-zero; activation rivals author nothing and block) |
+| COR-4 | `08d2bfe` | exact modality scopes and source-authoritative projector evidence (dotted container paths + path_exact; construction-site width binding code_bound/config_bound/derived/unavailable; generic language-width arms DELETED; wrapper rivalry law) |
+| COR-5 | this commit | migration-claim gate cutover, Net-2 conditional blocking, debt census, this receipt |
+
+## Unit states
+
+| Unit | State |
+|---|---|
+| U0 | REVIEWED/DONE only after COR-0 clean-checkout zero-skip preservation — machine-green as of this receipt; awaiting Soumil's review mark |
+| U1 | REVIEWED/DONE only after COR-1 through COR-4 and all exact/unknown-safe gates — machine-green as of this receipt; awaiting Soumil's review mark |
+| U2 | UNLOCKED only by this COR-5 receipt upon Soumil's approval |
+
+Claude never blesses and never marks REVIEWED/DONE; both marks are Soumil's.
+
+## Blocking policy landed (COR-5 §10, as refined by Soumil 2026-07-14)
+
+- Migration is claimed at exact **(owner, mechanism)** scope
+  (`MigrationClaim` in `model_unfolder/evidence/registry.py`), never per
+  adapter or source file. A claim names its exact config paths.
+- Net 1 (`config_migration_claims`) BLOCKS every claimed scope immediately:
+  within it, a present read must carry an exact path and be consumed,
+  scoped-ignored, or precisely classified — violations are structured rows.
+- First claimants: `root.vision/projector_out_width` and
+  `root.video/projector_out_width` (COR-4's source-bound width).
+- Unclaimed reads remain VISIBLE migration debt:
+  `docs/COR5_NET1_MIGRATION_DEBT.md` (252 exact rows, 2 zero-consumption
+  owners, each assigned to H7/H8). The census must shrink; mass registration
+  was explicitly rejected as debt-laundering.
+- Net 2 (`config_consumed_unprojected`) independently verifies projection and
+  blocks exactly where a parse declares `projection_receipts_available=True`;
+  declaring receipts with unreceipted obligations fails. No parser/renderer
+  path claims completion while receipts are unavailable — U2 lands receipts.
+- Ambiguities (`config_ambiguity`) remain blocking regardless of claims.
+- Poison suite: `tests/test_projection_audit.py::test_cor5_*` proves an empty
+  or violated declaration cannot pass vacuously (unconsumed-read poison,
+  bare-funnel poison, fabricated-receipts poison, constructor guards).
+
+## Official grouped hardening gate
+
+Every audit file must pass ALONE and inside the grouped run; a grouped pass
+does not excuse a lone failure or a collection error.
+
+```bash
+# layer 1 — each audit file alone
+pytest -q tests/test_config_access.py
+pytest -q tests/test_config_intents.py
+pytest -q tests/test_authority_probes.py
+pytest -q tests/test_projection_audit.py
+pytest -q tests/test_preservation.py
+pytest -q tests/test_isolation.py
+
+# layer 2 — official grouped hardening gate
+pytest -q tests/test_config_access.py tests/test_config_intents.py \
+  tests/test_authority_probes.py tests/test_projection_audit.py \
+  tests/test_vision_evidence.py tests/test_projector_evidence.py \
+  tests/test_fusion_evidence.py tests/test_audio_evidence.py \
+  tests/test_h7_diffusion.py tests/test_sable.py tests/test_preservation.py \
+  tests/test_isolation.py
+
+# layer 3 — full suite on the same unchanged tree
+pytest -q
+
+# layer 4 — clean-checkout preservation/isolation (post-commit)
+pytest -q tests/test_isolation.py
+```
+
+## §12 verification capture
+
+Recorded below after the runs on this exact tree (see the run block appended
+by the COR-5 close; fingerprints from `test_support.tree_state.fingerprint`).
+
+### §12 capture — final verification run (2026-07-15, tree of COR-5)
+
+```text
+HEAD: 08d2bfe (COR-5 working tree; this commit closes it)
+git status: COR-5 named files only (registry/parser/sable/vision consumer,
+            projection-audit + expanded-json tests, rebuilt manifest,
+            debt census, this tracker)
+tree fingerprint (before == after every layer):
+  f3631924a7334224ce969ecb77ba0b11ebbbb521549decff555c5de9183ad838
+collection: 1197 tests
+
+layer 1 — each audit file alone:
+  tests/test_config_access.py      46 passed                (12s)
+  tests/test_config_intents.py      8 passed                (<1s)
+  tests/test_authority_probes.py   26 passed, 5 xfailed     (1:04)
+  tests/test_projection_audit.py   26 passed                (17s)
+  tests/test_preservation.py       20 passed                (8:29)
+  tests/test_isolation.py           5 passed                (2s)
+layer 2 — official grouped hardening gate:
+  215 passed, 5 xfailed                                     (16:29)
+layer 3 — full suite (same tree):
+  1192 passed, 5 xfailed, 0 failed                          (32:18)
+layer 4 — clean-checkout preservation/isolation:
+  run post-commit on the pushed COR-5 HEAD; result recorded in the
+  current-state chapter (z-docs/07-current-state).
+
+corpus gates on this tree:
+  all-25 blessed-signature regression (blocking nets incl.
+  config_migration_claims): 0 findings
+  manifest rebuild: STRUCTURAL deltas [] · EVIDENCE deltas 50
+  (ledgers+sable ×25 — the migration_claims register key), documented.
+
+final receipt:
+  defects closed: C0 C1 C2 C3 C4
+  preservation witnesses: 25/25
+  preservation skips: 0
+  working-tree fingerprint: unchanged through layers 1-3
+  full-suite collection/result: 1197 collected; 1192 passed, 5 xfailed
+  visual matrix: previews/cor5_visual_matrix_2026-07-14 — 185 images,
+    13 models across transformer/multimodal/diffusion-pipeline/DiT/UNet;
+    spot-inspected (llama architecture; qwen2-vl vision path + projector
+    drill, in=5120 five-op PatchMerger chain; FLUX dual-stream denoiser);
+    FULL approval pass is Soumil's.
+  one full-suite delta during closing, explained and lawful:
+    test_expanded_json gemma4 projector assert encoded the pre-COR-4
+    text-width fabrication; the embedder projects through a raw Parameter
+    einsum no construction site proves, so the assert now pins
+    out_features ABSENT with out_width_source="unavailable".
+
+U0/U1 REVIEWED/DONE marks and the U2 unlock remain Soumil's alone.
+```
