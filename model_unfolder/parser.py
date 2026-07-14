@@ -111,7 +111,7 @@ def config_to_ir(
             continue
         leaf = _ev.alias or _ev.canonical
         _owner_touched.setdefault(_ev.component, set()).add(leaf)
-        if ":" not in _ev.config_path:   # an EXACT dotted occurrence (REC-2+)
+        if getattr(_ev, "path_exact", True):   # COR-4: resolver/container-scoped
             _owner_paths.setdefault(_ev.component, set()).add(_ev.config_path)
             _owner_exact_leaves.setdefault(_ev.component, set()).add(leaf)
     unread = _config_debug.unparsed_fields(

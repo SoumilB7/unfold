@@ -40,6 +40,13 @@ class ModalitySpec:
     #: Extra presence evidence beyond the key resolving (a bare composite slot
     #: like ``text_encoder`` only counts when the child declares model_type).
     validate: Optional[Callable[[Any], bool]] = None
+    #: COR-4 (§9): whether ``config_keys`` are rival SPELLINGS of one semantic
+    #: component slot (vision_config vs vision_model_config).  When True and a
+    #: config declares more than one, EQUAL wrappers are redundant evidence
+    #: (the declared order here is the named precedence) and UNEQUAL wrappers
+    #: are structured ambiguity — never a silent first-match.  False means the
+    #: keys are DISTINCT slots (conditioning encoders) and may coexist freely.
+    keys_are_rival_spellings: bool = True
 
     def resolve_config(self, cfg: Any) -> Any:
         """Return the first present sub-config dict, or None."""
@@ -86,6 +93,7 @@ MODALITY_REGISTRY: list[ModalitySpec] = [
         config_keys=conditioning_slot_keys(),
         build=conditioning_path,
         validate=lambda sub: declared_component(sub) is not None,
+        keys_are_rival_spellings=False,
     ),
 ]
 

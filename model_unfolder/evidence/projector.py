@@ -49,10 +49,12 @@ def projector_evidence(target: Any, *, source: str = "local",
         source_file, line = registry[owner].source_file, registry[owner].line
     learned_queries = _has_reachable_parameter(callable_cls, registry)
     kind = _derive_kind(ops, learned_queries=learned_queries)
+    widths = _projector_width_bindings(owner, field, cls, registry, root)
     return ProjectorEvidence(
         "proven", owner_class=owner, field_name=field, projector_class=callable_cls,
         source_file=source_file, line=line, ops=tuple(ops), kind=kind,
         learned_queries=(kind == "perceiver_resampler" and learned_queries),
+        **widths,
     )
 
 
@@ -181,6 +183,303 @@ def _callable_ops(name: str, info: CallableInfo, registry: dict[str, CallableInf
         return out
     from .vision import _collapse_plumbing_runs
     return _collapse_plumbing_runs(_dedupe(out))
+
+
+# ---------------------------------------------------------------------------
+# COR-4 (§9): source-authoritative connector width binding.
+#
+# The connector's entry/terminal widths are established from the modeling
+# source itself: the construction chain root -> owner gives each class the
+# exact dotted config prefix it was HANDED (``self.visual = Tower._from_config(
+# config.vision_config)`` -> ``("vision_config",)``), and the projector's own
+# ``__init__`` names which expression feeds each Linear.  A width is then
+#
+# * ``config_bound`` — the expression is an attribute chain on a received
+#   config object; ``path`` is the exact dotted path from the ROOT config.
+#   The VALUE is never resolved here: the consumer reads the path through the
+#   evented accessor, so the numeric premise stays a logged config read.
+# * ``code_bound``   — an integer literal at the ctor or call site.
+# * ``derived``      — an arithmetic expression over ctor inputs (established,
+#   not reduced).
+# * ``unavailable``  — anything the straight-line reading cannot bind; never
+#   guessed.  Multiple construction sites with different expressions, or a
+#   class reached with conflicting config prefixes, are conflicts and bind
+#   nothing (no first-match selection).
+# ---------------------------------------------------------------------------
+
+_NO_BINDING = ("unavailable", (), None)
+
+
+def _projector_width_bindings(owner: str, field: str, cls: str,
+                              registry: dict[str, CallableInfo],
+                              root: str | None) -> dict[str, Any]:
+    in_b, out_b = _width_binding_pair(owner, field, cls, registry, root)
+    return {
+        "in_width_source": in_b[0], "in_width_path": in_b[1], "in_width_value": in_b[2],
+        "out_width_source": out_b[0], "out_width_path": out_b[1], "out_width_value": out_b[2],
+    }
+
+
+def _width_binding_pair(owner: str, field: str, cls: str,
+                        registry: dict[str, CallableInfo], root: str | None):
+    chains = _config_param_chains(root, registry)
+    owner_params = chains.get(owner)
+    owner_info = registry.get(owner)
+    if owner_params is None or owner_info is None:
+        return _NO_BINDING, _NO_BINDING
+    owner_init = _method(_class_node(owner_info.source_file, owner), "__init__")
+    if owner_init is None:
+        return _NO_BINDING, _NO_BINDING
+    ctor = _field_ctor_call(owner_init, field)
+    if ctor is None:
+        return _NO_BINDING, _NO_BINDING
+    info = registry.get(cls)
+    if info is None:
+        # Primitive connector (``self.f = nn.Linear(in, out)``): the width
+        # expressions live at the owner's own construction site.
+        widths = _linear_widths_of_calls([ctor])
+        frame = _Frame(cfg_params=owner_params, param_args=None,
+                       self_assigns=_self_assigns(owner_init), parent_cfg_params=None)
+        return _bind_width_exprs(widths, frame)
+    cls_init = _method(_class_node(info.source_file, cls), "__init__")
+    if cls_init is None:
+        return _NO_BINDING, _NO_BINDING
+    widths = _linear_widths(cls_init)
+    frame = _Frame(cfg_params=chains.get(cls, {}),
+                   param_args=_map_call_args(ctor, cls_init),
+                   self_assigns=_self_assigns(cls_init),
+                   parent_cfg_params=owner_params)
+    return _bind_width_exprs(widths, frame)
+
+
+class _Frame:
+    """Everything one binding step may consult — no globals, no guessing."""
+
+    def __init__(self, *, cfg_params, param_args, self_assigns, parent_cfg_params):
+        self.cfg_params = cfg_params or {}
+        self.param_args = param_args or {}
+        self.self_assigns = self_assigns or {}
+        self.parent_cfg_params = parent_cfg_params or {}
+
+
+def _bind_width_exprs(widths, frame: _Frame):
+    if widths is None:
+        return _NO_BINDING, _NO_BINDING
+    in_expr, out_expr = widths
+    return _bind_expr(in_expr, frame), _bind_expr(out_expr, frame)
+
+
+def _bind_expr(expr, frame: _Frame, _depth: int = 0):
+    if expr is None or _depth > 3:
+        return _NO_BINDING
+    if isinstance(expr, ast.Constant):
+        if isinstance(expr.value, int) and not isinstance(expr.value, bool):
+            return ("code_bound", (), int(expr.value))
+        return _NO_BINDING
+    path = _attr_path(expr, frame.cfg_params)
+    if path is not None:
+        return ("config_bound", tuple(path), None)
+    if isinstance(expr, ast.Name) and expr.id in frame.param_args:
+        site = frame.param_args[expr.id]
+        if isinstance(site, ast.Constant):
+            if isinstance(site.value, int) and not isinstance(site.value, bool):
+                return ("code_bound", (), int(site.value))
+            return _NO_BINDING
+        site_path = _attr_path(site, frame.parent_cfg_params)
+        if site_path is not None:
+            return ("config_bound", tuple(site_path), None)
+        if isinstance(site, ast.BinOp):
+            return ("derived", (), None)
+        return _NO_BINDING
+    if (isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name)
+            and expr.value.id == "self"):
+        assigned = frame.self_assigns.get(expr.attr)
+        if isinstance(assigned, ast.BinOp):
+            return ("derived", (), None)
+        if assigned is not None:
+            return _bind_expr(assigned, frame, _depth + 1)
+        return _NO_BINDING
+    if isinstance(expr, ast.BinOp):
+        return ("derived", (), None)
+    return _NO_BINDING
+
+
+def _attr_path(expr, cfg_params: dict[str, tuple[str, ...]]):
+    """Exact dotted path when ``expr`` is an attribute chain on a config param."""
+    parts: list[str] = []
+    node = expr
+    while isinstance(node, ast.Attribute):
+        parts.append(node.attr)
+        node = node.value
+    if not isinstance(node, ast.Name) or node.id not in cfg_params:
+        return None
+    return (*cfg_params[node.id], *reversed(parts))
+
+
+def _config_param_chains(root: str | None,
+                         registry: dict[str, CallableInfo]) -> dict[str, dict[str, tuple[str, ...]]]:
+    """class -> {init param name: exact config prefix from the ROOT config}.
+
+    Walks construction sites breadth-first from the architecture root.  A class
+    constructed at two sites with DIFFERENT config expressions is a conflict
+    and is dropped entirely — binding through it is refused, never guessed.
+    """
+    out: dict[str, dict[str, tuple[str, ...]]] = {}
+    if not root or root not in registry:
+        return out
+    root_init = _method(_class_node(registry[root].source_file, root), "__init__")
+    root_params = _init_params(root_init)
+    if not root_params:
+        return out
+    out[root] = {root_params[0]: ()}
+    conflicted: set[str] = set()
+    queue = [root]
+    seen: set[str] = set()
+    while queue:
+        name = queue.pop(0)
+        if name in seen or name not in registry or name in conflicted:
+            continue
+        seen.add(name)
+        params = out.get(name)
+        if params is None:
+            continue
+        init = _method(_class_node(registry[name].source_file, name), "__init__")
+        if init is None:
+            continue
+        for stmt in ast.walk(init):
+            if not isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                continue
+            call = stmt.value
+            if not isinstance(call, ast.Call):
+                continue
+            child, form = _child_ctor(call)
+            if not child or child not in registry:
+                continue
+            child_init = _method(_class_node(registry[child].source_file, child), "__init__")
+            child_params = _init_params(child_init)
+            if not child_params:
+                continue
+            child_map: dict[str, tuple[str, ...]] = {}
+            if form == "factory":
+                path = _attr_path(call.args[0], params) if call.args else None
+                if path is not None:
+                    child_map[child_params[0]] = tuple(path)
+            else:
+                for index, arg in enumerate(call.args):
+                    path = _attr_path(arg, params)
+                    if path is not None and index < len(child_params):
+                        child_map[child_params[index]] = tuple(path)
+                for kw in call.keywords:
+                    path = _attr_path(kw.value, params)
+                    if path is not None and kw.arg in child_params:
+                        child_map[kw.arg] = tuple(path)
+            if not child_map:
+                continue
+            if child in out and out[child] != child_map:
+                conflicted.add(child)
+                continue
+            out[child] = child_map
+            queue.append(child)
+    for name in conflicted:
+        out.pop(name, None)
+    return out
+
+
+def _child_ctor(call: ast.Call) -> tuple[str | None, str]:
+    func = call.func
+    if isinstance(func, ast.Name):
+        return func.id, "direct"
+    if isinstance(func, ast.Attribute):
+        if (func.attr in {"_from_config", "from_config"}
+                and isinstance(func.value, ast.Name)):
+            return func.value.id, "factory"
+        return func.attr, "direct"
+    return None, ""
+
+
+def _init_params(init) -> list[str]:
+    if init is None:
+        return []
+    names = [arg.arg for arg in init.args.args]
+    return names[1:] if names and names[0] == "self" else names
+
+
+def _map_call_args(ctor: ast.Call, cls_init) -> dict[str, ast.AST]:
+    """Construction-site expressions keyed by the callee's own param names."""
+    params = _init_params(cls_init)
+    mapping: dict[str, ast.AST] = {}
+    for index, arg in enumerate(ctor.args):
+        if index < len(params):
+            mapping[params[index]] = arg
+    for kw in ctor.keywords:
+        if kw.arg:
+            mapping[kw.arg] = kw.value
+    return mapping
+
+
+def _field_ctor_call(owner_init, field: str) -> ast.Call | None:
+    """The single construction call assigned to ``self.<field>`` — ambiguity
+    (multiple differing sites) binds nothing."""
+    calls: list[ast.Call] = []
+    for stmt in ast.walk(owner_init):
+        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            continue
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        if field not in {_self_field(target) for target in targets}:
+            continue
+        if isinstance(stmt.value, ast.Call):
+            calls.append(stmt.value)
+    if not calls:
+        return None
+    if len({ast.unparse(call) for call in calls}) > 1:
+        return None
+    return calls[0]
+
+
+def _self_assigns(init) -> dict[str, ast.AST]:
+    out: dict[str, ast.AST] = {}
+    for stmt in getattr(init, "body", []) or []:
+        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)) or stmt.value is None:
+            continue
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        for target in targets:
+            field = _self_field(target)
+            if field:
+                out[field] = stmt.value
+    return out
+
+
+def _linear_widths(cls_init):
+    """(in_expr, out_expr) of the first/last Linear built in straight-line
+    ``__init__`` statements (direct assigns and Sequential members).  Loops and
+    branches are not followed — an unreadable layout binds nothing."""
+    linears: list[ast.Call] = []
+    for stmt in getattr(cls_init, "body", []) or []:
+        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)) or not isinstance(stmt.value, ast.Call):
+            continue
+        call = stmt.value
+        name = _call_name(call.func)
+        if name == "Linear":
+            linears.append(call)
+        elif name == "Sequential":
+            linears.extend(arg for arg in call.args
+                           if isinstance(arg, ast.Call) and _call_name(arg.func) == "Linear")
+    return _linear_widths_of_calls(linears)
+
+
+def _linear_widths_of_calls(linears: list[ast.Call]):
+    linears = [call for call in linears if _call_name(call.func) == "Linear"]
+    if not linears:
+        return None
+
+    def _width_arg(call: ast.Call, index: int, kwname: str):
+        for kw in call.keywords:
+            if kw.arg == kwname:
+                return kw.value
+        return call.args[index] if len(call.args) > index else None
+
+    return (_width_arg(linears[0], 0, "in_features"),
+            _width_arg(linears[-1], 1, "out_features"))
 
 
 def _is_projector_field(field: str, cls: str, info: CallableInfo,

@@ -663,7 +663,9 @@ def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
         # caller's denoiser owner, and the owner-join then flagged the very
         # fields these rows exist to classify).
         with (_config_access.owner_scope("root.vae") if bucket == "vae"
-              else nullcontext()):
+              else nullcontext()), \
+                (_config_access.config_container(("_vae_config",))
+                 if bucket == "vae" else nullcontext()):
             for row in rows:
                 value = _g(src, row["field"])
                 if value is None or row.get("silent"):
@@ -1934,12 +1936,14 @@ def _conditioning(geom: dict, num_single: int, rope_note: str,
 
 
 @_config_access.owner_scoped("root.scheduler")
+@_config_access.container_scoped(("_scheduler_config",))
 def _scheduler_geom(cfg: Any) -> dict:
     """Scheduler facts for the loop: friendly name (from the pipeline index) and
     real config values (from the merged scheduler/config.json, when fetched).
     U1 (§20.4.3): scheduler reads attribute to ``root.scheduler``."""
     out: dict = {}
-    entry = _g(cfg, "scheduler")
+    with _config_access.config_container(()):   # the SLOT key is top-level
+        entry = _g(cfg, "scheduler")
     cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
     if isinstance(cls, str):
         bare = cls.replace("DiscreteScheduler", "").replace("Scheduler", "") or cls
@@ -1971,6 +1975,7 @@ def _scheduler_geom(cfg: Any) -> dict:
 
 
 @_config_access.owner_scoped("root.vae")
+@_config_access.container_scoped(("_vae_config",))
 def _vae_geom(cfg: Any) -> dict | None:
     """Structural facts from the VAE's own config (when the loader fetched it),
     for the VAE-decoder drill view: channel stages, latent depth, upsampling.
@@ -2249,7 +2254,8 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
             # SLOT owner (root.text_encoder / _2 / _3) — the same key
             # ``qualify_component`` stamps on the sub-model spec, so ledger
             # events and projected blocks bind to one owner by construction.
-            with _config_access.owner_scope(f"root.{key}"):
+            with _config_access.owner_scope(f"root.{key}"), \
+                    _config_access.config_container(("_text_encoder_configs", key)):
                 spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted

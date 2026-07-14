@@ -113,9 +113,9 @@
     "gallery": "6b2762faa58ad39ef8461cfb209f4764f144c31527a49f343b2ed88b99351ced",
     "html_meta": "9df82ddad2fe5c6b533e0a347d0ceadd1b1bdc1b1ce7a56f8aee4cc630dc3cab",
     "ir": "071ebfe615b9dbfc51ea7ff5dde8e85d12296c4192c623b6a4ee89b233904a2f",
-    "ledgers": "6c17aba652dc5a4fd1cc95d8edc954ebd92cd9e8fe0fed7aeeea96187edd236d",
+    "ledgers": "64aa05ea99db4399b14c1ef388e0196ad5eb322ed55a99ed36aa0c5a5c38ef07",
     "params": "793e0eda9b767cd28bed443ff3c47298c56647a67a5328dffa90c3a776488e6f",
-    "sable": "71a01a877d94c0e9a3162e21c54ad22b5ed746f5bef29be99486cbb602b20ba4"
+    "sable": "354566384bd756c8459bd22d3e638a88545156e5cf4a2930cde3f984bae6cdd5"
    },
    "views": {
     "architecture": "47b67033885e46bf6c634adb80a11f25",
@@ -441,9 +441,9 @@
     "gallery": "92011400e727d45ec6738040316b529c13ac6d0f1400bee10967ca7f6b25b1fc",
     "html_meta": "86f4c5d1f4c177f64ff477bf036e344238a3b5e681d350ee447e88ddeb781857",
     "ir": "2730b5ead2a376d5d9f26efcd5d305c22abe16fc548087517e2ec2c27d0cb380",
-    "ledgers": "e8259ca86ee9828190f80f93b427e038ae139dfdf440597a18e86c664f065af8",
+    "ledgers": "5288db94a8c557045cdb0b3d9ffbf9523598917e08096f33bc96ab5fcd80e702",
     "params": "f988acd908b5e4b5be3f67fe3c76b8fb49b6e231372b87da663763a88417ed64",
-    "sable": "b22766e3751e7311f1383cfe3ddccdba31293bd40fec395910fcbd208465cdb4"
+    "sable": "716b5d0848a32f520c9cba8c92f4dbf55ae5c20854df4e5303b8f9fbf60dcdd8"
    },
    "views": {
     "architecture": "b28795092ea0e64e36ffc9300564dde5",
@@ -464,13 +464,13 @@
   "qwen2-vl-7b-instruct": {
    "input_sha256": "118613f4db7e1eba9aad854ff87585d2d96a07de10fddef1d2d9a65559e342c5",
    "surfaces": {
-    "expanded": "eb38173efb8d6939bf2d84b1b378bf7dae88c2965042f104eccfdb327e47fa8c",
+    "expanded": "41e96a5c9a1757e35db1bd7dd4ac34e44c9a6a7664ce66f6e55b9118cdca3d87",
     "gallery": "6cbd659fb25da99036ee0e43e93c7bf5549cbd47dee69fab825b52ec9d527873",
     "html_meta": "efe721bb4c26fe1f656546df29756074442f2fd4f6946055d97440bcc59084b5",
-    "ir": "f4a6c59a687e297286992163bffdf1eeb9fbd23af0f218958abdbf1d58395795",
-    "ledgers": "15d7887743213b6ddace4c808fb5a26c5e0cb3272ded15733f1b038e29c03ad2",
+    "ir": "4a0daa6f7b4ab322df4c2d563d97bbe46854bd20dd42c33926c9a21f2ff9d983",
+    "ledgers": "a4c0a1c64a2d88548d14b6404d2027f5e03a40b220d52373df254e242fbd55cb",
     "params": "92c898d877714f9261ec0dbd17bd2b924192a35d5adb73b1f115adc09ad43525",
-    "sable": "9fbfbc6a476ef61921a172ef25d9e614489948d5ffa605594b2daf208e7c779d"
+    "sable": "2ef51f7228c9b7143b1c9a96581d114cd154cf6bd412cf72c3f53df581d827be"
    },
    "views": {
     "architecture": "cf524c6e694a6ef256414879f4f5eb0b",

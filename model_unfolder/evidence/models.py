@@ -308,7 +308,18 @@ class AudioTowerEvidence:
 
 @dataclass(frozen=True)
 class ProjectorEvidence:
-    """Ordered operations of the exact multimodal connector callable."""
+    """Ordered operations of the exact multimodal connector callable.
+
+    COR-4 (§9): the connector's terminal/entry widths are SOURCE-bound facts.
+    ``*_width_source`` classifies each binding — ``config_bound`` (the ctor
+    reads a config attribute; ``*_width_path`` is the exact dotted path from
+    the ROOT config), ``code_bound`` (a literal in source; ``*_width_value``),
+    ``derived`` (an arithmetic expression over ctor params — established but
+    not reduced here), or ``unavailable``.  The evidence layer never resolves
+    config VALUES: the consumer reads the bound path through the evented
+    accessor funnel, so ownership is proven here and the numeric premise stays
+    a logged config read.
+    """
 
     status: str
     component: str = "root"
@@ -321,6 +332,12 @@ class ProjectorEvidence:
     kind: str = "code_defined_projector"
     learned_queries: bool = False
     reason: str = ""
+    out_width_source: str = "unavailable"
+    out_width_path: tuple[str, ...] = ()
+    out_width_value: int | None = None
+    in_width_source: str = "unavailable"
+    in_width_path: tuple[str, ...] = ()
+    in_width_value: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -330,6 +347,12 @@ class ProjectorEvidence:
             "line": self.line, "ops": [op.to_dict() for op in self.ops],
             "kind": self.kind, "learned_queries": self.learned_queries,
             "reason": self.reason,
+            "out_width_source": self.out_width_source,
+            "out_width_path": list(self.out_width_path),
+            "out_width_value": self.out_width_value,
+            "in_width_source": self.in_width_source,
+            "in_width_path": list(self.in_width_path),
+            "in_width_value": self.in_width_value,
         }
 
 

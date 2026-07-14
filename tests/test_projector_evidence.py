@@ -38,6 +38,112 @@ def test_real_projector_counterexample_matrix(
     assert [op.kind for op in evidence.ops] == expected_ops
 
 
+# COR-4 (§9): the OUT width the construction site actually wires, per shape —
+# param-fed through a factory chain (qwen2_vl), config-fed (paligemma: the
+# VISION config's own projection_dim, not the language width; llava/mistral3:
+# the text width, lawful because the source names it), and a primitive Linear
+# field bound at the owner's own site (mllama).  idefics2's perceiver hides
+# its widths behind loop-built layers: the binder must refuse, not guess.
+# The IN column pins the other review shapes: a derived arithmetic entry
+# (qwen2_vl context_dim*merge², llava's feature-concat multiply) is
+# established-not-reduced, and mllama's primitive binds both ends.
+@pytest.mark.parametrize(("model_type", "out_source", "out_path", "in_source"), [
+    ("qwen2_vl", "config_bound", ("vision_config", "hidden_size"), "derived"),
+    ("paligemma", "config_bound", ("vision_config", "projection_dim"), "config_bound"),
+    ("llava", "config_bound", ("text_config", "hidden_size"), "derived"),
+    ("mistral3", "config_bound", ("text_config", "hidden_size"), "derived"),
+    ("mllama", "config_bound", ("text_config", "hidden_size"), "config_bound"),
+    ("idefics2", "unavailable", (), "unavailable"),
+])
+def test_out_width_binding_is_construction_site_exact(
+    model_type, out_source, out_path, in_source,
+):
+    transformers = pytest.importorskip("transformers")
+    cfg = transformers.AutoConfig.for_model(model_type).to_dict()
+    evidence = projector_evidence(cfg)
+    assert evidence.out_width_source == out_source
+    assert tuple(evidence.out_width_path) == out_path
+    assert evidence.in_width_source == in_source
+    if out_source == "config_bound":
+        assert evidence.out_width_value is None    # values resolve at the
+        # consumer through the evented accessor, never inside evidence
+
+
+def test_width_binding_refuses_conflicting_construction_evidence(tmp_path):
+    """COR-4 (§9): conflicting construction evidence binds NOTHING — a class
+    handed DIFFERENT configs at different sites (its internal config reads
+    have no single exact path) and a field assigned at two differing sites
+    both refuse; a single unambiguous chain binds through two hops (control)."""
+    prefix_conflict = tmp_path / "modeling_prefix_conflict.py"
+    prefix_conflict.write_text(
+        "class Proj:\n"
+        "    def __init__(self, config):\n"
+        "        self.out = Linear(4, config.width)\n"
+        "    def forward(self, x):\n"
+        "        return self.out(x)\n"
+        "class Wrap:\n"
+        "    def __init__(self, config):\n"
+        "        self.projector = Proj(config.vision_config)\n"
+        "    def forward(self, x):\n"
+        "        return self.projector(x)\n"
+        "class Root:\n"
+        "    def __init__(self, config):\n"
+        "        self.projector = Proj(config.audio_config)\n"
+        "        self.wrap = Wrap(config)\n"
+        "    def forward(self, x):\n"
+        "        return self.wrap(self.projector(x))\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(prefix_conflict),), architecture="Root")
+    evidence = projector_evidence({}, bundle=bundle)
+    assert evidence.status == "proven"
+    assert evidence.out_width_source == "unavailable"
+    assert evidence.out_width_path == ()
+
+    field_conflict = tmp_path / "modeling_field_conflict.py"
+    field_conflict.write_text(
+        "class Root:\n"
+        "    def __init__(self, config, flag):\n"
+        "        if flag:\n"
+        "            self.projector = Linear(4, config.a_width)\n"
+        "        else:\n"
+        "            self.projector = Linear(4, config.b_width)\n"
+        "    def forward(self, x):\n"
+        "        return self.projector(x)\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(field_conflict),), architecture="Root")
+    evidence = projector_evidence({}, bundle=bundle)
+    assert evidence.status == "proven"
+    assert evidence.out_width_source == "unavailable"
+
+    control = tmp_path / "modeling_control.py"
+    control.write_text(
+        "class Proj:\n"
+        "    def __init__(self, config):\n"
+        "        self.out = Linear(4, config.width)\n"
+        "    def forward(self, x):\n"
+        "        return self.out(x)\n"
+        "class Wrap:\n"
+        "    def __init__(self, config):\n"
+        "        self.projector = Proj(config.vision_config)\n"
+        "    def forward(self, x):\n"
+        "        return self.projector(x)\n"
+        "class Root:\n"
+        "    def __init__(self, config):\n"
+        "        self.wrap = Wrap(config)\n"
+        "    def forward(self, x):\n"
+        "        return self.wrap(x)\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(control),), architecture="Root")
+    proven = projector_evidence({}, bundle=bundle)
+    assert proven.status == "proven"
+    assert proven.out_width_source == "config_bound"
+    assert tuple(proven.out_width_path) == ("vision_config", "width")
+    assert proven.out_width_value is None
+
+
 def test_idefics_connector_follows_factory_resampler_and_learned_queries():
     transformers = pytest.importorskip("transformers")
     cfg = transformers.AutoConfig.for_model("idefics2").to_dict()

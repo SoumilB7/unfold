@@ -1046,6 +1046,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
     # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
+    _rope_container      = ("rope_parameters" if _g(text_cfg, "rope_parameters")
+                            else "rope_scaling")
     _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
     # The modern transformers rope dialect NESTS the partial factor inside the
     # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
@@ -1054,7 +1056,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _nested_prf = _rope_scaling.get("partial_rotary_factor")
         if _nested_prf is not None:
             partial_rotary_fac = _nested_prf
-            debug.note_access("partial_rotary_factor")
+            with _config_access.config_container((*_text_path, _rope_container)):
+                debug.note_access("partial_rotary_factor")
     rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
     if rope_dim_value is None:
         # Config silent on the fraction — the CODE may still state it (ChatGLM
@@ -1068,7 +1071,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # Plain nested-dict reads bypass _g; register inspection so the owned
         # subkey is visible to the config audit. Projection consumption remains
         # a separate, not-yet-complete receipt rail.
-        debug.note_access("mrope_section")
+        with _config_access.config_container((*_text_path, _rope_container)):
+            debug.note_access("mrope_section")
 
     # ---- QK-Norm ----
     # Spelling read stays FIRST for config-ownership (all three aliases are
@@ -1660,6 +1664,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             modality_extras = apply_projector_evidence(
                 modality_extras,
                 projector_evidence(cfg, bundle=context.source_bundle),
+                cfg,
             )
         except Exception:
             # As with the tower extractor, failure leaves one honest generic
@@ -1864,10 +1869,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # These SUBKEYS are inspected above via plain dict reads. Record the
         # inspection so ownership is visible; do not label it consumption until
         # the corresponding rendered-fact receipts exist.
-        for inspected in ("rope_type", "type", "factor",
-                          "original_max_position_embeddings", "rope_theta"):
-            if inspected in rope_params:
-                debug.note_access(inspected)
+        _rp_container = ("rope_parameters" if _g(text_cfg, "rope_parameters")
+                         else "rope_scaling")
+        with _config_access.config_container((*_text_path, _rp_container)):
+            for inspected in ("rope_type", "type", "factor",
+                              "original_max_position_embeddings", "rope_theta"):
+                if inspected in rope_params:
+                    debug.note_access(inspected)
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.

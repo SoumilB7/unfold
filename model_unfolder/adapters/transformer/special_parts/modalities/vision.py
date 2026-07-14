@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .....evidence import config_access as _config_access
 from .accessors import as_int, drop_none, first, nested, present_paths
 from .detect import (
     has_cross_attention_adapter,
@@ -90,12 +91,18 @@ def _vision_submodel_spec(encoder: dict, variants: list[dict], evidence) -> dict
         encoder, variants, component=str(getattr(evidence, "component", "") or ""))
 
 
-def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
+def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None) -> dict | None:
     """Project the one qualified connector record into image and video paths.
 
     The card, op drill, path label, and fact-conformance net all read this same
     object.  Config remains authoritative for dimensions and latent counts; it
     never fabricates callable order when source evidence is absent.
+
+    COR-4 (§9): the projector's ``out_features`` is written HERE and only here,
+    from the evidence's source-bound width — a config path proven at the
+    construction site (read back through the evented accessor so the numeric
+    premise stays a logged config read) or a literal from the source.  Unproven
+    or unbindable widths stay absent: no language-width or family fallback.
     """
     if not payload or evidence is None:
         return payload
@@ -107,6 +114,9 @@ def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
             continue
         projector = path.get("projector") or {}
         projector.pop("profile", None)
+        bound_out = _bound_out_width(evidence, cfg, owner=f"root.{name}")
+        if bound_out is not None:
+            _insert_after(projector, "in_features", "out_features", bound_out)
         projector["source_evidence"] = evidence_dict
         projector["source_owner"] = evidence.owner_class
         projector["source_component"] = evidence.component
@@ -123,12 +133,62 @@ def apply_projector_evidence(payload: dict | None, evidence) -> dict | None:
         for step in path.get("pipeline") or []:
             if step.get("id") not in {"projector", "video_projector"}:
                 continue
+            if bound_out is not None:
+                _insert_after(step, "in_features", "out_features", bound_out)
             step["kind"] = projector["kind"]
             if evidence.status == "proven":
                 step["ops"] = projector["ops"]
             else:
                 step.pop("ops", None)
     return payload
+
+
+def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
+    """Resolve the evidence's source-bound output width, or None (unknown).
+
+    ``code_bound`` carries its literal; ``config_bound`` names an exact dotted
+    path from the ROOT config, which is read through the evented accessor under
+    that exact container so ownership and the logged read agree.  ``derived``
+    and ``unavailable`` resolve nothing — the drawing stays honestly unknown.
+    """
+    if evidence is None or getattr(evidence, "status", "") != "proven":
+        return None
+    source = getattr(evidence, "out_width_source", "unavailable")
+    if source == "code_bound":
+        return as_int(getattr(evidence, "out_width_value", None))
+    if source != "config_bound" or cfg is None:
+        return None
+    parts = tuple(getattr(evidence, "out_width_path", ()) or ())
+    if not parts:
+        return None
+    node = cfg
+    for part in parts[:-1]:            # raw structural hops — the leaf is the fact
+        node = node.get(part) if isinstance(node, dict) else getattr(node, part, None)
+        if node is None:
+            return None
+    # The read AUTHORS the drawn out_features, so it is a consumption with an
+    # exact path — a bare inspected read would (rightly) show up as
+    # accessed-but-unconsumed debt in the H3 audit.
+    resolution = _config_access.resolve(
+        node, parts[-1], (), component=owner, path=parts[:-1])
+    if resolution.state != "present":
+        return None
+    return as_int(resolution.consume(
+        fact_owner=owner, fact_key="projector_out_features"))
+
+
+def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:
+    """Insert ``key`` directly after ``anchor`` preserving all other order —
+    the overlay must not reorder card fields the build already wrote."""
+    if anchor not in target:
+        target[key] = value
+        return
+    items = list(target.items())
+    target.clear()
+    for existing_key, existing_value in items:
+        target[existing_key] = existing_value
+        if existing_key == anchor:
+            target[key] = value
 
 
 def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
@@ -139,12 +199,12 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     patch_size = first(vision_cfg, "patch_size", "patch_size_h")
     input_channels = first(vision_cfg, "in_channels", "num_channels")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
-    projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn, unified_grid)
-    # REC-5 (§11.2, R-10): the U1 width-comparison heuristic is DELETED — a
-    # config-value comparison can never infer projector-output meaning.  The
-    # declared vision ``hidden_size`` stays EXACT VISIBLE DEBT (registry:
-    # vision_out_width) until the source-bound projector owner exists (U3/U9);
-    # the generic projector-out derivation above is the pre-U1 behavior.
+    # COR-4 (§9): the projector's OUTPUT width is not authored here at all.
+    # No config field means "projector out" until the construction site proves
+    # it, so ``out_features`` is written only by :func:`apply_projector_evidence`
+    # from the source-bound width — the generic language-width and bare
+    # ``hidden_size``/``output_dim`` interpretations are DELETED, and a model
+    # without source keeps an honestly width-unknown connector.
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
     num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
     num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
@@ -255,7 +315,7 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         )
     stages.append(
         Stage("projector", "projector", projection_operation, projector_kind_value,
-              drop_none({"in_features": projector_in, "out_features": projector_out,
+              drop_none({"in_features": projector_in,
                          "activation": projector_activation, "num_latents": perceiver_latents(cfg)}))
     )
     stages.append(
@@ -297,7 +357,6 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn=False, unified_grid=True)
     num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
     num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
-    projector_out = vision_projector_out(cfg, vision_cfg, text_hidden_size, cross_attn=False, unified_grid=True)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
     temporal_patch_size = first(vision_cfg, "temporal_patch_size")
@@ -323,7 +382,7 @@ def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
                "position_encoding": vision_position_encoding(cfg, vision_cfg)},
               step_fields={"hidden_size": hidden_size, "num_layers": num_layers}),
         Stage("projector", "video_projector", "merge_patches_to_text_width", projector_kind_value,
-              drop_none({"in_features": projector_in, "out_features": projector_out})),
+              drop_none({"in_features": projector_in})),
         Stage("tokens", "video_tokens", "emit_grid_token_stream", "grid_video_tokens",
               {"width": text_hidden_size or None, "grid": grid}),
     ]
@@ -345,24 +404,6 @@ def vision_encoder_hidden_size(cfg: Any, vision_cfg: Any, unified_grid: bool) ->
     if unified_grid:
         return first(vision_cfg, "embed_dim", "vision_hidden_size", "width", "hidden_size")
     return first(vision_cfg, "hidden_size", "vision_hidden_size", "width", "embed_dim")
-
-
-def vision_projector_out(
-    cfg: Any,
-    vision_cfg: Any,
-    text_hidden_size: int,
-    cross_attn: bool,
-    unified_grid: bool,
-) -> Any:
-    """Return output width of the vision projector/merger."""
-    if cross_attn:
-        return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
-    if unified_grid:
-        # The merger's own declared output width wins (Qwen2.5-VL/Omni
-        # out_hidden_size); the text width is the fallback, not the source.
-        return (first(vision_cfg, "out_hidden_size") or text_hidden_size
-                or first(vision_cfg, "hidden_size", "output_dim"))
-    return text_hidden_size or first(cfg, "projection_dim", "text_hidden_size")
 
 
 def vision_projector_in(vision_cfg: Any, encoder_hidden_size: Any, cross_attn: bool, unified_grid: bool) -> Any:

@@ -32,6 +32,13 @@ from typing import Any, Callable, Iterable
 # is attributed to the RIGHT component even when siblings share the spelling.
 current_owner: ContextVar[str] = ContextVar("model_unfolder_config_owner", default="root")
 
+# COR-4 (§9): the CONTAINER path of the config object currently being read
+# (e.g. ("vision_config",) inside the vision tower's builder) — emit() joins
+# it with the spelling so even the legacy accessor funnel records the exact
+# dotted path; the owner:leaf compatibility label is retired.
+current_container: ContextVar[tuple] = ContextVar(
+    "model_unfolder_config_container", default=())
+
 # The intents a config access can carry.  ``projected`` is NOT an intent — it is
 # DERIVED by joining ``consumed`` events with the #13 render projection receipts.
 INTENTS = frozenset({
@@ -116,6 +123,10 @@ class ConfigAccessEvent:
     reader: str = ""          # source-binding reader (for intent="bound")
     reason: str = ""          # for ignored/ambiguous/absent_default: WHY
     value_state: str = "value"  # COR-1 (§6): missing | explicit_null | value
+    # COR-4 (§9): True when the path came from an explicit resolution or an
+    # active container scope; False for a bare legacy-funnel leaf (which may
+    # clear same-owner nested occurrences only via the transitional fallback).
+    path_exact: bool = True
 
     def __post_init__(self) -> None:
         if self.intent not in INTENTS:
@@ -608,6 +619,27 @@ def capture_events(existing: "ConfigAccessLedger | None" = None):
 
 
 @contextmanager
+def config_container(path: tuple):
+    """COR-4 (§9): declare the exact container path for the enclosed reads."""
+    token = current_container.set(tuple(path))
+    try:
+        yield
+    finally:
+        current_container.reset(token)
+
+
+def container_scoped(path: tuple) -> Callable:
+    """Decorator form of :func:`config_container`."""
+    def decorate(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            with config_container(path):
+                return func(*args, **kwargs)
+        return wrapper
+    return decorate
+
+
+@contextmanager
 def owner_scope(owner: str):
     """Set :data:`current_owner` for the enclosed parse region (a component
     boundary — root/text/vision/audio/vae/denoiser), so accesses inside are
@@ -670,10 +702,12 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         reason = reason or "identity/address read — locates source or labels, not structure"
     event = ConfigAccessEvent(
         component=owner,
-        # REC-2 (Law B): the EXACT dotted config path when the caller resolved
-        # one; the legacy owner:leaf label survives only for un-migrated
-        # note_access callers until REC-3/4/5 retire them.
-        config_path=config_path or f"{owner}:{alias or canonical}",
+        # COR-4 (§9, Law B): the EXACT dotted config path — explicit from the
+        # resolver, or joined from the ambient container scope for the legacy
+        # accessor funnel.  The owner:leaf label is RETIRED.
+        config_path=config_path or ".".join(
+            (*current_container.get(), alias or canonical)),
+        path_exact=(config_path is not None or bool(current_container.get())),
         canonical=canonical, alias=(alias or canonical) if present else None,
         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
         reader=reader, reason=reason,
@@ -687,6 +721,7 @@ __all__ = [
     "ConfigAccessEvent", "ConfigAccessLedger", "ConfigOccurrence",
     "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
     "ProjectionObligation", "ProjectionTarget",
+    "config_container", "container_scoped", "current_container",
     "current_owner", "resolve",
     "capture_events", "owner_scope", "owner_scoped", "emit",
     "active_ledger", "active_touched_names",

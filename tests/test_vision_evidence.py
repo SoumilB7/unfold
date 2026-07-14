@@ -213,10 +213,12 @@ def test_vision_fact_conformance_consumes_the_same_typed_evidence():
 
 
 def test_rec5_projector_width_is_code_bound_or_honest_debt():
-    """REC-5 (§11.2/§11.4, R-10): the width-comparison heuristic is DELETED at
-    source level (no family branch may replace it); qwen2-vl's declared vision
-    hidden_size is EXACT VISIBLE debt (owner root.vision) that cannot clear a
-    sibling, and the model parses clean."""
+    """REC-5 (§11.2/§11.4, R-10) as amended by COR-4 (§9): the width-comparison
+    heuristic is DELETED at source level (no family branch may replace it) and
+    so is the whole generic out-width author.  On the source-present witness
+    the construction-site binding CONSUMES ``vision_config.hidden_size``
+    exactly (fact ``projector_out_features``), so the registered debt row is
+    DISCHARGED there — it remains registered for source-less grid towers."""
     import json
     import pathlib
 
@@ -226,14 +228,20 @@ def test_rec5_projector_width_is_code_bound_or_honest_debt():
     src = (pathlib.Path(mu.__file__).parent / "adapters" / "transformer" /
            "special_parts" / "modalities" / "vision.py").read_text()
     assert "_resolve_out_width" not in src   # the heuristic (and any wrapper)
+    assert "def vision_projector_out" not in src   # COR-4: the generic author
 
     owners = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}
     assert ("root.vision", "hidden_size") in owners
 
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
     cfg = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
-    audit = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_audit", {})
+    extras = mu.unfold(cfg).to_ir().get("extras") or {}
+    audit = extras.get("config_audit", {})
     assert audit.get("unread") == []
-    assert "vision_config.hidden_size" in (audit.get("pending_projection") or [])
+    assert "vision_config.hidden_size" not in (audit.get("pending_projection") or [])
+    rows = (extras.get("config_access") or {}).get("projection_obligations") or []
+    bound = [r for r in rows
+             if (r.get("source") or {}).get("path") == "vision_config.hidden_size"]
+    assert bound, "the consumed width must surface as a projection obligation"
     # the root.vision entry cannot excuse a TRANSFORMER-root hidden_size —
     # a root-level unread hidden_size would still flag (P5/P6 family guard).

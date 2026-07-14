@@ -39,6 +39,15 @@ def _modality_host(cfg: Any, _depth: int = 0) -> Any:
     return None
 
 
+def _wrapper_dict(host: Any, key: str) -> Any:
+    """Normalized wrapper value for the rivalry comparison (objects compare
+    by their dict form so an AutoConfig child and a plain dict can be equal)."""
+    value = host.get(key) if isinstance(host, dict) else getattr(host, key, None)
+    if not isinstance(value, dict) and hasattr(value, "to_dict"):
+        return value.to_dict()
+    return value
+
+
 def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | None:
     """Return structured multimodal extras, if the config declares them."""
     host = _modality_host(cfg)
@@ -53,7 +62,29 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
         # vision ``hidden_size`` and the text ``hidden_size`` are distinct ledger
         # entries and one sibling never clears another's accessed-but-unconsumed
         # debt.  Generic over the registry — the loop still names no modality.
-        with _config_access.owner_scope(f"root.{spec.name}"):
+        _present_keys = [
+            k for k in (getattr(spec, "config_keys", ()) or ())
+            if ((k in host) if isinstance(host, dict)
+                else getattr(host, k, None) is not None)]
+        # COR-4 (§9): rival spellings of ONE component slot obey the alias law —
+        # equal wrappers are redundant evidence (the registry's declared order
+        # is the named precedence), unequal wrappers are structured ambiguity
+        # and author NOTHING.  Never a silent first-match.
+        if (len(_present_keys) > 1
+                and getattr(spec, "keys_are_rival_spellings", True)):
+            _wrapper_values = [_wrapper_dict(host, k) for k in _present_keys]
+            if any(v != _wrapper_values[0] for v in _wrapper_values[1:]):
+                _config_access.emit(
+                    f"{spec.name}_config", intent="ambiguous", present=True,
+                    alias=_present_keys[0], component=f"root.{spec.name}",
+                    config_path=_present_keys[0],
+                    reason=("rival component wrappers with unequal values: "
+                            + ", ".join(_present_keys)))
+                continue
+        _matched_key = _present_keys[0] if _present_keys else None
+        with _config_access.owner_scope(f"root.{spec.name}"), \
+                _config_access.config_container(
+                    (_matched_key,) if _matched_key else ()):
             path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
             if not path:
                 continue                 # a builder may veto on closer evidence

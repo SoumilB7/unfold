@@ -422,3 +422,154 @@ def test_cor3_equal_aliases_preserve_current_output_exactly():
     control = estimate_params(mu.unfold(LLAMA).ir)
     redundant = estimate_params(mu.unfold({**LLAMA, "n_embd": 4096}).ir)
     assert control["total"] == redundant["total"] and control["total"]
+
+
+# --------------------------------------------------------------------------- #
+# COR-4 (§9) — exact modality scopes and source-authoritative projector width
+# --------------------------------------------------------------------------- #
+
+_CORPUS = pathlib.Path(__file__).parent / "sable_test_corpus"
+
+
+def _qwen2vl_corpus_cfg():
+    return json.loads(
+        (_CORPUS / "qwen2-vl-7b-instruct.json").read_text())["config"]
+
+
+# A modality host with NO resolvable modeling source: the projector width can
+# only be honest-unknown, and sibling towers share the same leaf spelling.
+_NO_SOURCE_MM = {
+    "architectures": ["NoSuchThingForConditionalGeneration"],
+    "model_type": "no_such_thing",
+    "hidden_size": 4096, "num_hidden_layers": 2, "num_attention_heads": 8,
+    "vocab_size": 100,
+    "vision_config": {"hidden_size": 768, "num_hidden_layers": 2,
+                      "num_attention_heads": 4, "image_size": 224,
+                      "patch_size": 14},
+    "image_token_id": 5,
+}
+
+
+def test_cor4_ce1_qwen2vl_events_are_dotted_and_width_is_source_bound():
+    """§9.C.1: on the source-present corpus witness every authoritative
+    vision/video event carries its exact dotted path (the legacy
+    ``root.vision:leaf`` label is retired), and the drawn projector width
+    flows from the construction-site binding, not the language width."""
+    from model_unfolder.evidence.projector import projector_evidence
+
+    cfg = _qwen2vl_corpus_cfg()
+    ledger, ir = _capture(cfg)
+    tower_events = [e for e in ledger.events
+                    if e.component in {"root.vision", "root.video"} and e.present]
+    assert tower_events, "witness must exercise the modality owners"
+    bare = [e for e in tower_events if not getattr(e, "path_exact", False)]
+    assert bare == [], f"bare funnel leaves under modality owners: {bare[:3]}"
+    assert all("." in e.config_path or e.config_path in {"vision_config"}
+               for e in tower_events)
+
+    evidence = projector_evidence(cfg)
+    assert evidence.out_width_source == "config_bound"
+    assert tuple(evidence.out_width_path) == ("vision_config", "hidden_size")
+    projector = ir["extras"]["modalities"]["inputs"]["vision"]["projector"]
+    assert projector["out_features"] == cfg["vision_config"]["hidden_size"] == 3584
+
+
+def test_cor4_ce2_same_leaf_under_text_and_vision_stays_distinct():
+    """§9.C.2: ``hidden_size`` under the text scope and under the vision scope
+    are distinct occurrences with distinct exact paths — never one row."""
+    ledger, _ = _capture(_qwen2vl_corpus_cfg())
+    paths = {(e.component, e.config_path) for e in ledger.events
+             if e.canonical == "hidden_size" and e.present}
+    vision_rows = {p for p in paths if p[0] == "root.vision"}
+    text_rows = {p for p in paths if p[0] not in {"root.vision", "root.video"}}
+    assert any(path == "vision_config.hidden_size" for _, path in vision_rows)
+    assert all(not path.startswith("vision_config")
+               for _, path in text_rows if "." in path or path == "hidden_size")
+    assert vision_rows.isdisjoint(text_rows)
+
+
+def test_cor4_ce3_equivalent_wrapper_layouts_produce_the_same_facts():
+    """§9.C.3: the same component under either declared wrapper spelling
+    yields the same built path (scope normalization, not spelling forks)."""
+    canonical = mu.unfold(_NO_SOURCE_MM).to_ir()
+    alt = {k: v for k, v in _NO_SOURCE_MM.items() if k != "vision_config"}
+    alt["vision_model_config"] = dict(_NO_SOURCE_MM["vision_config"])
+    renamed = mu.unfold(alt).to_ir()
+    a = canonical["extras"]["modalities"]["inputs"]["vision"]
+    b = renamed["extras"]["modalities"]["inputs"]["vision"]
+    assert a == b
+
+
+def test_cor4_ce4_conflicting_wrappers_are_ambiguity_not_first_match():
+    """§9.C.4: rival wrapper spellings with unequal values author NOTHING —
+    a structured ambiguity event replaces the silent first-match pick."""
+    conflicted = dict(_NO_SOURCE_MM)
+    conflicted["vision_model_config"] = dict(
+        _NO_SOURCE_MM["vision_config"], hidden_size=999)
+    with capture_events() as ledger:
+        with owner_scope("root"):
+            ir = mu.unfold(conflicted).to_ir()
+    inputs = ((ir["extras"].get("modalities") or {}).get("inputs")) or {}
+    assert "vision" not in inputs
+    rows = [e for e in ledger.events
+            if e.intent == "ambiguous" and e.component == "root.vision"]
+    assert rows and "vision_model_config" in rows[0].reason
+
+    # EQUAL rivals are redundant evidence: the path builds, facts unchanged.
+    redundant = dict(_NO_SOURCE_MM)
+    redundant["vision_model_config"] = dict(_NO_SOURCE_MM["vision_config"])
+    built = mu.unfold(redundant).to_ir()["extras"]["modalities"]["inputs"]
+    assert built["vision"]["encoder"]["hidden_size"] == 768
+
+
+def test_cor4_ce5_source_owned_width_beats_language_width():
+    """§9.C.5: when the construction site says the merger's output is the
+    VISION config's field, that value wins even when it differs from the
+    language width — the generic width can no longer author it."""
+    from copy import deepcopy
+    from test_support import QWEN2VL_STYLE
+
+    cfg = deepcopy(QWEN2VL_STYLE)
+    cfg["vision_config"]["hidden_size"] = 1234          # != any text width
+    projector = mu.unfold(cfg).to_ir()[
+        "extras"]["modalities"]["inputs"]["vision"]["projector"]
+    assert projector["out_features"] == 1234
+
+
+def test_cor4_ce6_missing_source_leaves_width_and_mechanism_unknown():
+    """§9.C.6: no modeling source -> no out_features, no callable ops — and
+    no family/config/language-width fallback revives them."""
+    from model_unfolder.evidence.projector import projector_evidence
+
+    evidence = projector_evidence(_NO_SOURCE_MM)
+    assert evidence.status == "oracle_missing"
+    assert evidence.out_width_source == "unavailable"
+    projector = mu.unfold(_NO_SOURCE_MM).to_ir()[
+        "extras"]["modalities"]["inputs"]["vision"]["projector"]
+    assert "out_features" not in projector
+    assert "ops" not in projector
+
+
+def test_cor4_ce7_audio_and_vision_sharing_a_leaf_never_cross_clear():
+    """§9.C.7: audio and vision towers both declaring ``hidden_size`` keep
+    separate owner-scoped rows — neither clears the other's debt."""
+    cfg = dict(_NO_SOURCE_MM)
+    cfg["audio_config"] = {"hidden_size": 512, "num_hidden_layers": 2,
+                           "num_attention_heads": 4}
+    cfg["audio_token_index"] = 6
+    with capture_events() as ledger:
+        with owner_scope("root"):
+            mu.unfold(cfg).to_ir()
+    rows = {(e.component, e.config_path) for e in ledger.events
+            if e.canonical == "hidden_size" and e.present
+            and e.component in {"root.vision", "root.audio"}}
+    assert ("root.vision", "vision_config.hidden_size") in rows
+    assert ("root.audio", "audio_config.hidden_size") in rows
+    consumed_by = {}
+    for e in ledger.events:
+        if e.intent == "consumed" and e.canonical == "hidden_size" \
+                and e.component in {"root.vision", "root.audio"}:
+            consumed_by.setdefault(e.component, set()).add(e.config_path)
+    for owner, paths in consumed_by.items():
+        prefix = "vision_config." if owner == "root.vision" else "audio_config."
+        assert all(p.startswith(prefix) for p in paths), (owner, paths)

@@ -481,8 +481,11 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
     PendingProjectionFact("vision_out_width", "root.vision", "hidden_size",
                           "the vision config's declared merger/output width "
                           "(qwen2-vl: 3584 beside internal embed_dim=1280) — a "
-                          "config comparison may NOT infer its meaning; awaits "
-                          "the source-bound projector owner (U3/U9)",
+                          "config comparison may NOT infer its meaning.  COR-4: "
+                          "where construction evidence exists the source-bound "
+                          "projector CONSUMES it exactly (fact "
+                          "projector_out_features), discharging this row; it "
+                          "stays visible debt only for source-less grid towers",
                           "the projector output-width chip",
                           config_path="vision_config.hidden_size"),
     PendingProjectionFact("denoiser_scaling_factor", "root.denoiser", "scaling_factor",
