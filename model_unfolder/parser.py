@@ -140,11 +140,17 @@ def config_to_ir(
             path, _config_debug.component_prefix_owners(_root_owner), _root_owner)
         return owner if owner is not None else _root_owner
 
+    # COR-2 (§7/§12.4): the projection-debt join is EXACT — (owner, exact
+    # dotted path) when the entry declares one; owner+canonical only for
+    # leaf-unique top-level entries.
+    _pending_exact = {(entry.owner, entry.config_path)
+                      for entry in PENDING_PROJECTION_DEBT if entry.config_path}
     _pending_pairs = {(entry.owner, entry.canonical)
-                      for entry in PENDING_PROJECTION_DEBT}
+                      for entry in PENDING_PROJECTION_DEBT if not entry.config_path}
     pending_projection = sorted(
         path for path in unread
-        if (_unread_path_owner(path), path.rsplit(".", 1)[-1]) in _pending_pairs)
+        if (_unread_path_owner(path), path) in _pending_exact
+        or (_unread_path_owner(path), path.rsplit(".", 1)[-1]) in _pending_pairs)
     unread = [path for path in unread if path not in set(pending_projection)]
     # COR-1/COR-2: EXACT-path pending classifications (an occurrence whose
     # consumer does not exist yet) — joined on owner + exact dotted path,
@@ -197,7 +203,22 @@ def config_to_ir(
         # is the honest full read-but-not-yet-receipted census; it turns
         # blocking only after receipts + corpus debt migration (§20.4.10).
         "consumed_unprojected": _q(_access_ledger.consumed_but_unprojected(
-            pending=_pending_pairs)),
+            pending={(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT})),
+        # COR-2 (§7): STRUCTURED obligations — exact source occurrence AND
+        # exact target per consumption; state is data, never message text.
+        # An empty list is meaningful ONLY beside receipts_available=True.
+        "projection_receipts_available": bool(
+            getattr(parse_context, "projection_receipts_available", False)),
+        "projection_obligations": [
+            {"source": {"component": ob.source_occurrence.component_path,
+                        "path": ob.source_occurrence.config_path,
+                        "spelling": ob.source_occurrence.actual_spelling,
+                        "canonical": ob.source_occurrence.canonical_field},
+             "target": {"owner": ob.target.owner, "key": ob.target.fact_key,
+                        "kind": ob.target.structural_sink_kind},
+             "state": ob.state, "reason": ob.reason}
+            for ob in _access_ledger.projection_obligations(
+                pending={(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT})],
     }
     # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
     # tags into the call-local FactLedger and serialize it.  This is accounting,

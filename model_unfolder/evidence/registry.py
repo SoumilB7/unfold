@@ -375,6 +375,10 @@ class PendingProjectionFact:
     canonical: str      # the config field it reads
     reason: str
     projection: str     # the render surface it will draw on when H7-full lands
+    # COR-2 (§7): the EXACT dotted config path this entry may excuse — when
+    # set, the join is (owner, exact path); empty = owner+canonical for
+    # leaf-unique top-level entries only.
+    config_path: str = ""
 
 
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
@@ -435,33 +439,41 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
     PendingProjectionFact("vae_activation", "root.vae", "act_fn",
                           "the VAE decoder's convolution activation (video VAEs) — a "
                           "constructor record",
-                          "the VAE-decoder ResNet cells' activation chip"),
+                          "the VAE-decoder ResNet cells' activation chip",
+                          config_path="_vae_config.act_fn"),
     PendingProjectionFact("vae_temporal_compression", "root.vae", "temporal_compression_ratio",
                           "the VAE's own temporal compression (HunyuanVideo/Wan) — "
                           "distinct from the denoiser-level ratio",
-                          "the VAE latent-depth / temporal-axis chip"),
+                          "the VAE latent-depth / temporal-axis chip",
+                          config_path="_vae_config.temporal_compression_ratio"),
     # REC-4 (§10.3): the U1 config-authored card rows are DELETED; the fields
     # they were papering over return as EXACT visible debt — owner + path +
     # reason + target + deletion unit (U11/U12 derive these from source).
     PendingProjectionFact("vae_in_channels", "root.vae", "in_channels",
                           "VAE encoder input channels — awaits the source-derived "
                           "VAE component graph (deletion unit U12/V-02)",
-                          "the VAE encoder intake chip"),
+                          "the VAE encoder intake chip",
+                          config_path="_vae_config.in_channels"),
     PendingProjectionFact("vae_sample_height", "root.vae", "sample_height",
                           "VAE declared sample height (CogVideoX) — U12/V-02",
-                          "the VAE sample-geometry chip"),
+                          "the VAE sample-geometry chip",
+                          config_path="_vae_config.sample_height"),
     PendingProjectionFact("vae_sample_width", "root.vae", "sample_width",
                           "VAE declared sample width (CogVideoX) — U12/V-02",
-                          "the VAE sample-geometry chip"),
+                          "the VAE sample-geometry chip",
+                          config_path="_vae_config.sample_width"),
     PendingProjectionFact("vae_patch_size", "root.vae", "patch_size",
                           "patchified VAE spatial patch (FLUX.2/LTX) — U12/V-03",
-                          "the VAE patchify chip"),
+                          "the VAE patchify chip",
+                          config_path="_vae_config.patch_size"),
     PendingProjectionFact("vae_patch_size_t", "root.vae", "patch_size_t",
                           "patchified VAE temporal patch (LTX) — U12/V-03",
-                          "the VAE temporal-patchify chip"),
+                          "the VAE temporal-patchify chip",
+                          config_path="_vae_config.patch_size_t"),
     PendingProjectionFact("vae_attention_head_dim", "root.vae", "attention_head_dim",
                           "DC-AE decoder attention head width (Sana) — U12/V-05",
-                          "the VAE decoder attention chip"),
+                          "the VAE decoder attention chip",
+                          config_path="_vae_config.attention_head_dim"),
     PendingProjectionFact("denoiser_norm_num_groups", "root.denoiser", "norm_num_groups",
                           "GroupNorm group count declared on UNet/legacy-DiT "
                           "denoisers — U11/U-06 derives the cell norm from source",
@@ -471,7 +483,8 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
                           "(qwen2-vl: 3584 beside internal embed_dim=1280) — a "
                           "config comparison may NOT infer its meaning; awaits "
                           "the source-bound projector owner (U3/U9)",
-                          "the projector output-width chip"),
+                          "the projector output-width chip",
+                          config_path="vision_config.hidden_size"),
     PendingProjectionFact("denoiser_scaling_factor", "root.denoiser", "scaling_factor",
                           "pipeline-level latent-scale duplicate on the denoiser "
                           "config (Lumina); the VAE's own scaling_factor is the "

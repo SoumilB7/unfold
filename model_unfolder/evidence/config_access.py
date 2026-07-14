@@ -65,6 +65,43 @@ _ADDRESS_KEYS = frozenset({
 
 
 @dataclass(frozen=True)
+class ConfigOccurrenceKey:
+    """COR-2 (§7): the PRIMARY join identity of one config occurrence — what
+    was actually supplied, where.  Never replaceable by a leaf key or a
+    (component, canonical) approximation."""
+
+    component_path: str
+    config_path: str
+    actual_spelling: str
+    canonical_field: str
+
+
+@dataclass(frozen=True)
+class ProjectionTarget:
+    """COR-2 (§7): the exact architectural claim a consumption may affect."""
+
+    owner: str
+    fact_key: str
+    structural_sink_kind: str = "fact"   # fact | geometry
+
+
+@dataclass(frozen=True)
+class ProjectionObligation:
+    """COR-2 (§7): one consumption's obligation — its exact source occurrence,
+    its exact target, and its structured state (never message text)."""
+
+    source_occurrence: ConfigOccurrenceKey
+    target: ProjectionTarget
+    state: str          # projected | pending | scoped_ignored | unreceipted
+    reason: str = ""
+
+    def __post_init__(self) -> None:
+        if self.state not in ("projected", "pending", "scoped_ignored",
+                              "unreceipted"):
+            raise ValueError(f"unknown obligation state {self.state!r}")
+
+
+@dataclass(frozen=True)
 class ConfigAccessEvent:
     """One owner-scoped config access (plan §16.5's ten fields)."""
 
@@ -108,9 +145,28 @@ class ConfigAccessEvent:
 
     @property
     def owner_field(self) -> tuple[str, str]:
-        """The owner-qualified identity of the accessed field — the key that
-        keeps a text ``hidden_size`` and a vision ``hidden_size`` DISTINCT."""
+        """DERIVED compatibility/debug view ONLY (COR-2 §7): truth decisions
+        join on :meth:`occurrence_key`, never on this pair."""
         return (self.component, self.canonical)
+
+    @property
+    def occurrence_key(self) -> "ConfigOccurrenceKey":
+        """COR-2 (§7): the exact occurrence identity this event witnessed."""
+        return ConfigOccurrenceKey(
+            component_path=self.component, config_path=self.config_path,
+            actual_spelling=self.alias or self.canonical,
+            canonical_field=self.canonical)
+
+    @property
+    def projection_target(self) -> "ProjectionTarget | None":
+        """The exact target a consumed/bound event feeds (None otherwise)."""
+        if not self.fact_key:
+            return None
+        owner = self.fact_owner or self.component
+        kind = ("geometry" if owner.split(".")[-1] in
+                ("geometry", "stack", "patch") else "fact")
+        return ProjectionTarget(owner=owner, fact_key=self.fact_key,
+                                structural_sink_kind=kind)
 
 
 @dataclass
@@ -122,7 +178,43 @@ class ConfigAccessLedger:
     def record(self, event: ConfigAccessEvent) -> None:
         self.events.append(event)
 
-    # -- owner-qualified views (joins, NOT global set subtraction) ------------
+    # -- COR-2 (§7): occurrence-level truth views ------------------------------
+    def occurrences(self, intents: Iterable[str] | None = None
+                    ) -> list["ConfigOccurrenceKey"]:
+        want = set(intents) if intents is not None else None
+        return [e.occurrence_key for e in self.events
+                if e.present and (want is None or e.intent in want)]
+
+    def projection_obligations(
+        self, pending: set[tuple[str, str]] | None = None,
+        receipts: set[tuple[str, str]] | None = None,
+    ) -> list["ProjectionObligation"]:
+        """One structured obligation per consumed occurrence: PROJECTED when a
+        real receipt names its exact target, PENDING when registered debt
+        does, otherwise UNRECEIPTED — never an empty list standing in for
+        proof (the caller publishes receipt availability separately)."""
+        pending = pending or set()
+        receipts = receipts or set()
+        out: list[ProjectionObligation] = []
+        for e in self.events:
+            if e.intent != "consumed":
+                continue
+            target = e.projection_target
+            if target is None:
+                continue
+            pair = (target.owner, target.fact_key)
+            if pair in receipts:
+                state, reason = "projected", ""
+            elif pair in pending or (e.component, e.canonical) in pending:
+                state, reason = "pending", "registered pending-projection debt"
+            else:
+                state, reason = "unreceipted", "no projection receipt exists yet"
+            out.append(ProjectionObligation(
+                source_occurrence=e.occurrence_key, target=target,
+                state=state, reason=reason))
+        return out
+
+    # -- owner-qualified views (DERIVED compatibility/debug only, §7) ----------
     def _owner_fields(self, intents: Iterable[str], owner: str | None) -> set[tuple[str, str]]:
         want = set(intents)
         return {e.owner_field for e in self.events
@@ -584,7 +676,8 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
 
 __all__ = [
     "ConfigAccessEvent", "ConfigAccessLedger", "ConfigOccurrence",
-    "ConfigResolution", "INTENTS", "MISSING",
+    "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
+    "ProjectionObligation", "ProjectionTarget",
     "current_owner", "resolve",
     "capture_events", "owner_scope", "owner_scoped", "emit",
     "active_ledger", "active_touched_names",

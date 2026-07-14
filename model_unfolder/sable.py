@@ -471,8 +471,15 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # receipt is the read-but-never-drawn class.
         SableCheck(
             "config_consumed_unprojected",
-            list(((ir.get("extras") or {}).get("config_access") or {})
-                 .get("consumed_unprojected") or []),
+            [f"{row['source']['component']}:{row['source']['path']} -> "
+             f"{row['target']['owner']}.{row['target']['key']}"
+             for row in (((ir.get("extras") or {}).get("config_access") or {})
+                         .get("projection_obligations") or [])
+             if row["state"] == "unreceipted"],
+            note=("projection_receipts_unavailable — an empty list is NOT "
+                  "proof until U2 emits real receipts"
+                  if not ((ir.get("extras") or {}).get("config_access") or {})
+                  .get("projection_receipts_available") else ""),
             blocking=False,
         ),
         # REC-3 (§12.5): conflicting checkpoint declarations BLOCK from their

@@ -133,6 +133,10 @@ class ParseContext:
     # capture ContextVar only routes nested calls to this context's ledger and
     # is never a second truth store.  Compat bare-name views derive from it.
     config_access: ConfigAccessLedger = field(default_factory=ConfigAccessLedger)
+    # COR-2 (§7): real projector-emitted receipts do not exist until U2 — this
+    # flag is PUBLISHED so an empty obligation list can never impersonate
+    # proof of zero missing projections.
+    projection_receipts_available: bool = False
     # U2 class_default tier: the installed config CLASS's own defaults,
     # resolved ONCE at context build (identity-as-ADDRESS — the same rail
     # source resolution uses; the class is code evidence and the parse stays

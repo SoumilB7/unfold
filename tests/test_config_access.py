@@ -517,3 +517,98 @@ def test_event_value_state_law():
     ok = _event(intent="consumed", value_state="explicit_null",
                 fact_owner="model", fact_key="kv")
     assert ok.value_state == "explicit_null"
+
+
+# --------------------------------------------------------------------------- #
+# COR-2 (§7) — exact occurrence-to-projection accounting
+# --------------------------------------------------------------------------- #
+
+def _occ_event(component, path, spelling, canonical, intent="consumed",
+               fact_owner="model", fact_key="k"):
+    return ConfigAccessEvent(
+        component=component, config_path=path, canonical=canonical,
+        alias=spelling, present=True, intent=intent,
+        fact_owner=fact_owner, fact_key=fact_key)
+
+
+def test_occurrence_keys_keep_siblings_and_paths_distinct():
+    """§7 cases 1-2: text/vision hidden_size AND two same-owner paths are
+    four DISTINCT occurrence identities — no leaf/(component,canonical) join."""
+    a = _occ_event("root.text", "text_config.hidden_size", "hidden_size", "hidden_size")
+    b = _occ_event("root.vision", "vision_config.hidden_size", "hidden_size", "hidden_size")
+    c = _occ_event("root", "text_config.hidden_size", "hidden_size", "hidden_size")
+    d = _occ_event("root", "attn_config.hidden_size", "hidden_size", "hidden_size")
+    keys = {e.occurrence_key for e in (a, b, c, d)}
+    assert len(keys) == 4
+
+
+def test_one_occurrence_two_targets_creates_two_obligations():
+    """§7 case 4."""
+    e1 = _occ_event("root", "hidden_size", "hidden_size", "hidden_size",
+                    fact_owner="model", fact_key="hidden_size")
+    e2 = _occ_event("root", "hidden_size", "hidden_size", "hidden_size",
+                    fact_owner="decoder.attention", fact_key="head_dim_base")
+    obs = ConfigAccessLedger([e1, e2]).projection_obligations()
+    assert len(obs) == 2
+    assert {(o.target.owner, o.target.fact_key) for o in obs} == {
+        ("model", "hidden_size"), ("decoder.attention", "head_dim_base")}
+    assert all(o.state == "unreceipted" for o in obs)
+
+
+def test_a_receipt_clears_only_its_exact_target():
+    """§7 case 5: a projected fact cannot clear a DIFFERENT fact of the same
+    owner."""
+    e1 = _occ_event("root", "num_hidden_layers", "num_hidden_layers",
+                    "num_hidden_layers", fact_owner="model", fact_key="num_layers")
+    e2 = _occ_event("root", "vocab_size", "vocab_size", "vocab_size",
+                    fact_owner="model", fact_key="vocab_size")
+    obs = ConfigAccessLedger([e1, e2]).projection_obligations(
+        receipts={("model", "num_layers")})
+    states = {(o.target.fact_key): o.state for o in obs}
+    assert states == {"num_layers": "projected", "vocab_size": "unreceipted"}
+
+
+def test_exact_path_pending_entry_cannot_excuse_a_sibling_path():
+    """§7 case 6: the registry's exact-path debt joins on (owner, exact dotted
+    path) — a same-leaf different-path occurrence stays debt."""
+    import model_unfolder as mu
+    from test_support import LLAMA
+
+    # root-level act_fn on a TRANSFORMER: the root.vae entry declares the
+    # exact path _vae_config.act_fn — it must not excuse this occurrence.
+    audit = (mu.unfold({**LLAMA, "act_fn": "gelu"}).to_ir()
+             .get("extras") or {}).get("config_audit", {})
+    assert "act_fn" not in (audit.get("pending_projection") or [])
+
+
+def test_unavailable_receipts_are_reported_not_clean():
+    """§7 case 7: an empty obligation list beside receipts_available=False is
+    NEVER presented as proof — the Sable check carries the unavailability
+    note as structured state."""
+    import model_unfolder as mu
+    from model_unfolder.sable import sable
+    from test_support import LLAMA
+
+    ca = (mu.unfold(LLAMA).to_ir().get("extras") or {}).get("config_access") or {}
+    assert ca.get("projection_receipts_available") is False
+    assert ca.get("projection_obligations"), "obligations must be published"
+    rep = sable(LLAMA, render_images=False)
+    check = next(c for c in rep.checks if c.name == "config_consumed_unprojected")
+    assert "projection_receipts_unavailable" in check.note
+
+
+def test_nested_contexts_keep_occurrence_joins_independent():
+    """§7 case 8."""
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.models import SourceBundle
+
+    outer = ParseContext(source_bundle=SourceBundle(files=(), source="local"))
+    inner = ParseContext(source_bundle=SourceBundle(files=(), source="local"))
+    with capture_events(outer.config_access):
+        resolve({"hidden_size": 1}, "hidden_size", [], component="root")
+        with capture_events(inner.config_access):
+            resolve({"hidden_size": 2}, "hidden_size", [],
+                    component="root.vision", path=("vision_config",))
+    outer_keys = {e.occurrence_key for e in outer.config_access.events}
+    inner_keys = {e.occurrence_key for e in inner.config_access.events}
+    assert len(inner_keys) == 1 and inner_keys < outer_keys
