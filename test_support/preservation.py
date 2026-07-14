@@ -55,17 +55,15 @@ def split_structural_ir(ir: dict) -> tuple[dict, dict]:
 
 
 def normalize_mount(html: str) -> str:
-    """Replace the generated mount UUID consistently with ``<MOUNT>``.
-
-    Production keeps its UUID behavior; only the WITNESS is normalized.  Every
-    occurrence of each distinct mount token is replaced with the same stable
-    token so ids, URL refs, CSS selectors, and click wiring stay coupled.
-    """
-    mounts = sorted(set(_MOUNT_RE.findall(html)))
-    for index, mount in enumerate(mounts):
-        token = "<MOUNT>" if index == 0 else f"<MOUNT{index + 1}>"
-        html = html.replace(mount, token)
-    return html
+    """COR-0 (§5): replace ONLY the one intentionally-nondeterministic mount
+    ROOT identifier — discovered as the first generated token in the document
+    (the mount container precedes every derived id, which merely prefixes it).
+    Any OTHER ``uf-<hex>`` token is real element identity and stays visible as
+    drift; a global regex replacement would hide exactly that."""
+    match = _MOUNT_RE.search(html)
+    if not match:
+        return html
+    return html.replace(match.group(0), "<MOUNT>")
 
 
 def html_meta(html: str) -> dict:
@@ -224,3 +222,97 @@ def generate_baseline(corpus_dir, out_dir) -> None:
             if doc is not None:
                 (target / f"{surface}.json").write_text(
                     json.dumps(doc, indent=1, sort_keys=True, default=str) + "\n")
+
+
+def _tool_versions() -> dict:
+    """Renderer/tool identity for the receipt — a mismatch is explicit."""
+    import platform
+    import model_unfolder
+    versions = {"python": platform.python_version(),
+                "model_unfolder": getattr(model_unfolder, "__version__", "local")}
+    try:
+        import transformers
+        versions["transformers"] = transformers.__version__
+    except ImportError:
+        versions["transformers"] = None
+    return versions
+
+
+def _view_hashes(cfg: dict) -> dict:
+    """Per-view SVG structural hashes through the SAME production extraction
+    path Sable uses (preview.svg_views + _visual_hash); a missing required
+    view surfaces as its absence here and fails the comparison."""
+    import model_unfolder as mu
+    from model_unfolder.preview import svg_views, _visual_hash
+    html = mu.unfold(cfg).to_html(standalone=True)
+    return {label: _visual_hash(svg) for label, svg in svg_views(html)}
+
+
+def build_expected_manifest(corpus_dir, out_path) -> dict:
+    """COR-0 (§5): the AUTHORITATIVE executable manifest — for each of the 25
+    witnesses: input hash, canonical surface hashes (none None), required view
+    names + hashes, and the tool versions the hashes were produced under."""
+    corpus_dir = pathlib.Path(corpus_dir)
+    witnesses = {}
+    for path in sorted(corpus_dir.glob("*.json")):
+        cfg = json.loads(path.read_text())["config"]
+        docs = canonical_surfaces(cfg)
+        docs["gallery"] = gallery_witness(corpus_dir, path.stem)
+        surfaces = {s: hashlib.sha256(_canon_bytes(d)).hexdigest()
+                    for s, d in docs.items() if d is not None}
+        assert all(surfaces.values()), (path.stem, surfaces)
+        witnesses[path.stem] = {
+            "input_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "surfaces": surfaces,
+            "views": _view_hashes(cfg),
+        }
+    manifest = {"witness_count": len(witnesses), "witnesses": witnesses,
+                "versions": _tool_versions()}
+    pathlib.Path(out_path).write_text(
+        json.dumps(manifest, indent=1, sort_keys=True) + "\n")
+    return manifest
+
+
+def verify_against_expected(corpus_dir, manifest_path, *, limit=None) -> list[str]:
+    """Regenerate EVERY witness fresh and compare every hash — missing input,
+    hash mismatch, missing/extra witness, absent view, or a None hash is a
+    finding, never a skip."""
+    corpus_dir = pathlib.Path(corpus_dir)
+    manifest = json.loads(pathlib.Path(manifest_path).read_text())
+    expected = manifest["witnesses"]
+    findings: list[str] = []
+    inputs = {p.stem: p for p in sorted(corpus_dir.glob("*.json"))}
+    if manifest.get("witness_count") != 25 or len(expected) != 25:
+        findings.append(f"manifest witness_count != 25: {manifest.get('witness_count')}")
+    for extra in sorted(set(inputs) - set(expected)):
+        findings.append(f"unexpected extra witness input: {extra}")
+    regenerated = 0
+    for slug, row in sorted(expected.items()):
+        if limit is not None and regenerated >= limit:
+            break
+        regenerated += 1
+        path = inputs.get(slug)
+        if path is None:
+            findings.append(f"{slug}: corpus input MISSING")
+            continue
+        if hashlib.sha256(path.read_bytes()).hexdigest() != row["input_sha256"]:
+            findings.append(f"{slug}: corpus input hash MISMATCH")
+            continue
+        cfg = json.loads(path.read_text())["config"]
+        docs = canonical_surfaces(cfg)
+        docs["gallery"] = gallery_witness(corpus_dir, slug)
+        for surface, expected_sha in sorted(row["surfaces"].items()):
+            if not expected_sha:
+                findings.append(f"{slug}/{surface}: expected hash is None")
+                continue
+            doc = docs.get(surface)
+            actual = (hashlib.sha256(_canon_bytes(doc)).hexdigest()
+                      if doc is not None else None)
+            if actual != expected_sha:
+                findings.append(f"{slug}/{surface}: hash mismatch")
+        actual_views = _view_hashes(cfg)
+        for view, sha in sorted(row.get("views", {}).items()):
+            if actual_views.get(view) != sha:
+                findings.append(f"{slug}/view {view!r}: "
+                                + ("ABSENT" if view not in actual_views else "hash mismatch"))
+    return findings

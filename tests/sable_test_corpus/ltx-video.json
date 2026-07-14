@@ -1,0 +1,191 @@
+{
+  "checks": {
+    "asserted_facts": false,
+    "click_coupling": true,
+    "config_field_audit": true,
+    "dangling_connectors": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_class_name": "LTXVideoTransformer3DModel",
+    "_diffusers_version": "0.32.0.dev0",
+    "_name_or_path": "Lightricks/LTX-Video",
+    "_pipeline_class_name": "LTXPipeline",
+    "_repo_id": "Lightricks/LTX-Video",
+    "_scheduler_config": {
+      "_class_name": "FlowMatchEulerDiscreteScheduler",
+      "_diffusers_version": "0.32.0.dev0",
+      "base_image_seq_len": 1024,
+      "base_shift": 0.95,
+      "invert_sigmas": false,
+      "max_image_seq_len": 4096,
+      "max_shift": 2.05,
+      "num_train_timesteps": 1000,
+      "shift": 1.0,
+      "shift_terminal": 0.1,
+      "use_beta_sigmas": false,
+      "use_dynamic_shifting": true,
+      "use_exponential_sigmas": false,
+      "use_karras_sigmas": false
+    },
+    "_text_encoder_configs": {
+      "text_encoder": {
+        "_name_or_path": "google/t5-v1_1-xxl",
+        "architectures": [
+          "T5EncoderModel"
+        ],
+        "chunk_size_feed_forward": 0,
+        "classifier_dropout": 0.0,
+        "d_ff": 10240,
+        "d_kv": 64,
+        "d_model": 4096,
+        "decoder_start_token_id": 0,
+        "dense_act_fn": "gelu_new",
+        "dropout_rate": 0.1,
+        "dtype": "float32",
+        "eos_token_id": 1,
+        "feed_forward_proj": "gated-gelu",
+        "id2label": {
+          "0": "LABEL_0",
+          "1": "LABEL_1"
+        },
+        "initializer_factor": 1.0,
+        "is_decoder": false,
+        "is_encoder_decoder": true,
+        "is_gated_act": true,
+        "label2id": {
+          "LABEL_0": 0,
+          "LABEL_1": 1
+        },
+        "layer_norm_epsilon": 1e-06,
+        "model_type": "t5",
+        "num_decoder_layers": 24,
+        "num_heads": 64,
+        "num_layers": 24,
+        "output_attentions": false,
+        "output_hidden_states": false,
+        "output_past": true,
+        "pad_token_id": 0,
+        "problem_type": null,
+        "relative_attention_max_distance": 128,
+        "relative_attention_num_buckets": 32,
+        "return_dict": true,
+        "scale_decoder_outputs": false,
+        "tie_word_embeddings": true,
+        "transformers_version": "5.12.1",
+        "use_cache": true,
+        "vocab_size": 32128
+      }
+    },
+    "_vae_config": {
+      "_class_name": "AutoencoderKLLTXVideo",
+      "_diffusers_version": "0.32.0.dev0",
+      "block_out_channels": [
+        128,
+        256,
+        512,
+        512
+      ],
+      "decoder_causal": false,
+      "encoder_causal": true,
+      "in_channels": 3,
+      "latent_channels": 128,
+      "layers_per_block": [
+        4,
+        3,
+        3,
+        3,
+        4
+      ],
+      "out_channels": 3,
+      "patch_size": 4,
+      "patch_size_t": 1,
+      "resnet_norm_eps": 1e-06,
+      "scaling_factor": 1.0,
+      "spatio_temporal_scaling": [
+        true,
+        true,
+        true,
+        false
+      ]
+    },
+    "activation_fn": "gelu-approximate",
+    "attention_bias": true,
+    "attention_head_dim": 64,
+    "attention_out_bias": true,
+    "caption_channels": 4096,
+    "cross_attention_dim": 2048,
+    "in_channels": 128,
+    "norm_elementwise_affine": false,
+    "norm_eps": 1e-06,
+    "num_attention_heads": 32,
+    "num_layers": 28,
+    "out_channels": 128,
+    "patch_size": 1,
+    "patch_size_t": 1,
+    "qk_norm": "rms_norm_across_heads",
+    "scheduler": [
+      "diffusers",
+      "FlowMatchEulerDiscreteScheduler"
+    ],
+    "text_encoder": [
+      "transformers",
+      "T5EncoderModel"
+    ],
+    "tokenizer": [
+      "transformers",
+      "T5Tokenizer"
+    ],
+    "transformer": [
+      "diffusers",
+      "LTXVideoTransformer3DModel"
+    ],
+    "vae": [
+      "diffusers",
+      "AutoencoderKLLTXVideo"
+    ]
+  },
+  "hash_signature": [
+    "05dff6077dc8870396741fda8b6baa4f",
+    "2358e47255259136523f02cab857a2fc",
+    "236dc74f7a71b505a592b154f63174fc",
+    "36973ef6bda51a1bba50fe15f859f23c",
+    "49e1633d8e64698d8b55b6aba47456a7",
+    "74e9b652d38bfddd042838d262528b62",
+    "827b139178897fdcaae879dd731d7a7c",
+    "8897306b1b04a2714390fdd7505dc6a6",
+    "9b87e79060d680606c06b299ed03b566",
+    "ba3983a841063a93922f6df9b89ed562",
+    "bd56357e9127c33322064c9b9401ec96",
+    "f7a05b6da2a5c9fc1824403377cf4fd4"
+  ],
+  "model": "LTX-Video",
+  "source": "local",
+  "superseded_hash_signature": [
+    "05dff6077dc8870396741fda8b6baa4f",
+    "125d0a42cb145fbbe563f068a0b13316",
+    "2358e47255259136523f02cab857a2fc",
+    "236dc74f7a71b505a592b154f63174fc",
+    "36973ef6bda51a1bba50fe15f859f23c",
+    "49e1633d8e64698d8b55b6aba47456a7",
+    "827b139178897fdcaae879dd731d7a7c",
+    "85a7409550ac4cd62a30bb332658282b",
+    "9b87e79060d680606c06b299ed03b566",
+    "ba3983a841063a93922f6df9b89ed562",
+    "bd56357e9127c33322064c9b9401ec96",
+    "f7a05b6da2a5c9fc1824403377cf4fd4"
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/ltx-video",
+    "manifest": true,
+    "png_count": 12
+  }
+}

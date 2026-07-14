@@ -1,0 +1,681 @@
+{
+ "versions": {
+  "model_unfolder": "0.2.15",
+  "python": "3.12.10",
+  "transformers": "5.12.1"
+ },
+ "witness_count": 25,
+ "witnesses": {
+  "auraflow-v0-3": {
+   "input_sha256": "107d2a3cd013c2c49a8d1d4eab84420d1c64dbb06c7442951fc2e62762d820b5",
+   "surfaces": {
+    "expanded": "2c0701ddb8f64e6a4fd649cffebce9c27f5a4183a4ba2f7e20c8ab1d6e48a545",
+    "gallery": "a92834a49132d281ba6b6bd0bb20efd1b2a885b0d0c2cee9fe153f556445e45d",
+    "html_meta": "265fb9b48f7a85fc2bb83c359147b4599a16e02028318cc5f470737c0acf113f",
+    "ir": "e01dfb7ac4e1b1f682ae5ad49bc39162459ecb881e7405a2770dec98fc4ce71a",
+    "ledgers": "6ed3e6f49109e45b594d5bece0ad168a914143e794fc3dee7d998ce445c684e3",
+    "params": "b2db57d7fc9be8256e86489b71b9144ca3a7ad8f8d286612c1712934f0c05ae0",
+    "sable": "b8fba1004d0120b6db43fd0c53bd20e712d6b5e7ce32fa340a71582b04abbf35"
+   },
+   "views": {
+    "architecture": "784f69a8f122766416ebdb3f26927e32",
+    "attn": "9e83508cc21a724dada3e5b5fb1c4031",
+    "denoiser": "6d8c9e18ff128a2e57adea4ad138de3e",
+    "encoder_0": "27d14f81c2049ae5f4e78d235a43b6d2",
+    "encoder_0_op_ffn": "494b981a572306132a61c18bc290e26b",
+    "encoder_0_op_selfattn": "0de2a05cb8bdd3ff8454d82ba3451435",
+    "ffn": "c40e688c3ea242c4bc4b93b7df0944f0",
+    "scheduler": "a71d3f755a31dd4fc49f037f44024797",
+    "text_projection": "5d3b553a834bd18ff5da0e9ab9ea10f1",
+    "vae_decode": "c50009c8594dfe7524fc253c00ea8da9",
+    "vae_decoder_block_1": "0f942b2dfc5527d1e808cd12e61d9b80",
+    "vae_decoder_block_2": "a0bfa030b3ecbd9b2c89578218afb1d0",
+    "vae_decoder_block_3": "48e134ef4c919df87a42c8ac83b85ba6",
+    "vae_decoder_block_4": "be4ece54ce9dc5f680647a9215d96b35"
+   }
+  },
+  "bloom": {
+   "input_sha256": "81a754c9faa10d6b2893c8e11e591068f0df5ca0b03f75508a355c97387bf580",
+   "surfaces": {
+    "expanded": "b017d0faaf70b8ed1a1c28b77db04fe8340e25eb7e5e879fe175af04b0277b91",
+    "gallery": "161f7717a5f57d2c68187f27fb0e43adfcf4747c7bd83f6c76cea2ca9c9b79ea",
+    "html_meta": "c363a2dda61d0129cc54349d03d30f647a363ca17d30bd550a93c7dc3dc435fe",
+    "ir": "1678f77c2a013e8db1d194c21ac6afe3c1e26f307d8d5d536bed650a770eda97",
+    "ledgers": "52ee870fa3ad2a46ede9ec37724948d36f86f552e968e5f282f3a75a236ee5c9",
+    "params": "f6f2c51a1d6037599a97bc58bf48f7f420c4308e624c7613f8ff22e534abb8d6",
+    "sable": "5aa6e3c4ce0d389955859904a7fd90d84a1b002aa7cd4f2f050707d03952fffc"
+   },
+   "views": {
+    "architecture": "51385b61c23c40ad4d9016d6aed87030",
+    "attn": "984432b9fa84629cfee5bcd871795b3f",
+    "ffn": "9690073a99b038727d8ddfc9d75359d6"
+   }
+  },
+  "cogvideox-5b": {
+   "input_sha256": "4efbeb4af52232cf9adb6ea612ff91ab9f3491df6f6d14be47410f2ae8808a07",
+   "surfaces": {
+    "expanded": "4f80196e281467fa96a352d4701a7d105200c3a45943d92eea2a7e5076c458be",
+    "gallery": "6dfa29873847e064c7f4c86efd7b4444adf47b9e523a67999cb3b6be5c1d4f37",
+    "html_meta": "bb8f763d16cc627db135661db6a7a211afd9572543b5628ae758423a011cfb07",
+    "ir": "a947f3406d5bb1372090391835da36f6313061b35aef12c3070a766d6a7445e2",
+    "ledgers": "2f0693c7a5f665eb3dd0230cd951f20ea0e2ad69aedae5e9f550324ad55956a0",
+    "params": "5cf0ea8a7a59f8c66cf15f626cda682adf658cf174bd03288c9c95551eb27d7e",
+    "sable": "b74ae4f27615aad2e6ff41d567674ab81351eb1e7f96d73e86b56819f8928352"
+   },
+   "views": {
+    "architecture": "ced2f58961b3e6ed5100fa28a4d2167d",
+    "attn": "84a196e91300df8394dcd99ecdc987f7",
+    "denoiser": "5df9ba2eb96ccc969479d82c9135181c",
+    "encoder_0": "9b87e79060d680606c06b299ed03b566",
+    "encoder_0_op_ffn": "b52492e9f2340abd8bb03a36c8116a80",
+    "encoder_0_op_selfattn": "c67c832fdc8ac2f77d08f7811fe6a56e",
+    "ffn": "053fcc78f071a8789407e54b117644d2",
+    "scheduler": "b7eafb19db8b53e0f5790078c3d1f62a",
+    "vae_decode": "68a15e11ae644cd2c62c97d9bb926534",
+    "vae_decoder_block_1": "b08f4423fef372283566c0aea18020cf",
+    "vae_decoder_block_2": "034c793ae3e5acd9fce6c0bd159ecd6a",
+    "vae_decoder_block_3": "cdd40226ad21413bbe1904a814c8750b",
+    "vae_decoder_block_4": "6eabcdc83515c7b99964efc1de4da6d1"
+   }
+  },
+  "deepseek-v3": {
+   "input_sha256": "d60c619fdf58338a5a239a247f15a06452557fe97fd0a2c016111c1d4f3cf775",
+   "surfaces": {
+    "expanded": "d06398aab9041e18c01f76c9311436374bcd632e7bb7038423c6b76120010777",
+    "gallery": "464e966706fe90ea8c02a8167881f94ddbcf352e8e71a8797bc8a2b3cf49437a",
+    "html_meta": "930af4f150870f8e7f8eeece715f5ee0669e707a636aceddfdd88935cacb1f83",
+    "ir": "ebbe545083eda72bd3ab65afc8cf83b99f44959f4428fc0b2bb64bad13dd6754",
+    "ledgers": "fa5926afd887a02a3cb1eec1182d0f3c56e3a462e54b910acff84948b3e2f122",
+    "params": "421a0042d8fc1968d30c1cfb8295468d375dec34323cb58c69ae003bfe71e9b7",
+    "sable": "4401ece99c2dbbdd009b83eaef7fb8647357ccae5b47f1bec12a62fd9c46a1ff"
+   },
+   "views": {
+    "architecture": "6388158f0713795872ea10b64a5c3cbd",
+    "architecture_v1": "0d501a263ad8f485795b1ee8e2bec011",
+    "attn": "029aa789d8dc6d5c7e6d07d58400a937",
+    "expert_1": "8885e3fd637c1ca9929d34e303ca0d79",
+    "expert_k": "8885e3fd637c1ca9929d34e303ca0d79",
+    "expert_kp1": "8885e3fd637c1ca9929d34e303ca0d79",
+    "expert_n": "8885e3fd637c1ca9929d34e303ca0d79",
+    "ffn": "3416a5f46d9e75c633e7fd6735b98016",
+    "g_topk": "0d62405c9f25c10421e350c162c03419",
+    "mla_kv_path": "328f84680559846108436428a1d690c4",
+    "mla_query_path": "dabf1599258da7e9cac35423b6af665a",
+    "mtp": "b159235cab64de0806d6b426017577f2",
+    "mtp_block": "9317b54f4f99c1112c217b51999e0b53",
+    "router": "667e159965a80e96cddaf7c325f75999"
+   }
+  },
+  "flux-2-dev": {
+   "input_sha256": "bac578c5c85e79d82cdb6709df07583e57369beb14710c64a0264a8d377d7d60",
+   "surfaces": {
+    "expanded": "8b6915f434493c033407797d2f1e9f27eb8bcf12d2c87254e096c19370171d48",
+    "gallery": "6b2762faa58ad39ef8461cfb209f4764f144c31527a49f343b2ed88b99351ced",
+    "html_meta": "9df82ddad2fe5c6b533e0a347d0ceadd1b1bdc1b1ce7a56f8aee4cc630dc3cab",
+    "ir": "071ebfe615b9dbfc51ea7ff5dde8e85d12296c4192c623b6a4ee89b233904a2f",
+    "ledgers": "066cd808112a51ba9d7830b8f8078064477b53d12e71882545c9e009dcc8b83f",
+    "params": "793e0eda9b767cd28bed443ff3c47298c56647a67a5328dffa90c3a776488e6f",
+    "sable": "0361b2ef72add4a9dd7cdb661717048928a99d9ed03697feed6180e3a85d9c03"
+   },
+   "views": {
+    "architecture": "47b67033885e46bf6c634adb80a11f25",
+    "attn": "1aab35d9c8c8dd31637e153529ba554f",
+    "denoiser": "18faa8deb97c8fa5edb5db60e284aad5",
+    "encoder_0": "13757bc1292d0f5aab4eb530476da2da",
+    "encoder_0_op_ffn": "2a2dd9aa80c5b81de5969cadfcb98e30",
+    "encoder_0_op_selfattn": "8cf009787e3ffe4b524a9b3af331b2a8",
+    "ffn": "fa814a293e21cef0b70e733ad5060617",
+    "scheduler": "17c4013edb73ab284de6a7fe44a96ff1",
+    "vae_decode": "e60e4f00008fdd1f3e9bb1582c0ad6a5",
+    "vae_decoder_block_1": "1d4bfd5ea6a35d7a8d8b7cab02306d63",
+    "vae_decoder_block_2": "a759406e5f5eb86007274717b92c59a5",
+    "vae_decoder_block_3": "8c34ab04eded9602ef9bc1449606e686",
+    "vae_decoder_block_4": "09100bb2c03d93e81e3cfbb0adf9b8e5",
+    "vae_mid_block": "b28b57af7a35527bb97d9eae2fdf5ffb"
+   }
+  },
+  "fluxtransformer2dmodel": {
+   "input_sha256": "fb982b98b5a17bd6b6ad2c56f69b8d61b5c72bca958fc0c6d1ae3aa9d135448a",
+   "surfaces": {
+    "expanded": "372e1f9280b211789af0b04b0ec396d43ee9b34256e5f6d5235d295e914c493d",
+    "gallery": "c7fce394a53aa7d46bbc850644284cff42da0dd2a97425ca224f2d8c8cccd262",
+    "html_meta": "0e298bf5daa04e7139cd9fbec364683724232c3227bfa08479a22e3cc0051eb8",
+    "ir": "35475c2f31d43e9283f8eaa5ba7f1ba884e7d2fa3a549305c37683d9b4e4d939",
+    "ledgers": "6b27f1d82b10be8a872c3fd5106d842f7a3e797b5225375c8d5e2c5b37fa0f9a",
+    "params": "0795bbaf6900f411c3b7e4a738f643064c96f1d2f54268906fcd91e65ed9ba32",
+    "sable": "49c54c7a4b844e95c9eb9129387b73fa96f6cbcce8fcb43b39c427f2a90fdf1e"
+   },
+   "views": {
+    "architecture": "ca5a7a3c7d12892f3d7d48a382c9e3ce",
+    "attn": "f486627fae11612dc9d4e6e02b4a9660",
+    "denoiser": "58046c7983be6d737033fba850bdc778",
+    "encoder_0": "6fe1482f7559ed0de0bdd32182140ce3",
+    "encoder_0_op_ffn": "f3b14960315185f1921ac056d77d57be",
+    "encoder_0_op_selfattn": "ba0a8422185c20fb776481aa67bfa522",
+    "encoder_1": "9b87e79060d680606c06b299ed03b566",
+    "encoder_1_op_ffn": "f9cd9d6b2d90fbb0fe4c826bad7ef102",
+    "encoder_1_op_selfattn": "d60af43a1ffcb96c22cc14c154615747",
+    "ffn": "52c9cf92642b382085cff8f09bbb3704",
+    "scheduler": "b354d4cb12016360e1a9612e0000ac6e",
+    "vae_decode": "0751c0064be790891edf52f8bed807bb",
+    "vae_decoder_block_1": "a90de20e846dafb09ac1ab7b744f0556",
+    "vae_decoder_block_2": "48125ea1e7d6a56703533d06cb377d75",
+    "vae_decoder_block_3": "565270f4d8543fb166a76073d87e00cc",
+    "vae_decoder_block_4": "badaa1497d2255d8845e9ce6ea4314aa"
+   }
+  },
+  "gemma-2-2b-it": {
+   "input_sha256": "f23fccfe95eb51f35461995b5911d86acea1d632e88ce4ac8933026606f6a778",
+   "surfaces": {
+    "expanded": "a4052975aa5c76f724f188925ab6c74688d3e17747b62c2d513cfdd4757ca7e6",
+    "gallery": "e3d9fd9b38847a6c88d31402ec1fd17fdde168ffefae6accc856ccc1e8bc8d4c",
+    "html_meta": "564fd3de4e9359b3d83b57ea592176b4e716f301a0f3114ebb344a4b86a1e48f",
+    "ir": "3219a4c6844002ef25646a432a514ae010492fc23789c831108c846f0deac392",
+    "ledgers": "22c8569f8c9f47731477f2098ec85f3045b6c9f8185481814912b173bfda0a6a",
+    "params": "b8b3139280ed75f8fe0650ed60b81509550d011b1a745c621bdae9a114e165f9",
+    "sable": "a9a726d64fd67cfdfd5873784553ce76a712730c27c19a662792a5625d40082a"
+   },
+   "views": {
+    "architecture": "93d4193b79d933a34a4bcd3bedd065e3",
+    "architecture_v1": "6ad850b94a02840ff6da38e06c4d121d",
+    "attn": "f4b64ac4d882c40b7ae523239cfd90a2",
+    "ffn": "52a8b14de9f77cc647e93c81572bd05a"
+   }
+  },
+  "glm-4-5": {
+   "input_sha256": "f8b42b7b8e7ddc6d52acc661dc2d2cf907ca2b6cb0dc012e63a81c00211e0f0b",
+   "surfaces": {
+    "expanded": "ff2a195aa4b0eaff93ca19608e59c95b3f255ceb8a9761f9eb80efdafe091c28",
+    "gallery": "8ec1b8101008926d9506137c66d2eb3b220926309316e89efd892fc13c162e0c",
+    "html_meta": "4fd9e73776cf56d284b2be157a1c407b02def60da4522899e2f88ad2988c0d4f",
+    "ir": "0dbf08f7a75cce413dae143b0c265a22cda8ad688a6470e0a1ebc9ae22a48d98",
+    "ledgers": "cc5f8403436a8a01e3b1541269d430bfb297a1679138662bd68ce6c7b87016db",
+    "params": "a2f38d4b002dfeb25b2d5e18e2f0239ed7d6f9946da880da3d7101271b3293e2",
+    "sable": "9b1a16d2b52327e8c16f61c5f3da3f0cac4bfe624d73a0450399aae5c217c665"
+   },
+   "views": {
+    "architecture": "ac398067f12cc080bf1336e5bd4e0333",
+    "architecture_v1": "edb73cf21c6fd53db79344e9d6661d15",
+    "attn": "6b30a1810c8f7be3ba61b2c205260128",
+    "expert_1": "6358d38fa166c25631200a061e77e894",
+    "expert_k": "6358d38fa166c25631200a061e77e894",
+    "expert_kp1": "6358d38fa166c25631200a061e77e894",
+    "expert_n": "6358d38fa166c25631200a061e77e894",
+    "ffn": "20889ca7018c025f4eda94dc2502ad2e",
+    "g_topk": "bdefc6faf978f47be8662e9e530a4ebb",
+    "mtp": "cdd24b992ae172e22e40afcd4ef44d95",
+    "mtp_block": "62a8c5201b60a44521a6709a79b38945",
+    "router": "1903aeb488913c2a82ebb14153dd2502"
+   }
+  },
+  "gpt-oss-20b": {
+   "input_sha256": "fba2f20422e37220e7cf6ba6ca0a55a622793dc57840b1f54d04c758238f408e",
+   "surfaces": {
+    "expanded": "0a1a5ce12c66f1f6859eb8c195300bfa32e11bc45d04bcea2452909363caee10",
+    "gallery": "e99cbd9242af0018a13cda06bb64d4c08d5f0f5e5aa30c4e04d9a5c8b9abbce5",
+    "html_meta": "8fbe64a3a54915b69c607651356c67bfffddec22ee811e310df73eb6740f56cb",
+    "ir": "d75c551fd30ac03b2f9230078cae2727595ee13ef391ac47423d0463142f4f44",
+    "ledgers": "d56d8411dec9de8c30ffd07456e2be84d387c2e7f815cb8654786df4ae64af51",
+    "params": "d6040b31b79989e3c2c2f028ffea107d40d7697206c222f963c8e0ba82bb6050",
+    "sable": "e4e5792636942ccdf66a6440d9fe12b58ad5a27ba42639d0834a92c0f055514d"
+   },
+   "views": {
+    "architecture": "5bef34caff87e659f8458a1b572c6bbd",
+    "architecture_v1": "4e183581234c572ee0ebdc90a57ae2a0",
+    "attn": "30ff5ac4414b924575615425200c40b8",
+    "expert_1": "78641d62e1001e9e4552fdfee8051b5d",
+    "expert_k": "78641d62e1001e9e4552fdfee8051b5d",
+    "expert_kp1": "78641d62e1001e9e4552fdfee8051b5d",
+    "expert_n": "78641d62e1001e9e4552fdfee8051b5d",
+    "ffn": "1ecde1de24e3672114dc67e2d1478bd2",
+    "router": "12f0bfdd7bda43f63a570ca3b63905ce"
+   }
+  },
+  "hunyuanvideo": {
+   "input_sha256": "f032e76da694e0aca636ed7f1923013d7fe02a42fe8e6cc5b3c1401398272db1",
+   "surfaces": {
+    "expanded": "d7fcb0fbcadebd34792f279581c65eb7874d1a66b05f90bfb4f484bbd2b3fff9",
+    "gallery": "40a6d28a08ab2c2c0a1d8762c65a36bd1aada470c8bcf91063661a1929971ca6",
+    "html_meta": "28065020b10971dd87fb9c81565fd8783753787db50a4fff0c3257f6a7f99fad",
+    "ir": "681eaf1da47cda6dd477a144b7b7a57fa00e2a2ec3189e81dba97fc15cd4d802",
+    "ledgers": "3183643f562782448de349df4589b0fda7e70bf3d3a081c4535f6d19c9866578",
+    "params": "f988acd908b5e4b5be3f67fe3c76b8fb49b6e231372b87da663763a88417ed64",
+    "sable": "24b3ff2f9d981943982b0e4ca0f38bdfe859c9d89e07f26ee93e0edb1857e399"
+   },
+   "views": {
+    "architecture": "42f97b3458ea613132d2a5096c8a7da3",
+    "attn": "d3a5c66ee68127dd0affd57b523f5d44",
+    "denoiser": "8a54a5bbef6c75b6a1b8a8d71dc6518f",
+    "encoder_0": "5b3f222642ab31336a21bdad82a4f1ee",
+    "encoder_0_op_ffn": "98cc1a1085bcbd1bf37bca2d7bc8f0b5",
+    "encoder_0_op_selfattn": "b2c6e4ae5d3287f06cbdbc5ccc689963",
+    "encoder_1": "6fe1482f7559ed0de0bdd32182140ce3",
+    "encoder_1_op_ffn": "5629211bc9efbd086f2f26426877c1af",
+    "encoder_1_op_selfattn": "e61a83137bf7f8efd7fa6bc30ad12024",
+    "ffn": "2d4deb7e5d271b6c70408c4d31d43018",
+    "scheduler": "bf38a076baa29fc5858612bbd71d0fe5",
+    "text_refiner": "0109eb3c29391a13f33803499d687183",
+    "text_refiner_op_ffn": "91812bbbbd9a459f2bb76bcad6a7cd92",
+    "text_refiner_op_selfattn": "8e1fda718ca87fc286b8aebacf4f1e0e",
+    "vae_decode": "502c3ffeb9a9ffadf61a8ec993944433",
+    "vae_decoder_block_1": "30b5201d259e95a942012b0a27fe6d7f",
+    "vae_decoder_block_2": "511bc69086c757f55d1a4e9922fd78ed",
+    "vae_decoder_block_3": "34829e302343eaa19667bcba8a150848",
+    "vae_decoder_block_4": "30514691da513ec4ac4962bb1d572db9",
+    "vae_mid_block": "8df75c06f9f0a30aab0fb5cbcde3a971"
+   }
+  },
+  "llama-7b": {
+   "input_sha256": "df6bf0fcbeb5f417fb85595604dc2db1f278702c0a925c62a0688b7757e8015c",
+   "surfaces": {
+    "expanded": "d641f94838972c3a51560fb6b045c9c44d0474f11efab4d3cd655953850a4618",
+    "gallery": "b1dc7801c54cb56ea782213d70cb165c224f1e1f3435c4ea311a3a5bb957cca7",
+    "html_meta": "bc2cfac951c19b2c890b3b7242c9235ff50e3173b8a423d2bea5692b495c3da8",
+    "ir": "a06a2101110bcbfa1b6557b10ab32cd2ebe172e6c45ef06361c0a9d3b65af4b7",
+    "ledgers": "f82bfe389975851242eb8450ade029e00edc995b7cfffdc91ec2470b77f2a6fa",
+    "params": "19d99416172c2ff06622400e69561a4f4a4541eba14e0467b1e953fd97c43e62",
+    "sable": "ae50a6f853cb391f1b7cbeb8027d0319e920d559252734932e92f38f7faa6b30"
+   },
+   "views": {
+    "architecture": "4cd2f1b767e62d06cd5c03bcb28092dd",
+    "attn": "7930d691a433699cd6af919842089a5d",
+    "ffn": "d3314cccdb744f3767be47b560187b9c"
+   }
+  },
+  "ltx-video": {
+   "input_sha256": "020fb53b2b739e9c69b1ceb6250d12e32b722c2a8898cea3557b4aa7f486bcd9",
+   "surfaces": {
+    "expanded": "2da3903875c97989789bb418c357efb7aab336ace9fdb66b3502dd40b0b6bd29",
+    "gallery": "7d4dc886f3e1863bae60ad8fc1c0a08d590fb1c0bff843a11532a05ba4c55abe",
+    "html_meta": "abea249f34abaf99163c8e288074d661b4687a354b5aaa65d6293331d4322fb4",
+    "ir": "d5bf7f406f75487f8c5c3c861ce8f407a4ea7c21d12aeb93bc692e9f10be452f",
+    "ledgers": "3d421b30b46483a1af54955bbf494194e6fc4e5e81d859ed376f545a5d11eab7",
+    "params": "6855e80c31334426cfc45d5bc9bd7b446e80c1ab9eb71d76053484323699263c",
+    "sable": "53ddbf7e5e37c2c00eb1d2fecbc5750795b0c04cd8a58bb9b005f03be2390376"
+   },
+   "views": {
+    "architecture": "36973ef6bda51a1bba50fe15f859f23c",
+    "attn": "05dff6077dc8870396741fda8b6baa4f",
+    "cross_attn": "74e9b652d38bfddd042838d262528b62",
+    "denoiser": "8897306b1b04a2714390fdd7505dc6a6",
+    "encoder_0": "9b87e79060d680606c06b299ed03b566",
+    "encoder_0_op_ffn": "827b139178897fdcaae879dd731d7a7c",
+    "encoder_0_op_selfattn": "236dc74f7a71b505a592b154f63174fc",
+    "ffn": "49e1633d8e64698d8b55b6aba47456a7",
+    "scheduler": "ba3983a841063a93922f6df9b89ed562",
+    "text_projection": "f7a05b6da2a5c9fc1824403377cf4fd4",
+    "vae_decode": "2358e47255259136523f02cab857a2fc"
+   }
+  },
+  "lumina-image-2-0": {
+   "input_sha256": "13f5559da47c5cee57ac67b02dc5363c62764647f5a7ca381e1a20ba316f949d",
+   "surfaces": {
+    "expanded": "e8f348703e261830b50cb8a4811ee3541e601b6f0121d23af2fa122f20adb3c1",
+    "gallery": "137e8e1522cebbce0f3cde8845d941b25ad1ed0eb085781098f138aae2ddce5c",
+    "html_meta": "3084f2ee80cb43812cbddb986a9ba1886f0efec43b5e34d0953846f2889a2edb",
+    "ir": "cd7406a2954b9e7cb1c6f99cb6420d07bb3ad97af50266eedc6b551a615feeea",
+    "ledgers": "e2bd0999302d21fe32f5a5507c3d6280a4b48d0012bdcf952ec958e6078934a9",
+    "params": "c846bc681d826fb696307245eca291d51835fdf99fa1567338b6c7a79097574d",
+    "sable": "29a0195669e2167636f25922576e77c22fb457da2f1cefce48c6e17d004bb557"
+   },
+   "views": {
+    "architecture": "6dc62a9559452e8afbb5c6772da97bc4",
+    "attn": "74fbdad7b07d7350c88c88eb49cadebd",
+    "denoiser": "57ba5e482aaa12314cf7f2282ae86358",
+    "encoder_0": "f86831e8fc8b40b82165edc86f0e5dc6",
+    "encoder_0_g0_op_ffn": "7d3443fd29ef5465e5722d3dea2ff019",
+    "encoder_0_g0_op_selfattn": "c8874b48ec1a7dcb1aaadbb06697cb21",
+    "encoder_0_g1_op_ffn": "7d3443fd29ef5465e5722d3dea2ff019",
+    "encoder_0_g1_op_selfattn": "45f7c538f63d261ac6f01c7243043e3b",
+    "entry_stage": "7ea5872cd78ba9b590facdf0ca105987",
+    "entry_stage_op_ffn": "7fea0fb220eb9681e406980b0ebb93d3",
+    "entry_stage_op_selfattn": "82ef609ff21c47126d85ad43cbb0e46c",
+    "ffn": "e1641402bf13dfd461ecd0c0a7defd1c",
+    "scheduler": "72c72e56496f2ecf5c83d5192468a0e7",
+    "text_refiner": "40269203c8a65ec100c8cedbd81008df",
+    "text_refiner_op_ffn": "7fea0fb220eb9681e406980b0ebb93d3",
+    "text_refiner_op_selfattn": "82ef609ff21c47126d85ad43cbb0e46c",
+    "vae_decode": "a4bd9d4acf64c641ef5d7bbe32e79a7b",
+    "vae_decoder_block_1": "c9548637d7d0e759e38443e69f62a120",
+    "vae_decoder_block_2": "c445b387e72b69a1bcb1cf0bc02975cc",
+    "vae_decoder_block_3": "b26496903a90d935f59b32446b1d93be",
+    "vae_decoder_block_4": "c09631c90c0265de4279c56e8f8a8d57",
+    "vae_mid_block": "cb0c2c4d1a5455f44683943e4feedaf9"
+   }
+  },
+  "mochi-1-preview": {
+   "input_sha256": "8827c13c2736c2e77d40168f43cf587165347a92b772aeb830eccb55e6d44094",
+   "surfaces": {
+    "expanded": "0faf45db4d7271be2066d94b150f4918ff20ee0d981708d41470f39177e561d2",
+    "gallery": "30d87c97c8367946665a3a36d1373bd2496cd78d2cb007e2a87f16229c6c2b1d",
+    "html_meta": "c769aee5f86e4aff2ccda720bd57ee26568e59e8e6575ff99ed679f66ff4f32e",
+    "ir": "98137f9f0daac0f8e051e48559e1c444c99a7bda83db9e66e69c93e3ac3ab8b4",
+    "ledgers": "6e0bbbc9eb2fd4b25e330dbdddbc242392fb5fbe7e74a9159835f7d26fe1a577",
+    "params": "82b04fadcb52d86a3c24a68202a450cad8fe19644e251e75d8e7106c3fa21143",
+    "sable": "51b4f68c221f8604d231ff1f276a756e0d7f457fe3810d3c31c2b460f3077980"
+   },
+   "views": {
+    "architecture": "83d8afc4107222d999481235c8f7e1b4",
+    "attn": "49790b03dc0022b77ab168245e057946",
+    "denoiser": "e4aab071df0f1964e949525c971f4633",
+    "encoder_0": "9b87e79060d680606c06b299ed03b566",
+    "encoder_0_op_ffn": "40353f89e3ee2ed8274ea740b2639aad",
+    "encoder_0_op_selfattn": "bd916550c725637faca437252195cc2b",
+    "ffn": "7d8517124cdebbe6ccfc0f7e825743f9",
+    "scheduler": "84f18c811f524ad4554b856d60f3cf76",
+    "vae_decode": "d7d9354966f4495a28c380d90a280dd3"
+   }
+  },
+  "olmo-2-1124-7b": {
+   "input_sha256": "9aa89cf5ec93638b5143d45715541166f50325b435f64ed2bc6b100ac00b47e6",
+   "surfaces": {
+    "expanded": "a58388db24af1dfce705e86e9ca51bad18875dde94f5a105b9bd69da2afa48e5",
+    "gallery": "c4511b0509256c47a49efd99f7845991c0480447b3a824263d38a0d8d304cb85",
+    "html_meta": "72a1cb01e7a4355d2b918321935cb6c74ad2359f91dc3737e37008d153cfece1",
+    "ir": "fcb92167392ad41f3843dd5f75519f929a5484fdb74dc2953db61a6ffc67ae2a",
+    "ledgers": "4a09f68304f44cbc78cb021a65893927c4670071ca15c8f64cca514ed7577c69",
+    "params": "06b54a712c3986062b7ea1ba0484163aca3cf9448004579fab9d214289e394d4",
+    "sable": "c0d20b9f912971e8736386017442b22d210c24357c29a4a342922aa4f485a12f"
+   },
+   "views": {
+    "architecture": "53a77fd451abcf4054824f59a2beeb38",
+    "attn": "5e3aba5ff4c58e2d3c8782ca554fc3f7",
+    "ffn": "1ae3e6e5656fd8d7a8df14271e75d850"
+   }
+  },
+  "pixart-sigma-xl-2-1024-ms": {
+   "input_sha256": "529b2de8d37315e49492c3d02af974a4b30e328c154e08fd3e3c79b42e4b9cd3",
+   "surfaces": {
+    "expanded": "c0b99aa85726911c1fc852c669506ae8792807785c54ca8ee9c526c174cb5c50",
+    "gallery": "cb4ebde52cc50bebddfc88cc76b8e75ee10b786cd8de534a45785add36f13498",
+    "html_meta": "a4be875703059c4006fac695de51b1fbef3070a2c0374a3d0d977d0a8c06868a",
+    "ir": "170fc33be7e08ebec0a6c15ba110595d40876fd29f1d99a7fc648a91fb42665d",
+    "ledgers": "6e28cf6d66eb368a618b2d58f1ddc7b23f1cd58c3a0d46979ceb58d98a65f6c5",
+    "params": "1b3cce8b9c81e7778c07354256be1ac792505a0c4cb5a7f7ec9750a57f469fef",
+    "sable": "f26993624c5fab22e824a46cb9224d26b0e2cb7d859d270fff3865eb34886816"
+   },
+   "views": {
+    "architecture": "1cacf2dc833ade57cbd25b55f0676e05",
+    "attn": "d3552b121e3b5b31a3a81a831305315c",
+    "cross_attn": "62493dac4a0c1fe07edaeabed33be017",
+    "denoiser": "1584a5f7876a1612417fb88f5211af58",
+    "encoder_0": "9b87e79060d680606c06b299ed03b566",
+    "encoder_0_op_ffn": "b31abab691626c72dde789ac736cc3b0",
+    "encoder_0_op_selfattn": "14a695384058a63e8d7cbb25b6b4b842",
+    "ffn": "a66b0d9f8538451a202c6aff20678d1f",
+    "scheduler": "f8c0f6c893ff6bc3aa7f3e8490d60356",
+    "text_projection": "4aba2ecfbdf02367e04c9dc1739143e3",
+    "vae_decode": "b27da72d8797da4f23c882340fe81c3f",
+    "vae_decoder_block_1": "3beb7e8dd3a1413548860328bb44ec02",
+    "vae_decoder_block_2": "9f198a62053f6939aaa6682f5757e736",
+    "vae_decoder_block_3": "1e6e37015517da680f7d22555b019a11",
+    "vae_decoder_block_4": "22e659b90c632ec031fd95f36399ee49"
+   }
+  },
+  "prxpixel-t2i": {
+   "input_sha256": "b75e958b1a4ae7f4b5835f2e505c938881ccae9b10c728595c9c48abf152e619",
+   "surfaces": {
+    "expanded": "b340e7ef121cf5551cdb4c1984d399bf982dcc18871da943c804e0afc098ee36",
+    "gallery": "426f356a46f644e435e9a5daaa518547d9786e254f2ec0be374d54ba6e9d7420",
+    "html_meta": "2a47c12e335183bf18881243e3462414bc2d137766b52c392b0e4ce65229b5bf",
+    "ir": "d031453d7d3603794625e20566044fba3a8afd6c0f173f7d2a0253df5413a01f",
+    "ledgers": "24ed29d9b0fec921c4f2b9f515e7c3f86e9698ca99593a2a883305b2a8787c1c",
+    "params": "109b0d7d738a8208d109ec060f4aeab94436fbcaa6e782640830806c53af0a48",
+    "sable": "763ec0a5c817a0fc7a5dfa2f271a3fcb03dce1f613f2cd23b0a83ac27f15cbbd"
+   },
+   "views": {
+    "architecture": "51028cdc2f24390d0c6dc2993635fa32",
+    "attn": "dafe4920fd541548528f8088f25bd302",
+    "denoiser": "30ab62d182c5c850a9ecb9c8a447e1c6",
+    "encoder_0": "f8b1e4e0fa79a373c5ae7ba526973527",
+    "encoder_0_op_ffn": "38433759c72140f5833413de64e0bf5c",
+    "encoder_0_op_selfattn": "27370c9b2a02c5634f22f24176de8555",
+    "ffn": "671c05a4a4192258fa9687d8584567a7",
+    "scheduler": "455fcad6f15a7a8642673b21b0f8fcd7"
+   }
+  },
+  "qwen-image": {
+   "input_sha256": "0652a11493cb2ce560a49e3a0e8c3bcc75fef28c9c338035791b416a26504b71",
+   "surfaces": {
+    "expanded": "a3fbfb76b04bc8f6642f4333e6aebeea6639abf8fab95c51bc37ecc986e84f92",
+    "gallery": "92011400e727d45ec6738040316b529c13ac6d0f1400bee10967ca7f6b25b1fc",
+    "html_meta": "86f4c5d1f4c177f64ff477bf036e344238a3b5e681d350ee447e88ddeb781857",
+    "ir": "2730b5ead2a376d5d9f26efcd5d305c22abe16fc548087517e2ec2c27d0cb380",
+    "ledgers": "c3194dc28337a22b2388ebe71bed7a53a743b431545b79bfecf90a16187a3b32",
+    "params": "f988acd908b5e4b5be3f67fe3c76b8fb49b6e231372b87da663763a88417ed64",
+    "sable": "fdb328cc014472b88c1081d65f8defbd148c06978d24e86cb5483f192602dac5"
+   },
+   "views": {
+    "architecture": "b28795092ea0e64e36ffc9300564dde5",
+    "attn": "06c520c8baab65b82f4e8ee66bc9f0c4",
+    "denoiser": "1e20d289e4ee45a86ecd947ebdfc06fe",
+    "encoder_0": "5ba860823e257bbb7dafb9dab8a990e9",
+    "encoder_0_op_ffn": "a85265a7ec2cb379fee3cc2c5693bf37",
+    "encoder_0_op_selfattn": "3c8665d5139393e885a742568c89c67e",
+    "ffn": "55d445fd75cda43104b8c483bc9df7b3",
+    "scheduler": "3130960a49a7b5755a03df71c863676c",
+    "vae_decode": "c42470bb064f1f176b6efece5ccc2353",
+    "vae_decoder_block_1": "5287cc8501c929c34e6d0b43d7731cf3",
+    "vae_decoder_block_2": "bca741a288ebc432209718d9d589178d",
+    "vae_decoder_block_3": "4b43fdd076d4dd5d6a6b852d96353ec3",
+    "vae_decoder_block_4": "bb58470aeb416484a80788857c79da0f"
+   }
+  },
+  "qwen2-vl-7b-instruct": {
+   "input_sha256": "118613f4db7e1eba9aad854ff87585d2d96a07de10fddef1d2d9a65559e342c5",
+   "surfaces": {
+    "expanded": "eb38173efb8d6939bf2d84b1b378bf7dae88c2965042f104eccfdb327e47fa8c",
+    "gallery": "6cbd659fb25da99036ee0e43e93c7bf5549cbd47dee69fab825b52ec9d527873",
+    "html_meta": "efe721bb4c26fe1f656546df29756074442f2fd4f6946055d97440bcc59084b5",
+    "ir": "f4a6c59a687e297286992163bffdf1eeb9fbd23af0f218958abdbf1d58395795",
+    "ledgers": "a14b5274b800d3e69326da7faa2deb1eaa9a8e68e6702f4990808fdf2408076c",
+    "params": "92c898d877714f9261ec0dbd17bd2b924192a35d5adb73b1f115adc09ad43525",
+    "sable": "221aa6115a951e3372b056237f2350333fcec050e12651d31aa65a881812fa4f"
+   },
+   "views": {
+    "architecture": "cf524c6e694a6ef256414879f4f5eb0b",
+    "attn": "4dda5c76b0ed456862579ed11f792711",
+    "ffn": "2c92800356c775ae2fb957d272c5ded4",
+    "fusion": "c7679bca24724d3fd277f8c5dee25ce4",
+    "video_encoder": "d294b927141a6e9cc7d60a0edef39d56",
+    "video_patches": "2dc1b2e33ee6747674e0226823e47b7a",
+    "video_path": "0722d68e8b7714f0ad5c5d7b9946ea36",
+    "video_projector": "0119adc0a472b33e71e237cdd615e4bb",
+    "vision_enc_op_ffn": "a9ee9abd46e65af2b59aa70d72e3a99b",
+    "vision_enc_op_selfattn": "5587f6c04c78a3bda4bec1e9937f1d36",
+    "vision_encoder": "d294b927141a6e9cc7d60a0edef39d56",
+    "vision_patches": "24be8595cdbb6e1b93f81739b6428779",
+    "vision_path": "b87789d90a5ef4f2300b571043c58d21",
+    "vision_projector": "0119adc0a472b33e71e237cdd615e4bb"
+   }
+  },
+  "qwen3-8b": {
+   "input_sha256": "af07ba425791c3adff0ecdc562e96679ccca8be23344e9b1cd49e50e4eba18ec",
+   "surfaces": {
+    "expanded": "6118f3edf3aa4fe1b225b19856adab6fc045c49a0ef019f74134d2e66d3750d6",
+    "gallery": "590bf4222feb15d46d70d68751b393ef79b5fd2c4ffa426f3e8b8f9668988425",
+    "html_meta": "d1ceee5b992888f7f4ae4b91d891bcbd7fbc98bb424b8bd560d349a7bf853c5a",
+    "ir": "bedced72edb4917048638b7862dd1b6dd4cb6955bdc35494698fd52177533b04",
+    "ledgers": "6ba52f46dad78566c1b407280d5605c11141b6ffe92b52bb977c4e50a9060bbb",
+    "params": "56a91503562bfc0774643c3b65d4e35b38b323fcb35ef75be2a14b09b0e87f25",
+    "sable": "2eb13a7cb37638c47cdda90aea398341c5dabd5fcaafbe7e6371d225a97c5959"
+   },
+   "views": {
+    "architecture": "15b3c1ad4bb48f40b55d5ef0c152f7a8",
+    "attn": "8e309afbfd1286cb9dff04af7378d8f5",
+    "ffn": "12b1bdce7140cb545f7989138979cbfe"
+   }
+  },
+  "sana-1600m-1024px-diffusers": {
+   "input_sha256": "53d2fea176a64464f8010c37c8b19f4934c7be85c9e6be08df7f84cb0c24995a",
+   "surfaces": {
+    "expanded": "5c9e226de88d55cff984d90349a6f81e3cee1b58ca9d769e460a23f83a23ae7f",
+    "gallery": "ded2eb2e0383ecfaa4661dfa796211e6b961c6ccc4bea52f05b90146cb55c1b5",
+    "html_meta": "5d93549fee5ab574c98a8ec5b39f2c78b4015234d2a5533a2d5c336c5b4113fc",
+    "ir": "40cac969f7d3ff7577327fbe9eda5e14b4b6a665f4c03d95f5723f5d5217df68",
+    "ledgers": "48e33bb2e496b433ef6e1c95406306ada72f6e5a00fe59c4787b8d151c041723",
+    "params": "ae08126e9c19b6c65b6cb0d3be12874fd47f9f928bc483194fc6b2f97e114c36",
+    "sable": "cd00852a3476b495f83e5b9f7d95a318b6bebabb239761e9116a47ab6c86e3f9"
+   },
+   "views": {
+    "architecture": "40a0c3994e214ec659950b03156af428",
+    "attn": "c3b47dc7cf4b0422fe0b553c1dbe768b",
+    "cross_attn": "7aae01a2ba3277f8635e31fa6053b591",
+    "denoiser": "5db2f8f9b2485eeb412873de60cb9659",
+    "encoder_0": "f86831e8fc8b40b82165edc86f0e5dc6",
+    "encoder_0_g0_op_ffn": "44214a47b62afb95cf44b9c9a99c6eae",
+    "encoder_0_g0_op_selfattn": "aae2fb429abd156e914337612f776baf",
+    "encoder_0_g1_op_ffn": "44214a47b62afb95cf44b9c9a99c6eae",
+    "encoder_0_g1_op_selfattn": "010346db89c1d4339b7a22246537b7a2",
+    "ffn": "b268ddb98d302b36f13866c181a485eb",
+    "scheduler": "6f3ff3d93134f0e32a666f32805babb4",
+    "text_projection": "7fa8ba3824ca9c1245b42b4764f65232",
+    "vae_decode": "8a360c4f1e446063bd592a6f7c329e78"
+   }
+  },
+  "stable-diffusion-3-5-large": {
+   "input_sha256": "854194137777cf55588b8f3e7d928d383ff9e3e51acf7cea90ab2f49d927d7fc",
+   "surfaces": {
+    "expanded": "94451ac776b2766294ded43f1f0bce337be25de2c975c5846dbadb967f20915a",
+    "gallery": "62bfa2710f04fbd5ce4916ce5cd6245a3d5aff7956744b7326f2aa2d519e2cec",
+    "html_meta": "eebc710a1c1c14a75f119eb80cca21031ee67db8a50d14cc5443ed0a72e1b98a",
+    "ir": "e1b7beae745b2d80e1c4cd1ff653ac5c02d0455f7a3c3b050aa0fef9710377c6",
+    "ledgers": "5927ee48e5a49aeffde64cf292b6f0b80867608916fbd8f7c758a81a237cd76c",
+    "params": "45fba71a06da0f66de1f0a618138331c34ec6f6c589d47c18ea30eff78e51a39",
+    "sable": "42e5f212b7016638311e17c415af3275d60ea454503396ab303e0578c6239653"
+   },
+   "views": {
+    "architecture": "c7d527c9716ad15ea86aad84761dad3b",
+    "attn": "ee3a019d32c6da733ce276148e08354b",
+    "denoiser": "6dd2ecf2118d616b289dc50eb185c1f1",
+    "encoder_0": "d9672a2a93fc388b5667ff54bbc4f62b",
+    "encoder_0_op_ffn": "12bdac133e2f6698c41e56b1f164b6dd",
+    "encoder_0_op_selfattn": "d157f2432b9d39f3f75773b8cb4aa0f5",
+    "encoder_1": "5e4cf072825aa25f1c2a37e77fc4bdcc",
+    "encoder_1_op_ffn": "fe59ed6d743bbf863648ebd63f849bbb",
+    "encoder_1_op_selfattn": "648cb403c022b693ad878d706902da23",
+    "encoder_2": "9b87e79060d680606c06b299ed03b566",
+    "encoder_2_op_ffn": "f3e46159c1fcc33e83ec6fdbe8da0f2e",
+    "encoder_2_op_selfattn": "1b2176675450714b81f4c53f5e044923",
+    "ffn": "ff446529f304d20f7683f0ab777c2ebb",
+    "scheduler": "b6e394128267fd1d82004c53827a5c48",
+    "text_projection": "88bcf9930702b6af67b965392f3e9d61",
+    "vae_decode": "ea225848d907dde730d22f0038183b47",
+    "vae_decoder_block_1": "8bb573b3f2c12f5969ae4a8e092bf3ab",
+    "vae_decoder_block_2": "c73da7543802a9add541c80909f2707f",
+    "vae_decoder_block_3": "4d7cebce3cc717ac8526e0b0de1fe39f",
+    "vae_decoder_block_4": "2d5c868632c7dcb3dc3d884ef24c666b",
+    "vae_mid_block": "fb684258acc0ad1bce631820fd73366d"
+   }
+  },
+  "stable-diffusion-xl-base-1-0": {
+   "input_sha256": "52e70629b038b6ddaebe581ed106e3023fd7a748e32ac167578db153af4a684e",
+   "surfaces": {
+    "expanded": "208447c9473b21f9f6d254672d92396cab27098d20f42617395f87c28dfb677b",
+    "gallery": "740997ee907bb0b0db58972baec37e97849fbdae9a5f38a6ea02ff6ff5774255",
+    "html_meta": "d6e581528f16c1f9c388eee4d49b06c61d43295389a80c60c3cd912a6baba592",
+    "ir": "6a9266d0259d1b94c7c3ef3a94439cdff81b8be9e475e4e4cedaf1b5404589a2",
+    "ledgers": "912e89b5f4bc770e88d42b565036916c5c62490ee01117b36c3d463ae4be1e1e",
+    "params": "f80de00bd0ec5ab512ef44bc27533df68c8c1114a11177baf8efa64c8c5398e0",
+    "sable": "1763befe993c6eeb5410696c75c338072fee5f80a7a94bb202aeb04a3a1d0352"
+   },
+   "views": {
+    "architecture": "5df8a4eda034ca7f242d0fb47b632e22",
+    "denoiser": "cdf43b8ecc2ac51d8d827ac14dbd6dae",
+    "encoder_0": "3ecc45f838bfd7eebd7dca350c3f7d04",
+    "encoder_0_op_ffn": "1f44c23d07a67ae2e7f392b093ff5cf8",
+    "encoder_0_op_selfattn": "8039bda2aac9986de2094b82f76b73cc",
+    "encoder_1": "7c5fc3c739f41d8a567418b5f619d2c8",
+    "encoder_1_op_ffn": "132445acbdf7d756586f75024de47d17",
+    "encoder_1_op_selfattn": "1d25647afe5802983c48ff5fce381624",
+    "scheduler": "2989690d90d82dded5881dedfe9065ca",
+    "unet_down_0": "09d273d6022ab07158f8dc7b09698e33",
+    "unet_down_0__resnet": "64d6cd9b58140f0e4a7ec3412116dd93",
+    "unet_down_1": "b75b8f3ce3d358907036ee12b22cbbc2",
+    "unet_down_1__crossattn": "85a4069394f87fccf7bfab9611bbfbc2",
+    "unet_down_1__ff": "fe95d1d073b7b4685b5cffae7174d33f",
+    "unet_down_1__resnet": "8874936fa4778a9d44c1cf1a7d0bc752",
+    "unet_down_1__selfattn": "1d25647afe5802983c48ff5fce381624",
+    "unet_down_1__transformer": "40325d6d1106b458996838748a7df14b",
+    "unet_down_2": "9ad20efcf870037eef9d1cb50c0bc390",
+    "unet_down_2__crossattn": "85a4069394f87fccf7bfab9611bbfbc2",
+    "unet_down_2__ff": "fe95d1d073b7b4685b5cffae7174d33f",
+    "unet_down_2__resnet": "0850c4e36b23a250337f084246890fd0",
+    "unet_down_2__selfattn": "1d25647afe5802983c48ff5fce381624",
+    "unet_down_2__transformer": "2f1629970ce23e018d4bc9220f3384f7",
+    "unet_mid": "8870ec2d1f94d18d07b8440da8b9ab4b",
+    "unet_mid__crossattn": "85a4069394f87fccf7bfab9611bbfbc2",
+    "unet_mid__ff": "fe95d1d073b7b4685b5cffae7174d33f",
+    "unet_mid__resnet_post": "0850c4e36b23a250337f084246890fd0",
+    "unet_mid__resnet_pre": "0850c4e36b23a250337f084246890fd0",
+    "unet_mid__selfattn": "1d25647afe5802983c48ff5fce381624",
+    "unet_mid__transformer": "2f1629970ce23e018d4bc9220f3384f7",
+    "unet_text_cond": "b32f612f227252073a08e66d082113c1",
+    "unet_up_0": "c60a86c043f8d2be68bca7e5df2215e7",
+    "unet_up_0__crossattn": "85a4069394f87fccf7bfab9611bbfbc2",
+    "unet_up_0__ff": "fe95d1d073b7b4685b5cffae7174d33f",
+    "unet_up_0__resnet": "0850c4e36b23a250337f084246890fd0",
+    "unet_up_0__selfattn": "1d25647afe5802983c48ff5fce381624",
+    "unet_up_0__transformer": "2f1629970ce23e018d4bc9220f3384f7",
+    "unet_up_1": "1f259e59ffa9b85c128e90153526ddfa",
+    "unet_up_1__crossattn": "85a4069394f87fccf7bfab9611bbfbc2",
+    "unet_up_1__ff": "fe95d1d073b7b4685b5cffae7174d33f",
+    "unet_up_1__resnet": "8874936fa4778a9d44c1cf1a7d0bc752",
+    "unet_up_1__selfattn": "1d25647afe5802983c48ff5fce381624",
+    "unet_up_1__transformer": "40325d6d1106b458996838748a7df14b",
+    "unet_up_2": "f2e1233e250891e2de39c5c057476f4b",
+    "unet_up_2__resnet": "64d6cd9b58140f0e4a7ec3412116dd93",
+    "vae_decode": "19881dbe26ee6e9c28298b4f00967617",
+    "vae_decoder_block_1": "4b53d426a3dbc8f0c6e315f0d2a12cad",
+    "vae_decoder_block_2": "498f27eac22f32eb6d48d602da830a91",
+    "vae_decoder_block_3": "8d24f016deed8cbc7b7e8e5bd234dc2e",
+    "vae_decoder_block_4": "c47dd23a8c0eb8df389dc310acb4ccac"
+   }
+  },
+  "stablelm-2-1-6b": {
+   "input_sha256": "5ad7d57ed94b9e42210498cd1aaf80c82154c7cce34059397d58e18c334d8434",
+   "surfaces": {
+    "expanded": "9daffc9c89f50695bd3f18f1099539d5d0db0ccef0ad94741920c30bd2e98841",
+    "gallery": "899a4e1563e877bfe2ba093754119aef42382ded48c8e50e497396eceeb7044a",
+    "html_meta": "51b46ed4ced02044699fd7c881e8bfc50bd9c5ddbf950ceab0be715e7439af7b",
+    "ir": "d3092340e9d83b910526514685bd64841e21920aa057af81d8e9928e57ec64d9",
+    "ledgers": "91e6a02015c459a8ddaef1ce32dcb39d41a94a65f85db3d4fac54fc916d16bc7",
+    "params": "f964773efbf48df6b5701989e4051284a2e421457b947c09e9a1d28b254d5a33",
+    "sable": "88770ed19f9aa3e6434c861282e9a98e391996f24b29d3db787626ead3a7055f"
+   },
+   "views": {
+    "architecture": "27e589c20e8e988f8449da2eb97a12c1",
+    "attn": "dd71a8638db4f0c3e0fac88c19fabe41",
+    "ffn": "9c7ebe398faecd2478255d16c20831a3"
+   }
+  },
+  "wan2-2-t2v-a14b-diffusers": {
+   "input_sha256": "64f8942b3021e4c6ec031abcd1159c2e8eceaa15f8681332b319411432350d9c",
+   "surfaces": {
+    "expanded": "9fbe0dd2e2916bc0a6541e7ff0b777214689f01d36142bebf7bf1d0dec7e6c71",
+    "gallery": "539baef9e63ec48eea24bdbcbcb0659654e4a5a12340c192077e983a4939991a",
+    "html_meta": "5fa0fd97e9002c18a0068ebebf16dfb1ffc6d0794cbe530daef6d2d230ffad4f",
+    "ir": "4994932b8bafaacb585918612ca3512b1501997faa38d2570ac015426fef454c",
+    "ledgers": "8433d246a6017af655278e3ea97c3967d8efea5340d6391fe0f897806cec4088",
+    "params": "e31a56fbbcb41a11dececc787548d74c02032541dcb5b6240fb3209803fd2176",
+    "sable": "b74e566087b897e3c8abcdff6f4178c357db2b8ea1bb229f0bd5aa3bf8322e96"
+   },
+   "views": {
+    "architecture": "27ac45ab6afc0f6248b8a4ded54cab27",
+    "attn": "792a7efc1289d1eecce7bd2563b747b7",
+    "cross_attn": "e7441d48bd4ee7e85fffc8bd4513f96b",
+    "denoiser": "d7695868471fb250de9f6396d06755f6",
+    "encoder_0": "27d14f81c2049ae5f4e78d235a43b6d2",
+    "encoder_0_op_ffn": "aa4f7268539d28a234b33d9a01b0ddc6",
+    "encoder_0_op_selfattn": "01b001aaf2819dd97684ab2cf9289c82",
+    "ffn": "16a6798a2085439b3d272d169349b4aa",
+    "scheduler": "28e39454c95b30e92cf798c97768cfdd",
+    "vae_decode": "2fafa21f0f504acbc36cae0d02e0897f",
+    "vae_decoder_block_1": "7f8caa8f54b3a432dbdb16095095ff0d",
+    "vae_decoder_block_2": "b81d64f599b43794abcc2478c65ece53",
+    "vae_decoder_block_3": "f5ed400ab571892a69eefebdf8baaa93",
+    "vae_decoder_block_4": "89e5d1f408fe8c72264a1fe18f58492e"
+   }
+  }
+ }
+}

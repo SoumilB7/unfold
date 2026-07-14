@@ -147,3 +147,29 @@ def test_tree_fingerprint_excludes_only_the_worktree_prefix(tmp_path):
     assert fp4 != fp3
     (nested / "schema.json").unlink()
     assert tree_state.fingerprint(root) != fp4
+
+
+def test_preservation_is_clean_checkout_reproducible(tmp_path):
+    """COR-0 (§5): git-archive HEAD must carry EVERY preservation input and
+    expectation — the manifest verifier runs there with zero skips.  (The full
+    25-witness regeneration gate runs in test_preservation; this proves the
+    EVIDENCE is self-contained: manifest + 25 inputs present and hash-valid.)"""
+    import hashlib
+    import json
+    import subprocess
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    export = tmp_path / "export"
+    export.mkdir()
+    subprocess.run(f"git -C '{root}' archive HEAD | tar -x -C '{export}'",
+                   shell=True, check=True)
+    manifest = json.loads(
+        (export / "tests" / "preservation_expected_manifest.json").read_text())
+    assert manifest["witness_count"] == 25
+    corpus = export / "tests" / "sable_test_corpus"
+    inputs = sorted(corpus.glob("*.json"))
+    assert len(inputs) == 25, f"clean checkout carries {len(inputs)} inputs"
+    for path in inputs:
+        row = manifest["witnesses"][path.stem]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == row["input_sha256"]
+        assert all(row["surfaces"].values()) and row["views"]

@@ -1,0 +1,84 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "config_field_audit": true,
+    "dangling_connectors": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_name_or_path": "stabilityai/stablelm-2-1_6b",
+    "architectures": [
+      "StableLmForCausalLM"
+    ],
+    "attention_dropout": 0.0,
+    "bos_token_id": 100257,
+    "chunk_size_feed_forward": 0,
+    "dtype": "float16",
+    "eos_token_id": 100257,
+    "hidden_act": "silu",
+    "hidden_dropout": 0.0,
+    "hidden_size": 2048,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "initializer_range": 0.02,
+    "intermediate_size": 5632,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "layer_norm_eps": 1e-05,
+    "max_position_embeddings": 4096,
+    "model_type": "stablelm",
+    "num_attention_heads": 32,
+    "num_hidden_layers": 24,
+    "num_key_value_heads": 32,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "pad_token_id": null,
+    "partial_rotary_factor": 0.25,
+    "problem_type": null,
+    "qk_layernorm": false,
+    "return_dict": true,
+    "rope_parameters": {
+      "partial_rotary_factor": 0.25,
+      "rope_theta": 10000,
+      "rope_type": "default"
+    },
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "use_cache": true,
+    "use_parallel_residual": false,
+    "use_qkv_bias": true,
+    "vocab_size": 100352
+  },
+  "hash_signature": [
+    "27e589c20e8e988f8449da2eb97a12c1",
+    "9c7ebe398faecd2478255d16c20831a3",
+    "dd71a8638db4f0c3e0fac88c19fabe41",
+    "ed1b59a2bd54364a61191a66fae44950"
+  ],
+  "model": "stablelm-2-1_6b",
+  "source": "local",
+  "superseded_hash_signature": [
+    "27e589c20e8e988f8449da2eb97a12c1",
+    "9c7ebe398faecd2478255d16c20831a3",
+    "d1ddf7a438051a128350ddf89f259cf4",
+    "dd71a8638db4f0c3e0fac88c19fabe41"
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/stablelm-2-1-6b",
+    "manifest": true,
+    "png_count": 4
+  }
+}

@@ -144,27 +144,66 @@ def test_canonical_surfaces_are_deterministic_end_to_end():
 # §7.2 / §7.8 — the LIVE 25-model comparison (shadow tripwire)
 # --------------------------------------------------------------------------- #
 
-def test_live_corpus_comparison_shadow_report():
-    """BLOCKING (REC-7 §13.2): zero structural drift across all 25 witnesses
-    and every structural surface.  Evidence surfaces (ledgers/sable) remain
-    documented intentional recovery deltas until re-baselined with Soumil."""
-    if not _BASELINE.is_dir():
-        pytest.skip("no local U0 baseline (clean checkout) — the committed "
-                    "canonical-expected cutover lands in REC-7")
-    unexpected: list[str] = []
-    ir_drift: set[str] = set()
-    for path in sorted(_CORPUS.glob("*.json")):
-        row = P.compare_model(path.stem, _CORPUS, _BASELINE)
-        if row.get("baseline") == "MISSING":
-            unexpected.append(f"{path.stem}: baseline dir missing")
-            continue
-        for surface in row["structural_drift"]:
-            if surface == "ir" and path.stem in KNOWN_U1_IR_DRIFT:
-                ir_drift.add(path.stem)
-            else:
-                unexpected.append(f"{path.stem}: unexpected structural drift "
-                                  f"on {surface!r}")
-    print(f"\n[shadow] known U1 ir-drift present on {len(ir_drift)}/"
-          f"{len(KNOWN_U1_IR_DRIFT)} models: {sorted(ir_drift)}")
-    assert not unexpected, "NEW structural drift beyond the documented U1 " \
-                           f"set:\n  " + "\n  ".join(unexpected)
+def test_expected_manifest_zero_drift_zero_skip():
+    """COR-0 (§5): the BLOCKING clean-checkout gate — regenerate all 25
+    witnesses fresh and compare EVERY committed hash (inputs, surfaces, views).
+    A missing manifest/input/surface/view or a None hash is a FAILURE; there
+    is no skip path."""
+    manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+    assert manifest_path.exists(), "committed expected manifest is MISSING"
+    findings = P.verify_against_expected(_CORPUS, manifest_path)
+    assert findings == [], "\n".join(findings[:20])
+
+
+def _manifest_doc():
+    return json.loads((_CORPUS.parent / "preservation_expected_manifest.json").read_text())
+
+
+@pytest.mark.parametrize("mutate,expect", [
+    ("drop_one", "witness_count != 25"),
+    ("drop_first_input", "corpus input MISSING"),
+    ("add_extra", "witness_count != 25"),
+    ("mutate_input_hash", "corpus input hash MISMATCH"),
+    ("none_hash", "expected hash is None"),
+    ("mutate_view", "view"),
+])
+def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
+    """COR-0 (§5.7): 0/24/26 witnesses, missing/mutated input, None hash, and
+    view drift each fail for the intended reason."""
+    doc = _manifest_doc()
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    for src in _CORPUS.glob("*.json"):
+        (corpus / src.name).write_bytes(src.read_bytes())
+    slugs = sorted(doc["witnesses"])
+    if mutate == "drop_one":
+        doc["witnesses"].pop(slugs[0]); doc["witness_count"] = 24
+    elif mutate == "drop_first_input":
+        (corpus / f"{slugs[0]}.json").unlink()
+    elif mutate == "add_extra":
+        doc["witnesses"]["zzz-extra"] = doc["witnesses"][slugs[0]]
+        doc["witness_count"] = 26
+    elif mutate == "mutate_input_hash":
+        doc["witnesses"][slugs[0]]["input_sha256"] = "0" * 64
+    elif mutate == "none_hash":
+        key = next(iter(doc["witnesses"][slugs[0]]["surfaces"]))
+        doc["witnesses"][slugs[0]]["surfaces"][key] = None
+        doc["witnesses"][slugs[0]]["input_sha256"] = P.hashlib.sha256(
+            (corpus / f"{slugs[0]}.json").read_bytes()).hexdigest()
+    elif mutate == "mutate_view":
+        views = doc["witnesses"][slugs[0]]["views"]
+        views[next(iter(views))] = "f" * 12
+    mp = tmp_path / "m.json"
+    mp.write_text(json.dumps(doc))
+    # poison verification must not need a full 25-model regen: findings for
+    # count/input-level poisons surface before regeneration; content poisons
+    # are exercised on the FIRST witness only via a pruned manifest.
+    if mutate in ("none_hash", "mutate_view"):
+        doc["witnesses"] = {slugs[0]: doc["witnesses"][slugs[0]]}
+        doc["witness_count"] = 25   # keep count clean; isolate the content poison
+        mp.write_text(json.dumps(doc))
+        findings = P.verify_against_expected(corpus, mp, limit=1)
+        assert any(expect in f for f in findings), findings[:6]
+    else:
+        findings = P.verify_against_expected(corpus, mp, limit=1)
+        assert any(expect in f for f in findings), findings[:6]

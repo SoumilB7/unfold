@@ -44,8 +44,9 @@ htmlcov/
 # Previewer
 previews/
 
-# Corpuses
-sable_test_corpus
+# Generated galleries only — the 25 corpus INPUT configs are
+# canonical preservation evidence and are COMMITTED (COR-0 §5)
+tests/sable_test_corpus/galleries/
 # U0 frozen preservation witnesses (artifacts on disk; hashes committed in tests/preservation_manifest.json)
 tests/preservation_baseline/
 

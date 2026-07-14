@@ -1,0 +1,79 @@
+{
+  "checks": {
+    "click_coupling": true,
+    "config_field_audit": true,
+    "dangling_connectors": true,
+    "evidence_ambiguity": true,
+    "fact_conformance": true,
+    "label_lint": true,
+    "nested_conformance": true,
+    "no_dotted_arrows": true,
+    "no_dotted_boundaries": true,
+    "op_conformance": true,
+    "unique_ref_ids": true,
+    "wiring_conformance": true
+  },
+  "config": {
+    "_name_or_path": "allenai/OLMo-2-1124-7B",
+    "architectures": [
+      "Olmo2ForCausalLM"
+    ],
+    "attention_bias": false,
+    "attention_dropout": 0.0,
+    "bos_token_id": null,
+    "chunk_size_feed_forward": 0,
+    "dtype": "float32",
+    "eos_token_id": 100257,
+    "hidden_act": "silu",
+    "hidden_size": 4096,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "initializer_range": 0.02,
+    "intermediate_size": 11008,
+    "is_encoder_decoder": false,
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "max_position_embeddings": 4096,
+    "model_type": "olmo2",
+    "num_attention_heads": 32,
+    "num_hidden_layers": 32,
+    "num_key_value_heads": 32,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "pad_token_id": 100277,
+    "problem_type": null,
+    "return_dict": true,
+    "rms_norm_eps": 1e-06,
+    "rope_parameters": {
+      "rope_theta": 500000,
+      "rope_type": "default"
+    },
+    "tie_word_embeddings": false,
+    "transformers_version": "5.12.1",
+    "use_cache": true,
+    "vocab_size": 100352
+  },
+  "hash_signature": [
+    "1ae3e6e5656fd8d7a8df14271e75d850",
+    "53a77fd451abcf4054824f59a2beeb38",
+    "5e3aba5ff4c58e2d3c8782ca554fc3f7",
+    "954d1836f6b2de15544c299e5657ab13"
+  ],
+  "model": "OLMo-2-1124-7B",
+  "source": "local",
+  "superseded_hash_signature": [
+    "05578ac1b36a2cb0d7a5245165e623fc",
+    "1ae3e6e5656fd8d7a8df14271e75d850",
+    "53a77fd451abcf4054824f59a2beeb38",
+    "954d1836f6b2de15544c299e5657ab13"
+  ],
+  "visual_evidence": {
+    "gallery_dir": "galleries/olmo-2-1124-7b",
+    "manifest": true,
+    "png_count": 4
+  }
+}
