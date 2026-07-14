@@ -354,3 +354,71 @@ def test_audit_incomplete_names_unmigrated_owners():
     check = next(c for c in rep.checks if c.name == "config_audit_incomplete")
     assert check.blocking is False          # explicitly staged, not silent
     assert "root.scheduler" in check.findings, check.findings
+
+
+# --------------------------------------------------------------------------- #
+# COR-3 (§8) — unknown-safety at EVERY depth (permanent guards)
+# --------------------------------------------------------------------------- #
+
+def _depth_surfaces(cfg):
+    import re
+    from model_unfolder.params import estimate_params
+    diagram = mu.unfold(cfg)
+    html = diagram.to_html(standalone=True)
+    return {
+        "ir": diagram.to_ir(),
+        "html_zero": bool(re.search(r"\b(dim|hidden) 0\b", html)),
+        "expanded": json.dumps(diagram.to_json()),
+        "params": estimate_params(diagram.ir),
+    }
+
+
+def test_cor3_conflicting_width_stays_unknown_at_every_depth():
+    """§8.C.1: hidden_size=4096 + n_embd=64 — unknown through IR, HTML,
+    expanded, and params; never dim 0 / hidden 0 / zero-math totals."""
+    s = _depth_surfaces({**LLAMA, "n_embd": 64})
+    assert s["ir"].get("hidden_size") in (None,)          # unknown, not 0
+    assert not s["html_zero"]
+    assert '"hidden_size": 0' not in s["expanded"]
+    assert s["params"]["total"] is None and "incomplete" in s["params"]
+    rows = (s["ir"].get("extras") or {}).get("config_ambiguity") or []
+    assert len(rows) == 1                                  # idempotent, §8.B
+
+
+def test_cor3_conflicting_heads_never_fabricate_geometry():
+    """§8.C.2: FLUX head rivals — no zero-width claims at any depth."""
+    from test_support import FLUX
+
+    s = _depth_surfaces({**FLUX, "n_heads": 16})
+    assert not s["html_zero"]
+    assert '"hidden_size": 0' not in s["expanded"]
+    assert s["params"]["total"] is None
+
+
+def test_cor3_activation_rivals_author_nothing_and_block():
+    """§8.C.3: hidden_act=gelu vs act_fn=silu — ONE ambiguity, no retry, the
+    render is byte-identical to control (only code evidence draws), Sable
+    blocks."""
+    import sys
+    sys.path.insert(0, str(pathlib.Path(mu.__file__).parent.parent))
+    from model_unfolder.sable import sable
+    from test_support import FLUX
+    from test_support.preservation import html_meta
+
+    conflicted = {**FLUX, "hidden_act": "gelu", "act_fn": "silu"}
+    control = html_meta(mu.unfold(FLUX).to_html(standalone=True))
+    actual = html_meta(mu.unfold(conflicted).to_html(standalone=True))
+    assert actual["structural_sha256"] == control["structural_sha256"]
+    rep = sable(conflicted, render_images=False)
+    assert not rep.mechanical_passed
+    amb = next(c for c in rep.checks if c.name == "config_ambiguity")
+    assert any("hidden_act" in f for f in amb.findings)
+
+
+def test_cor3_equal_aliases_preserve_current_output_exactly():
+    """§8.C.4: equal redundant aliases change NOTHING."""
+    from model_unfolder.params import estimate_params
+
+    control = estimate_params(mu.unfold(LLAMA).ir)
+    redundant = estimate_params(mu.unfold({**LLAMA, "n_embd": 4096}).ir)
+    assert control["total"] == redundant["total"] and control["total"]

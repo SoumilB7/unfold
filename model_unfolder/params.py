@@ -97,6 +97,13 @@ def estimate_params(ir: ModelIR) -> dict:
     """
     h = ir.hidden_size
     v = ir.vocab_size
+    # COR-3 (§8.A): unresolved width -> an explicitly INCOMPLETE estimate.
+    # Computing with zero would present "0 params" as a known claim.
+    if not h:
+        return {"total": None, "active": None, "embed": None, "output": None,
+                "per_layer": [], "is_sparse": False,
+                "incomplete": "hidden_size unresolved — parameter formulas "
+                              "need the model width"}
 
     # U2 unknown policy: an unknown never silently picks a branch — the
     # estimate keeps a deterministic convention AND says so (``assumptions``

@@ -524,10 +524,19 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
                 f"{occ.dotted_path}={occ.value!r}" for occ in contest)
             break
     if conflict_reason:
-        emit(canonical, intent="ambiguous", present=True, alias=first.spelling,
-             component=owner, config_path=first.dotted_path,
-             reason=conflict_reason,
-             value_state="value" if first.value is not None else "explicit_null")
+        # COR-3 (§8.B): repeated resolution of the same conflicted occurrence
+        # is IDEMPOTENT — one ambiguity event per (owner, canonical, path) per
+        # ledger; a second inspection may neither duplicate nor weaken it.
+        ledger = active_ledger()
+        already = ledger is not None and any(
+            e.intent == "ambiguous" and e.component == owner
+            and e.canonical == canonical and e.config_path == first.dotted_path
+            for e in ledger.events)
+        if not already:
+            emit(canonical, intent="ambiguous", present=True, alias=first.spelling,
+                 component=owner, config_path=first.dotted_path,
+                 reason=conflict_reason,
+                 value_state="value" if first.value is not None else "explicit_null")
         return ConfigResolution(
             component=owner, canonical=canonical, selected_path=None,
             selected_alias=None, value=None, state="ambiguous",

@@ -676,12 +676,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
         value = res.consume(fact_owner=fact_owner, fact_key=fact_key or field)
         return default if value is None else value
 
-    num_layers   = consume("num_hidden_layers", 0, fact_owner="model", fact_key="num_layers") or 0
-    hidden_size  = consume("hidden_size", 0, fact_owner="model", fact_key="hidden_size") or 0
-    num_heads    = consume("num_attention_heads", 0, fact_owner="decoder.attention", fact_key="num_heads") or 0
+    num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
+    hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
+    num_heads    = consume("num_attention_heads", fact_owner="decoder.attention", fact_key="num_heads")
     num_kv_heads = consume("num_key_value_heads", fact_owner="decoder.attention", fact_key="num_kv_heads") or num_heads
     head_dim     = consume("head_dim", fact_owner="decoder.attention", fact_key="head_dim") or (hidden_size // num_heads if (num_heads and hidden_size) else None)
-    intermediate_size = consume("intermediate_size", 0, fact_owner="decoder.ffn", fact_key="intermediate_size") or 0
+    intermediate_size = consume("intermediate_size", fact_owner="decoder.ffn", fact_key="intermediate_size")
     # OLMo-style: intermediate_size derived from mlp_ratio * hidden_size.
     if not intermediate_size:
         mlp_ratio = consume("mlp_ratio", fact_owner="decoder.ffn", fact_key="mlp_ratio")
@@ -771,7 +771,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if not layer_types and full_attention_interval and num_layers:
         layer_types = [
             "linear_attention" if (i + 1) % int(full_attention_interval) else "full_attention"
-            for i in range(num_layers)
+            for i in range(num_layers or 0)
         ]
     # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
     # are picked up — see everchanging/aliases.yaml.
@@ -1218,7 +1218,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
 
     # ---- MoE ----
-    num_experts         = consume("num_experts", 0, fact_owner="decoder.ffn", fact_key="num_experts") or 0
+    num_experts         = consume("num_experts", fact_owner="decoder.ffn", fact_key="num_experts") or 0  # iteration count only — ambiguity already blocks
     num_experts_per_tok = consume("num_experts_per_tok", 0, fact_owner="decoder.ffn", fact_key="num_experts_per_tok") or 0
     num_shared_experts  = consume("num_shared_experts", 0, fact_owner="decoder.ffn", fact_key="num_shared_experts") or 0
     moe_intermediate_size = consume("moe_intermediate_size", 0, fact_owner="decoder.ffn", fact_key="moe_intermediate_size") or 0
@@ -1297,7 +1297,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _main_files = (_comp_files.get("decoder") or _comp_files.get("root")
                        or getattr(_bundle, "files", None))
         if decoder_cross_attention_all_layers_from_files(_main_files):
-            cross_attn_layer_set = set(range(num_layers))
+            cross_attn_layer_set = set(range(num_layers or 0))
             cross_attention_additive = True
         else:
             # Declared enc-dec composite whose decoder SOURCE we can't read
@@ -1328,7 +1328,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     cross_layer_edges: list[CrossLayerEdge] = []
 
     layers = []
-    for i in range(num_layers):
+    for i in range(num_layers or 0):
         mask, window, is_full_in_sliding_stack = _layer_mask(
             i, layer_types, sliding_window, sliding_window_pattern,
             has_sliding_in_stack, unknown_layer_types, max_window_layers,
@@ -1581,7 +1581,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     for lt in sorted(unknown_layer_types):
         warnings.append(f"Config layer_types contains unrecognized value {lt!r} — treated as causal.")
 
-    vocab_size = consume("vocab_size", 0, fact_owner="model", fact_key="vocab_size") or 0
+    vocab_size = consume("vocab_size", fact_owner="model", fact_key="vocab_size") or 0  # embed-table count; ambiguity already blocks
     # U2 default-kill (the live wrong-value fix): absence of the tie flag is
     # NOT "untied" — the installed config CLASS default decides (gpt2 / t5 /
     # bert / bloom / falcon all omit the key and tie by class default). Tiers
@@ -2179,7 +2179,7 @@ def _normalize_layer_schedule(text_cfg, num_layers: int, sliding_window):
         n = _g(text_cfg, field)
         if isinstance(n, int) and n > 0 and num_layers:
             on, off = sched["dense_interval_on"], sched["dense_interval_off"]
-            return [on if i % n == 0 else off for i in range(num_layers)], field
+            return [on if i % n == 0 else off for i in range(num_layers or 0)], field
     return None, None
 
 

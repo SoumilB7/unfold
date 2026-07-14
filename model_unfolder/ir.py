@@ -202,7 +202,10 @@ class ModelIR:
     name: str
     architecture: str               # e.g. "DeepseekV3ForCausalLM"
     vocab_size: int
-    hidden_size: int
+    # COR-3 (§8.A): None = the width is UNKNOWN (conflicting or absent
+    # declarations) — zero is never an unknown sentinel; consumers render
+    # unknown or omit the claim, and params return incomplete.
+    hidden_size: int | None
     max_position_embeddings: Optional[int]
     tie_word_embeddings: Optional[bool]  # True/False = config-declared or the
                                     # installed config CLASS default (U2 hydration

@@ -729,22 +729,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
         return _parse_unet_model(cfg, arch_name, warnings, context=context)
 
     # ---- Denoiser geometry ----
-    num_layers   = int(_consume_geom(cfg, "num_layers", "denoiser.stack", "num_layers", 0) or 0)
-    num_single   = int(_consume_geom(cfg, "num_single_layers", "denoiser.stack", "num_single_layers", 0) or 0)
-    num_heads    = int(_consume_geom(cfg, "num_attention_heads", "denoiser.attention", "num_heads", 0) or 0)
+    num_layers   = int(_consume_geom(cfg, "num_layers", "denoiser.stack", "num_layers") or 0)  # loop count; ambiguity blocks
+    num_single   = int(_consume_geom(cfg, "num_single_layers", "denoiser.stack", "num_single_layers") or 0)  # loop count; ambiguity blocks
+    _nh = _consume_geom(cfg, "num_attention_heads", "denoiser.attention", "num_heads")
+    num_heads    = int(_nh) if _nh is not None else None
     # Grouped-query attention: KV heads from config when declared (Lumina-Next
     # num_kv_heads:8), else None → the spec falls back to Q heads (plain MHA). Never
     # hardcode 32 — that silently dropped GQA.
-    num_kv_heads = int(_consume_geom(cfg, "num_kv_heads", "denoiser.attention", "num_kv_heads", 0) or 0) or None
-    head_dim     = int(_consume_geom(cfg, "attention_head_dim", "denoiser.attention", "head_dim", 0) or 0)
+    _nkv = _consume_geom(cfg, "num_kv_heads", "denoiser.attention", "num_kv_heads")
+    num_kv_heads = int(_nkv) if _nkv else None
+    _hd = _consume_geom(cfg, "attention_head_dim", "denoiser.attention", "head_dim")
+    head_dim     = int(_hd) if _hd is not None else None
     # DiT hidden = heads * head_dim; but some configs (Hunyuan-DiT) declare
     # hidden_size directly without a per-head dim — derive the head dim from it.
-    hidden_decl  = int(_consume_geom(cfg, "hidden_size", "denoiser.geometry", "hidden_size", 0) or 0)
+    _hdl = _consume_geom(cfg, "hidden_size", "denoiser.geometry", "hidden_size")
+    hidden_decl  = int(_hdl) if _hdl is not None else None
     if not head_dim and hidden_decl and num_heads:
         head_dim = hidden_decl // num_heads
-    hidden_size  = num_heads * head_dim or hidden_decl
+    # COR-3 (§8.B): unknown factors never multiply into a fake zero width.
+    hidden_size  = (num_heads * head_dim) if (num_heads and head_dim) else hidden_decl
 
-    intermediate_size = int(_consume_geom(cfg, "intermediate_size", "denoiser.ffn", "intermediate_size", 0) or 0)
+    _isz = _consume_geom(cfg, "intermediate_size", "denoiser.ffn", "intermediate_size")
+    intermediate_size = int(_isz) if _isz is not None else None
     if not intermediate_size and hidden_size:
         # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
         mlp_ratio = float(_inspect(cfg, "mlp_ratio", 4.0) or 4.0)
@@ -753,9 +759,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # convention: when no activation is declared the FFN's inner structure
     # (activation AND gating) is simply not a config fact — ``_dit_ffn`` renders it
     # honestly as undeclared rather than asserting a GELU/non-gated default.
-    declared_act = next((_inspect(cfg, k, None) for k in
-                         ("hidden_act", "activation_fn", "act_fn", "mlp_activation")
-                         if _inspect(cfg, k, None)), None)
+    # COR-3 (§8.B): rival activation spellings resolve EXACTLY ONCE as one
+    # family — gelu-vs-silu is a typed blocking ambiguity, and no later read
+    # may retry a single spelling after the combined resolution abstained.
+    _act_res = _config_access.resolve(
+        cfg, "hidden_act", ("activation_fn", "act_fn", "mlp_activation"))
+    declared_act = _act_res.value if _act_res.state == "present" else None
     # The DiT FFN's activation/gating is almost never in the config — it lives in
     # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
@@ -1021,7 +1030,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     layers = []
     idx = 0
-    for _ in range(num_layers):
+    for _ in range(num_layers or 0):
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
                                    rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
                                    scores_scaled=code_scores_scaled, bias=dit_attention_bias,
@@ -1070,7 +1079,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     single_fusion = _code_single_fusion(cfg, context)
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
-    for _ in range(num_single):
+    for _ in range(num_single or 0):
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
                                 rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
