@@ -197,67 +197,12 @@ def config_to_ir(
     # is drift and blocks), or be scoped-ignored / precisely classified.
     # Violations are structured rows the blocking net reads; unclaimed reads
     # stay visible advisory debt above.
+    from .evidence.claims_audit import validate_claims
     from .evidence.registry import MIGRATED_SCOPES
-    _consumed_targets: dict[tuple[str, str], set[tuple[str, str]]] = {}
-    for e in _access_ledger.events:
-        if e.intent == "consumed":
-            _consumed_targets.setdefault((e.component, e.config_path), set()).add(
-                (e.fact_owner or e.component, e.fact_key or e.canonical))
-    _ignored_paths = {(e.component, e.config_path)
-                      for e in _access_ledger.events if e.intent == "ignored"}
-    _classified_paths = {(entry.owner, entry.config_path)
-                         for entry in PENDING_CONFIG_CLASSIFICATION}
-    _declared_targets: dict[tuple[str, str], set[tuple[str, str]]] = {}
-    for _claim in MIGRATED_SCOPES:
-        for _binding in _claim.bindings:
-            _declared_targets.setdefault(
-                (_claim.owner, _binding.config_path), set()).add(
-                (_binding.target.owner, _binding.target.fact_key))
-    _claim_rows = []
-    for _claim in MIGRATED_SCOPES:
-        _violations = []
-        _observed = 0
-        _target_matches = 0
-        for _binding in _claim.bindings:
-            _key = (_claim.owner, _binding.config_path)
-            _scope_events = [e for e in _access_ledger.events
-                             if (e.component, e.config_path) == _key]
-            _observed += len(_scope_events)
-            _declared = _declared_targets[_key]
-            _consumed = _consumed_targets.get(_key, set())
-            _binding_target = (_binding.target.owner, _binding.target.fact_key)
-            _target_matches += sum(1 for t in _consumed if t == _binding_target)
-            for _t in sorted(_consumed - _declared):
-                _violations.append(
-                    f"{_claim.owner}/{_claim.mechanism}: {_binding.config_path!r} "
-                    f"consumed into UNDECLARED fact {_t[0]}.{_t[1]} — "
-                    "source-to-target drift")
-            for e in _scope_events:
-                if not getattr(e, "path_exact", False):
-                    _violations.append(
-                        f"{_claim.owner}/{_claim.mechanism}: inexact read of "
-                        f"{e.config_path!r} — a claimed scope may not read "
-                        "through the bare funnel")
-                elif (e.present and e.intent in {"inspected", "bound"}
-                        and not (_consumed & _declared)
-                        and _key not in _ignored_paths
-                        and _key not in _classified_paths):
-                    _violations.append(
-                        f"{_claim.owner}/{_claim.mechanism}: present read of "
-                        f"{e.config_path!r} is not consumed into any declared "
-                        "target, scoped-ignored, or precisely classified")
-        _claim_rows.append({
-            "scope": f"{_claim.owner}/{_claim.mechanism}",
-            "claimed_by": _claim.claimed_by,
-            "bindings": [{"path": b.config_path,
-                          "target_owner": b.target.owner,
-                          "target_key": b.target.fact_key,
-                          "target_kind": b.target.structural_sink_kind}
-                         for b in _claim.bindings],
-            "observed_events": _observed,
-            "target_matches": _target_matches,
-            "violations": sorted(set(_violations)),
-        })
+    _claim_rows = validate_claims(
+        _access_ledger.events, MIGRATED_SCOPES,
+        classified_paths={(entry.owner, entry.config_path)
+                          for entry in PENDING_CONFIG_CLASSIFICATION})
     ir.extras["config_access"] = {
         "accessed": _q(_access_ledger.accessed()),
         "consumed": _q(_access_ledger.consumed()),

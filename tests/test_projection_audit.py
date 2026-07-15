@@ -377,51 +377,57 @@ def test_cor5_poison_right_path_consumed_into_wrong_fact_blocks(monkeypatch):
     rows = ir["extras"]["config_access"]["migration_claims"]
     assert len(rows) == 1
     violations = rows[0]["violations"]
-    assert any("UNDECLARED fact" in v and "drift" in v for v in violations)
+    assert any("WRONG fact" in v and "source-to-target drift" in v
+               for v in violations)
     assert rows[0]["target_matches"] == 0
     rep = sable(_qwen2vl_cfg(), render_images=False)
     check = next(c for c in rep.checks if c.name == "config_migration_claims")
     assert check.blocking and not check.passed
 
 
+def _claim_rows_of(cfg):
+    ca = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_access") or {}
+    return ca.get("migration_claims") or []
+
+
 @pytest.fixture(scope="session")
 def corpus_claim_rows():
-    """One pass over the corpus (alphabetical, early-exit once every registered
-    claim is observed and target-matched) — shared by the anti-vacuity law."""
+    """One pass over corpus + synthetic binding witnesses (alphabetical,
+    early-exit once every declared BINDING is witnessed) — the anti-vacuity
+    law and its poisons all consume this through the ONE audit function."""
     import json
     import pathlib
 
+    from model_unfolder.evidence.claims_audit import audit_claim_coverage
     from model_unfolder.evidence.registry import MIGRATED_SCOPES
+    from test_support.claim_witnesses import CLAIM_SYNTHETIC_WITNESSES
 
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
-    needed = {f"{c.owner}/{c.mechanism}" for c in MIGRATED_SCOPES}
-    satisfied: dict[str, str] = {}
     rows_by_witness: dict[str, list] = {}
+    for name, cfg in sorted(CLAIM_SYNTHETIC_WITNESSES.items()):
+        rows_by_witness[name] = _claim_rows_of(cfg)
     for path in sorted(corpus.glob("*.json")):
-        cfg = json.loads(path.read_text())["config"]
-        ca = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_access") or {}
-        rows = ca.get("migration_claims") or []
-        rows_by_witness[path.stem] = rows
-        for row in rows:
-            if (row["scope"] in needed and row["observed_events"] > 0
-                    and row["target_matches"] > 0 and not row["violations"]):
-                satisfied.setdefault(row["scope"], path.stem)
-        if needed <= set(satisfied):
+        rows_by_witness[path.stem] = _claim_rows_of(
+            json.loads(path.read_text())["config"])
+        coverage = audit_claim_coverage(rows_by_witness, MIGRATED_SCOPES)
+        if not coverage["unwitnessed"]:
             break
-    return {"satisfied": satisfied, "needed": needed, "rows": rows_by_witness}
+    return rows_by_witness
 
 
-def test_cor5_every_registered_claim_is_observed_and_target_matched_on_corpus(
-    corpus_claim_rows,
-):
-    """Correction 2 (anti-vacuity, CORPUS level): every entry in
-    MIGRATED_SCOPES must be observed AND consumed into its declared target on
-    at least one witness.  A model with zero observations stays lawful — the
-    LAW lives here, not per model."""
-    missing = corpus_claim_rows["needed"] - set(corpus_claim_rows["satisfied"])
-    assert not missing, (
-        f"registered claims never observed+target-matched on any witness: "
-        f"{sorted(missing)} — a claim the corpus cannot exercise is vacuous")
+def test_cor5_every_declared_binding_is_witnessed_on_corpus(corpus_claim_rows):
+    """Fifth directive: coverage is BINDING-level — every declared
+    path-to-target binding must be observed AND target-matched on at least
+    one real or synthetic witness, through the SAME audit function the
+    poisons call.  Per-witness zero observations stay lawful."""
+    from model_unfolder.evidence.claims_audit import audit_claim_coverage
+    from model_unfolder.evidence.registry import MIGRATED_SCOPES
+
+    coverage = audit_claim_coverage(corpus_claim_rows, MIGRATED_SCOPES)
+    assert coverage["unwitnessed"] == [], (
+        "bindings never witnessed anywhere (add a witness or remove the "
+        f"binding): {coverage['unwitnessed']}")
+    assert coverage["witness_violations"] == {}
 
 
 def test_cor5_poison_nonexistent_path_claim_fails_the_corpus_gate(monkeypatch):
@@ -503,3 +509,135 @@ def test_cor5_obligation_truth_has_no_canonical_fallback():
     states = {ob.source_occurrence.config_path: ob.state for ob in obligations}
     assert states["_vae_config.scaling_factor"] == "pending"
     assert states["_vae_config.decoder.scaling_factor"] == "unreceipted"
+
+
+# --------------------------------------------------------------------------- #
+# Fifth directive (U0/U1 close) — exact mechanism matching, binding-level
+# anti-vacuity, and the named positive/negative controls.  Every check here
+# flows through the SAME functions the corpus gate uses (claims_audit).
+# --------------------------------------------------------------------------- #
+
+def test_final_poison_wrong_sink_kind_blocks(monkeypatch):
+    """A binding declaring sink kind 'geometry' while the real consumption
+    lands as a 'fact' must fail with the sink-kind law named."""
+    from model_unfolder.evidence import registry as reg
+
+    poisoned = (reg.MigrationClaim(
+        "root.vision", "projector_out_width", "POISON",
+        (reg.ClaimBinding(
+            "vision_config.hidden_size",
+            _config_access.ProjectionTarget(
+                "root.vision", "projector_out_features",
+                structural_sink_kind="geometry")),),
+    ),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    rows = _claim_rows_of(_qwen2vl_cfg())
+    assert any("WRONG sink kind" in v for v in rows[0]["violations"])
+
+
+def test_final_poison_wrong_mechanism_blocks(monkeypatch):
+    """A consumption tagged with a mechanism that declares NO binding for the
+    path is a violation — another mechanism's binding never clears it (the
+    cross-mechanism union is gone)."""
+    from model_unfolder.evidence import registry as reg
+
+    poisoned = (reg.MigrationClaim(
+        "root.vision", "phantom_mechanism", "POISON",
+        (reg.ClaimBinding(
+            "vision_config.hidden_size",
+            _config_access.ProjectionTarget("root.vision", "phantom_fact")),),
+    ),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    rows = _claim_rows_of(_qwen2vl_cfg())
+    violations = rows[0]["violations"]
+    assert any("wrong mechanism" in v and "projector_out_width" in v
+               for v in violations), violations
+
+
+def test_final_poison_unwitnessed_binding_fails_coverage(corpus_claim_rows):
+    """A declared binding no witness exercises must surface in
+    ``unwitnessed`` — through the SAME audit function as the real gate."""
+    from model_unfolder.evidence.claims_audit import audit_claim_coverage
+    from model_unfolder.evidence import registry as reg
+
+    ghost = reg.MigrationClaim(
+        "root.vision", "encoder_width", "POISON",
+        (reg.ClaimBinding(
+            "vision_config.never_spelled_width",
+            _config_access.ProjectionTarget("root.vision", "hidden_size")),),
+    )
+    coverage = audit_claim_coverage(
+        corpus_claim_rows, (*reg.MIGRATED_SCOPES, ghost))
+    assert coverage["unwitnessed"] == [
+        "root.vision/encoder_width::vision_config.never_spelled_width -> "
+        "root.vision.hidden_size[fact]"]
+
+
+def test_final_control_same_path_two_mechanisms_is_lawful():
+    """POSITIVE control for the one-path-two-mechanisms case: on qwen2-vl,
+    ``vision_config.hidden_size`` is consumed by the PROJECTOR mechanism; on
+    FLUX's embedded 2.5-shape encoder the same path is consumed by the
+    ENCODER-WIDTH mechanism.  Both parses are violation-free — each
+    consumption judged strictly under its own mechanism's binding."""
+    rows_q = {r["scope"]: r for r in _claim_rows_of(_qwen2vl_cfg())}
+    q_proj = next(b for b in rows_q["root.vision/projector_out_width"]["bindings"]
+                  if b["path"] == "vision_config.hidden_size")
+    assert q_proj["target_matches"] > 0
+    assert rows_q["root.vision/projector_out_width"]["violations"] == []
+    assert rows_q["root.vision/encoder_width"]["violations"] == []
+
+    import json
+    import pathlib as _pl
+
+    corpus = _pl.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    flux_witness = json.loads((corpus / "flux-2-dev.json").read_text())["config"]
+    rows_f = {r["scope"]: r for r in _claim_rows_of(flux_witness)}
+    f_enc = next(b for b in rows_f["root.vision/encoder_width"]["bindings"]
+                 if b["path"] == "vision_config.hidden_size")
+    f_proj = next(b for b in rows_f["root.vision/projector_out_width"]["bindings"]
+                  if b["path"] == "vision_config.hidden_size")
+    assert f_enc["target_matches"] > 0          # encoder width consumed it
+    assert f_proj["target_matches"] == 0        # projector mechanism silent
+    assert all(r["violations"] == [] for r in rows_f.values())
+
+
+def test_final_negative_control_flux_qwen_image_author_no_projector_width():
+    """NEGATIVE projector controls: the embedded 2.5-shape encoders read
+    ``vision_config.hidden_size`` as ENCODER width only — the projector
+    mechanism matches nothing there and no language-width fabrication
+    returns anywhere in the IR."""
+    import json
+    import pathlib
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    for slug in ("flux-2-dev", "qwen-image"):
+        cfg = json.loads((corpus / f"{slug}.json").read_text())["config"]
+        rows = {r["scope"]: r for r in _claim_rows_of(cfg)}
+        proj = rows["root.vision/projector_out_width"]
+        assert proj["target_matches"] == 0, slug
+        assert all(r["violations"] == [] for r in rows.values()), slug
+        enc_hidden = next(b for b in rows["root.vision/encoder_width"]["bindings"]
+                          if b["path"] == "vision_config.hidden_size")
+        assert enc_hidden["target_matches"] > 0, slug
+
+
+def test_final_positive_control_qwen2vl_encoder_and_projector():
+    """POSITIVE controls on the multimodal witness: the encoder mechanism
+    consumes ``embed_dim`` into the drawn tower width, the projector
+    mechanism consumes ``hidden_size`` into the drawn out_features (3584),
+    and both scopes are violation-free with mechanism-tagged events."""
+    cfg = _qwen2vl_cfg()
+    ir = mu.unfold(cfg).to_ir()
+    rows = {r["scope"]: r
+            for r in ir["extras"]["config_access"]["migration_claims"]}
+    enc_embed = next(b for b in rows["root.vision/encoder_width"]["bindings"]
+                     if b["path"] == "vision_config.embed_dim")
+    assert enc_embed["target_matches"] > 0
+    for scope in ("root.vision/projector_out_width",
+                  "root.video/projector_out_width"):
+        hidden = next(b for b in rows[scope]["bindings"]
+                      if b["path"] == "vision_config.hidden_size")
+        assert hidden["target_matches"] > 0, scope
+        assert rows[scope]["violations"] == []
+    projector = ir["extras"]["modalities"]["inputs"]["vision"]["projector"]
+    assert projector["out_features"] == 3584

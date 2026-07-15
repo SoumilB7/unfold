@@ -25,7 +25,7 @@ covers it.
 | scope | claimed by | bindings (path -> target) | observed | target-matched |
 |---|---|---|---|---|
 | root.video/projector_out_width | COR-4 | vision_config.hidden_size -> root.video.projector_out_features | 2 | 1 |
-| root.vision/encoder_width | COR-5 | vision_config.embed_dim -> root.vision.hidden_size; vision_config.vision_hidden_size -> root.vision.hidden_size; vision_config.width -> root.vision.hidden_size; vision_config.hidden_size -> root.vision.hidden_size | 18 | 3 |
+| root.vision/encoder_width | COR-5 | vision_config.embed_dim -> root.vision.hidden_size; vision_config.vision_hidden_size -> root.vision.hidden_size; vision_config.width -> root.vision.hidden_size; vision_config.hidden_size -> root.vision.hidden_size | 18 | 8 |
 | root.vision/projector_out_width | COR-4 | vision_config.hidden_size -> root.vision.projector_out_features | 14 | 1 |
 
 ## Owners with NO consumption at all (audit_incomplete)

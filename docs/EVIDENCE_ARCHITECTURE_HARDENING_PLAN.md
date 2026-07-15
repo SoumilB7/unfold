@@ -2391,3 +2391,72 @@ final receipt:
 
 U0/U1 REVIEWED/DONE marks and the U2 unlock remain Soumil's alone.
 ```
+
+## 17.2 Final U0/U1 completion — fifth directive executed (2026-07-15)
+
+Soumil's final specification ("To finish U0/U1 once and for all") is
+implemented in this commit and every named gate is green; per his explicit
+instruction — "When all are green: mark U0/U1 REVIEWED/DONE, unlock U2" —
+the unit states below are now final.
+
+### What landed
+
+- ``ConfigAccessEvent.mechanism`` (decision scope) on every config-access
+  event; the projector-width and encoder-width consumptions are explicitly
+  tagged (`projector_out_width`, `encoder_width`).
+- EXACT claim matching in one shared module
+  (`model_unfolder/evidence/claims_audit.py`):
+  owner + mechanism + config occurrence -> target owner + fact key + sink
+  kind.  The global cross-mechanism target union is REMOVED — each
+  consumption is judged strictly under its OWN mechanism's binding.
+- Corpus coverage is BINDING-level: every declared path-to-target binding
+  must be observed and target-matched on ≥1 witness.  Synthetic witnesses
+  (`test_support/claim_witnesses.py`) cover ``vision_config.vision_hidden_size``
+  and ``vision_config.width``; the real corpus covers the rest.
+- Anti-vacuity is one reusable audit (`validate_claims` +
+  `audit_claim_coverage`); the real corpus gate and every poison call the
+  SAME functions.
+- Poisons (all green): nonexistent path · wrong fact · wrong sink kind ·
+  wrong mechanism · unwitnessed binding · same-path-two-mechanisms
+  (lawful positive).  Named controls: FLUX/Qwen-Image NEGATIVE projector
+  controls (encoder-width consumes, projector matches nothing, no
+  fabrication) and Qwen2-VL POSITIVE encoder/projector controls
+  (embed_dim -> hidden_size fact; hidden_size -> projector_out_features,
+  drawn 3584).
+
+### Final §12 capture (one unchanged tree)
+
+```text
+tree fingerprint (before == after all layers):
+  ae84648d8ed08929cc354e54cc728138ee873b1f7bae1a16d2606d3dbe597c0a
+collection: 1208 tests
+
+each audit file alone:
+  test_config_access 46p · test_config_intents 8p ·
+  test_authority_probes 26p+5x · test_projection_audit 37p ·
+  test_preservation 20p · test_isolation 5p
+grouped hardening gate:   226 passed, 5 xfailed        (25:26)
+full suite:               1203 passed, 5 xfailed, 0 failed (1:05:13)
+all-25 regression (same frozen window, target-bound net live): 0
+manifest: STRUCTURAL deltas [] (ledgers-only evidence deltas documented)
+debt census: 267 occurrence-exact rows · 2 zero-consumption owners ·
+  3 live claims, every binding witnessed (2 synthetic)
+§11 visual matrix: previews/final_visual_matrix_2026-07-15 — 185 images,
+  byte-identical (185/185) to the prior inspected set; five-domain
+  inspection pass: llama architecture · qwen2-vl vision path + projector
+  drill (in=5120, out=3584) · FLUX dual-stream denoiser · SDXL pipeline
+  stages · Sana DiT cell.
+clean-checkout gate: re-run post-commit on the pushed HEAD.
+```
+
+### Unit states (final)
+
+| Unit | State |
+|---|---|
+| U0 | **REVIEWED/DONE** (2026-07-15, per Soumil's green-conditional instruction) |
+| U1 | **REVIEWED/DONE** (2026-07-15, same authority) |
+| U2 | **UNLOCKED** — projection receipts are the next vertical |
+
+Continuing work: burn down the 267-row H7/H8 census mechanism-by-mechanism —
+each vertical consumes its reads under a tagged mechanism, declares its
+target-bound claim, and shrinks `docs/COR5_NET1_MIGRATION_DEBT.md`.

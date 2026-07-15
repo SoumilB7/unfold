@@ -127,6 +127,13 @@ class ConfigAccessEvent:
     # active container scope; False for a bare legacy-funnel leaf (which may
     # clear same-owner nested occurrences only via the transitional fallback).
     path_exact: bool = True
+    # Fifth directive (U0/U1 close): the DECISION SCOPE that made this access —
+    # the (owner, mechanism) a consumption serves ("projector_out_width",
+    # "encoder_width", …).  Empty = untagged legacy read; claim validation
+    # judges each consumption strictly under ITS OWN mechanism's binding, so
+    # an untagged or wrong-mechanism consumption inside a claimed scope is a
+    # violation, never cleared by another mechanism's target.
+    mechanism: str = ""
 
     def __post_init__(self) -> None:
         if self.intent not in INTENTS:
@@ -434,7 +441,8 @@ class ConfigResolution:
         return self.state == "ambiguous"
 
     # -- explicit transitions (Contract A.5) ---------------------------------
-    def consume(self, fact_owner: str = "", fact_key: str = "") -> Any:
+    def consume(self, fact_owner: str = "", fact_key: str = "",
+                mechanism: str = "") -> Any:
         """The value reached a fact/geometry decision.  PRESENT consumes are
         recorded under the SELECTED SPELLING (never a fictional canonical
         read); an ABSENT consume is an ``absent_default`` PREMISE with the same
@@ -453,6 +461,7 @@ class ConfigResolution:
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=fact_owner or self.component, fact_key=fact_key,
+             mechanism=mechanism,
              component=self.component, config_path=self.selected_path,
              value_state=("value" if self.value is not None else
                           "explicit_null") if self.state == "present" else "missing",
@@ -720,7 +729,7 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
          fact_owner: str = "", fact_key: str = "", reader: str = "",
          reason: str = "", component: str | None = None,
          config_path: str | None = None,
-         value_state: str | None = None) -> None:
+         value_state: str | None = None, mechanism: str = "") -> None:
     """Append one owner-scoped event to every active ledger (a no-op outside a
     capture, so the accessor stays cheap when no audit is running).  The owner
     comes from :data:`current_owner` unless given explicitly."""
@@ -745,7 +754,8 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
         reader=reader, reason=reason,
         value_state=(value_state if value_state is not None
-                     else ("value" if present else "missing")))
+                     else ("value" if present else "missing")),
+        mechanism=mechanism)
     for ledger in ledgers:
         ledger.record(event)
 

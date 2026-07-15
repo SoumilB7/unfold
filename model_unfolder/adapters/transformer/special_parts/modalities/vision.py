@@ -174,7 +174,8 @@ def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
     if resolution.state != "present":
         return None
     return as_int(resolution.consume(
-        fact_owner=owner, fact_key="projector_out_features"))
+        fact_owner=owner, fact_key="projector_out_features",
+        mechanism="projector_out_width"))
 
 
 def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:
@@ -418,7 +419,8 @@ def vision_encoder_hidden_size(cfg: Any, vision_cfg: Any, unified_grid: bool) ->
             _config_access.emit(
                 key, intent="consumed", present=True, alias=key,
                 fact_owner=_config_access.current_owner.get(),
-                fact_key="hidden_size", reader="vision_encoder_hidden_size")
+                fact_key="hidden_size", reader="vision_encoder_hidden_size",
+                mechanism="encoder_width")
             return value
     return None
 
