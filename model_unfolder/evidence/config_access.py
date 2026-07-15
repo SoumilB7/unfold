@@ -197,14 +197,21 @@ class ConfigAccessLedger:
                 if e.present and (want is None or e.intent in want)]
 
     def projection_obligations(
-        self, pending: set[tuple[str, str]] | None = None,
+        self, pending_sources: set[tuple[str, str]] | None = None,
         receipts: set[tuple[str, str]] | None = None,
     ) -> list["ProjectionObligation"]:
         """One structured obligation per consumed occurrence: PROJECTED when a
         real receipt names its exact target, PENDING when registered debt
-        does, otherwise UNRECEIPTED — never an empty list standing in for
-        proof (the caller publishes receipt availability separately)."""
-        pending = pending or set()
+        names its exact SOURCE occurrence, otherwise UNRECEIPTED — never an
+        empty list standing in for proof (the caller publishes receipt
+        availability separately).
+
+        Fourth vet (§10 correction 3): pending matching is occurrence-exact —
+        ``pending_sources`` is ``{(owner, exact config path)}`` from the debt
+        register.  The former ``(component, canonical)`` and target-pair
+        fallbacks are REMOVED: a leaf-name coincidence can no longer flip an
+        obligation's truth state (recovery plan exactness law)."""
+        pending_sources = pending_sources or set()
         receipts = receipts or set()
         out: list[ProjectionObligation] = []
         for e in self.events:
@@ -213,10 +220,9 @@ class ConfigAccessLedger:
             target = e.projection_target
             if target is None:
                 continue
-            pair = (target.owner, target.fact_key)
-            if pair in receipts:
+            if (target.owner, target.fact_key) in receipts:
                 state, reason = "projected", ""
-            elif pair in pending or (e.component, e.canonical) in pending:
+            elif (e.component, e.config_path) in pending_sources:
                 state, reason = "pending", "registered pending-projection debt"
             else:
                 state, reason = "unreceipted", "no projection receipt exists yet"
@@ -252,23 +258,47 @@ class ConfigAccessLedger:
 
     # -- the two blocking nets, owner-qualified (§16.5) -----------------------
     def accessed_but_unconsumed(self, owner: str | None = None) -> set[tuple[str, str]]:
-        """Net 1: PRESENT and accessed/bound, but neither consumed NOR
-        scoped-ignored — the looked-up-but-unused class (granite multipliers).
-        Owner-qualified: a field consumed by a SIBLING does not clear it here."""
+        """COMPATIBILITY SUMMARY of Net-1 debt, keyed (owner, canonical) —
+        human-readable only.  Fourth vet (§10 correction 3): this grouping can
+        collapse two exact occurrences sharing a canonical leaf into one row,
+        so no truth decision or worklist may be built from it; the
+        authoritative view is :meth:`unconsumed_occurrences`."""
         accessed = self._owner_fields({"inspected", "bound"}, owner)
         return accessed - self.consumed(owner) - self.ignored(owner)
 
+    def unconsumed_occurrences(self, owner: str | None = None) -> list["ConfigOccurrenceKey"]:
+        """AUTHORITATIVE Net-1 debt: every PRESENT accessed/bound occurrence,
+        keyed by its full :class:`ConfigOccurrenceKey` (exact path + actual
+        spelling), with no consumed or scoped-ignored event at the same
+        exact (component, config_path).  This is the H7/H8 worklist source —
+        two paths sharing a canonical leaf stay two rows."""
+        excused = {(e.component, e.config_path) for e in self.events
+                   if e.intent in {"consumed", "ignored"}}
+        seen: dict[tuple[str, str, str], ConfigOccurrenceKey] = {}
+        for e in self.events:
+            if not e.present or e.intent not in {"inspected", "bound"}:
+                continue
+            if owner is not None and e.component != owner:
+                continue
+            if (e.component, e.config_path) in excused:
+                continue
+            key = e.occurrence_key
+            seen[(key.component_path, key.config_path, key.actual_spelling)] = key
+        return [seen[k] for k in sorted(seen)]
+
     def consumed_but_unprojected(
         self, projected: set[tuple[str, str]] | None = None,
-        pending: set[tuple[str, str]] | None = None,
+        pending_sources: set[tuple[str, str]] | None = None,
         owner: str | None = None,
     ) -> set[tuple[str, str]]:
-        """Net 2: consumed into a fact but that (owner, fact_key) is neither
-        PROJECTED (a #13 render receipt) nor a registered pending-projection
-        debt — the read-but-never-drawn class.  ``projected``/``pending`` are
-        owner-qualified ``(owner, fact_key)`` sets."""
+        """Net 2: consumed into a fact but neither PROJECTED (a #13 render
+        receipt names the exact target) nor excused by registered debt naming
+        the exact SOURCE occurrence — the read-but-never-drawn class.
+        ``projected`` is target-keyed ``{(owner, fact_key)}``;
+        ``pending_sources`` is occurrence-keyed ``{(owner, exact path)}``
+        (fourth vet: the canonical-pair fallback is removed)."""
         projected = projected or set()
-        pending = pending or set()
+        pending_sources = pending_sources or set()
         out: set[tuple[str, str]] = set()
         for e in self.events:
             if e.intent != "consumed":
@@ -276,8 +306,11 @@ class ConfigAccessLedger:
             if owner is not None and e.component != owner:
                 continue
             target = (e.fact_owner or e.component, e.fact_key or e.canonical)
-            if target not in projected and target not in pending:
-                out.add(e.owner_field)
+            if target in projected:
+                continue
+            if (e.component, e.config_path) in pending_sources:
+                continue
+            out.add(e.owner_field)
         return out
 
     # -- derived compatibility views (the old bare-name lists) ----------------

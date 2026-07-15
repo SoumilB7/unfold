@@ -2307,3 +2307,87 @@ final receipt:
 
 U0/U1 REVIEWED/DONE marks and the U2 unlock remain Soumil's alone.
 ```
+
+## 17.1 Fourth-vet correction addendum (2026-07-15)
+
+Soumil's audit of the COR-5 commit (`325fbdf`) found three soundness gaps and
+did NOT ratify U0/U1; U2 stayed locked.  All three are corrected in this
+commit; the marks remain Soumil's.
+
+1. **Claims are now source-to-target bound.** `MigrationClaim` carries
+   `ClaimBinding(config_path -> ProjectionTarget(owner, fact_key, kind))`
+   instead of bare paths.  The parser verifies BOTH the exact occurrence and
+   the exact target: within a claimed scope, a present read must be consumed
+   into a DECLARED target (the same path may be declared by two mechanisms),
+   and any consumption into an undeclared fact is named
+   "source-to-target drift" and BLOCKS.  Poison:
+   `test_cor5_poison_right_path_consumed_into_wrong_fact_blocks` — the right
+   path consumed into the wrong fact fails the gate.
+
+2. **Anti-vacuity is corpus-enforced.** Per-model zero observations stay
+   lawful; the LAW (`test_cor5_every_registered_claim_is_observed_and_
+   target_matched_on_corpus`) requires every entry in `MIGRATED_SCOPES` to be
+   observed AND target-matched on at least one witness.  Poison: a claim over
+   a nonexistent path shows `observed_events=0` everywhere and fails the
+   corpus law (`test_cor5_poison_nonexistent_path_claim_fails_the_corpus_gate`).
+
+3. **The debt census is occurrence-exact.**
+   `ConfigAccessLedger.unconsumed_occurrences()` keys by full
+   `ConfigOccurrenceKey` (component, exact path, actual spelling, canonical)
+   and is published as `accessed_unconsumed_exact`; the (owner, canonical)
+   view is demoted to a compatibility summary and authors nothing.  The Net-1
+   advisory findings and `docs/COR5_NET1_MIGRATION_DEBT.md` are generated
+   from the exact view — regeneration surfaced **267 exact rows where the
+   grouped summary showed 250** (17 occurrences had collapsed under shared
+   canonical leaves).  The `(component, canonical)` fallback is REMOVED from
+   projection-obligation truth (`projection_obligations` /
+   `consumed_but_unprojected` now take occurrence-keyed `pending_sources`),
+   and the projection-debt unread join is exact-only (the three path-less
+   register entries received their exact paths; the leaf fallback is
+   deleted).  Tests: `test_cor5_census_view_is_occurrence_exact`,
+   `test_cor5_obligation_truth_has_no_canonical_fallback`.
+
+Two prior tests encoded the superseded semantics and were evolved with the
+law stated in their docstrings (`test_accessed_unprojected_fires_once_a_
+consumed_census_exists`, `test_net2_consumed_but_unprojected_clears_on_
+projection_or_pending`).
+
+### §12 capture — fourth-vet verification run (2026-07-15)
+
+```text
+HEAD: 325fbdf (fourth-vet working tree; this commit closes it)
+tree fingerprint (before == after every layer):
+  4ec3b2451e2cab468adcea990487f175cc2d0d572bfcda7b7c131503b25263d6
+collection: 1202 tests
+
+layer 1 — each audit file alone:
+  tests/test_config_access.py      46 passed                (10s)
+  tests/test_config_intents.py      8 passed                (<1s)
+  tests/test_authority_probes.py   26 passed, 5 xfailed     (1:00)
+  tests/test_projection_audit.py   31 passed                (1:28)
+  tests/test_preservation.py       20 passed                (6:08)
+  tests/test_isolation.py           5 passed                (1s)
+layer 2 — official grouped hardening gate:
+  220 passed, 5 xfailed                                     (13:44)
+layer 3 — full suite (same tree):
+  1197 passed, 5 xfailed, 0 failed                          (40:09)
+layer 4 — clean-checkout preservation/isolation:
+  run post-commit on the pushed HEAD; recorded in
+  z-docs/07-current-state.
+
+corpus gates on this tree:
+  all-25 blessed-signature regression (target-bound claim net live): 0
+  manifest rebuild: STRUCTURAL deltas [] · EVIDENCE deltas documented
+  (ledgers+sable — binding-shaped claim rows, exact debt view,
+  occurrence-exact obligation states)
+
+final receipt:
+  defects closed: C0 C1 C2 C3 C4 + fourth-vet corrections 1-3
+  preservation witnesses: 25/25 · skips: 0
+  working-tree fingerprint: unchanged through layers 1-3
+  full-suite collection/result: 1202 collected; 1197 passed, 5 xfailed
+  debt census: 267 occurrence-exact rows (was 250 grouped), 2
+  zero-consumption owners, 3 live target-bound claims
+
+U0/U1 REVIEWED/DONE marks and the U2 unlock remain Soumil's alone.
+```

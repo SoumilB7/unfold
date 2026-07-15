@@ -299,20 +299,20 @@ def _zero_asserted_census_findings(cfg, source: str) -> list[str]:
 
 
 def _accessed_unprojected_findings(ir: dict) -> list[str]:
-    """ADVISORY: config fields accessed/bound but neither CONSUMED into a spec
-    field NOR scoped-ignored — the looked-up-but-unused class (granite
-    multipliers).  §16.5 net 1, now OWNER-QUALIFIED: it reads the owner-scoped
-    ``config_access`` ledger, so a field consumed by a SIBLING component (a
-    vision ``hidden_size`` vs the text ``hidden_size``) never clears this owner's
-    debt — the flat-global set-subtraction the restart removed.  Already gated at
-    parse time to owners that have a consumed census, so an adapter still on
-    inspected-only reads stays inert instead of flooding."""
+    """ADVISORY: config occurrences accessed/bound but neither CONSUMED into a
+    spec field NOR scoped-ignored — the looked-up-but-unused class (granite
+    multipliers).  §16.5 net 1; fourth vet (§10 correction 3): findings come
+    from the OCCURRENCE-EXACT view (component + exact dotted path + actual
+    spelling), so two paths sharing a canonical leaf are two findings — the
+    (owner, canonical) summary is compatibility display only and authors no
+    row here."""
     ca = (ir.get("extras") or {}).get("config_access") or {}
     return [
-        f"config field {entry!r} was accessed but never consumed into a spec field "
-        "(owner-qualified) — it drove a branch or was discarded; wire it to a "
+        f"config occurrence {row['component']}:{row['path']!r} "
+        f"(spelled {row['spelling']!r}) was accessed but never consumed into a "
+        "spec field — it drove a branch or was discarded; wire it to a "
         "spec/ledger fact, or record it inspected-only / scoped-ignored"
-        for entry in sorted(ca.get("accessed_unconsumed") or [])
+        for row in (ca.get("accessed_unconsumed_exact") or [])
     ]
 
 

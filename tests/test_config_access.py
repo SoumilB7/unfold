@@ -186,14 +186,24 @@ def test_net1_scoped_ignore_clears_the_debt():
 
 
 def test_net2_consumed_but_unprojected_clears_on_projection_or_pending():
+    """Fourth vet (§10.3): a real RECEIPT clears by exact target; registered
+    debt clears by exact SOURCE occurrence.  The old target-pair pending arm
+    and the (component, canonical) fallback are REMOVED — a leaf-name
+    coincidence cannot excuse a different occurrence."""
     ev = _event(canonical="rope_theta", intent="consumed",
+                config_path="rope_parameters.rope_theta",
                 fact_owner="decoder.attention", fact_key="position_kind")
     ledger = ConfigAccessLedger([ev])
     assert ledger.consumed_but_unprojected() == {("root", "rope_theta")}
     assert ledger.consumed_but_unprojected(
         projected={("decoder.attention", "position_kind")}) == set()
     assert ledger.consumed_but_unprojected(
-        pending={("decoder.attention", "position_kind")}) == set()
+        pending_sources={("root", "rope_parameters.rope_theta")}) == set()
+    # a SIBLING occurrence sharing the canonical leaf does not clear it,
+    # and the removed target-pair arm no longer excuses anything
+    assert ledger.consumed_but_unprojected(
+        pending_sources={("root", "other_container.rope_theta")}) == {
+        ("root", "rope_theta")}
 
 
 # --------------------------------------------------------------------------- #

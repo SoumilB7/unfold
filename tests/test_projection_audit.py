@@ -25,6 +25,7 @@ from model_unfolder.sable import (
     _CENSUS_ALLOWED,
     _PROJECTION_AUDIT_BLOCKING,
 )
+from model_unfolder.evidence import config_access as _config_access
 from test_support import LLAMA, FLUX
 
 
@@ -206,18 +207,27 @@ def test_real_transformer_parse_publishes_a_consumed_census():
 
 
 def test_accessed_unprojected_fires_once_a_consumed_census_exists():
-    """When the owner-scoped ledger surfaces an accessed-but-unconsumed field,
-    the net reports it — OWNER-QUALIFIED (``owner:field``), so a sibling's
-    consumption of the same leaf key does not clear it (the granite-multiplier
-    class, now free of the flat-global collision)."""
+    """When the owner-scoped ledger surfaces an accessed-but-unconsumed
+    occurrence, the net reports it — OCCURRENCE-EXACT (fourth vet §10.3:
+    component + exact path + actual spelling), so a sibling's consumption of
+    the same leaf key does not clear it AND two paths sharing a canonical
+    leaf stay two findings."""
     ir = {"extras": {"config_access": {
         "accessed_unconsumed": ["root:sliding_window", "root.vision:hidden_size"],
+        "accessed_unconsumed_exact": [
+            {"component": "root", "path": "sliding_window",
+             "spelling": "sliding_window", "canonical": "sliding_window"},
+            {"component": "root.vision", "path": "vision_config.hidden_size",
+             "spelling": "hidden_size", "canonical": "hidden_size"},
+            {"component": "root.vision", "path": "vision_config.sub.hidden_size",
+             "spelling": "hidden_size", "canonical": "hidden_size"},
+        ],
     }}}
     findings = _accessed_unprojected_findings(ir)
-    assert len(findings) == 2
-    assert any("root:sliding_window" in f for f in findings)
-    # the vision hidden_size is flagged for vision even though text consumed one
-    assert any("root.vision:hidden_size" in f for f in findings)
+    assert len(findings) == 3          # exact rows, not the collapsed summary
+    assert any("root:'sliding_window'" in f for f in findings)
+    assert any("'vision_config.hidden_size'" in f for f in findings)
+    assert any("'vision_config.sub.hidden_size'" in f for f in findings)
 
 
 def test_accessed_unprojected_is_wired_advisory_not_blocking():
@@ -232,16 +242,23 @@ def test_accessed_unprojected_is_wired_advisory_not_blocking():
 # --------------------------------------------------------------------------- #
 
 def test_cor5_migration_claim_constructor_rejects_empty_declarations():
-    from model_unfolder.evidence.registry import MigrationClaim
+    from model_unfolder.evidence.config_access import ProjectionTarget
+    from model_unfolder.evidence.registry import ClaimBinding, MigrationClaim
 
+    target = ProjectionTarget("root.vision", "projector_out_features")
+    binding = ClaimBinding("a.b", target)
     with pytest.raises(ValueError):
         MigrationClaim("root.vision", "projector_out_width", "COR-4", ())
     with pytest.raises(ValueError):
-        MigrationClaim("", "projector_out_width", "COR-4", ("a.b",))
+        MigrationClaim("", "projector_out_width", "COR-4", (binding,))
     with pytest.raises(ValueError):
-        MigrationClaim("root.vision", "", "COR-4", ("a.b",))
+        MigrationClaim("root.vision", "", "COR-4", (binding,))
     with pytest.raises(ValueError):
-        MigrationClaim("root.vision", "projector_out_width", "COR-4", ("a.b", ""))
+        ClaimBinding("", target)
+    with pytest.raises(ValueError):
+        ClaimBinding("a.b", ProjectionTarget("", "projector_out_features"))
+    with pytest.raises(ValueError):
+        ClaimBinding("a.b", ProjectionTarget("root.vision", ""))
 
 
 def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
@@ -251,7 +268,8 @@ def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
 
     poisoned = (reg.MigrationClaim(
         "root", "norm_epsilon", "POISON",
-        ("rms_norm_eps",),
+        (reg.ClaimBinding("rms_norm_eps",
+                          _config_access.ProjectionTarget("root", "norm_eps")),),
     ),)
     monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
     rep = sable(LLAMA, render_images=False)
@@ -269,7 +287,10 @@ def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation(monkeypatc
     from model_unfolder.evidence import registry as reg
 
     poisoned = (reg.MigrationClaim(
-        "root", "norm_epsilon", "POISON", ("rms_norm_eps",)),)
+        "root", "norm_epsilon", "POISON",
+        (reg.ClaimBinding("rms_norm_eps",
+                          _config_access.ProjectionTarget("root", "norm_eps")),),
+    ),)
     monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
     ir = mu.unfold(LLAMA).to_ir()
     rows = ir["extras"]["config_access"]["migration_claims"]
@@ -290,8 +311,10 @@ def test_cor5_real_claim_is_earned_on_the_multimodal_witness():
     ir = mu.unfold(cfg).to_ir()
     ca = ir["extras"]["config_access"]
     rows = {row["scope"]: row for row in ca["migration_claims"]}
-    for scope in ("root.vision/projector_out_width", "root.video/projector_out_width"):
+    for scope in ("root.vision/projector_out_width", "root.video/projector_out_width",
+                  "root.vision/encoder_width"):
         assert rows[scope]["observed_events"] > 0
+        assert rows[scope]["target_matches"] > 0, scope
         assert rows[scope]["violations"] == []
     assert "root.vision:hidden_size" in ca["consumed"]
     assert "root.video:hidden_size" in ca["consumed"]
@@ -323,3 +346,160 @@ def test_cor5_net2_blocks_exactly_when_receipts_are_declared_available(monkeypat
     assert net2b.findings, "unreceipted obligations must surface as findings"
     assert not net2b.passed
     assert not rep2.mechanical_passed
+
+
+# --------------------------------------------------------------------------- #
+# Fourth vet (2026-07-15) — the three COR-5 soundness corrections.
+# --------------------------------------------------------------------------- #
+
+def _qwen2vl_cfg():
+    import json
+    import pathlib
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    return json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
+
+
+def test_cor5_poison_right_path_consumed_into_wrong_fact_blocks(monkeypatch):
+    """Correction 1 POISON: the claimed path IS consumed — but into a fact the
+    claim did not declare.  A path-only guard would pass this; the
+    target-bound guard must name the drift and block."""
+    from model_unfolder.evidence import registry as reg
+
+    poisoned = (reg.MigrationClaim(
+        "root.vision", "projector_out_width", "POISON",
+        (reg.ClaimBinding(
+            "vision_config.hidden_size",
+            _config_access.ProjectionTarget("root.vision", "some_other_fact")),),
+    ),)
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", poisoned)
+    ir = mu.unfold(_qwen2vl_cfg()).to_ir()
+    rows = ir["extras"]["config_access"]["migration_claims"]
+    assert len(rows) == 1
+    violations = rows[0]["violations"]
+    assert any("UNDECLARED fact" in v and "drift" in v for v in violations)
+    assert rows[0]["target_matches"] == 0
+    rep = sable(_qwen2vl_cfg(), render_images=False)
+    check = next(c for c in rep.checks if c.name == "config_migration_claims")
+    assert check.blocking and not check.passed
+
+
+@pytest.fixture(scope="session")
+def corpus_claim_rows():
+    """One pass over the corpus (alphabetical, early-exit once every registered
+    claim is observed and target-matched) — shared by the anti-vacuity law."""
+    import json
+    import pathlib
+
+    from model_unfolder.evidence.registry import MIGRATED_SCOPES
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    needed = {f"{c.owner}/{c.mechanism}" for c in MIGRATED_SCOPES}
+    satisfied: dict[str, str] = {}
+    rows_by_witness: dict[str, list] = {}
+    for path in sorted(corpus.glob("*.json")):
+        cfg = json.loads(path.read_text())["config"]
+        ca = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_access") or {}
+        rows = ca.get("migration_claims") or []
+        rows_by_witness[path.stem] = rows
+        for row in rows:
+            if (row["scope"] in needed and row["observed_events"] > 0
+                    and row["target_matches"] > 0 and not row["violations"]):
+                satisfied.setdefault(row["scope"], path.stem)
+        if needed <= set(satisfied):
+            break
+    return {"satisfied": satisfied, "needed": needed, "rows": rows_by_witness}
+
+
+def test_cor5_every_registered_claim_is_observed_and_target_matched_on_corpus(
+    corpus_claim_rows,
+):
+    """Correction 2 (anti-vacuity, CORPUS level): every entry in
+    MIGRATED_SCOPES must be observed AND consumed into its declared target on
+    at least one witness.  A model with zero observations stays lawful — the
+    LAW lives here, not per model."""
+    missing = corpus_claim_rows["needed"] - set(corpus_claim_rows["satisfied"])
+    assert not missing, (
+        f"registered claims never observed+target-matched on any witness: "
+        f"{sorted(missing)} — a claim the corpus cannot exercise is vacuous")
+
+
+def test_cor5_poison_nonexistent_path_claim_fails_the_corpus_gate(monkeypatch):
+    """Correction 2 POISON: a claim over a path no model carries produces
+    observed_events=0 everywhere — the corpus-level law must flag it (while
+    each individual model still passes: zero observations are lawful
+    per-model)."""
+    from model_unfolder.evidence import registry as reg
+
+    bogus = reg.MigrationClaim(
+        "root.vision", "phantom_mechanism", "POISON",
+        (reg.ClaimBinding(
+            "vision_config.no_such_field_xyz",
+            _config_access.ProjectionTarget("root.vision", "phantom_fact")),),
+    )
+    monkeypatch.setattr(reg, "MIGRATED_SCOPES", (*reg.MIGRATED_SCOPES, bogus))
+    ir = mu.unfold(_qwen2vl_cfg()).to_ir()
+    rows = {r["scope"]: r for r in ir["extras"]["config_access"]["migration_claims"]}
+    phantom = rows["root.vision/phantom_mechanism"]
+    assert phantom["observed_events"] == 0
+    assert phantom["violations"] == []           # per-model: lawful
+    satisfied = {scope for scope, row in rows.items()
+                 if row["observed_events"] > 0 and row["target_matches"] > 0}
+    assert "root.vision/phantom_mechanism" not in satisfied
+    # the corpus law (previous test) computes exactly this set over all
+    # witnesses — a scope satisfied nowhere fails it.
+
+
+def test_cor5_census_view_is_occurrence_exact():
+    """Correction 3: two exact occurrences sharing one canonical leaf under one
+    owner are TWO rows in the authoritative view (full ConfigOccurrenceKey);
+    the (owner, canonical) view collapses them and is compatibility-only."""
+    with _config_access.capture_events() as ledger:
+        with _config_access.owner_scope("root.vae"):
+            _config_access.emit("scaling_factor", intent="inspected", present=True,
+                                alias="scaling_factor",
+                                config_path="_vae_config.scaling_factor")
+            _config_access.emit("scaling_factor", intent="inspected", present=True,
+                                alias="scale",
+                                config_path="_vae_config.decoder.scaling_factor")
+    exact = ledger.unconsumed_occurrences()
+    assert [(k.config_path, k.actual_spelling) for k in exact] == [
+        ("_vae_config.decoder.scaling_factor", "scale"),
+        ("_vae_config.scaling_factor", "scaling_factor"),
+    ]
+    assert len(ledger.accessed_but_unconsumed()) == 1     # documented collapse
+    with _config_access.capture_events() as ledger2:
+        with _config_access.owner_scope("root.vae"):
+            _config_access.emit("scaling_factor", intent="inspected", present=True,
+                                alias="scaling_factor",
+                                config_path="_vae_config.scaling_factor")
+            _config_access.emit("scaling_factor", intent="inspected", present=True,
+                                alias="scale",
+                                config_path="_vae_config.decoder.scaling_factor")
+            _config_access.emit("scaling_factor", intent="consumed", present=True,
+                                alias="scaling_factor",
+                                config_path="_vae_config.scaling_factor",
+                                fact_owner="root.vae", fact_key="scaling_factor")
+    remaining = ledger2.unconsumed_occurrences()
+    assert [k.config_path for k in remaining] == ["_vae_config.decoder.scaling_factor"]
+
+
+def test_cor5_obligation_truth_has_no_canonical_fallback():
+    """Correction 3: registered debt excuses ONLY the exact source occurrence.
+    A sibling occurrence sharing the canonical leaf stays unreceipted — the
+    leaf-name coincidence can no longer flip its truth state."""
+    with _config_access.capture_events() as ledger:
+        with _config_access.owner_scope("root.vae"):
+            _config_access.emit("scaling_factor", intent="consumed", present=True,
+                                alias="scaling_factor",
+                                config_path="_vae_config.scaling_factor",
+                                fact_owner="root.vae", fact_key="scaling_factor")
+            _config_access.emit("scaling_factor", intent="consumed", present=True,
+                                alias="scale",
+                                config_path="_vae_config.decoder.scaling_factor",
+                                fact_owner="root.vae", fact_key="decoder_scale")
+    obligations = ledger.projection_obligations(
+        pending_sources={("root.vae", "_vae_config.scaling_factor")})
+    states = {ob.source_occurrence.config_path: ob.state for ob in obligations}
+    assert states["_vae_config.scaling_factor"] == "pending"
+    assert states["_vae_config.decoder.scaling_factor"] == "unreceipted"

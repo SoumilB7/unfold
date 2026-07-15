@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .config_access import ProjectionTarget
 from .context import FACT_STATUSES
 
 # §16.4: the registry represents typed ``legacy_asserted`` debt as a first-class
@@ -384,54 +385,87 @@ class PendingProjectionFact:
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
 # pending-projection debt (registered typed facts, projection pending H7-full).
 @dataclass(frozen=True)
+class ClaimBinding:
+    """COR-5 fourth-vet (§10 correction 1): ONE claimed read as a full
+    source-to-target mapping — the exact config path AND the exact
+    architectural target its consumption must feed.  A path-only claim is
+    unsound: the right path consumed by the WRONG fact would clear it."""
+
+    config_path: str                 # exact dotted path from the ROOT config
+    target: "ProjectionTarget"       # the exact (owner, fact_key, kind)
+
+    def __post_init__(self) -> None:
+        if not (self.config_path and self.target
+                and self.target.owner and self.target.fact_key):
+            raise ValueError(
+                "a claim binding must map an exact config path to an exact "
+                "ProjectionTarget(owner, fact_key, kind)")
+
+
+@dataclass(frozen=True)
 class MigrationClaim:
     """COR-5 (§10): a declaration that ONE exact (owner, mechanism) scope has
     completed its config-consumption migration.
 
     A claim is a checkable promise, never an adapter- or file-wide flag: it
     names the exact component owner, the mechanism (fact family) inside it,
-    and the exact dotted config paths that mechanism reads.  Net 1 BLOCKS the
-    claimed scope immediately — within it every present read must carry an
-    exact path and be consumed, scoped-ignored, or precisely classified;
-    ambiguities stay blocking regardless.  Unclaimed rows remain visible
-    migration debt (the advisory census), and Net 2 independently verifies
-    projection afterward.  An empty declaration is a constructor error, and
-    the poison suite proves a violated claim cannot pass."""
+    and its reads as SOURCE-TO-TARGET bindings (fourth vet: occurrence AND
+    target are both verified — a consumption into an undeclared fact is
+    drift and blocks).  Net 1 BLOCKS the claimed scope immediately; within
+    it every present read must carry an exact path and be consumed into a
+    declared target, scoped-ignored, or precisely classified; ambiguities
+    stay blocking regardless.  Unclaimed rows remain visible migration debt,
+    Net 2 independently verifies projection afterward, and anti-vacuity is
+    enforced at CORPUS level: every registered claim must be observed and
+    target-matched on at least one witness (a nonexistent path cannot pass).
+    An empty declaration is a constructor error."""
 
     owner: str                       # exact component owner, e.g. "root.vision"
     mechanism: str                   # fact family inside the owner
     claimed_by: str                  # the unit that completed the migration
-    config_paths: tuple[str, ...]    # exact dotted paths from the ROOT config
+    bindings: tuple[ClaimBinding, ...]
 
     def __post_init__(self) -> None:
         if not (self.owner and self.mechanism and self.claimed_by
-                and self.config_paths and all(self.config_paths)):
+                and self.bindings):
             raise ValueError(
                 "a migration claim must name its exact owner, mechanism, "
-                "claiming unit, and non-empty config paths — an empty "
-                "declaration cannot be valid")
+                "claiming unit, and non-empty source-to-target bindings — "
+                "an empty declaration cannot be valid")
 
 
 # The live claim register.  First claimants:
 # * COR-4's source-authoritative projector out-width — the construction site
-#   proves ownership and the consumer CONSUMES the exact path (fact
-#   projector_out_features) on both the vision and video lanes.
+#   proves ownership and the consumer CONSUMES the exact path into the
+#   ``projector_out_features`` fact on both the vision and video lanes.
 # * COR-5's encoder width — the winning spelling of the tower-width priority
-#   chain is consumed (fact hidden_size), covering both the qwen2-vl shape
-#   (internal embed_dim beside a merger-out hidden_size) and the 2.5 shape
-#   (hidden_size IS the internal width, e.g. inside FLUX/Qwen-Image embedded
-#   encoders).  Paths are exact under the canonical wrapper spelling; a
-#   witness under an alternate wrapper spelling extends these tuples.
+#   chain is consumed into the ``hidden_size`` fact, covering both the
+#   qwen2-vl shape (internal embed_dim beside a merger-out hidden_size) and
+#   the 2.5 shape (hidden_size IS the internal width, e.g. inside
+#   FLUX/Qwen-Image embedded encoders).  The same exact path may lawfully be
+#   declared by TWO mechanisms with different targets; a consumption into
+#   any target NOT declared here is drift and blocks.  Paths are exact under
+#   the canonical wrapper spelling; a witness under an alternate wrapper
+#   spelling extends these tuples.
 MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
-    MigrationClaim("root.vision", "projector_out_width", "COR-4",
-                   ("vision_config.hidden_size",)),
-    MigrationClaim("root.video", "projector_out_width", "COR-4",
-                   ("vision_config.hidden_size",)),
-    MigrationClaim("root.vision", "encoder_width", "COR-5",
-                   ("vision_config.embed_dim",
-                    "vision_config.vision_hidden_size",
-                    "vision_config.width",
-                    "vision_config.hidden_size")),
+    MigrationClaim("root.vision", "projector_out_width", "COR-4", (
+        ClaimBinding("vision_config.hidden_size",
+                     ProjectionTarget("root.vision", "projector_out_features")),
+    )),
+    MigrationClaim("root.video", "projector_out_width", "COR-4", (
+        ClaimBinding("vision_config.hidden_size",
+                     ProjectionTarget("root.video", "projector_out_features")),
+    )),
+    MigrationClaim("root.vision", "encoder_width", "COR-5", (
+        ClaimBinding("vision_config.embed_dim",
+                     ProjectionTarget("root.vision", "hidden_size")),
+        ClaimBinding("vision_config.vision_hidden_size",
+                     ProjectionTarget("root.vision", "hidden_size")),
+        ClaimBinding("vision_config.width",
+                     ProjectionTarget("root.vision", "hidden_size")),
+        ClaimBinding("vision_config.hidden_size",
+                     ProjectionTarget("root.vision", "hidden_size")),
+    )),
 )
 
 
@@ -487,7 +521,8 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
     PendingProjectionFact("denoiser_max_sequence", "root.denoiser", "max_sequence_length",
                           "max text-token sequence the denoiser conditions on (Mochi) — "
                           "a declared conditioning limit",
-                          "the conditioning card on the denoiser view"),
+                          "the conditioning card on the denoiser view",
+                          config_path="max_sequence_length"),
     PendingProjectionFact("vae_activation", "root.vae", "act_fn",
                           "the VAE decoder's convolution activation (video VAEs) — a "
                           "constructor record",
@@ -529,7 +564,8 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
     PendingProjectionFact("denoiser_norm_num_groups", "root.denoiser", "norm_num_groups",
                           "GroupNorm group count declared on UNet/legacy-DiT "
                           "denoisers — U11/U-06 derives the cell norm from source",
-                          "the UNet ResNet-cell norm chip"),
+                          "the UNet ResNet-cell norm chip",
+                          config_path="norm_num_groups"),
     PendingProjectionFact("vision_out_width", "root.vision", "hidden_size",
                           "the vision config's declared merger/output width "
                           "(qwen2-vl: 3584 beside internal embed_dim=1280) — a "
@@ -544,7 +580,8 @@ PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
                           "pipeline-level latent-scale duplicate on the denoiser "
                           "config (Lumina); the VAE's own scaling_factor is the "
                           "drawn read — U12 latent-IO fact",
-                          "the latent scale chip (VAE-owned)"),
+                          "the latent scale chip (VAE-owned)",
+                          config_path="scaling_factor"),
 )
 
 

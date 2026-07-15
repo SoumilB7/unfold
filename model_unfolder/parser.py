@@ -140,17 +140,15 @@ def config_to_ir(
             path, _config_debug.component_prefix_owners(_root_owner), _root_owner)
         return owner if owner is not None else _root_owner
 
-    # COR-2 (§7/§12.4): the projection-debt join is EXACT — (owner, exact
-    # dotted path) when the entry declares one; owner+canonical only for
-    # leaf-unique top-level entries.
+    # COR-2 (§7/§12.4) as tightened by the fourth vet: the projection-debt
+    # join is EXACT ONLY — (owner, exact dotted path).  Every register entry
+    # now declares its path (top-level fields declare the leaf AS the path),
+    # and the leaf-name fallback is DELETED.
     _pending_exact = {(entry.owner, entry.config_path)
-                      for entry in PENDING_PROJECTION_DEBT if entry.config_path}
-    _pending_pairs = {(entry.owner, entry.canonical)
-                      for entry in PENDING_PROJECTION_DEBT if not entry.config_path}
+                      for entry in PENDING_PROJECTION_DEBT}
     pending_projection = sorted(
         path for path in unread
-        if (_unread_path_owner(path), path) in _pending_exact
-        or (_unread_path_owner(path), path.rsplit(".", 1)[-1]) in _pending_pairs)
+        if (_unread_path_owner(path), path) in _pending_exact)
     unread = [path for path in unread if path not in set(pending_projection)]
     # COR-1/COR-2: EXACT-path pending classifications (an occurrence whose
     # consumer does not exist yet) — joined on owner + exact dotted path,
@@ -191,43 +189,73 @@ def config_to_ir(
     _owners_with_consumed = {owner for owner, _ in _access_ledger.consumed()}
     _audit_incomplete = sorted(_all_owners - _owners_with_consumed)
     _gated_unconsumed = _access_ledger.accessed_but_unconsumed()
-    # COR-5 (§10): migration claims — Net 1 BLOCKS each claimed exact
-    # (owner, mechanism) scope immediately.  Within a claimed scope every
-    # present read must carry an exact path and be consumed, scoped-ignored,
-    # or precisely classified; violations are structured rows the blocking
-    # net reads.  Unclaimed reads stay visible advisory debt above.
+    # COR-5 (§10), fourth vet: migration claims are SOURCE-TO-TARGET bound —
+    # Net 1 BLOCKS each claimed exact (owner, mechanism) scope immediately.
+    # Within a claimed scope every present read must carry an exact path and
+    # be consumed INTO A DECLARED ProjectionTarget (the same exact path may
+    # be declared by two mechanisms; any consumption into an UNDECLARED fact
+    # is drift and blocks), or be scoped-ignored / precisely classified.
+    # Violations are structured rows the blocking net reads; unclaimed reads
+    # stay visible advisory debt above.
     from .evidence.registry import MIGRATED_SCOPES
-    _consumed_paths = {(e.component, e.config_path)
-                       for e in _access_ledger.events if e.intent == "consumed"}
+    _consumed_targets: dict[tuple[str, str], set[tuple[str, str]]] = {}
+    for e in _access_ledger.events:
+        if e.intent == "consumed":
+            _consumed_targets.setdefault((e.component, e.config_path), set()).add(
+                (e.fact_owner or e.component, e.fact_key or e.canonical))
     _ignored_paths = {(e.component, e.config_path)
                       for e in _access_ledger.events if e.intent == "ignored"}
     _classified_paths = {(entry.owner, entry.config_path)
                          for entry in PENDING_CONFIG_CLASSIFICATION}
+    _declared_targets: dict[tuple[str, str], set[tuple[str, str]]] = {}
+    for _claim in MIGRATED_SCOPES:
+        for _binding in _claim.bindings:
+            _declared_targets.setdefault(
+                (_claim.owner, _binding.config_path), set()).add(
+                (_binding.target.owner, _binding.target.fact_key))
     _claim_rows = []
     for _claim in MIGRATED_SCOPES:
-        _scope_events = [e for e in _access_ledger.events
-                         if e.component == _claim.owner
-                         and e.config_path in _claim.config_paths]
         _violations = []
-        for e in _scope_events:
-            if not getattr(e, "path_exact", False):
+        _observed = 0
+        _target_matches = 0
+        for _binding in _claim.bindings:
+            _key = (_claim.owner, _binding.config_path)
+            _scope_events = [e for e in _access_ledger.events
+                             if (e.component, e.config_path) == _key]
+            _observed += len(_scope_events)
+            _declared = _declared_targets[_key]
+            _consumed = _consumed_targets.get(_key, set())
+            _binding_target = (_binding.target.owner, _binding.target.fact_key)
+            _target_matches += sum(1 for t in _consumed if t == _binding_target)
+            for _t in sorted(_consumed - _declared):
                 _violations.append(
-                    f"{_claim.owner}/{_claim.mechanism}: inexact read of "
-                    f"{e.config_path!r} — a claimed scope may not read through "
-                    "the bare funnel")
-            elif (e.present and e.intent in {"inspected", "bound"}
-                    and (e.component, e.config_path) not in _consumed_paths
-                    and (e.component, e.config_path) not in _ignored_paths
-                    and (e.component, e.config_path) not in _classified_paths):
-                _violations.append(
-                    f"{_claim.owner}/{_claim.mechanism}: present read of "
-                    f"{e.config_path!r} is neither consumed, scoped-ignored, "
-                    "nor precisely classified")
+                    f"{_claim.owner}/{_claim.mechanism}: {_binding.config_path!r} "
+                    f"consumed into UNDECLARED fact {_t[0]}.{_t[1]} — "
+                    "source-to-target drift")
+            for e in _scope_events:
+                if not getattr(e, "path_exact", False):
+                    _violations.append(
+                        f"{_claim.owner}/{_claim.mechanism}: inexact read of "
+                        f"{e.config_path!r} — a claimed scope may not read "
+                        "through the bare funnel")
+                elif (e.present and e.intent in {"inspected", "bound"}
+                        and not (_consumed & _declared)
+                        and _key not in _ignored_paths
+                        and _key not in _classified_paths):
+                    _violations.append(
+                        f"{_claim.owner}/{_claim.mechanism}: present read of "
+                        f"{e.config_path!r} is not consumed into any declared "
+                        "target, scoped-ignored, or precisely classified")
         _claim_rows.append({
             "scope": f"{_claim.owner}/{_claim.mechanism}",
             "claimed_by": _claim.claimed_by,
-            "config_paths": list(_claim.config_paths),
-            "observed_events": len(_scope_events),
+            "bindings": [{"path": b.config_path,
+                          "target_owner": b.target.owner,
+                          "target_key": b.target.fact_key,
+                          "target_kind": b.target.structural_sink_kind}
+                         for b in _claim.bindings],
+            "observed_events": _observed,
+            "target_matches": _target_matches,
             "violations": sorted(set(_violations)),
         })
     ir.extras["config_access"] = {
@@ -235,6 +263,14 @@ def config_to_ir(
         "consumed": _q(_access_ledger.consumed()),
         "absent_default": _q(_access_ledger.absent_defaults()),
         "accessed_unconsumed": _q(_gated_unconsumed),
+        # Fourth vet (§10 correction 3): the AUTHORITATIVE Net-1 debt view,
+        # occurrence-exact — component, exact dotted path, actual spelling,
+        # canonical.  The (owner, canonical) list above is a human-readable
+        # compatibility summary only; worklists and truth decisions use THIS.
+        "accessed_unconsumed_exact": [
+            {"component": k.component_path, "path": k.config_path,
+             "spelling": k.actual_spelling, "canonical": k.canonical_field}
+            for k in _access_ledger.unconsumed_occurrences()],
         **({"audit_incomplete": _audit_incomplete} if _audit_incomplete else {}),
         # COR-5 (§10): the structured claim register for this parse — one row
         # per claimed (owner, mechanism) scope; the blocking net reads the
@@ -247,7 +283,8 @@ def config_to_ir(
         # is the honest full read-but-not-yet-receipted census; it turns
         # blocking only after receipts + corpus debt migration (§20.4.10).
         "consumed_unprojected": _q(_access_ledger.consumed_but_unprojected(
-            pending={(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT})),
+            pending_sources={(e.owner, e.config_path)
+                                 for e in PENDING_PROJECTION_DEBT})),
         # COR-2 (§7): STRUCTURED obligations — exact source occurrence AND
         # exact target per consumption; state is data, never message text.
         # An empty list is meaningful ONLY beside receipts_available=True.
@@ -262,7 +299,8 @@ def config_to_ir(
                         "kind": ob.target.structural_sink_kind},
              "state": ob.state, "reason": ob.reason}
             for ob in _access_ledger.projection_obligations(
-                pending={(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT})],
+                pending_sources={(e.owner, e.config_path)
+                                 for e in PENDING_PROJECTION_DEBT})],
     }
     # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
     # tags into the call-local FactLedger and serialize it.  This is accounting,
