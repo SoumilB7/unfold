@@ -280,10 +280,17 @@ def test_cor5_poison_claimed_scope_with_unconsumed_read_blocks(monkeypatch):
     assert not rep.mechanical_passed
 
 
-def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation(monkeypatch):
-    """A claimed scope may not read through the bare funnel: llama's
-    ``rms_norm_eps`` read is path-inexact today, so the SAME poison must name
-    the inexact-read law (not only unconsumed-ness)."""
+def test_cor5_poison_unconsumed_read_in_claimed_scope_is_a_violation(monkeypatch):
+    """A claimed scope may not contain a present read that no declared mechanism
+    binding consumes.
+
+    U2.2a note: this poison used to ride on llama's ``rms_norm_eps`` read being
+    path-INEXACT, and accepted either law's message. That read is a true
+    top-level field and is now honestly exact, so the inexact limb no longer
+    applies here — and an ``or`` across two laws could never prove which one
+    fired anyway. The two laws are now poisoned separately, each against a
+    construction that cannot rot: this one on unconsumed-ness, the next on
+    inexactness."""
     from model_unfolder.evidence import registry as reg
 
     poisoned = (reg.MigrationClaim(
@@ -296,8 +303,47 @@ def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation(monkeypatc
     rows = ir["extras"]["config_access"]["migration_claims"]
     assert len(rows) == 1
     assert rows[0]["observed_events"] >= 1
-    assert any("inexact read" in v or "neither consumed" in v
-               for v in rows[0]["violations"])
+    assert rows[0]["target_matches"] == 0
+    assert any("rms_norm_eps" in v and "not consumed" in v
+               for v in rows[0]["violations"]), rows[0]["violations"]
+
+
+def test_cor5_poison_bare_funnel_read_in_claimed_scope_is_a_violation():
+    """A claimed scope may not read through the bare funnel.
+
+    Built from a constructed inexact read rather than a model's incidental one:
+    the law must hold for ANY claimed scope, and tying it to whichever witness
+    happens to be unpathed today means the poison silently retires the moment
+    that reader is fixed."""
+    from model_unfolder.evidence.claims_audit import validate_claims
+    from model_unfolder.evidence import registry as reg
+
+    claim = reg.MigrationClaim(
+        "root", "norm_epsilon", "POISON",
+        (reg.ClaimBinding("rms_norm_eps",
+                          _config_access.ProjectionTarget("root", "norm_eps")),))
+    # the SAME occurrence, consumed into exactly the declared target — lawful in
+    # every respect except that its reader never said where the value lives
+    inexact = _config_access.ConfigAccessEvent(
+        component="root", config_path="rms_norm_eps", canonical="rms_norm_eps",
+        alias="rms_norm_eps", present=True, intent="consumed",
+        fact_owner="root", fact_key="norm_eps", mechanism="norm_epsilon",
+        path_exact=False)
+    rows = validate_claims([inexact], (claim,))
+    assert rows[0]["observed_events"] == 1
+    assert rows[0]["target_matches"] == 0, "an inexact read may never MATCH"
+    assert any("inexact read" in v and "bare funnel" in v
+               for v in rows[0]["violations"]), rows[0]["violations"]
+
+    # and the control: the identical event, exactly pathed, is lawful
+    exact = _config_access.ConfigAccessEvent(
+        component="root", config_path="rms_norm_eps", canonical="rms_norm_eps",
+        alias="rms_norm_eps", present=True, intent="consumed",
+        fact_owner="root", fact_key="norm_eps", mechanism="norm_epsilon",
+        path_exact=True)
+    lawful = validate_claims([exact], (claim,))
+    assert lawful[0]["target_matches"] == 1
+    assert lawful[0]["violations"] == []
 
 
 def test_cor5_real_claim_is_earned_on_the_multimodal_witness():

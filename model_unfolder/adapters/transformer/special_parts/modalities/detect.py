@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .....evidence import config_access as _config_access
+from ...common import wrapper_path as _wrapper_path
 from .accessors import drop_none, first
 
 
@@ -44,11 +46,18 @@ def has_video_input(cfg: Any) -> bool:
 def cross_attention_layers(cfg: Any, text_cfg: Any | None = None) -> list[int] | None:
     """Return decoder layer indices that read modality side states."""
     text_cfg = text_cfg or {}
-    value = first(cfg, "cross_attention_layers") or first(text_cfg, "cross_attention_layers")
-    if isinstance(value, (list, tuple)):
-        return [int(v) for v in value]
-    freq = first(cfg, "cross_attention_frequency") or first(text_cfg, "cross_attention_frequency")
-    num_layers = first(text_cfg, "num_hidden_layers", "n_layers") or first(cfg, "num_hidden_layers", "n_layers")
+    # U2.2a: this reader holds BOTH the host and the nested text config, so it
+    # can name where the latter lives — otherwise its reads emit bare leaves no
+    # auditor can locate.  Declaring the container is safe for the interleaved
+    # host reads: a container applies only to reads OF the object it names, so
+    # the ``cfg`` reads below keep their own document-root paths.
+    with _config_access.config_container(
+            _wrapper_path(cfg, text_cfg), obj=text_cfg):
+        value = first(cfg, "cross_attention_layers") or first(text_cfg, "cross_attention_layers")
+        if isinstance(value, (list, tuple)):
+            return [int(v) for v in value]
+        freq = first(cfg, "cross_attention_frequency") or first(text_cfg, "cross_attention_frequency")
+        num_layers = first(text_cfg, "num_hidden_layers", "n_layers") or first(cfg, "num_hidden_layers", "n_layers")
     if freq and num_layers:
         try:
             step = int(freq)

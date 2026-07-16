@@ -456,6 +456,7 @@ def _code_position(cfg: Any, context=None):
 
 
 from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
+from .common import wrapper_path as _wrapper_path
 from ...everchanging import load_composite_slots as _load_composite_slots
 
 
@@ -610,23 +611,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
     ffn_cfg  = _nested(text_cfg, "ffn_config")
 
     from ...evidence import config_access as _config_access
-
-    def _wrapper_path(root_cfg, target, _depth=0):
-        """The EXACT container path of the unwrapped text config (Law B) —
-        identity-walked over the known wrapper keys ('' when unwrapped)."""
-        if target is root_cfg or _depth > 3:
-            return ()
-        for key in _TEXT_WRAPPER_KEYS:
-            sub = (root_cfg.get(key) if isinstance(root_cfg, dict)
-                   else getattr(root_cfg, key, None))
-            if sub is None:
-                continue
-            if sub is target:
-                return (key,)
-            deeper = _wrapper_path(sub, target, _depth + 1)
-            if deeper:
-                return (key, *deeper)
-        return ()
 
     _text_path = _wrapper_path(cfg, text_cfg)
     _TIERS = (
@@ -1046,18 +1030,43 @@ def parse(cfg: Any, context=None) -> ModelIR:
     partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
     # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
-    _rope_container      = ("rope_parameters" if _g(text_cfg, "rope_parameters")
-                            else "rope_scaling")
+    # U2.2a: the container names the spelling the DOCUMENT supplies — chosen by
+    # literal presence, never by an alias-resolving read (``_g`` answers a
+    # request for ``rope_parameters`` with a document's ``rope_scaling`` value,
+    # which would assert a path that exists nowhere).  Absent both, no container
+    # is declared and the enclosed reads stay honestly inexact.
+    _rope_container      = _config_access.present_spelling(
+        text_cfg, ("rope_parameters", "rope_scaling"))
     _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
+    _rope_path           = (*_text_path, _rope_container) if _rope_container else ()
     # The modern transformers rope dialect NESTS the partial factor inside the
     # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
-    # exists on the config class) — same fact, newer spelling.
-    if partial_rotary_fac is None and isinstance(_rope_scaling, dict):
-        _nested_prf = _rope_scaling.get("partial_rotary_factor")
-        if _nested_prf is not None:
+    # exists on the config class) — the SAME fact in two spellings.
+    #
+    # COR-4 (§9) alias law: rival spellings are READ and COMPARED — equal ones
+    # are redundant evidence, disagreeing ones are structured ambiguity that
+    # authors nothing.  Never a silent first-match: guarding the nested read
+    # behind ``top-level is None`` left the rival spelling unread whenever both
+    # were declared, so whichever the parser happened to reach won unexamined
+    # and a real disagreement could not be seen.
+    _nested_prf = (_rope_scaling.get("partial_rotary_factor")
+                   if isinstance(_rope_scaling, dict) else None)
+    if _nested_prf is not None:
+        with _config_access.config_container(_rope_path, obj=_rope_scaling):
+            debug.note_access("partial_rotary_factor")
+        if partial_rotary_fac is None:
             partial_rotary_fac = _nested_prf
-            with _config_access.config_container((*_text_path, _rope_container)):
-                debug.note_access("partial_rotary_factor")
+        elif partial_rotary_fac != _nested_prf:
+            _config_access.emit(
+                "partial_rotary_factor", intent="ambiguous", present=True,
+                config_path=".".join((*_rope_path, "partial_rotary_factor")),
+                reason=(
+                    "rival spellings of one fact disagree: "
+                    f"{'.'.join((*_text_path, 'partial_rotary_factor'))}="
+                    f"{partial_rotary_fac!r} vs "
+                    f"{'.'.join((*_rope_path, 'partial_rotary_factor'))}="
+                    f"{_nested_prf!r}"))
+            partial_rotary_fac = None
     rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
     if rope_dim_value is None:
         # Config silent on the fraction — the CODE may still state it (ChatGLM
@@ -1071,7 +1080,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # Plain nested-dict reads bypass _g; register inspection so the owned
         # subkey is visible to the config audit. Projection consumption remains
         # a separate, not-yet-complete receipt rail.
-        with _config_access.config_container((*_text_path, _rope_container)):
+        with _config_access.config_container(_rope_path, obj=_rope_scaling):
             debug.note_access("mrope_section")
 
     # ---- QK-Norm ----
@@ -1870,9 +1879,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # These SUBKEYS are inspected above via plain dict reads. Record the
         # inspection so ownership is visible; do not label it consumption until
         # the corresponding rendered-fact receipts exist.
-        _rp_container = ("rope_parameters" if _g(text_cfg, "rope_parameters")
-                         else "rope_scaling")
-        with _config_access.config_container((*_text_path, _rp_container)):
+        with _config_access.config_container(_rope_path, obj=rope_params):
             for inspected in ("rope_type", "type", "factor",
                               "original_max_position_embeddings", "rope_theta"):
                 if inspected in rope_params:

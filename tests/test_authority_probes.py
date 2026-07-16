@@ -437,6 +437,20 @@ def _qwen2vl_corpus_cfg():
         (_CORPUS / "qwen2-vl-7b-instruct.json").read_text())["config"]
 
 
+def _resolves(doc, config_path: str) -> bool:
+    """Does this claimed path address a real location in the document?
+
+    The predicate that makes an exact path mean something: a fabricated prefix
+    looks precise and resolves nowhere."""
+    cur = doc
+    for key in config_path.split("."):
+        if isinstance(cur, dict) and key in cur:
+            cur = cur[key]
+        else:
+            return False
+    return True
+
+
 # A modality host with NO resolvable modeling source: the projector width can
 # only be honest-unknown, and sibling towers share the same leaf spelling.
 _NO_SOURCE_MM = {
@@ -465,8 +479,21 @@ def test_cor4_ce1_qwen2vl_events_are_dotted_and_width_is_source_bound():
     assert tower_events, "witness must exercise the modality owners"
     bare = [e for e in tower_events if not getattr(e, "path_exact", False)]
     assert bare == [], f"bare funnel leaves under modality owners: {bare[:3]}"
-    assert all("." in e.config_path or e.config_path in {"vision_config"}
-               for e in tower_events)
+    # U2.2a: the legacy ``owner:leaf`` label is retired — but "the path contains
+    # a dot" is NOT what proves it.  A host field genuinely lives at the top of
+    # its document, so its exact path has no dot; demanding one is demanding a
+    # fabricated prefix (this assertion previously passed on
+    # ``vision_config.image_token_id``, a path present in no document, and the
+    # single ``vision_config`` carve-out below was the first bare leaf that hit
+    # it).  Resolution is the real, and strictly stronger, predicate: a dotted
+    # path can be fiction, a resolving path cannot.
+    assert all(not e.config_path.startswith(f"{e.component}:")
+               for e in tower_events), "legacy owner:leaf label"
+    unresolvable = sorted({e.config_path for e in tower_events
+                           if not _resolves(cfg, e.config_path)})
+    assert not unresolvable, (
+        f"modality-owner events claim paths that exist nowhere in the witness: "
+        f"{unresolvable}")
 
     evidence = projector_evidence(cfg)
     assert evidence.out_width_source == "config_bound"

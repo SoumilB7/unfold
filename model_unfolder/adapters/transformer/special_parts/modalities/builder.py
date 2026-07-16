@@ -90,9 +90,12 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int,
                             + ", ".join(_present_keys)))
                 continue
         _matched_key = _present_keys[0] if _present_keys else None
+        # The container names sub_cfg: the builder also reads its HOST (token
+        # ids, wrapper flags), and those reads must keep their own root-level
+        # path rather than inherit this prefix.
         with _config_access.owner_scope(_owner), \
                 _config_access.config_container(
-                    (_matched_key,) if _matched_key else ()):
+                    (_matched_key,) if _matched_key else (), obj=sub_cfg):
             path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
             if not path:
                 continue                 # a builder may veto on closer evidence

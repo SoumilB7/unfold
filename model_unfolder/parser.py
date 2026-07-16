@@ -74,8 +74,12 @@ def config_to_ir(
     from .evidence import config_access as _config_access
     # U1 (§20.4.2): the ledger LIVES on the ParseContext; the capture ContextVar
     # only routes nested calls to it (never a second truth store).
+    # U2.2a: NAME the document being parsed.  Its top-level fields are exactly
+    # pathed at their bare leaf, so a reader of the root config need not (and
+    # must not) borrow a nested container's prefix to look precise.
     with _config_access.capture_events(parse_context.config_access) as _access_ledger, \
-            _config_access.owner_scope("root"):
+            _config_access.owner_scope("root"), \
+            _config_access.document_scope((), obj=cfg):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}
@@ -217,6 +221,11 @@ def config_to_ir(
             {"component": k.component_path, "path": k.config_path,
              "spelling": k.actual_spelling, "canonical": k.canonical_field}
             for k in _access_ledger.unconsumed_occurrences()],
+        # U2.2a: owner -> the document those paths are relative to.  A path is
+        # document-relative so a claim binding matches identically standalone or
+        # embedded; without this the row names a leaf nobody can locate, and no
+        # auditor can prove it real.
+        "document_roots": _access_ledger.document_roots(),
         **({"audit_incomplete": _audit_incomplete} if _audit_incomplete else {}),
         # COR-5 (§10): the structured claim register for this parse — one row
         # per claimed (owner, mechanism) scope; the blocking net reads the

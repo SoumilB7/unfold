@@ -666,7 +666,7 @@ def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
         # fields these rows exist to classify).
         with (_config_access.owner_scope("root.vae") if bucket == "vae"
               else nullcontext()), \
-                (_config_access.config_container(("_vae_config",))
+                (_config_access.config_container(("_vae_config",), obj=src)
                  if bucket == "vae" else nullcontext()):
             for row in rows:
                 value = _g(src, row["field"])
@@ -1951,8 +1951,10 @@ def _scheduler_geom(cfg: Any) -> dict:
     real config values (from the merged scheduler/config.json, when fetched).
     U1 (§20.4.3): scheduler reads attribute to ``root.scheduler``."""
     out: dict = {}
-    with _config_access.config_container(()):   # the SLOT key is top-level
-        entry = _g(cfg, "scheduler")
+    # U2.2a: no escape hatch — the container names ``cfg._scheduler_config``, so
+    # this read OF ``cfg`` is outside it by construction and keeps its true
+    # top-level path.
+    entry = _g(cfg, "scheduler")
     cls = entry[1] if isinstance(entry, (list, tuple)) and len(entry) >= 2 else None
     if isinstance(cls, str):
         bare = cls.replace("DiscreteScheduler", "").replace("Scheduler", "") or cls
@@ -2270,8 +2272,15 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
             # SLOT owner (root.text_encoder / _2 / _3) — the same key
             # ``qualify_component`` stamps on the sub-model spec, so ledger
             # events and projected blocks bind to one owner by construction.
+            # U2.2a: the slot is a distinct DOCUMENT, not a container in this
+            # one.  A container would glue this absolute address onto the
+            # encoder's own document-relative paths — asserting
+            # ``_text_encoder_configs.text_encoder.num_hidden_layers`` as the
+            # occurrence key, which no declared binding can match and which
+            # differs from the identical read in a standalone parse.  The
+            # address is recorded beside the path instead.
             with _config_access.owner_scope(f"root.{key}"), \
-                    _config_access.config_container(("_text_encoder_configs", key)):
+                    _config_access.document_scope(("_text_encoder_configs", key)):
                 spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted

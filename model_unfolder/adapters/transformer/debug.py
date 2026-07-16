@@ -59,7 +59,7 @@ def reset() -> None:
 
 
 def note_access(name: str, intent: str = "inspected", *, present: bool = True,
-                value_state: str | None = None) -> None:
+                value_state: str | None = None, source_obj: object = None) -> None:
     """Record a config-field lookup into the owner-scoped ledger — the ONE funnel,
     so every access site on this hot path is covered.
 
@@ -78,6 +78,7 @@ def note_access(name: str, intent: str = "inspected", *, present: bool = True,
     ledger_intent = ("absent_default" if (intent == "consumed" and not present)
                      else "inspected" if intent == "bound" else intent)
     _config_access.emit(name, intent=ledger_intent, present=present,
+                        source_obj_id=id(source_obj) if source_obj is not None else None,
                         value_state=value_state)
 
 

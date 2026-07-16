@@ -47,11 +47,16 @@ def collect() -> dict:
     rows: dict[tuple[str, str, str], set[str]] = defaultdict(set)
     incomplete: dict[str, set[str]] = defaultdict(set)
     claims: dict[tuple, list[int]] = defaultdict(lambda: [0, 0])
+    documents: dict[str, set[str]] = defaultdict(set)
     for path in sorted(CORPUS.glob("*.json")):
         cfg = json.loads(path.read_text())["config"]
         ca = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_access") or {}
         for row in ca.get("accessed_unconsumed_exact") or []:
             rows[(row["component"], row["path"], row["spelling"])].add(path.stem)
+        # U2.2a: paths are DOCUMENT-RELATIVE — record which document, or the row
+        # names a leaf no reader can locate.
+        for owner, root in (ca.get("document_roots") or {}).items():
+            documents[owner].add(".".join(root))
         for owner in ca.get("audit_incomplete") or []:
             incomplete[owner].add(path.stem)
         for claim in ca.get("migration_claims") or []:
@@ -60,11 +65,20 @@ def collect() -> dict:
                          for b in claim["bindings"]))
             claims[key][0] += claim["observed_events"]
             claims[key][1] += claim["target_matches"]
-    return {"rows": rows, "incomplete": incomplete, "claims": claims}
+    return {"rows": rows, "incomplete": incomplete, "claims": claims,
+            "documents": documents}
 
 
 def render(data: dict) -> str:
     rows, incomplete, claims = data["rows"], data["incomplete"], data["claims"]
+    documents = data["documents"]
+
+    def _doc_label(owner: str) -> str:
+        """Where this owner's paths are rooted, across the corpus."""
+        roots = sorted(documents.get(owner) or ())
+        if not roots or roots == [""]:
+            return "the top-level document"
+        return " · ".join(f"`{r}`" if r else "the top-level document" for r in roots)
     by_owner: dict[str, list[tuple[str, int]]] = defaultdict(list)
     for (owner, cpath, spelling), witnesses in rows.items():
         label = (cpath if spelling == cpath.rsplit(".", 1)[-1]
@@ -126,10 +140,15 @@ def render(data: dict) -> str:
     add("Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the")
     add("supplying alias differs. The row key is the FULL occurrence, so two paths")
     add("sharing a canonical leaf are two rows.\n")
+    add("Paths are relative to each owner's DOCUMENT (named per section below):")
+    add("that keeps the key host-independent, so a claim binding matches the same")
+    add("mechanism whether a model is parsed standalone or embedded in a pipeline.")
+    add("Prefix a row with its document to address the value in the witness file.\n")
     for owner in sorted(by_owner):
         unit, fam = _UNCLASSIFIED
         fields = sorted(by_owner[owner])
         add(f"### `{owner}` — {len(fields)} rows — **{unit}** ({fam})\n")
+        add(f"Paths relative to: {_doc_label(owner)}\n")
         add(", ".join(f"`{f}` ({n}w)" for f, n in fields))
         add("")
     return "\n".join(out) + "\n"

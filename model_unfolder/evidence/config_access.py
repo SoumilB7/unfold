@@ -37,7 +37,51 @@ current_owner: ContextVar[str] = ContextVar("model_unfolder_config_owner", defau
 # it with the spelling so even the legacy accessor funnel records the exact
 # dotted path; the owner:leaf compatibility label is retired.
 current_container: ContextVar[tuple] = ContextVar(
-    "model_unfolder_config_container", default=())
+    "model_unfolder_config_container", default=((), None))
+
+# U2.2a: the address of the DOCUMENT the current parse reads, relative to the
+# top-level document (``()`` for a root parse; ("_text_encoder_configs",
+# "text_encoder") for a recursively-parsed encoder slot).
+#
+# ``config_path`` is DOCUMENT-RELATIVE, and must stay so: a claim binding is
+# matched to an occurrence by exact equality on (owner, config_path)
+# (claims_audit), and every declared binding is written relative to the model's
+# own document ("vision_config.hidden_size").  Were paths made absolute against
+# the top-level document, the SAME mechanism would match its binding in a
+# standalone model and miss it once embedded — accountability would depend on
+# where a model happens to be hosted, which is the identity-dependence this
+# project exists to delete.
+#
+# So the document address is recorded BESIDE the path rather than glued into it:
+# ``document_path + config_path`` is resolvable against the top-level document
+# (which makes every path checkable), while ``config_path`` alone stays the
+# stable, host-independent join key.
+current_document: ContextVar[tuple] = ContextVar(
+    "model_unfolder_config_document", default=((), None))
+
+
+def _is_document_root_read(source_obj_id) -> bool:
+    """True when this read is OF the document's own root object — its fields
+    live at the top of that document, so the bare leaf is already the exact
+    path.  Requires the document to have been NAMED; an unnamed one proves
+    nothing about which object was read."""
+    _, doc_obj_id = current_document.get()
+    return (doc_obj_id is not None and source_obj_id is not None
+            and doc_obj_id == source_obj_id)
+
+
+def _container_prefix_for(source_obj_id):
+    """The container prefix that legitimately applies to THIS read.
+
+    A scope that names an object prefixes only reads of that object; an
+    unqualified scope prefixes everything enclosed.  Anything else gets no
+    prefix — an honest bare leaf, never a fabricated path."""
+    path, obj_id = current_container.get()
+    if not path:
+        return ()
+    if obj_id is None or source_obj_id is None or obj_id == source_obj_id:
+        return path
+    return ()
 
 # The intents a config access can carry.  ``projected`` is NOT an intent — it is
 # DERIVED by joining ``consumed`` events with the #13 render projection receipts.
@@ -131,6 +175,12 @@ class ConfigAccessEvent:
     # active container scope; False for a bare legacy-funnel leaf (which may
     # clear same-owner nested occurrences only via the transitional fallback).
     path_exact: bool = True
+    # U2.2a: the address of the document ``config_path`` is relative to, within
+    # the top-level document (``()`` for a root parse).  ``config_path`` stays
+    # document-relative so a claim binding matches identically standalone or
+    # embedded; this field is what makes it CHECKABLE — document_path +
+    # config_path must resolve in the top-level witness.
+    document_path: tuple = ()
     # Fifth directive (U0/U1 close): the DECISION SCOPE that made this access —
     # the (owner, mechanism) a consumption serves ("projector_out_width",
     # "encoder_width", …).  Empty = untagged legacy read; claim validation
@@ -282,6 +332,26 @@ class ConfigAccessLedger:
         authoritative view is :meth:`unconsumed_occurrences`."""
         accessed = self._owner_fields({"inspected", "bound"}, owner)
         return accessed - self.consumed(owner) - self.ignored(owner)
+
+    def document_roots(self) -> dict[str, list[str]]:
+        """U2.2a: owner -> the address of the document its paths are relative to.
+
+        ``config_path`` is document-relative (the host-independent key a claim
+        binding matches), so a row is only locatable once its document is named:
+        ``document_root + config_path`` addresses the value in the top-level
+        file.  An owner reading two documents is a real ownership defect rather
+        than something to average away, so it is reported, not collapsed."""
+        roots: dict[str, set[tuple]] = {}
+        for e in self.events:
+            roots.setdefault(e.component, set()).add(tuple(e.document_path))
+        out: dict[str, list[str]] = {}
+        for owner, paths in roots.items():
+            if len(paths) > 1:
+                raise ValueError(
+                    f"owner {owner!r} recorded reads against more than one "
+                    f"document ({sorted(paths)}) — its paths cannot be resolved")
+            out[owner] = list(next(iter(paths)))
+        return out
 
     def unconsumed_occurrences(self, owner: str | None = None) -> list["ConfigOccurrenceKey"]:
         """AUTHORITATIVE Net-1 debt: every PRESENT accessed/bound occurrence,
@@ -681,21 +751,110 @@ def capture_events(existing: "ConfigAccessLedger | None" = None):
 
 
 @contextmanager
-def config_container(path: tuple):
-    """COR-4 (§9): declare the exact container path for the enclosed reads."""
-    token = current_container.set(tuple(path))
+def config_container(path: tuple, obj: Any = None):
+    """COR-4 (§9): declare the exact container path for the enclosed reads.
+
+    U2.2a: ``obj`` is the config object that path NAMES.  A container scope
+    applies ONLY to reads OF that object — a builder legitimately reads both
+    its sub-config and its HOST, and gluing the sub-config's prefix onto a host
+    read asserts an exact path that exists nowhere in the document.  When
+    ``obj`` is omitted the scope is unqualified and prefixes every enclosed
+    read (the pre-existing behaviour, kept for scopes that read one object)."""
+    token = current_container.set((tuple(path), id(obj) if obj is not None else None))
     try:
         yield
     finally:
         current_container.reset(token)
 
 
+def _container_object(host: Any, path: tuple) -> Any:
+    """The object a container path NAMES, walked raw from its host.
+
+    Deliberately not the adapter accessor: resolving the container must not
+    alias, and must not emit an access event for the walk itself."""
+    cur = host
+    for key in path:
+        if cur is None:
+            return None
+        cur = cur.get(key) if isinstance(cur, dict) else getattr(cur, key, None)
+    return cur
+
+
+@contextmanager
+def document_scope(path: tuple, obj: Any = None):
+    """U2.2a: declare the DOCUMENT the enclosed parse reads.
+
+    ``path`` is where that document lives in the enclosing one (``()`` for the
+    parse's own root; ("_text_encoder_configs", "text_encoder") for a
+    recursively-parsed slot), and composes with any enclosing document.
+
+    Enclosed reads keep DOCUMENT-RELATIVE paths — the stable join key a claim
+    binding matches, identically whether a model is parsed standalone or
+    embedded.  Recording the address separately is what makes them checkable:
+    ``document_path + config_path`` resolves against the top-level document.
+
+    ``obj`` NAMES the document's root object.  A document root is an object like
+    any container names, and a read OF it is exactly pathed at its bare leaf —
+    a host field genuinely lives at the top of its document.  Without the name
+    such a read is indistinguishable from a read of some undeclared nested
+    object, so it must be reported inexact; the fix is to name the document, not
+    to let a container fabricate a prefix for it.  Naming it is also why the
+    address and the object are declared separately: a slot's document is
+    hydrated through its config class before being parsed, so the object finally
+    read is not the one sitting at ``path``.
+
+    Entering a document clears the enclosing container: a container names an
+    object in the document being LEFT, and can never describe a read inside the
+    new one."""
+    parent_path, parent_obj = current_document.get()
+    token = current_document.set((
+        (*parent_path, *path),
+        id(obj) if obj is not None else (parent_obj if not path else None)))
+    ctoken = current_container.set(((), None))
+    try:
+        yield
+    finally:
+        current_container.reset(ctoken)
+        current_document.reset(token)
+
+
+def present_spelling(host: Any, candidates) -> str | None:
+    """The first candidate spelling the document LITERALLY supplies on ``host``.
+
+    U2.2a: a container must name the key that actually exists, so choosing it
+    with an alias-resolving read is invalid — an accessor asked for a canonical
+    name answers with the document's rival spelling's VALUE, and the container
+    then asserts the canonical name as a real path.  The occurrence key is
+    defined as "what was actually supplied, where", so a canonicalized
+    container path contradicts its own contract and resolves nowhere.
+
+    Returns None when the document supplies none of them, so the caller
+    declares NO container rather than a false one."""
+    for key in candidates:
+        if _container_object(host, (key,)) is not None:
+            return key
+    return None
+
+
 def container_scoped(path: tuple) -> Callable:
-    """Decorator form of :func:`config_container`."""
+    """Decorator form of :func:`config_container`.
+
+    U2.2a: ``container_scoped(p)`` on ``f(cfg, …)`` declares "the reads inside
+    ``f`` are reads OF ``cfg`` walked by ``p``", so the named object is
+    resolved from the call's OWN first argument.  A read of any other object
+    (the host ``cfg`` itself, a sibling) is outside the container by
+    construction and keeps its true path — no hand-placed escape hatch, and no
+    prefix glued onto a read the container never named.
+
+    When ``p`` does not resolve, the declared object is absent from this
+    document: no enclosed read can be a read of it, so the scope names nothing
+    and prefixes nothing rather than asserting a path that does not exist."""
     def decorate(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            with config_container(path):
+            obj = _container_object(args[0], path) if args else None
+            with (config_container(path, obj=obj) if obj is not None
+                  else config_container(())):
                 return func(*args, **kwargs)
         return wrapper
     return decorate
@@ -750,7 +909,7 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
          reason: str = "", component: str | None = None,
          config_path: str | None = None,
          value_state: str | None = None, mechanism: str = "",
-         value_status_hash: str = "") -> None:
+         value_status_hash: str = "", source_obj_id: int | None = None) -> None:
     """Append one owner-scoped event to every active ledger (a no-op outside a
     capture, so the accessor stays cheap when no audit is running).  The owner
     comes from :data:`current_owner` unless given explicitly."""
@@ -769,8 +928,16 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         # resolver, or joined from the ambient container scope for the legacy
         # accessor funnel.  The owner:leaf label is RETIRED.
         config_path=config_path or ".".join(
-            (*current_container.get(), alias or canonical)),
-        path_exact=(config_path is not None or bool(current_container.get())),
+            (*_container_prefix_for(source_obj_id), alias or canonical)),
+        # An exact path comes from an explicit resolution, a container that
+        # legitimately names this read's object, or the read being OF the
+        # document root (whose fields live at its top, so the bare leaf IS the
+        # exact path).  Anything else is an honest bare leaf: some undeclared
+        # nested object supplied it and the reader never said where it lives.
+        path_exact=(config_path is not None
+                    or bool(_container_prefix_for(source_obj_id))
+                    or _is_document_root_read(source_obj_id)),
+        document_path=current_document.get()[0],
         canonical=canonical, alias=(alias or canonical) if present else None,
         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
         reader=reader, reason=reason,
@@ -786,6 +953,7 @@ __all__ = [
     "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
     "ProjectionObligation", "ProjectionTarget",
     "config_container", "container_scoped", "current_container",
+    "document_scope", "current_document", "present_spelling",
     "current_owner", "resolve",
     "capture_events", "owner_scope", "owner_scoped", "emit",
     "active_ledger", "active_touched_names",

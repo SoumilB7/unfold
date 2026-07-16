@@ -28,8 +28,10 @@ def get_config_value(cfg: Any, name: str, default=None):
         present = hasattr(cfg, name)
         value = getattr(cfg, name, default)
     if present:
+        # U2.2a: the funnel reports WHICH object it read, so an ambient
+        # container scope can only prefix reads of the object it names.
         debug.note_access(name, value_state=(
-            "explicit_null" if value is None else "value"))
+            "explicit_null" if value is None else "value"), source_obj=cfg)
     return value
 
 
@@ -65,3 +67,26 @@ TEXT_WRAPPER_KEYS = (
     "text_config", "language_config", "llm_config", "text_model_config",
     "thinker_config",  # Qwen-Omni nests the LM under thinker_config.text_config
 )
+
+
+def wrapper_path(root_cfg: Any, target: Any, _depth: int = 0) -> tuple:
+    """The EXACT container path of an unwrapped text config (Law B).
+
+    Identity-walked over the declared wrapper vocabulary — ``()`` when the
+    target IS the root (unwrapped), so a reader holding both a root and a
+    nested config can NAME where that config lives instead of emitting a bare
+    leaf whose location nobody can resolve.  Structural, never identity: it
+    finds the address by walking, not by knowing a model."""
+    if target is root_cfg or _depth > 3:
+        return ()
+    for key in TEXT_WRAPPER_KEYS:
+        sub = (root_cfg.get(key) if isinstance(root_cfg, dict)
+               else getattr(root_cfg, key, None))
+        if sub is None:
+            continue
+        if sub is target:
+            return (key,)
+        deeper = wrapper_path(sub, target, _depth + 1)
+        if deeper:
+            return (key, *deeper)
+    return ()

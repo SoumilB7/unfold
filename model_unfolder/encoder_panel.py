@@ -58,7 +58,13 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
     try:
         if context is None:
             context = ParseContext.build(c, source="local")
-        ir = _parse_transformer(c, context=context)
+        # U2.2a: name the document this parse actually reads — the HYDRATED
+        # config, not the raw slot value, since that is the object the reads
+        # are of.  The slot's address comes from the enclosing document scope
+        # (a standalone parse has none, and correctly roots at ()).
+        from .evidence import config_access as _config_access
+        with _config_access.document_scope((), obj=c):
+            ir = _parse_transformer(c, context=context)
     except Exception:
         return {}
     if not ir.layers:
