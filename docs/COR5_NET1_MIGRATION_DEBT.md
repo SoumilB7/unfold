@@ -17,23 +17,26 @@ covers it.
 - Net 1 blocks each claimed scope immediately (`config_migration_claims`).
 - Unclaimed rows below remain VISIBLE advisory debt — this file is that debt, exact
   and assigned; it must SHRINK as vertical units consume their reads and claim.
-- Net 2 (`config_consumed_unprojected`) independently verifies projection and blocks
-  exactly where a parse declares `projection_receipts_available=True` (U2 lands receipts).
+- Net 2 (`config_consumed_unreceipted`) joins exact occurrence -> exact fact target ->
+  exact render RECEIPT.  Coverage is owner/mechanism-SCOPED
+  (`projection_coverage.receipted_scopes`), never a global flag: inside a receipted
+  scope a missing receipt BLOCKS unconditionally; every other scope stays this
+  advisory census.  Migrating one mechanism never makes an unrelated obligation block.
 
 ## Live claims (source-to-target bound; observed and matched corpus-wide)
 
 | scope | claimed by | bindings (path -> target) | observed | target-matched |
 |---|---|---|---|---|
 | root.video/projector_out_width | COR-4 | vision_config.hidden_size -> root.video.projector_out_features | 2 | 1 |
-| root.vision/encoder_width | COR-5 | vision_config.embed_dim -> root.vision.hidden_size; vision_config.vision_hidden_size -> root.vision.hidden_size; vision_config.width -> root.vision.hidden_size; vision_config.hidden_size -> root.vision.hidden_size | 18 | 8 |
-| root.vision/projector_out_width | COR-4 | vision_config.hidden_size -> root.vision.projector_out_features | 14 | 1 |
+| root.vision/encoder_width | COR-5 | vision_config.embed_dim -> root.vision.hidden_size; vision_config.vision_hidden_size -> root.vision.hidden_size; vision_config.width -> root.vision.hidden_size; vision_config.hidden_size -> root.vision.hidden_size | 6 | 2 |
+| root.vision/projector_out_width | COR-4 | vision_config.hidden_size -> root.vision.projector_out_features | 2 | 1 |
 
 ## Owners with NO consumption at all (audit_incomplete)
 
 - `root.denoiser` — 1 witnesses (e.g. ['stable-diffusion-xl-base-1-0']); assigned **H7** (diffusion denoiser vertical (DiT/UNet fact families))
 - `root.scheduler` — 15 witnesses (e.g. ['auraflow-v0-3', 'cogvideox-5b', 'flux-2-dev', 'fluxtransformer2dmodel']); assigned **H7** (sampling/scheduler block)
 
-## Standing accessed-but-unconsumed rows: 267
+## Standing accessed-but-unconsumed rows: 281
 
 Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the
 supplying alias differs. Row key is the full occurrence; the per-witness
@@ -55,6 +58,10 @@ paths per row are in the event ledger of any carrying witness.
 
 `_text_encoder_configs.text_encoder.attn_logit_softcapping` (2w), `_text_encoder_configs.text_encoder.feed_forward_proj` (6w), `_text_encoder_configs.text_encoder.final_logit_softcapping` (2w), `_text_encoder_configs.text_encoder.image_token_id` (1w), `_text_encoder_configs.text_encoder.image_token_index` (1w), `_text_encoder_configs.text_encoder.is_decoder` (6w), `_text_encoder_configs.text_encoder.is_encoder_decoder` (14w), `_text_encoder_configs.text_encoder.is_gated_act` (6w), `_text_encoder_configs.text_encoder.layer_norm_eps` (2w), `_text_encoder_configs.text_encoder.layer_norm_epsilon` (6w), `_text_encoder_configs.text_encoder.layer_types` (3w), `_text_encoder_configs.text_encoder.max_window_layers` (1w), `_text_encoder_configs.text_encoder.num_hidden_layers` (9w), `_text_encoder_configs.text_encoder.query_pre_attn_scalar` (2w), `_text_encoder_configs.text_encoder.rms_norm_eps` (6w), `_text_encoder_configs.text_encoder.rope_parameters` (6w), `_text_encoder_configs.text_encoder.text_config` (2w), `_text_encoder_configs.text_encoder.use_bidirectional_attention` (2w), `_text_encoder_configs.text_encoder.use_sliding_window` (1w), `_text_encoder_configs.text_encoder.video_token_id` (1w), `_text_encoder_configs.text_encoder.vision_config` (2w), `_text_encoder_configs.text_encoder.vision_end_token_id` (1w), `_text_encoder_configs.text_encoder.vision_start_token_id` (1w), `attention_bias` (4w), `mlp_bias` (1w), `rope_parameters` (4w), `rope_parameters.mrope_section` (1w), `rope_parameters.rope_theta` (4w), `rope_parameters.rope_type` (4w), `text_config.rope_parameters` (2w), `text_config.rope_parameters.mrope_section` (1w), `text_config.rope_parameters.rope_theta` (2w), `text_config.rope_parameters.rope_type` (2w), `text_config.rope_parameters.type` (1w)
 
+### `root.text_encoder.vision` — 24 rows — assigned **H8** (unassigned)
+
+`vision_config.depth` (1w), `vision_config.fullatt_block_indexes` (1w), `vision_config.hidden_act` (2w), `vision_config.image_size` (1w), `vision_config.image_token_id` (1w), `vision_config.image_token_index` (1w), `vision_config.in_channels` (1w), `vision_config.in_chans` (1w), `vision_config.intermediate_size` (2w), `vision_config.num_attention_heads` (1w), `vision_config.num_channels` (1w), `vision_config.num_heads` (1w), `vision_config.num_hidden_layers` (2w), `vision_config.patch_size` (2w), `vision_config.projector_hidden_act` (1w), `vision_config.rope_parameters` (1w), `vision_config.spatial_merge_size` (1w), `vision_config.temporal_patch_size` (1w), `vision_config.tokens_per_second` (1w), `vision_config.video_token_id` (1w), `vision_config.vision_config` (2w), `vision_config.vision_end_token_id` (1w), `vision_config.vision_feature_layer` (1w), `vision_config.vision_start_token_id` (1w)
+
 ### `root.text_encoder_2` — 5 rows — assigned **H8** (supporting text-encoder tower flags)
 
 `_text_encoder_configs.text_encoder_2.feed_forward_proj` (1w), `_text_encoder_configs.text_encoder_2.is_encoder_decoder` (3w), `_text_encoder_configs.text_encoder_2.is_gated_act` (1w), `_text_encoder_configs.text_encoder_2.layer_norm_eps` (3w), `_text_encoder_configs.text_encoder_2.num_hidden_layers` (3w)
@@ -67,9 +74,9 @@ paths per row are in the event ledger of any carrying witness.
 
 `_vae_config.add_attention_block` (1w), `_vae_config.attn_scales` (2w), `_vae_config.base_dim` (2w), `_vae_config.batch_norm_eps` (1w), `_vae_config.batch_norm_momentum` (1w), `_vae_config.decoder_act_fns` (1w), `_vae_config.decoder_block_types` (1w), `_vae_config.decoder_causal` (1w), `_vae_config.decoder_layers_per_block` (1w), `_vae_config.decoder_norm_types` (1w), `_vae_config.decoder_qkv_multiscales` (1w), `_vae_config.dim_mult` (2w), `_vae_config.down_block_types` (8w), `_vae_config.downsample_block_type` (1w), `_vae_config.encoder_block_out_channels` (2w), `_vae_config.encoder_block_types` (1w), `_vae_config.encoder_causal` (1w), `_vae_config.encoder_layers_per_block` (1w), `_vae_config.encoder_qkv_multiscales` (1w), `_vae_config.invert_scale_latents` (1w), `_vae_config.latents_mean` (7w), `_vae_config.latents_std` (7w), `_vae_config.mid_block_add_attention` (4w), `_vae_config.norm_num_groups` (8w), `_vae_config.out_channels` (11w), `_vae_config.resnet_norm_eps` (1w), `_vae_config.sample_size` (6w), `_vae_config.scaling_factor` (11w), `_vae_config.shift_factor` (4w), `_vae_config.spatial_compression_ratio` (1w), `_vae_config.spatial_expansions` (1w), `_vae_config.spatio_temporal_scaling` (1w), `_vae_config.temperal_downsample` (2w), `_vae_config.temporal_expansions` (1w), `_vae_config.up_block_types` (8w), `_vae_config.upsample_block_type` (1w), `_vae_config.use_post_quant_conv` (5w), `_vae_config.use_quant_conv` (5w)
 
-### `root.vision` — 25 rows — assigned **H8** (vision tower + grid-stream fields (modality tail))
+### `root.vision` — 15 rows — assigned **H8** (vision tower + grid-stream fields (modality tail))
 
-`vision_config.depth` (2w), `vision_config.fullatt_block_indexes` (1w), `vision_config.hidden_act` (3w), `vision_config.image_size` (1w), `vision_config.image_token_id` (2w), `vision_config.image_token_index` (1w), `vision_config.in_channels` (2w), `vision_config.in_chans` (2w), `vision_config.intermediate_size` (2w), `vision_config.mlp_ratio` (1w), `vision_config.num_attention_heads` (1w), `vision_config.num_channels` (1w), `vision_config.num_heads` (2w), `vision_config.num_hidden_layers` (3w), `vision_config.patch_size` (3w), `vision_config.projector_hidden_act` (1w), `vision_config.rope_parameters` (1w), `vision_config.spatial_merge_size` (2w), `vision_config.temporal_patch_size` (2w), `vision_config.tokens_per_second` (1w), `vision_config.video_token_id` (2w), `vision_config.vision_config` (3w), `vision_config.vision_end_token_id` (2w), `vision_config.vision_feature_layer` (1w), `vision_config.vision_start_token_id` (2w)
+`vision_config.depth` (1w), `vision_config.hidden_act` (1w), `vision_config.image_token_id` (1w), `vision_config.in_channels` (1w), `vision_config.in_chans` (1w), `vision_config.mlp_ratio` (1w), `vision_config.num_heads` (1w), `vision_config.num_hidden_layers` (1w), `vision_config.patch_size` (1w), `vision_config.spatial_merge_size` (1w), `vision_config.temporal_patch_size` (1w), `vision_config.video_token_id` (1w), `vision_config.vision_config` (1w), `vision_config.vision_end_token_id` (1w), `vision_config.vision_start_token_id` (1w)
 
 ## Regeneration
 

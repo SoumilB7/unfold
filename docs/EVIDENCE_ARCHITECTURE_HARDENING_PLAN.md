@@ -2213,10 +2213,15 @@ Claude never blesses and never marks REVIEWED/DONE; both marks are Soumil's.
   `docs/COR5_NET1_MIGRATION_DEBT.md` (252 exact rows, 2 zero-consumption
   owners, each assigned to H7/H8). The census must shrink; mass registration
   was explicitly rejected as debt-laundering.
-- Net 2 (`config_consumed_unprojected`) independently verifies projection and
-  blocks exactly where a parse declares `projection_receipts_available=True`;
-  declaring receipts with unreceipted obligations fails. No parser/renderer
-  path claims completion while receipts are unavailable — U2 lands receipts.
+- Net 2 (`config_consumed_unreceipted`) independently verifies projection by
+  joining exact config occurrence -> exact fact target -> exact render
+  RECEIPT.  Coverage is owner/mechanism-SCOPED
+  (`ir.extras.config_access.projection_coverage.receipted_scopes`), never a
+  global flag: inside a receipted scope a missing receipt BLOCKS
+  unconditionally, and every other scope stays the advisory
+  read-but-not-yet-receipted census.  Migrating one mechanism therefore can
+  never make an unrelated obligation blocking.  Receipt enforcement is never
+  conditioned on whether a renderer happened to draw something.
 - Ambiguities (`config_ambiguity`) remain blocking regardless of claims.
 - Poison suite: `tests/test_projection_audit.py::test_cor5_*` proves an empty
   or violated declaration cannot pass vacuously (unconsumed-read poison,
