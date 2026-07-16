@@ -164,7 +164,7 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
     export = tmp_path / "export"
     export.mkdir()
     subprocess.run(f"git -C '{root}' archive HEAD | tar -x -C '{export}'",
-                   shell=True, check=True)
+                   shell=True, check=True, timeout=180)
     manifest = json.loads(
         (export / "tests" / "preservation_expected_manifest.json").read_text())
     assert manifest["witness_count"] == 25
@@ -194,7 +194,7 @@ def test_clean_checkout_imports_and_parses(tmp_path):
     export = tmp_path / "export"
     export.mkdir()
     subprocess.run(f"git -C '{root}' archive HEAD | tar -x -C '{export}'",
-                   shell=True, check=True)
+                   shell=True, check=True, timeout=180)
     program = textwrap.dedent("""
         import json, pathlib, sys
         import model_unfolder as mu
@@ -211,11 +211,20 @@ def test_clean_checkout_imports_and_parses(tmp_path):
         assert len(RECEIPTED_SCOPES) >= 1
         print("CLEAN_CHECKOUT_OK")
     """)
-    result = subprocess.run(
-        [sys.executable, "-c", program], cwd=export, capture_output=True, text=True,
-        env={"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(export),
-             "HOME": os.environ.get("HOME", "")},
-    )
+    # A bounded wait: a test that CAN block forever is a defect regardless of
+    # whether it blocks today — an unbounded subprocess turns any environmental
+    # stall into a silent multi-hour hang instead of a failure.
+    try:
+        result = subprocess.run(
+            [sys.executable, "-c", program], cwd=export, capture_output=True,
+            text=True, timeout=600,
+            env={"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(export),
+                 "HOME": os.environ.get("HOME", "")},
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AssertionError(
+            "clean-checkout import/parse did not finish within 600s — the "
+            f"archived tree hangs on import or parse: {exc}") from exc
     assert "CLEAN_CHECKOUT_OK" in result.stdout, (
         "archived HEAD does not import/parse from a clean checkout — a "
         f"production module or fixture is missing from the commit:\n"
