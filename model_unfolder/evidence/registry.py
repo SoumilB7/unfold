@@ -385,6 +385,32 @@ class PendingProjectionFact:
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
 # pending-projection debt (registered typed facts, projection pending H7-full).
 @dataclass(frozen=True)
+class ProjectionPolicy:
+    """U2.1a: the EXACT consumers a migrated scope may be projected onto.
+
+    Lives on the :class:`MigrationClaim` itself — there is exactly ONE
+    registry.  A separate receipt-policy table beside the claim register would
+    be a second source of truth that drifts, which is the recurring failure
+    this project exists to delete.  A claim carrying a policy IS a receipted
+    scope; Net 2 derives both the scope set and the validation rule from here.
+
+    Surface, kind and node path all PARTICIPATE in validation — recording a
+    field without checking it is decoration, not proof.
+    """
+
+    allowed_surfaces: frozenset[str]
+    allowed_kinds: frozenset[str]
+    allowed_node_paths: frozenset[tuple[str, ...]]
+
+    def __post_init__(self) -> None:
+        if not (self.allowed_surfaces and self.allowed_kinds
+                and self.allowed_node_paths):
+            raise ValueError(
+                "a projection policy must name at least one allowed surface, "
+                "kind and node path — an empty policy validates nothing")
+
+
+@dataclass(frozen=True)
 class ClaimBinding:
     """COR-5 fourth-vet (§10 correction 1): ONE claimed read as a full
     source-to-target mapping — the exact config path AND the exact
@@ -424,6 +450,13 @@ class MigrationClaim:
     mechanism: str                   # fact family inside the owner
     claimed_by: str                  # the unit that completed the migration
     bindings: tuple[ClaimBinding, ...]
+    # U2.1a: a claim carrying a projection policy IS a RECEIPTED scope — Net 2
+    # derives both the scope set and its validation rule from this ONE
+    # registry, so no second table can drift out of sync.
+    projection: "ProjectionPolicy | None" = None
+
+    def scope(self) -> tuple[str, str]:
+        return (self.owner, self.mechanism)
 
     def __post_init__(self) -> None:
         if not (self.owner and self.mechanism and self.claimed_by
@@ -451,11 +484,17 @@ MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
     MigrationClaim("root.vision", "projector_out_width", "COR-4", (
         ClaimBinding("vision_config.hidden_size",
                      ProjectionTarget("root.vision", "projector_out_features")),
-    )),
+    ), projection=ProjectionPolicy(
+        allowed_surfaces=frozenset({"ops_vision_projector"}),
+        allowed_kinds=frozenset({"op"}),
+        allowed_node_paths=frozenset({("vision_projector",)}))),
     MigrationClaim("root.video", "projector_out_width", "COR-4", (
         ClaimBinding("vision_config.hidden_size",
                      ProjectionTarget("root.video", "projector_out_features")),
-    )),
+    ), projection=ProjectionPolicy(
+        allowed_surfaces=frozenset({"ops_video_projector"}),
+        allowed_kinds=frozenset({"op"}),
+        allowed_node_paths=frozenset({("video_projector",)}))),
     MigrationClaim("root.vision", "encoder_width", "COR-5", (
         ClaimBinding("vision_config.embed_dim",
                      ProjectionTarget("root.vision", "hidden_size")),

@@ -14,7 +14,9 @@ one lawful shared package and is explicitly allowed.
 from __future__ import annotations
 
 import ast
+import os
 import pathlib
+import textwrap
 
 import pytest
 
@@ -173,3 +175,48 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
         row = manifest["witnesses"][path.stem]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == row["input_sha256"]
         assert all(row["surfaces"].values()) and row["views"]
+
+
+def test_clean_checkout_imports_and_parses(tmp_path):
+    """U2.1a: git-archive HEAD must be IMPORTABLE and PARSE, not merely carry
+    the preservation fixtures.
+
+    The sibling test above proves the preservation EVIDENCE is self-contained;
+    it never imports the archived code, so a production module left untracked
+    would sail through it (that error reached review once).  This runs the
+    archive in a SUBPROCESS whose import root is the export, imports the
+    package and every production module the tracked code imports, and parses
+    one transformer and one diffusion fixture."""
+    import subprocess
+    import sys
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    export = tmp_path / "export"
+    export.mkdir()
+    subprocess.run(f"git -C '{root}' archive HEAD | tar -x -C '{export}'",
+                   shell=True, check=True)
+    program = textwrap.dedent("""
+        import json, pathlib, sys
+        import model_unfolder as mu
+        # every production module the tracked code imports must be present
+        import model_unfolder.evidence.receipts          # noqa: F401
+        import model_unfolder.input_formats              # noqa: F401
+        from model_unfolder.evidence.receipts import RECEIPTED_SCOPES
+        corpus = pathlib.Path("tests/sable_test_corpus")
+        for slug in ("llama-7b", "flux-2-dev"):          # transformer + diffusion
+            cfg = json.loads((corpus / f"{slug}.json").read_text())["config"]
+            ir = mu.unfold(cfg).to_ir()
+            assert ir.get("extras"), slug
+            assert "projection_coverage" in ir["extras"]["config_access"], slug
+        assert len(RECEIPTED_SCOPES) >= 1
+        print("CLEAN_CHECKOUT_OK")
+    """)
+    result = subprocess.run(
+        [sys.executable, "-c", program], cwd=export, capture_output=True, text=True,
+        env={"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(export),
+             "HOME": os.environ.get("HOME", "")},
+    )
+    assert "CLEAN_CHECKOUT_OK" in result.stdout, (
+        "archived HEAD does not import/parse from a clean checkout — a "
+        f"production module or fixture is missing from the commit:\n"
+        f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr[-3000:]}")

@@ -201,3 +201,160 @@ def test_no_visual_delta_projector_views_unchanged():
     drifted = [v for v in sorted(set(views) | set(expected))
                if views.get(v) != expected.get(v)]
     assert drifted == [], f"projector receipt changed pixels: {drifted}"
+
+
+# --------------------------------------------------------------------------- #
+# U2.1a — a receipt must prove the CORRECT VALUE reached an ALLOWED CONSUMER.
+# Existence of a correctly-labelled receipt is not proof: the expected
+# fingerprint originates UPSTREAM at the consumption, and surface/kind are
+# validated against the registered projection policy.
+# --------------------------------------------------------------------------- #
+
+def _obligations(cfg):
+    return mu.unfold(cfg).to_ir()["extras"]["config_access"]["projection_obligations"]
+
+
+def _receipt_pair(**over):
+    """An honest vision+video projector receipt pair, mutated by ``over``."""
+    base = dict(fact_key="root.vision.projector_out_features", owner="root.vision",
+                mechanism="projector_out_width", surface="ops_vision_projector",
+                node_path=("vision_projector",), projection_kind="op",
+                value_status_hash=value_status_hash(3584, "config_bound"))
+    base.update(over)
+    video = {**base, "owner": "root.video",
+             "fact_key": "root.video.projector_out_features",
+             "surface": "ops_video_projector",
+             "node_path": ("video_projector",)}
+    # a poisoned field must poison BOTH lanes, else the honest lane masks it
+    for field in ("surface", "node_path"):
+        if field in over:
+            video[field] = over[field]
+    return [ProjectionReceipt(**base), ProjectionReceipt(**video)]
+
+
+def test_expected_fingerprint_originates_at_the_consumption_not_the_renderer():
+    """The obligation carries the fingerprint recorded WHEN THE VALUE WAS
+    CONSUMED.  Without this the renderer supplies both the drawing and its own
+    proof, which is self-certifying."""
+    rows = [o for o in _obligations(_qwen2vl())
+            if o["target"]["key"] == "projector_out_features"]
+    assert rows, "the witness must consume a projector width"
+    for row in rows:
+        assert row["expected_value_status_hash"] == value_status_hash(3584, "config_bound")
+
+
+def test_honest_receipt_passes_the_full_join():
+    result = join_obligation_receipts(
+        _obligations(_qwen2vl()), _receipt_pair(), RECEIPTED_SCOPES)
+    assert result["findings"] == []
+    assert result["receipted_targets"]
+
+
+@pytest.mark.parametrize(("label", "over", "expect"), [
+    ("wrong value",      {"value_status_hash": value_status_hash(9999, "config_bound")},
+     "does not match"),
+    ("wrong status",     {"value_status_hash": value_status_hash(3584, "code_bound")},
+     "does not match"),
+    ("wrong surface",    {"surface": "ops_some_other_block"}, "not allowed to be projected"),
+    ("wrong kind",       {"projection_kind": "prose"}, "projection kind"),
+])
+def test_poison_invalid_receipts_block(label, over, expect):
+    """A receipt with the right LABEL but the wrong value/status/surface/kind
+    must not clear the obligation."""
+    result = join_obligation_receipts(
+        _obligations(_qwen2vl()), _receipt_pair(**over), RECEIPTED_SCOPES)
+    assert result["findings"], f"{label} was accepted"
+    assert any(expect in f for f in result["findings"]), result["findings"]
+
+
+@pytest.mark.parametrize(("label", "over"), [
+    ("wrong owner", {"owner": "root.somewhere_else"}),
+    ("wrong mechanism", {"mechanism": "encoder_width"}),
+])
+def test_poison_wrong_owner_or_mechanism_never_clears(label, over):
+    """Owner and mechanism are part of the join key, so a receipt aimed at
+    another scope leaves the obligation unreceipted."""
+    result = join_obligation_receipts(
+        _obligations(_qwen2vl()), _receipt_pair(**over), RECEIPTED_SCOPES)
+    assert result["findings"], f"{label} was accepted"
+    assert any("no render surface emitted a matching projection receipt" in f
+               for f in result["findings"]), result["findings"]
+
+
+def test_poison_nominal_receipt_outside_the_real_consumer_blocks():
+    """A receipt emitted from a surface that is NOT the registered consumer —
+    a nominal 'this fact is drawn' assertion — cannot satisfy Net 2."""
+    result = join_obligation_receipts(
+        _obligations(_qwen2vl()),
+        _receipt_pair(surface="architecture", projection_kind="card"),
+        RECEIPTED_SCOPES)
+    assert result["findings"]
+    assert result["receipted_targets"] == []
+
+
+def test_poison_missing_expected_fingerprint_blocks():
+    """A receipted scope whose CONSUMPTION forgot ``status=`` records no
+    expectation.  Without this rule any matching receipt would clear it, so a
+    missing expectation must itself BLOCK — not silently pass."""
+    obligations = [dict(o) for o in _obligations(_qwen2vl())]
+    for ob in obligations:                       # simulate a forgotten status=
+        ob["expected_value_status_hash"] = ""
+    result = join_obligation_receipts(obligations, _receipt_pair(), RECEIPTED_SCOPES)
+    assert result["findings"], "a missing expectation was accepted"
+    assert any("NO expected value/status fingerprint" in f
+               for f in result["findings"]), result["findings"]
+    assert result["receipted_targets"] == []
+
+
+def test_poison_wrong_node_path_blocks():
+    """Everything correct — owner, fact, mechanism, surface, kind, hash — but
+    the receipt names a node the scope does not draw at.  It must fail."""
+    result = join_obligation_receipts(
+        _obligations(_qwen2vl()),
+        _receipt_pair(node_path=("some_other_node",)), RECEIPTED_SCOPES)
+    assert result["findings"], "a fake node path was accepted"
+    assert any("not a registered consumer node" in f
+               for f in result["findings"]), result["findings"]
+    assert result["receipted_targets"] == []
+
+
+def test_receipted_scopes_derive_from_the_one_claim_registry():
+    """There is exactly ONE registry.  A scope is receipted IFF its registered
+    migration claim declares a projection policy — cross-validated against the
+    claim register itself, not against a set derived from the same list."""
+    from model_unfolder.evidence.receipts import policy_for, receipted_scopes
+    from model_unfolder.evidence.registry import MIGRATED_SCOPES
+
+    claims = {c.scope(): c for c in MIGRATED_SCOPES}
+    # every receipted scope IS a registered claim that declares a policy
+    for scope in RECEIPTED_SCOPES:
+        assert scope in claims, f"{scope} is receipted but not a registered claim"
+        assert claims[scope].projection is not None
+    # and every policy-carrying claim IS receipted (no drift in either direction)
+    assert receipted_scopes() == {s for s, c in claims.items() if c.projection}
+    assert RECEIPTED_SCOPES == receipted_scopes()
+    # a claim WITHOUT a policy is not receipted (encoder_width is the live case)
+    unpoliced = {s for s, c in claims.items() if c.projection is None}
+    assert unpoliced, "the registry must still carry an un-migrated claim"
+    for scope in unpoliced:
+        assert scope not in RECEIPTED_SCOPES
+        assert policy_for(*scope) is None
+
+
+def test_every_policy_target_is_a_registered_claim_binding_target():
+    """Cross-validation: a projection policy may only exist for a scope whose
+    bindings name real targets — a policy for a target nothing consumes would
+    be a receipt rule with no fact behind it."""
+    from model_unfolder.evidence.registry import MIGRATED_SCOPES
+
+    for claim in MIGRATED_SCOPES:
+        if claim.projection is None:
+            continue
+        assert claim.bindings, f"{claim.scope()} has a policy but no bindings"
+        for binding in claim.bindings:
+            assert binding.target.owner == claim.owner, (
+                f"{claim.scope()} policy targets a foreign owner "
+                f"{binding.target.owner}")
+        assert claim.projection.allowed_surfaces
+        assert claim.projection.allowed_kinds
+        assert claim.projection.allowed_node_paths

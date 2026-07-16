@@ -174,9 +174,12 @@ def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
         node, parts[-1], (), component=owner, path=parts[:-1])
     if resolution.state != "present":
         return None
+    # U2.1a: ``status`` is the evidence tier that BOUND this width, so the
+    # consumption records the expected value/status fingerprint upstream; a
+    # receipt whose drawn fingerprint differs cannot clear this obligation.
     return as_int(resolution.consume(
         fact_owner=owner, fact_key="projector_out_features",
-        mechanism="projector_out_width"))
+        mechanism="projector_out_width", status=source))
 
 
 def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:

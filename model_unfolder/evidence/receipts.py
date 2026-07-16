@@ -76,14 +76,33 @@ def value_status_hash(value, status: str) -> str:
     return hashlib.sha256(f"{status}\x00{value!r}".encode()).hexdigest()[:16]
 
 
-# Scopes (owner, mechanism) whose render consumer emits receipts.  Net 2 is
-# BLOCKING for these and advisory everywhere else.  A scope enters this set
-# only when its drawing surface has been migrated to note_receipts — the
-# pilot is the source-bound vision/video projector output width (COR-4).
-RECEIPTED_SCOPES: frozenset[tuple[str, str]] = frozenset({
-    ("root.vision", "projector_out_width"),
-    ("root.video", "projector_out_width"),
-})
+def _claims():
+    """The ONE registry: migrated claims.  A claim carrying a projection policy
+    IS a receipted scope — there is no second table to drift."""
+    from .registry import MIGRATED_SCOPES
+    return MIGRATED_SCOPES
+
+
+def receipted_scopes(claims=None) -> frozenset:
+    """Scopes whose render consumer emits receipts, DERIVED from the claim
+    register: exactly those claims that declare a projection policy."""
+    return frozenset(c.scope() for c in (claims or _claims()) if c.projection)
+
+
+def policy_for(owner: str, mechanism: str, claims=None):
+    """The registered projection policy for a scope, or None."""
+    for claim in (claims or _claims()):
+        if claim.scope() == (owner, mechanism):
+            return claim.projection
+    return None
+
+
+class _ReceiptedScopes(frozenset):
+    """``RECEIPTED_SCOPES`` kept as a module constant for existing callers, but
+    always the DERIVED set — never an independently maintained list."""
+
+
+RECEIPTED_SCOPES: frozenset = _ReceiptedScopes(receipted_scopes())
 
 
 def is_receipted_scope(owner: str, mechanism: str,
@@ -121,14 +140,68 @@ def join_obligation_receipts(obligations, receipts,
         if (owner, mechanism) not in receipted_scopes:
             continue
         fact_key = f"{owner}.{key}"
-        if by_target.get((owner, fact_key, mechanism)):
-            receipted_targets.add((owner, fact_key, mechanism))
-        else:
+        source = f"{ob['source']['component']}:{ob['source']['path']}"
+        candidates = by_target.get((owner, fact_key, mechanism)) or []
+        if not candidates:
             findings.append(
-                f"{ob['source']['component']}:{ob['source']['path']} -> "
-                f"{owner}.{key} is in receipted scope {owner}/{mechanism} but no "
-                "render surface emitted a matching projection receipt (a consumed "
-                "structural value the diagram does not draw)")
+                f"{source} -> {owner}.{key} is in receipted scope "
+                f"{owner}/{mechanism} but no render surface emitted a matching "
+                "projection receipt (a consumed structural value the diagram "
+                "does not draw)")
+            continue
+        # U2.1a: existence is not proof.  The receipt must come from an ALLOWED
+        # surface and kind, and must carry the fingerprint the CONSUMPTION
+        # expected — otherwise the drawing drifted from the consumed value or a
+        # foreign surface cleared the obligation.
+        policy = policy_for(owner, mechanism)
+        expected = ob.get("expected_value_status_hash") or ""
+        if not expected:
+            # A receipted scope whose CONSUMPTION recorded no expected
+            # fingerprint cannot be validated at all — any matching receipt
+            # would clear it.  The consumption must pass status=; until it
+            # does, the scope is unproven and BLOCKS.
+            findings.append(
+                f"{source} -> {owner}.{key} is in receipted scope "
+                f"{owner}/{mechanism} but the consumption recorded NO expected "
+                "value/status fingerprint (pass status= at consume) — a receipt "
+                "cannot be validated against a missing expectation")
+            continue
+        accepted = []
+        for receipt in candidates:
+            if policy and receipt.surface not in policy.allowed_surfaces:
+                findings.append(
+                    f"{source} -> {owner}.{key}: receipt came from surface "
+                    f"{receipt.surface!r}, which {owner}/{mechanism} is not "
+                    f"allowed to be projected onto "
+                    f"(allowed: {sorted(policy.allowed_surfaces)})")
+                continue
+            if policy and receipt.projection_kind not in policy.allowed_kinds:
+                findings.append(
+                    f"{source} -> {owner}.{key}: receipt declares projection "
+                    f"kind {receipt.projection_kind!r}, not allowed for "
+                    f"{owner}/{mechanism} (allowed: {sorted(policy.allowed_kinds)})")
+                continue
+            if policy and tuple(receipt.node_path) not in policy.allowed_node_paths:
+                findings.append(
+                    f"{source} -> {owner}.{key}: receipt names node path "
+                    f"{tuple(receipt.node_path)!r}, not a registered consumer "
+                    f"node for {owner}/{mechanism} "
+                    f"(allowed: {sorted(policy.allowed_node_paths)})")
+                continue
+            if receipt.value_status_hash != expected:
+                findings.append(
+                    f"{source} -> {owner}.{key}: the drawn value/status "
+                    f"fingerprint {receipt.value_status_hash!r} does not match "
+                    f"the fingerprint {expected!r} recorded when the value was "
+                    "consumed — the drawing drifted from the consumed value")
+                continue
+            accepted.append(receipt)
+        if accepted:
+            receipted_targets.add((owner, fact_key, mechanism))
+        elif not findings:
+            findings.append(
+                f"{source} -> {owner}.{key}: no valid receipt "
+                f"for {owner}/{mechanism}")
     return {"findings": sorted(set(findings)),
             "receipted_targets": sorted(receipted_targets)}
 
@@ -155,6 +228,7 @@ def fabrication_findings(receipts, registered_keys, claimed_targets,
 
 __all__ = [
     "ProjectionReceipt", "value_status_hash", "receipts_from_projects",
-    "RECEIPTED_SCOPES", "is_receipted_scope", "join_obligation_receipts",
+    "RECEIPTED_SCOPES", "receipted_scopes", "policy_for",
+    "is_receipted_scope", "join_obligation_receipts",
     "fabrication_findings",
 ]

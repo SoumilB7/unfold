@@ -104,6 +104,7 @@ class ProjectionObligation:
     state: str          # projected | pending | scoped_ignored | unreceipted
     reason: str = ""
     mechanism: str = ""
+    expected_value_status_hash: str = ""
 
     def __post_init__(self) -> None:
         if self.state not in ("projected", "pending", "scoped_ignored",
@@ -137,6 +138,10 @@ class ConfigAccessEvent:
     # an untagged or wrong-mechanism consumption inside a claimed scope is a
     # violation, never cleared by another mechanism's target.
     mechanism: str = ""
+    # U2.1a: the EXPECTED value/status fingerprint of a consumed value, recorded
+    # AT the consumption.  Net 2 compares a receipt against this, so a renderer
+    # can never manufacture its own expectation.
+    value_status_hash: str = ""
 
     def __post_init__(self) -> None:
         if self.intent not in INTENTS:
@@ -239,7 +244,8 @@ class ConfigAccessLedger:
             out.append(ProjectionObligation(
                 source_occurrence=e.occurrence_key, target=target,
                 state=state, reason=reason,
-                mechanism=getattr(e, "mechanism", "")))
+                mechanism=getattr(e, "mechanism", ""),
+                expected_value_status_hash=getattr(e, "value_status_hash", "")))
         return out
 
     # -- owner-qualified views (DERIVED compatibility/debug only, §7) ----------
@@ -446,12 +452,18 @@ class ConfigResolution:
 
     # -- explicit transitions (Contract A.5) ---------------------------------
     def consume(self, fact_owner: str = "", fact_key: str = "",
-                mechanism: str = "") -> Any:
+                mechanism: str = "", status: str = "") -> Any:
         """The value reached a fact/geometry decision.  PRESENT consumes are
         recorded under the SELECTED SPELLING (never a fictional canonical
         read); an ABSENT consume is an ``absent_default`` PREMISE with the same
         fact linkage; consuming an AMBIGUOUS resolution is a programming error
-        — the parse may continue with an unknown fact but may not choose."""
+        — the parse may continue with an unknown fact but may not choose.
+
+        U2.1a: when ``status`` names the evidence tier that decided this value,
+        the consumption records the EXPECTED value/status fingerprint on its
+        event.  Net 2 compares a receipt's fingerprint against THIS one, so the
+        expectation originates upstream at the consumption — a renderer can
+        never certify its own drawing."""
         if self.state == "ambiguous":
             raise ValueError(
                 f"cannot consume ambiguous {self.canonical!r} for "
@@ -461,11 +473,15 @@ class ConfigResolution:
                 f"consume({self.canonical!r}) requires an exact fact/spec/"
                 "geometry target — a consumption with no target is a silent "
                 "audit-clearing read (COR-1 §6)")
+        expected = ""
+        if status and self.state == "present":
+            from .receipts import value_status_hash
+            expected = value_status_hash(self.value, status)
         emit(self.canonical,
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=fact_owner or self.component, fact_key=fact_key,
-             mechanism=mechanism,
+             mechanism=mechanism, value_status_hash=expected,
              component=self.component, config_path=self.selected_path,
              value_state=("value" if self.value is not None else
                           "explicit_null") if self.state == "present" else "missing",
@@ -733,7 +749,8 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
          fact_owner: str = "", fact_key: str = "", reader: str = "",
          reason: str = "", component: str | None = None,
          config_path: str | None = None,
-         value_state: str | None = None, mechanism: str = "") -> None:
+         value_state: str | None = None, mechanism: str = "",
+         value_status_hash: str = "") -> None:
     """Append one owner-scoped event to every active ledger (a no-op outside a
     capture, so the accessor stays cheap when no audit is running).  The owner
     comes from :data:`current_owner` unless given explicitly."""
@@ -759,7 +776,7 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
         reader=reader, reason=reason,
         value_state=(value_state if value_state is not None
                      else ("value" if present else "missing")),
-        mechanism=mechanism)
+        mechanism=mechanism, value_status_hash=value_status_hash)
     for ledger in ledgers:
         ledger.record(event)
 

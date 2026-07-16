@@ -249,7 +249,8 @@ def config_to_ir(
              "target": {"owner": ob.target.owner, "key": ob.target.fact_key,
                         "kind": ob.target.structural_sink_kind},
              "state": ob.state, "reason": ob.reason,
-             "mechanism": ob.mechanism}
+             "mechanism": ob.mechanism,
+             "expected_value_status_hash": ob.expected_value_status_hash}
             for ob in _access_ledger.projection_obligations(
                 pending_sources={(e.owner, e.config_path)
                                  for e in PENDING_PROJECTION_DEBT})],
