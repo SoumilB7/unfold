@@ -95,12 +95,15 @@ class ProjectionTarget:
 @dataclass(frozen=True)
 class ProjectionObligation:
     """COR-2 (§7): one consumption's obligation — its exact source occurrence,
-    its exact target, and its structured state (never message text)."""
+    its exact target, and its structured state (never message text).  U2: the
+    ``mechanism`` (decision scope) rides along so Net 2 can key receipt
+    coverage by (target owner, mechanism)."""
 
     source_occurrence: ConfigOccurrenceKey
     target: ProjectionTarget
     state: str          # projected | pending | scoped_ignored | unreceipted
     reason: str = ""
+    mechanism: str = ""
 
     def __post_init__(self) -> None:
         if self.state not in ("projected", "pending", "scoped_ignored",
@@ -235,7 +238,8 @@ class ConfigAccessLedger:
                 state, reason = "unreceipted", "no projection receipt exists yet"
             out.append(ProjectionObligation(
                 source_occurrence=e.occurrence_key, target=target,
-                state=state, reason=reason))
+                state=state, reason=reason,
+                mechanism=getattr(e, "mechanism", "")))
         return out
 
     # -- owner-qualified views (DERIVED compatibility/debug only, §7) ----------

@@ -292,15 +292,16 @@ def test_p12_sinks_reader_binds_to_the_decoder_owner():
 # --------------------------------------------------------------------------- #
 
 def test_p13_consumed_but_unprojected_net_is_published():
-    """FIXED by U1 (§20.4.9): permanent guard — net-2 is published as the
-    advisory ``config_consumed_unprojected`` Sable check (owner-qualified);
-    it turns blocking after U2 receipts + the corpus debt migration."""
+    """FIXED by U1 (§20.4.9), cut over by U2: net-2 is published as the
+    ``config_consumed_unreceipted`` Sable check — blocking inside receipted
+    (owner, mechanism) scopes and advisory elsewhere."""
     from model_unfolder.sable import sable
 
     report = sable(LLAMA, render_images=False)
     names = {check.name for check in report.checks}
-    assert any(("consumed" in name and "unprojected" in name) for name in names), (
-        f"no published consumed-but-unprojected net among checks: {sorted(names)}")
+    assert any(("consumed" in name and ("unreceipted" in name or "unprojected" in name))
+               for name in names), (
+        f"no published consumed-but-unreceipted net among checks: {sorted(names)}")
 
 
 def test_p13_content_exact_unreceipted_targets():

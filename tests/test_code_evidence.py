@@ -1023,6 +1023,37 @@ def test_unknown_model_type_falls_through_to_declared_class():
     assert not empty.files and empty.warnings
 
 
+def test_source_directory_uses_installed_registry_not_a_project_identity_table(
+        monkeypatch, tmp_path):
+    """Source addressing follows the installed library's own registry.
+
+    The project must not grow a model-type-to-directory table or guess parent
+    packages by chopping role suffixes.
+    """
+    import model_unfolder.evidence.sources as S
+    from transformers.models.auto import configuration_auto
+
+    models_root = tmp_path / "models"
+    declared = models_root / "registry_selected_module"
+    declared.mkdir(parents=True)
+    monkeypatch.setattr(
+        configuration_auto, "model_type_to_module_name",
+        lambda _declared_type: declared.name,
+    )
+    assert S._transformers_family_dir(
+        models_root, "arbitrary_declared_type") == declared.name
+    assert not hasattr(S, "MODEL_TYPE_TO_TRANSFORMERS_DIR")
+
+    # If registry metadata names no installed module, an invented suffix-parent
+    # must not be selected merely because that directory happens to exist.
+    (models_root / "ambiguous").mkdir()
+    monkeypatch.setattr(
+        configuration_auto, "model_type_to_module_name",
+        lambda _declared_type: "not_installed",
+    )
+    assert S._transformers_family_dir(models_root, "ambiguous_text") is None
+
+
 def test_fileless_hub_warning_is_not_masked(monkeypatch):
     """When the remote-code hub lookup fails (offline/gated/id-less), its TRUE
     cause must surface beside the local fallback warning instead of being

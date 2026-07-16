@@ -453,8 +453,10 @@ def _parse_unet_model(cfg: Any, arch_name: str, warnings: list[str], context=Non
             + "."
         )
     hidden = max(boc) if boc else 0
-    text_encoders = _detect_text_encoders(cfg)
+    # ONE namespaced sub-parse; names derive from it (never a second
+    # context-less parse under the wrong ownership namespace).
     text_encoder_specs = _text_encoder_specs(cfg, context=context)
+    text_encoders = [s["name"] for s in text_encoder_specs]
     conditioning = _resolve_conditioning(cfg, text_encoders)
     # The cross-attention K/V label the UNet view draws follows the resolved
     # conditioning modality (image_proj -> "Image embeds", never "Encoded text").
@@ -813,6 +815,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # conventional AdaLN cell (every image DiT tested).
     code_block_conditioning = _code_block_conditioning(cfg, context)
 
+    # ONE text-encoder sub-parse: names derive from the SAME namespaced specs
+    # the geometry uses.  A second, context-less call re-parsed every encoder
+    # under the wrong ownership namespace (root instead of root.<slot>),
+    # falsely attributing a multimodal encoder's vision projector to the
+    # pipeline's top-level root.vision (flux-2's mistral3 text encoder).
+    _text_encoder_specs_resolved = _text_encoder_specs(cfg, context=context)
+
     geom = {
         "denoiser_family": "dit",
         "hidden_size": hidden_size,
@@ -853,8 +862,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "audio": _audio_latent_domain(cfg),
         "block_conditioning": code_block_conditioning,
         "guidance_embeds": _g(cfg, "guidance_embeds"),
-        "text_encoders": _detect_text_encoders(cfg),
-        "text_encoder_specs": _text_encoder_specs(cfg, context=context),
+        "text_encoders": [s["name"] for s in _text_encoder_specs_resolved],
+        "text_encoder_specs": _text_encoder_specs_resolved,
         "double_stream_layers": num_layers or None,
         "single_stream_layers": num_single or None,
         "vae": _vae_geom(cfg),
@@ -2098,9 +2107,11 @@ def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
     return isinstance(patch, (list, tuple)) and len(patch) == 3
 
 
-def _detect_text_encoders(cfg: Any) -> list[str]:
-    """Friendly text-encoder names from a diffusers pipeline index, if present."""
-    return [s["name"] for s in _text_encoder_specs(cfg)]
+# _detect_text_encoders was DELETED (2026-07-16): it re-ran the full
+# text-encoder sub-parse context-less, re-parsing each encoder under the wrong
+# ownership namespace (root instead of root.<slot>) and falsely attributing a
+# multimodal encoder's vision projector to the pipeline's top-level root.vision.
+# Names now derive from the ONE namespaced `_text_encoder_specs(cfg, context=)`.
 
 
 def _resolve_conditioning(cfg: Any, encoders: list) -> dict:
@@ -2213,6 +2224,11 @@ def _slot_context(root_context, slot: str):
     }
     return ParseContext(
         source_bundle=sub_bundle, source=root_context.source,
+        # Ownership namespace: this slot's facts are owned under
+        # root.<slot> in the pipeline's global tree (composes for nesting),
+        # even though its SOURCE subtree is re-rooted for resolution above.
+        component_namespace=(
+            f"{getattr(root_context, 'component_namespace', 'root')}.{slot}"),
         class_defaults=_installed_config_defaults(_slot_identity),
         declared_decoderness=declared_decoderness(_slot_identity),
     )

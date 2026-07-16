@@ -42,8 +42,33 @@ def load(domain: str, name: str) -> dict:
 # --- transformer domain -----------------------------------------------------
 
 def load_aliases() -> dict[str, list[str]]:
-    """Transformer field-alias table (``transformer/aliases.yaml``)."""
-    return load("transformer", "aliases")
+    """Global transformer field aliases.
+
+    Scope-qualified input-format entries share ``transformer/aliases.yaml`` so
+    all spelling equivalence has one vocabulary, but they are deliberately
+    excluded here: a dialect-local alias such as ``dim`` must never leak into
+    the unordered transformer config scope.
+    """
+    return {
+        key: value
+        for key, value in load("transformer", "aliases").items()
+        if not str(key).startswith("input_format.")
+    }
+
+
+def load_input_format_aliases(format_name: str) -> dict[str, list[str]]:
+    """Return scope-qualified aliases for one structurally detected format.
+
+    Keys are stored as ``input_format.<format>.<scope>.<canonical>`` in the
+    shared alias resource.  ``format_name`` is a syntax contract, never a model,
+    class, or repository identity.
+    """
+    prefix = f"input_format.{format_name}."
+    return {
+        str(key)[len(prefix):]: list(value)
+        for key, value in load("transformer", "aliases").items()
+        if str(key).startswith(prefix) and isinstance(value, list)
+    }
 
 
 def load_ignored_fields() -> dict[str, list[str]]:
@@ -165,17 +190,6 @@ def load_layer_schedules() -> dict:
 def load_diffusion_aliases() -> dict[str, list[str]]:
     """Diffusion (DiT/MMDiT) field-alias table (``diffusor/aliases.yaml``)."""
     return load("diffusor", "aliases")
-
-
-def load_mistral_params_map() -> dict[str, dict[str, str]]:
-    """Mistral original-release ``params.json`` -> transformers spellings
-    (``transformer/mistral_params.yaml``): {"text": {src: dst}, "vision": …}."""
-    data = load("transformer", "mistral_params")
-    out: dict[str, dict[str, str]] = {}
-    for section, rows in (data or {}).items():
-        out[section] = dict(pair.split("=", 1) for pair in (rows or [])
-                            if isinstance(pair, str) and "=" in pair)
-    return out
 
 
 def load_diffusion_config_facts() -> dict[str, list[dict]]:
@@ -466,6 +480,7 @@ def _unquote(token: str) -> str:
 __all__ = [
     "load",
     "load_aliases",
+    "load_input_format_aliases",
     "load_ignored_fields",
     "load_transformer_typing",
     "load_layer_type_labels",

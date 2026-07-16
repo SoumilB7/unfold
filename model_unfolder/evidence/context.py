@@ -124,6 +124,14 @@ class ParseContext:
 
     source_bundle: SourceBundle
     source: str = "local"
+    # The ambient OWNERSHIP namespace of this parse in the pipeline's global
+    # component tree: "root" for a top-level parse, "root.text_encoder" /
+    # "root.text_encoder_2" / … for a recursively-parsed diffusion encoder
+    # slot (composes for deeper nesting).  Every owned fact/consumption this
+    # parse authors is namespaced under it, so a sub-component's modality
+    # (mistral3-as-text-encoder's vision) is owned by root.text_encoder.vision,
+    # never falsely attributed to the pipeline's top-level root.vision.
+    component_namespace: str = "root"
     # Later evidence units cache component-qualified AST registries here.  The
     # cache is call-local: no model or concurrent render can contaminate it.
     registries: dict[tuple[str, tuple[str, ...]], dict] = field(default_factory=dict)
@@ -133,10 +141,10 @@ class ParseContext:
     # capture ContextVar only routes nested calls to this context's ledger and
     # is never a second truth store.  Compat bare-name views derive from it.
     config_access: ConfigAccessLedger = field(default_factory=ConfigAccessLedger)
-    # COR-2 (§7): real projector-emitted receipts do not exist until U2 — this
-    # flag is PUBLISHED so an empty obligation list can never impersonate
-    # proof of zero missing projections.
-    projection_receipts_available: bool = False
+    # U2 retired the global ``projection_receipts_available`` boolean: receipt
+    # coverage is now owner/mechanism-SCOPED (evidence/receipts.py
+    # RECEIPTED_SCOPES, published as ir.extras.config_access.projection_coverage)
+    # and joined at render time, so a scope migrates without a parse-time flag.
     # U2 class_default tier: the installed config CLASS's own defaults,
     # resolved ONCE at context build (identity-as-ADDRESS — the same rail
     # source resolution uses; the class is code evidence and the parse stays

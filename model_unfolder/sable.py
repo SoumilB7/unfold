@@ -364,6 +364,30 @@ def sable(model_or_id, *, token=None, source: str = "local",
         html = diagram.to_html(standalone=True)
     render_log = list(render_context.events)
 
+    # U2 receipts: union the typed projection receipts the render emitted, then
+    # run Net 2 (occurrence -> target -> receipt) and reverse-fabrication.  Both
+    # are computed here where the render log and the parse obligations meet.
+    from .evidence.receipts import (
+        join_obligation_receipts, fabrication_findings, RECEIPTED_SCOPES,
+    )
+    from .evidence.registry import (
+        MIGRATED_SCOPES, PENDING_PROJECTION_DEBT, PENDING_CONFIG_CLASSIFICATION,
+        REGISTRY,
+    )
+    _receipts = [r for event in render_log
+                 for r in getattr(event, "receipts", ()) or ()]
+    _obligations = (((ir.get("extras") or {}).get("config_access") or {})
+                    .get("projection_obligations") or [])
+    _net2_findings = join_obligation_receipts(
+        _obligations, _receipts, RECEIPTED_SCOPES)
+    _claimed_targets = {(b.target.owner, b.target.fact_key)
+                        for c in MIGRATED_SCOPES for b in c.bindings}
+    _debt_keys = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}
+    _debt_keys |= {(e.owner, e.config_path.rsplit(".", 1)[-1])
+                   for e in PENDING_CONFIG_CLASSIFICATION}
+    _receipt_fabrication_findings = fabrication_findings(
+        _receipts, set(REGISTRY), _claimed_targets, _debt_keys)
+
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.
     oracle_files = context.source_bundle.files
@@ -478,25 +502,25 @@ def sable(model_or_id, *, token=None, source: str = "local",
                          .get("migration_claims") or [])
              for violation in row.get("violations") or []],
         ),
-        # U1 (§20.4.9) as cut over by COR-5 (§10): net-2 — consumed-but-
-        # unprojected, owner-qualified.  BLOCKING exactly where the parse
-        # declares projection receipts available: a path that claims receipts
-        # while carrying unreceipted obligations fails, and a path that leaves
-        # receipts unavailable keeps the honest advisory census (U2 lands the
-        # real receipts).
+        # U2 net-2 — consumed-but-unreceipted, joined occurrence -> target ->
+        # RECEIPT.  For a receipted (owner, mechanism) scope every consumption
+        # obligation must have a matching render receipt (the migrated consumer
+        # drew it) or the check BLOCKS; obligations outside a receipted scope
+        # stay the advisory read-but-not-yet-receipted census.  Migrating one
+        # mechanism can never make an unrelated obligation blocking.
         SableCheck(
-            "config_consumed_unprojected",
-            [f"{row['source']['component']}:{row['source']['path']} -> "
-             f"{row['target']['owner']}.{row['target']['key']}"
-             for row in (((ir.get("extras") or {}).get("config_access") or {})
-                         .get("projection_obligations") or [])
-             if row["state"] == "unreceipted"],
-            note=("projection_receipts_unavailable — an empty list is NOT "
-                  "proof until U2 emits real receipts"
-                  if not ((ir.get("extras") or {}).get("config_access") or {})
-                  .get("projection_receipts_available") else ""),
-            blocking=bool(((ir.get("extras") or {}).get("config_access") or {})
-                          .get("projection_receipts_available")),
+            "config_consumed_unreceipted",
+            _net2_findings["findings"],
+            note=("advisory for un-migrated scopes; blocking only inside "
+                  "receipted scopes" if not _net2_findings["findings"] else ""),
+        ),
+        # U2 reverse-fabrication: every emitted projection receipt must
+        # reference a registered ledger fact, a declared migration-claim
+        # target, or a shrinking typed-debt entry — a drawn structural claim
+        # with nothing behind it is a fabrication.
+        SableCheck(
+            "receipt_fabrication",
+            _receipt_fabrication_findings,
         ),
         # REC-3 (§12.5): conflicting checkpoint declarations BLOCK from their
         # first production use — an ambiguous field is an unknown fact plus

@@ -41,3 +41,31 @@ residual_multiplier: [residual_multiplier]
 embedding_multiplier: [embedding_multiplier]
 attention_multiplier: [attention_multiplier]
 logits_scaling: [logits_scaling, logit_scale]
+
+# Scope-qualified aliases for the structurally recognized ``params.json``
+# dialect whose root carries ``dim`` + ``n_layers``.  These MUST NOT be folded
+# into the global aliases above: ``dim`` is a hidden-size spelling in this exact
+# input format, but it is a rival concept in other containers.  The input-format
+# normalizer reads only this prefix and removes it before the transformer parser
+# receives the canonical config.
+input_format.layered_transformer_params.required: [dim, n_layers, n_heads]
+input_format.layered_transformer_params.text.hidden_size: [dim]
+input_format.layered_transformer_params.text.num_hidden_layers: [n_layers]
+input_format.layered_transformer_params.text.num_attention_heads: [n_heads]
+input_format.layered_transformer_params.text.num_key_value_heads: [n_kv_heads]
+input_format.layered_transformer_params.text.intermediate_size: [hidden_dim]
+input_format.layered_transformer_params.text.rms_norm_eps: [norm_eps]
+input_format.layered_transformer_params.text.head_dim: [head_dim]
+input_format.layered_transformer_params.text.rope_theta: [rope_theta]
+input_format.layered_transformer_params.text.vocab_size: [vocab_size]
+input_format.layered_transformer_params.text.max_position_embeddings: [max_position_embeddings]
+input_format.layered_transformer_params.vision.container: [vision_encoder]
+input_format.layered_transformer_params.vision.num_channels: [num_channels]
+input_format.layered_transformer_params.vision.image_size: [image_size]
+input_format.layered_transformer_params.vision.patch_size: [patch_size]
+input_format.layered_transformer_params.vision.hidden_size: [hidden_size]
+input_format.layered_transformer_params.vision.intermediate_size: [intermediate_size]
+input_format.layered_transformer_params.vision.num_hidden_layers: [num_hidden_layers]
+input_format.layered_transformer_params.vision.num_attention_heads: [num_attention_heads]
+input_format.layered_transformer_params.vision.rope_theta: [rope_theta]
+input_format.layered_transformer_params.vision.image_token_id: [image_token_id]

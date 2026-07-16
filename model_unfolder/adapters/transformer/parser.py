@@ -1625,7 +1625,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             tie_word_embeddings = None
             _note_fact("model", "tie_word_embeddings", None, _unknown_status, None)
 
-    modality_extras = multimodal_extras(cfg, text_cfg, hidden_size)
+    _owner_ns = getattr(context, "component_namespace", "root")
+    modality_extras = multimodal_extras(cfg, text_cfg, hidden_size, namespace=_owner_ns)
     if modality_extras:
         try:
             from ...evidence.audio import audio_tower_evidence
@@ -1664,7 +1665,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             modality_extras = apply_projector_evidence(
                 modality_extras,
                 projector_evidence(cfg, bundle=context.source_bundle),
-                cfg,
+                cfg, owner_namespace=_owner_ns,
             )
         except Exception:
             # As with the tower extractor, failure leaves one honest generic

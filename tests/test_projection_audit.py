@@ -320,30 +320,35 @@ def test_cor5_real_claim_is_earned_on_the_multimodal_witness():
     assert "root.video:hidden_size" in ca["consumed"]
 
 
-def test_cor5_net2_blocks_exactly_when_receipts_are_declared_available(monkeypatch):
-    """Net 2 is advisory while ``projection_receipts_available=False`` and
-    BLOCKING the moment a parse claims receipts: claiming with unreceipted
-    obligations standing must fail — completion cannot be claimed on an
-    unavailable ledger."""
+def test_cor5_net2_is_scope_gated_not_globally_gated(monkeypatch):
+    """U2 cutover: Net 2 is no longer gated by a global boolean.  It BLOCKS
+    inside receipted (owner, mechanism) scopes and is advisory-empty for a
+    model whose obligations all fall outside them.  A receipted scope whose
+    consumer emits NO receipt must block (poisoned by shrinking the receipt
+    set to empty)."""
+    # LLAMA: no receipted-scope obligations -> advisory, empty, passes.
     rep = sable(LLAMA, render_images=False)
-    net2 = next(c for c in rep.checks if c.name == "config_consumed_unprojected")
-    assert net2.blocking is False
-    assert "projection_receipts_unavailable" in (net2.note or "")
+    net2 = next(c for c in rep.checks if c.name == "config_consumed_unreceipted")
+    assert net2.blocking is True and net2.passed and net2.findings == []
 
-    from model_unfolder.evidence import context as ctx_mod
+    # POISON: declare a scope receipted but drop its receipts -> must block.
+    from model_unfolder.evidence import receipts as receipts_mod
 
-    real_build = ctx_mod.ParseContext.build
+    real_join = receipts_mod.join_obligation_receipts
 
-    def claiming_build(*args, **kwargs):
-        built = real_build(*args, **kwargs)
-        built.projection_receipts_available = True   # fabricated claim
-        return built
+    def blind_join(obligations, receipts, receipted_scopes=receipts_mod.RECEIPTED_SCOPES):
+        return real_join(obligations, [], receipted_scopes)   # render drew nothing
 
-    monkeypatch.setattr(ctx_mod.ParseContext, "build", claiming_build)
-    rep2 = sable(LLAMA, render_images=False)
-    net2b = next(c for c in rep2.checks if c.name == "config_consumed_unprojected")
+    import json
+    import pathlib
+
+    corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
+    qwen = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]
+    monkeypatch.setattr(receipts_mod, "join_obligation_receipts", blind_join)
+    rep2 = sable(qwen, render_images=False)
+    net2b = next(c for c in rep2.checks if c.name == "config_consumed_unreceipted")
     assert net2b.blocking is True
-    assert net2b.findings, "unreceipted obligations must surface as findings"
+    assert net2b.findings, "a receipted scope with no receipt must surface findings"
     assert not net2b.passed
     assert not rep2.mechanical_passed
 
@@ -574,11 +579,14 @@ def test_final_poison_unwitnessed_binding_fails_coverage(corpus_claim_rows):
 
 
 def test_final_control_same_path_two_mechanisms_is_lawful():
-    """POSITIVE control for the one-path-two-mechanisms case: on qwen2-vl,
-    ``vision_config.hidden_size`` is consumed by the PROJECTOR mechanism; on
-    FLUX's embedded 2.5-shape encoder the same path is consumed by the
-    ENCODER-WIDTH mechanism.  Both parses are violation-free — each
-    consumption judged strictly under its own mechanism's binding."""
+    """POSITIVE control for the one-path-two-mechanisms case at TOP LEVEL:
+    on qwen2-vl (grid) ``vision_config.hidden_size`` is consumed by the
+    PROJECTOR mechanism into projector_out_features; on a non-grid top-level
+    VLM the same path is consumed by the ENCODER-WIDTH mechanism into
+    hidden_size.  Both parses are violation-free — each consumption judged
+    strictly under its own mechanism's binding, never crossed."""
+    from test_support.claim_witnesses import HIDDEN_SIZE_WITNESS
+
     rows_q = {r["scope"]: r for r in _claim_rows_of(_qwen2vl_cfg())}
     q_proj = next(b for b in rows_q["root.vision/projector_out_width"]["bindings"]
                   if b["path"] == "vision_config.hidden_size")
@@ -586,39 +594,43 @@ def test_final_control_same_path_two_mechanisms_is_lawful():
     assert rows_q["root.vision/projector_out_width"]["violations"] == []
     assert rows_q["root.vision/encoder_width"]["violations"] == []
 
-    import json
-    import pathlib as _pl
-
-    corpus = _pl.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
-    flux_witness = json.loads((corpus / "flux-2-dev.json").read_text())["config"]
-    rows_f = {r["scope"]: r for r in _claim_rows_of(flux_witness)}
-    f_enc = next(b for b in rows_f["root.vision/encoder_width"]["bindings"]
+    rows_e = {r["scope"]: r for r in _claim_rows_of(HIDDEN_SIZE_WITNESS)}
+    e_enc = next(b for b in rows_e["root.vision/encoder_width"]["bindings"]
                  if b["path"] == "vision_config.hidden_size")
-    f_proj = next(b for b in rows_f["root.vision/projector_out_width"]["bindings"]
+    e_proj = next(b for b in rows_e["root.vision/projector_out_width"]["bindings"]
                   if b["path"] == "vision_config.hidden_size")
-    assert f_enc["target_matches"] > 0          # encoder width consumed it
-    assert f_proj["target_matches"] == 0        # projector mechanism silent
-    assert all(r["violations"] == [] for r in rows_f.values())
+    assert e_enc["target_matches"] > 0          # encoder width consumed it
+    assert e_proj["target_matches"] == 0        # projector mechanism silent
+    assert all(r["violations"] == [] for r in rows_e.values())
 
 
-def test_final_negative_control_flux_qwen_image_author_no_projector_width():
-    """NEGATIVE projector controls: the embedded 2.5-shape encoders read
-    ``vision_config.hidden_size`` as ENCODER width only — the projector
-    mechanism matches nothing there and no language-width fabrication
-    returns anywhere in the IR."""
+def test_final_negative_control_flux_qwen_image_author_no_top_level_vision():
+    """NEGATIVE projector controls (producer-fix strengthened): flux and
+    qwen-image are diffusion pipelines whose text encoder is a VLM (mistral3).
+    That VLM's vision is OWNED by root.text_encoder.vision — the pipelines
+    author NO top-level root.vision projector or encoder consumption at all, so
+    no language-width fabrication can leak into the pipeline's vision scope."""
     import json
     import pathlib
+
+    from model_unfolder.evidence.config_access import capture_events, owner_scope
 
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
     for slug in ("flux-2-dev", "qwen-image"):
         cfg = json.loads((corpus / f"{slug}.json").read_text())["config"]
         rows = {r["scope"]: r for r in _claim_rows_of(cfg)}
-        proj = rows["root.vision/projector_out_width"]
-        assert proj["target_matches"] == 0, slug
+        # no top-level projector or encoder consumption is claimed
+        assert rows["root.vision/projector_out_width"]["target_matches"] == 0, slug
+        assert rows["root.vision/encoder_width"]["target_matches"] == 0, slug
         assert all(r["violations"] == [] for r in rows.values()), slug
-        enc_hidden = next(b for b in rows["root.vision/encoder_width"]["bindings"]
-                          if b["path"] == "vision_config.hidden_size")
-        assert enc_hidden["target_matches"] > 0, slug
+        # the VLM text encoder's vision is namespaced under its slot, not root
+        with capture_events() as led:
+            with owner_scope("root"):
+                mu.unfold(cfg).to_ir()
+        vision_owners = {e.component for e in led.events if "vision" in e.component}
+        assert "root.vision" not in vision_owners, (slug, vision_owners)
+        assert any(o.startswith("root.text_encoder") and o.endswith("vision")
+                   for o in vision_owners), (slug, vision_owners)
 
 
 def test_final_positive_control_qwen2vl_encoder_and_projector():

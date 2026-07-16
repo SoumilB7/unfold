@@ -48,8 +48,15 @@ def _wrapper_dict(host: Any, key: str) -> Any:
     return value
 
 
-def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | None:
-    """Return structured multimodal extras, if the config declares them."""
+def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int,
+                      namespace: str = "root") -> dict | None:
+    """Return structured multimodal extras, if the config declares them.
+
+    ``namespace`` is the ambient ownership path of this parse (root for a
+    top-level parse, root.<slot> for a recursively-parsed encoder slot).
+    Every modality owner is namespaced under it, so a sub-component's tower
+    is owned by ``<namespace>.<modality>`` — never falsely attributed to the
+    pipeline's top-level ``root.<modality>``."""
     host = _modality_host(cfg)
     if host is None:
         return None
@@ -62,6 +69,7 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
         # vision ``hidden_size`` and the text ``hidden_size`` are distinct ledger
         # entries and one sibling never clears another's accessed-but-unconsumed
         # debt.  Generic over the registry — the loop still names no modality.
+        _owner = f"{namespace}.{spec.name}"
         _present_keys = [
             k for k in (getattr(spec, "config_keys", ()) or ())
             if ((k in host) if isinstance(host, dict)
@@ -76,13 +84,13 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int) -> dict | 
             if any(v != _wrapper_values[0] for v in _wrapper_values[1:]):
                 _config_access.emit(
                     f"{spec.name}_config", intent="ambiguous", present=True,
-                    alias=_present_keys[0], component=f"root.{spec.name}",
+                    alias=_present_keys[0], component=_owner,
                     config_path=_present_keys[0],
                     reason=("rival component wrappers with unequal values: "
                             + ", ".join(_present_keys)))
                 continue
         _matched_key = _present_keys[0] if _present_keys else None
-        with _config_access.owner_scope(f"root.{spec.name}"), \
+        with _config_access.owner_scope(_owner), \
                 _config_access.config_container(
                     (_matched_key,) if _matched_key else ()):
             path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)

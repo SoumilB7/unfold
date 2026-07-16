@@ -592,19 +592,24 @@ def test_exact_path_pending_entry_cannot_excuse_a_sibling_path():
 
 
 def test_unavailable_receipts_are_reported_not_clean():
-    """§7 case 7: an empty obligation list beside receipts_available=False is
-    NEVER presented as proof — the Sable check carries the unavailability
-    note as structured state."""
+    """§7 case 7, as cut over by U2: the global ``projection_receipts_available``
+    boolean is GONE — coverage is owner/mechanism-SCOPED.  LLAMA's obligations
+    fall outside every receipted scope, so Net 2 never presents them as
+    projected: it reports zero findings (advisory) rather than clean proof."""
     import model_unfolder as mu
     from model_unfolder.sable import sable
     from test_support import LLAMA
 
     ca = (mu.unfold(LLAMA).to_ir().get("extras") or {}).get("config_access") or {}
-    assert ca.get("projection_receipts_available") is False
+    assert "projection_receipts_available" not in ca      # the bool is retired
+    assert "receipted_scopes" in (ca.get("projection_coverage") or {})
     assert ca.get("projection_obligations"), "obligations must be published"
+    receipted = {tuple(s) for s in ca["projection_coverage"]["receipted_scopes"]}
+    for ob in ca["projection_obligations"]:
+        assert (ob["target"]["owner"], ob["mechanism"]) not in receipted
     rep = sable(LLAMA, render_images=False)
-    check = next(c for c in rep.checks if c.name == "config_consumed_unprojected")
-    assert "projection_receipts_unavailable" in check.note
+    check = next(c for c in rep.checks if c.name == "config_consumed_unreceipted")
+    assert check.blocking and check.passed and check.findings == []
 
 
 def test_nested_contexts_keep_occurrence_joins_independent():

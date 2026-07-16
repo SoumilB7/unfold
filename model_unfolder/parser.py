@@ -198,6 +198,7 @@ def config_to_ir(
     # Violations are structured rows the blocking net reads; unclaimed reads
     # stay visible advisory debt above.
     from .evidence.claims_audit import validate_claims
+    from .evidence.receipts import RECEIPTED_SCOPES as _receipted_scopes_set
     from .evidence.registry import MIGRATED_SCOPES
     _claim_rows = validate_claims(
         _access_ledger.events, MIGRATED_SCOPES,
@@ -232,9 +233,14 @@ def config_to_ir(
                                  for e in PENDING_PROJECTION_DEBT})),
         # COR-2 (§7): STRUCTURED obligations — exact source occurrence AND
         # exact target per consumption; state is data, never message text.
-        # An empty list is meaningful ONLY beside receipts_available=True.
-        "projection_receipts_available": bool(
-            getattr(parse_context, "projection_receipts_available", False)),
+        # U2: the global ``projection_receipts_available`` boolean is REPLACED
+        # by owner/mechanism-scoped ``projection_coverage`` — which scopes have
+        # a receipt-emitting render consumer.  Net 2 blocks obligations inside
+        # a covered scope and leaves every other scope advisory, so migrating
+        # one mechanism never makes an unrelated obligation suddenly blocking.
+        "projection_coverage": {
+            "receipted_scopes": sorted(
+                [list(s) for s in _receipted_scopes_set])},
         "projection_obligations": [
             {"source": {"component": ob.source_occurrence.component_path,
                         "path": ob.source_occurrence.config_path,
@@ -242,7 +248,8 @@ def config_to_ir(
                         "canonical": ob.source_occurrence.canonical_field},
              "target": {"owner": ob.target.owner, "key": ob.target.fact_key,
                         "kind": ob.target.structural_sink_kind},
-             "state": ob.state, "reason": ob.reason}
+             "state": ob.state, "reason": ob.reason,
+             "mechanism": ob.mechanism}
             for ob in _access_ledger.projection_obligations(
                 pending_sources={(e.owner, e.config_path)
                                  for e in PENDING_PROJECTION_DEBT})],
@@ -422,8 +429,8 @@ def _repo_layout_hint(model_id: str) -> str | None:
     config — read from the repo's FILE LISTING (evidence of what the repo IS;
     nothing executed, nothing guessed):
 
-    * mistral original-release format (``params.json``) — handled upstream by
-      the normalizer, so no hint fires here;
+    * structurally recognized layered-transformer ``params.json`` — handled
+      upstream by the input-format normalizer, so no hint fires here;
     * ADAPTER-ONLY repos (LoRA / IP-Adapter weight sets that modify a BASE
       model) — say so, instead of a generic not-found;
     * VARIANT-NESTED pipelines (``transformer/<variant>/config.json``) — name
@@ -599,11 +606,11 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
     try:
         path = hf_hub_download(**kwargs)
     except Exception as exc:
-        # No config.json at all — a Mistral ORIGINAL-RELEASE repo ships
-        # ``params.json`` instead (a FORMAT, detected by layout).  Normalize it
-        # through the declared mapping; anything else re-raises for the
-        # layout-aware classifier.
-        params = _load_mistral_params_json(model_id, auth_token)
+        # No config.json at all — some original-release repositories ship a
+        # structurally recognizable ``params.json`` dialect instead. Normalize
+        # its syntax through scope-qualified aliases; anything else re-raises
+        # for the layout-aware classifier.
+        params = _load_params_json(model_id, auth_token)
         if params is not None:
             return params
         raise exc
@@ -615,7 +622,7 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
         # through which a remote-code repo's own modeling .py can be fetched
         # (auto_map → hub snapshot). ``_repo_id`` is the loader's provenance
         # stamp — authoritative over exporter-baked ``_name_or_path`` junk —
-        # and mirrors the diffusor loader + Mistral-params rungs. Without it
+        # and mirrors the diffusion loader + foreign-params rung. Without it
         # every repo on this rung parses blind to its own shipped source.
         cfg["_repo_id"] = model_id
     return _ensure_unfoldable_config(cfg, model_id)
@@ -652,13 +659,14 @@ def _hydrate_config_class_defaults(cfg):
     return hydrated
 
 
-def _load_mistral_params_json(model_id: str, auth_token: Any) -> dict | None:
-    """Normalize a Mistral original-release ``params.json`` into transformers
-    spellings via the declared FORMAT vocabulary (everchanging/transformer/
-    mistral_params.yaml).  ``model_type`` is assigned as an ADDRESS from the
-    format itself (params.json IS Mistral's release format), exactly like a
-    diffusers ``_class_name`` — never used as an architectural fact."""
-    from .everchanging import load_mistral_params_map
+def _load_params_json(model_id: str, auth_token: Any) -> dict | None:
+    """Load and normalize a structurally recognized ``params.json`` dialect.
+
+    The file layout and required fields select the input format. No model,
+    class, or repository identity is manufactured. Repository identity remains
+    provenance for optional source discovery only.
+    """
+    from .input_formats import normalize_params_json
 
     try:
         from huggingface_hub import hf_hub_download
@@ -670,20 +678,11 @@ def _load_mistral_params_json(model_id: str, auth_token: Any) -> dict | None:
             params = _json.load(f)
     except Exception:
         return None
-    if not isinstance(params, dict) or "dim" not in params or "n_layers" not in params:
+    cfg = normalize_params_json(params)
+    if cfg is None:
         return None
-    mapping = load_mistral_params_map()
-    cfg = {dst: params[src] for src, dst in mapping.get("text", {}).items()
-           if src in params}
-    cfg["model_type"] = "mistral"
     cfg["_name_or_path"] = model_id
-    vision = params.get("vision_encoder")
-    if isinstance(vision, dict):
-        cfg["vision_config"] = {dst: vision[src] for src, dst
-                                in mapping.get("vision", {}).items() if src in vision}
-        # STRUCTURE, never the repo name: a params.json carrying a
-        # vision_encoder IS the multimodal (pixtral-format) release.
-        cfg["model_type"] = "pixtral"
+    cfg["_repo_id"] = model_id
     return cfg
 
 

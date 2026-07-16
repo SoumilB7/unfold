@@ -41,10 +41,23 @@ WIDTH_WITNESS = _base({
     "image_size": 224, "patch_size": 14,
 })
 
+# ``hidden_size`` wins the NON-GRID encoder chain — the 2.5-shape at TOP level
+# (hidden_size IS the internal vision width; embed_dim absent, no grid stream).
+# This binding used to be "witnessed" only by flux's mistral3 text encoder, but
+# that is a SUB-component (root.text_encoder.vision), never the pipeline's
+# top-level root.vision; a genuine top-level VLM of this shape is the correct
+# witness.
+HIDDEN_SIZE_WITNESS = _base({
+    "hidden_size": 112,
+    "num_hidden_layers": 2, "num_attention_heads": 4,
+    "image_size": 224, "patch_size": 14,
+})
+
 CLAIM_SYNTHETIC_WITNESSES: dict[str, dict] = {
     "synthetic-vision-hidden-size": VISION_HIDDEN_SIZE_WITNESS,
     "synthetic-width": WIDTH_WITNESS,
+    "synthetic-encoder-hidden-size": HIDDEN_SIZE_WITNESS,
 }
 
 __all__ = ["CLAIM_SYNTHETIC_WITNESSES", "VISION_HIDDEN_SIZE_WITNESS",
-           "WIDTH_WITNESS"]
+           "WIDTH_WITNESS", "HIDDEN_SIZE_WITNESS"]

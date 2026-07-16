@@ -67,6 +67,7 @@ def render_graph(
     min_width: int = 560,
     pad: int = 46,
     facts_projected=frozenset(),
+    receipts=(),
 ) -> str:
     context = ensure_render_context()
     by_id = graph.by_id()
@@ -75,12 +76,15 @@ def render_graph(
     # ``facts_projected`` (U2 P4 net #13): the ledger keys this graph visibly
     # carries — the projection-audit net proves every code/config-proven fact
     # reached a drawn surface (kills the read-but-never-drawn / granite-
-    # multiplier class).  It rides the render event, never the SVG bytes.
+    # multiplier class).  ``receipts`` (U2) is the authoritative typed channel:
+    # the exact fact targets this graph drew, joined by Net 2 against the
+    # config-consumption obligations.  Both ride the render event, not the SVG.
     context.record_graph(
         view_key,
         (n.kind for n in graph.nodes),
         (n.id for n in graph.nodes),
         facts_projected=facts_projected,
+        receipts=receipts,
     )
     arrow_id, shadow_id = _ids(mount_id, view_key)
     parts: list[str] = []

@@ -360,7 +360,7 @@ def _vision_children(vision: dict) -> list[dict]:
         *_reduction_children(reduction),
         {
             "id": "vision_projector",
-            **_projector_card_fields(projector),
+            **_projector_card_fields(projector, owner="root.vision"),
             **({"title": "Linear projection to decoder width"} if cross_attention_vision else {}),
         },
         {
@@ -749,7 +749,7 @@ def _video_children(video: dict) -> list[dict]:
         },
         {
             "id": "video_projector",
-            **_projector_card_fields(projector),
+            **_projector_card_fields(projector, owner="root.video"),
         },
         {
             "id": "video_tokens",
@@ -882,10 +882,15 @@ def _projector_ops(projector: dict) -> list[dict]:
     return ops
 
 
-def _projector_card_fields(projector: dict) -> dict:
+def _projector_card_fields(projector: dict, owner: str | None = None) -> dict:
     """Title, sentence, chips, and — when the dims are known — the declared-ops
     view for a modality connector.  ONE source: the same facts feed the chips
-    and the diagram, so they cannot disagree."""
+    and the diagram, so they cannot disagree.
+
+    U2: when ``owner`` is a receipted modality (vision/video) and the output
+    width is SOURCE-bound, the card declares the fact target it draws
+    (``projects``) so the drill's render event emits a projection receipt for
+    ``<owner>.projector_out_features``.  Config-only widths declare nothing."""
     kind = str(projector.get("kind") or "linear_projector")
     inn, out = projector.get("in_features"), projector.get("out_features")
     facts = [f for f in (
@@ -903,6 +908,13 @@ def _projector_card_fields(projector: dict) -> dict:
     if ops:
         fields["view"] = "ops"
         fields["detail"] = {"ops": ops}
+    out_source = ((projector.get("source_evidence") or {}).get("out_width_source"))
+    if owner and out and out_source in ("config_bound", "code_bound"):
+        fields["projects"] = [{
+            "owner": owner, "fact": "projector_out_features",
+            "mechanism": "projector_out_width", "projection_kind": "op",
+            "value": out, "status": out_source,
+        }]
     return fields
 
 

@@ -339,7 +339,7 @@ fact.
 | `transformer/aliases.yaml` | equivalent config spellings | **KEEP as syntax only**; consume through the exact alias resolver; unequal aliases block |
 | `transformer/ignored_fields.yaml` | global unread suppression | **MIGRATE** to owner/component/reason-qualified ignore records; global leaf suppression is forbidden |
 | `transformer/typing.yaml` | UI/schema stage vocabulary | **KEEP**, presentation/schema only |
-| `transformer/mistral_params.yaml` | raw foreign-format field conversion | **KEEP as syntax adapter**; outputs exact config paths, not mechanisms |
+| scope-qualified `input_format.*` entries in `transformer/aliases.yaml` | raw foreign-format field conversion selected by file layout and required keys | **KEEP as syntax adapter**; it may not manufacture model/class identity or mechanism semantics |
 | `transformer/composite_slots.yaml` | wrapper/component slot roles and undrawn labels | **CONSTRAIN**: slot keys may locate candidates; construction/source proves ownership; undrawn labels remain presentation debt |
 | `transformer/decoderness.yaml` | architecture suffix to decoder-role declaration | **QUARANTINE** as weak declared role; it cannot independently prove causal attention |
 | `transformer/layer_schedules.yaml` | field dialects and token-to-mixer mappings | **SPLIT**: spellings may remain syntax; mixer/attention semantics require code-bound schedule expressions |

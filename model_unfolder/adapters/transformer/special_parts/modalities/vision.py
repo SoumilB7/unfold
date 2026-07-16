@@ -91,7 +91,8 @@ def _vision_submodel_spec(encoder: dict, variants: list[dict], evidence) -> dict
         encoder, variants, component=str(getattr(evidence, "component", "") or ""))
 
 
-def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None) -> dict | None:
+def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None,
+                             owner_namespace: str = "root") -> dict | None:
     """Project the one qualified connector record into image and video paths.
 
     The card, op drill, path label, and fact-conformance net all read this same
@@ -114,7 +115,7 @@ def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None) ->
             continue
         projector = path.get("projector") or {}
         projector.pop("profile", None)
-        bound_out = _bound_out_width(evidence, cfg, owner=f"root.{name}")
+        bound_out = _bound_out_width(evidence, cfg, owner=f"{owner_namespace}.{name}")
         if bound_out is not None:
             _insert_after(projector, "in_features", "out_features", bound_out)
         projector["source_evidence"] = evidence_dict

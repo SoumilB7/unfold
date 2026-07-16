@@ -26,6 +26,12 @@ class RenderEvent:
     # unions these across events and diffs them against the evidenced facts in
     # ``ir.extras['fact_provenance']`` so no proven fact is silently dropped.
     facts_projected: frozenset[str] = frozenset()
+    # U2 receipt channel (authoritative): the typed
+    # :class:`~model_unfolder.evidence.receipts.ProjectionReceipt` objects this
+    # surface emitted — each names the exact fact target, mechanism, and node
+    # it drew.  Net 2 joins these against the config-consumption obligations;
+    # ``facts_projected`` above stays as temporary net-#13 compatibility.
+    receipts: tuple = ()
 
     def legacy_tuple(self) -> tuple[str, frozenset[str], frozenset[str]]:
         return self.view, self.drawn_ops, self.node_ids
@@ -55,7 +61,7 @@ class RenderContext:
             self.block_stack.pop()
 
     def record_graph(self, view: str, drawn_ops, node_ids,
-                     facts_projected=frozenset()) -> None:
+                     facts_projected=frozenset(), receipts=()) -> None:
         block = self.block_stack[-1] if self.block_stack else {}
         detail = block.get("detail") if isinstance(block.get("detail"), dict) else {}
         evidence = detail.get("evidence") if isinstance(detail.get("evidence"), dict) else {}
@@ -85,7 +91,23 @@ class RenderContext:
             drawn_ops=frozenset(drawn_ops),
             node_ids=frozenset(node_ids),
             facts_projected=frozenset(facts_projected or ()),
+            receipts=tuple(receipts or ()),
         ))
+
+    def note_receipts(self, view: str, projects, *, node_ids=()) -> None:
+        """Emit typed projection receipts from ``projects`` descriptors (U2).
+
+        Each descriptor is ``{owner, fact_key|fact, mechanism, projection_kind,
+        value, status}``; the surface that DREW the fact calls this so a receipt
+        can only exist for a value that reached the page.  ``view`` is the exact
+        render surface name; the block stack supplies the node path."""
+        if not projects:
+            return
+        from ...evidence.receipts import receipts_from_projects
+        path = tuple(str(item.get("id") or item.get("view") or "?")
+                     for item in self.block_stack)
+        self.record_graph(view, (), node_ids,
+                          receipts=receipts_from_projects(projects, view, path))
 
     def note_facts_projected(self, view: str, facts_projected, *, node_ids=()) -> None:
         """Record a facts-only projection witness (U2 P4 net #13).

@@ -11,65 +11,6 @@ from typing import Any
 from .models import SourceBundle
 
 
-MODEL_TYPE_TO_TRANSFORMERS_DIR = {
-    # Text-only transformer LMs
-    "baichuan": "baichuan",
-    "bloom": "bloom",
-    "dbrx": "dbrx",
-    "deepseek_v2": "deepseek_v2",
-    "deepseek_v3": "deepseek_v3",
-    "falcon": "falcon",
-    "gemma": "gemma",
-    "gemma2": "gemma2",
-    "gpt_bigcode": "gpt_bigcode",
-    "gpt_j": "gptj",
-    "gpt_neox": "gpt_neox",
-    "gpt_oss": "gpt_oss",
-    "llama": "llama",
-    "llama4": "llama4",
-    "mistral": "mistral",
-    "mixtral": "mixtral",
-    "mpt": "mpt",
-    "olmo": "olmo",
-    "olmo2": "olmo2",
-    "olmoe": "olmoe",
-    "openai-gpt": "openai",
-    "opt": "opt",
-    "phi": "phi",
-    "phi3": "phi3",
-    "qwen2": "qwen2",
-    "qwen2_moe": "qwen2_moe",
-    "qwen3": "qwen3",
-    "qwen3_moe": "qwen3_moe",
-    "stablelm": "stablelm",
-
-    # Multi-modal wrappers (transformer LM with vision/audio encoders).
-    # The wrapper directory contains both the LM and the modality pieces, so
-    # the evidence scanner sees attention/FFN/MoE patterns alongside the
-    # multimodal projector classes.
-    "gemma3":           "gemma3",
-    "gemma3_text":      "gemma3",
-    "gemma3n":          "gemma3n",
-    "gemma3n_text":     "gemma3n",
-    "gemma4":           "gemma4",
-    "gemma4_text":      "gemma4",
-    "mllama":           "mllama",
-    "llava":            "llava",
-    "llava_next":       "llava_next",
-    "llava_onevision":  "llava_onevision",
-    "paligemma":        "paligemma",
-    "qwen2_vl":         "qwen2_vl",
-    "qwen2_5_vl":       "qwen2_5_vl",
-    "qwen3_vl":         "qwen3_vl",
-    "idefics2":         "idefics2",
-    "idefics3":         "idefics3",
-    "smolvlm":          "smolvlm",
-    "internvl":         "internvl",
-    "pixtral":          "pixtral",
-    "fuyu":             "fuyu",
-}
-
-
 def resolve_source_files(target: Any, *, source: str = "local", token: Any = None) -> SourceBundle:
     """Resolve Python modeling files without executing model code.
 
@@ -390,9 +331,23 @@ def _auto_model_architecture(model_type: str) -> str | None:
 
 
 def _transformers_family_dir(models_root: Path, model_type: str) -> str | None:
-    family_dir = MODEL_TYPE_TO_TRANSFORMERS_DIR.get(model_type)
-    if family_dir is not None and (models_root / family_dir).exists():
-        return family_dir
+    """Resolve a config type through installed Transformers metadata.
+
+    ``model_type_to_module_name`` is the same registry-backed normalization the
+    library uses to import its config module. We accept its answer only when the
+    installed directory exists. There is no project-owned type/family table and
+    no suffix guessing; an unknown type remains unresolved and may still use an
+    exact declared-class lookup later in the source ladder.
+    """
+    try:
+        from transformers.models.auto.configuration_auto import (
+            model_type_to_module_name,
+        )
+        declared_dir = model_type_to_module_name(model_type)
+    except (ImportError, AttributeError, KeyError, TypeError, ValueError):
+        declared_dir = None
+    if declared_dir and (models_root / declared_dir).exists():
+        return str(declared_dir)
     return _direct_transformers_family_dir(models_root, model_type)
 
 
@@ -543,24 +498,9 @@ def _pipeline_text_encoder_components(target: Any):
 
 
 def _direct_transformers_family_dir(models_root: Path, model_type: str) -> str | None:
-    """Use the installed Transformers family directory when it matches directly.
-
-    The explicit map above covers families whose model_type differs from the
-    package directory (for example ``gpt_j`` -> ``gptj``). Many newer wrappers
-    use the model_type as the directory name, so this keeps multimodal additions
-    like qwen2_audio from needing one-off source-map entries.
-    """
+    """Conservative fallback for library versions without registry metadata."""
     normalized = model_type.replace("-", "_")
-    candidates = [model_type, normalized]
-    # Nested HF config types often describe the component role while sharing the
-    # parent's implementation package: qwen3_5_text -> qwen3_5,
-    # siglip_vision_model -> siglip.  Strip only recognized role suffixes and
-    # accept the result solely when that installed family directory exists.
-    for suffix in ("_vision_model", "_text_model", "_audio_model",
-                   "_vision", "_text", "_audio"):
-        if normalized.endswith(suffix):
-            candidates.append(normalized[:-len(suffix)])
-    for candidate in candidates:
+    for candidate in dict.fromkeys((model_type, normalized)):
         if candidate and (models_root / candidate).exists():
             return candidate
     return None
