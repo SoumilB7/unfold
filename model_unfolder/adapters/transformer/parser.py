@@ -1053,7 +1053,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                    if isinstance(_rope_scaling, dict) else None)
     if _nested_prf is not None:
         with _config_access.config_container(_rope_path, obj=_rope_scaling):
-            debug.note_access("partial_rotary_factor")
+            debug.note_access("partial_rotary_factor", source_obj=_rope_scaling)
         if partial_rotary_fac is None:
             partial_rotary_fac = _nested_prf
         elif partial_rotary_fac != _nested_prf:
@@ -1081,7 +1081,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # subkey is visible to the config audit. Projection consumption remains
         # a separate, not-yet-complete receipt rail.
         with _config_access.config_container(_rope_path, obj=_rope_scaling):
-            debug.note_access("mrope_section")
+            debug.note_access("mrope_section", source_obj=_rope_scaling)
 
     # ---- QK-Norm ----
     # Spelling read stays FIRST for config-ownership (all three aliases are
@@ -1883,7 +1883,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             for inspected in ("rope_type", "type", "factor",
                               "original_max_position_embeddings", "rope_theta"):
                 if inspected in rope_params:
-                    debug.note_access(inspected)
+                    debug.note_access(inspected, source_obj=rope_params)
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.

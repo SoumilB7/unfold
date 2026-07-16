@@ -11,6 +11,78 @@ from __future__ import annotations
 
 from typing import Any
 
+from .evidence.config_access import (
+    CHECKPOINT_DECLARED,
+    CLASS_DEFAULT,
+)
+
+
+def _provenance_map(raw: Any, hydrated: Any, prefix: tuple = ()) -> dict:
+    """Per-key provenance for a hydrated document: ``{dotted path: kind}``.
+
+    The ONLY thing this can prove is membership of the RAW document, so that is
+    the only thing it claims:
+
+    * present in raw  -> ``checkpoint_declared`` (the checkpoint said it);
+    * absent from raw -> ``class_default`` (the config class supplied it).
+
+    It deliberately does NOT infer ``class_normalized_alias`` from a class-added
+    key resembling a raw key that disappeared (``rope_scaling`` →
+    ``rope_parameters``).  Resemblance is not a source relationship: without an
+    explicit normalization trace from the class, asserting that one key IS the
+    renamed other would invent the very provenance this map exists to record.
+    Class-derived is the honest answer until a trace exists.
+    """
+    out: dict[str, str] = {}
+    if not isinstance(hydrated, dict):
+        return out
+    for key, value in hydrated.items():
+        # A dotted path addresses string keys; a label map keyed by ints
+        # (``id2label``) has no dotted address, so it is not mapped rather than
+        # coerced into one that would not resolve.
+        if not isinstance(key, str):
+            continue
+        path = ".".join((*prefix, key))
+        in_raw = isinstance(raw, dict) and key in raw
+        out[path] = CHECKPOINT_DECLARED if in_raw else CLASS_DEFAULT
+        if isinstance(value, dict):
+            out.update(_provenance_map(
+                raw.get(key) if in_raw else None, value, (*prefix, key)))
+    return out
+
+
+def hydrate_with_provenance(c: dict) -> tuple[dict, dict]:
+    """The hydration, plus WHERE EACH FIELD CAME FROM.
+
+    ``hydrate_encoder_config_facts`` fills config-class defaults invisible in a
+    raw component config.json — necessary code evidence, but it silently mixes
+    two provenances into one document, and the reader downstream cannot tell a
+    checkpoint's declaration from a class's default.  That matters exactly
+    because the defaults are STRUCTURAL: Gemma-2's sliding/global alternation is
+    ``sliding_window_pattern=2``, a default of ``configuration_gemma2.py`` that
+    is never serialized, and it decides the per-layer mask schedule.
+
+    ``AutoConfig.for_model(model_type, …)`` is identity-as-ADDRESS, which is
+    lawful — model_type LOCATES the installed class.  What is unlawful is
+    letting what that class supplies masquerade as what the checkpoint declared,
+    because then a fact detected from identity is indistinguishable from a fact
+    detected from evidence.  So the delta is recorded rather than discarded.
+    """
+    mt = c.get("model_type") if isinstance(c, dict) else None
+    if not isinstance(c, dict) or not mt:
+        return c, {}
+    try:
+        from transformers import AutoConfig
+        hydrated = AutoConfig.for_model(
+            mt, **{k: v for k, v in c.items()
+                   if not k.startswith("_") and k != "model_type"}).to_dict()
+    except Exception:
+        return c, {}
+    for k, v in c.items():          # loader stamps / private context keys survive
+        if k.startswith("_"):
+            hydrated[k] = v
+    return hydrated, _provenance_map(c, hydrated)
+
 
 def hydrate_encoder_config_facts(c: dict) -> dict:
     """Fill config-class DEFAULTS invisible in a raw component config.json.
@@ -20,21 +92,12 @@ def hydrate_encoder_config_facts(c: dict) -> dict:
     fetched dict reads as all-sliding and the encoder tower flattens a real
     heterogeneous stack.  The installed config class is code evidence (the same
     rail by-id loading uses); raw keys always win over defaults.  Unknown
-    model_types keep the raw dict untouched."""
-    mt = c.get("model_type")
-    if not isinstance(c, dict) or not mt:
-        return c
-    try:
-        from transformers import AutoConfig
-        hydrated = AutoConfig.for_model(
-            mt, **{k: v for k, v in c.items()
-                   if not k.startswith("_") and k != "model_type"}).to_dict()
-    except Exception:
-        return c
-    for k, v in c.items():          # loader stamps / private context keys survive
-        if k.startswith("_"):
-            hydrated[k] = v
-    return hydrated
+    model_types keep the raw dict untouched.
+
+    Callers that record evidence want :func:`hydrate_with_provenance` — this
+    returns the document alone, and a document alone cannot say which of its
+    fields the checkpoint actually declared."""
+    return hydrate_with_provenance(c)[0]
 
 
 def normalize_encoder_config(c: dict, context=None) -> dict:
@@ -54,16 +117,18 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
     )
     from .adapters.transformer.parser import parse as _parse_transformer
 
-    c = hydrate_encoder_config_facts(c)
+    c, provenance = hydrate_with_provenance(c)
     try:
         if context is None:
             context = ParseContext.build(c, source="local")
         # U2.2a: name the document this parse actually reads — the HYDRATED
         # config, not the raw slot value, since that is the object the reads
         # are of.  The slot's address comes from the enclosing document scope
-        # (a standalone parse has none, and correctly roots at ()).
+        # (a standalone parse has none, and correctly roots at ()).  The
+        # provenance map travels WITH it, so a reader downstream can tell what
+        # this checkpoint declared from what its config class supplied.
         from .evidence import config_access as _config_access
-        with _config_access.document_scope((), obj=c):
+        with _config_access.document_scope((), obj=c, provenance=provenance):
             ir = _parse_transformer(c, context=context)
     except Exception:
         return {}

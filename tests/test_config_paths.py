@@ -32,7 +32,10 @@ import pathlib
 import pytest
 
 import model_unfolder as mu
-from model_unfolder.encoder_panel import hydrate_encoder_config_facts
+from model_unfolder.encoder_panel import (
+    hydrate_encoder_config_facts,
+    hydrate_with_provenance,
+)
 from model_unfolder.evidence import config_access as ca
 
 _CORPUS = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
@@ -107,36 +110,238 @@ def test_every_exact_path_resolves_in_the_document_that_was_read(witness):
 
 
 @pytest.mark.parametrize("witness", _witnesses(), ids=lambda p: p.stem)
-def test_no_structural_fact_is_authored_from_a_key_the_source_never_supplied(witness):
-    """Hydration fills class defaults keyed by ``model_type`` — identity.
+def test_every_checkpoint_census_row_exists_in_the_raw_checkpoint(witness):
+    """The strongest form, and the point of the whole unit.
 
-    That is sanctioned as code evidence (the config class states what the model
-    constructs), but a fact CONSUMED from a class-supplied key would be a
-    structural claim the document never made, recorded indistinguishably from a
-    declared one — detection from identity wearing a config's clothes.
-
-    This currently holds at zero corpus-wide and is locked here so it can never
-    start: a class default may be inspected, never consumed into a fact."""
+    The census claims to list what the CHECKPOINT declared. So every row must
+    address a real location in the raw checkpoint file itself — not in a
+    hydrated view of it, and not merely in some document. Three separate
+    producer defects each broke this: fabricated container prefixes, class
+    defaults presented as the checkpoint's word, and reads whose location was
+    never established."""
     cfg = json.loads(witness.read_text())["config"]
-    slots = cfg.get("_text_encoder_configs")
-    if not isinstance(slots, dict):
-        pytest.skip("no recursively-parsed encoder slot in this witness")
-    raw = {k: v for k, v in slots.items() if isinstance(v, dict)}
-    hydrated = {k: hydrate_encoder_config_facts(v) for k, v in raw.items()}
+    ir = mu.unfold(cfg).to_ir()
+    access = (ir.get("extras") or {}).get("config_access") or {}
+    roots = access.get("document_roots") or {}
+    missing = sorted(
+        (row["component"], row["path"])
+        for row in access.get("accessed_unconsumed_exact") or []
+        if not _has(cfg, (*roots.get(row["component"], []),
+                          *row["path"].split("."))))
+    assert not missing, (
+        f"{witness.stem}: the census presents rows the raw checkpoint does not "
+        f"contain: {missing}")
 
-    offenders = []
-    for e in _ledger_for(cfg).events:
-        if e.intent != "consumed" or not e.present or not e.document_path:
-            continue
-        slot = e.document_path[-1]
-        if slot not in raw:
-            continue
-        parts = e.config_path.split(".")
-        if not _has(raw[slot], parts) and _has(hydrated[slot], parts):
-            offenders.append((e.component, e.config_path, e.fact_key))
-    assert not offenders, (
-        f"{witness.stem}: structural facts consumed from keys supplied by the "
-        f"config CLASS, not the document: {sorted(offenders)}")
+
+# --------------------------------------------------------------------------
+# Hydration provenance — the class's words are not the checkpoint's
+#
+# An encoder slot is parsed through its installed config class, located by
+# model_type.  That is identity-as-ADDRESS, which is lawful.  What is not lawful
+# is letting what the class SUPPLIES masquerade as what the checkpoint DECLARED,
+# because a fact detected from identity would then be indistinguishable from one
+# detected from evidence.
+#
+# An earlier version of this file asserted "no class key is ever CONSUMED" and
+# passed at zero.  It proved nothing: it measured the legacy inspected-vs-consumed
+# gap that U2 exists to repair.  A class-supplied ``layer_types`` is recorded as
+# merely `inspected` and still decides the entire per-layer mask schedule — the
+# structural influence was real, the metric was blind to it.  Provenance is
+# tracked per key instead.
+# --------------------------------------------------------------------------
+
+def _gemma2_raw():
+    """A Gemma-2 checkpoint that declares NO layer schedule of its own."""
+    return {"model_type": "gemma2", "hidden_size": 256, "num_hidden_layers": 4,
+            "num_attention_heads": 4, "num_key_value_heads": 2,
+            "vocab_size": 100, "intermediate_size": 512,
+            "sliding_window": 128, "head_dim": 64}
+
+
+def test_gemma2_class_supplied_schedule_is_class_default_never_checkpoint():
+    """THE motivating case, both halves.
+
+    Gemma-2's sliding/global alternation is never serialized — the config class
+    supplies it (as ``layer_types`` on transformers 5.x, ``sliding_window_pattern``
+    earlier). It is genuinely structural: it decides the mask of every layer. So
+    it must be recorded as the CLASS's word, never the checkpoint's."""
+    raw = _gemma2_raw()
+    doc, provenance = hydrate_with_provenance(raw)
+
+    schedule_keys = [k for k in ("layer_types", "sliding_window_pattern")
+                     if k in doc and doc[k] is not None]
+    assert schedule_keys, (
+        "the installed Gemma-2 class must supply a layer schedule — if this "
+        f"fails the class changed shape; doc keys: {sorted(doc)}")
+    for key in schedule_keys:
+        assert key not in raw, "the checkpoint must not declare it (fixture)"
+        assert provenance[key] == ca.CLASS_DEFAULT, (
+            f"{key} was supplied by the config class but is recorded as "
+            f"{provenance[key]!r}")
+        assert provenance[key] != ca.CHECKPOINT_DECLARED
+
+    # and a field the checkpoint DID declare keeps its own provenance
+    assert provenance["sliding_window"] == ca.CHECKPOINT_DECLARED
+
+
+def test_gemma2_class_supplied_schedule_really_builds_alternating_masks():
+    """The other half: the class default is not cosmetic — it CHANGES the
+    architecture, which is the whole reason mislabelling its provenance matters.
+
+    Exercised through the embedded encoder path, because that is the path that
+    hydrates: the checkpoint alone reads as uniformly sliding, and only the
+    class's word turns the stack heterogeneous."""
+    from model_unfolder.encoder_panel import normalize_encoder_config
+
+    spec = normalize_encoder_config(_gemma2_raw())
+    groups = (spec.get("sub_model") or {}).get("groups") or []
+    tags = [g.get("tag") for g in groups]
+    assert len(groups) > 1, (
+        f"the class-supplied schedule must build a HETEROGENEOUS stack, got "
+        f"{tags}")
+    assert any("sliding" in str(t) for t in tags), tags
+
+    # the counterfactual: with the class's word absent, the SAME checkpoint is
+    # uniformly sliding — so the schedule is genuinely the class's contribution
+    raw_only = _gemma2_raw()
+    ledger = ca.ConfigAccessLedger()
+    with ca.capture_events(ledger):
+        flat = mu.unfold(raw_only).to_ir()
+    masks = {(layer.get("attention") or {}).get("mask")
+             for layer in (flat.get("layers") or [])}
+    assert masks == {"sliding"}, (
+        f"the checkpoint alone should carry no alternation, got {masks}")
+
+
+def test_a_class_supplied_field_is_not_a_checkpoint_occurrence():
+    """The census asks "classify this declaration" — an incoherent task for a
+    declaration the checkpoint never made. Excluded from the checkpoint census,
+    and VISIBLE in its own class rather than vanished."""
+    doc = {"declared": 1, "from_class": 2}
+    provenance = {"declared": ca.CHECKPOINT_DECLARED,
+                  "from_class": ca.CLASS_DEFAULT}
+    with ca.capture_events() as ledger, \
+            ca.document_scope((), obj=doc, provenance=provenance):
+        ca.emit("declared", intent="inspected", present=True,
+                source_obj_id=id(doc))
+        ca.emit("from_class", intent="inspected", present=True,
+                source_obj_id=id(doc))
+    paths = {k.config_path for k in ledger.unconsumed_occurrences()}
+    assert paths == {"declared"}, paths
+    assert ("root", "from_class", ca.CLASS_DEFAULT) in \
+        ledger.class_supplied_occurrences()
+
+
+@pytest.mark.parametrize("witness", _witnesses(), ids=lambda p: p.stem)
+def test_no_checkpoint_occurrence_is_really_a_class_supplied_field(witness):
+    """Corpus-wide: nothing the config class supplied may appear in the
+    checkpoint census under any witness."""
+    cfg = json.loads(witness.read_text())["config"]
+    if not isinstance(cfg.get("_text_encoder_configs"), dict):
+        pytest.skip("no recursively-parsed encoder slot in this witness")
+    ledger = _ledger_for(cfg)
+    class_paths = {(c, p) for c, p, _ in ledger.class_supplied_occurrences()}
+    census = {(k.component_path, k.config_path)
+              for k in ledger.unconsumed_occurrences()}
+    assert not (census & class_paths), sorted(census & class_paths)
+
+
+# --------------------------------------------------------------------------
+# Path-proof poisons — exactness is PROVEN, never asserted
+#
+# Exactness is two claims and both must be discharged: the path addresses a real
+# location in the document, AND the object the document places there is the
+# object the reader actually read.  Proving only the first lets an unrelated
+# object borrow a real path; proving neither lets a producer invent one.
+# --------------------------------------------------------------------------
+
+def test_a_nonexistent_explicit_path_is_an_error():
+    """A producer may not author an address the document disproves."""
+    doc = {"real": 1}
+    with ca.capture_events(), ca.document_scope((), obj=doc):
+        with pytest.raises(ValueError, match="not proven by the document"):
+            ca.emit("x", intent="inspected", present=True,
+                    config_path="does.not.exist", source_obj_id=id(doc))
+
+
+def test_a_real_path_cannot_be_borrowed_by_an_unrelated_object():
+    """The sharpest form: the path EXISTS, so mere resolution certifies it.
+
+    Only identity separates the document's own ``real`` from a foreign object's
+    ``real`` — the value would be someone else's and the occurrence key ("what
+    was supplied, WHERE") a fiction that resolves."""
+    doc = {"real": 1}
+    unrelated = {"real": 999}
+    with ca.capture_events(), ca.document_scope((), obj=doc):
+        with pytest.raises(ValueError, match="not proven by the document"):
+            ca.emit("real", intent="inspected", present=True,
+                    config_path="real", source_obj_id=id(unrelated))
+    # control: the document's OWN object, same path, is lawful and exact
+    with ca.capture_events() as ledger, ca.document_scope((), obj=doc):
+        ca.emit("real", intent="inspected", present=True,
+                config_path="real", source_obj_id=id(doc))
+    assert ledger.events[0].path_exact is True
+
+
+def test_a_named_container_may_not_speak_for_an_unidentified_read():
+    """A read that does not say which object it came from cannot be shown to
+    belong in the container — absence of a contradiction is not evidence."""
+    doc = {"sub": {"leaf": 2}}
+    with ca.capture_events() as ledger, ca.document_scope((), obj=doc), \
+            ca.config_container(("sub",), obj=doc["sub"]):
+        ca.emit("leaf", intent="inspected", present=True, source_obj_id=None)
+    assert ledger.events[0].config_path == "leaf"      # NOT sub.leaf
+    assert ledger.events[0].path_exact is False
+
+
+def test_consuming_an_occurrence_keeps_the_proof_its_inspection_had():
+    """Occurrence identity must survive the whole lifecycle.
+
+    A consumption that re-emits from a value alone loses the location its
+    inspection proved — and the consumption is what a claim binding joins on,
+    so the fact ends up bound to an unproven address."""
+    doc = {"sub": {"leaf": 2}}
+    with ca.capture_events() as ledger, ca.document_scope((), obj=doc):
+        resolution = ca.resolve(doc["sub"], "leaf", (), path=("sub",))
+        resolution.consume(fact_owner="root", fact_key="x")
+    by_intent = {e.intent: e for e in ledger.events}
+    assert by_intent["inspected"].config_path == "sub.leaf"
+    assert by_intent["consumed"].config_path == "sub.leaf"
+    assert by_intent["consumed"].path_exact is True
+
+
+def test_priority_resolution_consumes_the_field_it_actually_found():
+    """A priority chain runs over DISTINCT fields, not rival spellings: the
+    declared order is the meaning, disagreement is not ambiguity, and only the
+    winner is consumed — carrying the exact path it was found at."""
+    doc = {"vision_config": {"embed_dim": 1280, "hidden_size": 3584}}
+    vision = doc["vision_config"]
+    with ca.capture_events() as ledger, ca.document_scope((), obj=doc), \
+            ca.config_container(("vision_config",), obj=vision):
+        resolution = ca.resolve_priority(vision, ("embed_dim", "hidden_size"))
+        value = resolution.consume(fact_owner="root.vision", fact_key="hidden_size",
+                                   mechanism="encoder_width")
+    assert value == 1280                                   # priority, not the sibling
+    consumed = [e for e in ledger.events if e.intent == "consumed"]
+    assert len(consumed) == 1
+    assert consumed[0].config_path == "vision_config.embed_dim"
+    assert consumed[0].path_exact is True
+    # the LOSING sibling is a different field, not this fact's to clear
+    assert not any(e.config_path == "vision_config.hidden_size"
+                   for e in ledger.events)
+
+
+def test_qwen2vl_vision_width_is_consumed_at_its_exact_path():
+    """The real witness: the tower width must be consumed at
+    ``vision_config.embed_dim`` — the path a claim binding joins on."""
+    cfg = json.loads((_CORPUS / "qwen2-vl-7b-instruct.json").read_text())["config"]
+    consumed = [e for e in _ledger_for(cfg).events
+                if e.intent == "consumed" and e.mechanism == "encoder_width"
+                and e.component == "root.vision"]
+    assert consumed, "the witness must consume a vision tower width"
+    assert all(e.config_path == "vision_config.embed_dim" for e in consumed), \
+        [e.config_path for e in consumed]
+    assert all(e.path_exact for e in consumed)
 
 
 # --------------------------------------------------------------------------

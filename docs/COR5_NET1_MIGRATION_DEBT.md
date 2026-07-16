@@ -51,7 +51,7 @@ mechanism-driving rows need new interpretation code.
 - `root.denoiser` — 1 witnesses (e.g. ['stable-diffusion-xl-base-1-0']); **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
 - `root.scheduler` — 15 witnesses (e.g. ['auraflow-v0-3', 'cogvideox-5b', 'flux-2-dev', 'fluxtransformer2dmodel']); **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
 
-## Standing accessed-but-unconsumed occurrences: 279
+## Standing accessed-but-unconsumed occurrences: 274
 
 Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the
 supplying alias differs. The row key is the FULL occurrence, so two paths
@@ -66,7 +66,7 @@ Prefix a row with its document to address the value in the witness file.
 
 Paths relative to: the top-level document
 
-`apply_residual_connection_post_layernorm` (1w), `attention_bias` (7w), `attn_logit_softcapping` (1w), `final_logit_softcapping` (1w), `first_k_dense_replace` (2w), `image_token_id` (1w), `is_encoder_decoder` (10w), `kv_lora_rank` (1w), `layer_norm_eps` (1w), `layer_norm_epsilon` (1w), `layer_types` (4w), `max_window_layers` (2w), `mlp_bias` (1w), `moe_layer_freq` (1w), `n_group` (2w), `norm_topk_prob` (2w), `num_nextn_predict_layers` (2w), `partial_rotary_factor` (2w), `q_lora_rank` (1w), `qk_layernorm` (1w), `qk_nope_head_dim` (1w), `qk_rope_head_dim` (1w), `query_pre_attn_scalar` (1w), `rms_norm_eps` (8w), `rope_parameters` (9w), `rope_parameters.factor` (2w), `rope_parameters.original_max_position_embeddings` (2w), `rope_parameters.partial_rotary_factor` (2w), `rope_parameters.rope_theta` (8w), `rope_parameters.rope_type` (8w), `rope_parameters.type` (1w), `routed_scaling_factor` (2w), `scoring_func` (1w), `swiglu_limit` (1w), `text_config` (1w), `text_config.rope_parameters` (1w), `text_config.rope_parameters.mrope_section` (1w), `text_config.rope_parameters.rope_theta` (1w), `text_config.rope_parameters.rope_type` (1w), `text_config.rope_parameters.type` (1w), `topk_group` (2w), `topk_method` (1w), `use_bidirectional_attention` (1w), `use_parallel_residual` (1w), `use_qk_norm` (1w), `use_qkv_bias` (1w), `use_sliding_window` (2w), `v_head_dim` (1w), `video_token_id` (1w), `vision_config` (1w), `vision_end_token_id` (1w), `vision_start_token_id` (1w)
+`apply_residual_connection_post_layernorm` (1w), `attention_bias` (7w), `attn_logit_softcapping` (1w), `final_logit_softcapping` (1w), `first_k_dense_replace` (2w), `image_token_id` (1w), `is_encoder_decoder` (10w), `kv_lora_rank` (1w), `layer_norm_eps` (1w), `layer_norm_epsilon` (1w), `layer_types` (3w), `max_window_layers` (1w), `mlp_bias` (1w), `moe_layer_freq` (1w), `n_group` (2w), `norm_topk_prob` (2w), `num_nextn_predict_layers` (2w), `partial_rotary_factor` (2w), `q_lora_rank` (1w), `qk_layernorm` (1w), `qk_nope_head_dim` (1w), `qk_rope_head_dim` (1w), `query_pre_attn_scalar` (1w), `rms_norm_eps` (7w), `rope_parameters` (8w), `rope_parameters.factor` (2w), `rope_parameters.original_max_position_embeddings` (2w), `rope_parameters.partial_rotary_factor` (2w), `rope_parameters.rope_theta` (8w), `rope_parameters.rope_type` (8w), `rope_parameters.type` (1w), `routed_scaling_factor` (2w), `scoring_func` (1w), `swiglu_limit` (1w), `text_config` (1w), `text_config.rope_parameters` (1w), `text_config.rope_parameters.mrope_section` (1w), `text_config.rope_parameters.rope_theta` (1w), `text_config.rope_parameters.rope_type` (1w), `text_config.rope_parameters.type` (1w), `topk_group` (2w), `topk_method` (1w), `use_bidirectional_attention` (1w), `use_parallel_residual` (1w), `use_qk_norm` (1w), `use_qkv_bias` (1w), `use_sliding_window` (1w), `v_head_dim` (1w), `video_token_id` (1w), `vision_config` (1w), `vision_end_token_id` (1w), `vision_start_token_id` (1w)
 
 ### `root.denoiser` — 101 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
 
@@ -80,11 +80,11 @@ Paths relative to: the top-level document
 
 `_scheduler_config.beta_schedule` (5w), `_scheduler_config.num_train_timesteps` (15w), `_scheduler_config.prediction_type` (5w), `_scheduler_config.shift` (10w), `_scheduler_config.timestep_spacing` (5w), `_scheduler_config.use_dynamic_shifting` (7w), `scheduler` (15w)
 
-### `root.text_encoder` — 32 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
+### `root.text_encoder` — 27 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
 
 Paths relative to: `_text_encoder_configs.text_encoder`
 
-`attention_bias` (4w), `attn_logit_softcapping` (2w), `feed_forward_proj` (6w), `final_logit_softcapping` (2w), `image_token_id` (1w), `image_token_index` (1w), `is_decoder` (6w), `is_encoder_decoder` (14w), `is_gated_act` (6w), `layer_norm_eps` (2w), `layer_norm_epsilon` (6w), `layer_types` (3w), `max_window_layers` (1w), `mlp_bias` (1w), `query_pre_attn_scalar` (2w), `rms_norm_eps` (6w), `rope_parameters` (6w), `rope_parameters.mrope_section` (1w), `rope_parameters.rope_theta` (4w), `rope_parameters.rope_type` (4w), `text_config` (2w), `text_config.rope_parameters` (2w), `text_config.rope_parameters.mrope_section` (1w), `text_config.rope_parameters.rope_theta` (2w), `text_config.rope_parameters.rope_type` (2w), `text_config.rope_parameters.type` (1w), `use_bidirectional_attention` (2w), `use_sliding_window` (1w), `video_token_id` (1w), `vision_config` (2w), `vision_end_token_id` (1w), `vision_start_token_id` (1w)
+`attention_bias` (4w), `attn_logit_softcapping` (2w), `feed_forward_proj` (6w), `final_logit_softcapping` (2w), `image_token_id` (1w), `image_token_index` (1w), `is_decoder` (3w), `is_encoder_decoder` (12w), `is_gated_act` (6w), `layer_norm_eps` (2w), `layer_norm_epsilon` (6w), `layer_types` (2w), `mlp_bias` (1w), `query_pre_attn_scalar` (2w), `rms_norm_eps` (4w), `rope_parameters` (3w), `rope_parameters.rope_theta` (3w), `rope_parameters.rope_type` (3w), `text_config` (2w), `text_config.rope_parameters` (1w), `text_config.rope_parameters.rope_theta` (1w), `text_config.rope_parameters.rope_type` (1w), `use_bidirectional_attention` (2w), `video_token_id` (1w), `vision_config` (2w), `vision_end_token_id` (1w), `vision_start_token_id` (1w)
 
 ### `root.text_encoder.vision` — 25 rows — **UNCLASSIFIED** (U2.2 assigns per occurrence/mechanism — an owner spans several units)
 
@@ -115,4 +115,33 @@ Paths relative to: the top-level document
 Paths relative to: the top-level document
 
 `image_token_id` (1w), `text_config.num_hidden_layers` (1w), `video_token_id` (1w), `vision_config` (1w), `vision_config.depth` (1w), `vision_config.hidden_act` (1w), `vision_config.in_channels` (1w), `vision_config.in_chans` (1w), `vision_config.mlp_ratio` (1w), `vision_config.num_heads` (1w), `vision_config.patch_size` (1w), `vision_config.spatial_merge_size` (1w), `vision_config.temporal_patch_size` (1w), `vision_end_token_id` (1w), `vision_start_token_id` (1w)
+
+## Reads whose LOCATION is unknown: 15
+
+NOT classifiable, and NOT part of the census above: the read is real
+and the value is real, but the reader touched a nested object without
+naming which, so the ledger recorded an honest bare leaf. Asking for a
+disposition here would be asking to classify a location nobody
+established.
+
+A **producer** backlog (U2.2b): each shrinks where its READER names the
+object it read (`wrapper_path` / `config_container(obj=)`) — never by a
+census filter, and never by deciding what an unlocatable row means.
+
+- `root` — 5: `layer_types` (1w), `max_window_layers` (1w), `rms_norm_eps` (1w), `rope_parameters` (1w), `use_sliding_window` (1w)
+- `root.text_encoder` — 8: `layer_norm_eps` (2w), `layer_norm_epsilon` (6w), `layer_types` (1w), `max_window_layers` (1w), `rms_norm_eps` (6w), `rope_parameters` (2w), `text_config` (2w), `use_sliding_window` (1w)
+- `root.text_encoder_2` — 1: `layer_norm_eps` (3w)
+- `root.text_encoder_3` — 1: `layer_norm_epsilon` (1w)
+
+## Fields the CHECKPOINT never declared: 12
+
+The installed config class supplied these (located by `model_type` —
+identity-as-ADDRESS, which is lawful). They are excluded from the
+checkpoint census because they are not the checkpoint's words, and
+listed here because they are real and often STRUCTURAL: a
+class-supplied `layer_types` IS a mask schedule. The open question for
+each is not "what does this declaration mean" but "may the class decide
+this, and does the fact it authors say so".
+
+- `root.text_encoder` — 12: `_name_or_path` [class_default] (2w), `is_decoder` [class_default] (3w), `is_encoder_decoder` [class_default] (2w), `rope_parameters` [class_default] (1w), `rope_parameters.mrope_section` [class_default] (1w), `rope_parameters.rope_theta` [class_default] (1w), `rope_parameters.rope_type` [class_default] (1w), `text_config.rope_parameters` [class_default] (1w), `text_config.rope_parameters.mrope_section` [class_default] (1w), `text_config.rope_parameters.rope_theta` [class_default] (1w), `text_config.rope_parameters.rope_type` [class_default] (1w), `text_config.rope_parameters.type` [class_default] (1w)
 

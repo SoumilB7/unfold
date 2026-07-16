@@ -9,7 +9,11 @@ from __future__ import annotations
 from typing import Any
 
 from .....evidence import config_access as _config_access
-from ...common import TEXT_WRAPPER_KEYS, get_config_value as _g
+from ...common import (
+    TEXT_WRAPPER_KEYS,
+    get_config_value as _g,
+    wrapper_path as _wrapper_path,
+)
 from .fusion import fusion_path
 from .registry import MODALITY_REGISTRY
 from .schema import multimodal_payload
@@ -93,9 +97,23 @@ def multimodal_extras(cfg: Any, text_cfg: Any, text_hidden_size: int,
         # The container names sub_cfg: the builder also reads its HOST (token
         # ids, wrapper flags), and those reads must keep their own root-level
         # path rather than inherit this prefix.
+        #
+        # U2.2a vet: the container path is relative to the DOCUMENT, not to the
+        # host.  A composite hides the modality host one declared level down
+        # (Qwen-Omni's ``thinker_config``), so naming the container
+        # ``vision_config`` there asserts a top-level address that does not
+        # exist — the tower really lives at ``thinker_config.vision_config``.
+        # When the host cannot be addressed at all (a composite whose wrapper
+        # was materialized through ``to_dict()``, so the object in hand is a
+        # COPY that sits nowhere in the document), no container is declared and
+        # the enclosed reads stay honestly inexact.  An unlocatable read is
+        # debt; a confidently mislocated one is a lie.
+        _host_path = _wrapper_path(cfg, host)
+        _addressable = host is cfg or bool(_host_path)
+        _container = ((*_host_path, _matched_key)
+                      if _matched_key and _addressable else ())
         with _config_access.owner_scope(_owner), \
-                _config_access.config_container(
-                    (_matched_key,) if _matched_key else (), obj=sub_cfg):
+                _config_access.config_container(_container, obj=sub_cfg):
             path = spec.build(host, text_cfg, sub_cfg, text_hidden_size)
             if not path:
                 continue                 # a builder may veto on closer evidence

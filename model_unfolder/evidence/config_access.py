@@ -60,28 +60,130 @@ current_document: ContextVar[tuple] = ContextVar(
     "model_unfolder_config_document", default=((), None))
 
 
+# U2.2a vet: WHERE A FIELD CAME FROM.  A parsed document is not always the
+# checkpoint's own words: an encoder slot is hydrated through its installed
+# config class (located by model_type — identity-as-ADDRESS, which is lawful),
+# and that class supplies STRUCTURAL defaults the checkpoint never serialized
+# (Gemma-2's ``sliding_window_pattern=2`` decides the per-layer mask schedule).
+# Recording all of it as "the config declared this" would make a fact detected
+# from identity indistinguishable from one detected from evidence — the exact
+# collapse this project exists to prevent.  So provenance is first-class.
+CHECKPOINT_DECLARED = "checkpoint_declared"   # the checkpoint's own declaration
+CLASS_DEFAULT = "class_default"               # the installed config class supplied it
+CLASS_NORMALIZED_ALIAS = "class_normalized_alias"  # class renamed a raw key (needs
+                                              # an EXPLICIT trace naming the raw
+                                              # path — never inferred from
+                                              # resemblance)
+LOADER_METADATA = "loader_metadata"           # the loader injected it (address /
+                                              # fetched component context)
+PROVENANCE_KINDS = frozenset({
+    CHECKPOINT_DECLARED, CLASS_DEFAULT, CLASS_NORMALIZED_ALIAS, LOADER_METADATA})
+
+#: Per-key provenance of the document being read: ``{dotted path: kind}``.
+#: Empty means the document was never mapped, so provenance is UNESTABLISHED —
+#: which is recorded as "" and never silently read as checkpoint_declared.
+current_provenance: ContextVar[dict] = ContextVar(
+    "model_unfolder_config_provenance", default={})
+
+
+def _provenance_for(path: str) -> str:
+    return current_provenance.get().get(path, "")
+
+
 def _is_document_root_read(source_obj_id) -> bool:
     """True when this read is OF the document's own root object — its fields
     live at the top of that document, so the bare leaf is already the exact
     path.  Requires the document to have been NAMED; an unnamed one proves
     nothing about which object was read."""
-    _, doc_obj_id = current_document.get()
-    return (doc_obj_id is not None and source_obj_id is not None
-            and doc_obj_id == source_obj_id)
+    _, doc_obj = current_document.get()
+    return (doc_obj is not None and source_obj_id is not None
+            and id(doc_obj) == source_obj_id)
 
 
 def _container_prefix_for(source_obj_id):
     """The container prefix that legitimately applies to THIS read.
 
-    A scope that names an object prefixes only reads of that object; an
-    unqualified scope prefixes everything enclosed.  Anything else gets no
-    prefix — an honest bare leaf, never a fabricated path."""
-    path, obj_id = current_container.get()
-    if not path:
+    STRICT (U2.2a vet): the scope must name an object AND the read must identify
+    itself as a read of that exact object.  A read that does not say which
+    object it came from cannot be shown to belong in the container, so the
+    container may not speak for it — an unidentified read keeps its bare leaf
+    and is honestly inexact.  Prefixing it "because nothing contradicted us"
+    is how the fabricated paths were authored in the first place: absence of a
+    contradiction is not evidence.
+
+    The unqualified legacy reads this leaves unprefixed are visible debt
+    (``path_exact=False``), not silent breakage — they belong in U2.2b's
+    quarantine, and each is fixed by its READER naming the object it read."""
+    path, obj = current_container.get()
+    if not path or obj is None or source_obj_id is None:
         return ()
-    if obj_id is None or source_obj_id is None or obj_id == source_obj_id:
-        return path
-    return ()
+    return path if id(obj) == source_obj_id else ()
+
+
+def _is_addressable(obj, prefix) -> bool:
+    """Can we say WHERE this object's own fields live in the named document?
+
+    Yes when a container prefix legitimately names it, or when it IS the
+    document root (its fields live at the top).  Otherwise the reader holds some
+    nested object it never located, and a bare leaf from it is NOT a claim about
+    where the value lives — it is an admission of not knowing.  The difference
+    matters: a producer's location CLAIM that the document disproves is an
+    error, while an honest "unlocated" is debt (visible, and fixed at the
+    reader).  Treating the second as the first would make the ledger refuse to
+    record reads it is supposed to be surfacing.
+
+    With no document named nothing can be contradicted, so a claim is allowed
+    through — it is unprovable rather than false, and ``_prove_path`` says so.
+    """
+    _, doc_obj = current_document.get()
+    if doc_obj is None:
+        return True
+    return bool(prefix) or id(doc_obj) == id(obj)
+
+
+def _member(obj, key):
+    """Occurrence membership (§8.3) — an explicit ``key: null`` IS present."""
+    return (obj.get(key, MISSING) if isinstance(obj, dict)
+            else getattr(obj, key, MISSING))
+
+
+def _prove_path(path: str, present: bool, source_obj_id):
+    """Was this value read FROM this exact location in the named document?
+
+    ``True`` proven · ``False`` disproven · ``None`` unprovable (no document
+    named, or the read never said which object it came from — and not knowing
+    is not a proof).
+
+    Exactness is TWO claims, and both must be discharged (U2.2a vet, hole 1):
+
+    1. the path addresses a real location in the document; **and**
+    2. the object the document says holds that field IS the object the reader
+       actually accessed.
+
+    Proving only (1) lets an unrelated object borrow a real path — a read of
+    some other ``{"real": 999}`` certifying itself as the document's ``real``.
+    The path would exist, the value would be foreign, and the occurrence key —
+    "what was actually supplied, WHERE" — would be a fiction that resolves.
+
+    Only PRESENT reads are provable: an absent field's path is where a value
+    *would* live, so resolution is the wrong question for it (its premise is
+    recorded as ``absent_default``, never as an occurrence).
+    """
+    _, doc_obj = current_document.get()
+    if doc_obj is None or not path or not present or source_obj_id is None:
+        return None
+    parts = path.split(".")
+    cur = doc_obj
+    for key in parts[:-1]:
+        nxt = _member(cur, key)
+        if nxt is MISSING:
+            return False
+        cur = nxt
+    # (2) the container the DOCUMENT says holds this field must be the very
+    # object the reader read — identity, never resemblance.
+    if id(cur) != source_obj_id:
+        return False
+    return _member(cur, parts[-1]) is not MISSING
 
 # The intents a config access can carry.  ``projected`` is NOT an intent — it is
 # DERIVED by joining ``consumed`` events with the #13 render projection receipts.
@@ -181,6 +283,11 @@ class ConfigAccessEvent:
     # embedded; this field is what makes it CHECKABLE — document_path +
     # config_path must resolve in the top-level witness.
     document_path: tuple = ()
+    # U2.2a vet: WHERE this field came from — checkpoint_declared / class_default
+    # / class_normalized_alias / loader_metadata.  "" = unestablished (the
+    # document was never provenance-mapped), which is NOT the same as, and may
+    # never be read as, "the checkpoint declared it".
+    provenance: str = ""
     # Fifth directive (U0/U1 close): the DECISION SCOPE that made this access —
     # the (owner, mechanism) a consumption serves ("projector_out_width",
     # "encoder_width", …).  Empty = untagged legacy read; claim validation
@@ -353,17 +460,67 @@ class ConfigAccessLedger:
             out[owner] = list(next(iter(paths)))
         return out
 
+    def unresolved_path_occurrences(self) -> list[tuple[str, str]]:
+        """Present reads whose LOCATION was never established — ``(owner, leaf)``.
+
+        A reader touched some nested object without naming which, so the ledger
+        recorded an honest bare leaf: the read is real, the value is real, and
+        the address is unknown.  These are a PRODUCER backlog, not a
+        disposition backlog — each is fixed where the reader names the object it
+        read (``wrapper_path``/``config_container(obj=)``), never by deciding
+        what an unlocatable row "means"."""
+        excused = {(e.component, e.config_path) for e in self.events
+                   if e.intent in {"consumed", "ignored"} and e.path_exact}
+        rows = {(e.component, e.config_path) for e in self.events
+                if e.present and not e.path_exact
+                and e.intent in {"inspected", "bound"}
+                and (e.component, e.config_path) not in excused}
+        return sorted(rows)
+
+    def class_supplied_occurrences(self) -> list[tuple[str, str, str]]:
+        """Present reads of fields the CHECKPOINT never declared — the installed
+        config class supplied them (``(owner, path, provenance)``).
+
+        Visible, never vanished: these are excluded from the checkpoint census
+        because they are not the checkpoint's words, but they are real reads
+        that really decide things (a class-supplied ``layer_types`` IS the mask
+        schedule), so they are published as their own class of evidence."""
+        rows = {(e.component, e.config_path, e.provenance)
+                for e in self.events
+                if e.present and e.provenance
+                and e.provenance != CHECKPOINT_DECLARED}
+        return sorted(rows)
+
     def unconsumed_occurrences(self, owner: str | None = None) -> list["ConfigOccurrenceKey"]:
         """AUTHORITATIVE Net-1 debt: every PRESENT accessed/bound occurrence,
         keyed by its full :class:`ConfigOccurrenceKey` (exact path + actual
         spelling), with no consumed or scoped-ignored event at the same
         exact (component, config_path).  This is the H7/H8 worklist source —
-        two paths sharing a canonical leaf stay two rows."""
+        two paths sharing a canonical leaf stay two rows.
+
+        CHECKPOINT-scoped (U2.2a vet): a field the installed config class
+        supplied is not an occurrence in the checkpoint, so it may not be listed
+        as one — the census would otherwise present the class's words as the
+        checkpoint's, and "classify this declaration" is an incoherent task for a
+        declaration the checkpoint never made.  Those reads stay visible through
+        :meth:`class_supplied_occurrences`; they are a different question
+        (should the class be permitted to decide this?), not a hidden one."""
         excused = {(e.component, e.config_path) for e in self.events
                    if e.intent in {"consumed", "ignored"}}
         seen: dict[tuple[str, str, str], ConfigOccurrenceKey] = {}
         for e in self.events:
             if not e.present or e.intent not in {"inspected", "bound"}:
+                continue
+            if e.provenance and e.provenance != CHECKPOINT_DECLARED:
+                continue
+            # U2.2b: an OCCURRENCE-EXACT census may only list occurrences whose
+            # path is proven.  A bare funnel leaf is a real read at an UNKNOWN
+            # location, so listing it here would put a key nobody can locate
+            # beside keys that are exact — and asking for its disposition is
+            # asking to classify a location that was never established.  They
+            # are published as their own class (:meth:`unresolved_path_
+            # occurrences`); the fix is per-READER, never a census filter.
+            if not e.path_exact:
                 continue
             if owner is not None and e.component != owner:
                 continue
@@ -511,6 +668,15 @@ class ConfigResolution:
     present_aliases: tuple[ConfigOccurrence, ...]  # every exact occurrence
     source_kind: str                     # checkpoint | class_default | unresolved
     reason: str = ""
+    # U2.2a vet: the object the occurrence was OBSERVED on.  Occurrence identity
+    # must survive the whole lifecycle — a consumption that re-emits without it
+    # loses the proof the inspection had, and the value silently becomes a claim
+    # about a location nobody verified it came from.
+    source_obj: Any = None
+
+    @property
+    def _source_obj_id(self):
+        return None if self.source_obj is None else id(self.source_obj)
 
     @property
     def present(self) -> bool:
@@ -553,6 +719,7 @@ class ConfigResolution:
              fact_owner=fact_owner or self.component, fact_key=fact_key,
              mechanism=mechanism, value_status_hash=expected,
              component=self.component, config_path=self.selected_path,
+             source_obj_id=self._source_obj_id,
              value_state=("value" if self.value is not None else
                           "explicit_null") if self.state == "present" else "missing",
              reason=self.reason if self.state == "present" else (
@@ -575,7 +742,7 @@ class ConfigResolution:
              present=self.state == "present", alias=self.selected_alias,
              fact_owner=fact_owner or self.component, fact_key=fact_key,
              reader=reader, component=self.component, reason=self.reason,
-             config_path=self.selected_path,
+             config_path=self.selected_path, source_obj_id=self._source_obj_id,
              value_state=("value" if self.value is not None else
                           "explicit_null") if self.state == "present" else "missing")
         return self.value
@@ -592,8 +759,60 @@ class ConfigResolution:
                 f"{self.component!r} — only a present occurrence is ignorable")
         emit(self.canonical, intent="ignored", present=True,
              alias=self.selected_alias, component=self.component, reason=reason,
-             config_path=self.selected_path,
+             config_path=self.selected_path, source_obj_id=self._source_obj_id,
              value_state="value" if self.value is not None else "explicit_null")
+
+
+def resolve_priority(cfg: Any, fields: Iterable[str], *,
+                     component: str | None = None,
+                     path: tuple[str, ...] | None = None) -> ConfigResolution:
+    """Resolve ONE fact from a PRIORITY chain over DISTINCT fields.
+
+    Not alias resolution: the candidates are not rival spellings of a single
+    declaration, so their disagreement is not ambiguity.  A grid vision tower
+    carries an internal ``embed_dim`` BESIDE a merger-out ``hidden_size`` and
+    they legitimately differ — the declared order IS the meaning, and only the
+    winner is consumed.  (Feeding such fields to :func:`resolve` would either
+    invent an ambiguity between two true declarations or silently pick one as
+    "the same fact".)
+
+    Returns a typed resolution carrying the winner's exact path AND the object
+    it was observed on, so the caller CONSUMES the occurrence it found rather
+    than hand-emitting a second, unproven event — the lifecycle gap that let a
+    consumed value lose the identity its inspection had.
+
+    A losing candidate is not evented: an absent one never happened, and a
+    present one is a DIFFERENT field, whose coverage is the unread audit's
+    business — never something this fact may silently clear.
+    """
+    owner = component if component is not None else current_owner.get()
+    # Where this object sits is already established by the ambient container
+    # (which only speaks for reads OF the object it names); asking the caller to
+    # restate it invites the two to disagree.
+    prefix = tuple(path) if path is not None else _container_prefix_for(id(cfg))
+    addressable = _is_addressable(cfg, prefix)
+    for field_name in fields:
+        raw = _member(cfg, field_name)
+        if raw is MISSING:
+            continue
+        occurrence = ConfigOccurrence(
+            component=owner, path=prefix, spelling=field_name, value=raw)
+        emit(field_name, intent="inspected", present=True, alias=field_name,
+             component=owner,
+             config_path=occurrence.dotted_path if addressable else None,
+             source_obj_id=id(cfg),
+             value_state="value" if raw is not None else "explicit_null")
+        return ConfigResolution(
+            component=owner, canonical=field_name,
+            selected_path=occurrence.dotted_path if addressable else None,
+            selected_alias=field_name,
+            value=raw, state="present", present_aliases=(occurrence,),
+            source_kind="checkpoint", source_obj=cfg)
+    return ConfigResolution(
+        component=owner, canonical=next(iter(fields), ""), selected_path=None,
+        selected_alias=None, value=None, state="absent", present_aliases=(),
+        source_kind="checkpoint",
+        reason="no field in the declared priority chain is present")
 
 
 def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
@@ -618,6 +837,11 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
       value: they are retained while selection runs over accepted values.
     """
     owner = component if component is not None else current_owner.get()
+    # U2.2a vet: only claim a location we can address (see _is_addressable) —
+    # otherwise the reader holds a nested object nobody located, and its bare
+    # leaf is an admission of not knowing, never an assertion about the top of
+    # the document.
+    addressable = _is_addressable(cfg, tuple(path))
     spellings = list(dict.fromkeys([canonical, *aliases]))
     occurrences: list[ConfigOccurrence] = []
     for spelling in spellings:
@@ -692,7 +916,9 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
     if accepted and nulls and null_policy:
         reason = (reason + "; " if reason else "") + f"null-coexistence policy: {null_policy}"
     emit(canonical, intent="inspected", present=True, alias=selected.spelling,
-         component=owner, config_path=selected.dotted_path, reason=reason,
+         component=owner,
+         config_path=selected.dotted_path if addressable else None,
+         reason=reason, source_obj_id=id(cfg),
          value_state="value" if selected.value is not None else "explicit_null")
     # §20.4.5: every occurrence recorded — redundant spellings (equal values,
     # plus retained explicit nulls) are scoped ignores: they clear unread
@@ -706,11 +932,14 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
                 if occ.value is None and accepted else
                 f"redundant equal alias of {canonical!r} — selected {selected.spelling!r}")
         emit(canonical, intent="ignored", present=True, alias=occ.spelling,
-             component=owner, config_path=occ.dotted_path, reason=note,
+             component=owner,
+             config_path=occ.dotted_path if addressable else None, reason=note,
+             source_obj_id=id(cfg),
              value_state="value" if occ.value is not None else "explicit_null")
     return ConfigResolution(
         component=owner, canonical=canonical,
-        selected_path=selected.dotted_path, selected_alias=selected.spelling,
+        selected_path=selected.dotted_path if addressable else None,
+        selected_alias=selected.spelling, source_obj=cfg,
         value=selected.value, state="present",
         present_aliases=tuple(occurrences), source_kind="checkpoint",
         reason=reason)
@@ -760,7 +989,7 @@ def config_container(path: tuple, obj: Any = None):
     read asserts an exact path that exists nowhere in the document.  When
     ``obj`` is omitted the scope is unqualified and prefixes every enclosed
     read (the pre-existing behaviour, kept for scopes that read one object)."""
-    token = current_container.set((tuple(path), id(obj) if obj is not None else None))
+    token = current_container.set((tuple(path), obj))
     try:
         yield
     finally:
@@ -781,7 +1010,7 @@ def _container_object(host: Any, path: tuple) -> Any:
 
 
 @contextmanager
-def document_scope(path: tuple, obj: Any = None):
+def document_scope(path: tuple, obj: Any = None, provenance: dict | None = None):
     """U2.2a: declare the DOCUMENT the enclosed parse reads.
 
     ``path`` is where that document lives in the enclosing one (``()`` for the
@@ -809,11 +1038,17 @@ def document_scope(path: tuple, obj: Any = None):
     parent_path, parent_obj = current_document.get()
     token = current_document.set((
         (*parent_path, *path),
-        id(obj) if obj is not None else (parent_obj if not path else None)))
+        obj if obj is not None else (parent_obj if not path else None)))
     ctoken = current_container.set(((), None))
+    # A new document brings its OWN provenance: the enclosing map addresses the
+    # document being left, and a path means something different in each.
+    ptoken = (current_provenance.set(provenance)
+              if provenance is not None else None)
     try:
         yield
     finally:
+        if ptoken is not None:
+            current_provenance.reset(ptoken)
         current_container.reset(ctoken)
         current_document.reset(token)
 
@@ -922,22 +1157,41 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
     if intent == "inspected" and canonical in _ADDRESS_KEYS:
         intent = "ignored"
         reason = reason or "identity/address read — locates source or labels, not structure"
+    # COR-4 (§9, Law B): the EXACT dotted config path — explicit from the
+    # resolver, or joined from the ambient container scope.  The owner:leaf
+    # label is RETIRED.
+    _path = config_path or ".".join(
+        (*_container_prefix_for(source_obj_id), alias or canonical))
+    # U2.2a vet, hole 1: a path may NOT certify itself.  Passing an explicit
+    # string used to set path_exact by fiat, so any producer could author a
+    # dotted path that addresses nothing — the corpus happened to hold none, but
+    # the primitive permitted it.  Exactness is now the PREDICATE, proven against
+    # the document the read was made from; and a producer that claims a path the
+    # document disproves is an error, not a quiet downgrade.
+    _proof = _prove_path(_path, present, source_obj_id)
+    if _proof is False and config_path is not None:
+        raise ValueError(
+            f"config path {config_path!r} for {owner}:{canonical} is not proven "
+            "by the document being read — it addresses nothing there, or the "
+            "value came from an object other than the one the document places "
+            "at that address.  A producer may not author an address the "
+            "document disproves, and a real path may not be borrowed by an "
+            "unrelated object")
     event = ConfigAccessEvent(
         component=owner,
-        # COR-4 (§9, Law B): the EXACT dotted config path — explicit from the
-        # resolver, or joined from the ambient container scope for the legacy
-        # accessor funnel.  The owner:leaf label is RETIRED.
-        config_path=config_path or ".".join(
-            (*_container_prefix_for(source_obj_id), alias or canonical)),
-        # An exact path comes from an explicit resolution, a container that
-        # legitimately names this read's object, or the read being OF the
-        # document root (whose fields live at its top, so the bare leaf IS the
-        # exact path).  Anything else is an honest bare leaf: some undeclared
-        # nested object supplied it and the reader never said where it lives.
-        path_exact=(config_path is not None
-                    or bool(_container_prefix_for(source_obj_id))
-                    or _is_document_root_read(source_obj_id)),
+        config_path=_path,
+        # Proven against the document ⇒ exact.  Unprovable (no document named,
+        # or an absent field, whose path is where a value WOULD live rather than
+        # where one was supplied) falls back to the structural evidence: a
+        # container that legitimately names this read's object, or the read being
+        # OF the document root, whose fields live at its top so the bare leaf IS
+        # the exact path.  Anything else is an honest bare leaf — some undeclared
+        # object supplied it and the reader never said which.
+        path_exact=(bool(_proof) if _proof is not None else
+                    (bool(_container_prefix_for(source_obj_id))
+                     or _is_document_root_read(source_obj_id))),
         document_path=current_document.get()[0],
+        provenance=_provenance_for(_path),
         canonical=canonical, alias=(alias or canonical) if present else None,
         present=present, intent=intent, fact_owner=fact_owner, fact_key=fact_key,
         reader=reader, reason=reason,
@@ -954,6 +1208,9 @@ __all__ = [
     "ProjectionObligation", "ProjectionTarget",
     "config_container", "container_scoped", "current_container",
     "document_scope", "current_document", "present_spelling",
+    "current_provenance", "resolve_priority",
+    "CHECKPOINT_DECLARED", "CLASS_DEFAULT", "CLASS_NORMALIZED_ALIAS",
+    "LOADER_METADATA", "PROVENANCE_KINDS",
     "current_owner", "resolve",
     "capture_events", "owner_scope", "owner_scoped", "emit",
     "active_ledger", "active_touched_names",

@@ -226,6 +226,22 @@ def config_to_ir(
         # embedded; without this the row names a leaf nobody can locate, and no
         # auditor can prove it real.
         "document_roots": _access_ledger.document_roots(),
+        # U2.2a vet: reads of fields the CHECKPOINT never declared — the config
+        # class supplied them (located by model_type: identity-as-address).
+        # Excluded from the checkpoint census above because they are not the
+        # checkpoint's words, and published HERE because they are real and
+        # structural (a class-supplied ``layer_types`` IS a mask schedule).
+        **({"class_supplied": [
+            {"component": c, "path": p, "provenance": k}
+            for c, p, k in _access_ledger.class_supplied_occurrences()]}
+           if _access_ledger.class_supplied_occurrences() else {}),
+        # U2.2b: real reads whose LOCATION was never established.  Not
+        # occurrence-exact, so not in the census above; a PRODUCER backlog that
+        # shrinks only as each reader names the object it read.
+        **({"accessed_unresolved_path": [
+            {"component": c, "leaf": p}
+            for c, p in _access_ledger.unresolved_path_occurrences()]}
+           if _access_ledger.unresolved_path_occurrences() else {}),
         **({"audit_incomplete": _audit_incomplete} if _audit_incomplete else {}),
         # COR-5 (§10): the structured claim register for this parse — one row
         # per claimed (owner, mechanism) scope; the blocking net reads the

@@ -417,16 +417,18 @@ def vision_encoder_hidden_size(cfg: Any, vision_cfg: Any, unified_grid: bool) ->
     keys = (("embed_dim", "vision_hidden_size", "width", "hidden_size")
             if unified_grid
             else ("hidden_size", "vision_hidden_size", "width", "embed_dim"))
-    for key in keys:
-        value = first(vision_cfg, key)
-        if value is not None:
-            _config_access.emit(
-                key, intent="consumed", present=True, alias=key,
-                fact_owner=_config_access.current_owner.get(),
-                fact_key="hidden_size", reader="vision_encoder_hidden_size",
-                mechanism="encoder_width")
-            return value
-    return None
+    # U2.2a vet: CONSUME THE OCCURRENCE THAT WAS FOUND.  This used to probe for a
+    # value and then hand-emit a separate consumed event carrying neither the
+    # path nor the object it came from — so the observation proved a location
+    # and the consumption, which is what a claim actually joins on, proved
+    # nothing.  A value-only handoff between finding and consuming will always
+    # drop the proof; the resolution carries both.
+    resolution = _config_access.resolve_priority(vision_cfg, keys)
+    if not resolution.present or resolution.value is None:
+        return None
+    return resolution.consume(
+        fact_owner=_config_access.current_owner.get(),
+        fact_key="hidden_size", mechanism="encoder_width")
 
 
 def vision_projector_in(vision_cfg: Any, encoder_hidden_size: Any, cross_attn: bool, unified_grid: bool) -> Any:

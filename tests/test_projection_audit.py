@@ -507,38 +507,54 @@ def test_cor5_poison_nonexistent_path_claim_fails_the_corpus_gate(monkeypatch):
     # witnesses — a scope satisfied nowhere fails it.
 
 
+# U2.2a vet: the fixture below carries a real DOCUMENT and each emit names the
+# object it read.  It used to assert exact paths against nothing at all, which
+# only worked while an explicit string could certify itself — the hole the vet
+# closed.  A census row is now an occurrence PROVEN against the document, so a
+# fixture that proves nothing rightly produces no rows; the law is unchanged and
+# the fixture is what became honest.
+_VAE_DOC = {"_vae_config": {"scaling_factor": 0.18,
+                            "decoder": {"scale": 0.5}}}
+
+
+def _vae_emit(intent="inspected", **kw):
+    """Emit a read of the VAE document at its true location."""
+    inner = _VAE_DOC["_vae_config"]
+    which = kw.pop("of")
+    obj = inner if which == "outer" else inner["decoder"]
+    _config_access.emit(
+        "scaling_factor", intent=intent, present=True, source_obj_id=id(obj), **kw)
+
+
 def test_cor5_census_view_is_occurrence_exact():
     """Correction 3: two exact occurrences sharing one canonical leaf under one
     owner are TWO rows in the authoritative view (full ConfigOccurrenceKey);
     the (owner, canonical) view collapses them and is compatibility-only."""
     with _config_access.capture_events() as ledger:
-        with _config_access.owner_scope("root.vae"):
-            _config_access.emit("scaling_factor", intent="inspected", present=True,
-                                alias="scaling_factor",
-                                config_path="_vae_config.scaling_factor")
-            _config_access.emit("scaling_factor", intent="inspected", present=True,
-                                alias="scale",
-                                config_path="_vae_config.decoder.scaling_factor")
+        with _config_access.owner_scope("root.vae"), \
+                _config_access.document_scope((), obj=_VAE_DOC):
+            _vae_emit(of="outer", alias="scaling_factor",
+                      config_path="_vae_config.scaling_factor")
+            _vae_emit(of="decoder", alias="scale",
+                      config_path="_vae_config.decoder.scale")
     exact = ledger.unconsumed_occurrences()
     assert [(k.config_path, k.actual_spelling) for k in exact] == [
-        ("_vae_config.decoder.scaling_factor", "scale"),
+        ("_vae_config.decoder.scale", "scale"),
         ("_vae_config.scaling_factor", "scaling_factor"),
     ]
     assert len(ledger.accessed_but_unconsumed()) == 1     # documented collapse
     with _config_access.capture_events() as ledger2:
-        with _config_access.owner_scope("root.vae"):
-            _config_access.emit("scaling_factor", intent="inspected", present=True,
-                                alias="scaling_factor",
-                                config_path="_vae_config.scaling_factor")
-            _config_access.emit("scaling_factor", intent="inspected", present=True,
-                                alias="scale",
-                                config_path="_vae_config.decoder.scaling_factor")
-            _config_access.emit("scaling_factor", intent="consumed", present=True,
-                                alias="scaling_factor",
-                                config_path="_vae_config.scaling_factor",
-                                fact_owner="root.vae", fact_key="scaling_factor")
+        with _config_access.owner_scope("root.vae"), \
+                _config_access.document_scope((), obj=_VAE_DOC):
+            _vae_emit(of="outer", alias="scaling_factor",
+                      config_path="_vae_config.scaling_factor")
+            _vae_emit(of="decoder", alias="scale",
+                      config_path="_vae_config.decoder.scale")
+            _vae_emit(intent="consumed", of="outer", alias="scaling_factor",
+                      config_path="_vae_config.scaling_factor",
+                      fact_owner="root.vae", fact_key="scaling_factor")
     remaining = ledger2.unconsumed_occurrences()
-    assert [k.config_path for k in remaining] == ["_vae_config.decoder.scaling_factor"]
+    assert [k.config_path for k in remaining] == ["_vae_config.decoder.scale"]
 
 
 def test_cor5_obligation_truth_has_no_canonical_fallback():

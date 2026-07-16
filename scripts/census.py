@@ -48,6 +48,8 @@ def collect() -> dict:
     incomplete: dict[str, set[str]] = defaultdict(set)
     claims: dict[tuple, list[int]] = defaultdict(lambda: [0, 0])
     documents: dict[str, set[str]] = defaultdict(set)
+    unresolved: dict[tuple[str, str], set[str]] = defaultdict(set)
+    class_supplied: dict[tuple[str, str, str], set[str]] = defaultdict(set)
     for path in sorted(CORPUS.glob("*.json")):
         cfg = json.loads(path.read_text())["config"]
         ca = (mu.unfold(cfg).to_ir().get("extras") or {}).get("config_access") or {}
@@ -57,6 +59,11 @@ def collect() -> dict:
         # names a leaf no reader can locate.
         for owner, root in (ca.get("document_roots") or {}).items():
             documents[owner].add(".".join(root))
+        for row in ca.get("accessed_unresolved_path") or []:
+            unresolved[(row["component"], row["leaf"])].add(path.stem)
+        for row in ca.get("class_supplied") or []:
+            class_supplied[(row["component"], row["path"],
+                            row["provenance"])].add(path.stem)
         for owner in ca.get("audit_incomplete") or []:
             incomplete[owner].add(path.stem)
         for claim in ca.get("migration_claims") or []:
@@ -66,7 +73,8 @@ def collect() -> dict:
             claims[key][0] += claim["observed_events"]
             claims[key][1] += claim["target_matches"]
     return {"rows": rows, "incomplete": incomplete, "claims": claims,
-            "documents": documents}
+            "documents": documents, "unresolved": unresolved,
+            "class_supplied": class_supplied}
 
 
 def render(data: dict) -> str:
@@ -151,6 +159,48 @@ def render(data: dict) -> str:
         add(f"Paths relative to: {_doc_label(owner)}\n")
         add(", ".join(f"`{f}` ({n}w)" for f, n in fields))
         add("")
+
+    # ---- the two classes that are NOT checkpoint occurrences -------------
+    unresolved, class_supplied = data["unresolved"], data["class_supplied"]
+    add(f"## Reads whose LOCATION is unknown: {len(unresolved)}\n")
+    add("NOT classifiable, and NOT part of the census above: the read is real")
+    add("and the value is real, but the reader touched a nested object without")
+    add("naming which, so the ledger recorded an honest bare leaf. Asking for a")
+    add("disposition here would be asking to classify a location nobody")
+    add("established.\n")
+    add("A **producer** backlog (U2.2b): each shrinks where its READER names the")
+    add("object it read (`wrapper_path` / `config_container(obj=)`) — never by a")
+    add("census filter, and never by deciding what an unlocatable row means.\n")
+    if unresolved:
+        by_unresolved: dict[str, list[tuple[str, int]]] = defaultdict(list)
+        for (owner, leaf), witnesses in unresolved.items():
+            by_unresolved[owner].append((leaf, len(witnesses)))
+        for owner in sorted(by_unresolved):
+            leaves = sorted(by_unresolved[owner])
+            add(f"- `{owner}` — {len(leaves)}: "
+                + ", ".join(f"`{leaf}` ({n}w)" for leaf, n in leaves))
+    else:
+        add("- none")
+    add("")
+    add(f"## Fields the CHECKPOINT never declared: {len(class_supplied)}\n")
+    add("The installed config class supplied these (located by `model_type` —")
+    add("identity-as-ADDRESS, which is lawful). They are excluded from the")
+    add("checkpoint census because they are not the checkpoint's words, and")
+    add("listed here because they are real and often STRUCTURAL: a")
+    add("class-supplied `layer_types` IS a mask schedule. The open question for")
+    add("each is not \"what does this declaration mean\" but \"may the class decide")
+    add("this, and does the fact it authors say so\".\n")
+    if class_supplied:
+        by_class: dict[str, list[tuple[str, str, int]]] = defaultdict(list)
+        for (owner, cpath, kind), witnesses in class_supplied.items():
+            by_class[owner].append((cpath, kind, len(witnesses)))
+        for owner in sorted(by_class):
+            entries = sorted(by_class[owner])
+            add(f"- `{owner}` — {len(entries)}: "
+                + ", ".join(f"`{p}` [{k}] ({n}w)" for p, k, n in entries))
+    else:
+        add("- none")
+    add("")
     return "\n".join(out) + "\n"
 
 
