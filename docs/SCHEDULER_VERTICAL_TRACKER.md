@@ -1,3 +1,16 @@
+# Scheduler vertical — SUPERSEDED
+
+**This plan was mis-scoped and is retired.** Its 5-commit route (source
+qualification → method index → scheduler evidence → render cutover → claims)
+is **U3 + U13 work**, not U2. U2 may not derive scheduler semantics; it
+registers the claims, receipts only the genuinely evidence-backed ones, and
+files the class-name-selected Euler/flow semantics as exact U13 debt.
+
+Live plan and state: `z-docs/07-current-state/u2-receipt-accountability.md`.
+The history below is kept only for the Commit-1 record.
+
+---
+
 # Scheduler vertical — live tracker
 
 **What this is:** the first full H7 domain burn-down (root.scheduler), executed
