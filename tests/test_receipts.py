@@ -358,3 +358,43 @@ def test_every_policy_target_is_a_registered_claim_binding_target():
         assert claim.projection.allowed_surfaces
         assert claim.projection.allowed_kinds
         assert claim.projection.allowed_node_paths
+
+
+def test_poison_receipted_scope_without_a_registered_policy_blocks():
+    """REGISTRY BYPASS: a scope treated as receipted but owned by no registered
+    claim/policy must BLOCK.  Guarding the surface/kind/node checks with
+    ``if policy and ...`` made an UNREGISTERED scope less validated than a
+    registered one — a receipt with a fake surface, fake node and fake kind
+    passed with zero findings.  Absence of the validator is never permission."""
+    from model_unfolder.evidence.receipts import policy_for
+
+    expected = value_status_hash(1234, "config_bound")
+    scope = ("root.ghost", "ghost_mechanism")
+    assert policy_for(*scope) is None, "the fixture scope must be unregistered"
+    obligation = [{
+        "source": {"component": "root.ghost", "path": "cfg.some_field",
+                   "spelling": "some_field", "canonical": "some_field"},
+        "target": {"owner": "root.ghost", "key": "some_fact", "kind": "fact"},
+        "state": "unreceipted", "reason": "", "mechanism": "ghost_mechanism",
+        "expected_value_status_hash": expected,
+    }]
+    receipt = [ProjectionReceipt(
+        fact_key="root.ghost.some_fact", owner="root.ghost",
+        mechanism="ghost_mechanism", surface="ANY_FAKE_SURFACE",
+        node_path=("any_fake_node",), projection_kind="prose",
+        value_status_hash=expected)]
+    result = join_obligation_receipts(obligation, receipt, frozenset({scope}))
+    assert result["findings"], "an unregistered receipted scope was accepted"
+    assert any("no registered claim declares a projection policy" in f
+               for f in result["findings"]), result["findings"]
+    assert result["receipted_targets"] == []
+
+
+def test_no_permissive_policy_guard_remains_in_the_join():
+    """Static guard: the join must never re-introduce ``if policy and ...`` —
+    that shape silently downgrades validation whenever a policy is absent."""
+    source = pathlib.Path(
+        mu.__file__).parent / "evidence" / "receipts.py"
+    assert "if policy and" not in source.read_text(), (
+        "a permissive policy guard was re-introduced: an absent policy must "
+        "BLOCK, never skip the surface/kind/node checks")

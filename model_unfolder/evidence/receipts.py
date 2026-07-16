@@ -154,6 +154,17 @@ def join_obligation_receipts(obligations, receipts,
         # expected — otherwise the drawing drifted from the consumed value or a
         # foreign surface cleared the obligation.
         policy = policy_for(owner, mechanism)
+        if policy is None:
+            # REGISTRY BYPASS: a scope can only be receipted by a registered
+            # claim that declares a projection policy.  Without one there is
+            # nothing to validate surface/kind/node against, so treating it as
+            # receipted would make an UNREGISTERED scope less checked than a
+            # registered one.  Absence of the validator is never permission.
+            findings.append(
+                f"{source} -> {owner}.{key} is treated as a receipted scope but "
+                f"no registered claim declares a projection policy for "
+                f"{owner}/{mechanism} — a scope cannot be receipted without one")
+            continue
         expected = ob.get("expected_value_status_hash") or ""
         if not expected:
             # A receipted scope whose CONSUMPTION recorded no expected
@@ -168,20 +179,20 @@ def join_obligation_receipts(obligations, receipts,
             continue
         accepted = []
         for receipt in candidates:
-            if policy and receipt.surface not in policy.allowed_surfaces:
+            if receipt.surface not in policy.allowed_surfaces:
                 findings.append(
                     f"{source} -> {owner}.{key}: receipt came from surface "
                     f"{receipt.surface!r}, which {owner}/{mechanism} is not "
                     f"allowed to be projected onto "
                     f"(allowed: {sorted(policy.allowed_surfaces)})")
                 continue
-            if policy and receipt.projection_kind not in policy.allowed_kinds:
+            if receipt.projection_kind not in policy.allowed_kinds:
                 findings.append(
                     f"{source} -> {owner}.{key}: receipt declares projection "
                     f"kind {receipt.projection_kind!r}, not allowed for "
                     f"{owner}/{mechanism} (allowed: {sorted(policy.allowed_kinds)})")
                 continue
-            if policy and tuple(receipt.node_path) not in policy.allowed_node_paths:
+            if tuple(receipt.node_path) not in policy.allowed_node_paths:
                 findings.append(
                     f"{source} -> {owner}.{key}: receipt names node path "
                     f"{tuple(receipt.node_path)!r}, not a registered consumer "
