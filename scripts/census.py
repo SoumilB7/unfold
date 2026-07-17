@@ -49,6 +49,7 @@ def collect() -> dict:
     claims: dict[tuple, list[int]] = defaultdict(lambda: [0, 0])
     documents: dict[str, set[str]] = defaultdict(set)
     unresolved: dict[tuple[str, str], set[str]] = defaultdict(set)
+    unestablished: dict[tuple[str, str], set[str]] = defaultdict(set)
     class_supplied: dict[tuple[str, str, str], set[str]] = defaultdict(set)
     for path in sorted(CORPUS.glob("*.json")):
         cfg = json.loads(path.read_text())["config"]
@@ -61,9 +62,11 @@ def collect() -> dict:
             documents[owner].add(".".join(root))
         for row in ca.get("accessed_unresolved_path") or []:
             unresolved[(row["component"], row["leaf"])].add(path.stem)
-        for row in ca.get("class_supplied") or []:
+        for row in ca.get("non_checkpoint") or []:
             class_supplied[(row["component"], row["path"],
                             row["provenance"])].add(path.stem)
+        for row in ca.get("unestablished_provenance") or []:
+            unestablished[(row["component"], row["path"])].add(path.stem)
         for owner in ca.get("audit_incomplete") or []:
             incomplete[owner].add(path.stem)
         for claim in ca.get("migration_claims") or []:
@@ -74,7 +77,7 @@ def collect() -> dict:
             claims[key][1] += claim["target_matches"]
     return {"rows": rows, "incomplete": incomplete, "claims": claims,
             "documents": documents, "unresolved": unresolved,
-            "class_supplied": class_supplied}
+            "class_supplied": class_supplied, "unestablished": unestablished}
 
 
 def render(data: dict) -> str:
@@ -179,6 +182,28 @@ def render(data: dict) -> str:
             leaves = sorted(by_unresolved[owner])
             add(f"- `{owner}` — {len(leaves)}: "
                 + ", ".join(f"`{leaf}` ({n}w)" for leaf, n in leaves))
+    else:
+        add("- none")
+    add("")
+    unestablished = data["unestablished"]
+    add(f"## Reads whose ORIGIN is unknown: {len(unestablished)}\n")
+    add("BLOCKING debt, and NOT part of the census above. The document these")
+    add("were read from was never prepared, so nobody can say whether the")
+    add("checkpoint declared them or a config class supplied them. Unestablished")
+    add("is not a synonym for declared — letting it default into the checkpoint")
+    add("census is what made the class's words look like the file's.\n")
+    add("These are a few lost DOCUMENT BOUNDARIES multiplied across many reads,")
+    add("not one problem per row: they collapse when preparation is centralized")
+    add("(one prepared document per boundary), not by classifying them.\n")
+    if unestablished:
+        by_un: dict[str, list[tuple[str, int]]] = defaultdict(list)
+        for (owner, cpath), witnesses in unestablished.items():
+            by_un[owner].append((cpath, len(witnesses)))
+        for owner in sorted(by_un):
+            entries = sorted(by_un[owner])
+            add(f"- `{owner}` — {len(entries)}: "
+                + ", ".join(f"`{c}` ({n}w)" for c, n in entries[:14])
+                + (" …" if len(entries) > 14 else ""))
     else:
         add("- none")
     add("")

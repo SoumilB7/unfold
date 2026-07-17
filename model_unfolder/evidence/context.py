@@ -141,6 +141,11 @@ class ParseContext:
     # capture ContextVar only routes nested calls to this context's ledger and
     # is never a second truth store.  Compat bare-name views derive from it.
     config_access: ConfigAccessLedger = field(default_factory=ConfigAccessLedger)
+    # U2-R1 (§5.1): the prepared document for each component owner, keyed by the
+    # EXACT owner ("root", "root.text_encoder", …).  A parser or renderer reads
+    # its document's provenance from here rather than re-preparing (which was the
+    # double-hydration bug) or guessing the owner from a module name.
+    prepared_documents: dict = field(default_factory=dict)
     # U2 retired the global ``projection_receipts_available`` boolean: receipt
     # coverage is now owner/mechanism-SCOPED (evidence/receipts.py
     # RECEIPTED_SCOPES, published as ir.extras.config_access.projection_coverage)

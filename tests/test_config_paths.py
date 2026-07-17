@@ -32,10 +32,8 @@ import pathlib
 import pytest
 
 import model_unfolder as mu
-from model_unfolder.encoder_panel import (
-    hydrate_encoder_config_facts,
-    hydrate_with_provenance,
-)
+from model_unfolder.encoder_panel import hydrate_encoder_config_facts
+from model_unfolder.evidence.document import LOADER_STAMPS, prepare_document
 from model_unfolder.evidence import config_access as ca
 
 _CORPUS = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
@@ -166,7 +164,8 @@ def test_gemma2_class_supplied_schedule_is_class_default_never_checkpoint():
     earlier). It is genuinely structural: it decides the mask of every layer. So
     it must be recorded as the CLASS's word, never the checkpoint's."""
     raw = _gemma2_raw()
-    doc, provenance = hydrate_with_provenance(raw)
+    _prepared = prepare_document(raw, loader_keys=LOADER_STAMPS)
+    doc, provenance = _prepared.document, _prepared.provenance
 
     schedule_keys = [k for k in ("layer_types", "sliding_window_pattern")
                      if k in doc and doc[k] is not None]
@@ -184,33 +183,32 @@ def test_gemma2_class_supplied_schedule_is_class_default_never_checkpoint():
     assert provenance["sliding_window"] == ca.CHECKPOINT_DECLARED
 
 
-def test_gemma2_class_supplied_schedule_really_builds_alternating_masks():
-    """The other half: the class default is not cosmetic — it CHANGES the
-    architecture, which is the whole reason mislabelling its provenance matters.
+def test_gemma2_class_schedule_is_a_U8_counterfactual_not_a_U2_success():
+    """§3.3: the class-supplied schedule is DEFERRED to U8, not authored in U2.
 
-    Exercised through the embedded encoder path, because that is the path that
-    hydrates: the checkpoint alone reads as uniformly sliding, and only the
-    class's word turns the stack heterogeneous."""
+    An earlier version of this test asserted the EMBEDDED encoder builds the
+    heterogeneous stack — but that only happened because the embedded prep used
+    merge=True, letting the class overlay author architecture.  That was the
+    R1-vet violation.  In U2 shadow mode (merge=False everywhere) the class
+    overlay authors NOTHING, so both the embedded and the standalone Gemma-2 are
+    uniformly sliding.  The schedule's real influence is a U8 counterfactual —
+    recorded, deferred — never a U2 success condition."""
     from model_unfolder.encoder_panel import normalize_encoder_config
 
+    # embedded: shadow mode -> NO class-authored alternation
     spec = normalize_encoder_config(_gemma2_raw())
     groups = (spec.get("sub_model") or {}).get("groups") or []
     tags = [g.get("tag") for g in groups]
-    assert len(groups) > 1, (
-        f"the class-supplied schedule must build a HETEROGENEOUS stack, got "
-        f"{tags}")
-    assert any("sliding" in str(t) for t in tags), tags
+    assert not any("sliding window" in str(t) for t in tags), (
+        f"the class overlay authored an embedded schedule (tags={tags}) — §3.3 "
+        "forbids a merge-driven structural delta before U8")
 
-    # the counterfactual: with the class's word absent, the SAME checkpoint is
-    # uniformly sliding — so the schedule is genuinely the class's contribution
-    raw_only = _gemma2_raw()
-    ledger = ca.ConfigAccessLedger()
-    with ca.capture_events(ledger):
-        flat = mu.unfold(raw_only).to_ir()
+    # standalone: identical shadow behaviour — uniformly sliding
+    flat = mu.unfold(_gemma2_raw()).to_ir()
     masks = {(layer.get("attention") or {}).get("mask")
              for layer in (flat.get("layers") or [])}
     assert masks == {"sliding"}, (
-        f"the checkpoint alone should carry no alternation, got {masks}")
+        f"standalone must match embedded in shadow mode, got {masks}")
 
 
 def test_a_class_supplied_field_is_not_a_checkpoint_occurrence():
@@ -229,7 +227,7 @@ def test_a_class_supplied_field_is_not_a_checkpoint_occurrence():
     paths = {k.config_path for k in ledger.unconsumed_occurrences()}
     assert paths == {"declared"}, paths
     assert ("root", "from_class", ca.CLASS_DEFAULT) in \
-        ledger.class_supplied_occurrences()
+        ledger.non_checkpoint_occurrences()
 
 
 @pytest.mark.parametrize("witness", _witnesses(), ids=lambda p: p.stem)
@@ -240,7 +238,7 @@ def test_no_checkpoint_occurrence_is_really_a_class_supplied_field(witness):
     if not isinstance(cfg.get("_text_encoder_configs"), dict):
         pytest.skip("no recursively-parsed encoder slot in this witness")
     ledger = _ledger_for(cfg)
-    class_paths = {(c, p) for c, p, _ in ledger.class_supplied_occurrences()}
+    class_paths = {(c, p) for c, p, _ in ledger.non_checkpoint_occurrences()}
     census = {(k.component_path, k.config_path)
               for k in ledger.unconsumed_occurrences()}
     assert not (census & class_paths), sorted(census & class_paths)

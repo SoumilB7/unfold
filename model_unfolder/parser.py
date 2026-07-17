@@ -50,7 +50,8 @@ def config_to_ir(
         ``"path"``, ``"hub"``, ``"auto"``, or a local file/directory path. Hub
         inspection downloads source files only and should be requested explicitly.
     """
-    cfg = _coerce(cfg_or_id, token=token)
+    _prepared = _coerce_prepared(cfg_or_id, token=token)
+    cfg = _prepared.document
     if parse_context is None:
         from .evidence.context import ParseContext
         parse_context = ParseContext.build(cfg, source="local", token=token)
@@ -77,9 +78,22 @@ def config_to_ir(
     # U2.2a: NAME the document being parsed.  Its top-level fields are exactly
     # pathed at their bare leaf, so a reader of the root config need not (and
     # must not) borrow a nested container's prefix to look precise.
+    #
+    # U2.2a vet: and declare its PROVENANCE.  The root document was reaching the
+    # ledger unmapped, so every ordinary checkpoint read recorded "" — which the
+    # census then counted as the checkpoint's word by default.  "Unestablished"
+    # must never be a synonym for "declared".  This boundary performs no class
+    # hydration, so the mapping is the file's own words plus the loader's
+    # declared stamps.
+    # U2-R1 (§5.1): bind the prepared root document to its owner and register it
+    # on the context, then ENTER it via its binding — one object carrying the
+    # document, its address and its provenance, verified together.
+    from .evidence.document import DocumentBinding as _DocumentBinding
+    _root_binding = _DocumentBinding("root", (), _prepared)
+    parse_context.prepared_documents["root"] = _root_binding
     with _config_access.capture_events(parse_context.config_access) as _access_ledger, \
             _config_access.owner_scope("root"), \
-            _config_access.document_scope((), obj=cfg):
+            _config_access.bound_document(_root_binding):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}
@@ -231,10 +245,23 @@ def config_to_ir(
         # Excluded from the checkpoint census above because they are not the
         # checkpoint's words, and published HERE because they are real and
         # structural (a class-supplied ``layer_types`` IS a mask schedule).
-        **({"class_supplied": [
+        # U2.2a vet: reads the checkpoint did NOT declare — a config class's
+        # default or a loader's stamp.  Neutrally named: their only shared
+        # property is that the file did not say them, and calling the set
+        # "class supplied" would report a loader stamp as the class's work.
+        **({"non_checkpoint": [
             {"component": c, "path": p, "provenance": k}
-            for c, p, k in _access_ledger.class_supplied_occurrences()]}
-           if _access_ledger.class_supplied_occurrences() else {}),
+            for c, p, k in _access_ledger.non_checkpoint_occurrences()]}
+           if _access_ledger.non_checkpoint_occurrences() else {}),
+        # U2.2a vet: reads whose ORIGIN was never established — the document
+        # they came from was never prepared, so nobody can say whether the
+        # checkpoint declared them or a class supplied them.  Published as its
+        # own BLOCKING debt rather than defaulting into either camp: a count
+        # measured in a script is not an audit surface.
+        **({"unestablished_provenance": [
+            {"component": c, "path": p}
+            for c, p in _access_ledger.unestablished_provenance_occurrences()]}
+           if _access_ledger.unestablished_provenance_occurrences() else {}),
         # U2.2b: real reads whose LOCATION was never established.  Not
         # occurrence-exact, so not in the census above; a PRODUCER backlog that
         # shrinks only as each reader names the object it read.
@@ -378,7 +405,33 @@ def _attach_code_evidence(ir: ModelIR, cfg: Any, *, token: Any = None, source: s
             ir.warnings.append(warning)
 
 
+def _coerce_prepared(cfg_or_id, token: Any = None):
+    """Coerce ANY accepted input into ONE prepared document.
+
+    Preparation lives inside the coercion so nothing can reach a parser with an
+    unprepared document: that is what left ordinary checkpoint reads with no
+    recorded origin, and what let the SAME model parse differently by-id (which
+    hydrated) than from a dict (which did not).  One boundary, one preparation,
+    one provenance map.
+    """
+    from .evidence.document import LOADER_STAMPS, prepare_document
+    # SHADOW MODE (merge=False): preparation records the checkpoint, the class's
+    # candidates and every field's origin, but the readers still see only the
+    # checkpoint.  Turning hydration on here fixes standalone/embedded parity
+    # and simultaneously lets a class default outrank a declaration — Falcon's
+    # ``multi_query=True`` loses to the class's ``num_kv_heads=71`` and the
+    # tower is drawn MHA when the checkpoint says MQA.  Parity flips only after
+    # the arbiter exists.
+    return prepare_document(_raw_input(cfg_or_id, token=token),
+                            loader_keys=LOADER_STAMPS, merge=False)
+
+
 def _coerce(cfg_or_id, token: Any = None):
+    """The prepared document itself, for callers that only want the config."""
+    return _coerce_prepared(cfg_or_id, token=token).document
+
+
+def _raw_input(cfg_or_id, token: Any = None):
     if isinstance(cfg_or_id, dict):
         return cfg_or_id
     if isinstance(cfg_or_id, str):
@@ -642,7 +695,6 @@ def _load_raw_config_json(model_id: str, auth_token: Any) -> dict:
         raise exc
     with open(path) as f:
         cfg = _parse_config_json_text(f.read())
-    cfg = _hydrate_config_class_defaults(cfg)
     if isinstance(cfg, dict):
         # Identity-as-ADDRESS at load time: the entry id is the only channel
         # through which a remote-code repo's own modeling .py can be fetched

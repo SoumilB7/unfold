@@ -90,6 +90,16 @@ def _provenance_for(path: str) -> str:
     return current_provenance.get().get(path, "")
 
 
+def provenance_of(path: str) -> str:
+    """Where the field at this document-relative path came from ("" = unknown).
+
+    Public because a fact's evidence STATUS has to be derived from the origin of
+    the read that decided it — a reader holding a value cannot otherwise tell
+    whether the checkpoint or its config class said it, and would report both as
+    the config's word."""
+    return _provenance_for(path)
+
+
 def _is_document_root_read(source_obj_id) -> bool:
     """True when this read is OF the document's own root object — its fields
     live at the top of that document, so the bare leaf is already the exact
@@ -217,6 +227,33 @@ _ADDRESS_KEYS = frozenset({
 })
 
 
+#: ledger provenance -> the ORIGIN axis of the occurrence table
+_ORIGIN_OF = {
+    CHECKPOINT_DECLARED: "checkpoint",
+    CLASS_DEFAULT: "class",
+    CLASS_NORMALIZED_ALIAS: "class",
+    LOADER_METADATA: "loader",
+    "": "unestablished",
+}
+
+
+@dataclass(frozen=True)
+class ClassifiedOccurrence:
+    """One occurrence, classified on three orthogonal axes.
+
+    ``conflicted`` on an axis is a real state, not a fallback: it records that
+    the evidence disagreed, which must be seen rather than resolved by picking
+    a side."""
+
+    owner: str
+    document_path: tuple
+    config_path: str
+    actual_spelling: str
+    location: str        # exact | unlocated | conflicted
+    origin: str          # checkpoint | class | loader | unestablished | conflicted
+    disposition: str     # standing | consumed | ignored | ambiguous
+
+
 @dataclass(frozen=True)
 class ConfigOccurrenceKey:
     """COR-2 (§7): the PRIMARY join identity of one config occurrence — what
@@ -227,6 +264,15 @@ class ConfigOccurrenceKey:
     config_path: str
     actual_spelling: str
     canonical_field: str
+    # U2-R2 vet: the DOCUMENT is part of the occurrence identity.  ``config_path``
+    # is document-relative, so the same dotted path in two documents (a pipeline
+    # root and an embedded encoder) is two DIFFERENT occurrences — merging them
+    # would let one document's consumption discharge another's obligation.
+    document_path: tuple = ()
+    # U2-R2 vet: the READER that consumed it.  One source consumed by two readers
+    # into two targets is two obligations, not one — so who read it is part of
+    # what makes a consumed occurrence distinct.
+    reader: str = ""
 
 
 @dataclass(frozen=True)
@@ -236,6 +282,37 @@ class ProjectionTarget:
     owner: str
     fact_key: str
     structural_sink_kind: str = "fact"   # fact | geometry
+
+
+@dataclass(frozen=True)
+class ConsumedConfigDecision:
+    """U2-R2 (§5.2): value and ORIGIN, inseparable.
+
+    A raw ``.consume()`` returned only a value, so a structural reader had to go
+    back to ``provenance_of(path)`` to learn where it came from — and nothing
+    stopped it pairing one path's value with another path's origin.  This is the
+    ONE object a migrated decision returns: value, exact occurrence, provenance,
+    and the exact target it feeds, all fixed together at the moment of
+    consumption, so the two can never be recombined by a later caller."""
+
+    occurrence: "ConfigOccurrenceKey | None"
+    component: str
+    document_path: tuple
+    canonical: str
+    selected_path: "str | None"
+    selected_alias: "str | None"
+    value: Any
+    state: str                 # present | absent | ambiguous
+    value_state: str           # value | explicit_null | missing
+    provenance: str            # checkpoint_declared | class_default | ...
+    mechanism: str
+    target: "ProjectionTarget"
+    reader: str
+    reason: str = ""
+
+    @property
+    def present(self) -> bool:
+        return self.state == "present"
 
 
 @dataclass(frozen=True)
@@ -460,6 +537,89 @@ class ConfigAccessLedger:
             out[owner] = list(next(iter(paths)))
         return out
 
+    def classified_occurrences(self) -> tuple[list["ClassifiedOccurrence"], list[str]]:
+        """THE occurrence table — one row per occurrence, three orthogonal axes.
+
+        Four independent set-producing methods could not be reasoned about
+        together: every unlocated read was ALSO origin-unestablished, and one
+        occurrence seen through both a prepared and an unprepared boundary
+        appeared in two lists at once, so the headline counts double-counted
+        debt and no reader could tell which list owned a row.
+
+        Each occurrence gets exactly ONE state per axis:
+
+        * ``location``    exact | unlocated
+        * ``origin``      checkpoint | class | loader | unestablished
+        * ``disposition`` standing | consumed | ignored | ambiguous
+
+        Disagreement is not averaged away.  The same key read through two
+        different boundaries — proven at the document root here, an unlocated
+        bare leaf of some nested object there — is not one fact with two
+        opinions; it is a BOUNDARY CONFLICT, returned as a blocking finding
+        rather than shown twice with different labels.
+        """
+        by_key: dict[tuple[str, str, str], list] = {}
+        for e in self.events:
+            if not e.present or e.intent not in _PRESENT_ACCESS:
+                continue
+            # The DOCUMENT is part of the occurrence identity: the same dotted
+            # path in two different documents is two occurrences, and merging
+            # them manufactures a conflict out of two facts that never met.
+            by_key.setdefault(
+                (e.component, tuple(e.document_path), e.config_path,
+                 e.alias or e.canonical), []).append(e)
+
+        rows: list[ClassifiedOccurrence] = []
+        conflicts: list[str] = []
+        for (owner, document, path, spelling), events in sorted(by_key.items()):
+            locations = {"exact" if e.path_exact else "unlocated" for e in events}
+            origins = {_ORIGIN_OF.get(e.provenance, "unestablished")
+                       for e in events}
+            if len(locations) > 1:
+                conflicts.append(
+                    f"{owner}:{path!r} was read both as a proven location and as "
+                    "an unlocated bare leaf — one key, two boundaries, so the "
+                    "occurrence key does not identify one occurrence")
+            if len(origins) > 1:
+                conflicts.append(
+                    f"{owner}:{path!r} carries conflicting origins "
+                    f"{sorted(origins)} — the same field cannot both be the "
+                    "checkpoint's word and not be; a document boundary lost its "
+                    "preparation on one of the paths that reached it")
+            intents = {e.intent for e in events}
+            disposition = ("ambiguous" if "ambiguous" in intents else
+                           "consumed" if "consumed" in intents else
+                           "ignored" if "ignored" in intents else "standing")
+            rows.append(ClassifiedOccurrence(
+                owner=owner, document_path=document,
+                config_path=path, actual_spelling=spelling,
+                location=("conflicted" if len(locations) > 1
+                          else next(iter(locations))),
+                origin=("conflicted" if len(origins) > 1 else next(iter(origins))),
+                disposition=disposition))
+        return rows, sorted(set(conflicts))
+
+    def worklists(self) -> dict:
+        """The four NON-OVERLAPPING worklists, derived from the one table.
+
+        Disjoint by construction — a row satisfies exactly one filter — so the
+        counts may be added.  Nothing is fixed by moving rows between these:
+        unlocated is a READER problem (one per row), unestablished origin is a
+        few lost document BOUNDARIES multiplied across many reads."""
+        rows, conflicts = self.classified_occurrences()
+        located = [r for r in rows if r.location == "exact"]
+        return {
+            "conflicts": conflicts,
+            "unlocated": [r for r in rows if r.location == "unlocated"],
+            "unestablished_origin": [r for r in located
+                                     if r.origin == "unestablished"],
+            "non_checkpoint": [r for r in located
+                               if r.origin in ("class", "loader")],
+            "checkpoint_standing": [r for r in located
+                                    if r.origin == "checkpoint"
+                                    and r.disposition == "standing"],
+        }
+
     def unresolved_path_occurrences(self) -> list[tuple[str, str]]:
         """Present reads whose LOCATION was never established — ``(owner, leaf)``.
 
@@ -477,18 +637,37 @@ class ConfigAccessLedger:
                 and (e.component, e.config_path) not in excused}
         return sorted(rows)
 
-    def class_supplied_occurrences(self) -> list[tuple[str, str, str]]:
-        """Present reads of fields the CHECKPOINT never declared — the installed
-        config class supplied them (``(owner, path, provenance)``).
+    def non_checkpoint_occurrences(self) -> list[tuple[str, str, str]]:
+        """Present reads the checkpoint did not declare — ``(owner, path, kind)``.
 
-        Visible, never vanished: these are excluded from the checkpoint census
-        because they are not the checkpoint's words, but they are real reads
-        that really decide things (a class-supplied ``layer_types`` IS the mask
-        schedule), so they are published as their own class of evidence."""
+        Neutrally named because it spans several distinct kinds (a config
+        class's default, a loader's stamp) whose only shared property is that
+        the checkpoint did not say them.  Calling it "class supplied" would let
+        a loader stamp be reported as the class's work.
+
+        Visible, never vanished: excluded from the checkpoint census because
+        they are not the checkpoint's words, published here because they are
+        real and often decisive (a class-supplied ``layer_types`` IS the mask
+        schedule)."""
         rows = {(e.component, e.config_path, e.provenance)
                 for e in self.events
                 if e.present and e.provenance
                 and e.provenance != CHECKPOINT_DECLARED}
+        return sorted(rows)
+
+    def unestablished_provenance_occurrences(self) -> list[tuple[str, str]]:
+        """Present reads whose provenance was never established — BLOCKING debt.
+
+        The document they were read from was never prepared, so nobody can say
+        whether the checkpoint declared these or a config class supplied them.
+        That is not a checkpoint occurrence and not a class one: it is an
+        unanswered question, and it must be visible as such rather than default
+        into either camp.  Empty provenance silently counting as the
+        checkpoint's word was the permissive default this replaces."""
+        rows = {(e.component, e.config_path)
+                for e in self.events
+                if e.present and not e.provenance
+                and e.intent in {"inspected", "bound", "consumed"}}
         return sorted(rows)
 
     def unconsumed_occurrences(self, owner: str | None = None) -> list["ConfigOccurrenceKey"]:
@@ -503,7 +682,7 @@ class ConfigAccessLedger:
         as one — the census would otherwise present the class's words as the
         checkpoint's, and "classify this declaration" is an incoherent task for a
         declaration the checkpoint never made.  Those reads stay visible through
-        :meth:`class_supplied_occurrences`; they are a different question
+        :meth:`non_checkpoint_occurrences`; they are a different question
         (should the class be permitted to decide this?), not a hidden one."""
         excused = {(e.component, e.config_path) for e in self.events
                    if e.intent in {"consumed", "ignored"}}
@@ -511,7 +690,7 @@ class ConfigAccessLedger:
         for e in self.events:
             if not e.present or e.intent not in {"inspected", "bound"}:
                 continue
-            if e.provenance and e.provenance != CHECKPOINT_DECLARED:
+            if e.provenance != CHECKPOINT_DECLARED:
                 continue
             # U2.2b: an OCCURRENCE-EXACT census may only list occurrences whose
             # path is proven.  A bare funnel leaf is a real read at an UNKNOWN
@@ -673,6 +852,11 @@ class ConfigResolution:
     # loses the proof the inspection had, and the value silently becomes a claim
     # about a location nobody verified it came from.
     source_obj: Any = None
+    # U2.2a vet: WHERE the selected value came from.  A resolution that cannot
+    # say this cannot be arbitrated: an evidence ordering that ranks a class
+    # default below a declaration needs to know which one it is holding, and a
+    # candidate may not borrow a strength its source does not have.
+    provenance: str = ""
 
     @property
     def _source_obj_id(self):
@@ -725,6 +909,42 @@ class ConfigResolution:
              reason=self.reason if self.state == "present" else (
                  self.reason or "absent — a default/class-default premise"))
         return self.value
+
+    def consume_decision(self, *, mechanism: str, fact_owner: str,
+                         fact_key: str, reader: str,
+                         status: "str | None" = None) -> "ConsumedConfigDecision":
+        """U2-R2 (§5.2): consume, and return value AND origin bound together.
+
+        Emits exactly the same single event ``consume()`` does (they share one
+        occurrence identity), and additionally hands back a typed decision so a
+        structural caller never has to re-derive provenance from a loose path
+        lookup.  ``ambiguous`` cannot return a structural value; ``absent``
+        returns a typed absent decision without inventing an occurrence."""
+        if self.state == "ambiguous":
+            raise ValueError(
+                f"cannot consume ambiguous {self.canonical!r} for "
+                f"{self.component!r}: {self.reason}")
+        self.consume(fact_owner=fact_owner, fact_key=fact_key,
+                     mechanism=mechanism, status=status or "")
+        occurrence = None
+        if self.state == "present" and self.selected_path is not None:
+            occurrence = ConfigOccurrenceKey(
+                component_path=self.component, config_path=self.selected_path,
+                actual_spelling=self.selected_alias or self.canonical,
+                canonical_field=self.canonical,
+                document_path=current_document.get()[0], reader=reader)
+        return ConsumedConfigDecision(
+            occurrence=occurrence, component=self.component,
+            document_path=current_document.get()[0],
+            canonical=self.canonical, selected_path=self.selected_path,
+            selected_alias=self.selected_alias, value=self.value,
+            state=self.state,
+            value_state=("value" if self.value is not None else "explicit_null")
+            if self.state == "present" else "missing",
+            provenance=self.provenance, mechanism=mechanism,
+            target=ProjectionTarget(owner=fact_owner or self.component,
+                                    fact_key=fact_key),
+            reader=reader, reason=self.reason)
 
     def bind(self, reader: str, fact_owner: str = "", fact_key: str = "") -> Any:
         """SOURCE CODE NAMES this config read (REC-2, R-02): a ``bound`` event,
@@ -806,6 +1026,8 @@ def resolve_priority(cfg: Any, fields: Iterable[str], *,
             component=owner, canonical=field_name,
             selected_path=occurrence.dotted_path if addressable else None,
             selected_alias=field_name,
+            provenance=(_provenance_for(occurrence.dotted_path)
+                        if addressable else ""),
             value=raw, state="present", present_aliases=(occurrence,),
             source_kind="checkpoint", source_obj=cfg)
     return ConfigResolution(
@@ -940,6 +1162,7 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
         component=owner, canonical=canonical,
         selected_path=selected.dotted_path if addressable else None,
         selected_alias=selected.spelling, source_obj=cfg,
+        provenance=_provenance_for(selected.dotted_path) if addressable else "",
         value=selected.value, state="present",
         present_aliases=tuple(occurrences), source_kind="checkpoint",
         reason=reason)
@@ -1010,8 +1233,29 @@ def _container_object(host: Any, path: tuple) -> Any:
 
 
 @contextmanager
+def bound_document(binding):
+    """U2-R1 (§5.1): enter the document a :class:`DocumentBinding` names.
+
+    The MIGRATED entry point: one object carries the document, its address and
+    its provenance, verified together, so a caller can no longer hand
+    ``document_scope`` an object and an unrelated map that drift apart.  Object
+    identity is the binding's own invariant (it refuses a preparation that does
+    not describe its document), so entering it cannot mislabel a foreign
+    object's reads."""
+    with document_scope(binding.document_path, obj=binding.document,
+                        provenance=binding.provenance):
+        yield
+
+
+@contextmanager
 def document_scope(path: tuple, obj: Any = None, provenance: dict | None = None):
     """U2.2a: declare the DOCUMENT the enclosed parse reads.
+
+    LEGACY-DEBT ENTRY (U2-R1): accepts a loose ``obj`` + ``provenance`` pair.
+    Migrated call sites use :func:`bound_document`, which verifies the two
+    belong together; this overload survives only for unmigrated readers and is
+    pinned by ``test_config_paths`` so it cannot grow.  Deletion unit: U2-R7,
+    once every reader carries a binding.
 
     ``path`` is where that document lives in the enclosing one (``()`` for the
     parse's own root; ("_text_encoder_configs", "text_encoder") for a
@@ -1040,10 +1284,16 @@ def document_scope(path: tuple, obj: Any = None, provenance: dict | None = None)
         (*parent_path, *path),
         obj if obj is not None else (parent_obj if not path else None)))
     ctoken = current_container.set(((), None))
-    # A new document brings its OWN provenance: the enclosing map addresses the
-    # document being left, and a path means something different in each.
-    ptoken = (current_provenance.set(provenance)
-              if provenance is not None else None)
+    # U2.2a vet: a genuinely NEW document ALWAYS installs its own map — an
+    # explicitly empty one when its provenance was never established.  Letting
+    # it inherit silently makes the enclosing document's map answer questions
+    # about a different document, where the same path means something else:
+    # ``same`` proven checkpoint-declared in the outer file would certify a
+    # nested ``same`` nobody examined.  Inheritance is legal only when
+    # RE-ENTERING the same object (naming the document you are already in).
+    _reentering = obj is not None and obj is parent_obj
+    ptoken = (None if (provenance is None and _reentering)
+              else current_provenance.set(provenance or {}))
     try:
         yield
     finally:
@@ -1204,11 +1454,13 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
 
 __all__ = [
     "ConfigAccessEvent", "ConfigAccessLedger", "ConfigOccurrence",
+    "ConsumedConfigDecision",
     "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
     "ProjectionObligation", "ProjectionTarget",
     "config_container", "container_scoped", "current_container",
-    "document_scope", "current_document", "present_spelling",
-    "current_provenance", "resolve_priority",
+    "document_scope", "bound_document", "current_document",
+    "present_spelling",
+    "current_provenance", "resolve_priority", "provenance_of",
     "CHECKPOINT_DECLARED", "CLASS_DEFAULT", "CLASS_NORMALIZED_ALIAS",
     "LOADER_METADATA", "PROVENANCE_KINDS",
     "current_owner", "resolve",

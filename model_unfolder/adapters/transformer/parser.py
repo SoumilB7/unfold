@@ -996,6 +996,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # multi_query_attention: true AND multi_query_group_num: 2 (a 2-group GQA).
     # Only when NO explicit group count is declared does the flag default the
     # KV count to 1 (Falcon-7B / GPT-BigCode true MQA).
+    # U6 owns head-sharing SEMANTICS and the evidence-strength migration; U2
+    # keeps this behaviour-preserving precedence.
     if has_multi_query_flag and not get("num_key_value_heads"):
         num_kv_heads = 1
     # Hybrid linear-recurrent token mixers (for example a gated delta network)
@@ -1206,6 +1208,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact("decoder.attention", "mask", "causal",
                    "config_declared", _decoderness_src)
     elif layer_types or sliding_window:
+        # U8 owns per-layer mask/schedule SEMANTICS (including deriving the fact's
+        # status from the deciding read's origin).  U2 keeps the existing
+        # behaviour-preserving fact and does not arbitrate the schedule.
         _note_fact("decoder.attention", "mask", "windowed schedule",
                    "config_declared", "layer_types/sliding_window")
     else:
