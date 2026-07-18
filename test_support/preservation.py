@@ -282,8 +282,8 @@ def verify_against_expected(corpus_dir, manifest_path, *, limit=None) -> list[st
     expected = manifest["witnesses"]
     findings: list[str] = []
     inputs = {p.stem: p for p in sorted(corpus_dir.glob("*.json"))}
-    if manifest.get("witness_count") != 25 or len(expected) != 25:
-        findings.append(f"manifest witness_count != 25: {manifest.get('witness_count')}")
+    if manifest.get("witness_count") != 26 or len(expected) != 26:
+        findings.append(f"manifest witness_count != 26: {manifest.get('witness_count')}")
     for extra in sorted(set(inputs) - set(expected)):
         findings.append(f"unexpected extra witness input: {extra}")
     regenerated = 0

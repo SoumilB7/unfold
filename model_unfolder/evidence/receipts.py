@@ -356,8 +356,7 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
             "receipted_targets": sorted(receipted_targets)}
 
 
-def fabrication_findings(receipts, facts, claimed_targets,
-                         debt_keys) -> list[str]:
+def fabrication_findings(receipts, facts, claimed_targets) -> list[str]:
     """Reverse-fabrication, R5-vet strengthened.
 
     A registered LEAF NAME is not evidence — ``root.ghost.projector_out_
@@ -377,7 +376,11 @@ def fabrication_findings(receipts, facts, claimed_targets,
     facts = facts or {}
     for receipt in receipts:
         target = (receipt.owner, receipt.fact_key)
-        if receipt.fact_id not in facts                 and target not in claimed_targets and target not in debt_keys:
+        # Soumil's final vet: pending config_read/classification DEBT can
+        # NEVER authorize a receipt — a pending INPUT classification is not
+        # permission to draw an architectural OUTPUT.  A receipt cites an
+        # actual typed fact or an exact migration-claim target; nothing else.
+        if receipt.fact_id not in facts and target not in claimed_targets:
             findings.append(
                 f"receipt for {receipt.fact_id} on surface {receipt.surface!r} "
                 "references no LEDGERED fact, migration-claim target, or typed "

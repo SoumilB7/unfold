@@ -160,9 +160,9 @@ def _manifest_doc():
 
 
 @pytest.mark.parametrize("mutate,expect", [
-    ("drop_one", "witness_count != 25"),
+    ("drop_one", "witness_count != 26"),
     ("drop_first_input", "corpus input MISSING"),
-    ("add_extra", "witness_count != 25"),
+    ("add_extra", "witness_count != 26"),
     ("mutate_input_hash", "corpus input hash MISMATCH"),
     ("none_hash", "expected hash is None"),
     ("mutate_view", "view"),

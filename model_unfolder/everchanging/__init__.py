@@ -81,12 +81,26 @@ def load_ignored_fields() -> dict[str, list[str]]:
     }
 
 
-def load_ledger_ignores() -> dict[str, list[str]]:
-    """U2-R7: the ledger-side scoped-ignore vocabulary
-    (``evidence/ledger_ignores.yaml`` — address keys; the transformer
-    ``ignored_fields`` keys/suffixes ride the same rail at the consumer)."""
+def load_ledger_ignores() -> dict:
+    """The ledger-side scoped-ignore vocabulary (evidence/ledger_ignores.yaml).
+
+    Soumil's final vet (2026-07-19): ignores are EXACT SCOPED RULES — each
+    rule row is ``"<owner pattern> | <exact path> | <reason>"`` — plus the
+    address-key list, whose entries match only a top-level read of the key
+    itself.  The transformer ``ignored_fields`` diagnostic vocabulary no
+    longer feeds the ledger: quieting an unread-fields REPORT and classifying
+    a READ as non-architectural are different powers, and the global feed is
+    how an architectural field (is_encoder_decoder) got recorded as plumbing."""
     data = load("evidence", "ledger_ignores")
-    return {"address_keys": data.get("address_keys") or []}
+    rules = []
+    for row in data.get("rules") or []:
+        parts = [p.strip() for p in str(row).split("|", 2)]
+        if len(parts) != 3 or not all(parts):
+            raise ValueError(
+                f"ledger_ignores rule must be '<owner> | <path> | <reason>', "
+                f"got {row!r}")
+        rules.append(tuple(parts))
+    return {"address_keys": data.get("address_keys") or [], "rules": rules}
 
 
 def load_transformer_typing() -> dict[str, list[str]]:

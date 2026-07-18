@@ -138,6 +138,15 @@ def component_prefix_owners(root_owner: str = "root") -> dict[str, str]:
         "_text_encoder_configs.text_encoder_2": "root.text_encoder_2",
         "_text_encoder_configs.text_encoder_3": "root.text_encoder_3",
     }
+    # Composite MAIN slots (composite_slots.yaml): the bare slot holding the
+    # PRIMARY generative stack (MusicGen's ``decoder``) is parsed AS the model
+    # itself, so its subtree belongs to the parse root — without this mapping
+    # ``decoder.*`` paths have no owner and NOTHING may clear them (the
+    # MusicGen unread-coverage wall).  Declared syntax, never model identity.
+    from ...everchanging import load_composite_slots
+    for slot, role in (load_composite_slots().get("slots") or {}).items():
+        if role == "main":
+            owners.setdefault(slot, root_owner)
     try:
         from .special_parts.modalities.registry import MODALITY_REGISTRY
     except ImportError:  # isolated helper context / import cycle — statics hold

@@ -226,26 +226,35 @@ _ledger_ignore_cache: dict | None = None
 def _ledger_ignores() -> dict:
     global _ledger_ignore_cache
     if _ledger_ignore_cache is None:
-        from ..everchanging import load_ignored_fields, load_ledger_ignores
-        declared = load_ignored_fields()
+        from ..everchanging import load_ledger_ignores
+        vocab = load_ledger_ignores()
         _ledger_ignore_cache = {
-            "address": frozenset(load_ledger_ignores()["address_keys"]),
-            "keys": frozenset(declared["keys"]),
-            "suffixes": tuple(declared["suffixes"]),
+            "address": frozenset(vocab["address_keys"]),
+            # {(owner_pattern, exact_path): reason}
+            "rules": {(o, p): r for o, p, r in vocab["rules"]},
         }
     return _ledger_ignore_cache
 
 
-def _scoped_ignore_reason(canonical: str) -> str | None:
-    """The standing reason when ``canonical`` is declared non-architectural —
-    None when it is not in the vocabulary (the read stays a real access)."""
+def _scoped_ignore_rule(owner: str, path: str, canonical: str) -> str | None:
+    """The standing reason when an EXACT scoped rule classifies this read —
+    None otherwise (the read stays a real access).
+
+    Soumil's final vet: never by bare leaf.  An address key matches only a
+    TOP-LEVEL read of the key itself (path == canonical == key; a nested
+    ``foo.model_type`` never matches).  A rule matches on its owner pattern
+    plus the exact occurrence path — classifying a field for one reader and
+    owner proves nothing about another."""
     vocab = _ledger_ignores()
-    if canonical in vocab["address"]:
+    if path == canonical and canonical in vocab["address"]:
         return "identity/address read — locates source or labels, not structure"
-    if canonical in vocab["keys"] or any(
-            canonical.endswith(suffix) for suffix in vocab["suffixes"]):
-        return ("declared non-architectural (everchanging/transformer/"
-                "ignored_fields.yaml) — display/plumbing, not structure")
+    for (rule_owner, rule_path), rule_reason in vocab["rules"].items():
+        if rule_path != path:
+            continue
+        from .registry import owner_matches_pattern
+        if owner == rule_owner or owner_matches_pattern(owner, rule_owner):
+            return (f"scoped ignore rule ({rule_owner} | {rule_path}) — "
+                    f"{rule_reason}")
     return None
 
 
@@ -1422,16 +1431,22 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
     # non-architectural field is a lawful scoped ignore, not
     # accessed-but-unconsumed debt (it located source, labelled a card, or
     # touched declared display/plumbing).  Vocabulary: everchanging YAML.
-    if intent == "inspected":
-        _ignore_reason = _scoped_ignore_reason(canonical)
-        if _ignore_reason is not None:
-            intent = "ignored"
-            reason = reason or _ignore_reason
     # COR-4 (§9, Law B): the EXACT dotted config path — explicit from the
     # resolver, or joined from the ambient container scope.  The owner:leaf
     # label is RETIRED.
     _path = config_path or ".".join(
         (*_container_prefix_for(source_obj_id), alias or canonical))
+    # Soumil's final vet (2026-07-19): a scoped ignore is an EXACT rule —
+    # owner pattern + exact occurrence path + intent + standing reason —
+    # matched against the path computed ABOVE, never a bare canonical key.
+    # A global by-leaf vocabulary classified an architectural field
+    # (is_encoder_decoder) as plumbing without proving the classification
+    # for the particular reader and owner; that rail is deleted.
+    if intent == "inspected":
+        _ignore_reason = _scoped_ignore_rule(owner, _path, canonical)
+        if _ignore_reason is not None:
+            intent = "ignored"
+            reason = reason or _ignore_reason
     # U2.2a vet, hole 1: a path may NOT certify itself.  Passing an explicit
     # string used to set path_exact by fiat, so any producer could author a
     # dotted path that addresses nothing — the corpus happened to hold none, but

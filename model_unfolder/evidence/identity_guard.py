@@ -659,13 +659,29 @@ def _enclosing_function_decorators(node: ast.AST,
     return set()
 
 
+SCRUBBED_IDENTITY = "__scrubbed__"
+
+
 def scrub_semantic_identity(value: Any) -> Any:
-    """Recursively remove names that may address code but cannot prove facts."""
+    """Recursively ANONYMIZE names that may address code but cannot prove facts.
+
+    U2-R9 (witness 26): the values are replaced, never the keys deleted.  Name
+    CONTENT stays fully blinded — the anonymous token matches no vocabulary,
+    no class registry, no family table, so any content-derived structure still
+    drifts and blocks.  Key PRESENCE survives because a composite slot is
+    declared by the child carrying its own ``model_type`` (presence is the
+    declared syntax the slot doctrine gates on — "evidence, not the name
+    alone"); deleting the key erased the DECLARATION itself and made the
+    first transformer-composite witness (MusicGen) lose its slots for a
+    reason that has nothing to do with name-derived structure."""
     if isinstance(value, dict):
         return {
-            key: scrub_semantic_identity(item)
+            key: (SCRUBBED_IDENTITY if isinstance(item, str)
+                  else [SCRUBBED_IDENTITY] if isinstance(item, list)
+                  else SCRUBBED_IDENTITY)
+            if str(key) in IDENTITY_CONFIG_KEYS
+            else scrub_semantic_identity(item)
             for key, item in value.items()
-            if str(key) not in IDENTITY_CONFIG_KEYS
         }
     if isinstance(value, list):
         return [scrub_semantic_identity(item) for item in value]
@@ -691,8 +707,14 @@ def name_blind_diff(target: Any, *, context=None) -> NameBlindResult:
     if adapter is None:
         raise ValueError("no adapter recognized the original config")
 
-    original_ir = adapter.parse(cfg, context=context)
-    scrubbed_ir = adapter.parse(scrub_semantic_identity(cfg), context=context)
+    from .context import active_parse_context
+    _apc_token = active_parse_context.set(context)
+    try:
+        original_ir = adapter.parse(cfg, context=context)
+        scrubbed_ir = adapter.parse(scrub_semantic_identity(cfg),
+                                    context=context)
+    finally:
+        active_parse_context.reset(_apc_token)
     original = _normalized_structure(original_ir.to_dict())
     scrubbed = _normalized_structure(scrubbed_ir.to_dict())
     return NameBlindResult(original == scrubbed, original, scrubbed)
@@ -716,7 +738,23 @@ def _normalized_structure(value: dict[str, Any]) -> dict[str, Any]:
         for key in ("config_audit", "config_consumed", "code_evidence"):
             extras.pop(key, None)
     _drop_display_class(value)
+    _drop_identity_labels(value.get("extras"))
     return value
+
+
+def _drop_identity_labels(value: Any) -> None:
+    """Nested ``model_type``/``architecture(s)`` fields inside extras are
+    identity-as-LABEL (the conditioning tower's stage cards echo the slot's
+    declared type) — display/address provenance, same category as
+    ``detail.class``, never an architectural fact."""
+    if isinstance(value, dict):
+        for key in ("model_type", "architecture", "architectures"):
+            value.pop(key, None)
+        for item in value.values():
+            _drop_identity_labels(item)
+    elif isinstance(value, list):
+        for item in value:
+            _drop_identity_labels(item)
 
 
 def _drop_display_class(value: Any) -> None:

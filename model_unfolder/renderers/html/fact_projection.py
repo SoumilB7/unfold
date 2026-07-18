@@ -47,6 +47,23 @@ FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
 LAYER_DRAWN = frozenset({"norm_kind", "norm_placement"})
 MODEL_DRAWN = frozenset({"tie_word_embeddings"})
 
+# Soumil's final vet (round 2): the drawn structural inventory is
+# OWNER-QUALIFIED — each drawn leaf is claimed by the owner whose serializer
+# draws it, so one owner's unledgered-debt row can never authorize a SIBLING
+# owner drawing the same leaf name.  The leaf-name sets above remain the
+# per-surface display/compat views; every GATE joins on these pairs.
+DRAWN_PAIRS = frozenset(
+    [("decoder.attention", leaf) for leaf in ATTENTION_DRAWN
+     if leaf != "attention_kind"]
+    # attention_kind is the DIFFUSION per-layer joint-attention tag — its
+    # ledger owner is layers[i].attention (REGISTRY owner_patterns), never
+    # the decoder-level attention owner.
+    + [("layers[i].attention", "attention_kind")]
+    + [("decoder.ffn", leaf) for leaf in FFN_DRAWN]
+    + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]
+    + [("model", leaf) for leaf in MODEL_DRAWN]
+)
+
 
 def family_segment(key: str) -> str:
     """The owner family of a ledger key: its second-to-last dotted segment."""
@@ -86,7 +103,8 @@ def layer_and_model_facts(ir) -> frozenset:
 
 __all__ = [
     "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
-    "ATTENTION_DRAWN", "FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN",
+    "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "LAYER_DRAWN",
+    "MODEL_DRAWN",
     "family_segment", "fact_provenance", "projected_keys",
     "attention_facts", "ffn_facts", "layer_and_model_facts",
 ]

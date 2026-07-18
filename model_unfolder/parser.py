@@ -96,7 +96,12 @@ def config_to_ir(
             _config_access.owner_scope("root"), \
             _config_access.bound_document(_root_binding), \
             _capture_facts(parse_context.facts):
-        ir = adapter.parse(cfg, context=parse_context)
+        from .evidence.context import active_parse_context
+        _apc_token = active_parse_context.set(parse_context)
+        try:
+            ir = adapter.parse(cfg, context=parse_context)
+        finally:
+            active_parse_context.reset(_apc_token)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}
     component_architectures = getattr(bundle, "component_architectures", {}) or {}
@@ -134,6 +139,15 @@ def config_to_ir(
         if getattr(_ev, "path_exact", True):   # COR-4: resolver/container-scoped
             _owner_paths.setdefault(_ev.component, set()).add(_ev.config_path)
             _owner_exact_leaves.setdefault(_ev.component, set()).add(leaf)
+            # U2-R9: a slot-document read keeps its DOCUMENT-RELATIVE path
+            # (the claim-join key), and its ADDRESS travels beside it — the
+            # coverage join resolves against the TOP-LEVEL document, so the
+            # composed absolute path clears the checkpoint entry it names
+            # (document_path + config_path, the documented contract).
+            _doc = getattr(_ev, "document_path", ()) or ()
+            if _doc:
+                _owner_paths[_ev.component].add(
+                    ".".join((*_doc, _ev.config_path)))
     unread = _config_debug.unparsed_fields(
         [cfg], recursive=True, owner_touched=_owner_touched,
         root_owner=_root_owner, owner_paths=_owner_paths,

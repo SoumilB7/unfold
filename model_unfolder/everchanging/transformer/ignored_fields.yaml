@@ -107,7 +107,9 @@ keys:
   - auto_map
   - id2label
   - label2id
-  - is_encoder_decoder
+  # is_encoder_decoder REMOVED (Soumil's final vet): it decides the drawn
+  # seq2seq half, mask causality, and cross-attn schedules — ARCHITECTURE.
+  # It is CONSUMED into decoder.attention.mask at its deciding reads.
   - problem_type
   - chunk_size_feed_forward
   - ep_size

@@ -224,3 +224,86 @@ def _installed_config_defaults(target: Any) -> dict | None:
 
 
 __all__ = ["ParseContext", "FactLedger", "FactRecord", "FACT_STATUSES"]
+
+
+# U2-R9: ONE slot-context builder (moved from the diffusor adapter —
+# the transformer composite conditioning slot needs the identical
+# derive-from-the-enclosing-resolution behavior; the name-blind law
+# depends on it: a sub-parse must never re-resolve source/identity
+# from its own, possibly scrubbed, sub-config).
+def slot_parse_context(root_context, slot: str, *,
+                       namespace: str | None = None):
+    """A ParseContext for one pipeline SLOT (text_encoder / text_encoder_2 / …),
+    derived from the root's ALREADY-RESOLVED bundle.  The sub-parse must not
+    re-resolve source from its own sub-config: the pipeline resolution already
+    qualified this component's files, and a fresh resolve from the sub-config
+    alone silently degrades whenever that sub-config loses its address (the
+    name-blind harness scrubs it; a minimal frozen config never had it).
+    None when the root carries no files for the slot — the caller then builds
+    its own context exactly as before."""
+    if root_context is None:
+        return None
+    from .models import SourceBundle
+    bundle = getattr(root_context, "source_bundle", None)
+    all_files = getattr(bundle, "component_files", {}) or {}
+    if not all_files.get(slot):
+        return None
+    # Graft the slot's whole QUALIFIED SUBTREE, re-rooted: the slot itself
+    # becomes "root" and inner delegations keep their relative paths
+    # (``text_encoder.text_config`` → ``text_config``), so a wrapper encoder's
+    # delegated stack (Mistral3 → Mistral) stays resolvable in the sub-parse.
+    prefix = slot + "."
+    def _reroot(mapping: dict) -> dict:
+        out = {}
+        for key, value in (mapping or {}).items():
+            if key == slot:
+                out["root"] = value
+            elif key.startswith(prefix):
+                out[key[len(prefix):]] = value
+        return out
+    component_files = {k: tuple(v) for k, v in _reroot(all_files).items()}
+    files: list[str] = []
+    for group in component_files.values():
+        files.extend(f for f in group if f not in files)
+    component_model_types = _reroot(getattr(bundle, "component_model_types", {}) or {})
+    component_architectures = _reroot(getattr(bundle, "component_architectures", {}) or {})
+    sub_bundle = SourceBundle(
+        source=bundle.source,
+        files=tuple(files),
+        model_type=component_model_types.get("root"),
+        architecture=component_architectures.get("root"),
+        component_files=component_files,
+        component_model_types=component_model_types,
+        component_architectures=component_architectures,
+    )
+    # U2: the slot context must carry the SAME pre-resolved declaration
+    # channels ParseContext.build gives a standalone parse (class defaults;
+    # decoder-ness), or embedded ≠ standalone (the parity net's law). They
+    # derive from the BUNDLE's own per-component records — resolved once at
+    # root resolution, so a scrubbed (name-blind) sub-config cannot change
+    # them, exactly like the pre-resolved source files.
+    from .decoderness import declared_decoderness
+    _slot_identity = {
+        "model_type": component_model_types.get("root"),
+        "architectures": ([component_architectures.get("root")]
+                          if component_architectures.get("root") else None),
+    }
+    return ParseContext(
+        source_bundle=sub_bundle, source=root_context.source,
+        # Ownership namespace: this slot's facts are owned under
+        # root.<slot> in the pipeline's global tree (composes for nesting),
+        # even though its SOURCE subtree is re-rooted for resolution above.
+        component_namespace=(namespace or (
+            f"{getattr(root_context, 'component_namespace', 'root')}.{slot}")),
+        class_defaults=_installed_config_defaults(_slot_identity),
+        declared_decoderness=declared_decoderness(_slot_identity),
+    )
+
+
+# The ambient parse context: set by orchestrators (config_to_ir, the
+# name-blind harness) so deeply-embedded slot walks can derive their
+# sub-contexts from the ENCLOSING resolution without threading a
+# parameter through every modality builder signature.
+from contextvars import ContextVar
+active_parse_context: ContextVar = ContextVar(
+    "model_unfolder_active_parse_context", default=None)

@@ -359,19 +359,6 @@ def test_ignore_is_a_scoped_conscious_classification():
     assert ledger.events[-1].reason.startswith("bespoke runtime knob")
 
 
-def test_declared_nonarchitectural_reads_are_vocabulary_ignores():
-    """U2-R7: an inspected read of a field the everchanging vocabulary
-    declares non-architectural (keys or suffixes) is a scoped ignore with the
-    standing reason — never accessed-but-unconsumed debt."""
-    with capture_events() as ledger:
-        resolve({"attention_dropout": 0.1}, "attention_dropout", [],
-                component="root")
-        resolve({"image_token_id": 7}, "image_token_id", [], component="root")
-    assert [e.intent for e in ledger.events] == ["ignored", "ignored"]
-    assert all("declared non-architectural" in (e.reason or "")
-               for e in ledger.events)
-
-
 def test_resolve_address_key_reads_stay_scoped_ignores():
     """The emit-layer address remap holds through the new resolver: inspecting
     torch_dtype (an address/serialization key) is a lawful scoped ignore, not

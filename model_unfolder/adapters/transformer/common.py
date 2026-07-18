@@ -79,7 +79,16 @@ def wrapper_path(root_cfg: Any, target: Any, _depth: int = 0) -> tuple:
     finds the address by walking, not by knowing a model."""
     if target is root_cfg or _depth > 3:
         return ()
-    for key in TEXT_WRAPPER_KEYS:
+    # Composite MAIN slots (MusicGen's bare ``decoder``) hide the LM exactly
+    # like a *_config wrapper does — same declared vocabulary
+    # (composite_slots.yaml), same identity walk, so the unwrapped stack's
+    # reads carry their real ``decoder.*`` addresses instead of bare leaves
+    # the audit can never join to the checkpoint's keys.
+    from ...everchanging import load_composite_slots
+    _main_slots = tuple(k for k, role in
+                        (load_composite_slots().get("slots") or {}).items()
+                        if role == "main")
+    for key in (*TEXT_WRAPPER_KEYS, *_main_slots):
         sub = (root_cfg.get(key) if isinstance(root_cfg, dict)
                else getattr(root_cfg, key, None))
         if sub is None:

@@ -48,7 +48,7 @@ def test_musicgen_cross_attention_is_construction_proven_and_additive():
         assert layer.attention.mask == "causal"
     cross = ir.layers[0].cross_attention
     assert cross.cross_attention is True and cross.mask == "full"
-    assert cross.cross_kv_source == "encoded prompt states (the t5 encoder tower)"
+    assert cross.cross_kv_source == "encoded prompt states (the conditioning encoder tower)"
     # The drawn cell has BOTH sublayers, in constructed order, and the side
     # states feed the CROSS block.
     ids = [b["id"] for b in ir.layers[0].blocks]

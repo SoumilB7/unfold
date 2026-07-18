@@ -130,14 +130,17 @@ def test_no_writer_condition_tracks_the_census():
 
 
 def test_fact_registered_condition_uses_the_real_registry():
-    live = _row(deletion_condition="fact_registered:projector_out_features")
+    # owner-bound (final vet): use an owner the definition COVERS
+    live = _row(owner="root.vision",
+                deletion_condition="fact_registered:projector_out_features")
     dead = _row(deletion_condition="fact_registered:no_such_fact_ever")
     assert deletion_condition_met(live, census_keys=_CENSUS)
     assert not deletion_condition_met(dead, census_keys=_CENSUS)
 
 
 def test_fact_routed_condition_requires_routes_not_mere_registration():
-    routed = _row(deletion_condition="fact_routed:projector_out_features")
+    routed = _row(owner="root.vision",
+                  deletion_condition="fact_routed:projector_out_features")
     assert deletion_condition_met(routed, census_keys=_CENSUS)
     # `activation` is registered but carries no ProjectionRoute — registration
     # alone must NOT satisfy a fact_routed condition.
@@ -150,7 +153,7 @@ def test_status_retired_condition_reads_allowed_statuses():
     kept = _row(deletion_condition=(
         "status_retired:projector_out_features:code_and_config"))
     assert not deletion_condition_met(kept, census_keys=_CENSUS)
-    gone = _row(deletion_condition=(
+    gone = _row(owner="root.vision", deletion_condition=(
         "status_retired:projector_out_features:legacy_convention"))
     assert deletion_condition_met(gone, census_keys=_CENSUS)
 
@@ -245,6 +248,7 @@ def test_unknown_policy_retired_condition_reads_the_registry():
     assert not deletion_condition_met(kept2, census_keys=_CENSUS)
     # A fact with a different (or no) unknown policy evaluates retired.
     done = _row(
+        owner="root.vision",
         deletion_condition="unknown_policy_retired:projector_out_features")
     assert deletion_condition_met(done, census_keys=_CENSUS)
 
@@ -266,36 +270,41 @@ def test_writer_gone_condition_is_per_writer_not_per_target():
         _row(deletion_condition="writer_gone:no-symbol-or-sink")
 
 
-def test_growth_gate_every_extras_write_needs_its_exact_row():
-    surface = frozenset({("extras", "attention"), ("extras", "moe"),
-                         ("extras", "moe.num_experts")})
-    missing = unrowed_extras_writes((_row(),), surface=surface)
-    assert missing == ["moe", "moe.num_experts"]
+def test_growth_gate_is_writer_exact_per_census_key():
+    """Final vet: coverage joins the census WRITER key — a row covers exactly
+    its own (module, symbol, sink, target)."""
+    keys = {(_WRITER_MODULE, "parse", "extras", "attention"),
+            (_WRITER_MODULE, "parse", "extras", "moe"),
+            (_WRITER_MODULE, "parse", "extras", "moe.num_experts")}
+    missing = unrowed_extras_writes((_row(),), census_keys=keys)
+    assert missing == [f"{_WRITER_MODULE}::parse -> extras:moe",
+                       f"{_WRITER_MODULE}::parse -> extras:moe.num_experts"]
 
 
 def test_growth_gate_top_level_row_excuses_nothing_below_it():
     """§R6: family-wide excuses block U2 — a row for ``moe`` does NOT cover
-    ``moe.num_experts``."""
-    surface = frozenset({("extras", "moe"), ("extras", "moe.num_experts")})
+    ``moe.num_experts``, and a row for one AUTHOR does not cover a second."""
+    keys = {(_WRITER_MODULE, "parse", "extras", "moe"),
+            (_WRITER_MODULE, "parse", "extras", "moe.num_experts"),
+            ("model_unfolder/other.py", "ghost", "extras", "moe")}
     top_only = _row(structural_target="moe",
                     deletion_condition="no_writer:extras:moe")
-    assert unrowed_extras_writes((top_only,), surface=surface) \
-        == ["moe.num_experts"]
+    assert unrowed_extras_writes((top_only,), census_keys=keys) == [
+        f"{_WRITER_MODULE}::parse -> extras:moe.num_experts",
+        "model_unfolder/other.py::ghost -> extras:moe"]
 
 
 def test_growth_gate_ignores_infra_extras():
-    surface = frozenset({("extras", "config_audit"),
-                         ("extras", "fact_provenance.some.leaf")})
-    assert unrowed_extras_writes((), surface=surface) == []
+    keys = {(_WRITER_MODULE, "parse", "extras", "config_audit"),
+            (_WRITER_MODULE, "parse", "extras", "fact_provenance.some.leaf")}
+    assert unrowed_extras_writes((), census_keys=keys) == []
 
 
 def test_debt_problems_aggregates_every_gate_and_is_empty_when_lawful():
-    assert debt_problems((_row(),), census_keys=_CENSUS,
-                         surface=frozenset({("extras", "attention")})) == []
+    assert debt_problems((_row(),), census_keys=_CENSUS) == []
     report = debt_problems(
         (_row(), _row(reason="dupe")),
-        census_keys=set(),
-        surface=frozenset({("extras", "attention"), ("extras", "moe")}))
+        census_keys={(_WRITER_MODULE, "parse", "extras", "moe")})
     assert any("duplicate" in p for p in report)
     assert any("dead writer" in p for p in report)
     assert any("deletion condition already met" in p for p in report)

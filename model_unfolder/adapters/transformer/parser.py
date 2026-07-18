@@ -816,7 +816,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
             + " — only the main transformer stack is drawn (audio plan U-E).")
     # A FLAT seq2seq config (SpeechT5: encoder_layers + decoder_layers, no
     # composite slots) is drawn as ONE stack today — say which half.
-    if (bool(_g(cfg, "is_encoder_decoder"))
+    # Soumil's final vet: is_encoder_decoder is ARCHITECTURE (drawn seq2seq
+    # half, mask causality, cross-attn schedule) — consumed ONCE here into
+    # the mask fact; the two later deciding sites reuse this value.
+    _ied_res = _config_access.resolve(cfg, "is_encoder_decoder", ())
+    _is_enc_dec = bool(
+        None if _ied_res.ambiguous else _ied_res.consume_decision(
+            mechanism="decoderness", fact_owner="decoder.attention",
+            fact_key="mask",
+            reader="adapters.transformer.parser.parse").value)
+    if (_is_enc_dec
             and _composite_encoder_model_type(cfg) is None
             and _g(cfg, "encoder_layers") and _g(cfg, "decoder_layers")):
         warnings.append(
@@ -1298,7 +1307,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # a causal-only verdict there is the other half's machinery (Whisper),
     # never this stack's fact.
     _code_causality = _code_attention_causality(text_cfg, context)
-    if (_code_causality == "causal" and bool(_g(cfg, "is_encoder_decoder"))
+    if (_code_causality == "causal" and _is_enc_dec
             and not _decoderness_src):
         _code_causality = None
     if forced_bidirectional:
@@ -1427,7 +1436,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declared mllama schedule, whose cross layers REPLACE self-attention.
     cross_attention_additive = False
     if (not cross_attn_layer_set and num_layers
-            and bool(_g(cfg, "is_encoder_decoder")) and composite_encoder_type):
+            and _is_enc_dec and composite_encoder_type):
         from ...evidence.patterns import decoder_cross_attention_all_layers_from_files
         _bundle = getattr(context, "source_bundle", None)
         _comp_files = getattr(_bundle, "component_files", {}) or {}
@@ -1452,7 +1461,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # Declared decoder-scope flags (Parler/MusicGen lineage): read them so the
     # ownership audit sees them; each is folded only where it is a proven fact.
-    _scale_embedding = _g(text_cfg, "scale_embedding")     # embeddings × sqrt(d)
+    # scale_embedding AUTHORS a drawn embed-card fact ("scaled × sqrt(d)") —
+    # a present declaration is consumed into the embedding-scale fact.
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        _se_res = _config_access.resolve(text_cfg, "scale_embedding", ())
+        _scale_embedding = (
+            None if _se_res.ambiguous or _se_res.state != "present"
+            else _se_res.consume_decision(
+                mechanism="embedding_scale", fact_owner="model",
+                fact_key="embedding_scale",
+                reader="adapters.transformer.parser.parse").value)
     _declared_rope = _g(text_cfg, "rope_embeddings")       # declared positional flag
     _cross_kv_heads_declared = _g(text_cfg, "num_cross_attention_key_value_heads")
     if _declared_rope and _code_position_evidence.status != "proven":
@@ -1571,8 +1589,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             cross_attention=is_cross_attn_layer and not cross_attention_additive,
             cross_kv_source=(("projected image states"
                               if has_vision_side_state and has_cross_attention_side_state
-                              else f"encoded prompt states (the {composite_encoder_type} "
-                                   "encoder tower)"
+                              else "encoded prompt states (the "
+                                   "conditioning encoder tower)"
                               if has_cross_attention_side_state else
                               "external encoder states (encoder not in this config)")
                              if is_cross_attn_layer and not cross_attention_additive
@@ -1688,8 +1706,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 rope=False,
                 bias=use_attention_bias,
                 cross_attention=True,
-                cross_kv_source=(f"encoded prompt states (the "
-                                 f"{composite_encoder_type} encoder tower)"),
+                # U2-R9: structural prose, identity-free — the slot's declared
+                # type is a display LABEL on the tower card, never in the
+                # wiring description (name-blind law).
+                cross_kv_source=("encoded prompt states (the "
+                                 "conditioning encoder tower)"),
             )
 
         extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
@@ -1809,8 +1830,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # comes from construction+forward evidence — only-when-present so every
     # single-stream decoder stays byte-stable.
     codebooks = None
-    _num_codebooks = _g(text_cfg, "num_codebooks")
+    # U2-R9: name the (possibly slot-nested) text config for these reads —
+    # a MusicGen decoder document's codebook fields must ledger located.
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        _cb_res = _config_access.resolve(text_cfg, "num_codebooks", ())
+        _num_codebooks = (None if _cb_res.ambiguous else
+                          (_cb_res.value if _cb_res.state == "present"
+                           else None))
     if isinstance(_num_codebooks, int) and _num_codebooks > 1:
+        # These declarations AUTHOR the drawn K-codebook structure — consumed
+        # (typed decision), matching the register's extras:codebooks row.
+        with _config_access.config_container(_text_path, obj=text_cfg):
+            _cb_res.consume_decision(
+                mechanism="codebooks", fact_owner="decoder",
+                fact_key="num_codebooks",
+                reader="adapters.transformer.parser.parse")
+            _ac_res = _config_access.resolve(text_cfg, "audio_channels", ())
+            _located_audio_channels = (
+                None if _ac_res.ambiguous or _ac_res.state != "present"
+                else _ac_res.consume_decision(
+                    mechanism="codebooks", fact_owner="decoder",
+                    fact_key="audio_channels",
+                    reader="adapters.transformer.parser.parse").value)
         from ...evidence.patterns import decoder_codebook_streams_from_files
         _cb_bundle = getattr(context, "source_bundle", None)
         _cb_comp = getattr(_cb_bundle, "component_files", {}) or {}
@@ -1820,7 +1861,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         codebooks = {
             "num": _num_codebooks,
             "vocab_per_book": vocab_size,
-            "audio_channels": _g(text_cfg, "audio_channels"),
+            "audio_channels": _located_audio_channels,
             **streams,
         }
     # U2-R7: ONE consumption for the occurrence — the LM-head card here and the
@@ -2654,8 +2695,10 @@ def _cross_attention_states_side_block(source_kind: str = "vision",
             "offset_y": 0,
             "label": ["Encoded prompt", "states"],
             "title": "Encoded prompt states",
+            # U2-R9: identity-free structural prose (name-blind law) — the
+            # slot's declared type is a display label on the encoder panel.
             "description": (
-                f"encoder_outputs: the {encoder_type or 'conditioning'} encoder's "
+                "encoder_outputs: the conditioning encoder's "
                 "output states (see the prompt-encoder panel); this tensor "
                 "supplies K/V to the decoder's cross-attention layers."
             ),

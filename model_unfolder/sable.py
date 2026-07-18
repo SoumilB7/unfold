@@ -406,7 +406,6 @@ def sable(model_or_id, *, token=None, source: str = "local",
         join_obligation_receipts, fabrication_findings, RECEIPTED_SCOPES,
     )
     from .evidence.registry import MIGRATED_SCOPES, REGISTRY
-    from .evidence.structural_debt import fabrication_debt_keys
     _receipts = [r for event in render_log
                  for r in getattr(event, "receipts", ()) or ()]
     _obligations = (((ir.get("extras") or {}).get("config_access") or {})
@@ -420,11 +419,10 @@ def sable(model_or_id, *, token=None, source: str = "local",
         context_token=render_context.context_token)
     _claimed_targets = {(b.target.owner, b.target.fact_key)
                         for c in MIGRATED_SCOPES for b in c.bindings}
-    # U2-R6: (owner, canonical leaf) from the ONE StructuralDebt register's
-    # config_read rows — byte-parity with the two former PENDING_* joins.
-    _debt_keys = fabrication_debt_keys()
+    # Soumil's final vet: the debt-key lane is DELETED — pending config
+    # debt never authorizes a receipt.
     _receipt_fabrication_findings = fabrication_findings(
-        _receipts, _fact_rows, _claimed_targets, _debt_keys)
+        _receipts, _fact_rows, _claimed_targets)
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.

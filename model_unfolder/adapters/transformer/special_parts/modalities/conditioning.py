@@ -49,13 +49,45 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
     if sub_cfg is None:
         return None
 
-    hidden = first(sub_cfg, "hidden_size", "d_model")
-    num_layers = first(sub_cfg, "num_hidden_layers", "num_layers", "encoder_layers")
-    num_heads = first(sub_cfg, "num_attention_heads", "num_heads",
-                      "encoder_attention_heads")
-    intermediate_size = first(sub_cfg, "intermediate_size", "d_ff",
-                              "encoder_ffn_dim", "ffn_dim")
-    vocab = first(sub_cfg, "vocab_size")
+    # U2-R9 (final vet follow-through): the conditioning slot is its own
+    # DOCUMENT with an address — prepared ONCE, entered through its binding
+    # (like the diffusor text-encoder slots, R7).  HOST reads stay hoisted in
+    # the root document; every slot read below is OF the prepared document,
+    # so one owner never reads against two documents.
+    from model_unfolder.evidence import config_access as _config_access
+    from model_unfolder.evidence.document import (
+        DocumentBinding, LOADER_STAMPS, prepare_document,
+    )
+    # Host-document reads carry the HOST's owner (root) — the caller may run
+    # this walk under the conditioning owner, and one owner never reads
+    # against two documents (document_roots law).
+    with _config_access.owner_scope("root"):
+        _cross_states = bool(first(cfg, "is_encoder_decoder"))
+        _host_trace = present_paths(cfg, sub_cfg,
+                                    [("is_encoder_decoder", cfg)])
+        _slot_key = next(
+            (key for key in conditioning_slot_keys()
+             if declared_component(first(cfg, key)) == sub_cfg), None)
+    _prepared = prepare_document(sub_cfg, loader_keys=LOADER_STAMPS,
+                                 merge=False)
+    slot_doc = _prepared.document
+    _binding = DocumentBinding(
+        "root.conditioning", (_slot_key,) if _slot_key else (), _prepared)
+    _slot_scope = _config_access.bound_document(_binding)
+
+    with _config_access.owner_scope("root.conditioning"), _slot_scope:
+        hidden = first(slot_doc, "hidden_size", "d_model")
+        num_layers = first(slot_doc, "num_hidden_layers", "num_layers",
+                           "encoder_layers")
+        num_heads = first(slot_doc, "num_attention_heads", "num_heads",
+                          "encoder_attention_heads")
+        intermediate_size = first(slot_doc, "intermediate_size", "d_ff",
+                                  "encoder_ffn_dim", "ffn_dim")
+        vocab = first(slot_doc, "vocab_size")
+        _slot_trace = present_paths(cfg, slot_doc,
+                                    [("model_type", slot_doc)])
+        _slot_architecture = architecture(slot_doc)
+    sub_cfg = slot_doc
     model_type = str(sub_cfg.get("model_type"))
 
     # A width projection between encoder states and the decoder's
@@ -69,7 +101,7 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         Stage("input", "prompt_tokens", "input", "prompt_tokens",
               {"vocab_size": vocab}),
         Stage("encoder", "conditioning_encoder", "encode", "conditioning_encoder",
-              {"architecture": architecture(sub_cfg), "model_type": model_type,
+              {"architecture": _slot_architecture, "model_type": model_type,
                "hidden_size": hidden, "num_layers": num_layers,
                "num_attention_heads": num_heads,
                "intermediate_size": intermediate_size,
@@ -85,18 +117,15 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         # separately, in the parser).
         Stage("tokens", "encoder_states",
               "emit_cross_attention_states"
-              if first(cfg, "is_encoder_decoder") else "emit_encoder_states",
+              if _cross_states else "emit_encoder_states",
               "cross_attention_states"
-              if first(cfg, "is_encoder_decoder") else "encoder_states",
+              if _cross_states else "encoder_states",
               {"width": (text_hidden_size if needs_projection else hidden) or None}),
     ]
     path = assemble_path(
         "prompt_to_cross_attention_states",
         stages,
-        present_paths(cfg, sub_cfg, [
-            ("is_encoder_decoder", cfg),
-            ("model_type", sub_cfg),
-        ]),
+        [*_host_trace, *_slot_trace],
     )
 
     # The deep tower: the SAME universal round-trip the diffusion pipelines
@@ -105,7 +134,21 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
     # declared facts above (honest, shallower), never a fabricated tower.
     try:
         from model_unfolder.encoder_panel import normalize_encoder_config
-        spec = normalize_encoder_config(dict(sub_cfg)) or {}
+        # U2-R9: the tower's source/identity channels derive from the
+        # ENCLOSING parse's already-resolved bundle (the ONE slot-context
+        # builder) — a sub-config that lost its names (name-blind harness,
+        # minimal frozen config) must not degrade the tower's evidence.
+        from model_unfolder.evidence.context import (
+            active_parse_context, slot_parse_context,
+        )
+        _slot_ctx = (slot_parse_context(active_parse_context.get(),
+                                        _slot_key,
+                                        namespace="root.conditioning")
+                     if _slot_key else None)
+        with _config_access.owner_scope("root.conditioning"), \
+                _config_access.bound_document(_binding):
+            spec = normalize_encoder_config(
+                slot_doc, context=_slot_ctx, binding=_binding) or {}
     except Exception:
         spec = {}
     if spec.get("sub_model"):
@@ -113,9 +156,7 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         # component source (modeling_t5.py), never the wrapper's root classes —
         # the same qualify step the diffusion pipelines' encoder slots take.
         from model_unfolder.submodel import qualify_component
-        slot_key = next(
-            (key for key in conditioning_slot_keys()
-             if declared_component(first(cfg, key)) == sub_cfg), None)
+        slot_key = _slot_key
         if slot_key:
             qualify_component(spec["sub_model"], slot_key)
         encoder = path.get("encoder") or {}

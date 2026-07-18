@@ -424,7 +424,7 @@ def test_an_empty_registry_cannot_vacuously_green():
 def test_reverse_fabrication_catches_an_unregistered_receipt():
     ghost = _receipt(fact_id="root.vision.some_invented_fact",
                      fact_key="some_invented_fact")
-    findings = fabrication_findings([ghost], _FACT_ROWS, set(), set())
+    findings = fabrication_findings([ghost], _FACT_ROWS, set())
     assert any("nothing behind it" in f for f in findings)
 
 
@@ -435,12 +435,12 @@ def test_reverse_fabrication_requires_a_LEDGERED_fact_not_a_leaf_name():
     definition's owner patterns."""
     ghost = _receipt(owner="root.ghost",
                      fact_id="root.ghost.projector_out_features")
-    findings = fabrication_findings([ghost], _FACT_ROWS, set(), set())
+    findings = fabrication_findings([ghost], _FACT_ROWS, set())
     assert any("nothing behind it" in f for f in findings)
     ghost_facts = dict(_FACT_ROWS)
     ghost_facts["root.ghost.projector_out_features"] = {
         "value": 3584, "status": "code_and_config"}
-    findings = fabrication_findings([ghost], ghost_facts, set(), set())
+    findings = fabrication_findings([ghost], ghost_facts, set())
     assert any("outside" in f and "owner patterns" in f for f in findings)
 
 
@@ -448,12 +448,12 @@ def test_reverse_fabrication_validates_the_route_too():
     """A ledgered fact drawn OUTSIDE its registered routes is a fabrication of
     placement even though the fact is real."""
     off_route = _receipt(surface="html")
-    findings = fabrication_findings([off_route], _FACT_ROWS, set(), set())
+    findings = fabrication_findings([off_route], _FACT_ROWS, set())
     assert any("registered projection routes" in f for f in findings)
 
 
 def test_registered_receipt_is_not_fabrication():
-    findings = fabrication_findings([_receipt()], _FACT_ROWS, set(), set())
+    findings = fabrication_findings([_receipt()], _FACT_ROWS, set())
     assert findings == []
 
 

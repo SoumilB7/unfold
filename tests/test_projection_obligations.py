@@ -22,10 +22,13 @@ from __future__ import annotations
 from model_unfolder.evidence.registry import REGISTRY
 from model_unfolder.evidence.structural_debt import (
     STRUCTURAL_DEBT,
+    drawn_leaf_is_lawful,
     drawn_unledgered_names,
+    drawn_unledgered_pairs,
 )
 from model_unfolder.renderers.html.fact_projection import (
     ATTENTION_DRAWN,
+    DRAWN_PAIRS,
     FFN_DRAWN,
     LAYER_DRAWN,
     MODEL_DRAWN,
@@ -42,12 +45,32 @@ _DEBT_NAMES = drawn_unledgered_names()
 
 
 def test_every_drawn_leaf_is_registered_or_pinned_debt():
-    """Reverse-fabrication audit: no leaf is drawn without a fact behind it."""
-    fabricated = _ALL_DRAWN - set(REGISTRY) - _DEBT_NAMES
+    """Reverse-fabrication audit, OWNER-QUALIFIED (final vet round 2): every
+    drawn (owner, leaf) pair must be lawful FOR THAT OWNER — a registered
+    fact covering the owner, or an unledgered debt row carrying the owner.
+    A sibling owner's registration or debt authorizes nothing."""
+    fabricated = sorted((owner, leaf) for owner, leaf in DRAWN_PAIRS
+                        if not drawn_leaf_is_lawful(owner, leaf))
     assert not fabricated, (
-        f"drawn leaves with no registered fact and no pinned debt (fabrication): "
-        f"{sorted(fabricated)} — register the fact or add an exact drawn_leaf "
-        f"StructuralDebt row")
+        f"drawn (owner, leaf) pairs with no owner-covering fact and no "
+        f"owner-carrying debt row (fabrication): {fabricated}")
+
+
+def test_poison_sibling_owner_debt_cannot_authorize_a_drawing():
+    """Owner A holds unledgered debt for leaf X; owner B drawing X must FAIL.
+    (position_kind debt is carried by decoder.attention only.)"""
+    assert ("decoder.attention", "position_kind") in drawn_unledgered_pairs()
+    assert drawn_leaf_is_lawful("decoder.attention", "position_kind")
+    assert not drawn_leaf_is_lawful("decoder.ffn", "position_kind")
+    assert not drawn_leaf_is_lawful("model", "position_kind")
+
+
+def test_names_view_is_display_only_and_never_gates():
+    """drawn_unledgered_names is the leaf-collapsed DISPLAY view; the gate
+    joins pairs.  Pin the collapse relation so the display view cannot drift
+    from the authoritative pairs."""
+    assert drawn_unledgered_names() == frozenset(
+        n for _, n in drawn_unledgered_pairs())
 
 
 def test_every_registry_drawable_fact_is_actually_drawn():

@@ -17,7 +17,8 @@ Deletion conditions are a closed predicate DSL, never prose::
     unknown_policy_retired:<key>     unknown_policy != 'legacy_convention'
     no_writer:<sink>:<target>        NO census writer of this (sink, target)
     writer_gone:<mod>::<sym>:<sink>:<target>  this exact census key is gone
-    classified:<config_path>         the config-classification table has it
+    classified:<config_path>         the OWNER-EXACT classification table
+                                     contains (row.owner, path)
     symbol_deleted:<module>::<sym>   the named production symbol is gone
 
 Every verb evaluates against the live registry/census — a condition that is
@@ -566,6 +567,9 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.denoiser", "time_embedding_dim",
             "explicit-null timestep-embedding width declaration",
             "U11", "classified:time_embedding_dim"),
+    # is_encoder_decoder rows DELETED (Soumil's final vet): the field is
+    # ARCHITECTURE, consumed into decoder.attention.mask at its deciding
+    # reads — debt shrinks in the same commit as the consumption.
     # ---- U2-R7 dispositions: standing occurrences classified PENDING (one
     # ---- exact row per owner x path; readers stay visible pending debt) ---- #
     _config("the residual-tap topology annotation (post-LN tap on the layer "
@@ -573,23 +577,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "BLOOM residual-tap flag drawn only as a render layer annotation "
             "— same U7 topology family as the parallel_residual extras row",
             "U7", "fact_registered:residual_topology"),
-    _config("mask/decoderness routing: flat-seq2seq encoder-half banner + "
-            "causality-verdict scope + composite cross-attn schedule scope",
-            "root", "is_encoder_decoder",
-            "enc-dec-ness gates three mask-family decisions with no fact "
-            "carrying it", "U8", "fact_routed:mask"),
-    _config("mask/decoderness routing (text-encoder slot)",
-            "root.text_encoder", "is_encoder_decoder",
-            "enc-dec-ness gates mask-family decisions with no fact",
-            "U8", "fact_routed:mask"),
-    _config("mask/decoderness routing (second text-encoder slot)",
-            "root.text_encoder_2", "is_encoder_decoder",
-            "enc-dec-ness gates mask-family decisions with no fact",
-            "U8", "fact_routed:mask"),
-    _config("mask/decoderness routing (third text-encoder slot)",
-            "root.text_encoder_3", "is_encoder_decoder",
-            "enc-dec-ness gates mask-family decisions with no fact",
-            "U8", "fact_routed:mask"),
     # RoPE scaling-descriptor subkeys: feed only raw extras.rope + the
     # declared-tier chip; the rope_theta fact retires the whole family.
     _config("the rope card's scaling-factor line", "root",
@@ -773,6 +760,21 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "the winning spelling is consumed; a config declaring the rival "
             "too leaves it as an input-stage inspection",
             "U9", "fact_registered:vision_patch_geometry"),
+    # Final vet follow-through: the ROOT-level is_encoder_decoder is CONSUMED
+    # (decoder.attention.mask); the class-stamped copies inside sub-configs
+    # (transformers serializes is_encoder_decoder=False into every
+    # sub-config) are unread boilerplate awaiting CLASSIFICATION — exact
+    # per-owner pending rows, never a return to any global ignore.
+    _config("class-stamped decoderness boilerplate on the text sub-config",
+            "root", "text_config.is_encoder_decoder",
+            "class-serialized copy the parse never reads (the root-level "
+            "occurrence is the consumed decoderness read)",
+            "U8", "classified:text_config.is_encoder_decoder"),
+    _config("class-stamped decoderness boilerplate on the vision sub-config",
+            "root.vision", "vision_config.is_encoder_decoder",
+            "class-serialized copy the parse never reads (the root-level "
+            "occurrence is the consumed decoderness read)",
+            "U8", "classified:vision_config.is_encoder_decoder"),
 )
 
 
@@ -800,24 +802,47 @@ def pending_classification_paths(rows=None) -> frozenset:
                      if _is_classification(r))
 
 
-def fabrication_debt_keys(rows=None) -> set:
-    """(owner, canonical leaf) for every config_read row — the sable
-    fabrication-net debt join (leaf of the exact path)."""
+# fabrication_debt_keys DELETED (Soumil's final vet): config_read debt
+# rows are INPUT classifications and may never authorize a drawn output
+# receipt — the reverse-fabrication net accepts only typed facts and
+# exact migration-claim targets.
+def drawn_unledgered_pairs(rows=None) -> frozenset:
+    """(owner, leaf) pairs lawfully drawn WITHOUT a registered fact —
+    Soumil's final vet: drawn debt keeps its OWNER identity, so one owner's
+    unledgered leaf never excuses another owner drawing the same name.
+    Owners are normalized to the registry's pattern space (the parse-root
+    ``root.`` prefix stripped) — the JOIN key every drawn gate uses."""
+    from .registry import REGISTRY
     rows = STRUCTURAL_DEBT if rows is None else rows
-    return {(r.owner, r.source_occurrence.rsplit(".", 1)[-1]) for r in rows
-            if r.sink_kind == "config_read"}
+    return frozenset(
+        ((r.owner[5:] if r.owner.startswith("root.") else r.owner),
+         r.structural_target)
+        for r in rows
+        if r.sink_kind == "drawn_leaf"
+        and r.structural_target not in REGISTRY)
+
+
+def drawn_leaf_is_lawful(owner: str, leaf: str, rows=None) -> bool:
+    """THE reverse-fabrication join for one drawn (owner, leaf): lawful only
+    when a registered FactDefinition covers THIS owner, or an unledgered
+    drawn_leaf debt row carries THIS owner — a sibling owner's registration
+    or debt authorizes nothing (never a bare leaf-name join)."""
+    from .registry import REGISTRY, owner_matches_pattern
+    defn = REGISTRY.get(leaf)
+    if defn is not None and any(
+            owner == pattern or owner_matches_pattern(owner, pattern)
+            for pattern in defn.owner_patterns):
+        return True
+    return (owner, leaf) in drawn_unledgered_pairs(rows)
 
 
 def drawn_unledgered_names(rows=None) -> frozenset:
-    """Leaf names lawfully drawn WITHOUT a registered fact — drawn_leaf rows
-    whose fact is not (yet) in the REGISTRY.  A drawn leaf that is neither
-    registered nor here is fabrication (exclusive-or preserved: a registered
-    fact's convention row never re-excuses its leaf)."""
-    from .registry import REGISTRY
-    rows = STRUCTURAL_DEBT if rows is None else rows
-    return frozenset(r.structural_target for r in rows
-                     if r.sink_kind == "drawn_leaf"
-                     and r.structural_target not in REGISTRY)
+    """DISPLAY/COMPATIBILITY view only (leaf names, owners collapsed).
+    NEVER a gate input — every gate joins :func:`drawn_leaf_is_lawful` /
+    :func:`drawn_unledgered_pairs` (Soumil's final vet, round 2: the
+    name-collapsed join let one owner's debt authorize a sibling owner's
+    drawing of the same leaf name)."""
+    return frozenset(name for _, name in drawn_unledgered_pairs(rows))
 
 
 def debt_keys(rows: tuple[StructuralDebt, ...] | None = None) -> frozenset:
@@ -873,10 +898,12 @@ def _fact_definition(fact_key: str):
     return fact_definition(fact_key)
 
 
-def _classification_table() -> frozenset[str]:
-    """The typed config-classification table (lands with U11); absent → empty,
-    so every ``classified:`` condition mechanically evaluates False until it
-    exists."""
+def _classification_table() -> frozenset:
+    """The typed config-classification table (lands with U11) as OWNER-EXACT
+    ``(owner, exact path)`` pairs; absent → empty, so every ``classified:``
+    condition mechanically evaluates False until it exists.  U11 must publish
+    the table in that pair shape — a bare-path table cannot satisfy any row
+    (Soumil's final vet, round 2: no deletion condition is bare-path)."""
     try:
         from . import registry
         table = getattr(registry, "CONFIG_CLASSIFICATION", None)
@@ -887,21 +914,39 @@ def _classification_table() -> frozenset[str]:
     return frozenset(table)
 
 
+def _defn_covers_owner(defn, owner: str) -> bool:
+    """Soumil's final vet: a fact-side condition is bound to the ROW'S OWNER —
+    a fact registered for a different owner satisfies nothing here."""
+    from .registry import owner_matches_pattern
+    return any(owner == pattern or owner_matches_pattern(owner, pattern)
+               for pattern in defn.owner_patterns)
+
+
 def deletion_condition_met(row: StructuralDebt, *,
                            census_keys=None) -> bool:
-    """Evaluate the row's deletion predicate against the live world."""
+    """Evaluate the row's deletion predicate against the live world.
+
+    The fact-side verbs (fact_registered / fact_routed / status_retired /
+    unknown_policy_retired) additionally require the registered definition's
+    owner_patterns to COVER this row's owner — registration under a foreign
+    owner never retires another owner's debt."""
     verb, args = _parse_condition(row.deletion_condition)
     if verb == "fact_registered":
-        return _fact_definition(args[0]) is not None
+        defn = _fact_definition(args[0])
+        return defn is not None and _defn_covers_owner(defn, row.owner)
     if verb == "fact_routed":
         defn = _fact_definition(args[0])
-        return defn is not None and bool(defn.projection_routes)
+        return (defn is not None and bool(defn.projection_routes)
+                and _defn_covers_owner(defn, row.owner))
     if verb == "status_retired":
         defn = _fact_definition(args[0])
-        return defn is not None and args[1] not in defn.allowed_statuses
+        return (defn is not None and args[1] not in defn.allowed_statuses
+                and _defn_covers_owner(defn, row.owner))
     if verb == "unknown_policy_retired":
         defn = _fact_definition(args[0])
-        return defn is not None and defn.unknown_policy != "legacy_convention"
+        return (defn is not None
+                and defn.unknown_policy != "legacy_convention"
+                and _defn_covers_owner(defn, row.owner))
     if verb == "no_writer":
         keys = _live_census_keys() if census_keys is None else census_keys
         sink, target = args
@@ -910,7 +955,7 @@ def deletion_condition_met(row: StructuralDebt, *,
         keys = _live_census_keys() if census_keys is None else census_keys
         return tuple(args) not in keys
     if verb == "classified":
-        return args[0] in _classification_table()
+        return (row.owner, args[0]) in _classification_table()
     if verb == "symbol_deleted":
         return not _symbol_exists(args[0], args[1])
     raise AssertionError(verb)  # unreachable: _parse_condition is closed
@@ -976,29 +1021,30 @@ def satisfied_debt_rows(rows=None, *, census_keys=None) -> list[StructuralDebt]:
             if deletion_condition_met(r, census_keys=census_keys)]
 
 
-def unrowed_extras_writes(rows=None, *, surface=None) -> list[str]:
-    """Growth gate: every raw top-level-or-nested extras write in the pinned
-    census surface needs its own EXACT debt row — a top-level key excuses
-    nothing below it (§R6: family-wide excuses block U2)."""
-    from .structural_writes import STRUCTURAL_SURFACE, _INFRA_EXTRAS
+def unrowed_extras_writes(rows=None, *, census_keys=None) -> list[str]:
+    """Growth gate, WRITER-EXACT (Soumil's final vet): every raw extras
+    census WRITER KEY (module, symbol, sink, target) needs a debt row whose
+    writer_key matches exactly — a row for one author of a target excuses
+    neither a second author nor a nested leaf (§R6: family-wide excuses
+    block U2; coverage joins on the same writer identity the baseline gate
+    ratchets)."""
+    from .structural_writes import _INFRA_EXTRAS
     rows = STRUCTURAL_DEBT if rows is None else rows
-    surface = STRUCTURAL_SURFACE if surface is None else surface
-    rowed = debt_targets("extras", rows) | frozenset(
-        r.census_target for r in rows
-        if r.sink_kind == "extras" and r.census_target)
+    keys = _live_census_keys() if census_keys is None else census_keys
+    rowed = frozenset(r.writer_key for r in rows if r.sink_kind == "extras")
     missing = []
-    for sink, target in surface:
+    for key in keys:
+        module, symbol, sink, target = key
         if sink != "extras":
             continue
-        top = target.split(".", 1)[0]
-        if top in _INFRA_EXTRAS:
+        if target.split(".", 1)[0] in _INFRA_EXTRAS:
             continue
-        if target not in rowed:
-            missing.append(target)
+        if key not in rowed:
+            missing.append(f"{module}::{symbol} -> extras:{target}")
     return sorted(missing)
 
 
-def debt_problems(rows=None, *, census_keys=None, surface=None) -> list[str]:
+def debt_problems(rows=None, *, census_keys=None) -> list[str]:
     """Every §R6 gate in one blocking report (empty == lawful)."""
     rows = STRUCTURAL_DEBT if rows is None else rows
     problems = [f"duplicate debt row {k}" for k in duplicate_debt_rows(rows)]
@@ -1012,6 +1058,6 @@ def debt_problems(rows=None, *, census_keys=None, surface=None) -> list[str]:
                  f"({r.deletion_condition}) — delete the row: "
                  f"{r.sink_kind}:{r.structural_target}"
                  for r in satisfied_debt_rows(rows, census_keys=census_keys)]
-    problems += [f"raw extras write without an exact debt row: {t}"
-                 for t in unrowed_extras_writes(rows, surface=surface)]
+    problems += [f"raw extras write without a writer-exact debt row: {t}"
+                 for t in unrowed_extras_writes(rows, census_keys=census_keys)]
     return problems

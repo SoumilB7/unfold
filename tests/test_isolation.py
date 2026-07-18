@@ -167,10 +167,10 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
                    shell=True, check=True, timeout=180)
     manifest = json.loads(
         (export / "tests" / "preservation_expected_manifest.json").read_text())
-    assert manifest["witness_count"] == 25
+    assert manifest["witness_count"] == 26   # U2-R9: witness 26 (musicgen-small)
     corpus = export / "tests" / "sable_test_corpus"
     inputs = sorted(corpus.glob("*.json"))
-    assert len(inputs) == 25, f"clean checkout carries {len(inputs)} inputs"
+    assert len(inputs) == 26, f"clean checkout carries {len(inputs)} inputs"
     for path in inputs:
         row = manifest["witnesses"][path.stem]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == row["input_sha256"]

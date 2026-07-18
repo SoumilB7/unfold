@@ -249,8 +249,10 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="bias",
-        value_types=frozenset({"bool"}),
-        allowed_statuses=frozenset({"code_proven"}),
+        # U2-R9 (witness 26): a composite decoder whose bias evidence cannot
+        # resolve records an HONEST ambiguous/None row (never a chosen value).
+        value_types=frozenset({"bool", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "ambiguous"}),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({"attention_detail", "json"}),
         unknown_policy="omit",
@@ -258,8 +260,10 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="mask",
+        # U2-R9: declared decoderness (is_decoder / is_encoder_decoder) is
+        # config EVIDENCE for the mask fact — the final-vet consumption tier.
         value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven"}),
+        allowed_statuses=frozenset({"code_proven", "config_declared"}),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({"attention_detail", "json"}),
         unknown_policy="unknown_banner",
@@ -287,9 +291,11 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="norm_placement",
-        value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven"}),
-        owner_patterns=frozenset({"decoder.layer"}),
+        # U2-R9 (witness 26): honest ambiguity + the conditioning tower's
+        # per-layer asserted tuples (attention_kind/ffn_storage precedent).
+        value_types=frozenset({"str", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "ambiguous", "asserted"}),
+        owner_patterns=frozenset({"decoder.layer", "layers[i].ffn"}),
         projections=frozenset({"architecture_view", "json"}),
         unknown_policy="legacy_convention",
         notes="reader-abstain still draws pre-norm + banner (census: parser "
@@ -297,9 +303,13 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="scores_scale",
-        value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven", "config_declared"}),
-        owner_patterns=frozenset({"decoder.attention"}),
+        # U2-R9 (witness 26): the B5 asserted convention row (legacy_convention
+        # drawing is the register's drawn_leaf debt) + per-layer tower tuples.
+        value_types=frozenset({"str", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "config_declared",
+                                    "asserted"}),
+        owner_patterns=frozenset({"decoder.attention",
+                                  "layers[i].attention"}),
         projections=frozenset({"attention_detail", "json"}),
         unknown_policy="legacy_convention",
         notes="silent input drawn as sqrt(d)-scaled (opgraph.py:473); H8 target",
