@@ -81,6 +81,14 @@ def load_ignored_fields() -> dict[str, list[str]]:
     }
 
 
+def load_ledger_ignores() -> dict[str, list[str]]:
+    """U2-R7: the ledger-side scoped-ignore vocabulary
+    (``evidence/ledger_ignores.yaml`` — address keys; the transformer
+    ``ignored_fields`` keys/suffixes ride the same rail at the consumer)."""
+    data = load("evidence", "ledger_ignores")
+    return {"address_keys": data.get("address_keys") or []}
+
+
 def load_transformer_typing() -> dict[str, list[str]]:
     """APPROVED transformer block stages (``transformer/typing.yaml``) — the known
     decoder-only-transformer block taxonomy."""

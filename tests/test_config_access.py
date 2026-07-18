@@ -347,12 +347,29 @@ def test_bind_is_bound_never_consumed():
 
 
 def test_ignore_is_a_scoped_conscious_classification():
+    # U2-R7: a field in the DECLARED vocabulary (attention_dropout lives in
+    # everchanging/transformer/ignored_fields.yaml) is scope-ignored at the
+    # ledger by that declaration; the conscious per-read .ignore() flow is
+    # pinned on a field NO vocabulary covers.
     with capture_events() as ledger:
-        res = resolve({"attention_dropout": 0.1}, "attention_dropout", [],
+        res = resolve({"my_bespoke_knob": 0.1}, "my_bespoke_knob", [],
                       component="root")
-        res.ignore("training-time dropout — not drawn architecture")
+        res.ignore("bespoke runtime knob — not drawn architecture")
     assert [e.intent for e in ledger.events] == ["inspected", "ignored"]
-    assert ledger.events[-1].reason.startswith("training-time dropout")
+    assert ledger.events[-1].reason.startswith("bespoke runtime knob")
+
+
+def test_declared_nonarchitectural_reads_are_vocabulary_ignores():
+    """U2-R7: an inspected read of a field the everchanging vocabulary
+    declares non-architectural (keys or suffixes) is a scoped ignore with the
+    standing reason — never accessed-but-unconsumed debt."""
+    with capture_events() as ledger:
+        resolve({"attention_dropout": 0.1}, "attention_dropout", [],
+                component="root")
+        resolve({"image_token_id": 7}, "image_token_id", [], component="root")
+    assert [e.intent for e in ledger.events] == ["ignored", "ignored"]
+    assert all("declared non-architectural" in (e.reason or "")
+               for e in ledger.events)
 
 
 def test_resolve_address_key_reads_stay_scoped_ignores():

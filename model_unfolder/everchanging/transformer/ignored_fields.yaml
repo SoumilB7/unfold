@@ -34,6 +34,10 @@ keys:
   - label2id
   # qk_head_dim: derived duplicate of qk_nope_head_dim + qk_rope_head_dim (both read).
   - qk_head_dim
+  # U2-R7: wall-clock -> position-id mapping constant on Qwen-VL vision
+  # (same family as position_id_per_seconds) — runtime plumbing, not structure.
+  - tokens_per_second
+  - position_id_per_seconds
   # spatial_patch_size: duplicate spelling beside patch_size (read) on Qwen-VL vision.
   - spatial_patch_size
   # rope_interleave: rotate-half vs interleaved WEIGHT LAYOUT — an implementation
@@ -201,6 +205,8 @@ suffixes:
   - layerdrop        # stochastic-depth training knob (layerdrop / encoder_layerdrop / …)
   - _token_id
   - _token_ids
+  # U2-R7: index spelling of the same token-id plumbing (llava image_token_index).
+  - _token_index
 
 # Nested component configs whose internals are owned by another adapter/domain.
 # The containing key must still be read; this only prevents the parent model's

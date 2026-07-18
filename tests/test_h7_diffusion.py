@@ -38,8 +38,12 @@ def test_pending_projection_debt_covers_the_three_removed_reads():
 def test_pending_projection_debt_is_fully_qualified():
     # REC-4/REC-5 grew the exact-debt ledger across owners; U2-R6 rows carry a
     # real component owner, a projection target, a checkable deletion condition
-    # and the excusal writer/consumer (constructor-enforced).
-    owners = {"root.denoiser", "root.vae", "root.vision"}
+    # and the excusal writer/consumer (constructor-enforced).  U2-R7 added the
+    # standing-occurrence dispositions, which legitimately span the parse root
+    # and the pipeline text-encoder slots.
+    owners = {"root", "root.denoiser", "root.vae", "root.vision",
+              "root.text_encoder", "root.text_encoder_2",
+              "root.text_encoder_3", "root.text_encoder.vision"}
     rows = [r for r in STRUCTURAL_DEBT if r.sink_kind == "config_read"
             and not r.deletion_condition.startswith("classified:")]
     for row in rows:

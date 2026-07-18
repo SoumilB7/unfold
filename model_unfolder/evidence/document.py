@@ -79,7 +79,8 @@ def _snapshot(value: Any) -> Any:
 class DocumentBinding:
     """A prepared document bound to the OWNER whose parse reads it (§5.1).
 
-    The binding is the single object a migrated ``document_scope`` accepts, so
+    The binding is the single object the document scope accepts (U2-R7:
+    ``bound_document`` is the only entry), so
     ``obj`` and ``provenance`` can no longer be supplied independently and drift
     apart.  ``prepared.document`` is the ONLY object this binding may describe;
     pairing a preparation with a different object is the nested-scope leak

@@ -26,7 +26,7 @@ from model_unfolder.sable import (
     _PROJECTION_AUDIT_BLOCKING,
 )
 from model_unfolder.evidence import config_access as _config_access
-from test_support import LLAMA, FLUX
+from test_support import bind_document, LLAMA, FLUX
 
 
 def _event(facts):
@@ -540,7 +540,8 @@ def test_cor5_census_view_is_occurrence_exact():
     the (owner, canonical) view collapses them and is compatibility-only."""
     with _config_access.capture_events() as ledger:
         with _config_access.owner_scope("root.vae"), \
-                _config_access.document_scope((), obj=_VAE_DOC, provenance=_VAE_PROV):
+                _config_access.bound_document(
+                    bind_document(_VAE_DOC, _VAE_PROV)):
             _vae_emit(of="outer", alias="scaling_factor",
                       config_path="_vae_config.scaling_factor")
             _vae_emit(of="decoder", alias="scale",
@@ -553,7 +554,8 @@ def test_cor5_census_view_is_occurrence_exact():
     assert len(ledger.accessed_but_unconsumed()) == 1     # documented collapse
     with _config_access.capture_events() as ledger2:
         with _config_access.owner_scope("root.vae"), \
-                _config_access.document_scope((), obj=_VAE_DOC, provenance=_VAE_PROV):
+                _config_access.bound_document(
+                    bind_document(_VAE_DOC, _VAE_PROV)):
             _vae_emit(of="outer", alias="scaling_factor",
                       config_path="_vae_config.scaling_factor")
             _vae_emit(of="decoder", alias="scale",

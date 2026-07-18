@@ -10,16 +10,17 @@ from __future__ import annotations
 import pytest
 
 from model_unfolder.evidence import config_access as ca
+from test_support import bind_document
 
 
 def _resolve(doc, canonical, *, provenance=None, path=()):
     prov = provenance or {canonical: ca.CHECKPOINT_DECLARED}
-    with ca.document_scope((), obj=doc, provenance=prov):
+    with ca.bound_document(bind_document(doc, prov)):
         return ca.resolve(doc, canonical, (), path=path)
 
 
 def _in_scope(doc, provenance):
-    return ca.document_scope((), obj=doc, provenance=provenance)
+    return ca.bound_document(bind_document(doc, provenance))
 
 
 # -------------------------------------------------------------------------
@@ -118,8 +119,8 @@ def test_the_same_path_in_two_documents_is_two_occurrences():
     for doc, dp in (({"hidden_size": 4096}, ()),
                     ({"hidden_size": 1280},
                      ("_text_encoder_configs", "text_encoder"))):
-        with ca.capture_events(), ca.document_scope(
-                dp, obj=doc, provenance={"hidden_size": ca.CHECKPOINT_DECLARED}):
+        with ca.capture_events(), ca.bound_document(bind_document(
+                doc, {"hidden_size": ca.CHECKPOINT_DECLARED}, path=dp)):
             occs.append(ca.resolve(doc, "hidden_size", ()).consume_decision(
                 mechanism="w", fact_owner="o", fact_key="hidden_size",
                 reader="r").occurrence)

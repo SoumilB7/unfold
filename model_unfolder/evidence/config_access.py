@@ -218,13 +218,35 @@ _PRESENT_ACCESS = frozenset({"inspected", "bound", "consumed", "ambiguous", "ign
 # as ``ignored`` (a scoped ignore, with a reason), so it does not show up as
 # accessed-but-unconsumed debt — the lawful counterpart to H0's typed
 # address/display wrappers, applied to the config-access ledger.
-_ADDRESS_KEYS = frozenset({
-    "model_type", "architectures", "_class_name", "_name_or_path", "name_or_path",
-    "model_id", "repo_id", "family", "family_hint", "vision_family", "audio_family",
-    "profile", "auto_map", "_diffusers_version", "transformers_version",
-    "torch_dtype", "_commit_hash", "_vae_config", "_scheduler_config",
-    "_text_encoder_configs", "_name", "id2label", "label2id",
-})
+# U2-R7: the vocabulary lives in everchanging YAML (evidence/ledger_ignores
+# address keys + the transformer ignored_fields keys/suffixes), never in code.
+_ledger_ignore_cache: dict | None = None
+
+
+def _ledger_ignores() -> dict:
+    global _ledger_ignore_cache
+    if _ledger_ignore_cache is None:
+        from ..everchanging import load_ignored_fields, load_ledger_ignores
+        declared = load_ignored_fields()
+        _ledger_ignore_cache = {
+            "address": frozenset(load_ledger_ignores()["address_keys"]),
+            "keys": frozenset(declared["keys"]),
+            "suffixes": tuple(declared["suffixes"]),
+        }
+    return _ledger_ignore_cache
+
+
+def _scoped_ignore_reason(canonical: str) -> str | None:
+    """The standing reason when ``canonical`` is declared non-architectural —
+    None when it is not in the vocabulary (the read stays a real access)."""
+    vocab = _ledger_ignores()
+    if canonical in vocab["address"]:
+        return "identity/address read — locates source or labels, not structure"
+    if canonical in vocab["keys"] or any(
+            canonical.endswith(suffix) for suffix in vocab["suffixes"]):
+        return ("declared non-architectural (everchanging/transformer/"
+                "ignored_fields.yaml) — display/plumbing, not structure")
+    return None
 
 
 #: ledger provenance -> the ORIGIN axis of the occurrence table
@@ -1236,26 +1258,20 @@ def _container_object(host: Any, path: tuple) -> Any:
 def bound_document(binding):
     """U2-R1 (§5.1): enter the document a :class:`DocumentBinding` names.
 
-    The MIGRATED entry point: one object carries the document, its address and
-    its provenance, verified together, so a caller can no longer hand
-    ``document_scope`` an object and an unrelated map that drift apart.  Object
-    identity is the binding's own invariant (it refuses a preparation that does
-    not describe its document), so entering it cannot mislabel a foreign
-    object's reads."""
-    with document_scope(binding.document_path, obj=binding.document,
-                        provenance=binding.provenance):
+    U2-R7: the ONLY entry.  The loose ``document_scope(path, obj=, provenance=)``
+    overload is DELETED — one object carries the document, its address and its
+    provenance, verified together, so a caller can no longer hand the scope an
+    object and an unrelated map that drift apart.  Object identity is the
+    binding's own invariant (it refuses a preparation that does not describe
+    its document), so entering it cannot mislabel a foreign object's reads."""
+    with _enter_document(binding.document_path, obj=binding.document,
+                         provenance=binding.provenance):
         yield
 
 
 @contextmanager
-def document_scope(path: tuple, obj: Any = None, provenance: dict | None = None):
-    """U2.2a: declare the DOCUMENT the enclosed parse reads.
-
-    LEGACY-DEBT ENTRY (U2-R1): accepts a loose ``obj`` + ``provenance`` pair.
-    Migrated call sites use :func:`bound_document`, which verifies the two
-    belong together; this overload survives only for unmigrated readers and is
-    pinned by ``test_config_paths`` so it cannot grow.  Deletion unit: U2-R7,
-    once every reader carries a binding.
+def _enter_document(path: tuple, obj: Any, provenance: dict | None):
+    """The document-scope MECHANISM (private — enter via :func:`bound_document`).
 
     ``path`` is where that document lives in the enclosing one (``()`` for the
     parse's own root; ("_text_encoder_configs", "text_encoder") for a
@@ -1402,11 +1418,15 @@ def emit(canonical: str, *, intent: str, present: bool, alias: str | None = None
     if not ledgers:
         return
     owner = component if component is not None else current_owner.get()
-    # An INSPECTED read of an address/identity key is a lawful scoped ignore, not
-    # accessed-but-unconsumed debt (it located source or labelled a card).
-    if intent == "inspected" and canonical in _ADDRESS_KEYS:
-        intent = "ignored"
-        reason = reason or "identity/address read — locates source or labels, not structure"
+    # An INSPECTED read of an address/identity key or a declared
+    # non-architectural field is a lawful scoped ignore, not
+    # accessed-but-unconsumed debt (it located source, labelled a card, or
+    # touched declared display/plumbing).  Vocabulary: everchanging YAML.
+    if intent == "inspected":
+        _ignore_reason = _scoped_ignore_reason(canonical)
+        if _ignore_reason is not None:
+            intent = "ignored"
+            reason = reason or _ignore_reason
     # COR-4 (§9, Law B): the EXACT dotted config path — explicit from the
     # resolver, or joined from the ambient container scope.  The owner:leaf
     # label is RETIRED.
@@ -1458,7 +1478,7 @@ __all__ = [
     "ConfigOccurrenceKey", "ConfigResolution", "INTENTS", "MISSING",
     "ProjectionObligation", "ProjectionTarget",
     "config_container", "container_scoped", "current_container",
-    "document_scope", "bound_document", "current_document",
+    "bound_document", "current_document",
     "present_spelling",
     "current_provenance", "resolve_priority", "provenance_of",
     "CHECKPOINT_DECLARED", "CLASS_DEFAULT", "CLASS_NORMALIZED_ALIAS",

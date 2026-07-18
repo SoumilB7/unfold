@@ -133,11 +133,14 @@ class StructuralDebt:
         _parse_condition(self.deletion_condition)
 
     @property
-    def key(self) -> tuple[str, str, str, str]:
-        """Row identity: one row per (sink, target, WRITER) — a second author
-        of one target is a second debt, never hidden under the first row."""
+    def key(self) -> tuple[str, str, str, str, str, str]:
+        """Row identity: one row per (sink, target, WRITER, owner, occurrence)
+        — a second author of one target is a second debt, and two owners'
+        reads of one path (or one owner's two exact paths) are two debts,
+        never hidden under the first row."""
         return (self.sink_kind, self.structural_target,
-                self.writer_module, self.writer_symbol)
+                self.writer_module, self.writer_symbol,
+                self.owner, self.source_occurrence or "")
 
     @property
     def writer_key(self) -> tuple[str, str, str, str]:
@@ -563,6 +566,213 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.denoiser", "time_embedding_dim",
             "explicit-null timestep-embedding width declaration",
             "U11", "classified:time_embedding_dim"),
+    # ---- U2-R7 dispositions: standing occurrences classified PENDING (one
+    # ---- exact row per owner x path; readers stay visible pending debt) ---- #
+    _config("the residual-tap topology annotation (post-LN tap on the layer "
+            "card)", "root", "apply_residual_connection_post_layernorm",
+            "BLOOM residual-tap flag drawn only as a render layer annotation "
+            "— same U7 topology family as the parallel_residual extras row",
+            "U7", "fact_registered:residual_topology"),
+    _config("mask/decoderness routing: flat-seq2seq encoder-half banner + "
+            "causality-verdict scope + composite cross-attn schedule scope",
+            "root", "is_encoder_decoder",
+            "enc-dec-ness gates three mask-family decisions with no fact "
+            "carrying it", "U8", "fact_routed:mask"),
+    _config("mask/decoderness routing (text-encoder slot)",
+            "root.text_encoder", "is_encoder_decoder",
+            "enc-dec-ness gates mask-family decisions with no fact",
+            "U8", "fact_routed:mask"),
+    _config("mask/decoderness routing (second text-encoder slot)",
+            "root.text_encoder_2", "is_encoder_decoder",
+            "enc-dec-ness gates mask-family decisions with no fact",
+            "U8", "fact_routed:mask"),
+    _config("mask/decoderness routing (third text-encoder slot)",
+            "root.text_encoder_3", "is_encoder_decoder",
+            "enc-dec-ness gates mask-family decisions with no fact",
+            "U8", "fact_routed:mask"),
+    # RoPE scaling-descriptor subkeys: feed only raw extras.rope + the
+    # declared-tier chip; the rope_theta fact retires the whole family.
+    _config("the rope card's scaling-factor line", "root",
+            "rope_parameters.factor",
+            "scaling descriptor subkey feeds only raw extras.rope",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's original-context line", "root",
+            "rope_parameters.original_max_position_embeddings",
+            "scaling descriptor subkey feeds only raw extras.rope",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line", "root",
+            "rope_parameters.rope_theta",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line", "root",
+            "rope_parameters.rope_type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (legacy spelling)", "root",
+            "rope_parameters.type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (wrapper path)", "root",
+            "text_config.rope_parameters.rope_theta",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (wrapper path)", "root",
+            "text_config.rope_parameters.rope_type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (wrapper path, legacy "
+            "spelling)", "root", "text_config.rope_parameters.type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (text-encoder slot)",
+            "root.text_encoder", "rope_parameters.rope_theta",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (text-encoder slot)",
+            "root.text_encoder", "rope_parameters.rope_type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (text-encoder slot, wrapper path)",
+            "root.text_encoder", "text_config.rope_parameters.rope_theta",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (text-encoder slot, wrapper "
+            "path)", "root.text_encoder",
+            "text_config.rope_parameters.rope_type",
+            "feeds extras.rope + the declared-tier chip only",
+            "U8", "fact_registered:rope_theta"),
+    # UNet structure reaches render only through raw extras.unet — these
+    # declared fields await the U11 source-derived component graph (the
+    # register's extras:unet row is the write-side twin).
+    _config("the drawn UNet stage-channel ladder", "root.denoiser",
+            "block_out_channels",
+            "UNet structure reaches render only through raw extras.unet",
+            "U11", "fact_registered:unet_blocks"),
+    _config("per-stage attention placement of the drawn U (down path)",
+            "root.denoiser", "down_block_types",
+            "raw extras.unet only", "U11", "fact_registered:unet_blocks"),
+    _config("per-stage attention placement of the drawn U (up path)",
+            "root.denoiser", "up_block_types",
+            "raw extras.unet only", "U11", "fact_registered:unet_blocks"),
+    _config("the drawn bottleneck stage + its declared provenance",
+            "root.denoiser", "mid_block_type",
+            "raw extras.unet only", "U11", "fact_registered:unet_blocks"),
+    _config("per-stage ResNet counts of the drawn U", "root.denoiser",
+            "layers_per_block",
+            "raw extras.unet only", "U11", "fact_registered:unet_blocks"),
+    _config("per-stage Transformer2D depth (SDXL mid=10)", "root.denoiser",
+            "transformer_layers_per_block",
+            "raw extras.unet only", "U11", "fact_registered:unet_blocks"),
+    _config("the drawn encoder-to-cross-attn width bridge (text_proj card)",
+            "root.denoiser", "encoder_hid_dim",
+            "builds the bridge card; raw extras.unet only",
+            "U11", "fact_registered:unet_blocks"),
+    _config("the conditioning-modality resolution (kv_label / projector / "
+            "kv_text)", "root.denoiser", "encoder_hid_dim_type",
+            "declared enum decides the drawn K/V modality story; lands in "
+            "raw extras.diffusion.conditioning",
+            "U11", "fact_registered:diffusion_meta"),
+    _config("the SDXL text_time micro-conditioning card (added-cond)",
+            "root.denoiser", "addition_embed_type",
+            "render-only added-conditioning block today",
+            "U11", "fact_registered:unet_added_conditioning"),
+    _config("added-cond time-embed width (SDXL/SVD)", "root.denoiser",
+            "addition_time_embed_dim",
+            "render-only added-conditioning block today",
+            "U11", "fact_registered:unet_added_conditioning"),
+    _config("added-cond projection-in width", "root.denoiser",
+            "projection_class_embeddings_input_dim",
+            "render-only added-conditioning block today",
+            "U11", "fact_registered:unet_added_conditioning"),
+    _config("the conditioning card's max-text-tokens chip (CogVideoX "
+            "spelling)", "root.denoiser", "max_text_seq_length",
+            "declared conditioning limit — the same mechanism as the "
+            "max_sequence_length row; chip-only today",
+            "U10", "fact_registered:denoiser_conditioning_limit"),
+    _config("the DiT FFN inner-width derivation", "root.denoiser",
+            "ffn_dim_multiplier",
+            "Lumina-family inner width = round(2/3*4h; multiple_of, "
+            "ffn_dim_multiplier); chip-only today while the drawn width "
+            "falls back to mlp_ratio=4 — possible mis-drawn width",
+            "U10", "fact_registered:ffn_width_derived"),
+    _config("the DiT FFN inner-width derivation (rounding quantum)",
+            "root.denoiser", "multiple_of",
+            "pairs with ffn_dim_multiplier",
+            "U10", "fact_registered:ffn_width_derived"),
+    _config("the cross-attention sublayer's own head geometry",
+            "root.denoiser", "num_cross_attention_heads",
+            "Sana declares distinct cross heads; the drawn cross-attn "
+            "sublayer reuses the SELF spec today (chip only)",
+            "U10", "fact_registered:cross_attention_geometry"),
+    _config("the cross-attention sublayer's own head geometry (head width)",
+            "root.denoiser", "cross_attention_head_dim",
+            "pairs with num_cross_attention_heads",
+            "U10", "fact_registered:cross_attention_geometry"),
+    # ---- raw-spelling twins the boundary fix surfaced (checkpoints that
+    # ---- declare rope_scaling/rope_theta literally; same U8 family) ------- #
+    _config("the rope card's theta line (raw spelling)",
+            "root.text_encoder", "rope_scaling.rope_theta",
+            "raw rope_scaling twin of the rope_parameters row",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (raw spelling)",
+            "root.text_encoder", "rope_scaling.rope_type",
+            "raw rope_scaling twin", "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (bare sibling declaration)",
+            "root.text_encoder", "rope_theta",
+            "top-level theta beside a scaling dict",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (wrapper, raw spelling)",
+            "root.text_encoder", "text_config.rope_scaling.rope_theta",
+            "raw rope_scaling twin under the text wrapper",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (wrapper, raw spelling)",
+            "root.text_encoder", "text_config.rope_scaling.rope_type",
+            "raw rope_scaling twin under the text wrapper",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's scaling-type line (wrapper, raw legacy "
+            "spelling)", "root.text_encoder", "text_config.rope_scaling.type",
+            "raw rope_scaling twin under the text wrapper",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's theta line (wrapper, bare sibling)",
+            "root.text_encoder", "text_config.rope_theta",
+            "top-level theta beside a scaling dict, under the text wrapper",
+            "U8", "fact_registered:rope_theta"),
+    _config("the rope card's partial-rotary line (redundant-equal rival "
+            "occurrence)", "root", "rope_parameters.partial_rotary_factor",
+            "the supplying occurrence is consumed; a witness declaring BOTH "
+            "spellings equal leaves this rival as a noted inspection",
+            "U8", "fact_registered:partial_rotary"),
+    # ---- vision residue: reads whose consuming form awaits the named
+    # ---- vision facts (per-occurrence, exact paths) ----------------------- #
+    _config("the vision tower position table (raw spelling probe)",
+            "root.text_encoder.vision", "rope_scaling",
+            "bare-theta towers signal rope without a table; the table "
+            "spelling probe stays an inspection on them",
+            "U9", "fact_registered:vision_position"),
+    _config("the vision tower depth (host-level spelling)",
+            "root.text_encoder.vision", "num_hidden_layers",
+            "host-level depth read beside the vision_config chain",
+            "U9", "fact_registered:vision_tower_geometry"),
+    _config("the cross-attention schedule derivation (text depth)",
+            "root.text_encoder.vision", "text_config.num_hidden_layers",
+            "freq x text-depth authors the schedule only on cross-attn "
+            "models; plain VL models keep an inspected read",
+            "U9", "fact_registered:cross_attention_schedule"),
+    _config("the cross-attention schedule derivation (text depth)",
+            "root.vision", "text_config.num_hidden_layers",
+            "freq x text-depth authors the schedule only on cross-attn "
+            "models; plain VL models keep an inspected read",
+            "U9", "fact_registered:cross_attention_schedule"),
+    _config("the patch-embedding input channels (losing rival spelling)",
+            "root.text_encoder.vision", "vision_config.in_channels",
+            "the winning spelling is consumed; a config declaring the rival "
+            "too leaves it as an input-stage inspection",
+            "U9", "fact_registered:vision_patch_geometry"),
+    _config("the patch-embedding input channels (losing rival spelling)",
+            "root.vision", "vision_config.in_channels",
+            "the winning spelling is consumed; a config declaring the rival "
+            "too leaves it as an input-stage inspection",
+            "U9", "fact_registered:vision_patch_geometry"),
 )
 
 

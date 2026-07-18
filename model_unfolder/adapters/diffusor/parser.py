@@ -87,6 +87,19 @@ def _consume_geom(cfg: Any, canonical: str, fact_owner: str, fact_key: str,
     return default if value is None else value
 
 
+def _display_geom(cfg: Any, canonical: str, default=None):
+    """U2-R7: a declared sample-canvas/display dimension — read for the latent
+    card's DISPLAY (canvas numbers, frames<->latent mapping), consciously
+    non-architectural for the structural ledger (scoped ignore, same family
+    as the declared sample_size chips)."""
+    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
+    if res.state != "present":
+        return default
+    res.ignore(reason="declared sample-canvas display (latent card) — "
+                      "resolution defaults, not architecture")
+    return default if res.value is None else res.value
+
+
 def _source_files(cfg: Any, context=None):
     """The ROOT component's source files for this parse — never the pipeline
     union.  A pipeline bundle folds text-encoder files (Gemma-2 for Sana) into
@@ -609,7 +622,14 @@ def _secondary_stack_specs(cfg: Any, context, hidden) -> list[dict]:
     for stack in stacks:
         if not stack.count_field or stack.count_field in root_depth_spellings:
             continue
-        count = _g(cfg, stack.count_field)
+        # U2-R7: the declared depth IS the drawn refiner stack's repeat count —
+        # the read is CONSUMED into the secondary-stack fact (an absent depth
+        # stays a typed premise; the stack is never drawn).
+        _count_res = _config_access.resolve(cfg, stack.count_field, ())
+        count = (None if _count_res.ambiguous else _count_res.consume_decision(
+            mechanism="secondary_stack",
+            fact_owner="denoiser.secondary_stack", fact_key="num_layers",
+            reader="adapters.diffusor.parser.secondary_stacks").value)
         if not count:
             continue                      # undeclared depth — never drawn
         lane = lane_map.get(stack.lane_param or "")
@@ -669,7 +689,16 @@ def _config_fact_chips(cfg: Any) -> dict[str, list[str]]:
                 (_config_access.config_container(("_vae_config",), obj=src)
                  if bucket == "vae" else nullcontext()):
             for row in rows:
-                value = _g(src, row["field"])
+                # U2-R7: a declared config-fact row is a SCOPED IGNORE on the
+                # ledger — the read is display-only by declaration (its YAML
+                # row is the citation), so it is never accessed-but-unconsumed
+                # debt.  Only a present, unambiguous occurrence is ignorable.
+                res = _config_access.resolve(src, row["field"], ())
+                if res.state == "present":
+                    res.ignore(reason=("declared display chip — everchanging/"
+                                       f"diffusor/config_facts.yaml "
+                                       f"{bucket}:{row['field']}"))
+                value = res.value if res.state == "present" else None
                 if value is None or row.get("silent"):
                     continue
                 if "noop" in row and _fact_is_noop(value, row["noop"]):
@@ -757,7 +786,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     intermediate_size = int(_isz) if _isz is not None else None
     if not intermediate_size and hidden_size:
         # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
-        mlp_ratio = float(_inspect(cfg, "mlp_ratio", 4.0) or 4.0)
+        # U2-R7: the ratio is the derivation INPUT of the drawn FFN width — a
+        # declared value is consumed into the FFN fact, keyed by its own name.
+        mlp_ratio = float(_consume_geom(cfg, "mlp_ratio", "denoiser.ffn",
+                                        "mlp_ratio") or 4.0)
         intermediate_size = int(hidden_size * mlp_ratio)
     # Read the activation from any key a DiT might use.  We do NOT fall back to a
     # convention: when no activation is declared the FFN's inner structure
@@ -768,7 +800,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # may retry a single spelling after the combined resolution abstained.
     _act_res = _config_access.resolve(
         cfg, "hidden_act", ("activation_fn", "act_fn", "mlp_activation"))
-    declared_act = _act_res.value if _act_res.state == "present" else None
+    # U2-R7: a declared activation IS the drawn FFN activation (and, in
+    # diffusers, its gating) — consumed into the FFN fact; ambiguity stays
+    # unchosen (the blocking config_ambiguity net already refused the model).
+    declared_act = (None if _act_res.ambiguous else _act_res.consume_decision(
+        mechanism="ffn_activation",
+        fact_owner="denoiser.ffn", fact_key="activation",
+        reader="adapters.diffusor.parser.dit_ffn").value)
     # The DiT FFN's activation/gating is almost never in the config — it lives in
     # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
@@ -793,9 +831,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # PixArt ``caption_channels`` builds PixArtAlphaTextProjection
     # (Linear -> GELU -> Linear); SD3/AuraFlow ``caption_projection_dim`` builds
     # one context Linear.  Carry that distinction into the loop op graph.
-    caption_input_dim = _inspect(cfg, "caption_input_dim")
-    caption_projection_dim = _inspect(cfg, "caption_projection_dim")
-    norm_elementwise_affine = _g(cfg, "norm_elementwise_affine")
+    caption_input_dim = _consume_geom(
+        cfg, "caption_input_dim", "denoiser.conditioning", "caption_input_dim")
+    caption_projection_dim = _consume_geom(
+        cfg, "caption_projection_dim", "denoiser.conditioning",
+        "caption_projection_dim")
+    norm_elementwise_affine = _consume_geom(
+        cfg, "norm_elementwise_affine", "denoiser.layer", "norm_affine")
 
     if not num_layers and not num_single:
         warnings.append(
@@ -828,20 +870,33 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "num_attention_heads": num_heads,
         "attention_head_dim": head_dim,
         "in_channels": _consume_geom(cfg, "in_channels", "denoiser.patch", "in_channels"),
-        "out_channels": _inspect(cfg, "out_channels"),
+        "out_channels": _consume_geom(cfg, "out_channels", "denoiser.patch",
+                                      "out_channels"),
         "patch_size": _consume_geom(cfg, "patch_size", "denoiser.patch", "patch_size"),
-        "sample_size": _inspect(cfg, "sample_size"),
-        "sample_height": _inspect(cfg, "sample_height"),
-        "sample_width": _inspect(cfg, "sample_width"),
-        "sample_frames": _inspect(cfg, "sample_frames"),
-        "sample_size_t": _inspect(cfg, "sample_size_t"),
+        "sample_size": _display_geom(cfg, "sample_size"),
+        "sample_height": _display_geom(cfg, "sample_height"),
+        "sample_width": _display_geom(cfg, "sample_width"),
+        "sample_frames": _display_geom(cfg, "sample_frames"),
+        "sample_size_t": _display_geom(cfg, "sample_size_t"),
         "patch_size_t": _consume_geom(cfg, "patch_size_t", "denoiser.patch", "patch_size_t"),
-        "temporal_compression_ratio": _inspect(cfg, "temporal_compression_ratio"),
-        "pooled_projection_dim": _inspect(cfg, "pooled_projection_dim"),
-        "joint_attention_dim": _inspect(cfg, "joint_attention_dim"),
-        "cross_attention_dim": _inspect(cfg, "cross_attention_dim"),
-        "text_embed_dim": _inspect(cfg, "text_embed_dim"),
-        "kv_join_dim": _inspect(cfg, "kv_join_dim"),
+        "temporal_compression_ratio": _display_geom(cfg, "temporal_compression_ratio"),
+        # U2-R7: the conditioning-dim presence-set DECIDES the drawn block
+        # topology (_conditioning) and the widths label the drawn text rails —
+        # each read is consumed into its conditioning fact.
+        "pooled_projection_dim": _consume_geom(cfg, "pooled_projection_dim",
+                                               "denoiser.conditioning",
+                                               "pooled_projection_dim"),
+        "joint_attention_dim": _consume_geom(cfg, "joint_attention_dim",
+                                             "denoiser.conditioning",
+                                             "joint_attention_dim"),
+        "cross_attention_dim": _consume_geom(cfg, "cross_attention_dim",
+                                             "denoiser.conditioning",
+                                             "cross_attention_dim"),
+        "text_embed_dim": _consume_geom(cfg, "text_embed_dim",
+                                        "denoiser.conditioning",
+                                        "text_embed_dim"),
+        "kv_join_dim": _consume_geom(cfg, "kv_join_dim",
+                                     "denoiser.conditioning", "kv_join_dim"),
         # max_sequence_length (Mochi denoiser conditioning limit): NOT read here.
         # ``procedure 2`` removed the audit-clearing read — it has no structural
         # consumer.  It is REGISTERED as a pending-projection fact (registry:
@@ -861,7 +916,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "video": _temporal_axis(cfg, cls, context),
         "audio": _audio_latent_domain(cfg),
         "block_conditioning": code_block_conditioning,
-        "guidance_embeds": _g(cfg, "guidance_embeds"),
+        "guidance_embeds": _consume_geom(cfg, "guidance_embeds",
+                                         "denoiser.conditioning",
+                                         "guidance_embeds"),
         "text_encoders": [s["name"] for s in _text_encoder_specs_resolved],
         "text_encoder_specs": _text_encoder_specs_resolved,
         "double_stream_layers": num_layers or None,
@@ -876,9 +933,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # mean the blocks are NOT NoPE: Flux-style axial RoPE (axes_dims_rope sums
     # to the head dim), multimodal 3D RoPE (mrope_section lists per-axis
     # half-dims, so the rotary span is twice their sum), or a bare rope_theta.
-    axes_dims_rope = _inspect(cfg, "axes_dims_rope")
+    # U2-R7: declared axial dims sum into the drawn rotary span, and rope_theta
+    # both labels the RoPE card and (alone) asserts rope — consumed.
+    # (mrope_section stays an inspection: not in this round's consumed census.)
+    axes_dims_rope = _consume_geom(cfg, "axes_dims_rope",
+                                   "denoiser.attention", "rope_dim")
     mrope_section = _inspect(cfg, "mrope_section")
-    rope_theta = _inspect(cfg, "rope_theta")
+    rope_theta = _consume_geom(cfg, "rope_theta",
+                               "denoiser.attention", "rope_theta")
     # Code-derived: when the config declares no RoPE but the model class fixes axial
     # dims (Flux), surface them READ FROM THE MODELING SOURCE (code -> fact). Never
     # overrides a declared config value.
@@ -909,7 +971,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # use_rotary_positional_embeddings) or a CODE fact read from the modeling source.
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
-    rope_3d_from_config = bool(_inspect(cfg, "use_rotary_positional_embeddings"))
+    rope_3d_from_config = bool(_consume_geom(
+        cfg, "use_rotary_positional_embeddings",
+        "denoiser.attention", "rope_3d"))
     # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
     # nothing in config) — read from the SAME evidence fact-conformance reads, so the
     # parser asserts rope exactly when the net would flag its absence as fabricated.
@@ -933,7 +997,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # not evidence of NoPE: Flux carries axial RoPE in the model class, not the
     # config, so a "no rotary" claim with no config signal would be a fabricated
     # negative. We therefore only describe a position scheme we can see.
-    has_pos_embed = _inspect(cfg, "pos_embed_max_size") is not None
+    # U2-R7: consumed as the POSITIVE learned-positions fact ("learned_pos",
+    # not "no_rope") — AttentionSpec.no_rope is a DERIVED negation (rope_dim
+    # is None AND not has_pos_embed), so the occurrence's own fact is the
+    # learned-pos signal it asserts, never the negation it merely feeds.
+    has_pos_embed = _consume_geom(cfg, "pos_embed_max_size",
+                                  "denoiser.attention", "learned_pos") is not None
     _from_class = " (set in the model class, not the config)" if axes_from_class else ""
     if rope_3d:
         if rope_3d_from_config:
@@ -963,7 +1032,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Code-derived: Flux's FluxAttention RMS-norms Q/K unconditionally but declares
     # nothing in config — surfaced by reading the modeling source (code -> fact).
     _empty_qk = (None, False, "", "none", "None", 0)
-    _qk = _inspect(cfg, "qk_norm")
+    _qk = _consume_geom(cfg, "qk_norm", "denoiser.attention", "qk_norm")
     qk_from_class = False
     if _qk in _empty_qk:
         # Config silent — READ the Q/K-norm TYPE from the modeling source (the
@@ -1012,7 +1081,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declares cross_attn_norm=True in config; any other verified case is a class
     # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
     # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
-    _can = _inspect(cfg, "cross_attn_norm")
+    _can = _consume_geom(cfg, "cross_attn_norm",
+                         "denoiser.attention", "cross_attn_norm")
     cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
 
     # Self-attention kind: standard softmax MHA unless the model class fixes a
@@ -1037,7 +1107,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Projection bias is a DECLARED constructor value on the diffusers side
     # (PixArt `attention_bias: true`) — reading it here both draws the true
     # bias fact and claims the field for the config-ownership audit.
-    dit_attention_bias = bool(_inspect(cfg, "attention_bias"))
+    dit_attention_bias = bool(_consume_geom(cfg, "attention_bias",
+                                            "denoiser.attention", "bias"))
 
     layers = []
     idx = 0
@@ -1875,19 +1946,42 @@ def _dit_norm_kind(cfg: Any) -> str:
     diffusers DiT configs usually don't state the norm type (it lives in the
     block class), and a bare ``norm_eps`` is shared by both RMSNorm and LayerNorm
     models — so it is NOT a signal.  We assert a kind only on an unambiguous
-    field, never a silent default."""
-    nt = _g(cfg, "norm_type") or _g(cfg, "norm_layer")
+    field, never a silent default.
+
+    U2-R7: exactly the WINNING read — the occurrence that decides the returned
+    kind — is CONSUMED into ``denoiser.layer.norm_kind`` at its decision point.
+    A probe that loses (an unmapped norm_type, an eps field checked after an
+    earlier signal already returned) stays an inspection: consuming it would
+    claim a decision it never made."""
+    nt, nt_win = None, None
+    for spelling in ("norm_type", "norm_layer"):
+        res = _config_access.resolve(cfg, spelling, ())
+        if res.state == "present" and res.value:
+            nt, nt_win = res.value, res
+            break
     if isinstance(nt, str):
         low = nt.lower()
         # AdaLN variants (ada_norm_single / ada_norm_zero / ...) are LayerNorm-based;
         # the substring map in typing.yaml resolves them (was missed before → "unknown").
         for sub, kind in _NORM_TYPE_KIND:
             if sub in low:
+                nt_win.consume_decision(
+                    mechanism="norm_kind", fact_owner="denoiser.layer",
+                    fact_key="norm_kind",
+                    reader="adapters.diffusor.parser._dit_norm_kind")
                 return kind
-    if _g(cfg, "rms_norm_eps") is not None:
-        return "rmsnorm"
-    if _g(cfg, "layer_norm_eps") is not None or _g(cfg, "layer_norm_epsilon") is not None:
-        return "layernorm"
+    for spelling, kind in (("rms_norm_eps", "rmsnorm"),
+                           ("layer_norm_eps", "layernorm"),
+                           ("layer_norm_epsilon", "layernorm")):
+        res = _config_access.resolve(cfg, spelling, ())
+        if res.state == "present" and res.value is not None:
+            # The eps field's PRESENCE is the deciding signal here — this is
+            # the winning read, so it carries the norm_kind consumption.
+            res.consume_decision(
+                mechanism="norm_kind", fact_owner="denoiser.layer",
+                fact_key="norm_kind",
+                reader="adapters.diffusor.parser._dit_norm_kind")
+            return kind
     return "unknown"
 
 
@@ -1971,6 +2065,14 @@ def _scheduler_geom(cfg: Any) -> dict:
         out["scheduler_flow_matching"] = any(m in cls for m in _FLOW_MATCHING_MARKERS)
     sched_cfg = _g(cfg, "_scheduler_config")
     if isinstance(sched_cfg, dict):
+        # U2-R7 dispositions, per field (verified against blocks.py):
+        # * num_train_timesteps — CONSUMED: drawn on the sampling-loop card and
+        #   gates the ε step view (_scheduler_step_view's undeclared guard);
+        # * prediction_type — CONSUMED: selects WHICH step rule is drawn
+        #   (flow / v-prediction / ε — different drawn ops, not a label);
+        # * shift / use_dynamic_shifting / beta_schedule / timestep_spacing —
+        #   loop-card display chips only (sched_facts) — scoped ignores.
+        _sched_consumed = {"num_train_timesteps", "prediction_type"}
         for key, field in (
             ("scheduler_train_timesteps", "num_train_timesteps"),
             ("scheduler_shift", "shift"),
@@ -1979,9 +2081,18 @@ def _scheduler_geom(cfg: Any) -> dict:
             ("scheduler_beta_schedule", "beta_schedule"),
             ("scheduler_timestep_spacing", "timestep_spacing"),
         ):
-            value = _g(sched_cfg, field)
-            if value is not None:
-                out[key] = value
+            res = _config_access.resolve(sched_cfg, field, ())
+            if res.state != "present" or res.value is None:
+                continue
+            if field in _sched_consumed:
+                out[key] = res.consume_decision(
+                    mechanism="sampling_loop",
+                    fact_owner="scheduler.sampling", fact_key=field,
+                    reader="adapters.diffusor.parser.scheduler_panel").value
+            else:
+                res.ignore(reason="scheduler stage label/marker — sampling-"
+                                  "loop card display chip")
+                out[key] = res.value
     return out
 
 
@@ -2010,8 +2121,9 @@ def _vae_geom(cfg: Any) -> dict | None:
 
     boc = _v("block_out_channels")
     if not isinstance(boc, (list, tuple)):
-        # Wan/Qwen 3D-causal VAEs parameterize stages as base_dim × dim_mult.
-        base, mult = _g(vcfg, "base_dim"), _g(vcfg, "dim_mult")
+        # Wan/Qwen 3D-causal VAEs parameterize stages as base_dim × dim_mult —
+        # U2-R7: both factors of the drawn channel ladder are consumed.
+        base, mult = _v("base_dim"), _v("dim_mult")
         if isinstance(base, int) and isinstance(mult, (list, tuple)):
             boc = [base * m for m in mult if isinstance(m, int)]
     if not isinstance(boc, (list, tuple)):
@@ -2021,17 +2133,22 @@ def _vae_geom(cfg: Any) -> dict | None:
         if isinstance(base, int) and isinstance(mult, (list, tuple)):
             boc = [base * m for m in mult if isinstance(m, int)]
     lpb = _v("layers_per_block")
+    # U2-R7: every read below whose value is DRAWN (the VAE tower's stage
+    # ladder, its cell norm, the latent-IO numbers/quant blocks on the stage
+    # card) is consumed via ``_v`` — one owner convention for the whole VAE
+    # (``vae.geometry``, fact_key = the field's own name), matching the
+    # consumed reads that already existed above.
     out = {
         "block_out_channels": list(boc) if isinstance(boc, (list, tuple)) else None,
         "latent_channels": _v("latent_channels"),
-        "out_channels": _g(vcfg, "out_channels"),
+        "out_channels": _v("out_channels"),
         # Per-stage depth must be a declared scalar — DC-AE's per-stage *lists*
         # mix block types (ResBlock/EViT), so a single count would be invented.
         "layers_per_block": lpb if isinstance(lpb, int) else None,
-        "scaling_factor": _g(vcfg, "scaling_factor"),
-        "shift_factor": _g(vcfg, "shift_factor"),
-        "latents_mean": _g(vcfg, "latents_mean"),
-        "latents_std": _g(vcfg, "latents_std"),
+        "scaling_factor": _v("scaling_factor"),
+        "shift_factor": _v("shift_factor"),
+        "latents_mean": _v("latents_mean"),
+        "latents_std": _v("latents_std"),
         # VAE act_fn and the VAE's own temporal_compression_ratio: NOT read here.
         # ``procedure 2`` removed both audit-clearing reads — neither has a
         # structural consumer (no VAE render draws them; the denoiser-level
@@ -2043,12 +2160,12 @@ def _vae_geom(cfg: Any) -> dict | None:
         # ignore), so the honest "removed until the H7-full reader draws them"
         # state holds without a silent re-read.  (procedure 9 re-vet: the audit was
         # BLOCKING, not advisory — the removal + registration alone left it red.)
-        "norm_num_groups": _g(vcfg, "norm_num_groups"),
-        "down_block_types": _g(vcfg, "down_block_types"),
-        "up_block_types": _g(vcfg, "up_block_types"),
-        "use_quant_conv": _g(vcfg, "use_quant_conv"),
-        "use_post_quant_conv": _g(vcfg, "use_post_quant_conv"),
-        "mid_block_add_attention": _g(vcfg, "mid_block_add_attention"),
+        "norm_num_groups": _v("norm_num_groups"),
+        "down_block_types": _v("down_block_types"),
+        "up_block_types": _v("up_block_types"),
+        "use_quant_conv": _v("use_quant_conv"),
+        "use_post_quant_conv": _v("use_post_quant_conv"),
+        "mid_block_add_attention": _v("mid_block_add_attention"),
         # 1-D audio VAE declarations (oobleck): the temporal up-ladder ratios
         # and the waveform channel count/rate — carried only when declared.
         "audio_channels": _g(vcfg, "audio_channels"),
@@ -2279,9 +2396,25 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
             # occurrence key, which no declared binding can match and which
             # differs from the identical read in a standalone parse.  The
             # address is recorded beside the path instead.
+            # U2-R7 (§5.1): the slot document is PREPARED HERE, ONCE, and
+            # entered through its DocumentBinding — object, address and
+            # provenance travel together, so slot reads are located and their
+            # origin is established at this boundary (not at each read).  The
+            # binding passes down so the encoder round-trip does not prepare
+            # a second time or re-enter the scope.
+            from ...evidence.document import (
+                DocumentBinding, LOADER_STAMPS, prepare_document,
+            )
+            _prepared = prepare_document(sub, loader_keys=LOADER_STAMPS,
+                                         merge=False)
+            _binding = DocumentBinding(f"root.{key}",
+                                       ("_text_encoder_configs", key),
+                                       _prepared)
             with _config_access.owner_scope(f"root.{key}"), \
-                    _config_access.document_scope(("_text_encoder_configs", key)):
-                spec.update(_normalize_encoder_config(sub, context=_slot_context(context, key)))
+                    _config_access.bound_document(_binding):
+                spec.update(_normalize_encoder_config(
+                    _prepared.document,
+                    context=_slot_context(context, key), binding=_binding))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted
             # (``text_encoder.text_config``), which the source bundle

@@ -691,7 +691,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # U2 P3b: the T5-family declaration — ``feed_forward_proj`` names the
         # activation (with an optional "gated-" prefix owned by the gate
         # decision below).  Un-ignored: a positive declaration, never noise.
-        _ffp_for_act = _g(text_cfg, "feed_forward_proj")
+        # U2-R7: ONE consumption for the occurrence, into its PRIMARY decision
+        # (activation); the gate decision below re-inspects the same value.
+        _ffp_for_act = consume("feed_forward_proj",
+                               fact_owner="decoder.ffn", fact_key="activation")
         if isinstance(_ffp_for_act, str) and _ffp_for_act:
             activation_raw = _ffp_for_act.lower()
             if activation_raw.startswith("gated-"):
@@ -745,13 +748,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # A config may declare a window size but turn SWA *off* (use_sliding_window
     # = False); honor that, otherwise we'd draw sliding attention on what is
     # really a full-attention model.  When absent (Mistral), the window applies.
-    use_sliding_window = _g(text_cfg, "use_sliding_window")
-    max_window_layers  = _g(text_cfg, "max_window_layers")
+    # U2-R7: these reads touch the (possibly nested) text config — NAME the
+    # object so the ledger records an exact located path instead of an honest
+    # bare leaf (wrapper_path is () when text IS the root; the container is
+    # obj-qualified either way, so host reads are never mislabeled).
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        # U2-R7: both flow into the sliding-window schedule (the enable toggle
+        # and the bottom-full split) — consumed like ``sliding_window`` above.
+        use_sliding_window = consume("use_sliding_window",
+                                     fact_owner="decoder.attention",
+                                     fact_key="use_sliding_window")
+        max_window_layers  = consume("max_window_layers",
+                                     fact_owner="decoder.attention",
+                                     fact_key="first_full_layers")
     if use_sliding_window is False:
         sliding_window = None
         max_window_layers = None
-    layer_types  = _g(text_cfg, "layer_types") or []
-    full_attention_interval = _g(text_cfg, "full_attention_interval") or 0
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        # U2-R7: the canonical per-layer mask/kind schedule — consumed into the
+        # attention schedule fact it becomes.
+        layer_types  = consume("layer_types", fact_owner="decoder.attention",
+                               fact_key="layer_types") or []
+        full_attention_interval = _g(text_cfg, "full_attention_interval") or 0
     if not layer_types and full_attention_interval and num_layers:
         layer_types = [
             "linear_attention" if (i + 1) % int(full_attention_interval) else "full_attention"
@@ -821,10 +839,20 @@ def parse(cfg: Any, context=None) -> ModelIR:
     residual_multiplier = get("residual_multiplier")
     get("embedding_multiplier")
     attention_multiplier = get("attention_multiplier")
-    query_pre_attn_scalar = _g(text_cfg, "query_pre_attn_scalar")
+    query_pre_attn_scalar = consume("query_pre_attn_scalar",
+                                    fact_owner="decoder.attention",
+                                    fact_key="scores_scale")
     get("logits_scaling")
-    _norm_kind_ev, _norm_kind_prov = _norm_kind_evidence_src(
-        text_cfg, get("norm_type"), context)
+    # U2-R7: the helper reads eps spellings off the (possibly nested) text
+    # config and has no path of its own — the CALLER names the object, and
+    # names the fact target the eps evidence flows into (the norm-kind
+    # decision recorded under decoder.layer below); the encoder panel's
+    # post-parse advisory call passes no target and keeps inspected reads,
+    # so one occurrence is never consumed twice.
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        _norm_kind_ev, _norm_kind_prov = _norm_kind_evidence_src(
+            text_cfg, get("norm_type"), context,
+            eps_fact=("decoder.layer", "norm_kind_eps"))
     # U2 default-kill: no channel → typed "unknown" (generic Normalization
     # label + honest card prose), never a silent modern-LM rmsnorm.
     norm_kind    = _norm_kind_ev or "unknown"
@@ -843,17 +871,37 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # feed_forward_proj).  These are semantic declarations, unlike a plain
     # activation such as ``silu`` which does NOT by itself prove a third gate
     # projection.  Source remains authoritative when present.
-    _declared_gated = _g(text_cfg, "is_gated_act")
-    _feed_forward_proj = _g(text_cfg, "feed_forward_proj")
+    # U2-R7: ``is_gated_act`` is consumed into the gate decision.  When it is
+    # absent, ``feed_forward_proj`` DECIDES gate-ness and that deciding read
+    # is consumed too — one declaration lawfully feeding two facts
+    # (activation above, gated here); when is_gated_act is present the
+    # feed_forward_proj glance stays an inspection (redundant, not deciding).
+    _declared_gated = consume("is_gated_act",
+                              fact_owner="decoder.ffn", fact_key="gated")
     if _declared_gated is not None:
+        # is_gated_act decided; a feed_forward_proj beside it is a redundant
+        # co-declaration of the same mechanism — a conscious scoped ignore,
+        # never accessed-but-unconsumed debt.
+        with _config_access.config_container(_text_path, obj=text_cfg):
+            _ffp_res = _config_access.resolve(text_cfg, "feed_forward_proj", ())
+        if _ffp_res.state == "present":
+            _ffp_res.ignore(reason="redundant co-declaration beside "
+                                   "is_gated_act — the consumed occurrence "
+                                   "decided the gate fact")
+        _feed_forward_proj = _ffp_res.value if _ffp_res.state == "present" \
+            else None
         _config_gated = bool(_declared_gated)
         _config_gated_source = "is_gated_act"
-    elif isinstance(_feed_forward_proj, str):
-        _config_gated = "gated" in _feed_forward_proj.lower()
-        _config_gated_source = "feed_forward_proj"
     else:
-        _config_gated = None
-        _config_gated_source = None
+        _feed_forward_proj = consume("feed_forward_proj",
+                                     fact_owner="decoder.ffn",
+                                     fact_key="gated")
+        if isinstance(_feed_forward_proj, str):
+            _config_gated = "gated" in _feed_forward_proj.lower()
+            _config_gated_source = "feed_forward_proj"
+        else:
+            _config_gated = None
+            _config_gated_source = None
     # U2 P3b class_default tier: the installed config CLASS's own gate
     # declaration (T5Config: is_gated_act=False / feed_forward_proj='relu' —
     # t5-base omits both keys yet IS dense-relu).  Sits below the checkpoint
@@ -936,7 +984,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # evidence: no declaration ⇒ typed unknown, exactly as before.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
     _declared_theta = get("rope_theta")
-    _declared_scaling = get("rope_scaling")
+    # U2-R7: the rope container DICT occurrence itself feeds the uses_rope
+    # decision — consumed once here; every later reader reuses this value.
+    _declared_scaling = consume("rope_scaling",
+                                fact_owner="decoder.attention", fact_key="rope")
     _rope_config_declared = False
     if _code_position_evidence.status == "proven":
         uses_rope = "rope" in _code_position_evidence.kinds
@@ -982,14 +1033,23 @@ def parse(cfg: Any, context=None) -> ModelIR:
     head_dim_global = _g(text_cfg, "global_head_dim") or head_dim
 
     # ---- Attention shape ----
-    q_lora_rank  = _g(text_cfg, "q_lora_rank")
-    kv_lora_rank = _g(text_cfg, "kv_lora_rank")
+    # U2-R7: the five MLA geometry fields flow straight into the attention
+    # spec/param math — consumed under their canonical names.
+    q_lora_rank  = consume("q_lora_rank", fact_owner="decoder.attention",
+                           fact_key="q_lora_rank")
+    kv_lora_rank = consume("kv_lora_rank", fact_owner="decoder.attention",
+                           fact_key="kv_lora_rank")
     is_mla       = bool(kv_lora_rank)
     # MLA decoupled head geometry — Q/K split into nope + rope, V its own width
     # (DeepSeek/Kimi). Needed for an accurate MLA parameter count.
-    qk_nope_head_dim = _g(text_cfg, "qk_nope_head_dim")
-    qk_rope_head_dim = _g(text_cfg, "qk_rope_head_dim")
-    v_head_dim_cfg   = _g(text_cfg, "v_head_dim")
+    qk_nope_head_dim = consume("qk_nope_head_dim",
+                               fact_owner="decoder.attention",
+                               fact_key="qk_nope_head_dim")
+    qk_rope_head_dim = consume("qk_rope_head_dim",
+                               fact_owner="decoder.attention",
+                               fact_key="qk_rope_head_dim")
+    v_head_dim_cfg   = consume("v_head_dim", fact_owner="decoder.attention",
+                               fact_key="v_head_dim")
     has_multi_query_flag = bool(_g(text_cfg, "multi_query")
                                 or _g(text_cfg, "multi_query_attention"))  # chatglm spelling
     # The flag means "KV heads are shared", NOT "exactly one": ChatGLM declares
@@ -1029,7 +1089,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
-    partial_rotary_fac   = _g(text_cfg, "partial_rotary_factor")
+    # U2-R7: consumed into the derived rope_dim (decoder.attention.rope_dim).
+    partial_rotary_fac   = consume("partial_rotary_factor",
+                                   fact_owner="decoder.attention",
+                                   fact_key="rope_dim")
     # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
     # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
     # U2.2a: the container names the spelling the DOCUMENT supplies — chosen by
@@ -1039,7 +1102,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # is declared and the enclosed reads stay honestly inexact.
     _rope_container      = _config_access.present_spelling(
         text_cfg, ("rope_parameters", "rope_scaling"))
-    _rope_scaling        = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling") or {}
+    # U2-R7: the rope dict occurrence was already resolved and CONSUMED once at
+    # the position-scheme decision above — REUSE that value (one resolve per
+    # occurrence; a second located read would re-record the same occurrence).
+    _rope_scaling        = _declared_scaling or {}
     _rope_path           = (*_text_path, _rope_container) if _rope_container else ()
     # The modern transformers rope dialect NESTS the partial factor inside the
     # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
@@ -1054,11 +1120,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _nested_prf = (_rope_scaling.get("partial_rotary_factor")
                    if isinstance(_rope_scaling, dict) else None)
     if _nested_prf is not None:
-        with _config_access.config_container(_rope_path, obj=_rope_scaling):
-            debug.note_access("partial_rotary_factor", source_obj=_rope_scaling)
         if partial_rotary_fac is None:
-            partial_rotary_fac = _nested_prf
-        elif partial_rotary_fac != _nested_prf:
+            # U2-R7: the nested spelling is the SUPPLYING occurrence — consumed
+            # at its exact nested path into the same derived rope_dim target.
+            # The rival-spelling comparison below is untouched: this branch is
+            # exactly the old ``top-level is None`` assignment.
+            with _config_access.config_container(_rope_path, obj=_rope_scaling):
+                partial_rotary_fac = _config_access.resolve(
+                    _rope_scaling, "partial_rotary_factor", (),
+                    path=_rope_path).consume_decision(
+                        mechanism="rope_dim",
+                        fact_owner="decoder.attention", fact_key="rope_dim",
+                        reader="adapters.transformer.parser.parse").value
+        elif partial_rotary_fac == _nested_prf:
+            # Redundant equal rival — recorded as the inspection it is.
+            with _config_access.config_container(_rope_path, obj=_rope_scaling):
+                debug.note_access("partial_rotary_factor",
+                                  source_obj=_rope_scaling)
+        else:
+            with _config_access.config_container(_rope_path, obj=_rope_scaling):
+                debug.note_access("partial_rotary_factor",
+                                  source_obj=_rope_scaling)
             _config_access.emit(
                 "partial_rotary_factor", intent="ambiguous", present=True,
                 config_path=".".join((*_rope_path, "partial_rotary_factor")),
@@ -1079,16 +1161,30 @@ def parse(cfg: Any, context=None) -> ModelIR:
             rope_dim_value = _code_rd
     mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
     if mrope_section is not None:
-        # Plain nested-dict reads bypass _g; register inspection so the owned
-        # subkey is visible to the config audit. Projection consumption remains
-        # a separate, not-yet-complete receipt rail.
+        # U2-R7: the nested mrope split flows into the attention position fact
+        # — consumed at its exact nested occurrence (ONE resolve; the guard
+        # above is a raw membership probe, not a ledger read).
         with _config_access.config_container(_rope_path, obj=_rope_scaling):
-            debug.note_access("mrope_section", source_obj=_rope_scaling)
+            mrope_section = _config_access.resolve(
+                _rope_scaling, "mrope_section", (),
+                path=_rope_path).consume_decision(
+                    mechanism="mrope",
+                    fact_owner="decoder.attention", fact_key="mrope_section",
+                    reader="adapters.transformer.parser.parse").value
 
     # ---- QK-Norm ----
     # Spelling read stays FIRST for config-ownership (all three aliases are
     # audited) and as the no-oracle fallback; the code evidence then decides.
-    use_qk_norm = bool(_g(text_cfg, "use_qk_norm") or _g(text_cfg, "qk_norm") or _g(text_cfg, "qk_layernorm"))
+    # U2-R7: the three rival spellings are ONE fact — resolved together (alias
+    # law: equal = redundant, unequal = typed ambiguity that authors nothing)
+    # and consumed into the qk_norm decision.
+    _qk_res = _config_access.resolve(
+        text_cfg, "use_qk_norm", ("qk_norm", "qk_layernorm"), path=_text_path)
+    _qk_declared = None if _qk_res.ambiguous else _qk_res.consume_decision(
+        mechanism="qk_norm", fact_owner="decoder.attention",
+        fact_key="qk_norm",
+        reader="adapters.transformer.parser.parse").value
+    use_qk_norm = bool(_qk_declared)
     qk_norm_layers = _resolve_qk_norm_layers(
         _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
 
@@ -1098,7 +1194,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # the config spelling is the declared channel behind it. U2 default-kill:
     # when BOTH are silent the bias is a typed UNKNOWN (None) — never a
     # silent False indistinguishable from proven-False.
-    _declared_attn_bias = get("attention_bias")
+    # U2-R7: consumed into the bias fact/spec — every alias spelling
+    # (use_qkv_bias, add_qkv_bias, ...) resolves through this ONE read.
+    _declared_attn_bias = consume("attention_bias",
+                                  fact_owner="decoder.attention",
+                                  fact_key="bias")
     if _declared_attn_bias is None:
         _declared_attn_bias = _g(attn_cfg, "attention_bias")
     _code_bias = _code_attention_bias(text_cfg, context)
@@ -1152,13 +1252,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
                    "decoder_attention_sinks_from_files")
     # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
     # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
-    attn_logit_softcap = _g(text_cfg, "attn_logit_softcapping")
+    attn_logit_softcap = consume("attn_logit_softcapping",
+                                 fact_owner="decoder.attention",
+                                 fact_key="logit_softcap")
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").  Code-authoritative like
     # its twin: Bloom's MLP Linears default to bias=True with a silent config;
     # `bias=config.mlp_bias` families still honor the checkpoint value through
     # the reader; Conv1D layouts abstain → the config spelling stands.
-    _mlp_bias = get("mlp_bias")
+    _mlp_bias = consume("mlp_bias", fact_owner="decoder.ffn", fact_key="bias")
     # class_default tier (the attention twin's rule): an absent mlp_bias key
     # resolves to the installed config class's default at runtime.
     if _mlp_bias is None:
@@ -1171,10 +1273,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
     # bidirectional attention — a MASK fact, consumed here so a positive value
     # can never be silently dropped.
-    if _g(text_cfg, "use_bidirectional_attention"):
-        forced_bidirectional = True
-    else:
-        forced_bidirectional = False
+    forced_bidirectional = bool(consume("use_bidirectional_attention",
+                                        fact_owner="decoder.attention",
+                                        fact_key="mask"))
     # U2 mask default-kill: "causal" may only be DRAWN when the config
     # declares decoder-ness (is_decoder / causal-LM architecture suffix /
     # decoder-only wrapper / composite decoder slot — general vocabulary in
@@ -1185,7 +1286,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # a nested text-scope is_decoder flag (never scrubbed) still counts.
     _decoderness_src = (getattr(context, "declared_decoderness", None)
                         or ("is_decoder"
-                            if _g(text_cfg, "is_decoder") is True else None))
+                            if consume("is_decoder",
+                                       fact_owner="decoder.attention",
+                                       fact_key="mask") is True else None))
     # U2 P2d — the CODE channel, wired ABOVE config-decoderness: mask-machinery
     # calls (is_decoder gates resolved from the checkpoint) / is_causal
     # literals.  BERT/T5-encoder become code-proven BIDIRECTIONAL; plain
@@ -1230,9 +1333,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
     # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
     parallel_norm_count = _code_parallel_norm_count(text_cfg, context) or 1
+    # U2-R7: the two rival spellings (GPT-NeoX use_parallel_residual / Falcon
+    # parallel_attn) are ONE declared fact — resolved together and consumed
+    # into the layer-topology fact; disagreement is typed ambiguity that
+    # authors nothing (the code channel then decides).
+    _par_res = _config_access.resolve(
+        text_cfg, "use_parallel_residual", ("parallel_attn",), path=_text_path)
+    _par_declared = None if _par_res.ambiguous else _par_res.consume_decision(
+        mechanism="residual_topology", fact_owner="decoder.layer",
+        fact_key="parallel_residual",
+        reader="adapters.transformer.parser.parse").value
     use_parallel_residual = bool(
-        _g(text_cfg, "use_parallel_residual") or _g(text_cfg, "parallel_attn")
-        or (_code_topo or {}).get("parallel_residual")
+        _par_declared or (_code_topo or {}).get("parallel_residual")
     )
 
     # ---- MoE ----
@@ -1242,8 +1354,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     moe_intermediate_size = consume("moe_intermediate_size", 0, fact_owner="decoder.ffn", fact_key="moe_intermediate_size") or 0
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
-    first_k_dense       = _g(text_cfg, "first_k_dense_replace") or 0
-    moe_layer_freq      = _g(text_cfg, "moe_layer_freq") or 1
+    # U2-R7: both feed the per-layer dense/MoE schedule (FFNSpec.kind).
+    first_k_dense       = consume("first_k_dense_replace",
+                                  fact_owner="decoder.ffn",
+                                  fact_key="moe_schedule") or 0
+    moe_layer_freq      = consume("moe_layer_freq",
+                                  fact_owner="decoder.ffn",
+                                  fact_key="moe_schedule") or 1
     interleave_moe_step = _g(text_cfg, "interleave_moe_layer_step") or 0
     # Qwen3-MoE: MoE applies every ``decoder_sparse_step`` layers, except the
     # explicit ``mlp_only_layers`` which stay dense.
@@ -1280,9 +1397,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     code_moe_schedule   = _code_moe_schedule(text_cfg, context, num_layers) if moe_active else None
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
-    moe_routing = _moe_routing(text_cfg, context) if moe_active else None
+    moe_routing = (_moe_routing(text_cfg, context, path=_text_path)
+                   if moe_active else None)
     # gpt-oss clamps its SwiGLU activation to ±swiglu_limit — a Tier-3 property.
-    activation_clip = _g(text_cfg, "swiglu_limit")
+    activation_clip = consume("swiglu_limit", fact_owner="decoder.ffn",
+                              fact_key="activation_clip")
 
     # ---- Cross-layer KV
     #  sharing (the last N layers reuse K/V from earlier) ----
@@ -1704,6 +1823,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "audio_channels": _g(text_cfg, "audio_channels"),
             **streams,
         }
+    # U2-R7: ONE consumption for the occurrence — the LM-head card here and the
+    # block-diffusion canvas path below share this value (never two consumes
+    # of one occurrence in a single parse).
+    final_logit_softcap = consume("final_logit_softcapping",
+                                  fact_owner="model",
+                                  fact_key="final_logit_softcapping")
     extras = decoder_extras(
         vocab_size,
         hidden_size,
@@ -1713,7 +1838,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         embed_norm=_code_embedding_norm(text_cfg, context),
         # Gemma-2's final_logit_softcapping is a REAL pre-sampling op — the LM
         # head card states it (only-when-present; everyone else byte-stable).
-        final_logit_softcap=_g(text_cfg, "final_logit_softcapping"),
+        final_logit_softcap=final_logit_softcap,
         codebooks=codebooks,
     )
     # U2: an unknown norm kind must not print "Final RMSNorm" — the short
@@ -1791,7 +1916,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         from .blocks.model import block_diffusion_loop_blocks
         from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
-        final_softcap = consume("final_logit_softcapping", fact_owner="model", fact_key="final_logit_softcapping")
+        # U2-R7: the occurrence was consumed ONCE above (the LM-head card
+        # read) — reuse that value here.
+        final_softcap = final_logit_softcap
         extras["render"]["layout"] = "block_diffusion"
         extras["render"]["loop_blocks"] = block_diffusion_loop_blocks(
             n_layers=num_layers,
@@ -1824,7 +1951,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             )
 
     # ---- Multi-Token Prediction heads (DeepSeek-V3 style next-token modules) ----
-    mtp_modules = _g(text_cfg, "num_nextn_predict_layers") or _g(text_cfg, "num_mtp_layers")
+    # U2-R7: consumed into the MTP-modules fact (extras["mtp"]).
+    mtp_modules = (consume("num_nextn_predict_layers", fact_owner="model",
+                           fact_key="mtp_modules")
+                   or _g(text_cfg, "num_mtp_layers"))
     try:
         mtp_modules = int(mtp_modules) if mtp_modules else 0
     except (TypeError, ValueError):
@@ -1871,14 +2001,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
         extras.setdefault("rope", {})["partial_pct"] = round(rope_dim_value / head_dim, 3)
 
     # RoPE scaling (YaRN, linear, dynamic, ntk, ...) reported as info-only.
-    rope_params = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling")
+    # U2-R7: name the text config for these reads (located, not bare leaves).
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        rope_params = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling")
     if isinstance(rope_params, dict):
         rope_type = rope_params.get("rope_type") or rope_params.get("type")
+        with _config_access.config_container(_text_path, obj=text_cfg):
+            _theta_fallback = _g(text_cfg, "rope_theta")
         scaling = {
             "type": rope_type,
             "factor": rope_params.get("factor"),
             "original_max_position_embeddings": rope_params.get("original_max_position_embeddings"),
-            "rope_theta": rope_params.get("rope_theta") or _g(text_cfg, "rope_theta"),
+            "rope_theta": rope_params.get("rope_theta") or _theta_fallback,
         }
         extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
         # These SUBKEYS are inspected above via plain dict reads. Record the
@@ -1892,7 +2026,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # RoPE base frequency — present on most rotary models even without a scaling
     # dict (the block above only fires when one is declared); surface it always.
-    rope_theta = _g(text_cfg, "rope_theta") or _g(attn_cfg, "rope_theta")
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        rope_theta = _g(text_cfg, "rope_theta")
+    rope_theta = rope_theta or _g(attn_cfg, "rope_theta")
     if rope_theta is not None:
         extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
 
@@ -2217,7 +2353,7 @@ def _moe_layers_from_enum(text_cfg) -> list[int] | None:
     return None
 
 
-def _moe_routing(cfg: Any, context=None) -> dict | None:
+def _moe_routing(cfg: Any, context=None, path: tuple = ()) -> dict | None:
     """Collect the MoE router knobs that decide *how* experts get picked.
 
     Config strings first (DeepSeek/Kimi declare the full set), then the CODE
@@ -2227,14 +2363,27 @@ def _moe_routing(cfg: Any, context=None) -> dict | None:
     drew softmax and dropped the bias.  Code is the enacted truth: it decides the
     score transform and the aux-loss-free bias; a declared string that agrees is
     confirmation, one that disagrees loses to the code (with a recorded note).
-    ``None`` when neither channel declares anything."""
+    ``None`` when neither channel declares anything.
+
+    U2-R7: each declared knob is CONSUMED into its routing fact
+    (``decoder.ffn.routing_<field>`` — the dict the render reads); ``path``
+    locates ``cfg`` in its document (the caller's text-scope path)."""
+    def _knob(field):
+        res = _config_access.resolve(
+            cfg, field, _ALIASES.get(field, ()), path=tuple(path))
+        if res.ambiguous:
+            return None
+        return res.consume_decision(
+            mechanism="moe_routing", fact_owner="decoder.ffn",
+            fact_key=f"routing_{field}",
+            reader="adapters.transformer.parser._moe_routing").value
     routing = {
-        "scoring_func":          _g(cfg, "scoring_func"),          # sigmoid | softmax
-        "topk_method":           _g(cfg, "topk_method"),           # noaux_tc, group_limited_greedy, ...
-        "n_group":               _g(cfg, "n_group"),               # expert groups (node-limited routing)
-        "topk_group":            _g(cfg, "topk_group"),            # groups kept per token
-        "norm_topk_prob":        _g(cfg, "norm_topk_prob"),        # renormalize the top-k gate weights
-        "routed_scaling_factor": _g(cfg, "routed_scaling_factor"),  # scale on routed-expert output
+        "scoring_func":          _knob("scoring_func"),          # sigmoid | softmax
+        "topk_method":           _knob("topk_method"),           # noaux_tc, group_limited_greedy, ...
+        "n_group":               _knob("n_group"),               # expert groups (node-limited routing)
+        "topk_group":            _knob("topk_group"),            # groups kept per token
+        "norm_topk_prob":        _knob("norm_topk_prob"),        # renormalize the top-k gate weights
+        "routed_scaling_factor": _knob("routed_scaling_factor"),  # scale on routed-expert output
     }
     routing = {k: v for k, v in routing.items() if v is not None}
 
@@ -2339,15 +2488,37 @@ def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) 
 
 
 def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
-                            context=None) -> tuple:
+                            context=None, eps_fact: tuple | None = None) -> tuple:
     """``(kind|None, (status, source)|None)`` — the kind PLUS which channel
-    decided it, for the FactLedger (U2). Channel order as documented above."""
+    decided it, for the FactLedger (U2). Channel order as documented above.
+
+    U2-R7: when the caller names ``eps_fact`` (the ``(fact_owner, fact_key)``
+    its norm-kind fact records under — the main transformer parse), the eps
+    spellings are CONSUMED into that target; with no target (the encoder
+    panel's post-parse advisory call, whose parse already consumed the same
+    occurrences once) they stay plain inspected reads — one occurrence is
+    never consumed twice in a single parse."""
     # Both eps spellings are read UP FRONT: they are real config facts (the
     # epsilon in use) and must record their access for the ownership audit even
     # when a higher channel (math) decides the KIND before the spelling hint.
-    rms_eps = _g(cfg, "rms_norm_eps")
-    ln_eps = _g(cfg, "layer_norm_epsilon")
-    ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
+    if eps_fact is not None:
+        _eps_owner, _eps_key = eps_fact
+        def _eps(canonical, aliases=()):
+            res = _config_access.resolve(cfg, canonical, aliases)
+            if res.ambiguous:
+                return None
+            return res.consume_decision(
+                mechanism="norm_kind_eps", fact_owner=_eps_owner,
+                fact_key=_eps_key,
+                reader="adapters.transformer.parser."
+                       "_norm_kind_evidence_src").value
+        rms_eps = _eps("rms_norm_eps")
+        ln_eps = _eps("layer_norm_epsilon")
+        ln_eps2 = _eps("layer_norm_eps", ("layernorm_epsilon",))  # chatglm spelling
+    else:
+        rms_eps = _g(cfg, "rms_norm_eps")
+        ln_eps = _g(cfg, "layer_norm_epsilon")
+        ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
     declared_rms = _g(cfg, "rmsnorm")            # chatglm boolean declaration
     if declared_rms is True:
         return "rmsnorm", ("config_declared", "rmsnorm flag")

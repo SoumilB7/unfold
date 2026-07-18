@@ -4,7 +4,15 @@ from __future__ import annotations
 from typing import Any
 
 from .....evidence import config_access as _config_access
-from .accessors import as_int, drop_none, first, nested, present_paths
+from .accessors import (
+    as_int,
+    consume_first,
+    drop_none,
+    first,
+    first_resolution,
+    nested,
+    present_paths,
+)
 from .detect import (
     has_cross_attention_adapter,
     has_video_input,
@@ -259,8 +267,18 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     """Return image/vision intake as semantic facts."""
     cross_attn = has_cross_attention_adapter(cfg, text_cfg)
     unified_grid = is_unified_grid_stream(cfg, vision_cfg)
-    image_size = first(vision_cfg, "image_size", "input_size")
-    patch_size = first(vision_cfg, "patch_size", "patch_size_h")
+    # U2-R7: these geometry reads AUTHOR the drawn input/embedding stages, so
+    # the winning occurrence is CONSUMED into the drawn patch component —
+    # (occurrence) -> (vision.patch, key) — never left as inspected debt.
+    image_size = consume_first(vision_cfg, "image_size", "input_size",
+                               fact_owner="vision.patch", fact_key="image_size",
+                               mechanism="patch_geometry")
+    patch_size = consume_first(vision_cfg, "patch_size", "patch_size_h",
+                               fact_owner="vision.patch", fact_key="patch_size",
+                               mechanism="patch_geometry")
+    # channels stay an inspection HERE: the one consuming read for the
+    # in_channels fact is the fullest chain below (encoder_fields), so a single
+    # occurrence is never consumed twice within one build.
     input_channels = first(vision_cfg, "in_channels", "num_channels")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid)
     # COR-4 (§9): the projector's OUTPUT width is not authored here at all.
@@ -270,14 +288,28 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     # ``hidden_size``/``output_dim`` interpretations are DELETED, and a model
     # without source keeps an honestly width-unknown connector.
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn, unified_grid)
-    num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
-    num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
+    # U2-R7: tower geometry CONSUMED into the drawn encoder component (the
+    # image and video lanes each consume for their own drawn stage, mirroring
+    # the COR-5 encoder-width precedent).
+    num_layers = consume_first(vision_cfg, "num_hidden_layers", "num_layers", "depth",
+                               fact_owner="vision.encoder", fact_key="num_layers",
+                               mechanism="encoder_depth")
+    num_heads = consume_first(vision_cfg, "num_attention_heads", "num_heads",
+                              "attention_heads",
+                              fact_owner="vision.encoder", fact_key="num_heads",
+                              mechanism="encoder_heads")
     # A perceiver resampler emits a fixed number of latent tokens regardless of
     # the patch count, so that count wins when present.
     token_count = perceiver_latents(cfg) or visual_token_count(cfg, vision_cfg, cross_attn)
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
-    projector_activation = first(cfg, "projector_hidden_act", "mm_projector_act")
+    # U2-R7: the declared activation AUTHORS the drawn projector stage (this is
+    # a HOST read — the field lives beside the sub-configs, not inside one).
+    projector_activation = consume_first(cfg, "projector_hidden_act",
+                                         "mm_projector_act",
+                                         fact_owner="vision.projector",
+                                         fact_key="activation",
+                                         mechanism="projector_activation")
     embedding_ops = vision_patch_embedding_ops(cfg, vision_cfg, hidden_size)
     token_kind = (
         "vision_cross_attention_states" if cross_attn
@@ -309,21 +341,42 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
     reduction = token_reduction(cfg, vision_cfg)
     multilayer = multilayer_features(vision_cfg)
     features = feature_selection(cfg)
+    # timm/ViT dialects declare the MLP width as a RATIO of the hidden size
+    # (Qwen2-VL: mlp_ratio=4 -> 1280*4); a declared ratio is a config fact,
+    # never a guessed default.  U2-R7: whichever spelling AUTHORS the drawn
+    # tower FFN width is consumed — the ratio only when the width read misses,
+    # exactly the flow the `or` fallback always had.
+    intermediate_size = consume_first(vision_cfg, "intermediate_size", "mlp_dim",
+                                      fact_owner="vision.encoder",
+                                      fact_key="intermediate_size",
+                                      mechanism="encoder_ffn_width")
+    if not intermediate_size:
+        mlp_ratio = consume_first(vision_cfg, "mlp_ratio",
+                                  fact_owner="vision.encoder",
+                                  fact_key="mlp_ratio",
+                                  mechanism="encoder_ffn_width")
+        intermediate_size = (int(mlp_ratio * hidden_size)
+                             if mlp_ratio and hidden_size else None)
     encoder_fields = drop_none({
         "hidden_size": hidden_size,
         "num_layers": num_layers,
         "num_attention_heads": num_heads,
         # A vision tower that declares global layers runs a local+global stack.
         "num_global_layers": first(vision_cfg, "num_global_layers"),
-        "num_channels": first(vision_cfg, "num_channels", "in_chans", "in_channels"),
+        # U2-R7: THE one consuming read for the channel fact — this chain
+        # carries every spelling (in_chans included), so the input-stage reads
+        # above/in video_path stay inspections of the same occurrence.
+        "num_channels": consume_first(vision_cfg, "num_channels", "in_chans",
+                                      "in_channels",
+                                      fact_owner="vision.patch",
+                                      fact_key="in_channels",
+                                      mechanism="patch_geometry"),
         "global_head_dim": first(vision_cfg, "global_head_dim"),
-        # timm/ViT dialects declare the MLP width as a RATIO of the hidden size
-        # (Qwen2-VL: mlp_ratio=4 -> 1280*4); a declared ratio is a config fact,
-        # never a guessed default.
-        "intermediate_size": first(vision_cfg, "intermediate_size", "mlp_dim")
-        or (int(first(vision_cfg, "mlp_ratio") * hidden_size)
-            if first(vision_cfg, "mlp_ratio") and hidden_size else None),
-        "activation": first(vision_cfg, "hidden_act", "hidden_activation"),
+        "intermediate_size": intermediate_size,
+        "activation": consume_first(vision_cfg, "hidden_act", "hidden_activation",
+                                    fact_owner="vision.encoder",
+                                    fact_key="activation",
+                                    mechanism="encoder_activation"),
         "patch_size": patch_size,
         # Which encoder output the connector reads (single layer + CLS policy).
         "feature_layer": (features or {}).get("layer"),
@@ -335,8 +388,12 @@ def vision_path(cfg: Any, text_cfg: Any, vision_cfg: Any, text_hidden_size: int)
         "position_encoding": vision_position_encoding(cfg, vision_cfg),
         # A windowed vision tower that declares WHICH blocks run full attention
         # (Qwen2.5-VL/Omni fullatt_block_indexes) — the layer schedule is a
-        # structural fact, not an impl flag.
-        "full_attention_block_indexes": first(vision_cfg, "fullatt_block_indexes"),
+        # structural fact, not an impl flag.  U2-R7: it authors the drawn
+        # window schedule, so it is consumed.
+        "full_attention_block_indexes": consume_first(
+            vision_cfg, "fullatt_block_indexes",
+            fact_owner="vision.encoder", fact_key="window_schedule",
+            mechanism="window_schedule"),
         # Video token time-density (grid streams): declared tokens per second.
         "video_tokens_per_second": first(vision_cfg, "tokens_per_second"),
         "norm_kind": "unknown",
@@ -416,14 +473,28 @@ def vision_patch_embedding_ops(cfg: Any, vision_cfg: Any, hidden_size: Any) -> l
 
 def video_path(cfg: Any, vision_cfg: Any, text_hidden_size: int) -> dict:
     """Return video intake when a model reuses its visual tower for frames."""
-    patch_size = first(vision_cfg, "patch_size", "patch_size_h")
+    # U2-R7: the video lane draws its own stages from the shared tower config,
+    # so its authoring reads consume too (same law as the image lane; the
+    # channel chain stays an inspection — vision_path's fullest chain is the
+    # one consuming read for that fact).
+    patch_size = consume_first(vision_cfg, "patch_size", "patch_size_h",
+                               fact_owner="vision.patch", fact_key="patch_size",
+                               mechanism="patch_geometry")
     hidden_size = vision_encoder_hidden_size(cfg, vision_cfg, unified_grid=True)
     projector_in = vision_projector_in(vision_cfg, hidden_size, cross_attn=False, unified_grid=True)
-    num_layers = first(vision_cfg, "num_hidden_layers", "num_layers", "depth")
-    num_heads = first(vision_cfg, "num_attention_heads", "num_heads", "attention_heads")
+    num_layers = consume_first(vision_cfg, "num_hidden_layers", "num_layers", "depth",
+                               fact_owner="vision.encoder", fact_key="num_layers",
+                               mechanism="encoder_depth")
+    num_heads = consume_first(vision_cfg, "num_attention_heads", "num_heads",
+                              "attention_heads",
+                              fact_owner="vision.encoder", fact_key="num_heads",
+                              mechanism="encoder_heads")
     encoder_kind = vision_encoder_kind(cfg, vision_cfg)
     projector_kind_value = projector_kind(cfg)
-    temporal_patch_size = first(vision_cfg, "temporal_patch_size")
+    temporal_patch_size = consume_first(vision_cfg, "temporal_patch_size",
+                                        fact_owner="vision.patch",
+                                        fact_key="temporal_patch_size",
+                                        mechanism="patch_geometry")
     input_channels = first(vision_cfg, "in_channels", "num_channels")
     video_shape = ["batch", "videos", "frames", "channels", "height", "width"]
     grid = grid_spec(cfg, vision_cfg, "video")
@@ -502,9 +573,18 @@ def vision_projector_in(vision_cfg: Any, encoder_hidden_size: Any, cross_attn: b
 def merged_patch_features(vision_cfg: Any, encoder_hidden_size: Any) -> int | None:
     """Return flattened merged patch width for grid-token mergers."""
     hidden = as_int(encoder_hidden_size)
-    merge = as_int(first(vision_cfg, "spatial_merge_size"))
+    merge_res = first_resolution(vision_cfg, "spatial_merge_size")
+    merge = as_int(merge_res.value) if merge_res is not None else None
     if hidden is None or merge is None:
         return None
+    # U2-R7: the merge factor AUTHORS the drawn merger in_features, so the
+    # occurrence is consumed exactly when the width it decides is computed —
+    # with no known tower width the read stays an inspection, never a
+    # fabricated consumption.
+    merge_res.consume_decision(fact_owner="vision.projector",
+                               fact_key="spatial_merge_size",
+                               mechanism="patch_merger_reduction",
+                               reader="modalities.vision.merged_patch_features")
     return hidden * (merge ** 2)
 
 
@@ -540,11 +620,18 @@ def vision_position_encoding(cfg: Any, vision_cfg: Any) -> dict | None:
     )
     if learned:
         methods.append("learned_2d")
-    if first(vision_cfg, "rope_parameters", "rope_theta", "rope_scaling") is not None:
+    # U2-R7: the declared rope table AUTHORS the drawn position-encoding
+    # decision, so the winning spelling is consumed ONCE — the old presence
+    # probe and value read touched the same occurrence twice.  A bare
+    # ``rope_theta`` (no table) still signals rope_2d but stays an inspection:
+    # only the value that flows into the drawing consumes.
+    rope = consume_first(vision_cfg, "rope_parameters", "rope_scaling",
+                         fact_owner="vision.encoder", fact_key="position",
+                         mechanism="encoder_position")
+    if rope is not None or first(vision_cfg, "rope_theta") is not None:
         methods.append("rope_2d")
     if not methods:
         return None
-    rope = first(vision_cfg, "rope_parameters", "rope_scaling")
     return drop_none({
         "kind": "_plus_".join(methods),
         "rope": rope if isinstance(rope, dict) else None,
@@ -645,12 +732,21 @@ def feature_selection(cfg: Any) -> dict | None:
     * ``vision_feature_select_strategy`` — ``"default"`` drops the CLS token,
       ``"full"`` keeps every patch token
     """
-    layer = first(cfg, "vision_feature_layer")
+    layer_res = first_resolution(cfg, "vision_feature_layer")
+    layer = layer_res.value if layer_res is not None else None
     strategy = first(cfg, "vision_feature_select_strategy")
     if layer is None and strategy is None:
         return None
     if isinstance(layer, (list, tuple)):  # a list is multi-layer concat, not single select
         layer = None
+    elif layer_res is not None:
+        # U2-R7: the single declared tap AUTHORS the drawn connector selection
+        # (encoder feature_layer field), so the occurrence is consumed; the
+        # list shape above stays an inspection — it never reaches this view.
+        layer = layer_res.consume_decision(
+            fact_owner="vision.projector", fact_key="tap_layer",
+            mechanism="projector_tap",
+            reader="modalities.vision.feature_selection").value
     return drop_none({"layer": layer, "select_strategy": strategy})
 
 

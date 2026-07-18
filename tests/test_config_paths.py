@@ -32,6 +32,7 @@ import pathlib
 import pytest
 
 import model_unfolder as mu
+from test_support import bind_document
 from model_unfolder.encoder_panel import hydrate_encoder_config_facts
 from model_unfolder.evidence.document import LOADER_STAMPS, prepare_document
 from model_unfolder.evidence import config_access as ca
@@ -219,7 +220,7 @@ def test_a_class_supplied_field_is_not_a_checkpoint_occurrence():
     provenance = {"declared": ca.CHECKPOINT_DECLARED,
                   "from_class": ca.CLASS_DEFAULT}
     with ca.capture_events() as ledger, \
-            ca.document_scope((), obj=doc, provenance=provenance):
+            ca.bound_document(bind_document(doc, provenance)):
         ca.emit("declared", intent="inspected", present=True,
                 source_obj_id=id(doc))
         ca.emit("from_class", intent="inspected", present=True,
@@ -256,7 +257,7 @@ def test_no_checkpoint_occurrence_is_really_a_class_supplied_field(witness):
 def test_a_nonexistent_explicit_path_is_an_error():
     """A producer may not author an address the document disproves."""
     doc = {"real": 1}
-    with ca.capture_events(), ca.document_scope((), obj=doc):
+    with ca.capture_events(), ca.bound_document(bind_document(doc)):
         with pytest.raises(ValueError, match="not proven by the document"):
             ca.emit("x", intent="inspected", present=True,
                     config_path="does.not.exist", source_obj_id=id(doc))
@@ -270,12 +271,12 @@ def test_a_real_path_cannot_be_borrowed_by_an_unrelated_object():
     was supplied, WHERE") a fiction that resolves."""
     doc = {"real": 1}
     unrelated = {"real": 999}
-    with ca.capture_events(), ca.document_scope((), obj=doc):
+    with ca.capture_events(), ca.bound_document(bind_document(doc)):
         with pytest.raises(ValueError, match="not proven by the document"):
             ca.emit("real", intent="inspected", present=True,
                     config_path="real", source_obj_id=id(unrelated))
     # control: the document's OWN object, same path, is lawful and exact
-    with ca.capture_events() as ledger, ca.document_scope((), obj=doc):
+    with ca.capture_events() as ledger, ca.bound_document(bind_document(doc)):
         ca.emit("real", intent="inspected", present=True,
                 config_path="real", source_obj_id=id(doc))
     assert ledger.events[0].path_exact is True
@@ -285,7 +286,7 @@ def test_a_named_container_may_not_speak_for_an_unidentified_read():
     """A read that does not say which object it came from cannot be shown to
     belong in the container — absence of a contradiction is not evidence."""
     doc = {"sub": {"leaf": 2}}
-    with ca.capture_events() as ledger, ca.document_scope((), obj=doc), \
+    with ca.capture_events() as ledger, ca.bound_document(bind_document(doc)), \
             ca.config_container(("sub",), obj=doc["sub"]):
         ca.emit("leaf", intent="inspected", present=True, source_obj_id=None)
     assert ledger.events[0].config_path == "leaf"      # NOT sub.leaf
@@ -299,7 +300,7 @@ def test_consuming_an_occurrence_keeps_the_proof_its_inspection_had():
     inspection proved — and the consumption is what a claim binding joins on,
     so the fact ends up bound to an unproven address."""
     doc = {"sub": {"leaf": 2}}
-    with ca.capture_events() as ledger, ca.document_scope((), obj=doc):
+    with ca.capture_events() as ledger, ca.bound_document(bind_document(doc)):
         resolution = ca.resolve(doc["sub"], "leaf", (), path=("sub",))
         resolution.consume(fact_owner="root", fact_key="x")
     by_intent = {e.intent: e for e in ledger.events}
@@ -314,7 +315,7 @@ def test_priority_resolution_consumes_the_field_it_actually_found():
     winner is consumed — carrying the exact path it was found at."""
     doc = {"vision_config": {"embed_dim": 1280, "hidden_size": 3584}}
     vision = doc["vision_config"]
-    with ca.capture_events() as ledger, ca.document_scope((), obj=doc), \
+    with ca.capture_events() as ledger, ca.bound_document(bind_document(doc)), \
             ca.config_container(("vision_config",), obj=vision):
         resolution = ca.resolve_priority(vision, ("embed_dim", "hidden_size"))
         value = resolution.consume(fact_owner="root.vision", fact_key="hidden_size",
@@ -410,25 +411,44 @@ def test_container_scoped_names_nothing_when_its_object_is_absent():
     assert ledger.events[0].config_path == "scheduler"
 
 
-def test_document_scope_keeps_paths_relative_and_records_the_address():
+def test_bound_document_keeps_paths_relative_and_records_the_address():
     """A slot is a document: its reads keep the host-independent join key a
-    claim binding matches, and the address travels beside the path."""
+    claim binding matches, and the address travels beside the path.  U2-R7:
+    entered through a BINDING — the path-only overload is deleted."""
+    doc = {"vision_config": {"hidden_size": 3584}}
+    binding = bind_document(
+        doc, path=("_text_encoder_configs", "text_encoder"))
     with ca.capture_events() as ledger:
-        with ca.document_scope(("_text_encoder_configs", "text_encoder")):
+        with ca.bound_document(binding):
+            # the source object is the one the document PLACES at the address
+            # (the binding makes the path-proof law bite — the deleted loose
+            # overload could not check this)
             ca.emit("hidden_size", intent="inspected", present=True,
-                    config_path="vision_config.hidden_size")
+                    config_path="vision_config.hidden_size",
+                    source_obj_id=id(doc["vision_config"]))
     event = ledger.events[0]
     assert event.config_path == "vision_config.hidden_size"     # unchanged key
     assert event.document_path == ("_text_encoder_configs", "text_encoder")
 
 
-def test_document_scope_clears_an_enclosing_container():
+def test_bound_document_clears_an_enclosing_container():
     """A container names an object in the document being LEFT; it can never
     describe a read inside the new one."""
     outer = {"a": 1}
+    binding = bind_document(
+        {"hidden_size": 8}, path=("_text_encoder_configs", "text_encoder"))
     with ca.capture_events() as ledger:
         with ca.config_container(("_vae_config",), obj=outer):
-            with ca.document_scope(("_text_encoder_configs", "text_encoder")):
+            with ca.bound_document(binding):
                 ca.emit("hidden_size", intent="inspected", present=True,
                         source_obj_id=id(outer))
     assert ledger.events[0].config_path == "hidden_size"
+
+
+def test_the_loose_document_scope_overload_is_deleted():
+    """U2-R7: entering a document REQUIRES a DocumentBinding — the loose
+    ``document_scope(path, obj=, provenance=)`` entry no longer exists as
+    public API, so an object and an unrelated provenance map can never be
+    paired again."""
+    assert not hasattr(ca, "document_scope")
+    assert "document_scope" not in ca.__all__

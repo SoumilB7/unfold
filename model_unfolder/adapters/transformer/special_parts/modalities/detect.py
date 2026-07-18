@@ -9,7 +9,7 @@ from typing import Any
 
 from .....evidence import config_access as _config_access
 from ...common import wrapper_path as _wrapper_path
-from .accessors import drop_none, first
+from .accessors import drop_none, first, first_resolution
 
 
 def has_cross_attention_adapter(cfg: Any, text_cfg: Any | None = None) -> bool:
@@ -51,13 +51,37 @@ def cross_attention_layers(cfg: Any, text_cfg: Any | None = None) -> list[int] |
     # auditor can locate.  Declaring the container is safe for the interleaved
     # host reads: a container applies only to reads OF the object it names, so
     # the ``cfg`` reads below keep their own document-root paths.
+    # U2-R7: the prefix is walked from the DOCUMENT root, not from ``cfg`` —
+    # an omni thinker host is itself nested (root.thinker_config.text_config),
+    # and a path proven against the document must carry the full address.
+    _doc_obj = _config_access.current_document.get()[1]
+    _container_host = _doc_obj if _doc_obj is not None else cfg
     with _config_access.config_container(
-            _wrapper_path(cfg, text_cfg), obj=text_cfg):
+            _wrapper_path(_container_host, text_cfg), obj=text_cfg):
         value = first(cfg, "cross_attention_layers") or first(text_cfg, "cross_attention_layers")
         if isinstance(value, (list, tuple)):
             return [int(v) for v in value]
         freq = first(cfg, "cross_attention_frequency") or first(text_cfg, "cross_attention_frequency")
-        num_layers = first(text_cfg, "num_hidden_layers", "n_layers") or first(cfg, "num_hidden_layers", "n_layers")
+        # U2-R7: the text depth is READ here, exactly where it always was (the
+        # container names the text sub-config for this read), but it is
+        # CONSUMED only below, where freq x depth actually authors the drawn
+        # cross-attn schedule — a model with no frequency keeps an inspected
+        # read, never a fabricated consumption.  The typed resolution carries
+        # the winning occurrence across the two points.
+        depth_res = first_resolution(text_cfg, "num_hidden_layers", "n_layers")
+        if depth_res is None or not depth_res.value:
+            depth_res = first_resolution(cfg, "num_hidden_layers", "n_layers")
+        num_layers = depth_res.value if depth_res is not None else None
+        if freq and num_layers:
+            # consumed INSIDE the container that proves the occurrence's
+            # path (an omni thinker wrapper re-addresses it outside), via
+            # the typed decision (U2-R2: value and origin bound).
+            num_layers = depth_res.consume_decision(
+                fact_owner="vision.cross_attention",
+                fact_key="text_num_layers",
+                mechanism="cross_attention_schedule",
+                reader="modalities.detect.cross_attention_layer_schedule",
+            ).value
     if freq and num_layers:
         try:
             step = int(freq)

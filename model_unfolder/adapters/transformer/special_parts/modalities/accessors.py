@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from ...common import get_config_value as _g
+from .....evidence import config_access as _config_access
 from .....evidence.identity_roles import identity_display
 
 
@@ -20,6 +21,41 @@ def first(cfg: Any, *keys: str) -> Any:
         if value is not None:
             return value
     return None
+
+
+def first_resolution(cfg: Any, *keys: str):
+    """The :func:`first` winner as a TYPED resolution, or ``None``.
+
+    Same selection law as :func:`first` — a priority chain over DISTINCT
+    fields where the first PRESENT NON-NULL spelling wins, an explicit null
+    is inspected and passed over, and absence events nothing — but the winner
+    comes back as the :class:`ConfigResolution` that OBSERVED it, so a caller
+    can consume the exact occurrence it found (U2-R7) instead of hand-emitting
+    a second event that carries neither the path nor the object it came from
+    (the lifecycle gap the U2.2a vet named)."""
+    for key in keys:
+        resolution = _config_access.resolve_priority(cfg, (key,))
+        if resolution.present and resolution.value is not None:
+            return resolution
+    return None
+
+
+def consume_first(cfg: Any, *keys: str, fact_owner: str, fact_key: str,
+                  mechanism: str) -> Any:
+    """:func:`first` for a value that AUTHORS a drawn stage field (U2-R7).
+
+    The winning occurrence is CONSUMED — the ledger records
+    (occurrence) -> (``fact_owner``, ``fact_key``) under ``mechanism`` — so
+    the read is a fact consumption, never a debt-shaped inspection.  Tri-state
+    honest: only a present, non-null winner consumes; absence stays absent
+    (no event, no fabricated premise) and an explicit null stays an inspected
+    pass-over, exactly as :func:`first` treats them."""
+    resolution = first_resolution(cfg, *keys)
+    if resolution is None:
+        return None
+    return resolution.consume_decision(
+        mechanism=mechanism, fact_owner=fact_owner, fact_key=fact_key,
+        reader="modalities.accessors.consume_first").value
 
 
 def nested(cfg: Any, key: str) -> Any:

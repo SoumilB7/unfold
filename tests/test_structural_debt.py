@@ -55,7 +55,8 @@ _CENSUS = {(_WRITER_MODULE, "parse", "extras", "attention")}
 
 def test_lawful_row_constructs():
     row = _row()
-    assert row.key == ("extras", "attention", _WRITER_MODULE, "parse")
+    assert row.key == ("extras", "attention", _WRITER_MODULE, "parse",
+                       "root.decoder.attention", "text_config.clip_qkv")
     assert row.writer_key == (_WRITER_MODULE, "parse", "extras", "attention")
 
 
@@ -213,7 +214,19 @@ def test_satisfied_condition_blocks_the_surviving_row():
 
 def test_duplicate_rows_block():
     assert duplicate_debt_rows((_row(), _row(reason="second excuse"))) \
-        == [("extras", "attention", _WRITER_MODULE, "parse")]
+        == [("extras", "attention", _WRITER_MODULE, "parse",
+             "root.decoder.attention", "text_config.clip_qkv")]
+
+
+def test_two_owners_reads_of_one_path_are_two_lawful_rows():
+    """config_read identity is (owner, exact path): four slot owners each
+    awaiting the same mechanism are four debts, not one laundered excuse."""
+    a = _row(sink_kind="config_read", structural_target="mask routing",
+             source_occurrence="is_encoder_decoder",
+             deletion_condition="fact_routed:mask",
+             last_consumer=_CONSUMER)
+    b = dataclasses.replace(a, owner="root.text_encoder_2")
+    assert duplicate_debt_rows((a, b)) == []
 
 
 def test_second_writer_of_one_target_is_a_second_lawful_row():

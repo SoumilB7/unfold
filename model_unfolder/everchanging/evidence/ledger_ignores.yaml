@@ -1,0 +1,59 @@
+# Ledger-side scoped-ignore vocabulary (U2-R7).
+#
+# address_keys: identity/ADDRESS reads — a key whose inspected read locates a
+# source, selects a sub-document, or labels a card; it never authors drawn
+# structure.  The config-access ledger converts an inspected read of one of
+# these to a scoped `ignored` intent with a standing reason, so address
+# plumbing is never accessed-but-unconsumed debt.  Formerly the hardcoded
+# `_ADDRESS_KEYS` set in evidence/config_access.py — vocabulary lives HERE
+# (everchanging), never in code.
+#
+# The transformer domain's `ignored_fields.yaml` (keys + suffixes) is ALSO
+# consulted by the same ledger rail: those fields are declared
+# non-architectural for the audit diagnostic, and a read of one is display/
+# plumbing by the same declaration (token ids, sampling knobs).
+
+address_keys:
+  - model_type
+  - architectures
+  - _class_name
+  - _name_or_path
+  - name_or_path
+  - model_id
+  - repo_id
+  - family
+  - family_hint
+  - vision_family
+  - audio_family
+  - profile
+  - auto_map
+  - _diffusers_version
+  - transformers_version
+  - torch_dtype
+  - _commit_hash
+  - _vae_config
+  - _scheduler_config
+  - _text_encoder_configs
+  - _name
+  - id2label
+  - label2id
+  # U2-R7: pipeline component-slot address keys — the slot entry is
+  # ["diffusers", "ClassName"] (a class-name -> friendly-label read at
+  # adapters/diffusor/parser.py::_encoder_stack_specs); the encoder CONFIGS
+  # are audited under _text_encoder_configs as their own documents.
+  - text_encoder
+  - text_encoder_2
+  - text_encoder_3
+  # scheduler slot: class-name -> stage label + flow-matching marker
+  # (adapters/diffusor/parser.py::parse); structural scheduler facts flow
+  # from _scheduler_config.* (U13 boundary).
+  - scheduler
+  # companion-denoiser slot presence (Wan 2.2 two-expert pipelines) — the
+  # stated-omission note reads only the KEY's presence.
+  - transformer_2
+  # U2-R7: sub-document WRAPPER probes — inspecting the wrapper key itself
+  # (does this config nest a text/vision sub-document?) selects a document,
+  # never authors structure; reads INSIDE the sub-document keep their own
+  # exact paths and are not touched by this entry.
+  - text_config
+  - vision_config

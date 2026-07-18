@@ -146,6 +146,29 @@ def render(data: dict) -> str:
     else:
         add("- none")
     add("")
+    # U2-R7: a standing occurrence with an exact PENDING StructuralDebt row
+    # (owner + exact path + U3-U14 unit + checkable deletion condition) is
+    # DISPOSITIONED — rendered in its own section with its unit, never
+    # UNCLASSIFIED.  The join is exact-only; the register's blocking gates
+    # (writer/consumer/stale/growth) keep the rows honest.
+    from model_unfolder.evidence.structural_debt import (
+        STRUCTURAL_DEBT, pending_classification_paths,
+        pending_projection_paths)
+    _pending_pairs = pending_projection_paths() | pending_classification_paths()
+    _pending_unit = {(r.owner, r.source_occurrence): r.migration_unit
+                     for r in STRUCTURAL_DEBT if r.sink_kind == "config_read"}
+    pending_by_owner: dict = defaultdict(list)
+    for owner in sorted(by_owner):
+        kept = []
+        for field, n in sorted(by_owner[owner]):
+            if (owner, field) in _pending_pairs:
+                pending_by_owner[owner].append(
+                    (field, n, _pending_unit[(owner, field)]))
+            else:
+                kept.append((field, n))
+        by_owner[owner] = kept
+    by_owner = {o: rows for o, rows in by_owner.items() if rows}
+
     total = sum(len(v) for v in by_owner.values())
     add(f"## Standing accessed-but-unconsumed occurrences: {total}\n")
     add("Format: `exact.dotted.path (witness count)`, with `(as spelling)` when the")
@@ -161,6 +184,20 @@ def render(data: dict) -> str:
         add(f"### `{owner}` — {len(fields)} rows — **{unit}** ({fam})\n")
         add(f"Paths relative to: {_doc_label(owner)}\n")
         add(", ".join(f"`{f}` ({n}w)" for f, n in fields))
+        add("")
+
+    pending_total = sum(len(v) for v in pending_by_owner.values())
+    add(f"## PENDING occurrences (dispositioned, exact debt rows): "
+        f"{pending_total}\n")
+    add("Each row here is EXCUSED by one exact config_read StructuralDebt row")
+    add("(evidence/structural_debt.py): owner + exact path + U3-U14 unit +")
+    add("checkable deletion condition + the excusal writer/consumer, all")
+    add("gate-enforced.  These are visible debt with an assigned unit — not")
+    add("standing UNCLASSIFIED reads, and never a family-wide excuse.\n")
+    for owner in sorted(pending_by_owner):
+        rows = sorted(pending_by_owner[owner])
+        add(f"### `{owner}` — {len(rows)} pending rows\n")
+        add(", ".join(f"`{f}` ({n}w, {unit})" for f, n, unit in rows))
         add("")
 
     # ---- the two classes that are NOT checkpoint occurrences -------------

@@ -28,7 +28,7 @@ hidden_size: [hidden_size, inner_dim, d_model, dim]
 # Lumina2's fabricated NoPE because this alias was missing axes_dim_rope.
 axes_dims_rope: [axes_dims_rope, axes_dim, axes_dim_rope, rope_axes_dim]
 mrope_section: [mrope_section, rope_sections]
-rope_theta: [rope_theta]
+rope_theta: [rope_theta, theta]   # Lumina2/PRX spell the rotary base "theta"; both also declare axes_dim(_rope), so rope stays axes-driven
 # Learned absolute positions baked into the patch embedding (SD3 / PixArt declare
 # the max grid). Presence => "position from the patch embedding"; its ABSENCE is
 # NOT evidence of NoPE — Flux carries axial RoPE in the model class, not the

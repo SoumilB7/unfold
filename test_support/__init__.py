@@ -456,3 +456,18 @@ CORPUS = {
         },
     }},
 }
+
+
+def bind_document(doc, provenance=None, path=(), owner="root"):
+    """U2-R7 test helper: a DocumentBinding around an arbitrary test dict.
+
+    The loose ``document_scope(path, obj=, provenance=)`` overload is DELETED —
+    tests enter documents the same way production does, through a binding whose
+    object/provenance travel together (checkpoint == document here: these are
+    hand-built documents, not hydrations)."""
+    from model_unfolder.evidence.document import (
+        DocumentBinding, PreparedDocument,
+    )
+    prepared = PreparedDocument(document=doc, checkpoint=doc,
+                                provenance=dict(provenance or {}))
+    return DocumentBinding(owner, tuple(path), prepared)

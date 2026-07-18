@@ -27,7 +27,7 @@ def hydrate_encoder_config_facts(c: dict) -> dict:
     return prepare_document(c, loader_keys=LOADER_STAMPS, merge=False).document
 
 
-def normalize_encoder_config(c: dict, context=None) -> dict:
+def normalize_encoder_config(c: dict, context=None, binding=None) -> dict:
     """Read an encoder's shape off the ONE universal transformer adapter.
 
     A pipeline's text-encoder config *is* a transformers config (CLIP, T5,
@@ -35,7 +35,17 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
     parser that handles those models standalone — every dialect, nested
     ``text_config``, GQA, norm kind — and the neutral spec is projected from
     the resulting IR.  No second field-extraction vocabulary lives here.
+
+    U2-R7: ONE preparation boundary.  An enclosing caller that already
+    prepared and ENTERED this document (the diffusor slot walk) passes its
+    ``binding``; this function then reads ``binding.prepared`` and does NOT
+    prepare again or re-enter the scope (a second entry would compose the
+    slot address twice).  With no binding, this function IS the boundary:
+    it prepares once and holds the bound scope open for its WHOLE body —
+    the post-parse evidence reads included — so no read here is unlocated.
     """
+    from contextlib import nullcontext
+
     from .evidence.context import ParseContext
     from .evidence.ffn import ffn_structure_evidence
     from .evidence.patterns import (
@@ -47,7 +57,9 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
     from .evidence.document import (
         DocumentBinding, LOADER_STAMPS, prepare_document,
     )
-    _prepared = prepare_document(c, loader_keys=LOADER_STAMPS, merge=False)
+    _prepared = (binding.prepared if binding is not None
+                 else prepare_document(c, loader_keys=LOADER_STAMPS,
+                                       merge=False))
     c = _prepared.document
     try:
         if context is None:
@@ -60,21 +72,36 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
         # verified.  The address stays () here: it is document-relative, and the
         # enclosing diffusor scope carries the slot's absolute address.
         _owner = getattr(context, "component_namespace", "root")
-        _binding = DocumentBinding(_owner, (), _prepared)
+        _binding = binding if binding is not None \
+            else DocumentBinding(_owner, (), _prepared)
         if hasattr(context, "prepared_documents"):
             context.prepared_documents[_owner] = _binding
         from .evidence import config_access as _config_access
-        with _config_access.bound_document(_binding):
+        _scope = (_config_access.bound_document(_binding)
+                  if binding is None else nullcontext())
+        with _scope:
             ir = _parse_transformer(c, context=context)
+            if not ir.layers:
+                return {}
+            return _project_encoder_spec(c, ir, context)
     except Exception:
         return {}
-    if not ir.layers:
-        return {}
+
+
+def _project_encoder_spec(c: dict, ir, context) -> dict:
+    """Project the parsed IR into the neutral encoder spec.  Runs INSIDE the
+    slot's bound document scope, so the evidence reads below stay located."""
+    from .evidence.ffn import ffn_structure_evidence
+    from .evidence.patterns import (
+        attention_score_scaling_from_files,
+        decoder_ffn_activation_from_files,
+    )
     # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
     # type, and a heterogeneous stack (sliding/global alternation, hybrid
     # full/linear mixers) additionally carries one entry per distinct signature
     # so the tower renders every real layer type — same collapse the main
     # architecture view uses (ir.distinct_layer_groups).
+    from .adapters.transformer.parser import _norm_kind_evidence, _unwrap_text
     from .ir import distinct_layer_groups
     groups = distinct_layer_groups(ir.layers)
     dominant = max(groups, key=lambda group: len(group["indices"]))
@@ -90,14 +117,19 @@ def normalize_encoder_config(c: dict, context=None) -> dict:
     inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
     def _has(*keys):
         return any(k in src for src in (c, inner) for k in keys)
-    from .adapters.transformer.parser import _norm_kind_evidence, _unwrap_text
     text_cfg = _unwrap_text(c)
-    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-        str(_norm_kind_evidence(
-            text_cfg,
-            (inner.get("norm_type") if isinstance(inner, dict) else None)
-            or c.get("norm_type"),
-            context) or "").lower())
+    # U2-R7: the norm-evidence helper reads eps spellings off the (possibly
+    # nested) text config — name the object here so those reads are located.
+    from .adapters.transformer.common import wrapper_path as _wrapper_path
+    from .evidence import config_access as _config_access
+    with _config_access.config_container(_wrapper_path(c, text_cfg),
+                                         obj=text_cfg):
+        norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+            str(_norm_kind_evidence(
+                text_cfg,
+                (inner.get("norm_type") if isinstance(inner, dict) else None)
+                or c.get("norm_type"),
+                context) or "").lower())
     # Gating and projection storage are code/config facts, never encoder-family
     # conventions.  A config may explicitly select a gated branch (T5's
     # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must

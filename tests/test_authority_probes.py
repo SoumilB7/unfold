@@ -344,7 +344,11 @@ def test_p13_content_exact_unreceipted_targets():
 
 def test_audit_incomplete_names_unmigrated_owners():
     """REC-6 (§12.6): an owner with zero consumed events is NAMED, never
-    empty-clean."""
+    empty-clean.  U2-R7 gave every flux owner a real consumption (scheduler
+    included), so the live witness is clean — the MECHANISM is pinned by
+    stripping the scheduler's consumed fields, leaving root.scheduler with
+    only ignored/inspected events."""
+    import copy
     import json
     import pathlib
 
@@ -356,7 +360,14 @@ def test_audit_incomplete_names_unmigrated_owners():
     rep = sable(flux, render_images=False)
     check = next(c for c in rep.checks if c.name == "config_audit_incomplete")
     assert check.blocking is False          # explicitly staged, not silent
-    assert "root.scheduler" in check.findings, check.findings
+    assert check.findings == [], check.findings   # every owner consumes now
+
+    starved = copy.deepcopy(flux)
+    for consumed_key in ("num_train_timesteps", "prediction_type"):
+        (starved.get("_scheduler_config") or {}).pop(consumed_key, None)
+    rep2 = sable(starved, render_images=False)
+    check2 = next(c for c in rep2.checks if c.name == "config_audit_incomplete")
+    assert "root.scheduler" in check2.findings, check2.findings
 
 
 # --------------------------------------------------------------------------- #

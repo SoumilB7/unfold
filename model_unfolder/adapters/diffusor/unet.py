@@ -11,12 +11,27 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...evidence import config_access as _config_access
 from ...ir import AttentionSpec, FFNSpec
 from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.blocks.feed_forward import ffn_child_blocks, ffn_detail, ffn_view
 from ..transformer.common import get_config_value as _g
 from .blocks import diffusion_loop_blocks, diffusion_loop_edges, diffusion_loop_region
 from .compound import unet_mid_stage, unet_resolution_stage
+
+
+def _consume(cfg: Any, field: str, fact_owner: str, fact_key: str):
+    """U2-R7: CONSUME one exact-spelling UNet config read into the drawn fact
+    it supplies (occurrence -> (fact_owner, fact_key)).  These reads run under
+    the ambient ``root.denoiser`` owner scope set by the diffusor ``parse``;
+    the UNet spellings are exact (no alias vocabulary), matching the bare
+    reads they replace."""
+    res = _config_access.resolve(cfg, field, ())
+    if res.ambiguous:
+        return None
+    return res.consume_decision(
+        mechanism="unet_geometry", fact_owner=fact_owner, fact_key=fact_key,
+        reader="adapters.diffusor.unet._consume").value
 
 
 def is_unet(cfg: Any) -> bool:
@@ -103,7 +118,11 @@ def parse_unet(cfg: Any) -> dict:
     # the canonical attention opener).  Diffusers is ambiguous: when
     # num_attention_heads is unset, attention_head_dim is actually the head COUNT
     # (SDXL: [5,10,20] heads over [320,640,1280] ch ⇒ head_dim 64).
-    nah, ahd = _g(cfg, "num_attention_heads"), _g(cfg, "attention_head_dim")
+    # U2-R7: the head geometry labels every attention-bearing stage of the
+    # drawn U — consumed into the same attention facts as the DiT twin reads
+    # (this UNet read is its own occurrence).
+    nah = _consume(cfg, "num_attention_heads", "denoiser.attention", "num_heads")
+    ahd = _consume(cfg, "attention_head_dim", "denoiser.attention", "head_dim")
 
     def heads_hd(i: int, channels):
         h = at(nah, i, None) if nah is not None else None
@@ -124,7 +143,8 @@ def parse_unet(cfg: Any) -> dict:
     mid["id"] = "unet_mid"
     mid["num_heads"], mid["head_dim"] = heads_hd(n - 1, mid.get("channels"))
 
-    cad = _g(cfg, "cross_attention_dim")
+    cad = _consume(cfg, "cross_attention_dim",
+                   "denoiser.conditioning", "cross_attention_dim")
     if isinstance(cad, (list, tuple)):
         cad = cad[0] if cad else None
     # Declared encoder-width bridge: when encoder_hid_dim is set, the U-net
@@ -133,9 +153,16 @@ def parse_unet(cfg: Any) -> dict:
     # defaults the type to "text_proj" = one nn.Linear — same rule as the code).
     ehd = _g(cfg, "encoder_hid_dim")
     ehdt = _g(cfg, "encoder_hid_dim_type") or ("text_proj" if ehd else None)
+    # U2-R7: act_fn is read ONCE (it was two bare reads) — the declared value
+    # is the drawn ResNet/conv activation label, consumed into the same FFN
+    # fact as the DiT activation; absence falls to the class default ("silu")
+    # carried with default-provenance (act_declared).
+    _act = _consume(cfg, "act_fn", "denoiser.ffn", "activation")
     return {
-        "in_channels": _g(cfg, "in_channels"),
-        "out_channels": _g(cfg, "out_channels"),
+        "in_channels": _consume(cfg, "in_channels", "denoiser.patch",
+                                "in_channels"),
+        "out_channels": _consume(cfg, "out_channels", "denoiser.patch",
+                                 "out_channels"),
         "block_out_channels": boc,
         "cross_attention_dim": cad,
         "encoder_hid": ({"dim": ehd, "type": str(ehdt)} if ehd else None),
@@ -152,8 +179,8 @@ def parse_unet(cfg: Any) -> dict:
         # activation.  An absent field falls to the CLASS default ("silu"),
         # carried with default-provenance so the prose never presents the
         # convention as a declared fact (the old hardcoded "SiLU" strings did).
-        "act_fn": str(_g(cfg, "act_fn") or "silu"),
-        "act_declared": _g(cfg, "act_fn") is not None,
+        "act_fn": str(_act or "silu"),
+        "act_declared": _act is not None,
     }
 
 
