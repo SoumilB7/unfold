@@ -13,7 +13,8 @@ each subsequent diffusion family migration has a ready contract to satisfy.
 """
 from __future__ import annotations
 
-from model_unfolder.evidence.registry import PENDING_PROJECTION_DEBT
+from model_unfolder.evidence.structural_debt import (
+    STRUCTURAL_DEBT, pending_projection_paths)
 from test_support import FLUX, metamorphic
 
 # the exact reads procedure 2 removed (§16.5) — the debt must cover all three
@@ -21,27 +22,31 @@ _REMOVED_READS = {"max_sequence_length", "act_fn", "temporal_compression_ratio"}
 
 
 def test_pending_projection_debt_covers_the_three_removed_reads():
-    """REC-4 grew the register into the living EXACT-debt ledger (§10.3): the
-    original 3 removed reads stay covered, and the 8 fields whose U1
-    config-authored rows were deleted are now visible owner-exact debt."""
-    covered = {entry.canonical for entry in PENDING_PROJECTION_DEBT}
+    """REC-4 grew the register into the living EXACT-debt ledger (§10.3); U2-R6
+    moved it into the ONE StructuralDebt register: the original 3 removed reads
+    stay covered, and the 8 fields whose U1 config-authored rows were deleted
+    are now visible owner-exact debt."""
+    pairs = pending_projection_paths()
+    covered = {path.rsplit(".", 1)[-1] for _, path in pairs}
     assert covered >= _REMOVED_READS, covered
     assert {"in_channels", "patch_size", "norm_num_groups",
             "scaling_factor"} <= covered
-    owners = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}
-    assert ("root.vae", "in_channels") in owners
-    assert ("root.denoiser", "norm_num_groups") in owners
+    assert ("root.vae", "_vae_config.in_channels") in pairs
+    assert ("root.denoiser", "norm_num_groups") in pairs
 
 
 def test_pending_projection_debt_is_fully_qualified():
-    # REC-4/REC-5 grew the exact-debt ledger across owners; every entry still
-    # carries a real component owner from the fixed vocabulary.
+    # REC-4/REC-5 grew the exact-debt ledger across owners; U2-R6 rows carry a
+    # real component owner, a projection target, a checkable deletion condition
+    # and the excusal writer/consumer (constructor-enforced).
     owners = {"root.denoiser", "root.vae", "root.vision"}
-    for entry in PENDING_PROJECTION_DEBT:
-        assert entry.name and entry.canonical and entry.reason and entry.projection
-        assert entry.owner in owners, entry
-    names = [e.name for e in PENDING_PROJECTION_DEBT]
-    assert len(names) == len(set(names)), "duplicate pending-projection names"
+    rows = [r for r in STRUCTURAL_DEBT if r.sink_kind == "config_read"
+            and not r.deletion_condition.startswith("classified:")]
+    for row in rows:
+        assert row.source_occurrence and row.reason and row.structural_target
+        assert row.owner in owners, row
+    pairs = [(r.owner, r.source_occurrence) for r in rows]
+    assert len(pairs) == len(set(pairs)), "duplicate pending-projection rows"
 
 
 def test_the_three_reads_are_still_removed_from_the_diffusor():
@@ -69,7 +74,7 @@ def test_config_field_audit_excuses_the_pending_projection_fields():
 
     ir = mu.unfold(FLUX).to_ir()  # FLUX carries _vae_config.act_fn, a pending fact
     unread = ((ir.get("extras") or {}).get("config_audit") or {}).get("unread", [])
-    pending = {e.canonical for e in PENDING_PROJECTION_DEBT}
+    pending = {path.rsplit(".", 1)[-1] for _, path in pending_projection_paths()}
     offending = [p for p in unread if p.rsplit(".", 1)[-1] in pending]
     assert not offending, (
         "a pending-projection field is a DECLARED classification and must not be "

@@ -247,39 +247,45 @@ def test_raw_write_census_excludes_audit_ledger_infrastructure():
     assert new_raw_structural_extras(set(INFRA_EXTRAS_KEYS), set()) == []
 
 
-# §16.4 Part B: the bare-string RAW_EXTRAS_BASELINE is replaced by the STRUCTURED
-# legacy register in ``evidence/structural_writes.py`` — every raw ir.extras
-# structural write is a ``LegacyExtrasWrite`` carrying owner, reason, migration
-# unit and intended deletion, not merely a string in an allowlist.  The runtime
-# gate below uses that register as the baseline (the full StructuralWrite census
-# — static + poisons — lives in ``test_structural_writes.py``).
+# §16.4 Part B / U2-R6: the structured legacy register is REPLACED by the ONE
+# StructuralDebt register (``evidence/structural_debt.py``) — every raw
+# ir.extras structural write has one EXACT row carrying owner, writer,
+# consumer, U3–U14 unit and a checkable deletion condition.  The runtime gate
+# below uses that register as the baseline (the full StructuralWrite census —
+# static + poisons — lives in ``test_structural_writes.py``).
 
 
 def test_no_new_raw_structural_extras_write_grows_silently(corpus_extras_keys):
     """H2.4 blocking gate: a new unledgered ir.extras structural write the corpus
     produces cannot appear without a conscious registration — the raw-write debt
-    "cannot grow or hide".  Baseline is the STRUCTURED register."""
+    "cannot grow or hide".  Baseline is the StructuralDebt register."""
     from model_unfolder.evidence.registry import new_raw_structural_extras
-    from model_unfolder.evidence.structural_writes import legacy_extras_targets
-    new = new_raw_structural_extras(corpus_extras_keys, legacy_extras_targets())
+    from model_unfolder.evidence.structural_debt import debt_targets
+    new = new_raw_structural_extras(corpus_extras_keys, debt_targets("extras"))
     assert not new, (
         f"new raw structural extras write(s) {new} bypassed the fact registry — "
-        "register as a fact (evidence/registry.py) or add a LegacyExtrasWrite row "
-        "(owner/reason/unit/deletion) in evidence/structural_writes.py")
+        "register as a fact (evidence/registry.py) or add an exact StructuralDebt "
+        "row (owner/writer/consumer/unit/deletion condition) in "
+        "evidence/structural_debt.py")
 
 
-def test_legacy_extras_register_is_not_stale(corpus_extras_keys):
-    """The register must reflect reality: every debt row is either a STATIC
-    ir.extras write in the code or a key the corpus EXERCISES — a row that is
-    neither is stale and must be removed (debt shrinks, never fabricates)."""
+def test_structural_debt_extras_rows_are_not_stale(corpus_extras_keys):
+    """The register must reflect reality: every extras debt row is either a
+    STATIC ir.extras write in the code or a key the corpus EXERCISES — a row
+    that is neither is stale and must be removed (debt shrinks, never
+    fabricates).  (The per-writer census join is the stronger blocking gate in
+    test_structural_writes; this pins the corpus-runtime side.)"""
     from model_unfolder.evidence.registry import INFRA_EXTRAS_KEYS
-    from model_unfolder.evidence.structural_writes import (
-        STRUCTURAL_SURFACE, legacy_extras_targets)
-    static_top = {t for s, t in STRUCTURAL_SURFACE if s == "extras" and "." not in t}
+    from model_unfolder.evidence.structural_debt import STRUCTURAL_DEBT
+    from model_unfolder.evidence.structural_writes import STRUCTURAL_SURFACE
+    static = {t for s, t in STRUCTURAL_SURFACE if s == "extras"}
     produced = set(corpus_extras_keys) - INFRA_EXTRAS_KEYS
-    stale = legacy_extras_targets() - (static_top | produced)
+    rowed = {r.census_target or r.structural_target
+             for r in STRUCTURAL_DEBT if r.sink_kind == "extras"}
+    stale = {t for t in rowed if t.split(".", 1)[0] not in produced
+             and t not in static}
     assert not stale, (
-        f"legacy register has stale rows (neither statically written nor "
+        f"debt register has stale extras rows (neither statically written nor "
         f"corpus-exercised): {sorted(stale)}")
 
 

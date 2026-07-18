@@ -223,15 +223,16 @@ def test_rec5_projector_width_is_code_bound_or_honest_debt():
     import pathlib
 
     import model_unfolder as mu
-    from model_unfolder.evidence.registry import PENDING_PROJECTION_DEBT
+    from model_unfolder.evidence.structural_debt import (
+        pending_projection_paths)
 
     src = (pathlib.Path(mu.__file__).parent / "adapters" / "transformer" /
            "special_parts" / "modalities" / "vision.py").read_text()
     assert "_resolve_out_width" not in src   # the heuristic (and any wrapper)
     assert "def vision_projector_out" not in src   # COR-4: the generic author
 
-    owners = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}
-    assert ("root.vision", "hidden_size") in owners
+    assert ("root.vision", "vision_config.hidden_size") \
+        in pending_projection_paths()
 
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
     cfg = json.loads((corpus / "qwen2-vl-7b-instruct.json").read_text())["config"]

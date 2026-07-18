@@ -10,7 +10,8 @@ one full end-to-end migration as the RAIL every subsequent mechanism follows:
 The attention forward proves it (``decoder_attention_sinks_from_files``); the
 parser records it in the ledger (presence-proven, only when True, so no
 negative-proof obligation); it is registered in REGISTRY with an
-``attention_detail`` projection; and it is removed from DRAWN_UNLEDGERED_DEBT.
+``attention_detail`` projection; and it is absent from the drawn-unledgered
+rows of the StructuralDebt register (U2-R6).
 gpt-oss-20b witnesses it, so the closed-world census stays satisfied.
 """
 from __future__ import annotations
@@ -19,7 +20,8 @@ import json
 import pathlib
 
 import model_unfolder as mu
-from model_unfolder.evidence.registry import DRAWN_UNLEDGERED_DEBT, REGISTRY
+from model_unfolder.evidence.registry import REGISTRY
+from model_unfolder.evidence.structural_debt import drawn_unledgered_names
 from test_support import metamorphic
 
 
@@ -34,7 +36,7 @@ def test_sinks_is_migrated_to_a_registered_code_proven_fact():
     definition = REGISTRY["sinks"]
     assert definition.allowed_statuses == frozenset({"code_proven"})
     assert "attention_detail" in definition.projections
-    assert "sinks" not in {d.name for d in DRAWN_UNLEDGERED_DEBT}
+    assert "sinks" not in drawn_unledgered_names()
 
 
 def test_a_real_sinks_model_records_the_fact_with_provenance():

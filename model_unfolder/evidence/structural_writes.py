@@ -24,11 +24,11 @@ Two gates, both blocking (the tests are the exit criteria — no separate doc):
   corpus proves the static surface covers reality (static catches unused/new
   code paths; runtime catches exercised values/owners/types).
 
-Legacy debt is not a bare allowlist: :data:`LEGACY_EXTRAS` records every raw
-``extras`` structural leaf as a :class:`LegacyExtrasWrite` carrying **owner,
-reason, migration unit and intended deletion** — the register H7/H8 drive to
-zero as each raw write becomes a registered fact or a scoped non-architectural
-extra.
+Legacy debt is not a bare allowlist: every raw ``extras`` structural leaf has
+one EXACT row in the StructuralDebt register (``evidence/structural_debt.py``,
+U2-R6) carrying owner, writer, consumer, U3–U14 migration unit and a checkable
+deletion condition — driven to zero as each raw write becomes a registered
+fact or a scoped non-architectural extra.
 """
 from __future__ import annotations
 
@@ -45,12 +45,10 @@ _SPEC_CLASSES = frozenset({
     "AttentionSpec", "FFNSpec", "LayerSpec", "ModelIR", "CrossLayerEdge",
 })
 _OPGRAPH_CTORS = frozenset({"Op", "Region"})
-# Audit/ledger INFRASTRUCTURE extras families — the census machinery itself, not
-# structural writes (kept in sync with registry.INFRA_EXTRAS_KEYS).
-_INFRA_EXTRAS = frozenset({
-    "config_audit", "config_consumed", "fact_provenance", "source_provenance",
-    "code_evidence", "config_access", "config_ambiguity",
-})
+# Audit/ledger INFRASTRUCTURE extras families — the census machinery itself,
+# not structural writes.  U2-R6: ONE source of truth (registry) — the two
+# near-duplicate sets previously "kept in sync" by comment are unified.
+from .registry import INFRA_EXTRAS_KEYS as _INFRA_EXTRAS
 # Structural card/block dict keys (an ``id``/``kind``/``lane``/``role``/``tag``
 # claim on a drawn card is a structural assertion; free-text keys are not).
 _CARD_KEYS = frozenset({"id", "kind", "lane", "role", "tag"})
@@ -87,19 +85,6 @@ class StructuralWrite:
     @property
     def key(self) -> tuple[str, str]:
         return (self.sink, self.target)
-
-
-@dataclass(frozen=True)
-class LegacyExtrasWrite:
-    """A raw ``ir.extras`` structural leaf, as migration debt with full context
-    (§16.4: an entry carries owner, reason, unit and intended deletion — never a
-    bare string in an allowlist)."""
-
-    target: str      # top-level extras key
-    owner: str       # the owner path that authors it
-    reason: str      # why it is a raw write rather than a registered fact
-    unit: str        # migration unit that converts it (H7 / H8 / scoped)
-    deletion: str    # what replaces it when the unit lands
 
 
 # --------------------------------------------------------------------------- #
@@ -149,6 +134,11 @@ _SPEC_FIELD_LEAVES = frozenset(f.split(".", 1)[1] for f in _SPEC_FIELDS)
 _CARD = frozenset({"id", "kind"})
 _PARAMS = frozenset({"estimate_params:append"})
 _EXTRAS = frozenset({
+    # U2-R6 (reviewed): targets surfaced by the (a0) scanner extension —
+    # top-level ``extras.setdefault``, dict-literal/AnnAssign extras binding,
+    # and ``extras.update``.  These writes always existed; the census was
+    # blind to their shapes (they were the "writer-less" LEGACY_EXTRAS rows).
+    "attention", "render", "rope", "softcap", "unet", "<dynamic>",
     "block_diffusion", "block_diffusion.canvas_length", "codebooks",
     "diffusion", "dual_kv", "dual_kv.global", "dual_kv.sliding", "irope",
     "irope.no_rope_interval", "moe", "moe.every_layer", "moe.num_experts",
@@ -194,67 +184,11 @@ STRUCTURAL_SURFACE: frozenset[tuple[str, str]] = frozenset(
 )
 
 
-# --------------------------------------------------------------------------- #
-# The structured legacy-extras register (owner · reason · unit · deletion)
-# --------------------------------------------------------------------------- #
-LEGACY_EXTRAS: tuple[LegacyExtrasWrite, ...] = (
-    LegacyExtrasWrite("moe", "root.decoder.layer[i].ffn",
-                      "per-layer MoE schedule (experts/shared/top-k) as raw extras",
-                      "H8", "registered per-layer MoE-schedule facts"),
-    LegacyExtrasWrite("mtp", "root",
-                      "multi-token-prediction module structure as raw extras",
-                      "H8", "registered mtp fact or scoped non-architectural extra"),
-    LegacyExtrasWrite("sliding_window", "root.decoder.attention",
-                      "sliding-window schedule (window + first-full layers)",
-                      "H8", "registered attention window/schedule facts"),
-    LegacyExtrasWrite("qk_norm", "root.decoder.attention",
-                      "per-layer QK-norm schedule as raw extras",
-                      "H8", "the qk_norm registered fact extended per layer"),
-    LegacyExtrasWrite("dual_kv", "root.decoder.attention",
-                      "dual global/sliding KV schedule as raw extras",
-                      "H8", "registered attention KV-schedule facts"),
-    LegacyExtrasWrite("irope", "root.decoder.attention",
-                      "interleaved-RoPE (NoPE-interval) schedule as raw extras",
-                      "H8", "registered per-layer no_rope/position facts"),
-    LegacyExtrasWrite("num_kv_shared_layers", "root.decoder.attention",
-                      "cross-layer KV-sharing count as raw extras",
-                      "H8", "cross-layer-edge facts"),
-    LegacyExtrasWrite("parallel_residual", "root.decoder.layer",
-                      "parallel-residual topology flag as raw extras",
-                      "H8", "registered norm_placement/topology fact"),
-    LegacyExtrasWrite("partial_rotary_factor", "root.decoder.attention",
-                      "partial-rotary fraction as raw extras",
-                      "H8", "registered position fact"),
-    LegacyExtrasWrite("position_encoding", "root.decoder.attention",
-                      "position-encoding descriptor as raw extras",
-                      "H8", "registered position facts"),
-    LegacyExtrasWrite("rope", "root.decoder.attention",
-                      "RoPE theta/scaling descriptor as raw extras",
-                      "H8", "registered position facts"),
-    LegacyExtrasWrite("softcap", "root.decoder.attention",
-                      "attention/final softcap descriptor as raw extras",
-                      "H8", "registered logit_softcap fact"),
-    LegacyExtrasWrite("diffusion", "root",
-                      "DiT/MMDiT structural descriptor block as raw extras",
-                      "H7", "registered diffusion facts"),
-    LegacyExtrasWrite("unet", "root",
-                      "UNet block-structure descriptor as raw extras",
-                      "H7", "registered UNet facts"),
-    LegacyExtrasWrite("block_diffusion", "root",
-                      "block-diffusion canvas descriptor as raw extras",
-                      "H7", "registered block-diffusion fact"),
-    LegacyExtrasWrite("codebooks", "root.decoder",
-                      "audio K-codebook structure as raw extras",
-                      "H8", "registered codebook fact"),
-    LegacyExtrasWrite("modalities", "root",
-                      "multimodal tower descriptors (sub-models) as raw extras",
-                      "H8", "first-class recursive sub-model facts"),
-    LegacyExtrasWrite("render", "root",
-                      "PRESENTATION render-spec — not architecture",
-                      "scoped", "none (lawful non-architectural extra; retained)"),
-)
-
-_MIGRATION_UNITS = frozenset({"H7", "H8", "scoped"})
+# U2-R6: ``LegacyExtrasWrite``/``LEGACY_EXTRAS`` are REPLACED by per-target
+# extras rows in the ONE StructuralDebt register (evidence/structural_debt.py)
+# — one EXACT row per (writer, target), U3–U14 units, checkable deletion
+# conditions, and blocking writer/consumer/stale/growth gates.  A top-level
+# key excuses nothing below it: every nested census target carries its own row.
 
 
 # --------------------------------------------------------------------------- #
@@ -417,7 +351,18 @@ def _scan_raw(root: str | Path | None = None) -> list[StructuralWrite]:
                     base = tgt.value
                     name = (base.attr if isinstance(base, ast.Attribute)
                             else base.id if isinstance(base, ast.Name) else "")
-                    if "extras" not in name or not isinstance(tgt.slice, ast.Constant):
+                    # U2-R6: an extras author is recognized by the RECEIVER
+                    # name or by the ENCLOSING symbol (``_merge_extras`` writes
+                    # ``target[key] = value`` — renaming the parameter must not
+                    # hide the author).
+                    if "extras" not in name \
+                            and "extras" not in _enclosing_symbol(node, parents):
+                        continue
+                    if not isinstance(tgt.slice, ast.Constant):
+                        # U2-R6: a VARIABLE-keyed write (``extras[flag] = v``)
+                        # is still a structural author — censused as <dynamic>
+                        # so the writer cannot hide behind a loop variable.
+                        add("extras", "<dynamic>", node)
                         continue
                     outer = tgt.slice.value
                     if outer in _INFRA_EXTRAS:
@@ -438,6 +383,36 @@ def _scan_raw(root: str | Path | None = None) -> list[StructuralWrite]:
                 add("params", f"{_enclosing_symbol(node, parents)}:append", node)
 
             # ---- U2-R4 full-surface branches --------------------------------
+
+            # (a0) U2-R6: TOP-LEVEL extras authors the subscript branch misses —
+            # ``extras.setdefault("rope", …)`` (a Call, not an Assign), a dict
+            # LITERAL bound to an extras variable (``extras = {"unet": …}``),
+            # and ``extras.update(...)`` (dynamic keys; the writer is still a
+            # real author and must be censused even when the key is not).
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                _recv = node.func.value
+                _recv_name = (_recv.attr if isinstance(_recv, ast.Attribute)
+                              else _recv.id if isinstance(_recv, ast.Name) else "")
+                if "extras" in _recv_name:
+                    if node.func.attr == "setdefault" and node.args:
+                        key0 = _const(node.args[0])
+                        if key0 and key0 not in _INFRA_EXTRAS:
+                            add("extras", key0, node)
+                    elif node.func.attr == "update":
+                        add("extras", "<update>", node)
+            if isinstance(node, (ast.Assign, ast.AnnAssign)) \
+                    and isinstance(node.value, ast.Dict):
+                _targets = (node.targets if isinstance(node, ast.Assign)
+                            else [node.target])
+                for tgt in _targets:
+                    tname = (tgt.attr if isinstance(tgt, ast.Attribute)
+                             else tgt.id if isinstance(tgt, ast.Name) else "")
+                    if "extras" not in tname:
+                        continue
+                    for k in node.value.keys:
+                        key0 = _const(k) if k is not None else None
+                        if key0 and key0 not in _INFRA_EXTRAS:
+                            add("extras", key0, node)
 
             # (a) NESTED extras writes — mutation of a render-structural subtree
             # (extras["render"].setdefault(...)/.append/.extend/[x][y]=), which the
@@ -627,17 +602,11 @@ def runtime_structural_surface(ir: Any, *, max_depth: int = 40
     return out
 
 
-def legacy_extras_targets() -> frozenset[str]:
-    """The top-level extras keys the structured register accounts for — the
-    structured replacement for the old bare ``RAW_EXTRAS_BASELINE`` string set."""
-    return frozenset(entry.target for entry in LEGACY_EXTRAS)
-
-
 __all__ = [
     "StructuralWriteKey", "scan_structural_write_multiset",
-    "StructuralWrite", "LegacyExtrasWrite", "STRUCTURAL_SURFACE", "LEGACY_EXTRAS",
+    "StructuralWrite", "STRUCTURAL_SURFACE",
     "scan_structural_writes", "new_structural_writes", "stale_surface_entries",
-    "runtime_structural_targets", "legacy_extras_targets",
+    "runtime_structural_targets",
 ]
 
 
@@ -646,6 +615,23 @@ __all__ = [
 # set, which structurally could not see a second author of one target).
 # --------------------------------------------------------------------------- #
 _STRUCTURAL_WRITERS_BASELINE = frozenset({
+    # U2-R6 (reviewed): top-level setdefault/dict-literal/AnnAssign extras
+    # authors the scanner previously missed — the writers behind the
+    # formerly writer-less LEGACY_EXTRAS rows (rope/softcap/unet/render) —
+    # plus the variable-keyed pass-through-flag loop (<dynamic>).
+    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras',
+     '<dynamic>'),
+    ('model_unfolder/adapters/transformer/assembly.py', '_merge_extras',
+     'extras', '<dynamic>'),
+    ('model_unfolder/adapters/transformer/special_parts/modalities/builder.py',
+     'multimodal_extras', 'extras', '<dynamic>'),
+    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'render'),
+    ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'unet'),
+    ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'extras', 'render'),
+    ('model_unfolder/adapters/transformer/assembly.py', 'decoder_extras', 'extras', 'render'),
+    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'attention'),
+    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'rope'),
+    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'softcap'),
     # U2-R5 (reviewed): the pilot's typed-fact author — the projector
     # out-width consumption records projector_out_features (code_and_config).
     ('model_unfolder/adapters/transformer/special_parts/modalities/vision.py', '_record_projector_fact', 'ledger', '<dynamic>'),
@@ -967,6 +953,8 @@ STRUCTURAL_WRITERS: frozenset = frozenset(
 # Every other pinned key has count 1.  Growth = live count > pinned count,
 # so a SECOND write of one target in one symbol is caught, not only a new key.
 _STRUCTURAL_WRITERS_MULTI = {
+    # U2-R6: three rope setdefault sites in one symbol
+    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'rope'): 3,
     ('model_unfolder/adapters/diffusor/parser.py', '_dit_ffn', 'spec', 'FFNSpec'): 4,
     ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'spec_mutation', 'blocks'): 4,
     ('model_unfolder/adapters/diffusor/unet.py', '_code_attn_card', 'spec', 'AttentionSpec'): 2,

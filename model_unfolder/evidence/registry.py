@@ -384,42 +384,11 @@ def fact_definition(fact_name: str) -> FactDefinition | None:
     return REGISTRY.get(fact_name)
 
 
-@dataclass(frozen=True)
-class DrawnUnledgeredFact:
-    """H6 (§16.6) reverse-fabrication debt: a leaf name the RENDERER draws for
-    which no ledger writer exists yet (census §0.6).  It is drawn from an
-    AttentionSpec tri-state field, so it is not fabricated from nothing — but it
-    is not a registered fact with provenance either, so it is pinned here with an
-    owner, a reason, the H8 unit that gives it a writer, and the fact it becomes.
-    A drawn leaf that is NEITHER registered NOR in this register is fabrication."""
-
-    name: str
-    surface: str
-    reason: str
-    unit: str
-    becomes: str
-
-
-# The six drawn-but-unledgered leaves (H2 census §0.6).  Drawn from the spec's
-# tri-state; H8 gives each a ledger writer, at which point it moves to REGISTRY.
-DRAWN_UNLEDGERED_DEBT: tuple[DrawnUnledgeredFact, ...] = (
-    DrawnUnledgeredFact("position_kind", "attention_detail",
-                        "positional scheme (rope/alibi/learned/none) drawn from the "
-                        "AttentionSpec tri-state; no ledger writer yet",
-                        "H8", "registered position_kind fact"),
-    DrawnUnledgeredFact("qk_norm", "attention_detail",
-                        "per-head Q/K normalisation drawn from spec.qk_norm",
-                        "H8", "registered qk_norm fact"),
-    DrawnUnledgeredFact("q_norm", "attention_detail",
-                        "separate Q-norm variant drawn from spec", "H8",
-                        "registered q_norm fact (or folded into qk_norm)"),
-    DrawnUnledgeredFact("k_norm", "attention_detail",
-                        "separate K-norm variant drawn from spec", "H8",
-                        "registered k_norm fact (or folded into qk_norm)"),
-    DrawnUnledgeredFact("logit_softcap", "attention_detail",
-                        "logit soft-cap op drawn from spec.logit_softcap",
-                        "H8", "registered logit_softcap fact"),
-)
+# U2-R6: ``DrawnUnledgeredFact``/``DRAWN_UNLEDGERED_DEBT`` are REPLACED by
+# drawn_leaf rows in the ONE StructuralDebt register
+# (evidence/structural_debt.py) — same exclusive-or law, now with a writer,
+# a consumer, a U3–U14 unit and a checkable deletion condition per leaf
+# (``drawn_unledgered_names()`` is the lawful-drawn join).
 
 
 def census_problems(rows, registry: dict[str, FactDefinition] | None = None) -> list[str]:
@@ -482,29 +451,11 @@ def validate_typed_write(fact) -> list[str]:
     return problems
 
 
-@dataclass(frozen=True)
-class PendingProjectionFact:
-    """H7 (§16.5/§16.6) — a diffusion config fact acknowledged as TYPED debt with
-    its projection still PENDING.  §16.5 removed three audit-clearing diffusion
-    reads because they had no structural consumer; they may return only "through
-    H7 typed facts with actual projections OR declared pending debt".  This is the
-    declared-pending-debt path: the fact is registered (named, owned, reasoned),
-    so it is no longer a silent read NOR a forgotten removal — the H7-full reader
-    + its render projection are the named next step."""
-
-    name: str
-    owner: str          # root.denoiser / root.vae
-    canonical: str      # the config field it reads
-    reason: str
-    projection: str     # the render surface it will draw on when H7-full lands
-    # COR-2 (§7): the EXACT dotted config path this entry may excuse — when
-    # set, the join is (owner, exact path); empty = owner+canonical for
-    # leaf-unique top-level entries only.
-    config_path: str = ""
-
-
-# The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
-# pending-projection debt (registered typed facts, projection pending H7-full).
+# U2-R6: ``PendingProjectionFact``/``PENDING_PROJECTION_DEBT`` are REPLACED by
+# config_read rows in the ONE StructuralDebt register — every field preserved
+# (owner, exact path, reason, projection target as structural_target) plus a
+# writer, a consumer, a U3–U14 unit and a checkable deletion condition
+# (``pending_projection_paths()`` is the parser's exact-only excusal join).
 # U2-R5: ``ProjectionPolicy`` is DELETED.  FactDefinition.projection_routes is
 # the SOLE projection-route authority — a claim binds a source occurrence to a
 # fact; the FACT owns where it may project, and the receipted-scope set derives
@@ -599,127 +550,19 @@ MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
 )
 
 
-@dataclass(frozen=True)
-class PendingConfigClassification:
-    """COR-1/COR-2 (§7 correction plan): an EXACT config occurrence not yet
-    interpreted — owner + exact dotted path + reason + deletion unit.  Distinct
-    from PendingProjectionFact (a typed fact awaiting its drawing): here the
-    OCCURRENCE itself awaits its consumer.  Never a bare leaf key."""
-
-    name: str
-    owner: str
-    config_path: str          # exact dotted path in the checkpoint document
-    reason: str
-    deletion_unit: str
-
-    def __post_init__(self) -> None:
-        if not all((self.name, self.owner, self.config_path, self.reason,
-                    self.deletion_unit)):
-            raise ValueError(f"pending classification {self.name!r} must carry "
-                             "owner, exact path, reason, and deletion unit")
-
-
-# The explicit-null feature-absence declarations the COR-1 null-flip unmasked
-# (nothing reads them yet; U11's source-derived UNet binds the non-null paths).
-PENDING_CONFIG_CLASSIFICATION: tuple[PendingConfigClassification, ...] = (
-    PendingConfigClassification(
-        "pixart_num_vector_embeds", "root.denoiser", "num_vector_embeds",
-        "explicit-null VQ-embedding declaration on the legacy DiT config", "U11"),
-    PendingConfigClassification(
-        "unet_add_watermarker", "root.denoiser", "add_watermarker",
-        "explicit-null pipeline watermark flag on the UNet config", "U11"),
-    PendingConfigClassification(
-        "unet_class_embed_type", "root.denoiser", "class_embed_type",
-        "explicit-null class-conditioning declaration (feature absent)", "U11"),
-    PendingConfigClassification(
-        "unet_cross_attention_norm", "root.denoiser", "cross_attention_norm",
-        "explicit-null cross-attention norm declaration", "U11"),
-    PendingConfigClassification(
-        "unet_mid_block_only_cross_attention", "root.denoiser",
-        "mid_block_only_cross_attention",
-        "explicit-null mid-block attention-mode declaration", "U11"),
-    PendingConfigClassification(
-        "unet_num_class_embeds", "root.denoiser", "num_class_embeds",
-        "explicit-null class-embedding count declaration", "U11"),
-    PendingConfigClassification(
-        "unet_time_embedding_dim", "root.denoiser", "time_embedding_dim",
-        "explicit-null timestep-embedding width declaration", "U11"),
-)
-
-
-PENDING_PROJECTION_DEBT: tuple[PendingProjectionFact, ...] = (
-    PendingProjectionFact("denoiser_max_sequence", "root.denoiser", "max_sequence_length",
-                          "max text-token sequence the denoiser conditions on (Mochi) — "
-                          "a declared conditioning limit",
-                          "the conditioning card on the denoiser view",
-                          config_path="max_sequence_length"),
-    PendingProjectionFact("vae_activation", "root.vae", "act_fn",
-                          "the VAE decoder's convolution activation (video VAEs) — a "
-                          "constructor record",
-                          "the VAE-decoder ResNet cells' activation chip",
-                          config_path="_vae_config.act_fn"),
-    PendingProjectionFact("vae_temporal_compression", "root.vae", "temporal_compression_ratio",
-                          "the VAE's own temporal compression (HunyuanVideo/Wan) — "
-                          "distinct from the denoiser-level ratio",
-                          "the VAE latent-depth / temporal-axis chip",
-                          config_path="_vae_config.temporal_compression_ratio"),
-    # REC-4 (§10.3): the U1 config-authored card rows are DELETED; the fields
-    # they were papering over return as EXACT visible debt — owner + path +
-    # reason + target + deletion unit (U11/U12 derive these from source).
-    PendingProjectionFact("vae_in_channels", "root.vae", "in_channels",
-                          "VAE encoder input channels — awaits the source-derived "
-                          "VAE component graph (deletion unit U12/V-02)",
-                          "the VAE encoder intake chip",
-                          config_path="_vae_config.in_channels"),
-    PendingProjectionFact("vae_sample_height", "root.vae", "sample_height",
-                          "VAE declared sample height (CogVideoX) — U12/V-02",
-                          "the VAE sample-geometry chip",
-                          config_path="_vae_config.sample_height"),
-    PendingProjectionFact("vae_sample_width", "root.vae", "sample_width",
-                          "VAE declared sample width (CogVideoX) — U12/V-02",
-                          "the VAE sample-geometry chip",
-                          config_path="_vae_config.sample_width"),
-    PendingProjectionFact("vae_patch_size", "root.vae", "patch_size",
-                          "patchified VAE spatial patch (FLUX.2/LTX) — U12/V-03",
-                          "the VAE patchify chip",
-                          config_path="_vae_config.patch_size"),
-    PendingProjectionFact("vae_patch_size_t", "root.vae", "patch_size_t",
-                          "patchified VAE temporal patch (LTX) — U12/V-03",
-                          "the VAE temporal-patchify chip",
-                          config_path="_vae_config.patch_size_t"),
-    PendingProjectionFact("vae_attention_head_dim", "root.vae", "attention_head_dim",
-                          "DC-AE decoder attention head width (Sana) — U12/V-05",
-                          "the VAE decoder attention chip",
-                          config_path="_vae_config.attention_head_dim"),
-    PendingProjectionFact("denoiser_norm_num_groups", "root.denoiser", "norm_num_groups",
-                          "GroupNorm group count declared on UNet/legacy-DiT "
-                          "denoisers — U11/U-06 derives the cell norm from source",
-                          "the UNet ResNet-cell norm chip",
-                          config_path="norm_num_groups"),
-    PendingProjectionFact("vision_out_width", "root.vision", "hidden_size",
-                          "the vision config's declared merger/output width "
-                          "(qwen2-vl: 3584 beside internal embed_dim=1280) — a "
-                          "config comparison may NOT infer its meaning.  COR-4: "
-                          "where construction evidence exists the source-bound "
-                          "projector CONSUMES it exactly (fact "
-                          "projector_out_features), discharging this row; it "
-                          "stays visible debt only for source-less grid towers",
-                          "the projector output-width chip",
-                          config_path="vision_config.hidden_size"),
-    PendingProjectionFact("denoiser_scaling_factor", "root.denoiser", "scaling_factor",
-                          "pipeline-level latent-scale duplicate on the denoiser "
-                          "config (Lumina); the VAE's own scaling_factor is the "
-                          "drawn read — U12 latent-IO fact",
-                          "the latent scale chip (VAE-owned)",
-                          config_path="scaling_factor"),
-)
+# U2-R6: ``PendingConfigClassification``/``PENDING_CONFIG_CLASSIFICATION`` are
+# REPLACED by config_read rows with ``classified:`` deletion conditions in the
+# ONE StructuralDebt register (``pending_classification_paths()`` is the
+# parser-excusal + claims-audit join).
 
 
 # The audit/ledger INFRASTRUCTURE extras keys — the census machinery itself,
 # not raw structural writes.  Excluded from the raw-structural-write census.
+# U2-R6: the ONE source — structural_writes._INFRA_EXTRAS imports this (the
+# two near-duplicate sets "kept in sync" by comment are unified).
 INFRA_EXTRAS_KEYS = frozenset({
     "config_audit", "source_provenance", "fact_provenance", "config_consumed",
-    "code_evidence", "config_access",
+    "code_evidence", "config_access", "config_ambiguity",
 })
 
 
@@ -742,6 +585,4 @@ __all__ = [
     "PROJECTION_SURFACES", "UNKNOWN_POLICIES", "INFRA_EXTRAS_KEYS",
     "FactDefinition", "REGISTRY", "census_problems", "fact_definition",
     "new_raw_structural_extras", "validate_typed_write",
-    "DrawnUnledgeredFact", "DRAWN_UNLEDGERED_DEBT",
-    "PendingProjectionFact", "PENDING_PROJECTION_DEBT",
 ]

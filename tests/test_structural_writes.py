@@ -16,9 +16,7 @@ from collections import Counter
 import pytest
 
 from model_unfolder.evidence.structural_writes import (
-    LEGACY_EXTRAS,
     STRUCTURAL_SURFACE,
-    legacy_extras_targets,
     new_structural_writes,
     runtime_structural_targets,
     scan_structural_writes,
@@ -54,26 +52,44 @@ def test_scanner_covers_every_sink_never_vacuous():
 
 
 # --------------------------------------------------------------------------- #
-# The structured legacy register (owner · reason · unit · deletion)
+# The ONE StructuralDebt register (U2-R6) — live blocking gates
 # --------------------------------------------------------------------------- #
 
-def test_legacy_extras_register_is_fully_qualified():
-    """§16.4: every legacy entry carries owner, reason, migration unit and
-    intended deletion — never a bare string in an allowlist."""
-    units = {"H7", "H8", "scoped"}
-    for entry in LEGACY_EXTRAS:
-        assert entry.target and entry.owner and entry.reason and entry.deletion, entry
-        assert entry.unit in units, f"{entry.target}: unit {entry.unit!r} not in {units}"
-    targets = [entry.target for entry in LEGACY_EXTRAS]
-    assert len(targets) == len(set(targets)), "duplicate legacy-extras targets"
+def test_structural_debt_register_is_lawful_and_exact():
+    """§R6 blocking report on the LIVE register: no duplicate row, every row's
+    writer joins the live census (or exists, for non-census sinks), every
+    consumer symbol exists, no deletion condition already satisfied, and every
+    raw extras census target — top-level AND nested, family excuses are gone —
+    has its own exact row."""
+    from model_unfolder.evidence.structural_debt import debt_problems
+    assert debt_problems() == []
 
 
-def test_every_raw_extras_write_has_a_structured_debt_row():
-    """No top-level raw ``extras`` structural write may exist without a
-    structured debt row — the bare-string allowlist is gone."""
-    top_level = {t for s, t in STRUCTURAL_SURFACE if s == "extras" and "." not in t}
-    missing = top_level - legacy_extras_targets()
-    assert not missing, f"raw extras writes without a structured register row: {missing}"
+def test_structural_debt_units_are_u3_to_u14_by_construction():
+    """The H7/H8/'scoped' vocabulary is DEAD — rows carry U3–U14 only, and the
+    constructor (not this test) is the enforcement; here we pin that the live
+    register is non-empty and every row parses its checkable condition."""
+    from model_unfolder.evidence.structural_debt import (
+        MIGRATION_UNITS, STRUCTURAL_DEBT)
+    assert len(STRUCTURAL_DEBT) >= 60, "the register lost rows unexpectedly"
+    assert {r.migration_unit for r in STRUCTURAL_DEBT} <= MIGRATION_UNITS
+
+
+def test_shrink_rule_deleting_a_writer_strands_its_row():
+    """§R6: deleting/migrating a writer must shrink the register in the same
+    commit — with the writer's census key gone, the row is DEAD (unbacked)
+    and the blocking report names it."""
+    from model_unfolder.evidence.structural_debt import (
+        STRUCTURAL_DEBT, unbacked_debt_rows)
+    row = next(r for r in STRUCTURAL_DEBT
+               if r.sink_kind == "extras" and r.structural_target == "rope")
+    from model_unfolder.evidence.structural_writes import (
+        scan_structural_write_multiset)
+    keys = {(k.module, k.enclosing_symbol, k.sink_kind, k.normalized_target)
+            for k in scan_structural_write_multiset()}
+    assert unbacked_debt_rows((row,), census_keys=keys) == []
+    keys.discard(row.writer_key)
+    assert unbacked_debt_rows((row,), census_keys=keys) == [row]
 
 
 # --------------------------------------------------------------------------- #
@@ -83,11 +99,12 @@ def test_every_raw_extras_write_has_a_structured_debt_row():
 def test_runtime_targets_are_top_level_and_covered():
     from test_support import LLAMA
     import model_unfolder as mu
+    from model_unfolder.evidence.structural_debt import debt_targets
 
     targets = runtime_structural_targets(mu.unfold(LLAMA).ir)
     assert all(sink == "extras" and "." not in t for sink, t in targets), \
         "runtime gate unit must be top-level extras keys"
-    uncovered = {t for _, t in targets if t not in legacy_extras_targets()}
+    uncovered = {t for _, t in targets if t not in debt_targets("extras")}
     assert not uncovered, f"runtime top-level extras not in the register: {uncovered}"
 
 

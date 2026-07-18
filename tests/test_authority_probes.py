@@ -23,7 +23,6 @@ import model_unfolder as mu
 from model_unfolder.evidence.config_access import capture_events, owner_scope
 from model_unfolder.evidence.identity_guard import scan_identity_source
 from model_unfolder.evidence.patterns import decoder_attention_sinks_from_files
-from model_unfolder.evidence.registry import DrawnUnledgeredFact
 from model_unfolder.evidence.structural_writes import StructuralWrite
 from test_support import LLAMA
 
@@ -235,11 +234,15 @@ def test_p10_structural_write_key_is_site_qualified():
 # §5.8 — debt rows must carry their owner (unit U2)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.8/U2: DrawnUnledgeredFact's docstring "
-                   "claims an owner but the dataclass has no owner field")
 def test_p11_drawn_unledgered_debt_carries_an_owner_field():
-    field_names = {f.name for f in dataclasses.fields(DrawnUnledgeredFact)}
-    assert "owner" in field_names, f"debt row fields lack owner: {sorted(field_names)}"
+    """CLOSED by U2-R6: the ONE StructuralDebt register replaced
+    DrawnUnledgeredFact (which claimed an owner in its docstring but had no
+    field) — every debt row now carries a typed owner plus writer, consumer,
+    unit and a checkable deletion condition."""
+    from model_unfolder.evidence.structural_debt import StructuralDebt
+    field_names = {f.name for f in dataclasses.fields(StructuralDebt)}
+    assert {"owner", "writer_module", "writer_symbol", "last_consumer",
+            "migration_unit", "deletion_condition"} <= field_names
 
 
 # --------------------------------------------------------------------------- #

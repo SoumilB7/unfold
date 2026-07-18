@@ -150,7 +150,8 @@ def config_to_ir(
     # DIFFUSION parse is the denoiser (adapter-kind is a code-shape fact about
     # the ADAPTER module, never model identity).  A NEW unread field is still
     # flagged; a stale registry entry no longer matching any path costs nothing.
-    from .evidence.registry import PENDING_PROJECTION_DEBT
+    from .evidence.structural_debt import (
+        pending_classification_paths, pending_projection_paths)
 
     def _unread_path_owner(path: str) -> str:
         # REC-5: the SAME owner attribution the unread join uses — two
@@ -161,11 +162,10 @@ def config_to_ir(
         return owner if owner is not None else _root_owner
 
     # COR-2 (§7/§12.4) as tightened by the fourth vet: the projection-debt
-    # join is EXACT ONLY — (owner, exact dotted path).  Every register entry
-    # now declares its path (top-level fields declare the leaf AS the path),
-    # and the leaf-name fallback is DELETED.
-    _pending_exact = {(entry.owner, entry.config_path)
-                      for entry in PENDING_PROJECTION_DEBT}
+    # join is EXACT ONLY — (owner, exact dotted path).  U2-R6: the pairs come
+    # from the ONE StructuralDebt register (config_read rows), which pins the
+    # excusal writer/consumer and a checkable deletion condition per row.
+    _pending_exact = pending_projection_paths()
     pending_projection = sorted(
         path for path in unread
         if (_unread_path_owner(path), path) in _pending_exact)
@@ -173,9 +173,7 @@ def config_to_ir(
     # COR-1/COR-2: EXACT-path pending classifications (an occurrence whose
     # consumer does not exist yet) — joined on owner + exact dotted path,
     # visible in diagnostics, never a bare leaf.
-    from .evidence.registry import PENDING_CONFIG_CLASSIFICATION
-    _pending_cls = {(entry.owner, entry.config_path)
-                    for entry in PENDING_CONFIG_CLASSIFICATION}
+    _pending_cls = pending_classification_paths()
     pending_classification = sorted(
         path for path in unread
         if (_unread_path_owner(path), path) in _pending_cls)
@@ -222,8 +220,7 @@ def config_to_ir(
     from .evidence.registry import MIGRATED_SCOPES
     _claim_rows = validate_claims(
         _access_ledger.events, MIGRATED_SCOPES,
-        classified_paths={(entry.owner, entry.config_path)
-                          for entry in PENDING_CONFIG_CLASSIFICATION})
+        classified_paths=set(pending_classification_paths()))
     ir.extras["config_access"] = {
         "accessed": _q(_access_ledger.accessed()),
         "consumed": _q(_access_ledger.consumed()),
@@ -283,8 +280,7 @@ def config_to_ir(
         # is the honest full read-but-not-yet-receipted census; it turns
         # blocking only after receipts + corpus debt migration (§20.4.10).
         "consumed_unprojected": _q(_access_ledger.consumed_but_unprojected(
-            pending_sources={(e.owner, e.config_path)
-                                 for e in PENDING_PROJECTION_DEBT})),
+            pending_sources=set(_pending_exact))),
         # COR-2 (§7): STRUCTURED obligations — exact source occurrence AND
         # exact target per consumption; state is data, never message text.
         # U2: the global ``projection_receipts_available`` boolean is REPLACED
@@ -306,8 +302,7 @@ def config_to_ir(
              "mechanism": ob.mechanism,
              "expected_value_status_hash": ob.expected_value_status_hash}
             for ob in _access_ledger.projection_obligations(
-                pending_sources={(e.owner, e.config_path)
-                                 for e in PENDING_PROJECTION_DEBT})],
+                pending_sources=set(_pending_exact))],
     }
     # U2 P0: per-fact provenance foundation. Fold the spec-level B5 ``asserted``
     # tags into the call-local FactLedger and serialize it.  This is accounting,
