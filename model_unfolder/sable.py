@@ -298,6 +298,41 @@ def _zero_asserted_census_findings(cfg, source: str) -> list[str]:
     return findings
 
 
+def _standing_unconsumed_findings(ir: dict) -> list[str]:
+    """U2-R8 net 3: every accessed-but-unconsumed occurrence must be excused
+    by an EXACT pending debt row (owner + dotted path); ledger-ignored reads
+    never reach this list, so what remains is a real disposition gap."""
+    from .evidence.structural_debt import (
+        pending_classification_paths, pending_projection_paths,
+    )
+    pending = pending_projection_paths() | pending_classification_paths()
+    rows = (((ir.get("extras") or {}).get("config_access") or {})
+            .get("accessed_unconsumed_exact") or [])
+    return [
+        f"{row.get('component')}:{row.get('path')} (as "
+        f"{row.get('spelling')}) — accessed but neither consumed, "
+        "scoped-ignored, nor exact pending debt"
+        for row in rows
+        if (row.get("component"), row.get("path")) not in pending
+    ]
+
+
+def _structural_debt_findings() -> list[str]:
+    """U2-R8 nets 7+8: unregistered writers + register health, render-time."""
+    from .evidence.structural_debt import debt_problems
+    from .evidence.structural_writes import (
+        new_structural_writers, stale_structural_writers,
+    )
+    findings = [f"unregistered structural writer: {k.module}::"
+                f"{k.enclosing_symbol} -> {k.sink_kind}:{k.normalized_target}"
+                for k in new_structural_writers()]
+    findings += [f"stale writer baseline pin: {k.module}::"
+                 f"{k.enclosing_symbol} -> {k.sink_kind}:{k.normalized_target}"
+                 for k in stale_structural_writers()]
+    findings += debt_problems()
+    return findings
+
+
 def _accessed_unprojected_findings(ir: dict) -> list[str]:
     """ADVISORY: config occurrences accessed/bound but neither CONSUMED into a
     spec field NOR scoped-ignored — the looked-up-but-unused class (granite
@@ -530,11 +565,43 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # this finding, never a silently chosen value.
         # REC-6 (§12.6): owners with NO consumed census are NAMED — staged
         # advisory until every adapter's consumption migrates (then blocking).
+        # U2-R8: BLOCKING — R7 migrated every adapter's consumption (the
+        # staged condition this net's advisory period named), so an owner
+        # with zero consumed events is a regression, not a migration gap.
         SableCheck(
             "config_audit_incomplete",
             list(((ir.get("extras") or {}).get("config_access") or {})
                  .get("audit_incomplete") or []),
-            blocking=False,
+        ),
+        # U2-R8 net 1 — prepared-document boundary completeness: a read whose
+        # LOCATION was never named or whose document ORIGIN was never
+        # established survives only while a boundary is missing; R7 drove
+        # both to zero, so any reappearance blocks at its first witness.
+        SableCheck(
+            "document_boundary_completeness",
+            [f"unlocated read: {row}" for row in
+             (((ir.get("extras") or {}).get("config_access") or {})
+              .get("accessed_unresolved_path") or [])]
+            + [f"unestablished origin: {row}" for row in
+               (((ir.get("extras") or {}).get("config_access") or {})
+                .get("unestablished_provenance") or [])],
+        ),
+        # U2-R8 net 3 — accessed but neither consumed, scoped-ignored, nor
+        # exact pending debt: the R7 standing-zero state, locked per model.
+        # The excusal join is EXACT (owner + dotted path) against the ONE
+        # StructuralDebt register — never a bare leaf or family prefix.
+        SableCheck(
+            "config_standing_unconsumed",
+            _standing_unconsumed_findings(ir),
+        ),
+        # U2-R8 nets 7+8 — structural writers and the debt register, at
+        # render time: a writer the census does not know, a census key the
+        # baseline does not pin, or a debt row that is duplicate/dead/
+        # satisfied/unrowed blocks every model until the register shrinks or
+        # the writer is registered (same-commit shrink law).
+        SableCheck(
+            "structural_debt_register",
+            _structural_debt_findings(),
         ),
         SableCheck(
             "config_ambiguity",

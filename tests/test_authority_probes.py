@@ -359,7 +359,7 @@ def test_audit_incomplete_names_unmigrated_owners():
     flux = json.loads((corpus / "flux-2-dev.json").read_text())["config"]
     rep = sable(flux, render_images=False)
     check = next(c for c in rep.checks if c.name == "config_audit_incomplete")
-    assert check.blocking is False          # explicitly staged, not silent
+    assert check.blocking is True           # U2-R8: the staged period ended
     assert check.findings == [], check.findings   # every owner consumes now
 
     starved = copy.deepcopy(flux)
