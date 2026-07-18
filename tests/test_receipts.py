@@ -49,9 +49,13 @@ def _qwen2vl():
 # Hermetic fixture: one migrated scope, fully specified
 # ---------------------------------------------------------------------------
 
+_SYMBOL = ("renderers.html.block_views.declared_ops."
+           "build_declared_ops_view")
 _ROUTE = ProjectionRoute("root.vision", "projector_out_width", "card",
                          "vision_projector", frozenset({"op"}),
-                         frozenset({("vision_projector",)}))
+                         frozenset({("vision_projector",)}),
+                         frozenset({_SYMBOL}))
+_ROUTES = {"projector_out_features": (_ROUTE,)}
 _FACT_ROWS = {"root.vision.projector_out_features":
               {"value": 3584, "status": "code_and_config"}}
 _EXPECTED = value_status_hash(3584, "code_and_config")
@@ -74,20 +78,19 @@ def _receipt(**overrides):
         fact_key="projector_out_features", mechanism="projector_out_width",
         fact_value_status_hash=_EXPECTED, surface="card",
         structural_target="vision_projector",
-        projector_symbol=("renderers.html.block_views.declared_ops."
-                          "build_declared_ops_view"),
+        projector_symbol=_SYMBOL, projection_kind="op",
         node_ids=("vision_projector",), context_token=_TOKEN)
     base.update(overrides)
     return ProjectionReceipt(**base)
 
 
-def _join(receipts, obligations=None, facts=None, token=_TOKEN, routes=(_ROUTE,)):
+def _join(receipts, obligations=None, facts=None, token=_TOKEN, routes=None):
     return join_obligation_receipts(
         obligations if obligations is not None else [_obligation()],
         receipts, facts if facts is not None else _FACT_ROWS,
         context_token=token,
         scopes=frozenset({("root.vision", "projector_out_width")}),
-        routes=routes)
+        routes=routes if routes is not None else _ROUTES)
 
 
 # ---------------------------------------------------------------------------
@@ -181,9 +184,13 @@ def test_wrong_node_identity_blocks():
                for f in result["findings"])
 
 
-def test_missing_projector_symbol_blocks():
-    result = _join([_receipt(projector_symbol="")])
-    assert any("names no projector symbol" in f for f in result["findings"])
+def test_projector_symbol_requires_exact_membership():
+    """R5-vet: "any nonempty symbol" validated nothing — a fake projector that
+    is not in the route's allowed set blocks, and an empty one blocks too."""
+    for fake in ("", "some.fake.projector"):
+        result = _join([_receipt(projector_symbol=fake)])
+        assert any("matches no registered projection route" in f
+                   for f in result["findings"]), repr(fake)
 
 
 def test_drifted_value_hash_blocks():
@@ -196,7 +203,7 @@ def test_drifted_value_hash_blocks():
 def test_silent_registry_blocks():
     """A scope treated as receipted with NO registered route is a finding —
     absence of the validator is never permission."""
-    result = _join([_receipt()], routes=())
+    result = _join([_receipt()], routes={})
     assert any("registry is the sole route authority and it is silent" in f
                for f in result["findings"])
 
@@ -214,10 +221,150 @@ def test_spec_is_a_registrable_surface_not_an_informal_category():
     """``spec`` is the explicit ninth surface: a route may target it, and an
     unknown surface is a constructor error."""
     route = ProjectionRoute("root.x", "m", "spec", "SpecTarget",
-                            frozenset({"field"}))
+                            frozenset({"field"}),
+                            projector_symbols=frozenset({"sym"}))
     assert route.surface == "spec"
     with pytest.raises(ValueError, match="nine canonical"):
-        ProjectionRoute("root.x", "m", "not_a_surface", "t", frozenset({"op"}))
+        ProjectionRoute("root.x", "m", "not_a_surface", "t", frozenset({"op"}),
+                        projector_symbols=frozenset({"sym"}))
+
+
+# ---------------------------------------------------------------------------
+# R5-vet corrections — each hole gets its own poison
+# ---------------------------------------------------------------------------
+
+def test_wrong_fact_key_with_correct_fact_id_blocks():
+    """R5-vet hole 1: the candidate index keyed on fact_id alone, so a receipt
+    with the RIGHT fact_id but a WRONG fact_key was accepted.  Coherence is now
+    enforced both ways."""
+    result = _join([_receipt(fact_key="hidden_size")])   # fact_id still correct
+    assert any("MALFORMED" in f or "cites fact_key" in f
+               for f in result["findings"])
+    assert result["receipted_targets"] == []
+
+
+def test_omitted_join_context_blocks_not_disables():
+    """R5-vet hole 3: an empty context must BLOCK the receipted join, never
+    disable the context check."""
+    result = _join([_receipt(context_token="")], token="")
+    assert any("NO render-context token" in f for f in result["findings"])
+    assert result["receipted_targets"] == []
+
+
+def test_wrong_projection_kind_blocks():
+    """R5-vet hole 4: the route's projection_kinds now participate."""
+    result = _join([_receipt(projection_kind="prose")])
+    assert any("matches no registered projection route" in f
+               for f in result["findings"])
+
+
+def test_same_scope_two_fact_collision_does_not_cross_clear():
+    """R5-vet: two facts sharing (owner, mechanism) — a receipt for fact A must
+    never clear fact B's obligation.  Routes are keyed BY FACT."""
+    other_route = ProjectionRoute(
+        "root.vision", "projector_out_width", "card", "other_node",
+        frozenset({"op"}), frozenset({("other_node",)}),
+        frozenset({_SYMBOL}))
+    routes = {"projector_out_features": (_ROUTE,),
+              "other_width": (other_route,)}
+    other_receipt = _receipt(fact_id="root.vision.other_width",
+                             fact_key="other_width",
+                             structural_target="other_node",
+                             node_ids=("other_node",))
+    result = _join([other_receipt], routes=routes)
+    # the projector_out_features obligation is NOT cleared by the other fact
+    assert any("no projector emitted" in f for f in result["findings"])
+    assert result["receipted_targets"] == []
+
+
+def test_route_construction_is_validated():
+    """R5-vet item 9: bad routes are registry errors AT CONSTRUCTION."""
+    from model_unfolder.evidence.registry import FactDefinition
+    # kind outside the closed vocabulary
+    with pytest.raises(ValueError, match="kind"):
+        ProjectionRoute("root.x", "m", "card", "t", frozenset({"vibes"}),
+                        projector_symbols=frozenset({"sym"}))
+    # missing projector symbols
+    with pytest.raises(ValueError, match="projector symbol"):
+        ProjectionRoute("root.x", "m", "card", "t", frozenset({"op"}))
+    good = ProjectionRoute("root.x", "m", "card", "t", frozenset({"op"}),
+                           projector_symbols=frozenset({"sym"}))
+    # route owner outside the fact's owner patterns
+    with pytest.raises(ValueError, match="outside this fact's"):
+        FactDefinition(
+            key="projector_out_features",
+            value_types=frozenset({"int"}),
+            allowed_statuses=frozenset({"code_and_config"}),
+            owner_patterns=frozenset({"root.vision"}),
+            projection_routes=(ProjectionRoute(
+                "root.GHOST", "m", "card", "t", frozenset({"op"}),
+                projector_symbols=frozenset({"sym"})),))
+    # duplicate route
+    with pytest.raises(ValueError, match="duplicate projection route"):
+        FactDefinition(
+            key="projector_out_features",
+            value_types=frozenset({"int"}),
+            allowed_statuses=frozenset({"code_and_config"}),
+            owner_patterns=frozenset({"root.x"}),
+            projection_routes=(good, good))
+
+
+def test_normalized_owner_pattern_matching_covers_concrete_indices():
+    """R5-vet item 10: a ``layers[i]`` route pattern matches concrete owners,
+    so future per-layer routes need no new machinery."""
+    from model_unfolder.evidence.receipts import scope_is_receipted
+    scopes = frozenset({("layers[i].ffn", "activation_width")})
+    assert scope_is_receipted("layers[3].ffn", "activation_width", scopes)
+    assert scope_is_receipted("layers[17].ffn", "activation_width", scopes)
+    assert not scope_is_receipted("layers[3].attention", "activation_width",
+                                  scopes)
+
+
+def test_renderer_can_never_supply_a_status():
+    """R5-vet item 5: the spec["status"] fallback is REMOVED — with no ledgered
+    fact the cited status is the explicit non-status, whose hash can never
+    match a real fact."""
+    from model_unfolder.evidence.receipts import receipts_from_projects
+    receipts = receipts_from_projects(
+        [{"owner": "root.vision", "fact": "projector_out_features",
+          "mechanism": "projector_out_width", "value": 3584,
+          "status": "code_and_config"}],       # renderer-supplied — IGNORED
+        surface="card", structural_target="vision_projector",
+        projector_symbol=_SYMBOL, node_ids=("vision_projector",),
+        projection_kind="op", fact_rows={})     # no ledgered fact
+    assert receipts[0].fact_value_status_hash == value_status_hash(
+        3584, "unledgered")
+    assert receipts[0].fact_value_status_hash != _EXPECTED
+
+
+def test_code_bound_width_records_a_typed_code_proven_fact():
+    """R5-vet item 7: a pure-code width records a typed fact (with its exact
+    projector source span) even though it has no config obligation."""
+    from types import SimpleNamespace
+    from model_unfolder.evidence.context import FactLedger, capture_facts
+    from model_unfolder.adapters.transformer.special_parts.modalities.vision         import _bound_out_width
+    evidence = SimpleNamespace(
+        status="proven", out_width_source="code_bound", out_width_value=4096,
+        component="vision_tower", projector_class="VisionProjector",
+        source_file="modeling_x.py", line=123)
+    ledger = FactLedger()
+    with capture_facts(ledger):
+        width, status = _bound_out_width(evidence, None, owner="root.vision")
+    assert (width, status) == (4096, "code_proven")
+    fact = ledger.typed.get("root.vision.projector_out_features")
+    assert fact is not None and fact.status == "code_proven"
+    assert fact.source_spans and fact.source_spans[0].file == "modeling_x.py"
+    assert fact.source_spans[0].line == 123
+
+
+def test_code_and_config_fact_cites_both_halves():
+    """R5-vet item 8: code_and_config substantiates BOTH the config path and
+    the projector source span."""
+    extras = mu.unfold(_qwen2vl()).to_ir()["extras"]
+    row = extras["fact_provenance"]["root.vision.projector_out_features"]
+    assert row["status"] == "code_and_config"
+    assert "vision_config.hidden_size" in row["source"]
+    assert ".py:" in row["source"]           # the projector source span
 
 
 def test_the_canonical_surface_list_is_exactly_nine():
@@ -265,7 +412,7 @@ def test_an_empty_registry_cannot_vacuously_green():
     """Anti-vacuity: with no routes, nothing is receipted — an obligation in a
     claimed scope with an empty registry is a silent-registry finding, and no
     receipt is ever accepted."""
-    result = _join([_receipt()], routes=())
+    result = _join([_receipt()], routes={})
     assert result["receipted_targets"] == []
     assert result["findings"]
 
@@ -277,12 +424,36 @@ def test_an_empty_registry_cannot_vacuously_green():
 def test_reverse_fabrication_catches_an_unregistered_receipt():
     ghost = _receipt(fact_id="root.vision.some_invented_fact",
                      fact_key="some_invented_fact")
-    findings = fabrication_findings([ghost], set(REGISTRY), set(), set())
+    findings = fabrication_findings([ghost], _FACT_ROWS, set(), set())
     assert any("nothing behind it" in f for f in findings)
 
 
+def test_reverse_fabrication_requires_a_LEDGERED_fact_not_a_leaf_name():
+    """R5-vet: root.ghost.projector_out_features shares a REGISTERED leaf name
+    and used to pass — a leaf name is not evidence.  With no ledgered fact it
+    is a fabrication; with a ledgered fact under a ghost owner it fails the
+    definition's owner patterns."""
+    ghost = _receipt(owner="root.ghost",
+                     fact_id="root.ghost.projector_out_features")
+    findings = fabrication_findings([ghost], _FACT_ROWS, set(), set())
+    assert any("nothing behind it" in f for f in findings)
+    ghost_facts = dict(_FACT_ROWS)
+    ghost_facts["root.ghost.projector_out_features"] = {
+        "value": 3584, "status": "code_and_config"}
+    findings = fabrication_findings([ghost], ghost_facts, set(), set())
+    assert any("outside" in f and "owner patterns" in f for f in findings)
+
+
+def test_reverse_fabrication_validates_the_route_too():
+    """A ledgered fact drawn OUTSIDE its registered routes is a fabrication of
+    placement even though the fact is real."""
+    off_route = _receipt(surface="html")
+    findings = fabrication_findings([off_route], _FACT_ROWS, set(), set())
+    assert any("registered projection routes" in f for f in findings)
+
+
 def test_registered_receipt_is_not_fabrication():
-    findings = fabrication_findings([_receipt()], set(REGISTRY), set(), set())
+    findings = fabrication_findings([_receipt()], _FACT_ROWS, set(), set())
     assert findings == []
 
 

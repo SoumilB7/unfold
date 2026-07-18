@@ -48,6 +48,9 @@ class ProjectionReceipt:
     structural_target: str   # the drawn structural node, e.g. "vision_projector"
     projector_symbol: str    # the ACTUAL projector (module.function) that emitted
     node_ids: tuple = ()     # drawn node identity within the surface
+    # R5-vet: HOW the fact appears on the surface — validated against the
+    # route's projection_kinds (a declared-but-unchecked field is decoration).
+    projection_kind: str = ""
     output_hash: "str | None" = None
     # U2-R5 (context validation): stamped by the RENDER CONTEXT itself when the
     # receipt is recorded — a receipt smuggled from another parse/render carries
@@ -79,7 +82,7 @@ def value_status_hash(value, status: str) -> str:
 
 def receipts_from_projects(projects, *, surface: str, structural_target: str,
                            projector_symbol: str, node_ids: tuple = (),
-                           fact_rows=None) -> tuple:
+                           projection_kind: str = "", fact_rows=None) -> tuple:
     """Build typed receipts from a projector's ``projects`` descriptors.
 
     Called INSIDE the actual projector (the code drawing the value) — never from
@@ -97,15 +100,20 @@ def receipts_from_projects(projects, *, surface: str, structural_target: str,
         leaf = str(spec.get("fact") or spec["fact_key"])
         fact_id = leaf if leaf.startswith(owner + ".") else f"{owner}.{leaf}"
         row = fact_rows.get(fact_id)
+        # R5-vet: the renderer may NEVER supply a status.  Missing ledgered fact
+        # -> the cited status is the explicit non-status "unledgered", whose
+        # hash can never match a real fact; the join's missing-fact check
+        # blocks first anyway.  (The old fallback to spec["status"] let the
+        # descriptor certify itself.)
         cited_status = (str(row.get("status"))
                         if isinstance(row, dict) and row.get("status")
-                        else str(spec.get("status") or "unknown"))
+                        else "unledgered")
         out.append(ProjectionReceipt(
             fact_id=fact_id, owner=owner, fact_key=fact_id.rsplit(".", 1)[-1],
             mechanism=str(spec["mechanism"]), surface=str(surface),
             structural_target=str(structural_target),
             projector_symbol=str(projector_symbol),
-            node_ids=tuple(node_ids),
+            node_ids=tuple(node_ids), projection_kind=str(projection_kind),
             fact_value_status_hash=value_status_hash(
                 spec.get("value"), cited_status)))
     return tuple(out)
@@ -122,12 +130,24 @@ def stamp_context(receipts, context_token: str) -> tuple:
 # Route authority — derived from the FactDefinition registry, nowhere else
 # --------------------------------------------------------------------------- #
 
-def projection_routes():
-    """Every registered route, from the ONE authority (FactDefinition)."""
+def projection_routes_by_fact() -> dict:
+    """Every registered route KEYED BY ITS FACT — the matched route must belong
+    to the exact FactDefinition the obligation targets, never merely another
+    fact sharing an owner/mechanism scope (R5-vet)."""
     from .registry import REGISTRY
+    out: dict = {}
+    for key, definition in REGISTRY.items():
+        routes = tuple(getattr(definition, "projection_routes", ()) or ())
+        if routes:
+            out[key] = routes
+    return out
+
+
+def projection_routes():
+    """Flat view of every registered route (scope derivation)."""
     routes = []
-    for definition in REGISTRY.values():
-        routes.extend(getattr(definition, "projection_routes", ()) or ())
+    for fact_routes in projection_routes_by_fact().values():
+        routes.extend(fact_routes)
     return tuple(routes)
 
 
@@ -138,15 +158,18 @@ def receipted_scopes(routes=None) -> frozenset:
                                          else projection_routes()))
 
 
-def routes_for(owner: str, mechanism: str, routes=None):
-    return tuple(r for r in (routes if routes is not None
-                             else projection_routes())
-                 if r.scope() == (owner, mechanism))
+def scope_is_receipted(owner: str, mechanism: str, scopes) -> bool:
+    """Normalized membership: a ``layers[i]`` route pattern covers every
+    concrete index, so future per-layer routes need no new machinery."""
+    from .registry import _normalize_owner
+    return ((owner, mechanism) in scopes
+            or (_normalize_owner(owner), mechanism) in scopes)
 
 
 def is_receipted_scope(owner: str, mechanism: str, scopes=None) -> bool:
-    return (owner, mechanism) in (scopes if scopes is not None
-                                  else receipted_scopes())
+    return scope_is_receipted(owner, mechanism,
+                              scopes if scopes is not None
+                              else receipted_scopes())
 
 
 class _LazyReceiptedScopes:
@@ -192,8 +215,10 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
     census.
     """
     live_scopes = scopes if scopes is not None else receipted_scopes()
-    live_routes = routes if routes is not None else projection_routes()
+    routes_by_fact = (routes if routes is not None
+                      else projection_routes_by_fact())
     facts = facts or {}
+    from .registry import owner_matches_pattern
 
     by_target: dict[tuple[str, str, str], list] = {}
     for receipt in receipts:
@@ -206,12 +231,25 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
         owner = ob["target"]["owner"]
         key = ob["target"]["key"]
         mechanism = ob.get("mechanism", "")
-        if (owner, mechanism) not in live_scopes:
+        if not scope_is_receipted(owner, mechanism, live_scopes):
             continue
         fact_id = f"{owner}.{key}"
         source = f"{ob['source']['component']}:{ob['source']['path']}"
-        scope_routes = tuple(r for r in live_routes
-                             if r.scope() == (owner, mechanism))
+        # R5-vet: an empty join context DISABLES nothing — it blocks.  A
+        # receipted join that cannot say which render it is joining against
+        # cannot accept any receipt.
+        if not context_token:
+            findings.append(
+                f"{source} -> {fact_id} is in receipted scope "
+                f"{owner}/{mechanism} but the join carries NO render-context "
+                "token — a context-less join cannot validate any receipt")
+            continue
+        # R5-vet: the routes must belong to THIS fact's definition — never to
+        # another fact that happens to share the (owner, mechanism) scope.
+        scope_routes = tuple(
+            r for r in routes_by_fact.get(key, ())
+            if r.mechanism == mechanism
+            and owner_matches_pattern(owner, r.owner_pattern))
         if not scope_routes:
             findings.append(
                 f"{source} -> {fact_id} is treated as receipted but no "
@@ -255,7 +293,23 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
             continue
         accepted = []
         for receipt in candidates:
-            if context_token and receipt.context_token != context_token:
+            # R5-vet: internal coherence FIRST — a receipt whose fact_id does
+            # not equal owner.fact_key is malformed, and its fact_key must be
+            # the obligation's exact target key (the by_target index alone let
+            # a wrong fact_key ride a correct fact_id).
+            if receipt.fact_id != f"{receipt.owner}.{receipt.fact_key}":
+                findings.append(
+                    f"{source} -> {fact_id}: receipt is MALFORMED — fact_id "
+                    f"{receipt.fact_id!r} does not equal owner.fact_key "
+                    f"{receipt.owner!r}.{receipt.fact_key!r}")
+                continue
+            if receipt.fact_key != key:
+                findings.append(
+                    f"{source} -> {fact_id}: receipt cites fact_key "
+                    f"{receipt.fact_key!r}, not the obligation's target "
+                    f"{key!r}")
+                continue
+            if receipt.context_token != context_token:
                 findings.append(
                     f"{source} -> {fact_id}: receipt carries a FOREIGN render-"
                     "context token — a receipt from another parse/render cannot "
@@ -269,19 +323,24 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
                     continue
                 if route.node_paths and tuple(receipt.node_ids) not in route.node_paths:
                     continue
+                # R5-vet: the KIND participates — a route that allows an "op"
+                # does not thereby allow a "prose" claim of the same value.
+                if receipt.projection_kind not in route.projection_kinds:
+                    continue
+                # R5-vet: EXACT projector-symbol membership — "any nonempty
+                # symbol" validated nothing.
+                if receipt.projector_symbol not in route.projector_symbols:
+                    continue
                 matched_route = route
                 break
             if matched_route is None:
                 findings.append(
                     f"{source} -> {fact_id}: receipt (surface="
                     f"{receipt.surface!r}, target={receipt.structural_target!r}, "
-                    f"nodes={tuple(receipt.node_ids)!r}) matches no registered "
-                    f"projection route for {owner}/{mechanism}")
-                continue
-            if not receipt.projector_symbol:
-                findings.append(
-                    f"{source} -> {fact_id}: receipt names no projector symbol "
-                    "— a receipt must come from the actual projector")
+                    f"nodes={tuple(receipt.node_ids)!r}, "
+                    f"kind={receipt.projection_kind!r}, "
+                    f"projector={receipt.projector_symbol!r}) matches no "
+                    f"registered projection route for {owner}/{mechanism}")
                 continue
             if receipt.fact_value_status_hash != expected_fact:
                 findings.append(
@@ -297,23 +356,54 @@ def join_obligation_receipts(obligations, receipts, facts=None, *,
             "receipted_targets": sorted(receipted_targets)}
 
 
-def fabrication_findings(receipts, registered_keys, claimed_targets,
+def fabrication_findings(receipts, facts, claimed_targets,
                          debt_keys) -> list[str]:
-    """Reverse-fabrication: every emitted receipt must reference a registered
-    ledger fact, a declared migration-claim target, or a registered (shrinking)
-    typed-debt entry.  A receipt for an unregistered target is a drawn claim
-    with no evidence behind it."""
+    """Reverse-fabrication, R5-vet strengthened.
+
+    A registered LEAF NAME is not evidence — ``root.ghost.projector_out_
+    features`` shares a registered leaf and used to pass.  Every emitted receipt
+    must now reference:
+
+    * an ACTUAL LEDGERED FACT (``facts`` is this parse's fact_provenance) — or a
+      declared migration-claim target / registered typed-debt entry for
+      unmigrated channels;
+    * an owner the fact's DEFINITION permits (normalized owner_patterns);
+    * a registered projection route the receipt actually matches (owner,
+      mechanism, surface, target, kind, symbol) when the definition declares
+      routes.
+    """
+    from .registry import REGISTRY, owner_matches_pattern
     findings: list[str] = []
+    facts = facts or {}
     for receipt in receipts:
         target = (receipt.owner, receipt.fact_key)
-        if (receipt.fact_key in registered_keys
-                or target in claimed_targets
-                or target in debt_keys):
+        if receipt.fact_id not in facts                 and target not in claimed_targets and target not in debt_keys:
+            findings.append(
+                f"receipt for {receipt.fact_id} on surface {receipt.surface!r} "
+                "references no LEDGERED fact, migration-claim target, or typed "
+                "debt entry — a drawn claim with nothing behind it")
             continue
-        findings.append(
-            f"receipt for {receipt.fact_id} on surface {receipt.surface!r} "
-            "references no registered fact, migration-claim target, or typed "
-            "debt entry — a drawn claim with nothing behind it")
+        definition = REGISTRY.get(receipt.fact_key)
+        if definition is not None:
+            if not any(owner_matches_pattern(receipt.owner, pattern)
+                       for pattern in definition.owner_patterns):
+                findings.append(
+                    f"receipt for {receipt.fact_id}: owner {receipt.owner!r} is "
+                    f"outside {receipt.fact_key!r}'s registered owner patterns "
+                    f"{sorted(definition.owner_patterns)}")
+                continue
+            routes = tuple(getattr(definition, "projection_routes", ()) or ())
+            if routes and not any(
+                    owner_matches_pattern(receipt.owner, r.owner_pattern)
+                    and receipt.mechanism == r.mechanism
+                    and receipt.surface == r.surface
+                    and receipt.structural_target == r.structural_target
+                    and receipt.projection_kind in r.projection_kinds
+                    and receipt.projector_symbol in r.projector_symbols
+                    for r in routes):
+                findings.append(
+                    f"receipt for {receipt.fact_id} matches none of "
+                    f"{receipt.fact_key!r}'s registered projection routes")
     return sorted(set(findings))
 
 

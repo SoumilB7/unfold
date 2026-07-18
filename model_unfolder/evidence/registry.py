@@ -63,6 +63,19 @@ UNKNOWN_POLICIES = frozenset({
 })
 
 
+def _normalize_owner(owner: str) -> str:
+    """Index-normalize an owner path (``layers[7].ffn`` -> ``layers[i].ffn``) so a
+    concrete per-layer owner matches its registered pattern."""
+    import re
+    return re.sub(r"\[\d+\]", "[i]", owner or "")
+
+
+def owner_matches_pattern(owner: str, pattern: str) -> bool:
+    """Normalized owner matching: a ``layers[i]``-style pattern matches every
+    concrete index, so future per-layer routes work without new machinery."""
+    return owner == pattern or _normalize_owner(owner) == pattern
+
+
 # U2-R5 (§5.5): the NINE canonical structural surfaces a fact may project onto.
 # ``spec`` is a distinct ninth surface, not an informal category: R4's structural
 # census treats spec construction/field authoring as its own sink, so a route
@@ -73,15 +86,21 @@ PROJECTION_ROUTE_SURFACES = frozenset({
 })
 
 
+#: The closed projection-KIND vocabulary — how a fact appears on a surface.
+PROJECTION_KINDS = frozenset({"op", "chip", "card", "field", "prose"})
+
+
 @dataclass(frozen=True)
 class ProjectionRoute:
     """U2-R5 (§5.5): where ONE fact is permitted to project, owner-qualified.
 
     FactDefinition is the ONLY projection-policy authority — a route lives on the
     fact, never on a MigrationClaim (a claim binds a source occurrence to a fact;
-    the fact owns where it may then be drawn).  Surface, structural target,
-    projection kinds and node paths all PARTICIPATE in receipt validation:
-    recording a field without checking it is decoration, not proof."""
+    the fact owns where it may then be drawn).  EVERY field participates in
+    receipt validation — surface, structural target, projection kind, node path,
+    AND the exact projector symbols allowed to emit (R5-vet: "any nonempty
+    symbol" was decoration, not proof).  Recording a field without checking it
+    is how a fabricated receipt passes."""
 
     owner_pattern: str
     mechanism: str
@@ -89,6 +108,9 @@ class ProjectionRoute:
     structural_target: str
     projection_kinds: frozenset[str]
     node_paths: frozenset[tuple[str, ...]] = frozenset()
+    # R5-vet: the EXACT projector symbols permitted to emit on this route —
+    # membership is validated, never mere non-emptiness.
+    projector_symbols: frozenset[str] = frozenset()
 
     def __post_init__(self) -> None:
         if self.surface not in PROJECTION_ROUTE_SURFACES:
@@ -101,6 +123,15 @@ class ProjectionRoute:
                 "a projection route must name owner, mechanism, structural "
                 "target and at least one projection kind — an empty route "
                 "validates nothing")
+        bad_kinds = self.projection_kinds - PROJECTION_KINDS
+        if bad_kinds:
+            raise ValueError(
+                f"unknown projection kind(s) {sorted(bad_kinds)} — the kind "
+                f"vocabulary is closed: {sorted(PROJECTION_KINDS)}")
+        if not self.projector_symbols:
+            raise ValueError(
+                "a projection route must name its allowed projector symbol(s) — "
+                "an emitter validated only for non-emptiness is not validated")
 
     def scope(self) -> tuple[str, str]:
         return (self.owner_pattern, self.mechanism)
@@ -146,6 +177,24 @@ class FactDefinition:
         if self.parameter_consumer and self.unknown_policy is None:
             raise ValueError(
                 f"{self.key}: parameter consumers must declare an unknown_policy (H2.4)")
+        # R5-vet: routes are validated AT CONSTRUCTION — a route for an owner
+        # this fact may not carry, or a duplicate route, is a registry error
+        # the moment it is written, not a silent hole at join time.
+        seen_routes = set()
+        for route in self.projection_routes:
+            if not any(owner_matches_pattern(route.owner_pattern, pattern)
+                       or route.owner_pattern == pattern
+                       for pattern in self.owner_patterns):
+                raise ValueError(
+                    f"{self.key}: projection route owner "
+                    f"{route.owner_pattern!r} is outside this fact's "
+                    f"owner_patterns {sorted(self.owner_patterns)}")
+            key = (route.owner_pattern, route.mechanism, route.surface,
+                   route.structural_target)
+            if key in seen_routes:
+                raise ValueError(
+                    f"{self.key}: duplicate projection route {key}")
+            seen_routes.add(key)
 
 
 def _definition_map(definitions) -> dict[str, FactDefinition]:
@@ -316,10 +365,14 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         projection_routes=(
             ProjectionRoute("root.vision", "projector_out_width", "card",
                             "vision_projector", frozenset({"op"}),
-                            frozenset({("vision_projector",)})),
+                            frozenset({("vision_projector",)}),
+                            frozenset({"renderers.html.block_views."
+                                       "declared_ops.build_declared_ops_view"})),
             ProjectionRoute("root.video", "projector_out_width", "card",
                             "video_projector", frozenset({"op"}),
-                            frozenset({("video_projector",)})),
+                            frozenset({("video_projector",)}),
+                            frozenset({"renderers.html.block_views."
+                                       "declared_ops.build_declared_ops_view"})),
         ),
         notes="U2-R5 pilot: source-proven projector out-width; routes are the "
               "sole projection authority.",
@@ -397,13 +450,6 @@ def census_problems(rows, registry: dict[str, FactDefinition] | None = None) -> 
         if value_type not in definition.value_types:
             problems.append(f"{label}: {fact} with unregistered value type {value_type!r}")
     return problems
-
-
-def _normalize_owner(owner: str) -> str:
-    """Index-normalize an owner path (``layers[7].ffn`` -> ``layers[i].ffn``) so a
-    concrete per-layer owner matches its registered pattern."""
-    import re
-    return re.sub(r"\[\d+\]", "[i]", owner or "")
 
 
 def validate_typed_write(fact) -> list[str]:

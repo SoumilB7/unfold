@@ -157,8 +157,13 @@ def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
         return None, None
     source = getattr(evidence, "out_width_source", "unavailable")
     if source == "code_bound":
-        # a literal in the projector source — code alone proves it
-        return as_int(getattr(evidence, "out_width_value", None)), "code_proven"
+        # a literal in the projector source — code alone proves it.  R5-vet:
+        # a pure-code width still needs a TYPED FACT (and hence a receipt);
+        # it merely has no config obligation.
+        width = as_int(getattr(evidence, "out_width_value", None))
+        if width is not None:
+            _record_projector_fact(owner, width, "code_proven", None, evidence)
+        return width, "code_proven"
     if source != "config_bound" or cfg is None:
         return None, None
     parts = tuple(getattr(evidence, "out_width_path", ()) or ())
@@ -188,32 +193,52 @@ def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
         fact_owner=owner, fact_key="projector_out_features",
         mechanism="projector_out_width", status=fact_status))
     if width is not None:
-        from .....evidence.context import active_facts
-        from .....evidence.facts import EvidenceFact
-        from .....evidence.registry import REGISTRY
-        _facts = active_facts()
-        # U2-R5 pilot scope: the typed fact is recorded ONLY for the owners the
-        # registry migrates (root.vision / root.video).  An EMBEDDED tower's
-        # owner (root.text_encoder.vision) is deliberately unmigrated: its
-        # consumption obligation stays on the advisory census as exact R6 debt,
-        # and attempting the typed write would (rightly) be rejected by the
-        # closed-world registry — a rejection that, swallowed by the modality
-        # try/except, silently dropped the WHOLE projector-evidence application
-        # for embedded VL encoders.  The registry decides, deterministically.
-        _defn = REGISTRY.get("projector_out_features")
-        if _facts is not None and _defn is not None \
-                and owner in _defn.owner_patterns:
-            _facts.record_typed(EvidenceFact(
-                key="projector_out_features", owner=owner, value=width,
-                status=fact_status, completeness="complete",
-                config_paths=(".".join(parts),),
-                # the flat row's SOURCE citation (PARTIAL-SOURCE law: a
-                # code-proven fact must cite where) — the exact config path the
-                # construction site proves, same as the typed channel
-                legacy_source=".".join(parts),
-                reason="projector out-width consumed from the construction-site "
-                       "config path the source proves"))
+        _record_projector_fact(owner, width, fact_status, ".".join(parts),
+                               evidence)
     return width, fact_status
+
+
+def _record_projector_fact(owner: str, width: int, status: str,
+                           config_path: "str | None", evidence) -> None:
+    """Record the typed projector-width fact — the ONE author for both tiers.
+
+    R5-vet: ``code_and_config`` must substantiate BOTH halves — the exact config
+    path AND the exact projector source span (file/line/class from the
+    construction-site evidence); a config path alone does not substantiate the
+    "code" half.  ``code_proven`` cites the span alone.
+
+    U2-R5 pilot scope: recorded ONLY for the owners the registry migrates
+    (root.vision / root.video).  An EMBEDDED tower's owner
+    (root.text_encoder.vision) is deliberately unmigrated: its consumption
+    obligation stays on the advisory census as exact R6 debt, and attempting
+    the typed write would (rightly) be rejected by the closed-world registry —
+    a rejection that, swallowed by the modality try/except, once silently
+    dropped the WHOLE projector-evidence application for embedded VL encoders.
+    The registry decides, deterministically."""
+    from .....evidence.context import active_facts
+    from .....evidence.facts import EvidenceFact, SourceSpan
+    from .....evidence.registry import REGISTRY
+    facts = active_facts()
+    definition = REGISTRY.get("projector_out_features")
+    if facts is None or definition is None \
+            or owner not in definition.owner_patterns:
+        return
+    span = SourceSpan(
+        component=str(getattr(evidence, "component", "") or ""),
+        class_name=getattr(evidence, "projector_class", None),
+        file=getattr(evidence, "source_file", None),
+        line=getattr(evidence, "line", None))
+    source_label = (f"{span.file}:{span.line}" if span.file else
+                    str(span.class_name or "projector source"))
+    facts.record_typed(EvidenceFact(
+        key="projector_out_features", owner=owner, value=width,
+        status=status, completeness="complete",
+        config_paths=(config_path,) if config_path else (),
+        source_spans=(span,),
+        legacy_source=(f"{config_path} + {source_label}" if config_path
+                       else source_label),
+        reason="projector out-width bound at the construction site the "
+               "source proves"))
 
 
 def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:

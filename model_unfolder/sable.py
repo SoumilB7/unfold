@@ -391,7 +391,7 @@ def sable(model_or_id, *, token=None, source: str = "local",
     _debt_keys |= {(e.owner, e.config_path.rsplit(".", 1)[-1])
                    for e in PENDING_CONFIG_CLASSIFICATION}
     _receipt_fabrication_findings = fabrication_findings(
-        _receipts, set(REGISTRY), _claimed_targets, _debt_keys)
+        _receipts, _fact_rows, _claimed_targets, _debt_keys)
 
     # Is the code oracle (the modeling forward()) reachable? If not, conformance
     # degrades to config-only — say so, never pretend the code was checked.

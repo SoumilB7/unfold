@@ -49,6 +49,6 @@ def build_declared_ops_view(ir: dict, info: dict, mount_id: str, block: dict) ->
         receipts=receipts_from_projects(
             block.get("projects"), surface="card", structural_target=rid,
             projector_symbol="renderers.html.block_views.declared_ops.build_declared_ops_view",
-            node_ids=(rid,),
+            node_ids=(rid,), projection_kind="op",
             fact_rows=(ir.get("extras") or {}).get("fact_provenance") or {}),
     )
