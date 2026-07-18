@@ -115,7 +115,8 @@ def apply_projector_evidence(payload: dict | None, evidence, cfg: Any = None,
             continue
         projector = path.get("projector") or {}
         projector.pop("profile", None)
-        bound_out = _bound_out_width(evidence, cfg, owner=f"{owner_namespace}.{name}")
+        bound_out, out_fact_status = _bound_out_width(
+            evidence, cfg, owner=f"{owner_namespace}.{name}")
         if bound_out is not None:
             _insert_after(projector, "in_features", "out_features", bound_out)
         projector["source_evidence"] = evidence_dict
@@ -153,33 +154,66 @@ def _bound_out_width(evidence, cfg: Any, *, owner: str) -> int | None:
     and ``unavailable`` resolve nothing — the drawing stays honestly unknown.
     """
     if evidence is None or getattr(evidence, "status", "") != "proven":
-        return None
+        return None, None
     source = getattr(evidence, "out_width_source", "unavailable")
     if source == "code_bound":
-        return as_int(getattr(evidence, "out_width_value", None))
+        # a literal in the projector source — code alone proves it
+        return as_int(getattr(evidence, "out_width_value", None)), "code_proven"
     if source != "config_bound" or cfg is None:
-        return None
+        return None, None
     parts = tuple(getattr(evidence, "out_width_path", ()) or ())
     if not parts:
-        return None
+        return None, None
     node = cfg
     for part in parts[:-1]:            # raw structural hops — the leaf is the fact
         node = node.get(part) if isinstance(node, dict) else getattr(node, part, None)
         if node is None:
-            return None
+            return None, None
     # The read AUTHORS the drawn out_features, so it is a consumption with an
     # exact path — a bare inspected read would (rightly) show up as
     # accessed-but-unconsumed debt in the H3 audit.
     resolution = _config_access.resolve(
         node, parts[-1], (), component=owner, path=parts[:-1])
     if resolution.state != "present":
-        return None
-    # U2.1a: ``status`` is the evidence tier that BOUND this width, so the
-    # consumption records the expected value/status fingerprint upstream; a
-    # receipt whose drawn fingerprint differs cannot clear this obligation.
-    return as_int(resolution.consume(
+        return None, None
+    # U2-R5: ONE author for the evidence status.  The projector SOURCE proves it
+    # consumes this exact config value, so the status is ``code_and_config`` —
+    # never ``config_declared`` merely because a number exists.  The SAME status
+    # goes to the consumption (whose fingerprint Net 2 checks), to the typed
+    # FACT (where the validator's expected hash originates), and — via the
+    # returned pair — to the drawn card's descriptor, so no later surface can
+    # re-derive it differently.
+    fact_status = "code_and_config"
+    width = as_int(resolution.consume(
         fact_owner=owner, fact_key="projector_out_features",
-        mechanism="projector_out_width", status=source))
+        mechanism="projector_out_width", status=fact_status))
+    if width is not None:
+        from .....evidence.context import active_facts
+        from .....evidence.facts import EvidenceFact
+        from .....evidence.registry import REGISTRY
+        _facts = active_facts()
+        # U2-R5 pilot scope: the typed fact is recorded ONLY for the owners the
+        # registry migrates (root.vision / root.video).  An EMBEDDED tower's
+        # owner (root.text_encoder.vision) is deliberately unmigrated: its
+        # consumption obligation stays on the advisory census as exact R6 debt,
+        # and attempting the typed write would (rightly) be rejected by the
+        # closed-world registry — a rejection that, swallowed by the modality
+        # try/except, silently dropped the WHOLE projector-evidence application
+        # for embedded VL encoders.  The registry decides, deterministically.
+        _defn = REGISTRY.get("projector_out_features")
+        if _facts is not None and _defn is not None \
+                and owner in _defn.owner_patterns:
+            _facts.record_typed(EvidenceFact(
+                key="projector_out_features", owner=owner, value=width,
+                status=fact_status, completeness="complete",
+                config_paths=(".".join(parts),),
+                # the flat row's SOURCE citation (PARTIAL-SOURCE law: a
+                # code-proven fact must cite where) — the exact config path the
+                # construction site proves, same as the typed channel
+                legacy_source=".".join(parts),
+                reason="projector out-width consumed from the construction-site "
+                       "config path the source proves"))
+    return width, fact_status
 
 
 def _insert_after(target: dict, anchor: str, key: str, value: Any) -> None:

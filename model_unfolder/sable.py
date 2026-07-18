@@ -378,8 +378,13 @@ def sable(model_or_id, *, token=None, source: str = "local",
                  for r in getattr(event, "receipts", ()) or ()]
     _obligations = (((ir.get("extras") or {}).get("config_access") or {})
                     .get("projection_obligations") or [])
+    # U2-R5: the EXPECTED hash originates from the typed FACT (fact_provenance)
+    # and the consumption; the join also validates the render-context token so a
+    # receipt from another parse/render cannot clear this one's obligations.
+    _fact_rows = ((ir.get("extras") or {}).get("fact_provenance") or {})
     _net2_findings = join_obligation_receipts(
-        _obligations, _receipts, RECEIPTED_SCOPES)
+        _obligations, _receipts, _fact_rows,
+        context_token=render_context.context_token)
     _claimed_targets = {(b.target.owner, b.target.fact_key)
                         for c in MIGRATED_SCOPES for b in c.bindings}
     _debt_keys = {(e.owner, e.canonical) for e in PENDING_PROJECTION_DEBT}

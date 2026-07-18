@@ -908,12 +908,15 @@ def _projector_card_fields(projector: dict, owner: str | None = None) -> dict:
     if ops:
         fields["view"] = "ops"
         fields["detail"] = {"ops": ops}
+    # U2-R5: the descriptor carries the DRAWN VALUE only — no status.  The
+    # actual projector (declared_ops) CITES the ledgered fact's status when it
+    # emits the receipt, so the evidence tier has exactly one author (the typed
+    # fact) and the renderer can never re-derive or invent one.
     out_source = ((projector.get("source_evidence") or {}).get("out_width_source"))
     if owner and out and out_source in ("config_bound", "code_bound"):
         fields["projects"] = [{
             "owner": owner, "fact": "projector_out_features",
-            "mechanism": "projector_out_width", "projection_kind": "op",
-            "value": out, "status": out_source,
+            "mechanism": "projector_out_width", "value": out,
         }]
     return fields
 

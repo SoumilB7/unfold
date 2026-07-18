@@ -6,6 +6,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Iterator
 
+from ...evidence.receipts import stamp_context as _stamp_context
+
 
 @dataclass(frozen=True)
 class RenderEvent:
@@ -46,6 +48,10 @@ class RenderContext:
     events: list[RenderEvent] = field(default_factory=list)
     block_stack: list[dict] = field(default_factory=list)
     id_sequence: int = 0
+    # U2-R5: THIS render's own identity.  The context stamps it onto every
+    # receipt it records, so a receipt from another parse/render carries a
+    # foreign token and cannot clear this render's obligations.
+    context_token: str = field(default_factory=lambda: __import__("uuid").uuid4().hex)
 
     def next_id(self) -> int:
         value = self.id_sequence
@@ -91,23 +97,9 @@ class RenderContext:
             drawn_ops=frozenset(drawn_ops),
             node_ids=frozenset(node_ids),
             facts_projected=frozenset(facts_projected or ()),
-            receipts=tuple(receipts or ()),
+            # the CONTEXT stamps its own token — a projector cannot forge it
+            receipts=_stamp_context(tuple(receipts or ()), self.context_token),
         ))
-
-    def note_receipts(self, view: str, projects, *, node_ids=()) -> None:
-        """Emit typed projection receipts from ``projects`` descriptors (U2).
-
-        Each descriptor is ``{owner, fact_key|fact, mechanism, projection_kind,
-        value, status}``; the surface that DREW the fact calls this so a receipt
-        can only exist for a value that reached the page.  ``view`` is the exact
-        render surface name; the block stack supplies the node path."""
-        if not projects:
-            return
-        from ...evidence.receipts import receipts_from_projects
-        path = tuple(str(item.get("id") or item.get("view") or "?")
-                     for item in self.block_stack)
-        self.record_graph(view, (), node_ids,
-                          receipts=receipts_from_projects(projects, view, path))
 
     def note_facts_projected(self, view: str, facts_projected, *, node_ids=()) -> None:
         """Record a facts-only projection witness (U2 P4 net #13).

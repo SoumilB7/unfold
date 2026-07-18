@@ -11,6 +11,8 @@ resolved bundle.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -46,6 +48,29 @@ class FactRecord:
     value: Any
     status: str
     source: str | None = None  # reader name / config field / file:line
+
+
+# U2-R5: an ambient handle to the parse's fact ledger, so deep readers (a
+# modality projector's width consumption) can record a typed fact WITHOUT the
+# modality build protocol threading ``context`` — mirrors the config-access
+# ambient ledger, and activates in the SAME ``config_to_ir`` scope so the two
+# ledgers can never desynchronize.  ``None`` outside a parse (a no-op).
+_active_facts: ContextVar = ContextVar("model_unfolder_active_facts", default=None)
+
+
+def active_facts():
+    """The fact ledger of the parse currently running, or ``None``."""
+    return _active_facts.get()
+
+
+@contextmanager
+def capture_facts(ledger):
+    """Route ambient fact records to ``ledger`` for the enclosed parse."""
+    token = _active_facts.set(ledger)
+    try:
+        yield ledger
+    finally:
+        _active_facts.reset(token)
 
 
 @dataclass

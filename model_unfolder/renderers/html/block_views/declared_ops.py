@@ -37,9 +37,18 @@ def build_declared_ops_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     # drill's own render event — no per-mechanism code, so scheduler and any
     # future op drill reuse the same channel.
     view_key = f"ops_{rid}"
+    # U2-R5: THIS function is the actual projector — it draws the declared ops
+    # (the projector width among them) on the CARD surface at the block's own
+    # structural node.  The receipt is emitted here, at the drawing site, with
+    # the canonical surface and this projector's symbol; the render context
+    # stamps its own token when the event is recorded.
     return render_graph(
         graph,
         info, mount_id, view_key,
         f"{ir.get('name', 'model')} {title}", min_width=640,
-        receipts=receipts_from_projects(block.get("projects"), view_key, (rid,)),
+        receipts=receipts_from_projects(
+            block.get("projects"), surface="card", structural_target=rid,
+            projector_symbol="renderers.html.block_views.declared_ops.build_declared_ops_view",
+            node_ids=(rid,),
+            fact_rows=(ir.get("extras") or {}).get("fact_provenance") or {}),
     )

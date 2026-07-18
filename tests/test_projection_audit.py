@@ -382,8 +382,10 @@ def test_cor5_net2_is_scope_gated_not_globally_gated(monkeypatch):
 
     real_join = receipts_mod.join_obligation_receipts
 
-    def blind_join(obligations, receipts, receipted_scopes=receipts_mod.RECEIPTED_SCOPES):
-        return real_join(obligations, [], receipted_scopes)   # render drew nothing
+    def blind_join(obligations, receipts, facts=None, **kwargs):
+        # render drew nothing — the receipts are dropped, everything else rides
+        # through unchanged (U2-R5 signature: facts + context_token/scopes/routes)
+        return real_join(obligations, [], facts, **kwargs)
 
     import json
     import pathlib

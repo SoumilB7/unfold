@@ -646,6 +646,9 @@ __all__ = [
 # set, which structurally could not see a second author of one target).
 # --------------------------------------------------------------------------- #
 _STRUCTURAL_WRITERS_BASELINE = frozenset({
+    # U2-R5 (reviewed): the pilot's typed-fact author — the projector
+    # out-width consumption records projector_out_features (code_and_config).
+    ('model_unfolder/adapters/transformer/special_parts/modalities/vision.py', '_bound_out_width', 'ledger', '<dynamic>'),
     ('model_unfolder/adapters/diffusor/parser.py', '_dit_attention', 'spec', 'AttentionSpec'),
     ('model_unfolder/adapters/diffusor/parser.py', '_dit_ffn', 'spec', 'FFNSpec'),
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'diffusion'),

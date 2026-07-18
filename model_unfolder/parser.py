@@ -89,11 +89,13 @@ def config_to_ir(
     # on the context, then ENTER it via its binding — one object carrying the
     # document, its address and its provenance, verified together.
     from .evidence.document import DocumentBinding as _DocumentBinding
+    from .evidence.context import capture_facts as _capture_facts
     _root_binding = _DocumentBinding("root", (), _prepared)
     parse_context.prepared_documents["root"] = _root_binding
     with _config_access.capture_events(parse_context.config_access) as _access_ledger, \
             _config_access.owner_scope("root"), \
-            _config_access.bound_document(_root_binding):
+            _config_access.bound_document(_root_binding), \
+            _capture_facts(parse_context.facts):
         ir = adapter.parse(cfg, context=parse_context)
     bundle = parse_context.source_bundle
     component_files = getattr(bundle, "component_files", {}) or {}

@@ -63,6 +63,49 @@ UNKNOWN_POLICIES = frozenset({
 })
 
 
+# U2-R5 (§5.5): the NINE canonical structural surfaces a fact may project onto.
+# ``spec`` is a distinct ninth surface, not an informal category: R4's structural
+# census treats spec construction/field authoring as its own sink, so a route
+# onto the spec surface must be as explicit and validated as any other.
+PROJECTION_ROUTE_SURFACES = frozenset({
+    "ir", "opgraph", "block", "card", "html", "json", "params", "conformance",
+    "spec",
+})
+
+
+@dataclass(frozen=True)
+class ProjectionRoute:
+    """U2-R5 (§5.5): where ONE fact is permitted to project, owner-qualified.
+
+    FactDefinition is the ONLY projection-policy authority — a route lives on the
+    fact, never on a MigrationClaim (a claim binds a source occurrence to a fact;
+    the fact owns where it may then be drawn).  Surface, structural target,
+    projection kinds and node paths all PARTICIPATE in receipt validation:
+    recording a field without checking it is decoration, not proof."""
+
+    owner_pattern: str
+    mechanism: str
+    surface: str              # one of PROJECTION_ROUTE_SURFACES
+    structural_target: str
+    projection_kinds: frozenset[str]
+    node_paths: frozenset[tuple[str, ...]] = frozenset()
+
+    def __post_init__(self) -> None:
+        if self.surface not in PROJECTION_ROUTE_SURFACES:
+            raise ValueError(
+                f"projection route surface {self.surface!r} is not one of the "
+                f"nine canonical surfaces {sorted(PROJECTION_ROUTE_SURFACES)}")
+        if not (self.owner_pattern and self.mechanism and self.structural_target
+                and self.projection_kinds):
+            raise ValueError(
+                "a projection route must name owner, mechanism, structural "
+                "target and at least one projection kind — an empty route "
+                "validates nothing")
+
+    def scope(self) -> tuple[str, str]:
+        return (self.owner_pattern, self.mechanism)
+
+
 @dataclass(frozen=True)
 class FactDefinition:
     """The closed-world contract for one structural fact name."""
@@ -72,6 +115,13 @@ class FactDefinition:
     allowed_statuses: frozenset[str]
     owner_patterns: frozenset[str]            # index-normalized owner paths ("layers[i].ffn")
     projections: frozenset[str] = frozenset({"json"})
+    # U2-R5 (§5.5): the owner-qualified projection ROUTES this fact may draw on —
+    # the single projection-policy authority.  A MIGRATED fact declares its
+    # routes here (the receipt validator derives the receipted scope and its
+    # rule from them); an unmigrated fact leaves this empty and keeps the legacy
+    # ``projections`` set as exact R6 debt.  A route lives on the FACT, never on
+    # a MigrationClaim.
+    projection_routes: tuple = ()             # tuple[ProjectionRoute, ...]
     unknown_policy: str | None = None
     negative_requires_complete: bool = False  # I-3 obligation for native writers
     parameter_consumer: bool = False          # params.py reads this fact
@@ -249,6 +299,31 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "non-field tag; 94 records / 2 fixtures); the drawn storage comes "
               "from spec.projection_mode defaults — H8 unifies fold + drawing",
     ),
+    # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
+    # SOLE projection-route authority (the policy no longer lives on a
+    # MigrationClaim).  ``projections`` stays json-only (the legacy drawable
+    # check does not apply); the R5 policy is the ``projection_routes``: the
+    # width is drawn as an ``op`` node on the ``card`` surface at the exact
+    # projector node.  Status is ``code_and_config`` when the projector SOURCE
+    # proves it consumes that exact config value — never ``config_declared``
+    # just because a number exists.
+    FactDefinition(
+        key="projector_out_features",
+        value_types=frozenset({"int"}),
+        allowed_statuses=frozenset({"code_and_config", "code_proven"}),
+        owner_patterns=frozenset({"root.vision", "root.video"}),
+        projections=frozenset({"json"}),
+        projection_routes=(
+            ProjectionRoute("root.vision", "projector_out_width", "card",
+                            "vision_projector", frozenset({"op"}),
+                            frozenset({("vision_projector",)})),
+            ProjectionRoute("root.video", "projector_out_width", "card",
+                            "video_projector", frozenset({"op"}),
+                            frozenset({("video_projector",)})),
+        ),
+        notes="U2-R5 pilot: source-proven projector out-width; routes are the "
+              "sole projection authority.",
+    ),
 ])
 
 
@@ -384,30 +459,10 @@ class PendingProjectionFact:
 
 # The three reads §16.5 removed in `procedure 2`, reintroduced here as declared
 # pending-projection debt (registered typed facts, projection pending H7-full).
-@dataclass(frozen=True)
-class ProjectionPolicy:
-    """U2.1a: the EXACT consumers a migrated scope may be projected onto.
-
-    Lives on the :class:`MigrationClaim` itself — there is exactly ONE
-    registry.  A separate receipt-policy table beside the claim register would
-    be a second source of truth that drifts, which is the recurring failure
-    this project exists to delete.  A claim carrying a policy IS a receipted
-    scope; Net 2 derives both the scope set and the validation rule from here.
-
-    Surface, kind and node path all PARTICIPATE in validation — recording a
-    field without checking it is decoration, not proof.
-    """
-
-    allowed_surfaces: frozenset[str]
-    allowed_kinds: frozenset[str]
-    allowed_node_paths: frozenset[tuple[str, ...]]
-
-    def __post_init__(self) -> None:
-        if not (self.allowed_surfaces and self.allowed_kinds
-                and self.allowed_node_paths):
-            raise ValueError(
-                "a projection policy must name at least one allowed surface, "
-                "kind and node path — an empty policy validates nothing")
+# U2-R5: ``ProjectionPolicy`` is DELETED.  FactDefinition.projection_routes is
+# the SOLE projection-route authority — a claim binds a source occurrence to a
+# fact; the FACT owns where it may project, and the receipted-scope set derives
+# from the registry (evidence/receipts.py), never from a claim-side policy.
 
 
 @dataclass(frozen=True)
@@ -450,10 +505,6 @@ class MigrationClaim:
     mechanism: str                   # fact family inside the owner
     claimed_by: str                  # the unit that completed the migration
     bindings: tuple[ClaimBinding, ...]
-    # U2.1a: a claim carrying a projection policy IS a RECEIPTED scope — Net 2
-    # derives both the scope set and its validation rule from this ONE
-    # registry, so no second table can drift out of sync.
-    projection: "ProjectionPolicy | None" = None
 
     def scope(self) -> tuple[str, str]:
         return (self.owner, self.mechanism)
@@ -484,17 +535,11 @@ MIGRATED_SCOPES: tuple[MigrationClaim, ...] = (
     MigrationClaim("root.vision", "projector_out_width", "COR-4", (
         ClaimBinding("vision_config.hidden_size",
                      ProjectionTarget("root.vision", "projector_out_features")),
-    ), projection=ProjectionPolicy(
-        allowed_surfaces=frozenset({"ops_vision_projector"}),
-        allowed_kinds=frozenset({"op"}),
-        allowed_node_paths=frozenset({("vision_projector",)}))),
+    )),
     MigrationClaim("root.video", "projector_out_width", "COR-4", (
         ClaimBinding("vision_config.hidden_size",
                      ProjectionTarget("root.video", "projector_out_features")),
-    ), projection=ProjectionPolicy(
-        allowed_surfaces=frozenset({"ops_video_projector"}),
-        allowed_kinds=frozenset({"op"}),
-        allowed_node_paths=frozenset({("video_projector",)}))),
+    )),
     MigrationClaim("root.vision", "encoder_width", "COR-5", (
         ClaimBinding("vision_config.embed_dim",
                      ProjectionTarget("root.vision", "hidden_size")),
