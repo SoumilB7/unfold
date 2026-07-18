@@ -515,6 +515,12 @@ def test_cor5_poison_nonexistent_path_claim_fails_the_corpus_gate(monkeypatch):
 # the fixture is what became honest.
 _VAE_DOC = {"_vae_config": {"scaling_factor": 0.18,
                             "decoder": {"scale": 0.5}}}
+# U2-R2b: the census admits only CHECKPOINT-provenance occurrences, so the VAE
+# reads must be marked as the checkpoint's own words (they are — this is the
+# VAE's config.json).  Without a map they read "" (unestablished) and are
+# excluded, which is what regressed this test after ac860e6.
+_VAE_PROV = {"_vae_config.scaling_factor": _config_access.CHECKPOINT_DECLARED,
+             "_vae_config.decoder.scale": _config_access.CHECKPOINT_DECLARED}
 
 
 def _vae_emit(intent="inspected", **kw):
@@ -532,7 +538,7 @@ def test_cor5_census_view_is_occurrence_exact():
     the (owner, canonical) view collapses them and is compatibility-only."""
     with _config_access.capture_events() as ledger:
         with _config_access.owner_scope("root.vae"), \
-                _config_access.document_scope((), obj=_VAE_DOC):
+                _config_access.document_scope((), obj=_VAE_DOC, provenance=_VAE_PROV):
             _vae_emit(of="outer", alias="scaling_factor",
                       config_path="_vae_config.scaling_factor")
             _vae_emit(of="decoder", alias="scale",
@@ -545,7 +551,7 @@ def test_cor5_census_view_is_occurrence_exact():
     assert len(ledger.accessed_but_unconsumed()) == 1     # documented collapse
     with _config_access.capture_events() as ledger2:
         with _config_access.owner_scope("root.vae"), \
-                _config_access.document_scope((), obj=_VAE_DOC):
+                _config_access.document_scope((), obj=_VAE_DOC, provenance=_VAE_PROV):
             _vae_emit(of="outer", alias="scaling_factor",
                       config_path="_vae_config.scaling_factor")
             _vae_emit(of="decoder", alias="scale",

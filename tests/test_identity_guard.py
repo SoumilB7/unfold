@@ -217,6 +217,20 @@ def test_identity_branch_exempt_only_via_typed_decorator():
     assert not any(f.kind == "identity_branch" for f in scan_identity_source(src))
 
 
+def test_identity_marker_does_not_launder_a_structural_sink():
+    """U2 (Soumil's proviso): @identity_address/@identity_display exempt an
+    ADDRESS/DISPLAY use only.  A decorated function that branches on identity to
+    write a STRUCTURAL SINK (a spec/opgraph ctor or a dict keyed by a structural
+    term) is STILL debt — the marker can never launder a structural decision."""
+    src = ("@identity_address\n"
+           "def choose(cfg):\n"
+           "    model_type = cfg['model_type']\n"
+           "    if model_type == 'pixtral':\n"
+           "        return {'kind': 'rms'}\n")   # STRUCTURAL sink, not an address
+    assert any(f.kind == "identity_branch" for f in scan_identity_source(src)), (
+        "the identity marker laundered a structural sink")
+
+
 # --------------------------------------------------------------------------- #
 # E7 — dict COMPREHENSION keyed by class-name data
 # --------------------------------------------------------------------------- #

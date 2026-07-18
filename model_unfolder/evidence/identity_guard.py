@@ -343,7 +343,20 @@ def scan_identity_source(source: str, *, path: str = "<memory>") -> list[Identit
             # (@identity_address / @identity_display), NOT a function name the
             # guard hard-codes.  A new function is not silently exempt, and a
             # structural branch hiding in an address-named function is now debt.
-            if _enclosing_function_decorators(node, parents) & IDENTITY_ROLE_DECORATORS:
+            #
+            # U2 (Soumil's proviso): the decorator exempts an ADDRESS/DISPLAY use
+            # ONLY — a decorated function that branches on identity and WRITES A
+            # STRUCTURAL SINK is still debt, so the marker can never launder a
+            # structural decision.  (``prepare_document`` is lawful: it returns
+            # an evidence object and locates a config class, it authors no
+            # structural sink.)
+            if (_enclosing_function_decorators(node, parents)
+                    & IDENTITY_ROLE_DECORATORS):
+                if isinstance(node, ast.If) and _branch_writes_structural_sink(node):
+                    add(test, "identity_branch",
+                        "an @identity_address/@identity_display function branches "
+                        "on identity to write a STRUCTURAL SINK — the marker "
+                        "exempts locating/labelling, never authoring structure")
                 continue
             if names & _IDENTITY_NAMES or _calls_named(test, _IDENTITY_HELPERS):
                 add(test, "identity_branch", "identity-derived predicate controls a branch")

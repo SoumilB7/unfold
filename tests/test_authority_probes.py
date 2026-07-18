@@ -187,10 +187,9 @@ def test_p7_controls_identity_taint_shapes_stay_caught(shape, expected_kind, src
 # §5.6 — the decorator holes that DO exist (unit R3)
 # --------------------------------------------------------------------------- #
 
-@pytest.mark.xfail(strict=True, reason="§5.6/R3: an @identity_display decorator "
-                   "exempts identity-NAME branches inside the function body — the "
-                   "one decorated shape that IS blessed today")
 def test_p8_decorated_identity_name_branch_is_not_blessed():
+    # U2 (Soumil's proviso): CLOSED — the @identity marker no longer exempts a
+    # branch that writes a STRUCTURAL SINK, so this decorated shape is caught.
     findings = scan_identity_source(textwrap.dedent('''
         from x import identity_display
         @identity_display

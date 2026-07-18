@@ -35,6 +35,7 @@ from .config_access import (
     CLASS_DEFAULT,
     LOADER_METADATA,
 )
+from .identity_roles import identity_address
 
 
 @dataclass(frozen=True)
@@ -164,7 +165,9 @@ def _values_agree(a: Any, b: Any) -> bool:
                 and all(_values_agree(x, y) for x, y in zip(a, b)))
     try:
         return bool(a == b)
-    except Exception:
+    except (TypeError, ValueError):
+        # an unorderable/array-like comparison can't be decided here; treat as
+        # changed (conservative — attributes to the class, never the checkpoint).
         return False
 
 
@@ -239,6 +242,7 @@ def _overlay(checkpoint: Any, hydrated: Any, prefix: tuple = ()) -> dict:
     return out
 
 
+@identity_address
 def prepare_document(raw: Any, *, loader_keys: frozenset = frozenset(),
                      merge: bool = True,
                      already_prepared: "PreparedDocument | None" = None,
@@ -289,11 +293,29 @@ def prepare_document(raw: Any, *, loader_keys: frozenset = frozenset(),
             provenance=_map_provenance(checkpoint, raw, loader_keys))
     try:
         from transformers import AutoConfig
+        # Hydrate from a THROWAWAY DEEP CLONE.  ``AutoConfig.for_model`` MUTATES
+        # the nested component dicts it is handed — it pops ``model_type`` out of
+        # a composite's ``text_encoder`` / ``audio_encoder`` sub-configs — and in
+        # shadow mode ``document=raw`` shares those very nested objects.  Passing
+        # raw's live values therefore corrupted the checkpoint the parser then
+        # reads: MusicGen's conditioning tower lost its ``model_type`` and its
+        # presence gate then correctly rejected it, so the modality vanished.
+        # Nothing reachable from ``raw`` may reach AutoConfig.
+        _hydration_input = _snapshot(raw)
         document = AutoConfig.for_model(
             str(model_type),
-            **{k: v for k, v in raw.items()
+            **{k: v for k, v in _hydration_input.items()
                if not k.startswith("_") and k != "model_type"}).to_dict()
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 — see below
+        # AutoConfig.for_model's failure modes are genuinely OPEN: any config
+        # class (or huggingface_hub's StrictDataclass validator) may reject any
+        # config in any way — ``StrictDataclassFieldValidationError`` is neither a
+        # ValueError nor a TypeError, so a typed list silently MISSES real
+        # rejections and lets the parse crash.  The broad catch is justified
+        # precisely because it converts that open failure into a TYPED
+        # ``PreparationFailure`` (kind="class_rejected") — the exact "reader
+        # failure becomes a typed failure" the §16.6 ratchet wants — and it is
+        # pinned in that ratchet's baseline, not silenced.
         return PreparedDocument(
             document=raw, checkpoint=checkpoint,
             provenance=_map_provenance(checkpoint, raw, loader_keys),
