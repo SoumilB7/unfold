@@ -157,6 +157,14 @@ _DISPLAY_READERS = frozenset({
 _DECODERNESS_READERS = frozenset({
     "model_unfolder/evidence/decoderness.py", "model_unfolder/everchanging/__init__.py",
 })
+# U3: the ProgramIndex walker's container-constructor vocabulary (ModuleList/
+# Sequential/ModuleDict) — framework-universal structural primitives, recognized
+# from construction code shape, never a per-model identity.  The walker consumes
+# the loaded SET (no name-literal access in code); only the loader names the file.
+_PROGRAM_INDEX_READERS = frozenset({
+    "model_unfolder/evidence/program_index.py",
+    "model_unfolder/everchanging/__init__.py",
+})
 
 _LAWFUL_TABLES: tuple[LawfulTable, ...] = (
     # code-shape role vocabulary (RMSNorm -> norm class): classifies a class
@@ -177,6 +185,10 @@ _LAWFUL_TABLES: tuple[LawfulTable, ...] = (
     LawfulTable("model_unfolder/everchanging/conformance/type_roles.yaml", "ffn", "code_shape", _CONFORMANCE_READERS, "f1ff638270101d2f"),
     LawfulTable("model_unfolder/everchanging/conformance/type_roles.yaml", "conv", "code_shape", _CONFORMANCE_READERS, "3fdc556e8889cc9e"),
     LawfulTable("model_unfolder/everchanging/conformance/type_roles.yaml", "linear", "code_shape", _CONFORMANCE_READERS, "9c4117ea1874dea2"),
+    # code-shape: the ProgramIndex walker's container-constructor primitives —
+    # ModuleList/Sequential/ModuleDict, whose ELEMENTS are the real per-slot
+    # construction sites; framework-universal, not a per-model identity.
+    LawfulTable("model_unfolder/everchanging/evidence/program_index_vocab.yaml", "container_classes", "code_shape", _PROGRAM_INDEX_READERS, "019993b3d2835b86"),
     # declared-component: reads a diffusers config's OWN _class_name declaration.
     LawfulTable("model_unfolder/everchanging/diffusor/typing.yaml", "dit_class_markers", "declared_component", _DIFFUSOR_READERS, "047ffe4c3b4247f6"),
     LawfulTable("model_unfolder/everchanging/diffusor/typing.yaml", "scheduler_flow_matching_markers", "declared_component", _DIFFUSOR_READERS, "9b9b539456201c6e"),

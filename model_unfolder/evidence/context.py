@@ -188,6 +188,21 @@ class ParseContext:
     # consumes the same declaration instead of re-deriving it from the
     # scrubbed dict. ``None`` ⇒ nothing declares decoder-ness.
     declared_decoderness: str | None = None
+    # U3: the ONE immutable ProgramIndex for this parse's SourceBundle, built
+    # lazily and memoized call-locally on first query (boundary 7 — one per
+    # context).  Observation-only; NO existing path consumes it yet (readers
+    # migrate onto it from U3-D), so building it never runs on the render hot
+    # path and preservation stays byte-identical.
+    _program_index: Any = None
+
+    def program_index(self):
+        """The single immutable :class:`~.program_index.ProgramIndex` for this
+        parse's bundle — assembled once, then returned from the call-local
+        cache (exactly one per context)."""
+        if self._program_index is None:
+            from .program_index import build_program_index
+            self._program_index = build_program_index(self.source_bundle)
+        return self._program_index
 
     @classmethod
     def build(

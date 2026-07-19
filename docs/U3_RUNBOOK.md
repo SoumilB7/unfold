@@ -69,6 +69,115 @@ disagree because they scanned different files/classes/closures.
   (pixels byte-identical; ledger drift = new bless, avoid until U3 closes or
   document evidence-only delta per the U2 precedent).
 
+
+## PHASE LADDER (Soumil, 2026-07-19 — REVISED, supersedes the earlier split)
+The earlier ladder (A=walker, B=assembly, C=fixtures) is WRONG and deleted:
+it would have committed a walker before its fixtures existed. The single
+unambiguous sequence is:
+
+- **U3-A** — the ProgramIndex CORE, ONE atomic independently-receipted commit:
+  types + walker + immutable assembly + call-local ParseContext attachment +
+  ALL 13 fixture families. A walker is NEVER committed before its fixture
+  families exist. No reader migration, no rendering change, no old-extraction
+  deletion, no architectural role inference, no name-based selection.
+- **U3-B** — the ComponentOwner resolver + construction-graph resolution
+  tests. Emits typed rival-owner / config-prefix conflicts when resolution
+  cannot prove uniqueness (the raw index only RECORDS candidates). No reader
+  migration.
+- **U3-C** — the generic `ReaderResult[T]` substrate + failure-law tests.
+  No reader migration.
+- **U3-D** — the first narrow reader pilot (mechanically selected: single
+  caller; typed evidence already; smallest deletion surface; no cross-owner
+  reach; corpus witnesses exercise it).
+- **U3-E..H** — bounded migration clusters, conformance migration, and
+  old-parser eradication. Each migrated reader wraps `ReaderResult[T]`, ships
+  its six adversarial controls + class-renaming metamorphic control, and
+  DELETES the old reader in the same commit.
+
+Every phase = its own independently verified commit (six-point receipt:
+focused tests, U2 nets green, full suite, fingerprint unchanged, pixels
+byte-identical, isolated committed-tree pass) + push. Proceed WITHOUT asking
+for routine implementation choices; after U3-A is pushed and green, continue
+autonomously into U3-B. STOP ONLY FOR: unresolved semantic conflict;
+unexplained artifact delta; preservation regression; product-judgment change.
+NEVER stop merely because a phase finished.
+
+## U3-A SCHEMA CONTRACT (Soumil, 2026-07-19 — BINDING, precedes any visitor)
+Correct the type layer BEFORE writing visitors. Never use a bare class or
+function name as authoritative identity.
+
+Stable qualified identities:
+- **SourceId** — canonical path, content fingerprint, component key, external
+  flag, external provenance.
+- **SymbolId** — source identity + qualified name.
+- **SourceSpan** — source identity/path, line, column, end line, end column.
+- **ConstructionSiteId** — owner SymbolId, callable SymbolId, source span,
+  assignment/slot ordinal.
+
+Records:
+- **ModuleRecord** — module/package identity + its source node (was missing).
+- **ParseFailure** — read / decode / AST-parse failures ONLY.
+- **UnsupportedSyntaxRecord** — separate: a HEALTHY file with unsupported
+  dynamic syntax stays indexed AND carries an unsupported-syntax observation.
+- **SourceFileNode.__post_init__ invariants** — internal node requires a
+  component key; external node requires non-empty provenance; fingerprint must
+  match supplied source content during assembly; contradictory internal/
+  external metadata raises.
+
+Query-bearing expressions are NEVER stored as strings:
+- **ExprNode** (frozen, normalized) — kind, value/name/operator, children,
+  keyword children, span, optional source segment for DIAGNOSTICS ONLY.
+  Structurally represents names, attributes, constants, calls, subscripts,
+  slices, collections, boolean/binop/comparison, IfExp, comprehensions.
+  Replaces every expression-string field in assignments, returns, kwargs,
+  guards, controls, calls, dataflow. Readers query the STRUCTURE — never
+  ast.unparse() or substring search over the diagnostic segment.
+- Defaults distinguish three cases: no default; literal None; unsupported/
+  dynamic default.
+
+Honest construction sites — ConstructionSite records: exact site identity;
+owner + enclosing callable as qualified SymbolIds; target kind + target
+field/slot; raw constructor expr (ExprNode); positional args; keyword args;
+guard/control references; ZERO, ONE, or SEVERAL statically-resolved child
+candidates; resolution provenance. Zero candidates = dynamic construction;
+multiple = rivals. The walker NEVER chooses one child_class. Factory/helper
+resolution creates PROOF-BEARING candidate edges — "factory-resolved" is
+never a guessed single name.
+
+Observation separate from resolution:
+- CallObservation.order → **lexical_order** (+ enclosing control/guard path).
+  Runtime execution order is a reader's job on a proven branch, not the index.
+- Dataflow records carry def-use edges + structural expression relationships
+  ONLY — never an attention/FFN/gating/projection role label.
+- Config observations carry: syntactic config-root binding; exact typed path
+  segments; dynamic/unresolved segments made explicit; owner callable + span.
+  PATHS only; checkpoint values stay exclusively on the U1 ledger.
+- ConflictRecord is NOT emitted merely because the walker sees multiple
+  candidates. The raw index records candidates; U3-B's resolver emits the
+  typed rival-owner / config-prefix conflicts.
+
+U3-A FIXTURES = the nine spec families PLUS: content-changed-mtime-preserved;
+same qualified class at two distinct sites/roles; conflicting owner/config-
+prefix candidates retained as RIVALS; one malformed + one healthy file
+(partial usability). PLUS: two modules defining the same class name; literal
+None default vs no default; two construction calls on the same source line;
+dynamic factory returning no proven candidate; multiple factory candidates
+with no winner selection; branch calls proving lexical_order ≠ runtime order;
+external node without provenance MUST raise; expression-source renaming that
+leaves the structural observations equivalent.
+
+U3-A ACCEPTANCE — do not modify any reader, renderer, architectural output,
+or old extraction path. Complete ONLY when: all types + walker + assembly +
+SourceBundle integration + ParseContext call-local ownership present; exactly
+ONE immutable index per bundle/context; the aggregate bundle fingerprint
+canonically includes source identity, component ownership, external
+provenance, and content fingerprints — NOT file contents alone or iteration
+order; every required fixture passes; no query API performs name/substring
+architectural selection; focused tests + all U2 nets + full suite + unchanged
+fingerprint + byte-identical preservation + isolated committed-tree
+verification all pass. Commit + push U3-A only after that complete receipt,
+then proceed autonomously to U3-B.
+
 ## Working state
 - [x] Reader inventory recon DONE → u3-reader-inventory.md (43KB, verbatim).
       Headlines: ~60 readers / 12 modules; 34 model-source ast.parse sites
@@ -90,9 +199,14 @@ disagree because they scanned different files/classes/closures.
       8 typed evidence dataclasses already exist to converge on (+ ConformanceProblem as a typed failure surface);
       projector._config_param_chains (:319) = the ComponentOwner +
       config-prefix prototype to seed the index design.
-- [ ] ProgramIndex core (files/classes/ctor fields/calls/spans) + fixtures
-- [ ] ComponentOwner resolver from parent construction graph
-- [ ] ReaderResult type + reader migrations (one reader at a time, parity
-      fixtures frozen before each)
-- [ ] Deletions + gates + commit ladder (per-reader commits, U2 receipt
-      discipline: focused + FULL suite + isolated receipt each)
+- [~] U3-A ProgramIndex CORE (types + walker + assembly + ParseContext +
+      ALL 13 fixtures) — schema contract locked (types being revised to the
+      2026-07-19 contract: SourceId/SymbolId/SourceSpan/ConstructionSiteId,
+      ModuleRecord, UnsupportedSyntaxRecord, ExprNode, candidate edges).
+      WALKER NOT YET WRITTEN — held until the revised types + fixtures exist.
+- [ ] U3-B ComponentOwner resolver + construction-graph resolution tests
+      (typed rival-owner/config-prefix conflicts)
+- [ ] U3-C generic ReaderResult[T] substrate + failure-law tests
+- [ ] U3-D first narrow reader pilot (mechanical selection)
+- [ ] U3-E..H migration clusters + conformance migration + old-parser
+      eradication (per-reader commits, U2 receipt discipline each)

@@ -460,6 +460,25 @@ def load_constructor_classmethods() -> frozenset[str]:
     return _CONSTRUCTOR_CLASSMETHODS
 
 
+def load_program_index_vocab() -> dict[str, frozenset[str]]:
+    """Syntactic vocabulary for the U3 ProgramIndex walker
+    (``evidence/program_index_vocab.yaml``): the bare-Name config roots, the
+    activation dispatch tables (``ACT2FN[…]``), the activation call forms
+    (``get_activation(…)``), and the container constructor classes (ModuleList/
+    Sequential/ModuleDict).  Data, never hardcoded — a new config dialect or
+    container idiom is a YAML edit."""
+    data = load("evidence", "program_index_vocab")
+    return {
+        "config_roots": frozenset(str(x) for x in (data.get("config_roots") or [])),
+        "activation_dispatch": frozenset(
+            str(x) for x in (data.get("activation_dispatch") or [])),
+        "activation_calls": frozenset(
+            str(x) for x in (data.get("activation_calls") or [])),
+        "container_classes": frozenset(
+            str(x) for x in (data.get("container_classes") or [])),
+    }
+
+
 def _parse_flow_yaml(text: str) -> dict[str, list[str]]:
     """Minimal reader for ``key: [a, b, c]`` / ``key:`` + ``- item`` blocks.
 
