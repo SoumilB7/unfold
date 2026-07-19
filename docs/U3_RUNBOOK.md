@@ -209,22 +209,43 @@ then proceed autonomously to U3-B.
       registered in the identity-guard lawful manifest. Six-point receipt green
       (full 1521 passed, fingerprint identical, preservation 20, identity 26,
       ratchet 4, isolated bracket PASS).
-- [x] U3-B ComponentOwner resolver — DONE. evidence/component_owner.py:
-      resolve_owner_graph(index, root) builds the parent->site->field/slot->child
-      owner tree, propagates the exact config prefix per edge, follows helper
-      folds + factory bases + ModuleList elements + cross-file unique names, and
-      emits TYPED ConflictRecords (rival_owner_chain for >=2 slot candidates,
-      rival_config_prefix for >=2 config-arg prefixes) — never a guess, never a
-      silent drop. 10 resolution tests. No reader migrated. (component_owner
-      stores the index as self.program_index, not self.index, so the U2 writer
-      census does not false-flag it as a spec_mutation:index writer.)
-- [x] U3-C generic ReaderResult[T] substrate — DONE. evidence/reader_result.py:
-      ReaderResult[T] wraps the eight domain evidence dataclasses with a typed
-      status (resolved/incomplete/ambiguous/absent/failed), owner, completeness,
-      typed ReaderFailures, provenance, and a typed Ambiguity (rival owner
-      chains + config prefixes + sites + ConflictRecords). Failure laws enforced
-      in __post_init__; lawful constructors + ambiguity_from_conflicts bridge.
-      18 failure-law tests. No reader migrated (that begins at U3-D).
-- [ ] U3-D first narrow reader pilot (mechanical selection)
+- [x] U3-B ComponentOwner resolver — corrected in the independent-audit baseline
+      after audit of 602b133. The first version still identified nodes by class
+      SymbolId at lookup (two same-class occurrences could collapse), resolved
+      an unimported cross-file class by bundle-wide name uniqueness, and recorded
+      a rival config-prefix conflict while publishing the parent's plausible
+      prefix. The corrected evidence/component_owner.py uses
+      OwnerOccurrenceId(root + complete ConstructionSiteId chain), retains both
+      helper-call and helper-return sites, exposes occurrence-only node lookup
+      plus plural nodes_for_symbol, resolves cross-file classes only through an
+      exact import binding, preserves guarded same-field constructions as typed
+      rivals, carries rival prefixes through descendants without fallback,
+      records cycles/depth limits explicitly, and requires explicit root
+      bindings when several constructor parameters are viable. Factory inputs
+      are recorded as factory inputs—not falsely mapped onto __init__ params.
+      18 resolution-law tests. No reader migrated.
+- [x] U3-C generic ReaderResult[T] substrate — corrected in the independent-audit
+      baseline after audit of a02c95d. ReaderResult now owns an exact
+      OwnerOccurrenceId rather than a class SymbolId; successful/partial values
+      require structured ReaderProvenance; provenance kinds enforce their real
+      channels (source span, config path, or both); failure kinds are closed;
+      incomplete results must explain their missing evidence; ambiguity accepts
+      only exact typed rival records; resolved/failed/absent/ambiguous states are
+      mutually exclusive. The value_or default escape hatch is deleted and
+      require_value raises on every non-value state. 23 failure/provenance-law
+      tests. No reader migrated (that begins at U3-D).
+      Committed-tree receipt (independent-audit baseline): 41 focused B/C + 69
+      U3-A/B/C green; affected U2 (identity/structural-write/registry/projection)
+      gates green; preservation green; full suite green; tree fingerprint
+      identical before/after. Marked complete on that green committed-tree gate.
+- [ ] U3-D first narrow reader pilot (mechanical selection) — gated by U3-D0
+      (component-root address boundary) and Codex V1 review per
+      docs/U3_D_TO_H_EXECUTION_AND_VET_PLAN.md (now versioned in this baseline)
 - [ ] U3-E..H migration clusters + conformance migration + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
+
+The binding execution order, exact first pilot, review ownership and stop gates
+for U3-D through U3-H are specified in
+`docs/U3_D_TO_H_EXECUTION_AND_VET_PLAN.md`. In particular, production migration
+must not begin until its U3-D0 component-root address boundary is present; the
+implementation agent may not invent a local root-class chooser.

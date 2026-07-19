@@ -1,17 +1,16 @@
-"""U3-C — the generic ReaderResult[T] substrate and its failure laws.
-
-A migrated reader may never return a bare value or a bare None/False; it returns
-a ReaderResult whose status makes "no evidence", "ambiguous", "incomplete" and
-"failed" distinguishable. These tests pin the laws so an ill-formed result cannot
-be constructed, and prove the wrapper is generic over the real domain evidence
-dataclasses and bridges the resolver's typed conflicts.
-"""
+"""U3-C — exact-owner ReaderResult failure and provenance laws."""
 from __future__ import annotations
 
 import pytest
 
+from model_unfolder.evidence.component_owner import (
+    ConfigPrefixRival,
+    OwnerOccurrenceId,
+    OwnerRival,
+)
 from model_unfolder.evidence.program_index import (
     ConflictRecord,
+    ConstructionSiteId,
     SourceId,
     SourceSpan,
     SymbolId,
@@ -19,144 +18,247 @@ from model_unfolder.evidence.program_index import (
 from model_unfolder.evidence.reader_result import (
     Ambiguity,
     ReaderFailure,
+    ReaderProvenance,
     ReaderResult,
+    ReaderValueUnavailable,
     ambiguity_from_conflicts,
 )
 
 
+def _symbol(name="Block"):
+    return SymbolId(SourceId("/m.py", "fp", component_key="root"), name)
+
+
+def _span(line=10):
+    return SourceSpan(_symbol().source, line)
+
+
+def _site(line=10, ordinal=0):
+    owner = _symbol("Root")
+    span = SourceSpan(owner.source, line)
+    return ConstructionSiteId(owner, SymbolId(owner.source, "Root.__init__"),
+                              span, ordinal)
+
+
 def _owner():
-    sid = SourceId("/m.py", "fp", component_key="root")
-    return SymbolId(sid, "Block.attention")
+    return OwnerOccurrenceId(_symbol("Root"), (_site(),))
 
 
-# --------------------------------------------------------------------------- #
-# Lawful constructors produce the right shape
-# --------------------------------------------------------------------------- #
-
-def test_resolved_carries_value_and_is_complete():
-    r = ReaderResult.resolved(_owner(), value={"kind": "mha"}, provenance=("ast",))
-    assert r.ok and r.has_value and r.status == "resolved"
-    assert r.completeness == "complete" and r.ambiguity is None
-    assert r.provenance == ("ast",)
+def _provenance():
+    return (ReaderProvenance("source", spans=(_span(),)),)
 
 
-def test_incomplete_carries_partial_value():
-    r = ReaderResult.incomplete(_owner(), value={"kind": "mha"},
-                                failures=(ReaderFailure("missing_source", "no rope"),))
-    assert r.status == "incomplete" and r.completeness == "partial"
-    assert r.has_value and not r.ok
-
-
-def test_absent_is_honest_no_evidence():
-    r = ReaderResult.absent(_owner())
-    assert r.status == "absent" and not r.has_value and r.completeness == "none"
-    assert r.value_or("dflt") == "dflt"
-
-
-def test_failed_requires_typed_failures():
-    r = ReaderResult.failed(_owner(), failures=(ReaderFailure("parse_failure", "boom"),))
-    assert r.status == "failed" and not r.has_value and r.failures
-
-
-def test_ambiguous_carries_rivals_and_no_value():
-    amb = Ambiguity(rival_owner_chains=((("EagerAttn", "registry"),
-                                         ("FlashAttn", "registry")),))
-    r = ReaderResult.ambiguous(_owner(), amb)
-    assert r.status == "ambiguous" and not r.has_value
-    assert r.ambiguity is amb
-
-
-# --------------------------------------------------------------------------- #
-# The failure LAWS reject ill-formed results at construction
-# --------------------------------------------------------------------------- #
-
-def test_unknown_status_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="maybe")
-
-
-def test_resolved_without_value_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="resolved", value=None, completeness="complete")
-
-
-def test_resolved_with_ambiguity_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="resolved", value={"x": 1}, completeness="complete",
-                     ambiguity=Ambiguity(rival_config_prefixes=((("a",), ("b",)),)))
-
-
-def test_ambiguous_without_ambiguity_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="ambiguous", value=None)
-
-
-def test_ambiguous_with_empty_ambiguity_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="ambiguous", ambiguity=Ambiguity())
-
-
-def test_ambiguous_with_value_rejected():
-    amb = Ambiguity(rival_config_prefixes=((("a",), ("b",)),))
-    with pytest.raises(ValueError):
-        ReaderResult(status="ambiguous", value={"x": 1}, ambiguity=amb)
-
-
-def test_failed_without_failures_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="failed", failures=())
-
-
-def test_absent_with_value_rejected():
-    with pytest.raises(ValueError):
-        ReaderResult(status="absent", value={"x": 1})
-
-
-def test_incomplete_must_be_partial():
-    with pytest.raises(ValueError):
-        ReaderResult(status="incomplete", value={"x": 1}, completeness="complete")
-
-
-def test_failures_must_be_typed():
-    with pytest.raises(TypeError):
-        ReaderResult(status="failed", failures=("just a string",))
-
-
-# --------------------------------------------------------------------------- #
-# Generic over the real domain evidence dataclasses
-# --------------------------------------------------------------------------- #
-
-def test_wraps_a_real_domain_evidence_dataclass():
-    from model_unfolder.evidence.models import PositionalEvidence
-    ev = PositionalEvidence(status="proven")
-    r: ReaderResult[PositionalEvidence] = ReaderResult.resolved(_owner(), ev)
-    assert r.ok and isinstance(r.value, PositionalEvidence)
-    assert r.value.status == "proven"
-
-
-# --------------------------------------------------------------------------- #
-# The U3-B -> reader bridge: build an Ambiguity from typed ConflictRecords
-# --------------------------------------------------------------------------- #
-
-def test_ambiguity_from_conflicts_bridge():
-    sid = SourceId("/m.py", "fp", component_key="root")
-    span = SourceSpan(sid, 10)
-    conflicts = (
-        ConflictRecord("rival_owner_chain",
-                       (("EagerAttn", "registry"), ("FlashAttn", "registry")),
-                       (span,)),
-        ConflictRecord("rival_config_prefix", (("text_config",), ("vision_config",)),
-                       (span,)),
+def _owner_rivals():
+    parent = OwnerOccurrenceId(_symbol("Root"))
+    site = _site()
+    return (
+        OwnerRival(parent, site, _symbol("EagerAttn"), "EagerAttn", "registry"),
+        OwnerRival(parent, site, _symbol("FlashAttn"), "FlashAttn", "registry"),
     )
-    amb = ambiguity_from_conflicts(conflicts)
-    assert len(amb.rival_owner_chains) == 1
-    assert len(amb.rival_config_prefixes) == 1
-    assert span in amb.sites and len(amb.conflicts) == 2
-    # and it can be handed straight into an ambiguous result
-    r = ReaderResult.ambiguous(_owner(), amb)
-    assert r.status == "ambiguous"
 
 
-def test_ambiguity_from_conflicts_rejects_non_conflicts():
+def _prefix_rivals():
+    parent = OwnerOccurrenceId(_symbol("Root"))
+    site = _site()
+    return (
+        ConfigPrefixRival(parent, site, "config", ("text_config",)),
+        ConfigPrefixRival(parent, site, "config", ("vision_config",)),
+    )
+
+
+def test_resolved_carries_exact_owner_value_and_structured_provenance():
+    result = ReaderResult.resolved(
+        _owner(), {"kind": "mha"}, provenance=_provenance())
+    assert result.ok and result.has_value
+    assert result.completeness == "complete"
+    assert isinstance(result.owner, OwnerOccurrenceId)
+    assert result.require_value() == {"kind": "mha"}
+
+
+def test_incomplete_requires_partial_value_failure_and_provenance():
+    result = ReaderResult.incomplete(
+        _owner(), {"kind": "mha"},
+        failures=(ReaderFailure("incomplete_graph", "position path unresolved"),),
+        provenance=_provenance(),
+    )
+    assert result.status == "incomplete" and result.has_value
+    assert not result.ok and result.require_value()["kind"] == "mha"
+
+
+def test_absent_is_honest_no_evidence_and_cannot_default():
+    result = ReaderResult.absent(_owner())
+    assert result.status == "absent" and not result.has_value
+    with pytest.raises(ReaderValueUnavailable):
+        result.require_value()
+    assert not hasattr(result, "value_or")
+
+
+def test_failed_carries_closed_typed_failure():
+    result = ReaderResult.failed(
+        _owner(), (ReaderFailure("parse_failure", "invalid syntax", _span()),))
+    assert result.status == "failed" and not result.has_value
+    with pytest.raises(ReaderValueUnavailable):
+        result.require_value()
+
+
+def test_ambiguous_carries_exact_rivals_and_no_value():
+    ambiguity = Ambiguity(rival_owner_chains=(_owner_rivals(),))
+    result = ReaderResult.ambiguous(_owner(), ambiguity)
+    assert result.status == "ambiguous" and result.ambiguity is ambiguity
+    with pytest.raises(ReaderValueUnavailable):
+        result.require_value()
+
+
+@pytest.mark.parametrize("status", ["maybe", "proven", "unknown"])
+def test_unknown_status_rejected(status):
+    with pytest.raises(ValueError):
+        ReaderResult(status=status)
+
+
+def test_resolved_requires_occurrence_owner():
     with pytest.raises(TypeError):
-        ambiguity_from_conflicts(["not a conflict record"])
+        ReaderResult.resolved(_symbol(), {"x": 1}, provenance=_provenance())
+
+
+def test_resolved_requires_value():
+    with pytest.raises(ValueError):
+        ReaderResult("resolved", _owner(), None, "complete",
+                     provenance=_provenance())
+
+
+def test_resolved_requires_structured_provenance():
+    with pytest.raises(ValueError):
+        ReaderResult.resolved(_owner(), {"x": 1}, provenance=())
+    with pytest.raises(TypeError):
+        ReaderResult.resolved(_owner(), {"x": 1}, provenance=("ast",))
+
+
+def test_resolved_cannot_hide_failure_or_ambiguity():
+    with pytest.raises(ValueError):
+        ReaderResult("resolved", _owner(), {"x": 1}, "complete",
+                     failures=(ReaderFailure("incomplete_graph", "missing"),),
+                     provenance=_provenance())
+    with pytest.raises(ValueError):
+        ReaderResult("resolved", _owner(), {"x": 1}, "complete",
+                     provenance=_provenance(),
+                     ambiguity=Ambiguity(rival_owner_chains=(_owner_rivals(),)))
+
+
+def test_incomplete_requires_failure_and_provenance():
+    with pytest.raises(ValueError):
+        ReaderResult("incomplete", _owner(), {"x": 1}, "partial",
+                     provenance=_provenance())
+    with pytest.raises(ValueError):
+        ReaderResult("incomplete", _owner(), {"x": 1}, "partial",
+                     failures=(ReaderFailure("incomplete_graph", "missing"),))
+
+
+def test_incomplete_cannot_also_be_ambiguous():
+    with pytest.raises(ValueError):
+        ReaderResult(
+            "incomplete", _owner(), {"x": 1}, "partial",
+            failures=(ReaderFailure("conflict", "rivals"),),
+            provenance=_provenance(),
+            ambiguity=Ambiguity(rival_owner_chains=(_owner_rivals(),)),
+        )
+
+
+def test_ambiguous_requires_owner_and_at_least_two_typed_rivals():
+    with pytest.raises(ValueError):
+        ReaderResult.ambiguous(None,
+                               Ambiguity(rival_owner_chains=(_owner_rivals(),)))
+    with pytest.raises(ValueError):
+        Ambiguity(rival_owner_chains=((_owner_rivals()[0],),))
+    with pytest.raises(ValueError):
+        Ambiguity(rival_owner_chains=(("a", "b"),))
+
+
+def test_ambiguous_cannot_carry_value_or_failure():
+    ambiguity = Ambiguity(rival_config_prefixes=(_prefix_rivals(),))
+    with pytest.raises(ValueError):
+        ReaderResult("ambiguous", _owner(), {"x": 1}, ambiguity=ambiguity)
+    with pytest.raises(ValueError):
+        ReaderResult("ambiguous", _owner(), failures=(
+            ReaderFailure("conflict", "rivals"),), ambiguity=ambiguity)
+
+
+def test_failed_requires_failure_and_rejects_unknown_failure_kind():
+    with pytest.raises(ValueError):
+        ReaderResult.failed(_owner(), ())
+    with pytest.raises(ValueError):
+        ReaderFailure("whatever", "not a closed kind")
+    with pytest.raises(ValueError):
+        ReaderFailure("parse_failure", "")
+
+
+def test_absent_cannot_carry_value_failure_or_ambiguity():
+    with pytest.raises(ValueError):
+        ReaderResult("absent", _owner(), {"x": 1})
+    with pytest.raises(ValueError):
+        ReaderResult("absent", _owner(), failures=(
+            ReaderFailure("missing_source", "none"),))
+    with pytest.raises(ValueError):
+        ReaderResult("absent", _owner(),
+                     ambiguity=Ambiguity(rival_owner_chains=(_owner_rivals(),)))
+
+
+def test_provenance_is_structural_and_nonempty():
+    with pytest.raises(ValueError):
+        ReaderProvenance("source")
+    with pytest.raises(ValueError):
+        ReaderProvenance("invented", detail="x")
+    with pytest.raises(TypeError):
+        ReaderProvenance("source", config_paths=(["hidden_size"],))
+    config = ReaderProvenance(
+        "code_and_config", spans=(_span(),),
+        config_paths=(("text_config", "hidden_size"),))
+    assert config.config_paths[0][-1] == "hidden_size"
+
+
+def test_each_provenance_kind_requires_its_real_evidence_channel():
+    with pytest.raises(ValueError):
+        ReaderProvenance("source", detail="a label is not a source span")
+    with pytest.raises(ValueError):
+        ReaderProvenance("external", detail="module name only")
+    with pytest.raises(ValueError):
+        ReaderProvenance("config", detail="field name only")
+    with pytest.raises(ValueError):
+        ReaderProvenance("code_and_config", spans=(_span(),))
+    with pytest.raises(ValueError):
+        ReaderProvenance("code_and_config",
+                         config_paths=(("hidden_size",),))
+    with pytest.raises(ValueError):
+        ReaderProvenance("derived", spans=(_span(),))
+    assert ReaderProvenance("derived", detail="premises: attention.kind")
+
+
+def test_wraps_real_domain_evidence_dataclass():
+    from model_unfolder.evidence.models import PositionalEvidence
+    evidence = PositionalEvidence(status="proven")
+    result: ReaderResult[PositionalEvidence] = ReaderResult.resolved(
+        _owner(), evidence, provenance=_provenance())
+    assert isinstance(result.require_value(), PositionalEvidence)
+
+
+def test_ambiguity_from_conflicts_preserves_exact_records():
+    owner_conflict = ConflictRecord(
+        "rival_owner_chain", _owner_rivals(), (_span(),))
+    prefix_conflict = ConflictRecord(
+        "rival_config_prefix", _prefix_rivals(), (_span(),))
+    ambiguity = ambiguity_from_conflicts((owner_conflict, prefix_conflict))
+    assert ambiguity.rival_owner_chains == (_owner_rivals(),)
+    assert ambiguity.rival_config_prefixes == (_prefix_rivals(),)
+    assert ambiguity.sites == (_span(),)
+    result = ReaderResult.ambiguous(_owner(), ambiguity)
+    assert result.status == "ambiguous"
+
+
+def test_ambiguity_bridge_rejects_untyped_or_unknown_conflicts():
+    with pytest.raises(TypeError):
+        ambiguity_from_conflicts(("not a conflict",))
+    with pytest.raises(ValueError):
+        ambiguity_from_conflicts((ConflictRecord("other", (), ()),))
+    with pytest.raises(ValueError):
+        ambiguity_from_conflicts((
+            ConflictRecord("rival_owner_chain", (("a",), ("b",)), (_span(),)),
+        ))

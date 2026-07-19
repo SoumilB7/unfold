@@ -12,9 +12,13 @@ from __future__ import annotations
 
 import textwrap
 
+import pytest
+
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.component_owner import (
+    ConfigPrefixRival,
     OwnerGraph,
+    OwnerRival,
     resolve_owner_graph,
 )
 from model_unfolder.evidence.models import SourceBundle
@@ -71,13 +75,13 @@ def test_owner_chain_and_config_prefix_propagate(tmp_path):
     g = resolve_owner_graph(idx, _root(idx, "Wrapper"))
     assert g.conflicts == ()
     text = _child(g.root, "text")
-    assert text.owner.qualified_name == "TextModel"
+    assert text.symbol.qualified_name == "TextModel"
     assert text.config_prefix == ("text_config",)          # config.text_config
     block = _child(text, "layers")
-    assert block.owner.qualified_name == "Block" and block.via_kind == "element"
+    assert block.symbol.qualified_name == "Block" and block.via_kind == "element"
     assert block.config_prefix == ("text_config",)
     norm = _child(block, "norm")
-    assert norm.owner.qualified_name == "RMSNorm"
+    assert norm.symbol.qualified_name == "RMSNorm"
     assert norm.config_prefix == ("text_config", "hidden_size")  # nested prefix
 
 
@@ -98,8 +102,10 @@ def test_helper_fold_resolves_through_the_return_site(tmp_path):
     idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
     g = resolve_owner_graph(idx, _root(idx, "Block"))
     mlp = _child(g.root, "mlp")
-    assert mlp is not None and mlp.owner.qualified_name == "MLP"
+    assert mlp is not None and mlp.symbol.qualified_name == "MLP"
     assert mlp.via_kind == "return"
+    # The helper-call site AND return site participate in occurrence identity.
+    assert len(mlp.occurrence.sites) == 2
 
 
 # --------------------------------------------------------------------------- #
@@ -117,7 +123,7 @@ def test_factory_resolves_base_and_propagates_prefix(tmp_path):
     idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
     g = resolve_owner_graph(idx, _root(idx, "Wrapper"))
     text = _child(g.root, "text")
-    assert text.owner.qualified_name == "TextTower"
+    assert text.symbol.qualified_name == "TextTower"
     assert text.config_prefix == ("text_config",)
 
 
@@ -145,7 +151,10 @@ def test_registry_rivals_emit_rival_owner_chain_conflict(tmp_path):
     kinds = [c.kind for c in g.conflicts]
     assert "rival_owner_chain" in kinds
     rivals = next(c for c in g.conflicts if c.kind == "rival_owner_chain").rivals
-    assert {r[0] for r in rivals} == {"EagerAttn", "FlashAttn"}
+    assert all(isinstance(r, OwnerRival) for r in rivals)
+    assert {r.reference for r in rivals} == {"EagerAttn", "FlashAttn"}
+    assert {r.parent for r in rivals} == {g.root.occurrence}
+    assert {r.site for r in rivals} == {g.root.unresolved[0].site}
 
 
 # --------------------------------------------------------------------------- #
@@ -166,9 +175,18 @@ def test_ternary_config_arg_emits_rival_config_prefix_conflict(tmp_path):
     kinds = [c.kind for c in g.conflicts]
     assert "rival_config_prefix" in kinds
     rc = next(c for c in g.conflicts if c.kind == "rival_config_prefix")
-    assert ("text_config",) in rc.rivals and ("vision_config",) in rc.rivals
-    # the child owner still resolves (Tower); only its prefix is ambiguous
-    assert _child(g.root, "tower").owner.qualified_name == "Tower"
+    assert all(isinstance(r, ConfigPrefixRival) for r in rc.rivals)
+    assert {r.prefix for r in rc.rivals} == {
+        ("text_config",), ("vision_config",),
+    }
+    # The child identity resolves, but its config location does not. Crucially,
+    # it does NOT fall back to the root prefix ().
+    tower = _child(g.root, "tower")
+    assert tower.symbol.qualified_name == "Tower"
+    assert tower.config_prefix is None
+    assert set(tower.config_prefix_candidates) == {
+        ("text_config",), ("vision_config",),
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -186,12 +204,28 @@ def test_cross_file_unique_class_resolves(tmp_path):
     idx = _index(tmp_path, {"root": (wrap, tower)})
     g = resolve_owner_graph(idx, _root(idx, "Wrapper"))
     tnode = _child(g.root, "tower")
-    assert tnode is not None and tnode.owner.qualified_name == "Tower"
-    assert tnode.owner.source.canonical_path.endswith("modeling_tower.py")
+    assert tnode is not None and tnode.symbol.qualified_name == "Tower"
+    assert tnode.symbol.source.canonical_path.endswith("modeling_tower.py")
     assert tnode.config_prefix == ("text_config",)
 
 
-def test_cross_file_ambiguous_class_name_is_not_guessed(tmp_path):
+def test_cross_file_module_alias_resolves_only_through_exact_import(tmp_path):
+    tower = _write(tmp_path, "modeling_tower.py",
+                   "class Tower:\n    def __init__(self, config): pass\n")
+    wrap = _write(tmp_path, "modeling_wrap.py", """
+        import modeling_tower as towers
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = towers.Tower(config.vision_config)
+    """)
+    idx = _index(tmp_path, {"root": (wrap, tower)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    node = _child(graph.root, "tower")
+    assert node is not None and node.symbol.source.canonical_path == tower
+    assert node.config_prefix == ("vision_config",)
+
+
+def test_cross_file_bare_name_without_import_is_not_guessed(tmp_path):
     a = _write(tmp_path, "modeling_a.py", "class Tower:\n    def __init__(self, config): pass\n")
     b = _write(tmp_path, "modeling_b.py", "class Tower:\n    def __init__(self, config): pass\n")
     wrap = _write(tmp_path, "modeling_wrap.py", """
@@ -201,9 +235,10 @@ def test_cross_file_ambiguous_class_name_is_not_guessed(tmp_path):
     """)
     idx = _index(tmp_path, {"root": (wrap, a, b)})
     g = resolve_owner_graph(idx, _root(idx, "Wrapper"))
-    # two classes named Tower -> the resolver refuses to guess which owns the slot
+    # A unique or ambiguous same-name class elsewhere is irrelevant without an
+    # import binding. Bare-name uniqueness across the bundle is not proof.
     assert _child(g.root, "tower") is None
-    assert any(u.field == "tower" and u.kind == "ambiguous_crossfile"
+    assert any(u.field == "tower" and u.kind == "external"
                for u in g.root.unresolved)
 
 
@@ -237,8 +272,10 @@ def test_self_referential_construction_terminates(tmp_path):
     g = resolve_owner_graph(idx, _root(idx, "Node"))
     # Node -> child Node -> (cycle stops); finite tree, no exception
     first = _child(g.root, "child")
-    assert first is not None and first.owner.qualified_name == "Node"
-    # the recursion terminates: the deepest Node has no further resolved child
+    assert first is not None and first.symbol.qualified_name == "Node"
+    # The recursion terminates with an explicit cycle record, not silent empty
+    # children that could be mistaken for a proven leaf.
+    assert any(u.kind == "cycle" for u in first.unresolved)
     assert isinstance(g, OwnerGraph)
 
 
@@ -256,6 +293,146 @@ def test_owner_graph_walk_and_lookup(tmp_path):
     """
     idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
     g = resolve_owner_graph(idx, _root(idx, "Block"))
-    names = [n.owner.qualified_name for n in g.walk()]
+    names = [n.symbol.qualified_name for n in g.walk()]
     assert names == ["Block", "Attn"]
-    assert g.node_for(_root(idx, "Attn")).via_field == "attn"
+    attn = _child(g.root, "attn")
+    assert g.node_for(attn.occurrence) is attn
+    assert g.nodes_for_symbol(_root(idx, "Attn")) == (attn,)
+    with pytest.raises(TypeError):
+        g.node_for(_root(idx, "Attn"))
+
+
+def test_same_class_at_two_sites_remains_two_owner_occurrences(tmp_path):
+    src = """
+        class Norm:
+            def __init__(self, dim): pass
+        class Block:
+            def __init__(self, config):
+                self.pre = Norm(config.hidden_size)
+                self.post = Norm(config.hidden_size)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    norm_symbol = _root(idx, "Norm")
+    graph = resolve_owner_graph(idx, _root(idx, "Block"))
+    pre, post = _child(graph.root, "pre"), _child(graph.root, "post")
+    assert pre.symbol == post.symbol == norm_symbol
+    assert pre.occurrence != post.occurrence
+    assert graph.nodes_for_symbol(norm_symbol) == (pre, post)
+    assert graph.node_for(pre.occurrence) is pre
+    assert graph.node_for(post.occurrence) is post
+
+
+def test_two_fields_calling_same_helper_do_not_collapse(tmp_path):
+    src = """
+        class Norm:
+            def __init__(self, config): pass
+        class Block:
+            def __init__(self, config):
+                self.pre = self._make(config)
+                self.post = self._make(config)
+            def _make(self, config):
+                return Norm(config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Block"))
+    pre, post = _child(graph.root, "pre"), _child(graph.root, "post")
+    assert pre.occurrence != post.occurrence
+    assert pre.occurrence.sites[-1] == post.occurrence.sites[-1]  # shared return
+    assert pre.occurrence.sites[0] != post.occurrence.sites[0]   # distinct fields
+
+
+def test_ambiguous_prefix_propagates_as_ambiguity_not_parent_fallback(tmp_path):
+    src = """
+        class Leaf:
+            def __init__(self, config): pass
+        class Tower:
+            def __init__(self, config):
+                self.leaf = Leaf(config)
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = Tower(
+                    config.text_config if config.is_text else config.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    tower = _child(graph.root, "tower")
+    leaf = _child(tower, "leaf")
+    expected = {("text_config",), ("vision_config",)}
+    assert tower.config_prefix is None and set(tower.config_prefix_candidates) == expected
+    assert leaf.config_prefix is None and set(leaf.config_prefix_candidates) == expected
+    assert sum(c.kind == "rival_config_prefix" for c in graph.conflicts) == 2
+
+
+def test_multiple_root_parameters_require_explicit_binding(tmp_path):
+    src = """
+        class Root:
+            def __init__(self, config, adapter): pass
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    root = _root(idx, "Root")
+    unresolved = resolve_owner_graph(idx, root)
+    assert any(u.kind == "root_config_binding" for u in unresolved.root.unresolved)
+    assert unresolved.root.config_bindings == ()
+    explicit = resolve_owner_graph(idx, root,
+                                   root_param_prefixes={"config": (), "adapter": ("adapter",)})
+    assert {b.parameter: b.resolved_prefix for b in explicit.root.config_bindings} == {
+        "config": (), "adapter": ("adapter",),
+    }
+
+
+def test_factory_input_is_not_falsely_bound_to_init_parameter(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, unrelated): pass
+        class Wrapper:
+            def __init__(self, config):
+                self.tower = Tower.from_pretrained(config.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    tower = _child(graph.root, "tower")
+    assert tower.config_prefix == ("vision_config",)
+    assert tower.config_bindings[0].parameter == "@factory_input"
+    assert all(binding.parameter != "unrelated" for binding in tower.config_bindings)
+
+
+def test_guarded_constructors_for_one_field_are_rivals_not_two_children(tmp_path):
+    src = """
+        class Dense: pass
+        class Gated: pass
+        class Block:
+            def __init__(self, config):
+                if config.gated:
+                    self.ffn = Gated()
+                else:
+                    self.ffn = Dense()
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Block"))
+    assert _child(graph.root, "ffn") is None
+    assert any(u.field == "ffn" and u.kind == "rival_owner"
+               for u in graph.root.unresolved)
+    conflict = next(c for c in graph.conflicts if c.kind == "rival_owner_chain")
+    assert {r.reference for r in conflict.rivals} == {"Dense", "Gated"}
+    assert len({r.site for r in conflict.rivals}) == 2
+
+
+def test_helper_with_rival_return_constructions_is_not_selected(tmp_path):
+    src = """
+        class Dense: pass
+        class Gated: pass
+        class Block:
+            def __init__(self, config):
+                self.ffn = self._make(config)
+            def _make(self, config):
+                if config.gated:
+                    return Gated()
+                return Dense()
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Block"))
+    assert _child(graph.root, "ffn") is None
+    assert any(u.field == "ffn" and u.kind == "rival_owner"
+               for u in graph.root.unresolved)
+    conflict = next(c for c in graph.conflicts if c.kind == "rival_owner_chain")
+    assert len(conflict.rivals) == 2
