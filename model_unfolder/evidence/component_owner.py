@@ -22,6 +22,7 @@ from typing import Mapping
 from .program_index import (
     ConflictRecord,
     ConstructionSiteId,
+    ParseFailure,
     ProgramIndex,
     SourceSpan,
     SymbolId,
@@ -598,8 +599,216 @@ def _ref_detail(site) -> str:
                      for candidate in site.candidates)
 
 
+# --------------------------------------------------------------------------- #
+# U3-D0 — the component-root address boundary
+# --------------------------------------------------------------------------- #
+
+@dataclass(frozen=True)
+class ComponentRootCandidate:
+    """One class exactly addressed by a component's declared architecture.
+
+    Exact identity is an ADDRESS (component key + declared spelling -> the class
+    of that qualified name in that component), never a mechanism claim.  The
+    invariants below make the candidate self-verifying: a forged component,
+    spelling or span source cannot be constructed.
+    """
+
+    component_key: str
+    declared_architecture: str
+    symbol: SymbolId
+    span: SourceSpan               # exact class span, required (never optional)
+
+    def __post_init__(self) -> None:
+        if not self.component_key:
+            raise ValueError("a component-root candidate requires a component key")
+        if not self.declared_architecture:
+            raise ValueError("a component-root candidate requires a declared architecture")
+        if not isinstance(self.symbol, SymbolId):
+            raise TypeError("a component-root candidate symbol must be a SymbolId")
+        if not isinstance(self.span, SourceSpan):
+            raise TypeError("a component-root candidate requires an exact SourceSpan")
+        if self.symbol.source.component_key != self.component_key:
+            raise ValueError("candidate symbol is not in the addressed component")
+        if self.symbol.qualified_name != self.declared_architecture:
+            raise ValueError("candidate symbol is not the declared architecture")
+        if self.span.source != self.symbol.source:
+            raise ValueError("candidate span does not belong to the symbol's source")
+
+
+def _candidate_sort_key(candidate: "ComponentRootCandidate"):
+    """Canonical, file-order-independent ordering for rival candidates."""
+    span = candidate.span
+    return (candidate.component_key,
+            candidate.symbol.source.canonical_path,
+            candidate.symbol.source.content_fingerprint,
+            candidate.symbol.qualified_name,
+            span.line, span.col)
+
+
+def _parse_failure_sort_key(failure: ParseFailure):
+    """Canonical, file-order-independent ordering for component parse failures."""
+    return (failure.source.component_key,
+            failure.source.canonical_path,
+            failure.source.content_fingerprint,
+            failure.kind, failure.detail)
+
+
+@dataclass(frozen=True)
+class ComponentRootResolution:
+    """Typed outcome of addressing a SourceBundle component's root class.
+
+    ``resolved`` carries the exact OwnerOccurrenceId and its OwnerGraph;
+    ``ambiguous`` preserves every exact rival candidate; ``failed`` carries the
+    indexed ProgramIndex parse failures that prevented the lookup; ``absent`` is
+    an honest no-match with nothing further.  ``resolved`` is an ADDRESS claim:
+    the class was located; any unresolved constructor/config binding stays
+    explicitly inside ``graph.root.unresolved`` and is not implied by this status.
+    Every closure invariant is enforced so a cross-field forgery cannot be built.
+    """
+
+    status: str                       # resolved | absent | ambiguous | failed
+    component_key: str
+    declared_architecture: str | None = None
+    occurrence: OwnerOccurrenceId | None = None
+    graph: OwnerGraph | None = None
+    candidates: tuple[ComponentRootCandidate, ...] = ()
+    parse_failures: tuple[ParseFailure, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.status not in {"resolved", "absent", "ambiguous", "failed"}:
+            raise ValueError(f"unknown component-root status {self.status!r}")
+        if not self.component_key:
+            raise ValueError("a component-root resolution requires a component key")
+        # closed parse-failure membership: every failure is typed and belongs here
+        for failure in self.parse_failures:
+            if not isinstance(failure, ParseFailure):
+                raise TypeError("parse_failures entries must be ParseFailure records")
+            if failure.source.component_key != self.component_key:
+                raise ValueError("a component-root failure must belong to this component")
+        # closed candidate membership: every rival matches this component + address
+        for candidate in self.candidates:
+            if not isinstance(candidate, ComponentRootCandidate):
+                raise TypeError("candidates entries must be ComponentRootCandidate values")
+            if candidate.component_key != self.component_key:
+                raise ValueError("a rival candidate must belong to this component")
+            if candidate.declared_architecture != self.declared_architecture:
+                raise ValueError("a rival candidate must match the declared architecture")
+        if self.status != "absent" and not self.declared_architecture:
+            raise ValueError(
+                f"a {self.status} component root requires a declared architecture")
+        if self.status == "resolved":
+            if self.occurrence is None or self.graph is None:
+                raise ValueError("a resolved component root carries its occurrence and graph")
+            if self.candidates or self.parse_failures:
+                raise ValueError("a resolved component root carries no rivals or failures")
+            if self.occurrence != self.graph.root.occurrence:
+                raise ValueError("the resolved occurrence must equal the graph root occurrence")
+            # a manually inconsistent OwnerGraph must not certify an unrelated
+            # occurrence root: the graph root's own occurrence must name the graph
+            # root's class symbol, and a component root has no construction chain.
+            if self.graph.root.occurrence.root != self.graph.root.symbol:
+                raise ValueError("the resolved occurrence root must be the graph root symbol")
+            if self.graph.root.occurrence.sites != ():
+                raise ValueError("a component root occurrence carries no construction-site chain")
+            root_symbol = self.graph.root.symbol
+            if root_symbol.source.component_key != self.component_key:
+                raise ValueError("the resolved root is not in the requested component")
+            if root_symbol.qualified_name != self.declared_architecture:
+                raise ValueError("the resolved root is not the declared architecture")
+        elif self.status == "ambiguous":
+            if len(self.candidates) < 2:
+                raise ValueError("an ambiguous component root preserves >=2 exact rival candidates")
+            if self.occurrence is not None or self.graph is not None or self.parse_failures:
+                raise ValueError("an ambiguous component root carries rival candidates only")
+        elif self.status == "failed":
+            if not self.parse_failures:
+                raise ValueError("a failed component root carries the indexed parse failures")
+            if self.occurrence is not None or self.graph is not None or self.candidates:
+                raise ValueError("a failed component root carries parse failures only")
+        else:  # absent
+            if (self.occurrence is not None or self.graph is not None
+                    or self.candidates or self.parse_failures):
+                raise ValueError("an absent component root carries nothing further")
+
+    @property
+    def address_resolved(self) -> bool:
+        """True iff the root ADDRESS resolved.  This is NOT a claim that the whole
+        OwnerGraph is resolved — check ``graph.root.unresolved`` for that."""
+        return self.status == "resolved"
+
+
+def resolve_component_root(index, bundle, component_key, *,
+                           root_param_prefixes=None):
+    """Bridge a ``SourceBundle`` component address to an exact root occurrence.
+
+    Address law (U3-D0):
+
+    1. The declared architecture is read ONLY from
+       ``bundle.component_architectures[component_key]``; ``bundle.architecture``
+       is a lawful compatibility address for the ``root`` component only.
+    2. HIDDEN-RIVAL LAW: an unreadable file in this component can hide another
+       exact class definition, so uniqueness is unprovable while any indexed
+       parse/read failure exists for the component.  Such failures are collected
+       BEFORE the candidate count and return ``failed`` ahead of
+       resolved/ambiguous/absent.
+    3. Otherwise resolution searches ONLY ``ProgramIndex`` classes whose
+       ``SourceId.component_key`` equals the requested component and matches the
+       qualified class name EXACTLY (an address, not a mechanism claim).
+    4. Exactly one candidate resolves; zero is ``absent``; more than one is
+       ``ambiguous`` with every rival kept in a canonical, file-order-independent
+       order.
+    5. Never uses model_type, suffixes, substrings, shortest name, field count,
+       file order, import order or role markers.
+    """
+    architectures = getattr(bundle, "component_architectures", None) or {}
+    declared = architectures.get(component_key)
+    if declared is None and component_key == "root":
+        declared = getattr(bundle, "architecture", None)   # root-only compat
+    if not declared:
+        # empty / absent architecture never "picks the only class"
+        return ComponentRootResolution(
+            status="absent", component_key=component_key,
+            declared_architecture=declared)
+
+    # Hidden-rival law: a parse/read failure anywhere in this component makes
+    # uniqueness unprovable (a broken file could define another exact class), so
+    # fail before counting visible candidates.  Sorted canonically so bundle file
+    # iteration order never leaks into the failed result.
+    component_failures = tuple(sorted((
+        failure for failure in index.parse_failures
+        if failure.source.component_key == component_key),
+        key=_parse_failure_sort_key))
+    if component_failures:
+        return ComponentRootResolution(
+            status="failed", component_key=component_key,
+            declared_architecture=declared, parse_failures=component_failures)
+
+    candidates = tuple(sorted((
+        ComponentRootCandidate(component_key, declared, record.symbol, record.span)
+        for record in index.classes
+        if record.symbol.source.component_key == component_key
+        and record.symbol.qualified_name == declared),
+        key=_candidate_sort_key))
+
+    if len(candidates) == 1:
+        graph = resolve_owner_graph(index, candidates[0].symbol,
+                                    root_param_prefixes=root_param_prefixes)
+        return ComponentRootResolution(
+            status="resolved", component_key=component_key,
+            declared_architecture=declared,
+            occurrence=graph.root.occurrence, graph=graph)
+    if len(candidates) >= 2:
+        return ComponentRootResolution(
+            status="ambiguous", component_key=component_key,
+            declared_architecture=declared, candidates=candidates)
+    return ComponentRootResolution(
+        status="absent", component_key=component_key,
+        declared_architecture=declared)
+
+
 __all__ = [
     "ConfigPrefix", "OwnerOccurrenceId", "ConfigBinding", "OwnerRival",
     "ConfigPrefixRival", "UnresolvedChild", "OwnerNode", "OwnerGraph",
     "resolve_owner_graph",
+    "ComponentRootCandidate", "ComponentRootResolution", "resolve_component_root",
 ]
