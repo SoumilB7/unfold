@@ -19,7 +19,7 @@ Started 2026-07-19 immediately after U2 closure (1d0c72b). Soumil: "go ahead".
 5. Conflicts become RECORDS: ReaderResult.ambiguous carries rival owner
    chains, conflicting config prefixes, exact construction sites, spans.
    Drop-on-conflict loses evidence; never silent.
-6. ReaderResult[T] WRAPS the seven domain evidence dataclasses (common
+6. ReaderResult[T] WRAPS the EIGHT domain evidence dataclasses (Positional, FFNStructure, VisionTower, AudioTower, Projector, Fusion, QKNormCode, RouterCode; ConformanceProblem is an additional typed failure surface) (common
    status/owner/completeness/failures/provenance) — never replaces them.
 7. Cache ownership is CALL-LOCAL: one immutable index on ParseContext/
    SourceBundle; optional cross-parse cache = content-fingerprint keyed +
@@ -87,7 +87,7 @@ disagree because they scanned different files/classes/closures.
       position.py raw walks read alibi/layer_types/_attn_implementation/
       rotary_dim/rotary_pct/partial_rotary_factor via a hardcoded
       5-wrapper chain (siblings: conformance :1727, projector :761);
-      7 typed evidence dataclasses already exist to converge on;
+      8 typed evidence dataclasses already exist to converge on (+ ConformanceProblem as a typed failure surface);
       projector._config_param_chains (:319) = the ComponentOwner +
       config-prefix prototype to seed the index design.
 - [ ] ProgramIndex core (files/classes/ctor fields/calls/spans) + fixtures
