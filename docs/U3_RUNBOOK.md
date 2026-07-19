@@ -215,8 +215,16 @@ then proceed autonomously to U3-B.
       folds + factory bases + ModuleList elements + cross-file unique names, and
       emits TYPED ConflictRecords (rival_owner_chain for >=2 slot candidates,
       rival_config_prefix for >=2 config-arg prefixes) — never a guess, never a
-      silent drop. 10 resolution tests. No reader migrated.
-- [ ] U3-C generic ReaderResult[T] substrate + failure-law tests
+      silent drop. 10 resolution tests. No reader migrated. (component_owner
+      stores the index as self.program_index, not self.index, so the U2 writer
+      census does not false-flag it as a spec_mutation:index writer.)
+- [x] U3-C generic ReaderResult[T] substrate — DONE. evidence/reader_result.py:
+      ReaderResult[T] wraps the eight domain evidence dataclasses with a typed
+      status (resolved/incomplete/ambiguous/absent/failed), owner, completeness,
+      typed ReaderFailures, provenance, and a typed Ambiguity (rival owner
+      chains + config prefixes + sites + ConflictRecords). Failure laws enforced
+      in __post_init__; lawful constructors + ambiguity_from_conflicts bridge.
+      18 failure-law tests. No reader migrated (that begins at U3-D).
 - [ ] U3-D first narrow reader pilot (mechanical selection)
 - [ ] U3-E..H migration clusters + conformance migration + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
