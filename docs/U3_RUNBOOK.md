@@ -199,13 +199,23 @@ then proceed autonomously to U3-B.
       8 typed evidence dataclasses already exist to converge on (+ ConformanceProblem as a typed failure surface);
       projector._config_param_chains (:319) = the ComponentOwner +
       config-prefix prototype to seed the index design.
-- [~] U3-A ProgramIndex CORE (types + walker + assembly + ParseContext +
-      ALL 13 fixtures) — schema contract locked (types being revised to the
-      2026-07-19 contract: SourceId/SymbolId/SourceSpan/ConstructionSiteId,
-      ModuleRecord, UnsupportedSyntaxRecord, ExprNode, candidate edges).
-      WALKER NOT YET WRITTEN — held until the revised types + fixtures exist.
-- [ ] U3-B ComponentOwner resolver + construction-graph resolution tests
-      (typed rival-owner/config-prefix conflicts)
+- [x] U3-A ProgramIndex CORE — DONE, pushed 44294f0. Types (SourceId/SymbolId/
+      SourceSpan/ConstructionSiteId, ModuleRecord, UnsupportedSyntaxRecord,
+      ExprNode, ChildCandidate edges) + observation-only walker + immutable
+      assembly + aggregate fingerprint (identity/ownership/provenance/content,
+      order-independent) + ParseContext.program_index() lazy call-local + 28
+      fixtures. Vocab in everchanging/evidence/program_index_vocab.yaml (config
+      roots, ACT2FN/get_activation, container classes) with container_classes
+      registered in the identity-guard lawful manifest. Six-point receipt green
+      (full 1521 passed, fingerprint identical, preservation 20, identity 26,
+      ratchet 4, isolated bracket PASS).
+- [x] U3-B ComponentOwner resolver — DONE. evidence/component_owner.py:
+      resolve_owner_graph(index, root) builds the parent->site->field/slot->child
+      owner tree, propagates the exact config prefix per edge, follows helper
+      folds + factory bases + ModuleList elements + cross-file unique names, and
+      emits TYPED ConflictRecords (rival_owner_chain for >=2 slot candidates,
+      rival_config_prefix for >=2 config-arg prefixes) — never a guess, never a
+      silent drop. 10 resolution tests. No reader migrated.
 - [ ] U3-C generic ReaderResult[T] substrate + failure-law tests
 - [ ] U3-D first narrow reader pilot (mechanical selection)
 - [ ] U3-E..H migration clusters + conformance migration + old-parser
