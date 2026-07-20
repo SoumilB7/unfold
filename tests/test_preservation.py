@@ -9,7 +9,6 @@ here.
 """
 from __future__ import annotations
 
-import copy
 import json
 import pathlib
 
@@ -151,7 +150,21 @@ def test_expected_manifest_zero_drift_zero_skip():
     is no skip path."""
     manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
     assert manifest_path.exists(), "committed expected manifest is MISSING"
-    findings = P.verify_against_expected(_CORPUS, manifest_path)
+    findings = P.verify_expected_manifest_shape(_CORPUS, manifest_path)
+    assert findings == [], "\n".join(findings[:20])
+
+
+_EXPECTED_WITNESSES = tuple(sorted(json.loads(
+    (_CORPUS.parent / "preservation_expected_manifest.json").read_text()
+)["witnesses"]))
+
+
+@pytest.mark.parametrize("slug", _EXPECTED_WITNESSES)
+def test_expected_witness_zero_drift_zero_skip(slug):
+    """Regenerate one witness so parallel workers can share the expensive
+    preservation bracket while retaining exact per-model failure attribution."""
+    manifest_path = _CORPUS.parent / "preservation_expected_manifest.json"
+    findings = P.verify_expected_witness(_CORPUS, manifest_path, slug)
     assert findings == [], "\n".join(findings[:20])
 
 

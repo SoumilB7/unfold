@@ -390,6 +390,31 @@ Every commit must reproduce from its own committed tree and include:
 
 If a commit passes only from the dirty working tree, it is not a receipt.
 
+### 10.1 Executable receipt and runtime discipline
+
+For every reader migration, execute the checklist through:
+
+```bash
+python3 scripts/verify_commit.py --focus tests/test_<reader>.py \
+  --forbid <deleted_legacy_identifier>
+```
+
+This is an exhaustive parallel partition, not a reduced suite. A dedicated
+lane owns all preservation tests (including one independently schedulable case
+per blessed witness); the full-core lane owns every other test file. Focused,
+U2-authority, collect-only, static/eradication, and those two exhaustive lanes
+run concurrently in separate detached worktrees. Host-aware scheduling gives
+the measured full-core long pole all cores not reserved for preservation,
+focused and U2. Each lane must return zero and preserve
+both the project-tree fingerprint and the content fingerprint of the ignored
+blessed galleries/baselines staged into that worktree. The emitted
+`receipt.json` is the machine-readable completion record.
+
+Run the same command with `--serial-full` at each U3 phase boundary and final
+U3 closure. That slower run is the cross-file/order-dependence backstop; it is
+not repeated after every one-reader migration unless the parallel receipt or a
+stop condition exposes an ordering concern.
+
 ## 11. Mandatory stop-and-report conditions
 
 The implementation agent stops without adding a workaround when:

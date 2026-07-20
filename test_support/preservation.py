@@ -278,41 +278,68 @@ def verify_against_expected(corpus_dir, manifest_path, *, limit=None) -> list[st
     hash mismatch, missing/extra witness, absent view, or a None hash is a
     finding, never a skip."""
     corpus_dir = pathlib.Path(corpus_dir)
-    manifest = json.loads(pathlib.Path(manifest_path).read_text())
+    manifest_path = pathlib.Path(manifest_path)
+    manifest = json.loads(manifest_path.read_text())
     expected = manifest["witnesses"]
-    findings: list[str] = []
-    inputs = {p.stem: p for p in sorted(corpus_dir.glob("*.json"))}
-    if manifest.get("witness_count") != 26 or len(expected) != 26:
-        findings.append(f"manifest witness_count != 26: {manifest.get('witness_count')}")
-    for extra in sorted(set(inputs) - set(expected)):
-        findings.append(f"unexpected extra witness input: {extra}")
+    findings = verify_expected_manifest_shape(corpus_dir, manifest_path)
     regenerated = 0
-    for slug, row in sorted(expected.items()):
+    for slug in sorted(expected):
         if limit is not None and regenerated >= limit:
             break
         regenerated += 1
-        path = inputs.get(slug)
-        if path is None:
-            findings.append(f"{slug}: corpus input MISSING")
+        findings.extend(verify_expected_witness(corpus_dir, manifest_path, slug))
+    return findings
+
+
+def verify_expected_manifest_shape(corpus_dir, manifest_path) -> list[str]:
+    """Validate the global 26-witness contract without rendering a model.
+
+    Keeping this separate from per-witness regeneration lets pytest distribute
+    expensive witnesses across processes without weakening count/input-growth
+    checks or making a missing witness disappear from collection.
+    """
+    corpus_dir = pathlib.Path(corpus_dir)
+    manifest = json.loads(pathlib.Path(manifest_path).read_text())
+    expected = manifest["witnesses"]
+    inputs = {p.stem for p in sorted(corpus_dir.glob("*.json"))}
+    findings: list[str] = []
+    if manifest.get("witness_count") != 26 or len(expected) != 26:
+        findings.append(f"manifest witness_count != 26: {manifest.get('witness_count')}")
+    for extra in sorted(inputs - set(expected)):
+        findings.append(f"unexpected extra witness input: {extra}")
+    return findings
+
+
+def verify_expected_witness(corpus_dir, manifest_path, slug: str) -> list[str]:
+    """Regenerate and verify exactly one named preservation witness."""
+    corpus_dir = pathlib.Path(corpus_dir)
+    manifest = json.loads(pathlib.Path(manifest_path).read_text())
+    row = manifest["witnesses"].get(slug)
+    if row is None:
+        return [f"{slug}: expected witness MISSING"]
+    path = corpus_dir / f"{slug}.json"
+    if not path.exists():
+        return [f"{slug}: corpus input MISSING"]
+    if hashlib.sha256(path.read_bytes()).hexdigest() != row["input_sha256"]:
+        return [f"{slug}: corpus input hash MISMATCH"]
+
+    findings: list[str] = []
+    cfg = json.loads(path.read_text())["config"]
+    docs = canonical_surfaces(cfg)
+    docs["gallery"] = gallery_witness(corpus_dir, slug)
+    for surface, expected_sha in sorted(row["surfaces"].items()):
+        if not expected_sha:
+            findings.append(f"{slug}/{surface}: expected hash is None")
             continue
-        if hashlib.sha256(path.read_bytes()).hexdigest() != row["input_sha256"]:
-            findings.append(f"{slug}: corpus input hash MISMATCH")
-            continue
-        cfg = json.loads(path.read_text())["config"]
-        docs = canonical_surfaces(cfg)
-        docs["gallery"] = gallery_witness(corpus_dir, slug)
-        for surface, expected_sha in sorted(row["surfaces"].items()):
-            if not expected_sha:
-                findings.append(f"{slug}/{surface}: expected hash is None")
-                continue
-            doc = docs.get(surface)
-            actual = (hashlib.sha256(_canon_bytes(doc)).hexdigest()
-                      if doc is not None else None)
-            if actual != expected_sha:
-                findings.append(f"{slug}/{surface}: hash mismatch")
-        actual_views = _view_hashes(cfg)
-        for view, sha in sorted(row.get("views", {}).items()):
-            if actual_views.get(view) != sha:
-                findings.append(f"{slug}/view {view!r}: "
-                                + ("ABSENT" if view not in actual_views else "hash mismatch"))
+        doc = docs.get(surface)
+        actual = (hashlib.sha256(_canon_bytes(doc)).hexdigest()
+                  if doc is not None else None)
+        if actual != expected_sha:
+            findings.append(f"{slug}/{surface}: hash mismatch")
+    actual_views = _view_hashes(cfg)
+    for view, sha in sorted(row.get("views", {}).items()):
+        if actual_views.get(view) != sha:
+            findings.append(
+                f"{slug}/view {view!r}: "
+                + ("ABSENT" if view not in actual_views else "hash mismatch"))
     return findings

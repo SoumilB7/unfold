@@ -100,6 +100,34 @@ byte-identical, isolated committed-tree pass) + push. Proceed WITHOUT asking
 for routine implementation choices; after U3-A is pushed and green, continue
 autonomously into U3-B. STOP ONLY FOR: unresolved semantic conflict;
 unexplained artifact delta; preservation regression; product-judgment change.
+
+### Parallel committed-tree receipt (binding from U3-D2 onward)
+
+Use the repository coordinator instead of serial scratch scripts:
+
+```bash
+python3 scripts/verify_commit.py --focus tests/test_<reader>.py \
+  --forbid <deleted_legacy_symbol>
+```
+
+The coordinator does not remove a gate. It runs focused/kernel, U2 authority,
+preservation, collection, static/eradication, and an exhaustive partition of
+the complete suite concurrently, with every lane in its own detached worktree.
+Host-aware allocation reserves one process each for preservation, focused and
+U2, assigning the remaining cores to the measured full-core long pole.
+Preservation owns exactly `tests/test_preservation.py`; the full-core lane owns
+every other test file, so no test is omitted and expensive fixtures are not
+duplicated across process workers. Every worktree is
+fingerprinted before and after. Gitignored blessed galleries/baselines are
+copied from one content-hashed snapshot and independently hashed in every lane;
+they are never mistaken for committed files. A missing focus path, missing lane, non-zero
+lane, collection error, forbidden symbol, static failure, or changed
+fingerprint makes the whole receipt fail.
+
+Run one serial full-suite bracket at each U3 phase boundary and before final U3
+closure with `--serial-full` as an additional order-dependence control. It does
+not replace the parallel full suite required for every migration commit. Each
+run writes a machine-readable `receipt.json` beside its lane logs.
 NEVER stop merely because a phase finished.
 
 ## U3-A SCHEMA CONTRACT (Soumil, 2026-07-19 — BINDING, precedes any visitor)
