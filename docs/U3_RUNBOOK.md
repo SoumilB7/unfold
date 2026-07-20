@@ -262,13 +262,22 @@ then proceed autonomously to U3-B.
       published as exact-callable unsupported regions rather than contaminating
       the parent. Bare unsupported expressions are also published, so a negative
       cannot skip opaque syntax. No identifier is interpreted by ProgramIndex.
-- [~] U3-D1 first production-reader pilot — denoiser temporal-axis remains
-      BLOCKED until the separate U3-A1 committed-tree receipt and Codex kernel
-      review pass. When resumed it must query the exact forward's
-      IdentifierObservation census directly, reject child occurrences, cite the
-      matching identifier's exact span, and return a negative only with no marker
-      and no unsupported/nested region. None of the parser cutover, replacement
-      reader or legacy-reader deletion may enter the U3-A1 commit.
+- [~] U3-D1 first production-reader pilot — denoiser temporal-axis, UNDER V2
+      REVIEW (resumed on the pushed U3-A1 kernel c5b3c82). evidence/denoiser.py
+      denoiser_temporal_axis(index, owner) -> ReaderResult[bool] queries the
+      exact forward's IdentifierObservation census directly
+      (index.identifiers_in), rejects child/non-root occurrences, matches the
+      temporal marker vocabulary against that complete exact-span census, cites
+      the matching identifier's exact span for a positive, and returns a negative
+      ONLY when there is no marker AND no unsupported/nested region for the exact
+      forward (a missing forward or an unsupported/nested region is a typed
+      failure, never False). adapters/diffusor/parser.py::_temporal_axis is
+      rewired onto context.program_index() + resolve_component_root("root") +
+      address_resolved + status==resolved, keeping the checkpoint-declared
+      temporal fallback and removing the broad except. The legacy
+      denoiser_temporal_axis_from_files + its AST loop are deleted in the same
+      commit (no shim). Reproduction was proven on all 11 video/image witnesses;
+      held unpushed for Codex V2.
 - [ ] U3-E..H migration clusters + conformance migration + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
 

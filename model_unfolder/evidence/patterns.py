@@ -1701,39 +1701,6 @@ def ffn_activation_dispatch_field_from_files(files) -> str | None:
     return None
 
 
-def denoiser_temporal_axis_from_files(files, architecture: str | None) -> bool | None:
-    """Does the denoiser's OWN forward() process a frames/temporal axis?
-
-    Every diffusers video transformer unpacks or receives ``num_frames`` in its
-    root forward; no image transformer does — a clean code discriminator that
-    replaces the ``"3D" in class_name`` identity branch (eradication I-10).
-    ``None`` when the root class/source is unavailable (caller may then consult
-    the declared temporal CONFIG fields, never a name).
-    """
-    import ast as _ast
-    from ..everchanging import load_diffusion_typing
-    from .forward_ops import _method
-    markers = [str(m).lower() for m in
-               (load_diffusion_typing().get("temporal_forward_markers") or ["num_frames"])]
-    if not architecture:
-        return None
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef) or node.name != architecture:
-                continue
-            forward = _method(node, "forward")
-            if forward is None:
-                return None
-            names = {child.id for child in _ast.walk(forward) if isinstance(child, _ast.Name)}
-            names |= {arg.arg for arg in forward.args.args}
-            return any(any(m in name.lower() for m in markers) for name in names)
-    return None
-
-
 def attention_fused_qkv_from_files(files) -> bool | None:
     """Is Q/K/V stored as ONE fused projection (BLOOM ``query_key_value``,
     GPT-2 ``c_attn``, MPT ``Wqkv``) rather than separate q/k/v Linears?

@@ -49,7 +49,7 @@ def _current() -> dict[str, int]:
 # SHRINK ONLY — lower an entry when its reader is converted to a typed except.
 _BASELINE = {
     "adapters/diffusor/loader.py": 2,
-    "adapters/diffusor/parser.py": 19,
+    "adapters/diffusor/parser.py": 18,
     "adapters/transformer/debug.py": 1,
     "adapters/transformer/parser.py": 30,
     "adapters/transformer/special_parts/modalities/conditioning.py": 2,

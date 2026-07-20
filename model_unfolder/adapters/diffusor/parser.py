@@ -2200,24 +2200,25 @@ def _temporal_axis(cfg: Any, cls: str, context=None) -> bool:
     """VIDEO denoiser detection from EVIDENCE, never the class name (I-10).
 
     Primary: the resolved root class's own forward() processes a frames axis
-    (``num_frames`` — a perfect discriminator across diffusers video vs image
-    transformers).  Config corroboration when source is unreadable: declared
-    temporal fields, or a 3-sequence ``patch_size``.  Silence stays False —
-    an image denoiser, never a guessed video one.
+    (``num_frames``), read from the ONE ProgramIndex under the EXACT owner
+    occurrence (U3-D1 ``denoiser_temporal_axis``).  The reader runs only for a
+    resolved component-root address and only a resolved verdict is consumed —
+    ambiguous/absent/failed source never guesses.  Config corroboration when the
+    source verdict is not resolved: declared temporal fields, or a 3-sequence
+    ``patch_size``.  Silence stays False — an image denoiser, never a guessed
+    video one.
     """
-    try:
-        from ...evidence.patterns import denoiser_temporal_axis_from_files
-        bundle = getattr(context, "source_bundle", None)
-        # Root-scoped, like every _code_* read: a pipeline's text-encoder file
-        # in the union must never decide whether the DENOISER is video.
-        files = ((getattr(bundle, "component_files", {}) or {}).get("root")
-                 or getattr(bundle, "files", None))
-        architecture = getattr(bundle, "architecture", None) or (str(cls) if cls else None)
-        verdict = denoiser_temporal_axis_from_files(files, architecture)
-        if verdict is not None:
-            return verdict
-    except Exception:
-        pass
+    if context is not None:
+        from ...evidence.component_owner import resolve_component_root
+        from ...evidence.denoiser import denoiser_temporal_axis
+        index = context.program_index()
+        resolution = resolve_component_root(index, context.source_bundle, "root")
+        if resolution.address_resolved:
+            verdict = denoiser_temporal_axis(index, resolution.occurrence)
+            if verdict.status == "resolved":
+                return bool(verdict.require_value())
+    # Lawful fallback when the source verdict is not resolved: the checkpoint's
+    # OWN declared temporal fields (never a class/name); a 3-sequence patch_size.
     from ...everchanging import load_diffusion_typing
     fields = load_diffusion_typing().get("temporal_config_fields") or []
     if any(_g(cfg, field) is not None for field in fields):
