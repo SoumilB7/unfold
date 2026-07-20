@@ -806,9 +806,558 @@ def resolve_component_root(index, bundle, component_key, *,
         declared_architecture=declared)
 
 
+# --------------------------------------------------------------------------- #
+# U3-B1 — the declared model-stage address boundary
+# --------------------------------------------------------------------------- #
+
+@dataclass(frozen=True)
+class FrameworkAddressProtocol:
+    """A closed, code-declared framework model-stage ADDRESS contract.  The
+    declaration attribute names WHERE a wrapper binds its base/model-stage
+    submodule (transformers' ``base_model_prefix = "model"``) — ADDRESS metadata
+    only, proving no mechanism.  This registry is CODE, not data: adding a
+    protocol changes which occurrence becomes architectural authority, so a new
+    protocol must arrive with its own semantics and poison tests, never a mere
+    config/YAML edit."""
+
+    declaration_attr: str
+
+    def __post_init__(self) -> None:
+        if not self.declaration_attr:
+            raise ValueError("a framework address protocol needs a declaration attribute")
+
+
+# The closed registry of framework model-stage address protocols.
+_FRAMEWORK_ADDRESS_PROTOCOLS: tuple = (
+    FrameworkAddressProtocol("base_model_prefix"),
+)
+
+
+@dataclass(frozen=True)
+class ModelStageDeclaration:
+    """One exact class-body model-stage ADDRESS declaration
+    (``base_model_prefix = "<attr>"``) proven at an exact declaring class —
+    directly on the root or through exact inheritance.  Address metadata only.
+
+    ``proof_trace`` is the exact class chain (root -> ... -> declaring_class) that
+    made this declaration decisive, and ``precedence_basis`` names WHY it is
+    decisive (``root-direct`` | ``first-base-direct`` | ``c3``).  Together with
+    ``span`` they are the resolver's proof that the lookup is exact, never
+    guessed."""
+
+    declaring_class: SymbolId
+    attribute: str                # the declared literal (may be "" for self)
+    span: SourceSpan
+    inherited: bool
+    proof_trace: tuple[SymbolId, ...] = ()   # MRO-prefix / precedence trace
+    precedence_basis: str = ""
+
+    def __post_init__(self) -> None:
+        # Provenance closure: a declaration must PROVE where it came from.  The
+        # proof_trace is an MRO-PREFIX (precedence) trace root -> ... ->
+        # declaring_class; in a diamond the elements before declaring_class are the
+        # C3-order predecessors, NOT necessarily a parent-child chain.
+        if not self.proof_trace:
+            raise ValueError("a model-stage declaration must carry a non-empty proof trace")
+        if self.proof_trace[-1] != self.declaring_class:
+            raise ValueError("a proof trace must end at the declaring class")
+        if self.span is None or self.span.source != self.declaring_class.source:
+            raise ValueError("the declaration span must live in the declaring class's source")
+        if self.precedence_basis not in {"root-direct", "first-base-direct", "c3"}:
+            raise ValueError(f"unknown precedence basis {self.precedence_basis!r}")
+        if self.precedence_basis == "root-direct":
+            if len(self.proof_trace) != 1:
+                raise ValueError("a root-direct trace is exactly the root itself")
+            if self.inherited:
+                raise ValueError("a root-direct declaration is not inherited")
+        else:
+            # first-base-direct / c3 name a declaration on an inherited base.
+            if not self.inherited:
+                raise ValueError(f"a {self.precedence_basis} declaration is inherited")
+
+
+@dataclass(frozen=True)
+class DeclaredModelStageResolution:
+    """Typed outcome of resolving the declared model-stage occurrence against the
+    authoritative root ``OwnerGraph``.
+
+    ``resolved`` carries the EXACT existing child occurrence from the graph (or
+    the root itself only on an explicit empty-prefix self proof); ``ambiguous``
+    preserves >=2 rival declarations or >=2 complete rival occurrences with
+    spans; ``absent`` is a missing declaration or a declaration pointing to no
+    constructed field; ``failed`` is broken source / unresolved inheritance /
+    dynamic declaration / unsupported or ambiguous construction / external
+    stage / unavailable framework contract.
+    """
+
+    status: str                   # resolved | absent | ambiguous | failed
+    root: SymbolId
+    attribute: str | None = None
+    declaration: ModelStageDeclaration | None = None
+    occurrence: OwnerOccurrenceId | None = None
+    self_stage: bool = False
+    rival_declarations: tuple[ModelStageDeclaration, ...] = ()
+    rival_occurrences: tuple[OwnerOccurrenceId, ...] = ()
+    rival_owners: tuple[OwnerRival, ...] = ()
+    failure_kind: str = ""
+    failure_detail: str = ""
+
+    def __post_init__(self) -> None:
+        if self.status not in {"resolved", "absent", "ambiguous", "failed"}:
+            raise ValueError(f"unknown model-stage status {self.status!r}")
+        if not isinstance(self.root, SymbolId):
+            raise TypeError("model-stage resolution requires a root SymbolId")
+        root_occurrence = OwnerOccurrenceId(self.root)
+        # ---- typed membership + cross-root closure over EVERY rival channel ---- #
+        for rival in self.rival_declarations:
+            if not isinstance(rival, ModelStageDeclaration):
+                raise TypeError("rival_declarations must be ModelStageDeclaration values")
+            if rival.proof_trace[0] != self.root:
+                raise ValueError("a rival declaration's proof trace must begin at the root")
+        for rival in self.rival_occurrences:
+            if not isinstance(rival, OwnerOccurrenceId):
+                raise TypeError("rival_occurrences must be complete OwnerOccurrenceId values")
+            if rival.root != self.root:
+                raise ValueError("a rival occurrence must be rooted at the requested root")
+            if not rival.sites:
+                raise ValueError("a rival occurrence carries a non-empty child chain")
+        for rival in self.rival_owners:
+            if not isinstance(rival, OwnerRival):
+                raise TypeError("rival_owners must be authoritative OwnerRival records")
+            if rival.parent != root_occurrence:
+                raise ValueError("a rival owner must attach to the exact root occurrence")
+        # ---- carried declaration provenance (any status that carries one) ------ #
+        if self.declaration is not None and self.declaration.proof_trace[0] != self.root:
+            raise ValueError("a carried declaration's proof trace must begin at the root")
+        if (self.declaration is not None and self.attribute is not None
+                and self.attribute != self.declaration.attribute):
+            raise ValueError("declaration and attribute must agree when both are present")
+        # ---- failure fields are inseparable ------------------------------------ #
+        if self.failure_detail and not self.failure_kind:
+            raise ValueError("a failure detail requires a failure kind")
+        # ---- self_stage is legal ONLY for a resolved self-stage ---------------- #
+        if self.self_stage and self.status != "resolved":
+            raise ValueError("self_stage is legal only for a resolved self-stage")
+
+        if self.status == "resolved":
+            if self.declaration is None:
+                raise ValueError("a resolved model stage carries its declaration")
+            if self.attribute != self.declaration.attribute:
+                raise ValueError("the resolved attribute must equal the declaration attribute")
+            if (self.rival_declarations or self.rival_occurrences
+                    or self.rival_owners or self.failure_kind):
+                raise ValueError("a resolved model stage carries no rivals or failure")
+            if self.occurrence is None:
+                raise ValueError("a resolved model stage carries an occurrence")
+            if self.self_stage:
+                if self.attribute != "":
+                    raise ValueError("a self-stage resolution requires an explicit empty-prefix proof")
+                if self.occurrence != root_occurrence:
+                    raise ValueError("a self-stage occurrence is exactly OwnerOccurrenceId(root)")
+            else:
+                if not self.occurrence.sites:
+                    raise ValueError("a non-self model-stage occurrence is a non-empty child chain")
+                if self.occurrence.root != self.root:
+                    raise ValueError("the occurrence must be rooted at the requested root")
+        elif self.status == "ambiguous":
+            if (len(self.rival_declarations) < 2 and len(self.rival_occurrences) < 2
+                    and len(self.rival_owners) < 2):
+                raise ValueError("an ambiguous model stage preserves >=2 rival "
+                                 "declarations, occurrences, or owner records")
+            if self.occurrence is not None or self.failure_kind:
+                raise ValueError("an ambiguous model stage carries no resolved occurrence or failure")
+            # occurrence-side ambiguity must name the applicable declaration.
+            if (self.rival_occurrences or self.rival_owners) and self.declaration is None:
+                raise ValueError("occurrence-side ambiguity carries its applicable declaration")
+        elif self.status == "failed":
+            if not self.failure_kind:
+                raise ValueError("a failed model stage carries a typed failure kind")
+            if (self.occurrence is not None or self.rival_declarations
+                    or self.rival_occurrences or self.rival_owners):
+                raise ValueError("a failed model stage carries no occurrence or rivals")
+        else:  # absent
+            if (self.occurrence is not None or self.rival_declarations
+                    or self.rival_occurrences or self.rival_owners or self.failure_kind):
+                raise ValueError("an absent model stage carries nothing further")
+
+    @property
+    def address_resolved(self) -> bool:
+        return self.status == "resolved"
+
+
+def resolve_declared_model_stage(index: ProgramIndex,
+                                 root_resolution: "ComponentRootResolution",
+                                 ) -> DeclaredModelStageResolution:
+    """Resolve the model-stage occurrence a root DECLARES via a closed framework
+    address protocol (``base_model_prefix``), matched against the ALREADY-RESOLVED
+    root ``OwnerGraph`` — never manufacturing an occurrence.
+
+    B1 consumes a RESOLVED :class:`ComponentRootResolution` (D0), permanently
+    inheriting D0's component isolation and hidden-rival / parse-failure law: a
+    broken file in the component makes uniqueness unprovable, so D0 returns
+    ``failed`` there and B1 cannot bypass it.  A resolved result carries the exact
+    existing graph child occurrence (``graph.node_for`` returns it).  Uses ONLY the
+    code-declared literal + exact reference binding through inheritance + the
+    graph's construction occurrences: never class names, model types, role
+    vocabulary, embedding/layer/norm evidence, call ordering, return flow, a
+    most-plausible-child heuristic, or a family table."""
+    if not isinstance(root_resolution, ComponentRootResolution):
+        raise TypeError("resolve_declared_model_stage requires a ComponentRootResolution (D0)")
+    if root_resolution.status != "resolved":
+        raise ValueError(
+            "resolve_declared_model_stage requires a RESOLVED component root; D0 "
+            f"returned {root_resolution.status!r} (component isolation + hidden-rival law)")
+    graph = root_resolution.graph
+    root_node = graph.root
+    root = root_node.symbol
+    # D0's own closure guarantees graph.root.occurrence has an empty site chain and
+    # names the indexed declared-architecture class; B1 never re-derives the root.
+
+    attrs = frozenset(p.declaration_attr for p in _FRAMEWORK_ADDRESS_PROTOCOLS)
+    effective, decl_status, payload = _resolve_stage_declaration(index, root, attrs)
+    # Declaration resolution is a TOTAL Python precedence order (exact C3 / provable
+    # lazy shortcut): it yields resolved / failed / absent, never a declaration-side
+    # tie.  Occurrence-side rivals (below) are the only ambiguity.
+    if decl_status == "failed":
+        return DeclaredModelStageResolution(
+            "failed", root, failure_kind=payload[0], failure_detail=payload[1])
+    if decl_status == "absent":
+        return DeclaredModelStageResolution("absent", root)
+
+    attribute = effective.attribute
+    if attribute == "":
+        # explicit self-fallback: base_model_prefix == "" declares the class IS
+        # its own base (getattr(self, "", self) -> self).
+        return DeclaredModelStageResolution(
+            "resolved", root, attribute="", declaration=effective,
+            occurrence=OwnerOccurrenceId(root), self_stage=True)
+
+    # Match the declared attribute against the AUTHORITATIVE graph.  Every branch
+    # below is EXHAUSTIVE over the graph's own occurrence facts: a resolved child,
+    # a preserved conflict, or a typed unresolved entry.  `absent` is reachable
+    # ONLY when the field has NO resolved child, NO unresolved entry, and NO owner
+    # conflict — a matching unresolved entry may never degrade to absent.
+    resolved_children = [c for c in root_node.children if c.via_field == attribute]
+    unresolved_here = [u for u in root_node.unresolved if u.field == attribute]
+    field_site_ids = {s.site_id for s in index.construction_sites_of(root)
+                      if s.target == attribute and s.target_kind == "field"}
+    field_site_ids |= {u.site for u in unresolved_here if u.site is not None}
+    # Authoritative rivals already preserved in graph.conflicts (never fabricated):
+    # an OwnerRival attaches to THIS field's root occurrence and construction site.
+    field_rivals = tuple(
+        rival
+        for conflict in graph.conflicts if conflict.kind == "rival_owner_chain"
+        for rival in conflict.rivals
+        if rival.parent == root_node.occurrence and rival.site in field_site_ids)
+
+    # >=2 resolved children: rival REAL occurrences (each round-trips via node_for).
+    if len(resolved_children) >= 2:
+        occurrences = tuple(c.occurrence for c in resolved_children
+                            if graph.node_for(c.occurrence) is not None)
+        return DeclaredModelStageResolution(
+            "ambiguous", root, attribute=attribute, declaration=effective,
+            rival_occurrences=occurrences)
+
+    # Any matching unresolved entry -> never absent; classify EXHAUSTIVELY.
+    if unresolved_here:
+        kinds = {u.kind for u in unresolved_here}
+        if kinds & {"rival_owner", "ambiguous_import"}:
+            if len(field_rivals) >= 2:
+                # ambiguity with the authoritative OwnerRival records preserved.
+                return DeclaredModelStageResolution(
+                    "ambiguous", root, attribute=attribute, declaration=effective,
+                    rival_owners=field_rivals)
+            # rivals exist but are not attributable to an exact root occurrence
+            # (e.g. helper-return chains) or were not preserved (ambiguous import):
+            # typed failure, never a fabricated occurrence, never absent.
+            return DeclaredModelStageResolution(
+                "failed", root, attribute=attribute, declaration=effective,
+                failure_kind="unresolved_construction",
+                failure_detail=f"self.{attribute} has rival constructions without an "
+                               f"exact authoritative occurrence")
+        if "dynamic" in kinds:
+            return DeclaredModelStageResolution(
+                "failed", root, attribute=attribute, declaration=effective,
+                failure_kind="unsupported_construction",
+                failure_detail=f"self.{attribute} is constructed dynamically")
+        if "external" in kinds:
+            return DeclaredModelStageResolution(
+                "failed", root, attribute=attribute, declaration=effective,
+                failure_kind="external_model_stage",
+                failure_detail=f"self.{attribute} constructs an external/symbol-less child")
+        # depth_limit / cycle / unbindable / any UNKNOWN future kind -> typed
+        # failure, never absent.
+        return DeclaredModelStageResolution(
+            "failed", root, attribute=attribute, declaration=effective,
+            failure_kind="unresolved_construction",
+            failure_detail=f"self.{attribute} is unresolved ({sorted(kinds)})")
+
+    # A preserved owner conflict for the field but no unresolved entry (defensive):
+    # still never absent.
+    if len(field_rivals) >= 2:
+        return DeclaredModelStageResolution(
+            "ambiguous", root, attribute=attribute, declaration=effective,
+            rival_owners=field_rivals)
+
+    if len(resolved_children) == 1:
+        return DeclaredModelStageResolution(
+            "resolved", root, attribute=attribute, declaration=effective,
+            occurrence=resolved_children[0].occurrence)
+
+    # No resolved child, no unresolved entry, no owner conflict: legally absent.
+    return DeclaredModelStageResolution(
+        "absent", root, attribute=attribute, declaration=effective)
+
+
+class _MROIncomplete(Exception):
+    """The exact C3 linearization required to decide precedence needs a class the
+    index does not (yet) contain, so precedence is unprovable."""
+
+
+def _resolve_stage_declaration(index, root, attrs):
+    """Resolve the effective model-stage declaration for ``root`` from the CLOSED
+    protocol attrs using LAZY, EXACT precedence — never a guessed order.  Returns
+    (declaration|None, status, payload): ``resolved`` -> the declaration with a
+    proof trace; ``failed`` -> (kind, detail); ``absent`` -> None.
+
+    Precedence (each step is an EXACT Python-semantics fact, applied only when
+    provable from the indexed closure):
+      1. the root's OWN class-body declaration is decisive (final in-class
+         assignment wins; a decisive dynamic assignment fails);
+      2. a DIRECTLY declaring class is decisive before its ancestors are inspected;
+      3. a direct declaration on the FIRST exactly-bound base is decisive over any
+         later base (C3 places the first direct base at MRO position 1);
+      4. otherwise the exact C3 linearization decides — computed ONLY when its
+         required closure is fully indexed;
+      5. an unresolved earlier base that can affect the lookup -> failed
+         (``mro_incomplete``); such a base is NEVER skipped to reach a later
+         declaration."""
+    value, span, dynamic = _own_declaration(index, root, attrs)
+    if dynamic:
+        return None, "failed", ("dynamic_declaration",
+                                f"{root.qualified_name} declares a non-literal model-stage address")
+    if value is not None:
+        return (ModelStageDeclaration(root, value, span, False,
+                                      proof_trace=(root,), precedence_basis="root-direct"),
+                "resolved", None)
+
+    bases = _direct_bindings(index, root)
+    if bases:
+        first_display, first_binding = bases[0]
+        if first_binding is None:
+            return None, "failed", ("mro_incomplete",
+                                    f"earliest base {first_display!r} is unresolved and can affect precedence")
+        if first_binding is _RIVAL_BASE:
+            return None, "failed", ("mro_incomplete",
+                                    f"earliest base {first_display!r} binds rival exact classes")
+        value, span, dynamic = _own_declaration(index, first_binding, attrs)
+        if value is not None or dynamic:
+            # The first-base shortcut relies on C3 placing the first direct base at
+            # MRO position 1.  When the WHOLE closure is indexed we can prove the
+            # hierarchy is C3-consistent; an INVALID fully-indexed hierarchy (one
+            # Python itself would reject) must fail, not resolve.  When the closure
+            # is incomplete (external bases such as GenerationMixin), we rely on the
+            # runtime-valid-class premise: the class exists at runtime, so Python
+            # already computed a consistent MRO for it, and the first direct base is
+            # necessarily first among the bases.
+            if _closure_fully_indexed(index, root):
+                try:
+                    _c3_linearization(index, root, set())
+                except _MROIncomplete as exc:
+                    return None, "failed", ("mro_incomplete", str(exc))
+            if dynamic:
+                return None, "failed", ("dynamic_declaration",
+                                        f"{first_binding.qualified_name} declares a non-literal model-stage address")
+            return (ModelStageDeclaration(first_binding, value, span, True,
+                                          proof_trace=(root, first_binding),
+                                          precedence_basis="first-base-direct"),
+                    "resolved", None)
+
+    # The lazy shortcuts did not decide.  Fall back to the EXACT C3 linearization,
+    # which requires the full closure to be indexed.
+    try:
+        mro = _c3_linearization(index, root, set())
+    except _MROIncomplete as exc:
+        return None, "failed", ("mro_incomplete", str(exc))
+    for offset, cls in enumerate(mro):
+        if cls == root:
+            continue                          # root already proven non-declaring
+        value, span, dynamic = _own_declaration(index, cls, attrs)
+        if dynamic:
+            return None, "failed", ("dynamic_declaration",
+                                    f"{cls.qualified_name} declares a non-literal model-stage address")
+        if value is not None:
+            return (ModelStageDeclaration(cls, value, span, True,
+                                          proof_trace=tuple(mro[:offset + 1]),
+                                          precedence_basis="c3"),
+                    "resolved", None)
+    return None, "absent", None
+
+
+def _own_declaration(index, symbol, attrs):
+    """The class's OWN-body effective model-stage declaration: the LAST assignment
+    of a protocol attr in class-body (source) order.  Returns (literal|None,
+    span|None, is_dynamic)."""
+    record = index.class_by_symbol(symbol)
+    if record is None:
+        return None, None, False
+    assigns = [ba for ba in record.body_assigns if ba.attr in attrs]
+    if not assigns:
+        return None, None, False
+    last = max(assigns, key=lambda ba: (ba.span.line if ba.span else 0,
+                                        ba.span.col if ba.span else 0))
+    value = last.value
+    if value.kind == "constant" and isinstance(value.const_value, str):
+        return value.const_value, last.span, False
+    return None, last.span, True
+
+
+# Sentinel for a direct base whose reference binds >=2 rival exact classes: the
+# exact binding is ambiguous, so precedence over it is unprovable.
+_RIVAL_BASE = object()
+
+
+def _direct_bindings(index, symbol):
+    """The direct bases of ``symbol`` in listed (Python precedence) order, each
+    bound EXACTLY.  Returns [(display, SymbolId | None | _RIVAL_BASE), ...]; a
+    None binding is an unresolved base, ``_RIVAL_BASE`` a rival binding.  An
+    unbindable base EXPRESSION is reported as unresolved (it can still affect the
+    MRO, so it must never be silently skipped)."""
+    record = index.class_by_symbol(symbol)
+    out: list = []
+    if record is None:
+        return out
+    for base in record.bases:
+        reference = _base_reference(base)
+        if reference is None:
+            out.append(("<unbindable base>", None))
+            continue
+        bindings = _resolve_base_binding(index, symbol.source, reference)
+        display = _reference_display(reference)
+        if not bindings:
+            out.append((display, None))
+        elif len(bindings) >= 2:
+            out.append((display, _RIVAL_BASE))
+        else:
+            out.append((display, bindings[0]))
+    return out
+
+
+def _closure_fully_indexed(index, root) -> bool:
+    """True iff every class in ``root``'s transitive inheritance closure is indexed
+    and every base binds to exactly one indexed class — the precondition for
+    computing (and validating) the exact C3 linearization."""
+    seen: set = set()
+    stack = [root]
+    while stack:
+        symbol = stack.pop()
+        if symbol in seen:
+            continue
+        seen.add(symbol)
+        if index.class_by_symbol(symbol) is None:
+            return False
+        for _display, binding in _direct_bindings(index, symbol):
+            if binding is None or binding is _RIVAL_BASE:
+                return False
+            stack.append(binding)
+    return True
+
+
+def _c3_linearization(index, symbol, stack):
+    """The EXACT C3 linearization (Python MRO) of ``symbol`` as SymbolIds.  Raises
+    :class:`_MROIncomplete` if any class in the required closure is not indexed,
+    a base binds rival exact classes, a base expression is unbindable, the
+    hierarchy is cyclic, or no consistent linearization exists — every case in
+    which the true Python order cannot be proven from the index."""
+    if symbol in stack:
+        raise _MROIncomplete(f"cyclic inheritance at {symbol.qualified_name!r}")
+    record = index.class_by_symbol(symbol)
+    if record is None:
+        raise _MROIncomplete(f"class {symbol.qualified_name!r} is not indexed")
+    base_symbols: list = []
+    for display, binding in _direct_bindings(index, symbol):
+        if binding is None:
+            raise _MROIncomplete(f"base {display!r} of {symbol.qualified_name!r} is unresolved")
+        if binding is _RIVAL_BASE:
+            raise _MROIncomplete(f"base {display!r} of {symbol.qualified_name!r} binds rival exact classes")
+        base_symbols.append(binding)
+    sequences = [_c3_linearization(index, base, stack | {symbol}) for base in base_symbols]
+    sequences.append(list(base_symbols))
+    return [symbol] + _c3_merge(sequences)
+
+
+def _c3_merge(sequences):
+    """The C3 merge: repeatedly take a head that appears in no sequence's tail."""
+    sequences = [list(seq) for seq in sequences if seq]
+    result: list = []
+    while sequences:
+        for seq in sequences:
+            head = seq[0]
+            if not any(head in later[1:] for later in sequences):
+                break
+        else:
+            raise _MROIncomplete("no consistent C3 linearization")
+        result.append(head)
+        sequences = [[c for c in seq if c != head] for seq in sequences]
+        sequences = [seq for seq in sequences if seq]
+    return result
+
+
+def _base_reference(expr):
+    """The Name/Attribute reference a base expression binds to (unwrapping a
+    ``Generic[...]``-style subscript), or None for a base we cannot bind."""
+    if expr is None:
+        return None
+    if expr.kind in ("name", "attribute"):
+        return expr
+    if expr.kind == "subscript" and expr.children:
+        return _base_reference(expr.children[0])
+    return None
+
+
+def _resolve_base_binding(index, source, reference):
+    """Bind a base reference EXACTLY, relative to its declaring source: a class of
+    that name in the SAME source, else an exact import binding (alias -> import
+    target -> the class in the addressed module).  Never a global qualified-name
+    search; returns >=2 SymbolIds only for genuine rival bindings."""
+    chain = _attribute_chain(reference)
+    if not chain:
+        return ()
+    if len(chain) == 1:
+        local = tuple(record.symbol for record in index.classes
+                      if record.symbol.source == source
+                      and record.symbol.qualified_name == chain[0])
+        if local:
+            return local
+    alias, *attributes = chain
+    matches: list = []
+    for record in index.imports:
+        if record.source != source or record.alias != alias:
+            continue
+        parts = tuple(part for part in record.target.lstrip(".").split(".") if part)
+        parts = parts + tuple(attributes)
+        if not parts:
+            continue
+        class_name = parts[-1]
+        module_name = parts[-2] if len(parts) >= 2 else ""
+        for class_record in index.classes:
+            if class_record.symbol.qualified_name == class_name and (
+                    not module_name
+                    or _module_stem(class_record.symbol.source.canonical_path) == module_name):
+                matches.append(class_record.symbol)
+    return tuple(dict.fromkeys(matches))
+
+
+def _reference_display(reference) -> str:
+    chain = _attribute_chain(reference)
+    return ".".join(chain) if chain else (reference.name or reference.kind)
+
+
 __all__ = [
     "ConfigPrefix", "OwnerOccurrenceId", "ConfigBinding", "OwnerRival",
     "ConfigPrefixRival", "UnresolvedChild", "OwnerNode", "OwnerGraph",
     "resolve_owner_graph",
     "ComponentRootCandidate", "ComponentRootResolution", "resolve_component_root",
+    "FrameworkAddressProtocol", "ModelStageDeclaration",
+    "DeclaredModelStageResolution", "resolve_declared_model_stage",
 ]
