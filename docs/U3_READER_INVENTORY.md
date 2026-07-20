@@ -237,3 +237,43 @@ Bare-failure replacement targets (→ ReaderResult): every patterns `*_from_file
 4. Source resolution is already one-shot and identity-as-address (`ParseContext.build` → sources ladder → `SourceBundle.component_files` → `slot_parse_context` re-rooting); the two places a NAME completes resolution are `sources._looks_like_diffusion_class` :354 (gates the diffusers search) and the domain/view NAME-marker filters in conformance (`_domain_block_classes`/`_view_class_candidates`) — plus transformer parser's `_source_files` :119 which throws the owner away by passing flat `bundle.files` to every patterns reader.
 5. `position.py`'s raw walks read exactly `alibi`, `layer_types`, `_attn_implementation`, `rotary_dim`, `rotary_pct`, `partial_rotary_factor` through a hardcoded 5-wrapper scope chain (:444-466), feeding the ALiBi-vs-RoPE arbitration, zero-rotary "none" proof, hybrid mixed-schedule proof, and dispatch-class selection — all unlogged by the config-access ledger (conformance :1727-1746 and projector :761-788 are the two sibling offenders).
 6. Failure shapes: 8 typed evidence dataclasses already exist (Positional, FFNStructure, VisionTower, AudioTower, Projector, Fusion, QKNormCode, RouterCode — plus ConformanceProblem as an additional typed failure surface) (Positional/FFNStructure/VisionTower/AudioTower/Projector/Fusion/QKNorm + RouterCodeEvidence) — everything else fails as bare None/False/empty; the projector width-binding rail (`_config_param_chains` projector.py:319) is the closest existing prototype of U3's ComponentOwner + config-prefix resolution and should seed the index design. `# UNVERIFIED:` exact runtime parse-count per sable run (static count of sites, not profiled); everything else above was read directly from source.
+
+---
+
+## U3-E owner-access classification (2026-07-21 — exhaustive; U3-E DONE, EMPTY)
+
+Every `*_from_files` reader in `evidence/patterns.py` classified by owner-access
+pattern, to test Section-6 rule 2 (exact owner already available) + rule 5
+(a corpus positive AND negative) + rule 6 (answerable from current observations).
+"Owner already available" today means the **root** (`resolve_component_root`);
+no lawful boundary yet identifies any child (model-stage or nested) owner.
+
+- **ROOT-ONLY (owner = the root class's own fields/forward):** ONLY
+  `unet_mid_block_present`. It reads the root's own `__init__` fields + its own
+  `forward` (down/up/mid call names). ✗ rule 5: SDXL (UNet2DConditionModel) is
+  the corpus's ONLY UNet → a positive witness but no negative UNet witness.
+  (`denoiser_temporal_axis` was the other root-only reader; migrated + deleted in
+  U3-D1.)
+- **WHOLE-FILE / per-class UNION (`ops.values()` / `ast.walk` over all classes):**
+  diffusion_ffn_activation, diffusion_axes_dims_rope, diffusion_rope,
+  diffusion_attn_kind, diffusion_ffn_kind, diffusion_qk_norm,
+  diffusion_cross_qk_norm, unet_code_attention_placement,
+  diffusion_single_stream_fusion, diffusion_gate_via_norm,
+  decoder_layer_topology, layer_class_count, decoder_norm_kind,
+  decoder_ffn_gated, decoder_ffn_activation, ffn_activation_dispatch_field,
+  attention_fused_qkv, decoder_rope_dim, decoder_router_evidence,
+  decoder_intermediate_size, decoder_attention_sinks, decoder_qk_norm,
+  decoder_parallel_norm_count, decoder_attention_bias, decoder_mlp_bias,
+  lm_head_tying, decoder_moe_schedule, embedding_stage_norm,
+  expert_fused_gate_up, attention_score_scaling, attention_causality,
+  decoder_cross_attention_all_layers, decoder_codebook_streams. Their faithful
+  migration needs an exact non-root owner (attention/ffn/model-stage/expert),
+  for which no lawful boundary exists yet.
+- **CHILD / BLOCK TRAVERSE (needs a block/stage occupancy the root points to):**
+  denoiser_block_timestep_conditioning; and the block-typed
+  unet_transformer_ffn_activation, unet_stage_temporal, unet_stage_attn_cell
+  (take `block_type`). → U3-F (decoder-block / stage occurrence discovery).
+
+**Result:** no reader satisfies rule 2 ∧ rule 5 ∧ rule 6 simultaneously → U3-E is
+empty. The next lawful boundary is U3-B1 (a declared model-stage address
+resolver); nested-mechanism owners are U3-F. Selection rules are NOT weakened.

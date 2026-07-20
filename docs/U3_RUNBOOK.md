@@ -290,23 +290,51 @@ then proceed autonomously to U3-B.
       published as exact-callable unsupported regions rather than contaminating
       the parent. Bare unsupported expressions are also published, so a negative
       cannot skip opaque syntax. No identifier is interpreted by ProgramIndex.
-- [~] U3-D1 first production-reader pilot — denoiser temporal-axis, UNDER V2
-      REVIEW (resumed on the pushed U3-A1 kernel c5b3c82). evidence/denoiser.py
-      denoiser_temporal_axis(index, owner) -> ReaderResult[bool] queries the
-      exact forward's IdentifierObservation census directly
-      (index.identifiers_in), rejects child/non-root occurrences, matches the
-      temporal marker vocabulary against that complete exact-span census, cites
-      the matching identifier's exact span for a positive, and returns a negative
-      ONLY when there is no marker AND no unsupported/nested region for the exact
-      forward (a missing forward or an unsupported/nested region is a typed
-      failure, never False). adapters/diffusor/parser.py::_temporal_axis is
-      rewired onto context.program_index() + resolve_component_root("root") +
-      address_resolved + status==resolved, keeping the checkpoint-declared
-      temporal fallback and removing the broad except. The legacy
-      denoiser_temporal_axis_from_files + its AST loop are deleted in the same
-      commit (no shim). Reproduction was proven on all 11 video/image witnesses;
-      held unpushed for Codex V2.
-- [ ] U3-E..H migration clusters + conformance migration + old-parser
+- [x] U3-D1 first production-reader pilot — denoiser temporal-axis, DONE (V2
+      approved, pushed 795c3ff). evidence/denoiser.py denoiser_temporal_axis(
+      index, owner) -> ReaderResult[bool] queries the exact forward's
+      IdentifierObservation census (index.identifiers_in), rejects child/non-root
+      occurrences, matches the temporal marker vocabulary against that complete
+      exact-span census, cites the matching identifier's exact span for a
+      positive, and returns a negative ONLY when the exact forward is completely
+      observable (no marker AND no unsupported/nested region — else a typed
+      failure, never False). adapters/diffusor/parser.py::_temporal_axis rewired
+      onto program_index() + resolve_component_root("root") + address_resolved +
+      status==resolved, checkpoint-declared fallback kept, broad except removed;
+      legacy denoiser_temporal_axis_from_files + AST loop deleted same commit; the
+      U2 broad-except baseline for adapters/diffusor/parser.py lowered 19->18 in
+      the same atomic unit. Committed-tree receipt PASS (full 1633/0, fp
+      identical, preservation 20 zero-drift, isolated 29, eradication clean).
+- [x] U3-E leaf-reader migration cluster — DONE, EMPTY (no lawful candidates).
+      Exhaustive inventory (docs/U3_READER_INVENTORY.md, "U3-E owner-access
+      classification"): of all 40 *_from_files readers, exactly ONE is ROOT-ONLY
+      (unet_mid_block_present), and it fails Section-6 rule 5 — SDXL is the
+      corpus's only UNet, so it has no negative witness. Every other reader is a
+      whole-file / per-class UNION or a nested/block traversal, so none has an
+      already-available exact owner AND a corpus positive+negative AND full
+      answerability from current observations. The Section-6 selection rules were
+      NOT weakened to force a candidate through. U3-E requires no reader commit.
+- [~] U3-B1 declared model-stage address boundary — UNDER CODEX REVIEW (replaces
+      the rejected execution/dataflow model-stage proposal; "primary sequence
+      body"/"output head"/"main hidden state" were semantic classifications, not
+      address evidence, and ProgramIndex dataflow is not a complete transitive
+      execution graph). A resolver that uses ONLY the code-declared framework
+      address contract — an exact base_model_prefix-style class-body declaration
+      resolved through exact inheritance — bound to the exact self.<declared
+      attr> construction occurrence in the OwnerGraph. Declaration is address
+      metadata only (no mechanism); exact class-body + inheritance resolution
+      preserving rival declarations; exact declared-attr->construction match; one
+      occurrence -> resolved; multiple -> ambiguous (rivals+spans kept); missing
+      declaration/target -> absent; broken/unresolved-inheritance/dynamic/
+      unsupported -> failed; root as its own model stage ONLY on an explicit
+      indexed self-fallback proof ("no child found" never implies root); NO class
+      names / model types / role vocab / embedding-layer-norm evidence / call
+      ordering / return-flow / most-plausible-child / YAML family tables. No new
+      ProgramIndex record family (class-body assigns + bases + construction sites
+      already exist). Held unpushed for Codex review; the embedding_stage_norm
+      reader stays reclassified and does NOT begin after U3-B1 (it still needs a
+      sound norm-kind contract and a real layer-stack stage/order contract).
+- [ ] U3-F..H nested-mechanism / modality / conformance clusters + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
 
 The binding execution order, exact first pilot, review ownership and stop gates
