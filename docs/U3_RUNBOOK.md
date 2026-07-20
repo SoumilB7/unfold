@@ -238,9 +238,37 @@ then proceed autonomously to U3-B.
       U3-A/B/C green; affected U2 (identity/structural-write/registry/projection)
       gates green; preservation green; full suite green; tree fingerprint
       identical before/after. Marked complete on that green committed-tree gate.
-- [ ] U3-D first narrow reader pilot (mechanical selection) — gated by U3-D0
-      (component-root address boundary) and Codex V1 review per
-      docs/U3_D_TO_H_EXECUTION_AND_VET_PLAN.md (now versioned in this baseline)
+- [x] U3-D0 component-root address boundary — DONE, pushed 343aa7d (V1
+      approved). evidence/component_owner.py resolve_component_root(index,
+      bundle, component_key) bridges a SourceBundle component address to the
+      exact root OwnerOccurrenceId: address from component_architectures[key]
+      (bundle.architecture = root compat only); exact-identity class match in the
+      requested component only; hidden-rival law (any component parse failure ->
+      failed before the candidate count, canonically sorted); self-verifying
+      ComponentRootCandidate; closed ComponentRootResolution (incl. graph-root-
+      symbol == occurrence-root, empty root site-chain); canonical rival sort;
+      address_resolved (an address claim, binding ambiguity stays in
+      graph.root.unresolved). 34 poisons. Committed-tree receipt: focused 103,
+      affected U2 44, preservation 20 zero-drift, full 1596/0, fingerprint
+      identical, isolated worktree green.
+- [~] U3-A1 identifier-observation completeness — CODEX-OWNED KERNEL CORRECTION,
+      implemented in the working tree and awaiting its own committed-tree
+      receipt. The D1 stop condition proved that reconstructing names from
+      selected call/dataflow/control records could not support a general
+      negative. ProgramIndex now records neutral IdentifierObservation rows for
+      every exact callable-scoped ast.Name/ast.arg with its SourceSpan and
+      syntactic context (parameter, load/store/delete, annotation, default,
+      decorator). Nested defs/classes/lambdas are lexical boundaries and are
+      published as exact-callable unsupported regions rather than contaminating
+      the parent. Bare unsupported expressions are also published, so a negative
+      cannot skip opaque syntax. No identifier is interpreted by ProgramIndex.
+- [~] U3-D1 first production-reader pilot — denoiser temporal-axis remains
+      BLOCKED until the separate U3-A1 committed-tree receipt and Codex kernel
+      review pass. When resumed it must query the exact forward's
+      IdentifierObservation census directly, reject child occurrences, cite the
+      matching identifier's exact span, and return a negative only with no marker
+      and no unsupported/nested region. None of the parser cutover, replacement
+      reader or legacy-reader deletion may enter the U3-A1 commit.
 - [ ] U3-E..H migration clusters + conformance migration + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
 

@@ -162,6 +162,29 @@ implementation agent must not design an alternative root-selection API.
 
 ## 5. U3-D1 — first production-reader pilot
 
+### U3-A1 prerequisite discovered by the pilot
+
+The first implementation correctly stopped because the original ProgramIndex
+embedded names only inside selected call/dataflow/control records. That could
+not prove the negative “this exact forward contains no temporal identifier.”
+The Codex-owned correction adds neutral `IdentifierObservation` records:
+
+- one exact `ast.Name`/`ast.arg` occurrence;
+- exact owning and enclosing callable addresses;
+- exact `SourceSpan`;
+- syntactic context (`parameter`, load/store/delete, annotation, default or
+  decorator);
+- strict lexical-scope separation—nested callables/classes/lambdas never
+  contaminate their parent;
+- complete unsupported-expression/nested-scope records for the exact callable,
+  so an opaque region blocks a negative instead of disappearing.
+
+This remains observation-only. ProgramIndex does not interpret an identifier as
+a temporal axis; the denoiser reader is the semantic consumer. A future reader
+needing bindings represented by Python's AST as plain strings (for example an
+exception alias or match capture) must stop for a separately proven token-aware
+observation—it may not invent a span.
+
 ### Selected reader
 
 Migrate `denoiser_temporal_axis_from_files` from
@@ -170,8 +193,8 @@ Migrate `denoiser_temporal_axis_from_files` from
 It is the bounded pilot because it has one production caller, addresses the
 denoiser root rather than traversing sibling owners, has a small deletion
 surface, has positive video and negative image witnesses, and can be answered
-from existing ProgramIndex callable/parameter/expression observations. It does
-not require a new ProgramIndex record family, fact, IR shape or renderer rule.
+after the U3-A1 identifier-observation correction. It requires no fact, IR shape
+or renderer rule.
 
 ### Exact implementation
 
@@ -184,17 +207,18 @@ not require a new ProgramIndex record family, fact, IR shape or renderer rule.
    ```
 
 2. Query the exact owner class and its exact `forward` callable from
-   `ProgramIndex`. Read normalized parameter/expression/dataflow observations;
-   never reopen a file, call `ast.parse`, inspect `source_segment`, or search
-   another class.
+   `ProgramIndex`. Read its `IdentifierObservation` census directly; never
+   reconstruct names by unioning selected calls/dataflow, reopen a file, call
+   `ast.parse`, inspect `source_segment`, or search another class.
 3. The existing temporal marker vocabulary may remain temporarily as a
    specialized-reader code-shape vocabulary. It may nominate a temporal-axis
    source symbol; it may not select the owner. Its later semantic replacement
    belongs to U10.
 4. Return:
    - `resolved(True)` with the exact matching observation span;
-   - `resolved(False)` only when the exact forward body was completely
-     observable and no temporal observation exists;
+   - `resolved(False)` only when the exact forward identifier census is
+     complete, the callable has no unsupported/nested lexical region, and no
+     temporal observation exists;
    - `failed(missing_source/parse_failure/unsupported_syntax)` when absence
      cannot be proven;
    - never `False` for an unreadable, unsupported or unresolved body.
@@ -214,6 +238,10 @@ not require a new ProgramIndex record family, fact, IR shape or renderer rule.
 - same class at a sibling component cannot influence root;
 - two same-spelled roots produce typed ambiguity before the reader;
 - syntax failure and unsupported expression never produce `False`;
+- temporal names in assignment/loop/comprehension binding positions and bare
+  name statements are observed with exact spans;
+- a nested callable/lambda is incomplete, not a false negative;
+- a child occurrence cannot be stamped with the component root's forward;
 - missing forward never produces `False`;
 - an unrelated `num_frames` in a sibling/helper does not affect the exact
   owner's forward;

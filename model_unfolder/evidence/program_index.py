@@ -317,6 +317,58 @@ class CallableRecord:
 
 
 # --------------------------------------------------------------------------- #
+# Exact callable-scoped identifiers
+# --------------------------------------------------------------------------- #
+
+IDENTIFIER_CONTEXTS = frozenset({
+    "parameter", "load", "store", "del",
+    "annotation", "default", "decorator",
+})
+
+
+@dataclass(frozen=True)
+class IdentifierObservation:
+    """One exact ``ast.Name``/``ast.arg`` occurrence in one callable.
+
+    This is neutral syntax, not a role or mechanism claim.  ``context`` records
+    where the spelling occurred so a specialized reader can distinguish a
+    runtime load/store from a parameter, annotation, default or decorator.
+    Nested named callables/classes and lambdas are separate lexical scopes and
+    are deliberately excluded from their parent's census; a reader requiring
+    transitive behavior must resolve/follow that callable explicitly.
+
+    Python stores a few bindings (for example ``except ... as name`` and match
+    pattern captures) as plain strings rather than ``ast.Name`` nodes.  They are
+    not part of this record family's contract: inventing a token span for them
+    would violate the exact-span law.  Add a separately proven token-aware
+    observation if a future reader genuinely needs those bindings.
+    """
+
+    owner: SymbolId | None
+    enclosing_callable: SymbolId
+    name: str
+    context: str
+    span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if self.owner is not None and not isinstance(self.owner, SymbolId):
+            raise TypeError("identifier owner must be a SymbolId or None")
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("identifier enclosing_callable must be a SymbolId")
+        if not self.name:
+            raise ValueError("an identifier observation requires a spelling")
+        if self.context not in IDENTIFIER_CONTEXTS:
+            raise ValueError(f"unknown identifier context {self.context!r}")
+        if not isinstance(self.span, SourceSpan):
+            raise TypeError("an identifier observation requires an exact SourceSpan")
+        if self.span.source != self.enclosing_callable.source:
+            raise ValueError("identifier span must belong to its callable source")
+        if self.owner is not None and \
+                self.owner.source != self.enclosing_callable.source:
+            raise ValueError("identifier owner and callable must share a source")
+
+
+# --------------------------------------------------------------------------- #
 # Classes, imports, dispatch registries
 # --------------------------------------------------------------------------- #
 
@@ -557,6 +609,7 @@ __all__ = [
     "EXPR_KINDS", "ExprNode",
     # callables
     "ParamRecord", "GuardStep", "CallableRecord",
+    "IDENTIFIER_CONTEXTS", "IdentifierObservation",
     # classes / imports / registries
     "ClassBodyAssign", "ClassRecord", "ImportRecord", "DispatchRegistryRecord",
     # construction occurrences
@@ -591,6 +644,17 @@ _CMP = {
     ast.NotIn: "not in",
 }
 
+# Direct AST expression nodes normalized by _SourceWalker._expr.  The callable
+# coverage walk tests membership in O(1) per node; calling _expr at every node
+# would recursively normalize the same subtrees and turn indexing into O(n^2).
+_NORMALIZED_EXPR_NODES = (
+    ast.Name, ast.Attribute, ast.Constant, ast.Call, ast.Subscript, ast.Slice,
+    ast.Tuple, ast.List, ast.Set, ast.Dict, ast.BoolOp, ast.BinOp, ast.UnaryOp,
+    ast.Compare, ast.IfExp, ast.ListComp, ast.SetComp, ast.GeneratorExp,
+    ast.DictComp, ast.Starred, ast.Lambda, ast.JoinedStr,
+)
+_IDENTIFIER_COVERED_EXPR_NODES = _NORMALIZED_EXPR_NODES + (ast.FormattedValue,)
+
 
 def _op_token(op) -> str:
     t = type(op)
@@ -617,6 +681,129 @@ class _CallableScan:
         return self.order
 
 
+class _CallableIdentifierCollector(ast.NodeVisitor):
+    """Complete exact-span ``ast.Name``/``ast.arg`` census for ONE callable.
+
+    The collector owns lexical-scope boundaries rather than relying on a broad
+    ``ast.walk``: nested defs/classes/lambdas never contaminate the parent.  The
+    normal walker indexes named nested callables separately.  Every emitted
+    record is syntax only; no spelling is interpreted here.
+    """
+
+    def __init__(self, sid: SourceId, owner: SymbolId | None,
+                 enclosing: SymbolId, *, segment):
+        self.sid = sid
+        self.owner = owner
+        self.enclosing = enclosing
+        self._segment = segment
+        self.records: list[IdentifierObservation] = []
+        self.unsupported: list[UnsupportedSyntaxRecord] = []
+        self._region: str | None = None
+
+    def collect(self, node):
+        args = node.args
+        params = (tuple(getattr(args, "posonlyargs", ())) + tuple(args.args)
+                  + tuple(args.kwonlyargs)
+                  + ((args.vararg,) if args.vararg is not None else ())
+                  + ((args.kwarg,) if args.kwarg is not None else ()))
+        for arg in params:
+            self._emit(arg.arg, "parameter", arg)
+            if arg.annotation is not None:
+                self._visit_region(arg.annotation, "annotation")
+        for default in tuple(args.defaults) + tuple(
+                item for item in args.kw_defaults if item is not None):
+            self._visit_region(default, "default")
+        for decorator in node.decorator_list:
+            self._visit_region(decorator, "decorator")
+        if node.returns is not None:
+            self._visit_region(node.returns, "annotation")
+        for stmt in node.body:
+            self.visit(stmt)
+        return (tuple(sorted(self.records, key=_identifier_sort_key)),
+                tuple(sorted(self.unsupported, key=_unsupported_sort_key)))
+
+    def _visit_region(self, node, region: str) -> None:
+        previous = self._region
+        self._region = region
+        try:
+            self.visit(node)
+        finally:
+            self._region = previous
+
+    def _emit(self, name: str, context: str, node) -> None:
+        self.records.append(IdentifierObservation(
+            self.owner, self.enclosing, name, context,
+            SourceSpan(
+                self.sid,
+                getattr(node, "lineno", 0) or 0,
+                getattr(node, "col_offset", 0) or 0,
+                getattr(node, "end_lineno", 0) or 0,
+                getattr(node, "end_col_offset", 0) or 0,
+            ),
+        ))
+
+    def visit_Name(self, node: ast.Name) -> None:
+        if self._region is not None:
+            context = self._region
+        elif isinstance(node.ctx, ast.Store):
+            context = "store"
+        elif isinstance(node.ctx, ast.Del):
+            context = "del"
+        else:
+            context = "load"
+        self._emit(node.id, context, node)
+
+    def visit(self, node):
+        # ExprNode normalization has a closed set.  Record every expression
+        # outside it even when that expression appears only as a bare statement
+        # or binding construct, so a reader can prove its negative did not skip
+        # an opaque part of the exact callable.
+        # FormattedValue is normalized as part of its supported JoinedStr
+        # parent; it is not a standalone expression surface.
+        if isinstance(node, ast.expr) and not isinstance(
+                node, _IDENTIFIER_COVERED_EXPR_NODES):
+            self._unsupported(type(node).__name__, node)
+        return super().visit(node)
+
+    def _unsupported(self, kind: str, node) -> None:
+        span = SourceSpan(
+            self.sid,
+            getattr(node, "lineno", 0) or 0,
+            getattr(node, "col_offset", 0) or 0,
+            getattr(node, "end_lineno", 0) or 0,
+            getattr(node, "end_col_offset", 0) or 0,
+        )
+        self.unsupported.append(UnsupportedSyntaxRecord(
+            self.owner, self.enclosing, kind,
+            self._segment(node) or kind, span))
+
+    # These are distinct lexical scopes.  _SourceWalker indexes named nested
+    # defs/classes separately; lambda bodies stay opaque to the parent's census.
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._unsupported("nested_callable", node)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self._unsupported("nested_callable", node)
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._unsupported("nested_class", node)
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:
+        self._unsupported("nested_lambda", node)
+
+
+def _identifier_sort_key(item: IdentifierObservation):
+    span = item.span
+    return (span.line, span.col, span.end_line, span.end_col,
+            item.context, item.name)
+
+
+def _unsupported_sort_key(item: UnsupportedSyntaxRecord):
+    span = item.span
+    return (span.line, span.col, span.end_line, span.end_col,
+            item.syntax_kind, item.detail)
+
+
 class _SourceWalker:
     """Walk ONE parsed source file into observation records.  Two passes: pass 1
     collects the definitions a construction reference may resolve against (local
@@ -638,6 +825,7 @@ class _SourceWalker:
         self.imports: list = []
         self.classes: list = []
         self.callables: list = []
+        self.identifiers: list = []
         self.field_assigns: list = []
         self.sites: list = []
         self.containers: list = []
@@ -742,6 +930,10 @@ class _SourceWalker:
     def _callable(self, node, owner: SymbolId | None, scope: str) -> None:
         qual = f"{scope}.{node.name}" if scope else node.name
         sym = SymbolId(self.sid, qual)
+        identifiers, unsupported = _CallableIdentifierCollector(
+            self.sid, owner, sym, segment=self._seg).collect(node)
+        self.identifiers.extend(identifiers)
+        self.unsupported.extend(unsupported)
         scan = _CallableScan(sym, owner)
         self._visit_stmts(node.body, guard=(), scan=scan)
         self.callables.append(CallableRecord(
@@ -1270,6 +1462,7 @@ class ProgramIndex:
     imports: tuple = ()
     classes: tuple = ()
     callables: tuple = ()
+    identifiers: tuple = ()
     field_assigns: tuple = ()
     construction_sites: tuple = ()
     containers: tuple = ()
@@ -1313,6 +1506,13 @@ class ProgramIndex:
             if c.symbol == symbol:
                 return c
         return None
+
+    def identifiers_in(self, callable_symbol: SymbolId) -> tuple:
+        """Exact identifiers for one callable address, in source order."""
+        if not isinstance(callable_symbol, SymbolId):
+            raise TypeError("identifiers_in requires a SymbolId")
+        return tuple(item for item in self.identifiers
+                     if item.enclosing_callable == callable_symbol)
 
     def field_assigns_of(self, owner: SymbolId) -> tuple:
         return tuple(f for f in self.field_assigns if f.owner == owner)
@@ -1387,7 +1587,8 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
     parse_failures: list = []
     agg_ids: list = []
     out = {k: [] for k in (
-        "modules", "imports", "classes", "callables", "field_assigns", "sites",
+        "modules", "imports", "classes", "callables", "identifiers",
+        "field_assigns", "sites",
         "containers", "registries", "calls", "attrs", "configs", "controls",
         "dataflow", "unsupported")}
 
@@ -1430,6 +1631,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
             out["imports"].extend(walker.imports)
             out["classes"].extend(walker.classes)
             out["callables"].extend(walker.callables)
+            out["identifiers"].extend(walker.identifiers)
             out["field_assigns"].extend(walker.field_assigns)
             out["sites"].extend(walker.sites)
             out["containers"].extend(walker.containers)
@@ -1456,6 +1658,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         imports=tuple(out["imports"]),
         classes=tuple(out["classes"]),
         callables=tuple(out["callables"]),
+        identifiers=tuple(out["identifiers"]),
         field_assigns=tuple(out["field_assigns"]),
         construction_sites=tuple(out["sites"]),
         containers=tuple(out["containers"]),

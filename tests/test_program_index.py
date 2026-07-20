@@ -70,6 +70,12 @@ def _sites_for(idx, field: str):
     return out
 
 
+def _identifiers(idx, qual):
+    callable_record = _callable(idx, qual)
+    assert callable_record is not None
+    return idx.identifiers_in(callable_record.symbol)
+
+
 def _shape(expr):
     """A structural signature of an ExprNode: kinds + operators + arity, with
     identifier names and the diagnostic source segment REMOVED — so a consistent
@@ -79,6 +85,146 @@ def _shape(expr):
     return (expr.kind, expr.operator,
             tuple(_shape(c) for c in expr.children),
             tuple((str(i), _shape(v)) for i, (_, v) in enumerate(expr.keyword_children)))
+
+
+# --------------------------------------------------------------------------- #
+# Exact callable-scoped identifier observations (U3-A1)
+# --------------------------------------------------------------------------- #
+
+def test_identifier_census_covers_parameters_and_name_binding_positions(tmp_path):
+    idx = _index(tmp_path, "modeling_identifiers.py", """
+        @decorate(flag)
+        def forward(self, num_frames: FrameCount = default_value):
+            bare_name
+            target = num_frames
+            for loop_name in iterable:
+                with manager as bound_name:
+                    values = [item for comp_name in source]
+            del target
+            return target
+    """)
+    rows = {(item.name, item.context) for item in _identifiers(idx, "forward")}
+    assert {
+        ("self", "parameter"), ("num_frames", "parameter"),
+        ("FrameCount", "annotation"), ("default_value", "default"),
+        ("decorate", "decorator"), ("flag", "decorator"),
+        ("bare_name", "load"), ("target", "store"),
+        ("num_frames", "load"), ("loop_name", "store"),
+        ("iterable", "load"), ("manager", "load"),
+        ("bound_name", "store"), ("values", "store"),
+        ("item", "load"), ("comp_name", "store"),
+        ("source", "load"), ("target", "del"), ("target", "load"),
+    } <= rows
+
+
+def test_identifier_observation_carries_exact_parameter_span(tmp_path):
+    idx = _index(tmp_path, "modeling_identifier_span.py", """
+        class Root:
+            def forward(self, num_frames, *, mask=None):
+                return num_frames
+    """)
+    row = next(item for item in _identifiers(idx, "Root.forward")
+               if item.name == "num_frames" and item.context == "parameter")
+    assert row.span.source == row.enclosing_callable.source
+    assert row.span.line == 3
+    assert row.span.end_line == 3
+    assert row.span.end_col > row.span.col
+
+
+def test_nested_callable_identifiers_do_not_contaminate_parent(tmp_path):
+    idx = _index(tmp_path, "modeling_nested_identifier.py", """
+        class Root:
+            def forward(self, hidden_states):
+                def helper(num_frames):
+                    return num_frames
+                return hidden_states
+    """)
+    outer = {(item.name, item.context)
+             for item in _identifiers(idx, "Root.forward")}
+    nested = {(item.name, item.context)
+              for item in _identifiers(idx, "Root.forward.helper")}
+    assert not any(name == "num_frames" for name, _ in outer)
+    assert ("num_frames", "parameter") in nested
+    assert ("num_frames", "load") in nested
+    outer_symbol = _callable(idx, "Root.forward").symbol
+    assert any(item.enclosing_callable == outer_symbol
+               and item.syntax_kind == "nested_callable"
+               for item in idx.unsupported_syntax)
+
+
+def test_lambda_identifiers_are_not_attributed_to_parent_callable(tmp_path):
+    idx = _index(tmp_path, "modeling_lambda_identifier.py", """
+        def forward(hidden_states):
+            fn = lambda num_frames: num_frames
+            return hidden_states
+    """)
+    rows = {(item.name, item.context) for item in _identifiers(idx, "forward")}
+    assert not any(name == "num_frames" for name, _ in rows)
+    assert ("fn", "store") in rows
+    symbol = _callable(idx, "forward").symbol
+    assert any(item.enclosing_callable == symbol
+               and item.syntax_kind == "nested_lambda"
+               for item in idx.unsupported_syntax)
+
+
+def test_bare_unsupported_expression_is_callable_scoped(tmp_path):
+    idx = _index(tmp_path, "modeling_bare_unsupported.py", """
+        def forward(hidden_states):
+            (ready := hidden_states)
+            return hidden_states
+    """)
+    symbol = _callable(idx, "forward").symbol
+    rows = [item for item in idx.unsupported_syntax
+            if item.enclosing_callable == symbol]
+    assert any(item.syntax_kind == "NamedExpr" for item in rows)
+    assert all(item.span.source == symbol.source for item in rows)
+
+
+def test_supported_fstring_does_not_create_false_unsupported_record(tmp_path):
+    idx = _index(tmp_path, "modeling_fstring.py", """
+        def forward(hidden_states):
+            label = f"shape={hidden_states.shape}"
+            return hidden_states
+    """)
+    symbol = _callable(idx, "forward").symbol
+    assert not [item for item in idx.unsupported_syntax
+                if item.enclosing_callable == symbol]
+
+
+def test_identifier_query_is_component_and_source_qualified(tmp_path):
+    shared = _write(tmp_path, "modeling_shared_identifier.py", """
+        class Root:
+            def forward(self, num_frames):
+                return num_frames
+    """)
+    idx = pi.build_program_index(_bundle({"root": (shared,), "vision": (shared,)}))
+    roots = [item for item in idx.callables
+             if item.symbol.qualified_name == "Root.forward"]
+    assert len(roots) == 2
+    root_rows = idx.identifiers_in(next(
+        item.symbol for item in roots if item.symbol.source.component_key == "root"))
+    vision_rows = idx.identifiers_in(next(
+        item.symbol for item in roots if item.symbol.source.component_key == "vision"))
+    assert root_rows and vision_rows
+    assert {item.enclosing_callable.source.component_key for item in root_rows} == {"root"}
+    assert {item.enclosing_callable.source.component_key for item in vision_rows} == {"vision"}
+
+
+def test_identifier_observation_contract_rejects_forgery(tmp_path):
+    idx = _index(tmp_path, "modeling_identifier_contract.py", """
+        def forward(x):
+            return x
+    """)
+    row = _identifiers(idx, "forward")[0]
+    with pytest.raises(ValueError):
+        pi.IdentifierObservation(row.owner, row.enclosing_callable, row.name,
+                                 "mechanism", row.span)
+    foreign = pi.SourceId("/foreign.py", "f", component_key="root")
+    with pytest.raises(ValueError):
+        pi.IdentifierObservation(row.owner, row.enclosing_callable, row.name,
+                                 row.context, pi.SourceSpan(foreign, 1))
+    with pytest.raises(TypeError):
+        idx.identifiers_in("forward")
 
 
 # --------------------------------------------------------------------------- #
@@ -583,6 +729,7 @@ def test_every_record_family_is_populated(tmp_path):
     """)
     assert idx.source_nodes and idx.modules and idx.imports and idx.classes
     assert idx.callables and idx.field_assigns and idx.construction_sites
+    assert idx.identifiers
     assert idx.containers and idx.dispatch_registries and idx.calls
     assert idx.attribute_accesses and idx.config_paths and idx.controls
     assert idx.dataflow and idx.unsupported_syntax  # unresolved registry marks this
