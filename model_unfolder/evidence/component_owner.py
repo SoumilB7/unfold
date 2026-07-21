@@ -839,11 +839,12 @@ class ModelStageDeclaration:
     (``base_model_prefix = "<attr>"``) proven at an exact declaring class —
     directly on the root or through exact inheritance.  Address metadata only.
 
-    ``proof_trace`` is the exact class chain (root -> ... -> declaring_class) that
-    made this declaration decisive, and ``precedence_basis`` names WHY it is
-    decisive (``root-direct`` | ``first-base-direct`` | ``c3``).  Together with
-    ``span`` they are the resolver's proof that the lookup is exact, never
-    guessed."""
+    ``proof_trace`` is the exact MRO-prefix / precedence trace
+    (root -> ... -> declaring_class) that made this declaration decisive; in a
+    diamond its pre-declaring elements are C3-order predecessors, NOT necessarily a
+    parent-child chain.  ``precedence_basis`` names WHY it is decisive
+    (``root-direct`` | ``first-base-direct`` | ``c3``).  Together with ``span``
+    they are the resolver's proof that the lookup is exact, never guessed."""
 
     declaring_class: SymbolId
     attribute: str                # the declared literal (may be "" for self)

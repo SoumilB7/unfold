@@ -314,26 +314,32 @@ then proceed autonomously to U3-B.
       already-available exact owner AND a corpus positive+negative AND full
       answerability from current observations. The Section-6 selection rules were
       NOT weakened to force a candidate through. U3-E requires no reader commit.
-- [~] U3-B1 declared model-stage address boundary — UNDER CODEX REVIEW (replaces
-      the rejected execution/dataflow model-stage proposal; "primary sequence
-      body"/"output head"/"main hidden state" were semantic classifications, not
-      address evidence, and ProgramIndex dataflow is not a complete transitive
-      execution graph). A resolver that uses ONLY the code-declared framework
-      address contract — an exact base_model_prefix-style class-body declaration
-      resolved through exact inheritance — bound to the exact self.<declared
-      attr> construction occurrence in the OwnerGraph. Declaration is address
-      metadata only (no mechanism); exact class-body + inheritance resolution
-      preserving rival declarations; exact declared-attr->construction match; one
-      occurrence -> resolved; multiple -> ambiguous (rivals+spans kept); missing
-      declaration/target -> absent; broken/unresolved-inheritance/dynamic/
-      unsupported -> failed; root as its own model stage ONLY on an explicit
-      indexed self-fallback proof ("no child found" never implies root); NO class
-      names / model types / role vocab / embedding-layer-norm evidence / call
-      ordering / return-flow / most-plausible-child / YAML family tables. No new
-      ProgramIndex record family (class-body assigns + bases + construction sites
-      already exist). Held unpushed for Codex review; the embedding_stage_norm
-      reader stays reclassified and does NOT begin after U3-B1 (it still needs a
-      sound norm-kind contract and a real layer-stack stage/order contract).
+- [x] U3-B1 declared model-stage address boundary — DONE (commit 933bb90, Codex
+      V4-approved; receipt `/private/tmp/model-unfolder-verification/0a36445ce2`:
+      static/focused(168)/collect(1741)/u2-authority(44)/full(1681)/preservation(46)
+      all green, every lane fingerprint identical). Replaces the rejected
+      execution/dataflow proposal ("primary sequence body"/"output head"/"main
+      hidden state" were semantic classifications, not address evidence). Resolver
+      uses ONLY the closed-code FrameworkAddressProtocol (base_model_prefix)
+      resolved by LAZY EXACT precedence (root-direct / first-exactly-bound-base-
+      direct / exact C3 when the closure is fully indexed; unresolved earlier base
+      -> failed(mro_incomplete), never skipped; decisive dynamic -> failed) with a
+      proof_trace (root -> declaring_class, MRO-prefix/precedence), matched
+      EXHAUSTIVELY against the authoritative OwnerGraph: one resolved child ->
+      resolved; >=2 -> ambiguous(real occurrences); a matching unresolved entry
+      never degrades to absent (rival_owner/ambiguous_import -> ambiguous with
+      authoritative OwnerRival records; dynamic/external/unknown -> typed failed);
+      no fabricated occurrences. B1 consumes a RESOLVED ComponentRootResolution
+      (D0), inheriting component isolation + the hidden-rival/parse-failure law
+      (a broken component file -> D0 failed -> B1 refuses). Every
+      DeclaredModelStageResolution status is mutually closed; provenance and the
+      framework protocol are invariant-guarded. 57 poisons. Corpus 10 resolved /
+      15 failed(mro_incomplete) / 1 absent, unpatched. NO class names / model types
+      / role vocab / embedding-layer-norm evidence / call ordering / return-flow /
+      most-plausible-child / YAML family tables; no new ProgramIndex record family.
+      The embedding_stage_norm reader stays RECLASSIFIED and does NOT begin: it
+      still needs (1) a code-proven norm-kind classification and (2) a code-proven
+      layer-stack stage/order boundary, each its own unit.
 - [ ] U3-F..H nested-mechanism / modality / conformance clusters + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
 
