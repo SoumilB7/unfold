@@ -67,8 +67,8 @@ _M = """
 """
 
 
-def _flow(tmp_path, body):
-    src = _M.replace("    # BODY", body)
+def _flow(tmp_path, body, source=None):
+    src = (source or _M).replace("    # BODY", body)
     files = {"root": (_write(tmp_path, "m.py", src),)}
     idx = pi.build_program_index(_bundle(files))
     cr = resolve_component_root(idx, _bundle(files), "root")
@@ -230,6 +230,17 @@ def test_modulelist_loop_produces_a_template_node(tmp_path):
                     x = layer(x)
                 return x""")
     assert any(n.kind == "template" for n in res.nodes)
+
+
+def test_external_primitive_participates_in_the_shared_def_use_graph(tmp_path):
+    source = ("    from torch.nn import LayerNorm\n" + _M).replace(
+        "self.f = F(config)", "self.f = LayerNorm(config.n)")
+    idx, occ, res = _flow(tmp_path, """
+                a = self.f(x)
+                b = self.g(a)
+                return b""", source=source)
+    assert {node.kind for node in res.nodes} == {"external", "addressed"}
+    assert _edge_fields(idx, res, res.proven_edges) == {("f", "g")}
 
 
 def _spans():

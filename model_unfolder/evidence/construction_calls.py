@@ -278,26 +278,42 @@ def _external_reference(index, site) -> ExternalReferenceProof | None:
     if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
         return None
     reference = site.candidates[0].reference
+    return resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable, reference)
+
+
+def resolve_import_reference(index, source, callable_symbol,
+                             reference) -> ExternalReferenceProof | None:
+    """Resolve one exact name/attribute reference through one unshadowed import.
+
+    This is lexical address evidence only.  It assigns no framework or model
+    semantics and refuses duplicate/conditional/local rebinding.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("resolve_import_reference requires a ProgramIndex")
+    if not isinstance(reference, ExprNode):
+        raise TypeError("resolve_import_reference requires an ExprNode")
     flattened = _flatten_reference(reference)
     if flattened is None:
         return None
     root, suffix = flattened
     imports = tuple(item for item in index.imports
-                    if item.source == site.owner.source and item.alias == root)
+                    if item.source == source and item.alias == root)
     if len(imports) != 1:
         return None
     # A later/conditional module rebinding or local binding makes the import
     # reference non-unique.  Familiar spelling never repairs that ambiguity.
     if any(binding.name == root and binding.kind != "import"
-           for binding in index.module_bindings_in(site.owner.source)):
+           for binding in index.module_bindings_in(source)):
         return None
-    if any(identifier.name == root
-           and identifier.context in {"parameter", "store", "del"}
-           for identifier in index.identifiers_in(site.enclosing_callable)):
-        return None
-    if any(region.construct_kind in {"try", "match"}
-           for region in index.unsupported_execution_in(site.enclosing_callable)):
-        return None
+    if callable_symbol is not None:
+        if any(identifier.name == root
+               and identifier.context in {"parameter", "store", "del"}
+               for identifier in index.identifiers_in(callable_symbol)):
+            return None
+        if any(region.construct_kind in {"try", "match"}
+               for region in index.unsupported_execution_in(callable_symbol)):
+            return None
     binding = imports[0]
     target = ".".join((binding.target, *suffix))
     return ExternalReferenceProof(reference, binding, target)
@@ -330,4 +346,5 @@ __all__ = [
     "ConstructionAlternative",
     "ConstructionCallResolution",
     "resolve_construction_call",
+    "resolve_import_reference",
 ]

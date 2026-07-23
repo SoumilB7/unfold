@@ -36,6 +36,7 @@ from dataclasses import dataclass
 
 from .component_owner import ComponentRootResolution, OwnerOccurrenceId
 from .container_inventory import ContainerAddress, ContainerInventory
+from .construction_calls import ConstructionAlternative, resolve_construction_call
 from .program_index import (
     CallObservation,
     CallSiteId,
@@ -84,6 +85,48 @@ class AddressedInvocation:
         for span in self.provenance_spans:
             if not isinstance(span, SourceSpan) or span.source != self.call_site.enclosing_callable.source:
                 raise ValueError("provenance spans are typed and source-consistent")
+
+
+@dataclass(frozen=True)
+class ExternalAddressedInvocation:
+    """A call to one exact external construction occurrence.
+
+    External primitives have no indexed class node, so this carries the F3a
+    construction identity instead of fabricating an OwnerOccurrenceId.
+    """
+
+    call_site: CallSiteId
+    caller_occurrence: OwnerOccurrenceId
+    construction: ConstructionAlternative
+    call: CallObservation
+    guard: tuple
+    provenance_spans: tuple
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.call_site, CallSiteId):
+            raise TypeError("an external invocation carries its CallSiteId")
+        if not isinstance(self.caller_occurrence, OwnerOccurrenceId):
+            raise TypeError("an external invocation caller is owner-qualified")
+        if not isinstance(self.construction, ConstructionAlternative) \
+                or self.construction.kind != "external":
+            raise ValueError("an external invocation carries one resolved external construction")
+        if self.construction.occurrence.parent != self.caller_occurrence:
+            raise ValueError("the external construction belongs to the exact caller")
+        if not isinstance(self.call, CallObservation):
+            raise TypeError("an external invocation carries its CallObservation")
+        if self.call.span is None or self.call_site != CallSiteId.of(self.call):
+            raise ValueError("the call site must be CallSiteId.of(call)")
+        if self.guard != self.call.guard:
+            raise ValueError("the invocation guard is the authoritative call guard")
+        if _self_field(self.call.callee) != self.construction.field:
+            raise ValueError("the call invokes the exact constructed field")
+        required = {self.call.span, self.construction.site.span}
+        if None in required or not required <= set(self.provenance_spans):
+            raise ValueError("provenance cites call + construction spans")
+        if any(not isinstance(span, SourceSpan)
+               or span.source != self.call_site.enclosing_callable.source
+               for span in self.provenance_spans):
+            raise ValueError("external provenance spans are typed and source-consistent")
 
 
 @dataclass(frozen=True)
@@ -181,6 +224,7 @@ class InvocationResolution:
     addressed: tuple = ()
     templates: tuple = ()
     unresolved: tuple = ()
+    external_addressed: tuple = ()
     failure_kind: str = ""
     failure_detail: str = ""
 
@@ -201,6 +245,11 @@ class InvocationResolution:
                 raise TypeError("template entries are RepeatedInvocationTemplate values")
             if tmpl.caller_occurrence != self.owner_occurrence:
                 raise ValueError("every template is called by the owner occurrence")
+        for inv in self.external_addressed:
+            if not isinstance(inv, ExternalAddressedInvocation):
+                raise TypeError("external entries are ExternalAddressedInvocation values")
+            if inv.caller_occurrence != self.owner_occurrence:
+                raise ValueError("every external invocation is called by the owner occurrence")
         for unresolved in self.unresolved:
             if not isinstance(unresolved, UnresolvedInvocation):
                 raise TypeError("unresolved entries are UnresolvedInvocation values")
@@ -211,6 +260,7 @@ class InvocationResolution:
         if len(self.call_sites) != len(set(self.call_sites)):
             raise ValueError("the call-site census is unique (no duplicate sites)")
         bucket = ([i.call_site for i in self.addressed]
+                  + [i.call_site for i in self.external_addressed]
                   + [t.call_site for t in self.templates]
                   + [u.call_site for u in self.unresolved])
         if len(bucket) != len(set(bucket)):
@@ -230,14 +280,16 @@ class InvocationResolution:
         elif self.status == "absent":
             if self.owner_symbol is None:
                 raise ValueError("an absent resolution still names the resolved owner")
-            if (self.addressed or self.templates or self.unresolved or self.failure_kind
+            if (self.addressed or self.external_addressed or self.templates
+                    or self.unresolved or self.failure_kind
                     or self.failure_detail or self.call_sites or self.callable_symbol):
                 raise ValueError("an absent resolution carries no call-site or graph payload")
         else:  # failed
             if self.failure_kind not in {"owner_not_in_graph", "index_mismatch"}:
                 raise ValueError("a failed invocation resolution carries a known failure kind")
             if (self.owner_symbol is not None or self.callable_symbol is not None
-                    or self.call_sites or self.addressed or self.templates or self.unresolved):
+                    or self.call_sites or self.addressed or self.external_addressed
+                    or self.templates or self.unresolved):
                 raise ValueError("a failed resolution carries no owner/call-site/graph payload")
 
 
@@ -277,18 +329,22 @@ def resolve_addressed_invocations(index: ProgramIndex,
     loops = index.loops_in(callable_symbol)
     container_by_field = {c.field: c for c in inventory.containers}
     addressed: list = []
+    external_addressed: list = []
     templates: list = []
     unresolved: list = []
     for call in index.calls_in(callable_symbol):
-        _classify(index, CallSiteId.of(call), call, node, owner_occurrence, loops,
-                  container_by_field, addressed, templates, unresolved)
+        _classify(index, root_resolution, CallSiteId.of(call), call, node,
+                  owner_occurrence, loops, container_by_field, addressed,
+                  external_addressed, templates, unresolved)
     return InvocationResolution(
         "resolved", owner_occurrence, owner_symbol, callable_symbol, tuple(census),
-        tuple(addressed), tuple(templates), tuple(unresolved))
+        tuple(addressed), tuple(templates), tuple(unresolved),
+        tuple(external_addressed))
 
 
-def _classify(index, site, call, node, owner_occurrence, loops, container_by_field,
-              addressed, templates, unresolved) -> None:
+def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
+              container_by_field, addressed, external_addressed, templates,
+              unresolved) -> None:
     callee = call.callee
     guard = call.guard
 
@@ -301,8 +357,18 @@ def _classify(index, site, call, node, owner_occurrence, loops, container_by_fie
         children = [c for c in node.children if c.via_field == field]
         blocked = [u for u in node.unresolved if u.field == field]
         if blocked:
+            construction = resolve_construction_call(
+                index, root_resolution, owner_occurrence, call)
+            if construction.status == "resolved" \
+                    and construction.selected.kind == "external":
+                selected = construction.selected
+                external_addressed.append(ExternalAddressedInvocation(
+                    site, owner_occurrence, selected, call, guard,
+                    (call.span, selected.site.span)))
+                return
             unresolved.append(UnresolvedInvocation(
-                site, owner_occurrence, "rival_or_unresolved_child", call, guard, tuple(blocked)))
+                site, owner_occurrence, "rival_or_unresolved_child", call, guard,
+                tuple(blocked) + tuple(construction.alternatives)))
             return
         if len(children) == 1:
             addressed.append(AddressedInvocation(
@@ -512,7 +578,7 @@ class InvocationNodeId:
     def __post_init__(self) -> None:
         if not isinstance(self.call_site, CallSiteId):
             raise TypeError("an invocation node is identified by its CallSiteId")
-        if self.kind not in {"addressed", "template"}:
+        if self.kind not in {"addressed", "external", "template"}:
             raise ValueError(f"unknown invocation node kind {self.kind!r}")
 
 
@@ -680,6 +746,8 @@ def resolve_execution_flow(index: ProgramIndex,
     node_of_site: dict = {}
     for a in inv_res.addressed:
         node_of_site[a.call_site] = InvocationNodeId(a.call_site, "addressed")
+    for a in inv_res.external_addressed:
+        node_of_site[a.call_site] = InvocationNodeId(a.call_site, "external")
     for t in inv_res.templates:
         node_of_site[t.call_site] = InvocationNodeId(t.call_site, "template")
     nodes = tuple(node_of_site.values())
@@ -968,6 +1036,7 @@ def _span_sort(span):
 
 __all__ = [
     "AddressedInvocation",
+    "ExternalAddressedInvocation",
     "RepeatedInvocationTemplate",
     "UnresolvedInvocation",
     "InvocationResolution",

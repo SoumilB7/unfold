@@ -21,6 +21,7 @@ from model_unfolder.evidence.component_owner import (
 from model_unfolder.evidence.container_inventory import resolve_container_inventory
 from model_unfolder.evidence.execution_flow import (
     AddressedInvocation,
+    ExternalAddressedInvocation,
     InvocationResolution,
     RepeatedInvocationTemplate,
     UnresolvedInvocation,
@@ -54,10 +55,10 @@ def _bundle(files, arch="Wrapper"):
                         component_architectures={"root": arch})
 
 
-def _pipeline(tmp_path, body, arch="Wrapper", use_root=False):
+def _pipeline(tmp_path, body, arch="Wrapper", use_root=False, source=None):
     """D0 -> B1 -> B2 -> Phase 3, at B1's model-stage occurrence (or the D0 root
     when use_root)."""
-    src = _MODEL.replace("        # BODY", body)
+    src = (source or _MODEL).replace("        # BODY", body)
     files = {"root": (_write(tmp_path, "m.py", src),)}
     idx = pi.build_program_index(_bundle(files, arch))
     cr = resolve_component_root(idx, _bundle(files, arch), "root")
@@ -124,6 +125,34 @@ def test_same_module_called_twice_is_two_identities(tmp_path):
     assert len({a.call_site for a in res.addressed}) == 2          # distinct CallSiteIds
     assert {_callee(cr, a) for a in res.addressed} == {"Attn"}     # same callee class
     assert res.addressed[0].callee_owner_occurrence == res.addressed[1].callee_owner_occurrence
+
+
+def test_external_primitive_call_has_a_separate_exact_construction_identity(tmp_path):
+    source = ("    from torch.nn import LayerNorm\n" + _MODEL).replace(
+        "self.norm = Norm(config)", "self.norm = LayerNorm(config.n)")
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            h = self.norm(x)
+            for layer in self.layers:
+                h = layer(h)
+            return h""", source=source)
+    (external,) = res.external_addressed
+    assert isinstance(external, ExternalAddressedInvocation)
+    assert external.construction.external_reference.qualified_target == \
+        "torch.nn.LayerNorm"
+    assert external.construction.occurrence.parent == occ
+    assert external.call_site in res.call_sites
+    assert not any(item.call_site == external.call_site for item in res.unresolved)
+
+
+def test_shadowed_external_constructor_stays_unresolved(tmp_path):
+    source = ("    from torch.nn import LayerNorm\n"
+              "    LayerNorm = replacement\n" + _MODEL).replace(
+        "self.norm = Norm(config)", "self.norm = LayerNorm(config.n)")
+    idx, cr, occ, inv, res = _pipeline(
+        tmp_path, "            return self.norm(x)", source=source)
+    assert res.external_addressed == ()
+    assert any(item.reason == "rival_or_unresolved_child"
+               for item in res.unresolved)
 
 
 # --------------------------------------------------------------------------- #
