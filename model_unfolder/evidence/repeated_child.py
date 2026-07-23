@@ -149,18 +149,46 @@ def resolve_repeated_child(
         raise ValueError("resolve_repeated_child requires a resolved B1 model stage")
     if not isinstance(inventory, ContainerInventory):
         raise TypeError("resolve_repeated_child requires a ContainerInventory (B2)")
-    stage = stage_resolution.occurrence
+    return resolve_repeated_child_at_owner(
+        index, root_resolution, stage_resolution.occurrence, inventory)
+
+
+def resolve_repeated_child_at_owner(
+    index: ProgramIndex,
+    root_resolution: ComponentRootResolution,
+    stage: OwnerOccurrenceId,
+    inventory: ContainerInventory,
+) -> RepeatedChildResolution:
+    """Resolve repetition for an explicitly authorized exact owner.
+
+    B1 is the normal caller through :func:`resolve_repeated_child`.  This lower
+    boundary also supports adapters whose selected architecture *is already*
+    the model stage (the D0 root), without manufacturing a B1 declaration or
+    interpreting a failed B1 result as permission to fall back.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("resolve_repeated_child_at_owner requires a ProgramIndex")
+    if not isinstance(root_resolution, ComponentRootResolution) \
+            or root_resolution.status != "resolved":
+        raise ValueError(
+            "resolve_repeated_child_at_owner requires a resolved D0 root")
+    if not isinstance(stage, OwnerOccurrenceId):
+        raise TypeError(
+            "resolve_repeated_child_at_owner requires an explicit OwnerOccurrenceId")
+    if not isinstance(inventory, ContainerInventory):
+        raise TypeError(
+            "resolve_repeated_child_at_owner requires a ContainerInventory")
     if inventory.owner_occurrence != stage:
         return RepeatedChildResolution(
             "failed", stage, failure_kind="inventory_mismatch",
-            failure_detail="the B2 inventory is not owned by the B1 model stage")
+            failure_detail="the B2 inventory is not owned by the explicit stage")
 
     graph = root_resolution.graph
     stage_node = graph.node_for(stage)
     if stage_node is None:
         return RepeatedChildResolution(
             "failed", stage, failure_kind="model_stage_not_in_graph",
-            failure_detail="the B1 occurrence does not round-trip through the D0 graph")
+            failure_detail="the stage occurrence does not round-trip through D0")
     if index.class_by_symbol(stage_node.symbol) is None:
         return RepeatedChildResolution(
             "failed", stage, failure_kind="index_mismatch",
@@ -236,4 +264,5 @@ __all__ = [
     "RepeatedChildProof",
     "RepeatedChildResolution",
     "resolve_repeated_child",
+    "resolve_repeated_child_at_owner",
 ]

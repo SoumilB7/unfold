@@ -179,7 +179,6 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     SigLIP for the same composite model, with qualified provenance on both."""
     from model_unfolder.evidence import conformance as conf
     from model_unfolder.evidence.forward_ops import extract_forward_ops
-    from model_unfolder.evidence.transitive import build_registry
 
     cfg = {
         "model_type": "paligemma",
@@ -1380,10 +1379,11 @@ def test_storage_conformance_flags_fused_experts_drawn_split():
                for p in _fact_problems(cfg, tampered))
 
 
-def test_bookend_conformance_embed_norm_both_directions():
+def test_bookend_conformance_flags_missing_positive_but_never_invents_absence():
     """BLOOM normalizes the word-embedding output (a drawn bookend): removing the
-    drawn block is a MISSING bookend; injecting one into Llama (whose source has
-    no such signature) is FABRICATED."""
+    drawn block is a MISSING bookend.  The execution substrate is open, so
+    injecting one into Llama is not called fabricated until a future
+    reader-specific completeness proof can establish absence."""
     import copy
     from transformers import AutoConfig
 
@@ -1405,7 +1405,8 @@ def test_bookend_conformance_embed_norm_both_directions():
     fabricated["extras"]["render"]["model_blocks"] = (
         list(fabricated["extras"]["render"]["model_blocks"])
         + [{"id": "embed_norm", "role": "norm", "kind": "norm"}])
-    assert any(p.kind == "fabricated_bookend" for p in _fact_problems(clean_cfg, fabricated))
+    assert not any(p.kind == "fabricated_bookend"
+                   for p in _fact_problems(clean_cfg, fabricated))
 
 
 def test_component_storage_conformance_flags_encoder_tower_divergence():
@@ -1414,7 +1415,6 @@ def test_component_storage_conformance_flags_encoder_tower_divergence():
     the slot as the component; the honest parse is clean."""
     import copy
     import json
-    from pathlib import Path
     from model_unfolder.evidence.conformance import check_fact_conformance
 
     from model_unfolder.sable import DEFAULT_CORPUS

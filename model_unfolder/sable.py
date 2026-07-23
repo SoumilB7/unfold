@@ -403,9 +403,9 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # run Net 2 (occurrence -> target -> receipt) and reverse-fabrication.  Both
     # are computed here where the render log and the parse obligations meet.
     from .evidence.receipts import (
-        join_obligation_receipts, fabrication_findings, RECEIPTED_SCOPES,
+        join_obligation_receipts, fabrication_findings,
     )
-    from .evidence.registry import MIGRATED_SCOPES, REGISTRY
+    from .evidence.registry import MIGRATED_SCOPES
     _receipts = [r for event in render_log
                  for r in getattr(event, "receipts", ()) or ()]
     _obligations = (((ir.get("extras") or {}).get("config_access") or {})
@@ -463,7 +463,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # algorithm (linear vs softmax). The two classes I kept catching by EYE.
         SableCheck("fact_conformance",
                    [p.message for p in (check_fact_conformance(
-                       cfg, ir, source=source, bundle=context.source_bundle
+                       cfg, ir, source=source, bundle=context.source_bundle,
+                       program_index=context.program_index()
                    ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         # Nested-conformance: recurse INTO each leaf-compute drill (attention / FFN /

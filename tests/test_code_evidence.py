@@ -788,13 +788,13 @@ def test_attention_score_scaling_verdicts_are_code_derived(tmp_path):
 
 
 def test_storage_fidelity_detectors_are_code_shaped(tmp_path):
-    """The three storage/bookend detectors fire on the code SHAPE, never a
-    name: fused experts (stacked gate_up split any way), fused QKV (one
-    projection, no split q/k/v), and an embedding-stage norm applied to the
-    embedding OUTPUT.  Negative controls prove absence stays None."""
+    """Storage detectors fire on code shape, never a name.
+
+    Embedding-stage normalization moved to the U3 exact-owner/flow reader and
+    is pinned separately in ``test_embedding_bookend.py``.
+    """
     from model_unfolder.evidence.patterns import (
         attention_fused_qkv_from_files,
-        embedding_stage_norm_from_files,
         expert_fused_gate_up_from_files,
     )
 
@@ -846,11 +846,6 @@ def test_storage_fidelity_detectors_are_code_shaped(tmp_path):
     assert expert_fused_gate_up_from_files((split,)) is None
     assert attention_fused_qkv_from_files((fused,)) is True
     assert attention_fused_qkv_from_files((split,)) is False
-    assert embedding_stage_norm_from_files((fused,)) == "LayerNorm"
-    # A FINAL norm applied to a reused variable name is NOT an embedding-stage
-    # norm — the order-aware dataflow must not misread llama-shaped code.
-    assert embedding_stage_norm_from_files((split,)) is None
-
 _CHATGLM_SHAPED = """
 import torch
 import torch.nn as nn
@@ -2656,7 +2651,6 @@ def test_router_ambiguity_reaches_blocking_net(tmp_path):
     """B4 end-to-end: the routing envelope lands on the router BLOCK's detail
     and the blocking evidence_ambiguity finder reports it."""
     import hashlib
-    from model_unfolder.adapters.transformer.parser import parse as parse_transformer
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
     from model_unfolder.sable import _ambiguous_evidence_findings
@@ -2692,8 +2686,6 @@ def test_companion_denoiser_notes_from_vocabulary():
     produce their note; neither key present → no note."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
-    from model_unfolder import unfold
-
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.adapters.diffusor.parser import parse as parse_diffusor
 
@@ -2898,7 +2890,7 @@ def test_asserted_facts_tagged_and_advisory():
     still no asserted tag either way."""
     import json, pathlib
     from model_unfolder import unfold
-    from model_unfolder.sable import DEFAULT_CORPUS, _asserted_fact_findings
+    from model_unfolder.sable import DEFAULT_CORPUS
 
     # bare llama-typed config WITHOUT architectures: decoder-ness undeclared
     # by CONFIG, but code-proven causal by the P2d reader — evidence-backed,

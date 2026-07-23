@@ -439,6 +439,7 @@ def check_wiring_conformance(
 
 def check_fact_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
+    program_index=None,
 ) -> list[ConformanceProblem]:
     """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
     structurally blind to — the SAME op-kind with different SEMANTICS:
@@ -480,7 +481,9 @@ def check_fact_conformance(
     # evidence function; the net compares the resulting IR projection rather than
     # maintaining a second family/marker decision rail.
     problems.extend(_check_storage_facts(
-        family, ir, files, representatives, check_bookend=bool(_model_type(target))))
+        family, ir, files, representatives,
+        check_bookend=bool(_model_type(target)),
+        bundle=bundle, program_index=program_index))
     problems.extend(_check_component_storage_facts(family, ir, bundle))
     if _model_type(target):
         # Attention-KIND cross-check (Group-2 item 3, insurance): a code-MLA
@@ -641,7 +644,8 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
 
 
 def _check_storage_facts(family: str, ir: dict, files, representatives,
-                         *, check_bookend: bool = True) -> list[ConformanceProblem]:
+                         *, check_bookend: bool = True, bundle=None,
+                         program_index=None) -> list[ConformanceProblem]:
     """Projection-STORAGE and embedding-BOOKEND facts vs the modeling source —
     the fused-vs-split class (gpt-oss fused experts, Falcon fused ``query_key_
     value``, BLOOM's word-embedding LayerNorm) that op-PRESENCE conformance is
@@ -654,7 +658,6 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     mixed storage abstains rather than guessing."""
     from .patterns import (
         attention_fused_qkv_from_files,
-        embedding_stage_norm_from_files,
         expert_fused_gate_up_from_files,
     )
 
@@ -675,13 +678,20 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         isinstance(block, dict) and block.get("id") == "embed_norm"
         for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
     )
-    code_bookend = embedding_stage_norm_from_files(files)
+    from .embedding_bookend import embedding_stage_norm_evidence
+    if program_index is None:
+        from .program_index import build_program_index
+        program_index = build_program_index(bundle)
+    bookend = embedding_stage_norm_evidence(
+        program_index, bundle, allow_root_stage=True)
+    code_bookend = bookend.value if bookend.status == "resolved" else None
     if code_bookend and not drawn_bookend:
         problems.append(ConformanceProblem(
             "missing_bookend", code_bookend, f"{family}/model"))
-    elif drawn_bookend and not code_bookend:
-        problems.append(ConformanceProblem(
-            "fabricated_bookend", "embed_norm", f"{family}/model"))
+    # The U3 execution substrate proves positive local relations but does not
+    # yet certify whole-callable absence.  A non-resolved reader therefore
+    # cannot accuse a drawn block of fabrication.  The old whole-file scan did
+    # exactly that unsound upgrade and has been deleted.
     return problems
 
 

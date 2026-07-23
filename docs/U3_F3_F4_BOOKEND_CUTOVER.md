@@ -99,17 +99,22 @@ infer from class or field spelling.
 The reader consumes only positive proof from the shared execution graph:
 
 ```text
-exact embedding construction call
-  -> exact norm construction call
+exact unguarded norm construction call
   -> exact U3-F2 repeated-child invocation template
 ```
+
+The earlier draft required an embedding-construction predecessor.  Real BLOOM
+proves why that is unsound: `inputs_embeds` may be supplied by the caller, so
+the embedding construction is legitimately conditional while the bookend norm
+is unconditional.  The architectural claim is the unconditional normalization
+of the value entering the stack, not that the model always constructs that
+value itself.
 
 Required:
 
 - all calls belong to the exact B1 model-stage occurrence;
-- F3b classifies the first as `embedding`;
-- F3b classifies the second as `layernorm` or `rmsnorm`;
-- shared versioned def-use proves embedding output enters the norm;
+- F3b classifies the source as `layernorm` or `rmsnorm`;
+- the norm invocation itself is unguarded;
 - shared versioned def-use proves norm output reaches the repeated-child call;
 - no unsupported/ambiguous relation is promoted.
 
@@ -127,7 +132,8 @@ whole-file AST helpers in the same commit.
 
 ## 5. Controls
 
-- BLOOM positive: external `Embedding -> LayerNorm -> repeated block`.
+- BLOOM positive: unconditional external `LayerNorm -> repeated block`; its
+  conditional `Embedding` call remains visible but is not falsely required.
 - Llama/Gemma/OLMo negative controls remain no-drawing-change; absence is not
   claimed without reader-specific completeness.
 - external constructor imported directly and through a module alias;

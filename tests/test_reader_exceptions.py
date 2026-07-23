@@ -51,7 +51,7 @@ _BASELINE = {
     "adapters/diffusor/loader.py": 2,
     "adapters/diffusor/parser.py": 18,
     "adapters/transformer/debug.py": 1,
-    "adapters/transformer/parser.py": 30,
+    "adapters/transformer/parser.py": 29,
     "adapters/transformer/special_parts/modalities/conditioning.py": 2,
     # U2 substrate: the duplicate hydration impl was DELETED, converting one
     # broad except away (2 -> 1) — the win is locked here.

@@ -337,11 +337,21 @@ then proceed autonomously to U3-B.
       15 failed(mro_incomplete) / 1 absent, unpatched. NO class names / model types
       / role vocab / embedding-layer-norm evidence / call ordering / return-flow /
       most-plausible-child / YAML family tables; no new ProgramIndex record family.
-      The embedding_stage_norm reader stays RECLASSIFIED and does NOT begin: it
-      still needs (1) a code-proven norm-kind classification and (2) a code-proven
-      layer-stack stage/order boundary, each its own unit.
+      This boundary does not itself classify a norm or a repeated child; those
+      separate F2/F3 mechanisms are now present below.
 - [ ] U3-F..H nested-mechanism / modality / conformance clusters + old-parser
       eradication (per-reader commits, U2 receipt discipline each)
+      - [x] U3-F0: occurrence-exact repeated-child reconnaissance
+        (`docs/U3_F0_REPEATED_CHILD_RECON.md`).
+      - [x] U3-F1: exact direct/sliced/builtin-enumerated iteration observations.
+      - [x] U3-F2: exact repeated-child occurrence resolution; Qwen2-VL's nested
+        text stack remains explicitly outside this B1 model-stage boundary.
+      - [x] U3-F3a: exact external construction-call addresses integrated into
+        the one execution-flow graph—never fabricated OwnerOccurrenceIds.
+      - [x] U3-F3b: embedding/LayerNorm/RMSNorm semantics from exact external
+        framework protocols or indexed implementation math, never class spelling.
+      - [ ] U3-F4: embedding-stage norm production cutover implemented; focused
+        gates green; final committed-tree receipt pending.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
@@ -349,11 +359,11 @@ for U3-D through U3-H are specified in
 must not begin until its U3-D0 component-root address boundary is present; the
 implementation agent may not invent a local root-class chooser.
 
-## U3 Execution-Substrate Campaign — status (held-unpushed commit chain)
+## U3 Execution-Substrate Campaign — foundation receipt
 
-A boundary-only, no-production-consumer campaign. Held unpushed for one Codex
-campaign-level review. Nothing in parser/renderer/facts/IR/config/debt/manifest/
-gallery changed anywhere in the chain.
+This was the boundary-only, no-production-consumer foundation. Nothing in
+parser/renderer/facts/IR/config/debt/manifest/gallery changed in that foundation
+chain; the later F4 row above is the first bounded production consumer.
 
 - [x] Phase 0 — U3-B2 final closure (owner-symbol cross-index check + typo).
 - [x] Phase 1 — U3-A2 recon corrected + FROZEN with an occurrence-exact 26-witness
@@ -388,6 +398,6 @@ gallery changed anywhere in the chain.
       needing a particular positively-proven local relation may be proposed
       separately.
 
-No production migration begins until Codex approves the campaign. The order-graph
-resolver and `embedding_stage_norm` remain gated (embedding_stage_norm still needs
-a code-proven norm-kind classification in addition to this stage/order substrate).
+The campaign has been approved and the bounded U3-F sequence is executing above.
+Whole-callable negative claims remain forbidden: F4 consumes only a positively
+proven local def-use relation into the exact repeated child.

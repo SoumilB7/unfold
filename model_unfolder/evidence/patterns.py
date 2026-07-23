@@ -2571,7 +2571,7 @@ def decoder_parallel_norm_count_from_files(files) -> int | None:
     2.  Returns None when not cleanly resolvable — the CONDITIONAL Falcon case
     (gated on ``new_decoder_architecture``) falls back to the current drawing.
     (GPT-J = the pinned negative control: genuinely 1, must not become 2.)"""
-    from .forward_ops import _method, _field_types, _role_of, _self_field
+    from .forward_ops import _method, _role_of, _self_field
     layer = _find_decoder_layer(files, ast)
     if layer is None:
         return None
@@ -2916,82 +2916,6 @@ def _cfg_num_layers(cfg):
                 pass
     return 0
 
-
-def embedding_stage_norm_from_files(files) -> str | None:
-    """A norm module applied to the EMBEDDING OUTPUT before the layer stack
-    (BLOOM's ``word_embeddings_layernorm``) — a real drawn block the layer
-    nets never see (bookend altitude).  Returns the norm kind label
-    ("LayerNorm"/"RMSNorm") when the model-stage forward provably applies a
-    norm-role field to the embedding result, else None."""
-    import ast as _ast
-    from .forward_ops import _field_types, _method, _role_of
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef):
-                continue
-            forward = _method(node, "forward")
-            if forward is None:
-                continue
-            fields = _field_types(_method(node, "__init__"))
-            embed_fields = {f for f, c in fields.items() if _role_of(c) == "embedding"}
-            norm_fields = {f: c for f, c in fields.items() if _role_of(c) == "norm"}
-            if not embed_fields or not norm_fields:
-                continue
-            # ORDER-AWARE walk over the top-level statements: a variable only
-            # counts as "the embedding output" until it is reassigned or the
-            # layer loop begins — otherwise a model reusing one name
-            # (h = embed(...); for ...: h = layer(h); self.norm(h)) would
-            # misread its FINAL norm as an embedding-stage norm.
-            embed_vars: set[str] = set()
-
-            def _is_self_call(value, names) -> bool:
-                return (isinstance(value, _ast.Call)
-                        and isinstance(value.func, _ast.Attribute)
-                        and isinstance(value.func.value, _ast.Name)
-                        and value.func.value.id == "self"
-                        and value.func.attr in names)
-
-            def _pre_loop_stmts(body):
-                """Statements in source order, transparent through If/With
-                (HF wraps the embed assign in ``if inputs_embeds is None:``),
-                stopping at the first loop — where the layer stack begins."""
-                for stmt in body:
-                    if isinstance(stmt, (_ast.For, _ast.AsyncFor, _ast.While)):
-                        return
-                    if isinstance(stmt, _ast.If):
-                        yield from _pre_loop_stmts(stmt.body)
-                        yield from _pre_loop_stmts(stmt.orelse)
-                        continue
-                    if isinstance(stmt, (_ast.With, _ast.AsyncWith)):
-                        yield from _pre_loop_stmts(stmt.body)
-                        continue
-                    yield stmt
-
-            found: str | None = None
-            for stmt in _pre_loop_stmts(forward.body):
-                for child in _ast.walk(stmt):
-                    if (found is None and isinstance(child, _ast.Call)
-                            and _is_self_call(child, norm_fields)
-                            and any(isinstance(arg, _ast.Name) and arg.id in embed_vars
-                                    for arg in child.args)):
-                        cls = norm_fields[child.func.attr]
-                        found = "RMSNorm" if "rms" in cls.lower() else "LayerNorm"
-                if isinstance(stmt, _ast.Assign):
-                    targets = {t.id for t in stmt.targets if isinstance(t, _ast.Name)}
-                    if _is_self_call(stmt.value, embed_fields):
-                        embed_vars |= targets
-                    elif (isinstance(stmt.value, _ast.Name)
-                          and stmt.value.id in embed_vars):
-                        embed_vars |= targets          # alias keeps the lineage
-                    else:
-                        embed_vars -= targets          # reassigned away
-                if found:
-                    return found
-    return None
 
 
 def expert_fused_gate_up_from_files(files) -> bool | None:
@@ -3500,9 +3424,8 @@ def denoiser_block_timestep_conditioning_from_files(files, architecture) -> bool
     ``False`` from the block's own code; ``None`` when the block cannot be
     resolved (callers keep the conventional AdaLN drawing).
     """
-    import ast as _ast
     from ..everchanging import load_diffusion_typing
-    from .forward_ops import extract_forward_ops, _method
+    from .forward_ops import extract_forward_ops
     markers = [str(m).lower() for m in
                (load_diffusion_typing().get("adaln_forward_markers")
                 or ["temb", "timestep", "time_emb", "t_emb", "adaln_input"])]

@@ -202,13 +202,18 @@ def _code_ffn_storage_mode(cfg: Any, context=None, *, expected_gated=None) -> st
 
 
 def _code_embedding_norm(cfg: Any, context=None) -> str | None:
-    """A norm applied to the embedding OUTPUT before the stack (BLOOM's
-    word-embedding LayerNorm) — a real drawn bookend read from the source."""
-    try:
-        from ...evidence.patterns import embedding_stage_norm_from_files
-        return embedding_stage_norm_from_files(_source_files(cfg, context))
-    except Exception:
+    """An unconditional norm whose output feeds the exact repeated block.
+
+    This is the U3 owner-qualified reader, not a whole-file role/name scan.
+    Unresolved evidence stays ``None`` and therefore cannot fabricate a block.
+    """
+    if context is None:
         return None
+    from ...evidence.embedding_bookend import embedding_stage_norm_evidence
+    evidence = embedding_stage_norm_evidence(
+        context.program_index(), context.source_bundle,
+        allow_root_stage=True)
+    return evidence.value if evidence.status == "resolved" else None
 
 
 def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
