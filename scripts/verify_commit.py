@@ -236,6 +236,19 @@ def _xdist_args(workers: int, distribution: str) -> tuple[str, ...]:
             ("-n", str(workers), "--dist", distribution))
 
 
+def _partitioned_full_command(pytest_base, workers: int) -> tuple[str, ...]:
+    """Return the exhaustive remainder owned by the parallel full-core lane.
+
+    Authority and preservation have dedicated lanes.  Running those files
+    inside ``tests/`` as well duplicated the most expensive work without adding
+    coverage.  Their union with this remainder is still the full collection.
+    """
+    owned_elsewhere = (PRESERVATION_TEST, *U2_AUTHORITY_TESTS)
+    ignores = tuple(f"--ignore={path}" for path in owned_elsewhere)
+    return (*pytest_base, "tests", *ignores,
+            *_xdist_args(workers, "loadfile"))
+
+
 def _run_phase(lanes: tuple[Lane, ...], worktrees: dict[str, pathlib.Path],
                log_dir: pathlib.Path) -> list[LaneResult]:
     results: list[LaneResult] = []
@@ -286,8 +299,7 @@ def main(argv: list[str] | None = None) -> int:
     # file, preserving within-file order and avoiding duplicated module/session
     # fixtures). Phase boundaries request one literal serial full invocation.
     full_command = ((*pytest_base, "tests") if args.serial_full else
-                    (*pytest_base, "tests", f"--ignore={PRESERVATION_TEST}",
-                     *_xdist_args(full_workers, "loadfile")))
+                    _partitioned_full_command(pytest_base, full_workers))
     lanes = (
         Lane("focused", (*pytest_base, *focused,
                           *_xdist_args(authority_workers, "loadfile"))),

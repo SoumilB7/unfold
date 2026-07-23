@@ -26,6 +26,21 @@ def test_preservation_partition_is_an_exact_existing_file():
     assert pathlib.Path(verify.PRESERVATION_TEST).is_file()
 
 
+def test_parallel_full_is_the_exact_remainder_not_duplicate_authority_work():
+    base = ("python", "-m", "pytest", "-q")
+    command = verify._partitioned_full_command(base, 3)
+    assert command[:len(base) + 1] == (*base, "tests")
+    ignored = {
+        item.removeprefix("--ignore=")
+        for item in command if item.startswith("--ignore=")
+    }
+    assert ignored == {
+        verify.PRESERVATION_TEST,
+        *verify.U2_AUTHORITY_TESTS,
+    }
+    assert command[-4:] == ("-n", "3", "--dist", "loadfile")
+
+
 def test_lane_cannot_pass_when_its_tree_changed(tmp_path):
     log = tmp_path / "lane.log"
     log.write_text("ok\n")
