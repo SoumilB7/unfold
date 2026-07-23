@@ -141,13 +141,77 @@ def test_modulelist_loop_is_a_repeated_template(tmp_path):
     assert t.element_template in t.container.element_sites
 
 
-def test_sliced_iterable_loop_is_unresolved(tmp_path):
+def test_sliced_iterable_loop_preserves_the_exact_base_container(tmp_path):
     idx, cr, occ, inv, res = _pipeline(tmp_path, """
             for layer in self.layers[: 2]:
                 x = layer(x)
             return x""")
+    (template,) = res.templates
+    assert template.iteration_kind == "sliced"
+    assert template.container.field == "layers"
+    assert template.loop.iterable.kind == "subscript"
+    assert template.loop.iterable.children[1].kind == "slice"
+
+
+def test_builtin_enumerate_binds_the_second_tuple_target(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            for index, layer in enumerate(self.layers):
+                x = layer(x)
+            return x""")
+    (template,) = res.templates
+    assert template.iteration_kind == "enumerated"
+    assert template.element_target.name == "layer"
+    assert template.container.field == "layers"
+
+
+def test_builtin_enumerate_over_slice_preserves_both_protocol_steps(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            for index, layer in enumerate(self.layers[: 2]):
+                x = layer(x)
+            return x""")
+    (template,) = res.templates
+    assert template.iteration_kind == "enumerated_sliced"
+    assert template.element_target.name == "layer"
+    assert template.loop.iterable.children[1].kind == "subscript"
+
+
+def test_reversed_enumerate_targets_do_not_bind_by_a_familiar_spelling(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            for layer, index in enumerate(self.layers):
+                x = layer(x)
+            return x""")
     assert res.templates == ()
-    assert any(u.reason == "loop_iterable_not_a_cited_container" for u in res.unresolved)
+    assert any(u.reason == "local_or_free_name_call" for u in res.unresolved)
+
+
+def test_locally_shadowed_enumerate_is_not_a_builtin_protocol(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            enumerate = self._helper
+            for index, layer in enumerate(self.layers):
+                x = layer(x)
+            return x""")
+    assert res.templates == ()
+    assert any(u.reason == "local_or_free_name_call" for u in res.unresolved)
+
+
+def test_module_shadowed_enumerate_is_not_a_builtin_protocol(tmp_path):
+    src = _MODEL.replace(
+        "    class Attn:",
+        "    enumerate = object()\n    class Attn:",
+    ).replace("        # BODY", """
+            for index, layer in enumerate(self.layers):
+                x = layer(x)
+            return x""")
+    files = {"root": (_write(tmp_path, "m.py", src),)}
+    bundle = _bundle(files)
+    idx = pi.build_program_index(bundle)
+    cr = resolve_component_root(idx, bundle, "root")
+    b1 = resolve_declared_model_stage(idx, cr)
+    inv = resolve_container_inventory(idx, cr, b1.occurrence)
+    res = resolve_addressed_invocations(idx, cr, b1.occurrence, inv)
+    assert res.templates == ()
+    assert any(binding.name == "enumerate"
+               for binding in idx.module_bindings_in(b1.occurrence.root.source))
 
 
 def test_indexed_access_is_unresolved(tmp_path):
@@ -441,3 +505,21 @@ def test_repeated_template_round_trips_to_call_and_loop(tmp_path):
     assert template.guard == template.call.guard
     with pytest.raises(ValueError):
         replace(template, guard=())
+    with pytest.raises(ValueError):
+        replace(template, iteration_kind="enumerated")
+    with pytest.raises(ValueError):
+        replace(template, element_target=ExprNode(kind="name", name="other"))
+
+
+def test_exception_target_cannot_launder_shadowed_enumerate_as_builtin(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            try:
+                x = x
+            except Exception as enumerate:
+                x = x
+            for index, layer in enumerate(self.layers):
+                x = layer(x)
+            return x""")
+    assert res.templates == ()
+    assert any(region.construct_kind == "try"
+               for region in idx.unsupported_execution_in(res.callable_symbol))

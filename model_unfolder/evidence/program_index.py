@@ -406,6 +406,35 @@ class ImportRecord:
 
 
 @dataclass(frozen=True)
+class ModuleBindingObservation:
+    """One name bound in a module's lexical scope.
+
+    This is neutral Python name-resolution evidence.  It exists so a later
+    protocol reader can prove that an unqualified builtin reference was not
+    shadowed, rather than treating a familiar spelling as semantic evidence.
+    The collector is deliberately conservative: conditional/deleted bindings
+    are still reported because either can prevent a sound builtin proof.
+    """
+
+    source: SourceId
+    name: str
+    kind: str
+    span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source, SourceId):
+            raise TypeError("a module binding is qualified by its SourceId")
+        if not self.name:
+            raise ValueError("a module binding carries a non-empty name")
+        if self.kind not in {
+                "import", "class", "function", "store", "delete",
+                "exception", "pattern"}:
+            raise ValueError(f"unknown module-binding kind {self.kind!r}")
+        if not isinstance(self.span, SourceSpan) or self.span.source != self.source:
+            raise ValueError("a module binding carries an exact same-source span")
+
+
+@dataclass(frozen=True)
 class DispatchRegistryRecord:
     """A module-level literal dict registry (ATTENTION_CLASSES = {...}).  Keys
     and values are structural ExprNodes (a value is typically a class-reference
@@ -789,7 +818,8 @@ __all__ = [
     "ParamRecord", "GuardStep", "CallableRecord",
     "IDENTIFIER_CONTEXTS", "IdentifierObservation",
     # classes / imports / registries
-    "ClassBodyAssign", "ClassRecord", "ImportRecord", "DispatchRegistryRecord",
+    "ClassBodyAssign", "ClassRecord", "ImportRecord",
+    "ModuleBindingObservation", "DispatchRegistryRecord",
     # construction occurrences
     "ChildCandidate", "ConstructionSite", "FieldAssignRecord",
     "ContainerElementsRecord",
@@ -989,6 +1019,137 @@ def _unsupported_sort_key(item: UnsupportedSyntaxRecord):
             item.syntax_kind, item.detail)
 
 
+class _ModuleBindingCollector(ast.NodeVisitor):
+    """Collect exact names bound in one module scope.
+
+    Function/class/lambda bodies and comprehension targets are separate scopes.
+    Control-flow statement bodies at module level remain in the module scope and
+    are visited normally.  The result is syntax-only and deliberately
+    conservative for builtin-name proof.
+    """
+
+    def __init__(self, sid: SourceId):
+        self.sid = sid
+        self.records: list[ModuleBindingObservation] = []
+
+    def collect(self, tree: ast.Module) -> tuple:
+        for stmt in tree.body:
+            self.visit(stmt)
+        return tuple(sorted(self.records, key=lambda r: (
+            r.span.line, r.span.col, r.span.end_line, r.span.end_col,
+            r.kind, r.name)))
+
+    def _span(self, node) -> SourceSpan:
+        return SourceSpan(
+            self.sid,
+            getattr(node, "lineno", 0) or 0,
+            getattr(node, "col_offset", 0) or 0,
+            getattr(node, "end_lineno", 0) or 0,
+            getattr(node, "end_col_offset", 0) or 0,
+        )
+
+    def _emit(self, name: str | None, kind: str, node) -> None:
+        if name:
+            self.records.append(
+                ModuleBindingObservation(self.sid, name, kind, self._span(node)))
+
+    def visit_Name(self, node: ast.Name) -> None:
+        if isinstance(node.ctx, ast.Store):
+            self._emit(node.id, "store", node)
+        elif isinstance(node.ctx, ast.Del):
+            self._emit(node.id, "delete", node)
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            self._emit(alias.asname or alias.name.split(".")[0], "import", alias)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        for alias in node.names:
+            self._emit(alias.asname or alias.name, "import", alias)
+
+    def _visit_function_header(self, node) -> None:
+        for decorator in node.decorator_list:
+            self.visit(decorator)
+        for default in tuple(node.args.defaults) + tuple(
+                d for d in node.args.kw_defaults if d is not None):
+            self.visit(default)
+        for arg in (tuple(getattr(node.args, "posonlyargs", ()))
+                    + tuple(node.args.args) + tuple(node.args.kwonlyargs)):
+            if arg.annotation is not None:
+                self.visit(arg.annotation)
+        if node.args.vararg is not None and node.args.vararg.annotation is not None:
+            self.visit(node.args.vararg.annotation)
+        if node.args.kwarg is not None and node.args.kwarg.annotation is not None:
+            self.visit(node.args.kwarg.annotation)
+        if node.returns is not None:
+            self.visit(node.returns)
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._emit(node.name, "function", node)
+        self._visit_function_header(node)
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self._emit(node.name, "function", node)
+        self._visit_function_header(node)
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._emit(node.name, "class", node)
+        for decorator in node.decorator_list:
+            self.visit(decorator)
+        for base in node.bases:
+            self.visit(base)
+        for keyword in node.keywords:
+            self.visit(keyword.value)
+
+    def visit_Lambda(self, node: ast.Lambda) -> None:
+        # A lambda's parameters/body are a separate lexical scope.  Its defaults
+        # do not exist on ast.Lambda; nothing here binds the containing module.
+        return
+
+    def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        self._emit(node.name, "exception", node)
+        if node.type is not None:
+            self.visit(node.type)
+        for stmt in node.body:
+            self.visit(stmt)
+
+    def visit_MatchAs(self, node) -> None:
+        self._emit(getattr(node, "name", None), "pattern", node)
+        if getattr(node, "pattern", None) is not None:
+            self.visit(node.pattern)
+
+    def visit_MatchStar(self, node) -> None:
+        self._emit(getattr(node, "name", None), "pattern", node)
+
+    def visit_MatchMapping(self, node) -> None:
+        self._emit(getattr(node, "rest", None), "pattern", node)
+        for pattern in node.patterns:
+            self.visit(pattern)
+
+    def _visit_comprehension(self, node, value_nodes) -> None:
+        # Comprehension targets are local to the implicit comprehension scope.
+        # The surrounding expressions are still visited so a NamedExpr target
+        # (which Python binds in the containing scope) remains visible.
+        for generator in node.generators:
+            self.visit(generator.iter)
+            for cond in generator.ifs:
+                self.visit(cond)
+        for value in value_nodes:
+            self.visit(value)
+
+    def visit_ListComp(self, node: ast.ListComp) -> None:
+        self._visit_comprehension(node, (node.elt,))
+
+    def visit_SetComp(self, node: ast.SetComp) -> None:
+        self._visit_comprehension(node, (node.elt,))
+
+    def visit_GeneratorExp(self, node: ast.GeneratorExp) -> None:
+        self._visit_comprehension(node, (node.elt,))
+
+    def visit_DictComp(self, node: ast.DictComp) -> None:
+        self._visit_comprehension(node, (node.key, node.value))
+
+
 class _SourceWalker:
     """Walk ONE parsed source file into observation records.  Two passes: pass 1
     collects the definitions a construction reference may resolve against (local
@@ -1008,6 +1169,7 @@ class _SourceWalker:
         self._factory_names = factory_names
         # outputs
         self.imports: list = []
+        self.module_bindings: list = []
         self.classes: list = []
         self.callables: list = []
         self.identifiers: list = []
@@ -1040,6 +1202,8 @@ class _SourceWalker:
     # -- passes ------------------------------------------------------------- #
 
     def run(self) -> "_SourceWalker":
+        self.module_bindings.extend(
+            _ModuleBindingCollector(self.sid).collect(self.tree))
         self._collect_definitions(self.tree.body, scope="")
         for node in self.tree.body:
             if isinstance(node, ast.ClassDef):
@@ -1781,6 +1945,7 @@ class ProgramIndex:
     source_nodes: tuple = ()
     modules: tuple = ()
     imports: tuple = ()
+    module_bindings: tuple = ()
     classes: tuple = ()
     callables: tuple = ()
     identifiers: tuple = ()
@@ -1817,6 +1982,11 @@ class ProgramIndex:
 
     def classes_in(self, source: SourceId) -> tuple:
         return tuple(c for c in self.classes if c.symbol.source == source)
+
+    def module_bindings_in(self, source: SourceId) -> tuple:
+        if not isinstance(source, SourceId):
+            raise TypeError("module_bindings_in requires a SourceId")
+        return tuple(b for b in self.module_bindings if b.source == source)
 
     def class_by_symbol(self, symbol: SymbolId) -> ClassRecord | None:
         for c in self.classes:
@@ -1942,7 +2112,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
     parse_failures: list = []
     agg_ids: list = []
     out = {k: [] for k in (
-        "modules", "imports", "classes", "callables", "identifiers",
+        "modules", "imports", "module_bindings", "classes", "callables", "identifiers",
         "field_assigns", "sites",
         "containers", "registries", "calls", "attrs", "configs", "controls",
         "dataflow", "unsupported",
@@ -1985,6 +2155,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
             walker = _SourceWalker(sid, text, tree, config_vocab=config_vocab,
                                    factory_names=factory_names).run()
             out["imports"].extend(walker.imports)
+            out["module_bindings"].extend(walker.module_bindings)
             out["classes"].extend(walker.classes)
             out["callables"].extend(walker.callables)
             out["identifiers"].extend(walker.identifiers)
@@ -2017,6 +2188,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         source_nodes=tuple(source_nodes),
         modules=tuple(out["modules"]),
         imports=tuple(out["imports"]),
+        module_bindings=tuple(out["module_bindings"]),
         classes=tuple(out["classes"]),
         callables=tuple(out["callables"]),
         identifiers=tuple(out["identifiers"]),

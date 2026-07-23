@@ -685,6 +685,66 @@ def test_aggregate_fingerprint_is_not_raw_file_contents(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# Module lexical bindings — builtin protocols cannot be selected by spelling
+# --------------------------------------------------------------------------- #
+
+def test_module_binding_census_respects_python_scope_boundaries(tmp_path):
+    idx = _index(tmp_path, "bindings.py", """
+        import os as operating_system
+        from somewhere import thing as imported_thing
+        assigned = 1
+        if flag:
+            conditional = 2
+        for loop_target in values:
+            pass
+        try:
+            pass
+        except Error as exception_target:
+            recovered = True
+        match subject:
+            case {"value": captured}:
+                matched = captured
+        class DeclaredClass:
+            class_local = 1
+        def declared_function(function_parameter):
+            function_local = function_parameter
+        comprehension = [item for item in values]
+    """)
+    source = idx.source_nodes[0].source_id
+    names = {binding.name for binding in idx.module_bindings_in(source)}
+    assert {
+        "operating_system", "imported_thing", "assigned", "conditional",
+        "loop_target", "exception_target", "recovered", "captured", "matched",
+        "DeclaredClass", "declared_function", "comprehension",
+    } <= names
+    assert "class_local" not in names
+    assert "function_parameter" not in names
+    assert "function_local" not in names
+    assert "item" not in names              # comprehension-local target
+    assert all(binding.span.source == source
+               for binding in idx.module_bindings_in(source))
+
+
+def test_module_binding_query_is_typed(tmp_path):
+    idx = _index(tmp_path, "bindings.py", "value = 1")
+    with pytest.raises(TypeError):
+        idx.module_bindings_in(object())
+
+
+def test_module_binding_observation_closes_its_identity():
+    source = pi.SourceId("/module.py", "fp", component_key="root")
+    span = pi.SourceSpan(source, 1)
+    assert pi.ModuleBindingObservation(source, "name", "store", span).name == "name"
+    with pytest.raises(ValueError):
+        pi.ModuleBindingObservation(source, "", "store", span)
+    with pytest.raises(ValueError):
+        pi.ModuleBindingObservation(source, "name", "guessed", span)
+    other = pi.SourceId("/other.py", "fp2", component_key="root")
+    with pytest.raises(ValueError):
+        pi.ModuleBindingObservation(source, "name", "store", pi.SourceSpan(other, 1))
+
+
+# --------------------------------------------------------------------------- #
 # ParseContext ownership — exactly ONE immutable index per context
 # --------------------------------------------------------------------------- #
 
@@ -727,7 +787,8 @@ def test_every_record_family_is_populated(tmp_path):
                 z = y + 1
                 return self.proj(z)
     """)
-    assert idx.source_nodes and idx.modules and idx.imports and idx.classes
+    assert idx.source_nodes and idx.modules and idx.imports and idx.module_bindings
+    assert idx.classes
     assert idx.callables and idx.field_assigns and idx.construction_sites
     assert idx.identifiers
     assert idx.containers and idx.dispatch_registries and idx.calls

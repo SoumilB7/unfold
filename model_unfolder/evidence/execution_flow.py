@@ -40,6 +40,7 @@ from .program_index import (
     CallObservation,
     CallSiteId,
     ConstructionSite,
+    ExprNode,
     LoopObservation,
     ProgramIndex,
     SourceSpan,
@@ -93,6 +94,8 @@ class RepeatedInvocationTemplate:
     element_template: ConstructionSite
     call: CallObservation       # the authoritative call observation (round-trip)
     loop: LoopObservation       # the authoritative loop observation (round-trip)
+    element_target: ExprNode    # exact loop target receiving a container element
+    iteration_kind: str         # direct | sliced | enumerated | enumerated_sliced
     guard: tuple
 
     def __post_init__(self) -> None:
@@ -106,23 +109,31 @@ class RepeatedInvocationTemplate:
             raise TypeError("a repeated invocation carries its CallObservation")
         if not isinstance(self.loop, LoopObservation):
             raise TypeError("a repeated invocation round-trips to its LoopObservation")
+        if not isinstance(self.element_target, ExprNode):
+            raise TypeError("a repeated invocation carries its exact element target")
+        if self.iteration_kind not in {
+                "direct", "sliced", "enumerated", "enumerated_sliced"}:
+            raise ValueError(f"unknown iteration kind {self.iteration_kind!r}")
         if self.call.span is None or self.call_site != CallSiteId.of(self.call):
             raise ValueError("the call site must be CallSiteId.of(call)")
         if self.guard != self.call.guard:
             raise ValueError("the template guard is the authoritative call guard")
         if self.loop.enclosing_callable != self.call_site.enclosing_callable:
             raise ValueError("the loop and call site share the enclosing callable")
-        if self.loop.kind != "for" or self.loop.target is None \
-                or self.loop.target.kind != "name":
-            raise ValueError("a repeated invocation cites a simple-name for-loop")
+        shape = _iteration_shape(self.loop)
+        if shape is None:
+            raise ValueError("a repeated invocation cites a supported exact iteration shape")
+        kind, field, target = shape
+        if self.iteration_kind != kind or self.element_target != target:
+            raise ValueError("iteration kind/target round-trip to the authoritative loop")
         if self.call.callee.kind != "name" \
-                or self.call.callee.name != self.loop.target.name:
+                or self.call.callee.name != self.element_target.name:
             raise ValueError("the call is made through the cited loop target")
         if self.loop.body_span is None or not _within(self.call.span, self.loop.body_span):
             raise ValueError("the repeated call lies inside the cited loop body")
         if not _is_prefix(self.loop.guard, self.guard):
             raise ValueError("the call guard descends from the cited loop guard")
-        if _self_field(self.loop.iterable) != self.container.field:
+        if field != self.container.field:
             raise ValueError("the loop iterable is the cited container field")
         if self.container.owner_occurrence != self.caller_occurrence:
             raise ValueError("the cited container is owned by the caller occurrence")
@@ -269,14 +280,14 @@ def resolve_addressed_invocations(index: ProgramIndex,
     templates: list = []
     unresolved: list = []
     for call in index.calls_in(callable_symbol):
-        _classify(CallSiteId.of(call), call, node, owner_occurrence, loops,
+        _classify(index, CallSiteId.of(call), call, node, owner_occurrence, loops,
                   container_by_field, addressed, templates, unresolved)
     return InvocationResolution(
         "resolved", owner_occurrence, owner_symbol, callable_symbol, tuple(census),
         tuple(addressed), tuple(templates), tuple(unresolved))
 
 
-def _classify(site, call, node, owner_occurrence, loops, container_by_field,
+def _classify(index, site, call, node, owner_occurrence, loops, container_by_field,
               addressed, templates, unresolved) -> None:
     callee = call.callee
     guard = call.guard
@@ -309,9 +320,10 @@ def _classify(site, call, node, owner_occurrence, loops, container_by_field,
 
     name = callee.name if callee.kind == "name" else None
     if name is not None:
-        loop = _enclosing_loop(loops, call, name)
-        if loop is not None:
-            container = _loop_container(loop, container_by_field)
+        binding = _enclosing_iteration(index, loops, call, name)
+        if binding is not None:
+            loop, iteration_kind, field, element_target = binding
+            container = container_by_field.get(field)
             if container is None:
                 unresolved.append(UnresolvedInvocation(
                     site, owner_occurrence, "loop_iterable_not_a_cited_container", call, guard))
@@ -323,7 +335,8 @@ def _classify(site, call, node, owner_occurrence, loops, container_by_field,
                     call, guard, tuple(container.element_sites)))
                 return
             templates.append(RepeatedInvocationTemplate(
-                site, owner_occurrence, container, element, call, loop, guard))
+                site, owner_occurrence, container, element, call, loop,
+                element_target, iteration_kind, guard))
             return
         unresolved.append(UnresolvedInvocation(
             site, owner_occurrence, "local_or_free_name_call", call, guard))
@@ -360,32 +373,102 @@ def _indexed_self_field(callee):
     return None
 
 
-def _enclosing_loop(loops, call, name):
-    """The exact loop that binds ``name`` at this call: a for-loop whose BODY SPAN
-    contains the call and whose guard prefixes the call's guard, with matching loop
-    target.  When nested loops shadow, the INNERMOST (smallest body span) binds; an
-    unresolvable tie yields None (never a spelling guess)."""
-    cands = [loop for loop in loops
-             if loop.kind == "for" and loop.target is not None
-             and loop.target.kind == "name" and loop.target.name == name
-             and loop.body_span is not None and call.span is not None
-             and _within(call.span, loop.body_span)
-             and _is_prefix(loop.guard, call.guard)]
+def _enclosing_iteration(index, loops, call, name):
+    """Return the exact loop/iteration binding for the call target.
+
+    Body span + guard select the lexical binder.  Direct/sliced container
+    iteration is structural.  ``enumerate`` is accepted only when the ProgramIndex
+    proves the unqualified name is not shadowed in either lexical scope.
+    """
+    cands = []
+    for loop in loops:
+        shape = _iteration_shape(loop)
+        if shape is None:
+            continue
+        kind, field, target = shape
+        if target.kind != "name" or target.name != name:
+            continue
+        if kind.startswith("enumerated") and not _unshadowed_builtin(
+                index, loop.enclosing_callable, "enumerate"):
+            continue
+        if (loop.body_span is not None and call.span is not None
+                and _within(call.span, loop.body_span)
+                and _is_prefix(loop.guard, call.guard)):
+            cands.append((loop, kind, field, target))
     if not cands:
         return None
-    smallest = min(_span_size(loop.body_span) for loop in cands)
-    innermost = [loop for loop in cands if _span_size(loop.body_span) == smallest]
+    smallest = min(_span_size(item[0].body_span) for item in cands)
+    innermost = [item for item in cands
+                 if _span_size(item[0].body_span) == smallest]
     return innermost[0] if len(innermost) == 1 else None
 
 
-def _loop_container(loop, container_by_field) -> ContainerAddress | None:
-    iterable = loop.iterable
-    if iterable is None or iterable.kind != "attribute":
+def _iteration_shape(loop):
+    """Structural ``(kind, self-field, element-target)`` for bounded Python
+    iteration forms.  Lexical proof that ``enumerate`` is the builtin is separate.
+    """
+    if loop.kind != "for" or loop.target is None or loop.iterable is None:
         return None
+    iterable = loop.iterable
+    enumerated = False
+    if iterable.kind == "call":
+        if (len(iterable.children) not in {2, 3}
+                or iterable.keyword_children
+                or iterable.children[0] is None
+                or iterable.children[0].kind != "name"
+                or iterable.children[0].name != "enumerate"):
+            return None
+        iterable = iterable.children[1]
+        enumerated = True
+
+    sliced = False
+    if iterable.kind == "subscript":
+        if (len(iterable.children) != 2 or iterable.children[0] is None
+                or iterable.children[1] is None
+                or iterable.children[1].kind != "slice"):
+            return None
+        iterable = iterable.children[0]
+        sliced = True
+
     field = _self_field(iterable)
     if field is None:
         return None
-    return container_by_field.get(field)
+
+    if enumerated:
+        if loop.target.kind not in {"tuple", "list"} \
+                or len(loop.target.children) != 2:
+            return None
+        target = loop.target.children[1]
+        if target is None or target.kind != "name":
+            return None
+        kind = "enumerated_sliced" if sliced else "enumerated"
+    else:
+        target = loop.target
+        if target.kind != "name":
+            return None
+        kind = "sliced" if sliced else "direct"
+    return kind, field, target
+
+
+def _unshadowed_builtin(index, callable_symbol, name) -> bool:
+    """Positive lexical proof that an unqualified builtin name is unshadowed.
+
+    The module binding census is produced by ProgramIndex from the same AST.
+    Callable parameters/stores/dels are exact identifier observations.  `try`
+    exception targets and `match` pattern captures are string-backed AST fields,
+    so those constructs conservatively prevent the proof.
+    """
+    module_bindings = index.module_bindings_in(callable_symbol.source)
+    if any(binding.name in {name, "*"} for binding in module_bindings):
+        return False
+    if any(identifier.name == name
+           and identifier.context in {"parameter", "store", "del"}
+           for identifier in index.identifiers_in(callable_symbol)):
+        return False
+    if any(region.construct_kind in {"try", "match"}
+           for region in index.unsupported_execution_in(callable_symbol)):
+        return False
+    return True
 
 
 def _unique_element_template(container) -> ConstructionSite | None:
