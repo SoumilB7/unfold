@@ -110,7 +110,8 @@ class Ambiguity:
             raise TypeError("ambiguity conflicts must be ConflictRecord instances")
 
     def is_empty(self) -> bool:
-        return not (self.rival_owner_chains or self.rival_config_prefixes)
+        return not (self.rival_owner_chains or self.rival_config_prefixes
+                    or self.sites or self.conflicts)
 
 
 class ReaderValueUnavailable(RuntimeError):

@@ -109,6 +109,13 @@ def test_ambiguous_carries_exact_rivals_and_no_value():
         result.require_value()
 
 
+def test_ambiguity_can_be_proven_by_exact_rival_sites_without_owner_guessing():
+    ambiguity = Ambiguity(sites=(_span(10), _span(20)))
+    result = ReaderResult.ambiguous(_owner(), ambiguity)
+    assert result.status == "ambiguous"
+    assert result.ambiguity.sites == (_span(10), _span(20))
+
+
 @pytest.mark.parametrize("status", ["maybe", "proven", "unknown"])
 def test_unknown_status_rejected(status):
     with pytest.raises(ValueError):
