@@ -583,6 +583,184 @@ class DataflowObservation:
 
 
 # --------------------------------------------------------------------------- #
+# Execution-flow observations (U3-A2 kernel) — NEUTRAL SYNTAX ONLY.
+# These records add exact statement/binding/loop/return/transfer identities so a
+# LATER resolver can prove def-use and happens-before OUTSIDE the index.  The index
+# itself NEVER emits SSA versions, architectural roles, resolved module owners,
+# happens-before edges, "layer stack" labels, or semantic callee classifications.
+# --------------------------------------------------------------------------- #
+
+@dataclass(frozen=True)
+class StatementId:
+    """Exact identity of one statement: enclosing callable + exact span + a
+    same-span ordinal (two statements sharing a start position are disambiguated,
+    mirroring :class:`ConstructionSiteId`)."""
+
+    enclosing_callable: SymbolId
+    span: SourceSpan
+    ordinal: int = 0
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a statement id is qualified by its enclosing callable")
+        if self.span is None:
+            raise ValueError("a statement id carries an exact span")
+        if self.span.source != self.enclosing_callable.source:
+            raise ValueError("a statement lives in its callable's source")
+        if self.ordinal < 0:
+            raise ValueError("a statement ordinal is non-negative")
+
+
+@dataclass(frozen=True)
+class CallSiteId:
+    """Exact identity of one call site, DERIVED from a :class:`CallObservation`
+    (enclosing callable + the call's exact span + its existing lexical order).  It
+    does not re-walk calls; use :meth:`of`."""
+
+    enclosing_callable: SymbolId
+    span: SourceSpan
+    lexical_order: int
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a call-site id is qualified by its enclosing callable")
+        if self.span is None:
+            raise ValueError("a call-site id carries the call's exact span")
+        if self.span.source != self.enclosing_callable.source:
+            raise ValueError("a call site lives in its callable's source")
+        if self.lexical_order < 0:
+            raise ValueError("a lexical order is non-negative")
+
+    @classmethod
+    def of(cls, call: "CallObservation") -> "CallSiteId":
+        if not isinstance(call, CallObservation):
+            raise TypeError("CallSiteId.of requires a CallObservation")
+        if call.span is None:
+            raise ValueError("the call observation carries no span")
+        return cls(call.enclosing_callable, call.span, call.lexical_order)
+
+
+@dataclass(frozen=True)
+class BindingObservation:
+    """One assignment as RAW SYNTAX (no SSA / no versioning): the exact target
+    pattern(s) (a chained assignment keeps every target; destructuring is preserved
+    structurally), the value expression, the assignment kind and the guard path."""
+
+    owner: SymbolId | None
+    enclosing_callable: SymbolId
+    statement: StatementId
+    targets: tuple               # tuple[ExprNode] — exact target patterns
+    value: ExprNode | None       # None only for a bare AnnAssign (`x: int`)
+    assignment_kind: str         # assign | annassign | augassign | walrus
+    guard: tuple = ()            # tuple[GuardStep]
+    span: SourceSpan | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a binding is qualified by its enclosing callable")
+        if not isinstance(self.statement, StatementId):
+            raise TypeError("a binding carries its StatementId")
+        if self.statement.enclosing_callable != self.enclosing_callable:
+            raise ValueError("a binding's statement shares its enclosing callable")
+        if not self.targets:
+            raise ValueError("a binding carries >=1 exact target pattern")
+        if self.assignment_kind not in {"assign", "annassign", "augassign", "walrus"}:
+            raise ValueError(f"unknown assignment kind {self.assignment_kind!r}")
+
+
+@dataclass(frozen=True)
+class LoopObservation:
+    """One loop as raw syntax: the target pattern + iterable (a ``for``/async-for),
+    or the test as ``iterable`` (a ``while``), plus guard path, body/else spans and
+    the async flag.  Never a claim that the loop body runs — order is proven
+    later."""
+
+    owner: SymbolId | None
+    enclosing_callable: SymbolId
+    statement: StatementId
+    kind: str                    # for | while
+    target: ExprNode | None      # loop target pattern (for); None for while
+    iterable: ExprNode | None    # iterable (for) / test (while)
+    async_flag: bool = False
+    guard: tuple = ()
+    body_span: SourceSpan | None = None
+    else_span: SourceSpan | None = None
+    span: SourceSpan | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a loop is qualified by its enclosing callable")
+        if not isinstance(self.statement, StatementId):
+            raise TypeError("a loop carries its StatementId")
+        if self.statement.enclosing_callable != self.enclosing_callable:
+            raise ValueError("a loop's statement shares its enclosing callable")
+        if self.kind not in {"for", "while"}:
+            raise ValueError(f"unknown loop kind {self.kind!r}")
+        if self.kind == "for" and self.target is None:
+            raise ValueError("a for-loop carries an exact target pattern")
+
+
+@dataclass(frozen=True)
+class ReturnObservation:
+    """One ``return`` statement: the value expression (or None) and the guard
+    path."""
+
+    owner: SymbolId | None
+    enclosing_callable: SymbolId
+    statement: StatementId
+    value: ExprNode | None
+    guard: tuple = ()
+    span: SourceSpan | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a return is qualified by its enclosing callable")
+        if not isinstance(self.statement, StatementId):
+            raise TypeError("a return carries its StatementId")
+        if self.statement.enclosing_callable != self.enclosing_callable:
+            raise ValueError("a return's statement shares its enclosing callable")
+
+
+@dataclass(frozen=True)
+class ControlTransferObservation:
+    """One control-transfer point that can break straight-line ordering:
+    ``return`` | ``break`` | ``continue`` | ``raise`` | ``yield`` | ``yield_from``.
+    (yield/yield_from are expressions; the rest are statements.)"""
+
+    kind: str
+    enclosing_callable: SymbolId
+    guard: tuple = ()
+    value: ExprNode | None = None
+    span: SourceSpan | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("a control transfer is qualified by its enclosing callable")
+        if self.kind not in {"return", "break", "continue", "raise", "yield", "yield_from"}:
+            raise ValueError(f"unknown control-transfer kind {self.kind!r}")
+
+
+@dataclass(frozen=True)
+class UnsupportedExecutionRegion:
+    """An execution construct NOT classified by the records above (match/case,
+    with/async-with, try, await, dynamic dispatch, comprehension-built calls, ...).
+    Making it VISIBLE is what lets a later resolver prove NEGATIVE completeness
+    instead of silently assuming full coverage."""
+
+    enclosing_callable: SymbolId
+    construct_kind: str
+    guard: tuple = ()
+    span: SourceSpan | None = None
+    reason: str = ""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError("an unsupported region is qualified by its enclosing callable")
+        if not self.construct_kind:
+            raise ValueError("an unsupported region names its construct kind")
+
+
+# --------------------------------------------------------------------------- #
 # Conflicts — emitted by the U3-B resolver, NOT the walker
 # --------------------------------------------------------------------------- #
 
@@ -618,6 +796,9 @@ __all__ = [
     # behavioural observations
     "CallObservation", "AttributeAccessRecord", "ConfigSegment",
     "ConfigPathObservation", "ControlRecord", "DataflowObservation",
+    # execution-flow observations (U3-A2 kernel)
+    "StatementId", "CallSiteId", "BindingObservation", "LoopObservation",
+    "ReturnObservation", "ControlTransferObservation", "UnsupportedExecutionRegion",
     # resolver-only
     "ConflictRecord",
     # assembly
@@ -654,6 +835,10 @@ _NORMALIZED_EXPR_NODES = (
     ast.DictComp, ast.Starred, ast.Lambda, ast.JoinedStr,
 )
 _IDENTIFIER_COVERED_EXPR_NODES = _NORMALIZED_EXPR_NODES + (ast.FormattedValue,)
+_MATCH = getattr(ast, "Match", None)   # structural pattern matching (py>=3.10)
+# statements that never affect submodule execution ordering; everything else that
+# reaches the _stmt fallback is flagged unsupported (closed-world default).
+_BENIGN_STATEMENTS = (ast.Pass, ast.Import, ast.ImportFrom, ast.Global, ast.Nonlocal)
 
 
 def _op_token(op) -> str:
@@ -836,6 +1021,13 @@ class _SourceWalker:
         self.controls: list = []
         self.dataflow: list = []
         self.unsupported: list = []
+        # execution-flow observations (U3-A2 kernel)
+        self.bindings: list = []
+        self.loops: list = []
+        self.return_obs: list = []
+        self.transfers: list = []
+        self.unsupported_exec: list = []
+        self._stmt_ordinals: dict = {}
         # pass-1 tables
         self._local_classes: set = set()          # qualified names defined here
         self._registry_values: dict = {}          # registry name -> tuple[ExprNode]
@@ -978,6 +1170,13 @@ class _SourceWalker:
         for stmt in stmts:
             self._stmt(stmt, guard, scan)
 
+    def _statement_id(self, stmt, scan: _CallableScan) -> "StatementId":
+        span = self._span(stmt)
+        key = (scan.enclosing.qualified_name, span.line, span.col)
+        ordinal = self._stmt_ordinals.get(key, 0)
+        self._stmt_ordinals[key] = ordinal + 1
+        return StatementId(scan.enclosing, span, ordinal)
+
     def _stmt(self, stmt, guard: tuple, scan: _CallableScan) -> None:
         if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)):
             self._callable(stmt, owner=None, scope=scan.enclosing.qualified_name)
@@ -994,8 +1193,18 @@ class _SourceWalker:
                 scan.owner, scan.enclosing, self._expr(stmt.value),
                 self._expr(stmt.target), f"aug:{_op_token(stmt.op)}",
                 self._span(stmt)))
+            self.bindings.append(BindingObservation(
+                scan.owner, scan.enclosing, self._statement_id(stmt, scan),
+                (self._expr(stmt.target),), self._expr(stmt.value), "augassign",
+                guard, self._span(stmt)))
             return
         if isinstance(stmt, ast.Return):
+            sid = self._statement_id(stmt, scan)
+            value_expr = self._expr(stmt.value) if stmt.value is not None else None
+            self.return_obs.append(ReturnObservation(
+                scan.owner, scan.enclosing, sid, value_expr, guard, self._span(stmt)))
+            self.transfers.append(ControlTransferObservation(
+                "return", scan.enclosing, guard, value_expr, self._span(stmt)))
             if stmt.value is not None:
                 scan.returns.append(self._expr(stmt.value))
                 # a helper that RETURNS a provable construction is a site
@@ -1030,6 +1239,12 @@ class _SourceWalker:
             self.controls.append(ControlRecord(
                 scan.owner, scan.enclosing, "for", self._expr(stmt.iter),
                 self._span(stmt)))
+            self.loops.append(LoopObservation(
+                scan.owner, scan.enclosing, self._statement_id(stmt, scan), "for",
+                self._expr(stmt.target), self._expr(stmt.iter),
+                isinstance(stmt, ast.AsyncFor), guard,
+                self._body_span(stmt.body), self._body_span(stmt.orelse),
+                self._span(stmt)))
             self._walk_expr(stmt.iter, guard, scan)
             loop_guard = guard + (GuardStep("for", self._expr(stmt.iter),
                                             self._span(stmt)),)
@@ -1040,6 +1255,11 @@ class _SourceWalker:
             self.controls.append(ControlRecord(
                 scan.owner, scan.enclosing, "while", self._expr(stmt.test),
                 self._span(stmt)))
+            self.loops.append(LoopObservation(
+                scan.owner, scan.enclosing, self._statement_id(stmt, scan), "while",
+                None, self._expr(stmt.test), False, guard,
+                self._body_span(stmt.body), self._body_span(stmt.orelse),
+                self._span(stmt)))
             self._walk_expr(stmt.test, guard, scan)
             loop_guard = guard + (GuardStep("while", self._expr(stmt.test),
                                             self._span(stmt)),)
@@ -1047,24 +1267,75 @@ class _SourceWalker:
             self._visit_stmts(stmt.orelse, guard, scan)
             return
         if isinstance(stmt, (ast.With, ast.AsyncWith)):
+            kind = "async_with" if isinstance(stmt, ast.AsyncWith) else "with"
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, kind, guard, self._span(stmt),
+                "context-manager execution semantics are not modelled"))
             for item in stmt.items:
                 self._walk_expr(item.context_expr, guard, scan)
             self._visit_stmts(stmt.body, guard, scan)
             return
         if isinstance(stmt, ast.Try):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "try", guard, self._span(stmt),
+                "exception control flow is not modelled"))
             self._visit_stmts(stmt.body, guard, scan)
             for handler in stmt.handlers:
                 self._visit_stmts(handler.body, guard, scan)
             self._visit_stmts(stmt.orelse, guard, scan)
             self._visit_stmts(stmt.finalbody, guard, scan)
             return
+        if isinstance(stmt, ast.Raise):
+            self.transfers.append(ControlTransferObservation(
+                "raise", scan.enclosing, guard,
+                self._expr(stmt.exc) if stmt.exc is not None else None,
+                self._span(stmt)))
+            for child in ast.iter_child_nodes(stmt):
+                if isinstance(child, ast.expr):
+                    self._walk_expr(child, guard, scan)
+            return
+        if isinstance(stmt, ast.Break):
+            self.transfers.append(ControlTransferObservation(
+                "break", scan.enclosing, guard, None, self._span(stmt)))
+            return
+        if isinstance(stmt, ast.Continue):
+            self.transfers.append(ControlTransferObservation(
+                "continue", scan.enclosing, guard, None, self._span(stmt)))
+            return
+        if _MATCH is not None and isinstance(stmt, _MATCH):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "match", guard, self._span(stmt),
+                "structural pattern matching is not modelled"))
+            self._walk_expr(stmt.subject, guard, scan)
+            for case in stmt.cases:
+                self._visit_stmts(case.body, guard, scan)
+            return
         if isinstance(stmt, ast.Expr):
             self._walk_expr(stmt.value, guard, scan)
             return
-        # any other statement: still sweep contained expressions for calls/reads
+        # any other statement: closed-world default — an UNKNOWN/unmodelled statement
+        # form (incl. future AST kinds) is made VISIBLE as unsupported, then its
+        # contained expressions are still swept for calls/reads.
+        if not isinstance(stmt, _BENIGN_STATEMENTS):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "unknown_statement", guard, self._span(stmt),
+                type(stmt).__name__))
         for child in ast.iter_child_nodes(stmt):
             if isinstance(child, ast.expr):
                 self._walk_expr(child, guard, scan)
+
+    @staticmethod
+    def _has_call(node) -> bool:
+        return any(isinstance(n, ast.Call) for n in ast.walk(node))
+
+    def _body_span(self, body) -> "SourceSpan | None":
+        if not body:
+            return None
+        first, last = body[0], body[-1]
+        start = self._span(first)
+        end = self._span(last)
+        return SourceSpan(start.source, start.line, start.col,
+                          end.end_line or end.line, end.end_col or end.col)
 
     def _assign(self, stmt, guard: tuple, scan: _CallableScan) -> None:
         value = stmt.value
@@ -1081,6 +1352,12 @@ class _SourceWalker:
                 self.attrs.append(AttributeAccessRecord(
                     scan.owner, scan.enclosing, self._expr(tgt), "write",
                     self._span(tgt)))
+        # neutral binding observation: exact target pattern(s) + value, no SSA.
+        self.bindings.append(BindingObservation(
+            scan.owner, scan.enclosing, self._statement_id(stmt, scan),
+            tuple(self._expr(tgt) for tgt in targets), self._expr(value),
+            "assign" if isinstance(stmt, ast.Assign) else "annassign",
+            guard, self._span(stmt)))
         # self.<field> = ... : field assign + construction / container
         field_name = self._self_field(targets)
         if field_name is not None and scan.owner is not None:
@@ -1222,6 +1499,50 @@ class _SourceWalker:
     def _walk_expr(self, node, guard: tuple, scan: _CallableScan) -> None:
         if node is None:
             return
+        # execution-flow expression observations (yield / yield from / await /
+        # walrus) — neutral syntax, recorded then swept normally.
+        if isinstance(node, ast.Yield):
+            self.transfers.append(ControlTransferObservation(
+                "yield", scan.enclosing, guard,
+                self._expr(node.value) if node.value is not None else None,
+                self._span(node)))
+        elif isinstance(node, ast.YieldFrom):
+            self.transfers.append(ControlTransferObservation(
+                "yield_from", scan.enclosing, guard, self._expr(node.value),
+                self._span(node)))
+        elif isinstance(node, ast.Await):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "await", guard, self._span(node),
+                "await suspension is not modelled"))
+        elif isinstance(node, ast.NamedExpr):
+            self.bindings.append(BindingObservation(
+                scan.owner, scan.enclosing, self._statement_id(node, scan),
+                (self._expr(node.target),), self._expr(node.value), "walrus",
+                guard, self._span(node)))
+        # closed-world coverage: executable value forms that carry or defer a call
+        # and are NOT explicitly modelled are made VISIBLE as unsupported regions,
+        # so a completeness certificate cannot silently assume full coverage.
+        if isinstance(node, ast.IfExp) and self._has_call(node):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "ifexp", guard, self._span(node),
+                "conditional expression carries a call"))
+        elif isinstance(node, ast.BoolOp) and self._has_call(node):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "boolop", guard, self._span(node),
+                "short-circuit boolean carries a call"))
+        elif isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp,
+                               ast.GeneratorExp)) and self._has_call(node):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "comprehension", guard, self._span(node),
+                "comprehension iteration carries a call"))
+        elif isinstance(node, ast.Lambda):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "lambda", guard, self._span(node),
+                "lambda defers execution"))
+        elif isinstance(node, ast.Compare) and len(node.ops) > 1 and self._has_call(node):
+            self.unsupported_exec.append(UnsupportedExecutionRegion(
+                scan.enclosing, "chained_comparison", guard, self._span(node),
+                "chained comparison carries a call"))
         # activation-dispatch subscript: ACT2FN[config.hidden_act]
         if isinstance(node, ast.Subscript) and isinstance(node.value, ast.Name) \
                 and node.value.id in self._act_dispatch:
@@ -1473,6 +1794,11 @@ class ProgramIndex:
     controls: tuple = ()
     dataflow: tuple = ()
     unsupported_syntax: tuple = ()
+    bindings: tuple = ()
+    loops: tuple = ()
+    return_observations: tuple = ()
+    control_transfers: tuple = ()
+    unsupported_execution: tuple = ()
     parse_failures: tuple = ()
     fingerprint: str = ""
 
@@ -1533,6 +1859,35 @@ class ProgramIndex:
         return tuple(c for c in self.config_paths
                      if c.enclosing_callable == callable_symbol)
 
+    # -- execution-flow query surface (address-only) ----------------------- #
+
+    def call_sites_in(self, callable_symbol: SymbolId) -> tuple:
+        """CallSiteIds for one callable, derived from CallObservations in lexical
+        order — no re-walk of calls."""
+        if not isinstance(callable_symbol, SymbolId):
+            raise TypeError("call_sites_in requires a SymbolId")
+        return tuple(CallSiteId.of(c) for c in self.calls_in(callable_symbol))
+
+    def bindings_in(self, callable_symbol: SymbolId) -> tuple:
+        return tuple(b for b in self.bindings
+                     if b.enclosing_callable == callable_symbol)
+
+    def loops_in(self, callable_symbol: SymbolId) -> tuple:
+        return tuple(loop for loop in self.loops
+                     if loop.enclosing_callable == callable_symbol)
+
+    def return_observations_in(self, callable_symbol: SymbolId) -> tuple:
+        return tuple(r for r in self.return_observations
+                     if r.enclosing_callable == callable_symbol)
+
+    def control_transfers_in(self, callable_symbol: SymbolId) -> tuple:
+        return tuple(t for t in self.control_transfers
+                     if t.enclosing_callable == callable_symbol)
+
+    def unsupported_execution_in(self, callable_symbol: SymbolId) -> tuple:
+        return tuple(u for u in self.unsupported_execution
+                     if u.enclosing_callable == callable_symbol)
+
 
 def _aggregate_fingerprint(source_ids) -> str:
     """Canonical, order-independent digest over source IDENTITY (path +
@@ -1590,7 +1945,8 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         "modules", "imports", "classes", "callables", "identifiers",
         "field_assigns", "sites",
         "containers", "registries", "calls", "attrs", "configs", "controls",
-        "dataflow", "unsupported")}
+        "dataflow", "unsupported",
+        "bindings", "loops", "returns", "transfers", "unsupported_exec")}
 
     for component in sorted(component_files):
         for raw_path in component_files[component]:
@@ -1642,6 +1998,11 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
             out["controls"].extend(walker.controls)
             out["dataflow"].extend(walker.dataflow)
             out["unsupported"].extend(walker.unsupported)
+            out["bindings"].extend(walker.bindings)
+            out["loops"].extend(walker.loops)
+            out["returns"].extend(walker.return_obs)
+            out["transfers"].extend(walker.transfers)
+            out["unsupported_exec"].extend(walker.unsupported_exec)
 
     for ext in external_nodes:
         if not isinstance(ext, SourceFileNode):
@@ -1669,6 +2030,11 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         controls=tuple(out["controls"]),
         dataflow=tuple(out["dataflow"]),
         unsupported_syntax=tuple(out["unsupported"]),
+        bindings=tuple(out["bindings"]),
+        loops=tuple(out["loops"]),
+        return_observations=tuple(out["returns"]),
+        control_transfers=tuple(out["transfers"]),
+        unsupported_execution=tuple(out["unsupported_exec"]),
         parse_failures=tuple(parse_failures),
         fingerprint=_aggregate_fingerprint(agg_ids),
     )
