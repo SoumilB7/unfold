@@ -7,6 +7,7 @@ a loop; ModuleDict/ModuleList/Sequential execution stays unresolved.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 import textwrap
 
 import pytest
@@ -395,3 +396,48 @@ def test_forged_unresolved_caller_is_rejected():
     wrong = CallSiteId(fn, SourceSpan(fn.source, 9), 0)
     with pytest.raises(ValueError):
         UnresolvedInvocation(wrong, _occ(), "reason", call, ())
+
+
+def test_unresolved_sibling_owner_cannot_enter_resolution():
+    fn = SymbolId(SourceId("/m.py", "fp", component_key="root"), "BaseModel.forward")
+    site = CallSiteId(fn, SourceSpan(fn.source, 1), 0)
+    call = CallObservation(None, fn, 0, ExprNode(kind="name", name="f"), None,
+                           (), (), (), SourceSpan(fn.source, 1))
+    owner = _occ("BaseModel")
+    sibling = _occ("Sibling")
+    unresolved = UnresolvedInvocation(site, sibling, "reason", call, call.guard)
+    with pytest.raises(ValueError):
+        InvocationResolution(
+            "resolved", owner, owner.root, fn, (site,), unresolved=(unresolved,))
+
+
+def test_invocation_guard_must_equal_authoritative_call_guard():
+    fn = SymbolId(SourceId("/m.py", "fp", component_key="root"), "BaseModel.forward")
+    span = SourceSpan(fn.source, 1)
+    site = CallSiteId(fn, span, 0)
+    call = CallObservation(None, fn, 0, ExprNode(kind="name", name="f"), None,
+                           (), (), (("actual",),), span)
+    with pytest.raises(ValueError):
+        UnresolvedInvocation(site, _occ(), "reason", call, (("forged",),))
+
+
+def test_failed_invocation_resolution_rejects_census_and_callable_payload():
+    owner = _occ()
+    fn = SymbolId(owner.root.source, "BaseModel.forward")
+    site = CallSiteId(fn, SourceSpan(fn.source, 1), 0)
+    with pytest.raises(ValueError):
+        InvocationResolution(
+            "failed", owner, owner.root, fn, (site,),
+            failure_kind="owner_not_in_graph")
+
+
+def test_repeated_template_round_trips_to_call_and_loop(tmp_path):
+    idx, cr, occ, inv, res = _pipeline(tmp_path, """
+            for layer in self.layers:
+                x = layer(x)
+            return x""")
+    (template,) = res.templates
+    assert template.call_site == CallSiteId.of(template.call)
+    assert template.guard == template.call.guard
+    with pytest.raises(ValueError):
+        replace(template, guard=())

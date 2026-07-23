@@ -274,6 +274,37 @@ def test_edge_and_resolution_closures():
         ExecutionFlowResolution("absent", occ, nodes=(n1,))
 
 
+def test_partial_flow_requires_owner_callable_and_rejects_failure_payload():
+    from model_unfolder.evidence.component_owner import OwnerOccurrenceId
+    owner = SymbolId(SourceId("/m.py", "fp", component_key="root"), "M")
+    occ = OwnerOccurrenceId(owner)
+    with pytest.raises(ValueError):
+        ExecutionFlowResolution("partial", occ)
+    with pytest.raises(ValueError):
+        ExecutionFlowResolution(
+            "partial", occ, owner, SymbolId(owner.source, "M.forward"),
+            failure_kind="index_mismatch")
+
+
+def test_failure_payload_is_closed_by_failure_kind():
+    from model_unfolder.evidence.component_owner import OwnerOccurrenceId
+    owner = SymbolId(SourceId("/m.py", "fp", component_key="root"), "M")
+    fn = SymbolId(owner.source, "M.forward")
+    occ = OwnerOccurrenceId(owner)
+    node = InvocationNodeId(CallSiteId(fn, SourceSpan(fn.source, 1), 0), "addressed")
+    with pytest.raises(ValueError):                       # unknown failure vocabulary
+        ExecutionFlowResolution("failed", occ, failure_kind="future_default")
+    with pytest.raises(ValueError):                       # pre-graph failure with graph payload
+        ExecutionFlowResolution(
+            "failed", occ, owner, fn, (node,), failure_kind="index_mismatch")
+    with pytest.raises(ValueError):                       # cycle failure without cycle context
+        ExecutionFlowResolution("failed", occ, failure_kind="cyclic_happens_before")
+    valid = ExecutionFlowResolution(
+        "failed", occ, owner, fn, (node,),
+        failure_kind="cyclic_happens_before")
+    assert valid.failure_kind == "cyclic_happens_before"
+
+
 # --------------------------------------------------------------------------- #
 # Round-6 poisons: conditional-source alias, direct call inside for/while
 # --------------------------------------------------------------------------- #

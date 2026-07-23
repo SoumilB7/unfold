@@ -44,6 +44,7 @@ from .program_index import (
     ProgramIndex,
     SourceSpan,
     SymbolId,
+    UnsupportedExecutionRegion,
 )
 
 
@@ -71,8 +72,14 @@ class AddressedInvocation:
             raise ValueError("a resolved callee owner is a non-empty child occurrence")
         if self.callee_owner_occurrence.root != self.caller_occurrence.root:
             raise ValueError("caller and callee occurrences share the requested root")
-        if self.call.span is not None and self.call_site != CallSiteId.of(self.call):
+        if not isinstance(self.call, CallObservation):
+            raise TypeError("an addressed invocation carries its CallObservation")
+        if self.call.span is None or self.call_site != CallSiteId.of(self.call):
             raise ValueError("the call site must be CallSiteId.of(call)")
+        if self.guard != self.call.guard:
+            raise ValueError("the invocation guard is the authoritative call guard")
+        if not self.provenance_spans or self.call.span not in self.provenance_spans:
+            raise ValueError("provenance cites the authoritative call span")
         for span in self.provenance_spans:
             if not isinstance(span, SourceSpan) or span.source != self.call_site.enclosing_callable.source:
                 raise ValueError("provenance spans are typed and source-consistent")
@@ -84,6 +91,7 @@ class RepeatedInvocationTemplate:
     caller_occurrence: OwnerOccurrenceId
     container: ContainerAddress
     element_template: ConstructionSite
+    call: CallObservation       # the authoritative call observation (round-trip)
     loop: LoopObservation       # the authoritative loop observation (round-trip)
     guard: tuple
 
@@ -92,10 +100,30 @@ class RepeatedInvocationTemplate:
             raise TypeError("a repeated invocation template carries its CallSiteId")
         if not isinstance(self.container, ContainerAddress):
             raise TypeError("a repeated invocation cites an exact ContainerAddress")
+        if not isinstance(self.caller_occurrence, OwnerOccurrenceId):
+            raise TypeError("the repeated invocation caller is owner-qualified")
+        if not isinstance(self.call, CallObservation):
+            raise TypeError("a repeated invocation carries its CallObservation")
         if not isinstance(self.loop, LoopObservation):
             raise TypeError("a repeated invocation round-trips to its LoopObservation")
+        if self.call.span is None or self.call_site != CallSiteId.of(self.call):
+            raise ValueError("the call site must be CallSiteId.of(call)")
+        if self.guard != self.call.guard:
+            raise ValueError("the template guard is the authoritative call guard")
         if self.loop.enclosing_callable != self.call_site.enclosing_callable:
             raise ValueError("the loop and call site share the enclosing callable")
+        if self.loop.kind != "for" or self.loop.target is None \
+                or self.loop.target.kind != "name":
+            raise ValueError("a repeated invocation cites a simple-name for-loop")
+        if self.call.callee.kind != "name" \
+                or self.call.callee.name != self.loop.target.name:
+            raise ValueError("the call is made through the cited loop target")
+        if self.loop.body_span is None or not _within(self.call.span, self.loop.body_span):
+            raise ValueError("the repeated call lies inside the cited loop body")
+        if not _is_prefix(self.loop.guard, self.guard):
+            raise ValueError("the call guard descends from the cited loop guard")
+        if _self_field(self.loop.iterable) != self.container.field:
+            raise ValueError("the loop iterable is the cited container field")
         if self.container.owner_occurrence != self.caller_occurrence:
             raise ValueError("the cited container is owned by the caller occurrence")
         if self.element_template not in self.container.element_sites:
@@ -103,6 +131,9 @@ class RepeatedInvocationTemplate:
         # the template must be THE unique proven element (never element_sites[0]).
         if len(self.container.element_sites) != 1:
             raise ValueError("a template resolves only a single-element (homogeneous) container")
+        if len(self.element_template.candidates) != 1 \
+                or self.element_template.candidates[0].symbol is None:
+            raise ValueError("the element template has one uniquely proven candidate")
 
 
 @dataclass(frozen=True)
@@ -121,8 +152,12 @@ class UnresolvedInvocation:
             raise TypeError("an unresolved caller is owner-qualified")
         if not self.reason:
             raise ValueError("an unresolved invocation names its reason")
-        if self.call.span is not None and self.call_site != CallSiteId.of(self.call):
+        if not isinstance(self.call, CallObservation):
+            raise TypeError("an unresolved invocation carries its CallObservation")
+        if self.call.span is None or self.call_site != CallSiteId.of(self.call):
             raise ValueError("the call site must be CallSiteId.of(call)")
+        if self.guard != self.call.guard:
+            raise ValueError("the unresolved guard is the authoritative call guard")
 
 
 @dataclass(frozen=True)
@@ -146,11 +181,22 @@ class InvocationResolution:
         if self.failure_detail and not self.failure_kind:
             raise ValueError("a failure detail requires a failure kind")
         for inv in self.addressed:
+            if not isinstance(inv, AddressedInvocation):
+                raise TypeError("addressed entries are AddressedInvocation values")
             if inv.caller_occurrence != self.owner_occurrence:
                 raise ValueError("every addressed invocation is called by the owner occurrence")
         for tmpl in self.templates:
+            if not isinstance(tmpl, RepeatedInvocationTemplate):
+                raise TypeError("template entries are RepeatedInvocationTemplate values")
             if tmpl.caller_occurrence != self.owner_occurrence:
                 raise ValueError("every template is called by the owner occurrence")
+        for unresolved in self.unresolved:
+            if not isinstance(unresolved, UnresolvedInvocation):
+                raise TypeError("unresolved entries are UnresolvedInvocation values")
+            if unresolved.caller_occurrence != self.owner_occurrence:
+                raise ValueError("every unresolved invocation is called by the owner occurrence")
+        if any(not isinstance(site, CallSiteId) for site in self.call_sites):
+            raise TypeError("the call-site census contains CallSiteId values")
         if len(self.call_sites) != len(set(self.call_sites)):
             raise ValueError("the call-site census is unique (no duplicate sites)")
         bucket = ([i.call_site for i in self.addressed]
@@ -166,17 +212,22 @@ class InvocationResolution:
                 raise ValueError("a resolved resolution names its owner + callable")
             if self.failure_kind:
                 raise ValueError("a resolved resolution carries no failure")
+            if any(site.enclosing_callable != self.callable_symbol for site in self.call_sites):
+                raise ValueError("every census site belongs to the resolved callable")
             if set(bucket) != set(self.call_sites) or len(bucket) != len(self.call_sites):
                 raise ValueError("addressed/template/unresolved must partition the call-site census exactly")
         elif self.status == "absent":
+            if self.owner_symbol is None:
+                raise ValueError("an absent resolution still names the resolved owner")
             if (self.addressed or self.templates or self.unresolved or self.failure_kind
-                    or self.call_sites or self.callable_symbol):
+                    or self.failure_detail or self.call_sites or self.callable_symbol):
                 raise ValueError("an absent resolution carries no call-site or graph payload")
         else:  # failed
-            if not self.failure_kind:
-                raise ValueError("a failed resolution carries a typed failure kind")
-            if self.addressed or self.templates or self.unresolved:
-                raise ValueError("a failed resolution carries no invocations")
+            if self.failure_kind not in {"owner_not_in_graph", "index_mismatch"}:
+                raise ValueError("a failed invocation resolution carries a known failure kind")
+            if (self.owner_symbol is not None or self.callable_symbol is not None
+                    or self.call_sites or self.addressed or self.templates or self.unresolved):
+                raise ValueError("a failed resolution carries no owner/call-site/graph payload")
 
 
 def resolve_addressed_invocations(index: ProgramIndex,
@@ -272,7 +323,7 @@ def _classify(site, call, node, owner_occurrence, loops, container_by_field,
                     call, guard, tuple(container.element_sites)))
                 return
             templates.append(RepeatedInvocationTemplate(
-                site, owner_occurrence, container, element, loop, guard))
+                site, owner_occurrence, container, element, call, loop, guard))
             return
         unresolved.append(UnresolvedInvocation(
             site, owner_occurrence, "local_or_free_name_call", call, guard))
@@ -474,18 +525,49 @@ class ExecutionFlowResolution:
         for rel in self.unresolved_relations:
             if rel.target not in node_set:
                 raise ValueError("an unresolved relation targets a graph node")
-        if self.status == "absent":
+        if self.status == "partial":
+            if self.owner_symbol is None or self.callable_symbol is None:
+                raise ValueError("a partial flow names its resolved owner and callable")
+            if self.failure_kind or self.failure_detail:
+                raise ValueError("a partial flow carries no failure payload")
+            for unresolved in self.unresolved_invocations:
+                if not isinstance(unresolved, UnresolvedInvocation):
+                    raise TypeError("unresolved invocations carry typed values")
+                if unresolved.caller_occurrence != self.owner_occurrence:
+                    raise ValueError("unresolved invocations belong to the flow owner")
+                if unresolved.call_site.enclosing_callable != self.callable_symbol:
+                    raise ValueError("unresolved invocations belong to the flow callable")
+            for region in self.unsupported_regions:
+                if not isinstance(region, UnsupportedExecutionRegion):
+                    raise TypeError("unsupported regions carry typed values")
+                if region.enclosing_callable != self.callable_symbol:
+                    raise ValueError("unsupported regions belong to the flow callable")
+            for loop in self.loops:
+                if not isinstance(loop, LoopObservation):
+                    raise TypeError("loop gaps carry LoopObservation values")
+                if loop.enclosing_callable != self.callable_symbol:
+                    raise ValueError("loop gaps belong to the flow callable")
+        elif self.status == "absent":
+            if self.owner_symbol is None:
+                raise ValueError("an absent flow still names the resolved owner")
             if (self.callable_symbol is not None or self.nodes or self.proven_edges
                     or self.conditional_edges or self.unresolved_relations
                     or self.unresolved_invocations or self.unsupported_regions
-                    or self.loops or self.failure_kind):
+                    or self.loops or self.failure_kind or self.failure_detail):
                 raise ValueError("an absent flow carries no call-site / graph / coverage payload")
-        elif self.status == "failed":
-            if not self.failure_kind:
-                raise ValueError("a failed flow carries a typed failure kind")
+        else:  # failed
+            if self.failure_kind not in {
+                    "owner_not_in_graph", "index_mismatch", "cyclic_happens_before"}:
+                raise ValueError("a failed flow carries a known failure kind")
             if (self.proven_edges or self.conditional_edges or self.unresolved_relations
                     or self.unresolved_invocations or self.unsupported_regions or self.loops):
                 raise ValueError("a failed flow carries no graph or coverage payload")
+            if self.failure_kind == "cyclic_happens_before":
+                if self.owner_symbol is None or self.callable_symbol is None or not self.nodes:
+                    raise ValueError("a cyclic failure carries its owner, callable and nodes")
+            elif (self.owner_symbol is not None or self.callable_symbol is not None
+                  or self.nodes):
+                raise ValueError("pre-graph failures carry no owner/callable/node payload")
 
 
 @dataclass(frozen=True)

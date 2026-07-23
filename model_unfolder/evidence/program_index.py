@@ -744,8 +744,8 @@ class ControlTransferObservation:
 class UnsupportedExecutionRegion:
     """An execution construct NOT classified by the records above (match/case,
     with/async-with, try, await, dynamic dispatch, comprehension-built calls, ...).
-    Making it VISIBLE is what lets a later resolver prove NEGATIVE completeness
-    instead of silently assuming full coverage."""
+    This is a published, explicitly non-exhaustive coverage gap.  Its absence is
+    never a whole-callable completeness proof."""
 
     enclosing_callable: SymbolId
     construct_kind: str
@@ -837,7 +837,7 @@ _NORMALIZED_EXPR_NODES = (
 _IDENTIFIER_COVERED_EXPR_NODES = _NORMALIZED_EXPR_NODES + (ast.FormattedValue,)
 _MATCH = getattr(ast, "Match", None)   # structural pattern matching (py>=3.10)
 # statements that never affect submodule execution ordering; everything else that
-# reaches the _stmt fallback is flagged unsupported (closed-world default).
+# reaches the _stmt fallback is published as an unsupported coverage gap.
 _BENIGN_STATEMENTS = (ast.Pass, ast.Import, ast.ImportFrom, ast.Global, ast.Nonlocal)
 
 
@@ -1313,9 +1313,9 @@ class _SourceWalker:
         if isinstance(stmt, ast.Expr):
             self._walk_expr(stmt.value, guard, scan)
             return
-        # any other statement: closed-world default — an UNKNOWN/unmodelled statement
-        # form (incl. future AST kinds) is made VISIBLE as unsupported, then its
-        # contained expressions are still swept for calls/reads.
+        # Any other statement is published as an UNKNOWN/unmodelled coverage gap,
+        # then its contained expressions are still swept for calls/reads.  This
+        # list is intentionally non-exhaustive and never proves completeness.
         if not isinstance(stmt, _BENIGN_STATEMENTS):
             self.unsupported_exec.append(UnsupportedExecutionRegion(
                 scan.enclosing, "unknown_statement", guard, self._span(stmt),
@@ -1519,9 +1519,9 @@ class _SourceWalker:
                 scan.owner, scan.enclosing, self._statement_id(node, scan),
                 (self._expr(node.target),), self._expr(node.value), "walrus",
                 guard, self._span(node)))
-        # closed-world coverage: executable value forms that carry or defer a call
-        # and are NOT explicitly modelled are made VISIBLE as unsupported regions,
-        # so a completeness certificate cannot silently assume full coverage.
+        # Publish known executable value forms that carry or defer a call as
+        # unsupported regions.  This list is deliberately non-exhaustive; absence
+        # of one of these records is never a completeness certificate.
         if isinstance(node, ast.IfExp) and self._has_call(node):
             self.unsupported_exec.append(UnsupportedExecutionRegion(
                 scan.enclosing, "ifexp", guard, self._span(node),

@@ -362,10 +362,12 @@ gallery changed anywhere in the chain.
       lower bound, never a zero.
 - [x] Phase 2 — neutral execution records in `program_index.py` (StatementId,
       CallSiteId, BindingObservation, LoopObservation, ReturnObservation,
-      ControlTransferObservation, UnsupportedExecutionRegion). Closed-world: every
-      unmodelled executable form (IfExp/BoolOp/comprehension/lambda/unknown
-      statement) surfaces as an UnsupportedExecutionRegion. No SSA / roles /
-      resolved owners / happens-before / layer-stack labels / semantic callee.
+      ControlTransferObservation, UnsupportedExecutionRegion). Known unmodelled
+      executable forms (IfExp/BoolOp/comprehension/lambda/unknown statement) are
+      published as `UnsupportedExecutionRegion` records, but the inventory is
+      deliberately non-exhaustive: absence of such a record never proves callable
+      completeness. No SSA / roles / resolved owners / happens-before /
+      layer-stack labels / semantic callee.
 - [x] Phase 3 — `execution_flow.py` addressed invocation resolver
       (AddressedInvocation / RepeatedInvocationTemplate / UnresolvedInvocation);
       consumes a resolved D0 + EXPLICIT owner + B2 inventory; never selects the
