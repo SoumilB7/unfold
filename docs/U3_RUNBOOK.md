@@ -348,3 +348,44 @@ for U3-D through U3-H are specified in
 `docs/U3_D_TO_H_EXECUTION_AND_VET_PLAN.md`. In particular, production migration
 must not begin until its U3-D0 component-root address boundary is present; the
 implementation agent may not invent a local root-class chooser.
+
+## U3 Execution-Substrate Campaign — status (held-unpushed commit chain)
+
+A boundary-only, no-production-consumer campaign. Held unpushed for one Codex
+campaign-level review. Nothing in parser/renderer/facts/IR/config/debt/manifest/
+gallery changed anywhere in the chain.
+
+- [x] Phase 0 — U3-B2 final closure (owner-symbol cross-index check + typo).
+- [x] Phase 1 — U3-A2 recon corrected + FROZEN with an occurrence-exact 26-witness
+      appendix (`docs/U3_A2_RECON.md`). Diffusion root is diffusion-adapter
+      authorized, never inferred from B1 failure; P11 is an exact set + labelled
+      lower bound, never a zero.
+- [x] Phase 2 — neutral execution records in `program_index.py` (StatementId,
+      CallSiteId, BindingObservation, LoopObservation, ReturnObservation,
+      ControlTransferObservation, UnsupportedExecutionRegion). Closed-world: every
+      unmodelled executable form (IfExp/BoolOp/comprehension/lambda/unknown
+      statement) surfaces as an UnsupportedExecutionRegion. No SSA / roles /
+      resolved owners / happens-before / layer-stack labels / semantic callee.
+- [x] Phase 3 — `execution_flow.py` addressed invocation resolver
+      (AddressedInvocation / RepeatedInvocationTemplate / UnresolvedInvocation);
+      consumes a resolved D0 + EXPLICIT owner + B2 inventory; never selects the
+      owner.
+- [x] Phase 4 — conservative versioned def-use execution-flow resolver
+      (InvocationNodeId / HappensBeforeEdge / ExecutionFlowResolution) + the
+      permanent adversarial matrix. An OPEN, conservative LOCAL-RELATION substrate:
+      NO resolved/complete status and NO closed-world coverage certificate (there
+      is no CFG coverage unit yet), so every callable result is `partial`. Local
+      proven/conditional edges are valid local relations; loops + unmodelled forms
+      are PUBLISHED as non-exhaustive coverage gaps. Unresolved is never "unordered";
+      cycles are a blocking failure; failed/ambiguous aliases are preserved as typed
+      unresolved state on the target.
+- [x] Phase 5 — corpus evaluation over 26 witnesses (no patching):
+      `docs/U3_EXECUTION_FLOW_CORPUS.md`. 26 partial (all open) · 3 proven edges ·
+      16 conditional · 7 templates — a local-relation lower bound, not a completeness
+      result. Do NOT migrate a reader requiring whole-callable completeness; a reader
+      needing a particular positively-proven local relation may be proposed
+      separately.
+
+No production migration begins until Codex approves the campaign. The order-graph
+resolver and `embedding_stage_norm` remain gated (embedding_stage_norm still needs
+a code-proven norm-kind classification in addition to this stage/order substrate).
