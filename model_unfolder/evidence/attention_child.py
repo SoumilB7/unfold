@@ -65,6 +65,8 @@ class AttentionComputeProof:
 
     child_symbol: SymbolId
     callable_symbol: SymbolId
+    entry_call: CallObservation
+    input_calls: tuple[CallObservation, ...]
     protocol: str               # scaled_dot_product_attention | dot_softmax
     spans: tuple[SourceSpan, ...]
 
@@ -73,6 +75,14 @@ class AttentionComputeProof:
             raise TypeError("an attention proof names its exact child symbol")
         if not isinstance(self.callable_symbol, SymbolId):
             raise TypeError("an attention proof names its exact callable")
+        if not isinstance(self.entry_call, CallObservation):
+            raise TypeError("an attention proof carries its exact child entry call")
+        if not self.input_calls or any(
+                not isinstance(call, CallObservation)
+                for call in self.input_calls):
+            raise TypeError("an attention proof carries exact input-bearing calls")
+        if len(set(self.input_calls)) != len(self.input_calls):
+            raise ValueError("attention input calls are unique")
         if self.protocol not in {
                 "scaled_dot_product_attention", "dot_softmax"}:
             raise ValueError(f"unknown attention-compute protocol {self.protocol!r}")
@@ -81,8 +91,19 @@ class AttentionComputeProof:
             raise ValueError("an attention proof carries exact source spans")
         if self.callable_symbol.source != self.child_symbol.source:
             raise ValueError("the compute callable and child share one source")
+        if self.entry_call.owner != self.child_symbol:
+            raise ValueError("the compute entry call belongs to the exact child")
+        if any(call.owner != self.child_symbol for call in self.input_calls):
+            raise ValueError("attention input calls belong to the exact child")
+        if self.entry_call.span is None \
+                or self.entry_call.span.source != self.child_symbol.source:
+            raise ValueError("the compute entry call has an exact child-source span")
         if any(span.source != self.callable_symbol.source for span in self.spans):
             raise ValueError("attention-compute spans belong to the callable source")
+        if self.entry_call.span not in self.spans:
+            raise ValueError("attention-compute provenance includes its entry call")
+        if any(call.span not in self.spans for call in self.input_calls):
+            raise ValueError("attention-compute provenance includes every input call")
 
 
 @dataclass(frozen=True)
@@ -208,11 +229,21 @@ def _attention_compute_proof(
     index: ProgramIndex,
     child_symbol: SymbolId,
 ) -> AttentionComputeProof | None:
-    for callable_symbol in _reachable_compute_callables(index, child_symbol):
+    for callable_symbol, entry_call in _reachable_compute_callables(
+            index, child_symbol):
         calls = index.calls_in(callable_symbol)
+        if entry_call is None:
+            # The child forward itself is the compute callable.  The earliest
+            # qualifying protocol call becomes the exact compute boundary.
+            candidate_entry = None
+        else:
+            candidate_entry = entry_call
         sdpa_spans: list[SourceSpan] = []
         softmax_spans: list[SourceSpan] = []
         dot_spans: list[SourceSpan] = []
+        sdpa_calls: list[CallObservation] = []
+        softmax_calls: list[CallObservation] = []
+        dot_calls: list[CallObservation] = []
         for call in calls:
             # A mechanism present only behind a branch does not classify the
             # child unconditionally.  Branch-equivalence is a separate proof;
@@ -222,39 +253,56 @@ def _attention_compute_proof(
             target, spans = _exact_call_target(index, call)
             if target in _SDPA_PROTOCOLS:
                 sdpa_spans.extend(spans)
+                sdpa_calls.append(call)
             elif target in _SOFTMAX_PROTOCOLS:
                 softmax_spans.extend(spans)
+                softmax_calls.append(call)
             elif target in _DOT_PROTOCOLS:
                 dot_spans.extend(spans)
+                dot_calls.append(call)
         for expression, guard in _callable_expressions(
                 index, callable_symbol):
             if not guard:
                 dot_spans.extend(_matmul_spans(expression))
         if sdpa_spans:
+            selected_entry = candidate_entry or min(
+                sdpa_calls, key=lambda item: item.lexical_order)
+            spans = tuple(dict.fromkeys(
+                (selected_entry.span, *sdpa_spans)))
+            input_calls = ((selected_entry,) if candidate_entry is not None
+                           else tuple(sdpa_calls))
             return AttentionComputeProof(
-                child_symbol, callable_symbol,
+                child_symbol, callable_symbol, selected_entry, input_calls,
                 "scaled_dot_product_attention",
-                tuple(dict.fromkeys(sdpa_spans)))
+                spans)
         if softmax_spans and dot_spans:
+            protocol_calls = (*softmax_calls, *dot_calls)
+            selected_entry = candidate_entry or min(
+                protocol_calls, key=lambda item: item.lexical_order)
+            spans = tuple(dict.fromkeys(
+                (selected_entry.span, *softmax_spans, *dot_spans)))
+            input_calls = ((selected_entry,) if candidate_entry is not None
+                           else tuple(dict.fromkeys(protocol_calls)))
             return AttentionComputeProof(
-                child_symbol, callable_symbol, "dot_softmax",
-                tuple(dict.fromkeys((*softmax_spans, *dot_spans))))
+                child_symbol, callable_symbol, selected_entry, input_calls,
+                "dot_softmax",
+                spans)
     return None
 
 
 def _reachable_compute_callables(
     index: ProgramIndex,
     child_symbol: SymbolId,
-) -> tuple[SymbolId, ...]:
+) -> tuple[tuple[SymbolId, CallObservation | None], ...]:
     forward = SymbolId(
         child_symbol.source, f"{child_symbol.qualified_name}.forward")
     if index.callable_by_symbol(forward) is None:
         return ()
-    queue = [forward]
+    queue = [(forward, None)]
     seen: set[SymbolId] = set()
-    out: list[SymbolId] = []
+    out: list[tuple[SymbolId, CallObservation | None]] = []
     while queue:
-        current = queue.pop(0)
+        current, entry_call = queue.pop(0)
         if current in seen:
             continue
         record = index.callable_by_symbol(current)
@@ -265,14 +313,18 @@ def _reachable_compute_callables(
         if record.owner not in {child_symbol, None}:
             continue
         seen.add(current)
-        out.append(current)
+        out.append((current, entry_call))
         if record.owner == child_symbol:
             for name in record.self_method_calls:
                 target = SymbolId(
                     child_symbol.source,
                     f"{child_symbol.qualified_name}.{name}")
                 if target not in seen:
-                    queue.append(target)
+                    exact_calls = tuple(
+                        call for call in index.calls_in(current)
+                        if _self_field(call.callee) == name)
+                    if len(exact_calls) == 1:
+                        queue.append((target, entry_call or exact_calls[0]))
             # A directly called same-module free helper is an exact call edge,
             # not a whole-file search.  Follow it without interpreting its
             # spelling.
@@ -283,15 +335,17 @@ def _reachable_compute_callables(
                 target_record = index.callable_by_symbol(target)
                 if target_record is not None and target_record.owner is None \
                         and target not in seen:
-                    queue.append(target)
-            queue.extend(_bound_dispatch_fallbacks(index, current))
+                    queue.append((target, entry_call or call))
+            queue.extend(
+                (target, entry_call or call)
+                for target, call in _bound_dispatch_fallbacks(index, current))
     return tuple(out)
 
 
 def _bound_dispatch_fallbacks(
     index: ProgramIndex,
     callable_symbol: SymbolId,
-) -> tuple[SymbolId, ...]:
+) -> tuple[tuple[SymbolId, CallObservation], ...]:
     """Exact ``fn = resolver(..., fallback); fn(...)`` free-function links."""
     unguarded_called_names = {
         call.callee.name for call in index.calls_in(callable_symbol)
@@ -299,7 +353,7 @@ def _bound_dispatch_fallbacks(
     }
     if not unguarded_called_names:
         return ()
-    out: list[SymbolId] = []
+    out: list[tuple[SymbolId, CallObservation]] = []
     for binding in index.bindings_in(callable_symbol):
         if binding.guard:
             continue
@@ -307,8 +361,16 @@ def _bound_dispatch_fallbacks(
             target.name for target in binding.targets
             if target.kind == "name" and target.name
         }
-        if not target_names.intersection(unguarded_called_names) \
+        selected_names = target_names.intersection(unguarded_called_names)
+        if len(selected_names) != 1 \
                 or binding.value is None or binding.value.kind != "call":
+            continue
+        selected_name = next(iter(selected_names))
+        entry_calls = tuple(
+            call for call in index.calls_in(callable_symbol)
+            if call.callee.kind == "name"
+            and call.callee.name == selected_name and not call.guard)
+        if len(entry_calls) != 1:
             continue
         for argument in _proven_dispatch_fallbacks(
                 index, callable_symbol, binding.value):
@@ -317,7 +379,7 @@ def _bound_dispatch_fallbacks(
             candidate = SymbolId(callable_symbol.source, argument.name)
             record = index.callable_by_symbol(candidate)
             if record is not None and record.owner is None:
-                out.append(candidate)
+                out.append((candidate, entry_calls[0]))
     return tuple(dict.fromkeys(out))
 
 

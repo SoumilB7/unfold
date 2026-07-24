@@ -367,6 +367,19 @@ then proceed autonomously to U3-B.
         Real controls: BLOOM, DeepSeek-V3, Gemma-2, GPT-OSS, Llama, OLMo-2,
         Qwen3 and StableLM resolve; Qwen2-VL remains honestly outside the F2
         model-stage boundary for U3-G.
+      - [ ] U3-F5b: exact Q/K/V projection-storage reader implemented as a
+        boundary, not yet a production cutover.  It consumes F5a's exact
+        attention occurrence and versioned local dataflow: three independent
+        exact Linear occurrences reaching the compute input prove `split`; one
+        exact Linear feeding a code-proven three-lane unpack proves
+        `fused_qkv`.  Conditional producer creation, dishonest unpack helpers,
+        low-rank/chained projections and unrelated Linear calls abstain.  Real
+        controls: BLOOM fused; Gemma-2/GPT-OSS/Llama/OLMo-2/Qwen3/StableLM
+        split; DeepSeek-V3 unknown.  Falcon deliberately remains unknown
+        because its attention child is selected through a config-keyed dispatch
+        registry.  Production cutover is forbidden until U3-F5c proves either
+        the exact selected candidate or unanimous candidate-equivalent storage;
+        the legacy reader remains intact until that same cutover commit.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
