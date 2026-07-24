@@ -61,6 +61,7 @@ import ast
 import hashlib
 import os
 from dataclasses import dataclass
+from functools import lru_cache
 
 
 # --------------------------------------------------------------------------- #
@@ -2124,6 +2125,115 @@ def _canonical_path(path: str) -> str:
         return path
 
 
+_WALKER_RECORDS = (
+    ("imports", "imports"),
+    ("module_bindings", "module_bindings"),
+    ("classes", "classes"),
+    ("callables", "callables"),
+    ("identifiers", "identifiers"),
+    ("field_assigns", "field_assigns"),
+    ("sites", "sites"),
+    ("containers", "containers"),
+    ("registries", "registries"),
+    ("calls", "calls"),
+    ("attrs", "attrs"),
+    ("configs", "configs"),
+    ("controls", "controls"),
+    ("dataflow", "dataflow"),
+    ("unsupported", "unsupported"),
+    ("bindings", "bindings"),
+    ("loops", "loops"),
+    ("returns", "return_obs"),
+    ("transfers", "transfers"),
+    ("unsupported_exec", "unsupported_exec"),
+)
+
+
+@dataclass(frozen=True)
+class _SourceObservationSlice:
+    """Immutable observations for one exact source address and content.
+
+    This is an optimization boundary, never an evidence authority.  Every
+    record still carries its complete :class:`SourceId`; the cache key includes
+    that address, the source text, and both walker vocabularies.  A syntax
+    failure is cached as a typed failure just like a successful observation
+    slice.
+    """
+
+    source_node: SourceFileNode | None
+    module: ModuleRecord | None
+    parse_failure: ParseFailure | None
+    records: tuple = ()
+
+    def __post_init__(self) -> None:
+        failed = self.parse_failure is not None
+        if failed:
+            if self.source_node is not None or self.module is not None \
+                    or self.records:
+                raise ValueError(
+                    "failed source observation cannot carry healthy records")
+            return
+        if self.source_node is None or self.module is None:
+            raise ValueError(
+                "healthy source observation requires source node and module")
+        if tuple(name for name, _ in self.records) != \
+                tuple(name for name, _ in _WALKER_RECORDS):
+            raise ValueError("source observation record families are incomplete")
+
+
+def _freeze_program_index_vocab(config_vocab) -> tuple:
+    """Canonical cache identity for the walker's syntax-only vocabulary."""
+    return tuple(sorted(
+        (str(key), tuple(sorted(str(value) for value in values)))
+        for key, values in config_vocab.items()
+    ))
+
+
+@lru_cache(maxsize=128)
+def _observe_source(
+        source_id: SourceId,
+        text: str,
+        config_vocab_key: tuple,
+        factory_names_key: tuple,
+) -> _SourceObservationSlice:
+    """Parse/walk one exact source once per complete immutable cache key.
+
+    The caller still reads and hashes the file on every build.  Consequently a
+    content change with a preserved mtime creates a new ``SourceId`` and misses
+    this cache.  Component-qualified addresses are deliberately distinct even
+    when they point at identical bytes.
+    """
+    node = SourceFileNode(source_id)
+    node.verify_content(text)
+    try:
+        tree = ast.parse(text, filename=source_id.canonical_path)
+    except SyntaxError as exc:
+        return _SourceObservationSlice(
+            None, None,
+            ParseFailure(source_id, "syntax_error", str(exc)))
+
+    config_vocab = {
+        key: frozenset(values) for key, values in config_vocab_key
+    }
+    walker = _SourceWalker(
+        source_id, text, tree, config_vocab=config_vocab,
+        factory_names=frozenset(factory_names_key)).run()
+    module_name = os.path.splitext(
+        os.path.basename(source_id.canonical_path))[0]
+    module = ModuleRecord(
+        module_name, "", node, SourceSpan(source_id, 1))
+    records = tuple(
+        (output_name, tuple(getattr(walker, walker_name)))
+        for output_name, walker_name in _WALKER_RECORDS
+    )
+    return _SourceObservationSlice(node, module, None, records)
+
+
+def clear_program_index_source_cache() -> None:
+    """Clear the bounded observation cache (tests and explicit invalidation)."""
+    _observe_source.cache_clear()
+
+
 def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
     """Assemble the ONE immutable index for a :class:`SourceBundle`.
 
@@ -2140,6 +2250,8 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         load_program_index_vocab, load_constructor_classmethods)
     config_vocab = load_program_index_vocab()
     factory_names = load_constructor_classmethods()
+    config_vocab_key = _freeze_program_index_vocab(config_vocab)
+    factory_names_key = tuple(sorted(str(name) for name in factory_names))
 
     component_files = dict(getattr(bundle, "component_files", {}) or {})
     if not component_files and getattr(bundle, "files", None):
@@ -2176,41 +2288,16 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
                 agg_ids.append(sid)
                 continue
             sid = SourceId(path, fp, component_key=component)
-            try:
-                tree = ast.parse(text, filename=path)
-            except SyntaxError as exc:
-                parse_failures.append(ParseFailure(sid, "syntax_error", str(exc)))
-                agg_ids.append(sid)
-                continue
-            node = SourceFileNode(sid)
-            node.verify_content(text)
-            source_nodes.append(node)
             agg_ids.append(sid)
-            module_name = os.path.splitext(os.path.basename(path))[0]
-            out["modules"].append(ModuleRecord(
-                module_name, "", node, SourceSpan(sid, 1)))
-            walker = _SourceWalker(sid, text, tree, config_vocab=config_vocab,
-                                   factory_names=factory_names).run()
-            out["imports"].extend(walker.imports)
-            out["module_bindings"].extend(walker.module_bindings)
-            out["classes"].extend(walker.classes)
-            out["callables"].extend(walker.callables)
-            out["identifiers"].extend(walker.identifiers)
-            out["field_assigns"].extend(walker.field_assigns)
-            out["sites"].extend(walker.sites)
-            out["containers"].extend(walker.containers)
-            out["registries"].extend(walker.registries)
-            out["calls"].extend(walker.calls)
-            out["attrs"].extend(walker.attrs)
-            out["configs"].extend(walker.configs)
-            out["controls"].extend(walker.controls)
-            out["dataflow"].extend(walker.dataflow)
-            out["unsupported"].extend(walker.unsupported)
-            out["bindings"].extend(walker.bindings)
-            out["loops"].extend(walker.loops)
-            out["returns"].extend(walker.return_obs)
-            out["transfers"].extend(walker.transfers)
-            out["unsupported_exec"].extend(walker.unsupported_exec)
+            observed = _observe_source(
+                sid, text, config_vocab_key, factory_names_key)
+            if observed.parse_failure is not None:
+                parse_failures.append(observed.parse_failure)
+                continue
+            source_nodes.append(observed.source_node)
+            out["modules"].append(observed.module)
+            for output_name, records in observed.records:
+                out[output_name].extend(records)
 
     for ext in external_nodes:
         if not isinstance(ext, SourceFileNode):

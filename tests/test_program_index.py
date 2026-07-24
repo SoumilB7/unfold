@@ -87,6 +87,19 @@ def _shape(expr):
             tuple((str(i), _shape(v)) for i, (_, v) in enumerate(expr.keyword_children)))
 
 
+def _count_source_walks(monkeypatch):
+    """Instrument the real walker without replacing any observation logic."""
+    real_run = pi._SourceWalker.run
+    count = [0]
+
+    def counted_run(self):
+        count[0] += 1
+        return real_run(self)
+
+    monkeypatch.setattr(pi._SourceWalker, "run", counted_run)
+    return lambda: count[0]
+
+
 # --------------------------------------------------------------------------- #
 # Exact callable-scoped identifier observations (U3-A1)
 # --------------------------------------------------------------------------- #
@@ -496,6 +509,112 @@ def test_content_change_with_preserved_mtime_changes_the_fingerprint(tmp_path):
     n1 = idx1.source_nodes[0].source_id.content_fingerprint
     n2 = idx2.source_nodes[0].source_id.content_fingerprint
     assert n1 != n2
+
+
+# --------------------------------------------------------------------------- #
+# Content-addressed immutable source-observation cache
+# --------------------------------------------------------------------------- #
+
+def test_repeated_build_reuses_one_exact_source_walk(
+        tmp_path, monkeypatch):
+    path = _write(tmp_path, "modeling_cached.py", """
+        class Blk:
+            def __init__(self, config):
+                self.a = A(config)
+    """)
+    bundle = _bundle({"root": (path,)})
+    pi.clear_program_index_source_cache()
+    walk_count = _count_source_walks(monkeypatch)
+    first = pi.build_program_index(bundle)
+    second = pi.build_program_index(bundle)
+    assert walk_count() == 1
+    assert first == second
+
+
+def test_cache_misses_when_content_changes_with_mtime_preserved(
+        tmp_path, monkeypatch):
+    path = _write(tmp_path, "modeling_cached_mtime.py", """
+        class Blk:
+            def __init__(self, config):
+                self.a = A(config)
+    """)
+    bundle = _bundle({"root": (path,)})
+    pi.clear_program_index_source_cache()
+    walk_count = _count_source_walks(monkeypatch)
+    first = pi.build_program_index(bundle)
+    stat = os.stat(path)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(
+            "class Blk:\n"
+            "    def __init__(self, config):\n"
+            "        self.a = B(config)\n")
+    os.utime(path, (stat.st_atime, stat.st_mtime))
+    second = pi.build_program_index(bundle)
+    assert walk_count() == 2
+    assert first.fingerprint != second.fingerprint
+
+
+def test_cache_keeps_identical_bytes_separate_across_component_addresses(
+        tmp_path, monkeypatch):
+    path = _write(tmp_path, "modeling_shared_cache.py", "class Shared: pass\n")
+    bundle = _bundle({
+        "root": (path,),
+        "text_encoder": (path,),
+    })
+    pi.clear_program_index_source_cache()
+    walk_count = _count_source_walks(monkeypatch)
+    index = pi.build_program_index(bundle)
+    assert walk_count() == 2
+    assert {node.source_id.component_key for node in index.source_nodes} == {
+        "root", "text_encoder",
+    }
+
+
+def test_cache_key_includes_the_complete_walker_vocabulary(
+        tmp_path, monkeypatch):
+    from model_unfolder import everchanging
+
+    path = _write(tmp_path, "modeling_vocab_cache.py", """
+        class Blk:
+            def __init__(self, config):
+                self.a = A(config)
+    """)
+    bundle = _bundle({"root": (path,)})
+    pi.clear_program_index_source_cache()
+    real_vocab = everchanging.load_program_index_vocab()
+    real_factories = everchanging.load_constructor_classmethods()
+    walk_count = _count_source_walks(monkeypatch)
+    monkeypatch.setattr(
+        everchanging, "load_program_index_vocab",
+        lambda: real_vocab)
+    monkeypatch.setattr(
+        everchanging, "load_constructor_classmethods",
+        lambda: real_factories)
+    pi.build_program_index(bundle)
+    changed = dict(real_vocab)
+    changed["config_roots"] = frozenset(
+        (*real_vocab["config_roots"], "alternate_config"))
+    monkeypatch.setattr(
+        everchanging, "load_program_index_vocab",
+        lambda: changed)
+    pi.build_program_index(bundle)
+    monkeypatch.setattr(
+        everchanging, "load_constructor_classmethods",
+        lambda: frozenset((*real_factories, "alternate_factory")))
+    pi.build_program_index(bundle)
+    assert walk_count() == 3
+
+
+def test_explicit_cache_clear_forces_a_fresh_walk(tmp_path, monkeypatch):
+    path = _write(tmp_path, "modeling_cache_clear.py", "class Root: pass\n")
+    bundle = _bundle({"root": (path,)})
+    pi.clear_program_index_source_cache()
+    walk_count = _count_source_walks(monkeypatch)
+    pi.build_program_index(bundle)
+    pi.clear_program_index_source_cache()
+    pi.build_program_index(bundle)
+    assert walk_count() == 2
+    assert pi._observe_source.cache_info().maxsize == 128
 
 
 # --------------------------------------------------------------------------- #
