@@ -317,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
         Lane("focused", (*pytest_base, *focused,
                           *_xdist_args(focused_workers, "loadfile"))),
         Lane("u2-authority", (*pytest_base, *U2_AUTHORITY_TESTS,
-                              *_xdist_args(authority_workers, "loadfile"))),
+                              *_xdist_args(authority_workers, "load"))),
         Lane("collect", (*pytest_base, "--collect-only", "tests")),
         Lane("static", _static_command(commit, tuple(args.forbid))),
     )

@@ -107,3 +107,7 @@ def test_single_worker_omits_xdist_overhead():
     assert verify._xdist_args(1, "loadfile") == ()
     assert verify._xdist_args(2, "loadfile") == (
         "-n", "2", "--dist", "loadfile")
+    # Authority tests include one much slower file; test-level scheduling keeps
+    # one worker from becoming the long pole after the other files finish.
+    assert verify._xdist_args(3, "load") == (
+        "-n", "3", "--dist", "load")
