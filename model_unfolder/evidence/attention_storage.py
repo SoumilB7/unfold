@@ -28,6 +28,7 @@ from .construction_calls import (
     resolve_construction_call,
 )
 from .container_inventory import resolve_container_inventory
+from .execution_flow import resolve_addressed_invocations
 from .models import SourceBundle
 from .program_index import (
     CallObservation,
@@ -37,6 +38,7 @@ from .program_index import (
     SymbolId,
 )
 from .reader_result import (
+    Ambiguity,
     ReaderFailure,
     ReaderProvenance,
     ReaderResult,
@@ -150,6 +152,105 @@ def decoder_attention_projection_storage_evidence(
         index, root, repeated.child_occurrence)
 
 
+def decoder_attention_projection_storage_mode_evidence(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    *,
+    component: str = "root",
+    allow_root_stage: bool = False,
+) -> ReaderResult[str]:
+    """Resolve direct storage or unanimous literal-dispatch candidate storage.
+
+    The direct F5b occurrence proof remains authoritative when the owner graph
+    resolves the child.  The F5d path is considered only for an exact unresolved
+    child invocation and succeeds only when its complete literal candidate
+    census is mechanism-equivalent.
+    """
+    direct = decoder_attention_projection_storage_evidence(
+        index, bundle, component=component,
+        allow_root_stage=allow_root_stage)
+    if direct.status == "resolved":
+        return ReaderResult.resolved(
+            direct.owner, direct.value.mode,
+            provenance=direct.provenance)
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "decoder_attention_projection_storage_mode_evidence "
+            "requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError(
+            "decoder_attention_projection_storage_mode_evidence "
+            "requires a SourceBundle")
+
+    root = resolve_component_root(index, bundle, component)
+    if root.status != "resolved":
+        return direct
+    stage = resolve_declared_model_stage(index, root)
+    if stage.status == "resolved":
+        owner = stage.occurrence
+        inventory = resolve_container_inventory(index, root, owner)
+        repeated = resolve_repeated_child(
+            index, root, stage, inventory)
+    elif allow_root_stage and stage.status == "absent":
+        owner = root.graph.root.occurrence
+        inventory = resolve_container_inventory(index, root, owner)
+        repeated = resolve_repeated_child_at_owner(
+            index, root, owner, inventory)
+    else:
+        return direct
+    if repeated.status != "resolved":
+        return direct
+
+    block = repeated.child_occurrence
+    child_inventory = resolve_container_inventory(
+        index, root, block)
+    invocations = resolve_addressed_invocations(
+        index, root, block, child_inventory)
+    if invocations.status != "resolved":
+        return direct
+
+    from .dispatch_attention_storage import (
+        dispatch_attention_projection_storage_evidence,
+    )
+    dispatch_results = []
+    block_node = root.graph.node_for(block)
+    for unresolved in invocations.unresolved:
+        field = _self_field(unresolved.call.callee)
+        if field is None or block_node is None:
+            continue
+        sites = tuple(
+            site for site in index.construction_sites_of(block_node.symbol)
+            if site.target_kind == "field" and site.target == field)
+        if len(sites) != 1 \
+                or not sites[0].via.startswith("registry_subscript:"):
+            continue
+        result = dispatch_attention_projection_storage_evidence(
+            index, root, block, unresolved.call)
+        if result.status in {"resolved", "ambiguous"}:
+            dispatch_results.append(result)
+    resolved = [item for item in dispatch_results
+                if item.status == "resolved"]
+    ambiguous = [item for item in dispatch_results
+                 if item.status == "ambiguous"]
+    if ambiguous or len(resolved) > 1:
+        spans = tuple(dict.fromkeys(
+            span for item in (*ambiguous, *resolved)
+            for span in (
+                item.ambiguity.sites if item.ambiguity is not None
+                else tuple(
+                    proof.candidate.candidate.reference.span
+                    for proof in item.value.proofs))
+            if isinstance(span, SourceSpan)))
+        return ReaderResult.ambiguous(
+            block, Ambiguity(sites=spans))
+    if len(resolved) == 1:
+        result = resolved[0]
+        return ReaderResult.resolved(
+            block, result.value.mode,
+            provenance=result.provenance)
+    return direct
+
+
 def attention_projection_storage_evidence(
     index: ProgramIndex,
     root: ComponentRootResolution,
@@ -204,7 +305,7 @@ def attention_projection_storage_evidence(
             "incomplete_graph",
             "the exact attention entry has no code-proven Linear producers"),))
 
-    sources, unpack_widths, dependencies, uncertain = _sources_reaching_calls(
+    sources, unpack_widths, dependencies, uncertain = projection_sources_reaching_calls(
         index, callable_symbol, child.compute.input_calls, linear_calls)
     ordered_sources = tuple(sorted(sources, key=_occurrence_sort_key))
     mode = None
@@ -248,7 +349,10 @@ def attention_projection_storage_evidence(
     )
 
 
-def _sources_reaching_calls(index, callable_symbol, input_calls, linear_calls):
+def projection_sources_reaching_calls(
+    index, callable_symbol, input_calls, linear_calls, *,
+    method_resolver=None,
+):
     """Conservative local reaching definitions at exact compute-input calls."""
     calls_by_span = {
         call.span: occurrence
@@ -297,7 +401,8 @@ def _sources_reaching_calls(index, callable_symbol, input_calls, linear_calls):
                     and len(flat_targets) >= 3 and len(sources) == 1 \
                     and _proves_lane_unpack(
                         index, callable_symbol, binding, env, calls_by_span,
-                        dependencies, next(iter(sources)), len(flat_targets)):
+                        dependencies, next(iter(sources)), len(flat_targets),
+                        method_resolver=method_resolver):
                 occurrence = next(iter(sources))
                 unpack_widths[occurrence] = max(
                     unpack_widths.get(occurrence, 0), len(flat_targets))
@@ -313,7 +418,7 @@ def _sources_reaching_calls(index, callable_symbol, input_calls, linear_calls):
 
 def _proves_lane_unpack(
     index, caller, binding, caller_env, calls_by_span, dependencies,
-    occurrence, width,
+    occurrence, width, *, method_resolver=None,
 ):
     value = binding.value
     if value is None:
@@ -338,10 +443,16 @@ def _proves_lane_unpack(
     owner = index.callable_by_symbol(caller)
     if owner is None or owner.owner is None:
         return False
-    helper_symbol = SymbolId(
-        caller.source, f"{owner.owner.qualified_name}.{method}")
+    helper_symbol = (
+        method_resolver(owner.owner, method)
+        if method_resolver is not None
+        else SymbolId(
+            caller.source, f"{owner.owner.qualified_name}.{method}")
+    )
+    if helper_symbol is None:
+        return False
     helper = index.callable_by_symbol(helper_symbol)
-    if helper is None or helper.owner != owner.owner:
+    if helper is None or helper.owner is None:
         return False
 
     args = tuple(
@@ -357,30 +468,83 @@ def _proves_lane_unpack(
         if param.kind in {"positional", "posonly"} and param.name != "self")
     if len(source_positions) != 1 or source_positions[0] >= len(params):
         return False
-    tainted: dict[str, bool] = {params[source_positions[0]].name: True}
-    for item in sorted(
-            index.bindings_in(helper_symbol),
-            key=lambda candidate: _span_sort_key(candidate.span)):
-        if item.guard:
-            return False
-        value_tainted = _tainted_expression(item.value, tainted)
-        for target in item.targets:
-            for name in _target_names(target):
-                tainted[name] = value_tainted
     returns = index.return_observations_in(helper_symbol)
-    if not returns:
+    if not returns or not _return_guards_are_exhaustive(returns):
         return False
     for returned in returns:
-        if returned.guard or returned.value is None \
+        if returned.value is None \
                 or returned.value.kind not in {"tuple", "list"} \
                 or len(returned.value.children) < width:
             return False
+        tainted: dict[str, bool] = {params[source_positions[0]].name: True}
+        for item in sorted(
+                index.bindings_in(helper_symbol),
+                key=lambda candidate: _span_sort_key(candidate.span)):
+            if not _span_before(item.span, returned.span) \
+                    or not _guard_path_contains(returned.guard, item.guard):
+                continue
+            value_tainted = _tainted_expression(item.value, tainted)
+            for target in item.targets:
+                for name in _target_names(target):
+                    tainted[name] = value_tainted
         if not all(
                 isinstance(child, ExprNode)
                 and _tainted_expression(child, tainted)
                 for child in returned.value.children[:width]):
             return False
     return True
+
+
+def _return_guards_are_exhaustive(returns):
+    """Prove that the observed returns cover one exact if/else decision tree.
+
+    An unguarded return covers the fallthrough path.  Otherwise every decision
+    node must have both its positive and ``else`` branches represented, and
+    each branch must recursively terminate in a return.  This deliberately
+    supports syntax such as a guarded QKV split helper without claiming general
+    CFG completeness.
+    """
+    paths = tuple(tuple(item.guard) for item in returns)
+    if any(not path for path in paths):
+        return True
+
+    def covers(active):
+        if any(not path for path in active):
+            return True
+        heads = {
+            _guard_identity(path[0])
+            for path in active
+        }
+        if len(heads) != 1:
+            return False
+        positive = tuple(path[1:] for path in active
+                         if path[0].kind in {"if", "elif"})
+        negative = tuple(path[1:] for path in active
+                         if path[0].kind == "else")
+        return bool(positive and negative) \
+            and covers(positive) and covers(negative)
+
+    return covers(paths)
+
+
+def _guard_identity(step):
+    span = step.span
+    return (
+        span.source,
+        span.line,
+        span.col,
+        span.end_line or span.line,
+        span.end_col or span.col,
+    )
+
+
+def _guard_path_contains(path, prefix):
+    if len(prefix) > len(path):
+        return False
+    return all(
+        left.kind == right.kind
+        and _guard_identity(left) == _guard_identity(right)
+        for left, right in zip(path, prefix))
 
 
 def _tainted_expression(expression, env):
@@ -431,13 +595,16 @@ def _expression_sources(expression, env, calls_by_span, dependencies):
             sources, child_uncertain = _expression_sources(
                 child, env, calls_by_span, dependencies)
             out.update(sources)
-            uncertain = uncertain or child_uncertain
+            # Uncertainty on an unrelated operand (for example a conditionally
+            # prepared rotary cosine) does not make the projection producer
+            # uncertain.  It propagates only with an actual projection source.
+            uncertain = uncertain or (child_uncertain and bool(sources))
     for _, child in expression.keyword_children:
         if isinstance(child, ExprNode):
             sources, child_uncertain = _expression_sources(
                 child, env, calls_by_span, dependencies)
             out.update(sources)
-            uncertain = uncertain or child_uncertain
+            uncertain = uncertain or (child_uncertain and bool(sources))
     return frozenset(out), uncertain
 
 
@@ -493,4 +660,6 @@ __all__ = [
     "AttentionProjectionStorage",
     "attention_projection_storage_evidence",
     "decoder_attention_projection_storage_evidence",
+    "decoder_attention_projection_storage_mode_evidence",
+    "projection_sources_reaching_calls",
 ]

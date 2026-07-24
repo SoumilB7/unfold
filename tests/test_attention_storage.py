@@ -12,6 +12,7 @@ from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention_storage import (
     attention_projection_storage_evidence,
     decoder_attention_projection_storage_evidence,
+    decoder_attention_projection_storage_mode_evidence,
 )
 from model_unfolder.evidence.construction_calls import ConstructionOccurrenceId
 from model_unfolder.evidence.component_owner import (
@@ -254,6 +255,11 @@ def test_dispatch_selected_attention_is_not_silently_picked():
         allow_root_stage=True)
     assert result.status == "failed"
     assert "unresolved constructed-child calls" in result.failures[0].detail
+    mode = decoder_attention_projection_storage_mode_evidence(
+        context.program_index(), context.source_bundle,
+        allow_root_stage=True)
+    assert mode.status == "resolved", mode.failures
+    assert mode.value == "fused_qkv"
 
 
 @pytest.mark.parametrize(("slug", "expected"), [
@@ -285,3 +291,26 @@ def test_real_decoder_storage_examples(slug, expected):
     else:
         assert result.status == "resolved", result.failures
         assert result.value.mode == expected
+
+
+@pytest.mark.parametrize(("slug", "expected"), [
+    ("bloom", "fused_qkv"),
+    ("llama-7b", "split"),
+    ("deepseek-v3", None),
+])
+def test_high_level_storage_mode_preserves_direct_model_controls(
+        slug, expected):
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+    data = json.loads((corpus / f"{slug}.json").read_text())
+    context = ParseContext.build(_coerce(data["config"]))
+    result = decoder_attention_projection_storage_mode_evidence(
+        context.program_index(), context.source_bundle,
+        allow_root_stage=True)
+    if expected is None:
+        assert result.status != "resolved"
+    else:
+        assert result.status == "resolved", result.failures
+        assert result.value == expected

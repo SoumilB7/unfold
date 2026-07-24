@@ -15,6 +15,7 @@ from model_unfolder.evidence.construction_calls import (
     ConstructionCallResolution,
     ConstructionOccurrenceId,
     resolve_construction_call,
+    resolve_import_reference,
 )
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import ExprNode
@@ -133,6 +134,34 @@ def test_duplicate_import_binding_is_not_picked_by_source_order(tmp_path):
     result = resolve_construction_call(
         index, root, stage.occurrence, _call(index, stage, "embedding"))
     assert result.status == "incomplete"
+
+
+def test_guarded_import_requires_an_explicit_positive_evidence_policy(tmp_path):
+    source = """
+        if capability_available():
+            from pkg.fast import fast_kernel
+
+        class Root:
+            def forward(self, x):
+                return fast_kernel(x)
+    """
+    path = _write(tmp_path, source)
+    bundle = SourceBundle(
+        source="local", files=(path,),
+        component_files={"root": (path,)},
+        component_architectures={"root": "Root"})
+    index = pi.build_program_index(bundle)
+    symbol = next(item.symbol for item in index.callables
+                  if item.symbol.qualified_name == "Root.forward")
+    call = index.calls_in(symbol)[0]
+    assert resolve_import_reference(
+        index, symbol.source, symbol, call.callee) is None
+    proof = resolve_import_reference(
+        index, symbol.source, symbol, call.callee,
+        allow_guarded=True)
+    assert proof is not None
+    assert proof.qualified_target == "pkg.fast.fast_kernel"
+    assert proof.binding.guard[0].kind == "if"
 
 
 def test_two_construction_sites_for_one_field_are_ambiguous(tmp_path):

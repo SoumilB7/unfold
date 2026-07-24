@@ -283,7 +283,9 @@ def _external_reference(index, site) -> ExternalReferenceProof | None:
 
 
 def resolve_import_reference(index, source, callable_symbol,
-                             reference) -> ExternalReferenceProof | None:
+                             reference, *,
+                             allow_guarded: bool = False,
+                             ) -> ExternalReferenceProof | None:
     """Resolve one exact name/attribute reference through one unshadowed import.
 
     This is lexical address evidence only.  It assigns no framework or model
@@ -293,12 +295,16 @@ def resolve_import_reference(index, source, callable_symbol,
         raise TypeError("resolve_import_reference requires a ProgramIndex")
     if not isinstance(reference, ExprNode):
         raise TypeError("resolve_import_reference requires an ExprNode")
+    if not isinstance(allow_guarded, bool):
+        raise TypeError("allow_guarded is an explicit evidence-policy flag")
     flattened = _flatten_reference(reference)
     if flattened is None:
         return None
     root, suffix = flattened
-    imports = tuple(item for item in index.imports
-                    if item.source == source and item.alias == root)
+    imports = tuple(
+        item for item in index.imports
+        if item.source == source and item.alias == root
+        and (allow_guarded or not item.guard))
     if len(imports) != 1:
         return None
     # A later/conditional module rebinding or local binding makes the import

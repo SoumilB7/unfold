@@ -247,6 +247,24 @@ def test_alias_import_construction_records_alias_provenance(tmp_path):
     assert cand.reference.kind == "name" and cand.reference.name == "FA"
 
 
+def test_module_conditional_import_is_observed_with_its_exact_guard(tmp_path):
+    idx = _index(tmp_path, "modeling_guarded_import.py", """
+        if capability_available():
+            from pkg.fast import fast_kernel
+
+        class Block:
+            def forward(self, x):
+                return fast_kernel(x)
+    """)
+    record = next(item for item in idx.imports
+                  if item.alias == "fast_kernel")
+    assert record.target == "pkg.fast.fast_kernel"
+    assert len(record.guard) == 1
+    assert record.guard[0].kind == "if"
+    assert record.guard[0].test.source_segment == "capability_available()"
+    assert record.guard[0].span.source == record.source
+
+
 # --------------------------------------------------------------------------- #
 # Spec family 2 — helper methods (self-call fold edges)
 # --------------------------------------------------------------------------- #

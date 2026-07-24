@@ -403,6 +403,17 @@ class ImportRecord:
     alias: str                   # local name bound in the module
     target: str                  # dotted module or module.symbol imported
     span: SourceSpan
+    guard: tuple = ()            # tuple[GuardStep] for module-scope conditional imports
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source, SourceId):
+            raise TypeError("an import is qualified by its SourceId")
+        if not self.alias or not self.target:
+            raise ValueError("an import carries exact non-empty binding names")
+        if not isinstance(self.span, SourceSpan) or self.span.source != self.source:
+            raise ValueError("an import carries an exact same-source span")
+        if any(not isinstance(step, GuardStep) for step in self.guard):
+            raise TypeError("an import guard is a tuple of GuardStep values")
 
 
 @dataclass(frozen=True)
@@ -1204,7 +1215,7 @@ class _SourceWalker:
     def run(self) -> "_SourceWalker":
         self.module_bindings.extend(
             _ModuleBindingCollector(self.sid).collect(self.tree))
-        self._collect_definitions(self.tree.body, scope="")
+        self._collect_definitions(self.tree.body, scope="", guard=())
         for node in self.tree.body:
             if isinstance(node, ast.ClassDef):
                 self._class(node, scope="")
@@ -1212,26 +1223,37 @@ class _SourceWalker:
                 self._callable(node, owner=None, scope="")
         return self
 
-    def _collect_definitions(self, body, scope: str) -> None:
+    def _collect_definitions(self, body, scope: str, guard: tuple) -> None:
         for node in body:
             if isinstance(node, ast.ClassDef):
                 qual = f"{scope}.{node.name}" if scope else node.name
                 self._local_classes.add(qual)
-                self._collect_definitions(node.body, scope=qual)
+                self._collect_definitions(node.body, scope=qual, guard=guard)
             elif isinstance(node, (ast.Import, ast.ImportFrom)):
-                self._record_import(node)
+                self._record_import(node, guard)
+            elif isinstance(node, ast.If) and scope == "":
+                branch = GuardStep("if", self._expr(node.test), self._span(node))
+                self._collect_definitions(
+                    node.body, scope=scope, guard=(*guard, branch))
+                if node.orelse:
+                    alternative = GuardStep("else", None, self._span(node))
+                    self._collect_definitions(
+                        node.orelse, scope=scope,
+                        guard=(*guard, alternative))
             elif isinstance(node, ast.Assign) and scope == "":
                 self._maybe_registry(node)
 
     # -- imports / registries ---------------------------------------------- #
 
-    def _record_import(self, node) -> None:
+    def _record_import(self, node, guard=()) -> None:
         span = self._span(node)
         if isinstance(node, ast.Import):
             for alias in node.names:
                 local = alias.asname or alias.name.split(".")[0]
-                self._import_aliases[local] = alias.name
-                self.imports.append(ImportRecord(self.sid, local, alias.name, span))
+                if not guard:
+                    self._import_aliases[local] = alias.name
+                self.imports.append(
+                    ImportRecord(self.sid, local, alias.name, span, guard))
         else:  # ImportFrom
             module = node.module or ""
             level = "." * (node.level or 0)
@@ -1239,8 +1261,10 @@ class _SourceWalker:
                 target = f"{level}{module}.{alias.name}" if module else \
                     f"{level}{alias.name}"
                 local = alias.asname or alias.name
-                self._import_aliases[local] = target
-                self.imports.append(ImportRecord(self.sid, local, target, span))
+                if not guard:
+                    self._import_aliases[local] = target
+                self.imports.append(
+                    ImportRecord(self.sid, local, target, span, guard))
 
     def _maybe_registry(self, node: ast.Assign) -> None:
         if not (len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
