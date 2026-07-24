@@ -14,6 +14,7 @@ from model_unfolder.evidence.component_owner import (
 )
 from model_unfolder.evidence.container_inventory import resolve_container_inventory
 from model_unfolder.evidence.dispatch_selection import (
+    resolve_dispatch_candidates,
     resolve_dispatch_construction,
 )
 from model_unfolder.evidence.execution_flow import resolve_addressed_invocations
@@ -118,6 +119,47 @@ def test_exact_registry_key_selects_one_class_without_fabricating_occurrence(
     assert result.provenance[0].config_paths == (("implementation",),)
 
 
+def test_literal_registry_census_groups_keys_by_exact_candidate(tmp_path):
+    source = _SOURCE.replace(
+        '        "second": Second,',
+        '        "alias": First,\n        "second": Second,',
+    )
+    index, root, parent, call = _pipeline(tmp_path, source)
+    result = resolve_dispatch_candidates(index, root, parent, call)
+    assert result.status == "resolved"
+    groups = {
+        item.candidate.symbol.qualified_name: item.keys
+        for item in result.value.candidates
+    }
+    assert groups == {
+        "First": ("first", "alias"),
+        "Second": ("second",),
+    }
+    assert not hasattr(result.value, "child_occurrence")
+
+
+def test_registry_census_cannot_omit_a_literal_entry(tmp_path):
+    index, root, parent, call = _pipeline(tmp_path)
+    result = resolve_dispatch_candidates(index, root, parent, call)
+    assert result.status == "resolved"
+    with pytest.raises(ValueError):
+        replace(
+            result.value,
+            candidates=result.value.candidates[:1],
+        )
+
+
+def test_registry_value_without_an_indexed_class_is_typed_failure(tmp_path):
+    source = _SOURCE.replace(
+        '        "second": Second,',
+        '        "second": build_second,',
+    )
+    index, root, parent, call = _pipeline(tmp_path, source)
+    result = resolve_dispatch_candidates(index, root, parent, call)
+    assert result.status == "failed"
+    assert "no indexed class" in result.failures[0].detail
+
+
 def test_key_value_not_present_in_registry_is_typed_failure(tmp_path):
     index, root, parent, call = _pipeline(tmp_path)
     result = resolve_dispatch_construction(
@@ -153,6 +195,8 @@ def test_duplicate_literal_key_with_rival_classes_is_ambiguity(tmp_path):
         index, root, parent, call, _decision({"implementation": "first"}))
     assert result.status == "ambiguous"
     assert len(result.ambiguity.sites) == 2
+    census = resolve_dispatch_candidates(index, root, parent, call)
+    assert census.status == "ambiguous"
 
 
 def test_dynamic_registry_key_expression_is_not_guessed(tmp_path):
