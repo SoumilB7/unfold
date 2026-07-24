@@ -26,7 +26,9 @@ from .construction_calls import (
     resolve_import_reference,
 )
 from .container_inventory import resolve_container_inventory
+from .decoder_block import decoder_block_path_for_config
 from .execution_flow import AddressedInvocation, resolve_addressed_invocations
+from .models import SourceBundle
 from .program_index import (
     ExprNode,
     ProgramIndex,
@@ -198,6 +200,35 @@ def ffn_mechanism_at_block(
     )
 
 
+def decoder_ffn_mechanism_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[FFNMechanism]:
+    """Resolve one parser-selected config to its exact ordinary FFN."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("decoder_ffn_mechanism_for_path requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("decoder_ffn_mechanism_for_path requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    result = ffn_mechanism_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
 def _mechanism_for_owner(
     index, root, block_occurrence, owner_occurrence, owner_symbol, invocation,
 ):
@@ -206,6 +237,7 @@ def _mechanism_for_owner(
     if index.callable_by_symbol(forward) is None:
         return None
     linear_calls = {}
+    guarded_linear_calls = {}
     for call in index.calls_in(forward):
         if _self_field(call.callee) is None:
             continue
@@ -215,10 +247,22 @@ def _mechanism_for_owner(
                 or construction.selected.kind != "external" \
                 or construction.selected.external_reference.qualified_target \
                 not in _LINEAR_PROTOCOLS \
-                or construction.selected.site.guard or call.guard:
+                or construction.selected.site.guard:
             continue
-        linear_calls[construction.selected.occurrence] = call
+        occurrence = construction.selected.occurrence
+        # Several calls through one storage occurrence need an execution
+        # relation between those sites.  Overwriting the dict entry would
+        # silently choose the last call and manufacture one canonical lane.
+        if occurrence in linear_calls:
+            return None
+        linear_calls[occurrence] = call
+        if call.guard:
+            guarded_linear_calls[occurrence] = call
     if len(linear_calls) not in {2, 3}:
+        return None
+    if any(not _guarded_linear_call_is_storage_equivalent(
+            index, forward, call, occurrence, linear_calls)
+            for occurrence, call in guarded_linear_calls.items()):
         return None
 
     returns = tuple(
@@ -242,19 +286,23 @@ def _mechanism_for_owner(
             dependencies.get(sink, ()), dependencies) != upstream:
         return None
 
-    activation, activation_path, activation_spans = \
-        _activation_evidence(index, root, owner_occurrence, owner_symbol, forward)
+    activation, activation_path, activation_spans = _activation_evidence(
+        index, root, owner_occurrence, owner_symbol, forward,
+        linear_calls, returned, upstream)
     if activation is None and not activation_path:
         return None
     multiplications = _multiplication_sources(
         index, forward, linear_calls)
-    split_spans = _split_spans(index, forward)
+    split_spans = ()
     if len(sources) == 3:
         if not any(upstream.issubset(item[0]) for item in multiplications):
             return None
         mode = "split"
     else:
         source = next(iter(upstream))
+        split_spans = _split_spans(
+            index, forward, linear_calls, multiplications,
+            required_source=source)
         if split_spans and any(source in item[0] for item in multiplications):
             mode = "fused_gate_up"
         elif any(source in item[0] for item in multiplications):
@@ -272,7 +320,7 @@ def _mechanism_for_owner(
             *(linear_calls[item].span for item in projection_order),
             *activation_spans,
             *split_spans,
-            *(span for _sources, span in multiplications),
+            *(span for _sources, span, _expressions in multiplications),
             returned.span,
         ) if isinstance(span, SourceSpan)))
     return FFNMechanism(
@@ -281,47 +329,71 @@ def _mechanism_for_owner(
         projection_order, spans)
 
 
-def _activation_evidence(index, root, occurrence, owner, forward):
-    found = []
-    paths = []
-    spans = []
+def _activation_evidence(
+    index, root, occurrence, owner, forward, linear_calls, returned, upstream,
+):
+    """Return the one activation proven to reach the returned FFN value.
+
+    Merely observing GELU/SiLU somewhere in the callable is insufficient: an
+    unrelated activation must not certify a dense/gated mechanism.  Each
+    candidate therefore becomes a temporary exact producer in the same
+    reaching-definition analysis used for the affine storage.
+    """
+    candidates = []
     for call in index.calls_in(forward):
+        value = None
+        path = ()
+        spans = []
         proof = resolve_import_reference(
             index, forward.source, forward, call.callee)
         if proof is not None and proof.qualified_target in _FUNCTIONAL_ACTIVATIONS:
-            found.append(_FUNCTIONAL_ACTIVATIONS[proof.qualified_target])
+            value = _FUNCTIONAL_ACTIVATIONS[proof.qualified_target]
             spans.extend((call.span, proof.binding.span))
+        elif _self_field(call.callee) is not None:
+            construction = resolve_construction_call(
+                index, root, occurrence, call)
+            if construction.status == "resolved":
+                selected = construction.selected
+                if selected.kind == "external":
+                    value = _MODULE_ACTIVATIONS.get(
+                        selected.external_reference.qualified_target)
+                    if value is not None:
+                        spans.extend((call.span, selected.site.span))
+                elif selected.kind == "internal":
+                    value, inner_spans = _internal_activation(
+                        index, selected.internal_symbol)
+                    if value is not None:
+                        spans.extend(
+                            (call.span, selected.site.span, *inner_spans))
+            if value is None:
+                path, path_span = _activation_dispatch_path(
+                    index, root, occurrence, owner,
+                    _self_field(call.callee))
+                if path:
+                    spans.extend((call.span, path_span))
+        if value is None and not path:
             continue
-        if _self_field(call.callee) is None:
+
+        key = ("activation", call.span)
+        producers = {**linear_calls, key: call}
+        output_sources, _, dependencies, _ = \
+            producer_sources_reaching_expressions(
+                index, forward, ((returned.span, (returned.value,)),),
+                producers)
+        closure = _dependency_closure(output_sources, dependencies)
+        activation_inputs = _dependency_closure(
+            dependencies.get(key, ()), dependencies)
+        if key not in closure or not activation_inputs \
+                or not set(activation_inputs).issubset(upstream):
             continue
-        construction = resolve_construction_call(index, root, occurrence, call)
-        if construction.status == "resolved":
-            selected = construction.selected
-            if selected.kind == "external":
-                value = _MODULE_ACTIVATIONS.get(
-                    selected.external_reference.qualified_target)
-                if value is not None:
-                    found.append(value)
-                    spans.extend((call.span, selected.site.span))
-                    continue
-            elif selected.kind == "internal":
-                value, inner_spans = _internal_activation(
-                    index, selected.internal_symbol)
-                if value is not None:
-                    found.append(value)
-                    spans.extend((call.span, selected.site.span, *inner_spans))
-                    continue
-        path, path_span = _activation_dispatch_path(
-            index, owner, _self_field(call.callee))
-        if path:
-            paths.append(path)
-            spans.extend((call.span, path_span))
-    values = set(found)
-    dispatches = set(paths)
-    if len(values) == 1 and not dispatches:
-        return next(iter(values)), (), _typed_spans(spans)
-    if len(dispatches) == 1 and not values:
-        return None, next(iter(dispatches)), _typed_spans(spans)
+        candidates.append((value, path, _typed_spans(spans)))
+
+    distinct = {
+        (value, path): spans for value, path, spans in candidates
+    }
+    if len(distinct) == 1:
+        (value, path), spans = next(iter(distinct.items()))
+        return value, path, spans
     return None, (), ()
 
 
@@ -422,7 +494,7 @@ def _calls_in_expression(expression):
         expression, lambda candidate: candidate.kind == "call")
 
 
-def _activation_dispatch_path(index, owner, field):
+def _activation_dispatch_path(index, root, occurrence, owner, field):
     if not field:
         return (), None
     assigns = tuple(
@@ -440,7 +512,22 @@ def _activation_dispatch_path(index, owner, field):
     if len(candidates) != 1:
         return (), None
     selected = candidates[0]
-    return tuple(segment.name for segment in selected.segments), selected.span
+    root_name = (
+        selected.root_binding.name
+        if selected.root_binding.kind == "name" else None)
+    node = root.graph.node_for(occurrence)
+    bindings = tuple(
+        binding for binding in (node.config_bindings if node else ())
+        if binding.parameter == root_name)
+    if len(bindings) != 1 or bindings[0].resolved_prefix is None:
+        return (), None
+    prefix = tuple(bindings[0].resolved_prefix)
+    if isinstance(root, ConstructedComponentRoot):
+        prefix = (*root.config_path, *prefix)
+    return (
+        (*prefix, *(segment.name for segment in selected.segments)),
+        selected.span,
+    )
 
 
 def _multiplication_sources(index, callable_symbol, producers):
@@ -461,7 +548,9 @@ def _multiplication_sources(index, callable_symbol, producers):
                 ((multiplication.span, tuple(multiplication.children)),),
                 producers)
             if not uncertain and sources:
-                out.append((set(sources), multiplication.span))
+                out.append((
+                    set(sources), multiplication.span,
+                    tuple(multiplication.children)))
     return tuple(out)
 
 
@@ -477,13 +566,83 @@ def _dependency_closure(sources, dependencies):
     return out
 
 
-def _split_spans(index, callable_symbol):
+def _split_spans(
+    index, callable_symbol, producers, multiplications, *,
+    required_source,
+):
     spans = []
     for call in index.calls_in(callable_symbol):
         terminal = call.callee.name if call.callee.kind == "attribute" else ""
-        if terminal in _SPLIT_PROTOCOLS and call.span is not None:
-            spans.append(call.span)
+        if terminal not in _SPLIT_PROTOCOLS or call.span is None:
+            continue
+        receiver = (
+            call.callee.children[0]
+            if call.callee.children else None)
+        split_inputs, _, _, split_input_uncertain = \
+            producer_sources_reaching_expressions(
+                index, callable_symbol,
+                ((call.span, (receiver,) if receiver is not None else ()),),
+                producers)
+        if split_input_uncertain or required_source not in split_inputs:
+            continue
+        key = ("split", call.span)
+        combined = {**producers, key: call}
+        for _sources, multiplication_span, expressions in multiplications:
+            reaching, _, dependencies, uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol,
+                    ((multiplication_span, expressions),), combined)
+            closure = _dependency_closure(reaching, dependencies)
+            if not uncertain and key in closure:
+                spans.append(call.span)
+                break
     return tuple(spans)
+
+
+def _guarded_linear_call_is_storage_equivalent(
+    index, callable_symbol, module_call, occurrence, linear_calls,
+):
+    """Prove both arms use one stored affine projection.
+
+    This covers an exact framework idiom used for tensor-parallel inference:
+    one arm calls ``self.proj(x)`` and the complementary arm calls
+    ``F.linear(..., self.proj.weight[...])``.  It does not evaluate the gate;
+    it proves the storage/mechanism is the same on both arms.
+    """
+    if not module_call.guard or module_call.guard[0].kind != "else":
+        return False
+    decision_span = module_call.guard[0].span
+    field = _self_field(module_call.callee)
+    if not field:
+        return False
+    for call in index.calls_in(callable_symbol):
+        if not call.guard or call.guard[0].kind not in {"if", "elif"} \
+                or call.guard[0].span != decision_span:
+            continue
+        proof = resolve_import_reference(
+            index, callable_symbol.source, callable_symbol, call.callee)
+        if proof is None \
+                or proof.qualified_target != "torch.nn.functional.linear":
+            continue
+        if any(_contains_self_field_attribute(argument, field, "weight")
+               for argument in call.args):
+            return occurrence in linear_calls
+    return False
+
+
+def _contains_self_field_attribute(expression, field, attribute):
+    if expression.kind == "attribute" and expression.name == attribute \
+            and expression.children:
+        base = expression.children[0]
+        if _self_field(base) == field:
+            return True
+    return any(
+        _contains_self_field_attribute(child, field, attribute)
+        for child in expression.children if isinstance(child, ExprNode)
+    ) or any(
+        _contains_self_field_attribute(child, field, attribute)
+        for _, child in expression.keyword_children if isinstance(child, ExprNode)
+    )
 
 
 def _expressions(root, predicate):
@@ -532,4 +691,8 @@ def _span_key(span):
     )
 
 
-__all__ = ["FFNMechanism", "ffn_mechanism_at_block"]
+__all__ = [
+    "FFNMechanism",
+    "decoder_ffn_mechanism_for_path",
+    "ffn_mechanism_at_block",
+]

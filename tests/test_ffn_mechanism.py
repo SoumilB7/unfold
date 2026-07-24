@@ -285,12 +285,139 @@ class FeedForward:
     assert result.status == "failed"
 
 
+def test_unrelated_activation_does_not_certify_a_dense_ffn(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        unused = F.gelu(x)
+        return self.down(self.up(x))
+""")
+    assert result.status == "failed"
+
+
+def test_activation_after_down_projection_is_not_an_ffn_hidden_activation(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        hidden = self.up(x)
+        return F.gelu(self.down(hidden))
+""")
+    assert result.status == "failed"
+
+
+def test_unrelated_split_does_not_certify_a_fused_gate_up_ffn(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        hidden = self.up(x)
+        unused = hidden.chunk(2, dim=-1)
+        return self.down(F.silu(hidden) * hidden)
+""")
+    assert result.status == "failed"
+
+
+def test_split_of_down_projection_is_not_fused_gate_up_storage(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden * 2)
+    def forward(self, x):
+        hidden = self.up(x)
+        output = self.down(F.silu(hidden) * hidden)
+        left, right = output.chunk(2, dim=-1)
+        return left + right
+""")
+    assert result.status == "failed"
+
+
+def test_repeated_projection_invocation_is_not_collapsed_to_one_call(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        first = self.up(x)
+        second = self.up(x)
+        return self.down(self.act(first + second))
+""")
+    assert result.status == "failed"
+
+
+def test_guarded_down_call_needs_complementary_use_of_the_same_stored_weight(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        hidden = self.act(self.up(x))
+        if self.training:
+            output = F.linear(hidden, self.up.weight)
+        else:
+            output = self.down(hidden)
+        return output
+""")
+    assert result.status == "failed"
+
+
+def test_guarded_down_call_accepts_complementary_use_of_the_same_stored_weight(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        hidden = self.act(self.up(x))
+        if self.training:
+            output = F.linear(hidden, self.down.weight)
+        else:
+            output = self.down(hidden)
+        return output
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+
+
+def test_guarded_down_call_without_a_complementary_storage_path_is_unknown(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        hidden = self.act(self.up(x))
+        if self.training:
+            output = hidden
+        else:
+            output = self.down(hidden)
+        return output
+""")
+    assert result.status == "failed"
+
+
 @pytest.mark.parametrize(("slug", "config_path", "mode"), [
-    # BLOOM's down projection has two config-selected implementations
-    # (module call vs functional weight slices).  Until that branch-equivalence
-    # proof is added, the exact reader must abstain rather than infer dense from
-    # the familiar class.
-    ("bloom", (), None),
+    # BLOOM's two branches are accepted only because both are proven to use the
+    # exact same stored down projection (module call vs F.linear(weight slices)).
+    ("bloom", (), "dense"),
     ("llama-7b", (), "split"),
     ("musicgen-small", ("decoder",), "dense"),
 ])
@@ -312,3 +439,63 @@ def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
     assert result.status == "resolved", result.failures
     assert result.value.projection_mode == mode
     assert result.value.gated is (mode != "dense")
+
+
+@pytest.mark.parametrize(("slug", "config_path", "mode", "gated"), [
+    ("bloom", (), "dense", False),
+    ("llama-7b", (), "split", True),
+    ("musicgen-small", ("decoder",), "dense", False),
+])
+def test_parser_consumes_the_same_exact_ffn_result(
+        slug, config_path, mode, gated):
+    from model_unfolder import config_to_ir
+    from model_unfolder.parser import _coerce
+
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    config_to_ir(cfg, parse_context=context)
+    key = ("decoder.ffn.mechanism", config_path)
+    result = context.reader_results[key]
+    assert result.status == "resolved", result.failures
+    assert (result.value.projection_mode, result.value.gated) == (mode, gated)
+    assert context.facts.records["decoder.ffn.gated"].source == \
+        "decoder_ffn_mechanism_for_path"
+    assert context.facts.records["decoder.ffn.projection_mode"].source == \
+        "decoder_ffn_mechanism_for_path"
+
+
+def test_parser_and_conformance_share_one_exact_ffn_result(monkeypatch):
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence import ffn_mechanism as mechanism_module
+    from model_unfolder.evidence.conformance import check_fact_conformance
+    from model_unfolder.parser import _coerce
+
+    config = json.loads(
+        (_CORPUS / "musicgen-small.json").read_text(encoding="utf-8"))["config"]
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    real_reader = mechanism_module.decoder_ffn_mechanism_for_path
+    calls = []
+
+    def counted_reader(*args, **kwargs):
+        calls.append((args[2], kwargs.get("allow_root_stage")))
+        return real_reader(*args, **kwargs)
+
+    monkeypatch.setattr(
+        mechanism_module, "decoder_ffn_mechanism_for_path", counted_reader)
+    ir = config_to_ir(cfg, parse_context=context)
+    key = ("decoder.ffn.mechanism", ("decoder",))
+    parsed_result = context.reader_results[key]
+    decoder_calls = [
+        call for call in calls if call[0] == ("decoder",)]
+    assert decoder_calls == [(("decoder",), True)]
+
+    problems = check_fact_conformance(
+        cfg, ir.to_dict(), bundle=context.source_bundle,
+        program_index=context.program_index(), parse_context=context)
+    assert not [problem for problem in problems
+                if problem.kind == "wrong_storage"]
+    assert context.reader_results[key] is parsed_result
+    assert [call for call in calls if call[0] == ("decoder",)] == decoder_calls
