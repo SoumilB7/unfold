@@ -61,7 +61,7 @@ import ast
 import hashlib
 import os
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cached_property, lru_cache
 
 
 # --------------------------------------------------------------------------- #
@@ -2007,65 +2007,126 @@ class ProgramIndex:
 
     # -- address-only query surface (no name/substring/role selection) ----- #
 
+    @cached_property
+    def _address_index(self) -> dict:
+        """Derived lookup maps over the immutable observation tuples.
+
+        These maps are a call-process optimization only: they are not dataclass
+        fields, do not participate in equality/fingerprints/serialization, and
+        cannot author evidence.  Group values retain the original tuple order;
+        single-value maps retain the old query surface's first-match behavior.
+        """
+        def grouped(records, key):
+            out = {}
+            for record in records:
+                out.setdefault(key(record), []).append(record)
+            return {address: tuple(values)
+                    for address, values in out.items()}
+
+        def first(records, key):
+            out = {}
+            for record in records:
+                out.setdefault(key(record), record)
+            return out
+
+        return {
+            "source_node": first(
+                self.source_nodes,
+                lambda item: (
+                    item.source_id.canonical_path,
+                    item.source_id.component_key)),
+            "sources_for_component": grouped(
+                self.source_nodes,
+                lambda item: item.source_id.component_key),
+            "classes_in": grouped(
+                self.classes, lambda item: item.symbol.source),
+            "module_bindings_in": grouped(
+                self.module_bindings, lambda item: item.source),
+            "class_by_symbol": first(
+                self.classes, lambda item: item.symbol),
+            "callables_of": grouped(
+                self.callables, lambda item: item.owner),
+            "callable_by_symbol": first(
+                self.callables, lambda item: item.symbol),
+            "identifiers_in": grouped(
+                self.identifiers, lambda item: item.enclosing_callable),
+            "field_assigns_of": grouped(
+                self.field_assigns, lambda item: item.owner),
+            "construction_sites_of": grouped(
+                self.construction_sites, lambda item: item.owner),
+            "construction_sites_in": grouped(
+                self.construction_sites,
+                lambda item: item.enclosing_callable),
+            "calls_in": {
+                address: tuple(sorted(
+                    values, key=lambda item: item.lexical_order))
+                for address, values in grouped(
+                    self.calls,
+                    lambda item: item.enclosing_callable).items()
+            },
+            "config_paths_in": grouped(
+                self.config_paths, lambda item: item.enclosing_callable),
+            "bindings_in": grouped(
+                self.bindings, lambda item: item.enclosing_callable),
+            "loops_in": grouped(
+                self.loops, lambda item: item.enclosing_callable),
+            "return_observations_in": grouped(
+                self.return_observations,
+                lambda item: item.enclosing_callable),
+            "control_transfers_in": grouped(
+                self.control_transfers,
+                lambda item: item.enclosing_callable),
+            "unsupported_execution_in": grouped(
+                self.unsupported_execution,
+                lambda item: item.enclosing_callable),
+        }
+
     def source_node(self, path: str, component: str | None) -> SourceFileNode | None:
-        for node in self.source_nodes:
-            if node.source_id.canonical_path == path and \
-                    node.source_id.component_key == component:
-                return node
-        return None
+        return self._address_index["source_node"].get((path, component))
 
     def sources_for_component(self, component: str | None) -> tuple:
-        return tuple(n for n in self.source_nodes
-                     if n.source_id.component_key == component)
+        return self._address_index["sources_for_component"].get(component, ())
 
     def classes_in(self, source: SourceId) -> tuple:
-        return tuple(c for c in self.classes if c.symbol.source == source)
+        return self._address_index["classes_in"].get(source, ())
 
     def module_bindings_in(self, source: SourceId) -> tuple:
         if not isinstance(source, SourceId):
             raise TypeError("module_bindings_in requires a SourceId")
-        return tuple(b for b in self.module_bindings if b.source == source)
+        return self._address_index["module_bindings_in"].get(source, ())
 
     def class_by_symbol(self, symbol: SymbolId) -> ClassRecord | None:
-        for c in self.classes:
-            if c.symbol == symbol:
-                return c
-        return None
+        return self._address_index["class_by_symbol"].get(symbol)
 
     def callables_of(self, owner: SymbolId) -> tuple:
-        return tuple(c for c in self.callables if c.owner == owner)
+        return self._address_index["callables_of"].get(owner, ())
 
     def callable_by_symbol(self, symbol: SymbolId) -> CallableRecord | None:
-        for c in self.callables:
-            if c.symbol == symbol:
-                return c
-        return None
+        return self._address_index["callable_by_symbol"].get(symbol)
 
     def identifiers_in(self, callable_symbol: SymbolId) -> tuple:
         """Exact identifiers for one callable address, in source order."""
         if not isinstance(callable_symbol, SymbolId):
             raise TypeError("identifiers_in requires a SymbolId")
-        return tuple(item for item in self.identifiers
-                     if item.enclosing_callable == callable_symbol)
+        return self._address_index["identifiers_in"].get(
+            callable_symbol, ())
 
     def field_assigns_of(self, owner: SymbolId) -> tuple:
-        return tuple(f for f in self.field_assigns if f.owner == owner)
+        return self._address_index["field_assigns_of"].get(owner, ())
 
     def construction_sites_of(self, owner: SymbolId) -> tuple:
-        return tuple(s for s in self.construction_sites if s.owner == owner)
+        return self._address_index["construction_sites_of"].get(owner, ())
 
     def construction_sites_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(s for s in self.construction_sites
-                     if s.enclosing_callable == callable_symbol)
+        return self._address_index["construction_sites_in"].get(
+            callable_symbol, ())
 
     def calls_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(sorted(
-            (c for c in self.calls if c.enclosing_callable == callable_symbol),
-            key=lambda c: c.lexical_order))
+        return self._address_index["calls_in"].get(callable_symbol, ())
 
     def config_paths_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(c for c in self.config_paths
-                     if c.enclosing_callable == callable_symbol)
+        return self._address_index["config_paths_in"].get(
+            callable_symbol, ())
 
     # -- execution-flow query surface (address-only) ----------------------- #
 
@@ -2077,24 +2138,22 @@ class ProgramIndex:
         return tuple(CallSiteId.of(c) for c in self.calls_in(callable_symbol))
 
     def bindings_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(b for b in self.bindings
-                     if b.enclosing_callable == callable_symbol)
+        return self._address_index["bindings_in"].get(callable_symbol, ())
 
     def loops_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(loop for loop in self.loops
-                     if loop.enclosing_callable == callable_symbol)
+        return self._address_index["loops_in"].get(callable_symbol, ())
 
     def return_observations_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(r for r in self.return_observations
-                     if r.enclosing_callable == callable_symbol)
+        return self._address_index["return_observations_in"].get(
+            callable_symbol, ())
 
     def control_transfers_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(t for t in self.control_transfers
-                     if t.enclosing_callable == callable_symbol)
+        return self._address_index["control_transfers_in"].get(
+            callable_symbol, ())
 
     def unsupported_execution_in(self, callable_symbol: SymbolId) -> tuple:
-        return tuple(u for u in self.unsupported_execution
-                     if u.enclosing_callable == callable_symbol)
+        return self._address_index["unsupported_execution_in"].get(
+            callable_symbol, ())
 
 
 def _aggregate_fingerprint(source_ids) -> str:

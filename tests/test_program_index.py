@@ -617,6 +617,45 @@ def test_explicit_cache_clear_forces_a_fresh_walk(tmp_path, monkeypatch):
     assert pi._observe_source.cache_info().maxsize == 128
 
 
+def test_address_query_cache_is_derived_and_preserves_exact_results(tmp_path):
+    from dataclasses import replace
+
+    idx = _index(tmp_path, "modeling_address_maps.py", """
+        class Child:
+            def forward(self, x):
+                return x
+        class Root:
+            def __init__(self, config):
+                self.child = Child()
+            def forward(self, x):
+                first = self.child(x)
+                return self.child(first)
+    """)
+    root = _class(idx, "Root").symbol
+    forward = _callable(idx, "Root.forward").symbol
+    source = root.source
+    assert "_address_index" not in idx.__dict__
+
+    expected_calls = tuple(sorted(
+        (call for call in idx.calls
+         if call.enclosing_callable == forward),
+        key=lambda call: call.lexical_order))
+    assert idx.classes_in(source) == tuple(
+        item for item in idx.classes if item.symbol.source == source)
+    assert idx.callables_of(root) == tuple(
+        item for item in idx.callables if item.owner == root)
+    assert idx.construction_sites_of(root) == tuple(
+        item for item in idx.construction_sites if item.owner == root)
+    assert idx.calls_in(forward) == expected_calls
+    assert idx.calls_in(forward) is idx.calls_in(forward)
+    assert idx.calls_in(pi.SymbolId(source, "Missing.forward")) == ()
+    assert "_address_index" in idx.__dict__
+
+    # The optimization is not an evidence field and cannot alter equality.
+    assert "_address_index" not in idx.__dataclass_fields__
+    assert idx == replace(idx)
+
+
 # --------------------------------------------------------------------------- #
 # Soumil — same qualified class at two distinct sites/roles
 # --------------------------------------------------------------------------- #
