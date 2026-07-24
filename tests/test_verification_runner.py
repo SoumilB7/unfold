@@ -38,6 +38,7 @@ def test_parallel_full_is_the_exact_remainder_not_duplicate_authority_work():
         verify.PRESERVATION_TEST,
         *verify.U2_AUTHORITY_TESTS,
     }
+    assert "--durations=25" in command
     assert command[-4:] == ("-n", "3", "--dist", "loadfile")
 
 
@@ -91,16 +92,16 @@ def test_serial_full_flag_is_explicit_and_defaults_off():
 
 def test_worker_plan_fills_ten_core_host_without_oversubscription():
     full, preservation, authority, focused = verify._worker_plan(10)
-    assert (full, preservation, authority, focused) == (8, 2, 3, 1)
+    assert (full, preservation, authority, focused) == (6, 4, 3, 1)
     assert full + preservation == 10
     assert authority + focused <= 10
 
 
 def test_worker_plan_scales_down_and_honors_override():
-    assert verify._worker_plan(12) == (9, 3, 4, 1)
-    assert verify._worker_plan(8) == (6, 2, 2, 1)
+    assert verify._worker_plan(12) == (8, 4, 4, 1)
+    assert verify._worker_plan(8) == (5, 3, 2, 1)
     assert verify._worker_plan(4) == (3, 1, 2, 1)
-    assert verify._worker_plan(10, 5) == (5, 2, 3, 1)
+    assert verify._worker_plan(10, 5) == (5, 4, 3, 1)
 
 
 def test_single_worker_omits_xdist_overhead():

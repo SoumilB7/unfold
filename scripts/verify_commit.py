@@ -234,12 +234,23 @@ def _worker_plan(cpu_count: int,
     cpu_count = max(4, cpu_count)
     focused = 1
     authority = min(4, max(2, cpu_count // 3))
+    # Preservation is itself a 26-model production render bracket.  Giving it
+    # only two workers made it a 30+ minute long pole while full-suite workers
+    # finished or became stranded behind file-scoped corpus tests.  Keep enough
+    # cores for the full lane, but distribute witnesses across up to four
+    # independent workers; this changes scheduling only, never coverage.
+    if cpu_count <= 4:
+        preservation = 1
+    elif cpu_count <= 6:
+        preservation = 2
+    elif cpu_count <= 9:
+        preservation = 3
+    else:
+        preservation = 4
     if override is not None:
-        preservation = min(2, max(1, cpu_count - 1))
         full = min(max(1, override),
                    max(1, cpu_count - preservation))
     else:
-        preservation = 3 if cpu_count >= 12 else 2 if cpu_count >= 7 else 1
         full = max(1, cpu_count - preservation)
     return full, preservation, authority, focused
 
@@ -258,7 +269,7 @@ def _partitioned_full_command(pytest_base, workers: int) -> tuple[str, ...]:
     """
     owned_elsewhere = (PRESERVATION_TEST, *U2_AUTHORITY_TESTS)
     ignores = tuple(f"--ignore={path}" for path in owned_elsewhere)
-    return (*pytest_base, "tests", *ignores,
+    return (*pytest_base, "tests", *ignores, "--durations=25",
             *_xdist_args(workers, "loadfile"))
 
 
@@ -323,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     heavy_lanes = (
         Lane("full", full_command),
-        Lane("preservation", (*pytest_base, PRESERVATION_TEST,
+        Lane("preservation", (*pytest_base, PRESERVATION_TEST, "--durations=10",
                               *_xdist_args(preservation_workers, "worksteal"))),
     )
     lanes = (*preflight_lanes, *heavy_lanes)
