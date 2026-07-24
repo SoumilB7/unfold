@@ -130,6 +130,60 @@ def test_delegation_depth_is_bounded_by_graph_cycles_not_magic_number(
     assert block.symbol.qualified_name == "Block"
 
 
+def test_exact_return_delegation_beats_unrelated_repeated_container_rivals(
+        tmp_path):
+    source = """
+from torch import nn
+class Noise:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class Block:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class Core:
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+class Stage:
+    def __init__(self, config):
+        self.left = nn.ModuleList(
+            [Noise(config) for _ in range(config.layers)])
+        self.right = nn.ModuleList(
+            [Noise(config) for _ in range(config.layers)])
+        self.core = Core(config)
+    def forward(self, x):
+        return self.core(x)
+class Wrapper:
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Stage(config)
+"""
+    path = tmp_path / "model.py"
+    path.write_text(source, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local",
+        files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    assert root.status == "resolved"
+
+    result = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    block = result.value.component_root.graph.node_for(
+        result.value.block_occurrence)
+    assert block is not None
+    assert block.symbol.qualified_name == "Block"
+
+
 def test_unconstructed_config_path_never_falls_back_to_root_decoder():
     result = _path("qwen2-vl-7b-instruct", ("does_not_exist",))
     assert result.status in {"absent", "failed"}

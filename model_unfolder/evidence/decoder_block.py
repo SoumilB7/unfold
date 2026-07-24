@@ -143,13 +143,6 @@ def decoder_block_path_at_root(
         inventory = resolve_container_inventory(index, root, owner)
         repeated = resolve_repeated_child_at_owner(
             index, root, owner, inventory)
-        if repeated.status == "ambiguous":
-            return ReaderResult.ambiguous(
-                owner, Ambiguity(sites=tuple(dict.fromkeys(
-                    proof.template.call.span
-                    for proof in repeated.rivals
-                    if isinstance(proof.template.call.span, SourceSpan)))),
-                provenance=tuple(delegated_provenance))
         if repeated.status == "resolved":
             value = DecoderBlockPath(
                 config_path, root, owner, repeated, address_spans)
@@ -166,12 +159,35 @@ def decoder_block_path_at_root(
 
         from .delegated_stage import resolve_return_delegated_child
         delegated = resolve_return_delegated_child(index, root, owner)
+        if delegated.status == "resolved":
+            if delegated.value in visited:
+                return ReaderResult.failed(owner, (ReaderFailure(
+                    "incomplete_graph",
+                    "return-delegated model-stage cycle"),),
+                    provenance=tuple(delegated_provenance))
+            delegated_provenance.extend(delegated.provenance)
+            owner = delegated.value
+            visited.add(owner)
+            continue
+
+        repeated_rival_sites = tuple(dict.fromkeys(
+            proof.template.call.span
+            for proof in repeated.rivals
+            if isinstance(proof.template.call.span, SourceSpan)
+        )) if repeated.status == "ambiguous" else ()
         if delegated.status == "ambiguous":
             return ReaderResult.ambiguous(
-                owner, delegated.ambiguity,
+                owner, Ambiguity(sites=tuple(dict.fromkeys((
+                    *repeated_rival_sites,
+                    *delegated.ambiguity.sites,
+                )))),
                 provenance=(
                     *delegated_provenance,
                     *delegated.provenance))
+        if repeated.status == "ambiguous":
+            return ReaderResult.ambiguous(
+                owner, Ambiguity(sites=repeated_rival_sites),
+                provenance=tuple(delegated_provenance))
         if delegated.status != "resolved":
             detail = "; ".join(
                 item.detail for item in delegated.failures) or delegated.status
@@ -181,14 +197,6 @@ def decoder_block_path_at_root(
                 f"{repeated.failure_detail or repeated.incomplete_reasons}; "
                 f"return delegation is {detail}"),),
                 provenance=tuple(delegated_provenance))
-        if delegated.value in visited:
-            return ReaderResult.failed(owner, (ReaderFailure(
-                "incomplete_graph",
-                "return-delegated model-stage cycle"),),
-                provenance=tuple(delegated_provenance))
-        delegated_provenance.extend(delegated.provenance)
-        owner = delegated.value
-        visited.add(owner)
 
 
 def decoder_block_path_for_config(
