@@ -220,17 +220,11 @@ def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
     """Fused Q/K/V storage (one ``query_key_value``/``c_attn`` projection) read
     from the source — the drill draws Linear (QKV) + splits, never three
     fabricated projections."""
-    if context is None:
+    try:
+        from ...evidence.patterns import attention_fused_qkv_from_files
+        return attention_fused_qkv_from_files(_source_files(cfg, context))
+    except Exception:
         return None
-    from ...evidence.attention_storage import (
-        decoder_attention_projection_storage_mode_evidence,
-    )
-    evidence = decoder_attention_projection_storage_mode_evidence(
-        context.program_index(), context.source_bundle,
-        allow_root_stage=True)
-    if evidence.status != "resolved":
-        return None
-    return evidence.value == "fused_qkv"
 
 
 def _code_qk_norm(cfg: Any, context=None):
@@ -971,7 +965,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _note_fact("decoder.attention", "projection_mode",
                "fused_qkv" if _code_fused_qkv else "split",
                "code_proven" if _code_fused_qkv is not None else "asserted",
-               source=("decoder_attention_projection_storage_mode_evidence"
+               source=("attention_fused_qkv_from_files"
                        if _code_fused_qkv is not None
                        else "split convention kept (storage unproven)"))
     # Placement (B2, U2 default-kill), two unknown tiers:

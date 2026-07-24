@@ -656,20 +656,13 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     decoder domain; the per-component diffusion pass is the recorded follow-up.
     File-level verdicts are unanimous-or-None, so a heterogeneous stack with
     mixed storage abstains rather than guessing."""
-    from .patterns import expert_fused_gate_up_from_files
-    from .attention_storage import (
-        decoder_attention_projection_storage_mode_evidence,
+    from .patterns import (
+        attention_fused_qkv_from_files,
+        expert_fused_gate_up_from_files,
     )
 
     problems: list[ConformanceProblem] = []
-    if program_index is None:
-        from .program_index import build_program_index
-        program_index = build_program_index(bundle)
-    storage = decoder_attention_projection_storage_mode_evidence(
-        program_index, bundle, allow_root_stage=True)
-    code_qkv = (
-        storage.value == "fused_qkv"
-        if storage.status == "resolved" else None)
+    code_qkv = attention_fused_qkv_from_files(files)
     code_expert = expert_fused_gate_up_from_files(files)
 
     for key, spec in representatives.items():
@@ -686,6 +679,9 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
     )
     from .embedding_bookend import embedding_stage_norm_evidence
+    if program_index is None:
+        from .program_index import build_program_index
+        program_index = build_program_index(bundle)
     bookend = embedding_stage_norm_evidence(
         program_index, bundle, allow_root_stage=True)
     code_bookend = bookend.value if bookend.status == "resolved" else None
