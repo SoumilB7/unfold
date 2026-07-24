@@ -41,7 +41,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .program_index import (
     ConfigPathObservation,
     ConstructionSite,
@@ -238,7 +243,8 @@ class ContainerInventory:
 
 
 def resolve_container_inventory(index: ProgramIndex,
-                                root_resolution: ComponentRootResolution,
+                                root_resolution:
+                                ComponentRootResolution | ConstructedComponentRoot,
                                 owner_occurrence: OwnerOccurrenceId,
                                 ) -> ContainerInventory:
     """Inventory every container record owned by ``owner_occurrence`` — an EXACT
@@ -248,12 +254,8 @@ def resolve_container_inventory(index: ProgramIndex,
     inheriting D0's component isolation + hidden-rival law; it never selects an
     owner and never falls back to the root.  Neutral and source-evidence-only (see
     the module docstring)."""
-    if not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("resolve_container_inventory requires a ComponentRootResolution (D0)")
-    if root_resolution.status != "resolved":
-        raise ValueError(
-            "resolve_container_inventory requires a RESOLVED component root; D0 "
-            f"returned {root_resolution.status!r} (component isolation + hidden-rival law)")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_container_inventory")
     if not isinstance(owner_occurrence, OwnerOccurrenceId):
         raise TypeError("resolve_container_inventory requires an explicit OwnerOccurrenceId owner")
 

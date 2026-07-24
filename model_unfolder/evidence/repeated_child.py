@@ -19,8 +19,10 @@ from dataclasses import dataclass
 
 from .component_owner import (
     ComponentRootResolution,
+    ConstructedComponentRoot,
     DeclaredModelStageResolution,
     OwnerOccurrenceId,
+    require_resolved_component_root,
 )
 from .container_inventory import ContainerInventory
 from .execution_flow import (
@@ -132,17 +134,15 @@ class RepeatedChildResolution:
 
 def resolve_repeated_child(
     index: ProgramIndex,
-    root_resolution: ComponentRootResolution,
+    root_resolution: ComponentRootResolution | ConstructedComponentRoot,
     stage_resolution: DeclaredModelStageResolution,
     inventory: ContainerInventory,
 ) -> RepeatedChildResolution:
     """Resolve one exact repeatedly invoked child occurrence, without roles."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("resolve_repeated_child requires a ProgramIndex")
-    if not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("resolve_repeated_child requires a ComponentRootResolution (D0)")
-    if root_resolution.status != "resolved":
-        raise ValueError("resolve_repeated_child requires a resolved D0 root")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_repeated_child")
     if not isinstance(stage_resolution, DeclaredModelStageResolution):
         raise TypeError("resolve_repeated_child requires a DeclaredModelStageResolution (B1)")
     if stage_resolution.status != "resolved":
@@ -155,7 +155,7 @@ def resolve_repeated_child(
 
 def resolve_repeated_child_at_owner(
     index: ProgramIndex,
-    root_resolution: ComponentRootResolution,
+    root_resolution: ComponentRootResolution | ConstructedComponentRoot,
     stage: OwnerOccurrenceId,
     inventory: ContainerInventory,
 ) -> RepeatedChildResolution:
@@ -168,10 +168,8 @@ def resolve_repeated_child_at_owner(
     """
     if not isinstance(index, ProgramIndex):
         raise TypeError("resolve_repeated_child_at_owner requires a ProgramIndex")
-    if not isinstance(root_resolution, ComponentRootResolution) \
-            or root_resolution.status != "resolved":
-        raise ValueError(
-            "resolve_repeated_child_at_owner requires a resolved D0 root")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_repeated_child_at_owner")
     if not isinstance(stage, OwnerOccurrenceId):
         raise TypeError(
             "resolve_repeated_child_at_owner requires an explicit OwnerOccurrenceId")

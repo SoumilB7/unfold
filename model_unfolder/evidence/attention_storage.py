@@ -16,10 +16,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .attention_child import AttentionChildEvidence, attention_child_evidence
+from .attention_child import (
+    AttentionChildEvidence,
+    attention_child_evidence,
+    attention_child_positive_census,
+)
 from .component_owner import (
     ComponentRootResolution,
+    ConstructedComponentRoot,
     OwnerOccurrenceId,
+    require_resolved_component_root,
     resolve_component_root,
     resolve_declared_model_stage,
 )
@@ -44,7 +50,6 @@ from .reader_result import (
     ReaderResult,
 )
 from .repeated_child import (
-    resolve_repeated_child,
     resolve_repeated_child_at_owner,
 )
 
@@ -127,29 +132,94 @@ def decoder_attention_projection_storage_evidence(
             "incomplete_graph",
             f"component root is {root.status}: "
             f"{getattr(root, 'failure_detail', '')}"),))
+    return _attention_projection_storage_at_root(
+        index, root, allow_root_stage=allow_root_stage)
+
+
+def _repeated_child_for_root(index, root, *, allow_root_stage):
     stage = resolve_declared_model_stage(index, root)
     if stage.status == "resolved":
         owner = stage.occurrence
-        inventory = resolve_container_inventory(index, root, owner)
-        repeated = resolve_repeated_child(
-            index, root, stage, inventory)
     elif allow_root_stage and stage.status == "absent":
         owner = root.graph.root.occurrence
+    else:
+        return ReaderResult.failed(
+            root.graph.root.occurrence,
+            (ReaderFailure(
+                "incomplete_graph",
+                f"declared model stage is {stage.status}: "
+                f"{getattr(stage, 'failure_detail', '')}"),))
+
+    delegated_provenance = []
+    visited = {owner}
+    for _ in range(8):
         inventory = resolve_container_inventory(index, root, owner)
         repeated = resolve_repeated_child_at_owner(
             index, root, owner, inventory)
-    else:
-        return ReaderResult.failed(root.graph.root.occurrence, (ReaderFailure(
-            "incomplete_graph",
-            f"declared model stage is {stage.status}: "
-            f"{getattr(stage, 'failure_detail', '')}"),))
-    if repeated.status != "resolved":
-        return ReaderResult.failed(owner, (ReaderFailure(
-            "incomplete_graph",
-            f"repeated-child evidence is {repeated.status}: "
-            f"{repeated.failure_detail or repeated.incomplete_reasons}"),))
-    return attention_projection_storage_evidence(
-        index, root, repeated.child_occurrence)
+        if repeated.status == "resolved":
+            return ReaderResult.resolved(
+                owner, repeated,
+                provenance=(
+                    *delegated_provenance,
+                    ReaderProvenance(
+                        "derived",
+                        detail=(
+                            "exact stage address plus exact repeated-container "
+                            "invocation proof")),
+                ))
+
+        from .delegated_stage import resolve_return_delegated_child
+        delegated = resolve_return_delegated_child(
+            index, root, owner)
+        if delegated.status == "ambiguous":
+            return ReaderResult.ambiguous(
+                owner, delegated.ambiguity,
+                provenance=delegated.provenance)
+        if delegated.status != "resolved":
+            detail = "; ".join(
+                item.detail for item in delegated.failures) or delegated.status
+            return ReaderResult.failed(owner, (ReaderFailure(
+                "incomplete_graph",
+                f"repeated-child evidence is {repeated.status}: "
+                f"{repeated.failure_detail or repeated.incomplete_reasons}; "
+                f"return delegation is {detail}"),))
+        if delegated.value in visited:
+            return ReaderResult.failed(owner, (ReaderFailure(
+                "incomplete_graph",
+                "return-delegated model-stage cycle"),))
+        delegated_provenance.extend(delegated.provenance)
+        owner = delegated.value
+        visited.add(owner)
+    return ReaderResult.failed(owner, (ReaderFailure(
+        "incomplete_graph",
+        "return-delegated model stage exceeded depth 8"),))
+
+
+def _attention_projection_storage_at_root(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionProjectionStorage]:
+    root = require_resolved_component_root(
+        root, caller="_attention_projection_storage_at_root")
+    repeated_path = _repeated_child_for_root(
+        index, root, allow_root_stage=allow_root_stage)
+    if repeated_path.status == "ambiguous":
+        return ReaderResult.ambiguous(
+            repeated_path.owner, repeated_path.ambiguity,
+            provenance=repeated_path.provenance)
+    if repeated_path.status != "resolved":
+        return ReaderResult.failed(
+            repeated_path.owner, repeated_path.failures,
+            provenance=repeated_path.provenance)
+    result = attention_projection_storage_evidence(
+        index, root, repeated_path.value.child_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*repeated_path.provenance, *result.provenance))
 
 
 def decoder_attention_projection_storage_mode_evidence(
@@ -166,13 +236,6 @@ def decoder_attention_projection_storage_mode_evidence(
     child invocation and succeeds only when its complete literal candidate
     census is mechanism-equivalent.
     """
-    direct = decoder_attention_projection_storage_evidence(
-        index, bundle, component=component,
-        allow_root_stage=allow_root_stage)
-    if direct.status == "resolved":
-        return ReaderResult.resolved(
-            direct.owner, direct.value.mode,
-            provenance=direct.provenance)
     if not isinstance(index, ProgramIndex):
         raise TypeError(
             "decoder_attention_projection_storage_mode_evidence "
@@ -184,24 +247,154 @@ def decoder_attention_projection_storage_mode_evidence(
 
     root = resolve_component_root(index, bundle, component)
     if root.status != "resolved":
+        direct = decoder_attention_projection_storage_evidence(
+            index, bundle, component=component,
+            allow_root_stage=allow_root_stage)
         return direct
-    stage = resolve_declared_model_stage(index, root)
-    if stage.status == "resolved":
-        owner = stage.occurrence
-        inventory = resolve_container_inventory(index, root, owner)
-        repeated = resolve_repeated_child(
-            index, root, stage, inventory)
-    elif allow_root_stage and stage.status == "absent":
-        owner = root.graph.root.occurrence
-        inventory = resolve_container_inventory(index, root, owner)
-        repeated = resolve_repeated_child_at_owner(
-            index, root, owner, inventory)
-    else:
-        return direct
-    if repeated.status != "resolved":
+    return attention_projection_storage_mode_at_root(
+        index, root, allow_root_stage=allow_root_stage)
+
+
+def decoder_attention_projection_storage_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool = False,
+) -> ReaderResult[str]:
+    """Resolve attention storage for the exact config selected by the parser.
+
+    ``()`` addresses the bundle-declared root.  A non-empty path must prove a
+    config-scoped local construction and field installation through
+    :mod:`config_scoped_owner`; the path spelling never supplies mechanism
+    semantics.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "decoder_attention_projection_storage_for_path requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError(
+            "decoder_attention_projection_storage_for_path requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    outer = resolve_component_root(index, bundle, "root")
+    if outer.status != "resolved":
+        return ReaderResult.failed(None, (ReaderFailure(
+            "incomplete_graph",
+            f"root component address is {outer.status}"),))
+    if not config_path:
+        return attention_projection_storage_mode_at_root(
+            index, outer, allow_root_stage=allow_root_stage)
+
+    from .config_scoped_owner import resolve_config_constructed_root
+    nested = resolve_config_constructed_root(
+        index, bundle, outer, config_path)
+    if nested.status == "ambiguous":
+        sites = tuple(dict.fromkeys(
+            span for candidate in nested.rivals for span in candidate.spans))
+        return ReaderResult.ambiguous(
+            nested.outer_root, Ambiguity(sites=sites))
+    if nested.status == "failed":
+        failure_kind = (
+            "missing_source"
+            if nested.failure_kind == "component_source_absent"
+            else "unsupported_syntax"
+            if nested.failure_kind in {
+                "unsupported_config_construction",
+                "unresolved_config_construction",
+            }
+            else "incomplete_graph"
+        )
+        return ReaderResult.failed(
+            nested.outer_root,
+            (ReaderFailure(
+                failure_kind,
+                f"{nested.failure_kind}: {nested.failure_detail}"),))
+    if nested.status == "absent":
+        return ReaderResult.absent(nested.outer_root)
+
+    candidate = nested.candidate
+    result = attention_projection_storage_mode_at_root(
+        index, candidate.component_root,
+        allow_root_stage=allow_root_stage)
+    if result.status != "resolved":
+        return result
+    address_provenance = ReaderProvenance(
+        "source",
+        spans=candidate.spans,
+        detail=(
+            "exact config-scope construction and field-installation "
+            f"address for {'.'.join(config_path)}"),
+    )
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(address_provenance, *result.provenance))
+
+
+def attention_projection_storage_mode_at_root(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    *,
+    allow_root_stage: bool = False,
+) -> ReaderResult[str]:
+    """Classify storage under one exact already-resolved component root."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "attention_projection_storage_mode_at_root requires a ProgramIndex")
+    if not isinstance(allow_root_stage, bool):
+        raise TypeError("allow_root_stage is an explicit adapter authorization")
+    root = require_resolved_component_root(
+        root, caller="attention_projection_storage_mode_at_root")
+    direct_storage = _attention_projection_storage_at_root(
+        index, root, allow_root_stage=allow_root_stage)
+    if direct_storage.status == "resolved":
+        return ReaderResult.resolved(
+            direct_storage.owner, direct_storage.value.mode,
+            provenance=direct_storage.provenance)
+    # Non-value outcomes are type-agnostic ReaderResult envelopes.  Preserve
+    # ambiguity/absence/failure exactly instead of manufacturing a failure
+    # with no typed cause merely to change the generic value parameter.
+    direct = direct_storage
+    repeated_path = _repeated_child_for_root(
+        index, root, allow_root_stage=allow_root_stage)
+    if repeated_path.status != "resolved":
         return direct
 
-    block = repeated.child_occurrence
+    block = repeated_path.value.child_occurrence
+    if direct_storage.status == "ambiguous":
+        census = attention_child_positive_census(
+            index, root, block)
+        if census.status == "resolved":
+            # This is a positive selection of the one ALWAYS-INVOKED attention
+            # child, not a false closed-world claim over every child in the
+            # block.  Guarded cross/auxiliary attention remains separate.  Two
+            # unguarded attention children remain ambiguous even when their
+            # storage happens to agree.
+            unguarded = tuple(
+                child for child in census.value.candidates
+                if not child.invocation.call.guard)
+            if len(unguarded) == 1:
+                proof = attention_projection_storage_for_child_evidence(
+                    index, root, block, unguarded[0])
+            else:
+                proof = None
+            if proof is not None and proof.status == "resolved":
+                mode = proof.value.mode
+                return ReaderResult.resolved(
+                    block, mode,
+                    provenance=(
+                        *repeated_path.provenance,
+                        *census.provenance,
+                        *proof.provenance,
+                        ReaderProvenance(
+                            "derived",
+                            detail=(
+                                "the exact block has one uniquely unguarded "
+                                "positively proven attention child; its "
+                                f"projection storage is {mode}")),
+                    ))
+
     child_inventory = resolve_container_inventory(
         index, root, block)
     invocations = resolve_addressed_invocations(
@@ -253,16 +446,15 @@ def decoder_attention_projection_storage_mode_evidence(
 
 def attention_projection_storage_evidence(
     index: ProgramIndex,
-    root: ComponentRootResolution,
+    root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
 ) -> ReaderResult[AttentionProjectionStorage]:
     """Classify Q/K/V storage for one exact repeated block occurrence."""
     if not isinstance(index, ProgramIndex):
         raise TypeError(
             "attention_projection_storage_evidence requires a ProgramIndex")
-    if not isinstance(root, ComponentRootResolution) or root.status != "resolved":
-        raise ValueError(
-            "attention_projection_storage_evidence requires a resolved root")
+    root = require_resolved_component_root(
+        root, caller="attention_projection_storage_evidence")
     if not isinstance(block_occurrence, OwnerOccurrenceId):
         raise TypeError(
             "attention_projection_storage_evidence requires an exact block")
@@ -280,7 +472,32 @@ def attention_projection_storage_evidence(
             block_occurrence, failures,
             provenance=attention.provenance)
 
-    child = attention.value
+    return attention_projection_storage_for_child_evidence(
+        index, root, block_occurrence, attention.value)
+
+
+def attention_projection_storage_for_child_evidence(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+    child: AttentionChildEvidence,
+) -> ReaderResult[AttentionProjectionStorage]:
+    """Classify storage for one already-proven exact attention child."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "attention_projection_storage_for_child_evidence "
+            "requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_projection_storage_for_child_evidence")
+    if not isinstance(block_occurrence, OwnerOccurrenceId) \
+            or not isinstance(child, AttentionChildEvidence):
+        raise TypeError("storage child evidence requires exact block + child proofs")
+    if child.block_occurrence != block_occurrence \
+            or root.graph.node_for(child.child_occurrence) is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the attention child does not belong to the exact block/root"),))
+
     entry = child.compute.entry_call
     callable_symbol = entry.enclosing_callable
     if entry.owner != child.compute.child_symbol:
@@ -309,8 +526,15 @@ def attention_projection_storage_evidence(
         index, callable_symbol, child.compute.input_calls, linear_calls)
     ordered_sources = tuple(sorted(sources, key=_occurrence_sort_key))
     mode = None
-    if not uncertain and len(ordered_sources) == 3 and not any(
-            dependencies.get(source) for source in ordered_sources):
+    if len(ordered_sources) == 3 \
+            and all(_construction_is_unconditional(index, source)
+                    for source in ordered_sources) \
+            and not any(dependencies.get(source)
+                        for source in ordered_sources):
+        # STORAGE is an initialization fact.  A runtime cache may bypass K/V
+        # projection on some forward paths without changing that the module
+        # stores three independent, unconditionally constructed projections.
+        # Conditional construction itself remains disallowed.
         mode = "split"
     elif not uncertain and len(ordered_sources) == 1 \
             and unpack_widths.get(ordered_sources[0], 0) >= 3:
@@ -414,6 +638,14 @@ def projection_sources_reaching_calls(
             entry_sources.update(argument_sources)
             uncertain = uncertain or argument_uncertain
     return frozenset(entry_sources), unpack_widths, dependencies, uncertain
+
+
+def _construction_is_unconditional(index, occurrence):
+    return any(
+        site.site_id == occurrence.site and not site.guard
+        for site in index.construction_sites_in(
+            occurrence.site.enclosing_callable)
+    )
 
 
 def _proves_lane_unpack(
@@ -659,7 +891,9 @@ def _occurrence_sort_key(occurrence):
 __all__ = [
     "AttentionProjectionStorage",
     "attention_projection_storage_evidence",
+    "attention_projection_storage_mode_at_root",
     "decoder_attention_projection_storage_evidence",
+    "decoder_attention_projection_storage_for_path",
     "decoder_attention_projection_storage_mode_evidence",
     "projection_sources_reaching_calls",
 ]

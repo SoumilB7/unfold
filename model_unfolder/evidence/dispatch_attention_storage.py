@@ -17,7 +17,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .attention_storage import projection_sources_reaching_calls
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+)
 from .construction_calls import resolve_import_reference
 from .dispatch_selection import (
     DispatchCandidateAddress,
@@ -143,7 +147,7 @@ class EquivalentDispatchStorage:
 
 def dispatch_attention_projection_storage_evidence(
     index: ProgramIndex,
-    root: ComponentRootResolution,
+    root: ComponentRootResolution | ConstructedComponentRoot,
     parent_occurrence: OwnerOccurrenceId,
     call: CallObservation,
 ) -> ReaderResult[EquivalentDispatchStorage]:

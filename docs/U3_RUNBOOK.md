@@ -350,13 +350,12 @@ then proceed autonomously to U3-B.
         the one execution-flow graph—never fabricated OwnerOccurrenceIds.
       - [x] U3-F3b: embedding/LayerNorm/RMSNorm semantics from exact external
         framework protocols or indexed implementation math, never class spelling.
-      - [ ] U3-F4: embedding-stage norm production cutover implemented; focused
-        gates green.  Its original receipt was stopped after exposing an
-        eight-hour worker-allocation pathology; F4 is included in the next
-        resource-balanced committed-tree campaign receipt rather than accepting
-        an incomplete run.
-      - [ ] U3-F5a: exact attention-child positive classification implemented,
-        pending the combined committed-tree receipt.  It starts at the exact F2
+      - [x] U3-F4: embedding-stage norm production cutover, committed in
+        `fc4c486` and covered by the unchanged-tree `c974abc` campaign receipt
+        (1,873 passed; preservation zero-drift).  Parser and conformance consume
+        the same exact-owner reader; the old production reader is gone.
+      - [x] U3-F5a: exact attention-child positive classification, committed in
+        `8c7e0b2` and covered by the `c974abc` receipt.  It starts at the exact F2
         repeated-child occurrence and follows only graph-authoritative invoked
         children.  Attention is proven by exact SDPA protocol or unguarded
         dot-product+softmax implementation in one callable.  A bound local
@@ -367,30 +366,46 @@ then proceed autonomously to U3-B.
         Real controls: BLOOM, DeepSeek-V3, Gemma-2, GPT-OSS, Llama, OLMo-2,
         Qwen3 and StableLM resolve; Qwen2-VL remains honestly outside the F2
         model-stage boundary for U3-G.
-      - [ ] U3-F5b: exact Q/K/V projection-storage reader implemented as a
-        boundary, not yet a production cutover.  It consumes F5a's exact
+      - [x] U3-F5b: exact Q/K/V projection-storage reader, committed in
+        `52a121b` and covered by the `c974abc` receipt.  It consumes F5a's exact
         attention occurrence and versioned local dataflow: three independent
         exact Linear occurrences reaching the compute input prove `split`; one
         exact Linear feeding a code-proven three-lane unpack proves
         `fused_qkv`.  Conditional producer creation, dishonest unpack helpers,
         low-rank/chained projections and unrelated Linear calls abstain.  Real
         controls: BLOOM fused; Gemma-2/GPT-OSS/Llama/OLMo-2/Qwen3/StableLM
-        split; DeepSeek-V3 unknown.  Falcon deliberately remains unknown
-        because its attention child is selected through a config-keyed dispatch
-        registry.  Production cutover is forbidden until U3-F5c proves either
-        the exact selected candidate or unanimous candidate-equivalent storage;
-        the legacy reader remains intact until that same cutover commit.
-      - [ ] U3-F5c: exact dispatch-selection address boundary implemented,
-        pending receipt.  A literal code registry supplies candidate classes
+        split; DeepSeek-V3 unknown.
+      - [x] U3-F5c: exact dispatch-selection address boundary, committed in
+        `13f9005` and covered by the `c974abc` receipt.  A literal code registry
+        supplies candidate classes
         and an owner/path-qualified `ConsumedConfigDecision` supplies the
         runtime key; neither channel can select alone.  The result deliberately
         carries no fabricated `OwnerOccurrenceId`.  Synthetic collisions,
         dynamic keys, foreign paths/components and cross-key DTO forgery block.
         A real Falcon control proves loader metadata `eager` addresses
         `FalconAttention`.  Offline Falcon configs do not carry that loader
-        stamp, so production storage cutover remains blocked on unanimous
-        candidate-equivalence plus guarded-path/inherited-member proof; the
-        boundary does not turn missing metadata into a default.
+        stamp; the boundary never turns missing metadata into a default.
+      - [x] U3-F5d: complete literal dispatch-candidate census plus
+        candidate-equivalent storage proof, committed in `7eea3ea`.  Falcon can
+        resolve fused storage only because every exact literal candidate proves
+        the same mechanism.  The initial cutover exposed MusicGen's nested
+        decoder ownership gap and was reverted in `815f1fb`; no model-specific
+        patch or wrapper fallback was retained.  The substrate and correction
+        are covered by the `c974abc` unchanged-tree receipt.
+      - [~] U3-F5e: production attention-storage cutover through exact selected
+        config owners is implemented in the current F5e commit and under final
+        receipt.  `config.path -> construction -> field installation` is a
+        typed address proof; local construction aliases, return delegation and
+        constructed component roots retain exact occurrences/spans.  Nested
+        owner reads now join the owner graph's `ConfigBinding`, so
+        `Stage(config.other)` plus local `config.child` addresses only
+        `other.child`, never `child`; rival/missing prefixes fail.  Parser and
+        root conformance share one call-local `ReaderResult` keyed by the exact
+        selected path.  Real controls cover MusicGen/BLOOM/Llama/Falcon/
+        DeepSeek-V3/Qwen2-VL.  The old
+        `attention_fused_qkv_from_files` remains only for recursive pipeline
+        component conformance and is explicitly assigned to U3-G; it is no
+        longer a root parser/conformance authority.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in

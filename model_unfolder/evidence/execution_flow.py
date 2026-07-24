@@ -34,7 +34,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .container_inventory import ContainerAddress, ContainerInventory
 from .construction_calls import ConstructionAlternative, resolve_construction_call
 from .program_index import (
@@ -294,14 +299,13 @@ class InvocationResolution:
 
 
 def resolve_addressed_invocations(index: ProgramIndex,
-                                  root_resolution: ComponentRootResolution,
+                                  root_resolution:
+                                  ComponentRootResolution | ConstructedComponentRoot,
                                   owner_occurrence: OwnerOccurrenceId,
                                   inventory: ContainerInventory,
                                   ) -> InvocationResolution:
-    if not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("resolve_addressed_invocations requires a ComponentRootResolution (D0)")
-    if root_resolution.status != "resolved":
-        raise ValueError("resolve_addressed_invocations requires a RESOLVED component root")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_addressed_invocations")
     if not isinstance(owner_occurrence, OwnerOccurrenceId):
         raise TypeError("resolve_addressed_invocations requires an explicit OwnerOccurrenceId")
     if not isinstance(inventory, ContainerInventory):
@@ -730,7 +734,8 @@ class _Def:
 
 
 def resolve_execution_flow(index: ProgramIndex,
-                           root_resolution: ComponentRootResolution,
+                           root_resolution:
+                           ComponentRootResolution | ConstructedComponentRoot,
                            owner_occurrence: OwnerOccurrenceId,
                            inventory: ContainerInventory,
                            ) -> ExecutionFlowResolution:

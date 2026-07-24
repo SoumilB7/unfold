@@ -158,6 +158,113 @@ class OwnerGraph:
         return tuple(node for node in self.walk() if node.symbol == symbol)
 
 
+@dataclass(frozen=True)
+class ConstructedComponentRoot:
+    """A component-root ADDRESS proven by an exact outer construction.
+
+    This is deliberately distinct from :class:`ComponentRootResolution`: the
+    latter proves a bundle-declared architecture, while this type proves
+    ``config.path -> construction -> exact self.field installation`` (either a
+    direct field construction or a proven local-to-field alias).  Downstream
+    ownership readers may consume either closed proof route, but no caller may
+    relabel construction evidence as a declared architecture merely to satisfy
+    a type.
+    """
+
+    component_key: str
+    occurrence: OwnerOccurrenceId
+    graph: OwnerGraph
+    outer_graph: OwnerGraph
+    outer_root: OwnerOccurrenceId
+    outer_owner_symbol: SymbolId
+    config_path: ConfigPrefix
+    installation_field: str
+    construction_site: ConstructionSiteId
+    installation_kind: str
+    construction_span: SourceSpan
+    installation_span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if not self.component_key \
+                or self.component_key != ".".join(self.config_path):
+            raise ValueError(
+                "a constructed component key is its exact non-empty config path")
+        if not isinstance(self.occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.outer_root, OwnerOccurrenceId):
+            raise TypeError("constructed roots carry exact inner + outer occurrences")
+        if not isinstance(self.outer_owner_symbol, SymbolId):
+            raise TypeError(
+                "a constructed root carries the exact outer owner symbol")
+        if not isinstance(self.graph, OwnerGraph) \
+                or not isinstance(self.outer_graph, OwnerGraph):
+            raise TypeError(
+                "a constructed root carries inner and outer OwnerGraphs")
+        if self.occurrence != self.graph.root.occurrence \
+                or self.graph.root.symbol != self.occurrence.root \
+                or self.occurrence.sites:
+            raise ValueError("the constructed component occurrence is the graph root")
+        if self.graph.root.symbol.source.component_key != self.component_key:
+            raise ValueError("the constructed graph belongs to the selected component")
+        if self.outer_graph.root.occurrence.root != self.outer_root.root:
+            raise ValueError(
+                "the outer occurrence belongs to the carried outer graph")
+        outer_node = self.outer_graph.node_for(self.outer_root)
+        if outer_node is None or outer_node.symbol != self.outer_owner_symbol:
+            raise ValueError(
+                "the outer graph proves the exact construction-owner occurrence")
+        if not self.installation_field:
+            raise ValueError("a constructed component is installed on an exact field")
+        if self.installation_kind not in {"direct_field", "local_alias"}:
+            raise ValueError(
+                f"unknown component installation kind {self.installation_kind!r}")
+        if not isinstance(self.construction_site, ConstructionSiteId) \
+                or self.construction_site.owner != self.outer_owner_symbol:
+            raise ValueError(
+                "the construction belongs to the exact outer occurrence")
+        if not isinstance(self.construction_span, SourceSpan) \
+                or not isinstance(self.installation_span, SourceSpan):
+            raise TypeError("constructed-root proof carries exact source spans")
+        if self.construction_site.span != self.construction_span \
+                or self.construction_span.source != self.installation_span.source:
+            raise ValueError(
+                "construction and installation spans close the exact proof")
+        construction_point = (
+            self.construction_span.line, self.construction_span.col)
+        installation_point = (
+            self.installation_span.line, self.installation_span.col)
+        if self.installation_kind == "direct_field" \
+                and installation_point != construction_point:
+            raise ValueError(
+                "a direct field construction installs at the construction site")
+        if self.installation_kind == "local_alias" \
+                and installation_point <= construction_point:
+            raise ValueError(
+                "a local-alias field installation follows the construction")
+
+    @property
+    def status(self) -> str:
+        return "resolved"
+
+
+def require_resolved_component_root(value, *, caller: str):
+    """Validate either lawful component-root address proof.
+
+    The helper centralizes the sole widening from D0-declared roots to exact
+    construction-derived roots.  Unknown objects and non-resolved D0 outcomes
+    remain rejected at every downstream boundary.
+    """
+    if isinstance(value, ConstructedComponentRoot):
+        return value
+    if not isinstance(value, ComponentRootResolution):
+        raise TypeError(
+            f"{caller} requires a ComponentRootResolution (D0) or "
+            "ConstructedComponentRoot")
+    if value.status != "resolved":
+        raise ValueError(
+            f"{caller} requires a resolved component root; got {value.status!r}")
+    return value
+
+
 def resolve_owner_graph(
     index: ProgramIndex,
     root_symbol: SymbolId,
@@ -191,6 +298,32 @@ def resolve_owner_graph(
         inherited_unresolved=unresolved,
     )
     return OwnerGraph(root=root, conflicts=tuple(resolver.conflicts))
+
+
+def resolve_construction_candidate_symbols(
+    index: ProgramIndex,
+    site,
+) -> tuple[SymbolId, ...]:
+    """Resolve one construction site's class candidates as ADDRESS evidence.
+
+    A directly indexed candidate is returned verbatim.  An imported candidate
+    is bound through the same exact lexical import resolver used by
+    :class:`OwnerGraph`; duplicate component-index copies and genuinely rival
+    bindings remain visible to the caller.  This helper assigns no mechanism or
+    architectural role.
+    """
+    from .program_index import ConstructionSite
+
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("construction candidate resolution requires a ProgramIndex")
+    if not isinstance(site, ConstructionSite):
+        raise TypeError("construction candidate resolution requires a ConstructionSite")
+    if len(site.candidates) != 1:
+        return ()
+    candidate = site.candidates[0]
+    if candidate.symbol is not None:
+        return (candidate.symbol,)
+    return _Resolver(index, 64)._resolve_import_binding(site.owner.source, candidate)
 
 
 class _Resolver:
@@ -430,7 +563,7 @@ class _Resolver:
         candidate = candidates[0]
         if candidate.symbol is not None:
             return candidate.symbol, "resolved"
-        imported = self._resolve_import_binding(site.owner.source, candidate)
+        imported = resolve_construction_candidate_symbols(self.program_index, site)
         if len(imported) == 1:
             return imported[0], "resolved_import"
         if len(imported) > 1:
@@ -987,27 +1120,22 @@ class DeclaredModelStageResolution:
 
 
 def resolve_declared_model_stage(index: ProgramIndex,
-                                 root_resolution: "ComponentRootResolution",
+                                 root_resolution,
                                  ) -> DeclaredModelStageResolution:
     """Resolve the model-stage occurrence a root DECLARES via a closed framework
     address protocol (``base_model_prefix``), matched against the ALREADY-RESOLVED
     root ``OwnerGraph`` — never manufacturing an occurrence.
 
-    B1 consumes a RESOLVED :class:`ComponentRootResolution` (D0), permanently
-    inheriting D0's component isolation and hidden-rival / parse-failure law: a
-    broken file in the component makes uniqueness unprovable, so D0 returns
-    ``failed`` there and B1 cannot bypass it.  A resolved result carries the exact
-    existing graph child occurrence (``graph.node_for`` returns it).  Uses ONLY the
-    code-declared literal + exact reference binding through inheritance + the
-    graph's construction occurrences: never class names, model types, role
+    B1 consumes either a resolved D0 declaration or a closed
+    :class:`ConstructedComponentRoot`; both routes already proved component
+    isolation and hidden-rival handling.  A resolved result carries the exact
+    existing graph child occurrence (``graph.node_for`` returns it).  Uses ONLY
+    the code-declared literal + exact reference binding through inheritance +
+    the graph's construction occurrences: never class names, model types, role
     vocabulary, embedding/layer/norm evidence, call ordering, return flow, a
     most-plausible-child heuristic, or a family table."""
-    if not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("resolve_declared_model_stage requires a ComponentRootResolution (D0)")
-    if root_resolution.status != "resolved":
-        raise ValueError(
-            "resolve_declared_model_stage requires a RESOLVED component root; D0 "
-            f"returned {root_resolution.status!r} (component isolation + hidden-rival law)")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_declared_model_stage")
     graph = root_resolution.graph
     root_node = graph.root
     root = root_node.symbol
@@ -1357,7 +1485,8 @@ def _reference_display(reference) -> str:
 __all__ = [
     "ConfigPrefix", "OwnerOccurrenceId", "ConfigBinding", "OwnerRival",
     "ConfigPrefixRival", "UnresolvedChild", "OwnerNode", "OwnerGraph",
-    "resolve_owner_graph",
+    "ConstructedComponentRoot", "require_resolved_component_root",
+    "resolve_owner_graph", "resolve_construction_candidate_symbols",
     "ComponentRootCandidate", "ComponentRootResolution", "resolve_component_root",
     "FrameworkAddressProtocol", "ModelStageDeclaration",
     "DeclaredModelStageResolution", "resolve_declared_model_stage",

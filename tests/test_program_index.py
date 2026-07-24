@@ -331,6 +331,30 @@ def test_factory_classmethod_resolves_to_the_base_as_a_proof_edge(tmp_path):
     assert site.via == "factory:_from_config"
 
 
+def test_local_factory_construction_is_observed_without_claiming_field_ownership(
+        tmp_path):
+    idx = _index(tmp_path, "modeling_local_factory.py", """
+        class Child:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                built = Child._from_config(config.child)
+                self.slot = built
+    """)
+    site = next(s for s in idx.construction_sites
+                if s.target_kind == "local" and s.target == "built")
+    assert site.via == "factory:_from_config"
+    assert len(site.candidates) == 1
+    assert site.candidates[0].symbol.qualified_name == "Child"
+    # Observation stays neutral: the later alias is a separate binding; the
+    # ProgramIndex does not silently rewrite the local site as a field site.
+    assert not any(s.target_kind == "field" and s.target == "slot"
+                   for s in idx.construction_sites)
+    alias = next(b for b in idx.bindings_in(site.enclosing_callable)
+                 if any(t.source_segment == "self.slot" for t in b.targets))
+    assert alias.value.source_segment == "built"
+
+
 # --------------------------------------------------------------------------- #
 # Spec family 5 — comprehensions (ModuleList + count expression)
 # --------------------------------------------------------------------------- #
@@ -775,6 +799,31 @@ def test_parse_context_program_index_is_call_local_and_memoized(tmp_path):
     assert first is second                      # exactly one per context
     other = ParseContext(source_bundle=_bundle({"root": (a,)}))
     assert other.program_index() is not first   # call-local: a new context builds its own
+
+
+def test_parse_context_reader_results_are_exact_path_scoped():
+    from model_unfolder.evidence.context import ParseContext
+
+    ctx = ParseContext(source_bundle=_bundle({}))
+    first = object()
+    assert ctx.cached_reader_result(
+        "reader", ("decoder",), lambda: first) is first
+    assert ctx.cached_reader_result(
+        "reader", ("decoder",),
+        lambda: pytest.fail("the exact reader/path result was recomputed")) \
+        is first
+
+    second = object()
+    assert ctx.cached_reader_result(
+        "reader", ("vision",), lambda: second) is second
+    assert ctx.reader_results == {
+        ("reader", ("decoder",)): first,
+        ("reader", ("vision",)): second,
+    }
+    with pytest.raises(ValueError):
+        ctx.cached_reader_result("", (), lambda: None)
+    with pytest.raises(TypeError):
+        ctx.cached_reader_result("reader", ("",), lambda: None)
 
 
 # --------------------------------------------------------------------------- #

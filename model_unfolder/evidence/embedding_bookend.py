@@ -15,6 +15,8 @@ from __future__ import annotations
 
 from .component_owner import (
     ComponentRootResolution,
+    ConstructedComponentRoot,
+    require_resolved_component_root,
     resolve_component_root,
     resolve_declared_model_stage,
 )
@@ -88,7 +90,7 @@ def embedding_stage_norm_evidence(
 
 def read_embedding_stage_norm(
     index: ProgramIndex,
-    root: ComponentRootResolution,
+    root: ComponentRootResolution | ConstructedComponentRoot,
     owner,
     inventory: ContainerInventory,
     repeated: RepeatedChildResolution,
@@ -96,8 +98,8 @@ def read_embedding_stage_norm(
     """Interpret one exact dependency bundle; never search outside its owner."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("read_embedding_stage_norm requires a ProgramIndex")
-    if not isinstance(root, ComponentRootResolution) or root.status != "resolved":
-        raise ValueError("read_embedding_stage_norm requires a resolved D0 root")
+    root = require_resolved_component_root(
+        root, caller="read_embedding_stage_norm")
     from .component_owner import OwnerOccurrenceId
     if not isinstance(owner, OwnerOccurrenceId):
         raise TypeError(

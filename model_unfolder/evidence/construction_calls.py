@@ -10,7 +10,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .program_index import (
     CallObservation,
     ConstructionSite,
@@ -184,17 +189,15 @@ class ConstructionCallResolution:
 
 def resolve_construction_call(
     index: ProgramIndex,
-    root_resolution: ComponentRootResolution,
+    root_resolution: ComponentRootResolution | ConstructedComponentRoot,
     caller: OwnerOccurrenceId,
     call: CallObservation,
 ) -> ConstructionCallResolution:
     """Resolve one exact ``self.<field>(...)`` call to its construction site."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("resolve_construction_call requires a ProgramIndex")
-    if not isinstance(root_resolution, ComponentRootResolution):
-        raise TypeError("resolve_construction_call requires a ComponentRootResolution")
-    if root_resolution.status != "resolved":
-        raise ValueError("resolve_construction_call requires a resolved D0 root")
+    root_resolution = require_resolved_component_root(
+        root_resolution, caller="resolve_construction_call")
     if not isinstance(caller, OwnerOccurrenceId):
         raise TypeError("resolve_construction_call requires an OwnerOccurrenceId caller")
     if not isinstance(call, CallObservation):

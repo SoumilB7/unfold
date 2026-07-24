@@ -439,7 +439,7 @@ def check_wiring_conformance(
 
 def check_fact_conformance(
     target, ir: dict, *, source: str = "local", bundle: SourceBundle | None = None,
-    program_index=None,
+    program_index=None, parse_context=None,
 ) -> list[ConformanceProblem]:
     """Diff per-layer-group ARCHITECTURE FACTS that op-PRESENCE conformance is
     structurally blind to — the SAME op-kind with different SEMANTICS:
@@ -483,7 +483,8 @@ def check_fact_conformance(
     problems.extend(_check_storage_facts(
         family, ir, files, representatives,
         check_bookend=bool(_model_type(target)),
-        bundle=bundle, program_index=program_index))
+        bundle=bundle, program_index=program_index,
+        parse_context=parse_context, source_component=component))
     problems.extend(_check_component_storage_facts(family, ir, bundle))
     if _model_type(target):
         # Attention-KIND cross-check (Group-2 item 3, insurance): a code-MLA
@@ -645,7 +646,9 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
 
 def _check_storage_facts(family: str, ir: dict, files, representatives,
                          *, check_bookend: bool = True, bundle=None,
-                         program_index=None) -> list[ConformanceProblem]:
+                         program_index=None,
+                         parse_context=None,
+                         source_component: str = "root") -> list[ConformanceProblem]:
     """Projection-STORAGE and embedding-BOOKEND facts vs the modeling source —
     the fused-vs-split class (gpt-oss fused experts, Falcon fused ``query_key_
     value``, BLOOM's word-embedding LayerNorm) that op-PRESENCE conformance is
@@ -656,13 +659,33 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     decoder domain; the per-component diffusion pass is the recorded follow-up.
     File-level verdicts are unanimous-or-None, so a heterogeneous stack with
     mixed storage abstains rather than guessing."""
-    from .patterns import (
-        attention_fused_qkv_from_files,
-        expert_fused_gate_up_from_files,
+    from .patterns import expert_fused_gate_up_from_files
+    from .attention_storage import (
+        decoder_attention_projection_storage_for_path,
     )
 
     problems: list[ConformanceProblem] = []
-    code_qkv = attention_fused_qkv_from_files(files)
+    path = _storage_config_path_for_conformance(
+        bundle, source_component, parse_context)
+    storage = None
+    if path is not None:
+        if program_index is None:
+            from .program_index import build_program_index
+            program_index = build_program_index(bundle)
+    if path is not None and parse_context is not None:
+        storage = parse_context.cached_reader_result(
+            "decoder.attention.projection_storage",
+            path,
+            lambda: decoder_attention_projection_storage_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif path is not None:
+        storage = decoder_attention_projection_storage_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_qkv = (
+        storage.value == "fused_qkv"
+        if storage is not None and storage.status == "resolved" else None
+    )
     code_expert = expert_fused_gate_up_from_files(files)
 
     for key, spec in representatives.items():
@@ -674,14 +697,14 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
 
     if not check_bookend:
         return problems
+    if program_index is None:
+        from .program_index import build_program_index
+        program_index = build_program_index(bundle)
     drawn_bookend = any(
         isinstance(block, dict) and block.get("id") == "embed_norm"
         for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
     )
     from .embedding_bookend import embedding_stage_norm_evidence
-    if program_index is None:
-        from .program_index import build_program_index
-        program_index = build_program_index(bundle)
     bookend = embedding_stage_norm_evidence(
         program_index, bundle, allow_root_stage=True)
     code_bookend = bookend.value if bookend.status == "resolved" else None
@@ -693,6 +716,31 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     # cannot accuse a drawn block of fabrication.  The old whole-file scan did
     # exactly that unsound upgrade and has been deleted.
     return problems
+
+
+def _storage_config_path_for_conformance(
+        bundle, source_component: str, parse_context=None):
+    """The exact parser-selected storage scope, or ``None`` to abstain.
+
+    Sable supplies the original :class:`ParseContext`, so parser and
+    conformance consume the identical cached owner-qualified result.  The
+    public standalone conformance API has no such decision receipt.  It may
+    therefore use ``root`` only for a root-only bundle, or an exact qualified
+    component address already selected by ``_component_source``.  A composite
+    whose source bundle contains several sibling scopes is deliberately
+    uncheckable without the parse context; silently assuming ``()`` could
+    compare a wrapper/vision mechanism against its nested text decoder.
+    """
+    if parse_context is not None:
+        selected = parse_context.selected_config_paths.get("transformer.main")
+        return tuple(selected) if selected is not None else None
+    groups = dict(getattr(bundle, "component_files", {}) or {})
+    if source_component != "root":
+        if source_component not in groups:
+            return None
+        path = tuple(part for part in source_component.split(".") if part)
+        return path or None
+    return () if not groups or set(groups) <= {"root"} else None
 
 
 def _drawn_position_kinds(ir: dict) -> set[str]:

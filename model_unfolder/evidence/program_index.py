@@ -495,7 +495,7 @@ class ConstructionSite:
     site_id: ConstructionSiteId
     owner: SymbolId
     enclosing_callable: SymbolId
-    target_kind: str             # field | slot | element | return | bare
+    target_kind: str             # field | local | slot | element | return | bare
     target: str                  # self.<field> name / slot marker / ''
     constructor: ExprNode        # raw constructor expression (structural)
     args: tuple = ()             # tuple[ExprNode]
@@ -1546,6 +1546,19 @@ class _SourceWalker:
             tuple(self._expr(tgt) for tgt in targets), self._expr(value),
             "assign" if isinstance(stmt, ast.Assign) else "annassign",
             guard, self._span(stmt)))
+        # A constructor first bound to a LOCAL and only later installed on
+        # ``self`` is still an exact construction observation.  The index does
+        # not infer that the later field owns it; it records the local site and
+        # leaves that alias/address proof to ComponentOwner.  This is the
+        # neutral substrate used by composite wrappers such as:
+        # ``child = Child._from_config(config.child); self.slot = child``.
+        if isinstance(value, ast.Call) and scan.owner is not None \
+                and self._provable_construction(value.func):
+            for target in targets:
+                if isinstance(target, ast.Name):
+                    self.sites.append(self._site(
+                        target.id, "local", value, guard, scan,
+                        via="local"))
         # self.<field> = ... : field assign + construction / container
         field_name = self._self_field(targets)
         if field_name is not None and scan.owner is not None:

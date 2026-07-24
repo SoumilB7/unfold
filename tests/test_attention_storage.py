@@ -10,8 +10,10 @@ import pytest
 
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention_storage import (
+    attention_projection_storage_mode_at_root,
     attention_projection_storage_evidence,
     decoder_attention_projection_storage_evidence,
+    decoder_attention_projection_storage_for_path,
     decoder_attention_projection_storage_mode_evidence,
 )
 from model_unfolder.evidence.construction_calls import ConstructionOccurrenceId
@@ -125,6 +127,42 @@ def test_one_linear_feeding_three_lane_unpack_is_fused(tmp_path):
     assert len(result.value.projections) == 1
 
 
+def test_two_unguarded_attention_children_never_become_unanimous_storage(
+        tmp_path):
+    source = _SOURCE.replace(
+        "            self.right = Other(config)",
+        "            self.right = Compute(config)",
+    )
+    index, root, _ = _pipeline(tmp_path, source)
+    result = attention_projection_storage_mode_at_root(
+        index, root, allow_root_stage=False)
+    assert result.status == "ambiguous"
+
+
+def test_one_unguarded_attention_child_is_not_laundered_by_guarded_secondary(
+        tmp_path):
+    source = _SOURCE.replace(
+        "            self.right = Other(config)",
+        "            self.right = Compute(config)",
+    ).replace(
+        """        def forward(self, x):
+            x = self.left(x)
+            return self.right(x)""",
+        """        def forward(self, x, side=None):
+            x = self.left(x)
+            if side is not None:
+                x = self.right(x)
+            return x""",
+    )
+    index, root, _ = _pipeline(tmp_path, source)
+    result = attention_projection_storage_mode_at_root(
+        index, root, allow_root_stage=False)
+    assert result.status == "resolved"
+    assert result.value == "split"
+    assert any("uniquely unguarded" in item.detail
+               for item in result.provenance)
+
+
 def test_helper_that_ignores_packed_projection_cannot_claim_fused(tmp_path):
     source = _SOURCE.replace(
         """            self.a = nn.Linear(config.hidden, config.hidden)
@@ -171,13 +209,26 @@ def test_three_linears_not_reaching_compute_do_not_prove_split(tmp_path):
     assert result.status == "failed"
 
 
-def test_guarded_projection_definition_cannot_prove_split(tmp_path):
+def test_guarded_projection_definition_without_reaching_proof_stays_unknown(
+        tmp_path):
     source = _SOURCE.replace(
         "            one = self.a(x)",
         """            if self.training:
                 one = self.a(x)
             else:
                 one = x""",
+    )
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "failed"
+
+
+def test_guarded_projection_construction_cannot_prove_split(tmp_path):
+    source = _SOURCE.replace(
+        "            self.a = nn.Linear(config.hidden, config.hidden)",
+        """            if config.use_a:
+                self.a = nn.Linear(config.hidden, config.hidden)""",
     )
     index, root, repeated = _pipeline(tmp_path, source)
     result = attention_projection_storage_evidence(
@@ -314,3 +365,143 @@ def test_high_level_storage_mode_preserves_direct_model_controls(
     else:
         assert result.status == "resolved", result.failures
         assert result.value == expected
+
+
+def test_musicgen_nested_decoder_storage_uses_exact_constructed_scope():
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+    data = json.loads((corpus / "musicgen-small.json").read_text())
+    context = ParseContext.build(_coerce(data["config"]))
+    result = decoder_attention_projection_storage_for_path(
+        context.program_index(), context.source_bundle, ("decoder",),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value == "split"
+    assert any("config-scope construction" in item.detail
+               for item in result.provenance)
+    assert any("forward's unconditional return" in item.detail
+               for item in result.provenance)
+    assert any("uniquely unguarded" in item.detail
+               for item in result.provenance)
+
+
+@pytest.mark.parametrize(("slug", "path", "value", "status"), [
+    ("musicgen-small", ("decoder",), "split", "code_proven"),
+    ("bloom", (), "fused_qkv", "code_proven"),
+    ("llama-7b", (), "split", "code_proven"),
+    # Low-rank/chained projection dataflow is deliberately outside the current
+    # proof.  It must stay conventional/visible debt, never become false code
+    # certainty merely because the model is in the same broad decoder family.
+    ("deepseek-v3", (), "split", "asserted"),
+    # The wrapper's text_config is a distinct config/owner scope: its exact
+    # direct field construction resolves independently of the sibling vision
+    # tower, whose fused QKV storage must not contaminate this split decoder.
+    ("qwen2-vl-7b-instruct", ("text_config",), "split", "code_proven"),
+])
+def test_parser_projection_fact_consumes_the_exact_path_reader(
+        slug, path, value, status):
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+    data = json.loads((corpus / f"{slug}.json").read_text())
+    cfg = _coerce(data["config"])
+    context = ParseContext.build(cfg)
+    config_to_ir(cfg, parse_context=context)
+
+    assert context.selected_config_paths["transformer.main"] == path
+    fact = context.facts.records["decoder.attention.projection_mode"]
+    assert (fact.value, fact.status) == (value, status)
+    if status == "code_proven":
+        assert fact.source == \
+            "decoder_attention_projection_storage_for_path"
+    else:
+        assert fact.source == "split convention kept (storage unproven)"
+
+
+def test_parser_and_conformance_share_one_exact_storage_result(monkeypatch):
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence import attention_storage as storage_module
+    from model_unfolder.evidence.conformance import check_fact_conformance
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+    data = json.loads((corpus / "musicgen-small.json").read_text())
+    cfg = _coerce(data["config"])
+    context = ParseContext.build(cfg)
+    real_reader = storage_module.decoder_attention_projection_storage_for_path
+    calls = []
+
+    def counted_reader(*args, **kwargs):
+        calls.append((args[2], kwargs.get("allow_root_stage")))
+        return real_reader(*args, **kwargs)
+
+    monkeypatch.setattr(
+        storage_module, "decoder_attention_projection_storage_for_path",
+        counted_reader)
+    ir = config_to_ir(cfg, parse_context=context)
+    key = ("decoder.attention.projection_storage", ("decoder",))
+    parsed_result = context.reader_results[key]
+    decoder_calls = [call for call in calls if call[0] == ("decoder",)]
+    assert decoder_calls == [(("decoder",), True)]
+
+    problems = check_fact_conformance(
+        cfg, ir.to_dict(), bundle=context.source_bundle,
+        program_index=context.program_index(), parse_context=context)
+    assert not [problem for problem in problems
+                if problem.kind == "wrong_storage"]
+    assert context.reader_results[key] is parsed_result
+    assert [call for call in calls if call[0] == ("decoder",)] == decoder_calls
+
+
+def test_standalone_conformance_never_assumes_root_for_a_nested_decoder():
+    from model_unfolder.evidence.conformance import (
+        _storage_config_path_for_conformance,
+    )
+    from model_unfolder.evidence.models import SourceBundle
+
+    root_only = SourceBundle(
+        source="local", files=("root.py",),
+        component_files={"root": ("root.py",)})
+    assert _storage_config_path_for_conformance(
+        root_only, "root") == ()
+
+    nested = SourceBundle(
+        source="local", files=("root.py", "text.py"),
+        component_files={
+            "root": ("root.py",),
+            "thinker_config.text_config": ("text.py",),
+        })
+    assert _storage_config_path_for_conformance(
+        nested, "thinker_config.text_config") \
+        == ("thinker_config", "text_config")
+    assert _storage_config_path_for_conformance(
+        nested, "root") is None
+
+    class Context:
+        selected_config_paths = {}
+
+    # A context that has not run the parser carries no selection receipt.  It
+    # must abstain rather than silently upgrading that absence to root.
+    assert _storage_config_path_for_conformance(
+        root_only, "root", Context()) is None
+
+
+def test_parser_falcon_dispatch_equivalence_is_code_proven():
+    from transformers import AutoConfig
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    cfg = _coerce(AutoConfig.for_model("falcon").to_dict())
+    context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=context)
+    fact = context.facts.records["decoder.attention.projection_mode"]
+    assert (fact.value, fact.status, fact.source) == (
+        "fused_qkv", "code_proven",
+        "decoder_attention_projection_storage_for_path")
+    assert ir.layers[0].attention.projection_mode == "fused_qkv"

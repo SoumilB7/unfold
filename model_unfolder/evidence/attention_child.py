@@ -21,7 +21,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .construction_calls import resolve_import_reference
 from .container_inventory import resolve_container_inventory
 from .execution_flow import AddressedInvocation, resolve_addressed_invocations
@@ -132,24 +137,47 @@ class AttentionChildEvidence:
             raise ValueError("the attention child is an immediate block child")
 
 
-def attention_child_evidence(
-    index: ProgramIndex,
-    root: ComponentRootResolution,
-    block_occurrence: OwnerOccurrenceId,
-) -> ReaderResult[AttentionChildEvidence]:
-    """Prove one exact invoked child performs attention computation.
+@dataclass(frozen=True)
+class AttentionChildCensus:
+    """Every positively proven attention child at one exact block invocation.
 
-    Several positively proven children are ambiguity.  No positive proof is an
-    incomplete graph, never evidence that attention is absent.
+    This is a positive census over addressed child calls, not a closed-world
+    claim that opaque or unresolved children cannot also implement attention.
     """
+
+    block_occurrence: OwnerOccurrenceId
+    candidates: tuple[AttentionChildEvidence, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("an attention-child census names one exact block")
+        if not self.candidates:
+            raise ValueError("an attention-child census carries >=1 positive proof")
+        if any(not isinstance(item, AttentionChildEvidence)
+               or item.block_occurrence != self.block_occurrence
+               for item in self.candidates):
+            raise ValueError("every positive attention child belongs to the block")
+        identities = tuple(
+            (item.child_occurrence, item.invocation.call_site)
+            for item in self.candidates)
+        if len(set(identities)) != len(identities):
+            raise ValueError("attention-child census identities are unique")
+
+
+def attention_child_positive_census(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionChildCensus]:
+    """Return all exact child invocations with positive attention computation."""
     if not isinstance(index, ProgramIndex):
-        raise TypeError("attention_child_evidence requires a ProgramIndex")
-    if not isinstance(root, ComponentRootResolution) or root.status != "resolved":
-        raise ValueError(
-            "attention_child_evidence requires a resolved component root")
+        raise TypeError(
+            "attention_child_positive_census requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_child_positive_census")
     if not isinstance(block_occurrence, OwnerOccurrenceId):
         raise TypeError(
-            "attention_child_evidence requires an exact block occurrence")
+            "attention_child_positive_census requires an exact block occurrence")
     graph = root.graph
     block_node = graph.node_for(block_occurrence)
     if block_node is None:
@@ -183,17 +211,10 @@ def attention_child_evidence(
         if proof is not None:
             candidates.append(AttentionChildEvidence(
                 block_occurrence, child.occurrence, invocation, proof))
-
     unique = {
         (item.child_occurrence, item.invocation.call_site): item
         for item in candidates
     }
-    if len(unique) > 1:
-        sites = tuple(sorted(
-            (item.invocation.call.span for item in unique.values()),
-            key=_span_sort_key))
-        return ReaderResult.ambiguous(
-            block_occurrence, Ambiguity(sites=sites))
     if not unique:
         unresolved = tuple(
             item for item in invocations.unresolved
@@ -206,7 +227,52 @@ def attention_child_evidence(
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", detail),))
 
-    evidence = next(iter(unique.values()))
+    ordered = tuple(sorted(
+        unique.values(),
+        key=lambda item: _span_sort_key(item.invocation.call.span)))
+    spans = tuple(dict.fromkeys(
+        span for evidence in ordered
+        for span in (
+            evidence.invocation.call.span,
+            *evidence.invocation.provenance_spans,
+            *evidence.compute.spans,
+        )
+        if isinstance(span, SourceSpan)))
+    return ReaderResult.resolved(
+        block_occurrence,
+        AttentionChildCensus(block_occurrence, ordered),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=(
+                "positive attention-compute proofs for every qualifying exact "
+                "addressed child invocation")),),
+    )
+
+
+def attention_child_evidence(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionChildEvidence]:
+    """Prove one exact invoked child performs attention computation.
+
+    Several positively proven children are ambiguity.  No positive proof is an
+    incomplete graph, never evidence that attention is absent.
+    """
+    census = attention_child_positive_census(
+        index, root, block_occurrence)
+    if census.status != "resolved":
+        return census
+    candidates = census.value.candidates
+    if len(candidates) > 1:
+        sites = tuple(sorted(
+            (item.invocation.call.span for item in candidates),
+            key=_span_sort_key))
+        return ReaderResult.ambiguous(
+            block_occurrence, Ambiguity(sites=sites),
+            provenance=census.provenance)
+
+    evidence = candidates[0]
     spans = tuple(dict.fromkeys((
         evidence.invocation.call.span,
         *evidence.invocation.provenance_spans,
@@ -486,6 +552,8 @@ def _span_sort_key(span):
 
 __all__ = [
     "AttentionChildEvidence",
+    "AttentionChildCensus",
     "AttentionComputeProof",
+    "attention_child_positive_census",
     "attention_child_evidence",
 ]

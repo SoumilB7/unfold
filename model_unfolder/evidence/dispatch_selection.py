@@ -15,7 +15,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .component_owner import ComponentRootResolution, OwnerOccurrenceId
+from .component_owner import (
+    ComponentRootResolution,
+    ConstructedComponentRoot,
+    OwnerOccurrenceId,
+    require_resolved_component_root,
+)
 from .config_access import ConsumedConfigDecision
 from .program_index import (
     CallObservation,
@@ -167,7 +172,7 @@ class SelectedDispatchConstruction:
 
 def resolve_dispatch_construction(
     index: ProgramIndex,
-    root: ComponentRootResolution,
+    root: ComponentRootResolution | ConstructedComponentRoot,
     parent_occurrence: OwnerOccurrenceId,
     call: CallObservation,
     decision: ConsumedConfigDecision,
@@ -233,15 +238,15 @@ def resolve_dispatch_construction(
 
 def resolve_dispatch_candidates(
     index: ProgramIndex,
-    root: ComponentRootResolution,
+    root: ComponentRootResolution | ConstructedComponentRoot,
     parent_occurrence: OwnerOccurrenceId,
     call: CallObservation,
 ) -> ReaderResult[DispatchConstructionCensus]:
     """Census every exact class addressed by one literal registry call."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("resolve_dispatch_candidates requires a ProgramIndex")
-    if not isinstance(root, ComponentRootResolution) or root.status != "resolved":
-        raise ValueError("resolve_dispatch_candidates requires a resolved root")
+    root = require_resolved_component_root(
+        root, caller="resolve_dispatch_candidates")
     if not isinstance(parent_occurrence, OwnerOccurrenceId):
         raise TypeError("resolve_dispatch_candidates requires an exact parent")
     if not isinstance(call, CallObservation):

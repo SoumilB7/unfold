@@ -464,7 +464,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         SableCheck("fact_conformance",
                    [p.message for p in (check_fact_conformance(
                        cfg, ir, source=source, bundle=context.source_bundle,
-                       program_index=context.program_index()
+                       program_index=context.program_index(),
+                       parse_context=context,
                    ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         # Nested-conformance: recurse INTO each leaf-compute drill (attention / FFN /

@@ -216,15 +216,31 @@ def _code_embedding_norm(cfg: Any, context=None) -> str | None:
     return evidence.value if evidence.status == "resolved" else None
 
 
-def _code_attention_fused_qkv(cfg: Any, context=None) -> bool | None:
-    """Fused Q/K/V storage (one ``query_key_value``/``c_attn`` projection) read
-    from the source — the drill draws Linear (QKV) + splits, never three
-    fabricated projections."""
-    try:
-        from ...evidence.patterns import attention_fused_qkv_from_files
-        return attention_fused_qkv_from_files(_source_files(cfg, context))
-    except Exception:
+def _attention_storage_result(context, config_path):
+    if context is None:
         return None
+    from ...evidence.attention_storage import (
+        decoder_attention_projection_storage_for_path,
+    )
+    return context.cached_reader_result(
+        "decoder.attention.projection_storage",
+        config_path,
+        lambda: decoder_attention_projection_storage_for_path(
+            context.program_index(),
+            context.source_bundle,
+            tuple(config_path),
+            allow_root_stage=True,
+        ),
+    )
+
+
+def _code_attention_fused_qkv(
+        cfg: Any, context=None, *, config_path=()) -> bool | None:
+    """Owner-qualified Q/K/V storage; uncertainty never becomes split/fused."""
+    result = _attention_storage_result(context, config_path)
+    if result is None or result.status != "resolved":
+        return None
+    return result.value == "fused_qkv"
 
 
 def _code_qk_norm(cfg: Any, context=None):
@@ -618,6 +634,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     from ...evidence import config_access as _config_access
 
     _text_path = _wrapper_path(cfg, text_cfg)
+    context.selected_config_paths["transformer.main"] = tuple(_text_path)
     _TIERS = (
         (text_cfg, _text_path),
         (attn_cfg, (*_text_path, "attn_config")),
@@ -955,7 +972,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                        if ffn_gated is not None else None))
     _code_storage_mode = _code_ffn_storage_mode(text_cfg, context, expected_gated=_code_gated)
     _code_expert_fused = _code_expert_storage(text_cfg, context)
-    _code_fused_qkv = _code_attention_fused_qkv(text_cfg, context)
+    _code_fused_qkv = _code_attention_fused_qkv(
+        text_cfg, context, config_path=_text_path)
     _code_position_evidence = _code_position(cfg, context)
     _note_fact("decoder.ffn", "projection_mode",
                _code_storage_mode if _code_storage_mode is not None else "split",
@@ -965,7 +983,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _note_fact("decoder.attention", "projection_mode",
                "fused_qkv" if _code_fused_qkv else "split",
                "code_proven" if _code_fused_qkv is not None else "asserted",
-               source=("attention_fused_qkv_from_files"
+               source=("decoder_attention_projection_storage_for_path"
                        if _code_fused_qkv is not None
                        else "split convention kept (storage unproven)"))
     # Placement (B2, U2 default-kill), two unknown tiers:

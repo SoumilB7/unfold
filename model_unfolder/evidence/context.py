@@ -188,6 +188,13 @@ class ParseContext:
     # consumes the same declaration instead of re-deriving it from the
     # scrubbed dict. ``None`` ⇒ nothing declares decoder-ness.
     declared_decoderness: str | None = None
+    # U3: parser and conformance consume the SAME owner-qualified reader
+    # result.  The key includes the exact selected config path, so a wrapper's
+    # decoder result cannot be reused for its vision/audio/text sibling.
+    reader_results: dict[tuple[str, tuple[str, ...]], Any] = field(
+        default_factory=dict)
+    selected_config_paths: dict[str, tuple[str, ...]] = field(
+        default_factory=dict)
     # U3: the ONE immutable ProgramIndex for this parse's SourceBundle, built
     # lazily and memoized call-locally on first query (boundary 7 — one per
     # context).  Observation-only; NO existing path consumes it yet (readers
@@ -203,6 +210,17 @@ class ParseContext:
             from .program_index import build_program_index
             self._program_index = build_program_index(self.source_bundle)
         return self._program_index
+
+    def cached_reader_result(self, reader: str, config_path, factory):
+        if not isinstance(reader, str) or not reader:
+            raise ValueError("a cached reader requires a stable non-empty name")
+        path = tuple(config_path)
+        if any(not isinstance(part, str) or not part for part in path):
+            raise TypeError("cached reader config paths are tuple[str, ...]")
+        key = (reader, path)
+        if key not in self.reader_results:
+            self.reader_results[key] = factory()
+        return self.reader_results[key]
 
     @classmethod
     def build(
