@@ -380,6 +380,17 @@ then proceed autonomously to U3-B.
         registry.  Production cutover is forbidden until U3-F5c proves either
         the exact selected candidate or unanimous candidate-equivalent storage;
         the legacy reader remains intact until that same cutover commit.
+      - [ ] U3-F5c: exact dispatch-selection address boundary implemented,
+        pending receipt.  A literal code registry supplies candidate classes
+        and an owner/path-qualified `ConsumedConfigDecision` supplies the
+        runtime key; neither channel can select alone.  The result deliberately
+        carries no fabricated `OwnerOccurrenceId`.  Synthetic collisions,
+        dynamic keys, foreign paths/components and cross-key DTO forgery block.
+        A real Falcon control proves loader metadata `eager` addresses
+        `FalconAttention`.  Offline Falcon configs do not carry that loader
+        stamp, so production storage cutover remains blocked on unanimous
+        candidate-equivalence plus guarded-path/inherited-member proof; the
+        boundary does not turn missing metadata into a default.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
