@@ -220,15 +220,28 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _worker_plan(cpu_count: int,
-                 override: int | None = None) -> tuple[int, int, int]:
-    """Weight one concurrent phase toward the measured full-core long pole."""
+                 override: int | None = None) -> tuple[int, int, int, int]:
+    """Allocate one bounded CPU budget across all concurrent pytest lanes.
+
+    Preservation is parametrized by witness and authority is split by file, so
+    leaving both serial while the remainder owns every core makes their receipts
+    the long pole.  The plan gives those lanes real workers without
+    oversubscribing the host.  Focused tests keep one worker: they are short and
+    xdist startup would usually cost more than it saves.
+    """
+    cpu_count = max(4, cpu_count)
+    focused = 1
     if override is not None:
-        full = min(max(1, override), max(1, cpu_count - 1))
+        preservation = 1
+        authority = 1
+        full = min(max(1, override),
+                   max(1, cpu_count - focused - preservation - authority))
     else:
-        full = min(8, max(1, cpu_count - 3))
-    preservation = 1
-    authority = 1
-    return full, preservation, authority
+        preservation = 3 if cpu_count >= 12 else 2 if cpu_count >= 7 else 1
+        authority = 2 if cpu_count >= 9 else 1
+        full = min(6, max(
+            1, cpu_count - focused - preservation - authority))
+    return full, preservation, authority, focused
 
 
 def _xdist_args(workers: int, distribution: str) -> tuple[str, ...]:
@@ -287,8 +300,8 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(resolved.stdout)
     commit = resolved.stdout.strip()
     cpu_count = os.cpu_count() or 2
-    full_workers, preservation_workers, authority_workers = _worker_plan(
-        cpu_count, args.workers)
+    (full_workers, preservation_workers,
+     authority_workers, focused_workers) = _worker_plan(cpu_count, args.workers)
     pytest_base = (sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider")
 
     focused = tuple(dict.fromkeys((*args.focus, *KERNEL_TESTS)))
@@ -302,7 +315,7 @@ def main(argv: list[str] | None = None) -> int:
                     _partitioned_full_command(pytest_base, full_workers))
     lanes = (
         Lane("focused", (*pytest_base, *focused,
-                          *_xdist_args(authority_workers, "loadfile"))),
+                          *_xdist_args(focused_workers, "loadfile"))),
         Lane("u2-authority", (*pytest_base, *U2_AUTHORITY_TESTS,
                               *_xdist_args(authority_workers, "loadfile"))),
         Lane("collect", (*pytest_base, "--collect-only", "tests")),
@@ -346,6 +359,7 @@ def main(argv: list[str] | None = None) -> int:
         "full_workers": 1 if args.serial_full else full_workers,
         "preservation_workers": preservation_workers,
         "authority_workers": authority_workers,
+        "focused_workers": focused_workers,
         "missing_lanes": missing,
         "failed_lanes": failed,
         "source_artifacts_before": source_artifacts_before,

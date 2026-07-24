@@ -90,15 +90,16 @@ def test_serial_full_flag_is_explicit_and_defaults_off():
 
 
 def test_worker_plan_fills_ten_core_host_without_oversubscription():
-    full, preservation, authority = verify._worker_plan(10)
-    assert (full, preservation, authority) == (7, 1, 1)
-    assert full + preservation + authority * 2 == 10
+    full, preservation, authority, focused = verify._worker_plan(10)
+    assert (full, preservation, authority, focused) == (5, 2, 2, 1)
+    assert full + preservation + authority + focused == 10
 
 
 def test_worker_plan_scales_down_and_honors_override():
-    assert verify._worker_plan(8) == (5, 1, 1)
-    assert verify._worker_plan(4) == (1, 1, 1)
-    assert verify._worker_plan(10, 5) == (5, 1, 1)
+    assert verify._worker_plan(12) == (6, 3, 2, 1)
+    assert verify._worker_plan(8) == (4, 2, 1, 1)
+    assert verify._worker_plan(4) == (1, 1, 1, 1)
+    assert verify._worker_plan(10, 5) == (5, 1, 1, 1)
 
 
 def test_single_worker_omits_xdist_overhead():
