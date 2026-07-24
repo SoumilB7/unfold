@@ -243,40 +243,71 @@ def _code_attention_fused_qkv(
     return result.value == "fused_qkv"
 
 
-def _code_qk_norm(cfg: Any, context=None):
-    """Q/K normalisation READ FROM THE MODELING SOURCE — code-first: the
-    attention class decides the SHAPE of the answer (unconditional / gated /
-    absent) and, when gated, NAMES the config field(s) whose values decide it
-    (``config.qk_layernorm``, ``config.use_qk_norm``, Llama-4's per-layer
-    ``config.no_rope_layers[layer_idx]``).  The config-spelling read survives
-    only as the no-oracle fallback — a declaration is still a declaration.
-    Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_qk_norm_from_files
-        return decoder_qk_norm_from_files(_source_files(cfg, context))
-    except Exception:
+def _qk_norm_result(context=None, *, config_path=()):
+    """One call-local exact-owner Q/K-normalization result."""
+    if context is None:
         return None
+    from ...evidence.qk_norm import decoder_qk_norm_evidence_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.qk_norm",
+        config_path,
+        lambda: decoder_qk_norm_evidence_for_path(
+            context.program_index(),
+            context.source_bundle,
+            config_path,
+            allow_root_stage=True,
+        ),
+    )
 
 
-def _resolve_qk_norm_layers(code_ev, cfg, declared: bool, num_layers: int) -> list[bool]:
+def _code_qk_norm(cfg: Any, context=None, *, config_path=()):
+    """Positive Q/K normalization from the exact selected decoder owner.
+
+    Missing or incomplete source evidence returns ``None`` so the checkpoint's
+    declaration remains the fallback.  It is never converted to code-proven
+    absence.
+    """
+    result = _qk_norm_result(context, config_path=config_path)
+    return result.value if result is not None and result.status == "resolved" \
+        else None
+
+
+def _resolve_qk_norm_layers(
+        code_ev, cfg, declared: bool, num_layers: int, *,
+        context=None, config_path=()) -> list[bool]:
     """Per-layer Q/K-norm facts from the code evidence.
 
     Code-first resolution: unconditional construction → True everywhere (the
-    config is not consulted); proven-absent → False everywhere EVEN IF a config
-    spelling claims otherwise (a flag the code never reads is dead — the code
-    wins); gated → AND of the values of the config fields the code itself
-    names, read from THIS checkpoint (per-layer when the code indexes by the
-    layer index); no source / unresolvable gate → the declared spelling."""
+    config is not consulted); gated → AND of the values of the exact config
+    fields the code itself names, read from THIS checkpoint (per-layer when the
+    code indexes by layer index); no positive source proof / unresolvable gate
+    → the declared spelling.  Source silence never proves absence."""
     n = max(int(num_layers or 0), 0)
     if code_ev is None:
         return [declared] * n
     if code_ev.present is True:
         return [True] * n
-    if code_ev.present is False:
-        return [False] * n
     per_layer = [True] * n
     for atom in code_ev.gate:
-        raw = _g(cfg, atom.field)
+        if tuple(atom.config_path[:-1]) != tuple(config_path):
+            return [declared] * n
+        if context is None:
+            missing = object()
+            raw = _g(cfg, atom.field, missing)
+            if raw is missing:
+                return [declared] * n
+        else:
+            resolution = _config_access.resolve(
+                cfg, atom.field, (), path=tuple(config_path))
+            if resolution.ambiguous or not resolution.present:
+                return [declared] * n
+            raw = resolution.consume_decision(
+                mechanism="qk_norm_gate",
+                fact_owner="decoder.attention",
+                fact_key="qk_norm",
+                reader="adapters.transformer.parser._resolve_qk_norm_layers",
+            ).value
         if atom.per_layer:
             if not isinstance(raw, (list, tuple)) or len(raw) < n:
                 return [declared] * n
@@ -1219,7 +1250,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         reader="adapters.transformer.parser.parse").value
     use_qk_norm = bool(_qk_declared)
     qk_norm_layers = _resolve_qk_norm_layers(
-        _code_qk_norm(text_cfg, context), text_cfg, use_qk_norm, num_layers)
+        _code_qk_norm(text_cfg, context, config_path=_text_path),
+        text_cfg, use_qk_norm, num_layers,
+        context=context, config_path=_text_path)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
     # CODE construction is authoritative (Bloom/Qwen2 hardcode

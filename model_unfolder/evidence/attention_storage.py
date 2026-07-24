@@ -497,9 +497,37 @@ def projection_sources_reaching_calls(
     method_resolver=None,
 ):
     """Conservative local reaching definitions at exact compute-input calls."""
+    consumers = tuple(
+        (input_call.span, (
+            *input_call.args,
+            *(value for _, value in input_call.kwargs),
+        ))
+        for input_call in input_calls
+        if input_call.enclosing_callable == callable_symbol
+    )
+    return producer_sources_reaching_expressions(
+        index, callable_symbol, consumers, linear_calls,
+        method_resolver=method_resolver)
+
+
+def producer_sources_reaching_expressions(
+    index, callable_symbol, consumers, producer_calls, *,
+    method_resolver=None, initial_sources=None,
+    preserve_local_tuple_lanes=False,
+):
+    """Conservative local reaching definitions for exact consumer expressions.
+
+    ``producer_calls`` maps any stable, hashable producer identity to its exact
+    :class:`CallObservation`.  ``consumers`` contains
+    ``(consumer_span, expressions)`` pairs.  This neutral form lets mechanism
+    readers ask about only the arguments that matter (for example the Q and K
+    operands of an attention score) without treating later calls in the same
+    forward as equivalent consumers.
+
+    """
     calls_by_span = {
         call.span: occurrence
-        for occurrence, call in linear_calls.items()
+        for occurrence, call in producer_calls.items()
         if call.span is not None
     }
     bindings = sorted(
@@ -510,34 +538,46 @@ def projection_sources_reaching_calls(
     dependencies: dict[
         ConstructionOccurrenceId, set[ConstructionOccurrenceId]] = {}
     uncertain = False
-    for input_call in input_calls:
-        if input_call.enclosing_callable != callable_symbol:
-            # A bound free-function implementation receives its Q/K/V at the
-            # child-level entry call; the proof deliberately publishes only
-            # that entry in input_calls.
+    for consumer_span, expressions in consumers:
+        if consumer_span is None:
             continue
         env: dict[
-            str, tuple[frozenset[ConstructionOccurrenceId], bool]] = {}
+            str, tuple[frozenset[ConstructionOccurrenceId], bool]] = {
+                name: (frozenset((source,)), False)
+                for name, source in (initial_sources or {}).items()
+            }
         for binding in bindings:
             if binding.span is None \
-                    or not _span_before(binding.span, input_call.span):
+                    or not _span_before(binding.span, consumer_span):
                 continue
             sources, source_uncertain = _expression_sources(
                 binding.value, env, calls_by_span, dependencies)
             targets = tuple(_target_names(target) for target in binding.targets)
             flat_targets = tuple(name for group in targets for name in group)
+            lane_states = (
+                _tuple_expression_lane_states(
+                    index, callable_symbol, binding.value, len(flat_targets),
+                    env, calls_by_span, dependencies)
+                if preserve_local_tuple_lanes and len(flat_targets) >= 2
+                else None
+            )
             existing_sources = frozenset(
                 source
                 for known_sources, _ in env.values()
                 for source in known_sources)
             introduces_conditional_producer = bool(binding.guard) and (
                 not sources or not sources.issubset(existing_sources))
-            for name in flat_targets:
+            for position, name in enumerate(flat_targets):
                 previous_uncertain = env.get(
                     name, (frozenset(), False))[1]
+                target_sources, target_uncertain = (
+                    lane_states[position]
+                    if lane_states is not None
+                    else (frozenset(sources), source_uncertain)
+                )
                 env[name] = (
-                    frozenset(sources),
-                    source_uncertain or previous_uncertain
+                    frozenset(target_sources),
+                    target_uncertain or previous_uncertain
                     or introduces_conditional_producer,
                 )
             if not binding.guard and not source_uncertain \
@@ -549,14 +589,123 @@ def projection_sources_reaching_calls(
                 occurrence = next(iter(sources))
                 unpack_widths[occurrence] = max(
                     unpack_widths.get(occurrence, 0), len(flat_targets))
-        for argument in (
-                *input_call.args,
-                *(value for _, value in input_call.kwargs)):
+        for argument in expressions:
             argument_sources, argument_uncertain = _expression_sources(
                 argument, env, calls_by_span, dependencies)
             entry_sources.update(argument_sources)
             uncertain = uncertain or argument_uncertain
     return frozenset(entry_sources), unpack_widths, dependencies, uncertain
+
+
+def _tuple_expression_lane_states(
+    index, caller, expression, width, env, calls_by_span, dependencies,
+):
+    if expression is not None and expression.kind in {"tuple", "list"} \
+            and len(expression.children) == width:
+        return tuple(
+            _expression_sources(child, env, calls_by_span, dependencies)
+            for child in expression.children)
+    return _local_tuple_call_lane_states(
+        index, caller, expression, width, env, calls_by_span, dependencies)
+
+
+def _local_tuple_call_lane_states(
+    index, caller, expression, width, caller_env, calls_by_span, dependencies,
+):
+    """Preserve lanes through one exactly indexed local tuple-return helper.
+
+    This is deliberately not a semantic protocol.  It accepts only a direct
+    same-source free-function call, maps exact arguments to exact parameters,
+    and replays the indexed binding/return expressions.  Any unsupported or
+    non-exhaustive shape returns ``None`` and the caller retains the
+    conservative union behavior.
+    """
+    if expression is None or expression.kind != "call" \
+            or not expression.children:
+        return None
+    callee = expression.children[0]
+    if callee.kind != "name" or not callee.name:
+        return None
+    target = SymbolId(caller.source, callee.name)
+    record = index.callable_by_symbol(target)
+    if record is None or record.owner is not None:
+        return None
+    if index.unsupported_execution_in(target):
+        return None
+
+    positional = tuple(
+        child for child in expression.children[1:]
+        if isinstance(child, ExprNode))
+    keywords = dict(expression.keyword_children)
+    positional_params = tuple(
+        param for param in record.params
+        if param.kind in {"positional", "posonly"})
+    params = tuple(
+        param for param in record.params
+        if param.kind in {"positional", "posonly", "keyword_only"})
+    helper_env = {}
+    for param in params:
+        argument = keywords.get(param.name)
+        if argument is None and param in positional_params:
+            position = positional_params.index(param)
+            argument = (
+                positional[position] if position < len(positional) else None)
+        if argument is not None:
+            helper_env[param.name] = _expression_sources(
+                argument, caller_env, calls_by_span, dependencies)
+
+    returns = index.return_observations_in(target)
+    if not returns or not _return_guards_are_exhaustive(returns):
+        return None
+    observed = []
+    helper_bindings = sorted(
+        index.bindings_in(target), key=lambda item: _span_sort_key(item.span))
+    for returned in returns:
+        value = returned.value
+        if value is None or value.kind not in {"tuple", "list"} \
+                or len(value.children) != width:
+            return None
+        env = dict(helper_env)
+        for binding in helper_bindings:
+            if binding.span is None or not _span_before(
+                    binding.span, returned.span):
+                continue
+            sources, source_uncertain = _expression_sources(
+                binding.value, env, {}, dependencies)
+            flat_targets = tuple(
+                name
+                for target_expr in binding.targets
+                for name in _target_names(target_expr))
+            lane_states = (
+                tuple(
+                    _expression_sources(child, env, {}, dependencies)
+                    for child in binding.value.children)
+                if binding.value is not None
+                and binding.value.kind in {"tuple", "list"}
+                and len(flat_targets) == len(binding.value.children)
+                else None
+            )
+            conditional = bool(binding.guard)
+            for position, name in enumerate(flat_targets):
+                target_sources, target_uncertain = (
+                    lane_states[position]
+                    if lane_states is not None
+                    else (frozenset(sources), source_uncertain)
+                )
+                previous = env.get(name, (frozenset(), False))[1]
+                env[name] = (
+                    frozenset(target_sources),
+                    target_uncertain or previous or conditional,
+                )
+        lanes = tuple(
+            _expression_sources(child, env, {}, dependencies)
+            for child in value.children)
+        observed.append(lanes)
+
+    canonical = observed[0]
+    if any(lanes != canonical for lanes in observed[1:]):
+        return None
+    return canonical
 
 
 def _construction_is_unconditional(index, occurrence):
@@ -814,5 +963,6 @@ __all__ = [
     "decoder_attention_projection_storage_evidence",
     "decoder_attention_projection_storage_for_path",
     "decoder_attention_projection_storage_mode_evidence",
+    "producer_sources_reaching_expressions",
     "projection_sources_reaching_calls",
 ]
