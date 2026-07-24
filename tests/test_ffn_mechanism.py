@@ -1,0 +1,314 @@
+"""U3-F exact-owner ordinary FFN mechanism controls."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+import textwrap
+
+import pytest
+
+from model_unfolder.evidence import program_index as pi
+from model_unfolder.evidence.component_owner import resolve_component_root
+from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
+from model_unfolder.evidence.decoder_block import decoder_block_path_for_config
+from model_unfolder.evidence.ffn_mechanism import ffn_mechanism_at_block
+from model_unfolder.evidence.models import SourceBundle
+
+
+_CORPUS = Path(__file__).parent / "sable_test_corpus"
+_PREFIX = """
+import torch
+from torch import nn
+from torch.nn import functional as F
+from transformers.activations import ACT2FN
+"""
+
+_ATTENTION = """
+class Attention:
+    def __init__(self, config):
+        self.q = nn.Linear(config.hidden, config.hidden)
+        self.k = nn.Linear(config.hidden, config.hidden)
+        self.v = nn.Linear(config.hidden, config.hidden)
+    def forward(self, x):
+        q = self.q(x)
+        k = self.k(x)
+        v = self.v(x)
+        score = torch.matmul(q, k.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), v)
+"""
+
+
+def _reader(tmp_path, ffn_source, *, block_forward=None, extra=""):
+    block_forward = block_forward or """
+        x = self.attn(x)
+        return self.ffn(x)
+"""
+    source = _PREFIX + _ATTENTION + ffn_source + extra + f"""
+class Block:
+    def __init__(self, config):
+        self.attn = Attention(config)
+        self.ffn = FeedForward(config)
+    def forward(self, x):
+{block_forward}
+class Model:
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+class Wrapper:
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Model(config)
+"""
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local",
+        files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    assert root.status == "resolved"
+    block = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert block.status == "resolved", block.failures
+    return ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence)
+
+
+def test_dense_ffn_requires_exact_two_projection_chain_and_activation(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        hidden = self.up(x)
+        hidden = self.act(hidden)
+        return self.down(hidden)
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.gated is False
+    assert result.value.projection_mode == "dense"
+    assert result.value.activation == "gelu"
+    assert len(result.value.projections) == 2
+
+
+def test_split_gated_ffn_requires_two_lanes_multiplying_before_down(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.gate = nn.Linear(config.hidden, config.wide)
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        gate = F.silu(self.gate(x))
+        up = self.up(x)
+        return self.down(gate * up)
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.gated is True
+    assert result.value.projection_mode == "split"
+    assert result.value.activation == "silu"
+    assert len(result.value.projections) == 3
+
+
+def test_fused_gate_up_requires_split_and_multiplication(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.gate_up = nn.Linear(config.hidden, config.wide * 2)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        gate, up = self.gate_up(x).chunk(2, dim=-1)
+        return self.down(F.silu(gate) * up)
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "fused_gate_up"
+    assert result.value.activation == "silu"
+
+
+def test_activation_dispatch_carries_exact_config_path_not_a_guessed_kind(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = ACT2FN[config.hidden_act]
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.activation is None
+    assert result.value.activation_config_path == ("hidden_act",)
+    assert result.provenance[0].kind == "code_and_config"
+
+
+def test_attention_projection_bundle_is_not_an_ffn_candidate(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.ReLU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""")
+    assert result.status == "resolved"
+    assert result.value.owner_symbol.qualified_name == "FeedForward"
+
+
+def test_two_invoked_ordinary_ffns_are_ambiguous_not_first_hit(tmp_path):
+    result = _reader(
+        tmp_path,
+        """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""",
+        block_forward="""
+        x = self.attn(x)
+        x = self.ffn(x)
+        return self.other(x)
+""",
+        extra="""
+class OtherFFN:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.ReLU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""".replace(
+            "class OtherFFN", "class UnusedOtherFFN")
+        + """
+""")
+    # The helper above constructs only self.ffn, so an unused sibling class
+    # cannot contaminate the exact block occurrence.
+    assert result.status == "resolved"
+
+
+def test_two_constructed_and_invoked_ffns_are_ambiguous(tmp_path):
+    ffn = """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+"""
+    source = _PREFIX + _ATTENTION + ffn + """
+class OtherFFN:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.ReLU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+class Block:
+    def __init__(self, config):
+        self.attn = Attention(config)
+        self.left = FeedForward(config)
+        self.right = OtherFFN(config)
+    def forward(self, x):
+        x = self.attn(x)
+        x = self.left(x)
+        return self.right(x)
+class Model:
+    def __init__(self, config):
+        self.layers = nn.ModuleList([Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+class Wrapper:
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Model(config)
+"""
+    path = tmp_path / "ambiguous.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(index, root, allow_root_stage=True)
+    result = ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence)
+    assert result.status == "ambiguous"
+    assert len(result.ambiguity.sites) == 2
+
+
+def test_two_linear_multiply_without_lane_split_is_not_fused(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        hidden = self.up(x)
+        return self.down(F.silu(hidden) * hidden)
+""")
+    assert result.status == "failed"
+
+
+def test_three_linears_without_gate_multiplication_are_not_split_gated(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.first = nn.Linear(config.hidden, config.wide)
+        self.second = nn.Linear(config.wide, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        hidden = F.gelu(self.first(x))
+        hidden = self.second(hidden)
+        return self.down(hidden)
+    """)
+    assert result.status == "failed"
+
+
+@pytest.mark.parametrize(("slug", "config_path", "mode"), [
+    # BLOOM's down projection has two config-selected implementations
+    # (module call vs functional weight slices).  Until that branch-equivalence
+    # proof is added, the exact reader must abstain rather than infer dense from
+    # the familiar class.
+    ("bloom", (), None),
+    ("llama-7b", (), "split"),
+    ("musicgen-small", ("decoder",), "dense"),
+])
+def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
+        slug, config_path, mode):
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    block = decoder_block_path_for_config(
+        context.program_index(), context.source_bundle, config_path,
+        allow_root_stage=True)
+    assert block.status == "resolved", block.failures
+    result = ffn_mechanism_at_block(
+        context.program_index(), block.value.component_root,
+        block.value.block_occurrence)
+    if mode is None:
+        assert result.status != "resolved"
+        return
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == mode
+    assert result.value.gated is (mode != "dense")
