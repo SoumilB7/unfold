@@ -4,8 +4,9 @@
 The old U3 receipts ran focused, U2, preservation, the full suite, and an
 isolated checkout one after another.  That repeated the same expensive corpus
 work serially.  This coordinator preserves every boundary while running each
-lane in its own detached worktree and distributing the full/preservation suites
-across processes.
+lane in its own detached worktree.  Cheap/authority lanes form a fail-fast
+preflight; after they release their workers, the exhaustive full and
+preservation partitions receive the whole bounded CPU budget.
 
 Example::
 
@@ -221,26 +222,25 @@ def _parser() -> argparse.ArgumentParser:
 
 def _worker_plan(cpu_count: int,
                  override: int | None = None) -> tuple[int, int, int, int]:
-    """Allocate one bounded CPU budget across all concurrent pytest lanes.
+    """Allocate bounded workers for the staged receipt.
 
-    Preservation is parametrized by witness and authority is split by file, so
-    leaving both serial while the remainder owns every core makes their receipts
-    the long pole.  The plan gives those lanes real workers without
-    oversubscribing the host.  Focused tests keep one worker: they are short and
-    xdist startup would usually cost more than it saves.
+    Preflight and exhaustive lanes never overlap, so their allocations are
+    separate budgets.  In the heavy phase, full + preservation equals the host
+    budget (unless ``--workers`` deliberately caps full).  This avoids the
+    previous fixed allocation, which left released authority/focused CPUs idle
+    for most of a long full-suite run.  Focused tests keep one worker because
+    xdist startup normally costs more than it saves.
     """
     cpu_count = max(4, cpu_count)
     focused = 1
+    authority = min(4, max(2, cpu_count // 3))
     if override is not None:
-        preservation = 1
-        authority = 1
+        preservation = min(2, max(1, cpu_count - 1))
         full = min(max(1, override),
-                   max(1, cpu_count - focused - preservation - authority))
+                   max(1, cpu_count - preservation))
     else:
         preservation = 3 if cpu_count >= 12 else 2 if cpu_count >= 7 else 1
-        authority = 2 if cpu_count >= 9 else 1
-        full = min(6, max(
-            1, cpu_count - focused - preservation - authority))
+        full = max(1, cpu_count - preservation)
     return full, preservation, authority, focused
 
 
@@ -313,17 +313,20 @@ def main(argv: list[str] | None = None) -> int:
     # fixtures). Phase boundaries request one literal serial full invocation.
     full_command = ((*pytest_base, "tests") if args.serial_full else
                     _partitioned_full_command(pytest_base, full_workers))
-    lanes = (
+    preflight_lanes = (
         Lane("focused", (*pytest_base, *focused,
                           *_xdist_args(focused_workers, "loadfile"))),
         Lane("u2-authority", (*pytest_base, *U2_AUTHORITY_TESTS,
                               *_xdist_args(authority_workers, "loadfile"))),
         Lane("collect", (*pytest_base, "--collect-only", "tests")),
         Lane("static", _static_command(commit, tuple(args.forbid))),
+    )
+    heavy_lanes = (
         Lane("full", full_command),
         Lane("preservation", (*pytest_base, PRESERVATION_TEST,
                               *_xdist_args(preservation_workers, "worksteal"))),
     )
+    lanes = (*preflight_lanes, *heavy_lanes)
 
     run_id = uuid.uuid4().hex[:10]
     log_dir = LOG_ROOT / run_id
@@ -338,7 +341,13 @@ def main(argv: list[str] | None = None) -> int:
         for lane in lanes:
             worktrees[lane.name] = _add_worktree(commit, lane.name, run_id)
             _stage_external_artifacts(artifact_source, worktrees[lane.name])
-        results.extend(_run_phase(lanes, worktrees, log_dir))
+        preflight_results = _run_phase(
+            preflight_lanes, worktrees, log_dir)
+        results.extend(preflight_results)
+        # Fail fast: an authority/static/focused failure invalidates the commit,
+        # so spending another full-suite interval cannot make the receipt valid.
+        if all(result.passed for result in preflight_results):
+            results.extend(_run_phase(heavy_lanes, worktrees, log_dir))
     finally:
         if not args.keep_worktrees:
             for path in worktrees.values():

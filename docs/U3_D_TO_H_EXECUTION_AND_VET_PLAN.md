@@ -399,13 +399,14 @@ python3 scripts/verify_commit.py --focus tests/test_<reader>.py \
   --forbid <deleted_legacy_identifier>
 ```
 
-This is an exhaustive parallel partition, not a reduced suite. A dedicated
-lane owns all preservation tests (including one independently schedulable case
-per blessed witness); the full-core lane owns every other test file. Focused,
-U2-authority, collect-only, static/eradication, and those two exhaustive lanes
-run concurrently in separate detached worktrees. Host-aware scheduling gives
-the measured full-core long pole all cores not reserved for preservation,
-focused and U2. Each lane must return zero and preserve
+This is an exhaustive staged partition, not a reduced suite. A fail-fast
+preflight runs focused, U2-authority, collect-only and static/eradication lanes
+in separate detached worktrees. Once those lanes release their workers, a
+dedicated lane owns all preservation tests (including one independently
+schedulable case per blessed witness) while the full-core lane owns every other
+test file. Host-aware scheduling gives those two exhaustive lanes the complete
+bounded CPU budget instead of permanently reserving idle workers for already
+finished preflight lanes. Each lane must return zero and preserve
 both the project-tree fingerprint and the content fingerprint of the ignored
 blessed galleries/baselines staged into that worktree. The emitted
 `receipt.json` is the machine-readable completion record.
