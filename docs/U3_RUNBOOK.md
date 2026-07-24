@@ -351,7 +351,22 @@ then proceed autonomously to U3-B.
       - [x] U3-F3b: embedding/LayerNorm/RMSNorm semantics from exact external
         framework protocols or indexed implementation math, never class spelling.
       - [ ] U3-F4: embedding-stage norm production cutover implemented; focused
-        gates green; final committed-tree receipt pending.
+        gates green.  Its original receipt was stopped after exposing an
+        eight-hour worker-allocation pathology; F4 is included in the next
+        resource-balanced committed-tree campaign receipt rather than accepting
+        an incomplete run.
+      - [ ] U3-F5a: exact attention-child positive classification implemented,
+        pending the combined committed-tree receipt.  It starts at the exact F2
+        repeated-child occurrence and follows only graph-authoritative invoked
+        children.  Attention is proven by exact SDPA protocol or unguarded
+        dot-product+softmax implementation in one callable.  A bound local
+        fallback is followed only through the exact
+        ``target = resolver(..., fallback); target(...)`` relationship.  Class,
+        field and local spellings never classify the child; softmax-only,
+        dot-only, guarded, unused-helper and sibling-owner controls abstain.
+        Real controls: BLOOM, DeepSeek-V3, Gemma-2, GPT-OSS, Llama, OLMo-2,
+        Qwen3 and StableLM resolve; Qwen2-VL remains honestly outside the F2
+        model-stage boundary for U3-G.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
