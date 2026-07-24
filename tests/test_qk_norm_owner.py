@@ -282,6 +282,72 @@ return torch.matmul(weights, value_states)
     assert result.status == "failed"
 
 
+def test_normalized_value_projection_cannot_impersonate_query_norm(tmp_path):
+    result = _reader(
+        tmp_path,
+        _LINEARS + """
+self.v_norm = nn.RMSNorm(config.hidden_size)
+self.k_norm = nn.RMSNorm(config.hidden_size)
+""",
+        """
+raw_query = self.q_proj(hidden_states)
+key_states = self.k_norm(self.k_proj(hidden_states))
+value_states = self.v_norm(self.v_proj(hidden_states))
+query_states = raw_query + value_states
+scores = torch.matmul(
+    query_states, key_states.transpose(-1, -2))
+weights = torch.softmax(scores, dim=-1)
+return torch.matmul(weights, value_states)
+""",
+    )
+    assert result.status == "failed"
+
+
+def test_raw_callable_input_beside_a_normalized_projection_is_not_q_norm(
+        tmp_path):
+    result = _reader(
+        tmp_path,
+        _LINEARS + """
+self.q_side_norm = nn.RMSNorm(config.hidden_size)
+self.k_norm = nn.RMSNorm(config.hidden_size)
+""",
+        """
+query_side = self.q_side_norm(self.v_proj(hidden_states))
+query_states = hidden_states + query_side
+key_states = self.k_norm(self.k_proj(hidden_states))
+value_states = self.q_proj(hidden_states)
+scores = torch.matmul(
+    query_states, key_states.transpose(-1, -2))
+weights = torch.softmax(scores, dim=-1)
+return torch.matmul(weights, value_states)
+""",
+    )
+    assert result.status == "failed"
+
+
+def test_aliased_raw_input_beside_a_normalized_projection_is_not_q_norm(
+        tmp_path):
+    result = _reader(
+        tmp_path,
+        _LINEARS + """
+self.q_side_norm = nn.RMSNorm(config.hidden_size)
+self.k_norm = nn.RMSNorm(config.hidden_size)
+""",
+        """
+raw_query = hidden_states
+query_side = self.q_side_norm(self.v_proj(hidden_states))
+query_states = raw_query + query_side
+key_states = self.k_norm(self.k_proj(hidden_states))
+value_states = self.q_proj(hidden_states)
+scores = torch.matmul(
+    query_states, key_states.transpose(-1, -2))
+weights = torch.softmax(scores, dim=-1)
+return torch.matmul(weights, value_states)
+""",
+    )
+    assert result.status == "failed"
+
+
 def test_latent_norm_before_another_projection_is_not_qk_norm(tmp_path):
     result = _reader(
         tmp_path,

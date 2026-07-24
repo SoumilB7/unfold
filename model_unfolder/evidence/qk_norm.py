@@ -35,6 +35,7 @@ from .primitive_semantics import classify_primitive_call
 from .program_index import (
     CallObservation,
     CallSiteId,
+    ExprNode,
     GuardStep,
     ProgramIndex,
     SourceSpan,
@@ -190,6 +191,7 @@ def _qk_norm_at_attention(
     norm_by_site = {item.call_site: item.call for item in norm_calls}
     lane_producers = {**linear_calls, **norm_by_site}
     live_sites = set()
+    lane_proofs = []
     score_spans = tuple(lane[0] for lane in score_lanes)
     for score_span, q_expressions, k_expressions in score_lanes:
         q_reaching, _, _, q_uncertain = \
@@ -234,6 +236,9 @@ def _qk_norm_at_attention(
                 score_span),))
         live_sites.update(q_sites)
         live_sites.update(k_sites)
+        lane_proofs.append((
+            score_span, q_expressions, k_expressions,
+            frozenset(q_sites), frozenset(k_sites)))
     live = tuple(item for item in norm_calls if item.call_site in live_sites)
     if len(live) < 2:
         return ReaderResult.failed(owner, (ReaderFailure(
@@ -241,6 +246,7 @@ def _qk_norm_at_attention(
             "Q and K do not reach two distinct exact norm applications "
             f"(applications={len(live)})"),))
 
+    upstream_by_site = {}
     for application in live:
         if not application.call.args:
             return ReaderResult.failed(owner, (ReaderFailure(
@@ -258,6 +264,7 @@ def _qk_norm_at_attention(
                 "a live Q/K norm input is not proven to descend from an exact "
                 "Q/K/V storage projection",
                 application.call.span),))
+        upstream_by_site[application.call_site] = frozenset(upstream)
         downstream_linear_consumers = tuple(
             (call.span, tuple(call.args))
             for call in linear_calls.values()
@@ -275,6 +282,46 @@ def _qk_norm_at_attention(
                 "a live norm result feeds another exact Linear application "
                 "before the score and is therefore an intermediate/latent norm",
                 application.call.span),))
+
+    # Assign the exact storage projections to the score's Q and K lanes on the
+    # unguarded path.  This prevents a normalized V (or another storage
+    # projection) mixed into a raw Q expression from impersonating Q
+    # normalization.  Guarded cache updates are deliberately excluded here:
+    # their external tuple-return protocol is not indexed, while the
+    # pre-update Q/K projection path remains exact and is the path on which the
+    # normalization mechanism is applied.
+    for score_span, q_expressions, k_expressions, q_sites, k_sites \
+            in lane_proofs:
+        for expressions, sites, label in (
+                (q_expressions, q_sites, "Q"),
+                (k_expressions, k_sites, "K")):
+            if any(_latest_binding_has_raw_parameter(
+                    index, callable_symbol, expression, score_span,
+                    norm_by_site, linear_calls)
+                    for expression in expressions):
+                return ReaderResult.failed(owner, (ReaderFailure(
+                    "incomplete_graph",
+                    f"the exact {label} score lane directly mixes a raw "
+                    "callable input beside its norm application",
+                    score_span),))
+            lane_linears, _, _, lane_uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol,
+                    ((score_span, expressions),), linear_calls,
+                    preserve_local_tuple_lanes=True,
+                    include_guarded_bindings=False)
+            permitted = {
+                projection
+                for site in sites
+                for projection in upstream_by_site.get(site, ())
+            }
+            if lane_uncertain or not lane_linears \
+                    or not set(lane_linears).issubset(permitted):
+                return ReaderResult.failed(owner, (ReaderFailure(
+                    "incomplete_graph",
+                    f"the exact {label} score lane is not wholly supplied by "
+                    "the storage projection(s) feeding its norm application",
+                    score_span),))
 
     config_prefix = (
         tuple(root.config_path)
@@ -308,6 +355,112 @@ def _qk_norm_at_attention(
                 "constructions and reach the code-proven Q/K score operands"),
         ),),
     )
+
+
+def _latest_binding_has_raw_parameter(
+    index, callable_symbol, expression, consumer_span,
+    norm_calls, linear_calls,
+):
+    """Reject a raw data parameter that bypasses every proved producer."""
+    record = index.callable_by_symbol(callable_symbol)
+    params = {
+        param.name for param in (record.params if record is not None else ())
+        if param.name != "self"
+        and param.kind in {"positional", "posonly", "keyword_only"}
+    }
+    bindings = tuple(index.bindings_in(callable_symbol))
+    producer_spans = {
+        call.span for call in (*norm_calls.values(), *linear_calls.values())
+        if call.span is not None
+    }
+
+    tensor_passthrough_methods = {
+        "contiguous", "flatten", "reshape", "squeeze", "to", "transpose",
+        "unsqueeze", "view",
+    }
+
+    def latest(name, before):
+        candidates = tuple(
+            binding for binding in bindings
+            if not binding.guard and binding.span is not None
+            and _span_before(binding.span, before)
+            and any(name in _binding_target_names(target)
+                    for target in binding.targets))
+        return max(candidates, key=lambda item: (
+            item.span.line, item.span.col,
+            item.span.end_line or item.span.line,
+            item.span.end_col or item.span.col)) if candidates else None
+
+    def raw(expr, before, seen):
+        if expr is None:
+            return False
+        if expr.kind == "call" and expr.span in producer_spans:
+            return False
+        if expr.kind == "name":
+            if expr.name in params:
+                return True
+            binding = latest(expr.name, before)
+            if binding is None:
+                return False
+            identity = (expr.name, binding.span)
+            if identity in seen:
+                return True
+            if _is_exact_local_tuple_transform(
+                    index, callable_symbol, binding):
+                return False
+            return raw(binding.value, binding.span, seen | {identity})
+        if expr.kind == "call" and expr.children:
+            callee = expr.children[0]
+            if callee.kind == "attribute" \
+                    and callee.name in tensor_passthrough_methods \
+                    and callee.children:
+                # Closed tensor-value protocol: shape/dtype arguments do not
+                # become the carried tensor lane.
+                return raw(callee.children[0], before, seen)
+        return any(
+            raw(child, before, seen) for child in expr.children
+            if isinstance(child, ExprNode)
+        ) or any(
+            raw(child, before, seen)
+            for _, child in expr.keyword_children
+            if isinstance(child, ExprNode)
+        )
+
+    return raw(expression, consumer_span, set())
+
+
+def _is_exact_local_tuple_transform(index, caller, binding):
+    value = binding.value
+    target_count = sum(
+        len(_binding_target_names(target)) for target in binding.targets)
+    if target_count < 2 or value is None or value.kind != "call" \
+            or not value.children:
+        return False
+    callee = value.children[0]
+    if callee.kind != "name" or not callee.name:
+        return False
+    helper = index.callable_by_symbol(
+        type(caller)(caller.source, callee.name))
+    if helper is None or helper.owner is not None:
+        return False
+    returns = index.return_observations_in(helper.symbol)
+    return bool(returns) and all(
+        returned.value is not None
+        and returned.value.kind in {"tuple", "list"}
+        and len(returned.value.children) == target_count
+        for returned in returns)
+
+
+def _binding_target_names(expression):
+    if expression.kind == "name" and expression.name:
+        return (expression.name,)
+    if expression.kind in {"tuple", "list"}:
+        return tuple(
+            name
+            for child in expression.children
+            if isinstance(child, ExprNode)
+            for name in _binding_target_names(child))
+    return ()
 
 
 def _attention_score_consumers(index, child):
