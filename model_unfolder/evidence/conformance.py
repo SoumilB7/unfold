@@ -569,7 +569,9 @@ def check_fact_conformance(
 
 def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
                                code_qkv, code_expert, *,
-                               component: str = "") -> list[ConformanceProblem]:
+                               component: str = "",
+                               code_ffn_mode=None,
+                               use_legacy_ffn=True) -> list[ConformanceProblem]:
     """The fused-vs-split comparisons for ONE layer/group spec — shared by the
     root pass and the per-pipeline-component pass so the vocabulary and rules
     can never diverge."""
@@ -598,7 +600,15 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
             problems.append(ConformanceProblem(
                 "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key,
                 source_component=component))
-    elif ffn.get("gated"):
+    elif code_ffn_mode is not None:
+        drawn = ffn.get("projection_mode") or (
+            "split" if ffn.get("gated") else "dense")
+        if drawn != code_ffn_mode:
+            problems.append(ConformanceProblem(
+                "wrong_storage",
+                f"FFN projection storage is {code_ffn_mode.upper()}, "
+                f"drawn {drawn}", key, source_component=component))
+    elif use_legacy_ffn and ffn.get("gated"):
         evidence = ffn_structure_evidence(files, expected_gated=True)
         if evidence.status == "proven" and evidence.projection_mode:
             drawn = ffn.get("projection_mode") or "split"
@@ -687,13 +697,31 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         if storage is not None and storage.status == "resolved" else None
     )
     code_expert = expert_fused_gate_up_from_files(files)
-
+    from .ffn_mechanism import decoder_ffn_mechanism_for_path
+    ffn_result = None
+    if path is not None and parse_context is not None:
+        ffn_result = parse_context.cached_reader_result(
+            "decoder.ffn.mechanism",
+            path,
+            lambda: decoder_ffn_mechanism_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif path is not None:
+        ffn_result = decoder_ffn_mechanism_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_ffn_mode = (
+        ffn_result.value.projection_mode
+        if ffn_result is not None and ffn_result.status == "resolved"
+        else None
+    )
     for key, spec in representatives.items():
         # Vocabulary is the SPEC's own (ir.py): attention "fused_qkv" | None;
         # FFN/expert "fused_gate_up" | "split" | "dense" | None(=conventional).
         problems.extend(_storage_problems_for_spec(
             key, spec.get("attention") or {}, spec.get("ffn") or {},
-            files, code_qkv, code_expert))
+            files, code_qkv, code_expert,
+            code_ffn_mode=code_ffn_mode,
+            use_legacy_ffn=False))
 
     if not check_bookend:
         return problems

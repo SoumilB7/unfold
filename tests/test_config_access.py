@@ -631,3 +631,16 @@ def test_nested_contexts_keep_occurrence_joins_independent():
     outer_keys = {e.occurrence_key for e in outer.config_access.events}
     inner_keys = {e.occurrence_key for e in inner.config_access.events}
     assert len(inner_keys) == 1 and inner_keys < outer_keys
+
+
+def test_class_default_address_census_keeps_shared_sibling_paths(monkeypatch):
+    """Object identity prevents cycles; it must not collapse two addresses."""
+    from model_unfolder.evidence import context as context_module
+
+    monkeypatch.setattr(
+        context_module, "_installed_config_defaults",
+        lambda value: {"object": id(value)})
+    shared = {}
+    defaults = context_module._installed_config_defaults_by_path({
+        "left": shared, "right": shared})
+    assert defaults[("left",)] == defaults[("right",)]

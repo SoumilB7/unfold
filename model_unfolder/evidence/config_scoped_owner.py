@@ -29,6 +29,7 @@ from .component_owner import (
     resolve_construction_candidate_symbols,
     resolve_owner_graph,
 )
+from .construction_calls import resolve_import_reference
 from .models import SourceBundle
 from .program_index import (
     BindingObservation,
@@ -381,8 +382,15 @@ def _candidate_for_site(
         installation_span = installation_binding.span
 
     source_symbols = resolve_construction_candidate_symbols(index, site)
+    framework_proof_span = None
     if not source_symbols:
-        return "the local construction class reference is unresolved"
+        dispatched = _framework_dispatched_component_symbol(
+            index, bundle, init.symbol, site, config_path)
+        if isinstance(dispatched, str):
+            return dispatched
+        if dispatched is None:
+            return "the local construction class reference is unresolved"
+        source_symbols, framework_proof_span = (dispatched[0],), dispatched[1]
     source_identities = {
         (
             symbol.source.canonical_path,
@@ -426,7 +434,8 @@ def _candidate_for_site(
     component_symbol = component_symbols[0]
 
     component_graph = resolve_owner_graph(index, component_symbol)
-    spans = tuple(dict.fromkeys((site.span, installation_span)))
+    spans = tuple(dict.fromkeys((
+        site.span, installation_span, framework_proof_span)))
     component_root = ConstructedComponentRoot(
         component_key=".".join(config_path),
         occurrence=component_graph.root.occurrence,
@@ -449,6 +458,60 @@ def _candidate_for_site(
         site, installation_binding, installation_field, installation_kind,
         component_symbol, component_root,
         tuple(span for span in spans if isinstance(span, SourceSpan)))
+
+
+def _framework_dispatched_component_symbol(
+    index, bundle, enclosing_callable, site, config_path,
+):
+    """Resolve the exact class behind Transformers' AutoModel.from_config.
+
+    This is a closed framework address protocol, not model identity: source
+    proves an imported ``transformers...auto.AutoModel*.from_config`` call on
+    the selected config expression, while the already-resolved SourceBundle
+    names the class exported for that component address.  Neither side alone
+    is sufficient.
+    """
+    constructor = site.constructor
+    if constructor.kind != "call" or not constructor.children:
+        return None
+    callee = constructor.children[0]
+    proof = resolve_import_reference(
+        index, enclosing_callable.source, enclosing_callable, callee)
+    if proof is None:
+        return None
+    qualified = proof.qualified_target.lstrip(".")
+    parts = qualified.split(".")
+    if not qualified.startswith("transformers.models.auto.") \
+            or len(parts) < 3 \
+            or parts[-3] not in {"auto", "modeling_auto"} \
+            or not parts[-2].startswith("AutoModel") \
+            or parts[-1] != "from_config":
+        return None
+
+    component_key = ".".join(config_path)
+    architecture = (
+        getattr(bundle, "component_architectures", {}) or {}
+    ).get(component_key)
+    if not architecture:
+        return (
+            "the framework-dispatched component has no declared source "
+            "architecture")
+    failures = tuple(
+        failure for failure in index.parse_failures
+        if failure.source.component_key == component_key)
+    if failures:
+        return (
+            "a component parse failure can hide a rival framework-dispatched "
+            "class")
+    matches = tuple(
+        record.symbol for record in index.classes
+        if record.symbol.source.component_key == component_key
+        and record.symbol.qualified_name == architecture)
+    if len(matches) != 1:
+        return (
+            "the framework-dispatched component has "
+            f"{len(matches)} exact architecture declarations")
+    return matches[0], proof.binding.span
 
 
 def _init_callable(index, symbol):

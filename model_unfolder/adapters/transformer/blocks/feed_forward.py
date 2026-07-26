@@ -429,6 +429,15 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
     activation = activation_label(ffn.activation)
+    # Routed experts are a distinct callable/storage boundary from the
+    # ordinary/shared FFN.  Never let the ordinary FFN's gate verdict certify
+    # an expert.  A fused gate+up projection, however, is itself positive
+    # expert-gating evidence: that storage has two lanes by definition.
+    expert_gated = (
+        True if ffn.expert_projection_mode in {"fused_gate_up", "split"}
+        else False if ffn.expert_projection_mode == "dense"
+        else None
+    )
     if ffn.expert_projection_mode == "fused_gate_up":
         # Code-proven fused storage: the expert cards derive from the SAME
         # canonical region the drill draws (fused Linear(gate+up) -> split),
@@ -438,7 +447,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         from ....opgraph import ffn_region, rename_ops
         from ....renderers.html.block_views.mixture_of_experts import _EXPERT_IDS
         region = ffn_region(
-            {"kind": "dense", "gated": True, "activation": ffn.activation,
+            {"kind": "dense", "gated": expert_gated,
+             "activation": ffn.activation,
              "intermediate_size": ffn.expert_intermediate_size or ffn.intermediate_size,
              "projection_mode": "fused_gate_up"},
             None,
@@ -483,7 +493,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": {
+                **ffn_detail(ffn), "gated": expert_gated}},
             "children": expert_children,
         },
         {
@@ -492,7 +503,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": {
+                **ffn_detail(ffn), "gated": expert_gated}},
             "children": expert_children,
         },
         {
@@ -501,7 +513,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": {
+                **ffn_detail(ffn), "gated": expert_gated}},
             "children": expert_children,
         },
         {
@@ -510,7 +523,8 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": ffn_detail(ffn)},
+            "detail": {"ffn": {
+                **ffn_detail(ffn), "gated": expert_gated}},
             "children": expert_children,
         },
         {
@@ -571,4 +585,3 @@ def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[B
             "facts": [f"{inter} \u2192 {hidden}"],
         },
     ]
-

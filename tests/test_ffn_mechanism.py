@@ -12,7 +12,10 @@ from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
 from model_unfolder.evidence.decoder_block import decoder_block_path_for_config
-from model_unfolder.evidence.ffn_mechanism import ffn_mechanism_at_block
+from model_unfolder.evidence.ffn_mechanism import (
+    decoder_ffn_mechanism_for_path,
+    ffn_mechanism_at_block,
+)
 from model_unfolder.evidence.models import SourceBundle
 
 
@@ -153,6 +156,59 @@ class FeedForward:
     assert result.provenance[0].kind == "code_and_config"
 
 
+def test_nested_activation_dispatch_carries_the_full_selected_config_path(
+        tmp_path):
+    child_source = _PREFIX + _ATTENTION + """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = ACT2FN[config.hidden_act]
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+class Block:
+    def __init__(self, config):
+        self.attn = Attention(config)
+        self.ffn = FeedForward(config)
+    def forward(self, x):
+        x = self.attn(x)
+        return self.ffn(x)
+class Model:
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+"""
+    wrapper_source = """
+from transformers.models.auto.modeling_auto import AutoModel
+class Wrapper:
+    def __init__(self, config):
+        self.model = AutoModel.from_config(config.text)
+"""
+    child = tmp_path / "child.py"
+    wrapper = tmp_path / "wrapper.py"
+    child.write_text(textwrap.dedent(child_source), encoding="utf-8")
+    wrapper.write_text(textwrap.dedent(wrapper_source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(wrapper), str(child)),
+        component_files={
+            "root": (str(wrapper),), "text": (str(child),)},
+        component_architectures={
+            "root": "Wrapper", "text": "Model"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    result = decoder_ffn_mechanism_for_path(
+        index, bundle, ("text",), allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.activation_config_path == ("text", "hidden_act")
+    assert result.provenance[-1].config_paths == (
+        ("text", "hidden_act"),)
+
+
 def test_attention_projection_bundle_is_not_an_ffn_candidate(tmp_path):
     result = _reader(tmp_path, """
 class FeedForward:
@@ -254,6 +310,27 @@ class Wrapper:
         index, root, block.value.block_occurrence)
     assert result.status == "ambiguous"
     assert len(result.ambiguity.sites) == 2
+
+
+def test_one_ffn_occurrence_invoked_twice_is_not_collapsed_to_one_sublayer(
+        tmp_path):
+    result = _reader(
+        tmp_path,
+        """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""",
+        block_forward="""
+        x = self.attn(x)
+        x = self.ffn(x)
+        return self.ffn(x)
+""")
+    assert result.status != "resolved"
 
 
 def test_two_linear_multiply_without_lane_split_is_not_fused(tmp_path):
@@ -395,6 +472,24 @@ class FeedForward:
     assert result.value.projection_mode == "dense"
 
 
+def test_guarded_same_weight_cannot_launder_an_activation_bypass(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        hidden = self.act(self.up(x))
+        if self.training:
+            output = F.linear(x, self.down.weight)
+        else:
+            output = self.down(hidden)
+        return output
+""")
+    assert result.status == "failed"
+
+
 def test_guarded_down_call_without_a_complementary_storage_path_is_unknown(
         tmp_path):
     result = _reader(tmp_path, """
@@ -419,7 +514,15 @@ class FeedForward:
     # exact same stored down projection (module call vs F.linear(weight slices)).
     ("bloom", (), "dense"),
     ("llama-7b", (), "split"),
+    ("stablelm-2-1-6b", (), "split"),
+    ("qwen2-vl-7b-instruct", ("text_config",), "split"),
     ("musicgen-small", ("decoder",), "dense"),
+    # Hybrid/routed blocks are not ordinary FFNs. Their mechanisms belong to
+    # the separate router/expert reader; this reader must abstain, never union
+    # a shared MLP and routed experts into one convenient answer.
+    ("deepseek-v3", (), None),
+    ("glm-4-5", (), None),
+    ("gpt-oss-20b", (), None),
 ])
 def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
         slug, config_path, mode):
@@ -444,6 +547,8 @@ def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
 @pytest.mark.parametrize(("slug", "config_path", "mode", "gated"), [
     ("bloom", (), "dense", False),
     ("llama-7b", (), "split", True),
+    ("stablelm-2-1-6b", (), "split", True),
+    ("qwen2-vl-7b-instruct", ("text_config",), "split", True),
     ("musicgen-small", ("decoder",), "dense", False),
 ])
 def test_parser_consumes_the_same_exact_ffn_result(
@@ -499,3 +604,134 @@ def test_parser_and_conformance_share_one_exact_ffn_result(monkeypatch):
                 if problem.kind == "wrong_storage"]
     assert context.reader_results[key] is parsed_result
     assert [call for call in calls if call[0] == ("decoder",)] == decoder_calls
+
+
+def test_routed_expert_gate_is_not_borrowed_from_the_ordinary_ffn():
+    """Expert storage is its own mechanism boundary.
+
+    A fused gate+up projection positively proves a gated expert even when the
+    ordinary FFN is unknown.  Without that expert-local proof the expert stays
+    opaque; the ordinary/shared FFN verdict must never leak across.
+    """
+    from model_unfolder.adapters.transformer.blocks.feed_forward import (
+        ffn_child_blocks,
+    )
+    from model_unfolder.ir import FFNSpec
+    from model_unfolder.opgraph import ffn_region
+
+    def expert_detail(mode):
+        spec = FFNSpec(
+            kind="moe", activation=None, gated=None, intermediate_size=256,
+            expert_intermediate_size=128, num_experts=8,
+            num_experts_per_tok=2, expert_projection_mode=mode,
+        )
+        return next(
+            child["detail"]["ffn"]
+            for child in ffn_child_blocks(spec, 64)
+            if child.get("id") == "expert_1"
+        )
+
+    fused = expert_detail("fused_gate_up")
+    assert fused["gated"] is True
+    fused_region = {
+        **fused, "kind": "dense",
+        "projection_mode": fused["expert_projection_mode"],
+    }
+    assert ffn_region(fused_region, 64).template == "fused_gated_mlp"
+
+    unknown = expert_detail(None)
+    assert unknown["gated"] is None
+    unknown_region = {
+        **unknown, "kind": "dense",
+        "projection_mode": unknown["expert_projection_mode"],
+    }
+    assert ffn_region(unknown_region, 64).template == "undeclared"
+
+
+def test_same_exact_ffn_called_on_alternative_paths_is_one_mechanism(tmp_path):
+    """Repeated invocation sites do not manufacture rival FFN owners.
+
+    GPT-NeoX invokes the same stored MLP in its parallel and sequential
+    residual branches.  The invocation census must retain both sites while the
+    mechanism remains the one exact constructed child.
+    """
+    result = _reader(
+        tmp_path,
+        """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""",
+        block_forward="""
+        if self.training:
+            return self.ffn(x)
+        return self.ffn(x)
+""",
+    )
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+    assert len(result.value.invocations) == 2
+
+
+def test_same_ffn_in_exact_if_else_assignment_is_one_mechanism(tmp_path):
+    result = _reader(
+        tmp_path,
+        """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""",
+        block_forward="""
+        if self.training:
+            output = self.ffn(x)
+        else:
+            output = self.ffn(x)
+        return output
+""",
+    )
+    assert result.status == "resolved", result.failures
+    assert len(result.value.invocations) == 2
+
+
+def test_fused_routed_expert_count_does_not_borrow_ordinary_gate():
+    from model_unfolder.ir import FFNSpec
+    from model_unfolder.params import _ffn_params
+
+    spec = FFNSpec(
+        kind="moe", activation=None, gated=None, intermediate_size=32,
+        expert_intermediate_size=16, num_experts=4,
+        num_experts_per_tok=2, num_shared_experts=1,
+        expert_projection_mode="fused_gate_up",
+    )
+    total, active = _ffn_params(spec, 8)
+    routed = 3 * 8 * 16
+    shared_floor = 2 * 8 * 16
+    router = 8 * 4
+    assert total == routed * 4 + shared_floor + router
+    assert active == routed * 2 + shared_floor + router
+
+
+def test_unproven_routed_expert_count_does_not_borrow_ordinary_gate():
+    from model_unfolder.ir import FFNSpec
+    from model_unfolder.params import _ffn_params
+
+    spec = FFNSpec(
+        kind="moe", activation="silu", gated=True, intermediate_size=32,
+        expert_intermediate_size=16, num_experts=4,
+        num_experts_per_tok=2, num_shared_experts=1,
+        expert_projection_mode=None,
+    )
+    total, active = _ffn_params(spec, 8)
+    routed_floor = 2 * 8 * 16
+    shared_gated = 3 * 8 * 16
+    router = 8 * 4
+    assert total == routed_floor * 4 + shared_gated + router
+    assert active == routed_floor * 2 + shared_gated + router

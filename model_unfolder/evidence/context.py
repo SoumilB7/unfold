@@ -182,6 +182,13 @@ class ParseContext:
     # they consume the resolved source bundle). ``None`` when the
     # model_type is absent/unregistered.
     class_defaults: dict | None = None
+    # The same code-derived config-class defaults, qualified by their exact
+    # document path and resolved from the ORIGINAL document once.  A
+    # name-blind replay reuses this address result instead of consulting the
+    # scrubbed identity again; sibling text/vision/audio configs can never
+    # borrow one another's defaults.
+    class_defaults_by_path: dict[tuple[str, ...], dict] = field(
+        default_factory=dict)
     # U2 mask family: the config's decoder-ness DECLARATION (is_decoder /
     # architectures[] role suffix / decoder-only wrapper / composite decoder
     # slot), resolved once here so the name-blind guard's scrubbed parse
@@ -231,10 +238,12 @@ class ParseContext:
         token: Any = None,
     ) -> "ParseContext":
         from .decoderness import declared_decoderness
+        defaults_by_path = _installed_config_defaults_by_path(target)
         return cls(
             source_bundle=resolve_source_files(target, source=source, token=token),
             source=source,
-            class_defaults=_installed_config_defaults(target),
+            class_defaults=defaults_by_path.get(()),
+            class_defaults_by_path=defaults_by_path,
             declared_decoderness=declared_decoderness(target),
         )
 
@@ -254,6 +263,39 @@ def _installed_config_defaults(target: Any) -> dict | None:
         return AutoConfig.for_model(str(model_type)).to_dict()
     except Exception:
         return None
+
+
+def _installed_config_defaults_by_path(
+    target: Any,
+) -> dict[tuple[str, ...], dict]:
+    """Resolve config-class address metadata once for every declared scope."""
+    out: dict[tuple[str, ...], dict] = {}
+    active: set[int] = set()
+
+    def walk(value: Any, path: tuple[str, ...], depth: int) -> None:
+        identity = id(value)
+        if depth > 5 or identity in active:
+            return
+        active.add(identity)
+        defaults = _installed_config_defaults(value)
+        if isinstance(defaults, dict):
+            out[path] = defaults
+        if isinstance(value, dict):
+            children = value.items()
+        elif hasattr(value, "to_dict"):
+            try:
+                children = value.to_dict().items()
+            except (TypeError, ValueError, AttributeError):
+                children = ()
+        else:
+            children = ()
+        for key, child in children:
+            if isinstance(child, dict) or hasattr(child, "to_dict"):
+                walk(child, (*path, str(key)), depth + 1)
+        active.remove(identity)
+
+    walk(target, (), 0)
+    return out
 
 
 __all__ = ["ParseContext", "FactLedger", "FactRecord", "FACT_STATUSES"]
@@ -321,6 +363,7 @@ def slot_parse_context(root_context, slot: str, *,
         "architectures": ([component_architectures.get("root")]
                           if component_architectures.get("root") else None),
     }
+    _slot_defaults = _installed_config_defaults(_slot_identity)
     return ParseContext(
         source_bundle=sub_bundle, source=root_context.source,
         # Ownership namespace: this slot's facts are owned under
@@ -328,7 +371,9 @@ def slot_parse_context(root_context, slot: str, *,
         # even though its SOURCE subtree is re-rooted for resolution above.
         component_namespace=(namespace or (
             f"{getattr(root_context, 'component_namespace', 'root')}.{slot}")),
-        class_defaults=_installed_config_defaults(_slot_identity),
+        class_defaults=_slot_defaults,
+        class_defaults_by_path=(
+            {(): _slot_defaults} if isinstance(_slot_defaults, dict) else {}),
         declared_decoderness=declared_decoderness(_slot_identity),
     )
 

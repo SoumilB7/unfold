@@ -76,6 +76,15 @@ _EXPERT_IDS = {
 def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> str:
     """Third-level view for the FFN that lives inside one MoE expert."""
     ffn = ffn_from_block(child, info)
+    # The expert is not the ordinary/shared FFN.  Only its own storage can
+    # certify its gate shape.  A fused gate+up projection is positive gating
+    # evidence; otherwise retain the expert's explicit tri-state verdict.
+    expert_gated = (
+        True if ffn.get("expert_projection_mode") in {
+            "fused_gate_up", "split"}
+        else False if ffn.get("expert_projection_mode") == "dense"
+        else None
+    )
     expert = rename_ops(
         ffn_region(
             {
@@ -83,7 +92,7 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
                 # U2: tri-state pass-through — an undeclared expert structure
                 # (gated None) draws the honest undeclared-FFN region, never a
                 # bool()-fabricated dense expert.
-                "gated": ffn.get("gated", True),
+                "gated": expert_gated,
                 "activation": ffn.get("activation"),
                 "intermediate_size": ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"),
                 # Code-proven fused gate_up storage flows into the expert drill —

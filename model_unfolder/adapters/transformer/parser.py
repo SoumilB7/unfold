@@ -168,20 +168,36 @@ def _code_norm_math(cfg: Any, context=None) -> str | None:
         return None
 
 
-def _code_ffn_gated(cfg: Any, context=None) -> bool | None:
-    """Whether the decoder's plain MLP is gated (gate·up) READ FROM THE MODELING
-    SOURCE — overrides the ``rmsnorm -> gated`` heuristic, which mis-gates a dense
-    RMSNorm decoder (Phi: ``PhiMLP`` is dense). Same code-evidence rail that feeds
-    the nested-conformance net, so the drawing and the net never diverge.
-    Best-effort, never raises into the parse; None keeps the heuristic."""
-    try:
-        from ...evidence.patterns import decoder_ffn_gated_from_files
-        return decoder_ffn_gated_from_files(_source_files(cfg, context), cfg=cfg)
-    except Exception:
+def _ffn_mechanism_result(context=None, *, config_path=()):
+    """One call-local exact-owner ordinary FFN result."""
+    if context is None:
         return None
+    from ...evidence.ffn_mechanism import decoder_ffn_mechanism_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.ffn.mechanism",
+        config_path,
+        lambda: decoder_ffn_mechanism_for_path(
+            context.program_index(),
+            context.source_bundle,
+            config_path,
+            allow_root_stage=True,
+        ),
+    )
 
 
-def _code_ffn_storage_mode(cfg: Any, context=None, *, expected_gated=None) -> str | None:
+def _code_ffn_gated(
+        cfg: Any, context=None, *, config_path=()) -> bool | None:
+    """Gate structure from the exact selected decoder FFN occurrence."""
+    result = _ffn_mechanism_result(
+        context, config_path=config_path)
+    return result.value.gated \
+        if result is not None and result.status == "resolved" else None
+
+
+def _code_ffn_storage_mode(
+        cfg: Any, context=None, *, expected_gated=None,
+        config_path=()) -> str | None:
     """FFN projection STORAGE read from the modeling source: split gate/up/down
     modules vs a fused ``gate_up_proj`` that is chunked in forward (Mixtral /
     DeepSeek-V3 naive MoE / gpt-oss experts).  A whiteboard-equivalent split
@@ -190,15 +206,14 @@ def _code_ffn_storage_mode(cfg: Any, context=None, *, expected_gated=None) -> st
     default split rendering (unproven storage stays the conventional shape only
     for the ALREADY-drawn gated structure; the gate-or-not fact itself remains
     evidence/tri-state via ``_code_ffn_gated``)."""
-    try:
-        from ...evidence.ffn import ffn_structure_evidence
-        evidence = ffn_structure_evidence(
-            _source_files(cfg, context), expected_gated=expected_gated)
-        if evidence.status == "proven":
-            return evidence.projection_mode
+    result = _ffn_mechanism_result(
+        context, config_path=config_path)
+    if result is None or result.status != "resolved":
         return None
-    except Exception:
+    if expected_gated is not None \
+            and result.value.gated != expected_gated:
         return None
+    return result.value.projection_mode
 
 
 def _code_embedding_norm(cfg: Any, context=None) -> str | None:
@@ -449,13 +464,13 @@ def _code_expert_storage(cfg: Any, context=None) -> str | None:
         return None
 
 
-def _code_ffn_activation(cfg: Any, context=None) -> str | None:
+def _code_ffn_activation(
+        cfg: Any, context=None, *, config_path=()) -> str | None:
     """Config-silent FFN activation read from the exact modeling source."""
-    try:
-        from ...evidence.patterns import decoder_ffn_activation_from_files
-        return decoder_ffn_activation_from_files(_source_files(cfg, context))
-    except Exception:
-        return None
+    result = _ffn_mechanism_result(
+        context, config_path=config_path)
+    return result.value.activation \
+        if result is not None and result.status == "resolved" else None
 
 
 def _code_lm_head_tying(cfg: Any, context=None) -> bool | None:
@@ -469,15 +484,19 @@ def _code_lm_head_tying(cfg: Any, context=None) -> bool | None:
         return None
 
 
-def _code_ffn_activation_dispatch(cfg: Any, context=None) -> str | None:
+def _code_ffn_activation_dispatch(
+        cfg: Any, context=None, *, config_path=()) -> str | None:
     """The config field the FFN's ``ACT2FN[...]``/``get_activation(...)``
     dispatch reads (U2 P2c) — names the deciding field so a config-supplied
     activation can be recorded ``code_and_config``, not merely declared."""
-    try:
-        from ...evidence.patterns import ffn_activation_dispatch_field_from_files
-        return ffn_activation_dispatch_field_from_files(_source_files(cfg, context))
-    except Exception:
+    result = _ffn_mechanism_result(
+        context, config_path=config_path)
+    if result is None or result.status != "resolved":
         return None
+    path = result.value.activation_config_path
+    if not path or tuple(path[:-1]) != tuple(config_path):
+        return None
+    return path[-1]
 
 
 def _code_attention_causality(cfg: Any, context=None) -> str | None:
@@ -512,15 +531,22 @@ from .common import wrapper_path as _wrapper_path
 from ...everchanging import load_composite_slots as _load_composite_slots
 
 
-def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
+def _unwrap_text_with_path(
+    cfg: Any, _depth: int = 0, *,
+    class_defaults_by_path=None, _base_path=(),
+) -> tuple[Any, tuple[str, ...]]:
     """If a multimodal wrapper hides the LM config under a sub-key, unwrap it.
 
     Handles one further level of nesting (e.g. Qwen3-Omni's
     ``thinker_config.text_config``) by recursing into a wrapper that doesn't
-    itself carry transformer shape.
+    itself carry transformer shape.  The address travels with the selected
+    object: completing a sparse child through its config class creates a new
+    mapping object, so an identity walk performed afterward cannot recover the
+    checkpoint path.
     """
     if _depth > 3:
-        return cfg
+        return cfg, ()
+    defaults_by_path = class_defaults_by_path or {}
     for key in _TEXT_WRAPPER_KEYS:
         sub = _g(cfg, key)
         if sub is None:
@@ -531,16 +557,27 @@ def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
             sub = sub.to_dict()
         if isinstance(sub, dict):
             if _has_transformer_shape(sub):
-                return sub
-            completed = _complete_config_from_transformers_registry(sub)
+                return sub, (key,)
+            absolute_path = (*_base_path, key)
+            completed = defaults_by_path.get(absolute_path)
+            if not isinstance(completed, dict):
+                completed = _complete_config_from_transformers_registry(sub)
             if _has_transformer_shape(completed):
-                return completed
+                # Completion proves that this declared child is a transformer
+                # config, but the parser must keep reading the checkpoint's
+                # original object.  Class-supplied values travel separately as
+                # typed class-default premises; replacing the object would
+                # falsely report those values as checkpoint declarations.
+                return sub, (key,)
             # Wrapper that itself nests the LM deeper (Omni thinker_config).
-            nested = _unwrap_text(sub, _depth + 1)
-            if nested is not sub and _has_transformer_shape(nested):
-                return nested
+            nested, nested_path = _unwrap_text_with_path(
+                sub, _depth + 1,
+                class_defaults_by_path=defaults_by_path,
+                _base_path=absolute_path)
+            if nested_path and _has_transformer_shape(nested):
+                return nested, (key, *nested_path)
         elif _has_transformer_shape(sub):
-            return sub
+            return sub, (key,)
     # Composite/seq2seq wrapper (MusicGen): the MAIN stack is a declared BARE
     # slot (``decoder`` — composite_slots vocabulary), not a ``*_config`` key.
     # A slot only counts when its child declares its own model_type; sparse
@@ -555,11 +592,19 @@ def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
         if not isinstance(sub, dict) or not sub.get("model_type"):
             continue
         if _has_transformer_shape(sub):
-            return sub
-        completed = _complete_config_from_transformers_registry(sub)
+            return sub, (key,)
+        absolute_path = (*_base_path, key)
+        completed = defaults_by_path.get(absolute_path)
+        if not isinstance(completed, dict):
+            completed = _complete_config_from_transformers_registry(sub)
         if _has_transformer_shape(completed):
-            return completed
-    return cfg
+            return sub, (key,)
+    return cfg, ()
+
+
+def _unwrap_text(cfg: Any, _depth: int = 0) -> Any:
+    """Compatibility value view; parsing consumes the address-carrying form."""
+    return _unwrap_text_with_path(cfg, _depth)[0]
 
 
 def _composite_encoder_model_type(cfg: Any) -> str | None:
@@ -655,7 +700,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
     model_type = (_g(cfg, "model_type") or "unknown").lower()
     arch_name  = architecture_name(cfg, model_type)
 
-    text_cfg = _unwrap_text(cfg)
+    _defaults_by_path = (
+        getattr(context, "class_defaults_by_path", None) or {})
+    text_cfg, _text_path = _unwrap_text_with_path(
+        cfg, class_defaults_by_path=_defaults_by_path)
+    _selected_class_defaults = _defaults_by_path.get(_text_path)
+    if not isinstance(_selected_class_defaults, dict):
+        _selected_class_defaults = (
+            _complete_config_from_transformers_registry(text_cfg)
+            if isinstance(text_cfg, dict) else {})
+    if _selected_class_defaults is text_cfg:
+        _selected_class_defaults = {}
+    # Preserve U2 shadow mode for an already-shaped checkpoint: class defaults
+    # may support individually-tiered facts below, but may not silently author
+    # arbitrary structure (for example Gemma-2's layer schedule).  The broad
+    # completion tier is retained only for a declared sparse child that could
+    # not otherwise be parsed as a transformer at all.
+    _shape_completion_defaults = (
+        _selected_class_defaults
+        if not _has_transformer_shape(text_cfg) else {})
+    _fact_class_defaults = (
+        _selected_class_defaults
+        if _text_path else (getattr(context, "class_defaults", None) or {}))
     # Nested text_config (multimodal wrapper) is fully supported — no warning needed.
 
     # DBRX-style nested config dicts: pull through transparently.
@@ -664,7 +730,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     from ...evidence import config_access as _config_access
 
-    _text_path = _wrapper_path(cfg, text_cfg)
+    # The selector carries this address through sparse config completion.
+    # Identity lookup remains a consistency check for unmodified child objects,
+    # never the sole way to rediscover a copied child's checkpoint location.
+    _identity_path = _wrapper_path(cfg, text_cfg)
+    if _identity_path and _identity_path != _text_path:
+        raise ValueError(
+            "text-config selection and identity address disagree")
     context.selected_config_paths["transformer.main"] = tuple(_text_path)
     _TIERS = (
         (text_cfg, _text_path),
@@ -689,7 +761,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     tier_cfg, field, _ALIASES.get(field, ()), path=tier_path)
         return _config_access.resolve(
             text_cfg if text_cfg is not None else {}, field,
-            _ALIASES.get(field, ()), path=_text_path)
+            _ALIASES.get(field, ()), path=_text_path,
+            class_defaults=_shape_completion_defaults)
 
     def get(field, default=None):
         """Inspect a scoped value (a branch may read and discard it).  An
@@ -697,7 +770,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         lawful ONLY because the typed ambiguity event is recorded and the
         blocking ``config_ambiguity`` net fails the model outright."""
         res = _scoped(field)
-        if res.state == "present" and res.value is not None:
+        if (res.state == "present" or res.source_kind == "class_default") \
+                and res.value is not None:
             return res.value
         return default
 
@@ -755,14 +829,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
             _activation_status, _activation_src = (
                 "config_declared", "feed_forward_proj")
     if activation_raw is None:
-        activation_raw = _code_ffn_activation(text_cfg, context)
+        activation_raw = _code_ffn_activation(
+            text_cfg, context, config_path=_text_path)
         _activation_status, _activation_src = (
-            "code_proven", "decoder_ffn_activation_from_files")
+            "code_proven", "decoder_ffn_mechanism_for_path")
         if activation_raw is None:
             # U2 P3b class_default tier (the hydration channel): the installed
             # config CLASS's own activation default decides before the typed
             # unknown (t5-base: dense_act_fn='relu' — the dense-relu truth).
-            _cd_for_act = getattr(context, "class_defaults", None) or {}
+            _cd_for_act = _fact_class_defaults
             _cd_act = next((_cd_for_act.get(s) for s in _spellings("hidden_act")
                             if _cd_for_act.get(s) is not None), None)
             _cd_src = "hidden_act family"
@@ -783,7 +858,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # the ACT2FN/get_activation dispatch, the fact is CODE-AND-CONFIG:
         # code proves an activation applies and NAMES the deciding field,
         # config supplies which (the endorsed envelope's fourth tier).
-        _dispatch_field = _code_ffn_activation_dispatch(text_cfg, context)
+        _dispatch_field = _code_ffn_activation_dispatch(
+            text_cfg, context, config_path=_text_path)
         if _dispatch_field:
             _activation_status = "code_and_config"
             _activation_src = f"ACT2FN[config.{_dispatch_field}]"
@@ -928,7 +1004,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # a gate-family activation string is the config-derived second channel; NO
     # channel ⇒ typed unknown (None) drawn as the honest undeclared-FFN block,
     # never derived from norm_kind (the census cascade, killed in U2).
-    _code_gated = _code_ffn_gated(text_cfg, context)
+    _code_gated = _code_ffn_gated(
+        text_cfg, context, config_path=_text_path)
     # Some configs declare gate-ness directly (T5's is_gated_act /
     # feed_forward_proj).  These are semantic declarations, unlike a plain
     # activation such as ``silu`` which does NOT by itself prove a third gate
@@ -971,7 +1048,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _clsdef_gated = None
     _clsdef_gated_source = None
     if _config_gated is None:
-        _cd_for_gate = getattr(context, "class_defaults", None) or {}
+        _cd_for_gate = _fact_class_defaults
         _cd_gate_flag = _cd_for_gate.get("is_gated_act")
         _cd_gate_ffp = _cd_for_gate.get("feed_forward_proj")
         if _cd_gate_flag is not None:
@@ -996,12 +1073,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
                else "class_default" if _clsdef_gated is not None
                else "derived" if ffn_gated is not None
                else _unknown_status,
-               source=("decoder_ffn_gated_from_files" if _code_gated is not None
+               source=("decoder_ffn_mechanism_for_path"
+                       if _code_gated is not None
                        else _config_gated_source if _config_gated is not None
                        else _clsdef_gated_source if _clsdef_gated is not None
                        else "explicit GLU activation name (hidden_act)"
                        if ffn_gated is not None else None))
-    _code_storage_mode = _code_ffn_storage_mode(text_cfg, context, expected_gated=_code_gated)
+    _code_storage_mode = _code_ffn_storage_mode(
+        text_cfg, context, expected_gated=_code_gated,
+        config_path=_text_path)
     _code_expert_fused = _code_expert_storage(text_cfg, context)
     _code_fused_qkv = _code_attention_fused_qkv(
         text_cfg, context, config_path=_text_path)
@@ -1009,7 +1089,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _note_fact("decoder.ffn", "projection_mode",
                _code_storage_mode if _code_storage_mode is not None else "split",
                "code_proven" if _code_storage_mode is not None else "asserted",
-               source=("ffn_structure_evidence" if _code_storage_mode is not None
+               source=("decoder_ffn_mechanism_for_path"
+                       if _code_storage_mode is not None
                        else "split convention kept (storage unproven)"))
     _note_fact("decoder.attention", "projection_mode",
                "fused_qkv" if _code_fused_qkv else "split",
@@ -1272,7 +1353,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # config ATTRIBUTE at runtime — an absent key resolves to the installed
     # config class's default, real evidence (the hydration channel) and the
     # same value the hydrated embedded/sub-model rail sees (parity net).
-    _cls_defaults = getattr(context, "class_defaults", None) or {}
+    _cls_defaults = _fact_class_defaults
     if _code_bias is not None:
         use_attention_bias = bool(_code_bias)
         _note_fact("decoder.attention", "bias", use_attention_bias,
@@ -1330,8 +1411,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # class_default tier (the attention twin's rule): an absent mlp_bias key
     # resolves to the installed config class's default at runtime.
     if _mlp_bias is None:
-        _mlp_bias = (getattr(context, "class_defaults", None)
-                     or {}).get("mlp_bias")
+        _mlp_bias = _fact_class_defaults.get("mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
     _code_mlp = _code_mlp_bias(text_cfg, context)
     if _code_mlp is not None:
@@ -1825,8 +1905,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact("model", "tie_word_embeddings", True,
                    "code_proven", "lm_head_tying_from_files")
     else:
-        _tie_cls = (getattr(context, "class_defaults", None)
-                    or {}).get("tie_word_embeddings")
+        _tie_cls = _fact_class_defaults.get("tie_word_embeddings")
         if _tie_cls is not None:
             tie_word_embeddings = bool(_tie_cls)
             _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
@@ -2676,8 +2755,9 @@ def _is_gated(activation: str | None, norm_kind: str | None = None,
     # → True): plain elementwise spellings are used by dense AND gated FFNs,
     # so they were never proof.  The tier existed only to keep the blessed
     # MoE fixtures' expert drills drawn — the MoE expert-hop in
-    # decoder_ffn_gated_from_files now code-proves those (deepseek-v3 /
-    # glm-4-5 / gpt-oss), and the corpus audit shows ZERO derived-tier
+    # the exact-owner FFN mechanism reader code-proves ordinary FFNs; routed
+    # experts remain on their separately owned U3-F reader. The corpus audit
+    # shows ZERO derived-tier
     # reliance, so retirement is drift-free.  Strict rule: no evidence ⇒
     # abstain (the honest undeclared-FFN block).
     return None

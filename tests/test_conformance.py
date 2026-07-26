@@ -1042,8 +1042,9 @@ _EXPECTED_NESTED_UNRESOLVED = {
     # Several genuine source variants render one shared drill; exact variant
     # provenance must be carried by the render log before these can be proved.
     "self_cond": {"gqa-attn", "ffn", "moe_router", "expert_1", "expert_k", "expert_kp1", "expert_n"},
-    # Synthetic wrapper fixture omits the delegated language config/source.
-    "audio": {"ffn"},
+    # MusicGen's nested decoder is now joined to its exact component/config
+    # path and exact inline FFN owner; the former audio/ffn unresolved pin was
+    # retired by the shared U3 FFN result.
     # (UNet block factories resolved 2026-07-03: the string factory
     # ``get_down_block`` is followed generally — no unet pin remains.)
 }

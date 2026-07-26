@@ -73,7 +73,7 @@ class FFNMechanism:
     block_occurrence: OwnerOccurrenceId
     owner_occurrence: OwnerOccurrenceId
     owner_symbol: SymbolId
-    invocation: AddressedInvocation | None
+    invocations: tuple[AddressedInvocation, ...]
     gated: bool
     projection_mode: str             # dense | split | fused_gate_up
     activation: str | None = None
@@ -87,14 +87,19 @@ class FFNMechanism:
             raise TypeError("FFN evidence names exact block and mechanism owners")
         if not isinstance(self.owner_symbol, SymbolId):
             raise TypeError("FFN evidence names its exact owner symbol")
-        if self.invocation is not None:
-            if not isinstance(self.invocation, AddressedInvocation):
-                raise TypeError("an FFN child carries its exact addressed invocation")
-            if self.invocation.caller_occurrence != self.block_occurrence \
-                    or self.invocation.callee_owner_occurrence != self.owner_occurrence:
+        if any(not isinstance(item, AddressedInvocation)
+               for item in self.invocations):
+            raise TypeError("an FFN child carries exact addressed invocations")
+        if self.invocations:
+            if any(item.caller_occurrence != self.block_occurrence
+                   or item.callee_owner_occurrence != self.owner_occurrence
+                   for item in self.invocations):
                 raise ValueError("the FFN invocation joins the block to the owner")
         elif self.owner_occurrence != self.block_occurrence:
             raise ValueError("only an inline FFN may omit a child invocation")
+        if len({item.call_site for item in self.invocations}) != \
+                len(self.invocations):
+            raise ValueError("FFN invocation sites are unique")
         if self.projection_mode not in {"dense", "split", "fused_gate_up"}:
             raise ValueError("unknown FFN projection mode")
         if self.gated != (self.projection_mode != "dense"):
@@ -149,29 +154,39 @@ def ffn_mechanism_at_block(
 
     candidates: list[FFNMechanism] = []
     if invocations.status == "resolved":
+        by_owner = {}
         for invocation in invocations.addressed:
-            child = root.graph.node_for(invocation.callee_owner_occurrence)
+            by_owner.setdefault(
+                invocation.callee_owner_occurrence, []).append(invocation)
+        for child_occurrence, child_invocations in by_owner.items():
+            if len(child_invocations) > 1 \
+                    and not _invocations_are_exact_alternatives(
+                        index, block.symbol, tuple(child_invocations)):
+                # Repeated sequential execution is not one FFN sublayer.
+                # Exact mutually-exclusive return paths may cite the same
+                # stored sublayer without manufacturing rival owners.
+                continue
+            child = root.graph.node_for(child_occurrence)
             if child is None:
                 continue
             evidence = _mechanism_for_owner(
                 index, root, block_occurrence, child.occurrence,
-                child.symbol, invocation)
+                child.symbol, tuple(child_invocations))
             if evidence is not None:
                 candidates.append(evidence)
 
     # Some architectures store the two FFN projections directly on the block.
     inline = _mechanism_for_owner(
-        index, root, block_occurrence, block_occurrence, block.symbol, None)
+        index, root, block_occurrence, block_occurrence, block.symbol, ())
     if inline is not None:
         candidates.append(inline)
 
     unique = {
-        (item.owner_occurrence, item.invocation.call_site
-         if item.invocation is not None else None): item
+        item.owner_occurrence: item
         for item in candidates
     }
     ordered = tuple(sorted(unique.values(), key=lambda item: _span_key(
-        item.invocation.call.span if item.invocation is not None
+        item.invocations[0].call.span if item.invocations
         else item.spans[0])))
     if not ordered:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
@@ -230,7 +245,7 @@ def decoder_ffn_mechanism_for_path(
 
 
 def _mechanism_for_owner(
-    index, root, block_occurrence, owner_occurrence, owner_symbol, invocation,
+    index, root, block_occurrence, owner_occurrence, owner_symbol, invocations,
 ):
     forward = SymbolId(
         owner_symbol.source, f"{owner_symbol.qualified_name}.forward")
@@ -260,9 +275,9 @@ def _mechanism_for_owner(
             guarded_linear_calls[occurrence] = call
     if len(linear_calls) not in {2, 3}:
         return None
-    if any(not _guarded_linear_call_is_storage_equivalent(
+    if any(_complementary_functional_linear(
             index, forward, call, occurrence, linear_calls)
-            for occurrence, call in guarded_linear_calls.items()):
+            is None for occurrence, call in guarded_linear_calls.items()):
         return None
 
     returns = tuple(
@@ -288,7 +303,7 @@ def _mechanism_for_owner(
 
     activation, activation_path, activation_spans = _activation_evidence(
         index, root, owner_occurrence, owner_symbol, forward,
-        linear_calls, returned, upstream)
+        linear_calls, guarded_linear_calls, returned, upstream)
     if activation is None and not activation_path:
         return None
     multiplications = _multiplication_sources(
@@ -324,13 +339,72 @@ def _mechanism_for_owner(
             returned.span,
         ) if isinstance(span, SourceSpan)))
     return FFNMechanism(
-        block_occurrence, owner_occurrence, owner_symbol, invocation,
+        block_occurrence, owner_occurrence, owner_symbol, invocations,
         mode != "dense", mode, activation, activation_path,
         projection_order, spans)
 
 
+def _invocations_are_exact_alternatives(index, block_symbol, invocations):
+    call_guards = tuple(item.call.guard for item in invocations)
+    if call_guards and all(len(path) == 1 for path in call_guards):
+        decisions = {
+            (path[0].span.source, path[0].span.line, path[0].span.col,
+             path[0].span.end_line, path[0].span.end_col)
+            for path in call_guards
+        }
+        kinds = {path[0].kind for path in call_guards}
+        if len(decisions) == 1 \
+                and bool(kinds & {"if", "elif"}) and "else" in kinds:
+            return True
+
+    forward = SymbolId(
+        block_symbol.source, f"{block_symbol.qualified_name}.forward")
+    returns = tuple(
+        item for item in index.return_observations_in(forward)
+        if item.value is not None)
+    if len(returns) != len(invocations):
+        return False
+    invocation_spans = {item.call.span for item in invocations}
+    return_spans = []
+    for returned in returns:
+        calls = tuple(_expressions(
+            returned.value,
+            lambda item: item.kind == "call"
+            and item.span in invocation_spans))
+        if len(calls) != 1:
+            return False
+        return_spans.append(calls[0].span)
+    if set(return_spans) != invocation_spans:
+        return False
+
+    # A guarded early return followed by one later unguarded fallthrough return
+    # is exhaustive.  Alternatively, one exact if/else decision may terminate
+    # in returns on both arms.  More complex CFGs remain unknown.
+    unguarded = tuple(item for item in returns if not item.guard)
+    guarded = tuple(item for item in returns if item.guard)
+    if len(unguarded) == 1 and guarded:
+        if any(len(item.guard) != 1 for item in guarded):
+            return False
+        return all(_span_key(item.span) < _span_key(unguarded[0].span)
+                   for item in guarded)
+    if unguarded:
+        return False
+    if not guarded or any(len(item.guard) != 1 for item in guarded):
+        return False
+    decisions = {
+        (item.guard[0].span.source, item.guard[0].span.line,
+         item.guard[0].span.col, item.guard[0].span.end_line,
+         item.guard[0].span.end_col)
+        for item in guarded
+    }
+    kinds = {item.guard[0].kind for item in guarded}
+    return len(decisions) == 1 \
+        and bool(kinds & {"if", "elif"}) and "else" in kinds
+
+
 def _activation_evidence(
-    index, root, occurrence, owner, forward, linear_calls, returned, upstream,
+    index, root, occurrence, owner, forward, linear_calls,
+    guarded_linear_calls, returned, upstream,
 ):
     """Return the one activation proven to reach the returned FFN value.
 
@@ -385,6 +459,11 @@ def _activation_evidence(
             dependencies.get(key, ()), dependencies)
         if key not in closure or not activation_inputs \
                 or not set(activation_inputs).issubset(upstream):
+            continue
+        if any(not _activation_reaches_guarded_storage_paths(
+                index, forward, key, call, module_call,
+                projection, linear_calls)
+                for projection, module_call in guarded_linear_calls.items()):
             continue
         candidates.append((value, path, _typed_spans(spans)))
 
@@ -599,7 +678,7 @@ def _split_spans(
     return tuple(spans)
 
 
-def _guarded_linear_call_is_storage_equivalent(
+def _complementary_functional_linear(
     index, callable_symbol, module_call, occurrence, linear_calls,
 ):
     """Prove both arms use one stored affine projection.
@@ -610,11 +689,11 @@ def _guarded_linear_call_is_storage_equivalent(
     it proves the storage/mechanism is the same on both arms.
     """
     if not module_call.guard or module_call.guard[0].kind != "else":
-        return False
+        return None
     decision_span = module_call.guard[0].span
     field = _self_field(module_call.callee)
     if not field:
-        return False
+        return None
     for call in index.calls_in(callable_symbol):
         if not call.guard or call.guard[0].kind not in {"if", "elif"} \
                 or call.guard[0].span != decision_span:
@@ -626,8 +705,34 @@ def _guarded_linear_call_is_storage_equivalent(
             continue
         if any(_contains_self_field_attribute(argument, field, "weight")
                for argument in call.args):
-            return occurrence in linear_calls
-    return False
+            return call if occurrence in linear_calls else None
+    return None
+
+
+def _activation_reaches_guarded_storage_paths(
+    index, callable_symbol, activation_key, activation_call,
+    module_call, occurrence, linear_calls,
+):
+    """Both equivalent storage arms must consume the proved activation."""
+    functional_call = _complementary_functional_linear(
+        index, callable_symbol, module_call, occurrence, linear_calls)
+    if functional_call is None or not module_call.args \
+            or not functional_call.args:
+        return False
+    producers = {**linear_calls, activation_key: activation_call}
+    for call, expression in (
+        (module_call, module_call.args[0]),
+        (functional_call, functional_call.args[0]),
+    ):
+        reaching, _, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, callable_symbol,
+                ((call.span, (expression,)),), producers)
+        if uncertain \
+                or activation_key not in _dependency_closure(
+                    reaching, dependencies):
+            return False
+    return True
 
 
 def _contains_self_field_attribute(expression, field, attribute):

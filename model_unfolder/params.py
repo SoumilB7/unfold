@@ -66,17 +66,31 @@ def _ffn_params(f: FFNSpec, hidden: int) -> tuple:
     ``gated is None`` (U2 typed unknown) counts the 2-projection floor — the
     caller (``estimate_params``) ANNOTATES the estimate so an unknown never
     silently picks a branch (blast_radius found a −33% FFN hazard here)."""
-    g = 3 if f.gated else 2
     hidden = _as_count(hidden)
     if f.kind == "moe":
-        per_expert = g * hidden * _as_count(f.expert_intermediate_size or f.intermediate_size)
+        # Routed experts and the ordinary/shared FFN are separate mechanisms.
+        # Exact fused gate+up expert storage proves three matrix-widths even
+        # when the ordinary FFN gate verdict is unknown; never let that proof
+        # silently certify a shared expert in the opposite direction.
+        expert_g = (
+            3 if f.expert_projection_mode in {"fused_gate_up", "split"}
+            else 2
+        )
+        shared_g = 3 if f.gated else 2
+        width = _as_count(
+            f.expert_intermediate_size or f.intermediate_size)
+        per_expert = expert_g * hidden * width
+        per_shared = shared_g * hidden * width
         n_routed = _as_count(f.num_experts)
         n_shared = _as_count(f.num_shared_experts)
         n_active = _as_count(f.num_experts_per_tok)
         router = hidden * n_routed
-        total = per_expert * (n_routed + n_shared) + router
-        active = per_expert * (n_active + n_shared) + router
+        total = (
+            per_expert * n_routed + per_shared * n_shared + router)
+        active = (
+            per_expert * n_active + per_shared * n_shared + router)
         return total, active
+    g = 3 if f.gated else 2
     p = g * hidden * _as_count(f.intermediate_size)
     return p, p
 
@@ -128,8 +142,15 @@ def estimate_params(ir: ModelIR) -> dict:
         f_total, f_active = _ffn_params(layer.ffn, h)
         if layer.ffn.kind == "moe":
             is_sparse = True
-        if layer.ffn.gated is None and _GATED_NOTE not in assumptions:
-            assumptions.append(_GATED_NOTE)
+        pending_notes = (
+            (_EXPERT_GATED_NOTE
+             if layer.ffn.kind == "moe"
+             and layer.ffn.expert_projection_mode is None else None),
+            (_GATED_NOTE if layer.ffn.gated is None else None),
+        )
+        for note in pending_notes:
+            if note is not None and note not in assumptions:
+                assumptions.append(note)
         norm_p = 2 * h
         t = a_p + f_total + norm_p
         ac = a_p + f_active + norm_p
@@ -155,6 +176,9 @@ def estimate_params(ir: ModelIR) -> dict:
 #: U2: the one-line annotation for an unknown FFN gate structure.
 _GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
                "(a gated FFN would add hidden x inner per layer)")
+_EXPERT_GATED_NOTE = (
+    "routed-expert structure unknown — counted as 2 projections "
+    "(a gated expert would add hidden x expert-inner per expert)")
 
 
 def humanize(n: int) -> str:

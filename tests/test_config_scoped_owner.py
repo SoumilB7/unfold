@@ -529,3 +529,85 @@ def test_real_qwen2_vl_text_scope_resolves_at_reachable_direct_field():
         replace(
             proof.component_root,
             outer_owner_symbol=proof.component_symbol)
+
+
+def test_transformers_auto_model_from_config_joins_declared_component(tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        from transformers.models.auto.modeling_auto import AutoModel
+
+        class Child:
+            def __init__(self, config): pass
+
+        class Wrapper:
+            def __init__(self, config):
+                self.slot = AutoModel.from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper", "child": "Child"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "resolved", result.failure_detail
+    assert result.candidate.component_symbol.qualified_name == "Child"
+    assert result.candidate.installation_field == "slot"
+    assert result.candidate.construction_site.constructor.source_segment \
+        == "AutoModel.from_config(config.child)"
+
+
+def test_unrelated_from_config_factory_cannot_claim_framework_dispatch(tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        from somewhere import OtherFactory
+
+        class Child:
+            def __init__(self, config): pass
+
+        class Wrapper:
+            def __init__(self, config):
+                self.slot = OtherFactory.from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper", "child": "Child"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "failed"
+    assert result.failure_kind == "unresolved_config_construction"
+
+
+def test_lookalike_auto_model_namespace_cannot_claim_framework_dispatch(
+        tmp_path):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent("""
+        from impostor.models.auto.modeling_auto import AutoModel
+
+        class Child:
+            def __init__(self, config): pass
+
+        class Wrapper:
+            def __init__(self, config):
+                self.slot = AutoModel.from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper", "child": "Child"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == "failed"
+    assert result.failure_kind == "unresolved_config_construction"
