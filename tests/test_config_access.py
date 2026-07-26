@@ -229,9 +229,7 @@ def test_derived_compat_name_views():
 # --------------------------------------------------------------------------- #
 
 from model_unfolder.evidence.config_access import (  # noqa: E402
-    ConfigResolution,
     capture_events,
-    resolve,
 )
 
 
@@ -407,7 +405,7 @@ def test_null_beside_value_is_ambiguous_by_default():
     """COR-1 (§6, Law D): an explicit null BESIDE a value is a checkpoint
     contradiction — blocking ambiguity unless a NAMED source-justified policy
     permits the pair (corpus-measured: zero such pairs exist today)."""
-    with capture_events() as ledger:
+    with capture_events():
         res = resolve({"intermediate_size": None, "n_inner": 256},
                       "intermediate_size", ["n_inner"], component="root")
     assert res.state == "ambiguous" and res.value is None
