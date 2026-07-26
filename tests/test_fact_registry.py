@@ -122,17 +122,20 @@ def test_registry_definitions_are_internally_valid():
 
 _INDEX = re.compile(r"\[\d+\]")
 
-# The exact asserted population after U3-F5e (689 records over the blessed
+# The exact asserted population after U3-F exact ordinary/expert storage
+# cutover (599 records over the blessed
 # corpus).  Shrinking is progress (update downward with the fix that earns it);
 # growth means a new default was presented as fact — that is the failure.
 ASSERTED_BASELINE = {
     "attention_kind": 543,
-    "ffn_storage": 94,
-    # U3-F5e: MusicGen's nested decoder now reaches its exact constructed
-    # component and earns code-proven split storage; one asserted convention
-    # is therefore retired.  This is a shrink-only pin, not a reclassification
-    # allowance.
-    "projection_mode": 3,
+    # Exact routed-expert storage retires 88 per-layer conventions.  The six
+    # survivors are the initial dense layers in two hybrid stacks: selecting
+    # their guarded ordinary-MLP construction is a later occurrence/schedule
+    # proof, so they remain visible debt rather than borrowing expert evidence.
+    "ffn_storage": 6,
+    # Expert projection storage now has its own code-proven fact/owner.  The
+    # sole survivor is DeepSeek's unrelated attention split convention.
+    "projection_mode": 1,
     # U2-R9: witness 26 (musicgen-small) — the composite decoder's B5
     # asserted convention (24 per-layer + 1 decoder-level scores_scale) and
     # the conditioning tower's per-layer norm_placement tuples.  A conscious
@@ -316,7 +319,7 @@ def test_asserted_population_matches_pinned_baseline(corpus_fact_rows):
     asserted = Counter(fact for _, _, fact, status, _ in corpus_fact_rows
                        if status == "asserted")
     assert dict(asserted) == ASSERTED_BASELINE
-    assert sum(asserted.values()) == 689
+    assert sum(asserted.values()) == 599
 
 
 # --------------------------------------------------------------------------- #

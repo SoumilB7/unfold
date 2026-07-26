@@ -46,7 +46,14 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         # Sana's GLUMBConv — the code-proven gated CONV chain, one card per op
         # (ids match the op-graph region's nodes so every drawn box drills).
         children = _conv_glu_ffn_child_blocks(hidden, inter)
-    elif ffn.kind != "moe" and ffn.gated is None:
+    elif ffn.kind == "moe":
+        # An MoE block is router + routed experts (+ optional shared expert).
+        # The ordinary FFN fields on FFNSpec are not permission to prepend a
+        # second, imaginary gate/up/down path to that block.  Each routed
+        # expert derives its own drill from ``expert_projection_mode`` below;
+        # a shared expert stays opaque until its separate exact owner resolves.
+        children = _moe_child_blocks(ffn, hidden, inter)
+    elif ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
         # opaque region node, so the click target stays coupled to its card).
         children = _undeclared_ffn_child_blocks(hidden, inter)
@@ -54,14 +61,12 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         children = _dense_ffn_child_blocks(hidden, inter, activation,
                                            ffn.activation_assumed, ffn.activation_from_class)
     else:
-        if ffn.kind != "moe" and ffn.projection_mode == "fused_gate_up":
+        if ffn.projection_mode == "fused_gate_up":
             # Source-proven FUSED storage: the drill draws one gate+up matrix
             # then a split — cards must match those exact node ids.
             children = _fused_gated_ffn_child_blocks(hidden, inter, activation)
         else:
             children = _gated_ffn_child_blocks(hidden, inter, activation)
-        if ffn.kind == "moe":
-            children.extend(_moe_child_blocks(ffn, hidden, inter))
     if generic:
         # Shared across sublayers/stages of differing width (UNet Transformer2D):
         # drop per-instance dims so the one shared card is correct everywhere.
@@ -544,9 +549,10 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "id": "shared_expert",
             "title": "Shared expert",
             "description": (
-                f"A dense {activation} FFN that runs on every token (it bypasses the "
-                "router) and is added to the routed-expert sum — always-on capacity "
-                "shared across all tokens."
+                "An always-on shared FFN that runs on every token (it bypasses "
+                "the router) and is added to the routed-expert sum. Its inner "
+                "gate/storage shape stays opaque until that exact shared owner "
+                "is independently proven."
             ),
             "facts": [f"{hidden} → {shared_inter} → {hidden}",
                       f"{n_shared} shared, always active"],

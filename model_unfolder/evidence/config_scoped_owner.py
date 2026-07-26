@@ -481,7 +481,21 @@ def _framework_dispatched_component_symbol(
         return None
     qualified = proof.qualified_target.lstrip(".")
     parts = qualified.split(".")
-    if not qualified.startswith("transformers.models.auto.") \
+    absolute_auto = proof.qualified_target.startswith(
+        "transformers.models.auto.")
+    # HF modeling modules conventionally import the same registry relatively
+    # as ``from ..auto import AutoModel``.  ProgramIndex deliberately retains
+    # that relative spelling; certify its package from the exact source path,
+    # never by accepting a bare ``..auto`` import in an arbitrary file.
+    source_parts = proof.binding.source.canonical_path.replace(
+        "\\", "/").split("/")
+    relative_auto = (
+        proof.qualified_target.startswith("..auto.")
+        and any(
+            source_parts[index:index + 2] == ["transformers", "models"]
+            for index in range(max(0, len(source_parts) - 1)))
+    )
+    if not (absolute_auto or relative_auto) \
             or len(parts) < 3 \
             or parts[-3] not in {"auto", "modeling_auto"} \
             or not parts[-2].startswith("AutoModel") \

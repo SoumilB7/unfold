@@ -326,6 +326,19 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "same debt as legacy_asserted (§16.4) instead of laundering it",
     ),
     FactDefinition(
+        key="expert_projection_mode",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.ffn.expert"}),
+        projections=frozenset({"ffn_detail", "params_annotation", "json"}),
+        unknown_policy="pale_undeclared",
+        parameter_consumer=True,
+        conformance="nested_callable",
+        notes="storage of the exact routed-expert callable; deliberately "
+              "separate from decoder.ffn.projection_mode so an expert cannot "
+              "certify the ordinary/shared FFN or vice versa",
+    ),
+    FactDefinition(
         key="tie_word_embeddings",
         value_types=frozenset({"bool"}),
         allowed_statuses=frozenset({"config_declared", "class_default"}),
@@ -355,8 +368,10 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         projections=frozenset({"json"}),
         unknown_policy="legacy_convention",
         notes="per-layer storage tag: asserted with None value (asserted-fold "
-              "non-field tag; 94 records / 2 fixtures); the drawn storage comes "
-              "from spec.projection_mode defaults — H8 unifies fold + drawing",
+              "non-field tag; 6 records / 2 hybrid fixtures after the exact "
+              "ordinary/expert split); the drawn storage comes from "
+              "spec.projection_mode defaults — the remaining guarded ordinary "
+              "variants require an occurrence/schedule proof",
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

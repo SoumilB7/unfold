@@ -452,16 +452,32 @@ def _code_rope_dim(cfg: Any, context=None) -> int | None:
         return None
 
 
-def _code_expert_storage(cfg: Any, context=None) -> str | None:
-    """Routed-EXPERT storage read from the source — independent of the plain
-    MLP's storage (DeepSeek-V3: split MLP for dense/shared, fused stacked
-    ``gate_up_proj`` for the routed experts)."""
-    try:
-        from ...evidence.patterns import expert_fused_gate_up_from_files
-        fused = expert_fused_gate_up_from_files(_source_files(cfg, context))
-        return "fused_gate_up" if fused else None
-    except Exception:
+def _expert_storage_result(context=None, *, config_path=()):
+    """One call-local exact-address routed-expert storage result."""
+    if context is None:
         return None
+    from ...evidence.expert_storage import \
+        decoder_routed_expert_storage_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.ffn.expert_storage",
+        config_path,
+        lambda: decoder_routed_expert_storage_for_path(
+            context.program_index(),
+            context.source_bundle,
+            config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
+def _code_expert_storage(
+        cfg: Any, context=None, *, config_path=()) -> str | None:
+    """Positive-only routed-expert storage from its exact construction path."""
+    result = _expert_storage_result(
+        context, config_path=config_path)
+    return result.value.projection_mode \
+        if result is not None and result.status == "resolved" else None
 
 
 def _code_ffn_activation(
@@ -551,17 +567,20 @@ def _unwrap_text_with_path(
         sub = _g(cfg, key)
         if sub is None:
             continue
-        # A composite AutoConfig nests sub-configs as OBJECTS, not dicts
-        # (Qwen3-Omni's thinker_config) — same declaration, different carrier.
-        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
-            sub = sub.to_dict()
-        if isinstance(sub, dict):
-            if _has_transformer_shape(sub):
-                return sub, (key,)
+        # A composite AutoConfig nests sub-configs as OBJECTS.  Keep that exact
+        # object as the read carrier: converting it to a dict would make a real
+        # path point at one object while the read cites an unrelated copy.
+        if _has_transformer_shape(sub):
+            return sub, (key,)
+        sub_mapping = (
+            sub if isinstance(sub, dict)
+            else sub.to_dict() if hasattr(sub, "to_dict") else None)
+        if isinstance(sub_mapping, dict):
             absolute_path = (*_base_path, key)
             completed = defaults_by_path.get(absolute_path)
             if not isinstance(completed, dict):
-                completed = _complete_config_from_transformers_registry(sub)
+                completed = _complete_config_from_transformers_registry(
+                    sub_mapping)
             if _has_transformer_shape(completed):
                 # Completion proves that this declared child is a transformer
                 # config, but the parser must keep reading the checkpoint's
@@ -576,8 +595,6 @@ def _unwrap_text_with_path(
                 _base_path=absolute_path)
             if nested_path and _has_transformer_shape(nested):
                 return nested, (key, *nested_path)
-        elif _has_transformer_shape(sub):
-            return sub, (key,)
     # Composite/seq2seq wrapper (MusicGen): the MAIN stack is a declared BARE
     # slot (``decoder`` — composite_slots vocabulary), not a ``*_config`` key.
     # A slot only counts when its child declares its own model_type; sparse
@@ -587,16 +604,19 @@ def _unwrap_text_with_path(
         if role != "main":
             continue
         sub = _g(cfg, key)
-        if not isinstance(sub, dict) and hasattr(sub, "to_dict"):
-            sub = sub.to_dict()
-        if not isinstance(sub, dict) or not sub.get("model_type"):
+        sub_mapping = (
+            sub if isinstance(sub, dict)
+            else sub.to_dict() if hasattr(sub, "to_dict") else None)
+        if not isinstance(sub_mapping, dict) \
+                or not sub_mapping.get("model_type"):
             continue
         if _has_transformer_shape(sub):
             return sub, (key,)
         absolute_path = (*_base_path, key)
         completed = defaults_by_path.get(absolute_path)
         if not isinstance(completed, dict):
-            completed = _complete_config_from_transformers_registry(sub)
+            completed = _complete_config_from_transformers_registry(
+                sub_mapping)
         if _has_transformer_shape(completed):
             return sub, (key,)
     return cfg, ()
@@ -1067,31 +1087,35 @@ def parse(cfg: Any, context=None) -> ModelIR:
         ffn_gated = _clsdef_gated
     else:
         ffn_gated = _is_gated(activation, norm_kind, None)
-    _note_fact("decoder.ffn", "gated", ffn_gated,
-               "code_proven" if _code_gated is not None
-               else "config_declared" if _config_gated is not None
-               else "class_default" if _clsdef_gated is not None
-               else "derived" if ffn_gated is not None
-               else _unknown_status,
-               source=("decoder_ffn_mechanism_for_path"
-                       if _code_gated is not None
-                       else _config_gated_source if _config_gated is not None
-                       else _clsdef_gated_source if _clsdef_gated is not None
-                       else "explicit GLU activation name (hidden_act)"
-                       if ffn_gated is not None else None))
+    # ``decoder.ffn.gated`` names the ordinary/shared FFN mechanism.  A routed
+    # expert proof must never be laundered into this owner, and a routed-only
+    # block has no ordinary gate fact to record.  The exact reader result
+    # remains in ``context.reader_results`` as the typed abstention.
+    if ffn_gated is not None:
+        _note_fact("decoder.ffn", "gated", ffn_gated,
+                   "code_proven" if _code_gated is not None
+                   else "config_declared" if _config_gated is not None
+                   else "class_default" if _clsdef_gated is not None
+                   else "derived",
+                   source=("decoder_ffn_mechanism_for_path"
+                           if _code_gated is not None
+                           else _config_gated_source
+                           if _config_gated is not None
+                           else _clsdef_gated_source
+                           if _clsdef_gated is not None
+                           else "explicit GLU activation name (hidden_act)"))
     _code_storage_mode = _code_ffn_storage_mode(
         text_cfg, context, expected_gated=_code_gated,
         config_path=_text_path)
-    _code_expert_fused = _code_expert_storage(text_cfg, context)
     _code_fused_qkv = _code_attention_fused_qkv(
         text_cfg, context, config_path=_text_path)
     _code_position_evidence = _code_position(cfg, context)
-    _note_fact("decoder.ffn", "projection_mode",
-               _code_storage_mode if _code_storage_mode is not None else "split",
-               "code_proven" if _code_storage_mode is not None else "asserted",
-               source=("decoder_ffn_mechanism_for_path"
-                       if _code_storage_mode is not None
-                       else "split convention kept (storage unproven)"))
+    # Projection storage is mechanism-scoped too.  Do not manufacture an
+    # ordinary ``split`` fact when only a routed-expert mechanism exists.
+    if _code_storage_mode is not None:
+        _note_fact("decoder.ffn", "projection_mode",
+                   _code_storage_mode, "code_proven",
+                   source="decoder_ffn_mechanism_for_path")
     _note_fact("decoder.attention", "projection_mode",
                "fused_qkv" if _code_fused_qkv else "split",
                "code_proven" if _code_fused_qkv is not None else "asserted",
@@ -1500,6 +1524,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     moe_intermediate_size = consume("moe_intermediate_size", 0, fact_owner="decoder.ffn", fact_key="moe_intermediate_size") or 0
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
+    _code_expert_fused = (
+        _code_expert_storage(
+            text_cfg, context, config_path=_text_path)
+        if moe_active else None)
+    if _code_expert_fused is not None:
+        _note_fact("decoder.ffn.expert", "expert_projection_mode",
+                   _code_expert_fused, "code_proven",
+                   source="decoder_routed_expert_storage_for_path")
     # U2-R7: both feed the per-layer dense/MoE schedule (FFNSpec.kind).
     first_k_dense       = consume("first_k_dense_replace",
                                   fact_owner="decoder.ffn",
@@ -1808,7 +1840,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 # topology reader abstained on the idiom.
                 asserted=tuple(
                     (["norm_placement"] if norm_placement_conventional else [])
-                    + (["ffn_storage"] if _code_storage_mode is None else [])),
+                    + (["ffn_storage"]
+                       if (_code_expert_fused is None
+                           and _code_storage_mode is None) else [])),
             )
         else:
             ffn = FFNSpec(

@@ -1041,7 +1041,10 @@ def _render_log(cfg):
 _EXPECTED_NESTED_UNRESOLVED = {
     # Several genuine source variants render one shared drill; exact variant
     # provenance must be carried by the render log before these can be proved.
-    "self_cond": {"gqa-attn", "ffn", "moe_router", "expert_1", "expert_k", "expert_kp1", "expert_n"},
+    # Expert drills are intentionally absent here: their storage/mechanism is
+    # unknown, so they render the explicit one-node ``opaque`` view and make no
+    # decomposed compute claim for conformance to resolve.
+    "self_cond": {"gqa-attn", "ffn", "moe_router"},
     # MusicGen's nested decoder is now joined to its exact component/config
     # path and exact inline FFN owner; the former audio/ffn unresolved pin was
     # retired by the shared U3 FFN result.

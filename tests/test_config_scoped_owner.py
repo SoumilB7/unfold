@@ -611,3 +611,37 @@ def test_lookalike_auto_model_namespace_cannot_claim_framework_dispatch(
         index, bundle, root, ("child",))
     assert result.status == "failed"
     assert result.failure_kind == "unresolved_config_construction"
+
+
+@pytest.mark.parametrize(("official_path", "expected"), [
+    (True, "resolved"),
+    (False, "failed"),
+])
+def test_relative_auto_dispatch_requires_the_exact_transformers_package_path(
+        tmp_path, official_path, expected):
+    base = (
+        tmp_path / "transformers" / "models" / "opaque"
+        if official_path else tmp_path / "unrelated")
+    base.mkdir(parents=True)
+    path = base / "modeling_opaque.py"
+    path.write_text(textwrap.dedent("""
+        from ..auto import AutoModel
+
+        class Child:
+            def __init__(self, config): pass
+
+        class Wrapper:
+            def __init__(self, config):
+                self.slot = AutoModel.from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),), "child": (str(path),)},
+        component_architectures={"root": "Wrapper", "child": "Child"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    result = resolve_config_constructed_root(
+        index, bundle, root, ("child",))
+    assert result.status == expected

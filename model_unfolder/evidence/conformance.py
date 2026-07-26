@@ -669,10 +669,10 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
     decoder domain; the per-component diffusion pass is the recorded follow-up.
     File-level verdicts are unanimous-or-None, so a heterogeneous stack with
     mixed storage abstains rather than guessing."""
-    from .patterns import expert_fused_gate_up_from_files
     from .attention_storage import (
         decoder_attention_projection_storage_for_path,
     )
+    from .expert_storage import decoder_routed_expert_storage_for_path
 
     problems: list[ConformanceProblem] = []
     path = _storage_config_path_for_conformance(
@@ -696,7 +696,26 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         storage.value == "fused_qkv"
         if storage is not None and storage.status == "resolved" else None
     )
-    code_expert = expert_fused_gate_up_from_files(files)
+    expert_storage = None
+    has_experts = any(
+        bool((spec.get("ffn") or {}).get("num_experts"))
+        for spec in representatives.values())
+    if has_experts and path is not None and parse_context is not None:
+        expert_storage = parse_context.cached_reader_result(
+            "decoder.ffn.expert_storage",
+            path,
+            lambda: decoder_routed_expert_storage_for_path(
+                program_index, bundle, path, allow_root_stage=True),
+        )
+    elif has_experts and path is not None:
+        expert_storage = decoder_routed_expert_storage_for_path(
+            program_index, bundle, path, allow_root_stage=True)
+    code_expert = (
+        True if expert_storage is not None
+        and expert_storage.status == "resolved"
+        and expert_storage.value.projection_mode == "fused_gate_up"
+        else None
+    )
     from .ffn_mechanism import decoder_ffn_mechanism_for_path
     ffn_result = None
     if path is not None and parse_context is not None:
