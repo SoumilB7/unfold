@@ -431,17 +431,31 @@ def _code_mlp_bias(cfg: Any, context=None, *, config_path=()) -> bool | None:
     )
 
 
-def _code_attention_sinks(cfg: Any, context=None) -> bool:
-    """Learned sink logits joining the attention softmax, READ FROM THE
-    MODELING SOURCE — a config-silent fact (no config field exists for it).
-    Vocabulary lives in fact_markers.yaml; bare spellings are gated on
-    attention-compute evidence.  False on silence — a lost oracle can never
-    fabricate a sink lane.  Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_attention_sinks_from_files
-        return decoder_attention_sinks_from_files(_source_files(cfg, context))
-    except Exception:
-        return False
+def _attention_sinks_result(context=None, *, config_path=()):
+    """Call-local learned-sink proof for one exact attention occurrence."""
+    if context is None:
+        return None
+    from ...evidence.attention_sinks import decoder_attention_sinks_for_path
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.sinks",
+        path,
+        lambda: decoder_attention_sinks_for_path(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True),
+    )
+
+
+def _code_attention_sinks(cfg: Any, context=None, *, config_path=()) -> bool:
+    """Whether an exact learned Parameter joins scores before exact softmax.
+
+    This is positive-only source evidence.  Incomplete source or an unproven
+    chain omits the sink mechanism; neither field spellings nor file-wide
+    markers can manufacture it.
+    """
+    result = _attention_sinks_result(
+        context, config_path=config_path)
+    return result is not None and result.status == "resolved"
 
 
 def _code_intermediate_size(cfg: Any, context=None) -> int | None:
@@ -1432,14 +1446,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
                        if code_scores_scaled is not None
                        else "sqrt(dim) convention kept"))
     # Learned sink logits in the softmax — config-silent, code-only.
-    code_attention_sinks = _code_attention_sinks(text_cfg, context)
+    code_attention_sinks = _code_attention_sinks(
+        text_cfg, context, config_path=_text_path)
     # H8 (§16.6) — migrate ``sinks`` from drawn-but-unledgered to a REGISTERED
     # code-proven fact.  Presence-proven from the attention forward, so recorded
     # only when True (no negative-proof obligation); its drawn witness is the
     # attention drill's sink column, so the projection-audit is satisfied.
     if code_attention_sinks:
         _note_fact("decoder.attention", "sinks", True, "code_proven",
-                   "decoder_attention_sinks_from_files")
+                   "decoder_attention_sinks_for_path")
     # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
     # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
     attn_logit_softcap = consume("attn_logit_softcapping",

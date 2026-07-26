@@ -22,7 +22,6 @@ import pytest
 import model_unfolder as mu
 from model_unfolder.evidence.config_access import capture_events, owner_scope
 from model_unfolder.evidence.identity_guard import scan_identity_source
-from model_unfolder.evidence.patterns import decoder_attention_sinks_from_files
 from model_unfolder.evidence.structural_writes import StructuralWrite
 from test_support import LLAMA
 
@@ -272,21 +271,69 @@ class MainDecoderAttention(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
+        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
 
     def forward(self, x):
-        return torch.softmax(self.q_proj(x), dim=-1)
+        q = self.q_proj(x)
+        k = self.k_proj(x)
+        v = self.v_proj(x)
+        weights = torch.softmax(torch.matmul(q, k), dim=-1)
+        return torch.matmul(weights, v)
+
+
+class Unit(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.attn = MainDecoderAttention(config)
+
+    def forward(self, x):
+        return self.attn(x)
+
+
+class Core(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.units = nn.ModuleList(
+            [Unit(config) for _ in range(config.num_hidden_layers)])
+
+    def forward(self, x):
+        for unit in self.units:
+            x = unit(x)
+        return x
+
+
+class Shell(nn.Module):
+    base_model_prefix = "core"
+
+    def __init__(self, config):
+        super().__init__()
+        self.core = Core(config)
 '''
 
 
-@pytest.mark.xfail(strict=True, reason="§5.9/U6: the sinks reader scans ALL classes "
-                   "in the files, so a sibling attention component votes for the "
-                   "decoder; it must bind to the exact decoder-attention owner")
 def test_p12_sinks_reader_binds_to_the_decoder_owner():
+    """FIXED by U3-F: the exact decoder attention has no sink; the sibling's
+    fully-real sink mechanism cannot vote across owner occurrences."""
+    from model_unfolder.evidence.attention_sinks import (
+        decoder_attention_sinks_for_path,
+    )
+    from model_unfolder.evidence.models import SourceBundle
+    from model_unfolder.evidence.program_index import build_program_index
+
     with tempfile.TemporaryDirectory() as td:
         path = pathlib.Path(td) / "modeling_probe.py"
         path.write_text(_SIBLING_ONLY_SINKS)
-        assert not decoder_attention_sinks_from_files([path]), (
-            "a sibling class's sinks parameter was attributed to the decoder")
+        bundle = SourceBundle(
+            source="local", files=(str(path),),
+            component_files={"root": (str(path),)},
+            component_architectures={"root": "Shell"},
+        )
+        result = decoder_attention_sinks_for_path(
+            build_program_index(bundle), bundle, (),
+            allow_root_stage=True)
+        assert result.status != "resolved", (
+            "a sibling class's sink mechanism was attributed to the decoder")
 
 
 # --------------------------------------------------------------------------- #

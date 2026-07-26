@@ -1988,21 +1988,6 @@ def decoder_intermediate_size_from_files(files, cfg, intermediate_aliases) -> in
     return _intermediate_from_linear_args(ffn_init, ev)
 
 
-def decoder_attention_sinks_from_files(files) -> bool:
-    """Whether the decoder's attention carries LEARNED SINK logits joining the
-    softmax — a config-silent, code-only fact (gpt-oss: ``self.sinks``
-    nn.Parameter concatenated onto the attention weights, softmaxed, then the
-    sink column dropped).  Same signal logic as the code-evidence feature chip
-    (``_sink_signals`` — vocabulary in fact_markers.yaml, bare spellings gated
-    on attention-compute evidence).  False on silence: only a positive signal
-    draws the sink lane, so absence can never fabricate one."""
-    from .ast_scanner import scan_python_files
-    for cls in scan_python_files(tuple(str(f) for f in (files or ()))):
-        if _sink_signals(set(cls.fields), set(cls.calls), set(cls.config_refs)):
-            return True
-    return False
-
-
 # ---------------------------------------------------------------------------
 # MoE-vs-dense LAYER SCHEDULE from construction evidence — which layers build
 # an experts class as their FFN field, name-independently, per layer.

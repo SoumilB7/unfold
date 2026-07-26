@@ -285,8 +285,8 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         unknown_policy="omit",            # absent ⇒ no sink column drawn
         negative_requires_complete=True,  # presence-proven; only ever recorded True
         conformance="fact_markers",
-        notes="H8: migrated from drawn-but-unledgered to a code-proven fact "
-              "(decoder_attention_sinks_from_files); gpt-oss witnesses it",
+        notes="H8/U3: exact Parameter -> score concat -> softmax evidence "
+              "(decoder_attention_sinks_for_path); gpt-oss witnesses it",
     ),
     FactDefinition(
         key="norm_kind",

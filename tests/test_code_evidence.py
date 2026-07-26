@@ -2254,32 +2254,9 @@ def test_cross_spec_qk_norm_trusted_not_suppressed():
     assert "x_q_norm" not in ids2
 
 
-def test_attention_sinks_detection_and_surfacing(tmp_path):
-    """A4: bare `self.sinks` on an attention-evidence class fires (gpt-oss);
-    a `sinks` field on a non-attention class never does; the spec emits
-    only-when-True; the region draws the sink lane into the softmax."""
-    import hashlib
-    import transformers, pathlib
-    from model_unfolder.evidence.patterns import decoder_attention_sinks_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    assert decoder_attention_sinks_from_files(
-        (str(base / "gpt_oss/modeling_gpt_oss.py"),)) is True
-    assert decoder_attention_sinks_from_files(
-        (str(base / "llama/modeling_llama.py"),)) is False
-
-    src = '''
-import torch.nn as nn
-class GraphPooler(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.sinks = nn.Linear(config.hidden_size, 4)   # not attention: no signal
-    def forward(self, x):
-        return self.sinks(x)
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    assert decoder_attention_sinks_from_files((str(f),)) is False
-
+def test_attention_sinks_spec_and_rendering_surface():
+    """The exact-owner reader is pinned in test_attention_sinks; this control
+    proves its positive fact remains an only-when-True rendered mechanism."""
     from model_unfolder.ir import AttentionSpec, _attention_to_dict
     from model_unfolder.adapters.transformer.blocks.attention import (
         attention_detail, attention_child_blocks)

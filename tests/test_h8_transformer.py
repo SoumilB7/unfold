@@ -7,11 +7,12 @@ one full end-to-end migration as the RAIL every subsequent mechanism follows:
 
   ``sinks`` : drawn-but-unledgered  →  a REGISTERED code-proven fact.
 
-The attention forward proves it (``decoder_attention_sinks_from_files``); the
-parser records it in the ledger (presence-proven, only when True, so no
-negative-proof obligation); it is registered in REGISTRY with an
-``attention_detail`` projection; and it is absent from the drawn-unledgered
-rows of the StructuralDebt register (U2-R6).
+The exact selected attention occurrence proves an exact learned Parameter
+joins scores before the exact softmax
+(``decoder_attention_sinks_for_path``); the parser records it in the ledger
+(presence-proven, only when True, so no negative-proof obligation); it is
+registered in REGISTRY with an ``attention_detail`` projection; and it is
+absent from the drawn-unledgered rows of the StructuralDebt register (U2-R6).
 gpt-oss-20b witnesses it, so the closed-world census stays satisfied.
 """
 from __future__ import annotations
@@ -46,7 +47,7 @@ def test_a_real_sinks_model_records_the_fact_with_provenance():
     assert sinks, "gpt-oss must record a sinks fact (the migration's corpus witness)"
     row = next(iter(sinks.values()))
     assert row["status"] == "code_proven" and row["value"] is True
-    assert row["source"] == "decoder_attention_sinks_from_files"  # cites the reader, not a name
+    assert row["source"] == "decoder_attention_sinks_for_path"
 
 
 def test_the_migrated_fact_is_drawn_its_projection_witness_exists():
