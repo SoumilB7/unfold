@@ -25,7 +25,7 @@ directly against their definitions.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from .config_access import ProjectionTarget
 from .context import FACT_STATUSES
