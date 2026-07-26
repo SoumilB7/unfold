@@ -43,7 +43,11 @@ ATTENTION_DRAWN = frozenset({
     "scores_scale", "projection_mode", "mask", "bias", "position_kind",
     "qk_norm", "q_norm", "k_norm", "attention_kind", "sinks", "logit_softcap",
 })
-FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
+ORDINARY_FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
+EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
+# Surface-level compatibility/obligation view.  Owner-qualified gates use the
+# two sets above and never attribute an expert fact to the ordinary FFN.
+FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN
 LAYER_DRAWN = frozenset({"norm_kind", "norm_placement"})
 MODEL_DRAWN = frozenset({"tie_word_embeddings"})
 
@@ -59,7 +63,8 @@ DRAWN_PAIRS = frozenset(
     # ledger owner is layers[i].attention (REGISTRY owner_patterns), never
     # the decoder-level attention owner.
     + [("layers[i].attention", "attention_kind")]
-    + [("decoder.ffn", leaf) for leaf in FFN_DRAWN]
+    + [("decoder.ffn", leaf) for leaf in ORDINARY_FFN_DRAWN]
+    + [("decoder.ffn.expert", leaf) for leaf in EXPERT_FFN_DRAWN]
     + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]
     + [("model", leaf) for leaf in MODEL_DRAWN]
 )
@@ -94,7 +99,10 @@ def attention_facts(ir) -> frozenset:
 
 
 def ffn_facts(ir) -> frozenset:
-    return projected_keys(ir, "ffn", FFN_DRAWN)
+    return (
+        projected_keys(ir, "ffn", ORDINARY_FFN_DRAWN)
+        | projected_keys(ir, "expert", EXPERT_FFN_DRAWN)
+    )
 
 
 def layer_and_model_facts(ir) -> frozenset:
@@ -103,8 +111,8 @@ def layer_and_model_facts(ir) -> frozenset:
 
 __all__ = [
     "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
-    "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "LAYER_DRAWN",
-    "MODEL_DRAWN",
+    "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "ORDINARY_FFN_DRAWN",
+    "EXPERT_FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN",
     "family_segment", "fact_provenance", "projected_keys",
     "attention_facts", "ffn_facts", "layer_and_model_facts",
 ]

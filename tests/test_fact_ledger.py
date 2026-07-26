@@ -185,7 +185,7 @@ def test_direct_ffn_gate_declarations_beat_activation_ambiguity():
     # another (silu implies gated).
     ambiguous = config_to_ir(dict(ZERO_EVIDENCE, hidden_act="silu"))
     assert ambiguous.layers[0].ffn.gated is None
-    assert _prov(ambiguous)["decoder.ffn.gated"]["status"] == "oracle_missing"
+    assert "decoder.ffn.gated" not in _prov(ambiguous)
 
 
 def test_tie_class_default_tier_fixes_absent_flag():

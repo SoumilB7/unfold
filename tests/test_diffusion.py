@@ -286,15 +286,15 @@ def test_text_encoder_shows_real_config_dims():
                                 "attention_detail", "position_evidence",
                                 "sub_model"}}
                   for spec in specs]
-    # ``norm`` comes from the norm class's forward() MATH in the modeling
-    # source — CLIP builds nn.LayerNorm, T5LayerNorm is variance-only RMS
-    # despite its name and its config's ``layer_norm_epsilon`` spelling.
+    # These encoder summaries do not yet have an exact selected repeated-child
+    # norm boundary (T5 also has explicit encoder/decoder rivals).  Until U3-G
+    # supplies it, neither summary may trust an epsilon field spelling.
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77,
-         "norm": "LayerNorm", "gated": False},
+         "gated": False},
         {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
-         "activation": "gelu_new", "vocab": 32128, "norm": "RMSNorm", "gated": True},
+         "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
     # Attention geometry lives ONLY on the typed sub-model facts — never
     # duplicated as flat scalars (the dead add-on vocabulary this replaced).
@@ -1236,7 +1236,6 @@ def test_scheduler_step_renders_a_clean_combine_not_floating_ops():
     (Regression: the declared-ops chain floated/duplicated the ⊕ because the
     combine merges the primary latent with a side-scaled input — same failure mode
     the self-conditioning view hit.)"""
-    from model_unfolder.adapters.diffusor.parser import _scheduler_geom
     from model_unfolder.adapters.diffusor.blocks import _scheduler_step_view
 
     # flow-matching family (FLUX / FlowMatchEuler): velocity prediction, Euler step
@@ -1491,7 +1490,6 @@ def test_encoded_text_box_drills_into_the_concat_view():
                            "hidden_act": "gelu", "max_position_embeddings": 77,
                            "vocab_size": 49408, "projection_dim": 1280},
     })
-    import re
     d = unfold(cfg)
     html = d.to_html(standalone=True)
     i = html.find('data-card-id="unet_text_cond"')
@@ -1557,8 +1555,8 @@ def test_unet_stage_drills_show_per_stage_dims():
                     ("unet_up_0", 1280), ("unet_up_2", 320)]:
         assert f"in ({ch:,} ch)" in view_svg(f"{sid}__resnet"), (sid, ch)
     # mid block: two resnets (pre/post), both at 1,280 ch
-    assert f"in (1,280 ch)" in view_svg("unet_mid__resnet_pre"), "unet_mid__resnet_pre"
-    assert f"in (1,280 ch)" in view_svg("unet_mid__resnet_post"), "unet_mid__resnet_post"
+    assert "in (1,280 ch)" in view_svg("unet_mid__resnet_pre"), "unet_mid__resnet_pre"
+    assert "in (1,280 ch)" in view_svg("unet_mid__resnet_post"), "unet_mid__resnet_post"
     # transformer head counts differ per stage (640→10 heads, 1,280→20 heads) —
     # not collapsed to the first cross-attn stage's count
     assert "10 heads" in html[html.find('data-card-id="unet_down_1__transformer"'):][:600]

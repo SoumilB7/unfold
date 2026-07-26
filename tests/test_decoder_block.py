@@ -11,6 +11,7 @@ from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import (
+    decoder_block_candidates_at_root,
     decoder_block_path_at_root,
     decoder_block_path_for_config,
 )
@@ -240,6 +241,19 @@ class Wrapper:
         index, root, allow_root_stage=True)
     assert result.status == "ambiguous"
     assert len(result.ambiguity.sites) == 2
+    candidates = decoder_block_candidates_at_root(
+        index, root, allow_root_stage=True)
+    assert candidates.status == "resolved"
+    assert candidates.value.repeated_child.status == "ambiguous"
+    assert len(candidates.value.occurrences) == 2
+    assert {
+        root.graph.node_for(item).symbol.qualified_name
+        for item in candidates.value.occurrences
+    } == {"LeftBlock", "RightBlock"}
+    with pytest.raises(ValueError):
+        replace(
+            candidates.value,
+            occurrences=candidates.value.occurrences[:1])
 
 
 def test_unconstructed_config_path_never_falls_back_to_root_decoder():

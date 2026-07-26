@@ -252,7 +252,14 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         # U2-R9 (witness 26): a composite decoder whose bias evidence cannot
         # resolve records an HONEST ambiguous/None row (never a chosen value).
         value_types=frozenset({"bool", "NoneType"}),
-        allowed_statuses=frozenset({"code_proven", "ambiguous"}),
+        # Exact source-only literals/framework defaults are code_proven.
+        # ``bias=config.<field>`` deliberately abstains in the code reader;
+        # the owner-scoped config channel then supplies the exact checkpoint
+        # declaration or installed class default.  Those are honest evidence
+        # tiers, not a reason to resurrect the whole-file source guesser.
+        allowed_statuses=frozenset({
+            "code_proven", "config_declared", "class_default", "ambiguous",
+        }),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({"attention_detail", "json"}),
         unknown_policy="omit",

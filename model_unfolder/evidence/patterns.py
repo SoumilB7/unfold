@@ -2129,40 +2129,6 @@ class _MoEGateEvaluator:
         return None
 
 
-_QKV_PROJ_NAMES = frozenset({
-    "q_proj", "k_proj", "v_proj",                       # split
-    "query_key_value", "qkv_proj", "c_attn", "wqkv", "qkv",  # fused
-    "query", "key", "value",
-})
-
-
-def _linear_bias_value(call: ast.Call, cfg):
-    """The bias of an ``nn.Linear(...)`` construction: True/False (literal),
-    the resolved value when ``bias=config.X`` / ``self.config.X``, True when the
-    kwarg is ABSENT (nn.Linear defaults bias=True), or None when unresolvable
-    (a bias gated on a non-config expression)."""
-    for kw in call.keywords:
-        if kw.arg != "bias":
-            continue
-        v = kw.value
-        if isinstance(v, ast.Constant):
-            return bool(v.value)
-        # bias=config.X / self.config.X → read the checkpoint value
-        if isinstance(v, ast.Attribute):
-            base = v.value
-            field = None
-            if isinstance(base, ast.Name) and base.id in ("config", "cfg"):
-                field = v.attr
-            elif (isinstance(base, ast.Attribute) and base.attr == "config"
-                  and isinstance(base.value, ast.Name) and base.value.id == "self"):
-                field = v.attr
-            if field is not None:
-                val = getattr(cfg, field, None) if not isinstance(cfg, dict) else cfg.get(field)
-                return None if val is None else bool(val)
-        return None                                      # bias=<other expr> → unresolvable
-    return True                                          # no bias kwarg → nn.Linear default True
-
-
 def decoder_parallel_norm_count_from_files(files) -> int | None:
     """For a PARALLEL-residual decoder layer, how many DISTINCT input norms feed
     the attention branch vs the FFN branch — 1 (SHARED: GPT-J's ``ln_1`` feeds
@@ -2228,96 +2194,8 @@ def decoder_parallel_norm_count_from_files(files) -> int | None:
     return 1 if attn_norm == ffn_norm else 2
 
 
-def decoder_attention_bias_from_files(files, cfg) -> bool | None:
-    """Do the attention Q/K/V projections carry a BIAS — READ FROM THE ATTENTION
-    CLASS's construction, code-authoritative.  Bloom (`query_key_value =
-    nn.Linear(..., bias=True)`) and Qwen2 (`q_proj = nn.Linear(..., bias=True)`)
-    enact bias UNCONDITIONALLY while their config declares no `attention_bias`,
-    so the spelling reader draws them bias-less.  The construction is the truth:
-    a literal `bias=True/False` wins; `bias=config.X` resolves the checkpoint
-    value (Llama); an absent kwarg is nn.Linear's default True.  Returns the
-    unanimous QKV-projection bias, or None when no attention/QKV Linear is found
-    or the verdicts disagree/are unresolvable (→ caller falls back to config)."""
-    from .forward_ops import _method, _role_of, _self_field
-    layer = _find_decoder_layer(files, ast)
-    if layer is None:
-        return None
-    _, layer_fields = layer
-    attn_classes = sorted({c for c in layer_fields.values() if _role_of(c) == "attention"})
-    if not attn_classes:
-        return None
-    defs = _parse_defs(tuple(str(p) for p in (files or ())))
-    verdicts: set = set()
-    for aname in attn_classes:
-        node = defs.get(aname)
-        init = _method(node, "__init__") if node else None
-        if init is None:
-            continue
-        for st in ast.walk(init):
-            if not (isinstance(st, ast.Assign) and isinstance(st.value, ast.Call)):
-                continue
-            field = _self_field(st.targets[0]) if st.targets else None
-            if field is None or field.lower() not in _QKV_PROJ_NAMES:
-                continue
-            callee = st.value.func
-            nm = callee.attr if isinstance(callee, ast.Attribute) else (
-                callee.id if isinstance(callee, ast.Name) else "")
-            if nm != "Linear":
-                continue                                 # only nn.Linear (Conv1D/others: skip)
-            b = _linear_bias_value(st.value, cfg)
-            if b is None:
-                return None                              # unresolvable QKV bias → doubt
-            verdicts.add(b)
-    if len(verdicts) != 1:
-        return None                                      # none found, or q/k/v disagree
-    return next(iter(verdicts))
-
-
-def decoder_mlp_bias_from_files(files, cfg) -> bool | None:
-    """Do the FFN's Linear projections carry a BIAS — READ FROM THE FFN
-    CLASS's construction, code-authoritative (the exact twin of
-    ``decoder_attention_bias_from_files``: Bloom's MLP Linears default to
-    bias=True while its config declares no ``mlp_bias``, so the spelling
-    reader leaves the fact silent).  A literal ``bias=True/False`` wins;
-    ``bias=config.X`` resolves the checkpoint value (Llama's ``mlp_bias``);
-    an absent kwarg is nn.Linear's default True.  Returns the unanimous
-    verdict across the FFN's Linears, or None (no FFN class resolved, a
-    non-Linear projection, or disagreement → caller keeps the config value)."""
-    from .forward_ops import _method, _role_of
-    layer = _find_decoder_layer(files, ast)
-    if layer is None:
-        return None
-    _, layer_fields = layer
-    ffn_classes = sorted({c for c in layer_fields.values() if _role_of(c) == "ffn"})
-    if len(ffn_classes) != 1:
-        return None                                     # zero or rival FFN fields
-    defs = _parse_defs(tuple(str(p) for p in (files or ())))
-    node = defs.get(ffn_classes[0])
-    init = _method(node, "__init__") if node else None
-    if init is None:
-        return None
-    verdicts: set = set()
-    found_any = False
-    for n in ast.walk(init):
-        if not isinstance(n, ast.Call):
-            continue
-        callee = n.func
-        nm = callee.attr if isinstance(callee, ast.Attribute) else (
-            callee.id if isinstance(callee, ast.Name) else "")
-        if nm != "Linear":
-            continue                                    # Conv1D/other layouts: abstain
-        found_any = True
-        b = _linear_bias_value(n, cfg)
-        if b is None:
-            return None                                 # unresolvable → doubt
-        verdicts.add(b)
-    if not found_any or len(verdicts) != 1:
-        return None
-    return next(iter(verdicts))
-
-
 # Field-name markers for the tying idiom's two ends (code-side vocabulary,
-# the _QKV_PROJ_NAMES precedent): the OUTPUT head field and the INPUT
+# a small structural vocabulary: the OUTPUT head field and the INPUT
 # embedding field the assignment connects.
 _HEAD_FIELD_MARKERS = ("lm_head", "embed_out", "output_layer", "head")
 _EMBED_FIELD_MARKERS = ("embed", "wte", "word_embeddings", "tok_embeddings")

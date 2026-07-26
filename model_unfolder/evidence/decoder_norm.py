@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from .construction_calls import resolve_construction_call
 from .container_inventory import resolve_container_inventory
-from .decoder_block import decoder_block_path_for_config
+from .decoder_block import decoder_block_candidates_for_config
 from .execution_flow import resolve_addressed_invocations
 from .models import SourceBundle
 from .primitive_semantics import classify_primitive_call
@@ -46,12 +46,60 @@ def decoder_norm_kind_for_path(
             not isinstance(part, str) or not part for part in config_path):
         raise TypeError("config_path is tuple[str, ...]")
 
-    block = decoder_block_path_for_config(
+    candidates = decoder_block_candidates_for_config(
         index, bundle, config_path, allow_root_stage=allow_root_stage)
-    if block.status != "resolved":
-        return block
-    root = block.value.component_root
-    owner = block.value.block_occurrence
+    if candidates.status != "resolved":
+        return candidates
+    root = candidates.value.component_root
+    classified_candidates = tuple(
+        _norm_kind_at_block(index, root, occurrence)
+        for occurrence in candidates.value.occurrences)
+    ambiguous = tuple(
+        result for result in classified_candidates
+        if result.status == "ambiguous")
+    if ambiguous:
+        return ReaderResult.ambiguous(
+            candidates.value.stage_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys(
+                span for result in ambiguous
+                for span in result.ambiguity.sites))),
+            provenance=candidates.provenance)
+    if any(result.status != "resolved" for result in classified_candidates):
+        failures = tuple(
+            failure
+            for result in classified_candidates
+            for failure in result.failures)
+        return ReaderResult.failed(
+            candidates.value.stage_occurrence,
+            failures or (ReaderFailure(
+                "incomplete_graph",
+                "not every exact decoder-block candidate proves a norm kind"),),
+            provenance=candidates.provenance)
+    values = {result.value for result in classified_candidates}
+    if len(values) > 1:
+        return ReaderResult.ambiguous(
+            candidates.value.stage_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys(
+                span for result in classified_candidates
+                for origin in result.provenance for span in origin.spans))),
+            provenance=candidates.provenance)
+    value = next(iter(values))
+    return ReaderResult.resolved(
+        candidates.value.stage_occurrence, value,
+        provenance=(
+            *candidates.provenance,
+            *(origin for result in classified_candidates
+              for origin in result.provenance),
+            ReaderProvenance(
+                "derived",
+                detail=(
+                    "every exact repeated-child candidate independently "
+                    "proves the same normalization primitive")),
+        ))
+
+
+def _norm_kind_at_block(index, root, owner):
+    """Classify normalization invocations on one exact block occurrence."""
     inventory = resolve_container_inventory(index, root, owner)
     invocations = resolve_addressed_invocations(
         index, root, owner, inventory)
@@ -100,7 +148,7 @@ def decoder_norm_kind_for_path(
         span for span in spans if isinstance(span, SourceSpan)))
     return ReaderResult.resolved(
         owner, value,
-        provenance=(*block.provenance, ReaderProvenance(
+        provenance=(ReaderProvenance(
             "source", spans=exact_spans,
             detail=(
                 "all positively classified unguarded normalization "

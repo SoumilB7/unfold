@@ -99,6 +99,55 @@ class DecoderBlockPath:
         return self.repeated_child.child_occurrence
 
 
+@dataclass(frozen=True)
+class DecoderBlockCandidates:
+    """Complete exact repeated-child candidate census for one selected stage.
+
+    More than one candidate is address ambiguity, not mechanism ambiguity.
+    Downstream readers may prove a value only when every carried occurrence is
+    independently resolved and mechanism-equivalent.
+    """
+
+    config_path: tuple[str, ...]
+    component_root: ComponentRootResolution | ConstructedComponentRoot
+    stage_occurrence: OwnerOccurrenceId
+    repeated_child: RepeatedChildResolution
+    occurrences: tuple[OwnerOccurrenceId, ...]
+    address_spans: tuple[SourceSpan, ...] = ()
+
+    def __post_init__(self) -> None:
+        root = require_resolved_component_root(
+            self.component_root, caller="DecoderBlockCandidates")
+        if self.repeated_child.status not in {"resolved", "ambiguous"}:
+            raise ValueError("candidate census carries resolved/ambiguous repetition")
+        if self.repeated_child.model_stage != self.stage_occurrence:
+            raise ValueError("candidate census belongs to the exact stage")
+        expected = (
+            (self.repeated_child.child_occurrence,)
+            if self.repeated_child.status == "resolved"
+            else tuple(dict.fromkeys(
+                proof.child_occurrence
+                for proof in self.repeated_child.rivals))
+        )
+        if self.occurrences != expected or not self.occurrences:
+            raise ValueError("candidate occurrences derive from the repeated proof")
+        if any(root.graph.node_for(item) is None for item in self.occurrences):
+            raise ValueError("every candidate round-trips through the owner graph")
+        if isinstance(root, ConstructedComponentRoot):
+            if self.config_path != tuple(root.config_path):
+                raise ValueError("nested candidates carry their exact config path")
+            if {root.construction_span, root.installation_span} \
+                    - set(self.address_spans):
+                raise ValueError("nested candidates retain exact address provenance")
+        elif self.config_path:
+            raise ValueError("declared-root candidates have an empty config path")
+        elif self.address_spans:
+            raise ValueError("declared-root candidates carry no nested address spans")
+        if any(not isinstance(span, SourceSpan) for span in self.address_spans) \
+                or len(set(self.address_spans)) != len(self.address_spans):
+            raise ValueError("candidate address spans are typed and unique")
+
+
 def decoder_block_path_at_root(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -106,8 +155,42 @@ def decoder_block_path_at_root(
     allow_root_stage: bool,
 ) -> ReaderResult[DecoderBlockPath]:
     """Resolve stage -> repeated child under an already-proven component root."""
+    candidates = decoder_block_candidates_at_root(
+        index, root, allow_root_stage=allow_root_stage)
+    if candidates.status != "resolved":
+        return candidates
+    value = candidates.value
+    if len(value.occurrences) > 1:
+        return ReaderResult.ambiguous(
+            value.stage_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys(
+                proof.template.call.span
+                for proof in value.repeated_child.rivals
+                if isinstance(proof.template.call.span, SourceSpan)))),
+            provenance=candidates.provenance)
+    if value.repeated_child.status != "resolved":
+        return ReaderResult.failed(
+            value.stage_occurrence,
+            (ReaderFailure(
+                "incomplete_graph",
+                "one candidate did not retain a unique repeated-child proof"),),
+            provenance=candidates.provenance)
+    path = DecoderBlockPath(
+        value.config_path, value.component_root, value.stage_occurrence,
+        value.repeated_child, value.address_spans)
+    return ReaderResult.resolved(
+        path.block_occurrence, path, provenance=candidates.provenance)
+
+
+def decoder_block_candidates_at_root(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[DecoderBlockCandidates]:
+    """Resolve a complete exact repeated-child candidate set at one root."""
     if not isinstance(index, ProgramIndex):
-        raise TypeError("decoder_block_path_at_root requires a ProgramIndex")
+        raise TypeError("decoder_block_candidates_at_root requires a ProgramIndex")
     if not isinstance(allow_root_stage, bool):
         raise TypeError("allow_root_stage is an explicit adapter authorization")
     root = require_resolved_component_root(
@@ -144,17 +227,26 @@ def decoder_block_path_at_root(
         repeated = resolve_repeated_child_at_owner(
             index, root, owner, inventory)
         if repeated.status == "ambiguous":
-            return ReaderResult.ambiguous(
-                owner, Ambiguity(sites=tuple(dict.fromkeys(
-                    proof.template.call.span
-                    for proof in repeated.rivals
-                    if isinstance(proof.template.call.span, SourceSpan)))),
-                provenance=tuple(delegated_provenance))
-        if repeated.status == "resolved":
-            value = DecoderBlockPath(
-                config_path, root, owner, repeated, address_spans)
+            occurrences = tuple(dict.fromkeys(
+                proof.child_occurrence for proof in repeated.rivals))
+            value = DecoderBlockCandidates(
+                config_path, root, owner, repeated, occurrences, address_spans)
             return ReaderResult.resolved(
-                value.block_occurrence, value,
+                owner, value,
+                provenance=(
+                    *delegated_provenance,
+                    ReaderProvenance(
+                        "derived",
+                        detail=(
+                            "complete exact rival repeated-child address "
+                            "census; no candidate selected")),
+                ))
+        if repeated.status == "resolved":
+            value = DecoderBlockCandidates(
+                config_path, root, owner, repeated,
+                (repeated.child_occurrence,), address_spans)
+            return ReaderResult.resolved(
+                owner, value,
                 provenance=(
                     *delegated_provenance,
                     ReaderProvenance(
@@ -199,8 +291,44 @@ def decoder_block_path_for_config(
     allow_root_stage: bool,
 ) -> ReaderResult[DecoderBlockPath]:
     """Resolve one parser-selected config path to its exact decoder block."""
+    candidates = decoder_block_candidates_for_config(
+        index, bundle, config_path, allow_root_stage=allow_root_stage)
+    if candidates.status != "resolved":
+        return candidates
+    value = candidates.value
+    if len(value.occurrences) > 1:
+        return ReaderResult.ambiguous(
+            value.stage_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys(
+                proof.template.call.span
+                for proof in value.repeated_child.rivals
+                if isinstance(proof.template.call.span, SourceSpan)))),
+            provenance=candidates.provenance)
+    if value.repeated_child.status != "resolved":
+        return ReaderResult.failed(
+            value.stage_occurrence,
+            (ReaderFailure(
+                "incomplete_graph",
+                "one candidate did not retain a unique repeated-child proof"),),
+            provenance=candidates.provenance)
+    path = DecoderBlockPath(
+        value.config_path, value.component_root, value.stage_occurrence,
+        value.repeated_child, value.address_spans)
+    return ReaderResult.resolved(
+        path.block_occurrence, path, provenance=candidates.provenance)
+
+
+def decoder_block_candidates_for_config(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[DecoderBlockCandidates]:
+    """Resolve all exact repeated-child candidates for a selected config."""
     if not isinstance(index, ProgramIndex):
-        raise TypeError("decoder_block_path_for_config requires a ProgramIndex")
+        raise TypeError(
+            "decoder_block_candidates_for_config requires a ProgramIndex")
     if not isinstance(bundle, SourceBundle):
         raise TypeError("decoder_block_path_for_config requires a SourceBundle")
     if not isinstance(config_path, tuple) or any(
@@ -215,7 +343,7 @@ def decoder_block_path_for_config(
             "incomplete_graph",
             f"root component address is {outer.status}"),))
     if not config_path:
-        return decoder_block_path_at_root(
+        return decoder_block_candidates_at_root(
             index, outer, allow_root_stage=allow_root_stage)
 
     nested = resolve_config_constructed_root(
@@ -245,14 +373,14 @@ def decoder_block_path_for_config(
         return ReaderResult.absent(nested.outer_root)
 
     candidate = nested.candidate
-    result = decoder_block_path_at_root(
+    result = decoder_block_candidates_at_root(
         index, candidate.component_root,
         allow_root_stage=allow_root_stage)
     if result.status != "resolved":
         return result
     value = result.value
     if value.config_path != config_path:
-        return ReaderResult.failed(value.block_occurrence, (ReaderFailure(
+        return ReaderResult.failed(value.stage_occurrence, (ReaderFailure(
             "out_of_owner",
             "the constructed decoder root returned a foreign config path"),))
     address_provenance = ReaderProvenance(
@@ -263,12 +391,15 @@ def decoder_block_path_for_config(
             f"address for {'.'.join(config_path)}"),
     )
     return ReaderResult.resolved(
-        value.block_occurrence, value,
+        value.stage_occurrence, value,
         provenance=(address_provenance, *result.provenance))
 
 
 __all__ = [
     "DecoderBlockPath",
+    "DecoderBlockCandidates",
+    "decoder_block_candidates_at_root",
+    "decoder_block_candidates_for_config",
     "decoder_block_path_at_root",
     "decoder_block_path_for_config",
 ]

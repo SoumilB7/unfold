@@ -1436,10 +1436,11 @@ def test_declared_intermediate_size_is_never_overridden_by_code():
 def test_norm_kind_math_outranks_the_rms_eps_spelling():
     """PhiMoE constructs ``nn.LayerNorm`` while carrying ``rms_norm_eps`` — the
     RMS eps spelling lies, the code math (torch-builtin LayerNorm) tells the
-    truth; and T5 (``layer_norm_epsilon`` + RMS math) stays RMS.  Every plain
-    RMS/LN control is unchanged."""
+    truth.  T5 exposes rival encoder/decoder stages, so its epsilon spelling
+    cannot stand in for an exact primitive and the diagram stays generic.
+    Every unambiguous plain RMS/LN control is unchanged."""
     from transformers import AutoConfig
-    expect = {"phimoe": "LayerNorm", "t5": "RMSNorm", "llama": "RMSNorm",
+    expect = {"phimoe": "LayerNorm", "t5": "Normalization", "llama": "RMSNorm",
               "bloom": "LayerNorm", "gemma2": "RMSNorm", "qwen3": "RMSNorm"}
     for mt, want in expect.items():
         ir = config_to_ir(AutoConfig.for_model(mt))
@@ -1448,14 +1449,23 @@ def test_norm_kind_math_outranks_the_rms_eps_spelling():
         assert drawn == {want}, f"{mt}: drew {drawn}, expected {want}"
 
 
-def test_norm_math_verdict_maps_torch_builtin_names():
-    """The math reader classifies a torch-builtin norm by its API name (fixed
-    library math), so a class with no in-file forward still resolves."""
-    from model_unfolder.evidence.patterns import _norm_math_verdict
-    import ast as _ast
-    assert _norm_math_verdict(None, {}, "LayerNorm", _ast) == "layernorm"
-    assert _norm_math_verdict(None, {}, "RMSNorm", _ast) == "rmsnorm"
-    assert _norm_math_verdict(None, {}, "SomethingElse", _ast) is None
+def test_t5_two_stage_norm_stays_unknown_until_stage_selection_is_proven():
+    """T5Model delegates to both encoder and decoder stacks.
+
+    The exact address rail preserves both rivals; an epsilon field spelling
+    must not pick a primitive or pretend one stage was selected.
+    """
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.decoder_norm import decoder_norm_kind_for_path
+    cfg = AutoConfig.for_model("t5")
+    context = ParseContext.build(cfg)
+    result = decoder_norm_kind_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "ambiguous"
+    ir = config_to_ir(cfg, parse_context=context)
+    assert {layer.norm_kind for layer in ir.layers} == {"unknown"}
 
 
 # ---------------------------------------------------------------------------
@@ -1988,32 +1998,6 @@ def test_moe_schedule_matches_code_construction():
             continue
         drawn = [(l.ffn.kind == "moe") for l in mu.config_to_ir(cfg).layers]
         assert drawn == code[:len(drawn)], f"{mt}: drawn MoE schedule != code construction"
-
-
-# ---------------------------------------------------------------------------
-# Attention bias from construction (Group 2): code-authoritative QKV bias
-# ---------------------------------------------------------------------------
-
-def test_attention_bias_from_construction():
-    """The QKV-projection bias read from the attention class's construction:
-    Bloom/Qwen2 hardcode bias=True (config declares nothing → was drawn
-    bias-less); Llama gates on config.attention_bias; Phi-3 is bias=False."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_attention_bias_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    cases = [("bloom", "bloom/modeling_bloom.py", None, True),
-             ("qwen2", "qwen2/modeling_qwen2.py", None, True),
-             ("phi3", "phi3/modeling_phi3.py", None, False),
-             ("llama", "llama/modeling_llama.py", {"attention_bias": False}, False),
-             ("llama", "llama/modeling_llama.py", {"attention_bias": True}, True)]
-    for mt, ff, override, want in cases:
-        cfg = AutoConfig.for_model(mt)
-        if override:
-            for k, v in override.items():
-                setattr(cfg, k, v)
-        got = decoder_attention_bias_from_files((str(base / ff),), cfg)
-        assert got == want, f"{mt} {override}: got {got}, want {want}"
 
 
 def test_parallel_norm_count_from_construction():
@@ -2764,27 +2748,6 @@ def test_unet_ffn_activation_anchored_to_declared_blocks():
     assert "does not declare its inner structure" not in html
 
 
-def test_mlp_bias_from_construction():
-    """U2: MLP bias read from the FFN class's Linears, code-authoritative —
-    Bloom (nn.Linear default True, silent config) → True; Qwen2/Gemma2
-    literal False; Llama resolves `bias=config.mlp_bias` (False); GPT-2's
-    Conv1D layout abstains (None → config spelling stands)."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_mlp_bias_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    want = {"bloom": True, "qwen2": False, "llama": False,
-            "gpt2": None, "gemma2": False}
-    for mt, w in want.items():
-        ff = base / mt / f"modeling_{mt}.py"
-        got = decoder_mlp_bias_from_files((str(ff),), AutoConfig.for_model(mt))
-        assert got is w or got == w, (mt, got, w)
-    # llama with mlp_bias=True in config → reader resolves the gate to True
-    cfg = AutoConfig.for_model("llama"); cfg.mlp_bias = True
-    assert decoder_mlp_bias_from_files(
-        (str(base / "llama/modeling_llama.py"),), cfg) is True
-
-
 def test_mla_kind_cross_check_both_directions(tmp_path):
     """U3: fact-conformance polices the attention KIND — a code-MLA drawn as
     GQA flags wrong_attention; drawn-MLA with no code MLA flags fabricated;
@@ -2890,62 +2853,6 @@ def test_patch_ops_humanized_and_plumbing_collapsed():
                             and any(c.isupper() for c in label[1:])
                             and " " not in label and label not in ("LayerNorm", "RMSNorm")), \
                     f"{mt}/{name}: class-name-like label {label!r}"
-
-
-# ---------------------------------------------------------------------------
-# U2 P2a — attention-bias reader: tmp-file constructor witnesses (the reader
-# was wired in P1; these pin its tri-state on synthetic ctor shapes so the
-# contract survives transformers refactors of the installed sources).
-# ---------------------------------------------------------------------------
-
-_BIAS_LAYER_TEMPLATE = """
-class FakeAttention:
-    def __init__(self, config):
-        self.q_proj = nn.Linear(4, 4, bias={bias})
-        self.k_proj = nn.Linear(4, 4, bias={bias})
-        self.v_proj = nn.Linear(4, 4, bias={bias})
-    def forward(self, x):
-        return x
-
-class FakeMLP:
-    def __init__(self, config):
-        self.up_proj = nn.Linear(4, 8)
-        self.down_proj = nn.Linear(8, 4)
-    def forward(self, x):
-        return x
-
-class FakeDecoderLayer:
-    def __init__(self, config):
-        self.self_attn = FakeAttention(config)
-        self.mlp = FakeMLP(config)
-    def forward(self, x, past_key_value=None):
-        return x
-"""
-
-
-def test_attention_bias_reader_tmpfile_ctor_tristate(tmp_path):
-    """Literal bias=True/False on the QKV Linears is code-proven either way;
-    ``bias=config.X`` resolves the checkpoint value and stays None (doubt)
-    when the config is silent; an absent source is an honest None."""
-    from model_unfolder.evidence.patterns import decoder_attention_bias_from_files
-
-    biased = tmp_path / "biased.py"
-    biased.write_text(_BIAS_LAYER_TEMPLATE.format(bias="True"))
-    unbiased = tmp_path / "unbiased.py"
-    unbiased.write_text(_BIAS_LAYER_TEMPLATE.format(bias="False"))
-    gated = tmp_path / "gated.py"
-    gated.write_text(_BIAS_LAYER_TEMPLATE.format(bias="config.attention_bias"))
-
-    assert decoder_attention_bias_from_files((str(biased),), {}) is True
-    assert decoder_attention_bias_from_files((str(unbiased),), {}) is False
-    # bias=config.X: the checkpoint value decides; silent config = doubt
-    assert decoder_attention_bias_from_files(
-        (str(gated),), {"attention_bias": True}) is True
-    assert decoder_attention_bias_from_files(
-        (str(gated),), {"attention_bias": False}) is False
-    assert decoder_attention_bias_from_files((str(gated),), {}) is None
-    # source absent → None, never a fabricated verdict
-    assert decoder_attention_bias_from_files((), {}) is None
 
 
 # ---------------------------------------------------------------------------

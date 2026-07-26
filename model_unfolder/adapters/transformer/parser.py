@@ -164,15 +164,6 @@ def _decoder_norm_result(context=None, *, config_path=()):
     )
 
 
-def _code_norm_math(
-        cfg: Any, context=None, *, config_path=()) -> str | None:
-    """Norm kind from exact constructed primitives on the selected block."""
-    result = _decoder_norm_result(
-        context, config_path=config_path)
-    return result.value \
-        if result is not None and result.status == "resolved" else None
-
-
 def _ffn_mechanism_result(context=None, *, config_path=()):
     """One call-local exact-owner ordinary FFN result."""
     if context is None:
@@ -351,17 +342,40 @@ def _code_parallel_norm_count(cfg: Any, context=None):
         return None
 
 
-def _code_attention_bias(cfg: Any, context=None):
-    """Whether the attention Q/K/V projections carry a BIAS, READ FROM THE
-    ATTENTION CLASS's construction — code-authoritative (Bloom/Qwen2 enact
-    `nn.Linear(..., bias=True)` while their config declares no `attention_bias`,
-    so the spelling reader draws them bias-less).  None when unresolvable →
-    caller keeps the config spelling.  Best-effort, never raises."""
-    try:
-        from ...evidence.patterns import decoder_attention_bias_from_files
-        return decoder_attention_bias_from_files(_source_files(cfg, context), cfg)
-    except Exception:
+def _projection_bias_result(context, mechanism, config_path):
+    """Call-local exact-owner projection bias evidence."""
+    if context is None:
         return None
+    from ...evidence.projection_bias import (
+        decoder_attention_bias_for_path,
+        decoder_ffn_bias_for_path,
+    )
+    readers = {
+        "attention": decoder_attention_bias_for_path,
+        "ordinary_ffn": decoder_ffn_bias_for_path,
+    }
+    reader = readers[mechanism]
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        f"decoder.{mechanism}.projection_bias",
+        path,
+        lambda: reader(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True),
+    )
+
+
+def _code_attention_bias(cfg: Any, context=None, *, config_path=()):
+    """Source-only bias of the exact Q/K/V projection occurrences.
+
+    Config-dependent bias expressions intentionally abstain here and stay on
+    the parser's owner-scoped config channel.
+    """
+    result = _projection_bias_result(context, "attention", config_path)
+    return (
+        result.value.value
+        if result is not None and result.status == "resolved" else None
+    )
 
 
 def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
@@ -408,15 +422,13 @@ def _code_scores_scaled(cfg: Any, context=None) -> bool | None:
         return None
 
 
-def _code_mlp_bias(cfg: Any, context=None) -> bool | None:
-    """MLP projection bias READ FROM THE FFN CLASS's Linear constructions —
-    the twin of _code_attention_bias.  None on doubt (Conv1D layouts, rival
-    FFN fields) → the config spelling stands.  Best-effort, never raises."""
-    try:
-        from ...evidence.patterns import decoder_mlp_bias_from_files
-        return decoder_mlp_bias_from_files(_source_files(cfg, context), cfg)
-    except Exception:
-        return None
+def _code_mlp_bias(cfg: Any, context=None, *, config_path=()) -> bool | None:
+    """Source-only bias of the exact ordinary-FFN projection occurrences."""
+    result = _projection_bias_result(context, "ordinary_ffn", config_path)
+    return (
+        result.value.value
+        if result is not None and result.status == "resolved" else None
+    )
 
 
 def _code_attention_sinks(cfg: Any, context=None) -> bool:
@@ -1378,7 +1390,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
                                   fact_key="bias")
     if _declared_attn_bias is None:
         _declared_attn_bias = _g(attn_cfg, "attention_bias")
-    _code_bias = _code_attention_bias(text_cfg, context)
+    _code_bias = _code_attention_bias(
+        text_cfg, context, config_path=_text_path)
     # class_default tier: ``Linear(bias=config.attention_bias)`` reads the
     # config ATTRIBUTE at runtime — an absent key resolves to the installed
     # config class's default, real evidence (the hydration channel) and the
@@ -1387,7 +1400,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if _code_bias is not None:
         use_attention_bias = bool(_code_bias)
         _note_fact("decoder.attention", "bias", use_attention_bias,
-                   "code_proven", "decoder_attention_bias_from_files")
+                   "code_proven", "decoder_attention_bias_for_path")
     elif _declared_attn_bias is not None:
         use_attention_bias = bool(_declared_attn_bias)
         _note_fact("decoder.attention", "bias", use_attention_bias,
@@ -1443,7 +1456,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if _mlp_bias is None:
         _mlp_bias = _fact_class_defaults.get("mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
-    _code_mlp = _code_mlp_bias(text_cfg, context)
+    _code_mlp = _code_mlp_bias(
+        text_cfg, context, config_path=_text_path)
     if _code_mlp is not None:
         use_mlp_bias = _code_mlp
     # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
@@ -2752,10 +2766,20 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
             return "rmsnorm", ("config_declared", "norm_type")
         if "layer" in nt:
             return "layernorm", ("config_declared", "norm_type")
-    math_kind = _code_norm_math(
-        cfg, context, config_path=tuple(config_path))
-    if math_kind:
-        return math_kind, ("code_proven", "decoder_norm_kind_for_path")
+    norm_result = _decoder_norm_result(
+        context, config_path=tuple(config_path))
+    if norm_result is not None and norm_result.status == "resolved":
+        return norm_result.value, (
+            "code_proven", "decoder_norm_kind_for_path")
+    # Readable source plus a typed ambiguous/incomplete exact-owner result is
+    # evidence AGAINST trusting a field-name heuristic.  Keep the kind unknown;
+    # only a genuinely missing source may fall through to the legacy spelling
+    # hint while U3-G finishes the remaining address boundary.
+    if context is not None and context.source_bundle.files \
+            and norm_result is not None:
+        return None, (
+            "ambiguous",
+            f"decoder_norm_kind_for_path:{norm_result.status}")
     # The eps SPELLING is a hint derived from a field NAME, not a declaration
     # of the kind (PhiMoE carries rms_norm_eps but constructs nn.LayerNorm) —
     # recorded as ``derived`` so the ledger never upgrades a spelling to fact.
