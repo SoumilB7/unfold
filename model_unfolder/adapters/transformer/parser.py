@@ -146,26 +146,31 @@ def _code_layer_topology(cfg: Any, context=None) -> dict | None:
         return None
 
 
-def _code_norm_kind(cfg: Any, context=None) -> str | None:
-    """The decoder's norm KIND (rmsnorm/layernorm) READ FROM THE MODELING SOURCE
-    — used only as a config-silent fallback (no eps field), replacing the legacy
-    model_type family-set.  Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_norm_kind_from_files
-        return decoder_norm_kind_from_files(_source_files(cfg, context))
-    except Exception:
+def _decoder_norm_result(context=None, *, config_path=()):
+    """One call-local exact decoder-block normalization result."""
+    if context is None:
         return None
+    from ...evidence.decoder_norm import decoder_norm_kind_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.layer.norm_kind",
+        config_path,
+        lambda: decoder_norm_kind_for_path(
+            context.program_index(),
+            context.source_bundle,
+            config_path,
+            allow_root_stage=True,
+        ),
+    )
 
 
-def _code_norm_math(cfg: Any, context=None) -> str | None:
-    """The decoder's norm KIND read from the norm class's forward() MATH —
-    outranks the eps-field spelling (T5: ``layer_norm_epsilon`` in config,
-    variance-only RMS in code).  Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import norm_kind_from_files_math
-        return norm_kind_from_files_math(_source_files(cfg, context))
-    except Exception:
-        return None
+def _code_norm_math(
+        cfg: Any, context=None, *, config_path=()) -> str | None:
+    """Norm kind from exact constructed primitives on the selected block."""
+    result = _decoder_norm_result(
+        context, config_path=config_path)
+    return result.value \
+        if result is not None and result.status == "resolved" else None
 
 
 def _ffn_mechanism_result(context=None, *, config_path=()):
@@ -1010,7 +1015,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     with _config_access.config_container(_text_path, obj=text_cfg):
         _norm_kind_ev, _norm_kind_prov = _norm_kind_evidence_src(
             text_cfg, get("norm_type"), context,
-            eps_fact=("decoder.layer", "norm_kind_eps"))
+            eps_fact=("decoder.layer", "norm_kind_eps"),
+            config_path=_text_path)
     # U2 default-kill: no channel → typed "unknown" (generic Normalization
     # label + honest card prose), never a silent modern-LM rmsnorm.
     norm_kind    = _norm_kind_ev or "unknown"
@@ -2677,29 +2683,34 @@ def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag:
     return "gqa"
 
 
-def _norm_kind_evidence(cfg: Any, explicit_norm_type: Any = None, context=None) -> str | None:
+def _norm_kind_evidence(
+        cfg: Any, explicit_norm_type: Any = None, context=None) -> str | None:
     """The norm kind from EVIDENCE only — None when nothing states it (the
     caller chooses its default and KNOWS it is a default).  Channel order:
 
     1. an explicit ``rmsnorm`` bool / ``norm_type`` config declaration;
-    2. the norm class's ``forward()`` MATH from the modeling source — the
-       only channel that never lies, so it outranks BOTH eps spellings:
+    2. exact constructed normalization primitives on the selected decoder
+       block, classified from an exact framework protocol or implementation
+       MATH — the only channel that never lies, so it outranks BOTH eps spellings:
        PhiMoE/Persimmon construct ``nn.LayerNorm`` while carrying
        ``rms_norm_eps`` (the RMS spelling lies about the kind), and T5 carries
        ``layer_norm_epsilon`` while ``T5LayerNorm`` computes a variance-only
-       rescale (RMS).  ``_norm_math_verdict`` also maps the torch-builtin API
-       names (``nn.LayerNorm``/``nn.RMSNorm``) as fixed library math — reading
-       the library, not the model — so a norm with no in-file forward still
-       classifies here;
+       rescale (RMS).  The primitive classifier also maps exact torch import
+       targets (``nn.LayerNorm``/``nn.RMSNorm``) as fixed library math —
+       reading the library protocol, not a model class spelling;
     3. ``rms_norm_eps`` spelling — RMS when no source math is readable;
-    4. the ``layer_norm_eps*`` spelling hint;
-    5. the name-based norm-class reader for eps-less legacy files (gpt2/opt/…).
+    4. the ``layer_norm_eps*`` spelling hint.
     """
-    return _norm_kind_evidence_src(cfg, explicit_norm_type, context)[0]
+    path = (
+        tuple(context.selected_config_paths.get("transformer.main", ()))
+        if context is not None else ())
+    return _norm_kind_evidence_src(
+        cfg, explicit_norm_type, context, config_path=path)[0]
 
 
 def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
-                            context=None, eps_fact: tuple | None = None) -> tuple:
+                            context=None, eps_fact: tuple | None = None,
+                            config_path=()) -> tuple:
     """``(kind|None, (status, source)|None)`` — the kind PLUS which channel
     decided it, for the FactLedger (U2). Channel order as documented above.
 
@@ -2741,9 +2752,10 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
             return "rmsnorm", ("config_declared", "norm_type")
         if "layer" in nt:
             return "layernorm", ("config_declared", "norm_type")
-    math_kind = _code_norm_math(cfg, context)
+    math_kind = _code_norm_math(
+        cfg, context, config_path=tuple(config_path))
     if math_kind:
-        return math_kind, ("code_proven", "norm_kind_from_files_math")
+        return math_kind, ("code_proven", "decoder_norm_kind_for_path")
     # The eps SPELLING is a hint derived from a field NAME, not a declaration
     # of the kind (PhiMoE carries rms_norm_eps but constructs nn.LayerNorm) —
     # recorded as ``derived`` so the ledger never upgrades a spelling to fact.
@@ -2751,9 +2763,6 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
         return "rmsnorm", ("derived", "rms_norm_eps spelling")
     if ln_eps is not None or ln_eps2 is not None:
         return "layernorm", ("derived", "layer_norm_eps spelling")
-    name_kind = _code_norm_kind(cfg, context)
-    if name_kind:
-        return name_kind, ("code_proven", "decoder_norm_kind_from_files")
     return None, None
 
 

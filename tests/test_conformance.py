@@ -821,56 +821,6 @@ def test_layer_topology_real_families_match_code(tmp_path):
     assert seen >= 4, "too few installed families exercised — resolver may be broken"
 
 
-def test_norm_kind_read_from_decoder_norm_class(tmp_path):
-    """config-silent norm KIND is read from the decoder's NORM submodule class
-    (RMSNorm vs LayerNorm), not a legacy model_type family-set.  An attention
-    HELPER class whose only attention signal is a flash-attn flag field (no norm)
-    must NOT be mistaken for the decoder layer."""
-    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
-    rms = (
-        "class FooDecoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.input_layernorm = FooRMSNorm(8)\n"
-        "        self.self_attn = FooAttention(8)\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-    )
-    ln = rms.replace("FooRMSNorm", "FooLayerNorm")
-    helper = (                                  # flash-attn flag matches 'attn', has no norm
-        "class FooFlashAttention2:\n"
-        "    def __init__(self):\n"
-        "        self._flag = flash_attn_supports_top_left_mask()\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-        "\n\n" + ln
-    )
-    fr = tmp_path / "m_rms.py"; fr.write_text(rms)
-    fl = tmp_path / "m_ln.py"; fl.write_text(ln)
-    fh = tmp_path / "m_helper.py"; fh.write_text(helper)
-    assert decoder_norm_kind_from_files([str(fr)]) == "rmsnorm"
-    assert decoder_norm_kind_from_files([str(fl)]) == "layernorm"
-    assert decoder_norm_kind_from_files([str(fh)]) == "layernorm"   # helper skipped
-
-
-def test_norm_kind_real_legacy_families_are_layernorm():
-    """The installed pre-RMSNorm decoders read LayerNorm from code (zero drift from
-    the deleted family-set), modern decoders RMSNorm — config-silently."""
-    from model_unfolder.evidence.patterns import decoder_norm_kind_from_files
-    from model_unfolder.evidence.sources import resolve_source_files
-    expect = {"gpt2": "layernorm", "opt": "layernorm", "bloom": "layernorm",
-              "gptj": "layernorm", "falcon": "layernorm", "phi": "layernorm",
-              "llama": "rmsnorm", "gemma2": "rmsnorm"}
-    seen = 0
-    for mt, kind in expect.items():
-        files = resolve_source_files({"model_type": mt}, source="local").files
-        got = decoder_norm_kind_from_files(files)
-        if got is None:
-            continue
-        seen += 1
-        assert got == kind, f"{mt}: {got} != {kind}"
-    assert seen >= 5
-
-
 def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
     """A multi-variant modeling file is detected by counting distinct LAYER classes
     (attention + ffn/norm), not a hardcoded family name: one decoder layer => 1
