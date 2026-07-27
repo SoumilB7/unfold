@@ -2077,12 +2077,20 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     mechanism="codebooks", fact_owner="decoder",
                     fact_key="audio_channels",
                     reader="adapters.transformer.parser.parse").value)
-        from ...evidence.patterns import decoder_codebook_streams_from_files
-        _cb_bundle = getattr(context, "source_bundle", None)
-        _cb_comp = getattr(_cb_bundle, "component_files", {}) or {}
-        _cb_files = (_cb_comp.get("decoder") or _cb_comp.get("root")
-                     or getattr(_cb_bundle, "files", None))
-        streams = decoder_codebook_streams_from_files(_cb_files)
+        from ...evidence.codebook_streams import \
+            decoder_codebook_streams_for_path
+        _cb_result = decoder_codebook_streams_for_path(
+            context.program_index(), context.source_bundle, _text_path)
+        streams = {
+            "embeddings_summed": None,
+            "heads_stacked": None,
+        }
+        if _cb_result.has_value:
+            streams = {
+                "embeddings_summed":
+                    _cb_result.value.embeddings_summed,
+                "heads_stacked": _cb_result.value.heads_stacked,
+            }
         codebooks = {
             "num": _num_codebooks,
             "vocab_per_book": vocab_size,

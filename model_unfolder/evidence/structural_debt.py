@@ -333,7 +333,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "the codebooks ARG, not this key)",
             "U7", "fact_registered:codebooks",
             occurrence="text_cfg num_codebooks + audio_channels + "
-                       "decoder_codebook_streams_from_files",
+                       "decoder_codebook_streams_for_path",
             module=_TA, symbol="decoder_extras"),
     _extras("render", "root",
             "PRESENTATION render-spec (theme/layout/blocks) — renderer "
