@@ -492,6 +492,27 @@ then proceed autonomously to U3-B.
         only its evidence-ledger reader provenance; IR, expanded, params,
         HTML metadata and Sable are byte-identical, while Llama is
         byte-identical on every surface.  No manifest/gallery has been blessed.
+      - [~] U3-F5l: exact additive cross-attention schedule is committed in
+        `0bbcbb7`.  The reader begins at the exact selected repeated block and
+        requires exactly two distinct, unguarded attention construction
+        occurrences of the same exact implementation.  Local dataflow must
+        prove that one optional forward formal feeds both K and V but not Q;
+        one construction leaves that formal at its exact literal-None default
+        while the other supplies it.  A shared module called twice, guarded
+        construction, K-only/V-only flow, both constructions supplying the
+        formal, different implementations, a third attention child, and a
+        sibling owner's attention all abstain.  Real controls prove MusicGen
+        positive and Llama negative.  The former whole-file
+        `decoder_cross_attention_all_layers_from_files` reader is deleted and
+        the parser consumes this exact selected-config result.
+        Receipt `54b99ed9d5`: static and collection green (2169), focused
+        173 passed, U2 authority 44 passed, and full 2065 passed / 11 skipped /
+        2 xfailed with the sole failure the already-withheld Sable manifest.
+        Preservation reports the same standing unblessed campaign drift.  An
+        independent direct `10fec07` -> `0bbcbb7` comparison over MusicGen and
+        Llama proves all seven canonical surfaces byte-identical: structural
+        IR, expanded JSON, parameters, HTML metadata, evidence ledgers, Sable,
+        and gallery metadata.  No manifest/gallery has been blessed.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
