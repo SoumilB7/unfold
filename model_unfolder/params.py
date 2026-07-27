@@ -146,7 +146,15 @@ def estimate_params(ir: ModelIR) -> dict:
             (_EXPERT_GATED_NOTE
              if layer.ffn.kind == "moe"
              and layer.ffn.expert_projection_mode is None else None),
-            (_GATED_NOTE if layer.ffn.gated is None else None),
+            # ``gated`` describes the ordinary/shared FFN lane.  A routed-only
+            # MoE with zero shared experts has no such parameters, so its
+            # unknown value cannot affect this formula and must not manufacture
+            # a misleading assumption (GPT-OSS is the real control).
+            (_GATED_NOTE
+             if layer.ffn.gated is None
+             and (layer.ffn.kind != "moe"
+                  or _as_count(layer.ffn.num_shared_experts) > 0)
+             else None),
         )
         for note in pending_notes:
             if note is not None and note not in assumptions:

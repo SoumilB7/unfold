@@ -286,13 +286,13 @@ def test_text_encoder_shows_real_config_dims():
                                 "attention_detail", "position_evidence",
                                 "sub_model"}}
                   for spec in specs]
-    # These encoder summaries do not yet have an exact selected repeated-child
-    # norm boundary (T5 also has explicit encoder/decoder rivals).  Until U3-G
-    # supplies it, neither summary may trust an epsilon field spelling.
+    # CLIP's structured return now resolves its exact CLIPEncoderLayer and its
+    # two torch.nn.LayerNorm calls.  T5 still has explicit encoder/decoder
+    # rivals, so its epsilon spelling may not manufacture a norm kind.
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
          "activation": "quick_gelu", "vocab": 49408, "max_pos": 77,
-         "gated": False},
+         "norm": "LayerNorm", "gated": False},
         {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
          "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]

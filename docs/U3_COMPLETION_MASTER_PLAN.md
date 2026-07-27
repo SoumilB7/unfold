@@ -596,7 +596,7 @@ fact migration.
 | U3-C2 — classify remaining raw parse authority | **DONE** | 33 exact evidence-layer parse sites: 1 central ProgramIndex, 1 address bootstrap, 7 repository audits, 1 test guard and 23 legacy model-source sites |
 | U3-C3 — freeze the semantic-reader quarantine | **DONE** | 25 exact readers; exact definitions/callers; normalized reader + same-module helper implementation digest; exact legacy-parse caller digest; growth/body/alias/move poisons blocking |
 | U3-C4 — regenerate the current inventory | **DONE** | `docs/U3_CURRENT_READER_INVENTORY.md`; generator `--check` is blocking |
-| U3-C5 — project-wide release gate | **HELD** | neutral U3 parity is exact, but the inherited unblessed semantic chain keeps the project-wide preservation/full gate red |
+| U3-C5 — project-wide release gate | **HELD — AUDITED** | neutral U3 parity is exact; `docs/U3_SEMANTIC_DELTA_ADJUDICATION.md` attributes and vets the inherited semantic chain; nine intentional T5/UMT5 `RMSNorm -> Norm` views still require Soumil's visual decision before re-blessing |
 
 The factory proof accepts only an exact directly indexed, unshadowed
 `@classmethod`, one unguarded `return cls(...)`, no unsupported execution
@@ -631,12 +631,43 @@ Receipt: `/private/tmp/model-unfolder-verification/d2467f9b90`, commit
 The two exhaustive failures are inherited semantic outputs:
 
 1. `test_text_encoder_shows_real_config_dims` — the retained embedded-CLIP
-   `norm: LayerNorm` candidate is not in the old expected structure;
+   `norm: LayerNorm` candidate was not in the stale expected structure. The
+   expected structure is now corrected because the exact CLIP block and its
+   `torch.nn.LayerNorm` calls are source-proven;
 2. `test_sable_regression_corpus` — the existing unblessed gallery delta is
    still deliberately blocking.
 
 The 19 preservation failures are likewise inherited from the semantic commits
 reclassified to U6–U9/U14. They are not accepted or re-blessed by U3.
+
+### Independent semantic-delta adjudication
+
+The binding audit is
+`docs/U3_SEMANTIC_DELTA_ADJUDICATION.md`. Its detached-tree attribution harness
+asserts that `model_unfolder` was imported from the requested historical
+worktree; an earlier harness without that assertion was discarded because
+changing a worktree on disk does not change Python's import root.
+
+The audit establishes:
+
+- exact semantic attribution to `78ab271`, `80fc2c3`, `d96c411`, `6effc34`,
+  `a788288` and `306fd8e`;
+- source-proven BLOOM dense FFN, DeepSeek/GLM/GPT-OSS fused routed experts,
+  MusicGen bias-free FFN, CLIP LayerNorm and GPT-OSS learned sinks;
+- no lawful exact T5/UMT5 encoder-block owner yet, so generic `Norm` is an
+  honest unknown rather than a regression to be patched with config spelling;
+- 19 changed witnesses, 46 changed canonical surfaces after the surgical
+  GPT-OSS correction, and nine named views, all nine being only
+  `RMSNorm -> Norm`;
+- no forward reversion is warranted: reverting would restore whole-file union
+  or config-name authority;
+- U9 owns exact recursive text-tower occurrence proof and U14 owns parameter
+  range/partial publication.
+
+Two local corrections belong to the audit receipt: the stale CLIP structural
+test now expects its exact `LayerNorm`, and a routed-only MoE no longer publishes
+an irrelevant ordinary/shared-FFN assumption. Neither correction changes a
+renderer or introduces model/family logic.
 
 ### Exact neutral-delta proof
 
@@ -655,7 +686,9 @@ delta.
 
 The neutral U3 implementation is complete. **U3 release acceptance is not
 marked DONE**, because this plan explicitly forbids using U3 to bless the
-retained semantic deltas. The next action is not more U3 substrate code: each
-inherited semantic delta must be either reverted to the blessed behavior or
-accepted under its assigned U6–U9/U14 receipt and Soumil visual decision. Only
-then may the project-wide gate turn green and U4 formally unlock.
+retained semantic deltas. The independent audit finds no semantic candidate
+that should be reverted: the remaining output delta is an honest removal of
+unsupported specificity. The next action is Soumil's visual decision on the
+nine `RMSNorm -> Norm` views. On acceptance, regenerate only the affected
+manifest/gallery artifacts and run the unchanged-tree release bracket. Only
+then may U3-C5 turn green and U4 formally unlock.

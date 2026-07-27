@@ -735,3 +735,38 @@ def test_unproven_routed_expert_count_does_not_borrow_ordinary_gate():
     router = 8 * 4
     assert total == routed_floor * 4 + shared_gated + router
     assert active == routed_floor * 2 + shared_gated + router
+
+
+def test_routed_only_moe_does_not_claim_an_unused_shared_ffn_assumption():
+    """An unknown ordinary/shared gate cannot qualify a formula when that lane
+    has zero instances.  GPT-OSS proves its routed fused gate+up storage and has
+    no shared expert; the former note falsely implied its exact total was a
+    two-projection lower bound."""
+    from model_unfolder.ir import AttentionSpec, FFNSpec, LayerSpec, ModelIR
+    from model_unfolder.params import estimate_params
+
+    def estimate(shared):
+        return estimate_params(ModelIR(
+            name="moe", architecture="Synthetic", vocab_size=8,
+            hidden_size=8, max_position_embeddings=None,
+            tie_word_embeddings=True,
+            layers=[LayerSpec(
+                index=0,
+                attention=AttentionSpec(kind="mha", num_heads=1),
+                ffn=FFNSpec(
+                    kind="moe", activation=None, gated=None,
+                    intermediate_size=16, expert_intermediate_size=16,
+                    num_experts=4, num_experts_per_tok=2,
+                    num_shared_experts=shared,
+                    expert_projection_mode="fused_gate_up"),
+                norm_kind="unknown")],
+        ))
+
+    routed_only = estimate(0)
+    assert not any(
+        "FFN structure unknown" in note
+        for note in routed_only.get("assumptions") or ())
+    shared = estimate(1)
+    assert any(
+        "FFN structure unknown" in note
+        for note in shared.get("assumptions") or ())
