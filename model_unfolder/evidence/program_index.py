@@ -742,6 +742,92 @@ class LoopObservation:
 
 
 @dataclass(frozen=True)
+class ComprehensionClause:
+    """One exact generator clause inside a comprehension.
+
+    This is binding syntax only: target, iterable, filters and async marker.
+    It does not claim that the iterable executes or that the target denotes a
+    module/container role.
+    """
+
+    target: ExprNode
+    iterable: ExprNode
+    filters: tuple = ()          # tuple[ExprNode]
+    async_flag: bool = False
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.target, ExprNode) \
+                or not isinstance(self.iterable, ExprNode):
+            raise TypeError(
+                "a comprehension clause carries exact target/iterable expressions")
+        if self.target.span is None or self.iterable.span is None:
+            raise ValueError(
+                "a comprehension clause retains target/iterable spans")
+        if self.target.span.source != self.iterable.span.source:
+            raise ValueError("a comprehension clause belongs to one exact source")
+        if any(not isinstance(item, ExprNode) for item in self.filters):
+            raise TypeError("comprehension filters are ExprNode values")
+        if any(item.span is None
+               or item.span.source != self.target.span.source
+               for item in self.filters):
+            raise ValueError("comprehension filters retain the clause source")
+        if not isinstance(self.async_flag, bool):
+            raise TypeError("a comprehension async marker is boolean")
+
+
+@dataclass(frozen=True)
+class ComprehensionObservation:
+    """One exact list/set/dict/generator comprehension.
+
+    Unlike the generic :class:`ExprNode`, this record preserves the binding
+    target for every generator clause.  It is still observation-only: source
+    order is not execution order and no architectural role is inferred.
+    """
+
+    owner: SymbolId | None
+    enclosing_callable: SymbolId
+    expression_kind: str         # list | set | dict | generator
+    outputs: tuple               # one ExprNode; dict carries (key, value)
+    clauses: tuple               # tuple[ComprehensionClause]
+    guard: tuple = ()
+    span: SourceSpan | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.enclosing_callable, SymbolId):
+            raise TypeError(
+                "a comprehension is qualified by its enclosing callable")
+        if self.expression_kind not in {"list", "set", "dict", "generator"}:
+            raise ValueError(
+                f"unknown comprehension expression kind {self.expression_kind!r}")
+        expected_outputs = 2 if self.expression_kind == "dict" else 1
+        if len(self.outputs) != expected_outputs \
+                or any(not isinstance(item, ExprNode)
+                       for item in self.outputs):
+            raise ValueError(
+                f"{self.expression_kind} comprehension carries "
+                f"{expected_outputs} exact output expression(s)")
+        if not self.clauses \
+                or any(not isinstance(item, ComprehensionClause)
+                       for item in self.clauses):
+            raise ValueError(
+                "a comprehension carries one or more typed clauses")
+        if self.span is None \
+                or self.span.source != self.enclosing_callable.source:
+            raise ValueError(
+                "a comprehension retains its exact callable source span")
+        expressions = (
+            *self.outputs,
+            *(part for clause in self.clauses
+              for part in (
+                  clause.target, clause.iterable, *clause.filters)),
+        )
+        if any(item.span is None or item.span.source != self.span.source
+               for item in expressions):
+            raise ValueError(
+                "every comprehension expression belongs to the exact source")
+
+
+@dataclass(frozen=True)
 class ReturnObservation:
     """One ``return`` statement: the value expression (or None) and the guard
     path."""
@@ -840,7 +926,8 @@ __all__ = [
     "ConfigPathObservation", "ControlRecord", "DataflowObservation",
     # execution-flow observations (U3-A2 kernel)
     "StatementId", "CallSiteId", "BindingObservation", "LoopObservation",
-    "ReturnObservation", "ControlTransferObservation", "UnsupportedExecutionRegion",
+    "ComprehensionClause", "ComprehensionObservation", "ReturnObservation",
+    "ControlTransferObservation", "UnsupportedExecutionRegion",
     # resolver-only
     "ConflictRecord",
     # assembly
@@ -1198,6 +1285,7 @@ class _SourceWalker:
         # execution-flow observations (U3-A2 kernel)
         self.bindings: list = []
         self.loops: list = []
+        self.comprehensions: list = []
         self.return_obs: list = []
         self.transfers: list = []
         self.unsupported_exec: list = []
@@ -1721,6 +1809,31 @@ class _SourceWalker:
                 scan.owner, scan.enclosing, self._statement_id(node, scan),
                 (self._expr(node.target),), self._expr(node.value), "walrus",
                 guard, self._span(node)))
+        if isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp,
+                             ast.GeneratorExp)):
+            expression_kind = (
+                "list" if isinstance(node, ast.ListComp)
+                else "set" if isinstance(node, ast.SetComp)
+                else "dict" if isinstance(node, ast.DictComp)
+                else "generator"
+            )
+            outputs = (
+                (self._expr(node.key), self._expr(node.value))
+                if isinstance(node, ast.DictComp)
+                else (self._expr(node.elt),)
+            )
+            clauses = tuple(
+                ComprehensionClause(
+                    self._expr(item.target),
+                    self._expr(item.iter),
+                    tuple(self._expr(test) for test in item.ifs),
+                    bool(item.is_async),
+                )
+                for item in node.generators
+            )
+            self.comprehensions.append(ComprehensionObservation(
+                scan.owner, scan.enclosing, expression_kind,
+                outputs, clauses, guard, self._span(node)))
         # Publish known executable value forms that carry or defer a call as
         # unsupported regions.  This list is deliberately non-exhaustive; absence
         # of one of these records is never a completeness certificate.
@@ -1999,6 +2112,7 @@ class ProgramIndex:
     unsupported_syntax: tuple = ()
     bindings: tuple = ()
     loops: tuple = ()
+    comprehensions: tuple = ()
     return_observations: tuple = ()
     control_transfers: tuple = ()
     unsupported_execution: tuple = ()
@@ -2070,6 +2184,9 @@ class ProgramIndex:
                 self.bindings, lambda item: item.enclosing_callable),
             "loops_in": grouped(
                 self.loops, lambda item: item.enclosing_callable),
+            "comprehensions_in": grouped(
+                self.comprehensions,
+                lambda item: item.enclosing_callable),
             "return_observations_in": grouped(
                 self.return_observations,
                 lambda item: item.enclosing_callable),
@@ -2143,6 +2260,10 @@ class ProgramIndex:
     def loops_in(self, callable_symbol: SymbolId) -> tuple:
         return self._address_index["loops_in"].get(callable_symbol, ())
 
+    def comprehensions_in(self, callable_symbol: SymbolId) -> tuple:
+        return self._address_index["comprehensions_in"].get(
+            callable_symbol, ())
+
     def return_observations_in(self, callable_symbol: SymbolId) -> tuple:
         return self._address_index["return_observations_in"].get(
             callable_symbol, ())
@@ -2202,6 +2323,7 @@ _WALKER_RECORDS = (
     ("unsupported", "unsupported"),
     ("bindings", "bindings"),
     ("loops", "loops"),
+    ("comprehensions", "comprehensions"),
     ("returns", "return_obs"),
     ("transfers", "transfers"),
     ("unsupported_exec", "unsupported_exec"),
@@ -2324,7 +2446,8 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         "field_assigns", "sites",
         "containers", "registries", "calls", "attrs", "configs", "controls",
         "dataflow", "unsupported",
-        "bindings", "loops", "returns", "transfers", "unsupported_exec")}
+        "bindings", "loops", "comprehensions", "returns", "transfers",
+        "unsupported_exec")}
 
     for component in sorted(component_files):
         for raw_path in component_files[component]:
@@ -2387,6 +2510,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         unsupported_syntax=tuple(out["unsupported"]),
         bindings=tuple(out["bindings"]),
         loops=tuple(out["loops"]),
+        comprehensions=tuple(out["comprehensions"]),
         return_observations=tuple(out["returns"]),
         control_transfers=tuple(out["transfers"]),
         unsupported_execution=tuple(out["unsupported_exec"]),
