@@ -1319,7 +1319,7 @@ receipt points to one exact owner-qualified fact.
 | U4 | C-01 to C-07, C-12 | U3 | no IR/opgraph/label/card/JSON default can turn unknown into a familiar mechanism |
 | U5 | X-01, X-06/X-07, J-09 to J-12 (firewall; final closure in U14/U15) | U4 | consumer firewalls and receipt-based reverse-fabrication nets |
 | U6 | T-02, T-08 to T-11, D-05, M-14/M-15, J-02/J-03 | U5 | one attention fact family across every owner altitude |
-| U7 | T-07, T-09, T-12, M-12/M-13, J-04/J-05 | U6 | one FFN/norm/cell-topology fact family across every owner altitude |
+| U7 | T-07, T-09, T-12, M-12/M-13, J-04/J-05/J-07 | U6 | one FFN/norm/cell-topology and root-bookend fact family across every owner altitude |
 | U8 | T-03 to T-06, T-13 to T-18 | U7 | code-bound masks, positions, schedules, routers and auxiliary layer selectors |
 | U9 | M-01 to M-16 | U8 | recursive multimodal owners, exact projector/fusion paths, no family fallback |
 | U10 | D-01, D-03 to D-15, D-17/D-18 | U9 | exact diffusion root, stream, conditioning and component topology |
@@ -1497,8 +1497,13 @@ selection, and duplicated low-level call/field extraction once parity is proven.
 **Tests:** `test_code_evidence.py`, `test_conformance.py`, all specialized
 evidence tests, `test_reader_exceptions.py`, and `test_h9_frontier.py`.
 
-**Done means:** all mechanism readers receive the same exact owner graph and
-cannot disagree because they scanned different files/classes/closures.
+**Done means (amended 2026-07-27 by
+`docs/U3_COMPLETION_MASTER_PLAN.md`):** the neutral ProgramIndex, exact owner
+graph, factory/config binding and typed failure path are authoritative for every
+migrated or new reader. Surviving legacy semantic readers are held in an exact,
+blocking, non-growing symbol/caller inventory assigned to U6–U13 and deleted
+once in those units. U3 does not mechanically port known-wrong semantics merely
+to delete them before U4. U15 requires the quarantine to reach zero.
 
 ### 20.7 U4 — make unknown safe before migrating mechanisms
 

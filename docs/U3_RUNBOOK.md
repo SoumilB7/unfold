@@ -3,6 +3,15 @@
 Spec: docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md §20.6 (lines 1457-1503).
 Started 2026-07-19 immediately after U2 closure (1d0c72b). Soumil: "go ahead".
 
+> **Binding completion correction (ratified 2026-07-27):**
+> `docs/U3_COMPLETION_MASTER_PLAN.md` governs the remaining U3 work. The
+> historical `U3-F` rows below mixed neutral U3 address/dataflow infrastructure
+> with U6–U9/U14 mechanism semantics. The code remains reviewable, but each
+> semantic result is credited only to its true future unit. U3 now closes by
+> completing the neutral kernel, freezing an exact non-growing legacy semantic
+> quarantine, regenerating the inventory and passing the U3-C5 receipt. It does
+> not mechanically reimplement every old semantic reader before U4.
+
 ## ⚠ SOUMIL'S PRE-IMPLEMENTATION BOUNDARIES (2026-07-19, BINDING)
 1. ProgramIndex is OBSERVATION-ONLY: AST facts/expressions/calls/spans/
    control structure. It never decides "this is the FFN" / gated / best
