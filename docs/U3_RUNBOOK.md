@@ -513,6 +513,56 @@ then proceed autonomously to U3-B.
         Llama proves all seven canonical surfaces byte-identical: structural
         IR, expanded JSON, parameters, HTML metadata, evidence ledgers, Sable,
         and gallery metadata.  No manifest/gallery has been blessed.
+      - [~] U3-F5m: exact codebook-stream aggregation is committed in
+        `b848808`.  It starts from exact root/stage occurrences and separately
+        proves the embedding-bank indexing lane and output-head aggregation
+        lane.  A comprehension contributes one symbolic stream template, never
+        fabricated per-stream occurrences; filtered targets, shadowed builtins,
+        unrelated banks, sibling classes, rival banks and self-certified
+        aggregate arguments abstain.  MusicGen is the real positive and Llama
+        the real negative.  The old whole-file codebook reader is deleted.
+        Receipt `5cbe6d20a9`: static, collection (2,188), focused (192) and U2
+        authority (44) green; full 2,084 passed / 11 skipped / 2 xfailed with
+        only the standing Sable-manifest failure, and preservation reports the
+        same standing unblessed campaign drift.  Direct MusicGen/Llama
+        comparison is byte-identical on all canonical surfaces.
+      - [~] U3-F5n: exact manual weight tying is committed in `14b096f`.
+        Positive proof requires the exact returned root Linear, the exact
+        stage-owned Embedding that feeds the repeated stack, and one unguarded
+        root-init weight assignment joining those endpoints.  Capability
+        declarations, config guards, sibling assignments, unrelated weights,
+        rival endpoints and similarly named custom primitives cannot vote.
+        Llama proves that capability alone remains absent; BLOOM and Qwen2-VL
+        preserve their config/class-default result.  The whole-file tying
+        reader and its broad catch are deleted.  Receipt `4c7b7de9e4`: static,
+        collection (2,199), focused (299) and U2 authority (44) green; full
+        2,095 passed / 11 skipped / 2 xfailed with only the standing Sable
+        failure.  Direct Llama/BLOOM/Qwen2-VL comparison is byte-identical on
+        all seven canonical surfaces.
+      - [x] U3-A4: unresolved calls now participate as neutral producer
+        versions in local execution dataflow, committed in `c47e25b`.  They
+        remain unresolved invocations, but a later unknown assignment can no
+        longer leave an earlier known producer falsely reaching a consumer.
+        The permanent poison is `a = known(); a = unknown(); use(a)`: no stale
+        known-to-use edge may survive.  Receipt `58421f93d3`: static,
+        collection (2,201), focused (251) and U2 authority (44) green; the only
+        full/preservation reds are the already-withheld campaign manifest.
+      - [~] U3-F5o: exact parallel-branch normalization is committed in
+        `d9740c3`.  It starts from the exact selected decoder block, exact
+        attention and ordinary-FFN callees, and exact normalization primitives.
+        Versioned def-use must prove each branch consumes a norm output through
+        the callee's exact first non-receiver formal; one shared occurrence
+        yields 1 and two distinct occurrences yield 2.  Names, siblings,
+        unrelated/custom callables, raw inputs, transformed outputs and rival
+        producers cannot vote.  GPT-NeoX is the real exact two-norm control;
+        GPT-J and Falcon remain typed unknown where guarded dispatch prevents a
+        complete equivalent-candidate proof.  BLOOM, Llama, Qwen2-VL and
+        StableLM are byte-identical on all canonical surfaces.  The former
+        whole-file parallel-norm reader and its parser broad catch are deleted.
+        Receipt `843f9c554f`: static, collection (2,215), focused (331) and U2
+        authority (44) green; full 2,111 passed / 11 skipped / 2 xfailed with
+        only the standing Sable-manifest failure, and preservation reports the
+        same 21 standing unblessed witnesses.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in

@@ -63,7 +63,7 @@ def test_declared_tiers_reading_their_own_declaration_are_lawful():
 
 
 def test_real_reader_sources_do_not_false_positive():
-    for source in ("decoder_ffn_gated_from_files", "config:hidden_act",
+    for source in ("decoder_ffn_mechanism_for_path", "config:hidden_act",
                    "attention_causality_from_files", "norm_math", "file.py:123"):
         assert scan_fact_provenance_identity(_prov("code_proven", source)) == [], source
 

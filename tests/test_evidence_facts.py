@@ -13,7 +13,6 @@ import pytest
 
 from model_unfolder.evidence.context import FACT_STATUSES, FactLedger, FactRecord
 from model_unfolder.evidence.facts import (
-    COMPLETENESS_LEVELS,
     EvidenceFact,
     NegativeProofError,
     BoundObservation,
@@ -150,7 +149,7 @@ def test_facts_are_not_truthy():
 @pytest.mark.parametrize("status", sorted(FACT_STATUSES))
 @pytest.mark.parametrize("value", [True, False, None, "silu", 4096, 0,
                                    ["a", "b"], {"k": 1}])
-@pytest.mark.parametrize("source", [None, "decoder_ffn_gated_from_files",
+@pytest.mark.parametrize("source", [None, "decoder_ffn_mechanism_for_path",
                                     "config:hidden_act", "file.py:123"])
 def test_every_legacy_record_shape_round_trips_exactly(status, value, source):
     record = FactRecord(value, status, source)
@@ -241,8 +240,8 @@ def test_reason_and_source_do_not_alias():
     the flat serialization source comes only from the stable ``legacy_source``
     label."""
     with_both = _fact(reason="because the forward gates via chunk",
-                      legacy_source="decoder_ffn_gated_from_files")
-    assert with_both.to_record().source == "decoder_ffn_gated_from_files"
+                      legacy_source="decoder_ffn_mechanism_for_path")
+    assert with_both.to_record().source == "decoder_ffn_mechanism_for_path"
 
     reason_only = _fact(reason="a human note, not provenance")
     assert reason_only.to_record().source is None

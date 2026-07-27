@@ -65,9 +65,13 @@ Tier B — `*_from_files` readers (each takes raw file paths; most re-parse). On
 - **`layer_class_count_from_files` :1330** — count of layer-shaped classes; ● 0.
 - **`decoder_norm_kind_from_files` :1354** — norm class-name substring rms/layernorm; ● None.
 - **`norm_kind_from_files_math` :1440** + **`_norm_math_verdict` :1378** — math classification (mean-sub vs pow/rsqrt), base-class recursion depth 3, torch-primitive names as leaves; unanimous-else-None; ● None.
-- **`decoder_ffn_gated_from_files` :1485** — MLP forward + ctor shape; MoE one-hop member recursion; inline fc1/fc2 branch :1566-1592; ● None.
+- **RETIRED — `decoder_ffn_gated_from_files` (former :1485)** — superseded by
+  the exact selected-block `decoder_ffn_mechanism_for_path` boundary; its
+  whole-file role union and expert borrowing are deleted.
 - **`decoder_ffn_activation_from_files` :1595** — activation class-name substring; ● None.
-- **`ffn_activation_dispatch_field_from_files` :1631** — `ACT2FN[config.X]`/`get_activation(config.X)` → field name (code_and_config tier); ● None.
+- **RETIRED — `ffn_activation_dispatch_field_from_files` (former :1631)** —
+  activation protocol and exact owner-qualified config path now come from the
+  same `decoder_ffn_mechanism_for_path` result as FFN storage/gating.
 - **`denoiser_temporal_axis_from_files` :1704** — architecture-addressed forward name scan vs `temporal_forward_markers`; ● None.
 - **`attention_fused_qkv_from_files` :1737** — ALL attention-role classes across all files ⚑ (unanimous-else-None); fused-name set `_QKV_PROJ_NAMES` :2563; ● None.
 - **QK-norm rail :1769-2001** — `_attention_qk_norm` :1860: guard-tracked ctor walk + forward taint dataflow (latent-norm exclusion, ≥2 live sites), gate atoms = config fields the code reads (typed `QKNormCodeEvidence`/`QKNormGateAtom` — the U3 model answer-shape); `_QK_UNRESOLVED` sentinel → None (honest).

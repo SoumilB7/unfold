@@ -153,8 +153,9 @@ drill_category: [route=selection, indexer=selection, composite=composite]
 # conflates a GATED text MLP with a DENSE vision MLP — so "the union has gate_mul"
 # does NOT mean THIS drill's FFN is gated, and a dense FFN drawn without a gate
 # would false-flag.  The dense-vs-gated FACT is instead fixed AT THE SOURCE by the
-# code-derived FFN-gating parser rail (decoder_ffn_gated_from_files), so the drill
-# draws gated iff the code gates — one source of truth, no downstream guess.
+# exact-owner FFN-mechanism parser rail (decoder_ffn_mechanism_for_path), so the
+# drill draws gated iff that selected block's invoked FFN gates — one source of
+# truth, no downstream role-union or whole-file guess.
 drill_salient_missing:
   - route=route
   - indexer=route

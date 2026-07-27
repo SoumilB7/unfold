@@ -28,11 +28,12 @@ def test_ledger_records_and_serializes():
     ledger = FactLedger()
     ledger.record("layers[0].attention", "mask", "causal", "asserted")
     ledger.record("layers[0].ffn", "gated", True, "code_proven",
-                  source="decoder_ffn_gated_from_files")
+                  source="decoder_ffn_mechanism_for_path")
     assert ledger.asserted() == ("layers[0].attention.mask",)
     d = ledger.to_dict()
     assert d["layers[0].ffn.gated"]["status"] == "code_proven"
-    assert d["layers[0].ffn.gated"]["source"] == "decoder_ffn_gated_from_files"
+    assert d["layers[0].ffn.gated"]["source"] == \
+        "decoder_ffn_mechanism_for_path"
     # unknown statuses are a programming error, loudly
     import pytest
     with pytest.raises(ValueError):
@@ -150,7 +151,7 @@ def test_gated_heuristic_abstains_instead_of_reading_norm_kind():
     U2 P2c retirement (STRICT rule): the silu/swish/tanh-GELU family tier is
     GONE — plain elementwise spellings are used by dense and gated FFNs
     alike, so they were never proof.  The MoE expert-hop in
-    decoder_ffn_gated_from_files code-proves the fixtures that tier was
+    decoder_ffn_mechanism_for_path code-proves the fixtures that tier was
     protecting (deepseek-v3 / glm-4-5 / gpt-oss), corpus-audited at zero
     derived reliance before retiring."""
     from model_unfolder.adapters.transformer.parser import _is_gated

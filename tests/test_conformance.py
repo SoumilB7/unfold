@@ -1123,32 +1123,26 @@ def test_opaque_drill_makes_no_claim(monkeypatch):
 
 
 def test_code_derived_ffn_gating_overrides_rmsnorm_heuristic():
-    """The dense-vs-gated FACT is code-derived: ``PhiMLP`` is dense (no gate_mul) so
-    a Phi config (RMSNorm + gelu_new) renders a DENSE FFN, NOT the gated FFN the
-    rmsnorm heuristic would have drawn — and ``LlamaMLP`` (gate_mul) stays gated.
-    This is what keeps the parser and the nested net from diverging."""
-    from model_unfolder.evidence.patterns import decoder_ffn_gated_from_files
+    """The exact selected FFN, not RMSNorm, controls the rendered mechanism."""
+    from transformers import AutoConfig
     for mt, expected in (("phi", False), ("llama", True)):
-        bundle = resolve_source_files({"model_type": mt}, source="local")
+        cfg = AutoConfig.for_model(mt).to_dict()
+        bundle = resolve_source_files(cfg, source="local")
         if not bundle.files:
             pytest.skip(f"transformers {mt} source not installed")
-        assert decoder_ffn_gated_from_files(bundle.files) is expected
+        assert mu.unfold(cfg).to_ir()["layers"][0]["ffn"]["gated"] is expected
 
 
 def test_bloom_dormant_tensor_parallel_multiply_is_not_an_ffn_gate():
     """BLOOM's disabled slow path multiplies slice indices/weights; that is not
     gate*up and must not turn its dense GELU MLP into a gated SiLU diagram."""
     from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import (
-        decoder_ffn_activation_from_files,
-        decoder_ffn_gated_from_files,
-    )
+    from model_unfolder.evidence.patterns import decoder_ffn_activation_from_files
 
     cfg = AutoConfig.for_model("bloom").to_dict()
     bundle = resolve_source_files(cfg, source="local")
     if not bundle.files:
         pytest.skip("transformers BLOOM source not installed")
-    assert decoder_ffn_gated_from_files(bundle.files, cfg=cfg) is False
     assert decoder_ffn_activation_from_files(bundle.files) == "gelu"
     ffn = mu.unfold(cfg).to_ir()["layers"][0]["ffn"]
     assert ffn["gated"] is False
