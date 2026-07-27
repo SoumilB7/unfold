@@ -201,6 +201,14 @@ def test_result_closure_rejects_a_broken_lineage(tmp_path):
 
 def test_real_clip_structured_output_resolves_its_exact_encoder_stage():
     from model_unfolder.evidence.context import ParseContext, slot_parse_context
+    from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
+    from model_unfolder.evidence.decoder_norm import decoder_norm_kind_for_path
+    from model_unfolder.evidence.ffn_mechanism import (
+        decoder_ffn_mechanism_for_path,
+    )
+    from model_unfolder.evidence.projection_bias import (
+        decoder_attention_bias_for_path,
+    )
 
     config = json.loads(
         (Path(__file__).parent / "sable_test_corpus"
@@ -220,3 +228,24 @@ def test_real_clip_structured_output_resolves_its_exact_encoder_stage():
     assert stage.symbol.qualified_name == "CLIPEncoder"
     assert result.value.repeated_child.child_symbol.qualified_name \
         == "CLIPEncoderLayer"
+    integrated = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert integrated.status == "resolved", integrated.failures
+    assert root.graph.node_for(
+        integrated.value.stage_occurrence).symbol == stage.symbol
+    assert root.graph.node_for(
+        integrated.value.block_occurrence).symbol.qualified_name \
+        == "CLIPEncoderLayer"
+    ffn = decoder_ffn_mechanism_for_path(
+        index, context.source_bundle, (), allow_root_stage=True)
+    assert ffn.status == "resolved", ffn.failures
+    assert ffn.value.owner_symbol.qualified_name == "CLIPMLP"
+    assert ffn.value.projection_mode == "dense"
+    norm = decoder_norm_kind_for_path(
+        index, context.source_bundle, (), allow_root_stage=True)
+    assert norm.status == "resolved", norm.failures
+    assert norm.value == "layernorm"
+    attention_bias = decoder_attention_bias_for_path(
+        index, context.source_bundle, (), allow_root_stage=True)
+    assert attention_bias.status == "resolved", attention_bias.failures
+    assert attention_bias.value.value is True
