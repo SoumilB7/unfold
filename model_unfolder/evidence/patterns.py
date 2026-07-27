@@ -1387,37 +1387,6 @@ def decoder_ffn_activation_from_files(files) -> str | None:
     return None
 
 
-def attention_fused_qkv_from_files(files) -> bool | None:
-    """Is Q/K/V stored as ONE fused projection (BLOOM ``query_key_value``,
-    GPT-2 ``c_attn``, MPT ``Wqkv``) rather than separate q/k/v Linears?
-
-    Storage fidelity for the attention drill: drawing three projections when
-    the code holds one fused matrix is diagram→code fabrication.  ``None``
-    keeps the split default (split IS the dominant modern layout)."""
-    import ast as _ast
-    from .forward_ops import _field_types, _method, _role_of
-    fused_names = {"query_key_value", "qkv_proj", "wqkv", "c_attn", "qkv"}
-    verdicts: set[bool] = set()
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef) or _role_of(node.name) != "attention":
-                continue
-            if _method(node, "forward") is None:
-                continue
-            fields = _field_types(_method(node, "__init__"))
-            has_fused = any(name.lower() in fused_names for name in fields)
-            has_split = {"q_proj", "k_proj", "v_proj"} <= set(fields)
-            if has_fused and not has_split:
-                verdicts.add(True)
-            elif has_split:
-                verdicts.add(False)
-    return next(iter(verdicts)) if len(verdicts) == 1 else None
-
-
 def _qk_self_attr(expr) -> str | None:
     """``self.<f>`` → ``f`` (else None)."""
     if (isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name)
@@ -2065,47 +2034,6 @@ def _cfg_num_layers(cfg):
                 pass
     return 0
 
-
-
-def expert_fused_gate_up_from_files(files) -> bool | None:
-    """Are the ROUTED EXPERTS stored as one fused ``gate_up`` tensor?
-
-    The dense/shared MLP and the routed experts are DIFFERENT callables with
-    independent storage: DeepSeek-V3's ``DeepseekV3MLP`` keeps split
-    gate/up/down modules while its naive-MoE experts hold a stacked
-    ``gate_up_proj`` Parameter chunked in forward (same for Mixtral / gpt-oss
-    experts).  The module-typed FFN evidence cannot see Parameter storage, so
-    this reads the fused-experts code signature directly: a field named
-    ``*gate_up*`` whose owner's forward() splits it (``chunk``/``split``/
-    indexing) — regardless of whether the field types as Linear or Parameter.
-    ``None`` (not found) keeps the conventional split expert drawing.
-    """
-    import ast as _ast
-    from .forward_ops import _field_types, _method
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef):
-                continue
-            forward = _method(node, "forward")
-            if forward is None:
-                continue
-            fields = _field_types(_method(node, "__init__"))
-            fused = {name for name in fields
-                     if "gate_up" in name.lower() or "up_gate" in name.lower()}
-            if not fused:
-                continue
-            # The STORAGE fact is the fused field itself; the split spelling
-            # varies (``.chunk(2)`` vs gpt-oss's interleaved ``[..., ::2]``
-            # slicing), so requiring a split token would miss real fused code.
-            referenced = {child.attr for child in _ast.walk(forward)
-                          if isinstance(child, _ast.Attribute)}
-            if fused & referenced:
-                return True
-    return None
 
 
 def attention_score_scaling_from_files(files) -> bool | None:

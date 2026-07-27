@@ -485,7 +485,8 @@ def check_fact_conformance(
         check_bookend=bool(_model_type(target)),
         bundle=bundle, program_index=program_index,
         parse_context=parse_context, source_component=component))
-    problems.extend(_check_component_storage_facts(family, ir, bundle))
+    problems.extend(_check_component_storage_facts(
+        family, ir, bundle, parse_context=parse_context, source=source))
     if _model_type(target):
         # Attention-KIND cross-check (Group-2 item 3, insurance): a code-MLA
         # whose config is silent on the latent ranks would draw GQA — the
@@ -620,12 +621,25 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
     return problems
 
 
-def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[ConformanceProblem]:
+def _check_component_storage_facts(
+    family: str,
+    ir: dict,
+    bundle,
+    *,
+    parse_context=None,
+    source: str = "local",
+) -> list[ConformanceProblem]:
     """The SAME storage comparisons for every pipeline SLOT's encoder tower:
     the drawn facts live on the conditioning block's recursive ``sub_model``
-    spec, the code truth in the slot's own qualified files (whole subtree —
-    a wrapper encoder's delegated stack included)."""
-    from .patterns import attention_fused_qkv_from_files, expert_fused_gate_up_from_files
+    spec, while the code truth comes from the slot's exact selected decoder
+    block.  Parser and conformance therefore share the ProgramIndex/owner path;
+    no whole-subtree class union is allowed to vote."""
+    from .attention_storage import (
+        decoder_attention_projection_storage_for_path,
+    )
+    from .context import ParseContext, slot_parse_context
+    from .expert_storage import decoder_routed_expert_storage_for_path
+    from .ffn_mechanism import decoder_ffn_mechanism_for_path
 
     component_files = getattr(bundle, "component_files", {}) or {}
     slots = [s for s in (getattr(bundle, "pipeline_components", ()) or ())
@@ -636,6 +650,8 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
               and block.get("diffusion_stage") == "text_encoder"
               and isinstance((block.get("detail") or {}).get("sub_model"), dict)]
     problems: list[ConformanceProblem] = []
+    root_context = parse_context or ParseContext(
+        source_bundle=bundle, source=source)
     for slot, block in zip(slots, towers):
         files: list[str] = []
         for key, group in component_files.items():
@@ -643,14 +659,42 @@ def _check_component_storage_facts(family: str, ir: dict, bundle) -> list[Confor
                 files.extend(f for f in group if f not in files)
         if not files:
             continue
-        code_qkv = attention_fused_qkv_from_files(files)
-        code_expert = expert_fused_gate_up_from_files(files)
+        context = slot_parse_context(root_context, slot)
+        if context is None:
+            continue
+        index = context.program_index()
+        storage = decoder_attention_projection_storage_for_path(
+            index, context.source_bundle, (), allow_root_stage=True)
+        code_qkv = (
+            storage.value == "fused_qkv"
+            if storage.status == "resolved" else None
+        )
+        ffn = decoder_ffn_mechanism_for_path(
+            index, context.source_bundle, (), allow_root_stage=True)
+        code_ffn_mode = (
+            ffn.value.projection_mode if ffn.status == "resolved" else None
+        )
         sub_model = block["detail"]["sub_model"]
+        has_experts = any(
+            bool((group.get("ffn") or {}).get("num_experts"))
+            for group in (sub_model.get("groups") or ()))
+        expert = (
+            decoder_routed_expert_storage_for_path(
+                index, context.source_bundle, (), allow_root_stage=True)
+            if has_experts else None
+        )
+        code_expert = (
+            True if expert is not None and expert.status == "resolved"
+            and expert.value.projection_mode == "fused_gate_up"
+            else None
+        )
         for i, group in enumerate(sub_model.get("groups") or []):
             problems.extend(_storage_problems_for_spec(
                 f"{family}/{block.get('id') or slot}/g{i}",
                 group.get("attention") or {}, group.get("ffn") or {},
-                files, code_qkv, code_expert, component=slot))
+                files, code_qkv, code_expert,
+                code_ffn_mode=code_ffn_mode, use_legacy_ffn=False,
+                component=slot))
     return problems
 
 
