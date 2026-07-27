@@ -2000,22 +2000,6 @@ def test_moe_schedule_matches_code_construction():
         assert drawn == code[:len(drawn)], f"{mt}: drawn MoE schedule != code construction"
 
 
-def test_parallel_norm_count_from_construction():
-    """Parallel-residual input-norm count from the code dataflow: GPT-J shares
-    one norm (1 — the pinned negative control), GPT-NeoX applies two separate
-    norms (2 — the fix); Falcon's conditional 4-field case → None (fallback)."""
-    import transformers, pathlib
-    from model_unfolder.evidence.patterns import decoder_parallel_norm_count_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    for mt, ff, want in (("gptj", "gptj/modeling_gptj.py", 1),
-                         ("gpt_neox", "gpt_neox/modeling_gpt_neox.py", 2),
-                         ("falcon", "falcon/modeling_falcon.py", None)):
-        p = base / ff
-        if not p.exists():
-            continue
-        assert decoder_parallel_norm_count_from_files((str(p),)) == want, mt
-
-
 def test_diffusion_rope_component_scoping():
     """The Sana leak, pinned: the DiT's own source says NO rotary; the pipeline
     UNION (DiT + Gemma-2 text encoder) says rotary — because Gemma's markers

@@ -330,16 +330,25 @@ def _resolve_qk_norm_layers(
     return per_layer
 
 
-def _code_parallel_norm_count(cfg: Any, context=None):
-    """Distinct INPUT norms a parallel-residual decoder layer applies (1 shared
-    / 2 separate), READ FROM THE CODE dataflow — fixes GPT-NeoX's two norms
-    drawn as one shared.  None when unresolvable (Falcon conditional) → the
-    caller defaults to 1.  Best-effort, never raises."""
-    try:
-        from ...evidence.patterns import decoder_parallel_norm_count_from_files
-        return decoder_parallel_norm_count_from_files(_source_files(cfg, context))
-    except Exception:
+def _code_parallel_norm_count(
+    cfg: Any, context=None, *, config_path=(),
+):
+    """Exact norm occurrences feeding the selected attention and FFN inputs."""
+    if context is None:
         return None
+    from ...evidence.parallel_norm import (
+        decoder_parallel_norm_count_for_path,
+    )
+    result = decoder_parallel_norm_count_for_path(
+        context.program_index(),
+        context.source_bundle,
+        tuple(config_path),
+        allow_root_stage=True,
+    )
+    return (
+        result.value.norm_count
+        if result.status == "resolved" else None
+    )
 
 
 def _projection_bias_result(context, mechanism, config_path):
@@ -1566,7 +1575,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Distinct INPUT norms a parallel-residual layer applies, read from the code
     # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
     # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
-    parallel_norm_count = _code_parallel_norm_count(text_cfg, context) or 1
+    parallel_norm_count = _code_parallel_norm_count(
+        text_cfg, context, config_path=_text_path) or 1
     # U2-R7: the two rival spellings (GPT-NeoX use_parallel_residual / Falcon
     # parallel_attn) are ONE declared fact — resolved together and consumed
     # into the layer-topology fact; disagreement is typed ambiguity that

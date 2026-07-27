@@ -356,6 +356,25 @@ def _attention_compute_proof(
     return None
 
 
+def attention_compute_proof_for_symbol(
+    index: ProgramIndex,
+    child_symbol: SymbolId,
+) -> AttentionComputeProof | None:
+    """Prove compute for one exact symbol without selecting its occurrence.
+
+    Literal dispatch censuses use this positive-only boundary to require every
+    exact candidate to prove attention computation.  It never creates an owner
+    occurrence and never searches by a class spelling.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "attention_compute_proof_for_symbol requires a ProgramIndex")
+    if not isinstance(child_symbol, SymbolId):
+        raise TypeError(
+            "attention_compute_proof_for_symbol requires an exact SymbolId")
+    return _attention_compute_proof(index, child_symbol)
+
+
 def _reachable_compute_callables(
     index: ProgramIndex,
     child_symbol: SymbolId,
@@ -554,6 +573,7 @@ __all__ = [
     "AttentionChildEvidence",
     "AttentionChildCensus",
     "AttentionComputeProof",
+    "attention_compute_proof_for_symbol",
     "attention_child_positive_census",
     "attention_child_evidence",
 ]
