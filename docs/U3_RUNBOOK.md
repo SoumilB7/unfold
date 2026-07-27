@@ -563,6 +563,39 @@ then proceed autonomously to U3-B.
         authority (44) green; full 2,111 passed / 11 skipped / 2 xfailed with
         only the standing Sable-manifest failure, and preservation reports the
         same 21 standing unblessed witnesses.
+      - [x] U3-A5/A6: transformed and ambiguous local definitions retain every
+        exact invocation producer candidate, committed in `facc5ef` and
+        `b171d80`.  These candidates remain typed unresolved relations; neither
+        unit promotes them into a proven happens-before edge.  This closes the
+        former information-loss seam needed by structured framework returns
+        while preserving the open/local execution-flow contract.
+      - [~] U3-F5p: exact output-reaching repeated-stage evidence is committed
+        in `bb1b4b1`, with production decoder-block routing in `703274d`.
+        The address proof requires an exact graph child, a positively proven
+        repeated container, and typed local lineage into the exact structured
+        return call.  Transformed/branch-rival producer candidates retain their
+        weaker proof kind; unresolved self-child calls and rival repeated stages
+        block selection.  The real SDXL CLIP text encoder proves
+        `CLIPEncoder -> CLIPEncoderLayer`, after which the shared norm,
+        attention-bias and ordinary-FFN readers consume that exact occurrence.
+        The resulting diagram delta is source-backed and deliberately
+        unblessed: the embedded CLIP card changes only from unresolved generic
+        norm/bias to `LayerNorm` and `+bias`.
+      - [~] U3-F5q: a unique output-contributing-child address boundary and
+        wrapper descent are committed in `243f4a2`.  It is deliberately weaker
+        than a model-stage claim: it selects only when exactly one addressed
+        child reaches the exact structured return through typed local lineage;
+        two contributing children are ambiguity and names/roles never rank
+        them.  This lets SDXL's `CLIPTextModelWithProjection` descend to its
+        exact `CLIPTextModel` body, where F5p proves the repeated encoder.
+        Both SDXL CLIP towers now expose source-proven `LayerNorm` and attention
+        projection bias.  The factory-created tower still withholds its
+        config-dispatched FFN activation because `_from_config` does not yet
+        prove constructor-parameter binding; no prefix was guessed to force
+        that fact through.  Direct comparisons keep Llama, Qwen2-VL and
+        MusicGen byte-identical on every canonical surface; SDXL/HunyuanVideo
+        differ only at the inspected embedded CLIP norm/bias fields and
+        structural HTML hash.  No manifest/gallery was blessed.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
