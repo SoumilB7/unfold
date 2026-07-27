@@ -2,8 +2,15 @@
   "checks": {
     "asserted_facts": false,
     "click_coupling": true,
+    "config_accessed_unprojected": true,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -11,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_class_name": "MochiTransformer3DModel",
@@ -179,15 +190,14 @@
     "83d8afc4107222d999481235c8f7e1b4",
     "84f18c811f524ad4554b856d60f3cf76",
     "8f49f25a13561f80d292dce2504feaad",
-    "9b87e79060d680606c06b299ed03b566",
     "bd916550c725637faca437252195cc2b",
+    "cdec98067c84a5d7fd089a097109e06e",
     "d7d9354966f4495a28c380d90a280dd3",
     "e4aab071df0f1964e949525c971f4633"
   ],
   "model": "mochi-1-preview",
   "source": "local",
   "superseded_hash_signature": [
-    "367890e023a13048cf089232a026954b",
     "40353f89e3ee2ed8274ea740b2639aad",
     "49790b03dc0022b77ab168245e057946",
     "7d8517124cdebbe6ccfc0f7e825743f9",
@@ -196,7 +206,8 @@
     "8f49f25a13561f80d292dce2504feaad",
     "9b87e79060d680606c06b299ed03b566",
     "bd916550c725637faca437252195cc2b",
-    "d7d9354966f4495a28c380d90a280dd3"
+    "d7d9354966f4495a28c380d90a280dd3",
+    "e4aab071df0f1964e949525c971f4633"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/mochi-1-preview",

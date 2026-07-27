@@ -1,7 +1,8 @@
 # U3 Semantic Delta Adjudication
 
-> **Status:** independent audit complete; code corrections in verification;
-> preservation/gallery blessing remains a Soumil decision.
+> **Status:** independent audit complete; code corrections verified; Soumil
+> approved the nine `RMSNorm -> Norm` views on 2026-07-28; exact re-bless
+> applied and inspected; final unchanged-tree bracket pending.
 >
 > **Authority:** this is the exact U3-C5 delta receipt referenced by
 > `U3_COMPLETION_MASTER_PLAN.md`. It does not credit the semantic work to U3.
@@ -200,14 +201,30 @@ Technical verdict:
 - **do not mark U6/U7/U9/U14 complete**—these are bounded pre-existing slices;
 - **do not re-bless automatically**.
 
+Soumil explicitly approved the nine `RMSNorm -> Norm` views on 2026-07-28.
+The project-owned guarded `bless()` path then regenerated the nine complete
+galleries and fixtures; the 26-witness preservation manifest was rebuilt from
+production outputs.
+
+The before/after artifact audit proves:
+
+- exactly one PNG changed in each approved gallery, at the approved view name;
+- no other PNG, review record or gallery file changed;
+- every frozen config, fixture identity and source stayed equal;
+- each fixture replaces exactly one view signature and carries its exact prior
+  signature in `superseded_hash_signature`;
+- the manifest changes 19 already-adjudicated witnesses, 55 surface hashes
+  (the 46 semantic/evidence hashes plus nine gallery hashes), nine view hashes
+  and nine fixture-input hashes;
+- GPT-OSS `params` remains byte-identical to the previous blessed hash;
+- no unexpected witness, surface, view or file entered the transition.
+
 Before U3-C5 can turn green:
 
-1. Soumil inspects/accepts the nine `RMSNorm -> Norm` views;
-2. regenerate the 26-witness preservation manifest and affected galleries only
-   after that decision;
-3. rerun the unchanged-tree focused, U2-authority, preservation, full-suite and
+1. commit the inspected fixture/manifest transition;
+2. rerun the unchanged-tree focused, U2-authority, preservation, full-suite and
    isolated-checkout bracket;
-4. record the remaining U9 exact-T5-owner and U14 parameter-range debts without
+3. record the remaining U9 exact-T5-owner and U14 parameter-range debts without
    weakening either gate.
 
 Until then, U3 neutral infrastructure is complete but its project-wide C5

@@ -596,7 +596,7 @@ fact migration.
 | U3-C2 — classify remaining raw parse authority | **DONE** | 33 exact evidence-layer parse sites: 1 central ProgramIndex, 1 address bootstrap, 7 repository audits, 1 test guard and 23 legacy model-source sites |
 | U3-C3 — freeze the semantic-reader quarantine | **DONE** | 25 exact readers; exact definitions/callers; normalized reader + same-module helper implementation digest; exact legacy-parse caller digest; growth/body/alias/move poisons blocking |
 | U3-C4 — regenerate the current inventory | **DONE** | `docs/U3_CURRENT_READER_INVENTORY.md`; generator `--check` is blocking |
-| U3-C5 — project-wide release gate | **HELD — AUDITED** | neutral U3 parity is exact; `docs/U3_SEMANTIC_DELTA_ADJUDICATION.md` attributes and vets the inherited semantic chain; nine intentional T5/UMT5 `RMSNorm -> Norm` views still require Soumil's visual decision before re-blessing |
+| U3-C5 — project-wide release gate | **ACTIVE — APPROVED DELTA** | neutral U3 parity is exact; `docs/U3_SEMANTIC_DELTA_ADJUDICATION.md` attributes and vets the inherited semantic chain; Soumil approved the nine T5/UMT5 `RMSNorm -> Norm` views on 2026-07-28; the exact gallery/manifest transition is inspected and awaits the final committed-tree bracket |
 
 The factory proof accepts only an exact directly indexed, unshadowed
 `@classmethod`, one unguarded `return cls(...)`, no unsupported execution
@@ -686,9 +686,11 @@ delta.
 
 The neutral U3 implementation is complete. **U3 release acceptance is not
 marked DONE**, because this plan explicitly forbids using U3 to bless the
-retained semantic deltas. The independent audit finds no semantic candidate
-that should be reverted: the remaining output delta is an honest removal of
-unsupported specificity. The next action is Soumil's visual decision on the
-nine `RMSNorm -> Norm` views. On acceptance, regenerate only the affected
-manifest/gallery artifacts and run the unchanged-tree release bracket. Only
-then may U3-C5 turn green and U4 formally unlock.
+retained semantic deltas without review. The independent audit finds no
+semantic candidate that should be reverted: the output delta is an honest
+removal of unsupported specificity. Soumil approved all nine
+`RMSNorm -> Norm` views on 2026-07-28. Their guarded re-bless changed exactly
+one PNG and one view signature per approved witness, retained the prior
+signatures, and rebuilt the manifest with no unexpected delta. The remaining
+action is the unchanged committed-tree release bracket. Only after that bracket
+is green may U3-C5 turn green and U4 formally unlock.
