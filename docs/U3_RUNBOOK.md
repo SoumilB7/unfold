@@ -596,6 +596,18 @@ then proceed autonomously to U3-B.
         MusicGen byte-identical on every canonical surface; SDXL/HunyuanVideo
         differ only at the inspected embedded CLIP norm/bias fields and
         structural HTML hash.  No manifest/gallery was blessed.
+      - [~] U3-H1: nested text-encoder storage conformance is cut over in
+        `4102e1c`.  The conformance net now derives each pipeline slot's own
+        ParseContext, ProgramIndex and exact decoder-block path, then consumes
+        the same attention-storage, ordinary-FFN and routed-expert readers as
+        parsing.  The former whole-subtree
+        `attention_fused_qkv_from_files` / `expert_fused_gate_up_from_files`
+        class unions and their legacy tests are deleted.  A sibling
+        attention/expert class can no longer clear or condemn the selected
+        encoder.  FLUX's real split-CLIP tamper control remains blocking;
+        104 exact storage/owner tests and the complete 191-test
+        conformance/code-evidence set pass.  No rendering surface changed in
+        this conformance-only unit.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
