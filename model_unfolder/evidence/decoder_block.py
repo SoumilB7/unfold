@@ -272,7 +272,10 @@ def decoder_block_candidates_at_root(
             # returning a structured framework object (CLIP is the canonical
             # shape).  Direct-return delegation cannot prove that address; the
             # neutral output-lineage boundary can, without class/field roles.
-            from .output_repeated_stage import resolve_output_repeated_stage
+            from .output_repeated_stage import (
+                resolve_output_child_stage,
+                resolve_output_repeated_stage,
+            )
             output_stage = resolve_output_repeated_stage(
                 index, root, owner)
             if output_stage.status == "ambiguous":
@@ -285,18 +288,36 @@ def decoder_block_candidates_at_root(
                 next_owner = output_stage.value.stage_occurrence
                 next_provenance = output_stage.provenance
             else:
-                output_detail = "; ".join(
-                    item.detail for item in output_stage.failures)
-                detail = "; ".join(
-                    item.detail for item in delegated.failures) or delegated.status
-                if output_detail:
-                    detail = f"{detail}; output lineage: {output_detail}"
-                return ReaderResult.failed(owner, (ReaderFailure(
-                    "incomplete_graph",
-                    f"repeated-child evidence is {repeated.status}: "
-                    f"{repeated.failure_detail or repeated.incomplete_reasons}; "
-                    f"return delegation is {detail}"),),
-                    provenance=tuple(delegated_provenance))
+                output_child = resolve_output_child_stage(
+                    index, root, owner)
+                if output_child.status == "ambiguous":
+                    return ReaderResult.ambiguous(
+                        owner, output_child.ambiguity,
+                        provenance=(
+                            *delegated_provenance,
+                            *output_child.provenance))
+                if output_child.status == "resolved":
+                    next_owner = output_child.value.child_occurrence
+                    next_provenance = output_child.provenance
+                else:
+                    child_detail = "; ".join(
+                        item.detail for item in output_child.failures)
+                    output_detail = "; ".join(
+                        item.detail for item in output_stage.failures)
+                    detail = "; ".join(
+                        item.detail for item in delegated.failures) \
+                        or delegated.status
+                    if output_detail:
+                        detail = f"{detail}; output lineage: {output_detail}"
+                    if child_detail:
+                        detail = (
+                            f"{detail}; output child: {child_detail}")
+                    return ReaderResult.failed(owner, (ReaderFailure(
+                        "incomplete_graph",
+                        f"repeated-child evidence is {repeated.status}: "
+                        f"{repeated.failure_detail or repeated.incomplete_reasons}; "
+                        f"return delegation is {detail}"),),
+                        provenance=tuple(delegated_provenance))
         if next_owner in visited:
             return ReaderResult.failed(owner, (ReaderFailure(
                 "incomplete_graph",

@@ -10,8 +10,10 @@ import pytest
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.output_repeated_stage import (
+    OutputChildStage,
     OutputLineageRelation,
     OutputRepeatedStage,
+    resolve_output_child_stage,
     resolve_output_repeated_stage,
 )
 from model_unfolder.evidence.program_index import build_program_index
@@ -73,6 +75,43 @@ class Wrapper:
     assert root.status == "resolved"
     return index, root, resolve_output_repeated_stage(
         index, root, root.graph.root.occurrence)
+
+
+def _nested_reader(tmp_path, *, two_bodies=False):
+    second_init = "self.other = Body(config)" if two_bodies else ""
+    second_call = (
+        "\n        other = self.other(x)"
+        "\n        return Outer(first=inner.last, second=other.last)"
+        if two_bodies else
+        "\n        return Outer(last_hidden_state=inner.last)"
+    )
+    source = _PREFIX + f"""
+class Body:
+    def __init__(self, config):
+        self.stage = Stage(config)
+    def forward(self, x):
+        hidden = self.stage(x)
+        return Inner(last=hidden)
+
+class Wrapper:
+    def __init__(self, config):
+        self.body = Body(config)
+        {second_init}
+    def forward(self, x):
+        inner = self.body(x){second_call}
+"""
+    path = tmp_path / "modeling_nested_output_stage.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    assert root.status == "resolved"
+    return index, root
 
 
 def test_exact_transformed_output_lineage_resolves_the_repeated_stage(tmp_path):
@@ -175,6 +214,32 @@ def test_returning_a_bare_name_is_not_upgraded_to_a_structured_sink(tmp_path):
     assert "returned expression" in result.failures[0].detail
 
 
+def test_unique_output_child_allows_an_exact_nested_stage_descent(tmp_path):
+    from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
+
+    index, root = _nested_reader(tmp_path)
+    child = resolve_output_child_stage(
+        index, root, root.graph.root.occurrence)
+    assert child.status == "resolved", child.failures
+    assert root.graph.node_for(
+        child.value.child_occurrence).symbol.qualified_name == "Body"
+    integrated = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert integrated.status == "resolved", integrated.failures
+    assert root.graph.node_for(
+        integrated.value.stage_occurrence).symbol.qualified_name == "Stage"
+    assert root.graph.node_for(
+        integrated.value.block_occurrence).symbol.qualified_name == "Cell"
+
+
+def test_two_output_contributing_children_are_not_ranked(tmp_path):
+    index, root = _nested_reader(tmp_path, two_bodies=True)
+    child = resolve_output_child_stage(
+        index, root, root.graph.root.occurrence)
+    assert child.status == "ambiguous"
+    assert len(child.ambiguity.sites) == 2
+
+
 def test_result_closure_rejects_a_broken_lineage(tmp_path):
     _index, _root, result = _read(tmp_path, """
         hidden = self.stage(x)
@@ -197,6 +262,18 @@ def test_result_closure_rejects_a_broken_lineage(tmp_path):
     with pytest.raises(ValueError):
         OutputLineageRelation(
             relation.source, relation.source, relation.kind, relation.spans)
+    child = resolve_output_child_stage(
+        _index, _root, _root.graph.root.occurrence)
+    assert child.status == "ambiguous"
+    with pytest.raises(ValueError):
+        OutputChildStage(
+            child.owner,
+            child.owner,
+            value.invocation,
+            value.return_sink,
+            value.lineage,
+            value.spans,
+        )
 
 
 def test_real_clip_structured_output_resolves_its_exact_encoder_stage():
@@ -249,3 +326,32 @@ def test_real_clip_structured_output_resolves_its_exact_encoder_stage():
         index, context.source_bundle, (), allow_root_stage=True)
     assert attention_bias.status == "resolved", attention_bias.failures
     assert attention_bias.value.value is True
+
+
+def test_real_clip_projection_wrapper_descends_through_its_unique_body():
+    from model_unfolder.evidence.context import ParseContext, slot_parse_context
+    from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
+
+    config = json.loads(
+        (Path(__file__).parent / "sable_test_corpus"
+         / "stable-diffusion-xl-base-1-0.json").read_text(
+             encoding="utf-8"))["config"]
+    context = slot_parse_context(
+        ParseContext.build(config), "text_encoder_2")
+    assert context is not None
+    index = context.program_index()
+    root = resolve_component_root(index, context.source_bundle, "root")
+    assert root.status == "resolved"
+    child = resolve_output_child_stage(
+        index, root, root.graph.root.occurrence)
+    assert child.status == "resolved", child.failures
+    assert root.graph.node_for(
+        child.value.child_occurrence).symbol.qualified_name == "CLIPTextModel"
+    integrated = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert integrated.status == "resolved", integrated.failures
+    assert root.graph.node_for(
+        integrated.value.stage_occurrence).symbol.qualified_name == "CLIPEncoder"
+    assert root.graph.node_for(
+        integrated.value.block_occurrence).symbol.qualified_name \
+        == "CLIPEncoderLayer"

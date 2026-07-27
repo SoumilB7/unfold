@@ -90,6 +90,52 @@ class OutputLineageRelation:
 
 
 @dataclass(frozen=True)
+class OutputChildStage:
+    """One exact invoked child contributing to a structured return.
+
+    This is an address claim only.  It does not say that the child is a model
+    stage or that it contains repetition; callers must prove those separately.
+    """
+
+    owner_occurrence: OwnerOccurrenceId
+    child_occurrence: OwnerOccurrenceId
+    invocation: AddressedInvocation
+    return_sink: InvocationNodeId
+    lineage: tuple[OutputLineageRelation, ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.owner_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.child_occurrence, OwnerOccurrenceId):
+            raise TypeError("output-child evidence is occurrence-qualified")
+        if not isinstance(self.invocation, AddressedInvocation):
+            raise TypeError("output-child evidence carries an addressed invocation")
+        if self.invocation.caller_occurrence != self.owner_occurrence \
+                or self.invocation.callee_owner_occurrence \
+                != self.child_occurrence:
+            raise ValueError("the exact owner invokes the exact output child")
+        if not isinstance(self.return_sink, InvocationNodeId):
+            raise TypeError("output-child evidence names the exact return call")
+        if not self.lineage or any(
+                not isinstance(item, OutputLineageRelation)
+                for item in self.lineage):
+            raise TypeError("output-child evidence carries a typed lineage")
+        start = InvocationNodeId(self.invocation.call_site, "addressed")
+        if self.lineage[0].source != start \
+                or self.lineage[-1].target != self.return_sink \
+                or any(left.target != right.source
+                       for left, right in zip(self.lineage, self.lineage[1:])):
+            raise ValueError("the lineage is one contiguous child-to-return path")
+        required = {
+            self.invocation.call.span,
+            *(span for item in self.lineage for span in item.spans),
+        }
+        if None in required or not required <= set(self.spans) \
+                or any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise ValueError("output-child provenance closes over the lineage")
+
+
+@dataclass(frozen=True)
 class OutputRepeatedStage:
     """One exact invoked repeated child that reaches the returned call."""
 
@@ -143,13 +189,86 @@ def resolve_output_repeated_stage(
     owner: OwnerOccurrenceId,
 ) -> ReaderResult[OutputRepeatedStage]:
     """Resolve one exact repeated child contributing to a structured return."""
-    if not isinstance(index, ProgramIndex):
-        raise TypeError("resolve_output_repeated_stage requires a ProgramIndex")
+    children = _output_child_candidates(index, root, owner)
+    if children.status != "resolved":
+        return children
     root = require_resolved_component_root(
         root, caller="resolve_output_repeated_stage")
+    paths = []
+    for child in children.value:
+        repeated = resolve_repeated_child_at_owner(
+            index, root, child.child_occurrence,
+            resolve_container_inventory(index, root, child.child_occurrence))
+        if repeated.status not in {"resolved", "ambiguous"}:
+            continue
+        paths.append(OutputRepeatedStage(
+            owner, child.child_occurrence, child.invocation,
+            repeated, child.return_sink, child.lineage, child.spans))
+
+    if len(paths) > 1:
+        return ReaderResult.ambiguous(
+            owner,
+            Ambiguity(sites=tuple(
+                item.invocation.call.span for item in paths)))
+    if not paths:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            "no exact invoked repeated child reaches the returned call"),))
+    value = paths[0]
+    return ReaderResult.resolved(
+        value.stage_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=value.spans,
+            detail=(
+                "exact graph child positively repeats and reaches the exact "
+                "structured return through typed local lineage")),))
+
+
+def resolve_output_child_stage(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    owner: OwnerOccurrenceId,
+) -> ReaderResult[OutputChildStage]:
+    """Resolve the sole exact child contributing to a structured return.
+
+    Cardinality is deliberately strict: multiple output-contributing children
+    are ambiguity, even when one looks more model-like.  This boundary is only
+    suitable for descending through a wrapper with one addressed body child.
+    """
+    children = _output_child_candidates(index, root, owner)
+    if children.status != "resolved":
+        return children
+    if len(children.value) > 1:
+        return ReaderResult.ambiguous(
+            owner, Ambiguity(sites=tuple(
+                item.invocation.call.span for item in children.value)))
+    if not children.value:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            "incomplete_graph",
+            "no exact invoked child reaches the returned call"),))
+    value = children.value[0]
+    return ReaderResult.resolved(
+        value.child_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=value.spans,
+            detail=(
+                "one exact graph child reaches the exact structured return "
+                "through typed local lineage")),))
+
+
+def _output_child_candidates(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    owner: OwnerOccurrenceId,
+) -> ReaderResult[tuple[OutputChildStage, ...]]:
+    """Return the complete positively-addressed output-child candidate set."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("output-child resolution requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="output-child resolution")
     if not isinstance(owner, OwnerOccurrenceId):
         raise TypeError(
-            "resolve_output_repeated_stage requires an exact owner occurrence")
+            "output-child resolution requires an exact owner occurrence")
     owner_node = root.graph.node_for(owner)
     if owner_node is None or index.class_by_symbol(owner_node.symbol) is None:
         return ReaderResult.failed(owner, (ReaderFailure(
@@ -183,22 +302,16 @@ def resolve_output_repeated_stage(
     for invocation in invocations.addressed:
         start = InvocationNodeId(invocation.call_site, "addressed")
         path = _one_path(start, sink, relations)
-        if path is None:
-            continue
-        repeated = resolve_repeated_child_at_owner(
-            index, root, invocation.callee_owner_occurrence,
-            resolve_container_inventory(
-                index, root, invocation.callee_owner_occurrence))
-        if repeated.status not in {"resolved", "ambiguous"}:
+        if not path:
             continue
         spans = tuple(dict.fromkeys(
             span for span in (
                 *invocation.provenance_spans,
                 *(item for relation in path for item in relation.spans),
             ) if isinstance(span, SourceSpan)))
-        paths.append(OutputRepeatedStage(
+        paths.append(OutputChildStage(
             owner, invocation.callee_owner_occurrence, invocation,
-            repeated, sink, path, spans))
+            sink, path, spans))
 
     unresolved_nodes = {
         InvocationNodeId(item.call_site, "observed")
@@ -210,23 +323,15 @@ def resolve_output_repeated_stage(
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "an unresolved self-child invocation also reaches the returned call"),))
-    if len(paths) > 1:
-        return ReaderResult.ambiguous(
-            owner,
-            Ambiguity(sites=tuple(
-                item.invocation.call.span for item in paths)))
-    if not paths:
-        return ReaderResult.failed(owner, (ReaderFailure(
-            "incomplete_graph",
-            "no exact invoked repeated child reaches the returned call"),))
-    value = paths[0]
+    spans = tuple(dict.fromkeys((
+        returns[0].span,
+        *(span for item in paths for span in item.spans),
+    )))
     return ReaderResult.resolved(
-        value.stage_occurrence, value,
+        owner, tuple(paths),
         provenance=(ReaderProvenance(
-            "source", spans=value.spans,
-            detail=(
-                "exact graph child positively repeats and reaches the exact "
-                "structured return through typed local lineage")),))
+            "source", spans=spans,
+            detail="complete positively-addressed output-child candidate set"),))
 
 
 def _return_sink(flow, returned: ExprNode):
@@ -306,7 +411,9 @@ def _could_be_self_child(expr: ExprNode):
 
 
 __all__ = [
+    "OutputChildStage",
     "OutputLineageRelation",
     "OutputRepeatedStage",
+    "resolve_output_child_stage",
     "resolve_output_repeated_stage",
 ]
