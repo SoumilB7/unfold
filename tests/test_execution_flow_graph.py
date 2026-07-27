@@ -22,6 +22,7 @@ from model_unfolder.evidence.execution_flow import (
     ExecutionFlowResolution,
     HappensBeforeEdge,
     InvocationNodeId,
+    UnresolvedRelation,
     resolve_execution_flow,
     _has_cycle,
 )
@@ -312,6 +313,17 @@ def test_edge_and_resolution_closures():
         ExecutionFlowResolution("partial", occ, nodes=(n1, n1))
     with pytest.raises(ValueError):                       # absent carries no graph payload
         ExecutionFlowResolution("absent", occ, nodes=(n1,))
+    with pytest.raises(ValueError):                       # candidates share the callable
+        UnresolvedRelation(
+            n1, "x", "transformed_reaching_definition", (n_other,))
+    with pytest.raises(ValueError):                       # only transforms retain producers
+        UnresolvedRelation(
+            n2, "x", "ambiguous_reaching_definition", (n1,))
+    with pytest.raises(ValueError):                       # candidates round-trip to nodes
+        ExecutionFlowResolution(
+            "partial", occ, SymbolId(fn.source, "M"), fn, (n2,),
+            unresolved_relations=(UnresolvedRelation(
+                n2, "x", "transformed_reaching_definition", (n1,)),))
 
 
 def test_partial_flow_requires_owner_callable_and_rejects_failure_payload():
@@ -407,8 +419,12 @@ def test_expression_reassignment_preserves_producer_as_unresolved(tmp_path):
     assert res.proven_edges == ()                         # a was transformed; no direct f->g
     # the producer f is NOT erased: using the transformed a is a typed unresolved
     # transformation, not silence.
-    assert any(u.reason == "transformed_reaching_definition"
-               for u in res.unresolved_relations)
+    relations = tuple(
+        item for item in res.unresolved_relations
+        if item.reason == "transformed_reaching_definition")
+    assert len(relations) == 1
+    assert len(relations[0].candidate_sources) == 1
+    assert _field(idx, res, relations[0].candidate_sources[0]) == "f"
 
 
 def test_coverage_gap_forms_are_published_not_completeness(tmp_path):

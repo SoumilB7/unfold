@@ -617,12 +617,28 @@ class UnresolvedRelation:
     target: InvocationNodeId
     variable: str
     reason: str
+    candidate_sources: tuple = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.target, InvocationNodeId):
             raise TypeError("an unresolved relation targets an InvocationNodeId")
         if not self.reason:
             raise ValueError("an unresolved relation names its reason")
+        if any(not isinstance(item, InvocationNodeId)
+               for item in self.candidate_sources):
+            raise TypeError(
+                "unresolved candidate sources are InvocationNodeId values")
+        if len(set(self.candidate_sources)) != len(self.candidate_sources):
+            raise ValueError("unresolved candidate sources are unique")
+        if any(item.call_site.enclosing_callable
+               != self.target.call_site.enclosing_callable
+               for item in self.candidate_sources):
+            raise ValueError(
+                "an unresolved relation and its candidates share one callable")
+        if self.candidate_sources \
+                and self.reason != "transformed_reaching_definition":
+            raise ValueError(
+                "only a transformed definition carries preserved producers")
 
 
 @dataclass(frozen=True)
@@ -679,6 +695,9 @@ class ExecutionFlowResolution:
         for rel in self.unresolved_relations:
             if rel.target not in node_set:
                 raise ValueError("an unresolved relation targets a graph node")
+            if any(source not in node_set for source in rel.candidate_sources):
+                raise ValueError(
+                    "unresolved candidate sources round-trip through graph nodes")
         if self.status == "partial":
             if self.owner_symbol is None or self.callable_symbol is None:
                 raise ValueError("a partial flow names its resolved owner and callable")
@@ -933,7 +952,9 @@ def _emit_arg_edges(call, node, node_by_key, defs, guard, clock, tainted, is_tai
             elif reason == "ambiguous":
                 unresolved.append(UnresolvedRelation(node, name, "ambiguous_reaching_definition"))
             elif reason == "transformed":
-                unresolved.append(UnresolvedRelation(node, name, "transformed_reaching_definition"))
+                unresolved.append(UnresolvedRelation(
+                    node, name, "transformed_reaching_definition",
+                    tuple(dict.fromkeys(e.transform_producers))))
             elif reason == "unresolved":
                 unresolved.append(UnresolvedRelation(node, name, "unresolved_alias_reaching_definition"))
 
