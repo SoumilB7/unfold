@@ -142,6 +142,32 @@ def test_reassignment_kills_earlier_definition(tmp_path):
     assert _edge_fields(idx, res, res.proven_edges) == {("h", "g")}   # NOT f->g
 
 
+def test_unresolved_call_overwrite_kills_the_stale_addressed_producer(tmp_path):
+    idx, occ, res = _flow(tmp_path, """
+                a = self.f(x)
+                a = unknown(a)
+                b = self.g(a)
+                return b""")
+    fields = _edge_fields(idx, res, res.proven_edges)
+    assert ("f", "g") not in fields
+    assert any(node.kind == "observed" for node in res.nodes)
+    assert any(item.call.callee.name == "unknown"
+               for item in res.unresolved_invocations)
+
+
+def test_positive_relation_into_unresolved_call_stays_local_not_addressed(
+        tmp_path):
+    idx, occ, res = _flow(tmp_path, """
+                a = self.f(x)
+                b = unknown(a)
+                return b""")
+    observed = tuple(node for node in res.nodes if node.kind == "observed")
+    assert len(observed) == 1
+    assert any(edge.target == observed[0] for edge in res.proven_edges)
+    assert any(item.call_site == observed[0].call_site
+               for item in res.unresolved_invocations)
+
+
 def test_tuple_unpack_edge(tmp_path):
     idx, occ, res = _flow(tmp_path, """
                 a, b = self.f(x)
@@ -264,6 +290,9 @@ def test_edge_and_resolution_closures():
     n1 = InvocationNodeId(CallSiteId(fn, SourceSpan(fn.source, 1), 0), "addressed")
     n2 = InvocationNodeId(CallSiteId(fn, SourceSpan(fn.source, 2), 0), "addressed")
     n_other = InvocationNodeId(CallSiteId(other_fn, SourceSpan(fn.source, 3), 0), "addressed")
+    observed = InvocationNodeId(
+        CallSiteId(fn, SourceSpan(fn.source, 4), 0), "observed")
+    assert observed.kind == "observed"
     with pytest.raises(ValueError):                       # self-loop
         HappensBeforeEdge(n1, n1, "versioned_def_use", _spans())
     with pytest.raises(ValueError):                       # unknown proof kind

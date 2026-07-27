@@ -577,12 +577,13 @@ _PROOF_KINDS = {"versioned_def_use", "container_iteration", "framework_protocol"
 @dataclass(frozen=True)
 class InvocationNodeId:
     call_site: CallSiteId
-    kind: str                    # addressed | template
+    kind: str                    # addressed | external | template | observed
 
     def __post_init__(self) -> None:
         if not isinstance(self.call_site, CallSiteId):
             raise TypeError("an invocation node is identified by its CallSiteId")
-        if self.kind not in {"addressed", "external", "template"}:
+        if self.kind not in {
+                "addressed", "external", "template", "observed"}:
             raise ValueError(f"unknown invocation node kind {self.kind!r}")
 
 
@@ -755,6 +756,15 @@ def resolve_execution_flow(index: ProgramIndex,
         node_of_site[a.call_site] = InvocationNodeId(a.call_site, "external")
     for t in inv_res.templates:
         node_of_site[t.call_site] = InvocationNodeId(t.call_site, "template")
+    # An unresolved call is still an exact, observed Python invocation.  It
+    # receives no mechanism/owner semantics, but it MUST participate in local
+    # def-use: otherwise ``a = known(); a = unknown(); use(a)`` would leave the
+    # stale known producer looking dominant.  The same call remains in
+    # ``unresolved_invocations`` so this neutral node can never launder it into
+    # an addressed mechanism.
+    for unresolved in inv_res.unresolved:
+        node_of_site[unresolved.call_site] = InvocationNodeId(
+            unresolved.call_site, "observed")
     nodes = tuple(node_of_site.values())
 
     proven, conditional, unresolved = _interpret_def_use(index, callable_symbol, node_of_site)
