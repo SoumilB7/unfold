@@ -279,9 +279,9 @@ then proceed autonomously to U3-B.
       graph.root.unresolved). 34 poisons. Committed-tree receipt: focused 103,
       affected U2 44, preservation 20 zero-drift, full 1596/0, fingerprint
       identical, isolated worktree green.
-- [~] U3-A1 identifier-observation completeness — CODEX-OWNED KERNEL CORRECTION,
-      implemented in the working tree and awaiting its own committed-tree
-      receipt. The D1 stop condition proved that reconstructing names from
+- [x] U3-A1 identifier-observation completeness — CODEX-OWNED KERNEL CORRECTION,
+      committed in `c5b3c82` and consumed by the approved D1 pilot. The D1 stop
+      condition proved that reconstructing names from
       selected call/dataflow/control records could not support a general
       negative. ProgramIndex now records neutral IdentifierObservation rows for
       every exact callable-scoped ast.Name/ast.arg with its SourceSpan and
@@ -392,9 +392,10 @@ then proceed autonomously to U3-B.
         decoder ownership gap and was reverted in `815f1fb`; no model-specific
         patch or wrapper fallback was retained.  The substrate and correction
         are covered by the `c974abc` unchanged-tree receipt.
-      - [~] U3-F5e: production attention-storage cutover through exact selected
-        config owners is implemented in the current F5e commit and under final
-        receipt.  `config.path -> construction -> field installation` is a
+      - [x] U3-F5e: production attention-storage cutover through exact selected
+        config owners was committed in `78ab271`, with immutable-index
+        performance corrections in `3b1c003` / `c194042` and debt lock in
+        `50a115b`.  `config.path -> construction -> field installation` is a
         typed address proof; local construction aliases, return delegation and
         constructed component roots retain exact occurrences/spans.  Nested
         owner reads now join the owner graph's `ConfigBinding`, so
@@ -406,6 +407,91 @@ then proceed autonomously to U3-B.
         `attention_fused_qkv_from_files` remains only for recursive pipeline
         component conformance and is explicitly assigned to U3-G; it is no
         longer a root parser/conformance authority.
+      - [x] U3-F5f: exact-owner Q/K-normalization cutover is implemented in
+        `4958a8f`, with the independent lane-soundness correction in
+        `d4d8b2f`.  It starts
+        from the shared selected-config decoder-block path, the exact attention
+        child and the exact three-projection storage proof.  Presence is
+        positive-only: two independently reaching norm applications must be
+        classified from implementation/protocol evidence, consume exact
+        storage projections, and wholly cover their respective Q/K score
+        lanes.  Config-gated construction retains exact owner-qualified paths;
+        source silence is unknown, never code-proven absence.  Permanent
+        counterexamples cover Q-only double norms, Q/V contamination, latent
+        pre-projection norms, normalized scalars and raw callable inputs.
+        Real controls keep Qwen3/OLMo-2/Gemma-3/Llama-4 positive and
+        Llama/DeepSeek-V3/plain attention unknown.  The former whole-file QK
+        reader and its parser broad catch are deleted.
+      - [x] U3-F5g: ordinary decoder FFN mechanism cutover, committed in
+        `43df77c`, `c37bbb5`, `80fc2c3` and lint correction `ddbd419`.
+        The reader starts at the exact selected decoder-block occurrence,
+        requires exact two/three affine construction occurrences, exact local
+        return reachability, activation reachability and (for gated shapes) a
+        proven multiplication.  Fused storage additionally requires an exact
+        split feeding that multiplication.  Repeated sequential invocation,
+        dormant/unrelated activation and cross-owner linear calls abstain.
+        Real controls prove BLOOM dense, Llama/StableLM/Qwen2-VL split gated
+        and MusicGen dense; routed/hybrid blocks deliberately do not borrow
+        their experts as an ordinary FFN.
+      - [~] U3-F5h: routed-expert storage is locally committed in `d96c411`;
+        its first combined receipt exposed real projection/legacy-test
+        contract defects, corrected forward in amended `a788288`.  The
+        replacement receipt proved static/authority/focused green and exposed
+        only the intentional unblessed view delta plus one bias-registry tier
+        omission; the latter is repaired in the amended commit.  It follows only
+        exact decoder-block construction/invocation paths and proves one
+        stacked two-lane Parameter whose multiplied lanes feed a distinct
+        stacked down Parameter.  DeepSeek-V3, GLM-4.5 and GPT-OSS are positive;
+        Llama and adversarial wrong-axis/uninvoked/rival controls abstain.
+        Expert storage now has a separate fact owner and cannot certify the
+        ordinary/shared FFN.  The asserted storage census shrank 94 -> 6; the
+        six honest survivors are guarded dense layers in two hybrid stacks,
+        pending an occurrence/schedule proof.  No manifest/gallery was changed.
+      - [~] U3-F5i: decoder-block normalization is locally committed in
+        `6effc34`, with its ambiguity/unknown-policy correction in amended
+        `a788288`.  It begins
+        at the exact selected decoder-block occurrence, follows only invoked
+        construction occurrences and classifies external LayerNorm/RMSNorm
+        protocols or indexed normalization math.  Mixed/guarded rival
+        primitives are ambiguous and sibling classes cannot vote.  Real
+        controls cover BLOOM, Llama, Gemma-2, DeepSeek-V3, GLM-4.5, GPT-OSS,
+        Qwen2-VL and MusicGen.  A complete rival repeated-child census may be
+        consumed only when every candidate proves the same primitive.  When a
+        higher stage address is still ambiguous (T5/encoder summaries), a
+        readable-source failure blocks epsilon-spelling fallback and renders
+        generic normalization pending U3-G.  Both former whole-file norm
+        readers and their parser broad catches are deleted.
+      - [~] U3-F5j: exact projection-bias cutover is committed in amended
+        `a788288`.  Its first full corpus gate proved that a config-dependent
+        exact Linear correctly falls back to an honest
+        ``config_declared``/``class_default`` fact tier; the registry's missing
+        admission of those tiers was repaired by the amend.
+        Attention bias consumes only the exact Q/K/V storage occurrences;
+        ordinary-FFN bias consumes only the exact reaching FFN projections.
+        Omitted/literal ``torch.nn.Linear`` bias is source-proven; a
+        config-dependent expression deliberately abstains and remains on the
+        owner-scoped config channel.  Unrelated Linears and sibling classes
+        cannot vote.  The old whole-file attention/MLP bias readers are
+        deleted in the same unit.  Together with F5i, the parser broad-catch
+        debt ratchet shrank 22 -> 18.
+      - [~] U3-F5k: exact learned attention sinks are committed in `306fd8e`.
+        The reader starts from the
+        exact selected attention occurrence, requires an exact learned
+        ``torch.nn.Parameter``, and proves that parameter and an exact score
+        producer meet in ``torch.cat`` before reaching the exact softmax.
+        Names, sibling parameters, unused parameters and post-softmax appends
+        cannot vote.  GPT-OSS is the real positive; Llama and Qwen2-VL are
+        real negative controls.  The old whole-file sinks reader and its
+        parser broad catch are deleted; the broad-catch ratchet shrinks
+        18 -> 17.  Receipt `8c51056713`: static clean, collection 2157,
+        U2 authority 44 passed, focused 320 passed + 2 expected xfails, and
+        full 2053 passed / 11 skipped / 2 xfailed with the sole failure the
+        already-withheld Sable manifest.  Preservation reports the same
+        21/25 standing unblessed witnesses as the parent campaign.  A direct
+        `a788288` -> `306fd8e` canonical comparison proves GPT-OSS changed
+        only its evidence-ledger reader provenance; IR, expanded, params,
+        HTML metadata and Sable are byte-identical, while Llama is
+        byte-identical on every surface.  No manifest/gallery has been blessed.
 
 The binding execution order, exact first pilot, review ownership and stop gates
 for U3-D through U3-H are specified in
