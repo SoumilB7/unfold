@@ -666,3 +666,24 @@ chain; the later F4 row above is the first bounded production consumer.
 The campaign has been approved and the bounded U3-F sequence is executing above.
 Whole-callable negative claims remain forbidden: F4 consumes only a positively
 proven local def-use relation into the exact repeated child.
+
+## Finite U3 completion amendment — execution status
+
+Binding source: `docs/U3_COMPLETION_MASTER_PLAN.md` §10.
+
+- [x] U3-C0: local-chain reclassification (`7530467`).
+- [x] U3-C1: conservative exact factory/config binding (`77aec7e`).
+- [x] U3-C2: all 33 evidence-layer parse sites classified; 23 legacy
+      model-source sites assigned to later units.
+- [x] U3-C3: 25-reader non-growing quarantine, including definition/caller,
+      body/helper and legacy-parse-caller pins.
+- [x] U3-C4: generated current inventory is blocking and current.
+- [ ] U3-C5: **HELD by inherited unblessed semantic output**, not by missing U3
+      substrate. Static/collection/focused/U2-authority are green, and an exact
+      26-witness parent→current comparison is byte-identical. The project-wide
+      receipt remains red on the pre-existing CLIP/gallery/preservation deltas,
+      which U3 is forbidden to bless.
+
+Do not add another U3 mechanism reader to clear C5. Resolve the retained
+semantic candidates in their assigned U6–U9/U14 units (revert or approve with
+their own receipts), then rerun C5 and formally unlock U4.

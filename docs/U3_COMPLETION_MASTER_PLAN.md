@@ -582,3 +582,80 @@ U3 is complete when:
 
 The next unit is then U4: make unknown safe everywhere before further semantic
 fact migration.
+
+---
+
+## 10. Implementation and acceptance record (2026-07-27)
+
+### Completed neutral work
+
+| Slice | Status | Receipt |
+|---|---|---|
+| U3-C0 — reconcile/reclassify the local chain | **DONE** | `7530467` |
+| U3-C1 — exact conservative factory/config binding | **DONE** | `77aec7e` |
+| U3-C2 — classify remaining raw parse authority | **DONE** | 33 exact evidence-layer parse sites: 1 central ProgramIndex, 1 address bootstrap, 7 repository audits, 1 test guard and 23 legacy model-source sites |
+| U3-C3 — freeze the semantic-reader quarantine | **DONE** | 25 exact readers; exact definitions/callers; normalized reader + same-module helper implementation digest; exact legacy-parse caller digest; growth/body/alias/move poisons blocking |
+| U3-C4 — regenerate the current inventory | **DONE** | `docs/U3_CURRENT_READER_INVENTORY.md`; generator `--check` is blocking |
+| U3-C5 — project-wide release gate | **HELD** | neutral U3 parity is exact, but the inherited unblessed semantic chain keeps the project-wide preservation/full gate red |
+
+The factory proof accepts only an exact directly indexed, unshadowed
+`@classmethod`, one unguarded `return cls(...)`, no unsupported execution
+region, no rebinding of a forwarded formal, and no `*args`/`**kwargs`
+expansion. Defaults, aliases, guarded/rival returns, external factories,
+class-name calls, dynamic forwarding and unsupported control flow remain
+typed opaque. No name, position or value-equality fallback was added.
+
+The quarantine blocks:
+
+- new/moved `*_from_files` definitions, including nested definitions;
+- direct, qualified, imported-alias and assigned-alias consumers;
+- a body or same-module helper-closure change;
+- a new/aliased evidence-layer `ast.parse`;
+- a new caller of an already-existing legacy parse authority;
+- stale/dead rows and generated-inventory drift.
+
+### Committed-tree receipt
+
+Receipt: `/private/tmp/model-unfolder-verification/d2467f9b90`, commit
+`77aec7e04d878ae58e15a271fead2b6aff83158e`.
+
+- static: **PASS**, 7 changed Python files clean;
+- collection: **PASS**, 2,252 collected;
+- focused ProgramIndex/owner/quarantine: **PASS**, 182;
+- U2 authority: **PASS**, 44;
+- exhaustive non-preservation partition: **2,147 passed, 11 skipped,
+  2 xfailed, 2 failed**;
+- preservation: **27 passed, 19 failed**;
+- every lane's source-tree and external-artifact fingerprints: **unchanged**.
+
+The two exhaustive failures are inherited semantic outputs:
+
+1. `test_text_encoder_shows_real_config_dims` — the retained embedded-CLIP
+   `norm: LayerNorm` candidate is not in the old expected structure;
+2. `test_sable_regression_corpus` — the existing unblessed gallery delta is
+   still deliberately blocking.
+
+The 19 preservation failures are likewise inherited from the semantic commits
+reclassified to U6–U9/U14. They are not accepted or re-blessed by U3.
+
+### Exact neutral-delta proof
+
+The parent `7530467` and U3 implementation `77aec7e` were each rendered in an
+isolated worktree across all 26 witnesses, four workers per tree. Both runs
+passed 26/26. Every canonical surface and every view hash compared byte-for-byte
+equal; the combined filename+content digest on both sides was:
+
+`df775f8a9a61509023e9c13eacd189f8bfad6077f2ec18794971913a05f65d5d`
+
+Therefore the U3 completion implementation itself caused **zero** architecture,
+IR, expanded JSON, parameter, evidence-ledger, HTML-metadata, gallery or pixel
+delta.
+
+### Binding status
+
+The neutral U3 implementation is complete. **U3 release acceptance is not
+marked DONE**, because this plan explicitly forbids using U3 to bless the
+retained semantic deltas. The next action is not more U3 substrate code: each
+inherited semantic delta must be either reverted to the blessed behavior or
+accepted under its assigned U6–U9/U14 receipt and Soumil visual decision. Only
+then may the project-wide gate turn green and U4 formally unlock.
