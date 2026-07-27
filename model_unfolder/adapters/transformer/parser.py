@@ -544,15 +544,20 @@ def _code_ffn_activation(
         if result is not None and result.status == "resolved" else None
 
 
-def _code_lm_head_tying(cfg: Any, context=None) -> bool | None:
-    """Unconditional manual lm_head↔embedding tying read from the source
-    (legacy/remote-code idiom).  ``_tied_weights_keys`` is capability, never
-    proof — the reader ignores it by design (U2 P2b)."""
-    try:
-        from ...evidence.patterns import lm_head_tying_from_files
-        return lm_head_tying_from_files(_source_files(cfg, context))
-    except Exception:
+def _code_lm_head_tying(
+    cfg: Any, context=None, *, config_path=(),
+) -> bool | None:
+    """Exact returned-head ↔ stack-feeding-embedding assignment proof.
+
+    ``_tied_weights_keys`` remains capability only.  Missing/ambiguous source
+    evidence stays unknown and falls through to the class-default tier.
+    """
+    if context is None:
         return None
+    from ...evidence.weight_tying import manual_weight_tying_for_path
+    result = manual_weight_tying_for_path(
+        context.program_index(), context.source_bundle, tuple(config_path))
+    return True if result.status == "resolved" else None
 
 
 def _code_ffn_activation_dispatch(
@@ -1989,10 +1994,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
         tie_word_embeddings = bool(_tie_raw)
         _note_fact("model", "tie_word_embeddings", tie_word_embeddings,
                    "config_declared", "tie_word_embeddings")
-    elif _code_lm_head_tying(text_cfg, context):
+    elif _code_lm_head_tying(
+            text_cfg, context, config_path=_text_path):
         tie_word_embeddings = True
         _note_fact("model", "tie_word_embeddings", True,
-                   "code_proven", "lm_head_tying_from_files")
+                   "code_proven", "manual_weight_tying_for_path")
     else:
         _tie_cls = _fact_class_defaults.get("tie_word_embeddings")
         if _tie_cls is not None:

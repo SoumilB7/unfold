@@ -383,26 +383,51 @@ def test_tie_code_channel_order(tmp_path):
 
     src = tmp_path / "modeling_fake.py"
     src.write_text(
+        "from torch import nn\n"
+        "\n"
+        "class FakeBlock:\n"
+        "    def forward(self, hidden):\n"
+        "        return hidden\n"
+        "\n"
+        "class FakeModel:\n"
+        "    def __init__(self):\n"
+        "        self.embed_tokens = nn.Embedding(16, 4)\n"
+        "        self.layers = nn.ModuleList(\n"
+        "            [FakeBlock() for _ in range(2)])\n"
+        "\n"
+        "    def forward(self, token_ids):\n"
+        "        hidden = self.embed_tokens(token_ids)\n"
+        "        for layer in self.layers:\n"
+        "            hidden = layer(hidden)\n"
+        "        return hidden\n"
+        "\n"
         "class FakeForCausalLM:\n"
-        "    def __init__(self, config):\n"
-        "        self.transformer = FakeModel(config)\n"
-        "        self.lm_head = nn.Linear(4, 8, bias=False)\n"
+        "    base_model_prefix = 'transformer'\n"
+        "\n"
+        "    def __init__(self):\n"
+        "        self.transformer = FakeModel()\n"
+        "        self.lm_head = nn.Linear(4, 16, bias=False)\n"
         "        self.lm_head.weight = self.transformer.embed_tokens.weight\n"
-        "    def forward(self, x):\n"
-        "        return self.lm_head(self.transformer(x))\n"
+        "\n"
+        "    def forward(self, token_ids):\n"
+        "        return self.lm_head(self.transformer(token_ids))\n"
     )
-    ctx = ParseContext(source_bundle=SourceBundle(source="local",
-                                                  files=(str(src),)))
+    bundle = SourceBundle(
+        source="local",
+        files=(str(src),),
+        component_files={"root": (str(src),)},
+        component_architectures={"root": "FakeForCausalLM"},
+    )
+    ctx = ParseContext(source_bundle=bundle)
     # flag absent + no model_type (no class default) → the code idiom decides
     ir = config_to_ir(dict(ZERO_EVIDENCE), parse_context=ctx)
     assert ir.tie_word_embeddings is True
     rec = _prov(ir)["model.tie_word_embeddings"]
     assert rec["status"] == "code_proven"
-    assert rec["source"] == "lm_head_tying_from_files"
+    assert rec["source"] == "manual_weight_tying_for_path"
 
     # a DECLARED flag outranks the code idiom (spec order: config first)
-    ctx2 = ParseContext(source_bundle=SourceBundle(source="local",
-                                                   files=(str(src),)))
+    ctx2 = ParseContext(source_bundle=bundle)
     ir2 = config_to_ir(dict(ZERO_EVIDENCE, tie_word_embeddings=False),
                        parse_context=ctx2)
     assert ir2.tie_word_embeddings is False
