@@ -2739,62 +2739,6 @@ def _classify_topology(seq: list[str]) -> dict:
     return {"norm_placement": placement, "parallel_residual": parallel}
 
 
-def decoder_cross_attention_all_layers_from_files(files) -> bool | None:
-    """Does the decoder LAYER class construct a cross-attention module
-    UNCONDITIONALLY in ``__init__`` (MusicGen's ``encoder_attn``)?
-
-    The composite config often can't say (MusicGen's decoder sub-config even
-    carries ``add_cross_attention: false`` while the layer class builds
-    ``encoder_attn`` on every layer) — construction is the truth.  A layer
-    qualifies structurally: it has a ``forward``, assigns a field named in the
-    ``cross_attn_fields`` vocabulary, AND assigns another attention field
-    (the self-attention) — the dual-attention decoder-layer shape, no class
-    names consulted.  ``True`` only for a TOP-LEVEL (unconditional) cross
-    assignment ⇒ every layer has it; a conditional build or no match stays
-    ``None`` — never a guessed schedule.
-    """
-    import ast as _ast
-    from ..everchanging import load_composite_slots
-    from .forward_ops import _method
-    markers = {str(m).lower() for m in
-               (load_composite_slots().get("cross_attn_fields") or ())}
-    if not markers:
-        return None
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef):
-                continue
-            init = _method(node, "__init__")
-            if init is None or _method(node, "forward") is None:
-                continue
-
-            def _self_fields(stmts):
-                out = set()
-                for stmt in stmts:
-                    if isinstance(stmt, _ast.Assign):
-                        for target in stmt.targets:
-                            if (isinstance(target, _ast.Attribute)
-                                    and isinstance(target.value, _ast.Name)
-                                    and target.value.id == "self"):
-                                out.add(target.attr.lower())
-                return out
-
-            top_fields = _self_fields(init.body)
-            all_fields = _self_fields(
-                [n for n in _ast.walk(init) if isinstance(n, _ast.Assign)])
-            self_attn = {f for f in all_fields - markers
-                         if "attn" in f or "attention" in f}
-            if not (all_fields & markers) or not self_attn:
-                continue
-            if top_fields & markers:
-                return True
-    return None
-
-
 def decoder_codebook_streams_from_files(files) -> dict:
     """Multi-codebook token streams READ FROM CONSTRUCTION + forward dataflow.
 

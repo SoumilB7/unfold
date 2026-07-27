@@ -458,6 +458,30 @@ def _code_attention_sinks(cfg: Any, context=None, *, config_path=()) -> bool:
     return result is not None and result.status == "resolved"
 
 
+def _cross_attention_schedule_result(context=None, *, config_path=()):
+    """Call-local additive cross-attention proof for one exact decoder block."""
+    if context is None:
+        return None
+    from ...evidence.cross_attention_schedule import (
+        decoder_cross_attention_all_layers_for_path,
+    )
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.cross_all_layers",
+        path,
+        lambda: decoder_cross_attention_all_layers_for_path(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True),
+    )
+
+
+def _code_cross_attention_all_layers(context=None, *, config_path=()):
+    """Positive-only exact dual-attention construction evidence."""
+    result = _cross_attention_schedule_result(
+        context, config_path=config_path)
+    return result is not None and result.status == "resolved"
+
+
 def _code_intermediate_size(cfg: Any, context=None) -> int | None:
     """FFN intermediate width from the modeling source's OWN default expression
     when the config field is absent (GPT-J/GPT-2/CodeGen ``n_inner=None →
@@ -1641,12 +1665,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     cross_attention_additive = False
     if (not cross_attn_layer_set and num_layers
             and _is_enc_dec and composite_encoder_type):
-        from ...evidence.patterns import decoder_cross_attention_all_layers_from_files
-        _bundle = getattr(context, "source_bundle", None)
-        _comp_files = getattr(_bundle, "component_files", {}) or {}
-        _main_files = (_comp_files.get("decoder") or _comp_files.get("root")
-                       or getattr(_bundle, "files", None))
-        if decoder_cross_attention_all_layers_from_files(_main_files):
+        if _code_cross_attention_all_layers(
+                context, config_path=_text_path):
             cross_attn_layer_set = set(range(num_layers or 0))
             cross_attention_additive = True
         else:
