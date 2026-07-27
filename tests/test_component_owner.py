@@ -16,6 +16,7 @@ import pytest
 
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.component_owner import (
+    ConfigBinding,
     ConfigPrefixRival,
     OwnerGraph,
     OwnerRival,
@@ -394,6 +395,328 @@ def test_factory_input_is_not_falsely_bound_to_init_parameter(tmp_path):
     assert tower.config_prefix == ("vision_config",)
     assert tower.config_bindings[0].parameter == "@factory_input"
     assert all(binding.parameter != "unrelated" for binding in tower.config_bindings)
+
+
+def test_indexed_classmethod_factory_proves_constructor_parameter_binding(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, actual_config): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    tower = _child(graph.root, "tower")
+    assert tower.config_prefix == ("vision_config",)
+    assert tower.config_bindings == (
+        ConfigBinding(
+            "actual_config", (("vision_config",),),
+            "indexed_factory_forwarding"),
+    )
+
+
+def test_indexed_factory_keyword_forwarding_is_exact(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, actual_config): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(actual_config=supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(
+                    supplied=root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "actual_config"
+    assert tower.config_bindings[0].resolved_prefix == ("vision_config",)
+
+
+def test_factory_without_indexed_forwarding_remains_opaque(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            def _from_config(self, supplied):
+                return Tower(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == (
+        ConfigBinding(
+            "@factory_input", (("vision_config",),),
+            "factory_input_unproven_forwarding"),
+    )
+
+
+def test_factory_class_name_call_is_not_assumed_to_be_the_cls_binding(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, Tower):
+                return Tower(Tower)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
+    assert tower.config_bindings[0].origin \
+        == "factory_input_unproven_forwarding"
+
+
+def test_rival_factory_returns_do_not_claim_constructor_binding(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                if supplied.use_first:
+                    return cls(supplied)
+                return cls(supplied.other)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
+    assert tower.config_bindings[0].origin \
+        == "factory_input_unproven_forwarding"
+
+
+def test_guarded_factory_return_does_not_claim_complete_forwarding(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                if supplied.enabled:
+                    return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == (
+        ConfigBinding(
+            "@factory_input", (("vision_config",),),
+            "factory_input_unproven_forwarding"),
+    )
+
+
+def test_rebound_factory_input_does_not_reuse_its_call_site_prefix(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                supplied = supplied.other
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == (
+        ConfigBinding(
+            "@factory_input", (("vision_config",),),
+            "factory_input_unproven_forwarding"),
+    )
+
+
+def test_loop_target_rebinding_factory_input_stays_opaque(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                for supplied in supplied.options:
+                    pass
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
+
+
+def test_unsupported_factory_control_flow_stays_opaque(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                try:
+                    value = supplied
+                finally:
+                    pass
+                return cls(value)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
+
+
+def test_factory_local_alias_is_not_mistaken_for_direct_formal_forwarding(
+        tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                alias = supplied
+                return cls(alias)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
+    assert tower.config_bindings[0].origin \
+        == "factory_input_unproven_forwarding"
+
+
+def test_factory_kwargs_expansion_does_not_invent_a_formal_binding(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied=None):
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(
+                    **{"supplied": root.vision_config})
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == ()
+
+
+def test_factory_star_args_do_not_shift_positional_formals(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, first, actual_config): pass
+            @classmethod
+            def _from_config(cls, first, supplied):
+                return cls(first, supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(
+                    *root.dynamic, root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == ()
+
+
+def test_imported_factory_alias_binds_the_exact_indexed_factory(tmp_path):
+    child = _write(tmp_path, "child.py", """
+        class Tower:
+            def __init__(self, actual_config): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(supplied)
+    """)
+    root = _write(tmp_path, "root.py", """
+        from child import Tower as ImportedTower
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = ImportedTower._from_config(root.vision_config)
+    """)
+    idx = _index(tmp_path, {"root": (root, child)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings == (
+        ConfigBinding(
+            "actual_config", (("vision_config",),),
+            "indexed_factory_forwarding"),
+    )
+
+
+def test_same_factory_class_at_two_sites_keeps_two_occurrence_addresses(
+        tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, actual_config): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.left = Tower._from_config(root.left)
+                self.right = Tower._from_config(root.right)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    left, right = _child(graph.root, "left"), _child(graph.root, "right")
+    assert left.occurrence != right.occurrence
+    assert left.config_prefix == ("left",)
+    assert right.config_prefix == ("right",)
+
+
+def test_factory_call_without_an_installed_result_is_not_an_owner(tmp_path):
+    src = """
+        class Tower:
+            def __init__(self, actual_config): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Wrapper"))
+    assert graph.root.children == ()
+
+
+def test_shadowed_classmethod_decorator_cannot_prove_factory_forwarding(tmp_path):
+    src = """
+        def fake(function): return function
+        class Tower:
+            classmethod = fake
+            def __init__(self, tempting_same_position): pass
+            @classmethod
+            def _from_config(cls, supplied):
+                return cls(supplied)
+        class Wrapper:
+            def __init__(self, root):
+                self.tower = Tower._from_config(root.vision_config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    tower = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "tower")
+    assert tower.config_bindings[0].parameter == "@factory_input"
 
 
 def test_guarded_constructors_for_one_field_are_rivals_not_two_children(tmp_path):

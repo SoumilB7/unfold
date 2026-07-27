@@ -1,5 +1,11 @@
 # U3 Reader Inventory — every code-evidence reader as of `audio-composite-support` @ 1d0c72b
 
+> **Historical reconnaissance.** This file preserves the pre-migration audit and
+> therefore intentionally names readers and line numbers that no longer exist.
+> The generated, blocking current-state inventory is
+> `docs/U3_CURRENT_READER_INVENTORY.md`; its code authority is
+> `model_unfolder/evidence/legacy_reader_quarantine.py`.
+
 All paths relative to `/Users/soumil/Code/Projects/Understand/llmvisualizer/unfold-pkg/model_unfolder/`. Line numbers verified against the working tree. Block format per reader: **(1)** inputs, **(2)** extracts, **(3)** target selection, **(4)** failure shape, **(5)** duplicated low-level extraction, **(6)** callers + owner info the caller already has. 37 `ast.parse` call sites exist under `model_unfolder/`; 34 read MODEL source (in scope), 3 parse the package's own source (self-audit guards, out of ProgramIndex scope).
 
 ---

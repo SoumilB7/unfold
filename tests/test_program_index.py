@@ -344,6 +344,19 @@ def test_factory_classmethod_resolves_to_the_base_as_a_proof_edge(tmp_path):
     assert site.via == "factory:_from_config"
 
 
+def test_callable_preserves_decorators_as_neutral_syntax(tmp_path):
+    idx = _index(tmp_path, "modeling_factory_decorator.py", """
+        class TextTower:
+            @classmethod
+            def _from_config(cls, config):
+                return cls(config)
+    """)
+    record = _callable(idx, "TextTower._from_config")
+    assert tuple((item.kind, item.name) for item in record.decorators) == (
+        ("name", "classmethod"),
+    )
+
+
 def test_local_factory_construction_is_observed_without_claiming_field_ownership(
         tmp_path):
     idx = _index(tmp_path, "modeling_local_factory.py", """

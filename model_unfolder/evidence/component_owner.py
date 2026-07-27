@@ -614,14 +614,22 @@ class _Resolver:
     def _child_bindings(self, site, child_symbol, param_prefixes,
                         parent_occurrence) -> tuple[ConfigBinding, ...]:
         # A class factory proves the component input prefix at the call site,
-        # but not how that factory forwards it into __init__. Do not map factory
-        # arguments onto constructor parameters merely because their positions
-        # happen to align.
+        # but not, by itself, how that factory forwards it into __init__.  When
+        # the exact factory body is indexed we may prove the two call bindings
+        # (caller -> factory formal -> constructor formal).  External/inherited
+        # factories remain an opaque @factory_input; positions at the outer call
+        # site never get relabelled as constructor parameters by resemblance.
         if site.via.startswith("factory:"):
+            forwarded = self._indexed_factory_bindings(
+                site, child_symbol, param_prefixes)
+            if forwarded:
+                self._record_prefix_conflicts(
+                    site, forwarded, parent_occurrence)
+                return forwarded
             prefixes = (_arg_prefixes(site.args[0], param_prefixes)
                         if site.args else ())
             bindings = ((ConfigBinding("@factory_input", prefixes,
-                                       "factory_argument"),)
+                                       "factory_input_unproven_forwarding"),)
                         if prefixes else ())
             self._record_prefix_conflicts(
                 site, bindings, parent_occurrence)
@@ -648,6 +656,63 @@ class _Resolver:
                          for name, prefixes in found.items())
         self._record_prefix_conflicts(site, bindings, parent_occurrence)
         return bindings
+
+    def _indexed_factory_bindings(
+            self, site, child_symbol, parent_prefixes) -> tuple[ConfigBinding, ...]:
+        """Prove factory-formal -> constructor-formal config forwarding.
+
+        This is deliberately a small Python call-binding proof, not a framework
+        protocol.  It applies only to a directly indexed ``@classmethod`` on the
+        exact constructed class, with one exact ``return cls(...)``.  A bare
+        class-name call could be shadowed in the function scope and is therefore
+        not an address proof.  Inherited/external factories, rival returns,
+        dynamic forwarding and ``**kwargs``-only forwarding remain opaque.
+        """
+        method = site.via.partition(":")[2]
+        if not method:
+            return ()
+        factory = self.program_index.callable_by_symbol(SymbolId(
+            child_symbol.source, f"{child_symbol.qualified_name}.{method}"))
+        if factory is None or factory.owner != child_symbol \
+                or not _is_unshadowed_classmethod(
+                    self.program_index, child_symbol, factory):
+            return ()
+        params = tuple(factory.params)
+        if not params or params[0].name != "cls":
+            return ()
+        factory_prefixes = _bind_call_prefixes(
+            site.args, site.kwargs, params[1:], parent_prefixes)
+        if not factory_prefixes or len(factory.returns) != 1:
+            return ()
+        returned = factory.returns[0]
+        return_observations = self.program_index.return_observations_in(
+            factory.symbol)
+        if len(return_observations) != 1 \
+                or return_observations[0].guard \
+                or return_observations[0].value != returned:
+            return ()
+        forwarded_formals = frozenset(factory_prefixes)
+        if self.program_index.unsupported_execution_in(factory.symbol) \
+                or any(identifier.name in forwarded_formals
+                       and identifier.context in {"store", "del"}
+                       for identifier in self.program_index.identifiers_in(
+                           factory.symbol)):
+            return ()
+        if returned.kind != "call" or not returned.children:
+            return ()
+        callee = returned.children[0]
+        if not _is_exact_factory_constructor(callee, child_symbol, params[0].name):
+            return ()
+        init_params = self._params(child_symbol)
+        if not init_params:
+            return ()
+        returned_args = tuple(returned.children[1:])
+        returned_kwargs = tuple(returned.keyword_children)
+        found = _bind_call_prefixes(
+            returned_args, returned_kwargs, init_params, factory_prefixes)
+        return tuple(ConfigBinding(
+            name, prefixes, "indexed_factory_forwarding")
+            for name, prefixes in found.items())
 
     def _record_prefix_conflicts(self, site, bindings,
                                  parent_occurrence) -> None:
@@ -688,6 +753,57 @@ def _arg_prefixes(expr, param_prefixes) -> tuple[ConfigPrefix, ...]:
             (*prefix, *reversed(segments))
             for prefix in param_prefixes[current.name]))
     return ()
+
+
+def _bind_call_prefixes(args, kwargs, params, source_prefixes):
+    """Bind config prefixes across one exact Python call surface.
+
+    The result contains only positively-proven bindings.  Varargs, ``**kwargs``
+    expansion, missing/defaulted arguments and unknown keyword names do not
+    fabricate a prefix.
+    """
+    if any(argument.kind == "starred" for argument in args) \
+            or any(name == "**" for name, _argument in kwargs):
+        return {}
+    positional = tuple(param for param in params
+                       if param.kind == "positional")
+    by_name = {param.name: param for param in params
+               if param.kind not in {"vararg", "kwarg"}}
+    found: dict[str, tuple[ConfigPrefix, ...]] = {}
+    for index, argument in enumerate(args):
+        if index >= len(positional):
+            break
+        prefixes = _arg_prefixes(argument, source_prefixes)
+        if prefixes:
+            found[positional[index].name] = prefixes
+    for name, argument in kwargs:
+        if name == "**" or name not in by_name:
+            continue
+        prefixes = _arg_prefixes(argument, source_prefixes)
+        if prefixes:
+            found[name] = prefixes
+    return found
+
+
+def _is_unshadowed_classmethod(index, child_symbol, callable_record) -> bool:
+    decorators = tuple(callable_record.decorators)
+    if len(decorators) != 1 \
+            or decorators[0].kind != "name" \
+            or decorators[0].name != "classmethod":
+        return False
+    class_record = index.class_by_symbol(child_symbol)
+    if class_record is None \
+            or any(item.attr == "classmethod"
+                   for item in class_record.body_assigns):
+        return False
+    return not any(binding.source == child_symbol.source
+                   and binding.name == "classmethod"
+                   for binding in index.module_bindings)
+
+
+def _is_exact_factory_constructor(callee, child_symbol, cls_parameter) -> bool:
+    del child_symbol  # the exact class is carried by the bound ``cls`` formal
+    return callee.kind == "name" and callee.name == cls_parameter
 
 
 def _unique_prefixes(*prefixes) -> tuple[ConfigPrefix, ...]:

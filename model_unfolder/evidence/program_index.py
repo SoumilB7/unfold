@@ -315,6 +315,7 @@ class CallableRecord:
     returns: tuple = ()          # tuple[ExprNode]
     self_method_calls: tuple = ()  # tuple[str] — observed helper-fold targets
     span: SourceSpan | None = None
+    decorators: tuple = ()       # tuple[ExprNode] — exact syntax, no semantics
 
 
 # --------------------------------------------------------------------------- #
@@ -1411,7 +1412,9 @@ class _SourceWalker:
             params=self._params(node.args),
             returns=tuple(scan.returns),
             self_method_calls=tuple(dict.fromkeys(scan.self_calls)),
-            span=self._span(node)))
+            span=self._span(node),
+            decorators=tuple(self._expr(item)
+                             for item in node.decorator_list)))
 
     def _params(self, args: ast.arguments) -> tuple:
         out = []
