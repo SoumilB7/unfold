@@ -208,8 +208,11 @@ def test_conflicting_branch_definitions_unresolved(tmp_path):
                 b = self.g(a)
                 return b""")
     assert res.proven_edges == () and res.conditional_edges == ()
-    assert any(u.reason == "ambiguous_reaching_definition"
-               for u in res.unresolved_relations)
+    relation = next(
+        item for item in res.unresolved_relations
+        if item.reason == "ambiguous_reaching_definition")
+    assert {_field(idx, res, item)
+            for item in relation.candidate_sources} == {"f", "h"}
     assert res.status == "partial"
 
 
@@ -318,7 +321,7 @@ def test_edge_and_resolution_closures():
             n1, "x", "transformed_reaching_definition", (n_other,))
     with pytest.raises(ValueError):                       # only transforms retain producers
         UnresolvedRelation(
-            n2, "x", "ambiguous_reaching_definition", (n1,))
+            n2, "x", "unresolved_alias_reaching_definition", (n1,))
     with pytest.raises(ValueError):                       # candidates round-trip to nodes
         ExecutionFlowResolution(
             "partial", occ, SymbolId(fn.source, "M"), fn, (n2,),

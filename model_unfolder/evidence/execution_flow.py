@@ -635,10 +635,11 @@ class UnresolvedRelation:
                for item in self.candidate_sources):
             raise ValueError(
                 "an unresolved relation and its candidates share one callable")
-        if self.candidate_sources \
-                and self.reason != "transformed_reaching_definition":
+        if self.candidate_sources and self.reason not in {
+                "transformed_reaching_definition",
+                "ambiguous_reaching_definition"}:
             raise ValueError(
-                "only a transformed definition carries preserved producers")
+                "only transformed/ambiguous definitions preserve candidates")
 
 
 @dataclass(frozen=True)
@@ -950,13 +951,30 @@ def _emit_arg_edges(call, node, node_by_key, defs, guard, clock, tainted, is_tai
                           tainted, is_tainted, _key(e.node.call_site.span),
                           proven, conditional, unresolved, node)
             elif reason == "ambiguous":
-                unresolved.append(UnresolvedRelation(node, name, "ambiguous_reaching_definition"))
+                unresolved.append(UnresolvedRelation(
+                    node, name, "ambiguous_reaching_definition",
+                    _possible_sources(defs.get(name, ()), guard, clock)))
             elif reason == "transformed":
                 unresolved.append(UnresolvedRelation(
                     node, name, "transformed_reaching_definition",
                     tuple(dict.fromkeys(e.transform_producers))))
             elif reason == "unresolved":
                 unresolved.append(UnresolvedRelation(node, name, "unresolved_alias_reaching_definition"))
+
+
+def _possible_sources(entries, guard, clock):
+    """Preserve exact producer candidates without promoting a rival to an edge."""
+    reaching = [
+        item for item in entries
+        if item.order < clock and _reach_compatible(item.guard, guard)
+    ]
+    sources = []
+    for item in reaching:
+        if item.node is not None:
+            sources.append(item.node)
+        else:
+            sources.extend(item.transform_producers)
+    return tuple(dict.fromkeys(sources))
 
 
 def _add_edge(source, target, proof, spans, guard, tainted, target_tainted, source_key,
