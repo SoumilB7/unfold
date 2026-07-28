@@ -39,14 +39,19 @@ def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: d
         "projections":     _projections(attn, hidden, heads),
         "operation_graph": _operation_graph(attn, hidden, heads),
         "cache":           _cache(attn),
+        "qk_norm":         attn.get("qk_norm"),
+        "bias":            attn.get("bias"),
+        "rope":            attn.get("rope"),
+        "position_kind":   attn.get("position_kind"),
+        "position_application": attn.get("position_application"),
+        "projection_mode": attn.get("projection_mode"),
+        "scores_scaled":   attn.get("scores_scaled"),
         "trace": {
             "ir_path":          f"{group_path}.attention",
             "code_finding_ids": _evidence_ids(evidence, "attention", _evidence_values(kind)),
         },
     }
     out.update(drop_none({
-        "qk_norm":         attn.get("qk_norm") or None,
-        "bias":            attn.get("bias") or None,
         "shared":          attn.get("shared") or None,
         "no_rope":         attn.get("no_rope") or None,
         "kv_source_layer": attn.get("kv_source_layer"),
@@ -97,6 +102,16 @@ def _projections(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
         # attention is included because its canonical region explicitly
         # contains Q/K/V/out projections (Sana's code-proven processor).
         return {}
+    if attn.get("kind") in {"mha", "gqa", "mqa"} \
+            and attn.get("projection_mode") != "split_qkv":
+        if attn.get("projection_mode") == "fused_qkv":
+            return drop_none({
+                "fused_qkv": linear(hidden, q_w + 2 * kv_w
+                                    if q_w is not None and kv_w is not None
+                                    else None),
+                "output": linear(q_w, residual_w),
+            })
+        return {}
     return drop_none({
         "query":  linear(hidden, q_w),
         "key":    linear(hidden, kv_w),
@@ -107,14 +122,19 @@ def _projections(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
 
 def _cache(attn: dict) -> dict[str, Any]:
     kind = attn.get("kind")
-    if kind == "mla":
+    cached = attn.get("cached")
+    if cached is None and kind in {"mha", "gqa", "mqa", "mla"}:
+        return {"enabled": None, "status": "unresolved"}
+    if cached is False:
+        return {"enabled": False, "kind": "none"}
+    if kind == "mla" and cached is True:
         return {
             "enabled": True,
             "kind":    "latent_kv",
             "stores":  ["kv_latent"],
             "rank":    attn.get("kv_lora_rank"),
         }
-    if kind in {"mha", "gqa", "mqa"}:
+    if kind in {"mha", "gqa", "mqa"} and cached is True:
         return drop_none({
             "enabled":  True,
             "kind":     "kv",
@@ -150,7 +170,7 @@ def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, A
             if op.id in nested:
                 op.meta["region"] = nested[op.id]
     graph = region_to_json(region, rename=_PUBLIC_IDS)
-    if kind in _CACHED_SDPA_KINDS:
+    if kind in _CACHED_SDPA_KINDS and attn.get("cached") is True:
         _splice_kv_cache(graph, attn)
     return graph
 

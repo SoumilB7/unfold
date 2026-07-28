@@ -306,27 +306,26 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="scores_scale",
-        # U2-R9 (witness 26): the B5 asserted convention row (legacy_convention
-        # drawing is the register's drawn_leaf debt) + per-layer tower tuples.
         value_types=frozenset({"str", "NoneType"}),
-        allowed_statuses=frozenset({"code_proven", "config_declared",
-                                    "asserted"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config",
+                                    "config_declared", "ambiguous"}),
         owner_patterns=frozenset({"decoder.attention",
                                   "layers[i].attention"}),
         projections=frozenset({"attention_detail", "json"}),
-        unknown_policy="legacy_convention",
-        notes="silent input drawn as sqrt(d)-scaled (opgraph.py:473); H8 target",
+        unknown_policy="pale_undeclared",
+        notes="U4-B retires the silent sqrt(d) drawing and asserted tower "
+              "rows; a declared numeric operand projects only when code "
+              "independently proves scaling.",
     ),
     FactDefinition(
         key="projection_mode",
-        value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven", "asserted", "legacy_asserted"}),
+        value_types=frozenset({"str", "NoneType"}),
+        allowed_statuses=frozenset({"code_proven", "ambiguous"}),
         owner_patterns=frozenset({"decoder.attention", "decoder.ffn"}),
         projections=frozenset({"attention_detail", "ffn_detail", "json"}),
-        unknown_policy="legacy_convention",
-        notes="absent mode drawn as solid split projections (opgraph.py:133,436); "
-              "asserted rows are pinned census debt; the typed channel records the "
-              "same debt as legacy_asserted (§16.4) instead of laundering it",
+        unknown_policy="pale_undeclared",
+        notes="U4-B: split/fused storage projects only from exact owner code; "
+              "missing or rival storage remains opaque/ambiguous.",
     ),
     FactDefinition(
         key="expert_projection_mode",

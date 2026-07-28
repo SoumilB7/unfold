@@ -100,8 +100,7 @@ def _prov(ir):
 
 def test_zero_evidence_parse_has_typed_unknowns_not_defaults():
     """The P1 acceptance shape: at zero evidence every P1 family is a typed
-    unknown; the only remaining asserted conventions are the projection/scores
-    drawings the doctrine keeps (split layout, sqrt(dim))."""
+    unknown; no asserted mechanism convention survives."""
     ir = config_to_ir(ZERO_EVIDENCE)
     layer = ir.layers[0]
     assert layer.attention.mask == "unknown"        # not "causal"
@@ -111,7 +110,7 @@ def test_zero_evidence_parse_has_typed_unknowns_not_defaults():
     assert layer.norm_kind == "unknown"             # not "rmsnorm"
     assert layer.norm_placement == "unknown"        # not "pre"
     assert ir.tie_word_embeddings is None           # not False
-    allowed_asserted_facts = {"scores_scale", "projection_mode"}
+    allowed_asserted_facts = set()
     for key, rec in _prov(ir).items():
         if rec["status"] == "asserted":
             assert key.rsplit(".", 1)[1] in allowed_asserted_facts, key
@@ -302,32 +301,28 @@ def test_t5_family_ffn_truth_at_fact_level():
     assert prov2["decoder.ffn.activation"]["source"] == "feed_forward_proj"
 
 
-def test_position_config_fallback_tiers():
-    """U2 P3a: when the code channel is oracle_missing/ambiguous and the
-    config DECLARES RoPE (θ or a scaling dict), RoPE is drawn as
-    config_declared — θ chip tier on the spec, banner replaced; no
-    declaration keeps the typed unknown + banner (a family convention is
-    still not evidence)."""
+def test_position_declaration_cannot_author_qk_rotation():
+    """Theta/scaling values remain data; without source application evidence
+    they cannot create a RoPE operation."""
     ir = config_to_ir(dict(ZERO_EVIDENCE, rope_theta=500000.0))
     a = ir.layers[0].attention
-    assert a.rope is True and a.position_kind == "rope"
-    assert a.position_declared is True
-    assert a.rope_theta_declared == 500000.0
-    rec = _prov(ir)["decoder.attention.position"]
-    assert rec["status"] == "config_declared" and rec["source"] == "rope_theta"
-    assert not any("positional" in w for w in ir.warnings)
+    assert a.rope is None and a.position_kind == "unknown"
+    assert a.position_application == "none"
+    assert a.position_declared is False
+    assert "decoder.attention.position" not in _prov(ir)
+    assert any("positional scheme remains unknown" in w for w in ir.warnings)
 
     # the modern nested spelling (rope_scaling/rope_parameters dict) counts
     ir2 = config_to_ir(dict(ZERO_EVIDENCE, rope_scaling={"rope_type": "linear",
                                                          "factor": 2.0}))
     a2 = ir2.layers[0].attention
-    assert a2.rope is True and a2.position_declared is True
-    assert _prov(ir2)["decoder.attention.position"]["source"] == "rope_scaling"
+    assert a2.rope is None and a2.position_declared is False
+    assert "decoder.attention.position" not in _prov(ir2)
 
     # NEGATIVE: no declaration → typed unknown + the honest banner stays
     ir3 = config_to_ir(ZERO_EVIDENCE)
     a3 = ir3.layers[0].attention
-    assert a3.rope is False and a3.position_kind == "unknown"
+    assert a3.rope is None and a3.position_kind == "unknown"
     assert a3.position_declared is False
     assert any("positional scheme remains unknown" in w for w in ir3.warnings)
 
@@ -353,27 +348,23 @@ def test_position_declared_chip_text():
     assert any("θ=640,000" in f and "config-declared" in f for f in facts)
 
 
-def test_bias_tristate_channels():
-    """bias: declared → config value; silent + unreadable → None (typed
-    unknown), never a silent False."""
+def test_bias_declaration_without_constructor_binding_stays_unknown():
     ir = config_to_ir(dict(ZERO_EVIDENCE, attention_bias=True))
-    assert ir.layers[0].attention.bias is True
-    assert _prov(ir)["decoder.attention.bias"]["status"] == "config_declared"
+    assert ir.layers[0].attention.bias is None
+    assert _prov(ir)["decoder.attention.bias"]["status"] == "oracle_missing"
     ir = config_to_ir(ZERO_EVIDENCE)
     assert ir.layers[0].attention.bias is None
 
 
-def test_bias_alias_spellings_reach_config_declared():
-    """U2 P2a: dialect spellings of the QKV-bias flag (internlm ``bias``,
-    qwen1 ``qkv_bias``) resolve through aliases.yaml to the same
-    config_declared fact — including a declared False, which must stay a
-    declaration, never collapse into the typed unknown."""
+def test_bias_alias_spellings_do_not_create_projection_bias():
+    """Aliases normalize syntax; without a bound Linear constructor they do
+    not prove the mechanism, including a declared False."""
     ir = config_to_ir(dict(ZERO_EVIDENCE, bias=True))
-    assert ir.layers[0].attention.bias is True
-    assert _prov(ir)["decoder.attention.bias"]["status"] == "config_declared"
+    assert ir.layers[0].attention.bias is None
+    assert _prov(ir)["decoder.attention.bias"]["status"] == "oracle_missing"
     ir = config_to_ir(dict(ZERO_EVIDENCE, qkv_bias=False))
-    assert ir.layers[0].attention.bias is False
-    assert _prov(ir)["decoder.attention.bias"]["status"] == "config_declared"
+    assert ir.layers[0].attention.bias is None
+    assert _prov(ir)["decoder.attention.bias"]["status"] == "oracle_missing"
 
 
 def test_tie_code_channel_order(tmp_path):

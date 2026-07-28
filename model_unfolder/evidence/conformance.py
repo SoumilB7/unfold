@@ -544,7 +544,10 @@ def check_fact_conformance(
 
         # Positional: a NoPE claim contradicted by rotary threaded through the block.
         if rotary_subs and attn.get("no_rope"):
-            toks = " ".join(code.forward_params | code.signature_tokens).lower()
+            toks = " ".join(
+                str(token)
+                for token in (*code.forward_params, *code.signature_tokens)
+            ).lower()
             if any(s in toks for s in rotary_subs):
                 problems.append(ConformanceProblem(
                     "missing_position", "rope", key,

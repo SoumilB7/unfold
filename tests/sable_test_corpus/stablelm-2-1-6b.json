@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "stabilityai/stablelm-2-1_6b",
@@ -63,9 +75,9 @@
     "vocab_size": 100352
   },
   "hash_signature": [
-    "27e589c20e8e988f8449da2eb97a12c1",
+    "4ddabac361f85744c8fa95e52b1249bd",
     "9c7ebe398faecd2478255d16c20831a3",
-    "dd71a8638db4f0c3e0fac88c19fabe41",
+    "cb9281ac0ec2d70b193d402606b27c6b",
     "ed1b59a2bd54364a61191a66fae44950"
   ],
   "model": "stablelm-2-1_6b",
@@ -73,8 +85,8 @@
   "superseded_hash_signature": [
     "27e589c20e8e988f8449da2eb97a12c1",
     "9c7ebe398faecd2478255d16c20831a3",
-    "d1ddf7a438051a128350ddf89f259cf4",
-    "dd71a8638db4f0c3e0fac88c19fabe41"
+    "dd71a8638db4f0c3e0fac88c19fabe41",
+    "ed1b59a2bd54364a61191a66fae44950"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/stablelm-2-1-6b",

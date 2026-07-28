@@ -102,7 +102,7 @@ def test_render_events_carry_block_path_component_and_variant():
     assert attn.block_path == ("attn",)
     assert "MM-DiT" in attn.variant
     assert attn.source_owner == "FluxTransformer2DModel"
-    assert "linear" in attn.drawn_ops
+    assert attn.drawn_ops == frozenset({"opaque", "port"})
     # The supporting text encoders now bake their OWN canonical attention drills,
     # each carrying its qualified component — never unioned with the denoiser's.
     encoder_attn = [event for event in events
@@ -428,10 +428,14 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     # the new fixture must carry the superseded signature.
     with open(path, "w") as fh:
         json.dump(tampered, fh)
+    gallery_home = tmp_path / "galleries" / fixture["model"]
+    review = gallery_home / "her_eyes_review.md"
+    review.write_text("human review evidence must survive a re-bless\n")
     path2 = bless(r, FLUX, corpus_dir=str(tmp_path))
     refreshed = json.loads(open(path2).read())
     assert refreshed["hash_signature"] == fixture["hash_signature"]
     assert refreshed["superseded_hash_signature"] == tampered["hash_signature"]
+    assert review.read_text() == "human review evidence must survive a re-bless\n"
 
 
 def test_sable_regression_corpus():
@@ -509,7 +513,6 @@ def test_every_fixture_gallery_is_durable_and_complete():
     """The reviewed pixels are part of the lock: every fixture's visual_evidence
     must point INSIDE the corpus (galleries/<slug>, never a scratch/session
     directory), with the PNG count it certifies and the save_images MANIFEST."""
-    from pathlib import Path
     from model_unfolder.sable import DEFAULT_CORPUS, load_corpus
 
     for fname, fix in load_corpus():

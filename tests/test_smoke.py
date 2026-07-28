@@ -87,7 +87,7 @@ def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
     )
     ir = parser_module.parse(cfg)
     assert ir.layers[0].attention.position_kind == "unknown"
-    assert ir.layers[0].attention.rope is False
+    assert ir.layers[0].attention.rope is None
     assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
 
 
@@ -105,8 +105,8 @@ def test_oracle_missing_position_is_unknown_independent_of_model_identity(monkey
     )
     bloom = parser_module.parse({**base, "model_type": "bloom"})
     unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
-    assert bloom.layers[0].attention.rope is False
-    assert unknown.layers[0].attention.rope is False
+    assert bloom.layers[0].attention.rope is None
+    assert unknown.layers[0].attention.rope is None
     assert bloom.layers[0].attention.position_kind == "unknown"
     assert unknown.layers[0].attention.position_kind == "unknown"
     assert "fallback_rope" not in bloom.extras["position_encoding"]
@@ -389,7 +389,7 @@ DIFFUSION_GEMMA_CONFIG = {
 
 # Shared gemma-4 base config + builders live in test_support (§16.1).
 from test_support import (  # noqa: E402
-    GEMMA4_31B_LAYER_TYPES, GEMMA4_31B_CONFIG,
+    GEMMA4_31B_CONFIG,
     _gemma4_e4b_config, _gemma4_e2b_vision_config,
 )
 
@@ -782,12 +782,17 @@ def test_attention_bias_and_rope_theta():
     assert all(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
     assert all(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
 
-    # A CONFIG-GATED family (Llama: `bias=config.attention_bias`) honors the
-    # flag through the same code reader — False disables it, True enables it.
+    # A config-gated construction (Llama: ``bias=config.attention_bias``)
+    # remains unknown in U4-B.  The source-only reader proves that the exact
+    # projection exists but deliberately cannot upgrade a bare declaration
+    # into the constructor result; U6 owns the exact code+config binding.
     llama = dict(model_type="llama", num_hidden_layers=2, hidden_size=64,
                  num_attention_heads=8, intermediate_size=128, vocab_size=100, rms_norm_eps=1e-5)
-    assert not any(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": False}).to_ir()["layers"])
-    assert all(l["attention"]["bias"] for l in unfold({**llama, "attention_bias": True}).to_ir()["layers"])
+    for declared in (False, True):
+        assert all(
+            l["attention"]["bias"] is None
+            for l in unfold({**llama, "attention_bias": declared}).to_ir()["layers"]
+        )
 
 
 def test_compress_rates_alias_derives_csa_hca_masks():
@@ -1376,7 +1381,8 @@ def test_llama3():
     assert "KV sharing pattern" in html
     assert "Q0-Q3" in html
     assert "use KV0" in html
-    assert "KV cache 4x smaller" in html
+    assert "cache unresolved" in html
+    assert "KV cache 4x smaller" not in html
     assert "Grouped scaled dot-product attention" in html
 
     print(f"Llama-3 OK  — ~{ir['params']['total_h']} params")
@@ -1420,10 +1426,11 @@ def test_falcon_parallel_attn_uses_parallel_topology():
 
     html = d.to_html(standalone=True)
     assert "Multi-query scaled dot-product attention" in html
-    assert "Shared K/V cache" in html
     # the aside chip splits the fact into a strong half and a detail half
     assert "1 K + 1 V" in html and "reused by 71 Q" in html
-    assert "KV cache 71x smaller" in html
+    assert "cache unresolved" in html
+    assert "Shared K/V cache" not in html
+    assert "KV cache 71x smaller" not in html
     assert "Multi-query scaled dot-product attention" in html
 
 
@@ -1728,30 +1735,29 @@ def test_residual_multiplier_draws_scale_connectors_with_the_constant():
     assert "res_scale" not in plain
 
 
-def test_declared_scores_scale_replaces_sqrt_in_the_drawing():
-    """A config-declared QK^T scale that DIFFERS from 1/sqrt(head_dim) must be
-    the drawn denominator — sqrt(dim) would be a lie (Granite scales by
-    attention_multiplier = 1/128, not 1/sqrt(128)).  Two declaration dialects,
-    each with its own semantics: attention_multiplier (the scale directly) and
-    query_pre_attn_scalar (Gemma-2: scale = value^-0.5).  A declaration EQUAL
-    to the default keeps sqrt(dim) — which is then exactly true (Gemma-2-2b:
-    qpas == head_dim) — so no blessed model drifts."""
+def test_declared_scores_scale_does_not_manufacture_an_operation():
+    """A numeric declaration is an operand, not proof that the forward applies
+    it.  Without source evidence the score formula stays unresolved for both
+    declaration dialects and for the conventional no-declaration case."""
     from model_unfolder.block_schema import validate_click_coupling
-    # Granite dialect: direct multiplier, 1/0.0078125 = 128
-    cfg = dict(LLAMA3_8B_CONFIG, attention_multiplier=0.0078125)
-    html = unfold(cfg).to_html(standalone=True)
-    assert ">128<" in html and "sqrt(dim)" not in html
-    assert "config-declared" in html            # the card says WHY
-    assert validate_click_coupling(html) == []
-    # Gemma-2 dialect: qpas^-0.5, 144^-0.5 -> 1/12
-    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=144)
-    html = unfold(cfg).to_html(standalone=True)
-    assert ">12<" in html and "sqrt(dim)" not in html
-    # EQUAL to default -> unchanged sqrt(dim) (head_dim = 4096/32 = 128)
-    cfg = dict(LLAMA3_8B_CONFIG, query_pre_attn_scalar=128)
-    assert "sqrt(dim)" in unfold(cfg).to_html(standalone=True)
-    # no declaration -> unchanged
-    assert "sqrt(dim)" in unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
+    base = {
+        "model_type": "u4_score_scale_no_source",
+        "architectures": ["U4ScoreScaleNoSourceForCausalLM"],
+        "vocab_size": 128,
+        "hidden_size": 64,
+        "num_hidden_layers": 1,
+        "num_attention_heads": 4,
+        "intermediate_size": 256,
+    }
+    for extra in (
+        {"attention_multiplier": 0.0078125},
+        {"query_pre_attn_scalar": 144},
+        {},
+    ):
+        html = unfold({**base, **extra}).to_html(standalone=True)
+        assert "Attention scores (scaling unresolved)" in html
+        assert "sqrt(dim)" not in html
+        assert validate_click_coupling(html) == []
 
 
 def test_multi_query_flag_defers_to_declared_group_count():
@@ -1772,9 +1778,10 @@ def test_multi_query_flag_defers_to_declared_group_count():
               "num_attention_heads": 71, "multi_query": True, "vocab_size": 65024}
     a = unfold(falcon).to_ir()["layers"][0]["attention"]
     assert (a["num_kv_heads"], a["kind"]) == (1, "mqa")
-    # chatglm bias spellings resolve through the alias rows (YAML, not code)
+    # A similarly named config field cannot author projection bias without an
+    # exact source binding to the constructed Q/K/V projections.
     a = unfold(dict(glm, add_qkv_bias=True))        .to_ir()["layers"][0]["attention"]
-    assert a["bias"] is True
+    assert a["bias"] is None
 
 
 def test_modality_host_looks_through_declared_wrappers():

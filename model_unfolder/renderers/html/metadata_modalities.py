@@ -26,7 +26,7 @@ def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
         "num_kv_heads": kv or heads,
         "head_dim": head_dim,
         "hidden": hidden,
-        "cached": False,
+        "cached": None,
     }
     facts = attention_summary(attn)[1]
     if hidden:

@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": true,
+    "config_accessed_unprojected": false,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -214,6 +214,25 @@
     ]
   },
   "hash_signature": [
+    "16a6798a2085439b3d272d169349b4aa",
+    "28e39454c95b30e92cf798c97768cfdd",
+    "2fafa21f0f504acbc36cae0d02e0897f",
+    "4c0873b8398f73b56e41271c1cae2456",
+    "57eb84458602b92091e92f78b8810dab",
+    "7de1b35af5bfd972b5869d1c492d3b54",
+    "7e9ae74296591f555e9f1b6c27cbc427",
+    "7f8caa8f54b3a432dbdb16095095ff0d",
+    "875c5552c8ad1b318d4a115647fb25af",
+    "89e5d1f408fe8c72264a1fe18f58492e",
+    "962f5a0d71d9a9fcf7491277b077dc17",
+    "aa4f7268539d28a234b33d9a01b0ddc6",
+    "b2bbd72a624c2dfe682e5c26cba9dd5b",
+    "b81d64f599b43794abcc2478c65ece53",
+    "f5ed400ab571892a69eefebdf8baaa93"
+  ],
+  "model": "Wan2.2-T2V-A14B-Diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
     "01b001aaf2819dd97684ab2cf9289c82",
     "16a6798a2085439b3d272d169349b4aa",
     "28e39454c95b30e92cf798c97768cfdd",
@@ -228,25 +247,6 @@
     "aa4f7268539d28a234b33d9a01b0ddc6",
     "b2bbd72a624c2dfe682e5c26cba9dd5b",
     "b81d64f599b43794abcc2478c65ece53",
-    "f5ed400ab571892a69eefebdf8baaa93"
-  ],
-  "model": "Wan2.2-T2V-A14B-Diffusers",
-  "source": "local",
-  "superseded_hash_signature": [
-    "01b001aaf2819dd97684ab2cf9289c82",
-    "16a6798a2085439b3d272d169349b4aa",
-    "27ac45ab6afc0f6248b8a4ded54cab27",
-    "28e39454c95b30e92cf798c97768cfdd",
-    "2fafa21f0f504acbc36cae0d02e0897f",
-    "792a7efc1289d1eecce7bd2563b747b7",
-    "7de1b35af5bfd972b5869d1c492d3b54",
-    "7e9ae74296591f555e9f1b6c27cbc427",
-    "7f8caa8f54b3a432dbdb16095095ff0d",
-    "89e5d1f408fe8c72264a1fe18f58492e",
-    "aa4f7268539d28a234b33d9a01b0ddc6",
-    "b81d64f599b43794abcc2478c65ece53",
-    "d7695868471fb250de9f6396d06755f6",
-    "e7441d48bd4ee7e85fffc8bd4513f96b",
     "f5ed400ab571892a69eefebdf8baaa93"
   ],
   "visual_evidence": {

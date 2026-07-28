@@ -388,17 +388,17 @@ def test_musicgen_nested_decoder_storage_uses_exact_constructed_scope():
 
 
 @pytest.mark.parametrize(("slug", "path", "value", "status"), [
-    ("musicgen-small", ("decoder",), "split", "code_proven"),
+    ("musicgen-small", ("decoder",), "split_qkv", "code_proven"),
     ("bloom", (), "fused_qkv", "code_proven"),
-    ("llama-7b", (), "split", "code_proven"),
+    ("llama-7b", (), "split_qkv", "code_proven"),
     # Low-rank/chained projection dataflow is deliberately outside the current
     # proof.  It must stay conventional/visible debt, never become false code
     # certainty merely because the model is in the same broad decoder family.
-    ("deepseek-v3", (), "split", "asserted"),
+    ("deepseek-v3", (), None, "ambiguous"),
     # The wrapper's text_config is a distinct config/owner scope: its exact
     # direct field construction resolves independently of the sibling vision
     # tower, whose fused QKV storage must not contaminate this split decoder.
-    ("qwen2-vl-7b-instruct", ("text_config",), "split", "code_proven"),
+    ("qwen2-vl-7b-instruct", ("text_config",), "split_qkv", "code_proven"),
 ])
 def test_parser_projection_fact_consumes_the_exact_path_reader(
         slug, path, value, status):
@@ -419,7 +419,7 @@ def test_parser_projection_fact_consumes_the_exact_path_reader(
         assert fact.source == \
             "decoder_attention_projection_storage_for_path"
     else:
-        assert fact.source == "split convention kept (storage unproven)"
+        assert fact.source is None
 
 
 def test_parser_and_conformance_share_one_exact_storage_result(monkeypatch):

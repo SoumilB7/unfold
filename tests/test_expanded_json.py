@@ -126,11 +126,8 @@ def test_expanded_json_has_traceable_attention_and_ffn_graphs():
     }
     assert group["attention"]["projections"]["key"]["out_features"] == 32
     assert group["attention"]["cache"] == {
-        "enabled": True,
-        "kind": "kv",
-        "stores": ["key", "value"],
-        "kv_heads": 2,
-        "head_dim": 16,
+        "enabled": None,
+        "status": "unresolved",
     }
     assert group["attention"]["trace"]["ir_path"] == "layers[0].attention"
 

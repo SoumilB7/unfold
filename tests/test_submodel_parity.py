@@ -257,8 +257,6 @@ def test_hero_altitude_represents_the_root_losslessly(slug):
     through the canonical serializers breaks this, which is exactly what makes
     a future migration of the flagship view onto the projector safe."""
     import json
-    from pathlib import Path
-
     from model_unfolder import config_to_ir
     from model_unfolder.adapters.transformer.blocks.attention import attention_detail
     from model_unfolder.ir import distinct_layer_groups
@@ -284,7 +282,6 @@ def test_hero_altitude_represents_the_root_losslessly(slug):
         expected = attention_detail(layer.attention)
         got = dict(spec_group["attention"])
         assert got.pop("hidden") == ir.hidden_size
-        got.pop("scores_scaled", None)
         assert got == expected, f"{slug}: attention fact loss in hero dialect"
         assert spec_group["count"] == len(typed_group["indices"])
         assert spec_group["layers"] == list(typed_group["indices"])

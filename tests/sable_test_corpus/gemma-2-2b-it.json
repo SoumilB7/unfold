@@ -2,8 +2,15 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -11,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "google/gemma-2-2b-it",
@@ -98,22 +109,22 @@
     "vocab_size": 256000
   },
   "hash_signature": [
+    "2d1c39ac7aed719b4d7c8cefe79b8e70",
+    "52a8b14de9f77cc647e93c81572bd05a",
+    "6ad850b94a02840ff6da38e06c4d121d",
+    "6b6b7dedbf280f63f1eaf5783a4b5f26",
+    "93d4193b79d933a34a4bcd3bedd065e3",
+    "97add9fdeb9864e5fdfb6daeac37976b"
+  ],
+  "model": "gemma-2-2b-it",
+  "source": "local",
+  "superseded_hash_signature": [
     "11e09523430e387330b01adb9f63e55f",
     "52a8b14de9f77cc647e93c81572bd05a",
     "6ad850b94a02840ff6da38e06c4d121d",
     "6b6b7dedbf280f63f1eaf5783a4b5f26",
     "93d4193b79d933a34a4bcd3bedd065e3",
     "f4b64ac4d882c40b7ae523239cfd90a2"
-  ],
-  "model": "gemma-2-2b-it",
-  "source": "local",
-  "superseded_hash_signature": [
-    "1b7fbd34f9a73c0b3b448fcba66fda0a",
-    "52a8b14de9f77cc647e93c81572bd05a",
-    "6ad850b94a02840ff6da38e06c4d121d",
-    "6b6b7dedbf280f63f1eaf5783a4b5f26",
-    "93d4193b79d933a34a4bcd3bedd065e3",
-    "e3ee5203c4d445d12be34c240026c14e"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gemma-2-2b-it",

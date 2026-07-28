@@ -1546,7 +1546,7 @@ controls and preservation delta must close together.
 | Slice | Exact boundary | State |
 |---|---|---|
 | U4-A | attention mechanism + mask vocabulary: missing/novel kind cannot become MHA/SDPA; missing/novel mask cannot become causal; known geometry may ride one opaque region | DONE — Soumil approved 2026-07-28; 14 inspected galleries/fixtures re-blessed; 26-witness preservation 46/46 green |
-| U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | ACTIVE — inventory and producer/consumer closure next |
+| U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | CANDIDATE — Soumil approved the honesty delta on 2026-07-29; guarded artifacts rebuilt and pre-commit gates green; committed-tree receipt pending |
 | U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | PENDING |
 | U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | PENDING |
 | U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
@@ -1632,6 +1632,151 @@ diffusion galleries/fixtures.  Artifact audit results:
 U4-A is therefore closed.  U4-B begins from the independently typed internal
 facts; it must not infer one internal merely because another internal or the
 overall attention mechanism is known.
+
+#### U4-B implementation ledger (local, awaiting final gate)
+
+U4-B removes the remaining cross-fact shortcuts without pretending that U6,
+U8 or U10 have already supplied their exact readers:
+
+- `AttentionSpec` carries QK norm, projection bias, cache, RoPE application,
+  QKV storage and score scaling as independent tri-state values. Its grouping
+  signature includes them, so unlike layers cannot collapse into one card.
+- transformer and diffusion parsers no longer let a similarly named config
+  field author QK normalization, projection bias, RoPE application or score
+  scaling. A declared score constant becomes an operand only when source also
+  proves that this attention applies a scale.
+- the canonical attention region draws split/fused QKV storage only from the
+  exact storage fact, cache ports only from `cached=True`, a scale formula only
+  from a positive/negative scaling fact, and RoPE nodes only from the exact
+  `(rope=True, kind=rope, application=qk_rotation)` conjunction.
+- HTML child cards, summary chips, expanded JSON and metadata preserve the
+  same true/false/unknown distinction. An unresolved QKV layout is one opaque
+  projection stage; unknown cache/scale/position are stated explicitly.
+- MLA's compressed latent path no longer fabricates a cache: the latent
+  transform and an actual cache write/read are separate nodes/facts.
+- config-computed NoPE schedules, the block-diffusion QK-norm override and
+  UNet no-cache/no-RoPE assumptions were removed. A declared per-layer
+  position schedule makes that schedule unknown until U8 proves its selector;
+  it may not cause model-wide RoPE to be stamped onto the exceptional layers.
+- the `attention_kind`, projection-storage and score-scaling asserted
+  conventions are retired from the fact registry/census and their structural
+  debt rows are deleted. The blessed-corpus asserted population shrinks from
+  the historical 593 to 24, all of which are the separately owned
+  MusicGen norm-placement debt.
+
+Real-model controls already exercised on the local tree:
+
+- Llama: split QKV, scaled scores and RoPE remain source-proven; bias/cache are
+  unknown rather than inferred.
+- BLOOM: fused QKV, biased projections, scaled scores and ALiBi remain.
+- Qwen3: GQA, split QKV, QK norm, scaled scores and RoPE remain.
+- T5: raw unscaled `QK^T` and relative-position bias remain; storage/cache stay
+  unknown.
+- FLUX: its separately proven QK norm, scaling and RoPE facts remain, while
+  U4-A's unresolved overall attention mechanism keeps the canonical graph
+  opaque.
+- PixArt: unresolved mechanism and internals remain opaque.
+- SDXL UNet: the existing hand-authored MHA/SDPA shell remains visible debt for
+  U10, but U4-B no longer supplies QKV storage, cache, position or scaling
+  details underneath it.
+
+The intentional loss ledger is equally important:
+
+- StableLM's config-gated per-head QK norm stays unknown because its norm
+  wrapper executes a `ModuleList`; U6 must prove that container path.
+- Llama-4's QK-norm selector remains proven per layer, but its interleaved
+  RoPE/NoPE application is unknown until U8 proves the independent position
+  selector.
+- ordinary Llama/Qwen bias flags remain unknown until U6 binds each exact
+  `Linear(..., bias=config.<field>)` construction.
+- decoder KV-cache behavior remains unknown until U6 proves writes/reads;
+  causality alone never supplies it.
+- UNet's MHA/SDPA shell is not ratified by this slice; U10 must replace that
+  template with the exact nested owner evidence.
+
+These are not permission to restore a config fallback. They are the exact
+reader worklist for later units.
+
+The real-model pass also exposed one cross-unit substrate regression rather
+than an attention-policy mistake.  U3 intentionally represents
+`ForwardOps.forward_params` as an ordered tuple and `signature_tokens` as a
+set-like census.  The diffusion rotary reader and its conformance twin still
+used set union on those unlike containers.  The resulting `TypeError` was
+swallowed by `_code_has_rope`, so FLUX's source-proven rotary application
+silently became unknown.  U4-B closes the producer seam rather than restoring
+a FLUX special case:
+
+- both readers iterate the two observation collections without assuming a
+  shared container type;
+- a real installed-FLUX regression pins the exact record shape;
+- the broad parser catch is deleted, because the lower reader already handles
+  missing/unparseable files and programming-contract failures must remain loud;
+- the broad-exception ratchet drops `adapters/diffusor/parser.py` from 18 to
+  17;
+- FLUX again carries independently proven RoPE, QK norm and score scaling while
+  its still-unresolved overall attention mechanism remains one opaque region.
+
+Current local verification, before any artifact blessing:
+
+- the U4-B affected cross-surface bracket is **550 semantic passes**, with the
+  only remaining failure being the intentionally stale Sable view lock;
+- the corrected nested-conformance corpus is **17/17 green** and retires the
+  obsolete self-conditioning attention unresolved pin;
+- the focused unknown-safety plus U2 authority bracket is **224/224 green**;
+- four fresh public `unfold` + Sable runs produced complete galleries for
+  Llama, Qwen2-VL, FLUX and PixArt. Llama/FLUX/PixArt are mechanically clean;
+  the synthetic Qwen2-VL fixture retains its pre-existing
+  `temporal_patch_size` standing-consumption finding, unrelated to U4-B;
+- visual inspection confirms: Llama retains split Q/K/V, RoPE and scaled
+  scores while naming cache unknown; Qwen2-VL's vision drill retains fused QKV
+  and source-proven RoPE while naming score scaling unknown; FLUX and PixArt
+  remain honest opaque attention mechanisms rather than acquiring fabricated
+  MHA internals;
+- a ten-model parent/current comparison keeps parameter estimates identical
+  and limits structural deltas to the attention/architecture surfaces this
+  slice owns.
+
+Soumil approved the U4-B honesty/artifact delta on 2026-07-29.  The guarded
+project `sable()` + `bless()` path then reproduced every affected fixture with
+all blocking mechanical checks green, a present code oracle, one PNG per
+distinct view, and an offline-equal signature.  The complete artifact audit
+records three distinct cases instead of laundering them into one “26 changed”
+claim:
+
+- **25 fixtures** changed signature and retain their exact former signature in
+  `superseded_hash_signature`;
+- **25 galleries / 42 PNG files / 46 named views** changed; every prior
+  `her_eyes_review.md` remains byte-identical;
+- **BLOOM** has no visual or fixture change, but its canonical IR/evidence
+  surfaces changed and are therefore updated in the 26-witness manifest;
+- **SDXL** grows from 29 to 30 distinct gallery views because its self-attention
+  and cross-attention drills no longer collapse after their independently
+  unknown storage/scale facts diverge; the added self-attention and retained
+  encoded-text cross-attention views were inspected separately;
+- every fixture's model identity, source and frozen config is byte-equivalent
+  to its predecessor, and the corpus remains exactly 26 inputs plus 26
+  galleries with no orphan.
+
+The rebuilt manifest changes canonical surfaces for all 26 witnesses, as
+expected from the fact/IR/expanded/metadata contract change.  Before the local
+candidate commit:
+
+- the non-preservation full suite is **2228 passed, 11 skipped, 2 xfailed,
+  0 failed**;
+- the focused unknown-safety plus U2 authority bracket is **224/224 green**;
+- nested conformance is **17/17 green**;
+- the combined Sable-regression plus preservation bracket is **47/47 green**
+  in 1102.39 seconds;
+- tree fingerprint
+  `bdc22be4b20ee30bd5d9b3b449c18cb583e23e4c645384e505456d455434985a`
+  and blessed-artifact fingerprint
+  `67d95d446c6c34e7c10acb2f30d1d420625b85c2160e72f8762b2d525b09fe14`
+  are each unchanged before/after that bracket;
+- changed-file pyflakes and `git diff --check` are clean.
+
+U4-B remains a candidate, not `DONE`, until the exact staged commit passes the
+detached-worktree focused, U2-authority, collection, full, preservation,
+static and fingerprint lanes.  U4-C may not begin before that receipt.
 
 ### 20.8 U5 — establish consumer firewalls
 
@@ -1942,7 +2087,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A DONE; U4-B next | working tree | C-01..C-07, C-12 | U4-A focused + affected + U2 authority green | Qwen3 GQA; Sana linear; 14 diffusion witnesses honestly unresolved | unknown-kind/mask and real-model controls green | attention asserted-debt row deleted | 14 guarded re-blesses; exact supersession recorded | preservation 46/46 green | committed-tree receipt pending | Soumil approved U4-A 2026-07-28 | begin U4-B internal-fact inventory |
+| U4 | ACTIVE — U4-A DONE; U4-B approved candidate awaiting committed-tree receipt | working tree | C-01, C-04, C-06 plus attention half of T-05/T-08/T-10/D-08/U-07 | independent attention-internal tri-states and canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, Sable/conformance and nested submodels | cross-fact implications, config-authored internals, UNet internal defaults, attention/storage/scale asserted debt | Llama/BLOOM/Qwen3/T5/FLUX/PixArt/SDXL/Llama-4 plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 fixture signatures, 42 PNGs and 46 named views; BLOOM semantic-only | U4-B non-preservation 2228p; focused 224p; nested 17p; Sable+preservation 47p | pre-commit source/artifact fingerprints each unchanged; committed receipt pending | asserted census 593→24; attention/storage/scale asserted rows deleted | Soumil approved U4-A 2026-07-28 and U4-B 2026-07-29; run committed-tree receipt, then U4-C |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |

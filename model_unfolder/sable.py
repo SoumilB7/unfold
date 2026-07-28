@@ -193,7 +193,7 @@ _PROJECTION_AUDIT_BLOCKING = True
 # default (a fused-vs-split projection, a sqrt(head_dim) scale, a
 # concatenated-vs-separate FFN storage — presentation conventions, not fabricated
 # structure).  Keyed on the fact LEAF name (last dotted segment).
-_CENSUS_ALLOWED = frozenset({"scores_scale", "projection_mode"})
+_CENSUS_ALLOWED = frozenset()
 
 # The census D-quadrant config (CONFIG_ABLATION_CENSUS.md appendix): identity is
 # kept as ADDRESS (so source/class-default channels can still resolve by it) and
@@ -696,12 +696,31 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
     # session and leaves the lock claiming a review nobody can re-open.
     import shutil
     gallery_home = corpus / "galleries" / _slug(report.model)
+    # A guarded re-bless replaces generated pixels and their manifest, but it
+    # must not erase durable human-review evidence stored beside them.  Keep
+    # every non-generated sidecar byte-for-byte (for example
+    # ``her_eyes_review.md``); deleting those files would make the new lock
+    # look cleaner by destroying the record that justified the old one.
+    sidecars: list[tuple[Path, bytes, int]] = []
     if gallery_home.exists():
+        for existing in sorted(p for p in gallery_home.rglob("*") if p.is_file()):
+            if existing.name == "MANIFEST.txt" or existing.suffix.lower() == ".png":
+                continue
+            sidecars.append((
+                existing.relative_to(gallery_home),
+                existing.read_bytes(),
+                existing.stat().st_mode,
+            ))
         shutil.rmtree(gallery_home)
     gallery_home.mkdir(parents=True)
     for png in gallery:
         shutil.copy2(png, gallery_home / Path(png).name)
     shutil.copy2(manifest, gallery_home / "MANIFEST.txt")
+    for relative, content, mode in sidecars:
+        destination = gallery_home / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(content)
+        destination.chmod(mode)
     fixture = {
         "model": report.model,
         "source": source,

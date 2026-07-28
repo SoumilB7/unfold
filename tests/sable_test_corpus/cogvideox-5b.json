@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": true,
+    "config_accessed_unprojected": false,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -171,6 +171,24 @@
   "hash_signature": [
     "034c793ae3e5acd9fce6c0bd159ecd6a",
     "053fcc78f071a8789407e54b117644d2",
+    "1377af76071785cda9b4221d3782382c",
+    "68a15e11ae644cd2c62c97d9bb926534",
+    "6eabcdc83515c7b99964efc1de4da6d1",
+    "79014d44ce1efb8b5e5885c9236ab40e",
+    "a99b54ef057a9be8af7f1638e5315428",
+    "b08f4423fef372283566c0aea18020cf",
+    "b3952e08c9cca68c486aa9cfc2e70242",
+    "b52492e9f2340abd8bb03a36c8116a80",
+    "b7eafb19db8b53e0f5790078c3d1f62a",
+    "cdd40226ad21413bbe1904a814c8750b",
+    "cdec98067c84a5d7fd089a097109e06e",
+    "fd927ebd07e1a6712320baf826b33e56"
+  ],
+  "model": "CogVideoX-5b",
+  "source": "local",
+  "superseded_hash_signature": [
+    "034c793ae3e5acd9fce6c0bd159ecd6a",
+    "053fcc78f071a8789407e54b117644d2",
     "68a15e11ae644cd2c62c97d9bb926534",
     "6eabcdc83515c7b99964efc1de4da6d1",
     "79014d44ce1efb8b5e5885c9236ab40e",
@@ -183,24 +201,6 @@
     "cdd40226ad21413bbe1904a814c8750b",
     "cdec98067c84a5d7fd089a097109e06e",
     "fd927ebd07e1a6712320baf826b33e56"
-  ],
-  "model": "CogVideoX-5b",
-  "source": "local",
-  "superseded_hash_signature": [
-    "034c793ae3e5acd9fce6c0bd159ecd6a",
-    "053fcc78f071a8789407e54b117644d2",
-    "5df9ba2eb96ccc969479d82c9135181c",
-    "68a15e11ae644cd2c62c97d9bb926534",
-    "6eabcdc83515c7b99964efc1de4da6d1",
-    "79014d44ce1efb8b5e5885c9236ab40e",
-    "84a196e91300df8394dcd99ecdc987f7",
-    "b08f4423fef372283566c0aea18020cf",
-    "b52492e9f2340abd8bb03a36c8116a80",
-    "b7eafb19db8b53e0f5790078c3d1f62a",
-    "c67c832fdc8ac2f77d08f7811fe6a56e",
-    "cdd40226ad21413bbe1904a814c8750b",
-    "cdec98067c84a5d7fd089a097109e06e",
-    "ced2f58961b3e6ed5100fa28a4d2167d"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/cogvideox-5b",

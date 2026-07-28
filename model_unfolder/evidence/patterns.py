@@ -690,7 +690,13 @@ def diffusion_rope_from_files(files) -> bool:
         return False
     ops = extract_forward_ops(tuple(str(f) for f in (files or ())))
     for fo in ops.values():
-        toks = " ".join(t.lower() for t in (fo.forward_params | fo.signature_tokens))
+        # ``forward_params`` is an ordered tuple while ``signature_tokens`` is
+        # a set-like census.  Read both without assuming they share a container
+        # type; the ProgramIndex migration intentionally made that distinction.
+        toks = " ".join(
+            str(token).lower()
+            for token in (*fo.forward_params, *fo.signature_tokens)
+        )
         if any(s in toks for s in rotary_subs):
             return True
     return False

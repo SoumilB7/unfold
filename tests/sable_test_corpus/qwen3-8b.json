@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "Qwen/Qwen3-8B",
@@ -102,15 +114,15 @@
   "hash_signature": [
     "12b1bdce7140cb545f7989138979cbfe",
     "15b3c1ad4bb48f40b55d5ef0c152f7a8",
-    "8e309afbfd1286cb9dff04af7378d8f5",
-    "b75aade95db5c927a553047b9a2b5bfc"
+    "b75aade95db5c927a553047b9a2b5bfc",
+    "f7a1d21a7c8882f8076b1489523e16ee"
   ],
   "model": "Qwen3-8B",
   "source": "local",
   "superseded_hash_signature": [
     "12b1bdce7140cb545f7989138979cbfe",
     "15b3c1ad4bb48f40b55d5ef0c152f7a8",
-    "2f75ab153c0517022457cac70f411970",
+    "8e309afbfd1286cb9dff04af7378d8f5",
     "b75aade95db5c927a553047b9a2b5bfc"
   ],
   "visual_evidence": {

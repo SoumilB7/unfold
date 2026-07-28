@@ -2,8 +2,15 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -11,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_class_name": "UNet2DConditionModel",
@@ -256,15 +267,16 @@
     "1f44c23d07a67ae2e7f392b093ff5cf8",
     "2989690d90d82dded5881dedfe9065ca",
     "2f1629970ce23e018d4bc9220f3384f7",
+    "3ddefcdbf4de50f4e3764fddb732af3a",
     "3ecc45f838bfd7eebd7dca350c3f7d04",
     "40325d6d1106b458996838748a7df14b",
+    "472980777bcf5567708bdf52ea2fb9c8",
     "498f27eac22f32eb6d48d602da830a91",
     "4b53d426a3dbc8f0c6e315f0d2a12cad",
     "5df8a4eda034ca7f242d0fb47b632e22",
     "64d6cd9b58140f0e4a7ec3412116dd93",
     "7c5fc3c739f41d8a567418b5f619d2c8",
     "8039bda2aac9986de2094b82f76b73cc",
-    "85a4069394f87fccf7bfab9611bbfbc2",
     "8870ec2d1f94d18d07b8440da8b9ab4b",
     "8874936fa4778a9d44c1cf1a7d0bc752",
     "8d24f016deed8cbc7b7e8e5bd234dc2e",
@@ -307,12 +319,12 @@
     "c47dd23a8c0eb8df389dc310acb4ccac",
     "c60a86c043f8d2be68bca7e5df2215e7",
     "cdf43b8ecc2ac51d8d827ac14dbd6dae",
-    "de1c686b48c01108f536c2978d7f2263",
-    "f2e1233e250891e2de39c5c057476f4b"
+    "f2e1233e250891e2de39c5c057476f4b",
+    "fe95d1d073b7b4685b5cffae7174d33f"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/stable-diffusion-xl-base-1-0",
     "manifest": true,
-    "png_count": 29
+    "png_count": 30
   }
 }

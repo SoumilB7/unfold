@@ -15,6 +15,11 @@ from model_unfolder.labels import (
     mask_short,
 )
 from model_unfolder.opgraph import attention_region
+from model_unfolder.opgraph import mla_kv_region, mla_query_region
+from model_unfolder.expanded.attention import build_attention
+from model_unfolder.adapters.transformer.blocks.attention import (
+    attention_detail,
+)
 
 
 def _unknown_attention(**overrides):
@@ -161,4 +166,203 @@ def test_expanded_unknown_attention_keeps_geometry_without_qkv_or_sdpa():
     assert attention["projections"] == {}
     assert [node["operation"] for node in
             attention["operation_graph"]["nodes"]] == ["opaque"]
+    # Cache is not applicable until an attention mechanism is known; it must
+    # not be inferred from mask/geometry or represented as a proven negative.
     assert attention["cache"] == {"enabled": False}
+
+
+def test_attention_internal_defaults_are_unknown_not_conventional():
+    attention = AttentionSpec(kind="gqa", num_heads=8)
+    assert attention.qk_norm is None
+    assert attention.bias is None
+    assert attention.rope is None
+    assert attention.cached is None
+    assert attention.projection_mode is None
+    assert attention.scores_scaled is None
+    detail = attention_detail(attention)
+    assert detail["q_norm"] is None
+    assert detail["k_norm"] is None
+
+
+def test_attention_summary_distinguishes_false_unknown_and_position_unknown():
+    from model_unfolder.labels import attention_summary
+
+    _, unknown = attention_summary({
+        "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+        "head_dim": 64, "qk_norm": None, "bias": None,
+        "cached": None, "projection_mode": None, "scores_scaled": None,
+        "position_kind": "unknown", "position_application": "unknown",
+    })
+    assert {
+        "bias unresolved", "QK norm unresolved", "cache unresolved",
+        "QKV storage unresolved", "score scaling unresolved",
+        "position application unresolved",
+    } <= set(unknown)
+
+    _, negative = attention_summary({
+        "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+        "head_dim": 64, "qk_norm": False, "bias": False,
+        "cached": False, "projection_mode": "split_qkv",
+        "scores_scaled": False,
+        "position_kind": "none", "position_application": "none",
+    })
+    assert {"bias-free projections", "no QK norm", "no KV cache",
+            "no attention-stage position op"} <= set(negative)
+
+
+def test_nested_attention_bias_debt_is_owner_exact():
+    """The root projection-bias row may not excuse a recursive text encoder."""
+    from model_unfolder.evidence.structural_debt import pending_projection_paths
+
+    pending = pending_projection_paths()
+    assert ("root", "attention_bias") in pending
+    assert ("root.text_encoder", "attention_bias") in pending
+
+
+def test_unknown_projection_storage_never_becomes_split_qkv():
+    region = attention_region(
+        {
+            "kind": "gqa",
+            "num_heads": 8,
+            "num_kv_heads": 2,
+            "head_dim": 64,
+            "projection_mode": None,
+            "scores_scaled": True,
+        },
+        512,
+    )
+    ids = {op.id for op in region.ops}
+    assert "qkv_projection_unresolved" in ids
+    assert not {"q_proj", "k_proj", "v_proj", "qkv_proj"} & ids
+
+
+def test_projection_storage_requires_an_explicit_split_or_fused_fact():
+    split = attention_region(
+        {
+            "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+            "head_dim": 64, "projection_mode": "split_qkv",
+            "scores_scaled": True,
+        },
+        512,
+    )
+    fused = attention_region(
+        {
+            "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+            "head_dim": 64, "projection_mode": "fused_qkv",
+            "scores_scaled": True,
+        },
+        512,
+    )
+    assert {"q_proj", "k_proj", "v_proj"} <= {op.id for op in split.ops}
+    assert "qkv_proj" in {op.id for op in fused.ops}
+
+
+def test_cache_and_score_scaling_are_independent_tristate_facts():
+    base = {
+        "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+        "head_dim": 64, "projection_mode": "split_qkv",
+        "position_kind": "none", "position_application": "none",
+    }
+    unknown = build_attention(base, 512, "groups[0]", None)
+    assert unknown["cache"] == {"enabled": None, "status": "unresolved"}
+    unknown_scores = next(
+        node for node in unknown["operation_graph"]["nodes"]
+        if node["id"] == "scores"
+    )
+    assert "formula" not in unknown_scores
+    assert unknown_scores["status"] == "unresolved"
+
+    cached = build_attention(
+        {**base, "cached": True, "scores_scaled": True},
+        512, "groups[0]", None,
+    )
+    assert cached["cache"]["enabled"] is True
+    assert "kv_cache" in {
+        node["id"] for node in cached["operation_graph"]["nodes"]
+    }
+    scaled_scores = next(
+        node for node in cached["operation_graph"]["nodes"]
+        if node["id"] == "scores"
+    )
+    assert scaled_scores["formula"] == "QK^T/sqrt(dim)"
+
+    uncached = build_attention(
+        {**base, "cached": False, "scores_scaled": False},
+        512, "groups[0]", None,
+    )
+    assert uncached["cache"] == {"enabled": False, "kind": "none"}
+    assert "kv_cache" not in {
+        node["id"] for node in uncached["operation_graph"]["nodes"]
+    }
+    raw_scores = next(
+        node for node in uncached["operation_graph"]["nodes"]
+        if node["id"] == "scores"
+    )
+    assert raw_scores["formula"] == "QK^T"
+
+
+def test_declared_score_constant_cannot_author_the_scale_operation():
+    base = {
+        "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+        "head_dim": 64, "projection_mode": "split_qkv",
+        "scores_scale": 1 / 32,
+    }
+    unproved = next(
+        op for op in attention_region(base, 512).ops
+        if op.id == "scaled_scores"
+    )
+    assert unproved.meta["status"] == "unresolved"
+    assert "formula" not in unproved.meta
+
+    proved = next(
+        op for op in attention_region(
+            {**base, "scores_scaled": True}, 512
+        ).ops
+        if op.id == "scaled_scores"
+    )
+    assert proved.meta["formula"] == "QK^T/32"
+
+
+def test_rope_requires_the_exact_application_fact():
+    base = {
+        "kind": "gqa", "num_heads": 8, "num_kv_heads": 2,
+        "head_dim": 64, "projection_mode": "split_qkv",
+        "scores_scaled": True,
+    }
+    for incomplete in (
+        {**base, "rope": True},
+        {**base, "position_kind": "rope"},
+        {**base, "position_application": "qk_rotation"},
+    ):
+        ids = {op.id for op in attention_region(incomplete, 512).ops}
+        assert not {"q_rope", "k_rope"} & ids
+    proven = {
+        **base, "rope": True, "position_kind": "rope",
+        "position_application": "qk_rotation",
+    }
+    assert {"q_rope", "k_rope"} <= {
+        op.id for op in attention_region(proven, 512).ops
+    }
+
+
+def test_mla_latent_structure_does_not_imply_cache_rope_or_scaling():
+    attention = {
+        "kind": "mla",
+        "num_heads": 16,
+        "head_dim": 128,
+        "kv_lora_rank": 256,
+        "qk_nope_head_dim": 96,
+        "qk_rope_head_dim": 32,
+    }
+    parent = attention_region(attention, 2048)
+    kv = mla_kv_region(attention, 2048)
+    query = mla_query_region(attention, 2048)
+    assert "cache" not in {
+        op.kind for op in (*parent.ops, *kv.ops, *query.ops)
+    }
+    assert "rope" not in {
+        op.kind for op in (*parent.ops, *kv.ops, *query.ops)
+    }
+    scores = next(op for op in parent.ops if op.id == "scaled_scores")
+    assert scores.meta["status"] == "unresolved"
+    assert "formula" not in scores.meta

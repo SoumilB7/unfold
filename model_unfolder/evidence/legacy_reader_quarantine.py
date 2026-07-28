@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U6", "U7", "U8", "U10", "U11"})
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "82fe24ffa788a7f3fb5f65464e1995cb3caca78bb59175beec1418fe5822b454")
+    "9330c5930fd4a6866fbd53c45dc7ca97bd6c6f8d31399aa811f30b01bc4fc60e")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "8eab4f95ee9951df97a494bf3f13c7ee20e86f29f948121dccf25d354ce950c0")
+    "c677eb34678995d37a9f239c58340b664a68d120fa3b992eae1c8894b872b899")
 
 
 @dataclass(frozen=True)
@@ -102,7 +102,6 @@ LEGACY_SEMANTIC_READERS = (
          callers=(
              "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
              "model_unfolder/adapters/transformer/parser.py:_code_scores_scaled",
-             "model_unfolder/encoder_panel.py:_project_encoder_spec",
          )),
     _row("decoder_ffn_activation_from_files", "U7",
          "whole-file FFN activation interpretation",

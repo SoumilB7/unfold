@@ -107,6 +107,11 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
     groups = []
     for i, variant in enumerate(variants):
         gate = None
+        position_kind = variant.get("position_kind")
+        rope_applied = position_kind == "rope"
+        projection_mode = variant.get("projection_mode")
+        if projection_mode == "separate_qkv":
+            projection_mode = "split_qkv"
         if variant.get("residual_gated"):
             act = variant.get("gate_activation")
             source = variant.get("gate_source")
@@ -121,9 +126,19 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
                 "num_heads": heads,
                 "head_dim": head_dim,
                 "hidden": hidden,
-                "rope": "rope" in str(variant.get("position_kind") or ""),
-                "cached": False,
-                "projection_mode": variant.get("projection_mode"),
+                # The vision evidence observed rotary application inside this
+                # exact attention callable.  Project all three independent
+                # positional fields required by the canonical attention graph;
+                # a config-level tower position label alone cannot supply them.
+                "rope": True if rope_applied else None,
+                "position_kind": "rope" if rope_applied else "unknown",
+                "position_application": (
+                    "qk_rotation" if rope_applied else "unknown"
+                ),
+                # Encoder-ness does not itself prove the absence of cache
+                # reads/writes.  U9 owns that source-complete negative.
+                "cached": None,
+                "projection_mode": projection_mode,
                 "q_norm": variant.get("q_norm"),
                 "k_norm": variant.get("k_norm"),
                 "v_norm": variant.get("v_norm"),
@@ -155,4 +170,3 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
         "evidence": {"position": None, "ffn": None},
         "sub_models": [],
     }
-

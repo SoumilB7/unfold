@@ -347,7 +347,14 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     kind = attention.get("kind")
     facts: list[str] = []
     variant = attention.get("variant")
-    if variant and variant.get("desc"):
+    if kind in (None, "", "unknown"):
+        role = "Cross-attention" if attention.get("cross_attention") else "Attention"
+        desc = (
+            f"{role} exists, but its internal mechanism is unresolved from "
+            "the available source evidence."
+        )
+        _head_facts(attention, facts)
+    elif variant and variant.get("desc"):
         desc = variant["desc"]
         _head_facts(attention, facts)
     elif attention.get("cross_attention"):
@@ -457,6 +464,28 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
             facts.append(chip)
     if attention.get("bias") is None and "bias" in attention:
         facts.append("bias unresolved")
+    elif attention.get("bias") is False:
+        facts.append("bias-free projections")
+    if kind in {"mha", "gqa", "mqa"}:
+        if attention.get("qk_norm") is None:
+            facts.append("QK norm unresolved")
+        elif attention.get("qk_norm") is False:
+            facts.append("no QK norm")
+        if attention.get("cached") is None:
+            facts.append("cache unresolved")
+        elif attention.get("cached") is False:
+            facts.append("no KV cache")
+        if attention.get("projection_mode") is None:
+            facts.append("QKV storage unresolved")
+        if (attention.get("scores_scaled") is None
+                and attention.get("scores_scale") is None):
+            facts.append("score scaling unresolved")
+        if attention.get("position_kind") in {None, "unknown"} \
+                or attention.get("position_application") in {None, "unknown"}:
+            facts.append("position application unresolved")
+        elif (attention.get("position_kind"),
+              attention.get("position_application")) == ("none", "none"):
+            facts.append("no attention-stage position op")
     _pr = _partial_rope_dims(attention)
     if _pr:
         facts.append(f"partial rotary — {_pr[0]} of {_pr[1]} head dims")

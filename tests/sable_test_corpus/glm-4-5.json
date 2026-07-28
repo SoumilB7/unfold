@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "zai-org/GLM-4.5",
@@ -76,13 +88,13 @@
     "vocab_size": 151552
   },
   "hash_signature": [
+    "092c00e05f9a12e98bafa153a51ad521",
     "1903aeb488913c2a82ebb14153dd2502",
     "1a58f54930d25fa7f9b24be19fed4cbb",
     "20889ca7018c025f4eda94dc2502ad2e",
+    "25a347680cccc498277025a182245dce",
     "62a8c5201b60a44521a6709a79b38945",
     "6358d38fa166c25631200a061e77e894",
-    "6b30a1810c8f7be3ba61b2c205260128",
-    "ac398067f12cc080bf1336e5bd4e0333",
     "b6bc9074c9eb199cee46b05679c7fe4d",
     "bdefc6faf978f47be8662e9e530a4ebb",
     "cdd24b992ae172e22e40afcd4ef44d95",
@@ -91,11 +103,11 @@
   "model": "GLM-4.5",
   "source": "local",
   "superseded_hash_signature": [
+    "1903aeb488913c2a82ebb14153dd2502",
     "1a58f54930d25fa7f9b24be19fed4cbb",
     "20889ca7018c025f4eda94dc2502ad2e",
     "62a8c5201b60a44521a6709a79b38945",
     "6358d38fa166c25631200a061e77e894",
-    "6512ef851531dea554b9147f7f2a3768",
     "6b30a1810c8f7be3ba61b2c205260128",
     "ac398067f12cc080bf1336e5bd4e0333",
     "b6bc9074c9eb199cee46b05679c7fe4d",

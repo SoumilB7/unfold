@@ -122,21 +122,13 @@ def test_registry_definitions_are_internally_valid():
 
 _INDEX = re.compile(r"\[\d+\]")
 
-# The exact asserted population after the conditional ordinary/shared FFN
-# proof retired the last storage tags (593 records over the blessed
-# corpus).  Shrinking is progress (update downward with the fix that earns it);
-# growth means a new default was presented as fact — that is the failure.
+# The exact asserted population after U4-B retired attention storage and score
+# conventions (24 records over the blessed corpus). Shrinking is progress;
+# growth means a new default was presented as fact.
 ASSERTED_BASELINE = {
-    "attention_kind": 543,
-    # Expert projection storage now has its own code-proven fact/owner.  The
-    # sole survivor is DeepSeek's unrelated attention split convention.
-    "projection_mode": 1,
-    # U2-R9: witness 26 (musicgen-small) — the composite decoder's B5
-    # asserted convention (24 per-layer + 1 decoder-level scores_scale) and
-    # the conditioning tower's per-layer norm_placement tuples.  A conscious
-    # re-pin tied to the witness addition; growth beyond it still blocks.
+    # U2-R9: witness 26 (musicgen-small) — the conditioning tower's per-layer
+    # norm-placement tuples. U4-B retired score/storage assertions.
     "norm_placement": 24,
-    "scores_scale": 25,
 }
 
 
@@ -314,7 +306,7 @@ def test_asserted_population_matches_pinned_baseline(corpus_fact_rows):
     asserted = Counter(fact for _, _, fact, status, _ in corpus_fact_rows
                        if status == "asserted")
     assert dict(asserted) == ASSERTED_BASELINE
-    assert sum(asserted.values()) == 593
+    assert sum(asserted.values()) == 24
 
 
 # --------------------------------------------------------------------------- #
@@ -373,20 +365,18 @@ def test_record_typed_enforces_registry_negative_completeness():
     assert ledger.typed["decoder.attention.bias"].is_negative()
 
 
-def test_registry_allows_legacy_asserted_and_counts_it_as_debt():
-    """§16.4: the registry REPRESENTS typed legacy_asserted rather than
-    laundering it into asserted — the asserted-debt facts declare it."""
-    for fact in ("projection_mode", "attention_kind"):
-        assert "legacy_asserted" in REGISTRY[fact].allowed_statuses
+def test_projection_storage_has_no_legacy_asserted_escape_hatch():
+    """U4-B retires the last asserted projection-storage convention."""
+    assert "legacy_asserted" not in REGISTRY["projection_mode"].allowed_statuses
+    assert "asserted" not in REGISTRY["projection_mode"].allowed_statuses
+    # U4-A retired the per-layer asserted attention-kind convention entirely.
+    assert "attention_kind" not in REGISTRY
 
 
-def test_legacy_asserted_typed_write_is_accepted_and_serialized_asserted():
-    """A typed legacy_asserted write passes the registry gate (it is a declared
-    debt tier), and it still serializes to the live 'asserted' spelling so the
-    census baseline and blessed dicts do not move."""
+def test_retired_projection_legacy_assertion_is_rejected():
     from model_unfolder.evidence.context import FactLedger
     ledger = FactLedger()
-    ledger.record_typed(_typed(key="projection_mode", owner="decoder.attention",
-                               value="split", status="legacy_asserted"))
-    assert ledger.typed["decoder.attention.projection_mode"].status == "legacy_asserted"
-    assert ledger.records["decoder.attention.projection_mode"].status == "asserted"
+    with pytest.raises(ValueError, match="status"):
+        ledger.record_typed(_typed(
+            key="projection_mode", owner="decoder.attention",
+            value="split_qkv", status="legacy_asserted"))

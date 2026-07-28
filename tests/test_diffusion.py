@@ -34,12 +34,12 @@ def test_flux_layer_count_and_geometry():
     assert ir.hidden_size == 24 * 128 == 3072
     # No token vocabulary in a denoiser.
     assert ir.vocab_size == 0
-    # DiT attention is full bidirectional multi-head attention with axial RoPE.
+    # Geometry and the full mask are known independently.  U4-A deliberately
+    # refuses to turn the legacy "not linear" result into an MHA mechanism.
     attn = ir.layers[0].attention
-    assert attn.kind == "mha"
+    assert attn.kind is None
     assert attn.num_kv_heads == attn.num_heads == 24
     assert attn.mask == "full"
-    assert attn.no_rope is False
     assert attn.rope_dim == 16 + 56 + 56   # axes_dims_rope sum to head_dim
     # Flux declares no activation_fn in config, but its model class fixes it
     # (FeedForward gelu-approximate, non-gated) — surfaced from class_defaults and
@@ -1094,14 +1094,18 @@ def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.
     assert cross.get("view") == "attention" and cross.get("diffusion_stage") == "cross_attention"
     xattn = cross["detail"]["attention"]
-    assert xattn["cross_attention"] is True and xattn["cached"] is False
-    # cross-attn carries its OWN namespaced op cards (accurate dims), incl. the text K/V node.
+    assert xattn["cross_attention"] is True
+    # The cross-attention role and text input remain known, but an unproven
+    # mechanism must not manufacture Q/K/V or scaled-score internals.
     cross_ids = {c["id"] for c in cross["children"]}
     assert xattn["node_prefix"] == "x_" and "x_cross_attention_states" in cross_ids
-    assert {"x_q_proj", "x_k_proj", "x_scaled_scores", "x_o_proj"} <= cross_ids
-    # self-attention keeps its own specific (non-namespaced) cards, untouched.
+    assert {"x_q_proj", "x_k_proj", "x_scaled_scores", "x_o_proj"}.isdisjoint(cross_ids)
+    assert "opaque_mixer" in cross_ids
+    # The self-attention role remains separate and is equally honest.
     self_attn = next(b for b in d.ir.layers[0].blocks if b["id"] == "attn")
-    assert {c["id"] for c in self_attn["children"]} >= {"q_proj", "k_proj", "scaled_scores", "o_proj"}
+    self_ids = {c["id"] for c in self_attn["children"]}
+    assert {"q_proj", "k_proj", "scaled_scores", "o_proj"}.isdisjoint(self_ids)
+    assert "opaque_mixer" in self_ids
     # AdaLN gates are Tier-2 connectors (× glyph) on self-attn + FFN (not on cross-attn) —
     # glyphs, but now clickable with a describing card (not static).
     gates = [b for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp")]
@@ -1109,7 +1113,9 @@ def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     add_x = next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn")
     assert add_x["kind"] == "residual_add" and not add_x.get("static") and add_x.get("description")
     html = d.to_html(standalone=True)
-    assert "Cross-attention to text" in html and validate_click_coupling(html) == []
+    assert "Encoded text" in html
+    assert "Attention mechanism unresolved" in html
+    assert validate_click_coupling(html) == []
 
     # MM-DiT (joint_attention_dim) must NOT grow a cross-attention sublayer.
     mmdit_ids = [b["id"] for b in unfold(FLUX).ir.layers[0].blocks]
@@ -1126,7 +1132,8 @@ def test_video_dit_detected_and_honest():
     assert ir["layers"][0]["ffn"]["intermediate_size"] == 8960   # ffn_dim
     html = d.to_html(standalone=True)
     # cross-attn DiT: a SEPARATE cross-attention sublayer (self → cross → FFN), not MM-DiT
-    assert "Cross-Attention" in html and "Cross-attention to text" in html
+    assert "Cross-Attention" in html
+    assert "Cross-attention mechanism unresolved" in html
     block_ids = [b["id"] for b in d.ir.layers[0].blocks]
     assert "cross_attn" in block_ids and "add_xattn" in block_ids
     assert "MM-DiT" not in html
@@ -1584,24 +1591,19 @@ def test_unet_resnet_block_has_no_repeat_pill():
     assert "× 2" in view_svg("unet_down_1")
 
 
-def test_unet_attention_inner_ops_are_described_and_clickable():
-    """Drilling into the UNet self/cross attention must give EVERY inner op a card
-    (a description) and make it clickable — Q/K/V projections, scaled scores,
-    softmax, apply-V, concat, output projection — plus cross-attention's distinct
-    encoded-text K/V source.  The shared SDPA op cards use neutral wording (correct
-    for both self and cross, which share op ids); the source difference is the
-    cross_attention_states node."""
+def test_unet_attention_internals_do_not_gain_unproved_u4b_details():
+    """U4-B removes QKV-storage, cache, position and scale assumptions. U10
+    separately owns retiring the hand-authored UNet MHA/SDPA mechanism."""
     html = unfold(SDXL_UNET).to_html(standalone=True)
-    for op in ("q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
-               "attn_apply_v", "concat_heads", "o_proj"):
-        assert f'data-id="{op}"' in html, f"{op} not clickable"
-        assert f'data-card-id="{op}"' in html, f"{op} has no card"
-    # cross-attention's distinguishing source node is described
-    assert 'data-card-id="cross_attention_states"' in html
-    assert "what makes it cross-attention" in html
-    # shared op cards are source-neutral (not baked to one side)
-    i = html.find('data-card-id="k_proj"')
-    assert "the input" in html[i:i + 400]
+    for op in ("q_proj", "k_proj", "v_proj", "qkv_proj"):
+        assert f'data-id="{op}"' not in html
+    assert 'data-id="qkv_projection_unresolved"' in html
+    assert 'data-id="scaled_scores"' in html
+    assert "Q/K/V projection storage unresolved" in html
+    assert "Attention scores (scaling unresolved)" in html
+    assert 'data-id="kv_cache"' not in html
+    assert 'data-id="q_rope"' not in html
+    assert 'data-id="k_rope"' not in html
     assert validate_click_coupling(html) == []
 
 

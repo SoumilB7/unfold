@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "huggyllama/llama-7b",
@@ -63,12 +75,18 @@
   },
   "hash_signature": [
     "4cd2f1b767e62d06cd5c03bcb28092dd",
-    "7930d691a433699cd6af919842089a5d",
+    "b744f95082cfc83307ae9d819f726742",
     "ce58330a56a0dd139200f32bfb4c35e4",
     "d3314cccdb744f3767be47b560187b9c"
   ],
   "model": "llama-7b",
   "source": "local",
+  "superseded_hash_signature": [
+    "4cd2f1b767e62d06cd5c03bcb28092dd",
+    "7930d691a433699cd6af919842089a5d",
+    "ce58330a56a0dd139200f32bfb4c35e4",
+    "d3314cccdb744f3767be47b560187b9c"
+  ],
   "visual_evidence": {
     "gallery_dir": "galleries/llama-7b",
     "manifest": true,

@@ -131,17 +131,16 @@ def _code_ffn_activation(cfg: Any, context=None):
         return None
 
 
-def _code_has_rope(cfg: Any, context=None) -> bool:
+def _code_has_rope(cfg: Any, context=None) -> bool | None:
     """Whether the denoiser applies rotary position embedding, READ FROM THE
     MODELING SOURCE — the pure code-based replacement for the ``rope_3d`` table.
     Uses the SAME evidence fact-conformance reads to CATCH a fabricated NoPE
-    (forward rotary markers), so the parser derives what the net checks. Best-effort,
-    silent on failure (no source → no rope claim, an honest negative)."""
-    try:
-        from ...evidence.patterns import diffusion_rope_from_files
-        return diffusion_rope_from_files(_source_files(cfg, context))
-    except Exception:
-        return False
+    (forward rotary markers), so the parser derives what the net checks. The
+    reader already turns missing/unparseable files into an empty observation;
+    programming/record-shape errors must remain loud rather than collapsing
+    into an indistinguishable unknown."""
+    from ...evidence.patterns import diffusion_rope_from_files
+    return diffusion_rope_from_files(_source_files(cfg, context))
 
 
 def _code_attn_kind(cfg: Any, context=None):
@@ -937,14 +936,19 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # U2-R7: declared axial dims sum into the drawn rotary span, and rope_theta
     # both labels the RoPE card and (alone) asserts rope — consumed.
     # (mrope_section stays an inspection: not in this round's consumed census.)
-    axes_dims_rope = _consume_geom(cfg, "axes_dims_rope",
-                                   "denoiser.attention", "rope_dim")
+    axes_resolution = _config_access.resolve(
+        cfg, "axes_dims_rope", _ALIASES.get("axes_dims_rope", ()))
+    raw_axes_dims_rope = (
+        axes_resolution.value
+        if axes_resolution.state == "present"
+        and axes_resolution.value is not None else None
+    )
     mrope_section = _inspect(cfg, "mrope_section")
-    rope_theta = _consume_geom(cfg, "rope_theta",
-                               "denoiser.attention", "rope_theta")
+    rope_theta = _inspect(cfg, "rope_theta")
     # Code-derived: when the config declares no RoPE but the model class fixes axial
     # dims (Flux), surface them READ FROM THE MODELING SOURCE (code -> fact). Never
     # overrides a declared config value.
+    axes_dims_rope = raw_axes_dims_rope
     axes_from_class = False
     if axes_dims_rope is None:
         # Config silent — READ the axial dims from the model __init__ default
@@ -953,7 +957,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if _code_axes:
             axes_dims_rope, axes_from_class = _code_axes, True
     rope_dim = None
-    if isinstance(axes_dims_rope, (list, tuple)):
+    if isinstance(raw_axes_dims_rope, (list, tuple)):
+        try:
+            # Validate before consuming so malformed declarations cannot claim
+            # a structural target. The structural value is then read back from
+            # the origin-bound decision, never from a detached raw consume.
+            sum(int(x) for x in raw_axes_dims_rope)
+            axes_decision = axes_resolution.consume_decision(
+                mechanism="rotary_geometry",
+                fact_owner="denoiser.attention",
+                fact_key="rope_dim",
+                reader="adapters.diffusor.parser.parse",
+                status="config_declared",
+            )
+            rope_dim = sum(int(x) for x in axes_decision.value)
+            # This declaration supplies only the numeric rotary geometry.
+            # Whether Q/K actually receive RoPE is independently proven below
+            # from source.  Consuming it as ``rope_dim`` therefore cannot
+            # manufacture the position operation it parameterizes.
+        except (TypeError, ValueError):
+            rope_dim = None
+    elif axes_from_class and isinstance(axes_dims_rope, (list, tuple)):
         try:
             rope_dim = sum(int(x) for x in axes_dims_rope)
         except (TypeError, ValueError):
@@ -964,7 +988,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             rope_dim = span if (not head_dim or span <= head_dim) else sum(int(x) for x in mrope_section)
         except (TypeError, ValueError):
             rope_dim = None
-    has_rope = rope_dim is not None or rope_theta is not None
+    declared_rope_geometry = rope_dim is not None or rope_theta is not None
     # 3D RoPE DETECTION fix (Wan / Mochi / LTX / CogVideoX): these video DiTs apply
     # axial rotary over (temporal · height · width) to Q/K but declare NO rope dims
     # in config (it's in the model class), so without help the block reads as NoPE —
@@ -972,27 +996,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # use_rotary_positional_embeddings) or a CODE fact read from the modeling source.
     # We set rope_dim = head_dim (the whole head is rotated) so the attention drill
     # draws RoPE, and NEVER fabricate the per-axis split (head-dim dependent).
-    rope_3d_from_config = bool(_consume_geom(
-        cfg, "use_rotary_positional_embeddings",
-        "denoiser.attention", "rope_3d"))
+    rope_3d_from_config = bool(_inspect(
+        cfg, "use_rotary_positional_embeddings"))
     # Code-derived: the block applies rotary (Allegro/Lumina/Wan/Mochi/LTX declare
     # nothing in config) — read from the SAME evidence fact-conformance reads, so the
     # parser asserts rope exactly when the net would flag its absence as fabricated.
     # When the source can't be read the block stays NoPE (never identity-guessed).
     # We rotate the whole head (rope_dim = head_dim) and NEVER fabricate the
     # per-axis split (head-dim dependent).
+    code_rope_applied = _code_has_rope(cfg, context) is True
     rope_3d_from_class = False
-    if not has_rope and head_dim and (rope_3d_from_config or _code_has_rope(cfg, context)):
+    if not declared_rope_geometry and head_dim and code_rope_applied:
         rope_dim = head_dim
-        has_rope = True
-        rope_3d_from_class = not rope_3d_from_config
+        rope_3d_from_class = True
     # The TEMPORAL axis: ANY video DiT (a *Transformer3DModel — geom["video"]) with
     # rope uses 3D (T·H·W) rope, whether detected above OR via axes_dims_rope
     # (HunyuanVideo's rope_axes_dim=[16,56,56] = temporal·height·width). This — not
     # the detection path — drives the "3D RoPE · T·H·W" card chip + the note, so the
     # block reads as VIDEO without drilling. Image DiTs (Flux's 3-axis axial rope)
     # are NOT video, so they keep the plain "Axial rotary" note and no chip.
-    rope_3d = bool(geom.get("video")) and has_rope
+    has_rope = code_rope_applied
+    rope_3d = bool(geom.get("video")) and code_rope_applied
     # Learned absolute positions baked into the patch embedding are a POSITIVE
     # config signal (SD3 / PixArt declare pos_embed_max_size). Their ABSENCE is
     # not evidence of NoPE: Flux carries axial RoPE in the model class, not the
@@ -1032,23 +1056,19 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declared, non-null value surfaces the QK-norm annotation on the attention.
     # Code-derived: Flux's FluxAttention RMS-norms Q/K unconditionally but declares
     # nothing in config — surfaced by reading the modeling source (code -> fact).
-    _empty_qk = (None, False, "", "none", "None", 0)
-    _qk = _consume_geom(cfg, "qk_norm", "denoiser.attention", "qk_norm")
-    qk_from_class = False
-    if _qk in _empty_qk:
-        # Config silent — READ the Q/K-norm TYPE from the modeling source (the
-        # attention's norm_q class / qk_norm kwarg). No table fallback.
-        _code_qk = _code_qk_norm(cfg, context)
-        if _code_qk:
-            _qk, qk_from_class = _code_qk, True
-    has_qk_norm = _qk not in _empty_qk
+    _inspect(cfg, "qk_norm")
+    _code_qk = _code_qk_norm(cfg, context)
+    qk_from_class = bool(_code_qk)
+    has_qk_norm = True if _code_qk else None
     if qk_from_class:
         # Mark the code-derived QK-norm in the attention description (the chip
         # states the fact; this clause says where the fact comes from). The norm
         # TYPE comes from the class-default value — Flux RMS-norms Q/K, CogVideoX
         # LayerNorm-norms them ("layer_norm" if qk_norm else None) — so never
         # hardcode "RMSNorm".
-        _qk_kind = "LayerNorm" if "layer" in str(_qk).lower() else "RMSNorm"
+        _qk_kind = (
+            "LayerNorm" if "layer" in str(_code_qk).lower() else "RMSNorm"
+        )
         rope_note = (rope_note + " " if rope_note else "") + (
             f"QK-norm ({_qk_kind} on Q/K) is applied in the model class, not the config.")
 
@@ -1099,18 +1119,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Per-SITE cross-attention Q/K-norm (Wan's attn2 RMS-norms unconditionally);
     # None (shared/gated cross class) keeps the cross sublayer norm-less.
     code_cross_qk_norm = _code_cross_qk_norm(cfg, context) if cond["cross_attn_sublayer"] else None
-    # Projection bias is a DECLARED constructor value on the diffusers side
-    # (PixArt `attention_bias: true`) — reading it here both draws the true
-    # bias fact and claims the field for the config-ownership audit.
-    dit_attention_bias = bool(_consume_geom(cfg, "attention_bias",
-                                            "denoiser.attention", "bias"))
+    # A bare declaration is not proof that this exact attention owner passes
+    # the value into its Q/K/V/O constructions. Keep it visible as inspected
+    # migration debt; U10's exact owner reader may promote it.
+    _inspect(cfg, "attention_bias")
+    dit_attention_bias = None
 
     layers = []
     idx = 0
     for _ in range(num_layers or 0):
-        attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
-                                   rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
-                                   scores_scaled=code_scores_scaled, bias=dit_attention_bias)
+        attn_spec = _dit_attention(
+            num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
+            rope_3d, has_pos_embed, self_attn_kind,
+            num_kv_heads=num_kv_heads, scores_scaled=code_scores_scaled,
+            bias=dit_attention_bias, position_applied=has_rope,
+        )
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
@@ -1156,10 +1179,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     single_fused_in = single_fusion == "parallel"
     seq_single_variant = _concat_joint_variant(rope_note) if single_fusion == "sequential" else None
     for _ in range(num_single or 0):
-        s_attn = _dit_attention(num_heads, head_dim, rope_dim,
-                                seq_single_variant or single_variant, has_qk_norm,
-                                rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
-                                scores_scaled=code_scores_scaled, bias=dit_attention_bias)
+        s_attn = _dit_attention(
+            num_heads, head_dim, rope_dim,
+            seq_single_variant or single_variant, has_qk_norm,
+            rope_3d, has_pos_embed, self_attn_kind,
+            num_kv_heads=num_kv_heads, scores_scaled=code_scores_scaled,
+            bias=dit_attention_bias, position_applied=has_rope,
+        )
         s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
                          code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
@@ -1285,11 +1311,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
 # ---------------------------------------------------------------------------
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
-                   qk_norm: bool = False, rope_3d: bool = False,
+                   qk_norm: bool | None = None, rope_3d: bool = False,
                    has_pos_embed: bool = False, kind: str | None = None,
                    num_kv_heads: int | None = None,
                    scores_scaled: bool | None = None,
-                   bias: bool = False) -> AttentionSpec:
+                   bias: bool | None = None,
+                   position_applied: bool = False) -> AttentionSpec:
     # DiT attention is full/bidirectional and non-autoregressive. ``variant``
     # names the stream topology; ``mask="full"`` and the rope dimension correct
     # the LLM defaults (causal / NoPE) that do not apply.  Those facts do not,
@@ -1307,15 +1334,17 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
         head_dim=head_dim or None,
         mask="full",
         rope_dim=rope_dim,
-        rope=rope_dim is not None,
-        no_rope=rope_dim is None and not has_pos_embed,
+        rope=True if position_applied else None,
+        position_kind="rope" if position_applied else "unknown",
+        position_application=(
+            "qk_rotation" if position_applied else "unknown"
+        ),
+        no_rope=False,
         rope_3d=rope_3d,        # 3D (T·H·W) axial RoPE — surfaces the temporal axis chip
-        qk_norm=qk_norm,        # config-declared per-head Q/K norm (SD3.5 rms_norm)
-        bias=bias,              # config-declared Q/K/V/out projection bias (PixArt
-                                # attention_bias=true) — a diffusers config is a
-                                # constructor record, so the declared value IS the fact
-        cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
-        scores_scaled=scores_scaled,  # code-proven verdict; only False changes rendering
+        qk_norm=qk_norm,        # exact source-proven per-head Q/K norm
+        bias=bias,              # exact source-proven Q/K/V/out projection bias
+        cached=None,
+        scores_scaled=scores_scaled,
         variant=variant,
     )
 
@@ -1512,8 +1541,11 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
                           # keeps the mechanism unknown instead of asserting
                           # softmax MHA (including Sana's separate attn2).
                           kind=None,
-                          qk_norm=bool(cross_qk_norm),
-                          no_rope=True, rope_dim=None, rope_3d=False, variant=None)
+                          qk_norm=(True if cross_qk_norm else None),
+                          rope=None, position_kind="unknown",
+                          position_application="unknown",
+                          no_rope=False, rope_dim=None, rope_3d=False,
+                          cached=None, projection_mode=None, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
     # cards are left intact. K/V read from the text's cross_attention_dim, not hidden.
     cross_children = attention_child_blocks(cross_spec, hidden_size, id_prefix="x_")

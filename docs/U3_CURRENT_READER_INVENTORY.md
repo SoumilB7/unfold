@@ -11,8 +11,8 @@ This is the current authority/deletion worklist. The older
 - quarantined semantic readers: **25**
 - exact evidence-layer `ast.parse` sites: **33**
 - legacy model-source parse sites: **23**
-- frozen reader/helper implementation digest: `82fe24ffa788a7f3fb5f65464e1995cb3caca78bb59175beec1418fe5822b454`
-- frozen legacy-parse caller digest: `8eab4f95ee9951df97a494bf3f13c7ee20e86f29f948121dccf25d354ce950c0`
+- frozen reader/helper implementation digest: `9330c5930fd4a6866fbd53c45dc7ca97bd6c6f8d31399aa811f30b01bc4fc60e`
+- frozen legacy-parse caller digest: `c677eb34678995d37a9f239c58340b664a68d120fa3b992eae1c8894b872b899`
 
 ## Authority classes
 
@@ -28,7 +28,7 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U6 | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled`<br>`model_unfolder/adapters/transformer/parser.py:_code_scores_scaled`<br>`model_unfolder/encoder_panel.py:_project_encoder_spec` | whole-file attention score-scaling interpretation | U6 registers the exact owner-qualified fact and deletes attention_score_scaling_from_files |
+| U6 | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled`<br>`model_unfolder/adapters/transformer/parser.py:_code_scores_scaled` | whole-file attention score-scaling interpretation | U6 registers the exact owner-qualified fact and deletes attention_score_scaling_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_ffn_activation_from_files` | `model_unfolder/encoder_panel.py:_project_encoder_spec` | whole-file FFN activation interpretation | U7 registers the exact owner-qualified fact and deletes decoder_ffn_activation_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_intermediate_size_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_intermediate_size` | whole-file FFN dimension interpretation | U7 registers the exact owner-qualified fact and deletes decoder_intermediate_size_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_layer_topology_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_layer_topology` | whole-file decoder cell-topology interpretation | U7 registers the exact owner-qualified fact and deletes decoder_layer_topology_from_files |

@@ -445,23 +445,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            module=_TP, symbol="parse",
            consumer="model_unfolder/renderers/html/views.py::"
                     "_build_architecture_view"),
-    _drawn("scores_scale", "root.decoder.attention",
-           "silent input drawn as sqrt(d)-scaled scores denominator",
-           "U6", "unknown_policy_retired:scores_scale",
-           occurrence="REGISTRY['scores_scale'] "
-                      "unknown_policy='legacy_convention'",
-           module=_OG, symbol="_sdpa_core_ops",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
-    _drawn("projection_mode", "root.decoder.attention",
-           "absent mode drawn as solid split projections; asserted rows "
-           "are pinned census debt",
-           "U6", "status_retired:projection_mode:legacy_asserted",
-           occurrence="REGISTRY['projection_mode'] statuses "
-                      "asserted/legacy_asserted",
-           module=_OG, symbol="_sdpa_region",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
     # ---- config occurrences awaiting their consumer (former
     # ---- PENDING_PROJECTION_DEBT; owner + EXACT dotted path) -------------- #
     _config("the conditioning card on the denoiser view",
@@ -504,6 +487,48 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.vae", "_vae_config.attention_head_dim",
             "DC-AE decoder attention head width (Sana) — V-05",
             "U12", "fact_registered:vae_decoder_attention"),
+    # U4-B: these declarations remain visible but cannot author their
+    # mechanisms.  U6/U8/U10 must bind each exact occurrence to the owning
+    # source expression before it may leave this register.
+    _config("the decoder projection-bias fact", "root", "attention_bias",
+            "declaration awaits exact Linear(..., bias=config.<field>) "
+            "binding; declaration alone authors no bias operation",
+            "U6", "status_retired:bias:config_declared"),
+    _config("the decoder projection-bias fact", "root", "use_qkv_bias",
+            "alias occurrence awaits the same exact projection binding",
+            "U6", "status_retired:bias:config_declared"),
+    _config("the embedded decoder projection-bias fact", "root",
+            "text_config.attention_bias",
+            "nested text-config occurrence awaits exact projection binding",
+            "U6", "status_retired:bias:config_declared"),
+    _config("the recursively parsed decoder projection-bias fact",
+            "root.text_encoder", "attention_bias",
+            "the nested encoder declaration awaits the same exact "
+            "Linear(..., bias=config.<field>) binding; recursive ownership "
+            "must not be laundered through the top-level root row",
+            "U6", "status_retired:bias:config_declared"),
+    _config("the decoder per-head Q/K-normalization fact", "root",
+            "qk_layernorm",
+            "the declaration cannot prove execution of its ModuleList-backed "
+            "per-head norms; U6 must bind the exact call path",
+            "U6", "fact_registered:qk_norm"),
+    _config("the denoiser projection-bias fact", "root.denoiser",
+            "attention_bias",
+            "declaration awaits exact denoiser projection-construction binding",
+            "U10", "fact_registered:denoiser_attention_bias"),
+    _config("the denoiser Q/K-normalization fact", "root.denoiser",
+            "qk_norm",
+            "declaration awaits exact denoiser Q/K norm execution binding",
+            "U10", "fact_registered:qk_norm"),
+    _config("the denoiser rotary-application fact", "root.denoiser",
+            "use_rotary_positional_embeddings",
+            "declaration awaits exact denoiser positional call binding; "
+            "it cannot independently author Q/K rotation",
+            "U10", "fact_registered:position_kind"),
+    _config("the denoiser rotary-geometry fact", "root.denoiser",
+            "rope_theta",
+            "numeric rotary operand awaits its U8 owner-bound position fact",
+            "U8", "fact_registered:rope_theta"),
     _config("the UNet ResNet-cell norm chip",
             "root.denoiser", "norm_num_groups",
             "GroupNorm group count declared on UNet/legacy-DiT denoisers — "

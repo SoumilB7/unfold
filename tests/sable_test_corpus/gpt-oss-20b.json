@@ -1,9 +1,16 @@
 {
   "checks": {
-    "asserted_facts": false,
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -11,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "openai/gpt-oss-20b",
@@ -109,24 +120,24 @@
   },
   "hash_signature": [
     "12f0bfdd7bda43f63a570ca3b63905ce",
+    "165f25ce0ef4cf68aa1ef819b4fb9948",
     "1ecde1de24e3672114dc67e2d1478bd2",
-    "2b4d84ba67694f2cf56140f63a646a95",
-    "30ff5ac4414b924575615425200c40b8",
     "4e183581234c572ee0ebdc90a57ae2a0",
-    "5bef34caff87e659f8458a1b572c6bbd",
+    "666008b2cb577cb8315509535721b5ad",
     "78641d62e1001e9e4552fdfee8051b5d",
-    "f4b515a3b3326edc7cb9012501bc9afd"
+    "f4b515a3b3326edc7cb9012501bc9afd",
+    "f58793913190f0d886cc9199f852a84f"
   ],
   "model": "gpt-oss-20b",
   "source": "local",
   "superseded_hash_signature": [
     "12f0bfdd7bda43f63a570ca3b63905ce",
     "1ecde1de24e3672114dc67e2d1478bd2",
+    "2b4d84ba67694f2cf56140f63a646a95",
+    "30ff5ac4414b924575615425200c40b8",
     "4e183581234c572ee0ebdc90a57ae2a0",
     "5bef34caff87e659f8458a1b572c6bbd",
-    "63fa1e14b491d1b5af2a0eae578855dd",
     "78641d62e1001e9e4552fdfee8051b5d",
-    "e3abc03048d92cc6fac7c43ee4d45539",
     "f4b515a3b3326edc7cb9012501bc9afd"
   ],
   "visual_evidence": {

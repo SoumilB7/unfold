@@ -354,7 +354,9 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
     attention / feed-forward opener (the same view a transformer attention/FFN
     block opens), instead of a bespoke leaf.  Block ids are scoped by ``prefix``
     (the stage id) so a stage's heads/width survive the per-depth card dedup; the
-    canonical SDPA op cards (q_proj …) stay shared and source/dim-neutral.
+    canonical attention opener stays shared.  Until U10 proves the exact UNet
+    attention storage and score path, its internal projection/score details
+    remain unresolved rather than being supplied by this view factory.
 
     ``kv_label`` (F1) is the resolved cross-attention K/V modality label — text
     ("Encoded text") for SD/SDXL, image ("Image embeds") for image_proj decoders
@@ -364,16 +366,13 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
     kv_from = "text" if kv_text else str(kv_label)
-    # cached=False: spatial diffusion attention is bidirectional and runs per
-    # step — there is no autoregressive KV cache, so no cache ports.
     self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                              head_dim=hd, mask="full", no_rope=True,
-                              cached=False)
+                              head_dim=hd, mask="full")
     # Cross-attention pulls K/V from the resolved conditioning source (encoded
     # text for SD/SDXL, image embeds for image_proj decoders), not the latent —
     # give it a real cross spec so its drilled view shows those states entering.
     cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                               head_dim=hd, mask="full", no_rope=True,
+                               head_dim=hd, mask="full",
                                cross_attention=True,
                                cross_kv_source=kv_source)
     # FFN inner shape: ANCHORED code evidence when available (the block class
@@ -479,7 +478,7 @@ def _simple_cross_card(sid: str, st: dict, cross_dim, kv_label: str | None = Non
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
     cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                               head_dim=hd, mask="full", no_rope=True,
+                               head_dim=hd, mask="full",
                                cross_attention=True, cross_kv_source=kv_source)
     return {
         "id": f"{sid}__crossattn", "title": "Cross-attention",
@@ -516,7 +515,7 @@ def _unknown_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = Non
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
     cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                               mask="full", no_rope=True, cross_attention=True,
+                               mask="full", cross_attention=True,
                                cross_kv_source=kv_source)
     return {
         "id": f"{sid}__crossattn", "title": "Cross-attention",
@@ -553,7 +552,7 @@ def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) 
     children: list[dict] = []
     if has_self:
         self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                                  mask="full", no_rope=True, cached=False)
+                                  mask="full")
         children.append({
             "id": f"{sid}__code_self", "title": "Self-attention",
             "description": ("Self-attention over the spatial latent tokens at this "
@@ -562,7 +561,7 @@ def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) 
             "view": "attention", "detail": {"attention": attention_detail(self_spec)}})
     if has_cross:
         cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                                   mask="full", no_rope=True, cross_attention=True,
+                                   mask="full", cross_attention=True,
                                    cross_kv_source=kv_source)
         children.append({
             "id": f"{sid}__code_cross", "title": f"Cross-attention ({kv_from})",
@@ -854,7 +853,6 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 "the encoders combine. Declared by cross_attention_dim + the "
                 "CrossAttn* block types.")
         else:
-            kv_name = str(kv_label) if kv_label else "External conditioning"
             cond_title = ("Image conditioning" if kv_word.startswith("image")
                           else "External conditioning")
             cond_desc = (
@@ -863,7 +861,7 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 f"read the same {cad}-d {kv_word} states"
                 + (proj_note or "")
                 + ". The latent flows through the U vertically; this conditioning "
-                f"enters each cross-attention stage from the side. Declared by "
+                "enters each cross-attention stage from the side. Declared by "
                 "encoder_hid_dim_type + cross_attention_dim.")
         card = {
             "id": "unet_text_cond",

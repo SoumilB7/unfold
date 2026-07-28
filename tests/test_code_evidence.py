@@ -1010,7 +1010,7 @@ def test_fileless_hub_warning_is_not_masked(monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_qk_norm_resolution_states():
-    """Parser arbitration: positive code evidence or checkpoint fallback."""
+    """Only the exact code shape and the fields it gates may decide QK norm."""
     from model_unfolder.adapters.transformer.parser import _resolve_qk_norm_layers
     from model_unfolder.evidence.qk_norm import (
         QKNormCodeEvidence,
@@ -1019,14 +1019,16 @@ def test_qk_norm_resolution_states():
 
     # unconditional: config not consulted
     assert _resolve_qk_norm_layers(
-        QKNormCodeEvidence(present=True), {}, False, 3) == [True] * 3
+        QKNormCodeEvidence(present=True), {}, 3) == [True] * 3
     # gated: the named field's VALUE decides
     gated = QKNormCodeEvidence(
         present=None, gate=(QKNormGateAtom(
             "qk_layernorm", ("qk_layernorm",)),))
-    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": True}, False, 2) == [True] * 2
-    assert _resolve_qk_norm_layers(gated, {"qk_layernorm": False}, True, 2) == [False] * 2
-    assert _resolve_qk_norm_layers(gated, {}, True, 2) == [True] * 2
+    assert _resolve_qk_norm_layers(
+        gated, {"qk_layernorm": True}, 2) == [True] * 2
+    assert _resolve_qk_norm_layers(
+        gated, {"qk_layernorm": False}, 2) == [False] * 2
+    assert _resolve_qk_norm_layers(gated, {}, 2) == [None] * 2
     # per-layer atom: the code indexes its own field by layer
     comp = QKNormCodeEvidence(present=None, gate=(
         QKNormGateAtom(
@@ -1034,11 +1036,13 @@ def test_qk_norm_resolution_states():
         QKNormGateAtom("use_qk_norm", ("use_qk_norm",)),
     ))
     cfg = {"use_qk_norm": True, "no_rope_layers": [1, 1, 0, 1]}
-    assert _resolve_qk_norm_layers(comp, cfg, False, 4) == [True, True, False, True]
-    # unresolvable gate value -> honest fallback to the declared spelling
-    assert _resolve_qk_norm_layers(comp, {"use_qk_norm": True}, True, 4) == [True] * 4
-    # no source at all -> the declaration stands (a declaration is evidence)
-    assert _resolve_qk_norm_layers(None, {}, True, 2) == [True] * 2
+    assert _resolve_qk_norm_layers(
+        comp, cfg, 4) == [True, True, False, True]
+    # An unresolved gate and source silence remain unknown. A similarly named
+    # declaration does not prove this operation without the source binding.
+    assert _resolve_qk_norm_layers(
+        comp, {"use_qk_norm": True}, 4) == [None] * 4
+    assert _resolve_qk_norm_layers(None, {}, 2) == [None] * 2
 
 
 def test_qk_norm_ships_for_config_silent_oracle_models():
@@ -1051,27 +1055,32 @@ def test_qk_norm_ships_for_config_silent_oracle_models():
         assert ir.layers and all(l.attention.qk_norm for l in ir.layers), mt
 
 
-def test_qk_norm_declared_gate_still_decides_for_stablelm():
+def test_stablelm_qk_norm_stays_unknown_until_per_head_execution_is_proved():
+    """StableLM wraps per-head norms in a ModuleList. Until that exact
+    container execution is proved, its declaration cannot author the op."""
     from transformers import AutoConfig
-    cfg = AutoConfig.for_model("stablelm")          # qk_layernorm defaults False
-    assert not any(l.attention.qk_norm for l in config_to_ir(cfg).layers)
+    cfg = AutoConfig.for_model("stablelm")
+    assert all(l.attention.qk_norm is None for l in config_to_ir(cfg).layers)
     cfg.qk_layernorm = True
-    assert all(l.attention.qk_norm for l in config_to_ir(cfg).layers)
+    assert all(l.attention.qk_norm is None for l in config_to_ir(cfg).layers)
 
 
-def test_llama4_qk_norm_skips_nope_layers_and_positions_follow_the_code():
-    """Fabrication half of the sweep finding + the positional bug the gate
-    exposed: NoPE placement must follow ``config.no_rope_layers`` (the field
-    the code indexes — NoPE at layers 3, 7, 11…), and QK-norm must sit on
-    exactly the rope layers."""
+def test_llama4_qk_schedule_survives_while_position_selector_stays_unknown():
+    """The exact QK-norm reader proves its own per-layer gate. It cannot also
+    certify the positional selector: U8 must prove that separately, so neither
+    model-wide RoPE nor config-computed NoPE is projected yet."""
     from transformers import AutoConfig
     cfg = AutoConfig.for_model("llama4_text")
     ir = config_to_ir(cfg)
     qk = [bool(l.attention.qk_norm) for l in ir.layers]
-    nope = [bool(l.attention.no_rope) for l in ir.layers]
-    assert any(nope) and sum(nope) * 4 == len(ir.layers)
-    assert all(q == (not n) for q, n in zip(qk, nope))
-    assert [i for i, n in enumerate(nope) if n][:3] == [3, 7, 11]
+    assert [i for i, enabled in enumerate(qk) if not enabled][:3] == [3, 7, 11]
+    assert all(l.attention.no_rope is False for l in ir.layers)
+    assert all(l.attention.rope is None for l in ir.layers)
+    assert all(
+        (l.attention.position_kind, l.attention.position_application)
+        == ("unknown", "unknown")
+        for l in ir.layers
+    )
 
 
 def test_qk_norm_stays_absent_for_mla_and_plain_oracle_models():
@@ -1904,9 +1913,13 @@ def test_sliding_schedule_matches_code_layer_types():
         assert drawn == code, f"{mt}: sliding schedule diverged from code layer_types"
 
 
-def test_nope_schedule_matches_code_no_rope_layers():
-    """A model with a ``no_rope_layers`` list (Llama-4 iRoPE) must draw NoPE on
-    exactly the layers the code marks (``no_rope_layers[i]`` truthy = uses rope)."""
+def test_nope_schedule_declaration_does_not_project_without_selector_proof():
+    """A config schedule is not proof of how the forward applies positions.
+
+    Llama-4 exposes ``no_rope_layers``, but until U8 binds that declaration to
+    the exact positional selector in source, U4 must preserve every layer as
+    position-unknown rather than computing a plausible RoPE/NoPE schedule.
+    """
     from transformers import AutoConfig
     import model_unfolder as mu
     for mt in ("llama4_text",):
@@ -1914,9 +1927,15 @@ def test_nope_schedule_matches_code_no_rope_layers():
         nrl = getattr(cfg, "no_rope_layers", None)
         if not isinstance(nrl, (list, tuple)):
             continue
-        drawn = [bool(l.attention.no_rope) for l in mu.config_to_ir(cfg).layers]
-        code = [not bool(x) for x in nrl][:len(drawn)]
-        assert drawn == code, f"{mt}: NoPE schedule diverged from code no_rope_layers"
+        layers = mu.config_to_ir(cfg).layers
+        assert layers
+        assert all(layer.attention.no_rope is False for layer in layers)
+        assert all(layer.attention.rope is None for layer in layers)
+        assert all(
+            (layer.attention.position_kind,
+             layer.attention.position_application) == ("unknown", "unknown")
+            for layer in layers
+        )
 
 
 def test_moe_schedule_matches_code_construction():
@@ -1950,6 +1969,22 @@ def test_diffusion_rope_component_scoping():
         return
     assert diffusion_rope_from_files((str(sana),)) is False
     assert diffusion_rope_from_files((str(sana), str(gemma))) is True  # the leak shape
+
+
+def test_diffusion_rope_reader_accepts_the_real_forward_record_shape():
+    """The reader must combine tuple params with set-like signature tokens.
+
+    U3 deliberately gave those observations different container types.  A
+    set-union assumption raised here and was then swallowed by the parser,
+    turning FLUX's code-proven rotary application into unknown.
+    """
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.patterns import diffusion_rope_from_files
+    from test_support import FLUX
+
+    context = ParseContext.build(FLUX)
+    files = context.source_bundle.component_files["root"]
+    assert diffusion_rope_from_files(files) is True
 
 
 def test_diffusor_source_files_root_scoped():
@@ -2061,40 +2096,41 @@ def test_scores_scaling_wired_to_main_paths():
     assert d_scaled({}, _Ctx(mixed)) is True
 
 
-def test_scores_scaled_projections_only_when_false():
-    """The spec field lands in BOTH dict projections ONLY when False — a
-    scaled/unknown model's output stays byte-identical (the scores_scale rule)."""
+def test_scores_scaled_projections_preserve_the_full_tristate():
+    """True, false and unknown remain distinguishable on every projection."""
     from model_unfolder.ir import AttentionSpec, _attention_to_dict
     from model_unfolder.adapters.transformer.blocks.attention import attention_detail
 
     base = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64)
-    assert "scores_scaled" not in _attention_to_dict(base)
-    assert "scores_scaled" not in attention_detail(base)
+    assert _attention_to_dict(base)["scores_scaled"] is None
+    assert attention_detail(base)["scores_scaled"] is None
     proven = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
                            scores_scaled=False)
     assert _attention_to_dict(proven)["scores_scaled"] is False
     assert attention_detail(proven)["scores_scaled"] is False
     scaled = AttentionSpec(kind="mha", num_heads=8, num_kv_heads=8, head_dim=64,
                            scores_scaled=True)
-    assert "scores_scaled" not in _attention_to_dict(scaled)
-    assert "scores_scaled" not in attention_detail(scaled)
+    assert _attention_to_dict(scaled)["scores_scaled"] is True
+    assert attention_detail(scaled)["scores_scaled"] is True
 
 
-def test_scores_scaled_region_drops_denominator():
+def test_scores_scaled_region_preserves_true_false_and_unknown():
     """Opgraph spine: scores_scaled=False → numerator-only Q K^T (no sqrt
-    fraction); absent/True keeps the sqrt(dim) denominator."""
+    fraction); True proves sqrt(dim); absent is unresolved."""
     from model_unfolder.opgraph import attention_region
 
     def _scores_meta(attn):
         region = attention_region(attn, 512)
         for op in region.ops:
-            meta = getattr(op, "meta", None) or {}
-            if "denominator" in meta:
-                return meta
+            if op.id == "scaled_scores":
+                return getattr(op, "meta", None) or {}
         raise AssertionError("no scores op with a formula meta found")
 
     plain = {"kind": "mha", "num_heads": 8, "num_kv_heads": 8, "head_dim": 64}
-    assert _scores_meta(plain)["denominator"]          # sqrt(dim) kept
+    assert _scores_meta(plain)["status"] == "unresolved"
+    assert "formula" not in _scores_meta(plain)
+    scaled = dict(plain, scores_scaled=True)
+    assert _scores_meta(scaled)["denominator"] == "sqrt(dim)"
     unscaled = dict(plain, scores_scaled=False)
     assert _scores_meta(unscaled)["denominator"] is None
     assert _scores_meta(unscaled)["formula"] == "QK^T"
@@ -2406,10 +2442,9 @@ def test_companion_denoiser_notes_from_vocabulary():
                 if "denoiser" in n or "twin" in n]
 
 
-def test_dit_attention_bias_from_declared_config():
-    """C3: a diffusers config is a constructor record — a declared
-    `attention_bias: true` reaches the DiT AttentionSpec; silence keeps the
-    bias-less default (never a guess)."""
+def test_dit_attention_bias_declaration_does_not_prove_application():
+    """A config value is a possible constructor operand, not proof that this
+    exact denoiser attention applies biased projections."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
     from model_unfolder.evidence.context import ParseContext
@@ -2417,11 +2452,11 @@ def test_dit_attention_bias_from_declared_config():
     fx = json.loads((pathlib.Path(DEFAULT_CORPUS)
                      / "pixart-sigma-xl-2-1024-ms.json").read_text())
     ir = dparse(fx["config"], context=ParseContext.build(fx["config"], source="local"))
-    assert ir.layers[0].attention.bias is True
+    assert ir.layers[0].attention.bias is None
     fx2 = json.loads((pathlib.Path(DEFAULT_CORPUS)
                       / "stable-diffusion-3-5-large.json").read_text())
     ir2 = dparse(fx2["config"], context=ParseContext.build(fx2["config"], source="local"))
-    assert ir2.layers[0].attention.bias is False
+    assert ir2.layers[0].attention.bias is None
 
 
 def test_dit_norm_kind_resolved_from_classes_when_config_silent():

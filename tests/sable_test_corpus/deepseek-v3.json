@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "deepseek-ai/DeepSeek-V3",
@@ -102,18 +114,18 @@
     "vocab_size": 129280
   },
   "hash_signature": [
-    "029aa789d8dc6d5c7e6d07d58400a937",
     "0d501a263ad8f485795b1ee8e2bec011",
     "0d62405c9f25c10421e350c162c03419",
-    "328f84680559846108436428a1d690c4",
     "3416a5f46d9e75c633e7fd6735b98016",
     "6388158f0713795872ea10b64a5c3cbd",
     "667e159965a80e96cddaf7c325f75999",
     "7dc618dec24ee7c74b89eb41a82125bc",
     "8885e3fd637c1ca9929d34e303ca0d79",
     "9317b54f4f99c1112c217b51999e0b53",
+    "957109c7d03856fac96f612ceb3694e8",
     "b159235cab64de0806d6b426017577f2",
     "dabf1599258da7e9cac35423b6af665a",
+    "f81f29a8d6da195b64df83582a7b82ee",
     "fe7dbad6aaa0ecd58090855148c95349"
   ],
   "model": "DeepSeek-V3",
@@ -125,11 +137,11 @@
     "328f84680559846108436428a1d690c4",
     "3416a5f46d9e75c633e7fd6735b98016",
     "6388158f0713795872ea10b64a5c3cbd",
+    "667e159965a80e96cddaf7c325f75999",
     "7dc618dec24ee7c74b89eb41a82125bc",
     "8885e3fd637c1ca9929d34e303ca0d79",
     "9317b54f4f99c1112c217b51999e0b53",
     "b159235cab64de0806d6b426017577f2",
-    "baf4a52c16a965c3162bfbe63336ff8e",
     "dabf1599258da7e9cac35423b6af665a",
     "fe7dbad6aaa0ecd58090855148c95349"
   ],

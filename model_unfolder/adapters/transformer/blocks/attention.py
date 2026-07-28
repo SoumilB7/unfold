@@ -35,8 +35,8 @@ def attention_detail(attention: AttentionSpec) -> dict:
         # was the refiner attribution bug — that guard now lives at PARSE
         # time, where the evidence is, not as a render-time suppression that
         # drops real ops.
-        "q_norm": bool(attention.qk_norm),
-        "k_norm": bool(attention.qk_norm),
+        "q_norm": attention.qk_norm,
+        "k_norm": attention.qk_norm,
         "rope": attention.rope,
         "position_kind": attention.position_kind,
         "position_application": attention.position_application,
@@ -55,6 +55,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "conv_kernel_size": attention.conv_kernel_size,
         "output_gate": attention.output_gate,
         "projection_mode": attention.projection_mode,
+        "scores_scaled": attention.scores_scaled,
         "variant": attention.variant,
         # U2 P3a: emitted only on the config-declared position fallback so
         # every code-proven model's block detail stays byte-stable
@@ -66,9 +67,6 @@ def attention_detail(attention: AttentionSpec) -> dict:
         # undeclared models' block detail stays byte-stable
         **({"scores_scale": attention.scores_scale}
            if attention.scores_scale is not None else {}),
-        # emitted only when code PROVES the forward performs no scale (raw
-        # QK^T) — the opgraph spine reads this key to drop the denominator
-        **({"scores_scaled": False} if attention.scores_scaled is False else {}),
         # emitted only when code proves learned sink logits join the softmax
         # (the opgraph draws the sink lane from this key)
         **({"sinks": True} if attention.sinks else {}),
@@ -229,14 +227,33 @@ def _sdpa_detailed_child_blocks(
         scale_note = ("scores use raw QK^T — this family folds the scale into "
                       "its weight initialization; the forward adds no explicit "
                       "scale (read from the model code)")
-    else:
+    elif attention.scores_scaled is True:
         scale_txt = "QK^T / sqrt(dim)"
         scale_note = "scores use QK^T / sqrt(dim)"
-    scaled_title = ("Attention scores" if attention.scores_scaled is False
-                    and attention.scores_scale is None else "Scaled attention scores")
-    scaled_desc = (f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
-                   if scale_txt != "QK^T" else
-                   f"Per head: {scale_txt} — raw dot-product scores; no explicit scale in the forward.")
+    else:
+        scale_txt = "QK^T · scaling unresolved"
+        scale_note = ("the dot product is proven, but whether the forward applies "
+                      "an explicit scale is unresolved")
+    scaled_title = (
+        "Attention scores"
+        if attention.scores_scaled is False and attention.scores_scale is None
+        else "Attention scores (scaling unresolved)"
+        if attention.scores_scaled is None and attention.scores_scale is None
+        else "Scaled attention scores"
+    )
+    if attention.scores_scaled is None and attention.scores_scale is None:
+        scaled_desc = (
+            "Per head: QK^T is computed, but the source evidence has not resolved "
+            "whether an explicit score scale is applied."
+        )
+    elif scale_txt != "QK^T":
+        scaled_desc = (
+            f"Per head: {scale_txt} — dot-product scores scaled for numerical stability."
+        )
+    else:
+        scaled_desc = (
+            f"Per head: {scale_txt} — raw dot-product scores; no explicit scale in the forward."
+        )
     if cross_attention:
         scaled_title = "Cross-attention scores"
         scaled_desc = (
@@ -265,7 +282,7 @@ def _sdpa_detailed_child_blocks(
                  if cross_attention else "the hidden state")
         kv_src = f"the {cross_src}" if cross_attention else "the hidden state"
         # No cache ports for cross-attention or explicitly non-cached (diffusion/ViT) attention.
-        cache_facts = [] if (cross_attention or attention.cached is False) else [CACHE_PORT_FACT]
+        cache_facts = [CACHE_PORT_FACT] if attention.cached is True else []
     cross_chip = ["from cross-attention source"] if cross_attention else []
     if attention.projection_mode == "fused_qkv" and not cross_attention:
         # Code-proven FUSED storage (BLOOM query_key_value / GPT-2 c_attn):
@@ -299,7 +316,7 @@ def _sdpa_detailed_child_blocks(
                 "facts": [f"→ {kv_out}", kv_chip, *cache_facts],
             },
         ]
-    else:
+    elif attention.projection_mode == "split_qkv":
         projection_cards = [
         {
             "id": "q_proj",
@@ -320,6 +337,16 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{hidden} → {kv_out}", kv_chip, *cross_chip, *cache_facts],
         },
         ]
+    else:
+        projection_cards = [{
+            "id": "qkv_projection_unresolved",
+            "title": "Q/K/V projection storage unresolved",
+            "description": (
+                "The attention mechanism uses query, key and value tensors, but "
+                "the exact owner evidence has not resolved whether they come from "
+                "separate projections, one fused projection, or another layout."
+            ),
+        }]
     cards = [
         *projection_cards,
         {
@@ -394,7 +421,13 @@ def _sdpa_detailed_child_blocks(
                             f"extremes (declared by attn_logit_softcapping)."),
             "facts": [f"±{_cap:g}"],
         })
-    if attention.rope and not attention.no_rope and not cross_attention:
+    if (
+        attention.rope is True
+        and attention.position_kind == "rope"
+        and attention.position_application == "qk_rotation"
+        and not attention.no_rope
+        and not cross_attention
+    ):
         # RoPE rotates Q and K before the scores (apply_rotary_pos_emb) — cards for
         # the two rope nodes the SDPA region now draws on the Q/K lanes.
         _prd = attention.rope_dim
@@ -504,6 +537,12 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
     nope_fact = [f"{_fmt(nope_v)} per head"] if nope_v else []
     concat_fact = ([f"head dim {_fmt(nope_v + rope_v)} = {_fmt(nope_v)} + {_fmt(rope_v)}"]
                    if (nope_v and rope_v) else [])
+    rope_proven = (
+        attention.rope is True
+        and attention.position_kind == "rope"
+        and attention.position_application == "qk_rotation"
+        and not attention.no_rope
+    )
     q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
     query_children = [
         {
@@ -551,7 +590,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_kv_down",
             "label": "KV compress",
             "title": "K/V latent compression",
-            "description": "Compresses the token state into the shared latent K/V cache.",
+            "description": "Compresses the token state into a shared low-rank K/V representation.",
             "facts": [f"{hidden} → rank {kv_rank}"],
         },
         {
@@ -565,7 +604,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_kv_up",
             "label": "KV expand",
             "title": "K/V head expansion",
-            "description": "Expands the cached latent c_t into K noPE content and V values.",
+            "description": "Expands the compressed latent into K noPE content and V values.",
             "facts": [f"{num_heads} heads"]
                 + ([f"{_fmt(nope_v)} + {_fmt(v_v)} per head"] if (nope_v and v_v) else []),
         },
@@ -580,7 +619,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "id": "mla_k_rope",
             "label": "K RoPE",
             "title": "Key positional slice",
-            "description": "Key positional component produced alongside the latent cache.",
+            "description": "Key positional component produced alongside the compressed latent.",
             "facts": [f"{rope} shared across heads"],
         },
         {
@@ -605,6 +644,48 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
             "facts": ([f"{_fmt(v_v)} per head"] if v_v else []) + [f"{num_heads} heads"],
         },
     ]
+    kv_children.insert(1, {
+        "id": "mla_latent",
+        "label": "Compressed KV latent",
+        "title": "Compressed K/V representation",
+        "description": (
+            "The low-rank K/V representation produced by compression. Whether "
+            "this representation is written to a runtime cache is a separate fact."
+        ),
+        "facts": [f"rank {kv_rank}"],
+    })
+    if attention.cached is not True:
+        kv_children = [
+            child for child in kv_children if child["id"] != "mla_cache"
+        ]
+    if not rope_proven:
+        query_children = [
+            query_children[0],
+            {
+                "id": "mla_q_position_unresolved",
+                "label": "Position unresolved",
+                "title": "Query position application unresolved",
+                "description": (
+                    "The query projection is known, but no exact source fact "
+                    "proves how positional information is applied to it."
+                ),
+            },
+        ]
+        kv_children = [
+            child for child in kv_children
+            if child["id"] not in {
+                "mla_k_rope", "mla_k_rope_apply", "mla_k_merge",
+            }
+        ]
+        kv_children.append({
+            "id": "mla_k_position_unresolved",
+            "label": "Position unresolved",
+            "title": "Key position application unresolved",
+            "description": (
+                "The compressed K/V path is known, but no exact source fact "
+                "proves how positional information is applied to its key lane."
+            ),
+        })
     indexer_block = []
     if attention.index_n_heads:
         # DeepSeek-V3.2 DSA: the lightning indexer is a real sub-module (its own
@@ -652,21 +733,57 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
         },
         {
             "id": "mla_kv_path",
-            "label": "KV cache path",
-            "title": "MLA K/V cache path",
-            "description": (
-                "Compresses the hidden state into the latent cache, expands K/V content, "
-                "and combines K noPE with a RoPE key side-channel."
+            "label": (
+                "KV cache path" if attention.cached is True
+                else "Compressed KV path"
             ),
-            "facts": [f"cache rank {kv_rank}", CACHE_PORT_FACT],
+            "title": (
+                "MLA K/V cache path" if attention.cached is True
+                else "MLA compressed K/V path"
+            ),
+            "description": (
+                "Compresses the hidden state into a low-rank K/V representation "
+                "and expands its K/V content."
+                + (
+                    " The latent is written to the runtime cache."
+                    if attention.cached is True
+                    else " Cache behavior remains unresolved."
+                    if attention.cached is None
+                    else ""
+                )
+                + (
+                    " The key content is combined with a proven RoPE side-channel."
+                    if rope_proven else
+                    " Key-position application remains unresolved."
+                )
+            ),
+            "facts": (
+                [f"cache rank {kv_rank}", CACHE_PORT_FACT]
+                if attention.cached is True
+                else [f"latent rank {kv_rank}", "cache unresolved"]
+                if attention.cached is None
+                else [f"latent rank {kv_rank}", "not cached"]
+            ),
             "view": "mla_kv_cache_path",
             "children": kv_children,
         },
         {
             "id": "scaled_scores",
             "label": "Latent scores",
-            "title": "Multi-Head Latent scores",
-            "description": "Q attends to expanded latent K plus the RoPE key side-channel; scores use QK^T / sqrt(dim)",
+            "title": (
+                "Multi-Head Latent scores"
+                if attention.scores_scaled is not None
+                or attention.scores_scale is not None
+                else "Multi-Head Latent scores (scaling unresolved)"
+            ),
+            "description": (
+                "Q attends to the expanded latent K; score scaling is unresolved."
+                if attention.scores_scaled is None
+                and attention.scores_scale is None
+                else "Q attends to the expanded latent K; scores use raw QK^T."
+                if attention.scores_scaled is False
+                else "Q attends to the expanded latent K; scores use an explicit scale."
+            ),
         },
         {
             "id": "attn_softmax",

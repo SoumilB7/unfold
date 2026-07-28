@@ -9,9 +9,6 @@ implementation (no transformer→diffusor dependency).
 """
 from __future__ import annotations
 
-from typing import Any
-
-
 def hydrate_encoder_config_facts(c: dict) -> dict:
     """Fill config-class DEFAULTS invisible in a raw component config.json.
 
@@ -47,11 +44,6 @@ def normalize_encoder_config(c: dict, context=None, binding=None) -> dict:
     from contextlib import nullcontext
 
     from .evidence.context import ParseContext
-    from .evidence.ffn import ffn_structure_evidence
-    from .evidence.patterns import (
-        attention_score_scaling_from_files,
-        decoder_ffn_activation_from_files,
-    )
     from .adapters.transformer.parser import parse as _parse_transformer
 
     from .evidence.document import (
@@ -92,10 +84,7 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     """Project the parsed IR into the neutral encoder spec.  Runs INSIDE the
     slot's bound document scope, so the evidence reads below stay located."""
     from .evidence.ffn import ffn_structure_evidence
-    from .evidence.patterns import (
-        attention_score_scaling_from_files,
-        decoder_ffn_activation_from_files,
-    )
+    from .evidence.patterns import decoder_ffn_activation_from_files
     # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
     # type, and a heterogeneous stack (sliding/global alternation, hybrid
     # full/linear mixers) additionally carries one entry per distinct signature
@@ -180,7 +169,6 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     out["ffn_evidence"] = ffn_evidence.to_dict()
     if ffn_evidence.status == "proven":
         out["ffn_projection_mode"] = ffn_evidence.projection_mode
-    scaled = attention_score_scaling_from_files(files)
     position = (ir.extras or {}).get("position_encoding")
 
     # The ONE facts-only sub-model spec — groups, schedule, per-group typed
@@ -193,7 +181,6 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     out["sub_model"] = submodel_spec(
         ir,
         altitude="tower",
-        scores_scaled=scaled,
         norm_label=norm,
         activation=act,
         gated=gated,

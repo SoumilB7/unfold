@@ -16,7 +16,30 @@ from model_unfolder.opgraph import (
 from model_unfolder.renderers.html.op_render import region_to_graph
 from model_unfolder.renderers.html.graph import wiring_problems
 
-GQA = {"kind": "gqa", "num_heads": 32, "num_kv_heads": 8, "head_dim": 128}
+GQA = {
+    "kind": "gqa",
+    "num_heads": 32,
+    "num_kv_heads": 8,
+    "head_dim": 128,
+    "projection_mode": "split_qkv",
+    "scores_scaled": True,
+    "rope": True,
+    "position_kind": "rope",
+    "position_application": "qk_rotation",
+    "cached": True,
+}
+
+
+def _proven_mla(**values):
+    return {
+        "kind": "mla",
+        "cached": True,
+        "scores_scaled": True,
+        "rope": True,
+        "position_kind": "rope",
+        "position_application": "qk_rotation",
+        **values,
+    }
 
 
 def test_gated_ffn_resolves_to_a_gated_region():
@@ -130,8 +153,9 @@ def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
     from model_unfolder.renderers.html.graph_engine import _lane_draw_order
     from model_unfolder.renderers.html.op_render import region_to_graph
 
-    mla = {"kind": "mla", "num_heads": 128, "head_dim": 192, "q_lora_rank": 1536,
-           "kv_lora_rank": 512, "rope_dim": 64}
+    mla = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
     dsa = {**mla, "index_n_heads": 64, "index_head_dim": 128, "index_topk": 2048}
 
     # Additive: V3 and V3.2 share the SAME query/kv/V structure; DSA only adds the indexer.
@@ -153,8 +177,9 @@ def test_mla_indexer_is_additive_and_keeps_the_v_lane_off_the_spine():
 
 
 def test_mla_region_nests_the_two_path_subgraphs():
-    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
-            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
     r = attention_region(attn, 7168)
     kinds = {o.id: o.kind for o in r.ops}
     assert kinds["mla_query_path"] == kinds["mla_kv_path"] == "subgraph"
@@ -170,8 +195,9 @@ def test_concat_is_a_merge_glyph_while_head_merge_is_a_reshape_box():
     per-head outputs back to the model dim is a single-stream RESHAPE → a box. So a
     ‖ always means 'two named lanes joined here', never a relabelled 1-input op."""
     from model_unfolder.renderers.html.graph import KIND
-    attn = {"kind": "mla", "num_heads": 128, "head_dim": 192,
-            "q_lora_rank": 1536, "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(
+        num_heads=128, head_dim=192, q_lora_rank=1536,
+        kv_lora_rank=512, rope_dim=64)
 
     # SDPA spine: concat-of-heads is a reshape, NOT a concat.
     ch = next(o for o in attention_region(GQA, 4096).ops if o.id == "concat_heads")
@@ -220,10 +246,13 @@ def test_a_one_input_concat_is_flagged_dangling():
 
 
 def test_mla_kv_path_v_exits_as_a_labelled_output_lane():
-    attn = {"kind": "mla", "kv_lora_rank": 512, "rope_dim": 64}
+    attn = _proven_mla(kv_lora_rank=512, rope_dim=64)
     g = region_to_graph(mla_kv_region(attn, 7168), clickable=True)
     # spine runs through compression -> latent cache -> expansion -> K concat
-    assert g.flow[:5] == ["hidden", "mla_kv_down", "mla_cache", "mla_kv_up", "mla_k_merge"]
+    assert g.flow[:6] == [
+        "hidden", "mla_kv_down", "mla_latent", "mla_cache",
+        "mla_kv_up", "mla_k_merge",
+    ]
     lanes = g.parallels[0].norm_lanes()
     v = next(lane for lane in lanes if lane.ids == ["mla_v"])
     assert v.dst == [] and v.out_label == "V"

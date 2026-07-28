@@ -34,14 +34,14 @@ DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
 #   * the attention detail draws the Q/K/V projections (projection_mode), the
 #     score formula + its denominator (scores_scale), the mask / sliding-window
 #     strip (mask), the +bias / QK-Norm / RoPE nodes, and the region shape that
-#     names the family (attention_kind);
+#     carries the independently evidenced attention details;
 #   * the FFN / expert detail draws in->act->out or gate||up->x->down
 #     (activation, gated, projection_mode);
 #   * the architecture view draws the norm cells (norm_kind), their pre/post
 #     placement (norm_placement), and the head-tying note (tie_word_embeddings).
 ATTENTION_DRAWN = frozenset({
     "scores_scale", "projection_mode", "mask", "bias", "position_kind",
-    "qk_norm", "q_norm", "k_norm", "attention_kind", "sinks", "logit_softcap",
+    "qk_norm", "q_norm", "k_norm", "sinks", "logit_softcap",
 })
 ORDINARY_FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
 EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
@@ -57,12 +57,7 @@ MODEL_DRAWN = frozenset({"tie_word_embeddings"})
 # owner drawing the same leaf name.  The leaf-name sets above remain the
 # per-surface display/compat views; every GATE joins on these pairs.
 DRAWN_PAIRS = frozenset(
-    [("decoder.attention", leaf) for leaf in ATTENTION_DRAWN
-     if leaf != "attention_kind"]
-    # attention_kind is the DIFFUSION per-layer joint-attention tag — its
-    # ledger owner is layers[i].attention (REGISTRY owner_patterns), never
-    # the decoder-level attention owner.
-    + [("layers[i].attention", "attention_kind")]
+    [("decoder.attention", leaf) for leaf in ATTENTION_DRAWN]
     + [("decoder.ffn", leaf) for leaf in ORDINARY_FFN_DRAWN]
     + [("decoder.ffn.expert", leaf) for leaf in EXPERT_FFN_DRAWN]
     + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]

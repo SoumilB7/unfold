@@ -399,7 +399,7 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
 
 
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
-                   *, scaled: bool = True,
+                   *, scaled: bool | None = None,
                    scale: float | None = None,
                    softcap: float | None = None) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
@@ -407,12 +407,10 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
     ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
     1/sqrt(d) into initialization and matmuls unscaled scores) — drawing the
     sqrt there would fabricate an op the forward() never performs.
-    ``scale`` is a config-DECLARED constant that REPLACES the default
-    1/sqrt(head_dim) (Granite's attention_multiplier, Gemma-2's
-    query_pre_attn_scalar^-0.5) — the drawn denominator must be the real one,
-    never sqrt(dim) when the code divides by something else.
+    ``scale`` is a declared operand whose APPLICATION was independently proved
+    by ``scaled=True``.  A bare config constant never authors this operation.
     """
-    if scale is not None:
+    if scaled is True and scale is not None:
         inv = 1.0 / scale
         denom = (f"{inv:,.0f}" if abs(inv - round(inv)) < 1e-6 else f"{inv:.4g}")
         scores_meta = {
@@ -423,17 +421,28 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
                      "1/sqrt(head_dim) — the forward pass multiplies QK^T by "
                      "this declared value."),
         }
-    elif scaled:
+    elif scaled is True:
         scores_meta = {"numerator": "Q K^T", "denominator": "sqrt(dim)",
                        "formula": "QK^T/sqrt(dim)"}
-    else:
+    elif scaled is False:
         scores_meta = {
             "numerator": "Q K^T", "denominator": None, "formula": "QK^T",
             "desc": "Raw dot-product attention scores QK^T — this family folds "
                     "the 1/sqrt(d) scaling into its weight initialization, so "
                     "the forward pass adds no explicit scale."}
+    else:
+        scores_meta = {
+            "numerator": "Q K^T",
+            "status": "unresolved",
+            "desc": "Computes QK^T attention scores. Whether the forward applies "
+                    "an explicit scale is unresolved, so no denominator or "
+                    "scaling formula is asserted.",
+        }
     ops = [
-        Op("scaled_scores", "attention_core", fn="scaled_dot_product",
+        Op("scaled_scores", "attention_core",
+           "Attention scores (scaling unresolved)" if scaled is None else None,
+           fn=("scaled_dot_product" if scaled is True
+               else "dot_product"),
            meta=scores_meta),
         Op("attn_softmax", "activation", "Softmax", fn="softmax"),
         Op("attn_apply_v", "elementwise", fn="matmul"),
@@ -470,26 +479,35 @@ def _cross_kv_label(attn: dict) -> list[str]:
     return [str(attn.get("cross_kv_source"))]
 
 
+def _rope_application_proven(attn: dict) -> bool:
+    """Whether this exact attention fact proves Q/K rotary application."""
+    return (
+        attn.get("rope") is True
+        and attn.get("position_kind") == "rope"
+        and attn.get("position_application") == "qk_rotation"
+        and not attn.get("no_rope")
+    )
+
+
 def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     kind = attn["kind"]
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
     cross = bool(attn.get("cross_attention"))
-    # Cache ports show only for autoregressive K/V. `cached` defaults to `not cross`
-    # (causal LMs cache, cross-attn doesn't); an explicit False (diffusion DiT / ViT —
-    # bidirectional, non-AR) suppresses them honestly.
-    _cached = attn.get("cached")
-    cached = (not cross) if _cached is None else bool(_cached)
+    # Cache is an independent mechanism fact. Unknown must not acquire ports
+    # merely because this is self-attention or causal attention.
+    cached = attn.get("cached") is True
 
-    fused_qkv = attn.get("projection_mode") == "fused_qkv"
+    projection_mode = attn.get("projection_mode")
+    fused_qkv = projection_mode == "fused_qkv"
     if fused_qkv:
         ops = [
             Op("hidden", "input", out_features=hidden),
             Op("qkv_proj", "linear", "Linear (QKV)", in_features=hidden),
             Op("q_split", "slice", "Split Q", out_features=q_w),
             Op("k_split", "slice", "Split K", out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
             Op("v_split", "slice", "Split V", out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
         ]
         edges = [
             Edge("hidden", "qkv_proj"),
@@ -497,33 +515,55 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("qkv_proj", "v_split"), Edge("v_split", "attn_apply_v"),
         ]
         q_source, k_source = "q_split", "k_split"
-    else:
+        v_source = "v_split"
+    elif projection_mode == "split_qkv":
         ops = [
             Op("hidden", "input", out_features=hidden),
             Op("q_proj", "linear", "Linear (Q + gate)" if attn.get("output_gate") else "Linear (Q)",
                in_features=hidden, out_features=q_w),
             Op("k_proj", "linear", "Linear (K)", in_features=hidden, out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
             Op("v_proj", "linear", "Linear (V)", in_features=hidden, out_features=kv_w,
-               meta={"cached": cached}),
+               meta={"cached": True} if cached else {}),
         ]
         edges = [
             Edge("hidden", "q_proj"), Edge("v_proj", "attn_apply_v"),
         ]
         q_source, k_source = "q_proj", "k_proj"
+        v_source = "v_proj"
+    else:
+        # Known SDPA semantics do not prove how Q/K/V are stored. Preserve the
+        # score/softmax/value spine while keeping the projection stage opaque.
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            Op(
+                "qkv_projection_unresolved",
+                "opaque",
+                "Q/K/V projections (storage unresolved)",
+                in_features=hidden,
+                meta={"status": "unresolved"},
+            ),
+        ]
+        edges = [
+            Edge("hidden", "qkv_projection_unresolved"),
+            Edge("qkv_projection_unresolved", "attn_apply_v"),
+        ]
+        q_source = k_source = v_source = "qkv_projection_unresolved"
     kv_src = "hidden"
     if cross:
         ops.append(Op("cross_attention_states", "input", _cross_kv_label(attn)))
         kv_src = "cross_attention_states"
     core_ops, core_edges = _sdpa_core_ops(
         heads, head_dim, q_w, hidden,
-        scaled=attn.get("scores_scaled") is not False,
+        scaled=attn.get("scores_scaled"),
         scale=attn.get("scores_scale"),
         softcap=attn.get("logit_softcap"),
     )
     ops += core_ops
-    if not fused_qkv:
+    if projection_mode == "split_qkv":
         edges += [Edge(kv_src, "k_proj"), Edge(kv_src, "v_proj")]
+    elif projection_mode not in {"split_qkv", "fused_qkv"} and cross:
+        edges.append(Edge(kv_src, "qkv_projection_unresolved"))
     edges += core_edges
     if attn.get("sinks") and not cross:
         # Learned sink logits: an extra per-head column CONCATENATED onto the
@@ -563,7 +603,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("attn_output_mul", "o_proj"),
         ]
         q_source = "q_gate_split"
-    for lane, source_id in (("q", q_source), ("k", k_source), ("v", "v_split" if fused_qkv else "v_proj")):
+    for lane, source_id in (("q", q_source), ("k", k_source), ("v", v_source)):
         if not attn.get(f"{lane}_norm"):
             continue
         norm_id = f"{lane}_norm"
@@ -622,7 +662,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
     # the head and rotates only ``rope_dim`` of ``head_dim`` dims, passing the
     # rest through untouched — drawing a full rotation would fabricate math the
     # forward never performs, so the op states the real fraction.
-    if attn.get("rope", True) and not attn.get("no_rope") and not cross:
+    if _rope_application_proven(attn) and not cross:
         rope_dim = attn.get("rope_dim")
         head_dim = attn.get("head_dim")
         partial = (isinstance(rope_dim, int) and isinstance(head_dim, int)
@@ -647,14 +687,22 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
     compressed-KV path (both :func:`subgraph` ops with their own regions)
     feeding the shared SDPA spine."""
     heads, _, head_dim, q_w, _ = _head_geometry(attn, hidden)
+    cached = attn.get("cached")
+    kv_label = "KV cache path" if cached is True else "Compressed KV path"
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_query_path", "subgraph", "Query path",
            in_features=hidden, out_features=q_w),
-        Op("mla_kv_path", "subgraph", "KV cache path",
-           in_features=hidden, meta={"cached": True}),
+        Op("mla_kv_path", "subgraph", kv_label,
+           in_features=hidden,
+           meta={"cached": True} if cached is True else {}),
     ]
-    core_ops, core_edges = _sdpa_core_ops(heads, head_dim, q_w, hidden)
+    core_ops, core_edges = _sdpa_core_ops(
+        heads, head_dim, q_w, hidden,
+        scaled=attn.get("scores_scaled"),
+        scale=attn.get("scores_scale"),
+        softcap=attn.get("logit_softcap"),
+    )
     ops += core_ops
     edges = [
         Edge("hidden", "mla_query_path"), Edge("hidden", "mla_kv_path"),
@@ -686,13 +734,25 @@ def mla_query_region(attn: dict, hidden: int | None) -> Region:
         Op("hidden", "input", out_features=hidden),
         Op("mla_q", "linear", "Query projection",
            in_features=hidden, out_features=q_w, meta={"lora_rank": q_rank}),
+    ]
+    edges = [Edge("hidden", "mla_q")]
+    if not _rope_application_proven(attn):
+        ops.append(Op(
+            "mla_q_position_unresolved", "opaque",
+            "Query position application unresolved",
+            meta={"status": "unresolved"},
+        ))
+        edges.append(Edge("mla_q", "mla_q_position_unresolved"))
+        return Region(
+            "mla_query_path", "attention", "MLA query path",
+            ops, edges, template="mla_query")
+    ops += [
         Op("mla_q_nope", "slice", "Q noPE"),
         Op("mla_q_rope", "slice", "Q RoPE"),
         Op("mla_q_rope_apply", "rope", ["apply RoPE", "Q side"]),
         Op("mla_q_concat", "concat", ["Q concat", "NoPE + RoPE"]),
     ]
-    edges = [
-        Edge("hidden", "mla_q"),
+    edges += [
         Edge("mla_q", "mla_q_nope"), Edge("mla_q", "mla_q_rope"),
         Edge("mla_q_rope", "mla_q_rope_apply"),
         Edge("mla_q_nope", "mla_q_concat"), Edge("mla_q_rope_apply", "mla_q_concat"),
@@ -704,27 +764,57 @@ def mla_kv_region(attn: dict, hidden: int | None) -> Region:
     """The MLA compressed-KV path: compress → latent cache → expand, with the
     RoPE key side-channel branching pre-cache and V leaving as its own output."""
     kv_rank = attn.get("kv_lora_rank")
+    cached = attn.get("cached")
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("mla_kv_down", "linear", "KV compression",
            in_features=hidden, out_features=kv_rank),
-        Op("mla_cache", "cache", ["latent cache c_t", "stored"],
-           meta={"stores": ["kv_latent"]}),
+        Op("mla_latent", "reshape", "Compressed KV latent"),
+    ]
+    edges = [
+        Edge("hidden", "mla_kv_down"),
+        Edge("mla_kv_down", "mla_latent"),
+    ]
+    latent_source = "mla_latent"
+    if cached is True:
+        ops.append(Op("mla_cache", "cache", ["latent cache c_t", "stored"],
+                      meta={"stores": ["kv_latent"]}))
+        edges += [Edge("mla_latent", "mla_cache")]
+        latent_source = "mla_cache"
+    ops += [
         Op("mla_kv_up", "linear", "KV expansion", in_features=kv_rank),
         Op("mla_k_nope", "slice", "K noPE"),
         Op("mla_v", "slice", ["V", "from latent"], meta={"out_label": "V"}),
+    ]
+    edges += [
+        Edge(latent_source, "mla_kv_up"),
+        Edge("mla_kv_up", "mla_k_nope"), Edge("mla_kv_up", "mla_v"),
+    ]
+    if not _rope_application_proven(attn):
+        ops.append(Op(
+            "mla_k_position_unresolved", "opaque",
+            "Key position application unresolved",
+            meta={"status": "unresolved"},
+        ))
+        edges += [
+            Edge("mla_kv_down", "mla_k_position_unresolved"),
+            Edge("mla_k_nope", "mla_k_position_unresolved"),
+        ]
+        return Region(
+            "mla_kv_path", "attention", "MLA compressed KV path",
+            ops, edges, template="mla_kv")
+    ops += [
         Op("mla_k_rope", "slice", "K RoPE"),
         Op("mla_k_rope_apply", "rope", ["apply RoPE", "K side"]),
         Op("mla_k_merge", "concat", ["K concat", "NoPE + RoPE"]),
     ]
-    edges = [
-        Edge("hidden", "mla_kv_down"),
-        Edge("mla_kv_down", "mla_cache"), Edge("mla_cache", "mla_kv_up"),
-        Edge("mla_kv_up", "mla_k_nope"), Edge("mla_kv_up", "mla_v"),
+    edges += [
         Edge("mla_kv_down", "mla_k_rope"), Edge("mla_k_rope", "mla_k_rope_apply"),
         Edge("mla_k_nope", "mla_k_merge"), Edge("mla_k_rope_apply", "mla_k_merge"),
     ]
-    return Region("mla_kv_cache_path", "attention", "MLA KV cache path", ops, edges, template="mla_kv")
+    return Region(
+        "mla_kv_path", "attention", "MLA compressed KV path",
+        ops, edges, template="mla_kv")
 
 
 def _ssm_region(attn: dict, hidden: int | None) -> Region:

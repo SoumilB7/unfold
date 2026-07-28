@@ -116,21 +116,31 @@ def _kv_sharing_aside(attn: dict) -> dict | None:
     kv_heads = attn.get("num_kv_heads") or heads
     # A prompt encoder runs once — there is no autoregressive KV cache to
     # shrink; the sharing still cuts the K/V projections themselves.
-    cached = attn.get("cached", True) is not False
+    cached = attn.get("cached")
     if kind == "mqa" and heads > 1:
         return {
-            "title": "Shared K/V cache" if cached else "Shared K/V heads",
+            "title": "Shared K/V cache" if cached is True else "Shared K/V heads",
             "rows": [("1 K + 1 V", f"reused by {heads} Q")],
-            "footer": [f"KV cache {heads}x smaller" if cached
-                       else f"{heads}x fewer K/V projections", "than full MHA"],
+            "footer": (
+                [f"KV cache {heads}x smaller", "than full MHA"]
+                if cached is True
+                else [f"{heads}x fewer K/V heads", "cache behavior unresolved"]
+                if cached is None
+                else [f"{heads}x fewer K/V heads", "than full MHA"]
+            ),
         }
     if kind != "gqa" or not heads or not kv_heads or heads % kv_heads:
         return None
     per_group = heads // kv_heads
     aside = {"title": "KV sharing pattern", "rows": _gqa_rows(heads, kv_heads, per_group)}
     if per_group > 1:
-        aside["footer"] = [f"KV cache {per_group}x smaller" if cached
-                           else f"{per_group}x fewer K/V projections", "than full MHA"]
+        aside["footer"] = (
+            [f"KV cache {per_group}x smaller", "than full MHA"]
+            if cached is True
+            else [f"{per_group}x fewer K/V heads", "cache behavior unresolved"]
+            if cached is None
+            else [f"{per_group}x fewer K/V heads", "than full MHA"]
+        )
     return aside
 
 

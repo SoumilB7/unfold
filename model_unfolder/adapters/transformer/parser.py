@@ -245,13 +245,13 @@ def _attention_storage_result(context, config_path):
     )
 
 
-def _code_attention_fused_qkv(
-        cfg: Any, context=None, *, config_path=()) -> bool | None:
+def _code_attention_storage_mode(
+        cfg: Any, context=None, *, config_path=()) -> str | None:
     """Owner-qualified Q/K/V storage; uncertainty never becomes split/fused."""
     result = _attention_storage_result(context, config_path)
     if result is None or result.status != "resolved":
         return None
-    return result.value == "fused_qkv"
+    return "split_qkv" if result.value == "split" else result.value
 
 
 def _qk_norm_result(context=None, *, config_path=()):
@@ -285,34 +285,35 @@ def _code_qk_norm(cfg: Any, context=None, *, config_path=()):
 
 
 def _resolve_qk_norm_layers(
-        code_ev, cfg, declared: bool, num_layers: int, *,
-        context=None, config_path=()) -> list[bool]:
+        code_ev, cfg, num_layers: int, *,
+        context=None, config_path=()) -> list[bool | None]:
     """Per-layer Q/K-norm facts from the code evidence.
 
     Code-first resolution: unconditional construction → True everywhere (the
     config is not consulted); gated → AND of the values of the exact config
     fields the code itself names, read from THIS checkpoint (per-layer when the
     code indexes by layer index); no positive source proof / unresolvable gate
-    → the declared spelling.  Source silence never proves absence."""
+    → unknown. A declaration without an exact owner-bound use is not a
+    mechanism fact. Source silence never proves absence."""
     n = max(int(num_layers or 0), 0)
     if code_ev is None:
-        return [declared] * n
+        return [None] * n
     if code_ev.present is True:
         return [True] * n
     per_layer = [True] * n
     for atom in code_ev.gate:
         if tuple(atom.config_path[:-1]) != tuple(config_path):
-            return [declared] * n
+            return [None] * n
         if context is None:
             missing = object()
             raw = _g(cfg, atom.field, missing)
             if raw is missing:
-                return [declared] * n
+                return [None] * n
         else:
             resolution = _config_access.resolve(
                 cfg, atom.field, (), path=tuple(config_path))
             if resolution.ambiguous or not resolution.present:
-                return [declared] * n
+                return [None] * n
             raw = resolution.consume_decision(
                 mechanism="qk_norm_gate",
                 fact_owner="decoder.attention",
@@ -321,11 +322,11 @@ def _resolve_qk_norm_layers(
             ).value
         if atom.per_layer:
             if not isinstance(raw, (list, tuple)) or len(raw) < n:
-                return [declared] * n
+                return [None] * n
             per_layer = [p and bool(raw[i]) for i, p in enumerate(per_layer)]
         else:
             if raw is None:
-                return [declared] * n
+                return [None] * n
             per_layer = [p and bool(raw) for p in per_layer]
     return per_layer
 
@@ -1177,7 +1178,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _code_storage_mode = _code_ffn_storage_mode(
         text_cfg, context, expected_gated=_code_gated,
         config_path=_text_path)
-    _code_fused_qkv = _code_attention_fused_qkv(
+    _code_attention_storage = _code_attention_storage_mode(
         text_cfg, context, config_path=_text_path)
     _code_position_evidence = _code_position(cfg, context)
     # Projection storage is mechanism-scoped too.  Do not manufacture an
@@ -1186,12 +1187,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact("decoder.ffn", "projection_mode",
                    _code_storage_mode, "code_proven",
                    source="decoder_ffn_mechanism_for_path")
-    _note_fact("decoder.attention", "projection_mode",
-               "fused_qkv" if _code_fused_qkv else "split",
-               "code_proven" if _code_fused_qkv is not None else "asserted",
-               source=("decoder_attention_projection_storage_for_path"
-                       if _code_fused_qkv is not None
-                       else "split convention kept (storage unproven)"))
+    _note_fact(
+        "decoder.attention", "projection_mode",
+        _code_attention_storage,
+        "code_proven" if _code_attention_storage is not None else _unknown_status,
+        source=("decoder_attention_projection_storage_for_path"
+                if _code_attention_storage is not None else None),
+    )
     # Placement (B2, U2 default-kill), two unknown tiers:
     # * source ABSENT (oracle_missing) → typed "unknown": the layer draws its
     #   declared sublayers plus ONE pale "code-defined wiring" block (the
@@ -1214,29 +1216,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
     norm_placement_conventional = norm_placement_defaulted and _source_present
     if not norm_placement:
         norm_placement = "pre" if _source_present else "unknown"
-    # Position scheme: configured source evidence asserts a mechanism when it
-    # can (code_proven).  U2 P3a — the CONFIG-DECLARED fallback: when the code
-    # channel is oracle_missing/ambiguous but the config itself declares RoPE
-    # (a θ / a scaling dict, alias spellings in aliases.yaml), RoPE is drawn
-    # as CONFIG-DECLARED — a "θ=… (config-declared)" chip states the tier,
-    # replacing the honest-unknown banner.  A family convention is still not
-    # evidence: no declaration ⇒ typed unknown, exactly as before.
+    # Position application is a mechanism fact. A declared theta/scaling value
+    # remains visible to the config ledger, but cannot create Q/K rotation.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
-    _declared_theta = get("rope_theta")
     # U2-R7: the rope container DICT occurrence itself feeds the uses_rope
     # decision — consumed once here; every later reader reuses this value.
     _declared_scaling = consume("rope_scaling",
                                 fact_owner="decoder.attention", fact_key="rope")
-    _rope_config_declared = False
     if _code_position_evidence.status == "proven":
         uses_rope = "rope" in _code_position_evidence.kinds
-    elif _declared_theta is not None or isinstance(_declared_scaling, dict):
-        uses_rope = True
-        _rope_config_declared = True
-        _note_fact("decoder.attention", "position", "rope", "config_declared",
-                   "rope_theta" if _declared_theta is not None else "rope_scaling")
     else:
-        uses_rope = False
+        uses_rope = None
         if _code_position_evidence.status == "oracle_missing":
             warnings.append(
                 "Modeling source is unavailable; the positional scheme remains unknown."
@@ -1324,7 +1314,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
     # ---- Position encoding ----
     no_rope_interval     = _g(text_cfg, "no_rope_layer_interval") or 0
-    no_rope_list         = _g(text_cfg, "no_rope_layers")   # materialized per-layer use_rope flags
+    no_rope_list_declared = _g(text_cfg, "no_rope_layers")
+    # These values announce a per-layer selector but do not prove its source
+    # semantics. Until U8 binds the selector, projecting model-wide RoPE onto
+    # every layer would be as wrong as fabricating NoPE on selected layers.
+    position_schedule_unresolved = bool(
+        no_rope_interval or isinstance(no_rope_list_declared, (list, tuple))
+    )
     _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
     rotary_pct           = _g(text_cfg, "rotary_pct")
     rotary_dim           = _g(text_cfg, "rotary_dim")
@@ -1417,16 +1413,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # U2-R7: the three rival spellings are ONE fact — resolved together (alias
     # law: equal = redundant, unequal = typed ambiguity that authors nothing)
     # and consumed into the qk_norm decision.
-    _qk_res = _config_access.resolve(
+    _config_access.resolve(
         text_cfg, "use_qk_norm", ("qk_norm", "qk_layernorm"), path=_text_path)
-    _qk_declared = None if _qk_res.ambiguous else _qk_res.consume_decision(
-        mechanism="qk_norm", fact_owner="decoder.attention",
-        fact_key="qk_norm",
-        reader="adapters.transformer.parser.parse").value
-    use_qk_norm = bool(_qk_declared)
+    use_qk_norm = None
     qk_norm_layers = _resolve_qk_norm_layers(
         _code_qk_norm(text_cfg, context, config_path=_text_path),
-        text_cfg, use_qk_norm, num_layers,
+        text_cfg, num_layers,
         context=context, config_path=_text_path)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
@@ -1437,52 +1429,46 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # silent False indistinguishable from proven-False.
     # U2-R7: consumed into the bias fact/spec — every alias spelling
     # (use_qkv_bias, add_qkv_bias, ...) resolves through this ONE read.
-    _declared_attn_bias = consume("attention_bias",
-                                  fact_owner="decoder.attention",
-                                  fact_key="bias")
-    if _declared_attn_bias is None:
-        _declared_attn_bias = _g(attn_cfg, "attention_bias")
+    # U4-B keeps the declaration visible in the owner-scoped access ledger,
+    # but it cannot decide the fact.  U6 will bind the winning spelling to the
+    # exact ``Linear(..., bias=config.<field>)`` expression; until then the
+    # occurrence is explicit pending debt rather than an unread config field.
+    _config_access.resolve(
+        text_cfg, "attention_bias", _ALIASES.get("attention_bias", ()),
+        path=_text_path,
+    )
     _code_bias = _code_attention_bias(
         text_cfg, context, config_path=_text_path)
-    # class_default tier: ``Linear(bias=config.attention_bias)`` reads the
-    # config ATTRIBUTE at runtime — an absent key resolves to the installed
-    # config class's default, real evidence (the hydration channel) and the
-    # same value the hydrated embedded/sub-model rail sees (parity net).
-    _cls_defaults = _fact_class_defaults
     if _code_bias is not None:
         use_attention_bias = bool(_code_bias)
         _note_fact("decoder.attention", "bias", use_attention_bias,
                    "code_proven", "decoder_attention_bias_for_path")
-    elif _declared_attn_bias is not None:
-        use_attention_bias = bool(_declared_attn_bias)
-        _note_fact("decoder.attention", "bias", use_attention_bias,
-                   "config_declared", "attention_bias")
-    elif _cls_defaults.get("attention_bias") is not None:
-        use_attention_bias = bool(_cls_defaults["attention_bias"])
-        _note_fact("decoder.attention", "bias", use_attention_bias,
-                   "class_default",
-                   "installed config-class default (AutoConfig.for_model)")
     else:
         use_attention_bias = None
         _note_fact("decoder.attention", "bias", None, _unknown_status, None)
-    # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).  A
-    # config-DECLARED scale is a stronger, load-bearing statement: when one
-    # exists the declared float wins and the silent-scale read is ignored.
+    # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).
+    # A declared constant supplies the OPERAND only after code has proved that
+    # this exact attention path applies a scale.  A number in config cannot,
+    # by itself, manufacture an operation.
     code_scores_scaled = _code_scores_scaled(text_cfg, context)
+    _declared_score_scale = (
+        attention_multiplier is not None or bool(query_pre_attn_scalar)
+    )
+    _applied_declared_scale = bool(
+        _declared_score_scale and code_scores_scaled is True
+    )
     _note_fact("decoder.attention", "scores_scale",
-               "declared" if (attention_multiplier is not None
-                              or query_pre_attn_scalar) else
-               ("unscaled (raw QK^T)" if code_scores_scaled is False
-                else "sqrt(head_dim)"),
-               "config_declared" if (attention_multiplier is not None
-                                     or query_pre_attn_scalar)
+               "declared" if _applied_declared_scale else
+               "unscaled (raw QK^T)" if code_scores_scaled is False else
+               "sqrt(head_dim)" if code_scores_scaled is True else None,
+               "code_and_config" if _applied_declared_scale
                else "code_proven" if code_scores_scaled is not None
-               else "asserted",
+               else _unknown_status,
                source=("attention_multiplier/query_pre_attn_scalar"
-                       if (attention_multiplier is not None or query_pre_attn_scalar)
+                       if _applied_declared_scale
                        else "attention_score_scaling_from_files"
                        if code_scores_scaled is not None
-                       else "sqrt(dim) convention kept"))
+                       else None))
     # Learned sink logits in the softmax — config-silent, code-only.
     code_attention_sinks = _code_attention_sinks(
         text_cfg, context, config_path=_text_path)
@@ -1762,15 +1748,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         else:
             attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads,
                                         has_multi_query_flag)
-        # NoPE placement comes from the field the code actually indexes
-        # (``self.use_rope = config.no_rope_layers[layer_idx]`` — truthy means
-        # the layer USES rope), falling back to the interval rule with the
-        # config class's own phase: ``use_rope = (i + 1) % interval != 0`` puts
-        # NoPE at layers 3, 7, 11…, not 0, 4, 8….
-        if isinstance(no_rope_list, (list, tuple)) and i < len(no_rope_list):
-            is_nope = not bool(no_rope_list[i])
-        else:
-            is_nope = bool(no_rope_interval > 1 and (i + 1) % no_rope_interval == 0)
         # The layer TYPE follows the declared schedule alone: a bare component
         # config (mllama_text_model) declares cross_attention_layers without a
         # vision_config sibling, and its cross layers ARE cross-attention
@@ -1787,15 +1764,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     CrossLayerEdge(kind="kv_share", from_layer=kv_source, to_layer=i, shared=["K", "V"])
                 )
 
-        position_mechanism = _position_for_layer(
-            _code_position_evidence, mixer_kind=mixer_kind,
+        position_mechanism = (
+            ("unknown", "unknown")
+            if position_schedule_unresolved
+            else _position_for_layer(
+                _code_position_evidence, mixer_kind=mixer_kind,
+            )
         )
-        if (_rope_config_declared and position_mechanism[0] == "unknown"
-                and not is_mixer):
-            # U2 P3a: the config-declared RoPE fallback projects onto the
-            # layer (chip carries the declared tier), replacing the
-            # position-unresolved chip.
-            position_mechanism = ("rope", "qk_rotation")
+        layer_uses_rope = None if position_schedule_unresolved else uses_rope
+        # NoPE is a mechanism claim. U8 will restore interleaved schedules after
+        # proving the exact source selector; raw list/interval values cannot
+        # author it in U4.
+        is_nope = position_mechanism == ("none", "none")
         attn = AttentionSpec(
             kind=attn_kind,
             num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
@@ -1811,18 +1791,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=qk_norm_layers[i] if i < len(qk_norm_layers) else use_qk_norm,
-            rope=uses_rope and not is_mixer,
+            rope=(layer_uses_rope and not is_mixer),
             position_kind=position_mechanism[0],
             position_application=position_mechanism[1],
-            # U2 P3a: the declared-tier marker + θ ride the spec only on the
-            # config-declared fallback (chip says "(config-declared)").
-            position_declared=(_rope_config_declared
-                               and position_mechanism[0] == "rope"),
-            rope_theta_declared=(
-                float(_declared_theta)
-                if (_rope_config_declared and position_mechanism[0] == "rope"
-                    and isinstance(_declared_theta, (int, float)))
-                else None),
+            position_declared=False,
+            rope_theta_declared=None,
             bias=use_attention_bias,
             no_rope=is_nope,
             cross_attention=is_cross_attn_layer and not cross_attention_additive,
@@ -1844,28 +1817,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
             mrope_section=mrope_section,
             conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
             output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
-            scores_scale=_declared_scores_scale(
-                attention_multiplier, query_pre_attn_scalar,
-                layer_head_dim or (hidden_size // num_heads
-                                   if hidden_size and num_heads else None)),
-            # only a False verdict changes rendering, and only when no config-
-            # declared scale contradicts it (declared float > silent-scale read)
-            scores_scaled=(False if (code_scores_scaled is False
-                                     and attention_multiplier is None
-                                     and not query_pre_attn_scalar) else None),
+            scores_scale=(
+                _declared_scores_scale(
+                    attention_multiplier, query_pre_attn_scalar,
+                    layer_head_dim or (hidden_size // num_heads
+                                       if hidden_size and num_heads else None)
+                )
+                if _applied_declared_scale else None
+            ),
+            scores_scaled=code_scores_scaled,
             sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
             logit_softcap=attn_logit_softcap,
-            # B5/U2: mask is no longer taggable-asserted — it is either
-            # evidence-backed (decoder-ness / schedule / bidirectional flag)
-            # or a typed "unknown" drawn honestly. The sqrt(dim) scores
-            # denominator remains asserted when neither a declared scale nor
-            # the code verdict backs it (JSON-only; SVG-hash stable).
-            asserted=tuple(
-                ["scores_scale"] if (code_scores_scaled is None
-                                     and attention_multiplier is None
-                                     and not query_pre_attn_scalar) else []),
-            projection_mode=("fused_qkv" if (_code_fused_qkv and attn_kind in ("mha", "gqa", "mqa")
-                                             and not is_gated_delta) else None),
+            asserted=(),
+            projection_mode=(
+                _code_attention_storage
+                if attn_kind in ("mha", "gqa", "mqa")
+                and not is_gated_delta
+                else None
+            ),
             variant=_mixer_variant(mixer_kind),
         )
 
@@ -1941,7 +1910,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                               if _cross_kv_heads_declared else layer_kv_heads),
                 head_dim=layer_head_dim,
                 mask="full",
-                rope=False,
+                rope=None,
+                position_kind="unknown",
+                position_application="unknown",
                 bias=use_attention_bias,
                 cross_attention=True,
                 # U2-R9: structural prose, identity-free — the slot's declared
@@ -2194,7 +2165,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
     #      dense-MLP + MoE, post-FFN norm, and a per-layer learned scalar —
     #      none of which the generic decoder_layer topology expresses (the block
     #      builder is the opaque-source fallback for these research models).
-    #   3. qk_norm: Q/K/V norms are unconditional in __init__ (not a config flag).
     # Block-diffusion layout is a CONFIG fact (canvas_length declares the
     # denoising canvas) — never a model_type spelling.  A block-diffusion
     # config without canvas_length renders as the plain decoder its config
@@ -2228,7 +2198,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "& decoder (bidirectional)",
         ]
         for layer in layers:
-            layer.attention.qk_norm = True
             layer.blocks = diffusion_gemma_layer_blocks(
                 layer.attention,
                 layer.ffn,

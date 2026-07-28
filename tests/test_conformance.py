@@ -994,7 +994,11 @@ _EXPECTED_NESTED_UNRESOLVED = {
     # Expert drills are intentionally absent here: their storage/mechanism is
     # unknown, so they render the explicit one-node ``opaque`` view and make no
     # decomposed compute claim for conformance to resolve.
-    "self_cond": {"gqa-attn", "ffn", "moe_router"},
+    # The attention drill is now source-resolved: the tuple/frozenset
+    # ForwardOps record-shape fix lets the conformance reader see the real
+    # rotary/signature evidence instead of silently abstaining.  FFN/router
+    # attribution remains genuinely unresolved.
+    "self_cond": {"ffn", "moe_router"},
     # MusicGen's nested decoder is now joined to its exact component/config
     # path and exact inline FFN owner; the former audio/ffn unresolved pin was
     # retired by the shared U3 FFN result.
