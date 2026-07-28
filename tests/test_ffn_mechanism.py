@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 import textwrap
 
@@ -13,6 +14,8 @@ from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
 from model_unfolder.evidence.decoder_block import decoder_block_path_for_config
 from model_unfolder.evidence.ffn_mechanism import (
+    ConditionalFFNEntry,
+    EquivalentFFNMechanism,
     decoder_ffn_mechanism_for_path,
     ffn_mechanism_at_block,
 )
@@ -509,6 +512,224 @@ class FeedForward:
     assert result.status == "failed"
 
 
+def _conditional_reader(
+        tmp_path, *, direct_class="DirectGated",
+        wrapper_forward="return x + self.shared(x)",
+        assignments=None):
+    assignments = assignments or """
+        if config.use_routed:
+            self.ffn = RoutedWrapper(config)
+        else:
+            self.ffn = DirectGated(config)
+"""
+    source = _PREFIX + _ATTENTION + """
+class DirectGated:
+    def __init__(self, config):
+        self.gate = nn.Linear(config.hidden, config.wide)
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = ACT2FN[config.hidden_act]
+    def forward(self, x):
+        return self.down(self.act(self.gate(x)) * self.up(x))
+
+class DirectDense:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = ACT2FN[config.hidden_act]
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+
+class RoutedWrapper:
+    def __init__(self, config):
+        self.shared = DirectGated(config)
+    def forward(self, x):
+        __WRAPPER_FORWARD__
+
+class Block:
+    def __init__(self, config):
+__ASSIGNMENTS__
+    def forward(self, x):
+        return self.ffn(x)
+
+class Model:
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+class Wrapper:
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Model(config)
+""".replace("__WRAPPER_FORWARD__", wrapper_forward).replace(
+        "__ASSIGNMENTS__", textwrap.indent(
+            textwrap.dedent(assignments).strip(), "        ")).replace(
+        "self.ffn = DirectGated(config)",
+        f"self.ffn = {direct_class}(config)")
+    path = tmp_path / "conditional.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    assert root.status == "resolved"
+    block = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert block.status == "resolved", block.failures
+    return ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence)
+
+
+def test_exhaustive_dense_and_invoked_shared_paths_must_unanimously_agree(
+        tmp_path):
+    result = _conditional_reader(tmp_path)
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "split"
+    assert result.value.gated is True
+    assert result.value.activation_config_path == ("hidden_act",)
+    assert len(result.value.variants) == 2
+    assert {len(item.invocations) for item in result.value.variants} == {0, 1}
+
+
+def test_equivalent_ffn_evidence_rejects_semantic_or_entry_forgeries(tmp_path):
+    result = _conditional_reader(tmp_path)
+    value = result.value
+    first, second = value.variants
+    disagreeing = replace(
+        second, activation="gelu", activation_config_path=())
+    with pytest.raises(ValueError, match="identical semantics"):
+        EquivalentFFNMechanism(
+            value.block_occurrence, (first, disagreeing))
+
+    unguarded_site = replace(
+        first.conditional_entry.site, guard=())
+    with pytest.raises(ValueError, match="preserve its construction guard"):
+        ConditionalFFNEntry(
+            first.block_occurrence,
+            first.conditional_entry.call,
+            unguarded_site,
+            first.conditional_entry.candidate)
+
+    different_call = replace(
+        second.conditional_entry.call,
+        lexical_order=second.conditional_entry.call.lexical_order + 1)
+    with pytest.raises(ValueError, match="one exact block invocation"):
+        EquivalentFFNMechanism(
+            value.block_occurrence,
+            (first, replace(
+                second,
+                conditional_entry=replace(
+                    second.conditional_entry, call=different_call))))
+
+    non_exhaustive_site = replace(
+        second.conditional_entry.site,
+        guard=first.conditional_entry.site.guard)
+    with pytest.raises(ValueError, match="one exhaustive decision"):
+        EquivalentFFNMechanism(
+            value.block_occurrence,
+            (first, replace(
+                second,
+                conditional_entry=replace(
+                    second.conditional_entry, site=non_exhaustive_site))))
+
+
+def test_conditional_dense_and_shared_mechanisms_that_disagree_are_ambiguous(
+        tmp_path):
+    result = _conditional_reader(tmp_path, direct_class="DirectDense")
+    assert result.status == "ambiguous"
+
+
+def test_constructed_but_uninvoked_shared_ffn_cannot_certify_a_wrapper(
+        tmp_path):
+    result = _conditional_reader(tmp_path, wrapper_forward="return x")
+    assert result.status == "failed"
+
+
+def test_non_exhaustive_conditional_constructions_remain_unknown(tmp_path):
+    result = _conditional_reader(
+        tmp_path,
+        assignments="""
+        if config.first:
+            self.ffn = RoutedWrapper(config)
+        if config.second:
+            self.ffn = DirectGated(config)
+""")
+    assert result.status == "failed"
+
+
+def test_an_exact_direct_ffn_cannot_hide_a_second_rival_invoked_field(tmp_path):
+    result_path = tmp_path / "two_fields"
+    result_path.mkdir()
+    _conditional_reader(result_path)
+    path = result_path / "conditional.py"
+    text = path.read_text(encoding="utf-8").replace(
+        "            self.ffn = DirectGated(config)\n"
+        "    def forward(self, x):\n"
+        "        return self.ffn(x)",
+        "            self.ffn = DirectGated(config)\n"
+        "        self.ordinary = DirectGated(config)\n"
+        "    def forward(self, x):\n"
+        "        x = self.ordinary(x)\n"
+        "        return self.ffn(x)")
+    path.write_text(text, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(index, root, allow_root_stage=True)
+    result = ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence)
+    assert result.status == "ambiguous"
+
+
+def test_guarded_block_invocation_does_not_become_a_global_ffn_claim(tmp_path):
+    # Construction is exhaustive, but use is not: the block can bypass the
+    # selected field.  A model-level FFN summary must therefore abstain.
+    source = """
+        if config.use_routed:
+            self.ffn = RoutedWrapper(config)
+        else:
+            self.ffn = DirectGated(config)
+"""
+    # The helper's block invocation is intentionally unguarded; build a close
+    # negative by changing the generated source after construction.
+    result_path = tmp_path / "nested"
+    result_path.mkdir()
+    _conditional_reader(result_path, assignments=source)
+    path = result_path / "conditional.py"
+    text = path.read_text(encoding="utf-8").replace(
+        "    def forward(self, x):\n        return self.ffn(x)\n\nclass Model:",
+        "    def forward(self, x):\n"
+        "        if self.training:\n"
+        "            return self.ffn(x)\n"
+        "        return x\n\nclass Model:")
+    path.write_text(text, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(index, root, allow_root_stage=True)
+    result = ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence)
+    assert result.status == "failed"
+
+
 @pytest.mark.parametrize(("slug", "config_path", "mode"), [
     # BLOOM's two branches are accepted only because both are proven to use the
     # exact same stored down projection (module call vs F.linear(weight slices)).
@@ -517,11 +738,13 @@ class FeedForward:
     ("stablelm-2-1-6b", (), "split"),
     ("qwen2-vl-7b-instruct", ("text_config",), "split"),
     ("musicgen-small", ("decoder",), "dense"),
-    # Hybrid/routed blocks are not ordinary FFNs. Their mechanisms belong to
-    # the separate router/expert reader; this reader must abstain, never union
-    # a shared MLP and routed experts into one convenient answer.
-    ("deepseek-v3", (), None),
-    ("glm-4-5", (), None),
+    # These hybrid blocks have exhaustive dense-vs-MoE construction branches.
+    # The dense branch and the MoE wrapper's actually-invoked shared child each
+    # independently prove the same split gate/up/down mechanism.
+    ("deepseek-v3", (), "split"),
+    ("glm-4-5", (), "split"),
+    # Routed-only blocks still abstain: routed expert storage is a separate
+    # mechanism and cannot be laundered into an ordinary/shared FFN fact.
     ("gpt-oss-20b", (), None),
 ])
 def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
@@ -550,6 +773,8 @@ def test_real_decoder_ffn_examples_use_the_exact_selected_owner(
     ("stablelm-2-1-6b", (), "split", True),
     ("qwen2-vl-7b-instruct", ("text_config",), "split", True),
     ("musicgen-small", ("decoder",), "dense", False),
+    ("deepseek-v3", (), "split", True),
+    ("glm-4-5", (), "split", True),
 ])
 def test_parser_consumes_the_same_exact_ffn_result(
         slug, config_path, mode, gated):

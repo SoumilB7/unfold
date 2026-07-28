@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
+    OwnerGraph,
     OwnerOccurrenceId,
     require_resolved_component_root,
 )
@@ -194,19 +195,45 @@ def resolve_construction_call(
     call: CallObservation,
 ) -> ConstructionCallResolution:
     """Resolve one exact ``self.<field>(...)`` call to its construction site."""
-    if not isinstance(index, ProgramIndex):
-        raise TypeError("resolve_construction_call requires a ProgramIndex")
     root_resolution = require_resolved_component_root(
         root_resolution, caller="resolve_construction_call")
+    return resolve_construction_call_in_graph(
+        index, root_resolution.graph, caller, call)
+
+
+def resolve_construction_call_in_graph(
+    index: ProgramIndex,
+    graph: OwnerGraph,
+    caller: OwnerOccurrenceId,
+    call: CallObservation,
+) -> ConstructionCallResolution:
+    """Resolve a construction-backed call inside one already-proven owner graph.
+
+    This lower boundary does not establish a component root.  Its caller must
+    already own the graph's provenance (for example an exact conditional
+    construction alternative).  Keeping that distinction explicit lets a
+    mechanism reader inspect an isolated rival branch without relabelling the
+    branch as the model's declared component root.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "resolve_construction_call_in_graph requires a ProgramIndex")
+    if not isinstance(graph, OwnerGraph):
+        raise TypeError(
+            "resolve_construction_call_in_graph requires an OwnerGraph")
     if not isinstance(caller, OwnerOccurrenceId):
-        raise TypeError("resolve_construction_call requires an OwnerOccurrenceId caller")
+        raise TypeError(
+            "resolve_construction_call_in_graph requires an "
+            "OwnerOccurrenceId caller")
     if not isinstance(call, CallObservation):
-        raise TypeError("resolve_construction_call requires a CallObservation")
+        raise TypeError(
+            "resolve_construction_call_in_graph requires a CallObservation")
     field = _self_field(call.callee)
     if field is None:
-        raise ValueError("resolve_construction_call requires an exact self.<field> call")
+        raise ValueError(
+            "resolve_construction_call_in_graph requires an exact "
+            "self.<field> call")
 
-    graph = root_resolution.graph
     node = graph.node_for(caller)
     if node is None:
         return ConstructionCallResolution(

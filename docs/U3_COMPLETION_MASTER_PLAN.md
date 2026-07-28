@@ -654,6 +654,11 @@ The audit establishes:
   `a788288` and `306fd8e`;
 - source-proven BLOOM dense FFN, DeepSeek/GLM/GPT-OSS fused routed experts,
   MusicGen bias-free FFN, CLIP LayerNorm and GPT-OSS learned sinks;
+- a later bounded U7 correction,
+  `docs/U7_CONDITIONAL_SHARED_FFN_PROOF.md`, proves DeepSeek/GLM's
+  ordinary/shared split-gated mechanism across every exact exhaustive
+  construction alternative; this supersedes only the audit's temporary
+  generic-FFN conclusion and does not mark U7 complete;
 - no lawful exact T5/UMT5 encoder-block owner yet, so generic `Norm` is an
   honest unknown rather than a regression to be patched with config spelling;
 - 19 changed witnesses, 46 changed canonical surfaces after the surgical

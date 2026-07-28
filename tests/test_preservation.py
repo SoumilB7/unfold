@@ -94,9 +94,10 @@ def test_poison_corpus_input_change_is_detected():
     import hashlib
     manifest = json.loads(
         (pathlib.Path(mu.__file__).parent.parent /
-         "tests" / "preservation_manifest.json").read_text())
-    name, recorded = next(iter(sorted(manifest["corpus_inputs"].items())))
-    original = (_CORPUS / name).read_bytes()
+         "tests" / "preservation_expected_manifest.json").read_text())
+    slug, row = next(iter(sorted(manifest["witnesses"].items())))
+    recorded = row["input_sha256"]
+    original = (_CORPUS / f"{slug}.json").read_bytes()
     assert hashlib.sha256(original).hexdigest() == recorded  # inputs intact
     assert hashlib.sha256(original + b"\n{}").hexdigest() != recorded
 

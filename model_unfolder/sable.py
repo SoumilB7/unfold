@@ -193,7 +193,7 @@ _PROJECTION_AUDIT_BLOCKING = True
 # default (a fused-vs-split projection, a sqrt(head_dim) scale, a
 # concatenated-vs-separate FFN storage — presentation conventions, not fabricated
 # structure).  Keyed on the fact LEAF name (last dotted segment).
-_CENSUS_ALLOWED = frozenset({"scores_scale", "ffn_storage", "projection_mode"})
+_CENSUS_ALLOWED = frozenset({"scores_scale", "projection_mode"})
 
 # The census D-quadrant config (CONFIG_ABLATION_CENSUS.md appendix): identity is
 # kept as ADDRESS (so source/class-default channels can still resolve by it) and

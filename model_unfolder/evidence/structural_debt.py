@@ -468,12 +468,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            "U10", "status_retired:attention_kind:legacy_asserted",
            occurrence="REGISTRY['attention_kind'] value_types NoneType",
            module=_DP, symbol="parse", consumer=_JSON_DOC),
-    _drawn("ffn_storage", "layers[i].ffn",
-           "per-layer storage tag asserted with None value (json-only; "
-           "94 records / 2 fixtures)",
-           "U7", "status_retired:ffn_storage:legacy_asserted",
-           occurrence="REGISTRY['ffn_storage'] value_types NoneType",
-           module=_TP, symbol="parse", consumer=_JSON_DOC),
     # ---- config occurrences awaiting their consumer (former
     # ---- PENDING_PROJECTION_DEBT; owner + EXACT dotted path) -------------- #
     _config("the conditioning card on the denoiser view",

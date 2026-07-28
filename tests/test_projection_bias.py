@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 import textwrap
 
@@ -10,6 +11,7 @@ import pytest
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.projection_bias import (
+    EquivalentProjectionBiasEvidence,
     decoder_attention_bias_for_path,
     decoder_ffn_bias_for_path,
 )
@@ -164,6 +166,10 @@ class Distractor:
     ("bloom", (), "attention", True),
     ("bloom", (), "ordinary_ffn", True),
     ("gemma-2-2b-it", (), "ordinary_ffn", False),
+    # Both the dense alternative and the invoked shared-expert alternative
+    # independently prove bias=False; neither branch may certify the other.
+    ("deepseek-v3", (), "ordinary_ffn", False),
+    ("glm-4-5", (), "ordinary_ffn", False),
     ("qwen2-vl-7b-instruct", ("text_config",), "attention", True),
 ])
 def test_real_source_only_projection_bias_examples(
@@ -181,6 +187,25 @@ def test_real_source_only_projection_bias_examples(
         allow_root_stage=True)
     assert result.status == "resolved", result.failures
     assert result.value.value is expected
+
+
+def test_equivalent_projection_bias_rejects_cross_branch_disagreement():
+    from model_unfolder.evidence.context import ParseContext
+
+    config = json.loads(
+        (_CORPUS / "deepseek-v3.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_ffn_bias_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved"
+    first, second = result.value.variants
+    with pytest.raises(ValueError, match="unanimously agree"):
+        EquivalentProjectionBiasEvidence(
+            "ordinary_ffn", (first, replace(second, value=not first.value)))
+    with pytest.raises(ValueError, match="distinct branch evidence"):
+        EquivalentProjectionBiasEvidence(
+            "ordinary_ffn", (first, first))
 
 
 def test_parser_consumes_the_same_exact_projection_bias_results():

@@ -26,7 +26,10 @@ from .construction_calls import (
     resolve_import_reference,
 )
 from .decoder_block import decoder_block_path_for_config
-from .ffn_mechanism import decoder_ffn_mechanism_for_path
+from .ffn_mechanism import (
+    EquivalentFFNMechanism,
+    decoder_ffn_mechanism_for_path,
+)
 from .models import SourceBundle
 from .program_index import ExprNode, ProgramIndex, SourceSpan, SymbolId
 from .reader_result import (
@@ -79,6 +82,47 @@ class ProjectionBiasEvidence:
             raise ValueError("bias provenance includes every construction site")
 
 
+@dataclass(frozen=True)
+class EquivalentProjectionBiasEvidence:
+    """Unanimous projection bias across exact FFN construction variants."""
+
+    mechanism: str
+    variants: tuple[ProjectionBiasEvidence, ...]
+
+    def __post_init__(self) -> None:
+        if self.mechanism != "ordinary_ffn":
+            raise ValueError(
+                "equivalent projection bias is scoped to ordinary/shared FFNs")
+        if len(self.variants) < 2 or any(
+                not isinstance(item, ProjectionBiasEvidence)
+                or item.mechanism != self.mechanism
+                for item in self.variants):
+            raise ValueError(
+                "equivalent projection bias carries >=2 ordinary FFN variants")
+        if len({item.value for item in self.variants}) != 1:
+            raise ValueError(
+                "equivalent projection-bias variants must unanimously agree")
+        if len({item.projections for item in self.variants}) != \
+                len(self.variants):
+            raise ValueError(
+                "equivalent projection bias retains distinct branch evidence")
+
+    @property
+    def value(self) -> bool:
+        return self.variants[0].value
+
+    @property
+    def projections(self) -> tuple[ConstructionOccurrenceId, ...]:
+        return tuple(
+            projection
+            for item in self.variants for projection in item.projections)
+
+    @property
+    def spans(self) -> tuple[SourceSpan, ...]:
+        return tuple(dict.fromkeys(
+            span for item in self.variants for span in item.spans))
+
+
 def decoder_attention_bias_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -116,6 +160,26 @@ def decoder_ffn_bias_for_path(
         index, bundle, config_path, allow_root_stage=allow_root_stage)
     if mechanism.status != "resolved":
         return mechanism
+    if isinstance(mechanism.value, EquivalentFFNMechanism):
+        variants = []
+        provenance = list(mechanism.provenance)
+        for variant in mechanism.value.variants:
+            result = _bias_for_projections(
+                index, variant.owner_symbol, variant.projections,
+                mechanism="ordinary_ffn")
+            if result.status != "resolved":
+                return result
+            variants.append(result.value)
+            provenance.extend(result.provenance)
+        if len({item.value for item in variants}) != 1:
+            return ReaderResult.ambiguous(
+                mechanism.owner,
+                Ambiguity(sites=tuple(
+                    span for item in variants for span in item.spans)))
+        value = EquivalentProjectionBiasEvidence(
+            "ordinary_ffn", tuple(variants))
+        return ReaderResult.resolved(
+            mechanism.owner, value, provenance=tuple(provenance))
     value = _bias_for_projections(
         index,
         mechanism.value.owner_symbol,

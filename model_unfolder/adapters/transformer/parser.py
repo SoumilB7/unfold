@@ -1905,14 +1905,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 expert_projection_mode=_code_expert_fused,
                 # B5/U2: unbacked activation/norm-kind facts are typed
                 # unknowns (drawn honestly), never "asserted". Two DRAWN
-                # conventions remain tagged: split storage (layout unproven)
-                # and the pre cell kept when source is present but the
-                # topology reader abstained on the idiom.
+                # conventions formerly remained tagged here. Exact ordinary
+                # and expert storage has retired the storage tag completely;
+                # only the kept-pre topology convention remains.
                 asserted=tuple(
-                    (["norm_placement"] if norm_placement_conventional else [])
-                    + (["ffn_storage"]
-                       if (_code_expert_fused is None
-                           and _code_storage_mode is None) else [])),
+                    ["norm_placement"] if norm_placement_conventional else []),
             )
         else:
             ffn = FFNSpec(
@@ -1923,11 +1920,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
-                # B5/U2: see the MoE branch — only the two DRAWN conventions
-                # (kept-pre placement, split storage) remain asserted.
+                # B5/U2: see the MoE branch — unknown FFN storage is represented
+                # by projection_mode=None and an opaque region, never a second
+                # asserted tag.
                 asserted=tuple(
-                    (["norm_placement"] if norm_placement_conventional else [])
-                    + (["ffn_storage"] if _code_storage_mode is None else [])),
+                    ["norm_placement"] if norm_placement_conventional else []),
             )
 
         # The ADDITIVE cross sublayer's own spec: same construction-declared

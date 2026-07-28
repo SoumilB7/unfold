@@ -442,6 +442,11 @@ then proceed autonomously to U3-B.
         Real controls prove BLOOM dense, Llama/StableLM/Qwen2-VL split gated
         and MusicGen dense; routed/hybrid blocks deliberately do not borrow
         their experts as an ordinary FFN.
+        **U7 follow-up:** `docs/U7_CONDITIONAL_SHARED_FFN_PROOF.md` closes the
+        exact exhaustive-construction case without weakening that separation.
+        DeepSeek-V3 and GLM-4.5 resolve only because their ordinary alternative
+        and the MoE wrapper's actually-invoked shared child independently prove
+        the same split-gated mechanism. GPT-OSS remains routed-only/unknown.
       - [~] U3-F5h: routed-expert storage is locally committed in `d96c411`;
         its first combined receipt exposed real projection/legacy-test
         contract defects, corrected forward in amended `a788288`.  The

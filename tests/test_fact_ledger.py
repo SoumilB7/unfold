@@ -100,7 +100,7 @@ def _prov(ir):
 
 def test_zero_evidence_parse_has_typed_unknowns_not_defaults():
     """The P1 acceptance shape: at zero evidence every P1 family is a typed
-    unknown; the only remaining asserted conventions are the storage/scores
+    unknown; the only remaining asserted conventions are the projection/scores
     drawings the doctrine keeps (split layout, sqrt(dim))."""
     ir = config_to_ir(ZERO_EVIDENCE)
     layer = ir.layers[0]
@@ -111,7 +111,7 @@ def test_zero_evidence_parse_has_typed_unknowns_not_defaults():
     assert layer.norm_kind == "unknown"             # not "rmsnorm"
     assert layer.norm_placement == "unknown"        # not "pre"
     assert ir.tie_word_embeddings is None           # not False
-    allowed_asserted_facts = {"scores_scale", "ffn_storage", "projection_mode"}
+    allowed_asserted_facts = {"scores_scale", "projection_mode"}
     for key, rec in _prov(ir).items():
         if rec["status"] == "asserted":
             assert key.rsplit(".", 1)[1] in allowed_asserted_facts, key

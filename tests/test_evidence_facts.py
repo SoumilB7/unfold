@@ -300,11 +300,11 @@ def test_typed_records_lifts_legacy_rows_and_keeps_native_ones():
 
 def test_asserted_census_unaffected_by_typed_channel():
     ledger = FactLedger()
-    ledger.record("decoder.ffn", "ffn_storage", "split", "asserted", None)
+    ledger.record("decoder.attention", "scores_scale", "sqrt", "asserted", None)
     ledger.record_typed(_fact(key="projection_mode", owner="decoder.attention",
                               value="split", status="legacy_asserted"))
     assert ledger.asserted() == ("decoder.attention.projection_mode",
-                                 "decoder.ffn.ffn_storage")
+                                 "decoder.attention.scores_scale")
 
 
 # --- integration: a real parse's whole ledger is representable ----------------

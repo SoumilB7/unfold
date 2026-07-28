@@ -217,7 +217,7 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # consumers from params.py's assumption channel.
 #
 # Known debt stated where it lives:
-# * attention_kind / ffn_storage records carry ``NoneType`` VALUES — the
+# * attention_kind records carry ``NoneType`` VALUES — the
 #   asserted-fold writes ``getattr(spec, fact, None)`` for non-field tag names
 #   (census §0.7).  The registry pins that truth; the H2 fold-unification
 #   makes these real values, and editing value_types then is the conscious act.
@@ -299,7 +299,7 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="norm_placement",
         # U2-R9 (witness 26): honest ambiguity + the conditioning tower's
-        # per-layer asserted tuples (attention_kind/ffn_storage precedent).
+        # per-layer asserted tuples (attention_kind precedent).
         value_types=frozenset({"str", "NoneType"}),
         allowed_statuses=frozenset({"code_proven", "ambiguous", "asserted"}),
         owner_patterns=frozenset({"decoder.layer", "layers[i].ffn"}),
@@ -366,19 +366,6 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "value (asserted-fold non-field tag); largest census debt "
               "cluster (543 records / 13 fixtures) — H7 evidences it; the LLM "
               "decoder kind is a spec field that never reaches the ledger (H8)",
-    ),
-    FactDefinition(
-        key="ffn_storage",
-        value_types=frozenset({"NoneType"}),
-        allowed_statuses=frozenset({"asserted", "legacy_asserted"}),
-        owner_patterns=frozenset({"layers[i].ffn"}),
-        projections=frozenset({"json"}),
-        unknown_policy="legacy_convention",
-        notes="per-layer storage tag: asserted with None value (asserted-fold "
-              "non-field tag; 6 records / 2 hybrid fixtures after the exact "
-              "ordinary/expert split); the drawn storage comes from "
-              "spec.projection_mode defaults — the remaining guarded ordinary "
-              "variants require an occurrence/schedule proof",
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

@@ -32,7 +32,10 @@ from .execution_flow import (
     resolve_addressed_invocations,
     resolve_execution_flow,
 )
-from .ffn_mechanism import ffn_mechanism_at_block
+from .ffn_mechanism import (
+    EquivalentFFNMechanism,
+    ffn_mechanism_at_block,
+)
 from .models import SourceBundle
 from .primitive_semantics import classify_primitive_call
 from .program_index import (
@@ -75,7 +78,9 @@ class ExactBranchInvocation:
             raise ValueError("a branch invocation retains its exact call node")
         if self.mechanism not in {"attention", "ordinary_ffn"}:
             raise ValueError("a branch invocation has a closed mechanism kind")
-        if self.proof_kind not in {"addressed_child", "dispatch_equivalent"}:
+        if self.proof_kind not in {
+                "addressed_child", "dispatch_equivalent",
+                "conditional_equivalent"}:
             raise ValueError("a branch invocation has a closed proof kind")
         if not self.candidate_symbols or any(
                 not isinstance(item, SymbolId)
@@ -90,6 +95,10 @@ class ExactBranchInvocation:
         if self.proof_kind == "dispatch_equivalent" \
                 and self.node.kind != "observed":
             raise ValueError("a dispatch branch stays a neutral observed node")
+        if self.proof_kind == "conditional_equivalent" \
+                and self.node.kind != "observed":
+            raise ValueError(
+                "a conditional-equivalent branch stays a neutral observed node")
         if not self.spans or self.call.span not in self.spans \
                 or any(not isinstance(span, SourceSpan)
                        for span in self.spans):
@@ -257,10 +266,17 @@ def _parallel_norm_at_block(index, root, block_occurrence):
                 "incomplete_graph",
                 "the exact ordinary-FFN branch is unresolved"),),
             provenance=ffn.provenance)
-    if not ffn.value.invocations:
+    if isinstance(ffn.value, EquivalentFFNMechanism):
+        ffn_branches = (_conditional_equivalent_branch(ffn.value),)
+    elif not ffn.value.invocations:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph",
             "an inline FFN has no addressed branch-input call"),))
+    else:
+        ffn_branches = tuple(
+            _addressed_branch(
+                root, invocation, "ordinary_ffn")
+            for invocation in ffn.value.invocations)
 
     inventory = resolve_container_inventory(index, root, block_occurrence)
     invocations = resolve_addressed_invocations(
@@ -276,10 +292,6 @@ def _parallel_norm_at_block(index, root, block_occurrence):
         index, root, block_occurrence, invocations, flow)
     if isinstance(attention, ReaderResult):
         return attention
-    ffn_branches = tuple(
-        _addressed_branch(
-            root, invocation, "ordinary_ffn")
-        for invocation in ffn.value.invocations)
     norms = _norm_sources(
         index, root, block_occurrence, invocations)
     attention_input = _branch_norm_input(
@@ -330,6 +342,33 @@ def _addressed_branch(root, invocation, mechanism):
         (child.symbol,),
         mechanism,
         "addressed_child",
+        spans,
+    )
+
+
+def _conditional_equivalent_branch(value):
+    calls = {
+        item.conditional_entry.call for item in value.variants
+    }
+    if len(calls) != 1:
+        raise ValueError(
+            "equivalent FFN alternatives share one exact block invocation")
+    call = next(iter(calls))
+    symbols = tuple(dict.fromkeys(
+        item.owner_symbol for item in value.variants))
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            call.span,
+            *(item.conditional_entry.site.span for item in value.variants),
+            *value.spans,
+        ) if isinstance(span, SourceSpan)))
+    return ExactBranchInvocation(
+        value.block_occurrence,
+        call,
+        InvocationNodeId(CallSiteId.of(call), "observed"),
+        symbols,
+        "ordinary_ffn",
+        "conditional_equivalent",
         spans,
     )
 

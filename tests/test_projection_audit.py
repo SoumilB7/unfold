@@ -141,7 +141,7 @@ def test_numbers_only_keeps_address_and_numbers_strips_declarations():
 
 def test_census_clean_on_a_real_decoder():
     """Post-P1 a llama's zero-evidence parse asserts only doctrine-allowed
-    defaults (scores_scale / ffn_storage / projection_mode)."""
+    defaults (scores_scale / projection_mode)."""
     assert _zero_asserted_census_findings(LLAMA, "local") == []
 
 
@@ -160,12 +160,13 @@ def test_census_flags_a_disallowed_zero_evidence_default(monkeypatch):
 
     def fake_config_to_ir(cfg, *a, parse_context=None, **kw):
         parse_context.facts.record("decoder.attention", "mask", "causal", "asserted")
-        parse_context.facts.record("decoder.ffn", "ffn_storage", "cat", "asserted")  # allowed
+        parse_context.facts.record(
+            "decoder.ffn", "projection_mode", "split", "asserted")  # allowed
         return SimpleNamespace(extras={})
 
     monkeypatch.setattr(parser_mod, "config_to_ir", fake_config_to_ir)
     findings = _zero_asserted_census_findings(LLAMA, "local")
-    # Only the disallowed 'mask' is flagged; the allowed 'ffn_storage' assertion
+    # Only the disallowed 'mask' is flagged; the allowed projection assertion
     # is not (len == 1 proves it — the allowed set is merely NAMED in the advice).
     assert len(findings) == 1
     assert "asserts 'mask'" in findings[0]
@@ -178,8 +179,8 @@ def test_census_is_wired_into_sable_as_blocking():
     assert check.passed, check.findings
 
 
-def test_census_allowed_set_is_the_three_presentation_conventions():
-    assert _CENSUS_ALLOWED == {"scores_scale", "ffn_storage", "projection_mode"}
+def test_census_allowed_set_is_the_two_presentation_conventions():
+    assert _CENSUS_ALLOWED == {"scores_scale", "projection_mode"}
 
 
 # --------------------------------------------------------------------------- #

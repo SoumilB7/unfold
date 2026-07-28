@@ -230,3 +230,23 @@ Before U3-C5 can turn green:
 Until then, U3 neutral infrastructure is complete but its project-wide C5
 release receipt remains held. U4 implementation must not use the held state as
 permission to introduce more unreviewed output drift.
+
+## 9. Superseding U7 correction — conditional ordinary/shared FFNs
+
+Sections 5.1 and 6 record the state at the time of this U3 adjudication. They
+are superseded for DeepSeek-V3 and GLM-4.5 by
+`docs/U7_CONDITIONAL_SHARED_FFN_PROOF.md`.
+
+The Hugging Face source was re-vetted before accepting the temporary generic
+view. It is fully specific: both ordinary MLP classes implement distinct
+gate/up/down projections and a gated product, while each MoE wrapper
+unconditionally invokes an exact child with the same implementation and returns
+its contribution. The loss of specificity was therefore an owner-rival parsing
+gap, not honest source ambiguity.
+
+The U7 correction evaluates every exact exhaustive `self.mlp` construction
+alternative and resolves only on unanimous mechanism evidence. It restores the
+already-blessed detailed FFN views for DeepSeek-V3 and GLM-4.5 without a
+family/model branch or renderer exception. GPT-OSS remains the routed-only
+negative. The former DeepSeek/GLM lower-bound assumption no longer applies;
+U14 range publication remains required for mechanisms that are still unknown.

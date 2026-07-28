@@ -6,8 +6,11 @@ An FFN is classified from exact projection constructions plus local value flow;
 class names, field names, model families and whole-file votes are never
 selection evidence.
 
-This unit intentionally covers the ordinary dense/gated FFN.  Routed experts
-are a separate owner boundary and remain unknown here.
+This unit intentionally covers the ordinary/shared dense or gated FFN.
+Routed-expert storage is a separate owner boundary and remains unknown here.
+When a decoder field is constructed differently across an exhaustive branch,
+every alternative must independently prove the same ordinary/shared mechanism;
+the reader never selects one branch or unions routed experts into that fact.
 """
 from __future__ import annotations
 
@@ -19,10 +22,12 @@ from .component_owner import (
     ConstructedComponentRoot,
     OwnerOccurrenceId,
     require_resolved_component_root,
+    resolve_construction_candidate_symbols,
+    resolve_owner_graph,
 )
 from .construction_calls import (
     ConstructionOccurrenceId,
-    resolve_construction_call,
+    resolve_construction_call_in_graph,
     resolve_import_reference,
 )
 from .container_inventory import resolve_container_inventory
@@ -30,6 +35,9 @@ from .decoder_block import decoder_block_path_for_config
 from .execution_flow import AddressedInvocation, resolve_addressed_invocations
 from .models import SourceBundle
 from .program_index import (
+    CallObservation,
+    CallSiteId,
+    ConstructionSite,
     ExprNode,
     ProgramIndex,
     SourceSpan,
@@ -67,6 +75,48 @@ _SPLIT_PROTOCOLS = frozenset({"chunk", "split", "tensor_split"})
 
 
 @dataclass(frozen=True)
+class ConditionalFFNEntry:
+    """One exact guarded construction alternative invoked by the block.
+
+    The entry is an address proof, not a mechanism classification.  It keeps
+    the conditional construction site separate from the isolated owner graph
+    used to inspect that alternative, so no rival branch is fabricated as a
+    child of the main owner graph.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    call: CallObservation
+    site: ConstructionSite
+    candidate: SymbolId
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("a conditional FFN entry names its exact block")
+        if not isinstance(self.call, CallObservation):
+            raise TypeError("a conditional FFN entry carries its exact call")
+        if not isinstance(self.site, ConstructionSite):
+            raise TypeError(
+                "a conditional FFN entry carries its exact construction site")
+        if not isinstance(self.candidate, SymbolId):
+            raise TypeError("a conditional FFN entry names its exact candidate")
+        field = _self_field(self.call.callee)
+        if not field or self.site.target_kind != "field" \
+                or self.site.target != field:
+            raise ValueError(
+                "the call and construction alternative name the same field")
+        if self.call.owner != self.site.owner:
+            raise ValueError(
+                "the call and conditional construction share one owner class")
+        if self.call.span is None or self.site.span is None \
+                or self.call.span.source != self.site.span.source:
+            raise ValueError(
+                "the conditional entry carries exact same-source provenance")
+        if not self.site.guard:
+            raise ValueError(
+                "a conditional FFN entry must preserve its construction guard")
+
+
+@dataclass(frozen=True)
 class FFNMechanism:
     """One exact ordinary FFN implementation."""
 
@@ -80,6 +130,7 @@ class FFNMechanism:
     activation_config_path: tuple[str, ...] = ()
     projections: tuple[ConstructionOccurrenceId, ...] = ()
     spans: tuple[SourceSpan, ...] = ()
+    conditional_entry: ConditionalFFNEntry | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -90,13 +141,32 @@ class FFNMechanism:
         if any(not isinstance(item, AddressedInvocation)
                for item in self.invocations):
             raise TypeError("an FFN child carries exact addressed invocations")
-        if self.invocations:
-            if any(item.caller_occurrence != self.block_occurrence
-                   or item.callee_owner_occurrence != self.owner_occurrence
-                   for item in self.invocations):
-                raise ValueError("the FFN invocation joins the block to the owner")
-        elif self.owner_occurrence != self.block_occurrence:
-            raise ValueError("only an inline FFN may omit a child invocation")
+        if self.conditional_entry is None:
+            if self.invocations:
+                if any(item.caller_occurrence != self.block_occurrence
+                       or item.callee_owner_occurrence != self.owner_occurrence
+                       for item in self.invocations):
+                    raise ValueError(
+                        "the FFN invocation joins the block to the owner")
+            elif self.owner_occurrence != self.block_occurrence:
+                raise ValueError("only an inline FFN may omit a child invocation")
+        else:
+            if self.conditional_entry.block_occurrence != self.block_occurrence:
+                raise ValueError(
+                    "the conditional entry belongs to the exact decoder block")
+            branch_root = OwnerOccurrenceId(self.conditional_entry.candidate)
+            if self.invocations:
+                if len(self.invocations) != 1 \
+                        or self.invocations[0].caller_occurrence != branch_root \
+                        or self.invocations[0].callee_owner_occurrence \
+                        != self.owner_occurrence:
+                    raise ValueError(
+                        "a conditional wrapper has one exact invocation from "
+                        "its isolated root to the mechanism owner")
+            elif self.owner_occurrence != branch_root:
+                raise ValueError(
+                    "a direct conditional mechanism is owned by its exact "
+                    "isolated branch root")
         if len({item.call_site for item in self.invocations}) != \
                 len(self.invocations):
             raise ValueError("FFN invocation sites are unique")
@@ -124,11 +194,71 @@ class FFNMechanism:
             raise ValueError("FFN provenance belongs to the exact owner source")
 
 
+@dataclass(frozen=True)
+class EquivalentFFNMechanism:
+    """Unanimous ordinary/shared FFN semantics across exact block alternatives."""
+
+    block_occurrence: OwnerOccurrenceId
+    variants: tuple[FFNMechanism, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("equivalent FFN evidence names its exact block")
+        if len(self.variants) < 2 or any(
+                not isinstance(item, FFNMechanism)
+                or item.block_occurrence != self.block_occurrence
+                or item.conditional_entry is None
+                for item in self.variants):
+            raise ValueError(
+                "equivalent FFN evidence carries >=2 exact conditional variants")
+        if len({
+                _mechanism_signature(item)
+                for item in self.variants}) != 1:
+            raise ValueError(
+                "equivalent FFN variants must prove identical semantics")
+        entries = tuple(item.conditional_entry for item in self.variants)
+        if len({item.call for item in entries}) != 1:
+            raise ValueError(
+                "equivalent FFN alternatives share one exact block invocation")
+        if not _construction_sites_are_exact_alternatives(
+                tuple(item.site for item in entries)):
+            raise ValueError(
+                "equivalent FFN variants preserve one exhaustive decision")
+        if len({
+                item.site.site_id for item in entries}) != len(self.variants):
+            raise ValueError("conditional FFN alternative sites are unique")
+
+    @property
+    def gated(self) -> bool:
+        return self.variants[0].gated
+
+    @property
+    def projection_mode(self) -> str:
+        return self.variants[0].projection_mode
+
+    @property
+    def activation(self) -> str | None:
+        return self.variants[0].activation
+
+    @property
+    def activation_config_path(self) -> tuple[str, ...]:
+        return self.variants[0].activation_config_path
+
+    @property
+    def spans(self) -> tuple[SourceSpan, ...]:
+        return tuple(dict.fromkeys(
+            span for item in self.variants for span in (
+                item.conditional_entry.site.span,
+                item.conditional_entry.call.span,
+                *item.spans,
+            ) if isinstance(span, SourceSpan)))
+
+
 def ffn_mechanism_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
-) -> ReaderResult[FFNMechanism]:
+) -> ReaderResult[FFNMechanism | EquivalentFFNMechanism]:
     """Classify the one exact ordinary FFN invoked by a decoder block."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("ffn_mechanism_at_block requires a ProgramIndex")
@@ -170,14 +300,16 @@ def ffn_mechanism_at_block(
             if child is None:
                 continue
             evidence = _mechanism_for_owner(
-                index, root, block_occurrence, child.occurrence,
+                index, root.graph, _config_path_prefix(root),
+                block_occurrence, child.occurrence,
                 child.symbol, tuple(child_invocations))
             if evidence is not None:
                 candidates.append(evidence)
 
     # Some architectures store the two FFN projections directly on the block.
     inline = _mechanism_for_owner(
-        index, root, block_occurrence, block_occurrence, block.symbol, ())
+        index, root.graph, _config_path_prefix(root),
+        block_occurrence, block_occurrence, block.symbol, ())
     if inline is not None:
         candidates.append(inline)
 
@@ -188,7 +320,41 @@ def ffn_mechanism_at_block(
     ordered = tuple(sorted(unique.values(), key=lambda item: _span_key(
         item.invocations[0].call.span if item.invocations
         else item.spans[0])))
+    alternatives = _conditional_ffn_alternatives(
+        index, root, block_occurrence, block.symbol)
+    if ordered and alternatives is not None:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys((
+                *(item.spans[0] for item in ordered),
+                *(item.conditional_entry.site.span
+                  for item in alternatives),
+            )))))
     if not ordered:
+        if alternatives:
+            signatures = {_mechanism_signature(item) for item in alternatives}
+            if len(signatures) != 1:
+                return ReaderResult.ambiguous(
+                    block_occurrence,
+                    Ambiguity(sites=tuple(
+                        item.conditional_entry.site.span
+                        for item in alternatives)))
+            value = EquivalentFFNMechanism(
+                block_occurrence, alternatives)
+            config_paths = (
+                (value.activation_config_path,)
+                if value.activation_config_path else ())
+            return ReaderResult.resolved(
+                block_occurrence, value,
+                provenance=(ReaderProvenance(
+                    "code_and_config" if config_paths else "source",
+                    spans=value.spans,
+                    config_paths=config_paths,
+                    detail=(
+                        "every exact exhaustive construction alternative "
+                        "proves the same ordinary/shared feed-forward "
+                        "mechanism")),),
+            )
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph",
             "no exact invoked child or inline block has a proven ordinary "
@@ -221,7 +387,7 @@ def decoder_ffn_mechanism_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
-) -> ReaderResult[FFNMechanism]:
+) -> ReaderResult[FFNMechanism | EquivalentFFNMechanism]:
     """Resolve one parser-selected config to its exact ordinary FFN."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("decoder_ffn_mechanism_for_path requires a ProgramIndex")
@@ -244,8 +410,212 @@ def decoder_ffn_mechanism_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+def _conditional_ffn_alternatives(
+    index, root, block_occurrence, block_symbol,
+):
+    """Prove the ordinary/shared FFN on every exhaustive field alternative.
+
+    The main owner graph deliberately refuses to choose between two guarded
+    writes to one field.  This reader keeps that refusal: it evaluates every
+    exact alternative in an isolated owner graph and returns evidence only when
+    every branch independently yields one ordinary mechanism.  Missing,
+    dynamic, non-exhaustive, or multi-candidate alternatives therefore remain
+    unknown.
+    """
+    block_node = root.graph.node_for(block_occurrence)
+    if block_node is None:
+        return None
+    forward = SymbolId(
+        block_symbol.source, f"{block_symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    rival_fields = {
+        item.field for item in block_node.unresolved
+        if item.kind == "rival_owner"
+    }
+    rival_calls = tuple(
+        call for call in index.calls_in(forward)
+        if _self_field(call.callee) in rival_fields)
+    if not rival_calls:
+        return None
+    if any(call.guard for call in rival_calls):
+        return ()
+    groups = []
+    for call in rival_calls:
+        field = _self_field(call.callee)
+        sites = tuple(sorted((
+            site for site in index.construction_sites_of(block_symbol)
+            if site.target_kind == "field" and site.target == field),
+            key=lambda item: _span_key(item.span)))
+        if not _construction_sites_are_exact_alternatives(sites):
+            continue
+        groups.append((call, sites))
+    # A rival owner can belong to a different mechanism altogether (for
+    # example GPT-J's dispatch-selected attention implementation).  The
+    # conditional-FFN proof is applicable only when the invoked field itself
+    # has one exact exhaustive construction-alternative group.  Treating
+    # "some rival exists" as a failed FFN proof manufactures ambiguity between
+    # unrelated sublayers.
+    if not groups:
+        return None
+    if len(groups) != 1:
+        return ()
+
+    call, sites = groups[0]
+    variants = []
+    for site in sites:
+        candidates = resolve_construction_candidate_symbols(index, site)
+        if len(candidates) != 1:
+            return ()
+        candidate = candidates[0]
+        root_param_prefixes = _alternative_root_param_prefixes(
+            index, block_node, site, candidate)
+        graph = resolve_owner_graph(
+            index, candidate, root_param_prefixes=root_param_prefixes)
+        entry = ConditionalFFNEntry(
+            block_occurrence, call, site, candidate)
+        mechanism = _mechanism_for_owner(
+            index, graph, _config_path_prefix(root),
+            block_occurrence, graph.root.occurrence, candidate, (),
+            conditional_entry=entry)
+        if mechanism is None:
+            mechanism = _one_invoked_nested_ffn(
+                index, graph, _config_path_prefix(root),
+                block_occurrence, entry)
+        if mechanism is None:
+            return ()
+        variants.append(mechanism)
+    return tuple(variants)
+
+
+def _construction_sites_are_exact_alternatives(sites):
+    if len(sites) < 2 or any(
+            len(site.guard) != 1 or site.span is None for site in sites):
+        return False
+    decisions = {
+        (site.guard[0].span.source,
+         site.guard[0].span.line, site.guard[0].span.col,
+         site.guard[0].span.end_line, site.guard[0].span.end_col)
+        for site in sites
+    }
+    kinds = {site.guard[0].kind for site in sites}
+    return len(decisions) == 1 \
+        and bool(kinds & {"if", "elif"}) and "else" in kinds
+
+
+def _alternative_root_param_prefixes(index, parent_node, site, candidate):
+    """Transfer only exact parent-config arguments into an isolated branch.
+
+    A candidate may have optional non-config constructor parameters, so the
+    generic "single constructor parameter" root shortcut is insufficient.
+    This maps positional/keyword arguments by the candidate's real signature
+    and accepts only a bare parent parameter with one proven prefix.
+    """
+    init = SymbolId(
+        candidate.source, f"{candidate.qualified_name}.__init__")
+    callable_record = index.callable_by_symbol(init)
+    if callable_record is None:
+        return None
+    params = tuple(
+        item for item in callable_record.params
+        if item.name != "self" and item.kind not in {"vararg", "kwarg"})
+    positional = tuple(
+        item for item in params if item.kind in {"positional", "posonly"})
+    by_name = {item.name: item for item in params}
+    parent_prefixes = {
+        item.parameter: item.resolved_prefix
+        for item in parent_node.config_bindings
+        if item.resolved_prefix is not None
+    }
+    mapped = {}
+    for position, argument in enumerate(site.args):
+        if position >= len(positional):
+            break
+        if argument.kind == "name" \
+                and argument.name in parent_prefixes:
+            mapped[positional[position].name] = \
+                parent_prefixes[argument.name]
+    for name, argument in site.kwargs:
+        if name in by_name and argument.kind == "name" \
+                and argument.name in parent_prefixes:
+            mapped[name] = parent_prefixes[argument.name]
+    return mapped or None
+
+
+def _one_invoked_nested_ffn(
+    index, graph, config_path_prefix, block_occurrence, entry,
+):
+    """Return one exact nested FFN whose value reaches the branch return.
+
+    This is the shared-expert case expressed structurally: the branch wrapper
+    invokes an exact child, that child independently proves an FFN, and the
+    child's output reaches the wrapper's returned value.  A merely constructed
+    or unused sibling cannot qualify.
+    """
+    branch = graph.root
+    forward = SymbolId(
+        branch.symbol.source, f"{branch.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    returns = tuple(
+        item for item in index.return_observations_in(forward)
+        if not item.guard and item.value is not None)
+    if len(returns) != 1:
+        return None
+    returned = returns[0]
+    candidates = []
+    for call in index.calls_in(forward):
+        field = _self_field(call.callee)
+        if field is None or call.guard or call.span is None:
+            continue
+        children = tuple(
+            child for child in branch.children
+            if child.via_field == field)
+        blocked = tuple(
+            item for item in branch.unresolved if item.field == field)
+        if len(children) != 1 or blocked:
+            continue
+        child = children[0]
+        invocation = AddressedInvocation(
+            CallSiteId.of(call), branch.occurrence,
+            child.occurrence, call, call.guard, (call.span,))
+        mechanism = _mechanism_for_owner(
+            index, graph, config_path_prefix,
+            block_occurrence, child.occurrence, child.symbol,
+            (invocation,), conditional_entry=entry)
+        if mechanism is None:
+            continue
+        key = ("nested_ffn", call.span)
+        sources, _, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward,
+                ((returned.span, (returned.value,)),),
+                {key: call})
+        if uncertain or key not in _dependency_closure(sources, dependencies):
+            continue
+        candidates.append(mechanism)
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def _mechanism_signature(value):
+    return (
+        value.gated,
+        value.projection_mode,
+        value.activation,
+        value.activation_config_path,
+    )
+
+
+def _config_path_prefix(root):
+    return (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ()
+    )
+
+
 def _mechanism_for_owner(
-    index, root, block_occurrence, owner_occurrence, owner_symbol, invocations,
+    index, graph, config_path_prefix, block_occurrence, owner_occurrence,
+    owner_symbol, invocations, conditional_entry=None,
 ):
     forward = SymbolId(
         owner_symbol.source, f"{owner_symbol.qualified_name}.forward")
@@ -256,8 +626,8 @@ def _mechanism_for_owner(
     for call in index.calls_in(forward):
         if _self_field(call.callee) is None:
             continue
-        construction = resolve_construction_call(
-            index, root, owner_occurrence, call)
+        construction = resolve_construction_call_in_graph(
+            index, graph, owner_occurrence, call)
         if construction.status != "resolved" \
                 or construction.selected.kind != "external" \
                 or construction.selected.external_reference.qualified_target \
@@ -302,7 +672,8 @@ def _mechanism_for_owner(
         return None
 
     activation, activation_path, activation_spans = _activation_evidence(
-        index, root, owner_occurrence, owner_symbol, forward,
+        index, graph, config_path_prefix, owner_occurrence,
+        owner_symbol, forward,
         linear_calls, guarded_linear_calls, returned, upstream)
     if activation is None and not activation_path:
         return None
@@ -341,7 +712,7 @@ def _mechanism_for_owner(
     return FFNMechanism(
         block_occurrence, owner_occurrence, owner_symbol, invocations,
         mode != "dense", mode, activation, activation_path,
-        projection_order, spans)
+        projection_order, spans, conditional_entry)
 
 
 def _invocations_are_exact_alternatives(index, block_symbol, invocations):
@@ -403,7 +774,7 @@ def _invocations_are_exact_alternatives(index, block_symbol, invocations):
 
 
 def _activation_evidence(
-    index, root, occurrence, owner, forward, linear_calls,
+    index, graph, config_path_prefix, occurrence, owner, forward, linear_calls,
     guarded_linear_calls, returned, upstream,
 ):
     """Return the one activation proven to reach the returned FFN value.
@@ -424,8 +795,8 @@ def _activation_evidence(
             value = _FUNCTIONAL_ACTIVATIONS[proof.qualified_target]
             spans.extend((call.span, proof.binding.span))
         elif _self_field(call.callee) is not None:
-            construction = resolve_construction_call(
-                index, root, occurrence, call)
+            construction = resolve_construction_call_in_graph(
+                index, graph, occurrence, call)
             if construction.status == "resolved":
                 selected = construction.selected
                 if selected.kind == "external":
@@ -441,7 +812,7 @@ def _activation_evidence(
                             (call.span, selected.site.span, *inner_spans))
             if value is None:
                 path, path_span = _activation_dispatch_path(
-                    index, root, occurrence, owner,
+                    index, graph, config_path_prefix, occurrence, owner,
                     _self_field(call.callee))
                 if path:
                     spans.extend((call.span, path_span))
@@ -573,7 +944,8 @@ def _calls_in_expression(expression):
         expression, lambda candidate: candidate.kind == "call")
 
 
-def _activation_dispatch_path(index, root, occurrence, owner, field):
+def _activation_dispatch_path(
+        index, graph, config_path_prefix, occurrence, owner, field):
     if not field:
         return (), None
     assigns = tuple(
@@ -594,15 +966,14 @@ def _activation_dispatch_path(index, root, occurrence, owner, field):
     root_name = (
         selected.root_binding.name
         if selected.root_binding.kind == "name" else None)
-    node = root.graph.node_for(occurrence)
+    node = graph.node_for(occurrence)
     bindings = tuple(
         binding for binding in (node.config_bindings if node else ())
         if binding.parameter == root_name)
     if len(bindings) != 1 or bindings[0].resolved_prefix is None:
         return (), None
     prefix = tuple(bindings[0].resolved_prefix)
-    if isinstance(root, ConstructedComponentRoot):
-        prefix = (*root.config_path, *prefix)
+    prefix = (*config_path_prefix, *prefix)
     return (
         (*prefix, *(segment.name for segment in selected.segments)),
         selected.span,
@@ -797,7 +1168,9 @@ def _span_key(span):
 
 
 __all__ = [
+    "ConditionalFFNEntry",
     "FFNMechanism",
+    "EquivalentFFNMechanism",
     "decoder_ffn_mechanism_for_path",
     "ffn_mechanism_at_block",
 ]
