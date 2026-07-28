@@ -1546,7 +1546,7 @@ controls and preservation delta must close together.
 | Slice | Exact boundary | State |
 |---|---|---|
 | U4-A | attention mechanism + mask vocabulary: missing/novel kind cannot become MHA/SDPA; missing/novel mask cannot become causal; known geometry may ride one opaque region | DONE — Soumil approved 2026-07-28; 14 inspected galleries/fixtures re-blessed; 26-witness preservation 46/46 green |
-| U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | CANDIDATE — Soumil approved the honesty delta on 2026-07-29; guarded artifacts rebuilt and pre-commit gates green; committed-tree receipt pending |
+| U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | DONE — Soumil approved 2026-07-29; guarded artifacts audited; commit `4857026`; detached-worktree receipt fully green |
 | U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | PENDING |
 | U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | PENDING |
 | U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
@@ -1774,9 +1774,24 @@ candidate commit:
   are each unchanged before/after that bracket;
 - changed-file pyflakes and `git diff --check` are clean.
 
-U4-B remains a candidate, not `DONE`, until the exact staged commit passes the
-detached-worktree focused, U2-authority, collection, full, preservation,
-static and fingerprint lanes.  U4-C may not begin before that receipt.
+The exact staged implementation/artifact commit is `4857026`.  Its
+detached-worktree coordinator receipt is
+`/private/tmp/model-unfolder-verification/598777dc06`:
+
+- focused affected semantics: **1010 passed**;
+- U2 authority: **44 passed**;
+- collection: **2289 tests**;
+- preservation: **46 passed**;
+- exhaustive non-preservation partition: **2186 passed, 11 skipped,
+  2 xfailed, 0 failed**;
+- changed Python static gate: **38 files clean**;
+- every lane's complete source-tree and ignored blessed-artifact fingerprint
+  is identical before/after.
+
+U4-B is therefore `DONE`.  The next permitted slice is U4-C, which must apply
+the same independent-fact and opaque-region law to FFN mechanism, gating,
+activation, ordinary/expert storage and widths.  U4-B supplies no permission
+to infer any FFN fact from attention or from a model/config identity.
 
 ### 20.8 U5 — establish consumer firewalls
 
@@ -2087,7 +2102,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A DONE; U4-B approved candidate awaiting committed-tree receipt | working tree | C-01, C-04, C-06 plus attention half of T-05/T-08/T-10/D-08/U-07 | independent attention-internal tri-states and canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, Sable/conformance and nested submodels | cross-fact implications, config-authored internals, UNet internal defaults, attention/storage/scale asserted debt | Llama/BLOOM/Qwen3/T5/FLUX/PixArt/SDXL/Llama-4 plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 fixture signatures, 42 PNGs and 46 named views; BLOOM semantic-only | U4-B non-preservation 2228p; focused 224p; nested 17p; Sable+preservation 47p | pre-commit source/artifact fingerprints each unchanged; committed receipt pending | asserted census 593→24; attention/storage/scale asserted rows deleted | Soumil approved U4-A 2026-07-28 and U4-B 2026-07-29; run committed-tree receipt, then U4-C |
+| U4 | ACTIVE — U4-A and U4-B DONE; U4-C next | `4857026` | C-01, C-04, C-06 plus attention half of T-05/T-08/T-10/D-08/U-07 | independent attention-internal tri-states and canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, Sable/conformance and nested submodels | cross-fact implications, config-authored internals, UNet internal defaults, attention/storage/scale asserted debt | Llama/BLOOM/Qwen3/T5/FLUX/PixArt/SDXL/Llama-4 plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 fixture signatures, 42 PNGs and 46 named views; BLOOM semantic-only | focused 1010p; U2 44p; preservation 46p; exhaustive 2186p+11s+2xf | `/private/tmp/model-unfolder-verification/598777dc06`; every lane source/artifact fingerprint identical | asserted census 593→24; attention/storage/scale asserted rows deleted | Soumil approved U4-A 2026-07-28 and U4-B 2026-07-29; proceed to U4-C |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
