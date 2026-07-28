@@ -33,9 +33,10 @@ fact or a scoped non-architectural extra.
 from __future__ import annotations
 
 import ast
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 
 # --------------------------------------------------------------------------- #
@@ -229,7 +230,6 @@ def scan_structural_write_multiset(
     ``(module, symbol, sink, target)`` — so two writers of one target are two
     rows, and moving a table into YAML/conformance or renaming a helper cannot
     make an author disappear."""
-    from collections import Counter
     counter: "Counter[StructuralWriteKey]" = Counter()
     for write in _scan_raw(root):
         counter[StructuralWriteKey(write.module, write.symbol, write.sink,
@@ -701,6 +701,13 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/expanded/sections.py', 'build_io', 'expanded', 'kind:position_ids'),
     ('model_unfolder/expanded/sections.py', 'build_io', 'expanded', 'kind:token_ids'),
     ('model_unfolder/expanded/stack.py', 'build_stack', 'expanded', 'kind:decoder_only'),
+    # U4-A: one reviewed opaque attention author.  It is the canonical
+    # anti-fabrication region used when mechanism evidence is unknown; pin the
+    # exact writer rather than broadening an opgraph/table exemption.
+    ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
+     'Op:block'),
+    ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
+     'Region:attention'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.asserted'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.bias'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.cached'),
@@ -1026,4 +1033,3 @@ def stale_structural_writers(root=None) -> list:
     stale = [k for k in keys if live.get(k, 0) < _pinned_count(k)]
     return sorted(stale, key=lambda k: (k.sink_kind, k.normalized_target,
                                         k.module, k.enclosing_symbol))
-

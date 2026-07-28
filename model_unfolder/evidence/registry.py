@@ -217,10 +217,6 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # consumers from params.py's assumption channel.
 #
 # Known debt stated where it lives:
-# * attention_kind records carry ``NoneType`` VALUES — the
-#   asserted-fold writes ``getattr(spec, fact, None)`` for non-field tag names
-#   (census §0.7).  The registry pins that truth; the H2 fold-unification
-#   makes these real values, and editing value_types then is the conscious act.
 # * Six DRAWN leaf names (position_kind, qk_norm, q_norm, k_norm, sinks,
 #   logit_softcap) never appear in any ledger — drawn-but-unledgered facts
 #   (census §0.6); they get definitions when H8 gives them writers.
@@ -299,7 +295,7 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="norm_placement",
         # U2-R9 (witness 26): honest ambiguity + the conditioning tower's
-        # per-layer asserted tuples (attention_kind precedent).
+        # per-layer asserted tuples.
         value_types=frozenset({"str", "NoneType"}),
         allowed_statuses=frozenset({"code_proven", "ambiguous", "asserted"}),
         owner_patterns=frozenset({"decoder.layer", "layers[i].ffn"}),
@@ -354,18 +350,6 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         unknown_policy="assumption_note",
         negative_requires_complete=False,   # config/class tiers, not code claims
         parameter_consumer=True,
-    ),
-    FactDefinition(
-        key="attention_kind",
-        value_types=frozenset({"NoneType"}),
-        allowed_statuses=frozenset({"asserted", "legacy_asserted"}),
-        owner_patterns=frozenset({"layers[i].attention"}),
-        projections=frozenset({"json"}),
-        unknown_policy="legacy_convention",
-        notes="diffusion per-layer joint-attention kind: asserted with None "
-              "value (asserted-fold non-field tag); largest census debt "
-              "cluster (543 records / 13 fixtures) — H7 evidences it; the LLM "
-              "decoder kind is a spec field that never reaches the ledger (H8)",
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

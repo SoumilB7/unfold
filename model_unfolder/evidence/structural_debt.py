@@ -462,12 +462,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            module=_OG, symbol="_sdpa_region",
            consumer="model_unfolder/renderers/html/fact_projection.py::"
                     "attention_facts"),
-    _drawn("attention_kind", "layers[i].attention",
-           "diffusion per-layer joint-attention kind asserted with None "
-           "value (json-only; 543 records / 13 fixtures)",
-           "U10", "status_retired:attention_kind:legacy_asserted",
-           occurrence="REGISTRY['attention_kind'] value_types NoneType",
-           module=_DP, symbol="parse", consumer=_JSON_DOC),
     # ---- config occurrences awaiting their consumer (former
     # ---- PENDING_PROJECTION_DEBT; owner + EXACT dotted path) -------------- #
     _config("the conditioning card on the denoiser view",

@@ -1,9 +1,16 @@
 {
   "checks": {
-    "asserted_facts": false,
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -11,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_class_name": "PRXTransformer2DModel",
@@ -100,20 +111,20 @@
   "hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
     "27370c9b2a02c5634f22f24176de8555",
-    "30ab62d182c5c850a9ecb9c8a447e1c6",
     "38433759c72140f5833413de64e0bf5c",
+    "44928e6fc5754eae24b47f4634f6b9e8",
     "455fcad6f15a7a8642673b21b0f8fcd7",
-    "51028cdc2f24390d0c6dc2993635fa32",
     "671c05a4a4192258fa9687d8584567a7",
-    "dafe4920fd541548528f8088f25bd302",
+    "6955495117506f6836d260f241380d3a",
+    "e1828ba837eeb66ef210d6866e8f3c08",
     "f8b1e4e0fa79a373c5ae7ba526973527"
   ],
   "model": "prxpixel-t2i",
   "source": "local",
   "superseded_hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
-    "15649625b52c6d32e9b783ca223dd225",
     "27370c9b2a02c5634f22f24176de8555",
+    "30ab62d182c5c850a9ecb9c8a447e1c6",
     "38433759c72140f5833413de64e0bf5c",
     "455fcad6f15a7a8642673b21b0f8fcd7",
     "51028cdc2f24390d0c6dc2993635fa32",

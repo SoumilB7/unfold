@@ -1536,6 +1536,103 @@ Perform exactly:
 **Done means:** reader abstention, reader failure and missing source never produce
 a familiar mechanism on any surface.
 
+#### U4 execution ledger (binding decomposition, 2026-07-28)
+
+U4 is implemented fact-by-fact across every consumer.  A slice is not complete
+when only its dataclass or renderer changes: its producer fallback, canonical
+region, labels/cards, expanded JSON, debt row, negative poisons, real-model
+controls and preservation delta must close together.
+
+| Slice | Exact boundary | State |
+|---|---|---|
+| U4-A | attention mechanism + mask vocabulary: missing/novel kind cannot become MHA/SDPA; missing/novel mask cannot become causal; known geometry may ride one opaque region | DONE — Soumil approved 2026-07-28; 14 inspected galleries/fixtures re-blessed; 26-witness preservation 46/46 green |
+| U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | ACTIVE — inventory and producer/consumer closure next |
+| U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | PENDING |
+| U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | PENDING |
+| U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
+| U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | PENDING |
+
+U4-A's semantic controls are deliberately asymmetric:
+
+- Qwen3 remains GQA because its head geometry decides that known mechanism;
+- Sana's self-attention remains linear because modeling code proves its
+  processor; its separately-existing cross-attention remains present but its
+  mechanism becomes unresolved because that exact sublayer has no reader yet;
+- FLUX and SDXL become mechanism-unresolved because the old diffusion reader
+  only detected the exceptional linear case and otherwise defaulted to MHA.
+
+That loss of familiar detail is an intentional honesty delta, not evidence that
+FLUX/SDXL lack attention.  U10 may restore MHA only through an exact denoiser
+owner reader.  U4 must not preserve it with a family branch, asserted debt row
+or renderer default.
+
+Working-tree verification receipt:
+
+- focused U4/opgraph/expanded/block-schema: **76 passed**;
+- affected opgraph/expanded/block-schema after the final cross-role fix:
+  **65 passed**;
+- U2 identity/structural-writer/blocking/exception authority gates:
+  **57 passed**;
+- real Sana Sable: **mechanical PASS**, 13 distinct views / 13 PNGs;
+- visual positive: Sana self-attention remains the detailed code-proven linear
+  Q/K/V + kernel-feature-map graph;
+- visual abstention: Sana cross-attention preserves its known role and K/V
+  source but renders one `Cross-attention mechanism unresolved` block;
+- visual abstention: FLUX preserves `Joint Attention` but renders its mechanism
+  as one unresolved block;
+- preservation partition: **32 passed / 14 intentional failures**.  Every
+  transformer witness and SDXL's separately-authored UNet path stayed green.
+  The failures are the diffusion DiT witnesses whose old MHA/cross-MHA detail
+  came from the deleted defaults; Sana changes only on the cross-attention
+  surface.
+- changed-file pyflakes and `git diff --check`: **clean**.
+
+Independent public-API example bracket (added after the first visual pass):
+
+- `unfold(qwen3-8b)`: 36 causal GQA layers; expanded attention retains
+  Q/K/V, cache, scaled dot product, softmax, value application, output
+  projection and RoPE;
+- `unfold(sana)`: 20 full linear-attention layers; expanded self-attention
+  retains its code-proven linear Q/K/V + feature-map graph; cross-attention
+  remains a separate text-K/V sublayer with unknown mechanism;
+- `unfold(flux-2-dev)`: 56 full-mask layers, mechanism `None`, expanded
+  attention contains only `opaque`;
+- `unfold(sd3.5)`: 38 full-mask layers, mechanism `None`, expanded attention
+  contains only `opaque`;
+- `unfold(hunyuanvideo)`: 60 full-mask layers, mechanism `None`, expanded
+  attention contains only `opaque`; the independently rendered FFN remains its
+  existing Linear → GELU → Linear graph;
+- `unfold(pixart)`: 28 layers; self- and separate text cross-attention are
+  preserved, both mechanisms unresolved; expanded attention is opaque;
+- `unfold(sdxl)`: remains a UNet with no fabricated transformer layer list.
+
+Four independent Sable renders also pass mechanically: Qwen3 **4/4**,
+HunyuanVideo **22/22**, PixArt **16/16**, SDXL **29/29**.  Visual inspection
+caught two cross-surface issues before blessing: the PixArt parent
+cross-attention card originally hid the unknown mechanism, and the first honest
+label overflowed its compact box.  The shared typed label now renders
+`Cross-Attention / (unresolved)` while its title, facts, description and drill
+retain the full `Cross-attention mechanism unresolved` statement.  A permanent
+real-PixArt control pins that agreement.
+
+No manifest or durable gallery is changed until Soumil approves this semantic
+delta.  A re-bless before that approval would hide the exact decision U4 exists
+to make explicit.
+
+Soumil approved the U4-A semantic/artifact delta on 2026-07-28.  The guarded
+project `bless()` path then reproduced and replaced exactly the 14 inspected
+diffusion galleries/fixtures.  Artifact audit results:
+
+- every changed fixture preserves its exact model identity, source and config;
+- every changed fixture records its exact former hash signature as superseded;
+- exactly the expected 14 manifest witnesses changed and all 12 controls stayed
+  byte-identical across every surface and view;
+- the rebuilt 26-witness preservation gate passes **46/46**.
+
+U4-A is therefore closed.  U4-B begins from the independently typed internal
+facts; it must not infer one internal merely because another internal or the
+overall attention mechanism is known.
+
 ### 20.8 U5 — establish consumer firewalls
 
 Perform exactly:
@@ -1845,7 +1942,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | PENDING | — | C-01..C-07, C-12 | — | — | — | — | — | not run | not recorded | — | — |
+| U4 | ACTIVE — U4-A DONE; U4-B next | working tree | C-01..C-07, C-12 | U4-A focused + affected + U2 authority green | Qwen3 GQA; Sana linear; 14 diffusion witnesses honestly unresolved | unknown-kind/mask and real-model controls green | attention asserted-debt row deleted | 14 guarded re-blesses; exact supersession recorded | preservation 46/46 green | committed-tree receipt pending | Soumil approved U4-A 2026-07-28 | begin U4-B internal-fact inventory |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |

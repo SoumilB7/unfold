@@ -90,28 +90,28 @@ def mask_short(attention: dict) -> str:
 
     U2: an unresolved mask (``None``/``"unknown"``) says so instead of
     re-asserting the causal default the parser just refused to fabricate."""
-    mask = attention.get("mask", "causal")
-    if mask in (None, "unknown"):
+    mask = attention.get("mask")
+    if mask not in _MASK_SHORT:
         return "unresolved"
-    return _MASK_SHORT.get(mask, "causal")
+    return _MASK_SHORT[mask]
 
 
 def mask_long(attention: dict) -> str:
     """Human-readable mask label — ``"Sliding-window"`` / ``"Full / global"``."""
-    mask = attention.get("mask", "causal")
-    if mask in (None, "unknown"):
+    mask = attention.get("mask")
+    if mask not in _MASK_LONG:
         return "Mask unresolved"
-    return _MASK_LONG.get(mask, "Causal")
+    return _MASK_LONG[mask]
 
 
 def mask_title(attention: dict) -> str:
     """Tooltip-style mask description."""
-    mask = attention.get("mask", "causal")
-    if mask in (None, "unknown"):
+    mask = attention.get("mask")
+    if mask not in _MASK_TITLE:
         return ("Attention mask unresolved — the config does not declare "
                 "whether this stack is a causal decoder, and the mask is not "
                 "read from code yet; nothing is asserted")
-    return _MASK_TITLE.get(mask, "Causal attention")
+    return _MASK_TITLE[mask]
 
 
 def mask_chip(attention: dict) -> str:
@@ -127,12 +127,23 @@ def mask_chip(attention: dict) -> str:
 
 
 def kind_short(attention: dict) -> str:
+    kind = attention.get("kind")
     variant = attention.get("variant")
+    if kind in (None, "", "unknown"):
+        if variant and variant.get("short"):
+            base = (f"{variant['short']} · {variant['tag']}"
+                    if variant.get("tag") else variant["short"])
+            return f"{base} · unresolved"
+        return ("XAttn unresolved" if attention.get("cross_attention")
+                else "Attn unresolved")
     if variant and variant.get("short"):
         # Variant is self-describing (e.g. "Joint Attn · MM-DiT"); it already
         # encodes everything, so don't also append the auto QK/bias/NoPE tags.
         return f"{variant['short']} · {variant['tag']}" if variant.get("tag") else variant["short"]
-    short = _KIND_SHORT.get(attention.get("kind", ""), "MHA")
+    short = _KIND_SHORT.get(kind)
+    if short is None:
+        return ("XAttn unresolved" if attention.get("cross_attention")
+                else "Attn unresolved")
     if attention.get("cross_attention"):
         short = f"{short} XAttn"
     tags = []
@@ -161,10 +172,22 @@ def _partial_rope_dims(attention: dict) -> tuple[int, int] | None:
 
 
 def kind_long(attention: dict) -> str:
+    kind = attention.get("kind")
     variant = attention.get("variant")
+    if kind in (None, "", "unknown"):
+        if variant and (variant.get("title") or variant.get("short")):
+            base = variant.get("title") or variant["short"]
+            return f"{base} — attention mechanism unresolved"
+        return ("Cross-attention mechanism unresolved"
+                if attention.get("cross_attention")
+                else "Attention mechanism unresolved")
     if variant and (variant.get("title") or variant.get("short")):
         return variant.get("title") or variant["short"]
-    base = _KIND_LONG.get(attention.get("kind", ""), "Multi-head attention")
+    base = _KIND_LONG.get(kind)
+    if base is None:
+        return ("Cross-attention mechanism unresolved"
+                if attention.get("cross_attention")
+                else "Attention mechanism unresolved")
     if attention.get("cross_attention"):
         base = {
             "gqa": "Grouped-query cross-attention",
@@ -532,10 +555,25 @@ def _fmt_int(value) -> str:
 
 
 def attention_label(attention: AttentionSpec) -> list[str]:
-    if attention.variant and attention.variant.get("label"):
-        return list(attention.variant["label"])
     kind = attention.kind
     prefix = _attention_mask_prefix(attention)
+    if kind in (None, "", "unknown"):
+        if attention.variant and attention.variant.get("label"):
+            label = list(attention.variant["label"])
+            if label:
+                # Hero blocks have a fixed two-line compact label.  Keep the
+                # variant's primary name here and put its full topology plus
+                # the mechanism explanation in the title/inspect card; adding
+                # a third line overflows the block.
+                return [label[0], "(unresolved)"]
+        if attention.cross_attention:
+            # Hero blocks have a constrained two-line width.  The title,
+            # description, fact chip and drill carry the full "mechanism
+            # unresolved" wording; keep the visible box truthful and legible.
+            return _prefixed_label(prefix, "Cross-Attention", "(unresolved)")
+        return _prefixed_label(prefix, "Attention", "(mechanism unresolved)")
+    if attention.variant and attention.variant.get("label"):
+        return list(attention.variant["label"])
     if attention.cross_attention:
         # Name the actual side source (from the spec's own cross_kv_source):
         # a seq2seq composite's K/V are encoded PROMPT states, not vision.
@@ -587,6 +625,15 @@ def _spec_partial_rope(attention: AttentionSpec) -> bool:
 
 
 def attention_title(attention: AttentionSpec) -> str:
+    if attention.kind in (None, "", "unknown"):
+        if attention.variant and (
+                attention.variant.get("title") or attention.variant.get("short")):
+            base = attention.variant.get("title") or attention.variant["short"]
+            return f"{base} — attention mechanism unresolved"
+        base = ("Cross-attention mechanism unresolved"
+                if attention.cross_attention
+                else "Attention mechanism unresolved")
+        return _prefixed_title(_attention_mask_title_prefix(attention), base)
     if attention.variant and attention.variant.get("title"):
         return attention.variant["title"]
     if attention.cross_attention:

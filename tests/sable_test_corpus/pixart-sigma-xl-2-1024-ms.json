@@ -1,6 +1,6 @@
 {
   "checks": {
-    "asserted_facts": false,
+    "asserted_facts": true,
     "click_coupling": true,
     "config_accessed_unprojected": true,
     "config_ambiguity": true,
@@ -183,6 +183,26 @@
     ]
   },
   "hash_signature": [
+    "047df2e28808114973ee6a0553817e55",
+    "14a695384058a63e8d7cbb25b6b4b842",
+    "1e6e37015517da680f7d22555b019a11",
+    "22e659b90c632ec031fd95f36399ee49",
+    "2a162cebd1b107837d9340dd96af2a56",
+    "3beb7e8dd3a1413548860328bb44ec02",
+    "4aba2ecfbdf02367e04c9dc1739143e3",
+    "6280545624b8806264e3b79eda7ef823",
+    "92581c66390ebafb51be324cdbc42c3d",
+    "9f198a62053f6939aaa6682f5757e736",
+    "a66b0d9f8538451a202c6aff20678d1f",
+    "b27da72d8797da4f23c882340fe81c3f",
+    "b31abab691626c72dde789ac736cc3b0",
+    "b38dcb2f6c9289cc9b810d9bbdfa6610",
+    "cdec98067c84a5d7fd089a097109e06e",
+    "f8c0f6c893ff6bc3aa7f3e8490d60356"
+  ],
+  "model": "PixArt-Sigma-XL-2-1024-MS",
+  "source": "local",
+  "superseded_hash_signature": [
     "14a695384058a63e8d7cbb25b6b4b842",
     "1584a5f7876a1612417fb88f5211af58",
     "1cacf2dc833ade57cbd25b55f0676e05",
@@ -197,26 +217,6 @@
     "b31abab691626c72dde789ac736cc3b0",
     "b38dcb2f6c9289cc9b810d9bbdfa6610",
     "cdec98067c84a5d7fd089a097109e06e",
-    "d3552b121e3b5b31a3a81a831305315c",
-    "f8c0f6c893ff6bc3aa7f3e8490d60356"
-  ],
-  "model": "PixArt-Sigma-XL-2-1024-MS",
-  "source": "local",
-  "superseded_hash_signature": [
-    "14a695384058a63e8d7cbb25b6b4b842",
-    "1584a5f7876a1612417fb88f5211af58",
-    "1cacf2dc833ade57cbd25b55f0676e05",
-    "1e6e37015517da680f7d22555b019a11",
-    "22e659b90c632ec031fd95f36399ee49",
-    "3beb7e8dd3a1413548860328bb44ec02",
-    "4aba2ecfbdf02367e04c9dc1739143e3",
-    "62493dac4a0c1fe07edaeabed33be017",
-    "9b87e79060d680606c06b299ed03b566",
-    "9f198a62053f6939aaa6682f5757e736",
-    "a66b0d9f8538451a202c6aff20678d1f",
-    "b27da72d8797da4f23c882340fe81c3f",
-    "b31abab691626c72dde789ac736cc3b0",
-    "b38dcb2f6c9289cc9b810d9bbdfa6610",
     "d3552b121e3b5b31a3a81a831305315c",
     "f8c0f6c893ff6bc3aa7f3e8490d60356"
   ],

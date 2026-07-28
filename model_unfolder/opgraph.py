@@ -324,7 +324,9 @@ def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = 
     fabricated Q/K/V structure.  (``evidence`` is the reserved tier-2 hook.)
     """
     kind = attn.get("kind")
-    if kind in _SDPA_KINDS or kind is None:
+    if kind in (None, "", "unknown"):
+        return _unknown_attention_region(attn, hidden)
+    if kind in _SDPA_KINDS:
         return _sdpa_region(attn, hidden)
     if kind == "mla":
         return _mla_region(attn, hidden)
@@ -340,6 +342,51 @@ def attention_region(attn: dict, hidden: int | None, *, evidence: dict | None = 
         return _linear_attention_region(attn, hidden)
     return _opaque(attn, hidden, role="attention",
                    label=str(attn.get("class_name") or kind or "Custom attention"))
+
+
+def _unknown_attention_region(attn: dict, hidden: int | None) -> Region:
+    """Carry proven geometry without inventing an attention mechanism.
+
+    Head counts and dimensions are useful architectural facts even when the
+    source reader cannot prove how tokens are mixed.  They belong on the opaque
+    node as metadata; they are not permission to draw Q/K/V projections, SDPA,
+    RoPE, cache ports, or an output projection.
+    """
+    geometry = {
+        key: attn.get(key)
+        for key in ("num_heads", "num_kv_heads", "head_dim")
+        if attn.get(key) is not None
+    }
+    label = (
+        "Cross-attention mechanism unresolved"
+        if attn.get("cross_attention")
+        else "Attention mechanism unresolved"
+    )
+    op = Op(
+        "block",
+        "opaque",
+        label,
+        in_features=hidden,
+        out_features=hidden,
+        meta={
+            **geometry,
+            "desc": (
+                "The source evidence does not prove the token-mixing "
+                "mechanism. Known head geometry is retained, but no Q/K/V, "
+                "score, softmax, cache, or position operation is inferred."
+            ),
+        },
+    )
+    return Region(
+        "attention",
+        "attention",
+        label,
+        [op],
+        [],
+        template="unknown_attention",
+        source="opaque",
+        resolved=False,
+    )
 
 
 def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int | None, int | None]:
@@ -424,7 +471,7 @@ def _cross_kv_label(attn: dict) -> list[str]:
 
 
 def _sdpa_region(attn: dict, hidden: int | None) -> Region:
-    kind = attn.get("kind") or "mha"
+    kind = attn["kind"]
     heads, kv_heads, head_dim, q_w, kv_w = _head_geometry(attn, hidden)
     cross = bool(attn.get("cross_attention"))
     # Cache ports show only for autoregressive K/V. `cached` defaults to `not cross`

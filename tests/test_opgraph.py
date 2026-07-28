@@ -270,6 +270,36 @@ def test_unknown_attention_kind_is_one_honest_opaque_node():
     assert [o.kind for o in r.ops] == ["opaque"]
 
 
+def test_missing_attention_kind_keeps_geometry_but_fabricates_no_mechanism():
+    r = attention_region(
+        {"kind": None, "num_heads": 32, "num_kv_heads": 8, "head_dim": 128},
+        4096,
+    )
+    assert r.template == "unknown_attention" and r.resolved is False
+    assert [op.kind for op in r.ops] == ["opaque"]
+    assert r.ops[0].meta["num_heads"] == 32
+    assert r.ops[0].meta["num_kv_heads"] == 8
+    assert r.ops[0].meta["head_dim"] == 128
+    fabricated = {
+        "q_proj", "k_proj", "v_proj", "qkv_proj", "scaled_scores",
+        "attn_softmax", "attn_apply_v", "q_rope", "k_rope", "kv_cache",
+    }
+    assert not (fabricated & {op.id for op in r.ops})
+
+
+def test_missing_attention_kind_is_opaque_on_render_and_json_surfaces():
+    r = attention_region({"kind": None, "num_heads": 16}, 1024)
+    json_nodes = region_to_json(r)["nodes"]
+    graph = region_to_graph(r, clickable=True)
+    assert [node["operation"] for node in json_nodes] == ["opaque"]
+    # The graph projection adds its presentation-only output bookend; the
+    # canonical structural node remains exactly one opaque block.
+    assert [node.id for node in graph.nodes] == ["block", "region_out"]
+    assert not {"q_proj", "k_proj", "v_proj", "scaled_scores"} & {
+        node.id for node in graph.nodes
+    }
+
+
 def test_attention_render_and_json_project_from_the_same_region():
     """The whole point, again: render and JSON consume ONE region."""
     region = attention_region(GQA, 4096)

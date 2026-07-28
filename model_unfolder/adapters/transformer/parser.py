@@ -2734,7 +2734,8 @@ def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interlea
     return False
 
 
-def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag: bool) -> str:
+def _attention_kind(is_mla: bool, num_q: int, num_kv: int,
+                    has_multi_query_flag: bool) -> str | None:
     """Classify the attention head pattern.
 
     Note: ``num_kv == 1`` alone is *not* enough to label a layer as MQA.  Many
@@ -2744,8 +2745,8 @@ def _attention_kind(is_mla: bool, num_q: int, num_kv: int, has_multi_query_flag:
     """
     if is_mla:
         return "mla"
-    if not num_q:
-        return "mha"
+    if not num_q or not num_kv:
+        return None
     if num_kv == num_q:
         return "mha"
     if has_multi_query_flag and num_kv == 1:

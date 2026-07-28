@@ -34,6 +34,7 @@ from ...everchanging import (
 from dataclasses import replace as _replace
 from ...evidence import config_access as _config_access
 from ...ir import AttentionSpec, FFNSpec, ModelIR
+from ...labels import attention_label, attention_title
 from ..transformer.assembly import decoder_layer, single_stream_decoder_layer
 from ..transformer.blocks.attention import attention_child_blocks, attention_detail
 from ..transformer.common import architecture_name, format_dim as _fmt, get_config_value as _g, model_name
@@ -1085,17 +1086,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                          "denoiser.attention", "cross_attn_norm")
     cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
 
-    # Self-attention kind: standard softmax MHA unless the model class fixes a
-    # non-softmax processor with the config silent (Sana = ReLU-kernel LINEAR
-    # attention via SanaLinearAttnProcessor) — a code fact. The CROSS attention stays
-    # softmax (mha); only the self path changes. The attention ALGORITHM is READ FROM
-    # THE SOURCE (the SAME *LinearAttn* signal fact-conformance reads); unreadable
-    # source falls to the default softmax MHA.
+    # Self-attention kind is a code fact.  A special processor can prove linear
+    # attention; an abstaining reader leaves the mechanism unresolved.  U4:
+    # source absence must not manufacture the former softmax-MHA default.
     _code_kind = _code_attn_kind(cfg, context)
-    self_attn_kind = _code_kind or "mha"
-    # B5: "mha" without a code verdict is the asserted default (correct on
-    # every tested DiT, but an assertion — tagged so the machine layer knows).
-    dit_attn_asserted = ("attention_kind",) if _code_kind is None else ()
+    self_attn_kind = _code_kind
 
     # Code-proven scores-scaling verdict for the DENOISER's own attention —
     # the same oracle the encoder towers already draw (T5 raw QK^T).  Only a
@@ -1115,8 +1110,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     for _ in range(num_layers or 0):
         attn_spec = _dit_attention(num_heads, head_dim, rope_dim, double_variant, has_qk_norm,
                                    rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
-                                   scores_scaled=code_scores_scaled, bias=dit_attention_bias,
-                                   asserted=dit_attn_asserted)
+                                   scores_scaled=code_scores_scaled, bias=dit_attention_bias)
         layer = decoder_layer(
             idx, attn_spec,
             _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
@@ -1165,8 +1159,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         s_attn = _dit_attention(num_heads, head_dim, rope_dim,
                                 seq_single_variant or single_variant, has_qk_norm,
                                 rope_3d, has_pos_embed, self_attn_kind, num_kv_heads=num_kv_heads,
-                                scores_scaled=code_scores_scaled, bias=dit_attention_bias,
-                                asserted=dit_attn_asserted)
+                                scores_scaled=code_scores_scaled, bias=dit_attention_bias)
         s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
                          code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
@@ -1293,14 +1286,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
 
 def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
                    qk_norm: bool = False, rope_3d: bool = False,
-                   has_pos_embed: bool = False, kind: str = "mha",
+                   has_pos_embed: bool = False, kind: str | None = None,
                    num_kv_heads: int | None = None,
                    scores_scaled: bool | None = None,
-                   bias: bool = False,
-                   asserted: tuple = ()) -> AttentionSpec:
-    # DiT attention is FULL bidirectional multi-head attention (no causal mask;
-    # KV heads == Q heads).  ``variant`` names the stream topology; ``mask="full"``
-    # and the rope dim correct the LLM defaults (causal / NoPE) that don't apply.
+                   bias: bool = False) -> AttentionSpec:
+    # DiT attention is full/bidirectional and non-autoregressive. ``variant``
+    # names the stream topology; ``mask="full"`` and the rope dimension correct
+    # the LLM defaults (causal / NoPE) that do not apply.  Those facts do not,
+    # by themselves, prove whether the token mixer is MHA or another mechanism.
     #
     # Positional honesty: ``rope`` (which gates the drawn RoPE nodes) is true only
     # when a rope dim exists; ``no_rope`` (the "NoPE" chip = TRULY positionless) is
@@ -1323,7 +1316,6 @@ def _dit_attention(num_heads: int, head_dim: int, rope_dim, variant: dict,
                                 # constructor record, so the declared value IS the fact
         cached=False,           # diffusion DiT attention is bidirectional, non-AR — no KV cache
         scores_scaled=scores_scaled,  # code-proven verdict; only False changes rendering
-        asserted=asserted,            # B5: defaults tagged, JSON-only
         variant=variant,
     )
 
@@ -1514,7 +1506,12 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
     # (Wan's attn2 RMS-norms Q/K unconditionally; PixArt/SD3 stay norm-less).
     cross_spec = _replace(self_spec, cross_attention=True,
                           cross_kv_source="encoded text prompt",
-                          kind="mha",   # cross-attn is softmax even when self-attn is linear (Sana)
+                          # This reader proves that a cross-attention SUBLAYER
+                          # exists and where its K/V come from.  It does not
+                          # inspect that sublayer's processor/mechanism, so U4
+                          # keeps the mechanism unknown instead of asserting
+                          # softmax MHA (including Sana's separate attn2).
+                          kind=None,
                           qk_norm=bool(cross_qk_norm),
                           no_rope=True, rope_dim=None, rope_3d=False, variant=None)
     # Cross-attn gets its OWN namespaced op cards (accurate dims), so self-attention's
@@ -1552,14 +1549,31 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
         {
             "id": "cross_attn", "role": "attention", "kind": "attention",
             "diffusion_stage": "cross_attention",
-            "label": ["Cross-Attention", "(to text)"],
-            "title": "Cross-attention to text",
+            # The card and the drill consume the SAME typed spec.  Known role
+            # and K/V source stay visible, while an unresolved mechanism can
+            # no longer disappear behind a reassuring hand-written label.
+            "label": attention_label(cross_spec),
+            "title": attention_title(cross_spec),
             "description": (
                 "Image tokens form the queries; the encoded prompt (text-encoder K/V) "
                 "is attended — a separate sublayer (attn2) from self-attention, with its "
-                "own residual. This is how text conditions a cross-attention DiT." + _no_prenorm_clause
+                "own residual. This is how text conditions a cross-attention DiT."
+                + (
+                    " Its internal attention mechanism is unresolved from the "
+                    "available source evidence."
+                    if cross_spec.kind in (None, "", "unknown") else ""
+                )
+                + _no_prenorm_clause
             ),
-            "facts": [f for f in (heads_fact, "Q: image · K/V: text") if f],
+            "facts": [
+                f for f in (
+                    heads_fact,
+                    "Q: image · K/V: text",
+                    ("mechanism unresolved"
+                     if cross_spec.kind in (None, "", "unknown") else None),
+                )
+                if f
+            ],
             "view": "attention",
             "detail": {"attention": {**attention_detail(cross_spec), "node_prefix": "x_"}},
             "children": cross_children,
@@ -2412,7 +2426,5 @@ def _uniquify_encoder_names(specs: list[dict]) -> None:
 # The encoder round-trip is adapter-neutral — it lives in encoder_panel so the
 # transformer side's conditioning towers use the SAME implementation (parity).
 from ...encoder_panel import (
-    hydrate_encoder_config_facts as _hydrate_encoder_config_facts,
     normalize_encoder_config as _normalize_encoder_config,
 )
-

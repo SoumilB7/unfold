@@ -14,7 +14,10 @@ from typing import Optional
 @dataclass
 class AttentionSpec:
     """Specification of an attention/token-mixer block within a layer."""
-    kind: str                       # "mha" | "gqa" | "mqa" | "mla" | "gated_delta" | "ssm" | ...
+    kind: str | None                # "mha" | "gqa" | "mqa" | "mla" | ...
+                                    # None = mechanism unresolved.  Geometry may
+                                    # still be known, but consumers must not
+                                    # manufacture Q/K/V or SDPA from omission.
     num_heads: int
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None

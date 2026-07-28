@@ -90,6 +90,13 @@ def _projections(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
             "kv_lora_b":    linear(attn.get("kv_lora_rank"), q_w),
             "output":       linear(q_w, residual_w),
         })
+    if attn.get("kind") not in {"mha", "gqa", "mqa", "linear"}:
+        # Geometry alone does not prove Q/K/V storage.  Unknown and non-SDPA
+        # mixers project their canonical region below; expanded JSON must not
+        # independently manufacture the conventional four Linears.  Linear
+        # attention is included because its canonical region explicitly
+        # contains Q/K/V/out projections (Sana's code-proven processor).
+        return {}
     return drop_none({
         "query":  linear(hidden, q_w),
         "key":    linear(hidden, kv_w),
@@ -128,7 +135,7 @@ _PUBLIC_IDS = {
     "attn_apply_v": "context",
 }
 
-_CACHED_SDPA_KINDS = {"mha", "gqa", "mqa", None}
+_CACHED_SDPA_KINDS = {"mha", "gqa", "mqa"}
 
 
 def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
