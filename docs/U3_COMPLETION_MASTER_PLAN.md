@@ -1,5 +1,10 @@
 # U3 Completion Master Plan — Program Authority Without Semantic Scope Creep
 
+> Current audit procedure: `docs/U3_ACCOMPLISHMENTS_AND_CURRENT_PROCEDURE_AUDIT.md`.
+> It reconciles this plan's historical execution record with the present tree
+> and contains the mandatory lost-detail review gate added after the
+> DeepSeek/GLM semantic re-proof.
+
 > **Status:** Ratified by Soumil on 2026-07-27; binding for U3 completion.
 >
 > **Authority:** This is the unit-level completion plan for U3. It is subordinate
@@ -596,7 +601,7 @@ fact migration.
 | U3-C2 — classify remaining raw parse authority | **DONE** | 33 exact evidence-layer parse sites: 1 central ProgramIndex, 1 address bootstrap, 7 repository audits, 1 test guard and 23 legacy model-source sites |
 | U3-C3 — freeze the semantic-reader quarantine | **DONE** | 25 exact readers; exact definitions/callers; normalized reader + same-module helper implementation digest; exact legacy-parse caller digest; growth/body/alias/move poisons blocking |
 | U3-C4 — regenerate the current inventory | **DONE** | `docs/U3_CURRENT_READER_INVENTORY.md`; generator `--check` is blocking |
-| U3-C5 — project-wide release gate | **ACTIVE — APPROVED DELTA** | neutral U3 parity is exact; `docs/U3_SEMANTIC_DELTA_ADJUDICATION.md` attributes and vets the inherited semantic chain; Soumil approved the nine T5/UMT5 `RMSNorm -> Norm` views on 2026-07-28; the exact gallery/manifest transition is inspected and awaits the final committed-tree bracket |
+| U3-C5 — project-wide release gate | **DONE** | Soumil approved the nine T5/UMT5 `RMSNorm -> Norm` views; the manifest transition was inspected; current committed-tree bracket `4bd1395` is fully green with identical fingerprints (see the current closure addendum below) |
 
 The factory proof accepts only an exact directly indexed, unshadowed
 `@classmethod`, one unguarded `return cls(...)`, no unsupported execution
@@ -699,3 +704,29 @@ one PNG and one view signature per approved witness, retained the prior
 signatures, and rebuilt the manifest with no unexpected delta. The remaining
 action is the unchanged committed-tree release bracket. Only after that bracket
 is green may U3-C5 turn green and U4 formally unlock.
+
+### Current closure addendum (supersedes the pending status above)
+
+The paragraph above records the state before the final review and is retained
+as history. U3-C5 is now **DONE**.
+
+Soumil approved the named T5/UMT5 visual delta, the guarded manifest transition
+landed, and the later DeepSeek/GLM re-proof restored their detailed FFN views
+without a new renderer or family branch. The final isolated committed-tree
+bracket on `4bd1395` reported:
+
+- static: PASS;
+- collection: 2,265;
+- focused: 290 passed;
+- U2 authority: 44 passed;
+- preservation: 46 passed over 26 witnesses;
+- exhaustive: 2,162 passed, 11 skipped, 2 expected xfailed;
+- every lane fingerprint identical before/after.
+
+Receipt:
+`/private/tmp/model-unfolder-verification/7b368e2bd5`.
+
+U3 is closed as neutral program/ownership infrastructure. This does not mark
+the semantic U6–U15 migrations complete. The current review contract and the
+mandatory lost-detail gate are defined in
+`docs/U3_ACCOMPLISHMENTS_AND_CURRENT_PROCEDURE_AUDIT.md`.
