@@ -278,12 +278,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "comes from CrossLayerEdge spec fields)",
             "U6", "fact_registered:kv_shared_layers",
             occurrence="text_cfg num_kv_shared_layers"),
-    _extras("parallel_residual", "root.decoder.layer",
-            "parallel-residual topology flag as raw extras (drawn topology "
-            "comes from parallel_decoder_layer blocks)",
-            "U7", "fact_registered:residual_topology",
-            occurrence="text_cfg use_parallel_residual + "
-                       "everchanging layer_topology.yaml"),
     _extras("partial_rotary_factor", "root.decoder.attention",
             "partial-rotary fraction as raw extras (drawn partial rotary "
             "comes from AttentionSpec.rope_dim)",
@@ -434,17 +428,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            module=_OG, symbol="_sdpa_core_ops",
            consumer="model_unfolder/renderers/html/fact_projection.py::"
                     "attention_facts"),
-    # ---- legacy_convention drawings (registered facts whose UNKNOWN state
-    # ---- is drawn as a fabricated convention) ----------------------------- #
-    _drawn("norm_placement", "root.decoder.layer",
-           "reader-abstain still draws pre-norm + banner; honest-unknown "
-           "cell replaces the convention",
-           "U7", "unknown_policy_retired:norm_placement",
-           occurrence="REGISTRY['norm_placement'] "
-                      "unknown_policy='legacy_convention'",
-           module=_TP, symbol="parse",
-           consumer="model_unfolder/renderers/html/views.py::"
-                    "_build_architecture_view"),
     # ---- config occurrences awaiting their consumer (former
     # ---- PENDING_PROJECTION_DEBT; owner + EXACT dotted path) -------------- #
     _config("the conditioning card on the denoiser view",
@@ -703,8 +686,8 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     # ---- exact row per owner x path; readers stay visible pending debt) ---- #
     _config("the residual-tap topology annotation (post-LN tap on the layer "
             "card)", "root", "apply_residual_connection_post_layernorm",
-            "BLOOM residual-tap flag drawn only as a render layer annotation "
-            "— same U7 topology family as the parallel_residual extras row",
+            "declaration is inspected but cannot author the residual tap; U7 "
+            "binds it to the exact owner dataflow",
             "U7", "fact_registered:residual_topology"),
     # RoPE scaling-descriptor subkeys: feed only raw extras.rope + the
     # declared-tier chip; the rope_theta fact retires the whole family.

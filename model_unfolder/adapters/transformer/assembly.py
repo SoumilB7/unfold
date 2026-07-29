@@ -20,14 +20,16 @@ def decoder_layer(
     hidden_size: int,
     *,
     extra_blocks: Iterable[dict] | None = None,
-    norm_kind: str = "rmsnorm",
-    norm_placement: str = "pre",
+    norm_kind: str = "unknown",
+    norm_placement: str = "unknown",
+    residual_topology: str = "unknown",
     residual_scale=None,
     cross_attention_spec: AttentionSpec | None = None,
 ) -> LayerSpec:
     """Build a decoder layer from parsed specs plus optional reusable parts."""
     blocks = decoder_layer_blocks(attention, ffn, hidden_size, norm_kind=norm_kind,
                                   norm_placement=norm_placement,
+                                  residual_topology=residual_topology,
                                   residual_scale=residual_scale,
                                   cross_attention=cross_attention_spec)
     if extra_blocks:
@@ -38,6 +40,7 @@ def decoder_layer(
         ffn=ffn,
         norm_kind=norm_kind,
         norm_placement=norm_placement,
+        residual_topology=residual_topology,
         blocks=blocks,
         cross_attention=cross_attention_spec,
     )
@@ -49,8 +52,8 @@ def parallel_decoder_layer(
     ffn: FFNSpec,
     hidden_size: int,
     *,
-    norm_kind: str = "rmsnorm",
-    norm_count: int = 1,
+    norm_kind: str = "unknown",
+    norm_count: int | None = None,
 ) -> LayerSpec:
     """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
 
@@ -65,7 +68,12 @@ def parallel_decoder_layer(
         attention=attention,
         ffn=ffn,
         norm_kind=norm_kind,
-        norm_placement="pre",
+        # The exact parallel-input reader proves pre-normalization only when it
+        # resolves the real occurrences.  Parallel wiring alone is not a
+        # one-norm convention.
+        norm_placement="pre" if norm_count in {1, 2} else "unknown",
+        residual_topology="parallel",
+        parallel_norm_count=norm_count,
         blocks=blocks,
     )
 
@@ -76,7 +84,8 @@ def single_stream_decoder_layer(
     ffn: FFNSpec,
     hidden_size: int,
     *,
-    norm_kind: str = "rmsnorm",
+    norm_kind: str = "unknown",
+    norm_placement: str = "unknown",
     fused_in: bool = False,
 ) -> LayerSpec:
     """Build a fused single-stream MM-DiT layer (Flux's single-stream block).
@@ -90,13 +99,16 @@ def single_stream_decoder_layer(
     which fuses only the OUT projection.
     """
     blocks = single_stream_decoder_layer_blocks(attention, ffn, hidden_size,
-                                                norm_kind=norm_kind, fused_in=fused_in)
+                                                norm_kind=norm_kind,
+                                                norm_placement=norm_placement,
+                                                fused_in=fused_in)
     return LayerSpec(
         index=index,
         attention=attention,
         ffn=ffn,
         norm_kind=norm_kind,
-        norm_placement="pre",
+        norm_placement=norm_placement,
+        residual_topology="fused_parallel",
         blocks=blocks,
     )
 
@@ -107,6 +119,7 @@ def decoder_extras(
     tie_word_embeddings: bool | None,
     *extra_maps: Mapping[str, Any] | None,
     embed_norm: str | None = None,
+    final_norm: str | None = None,
     final_logit_softcap: float | None = None,
     codebooks: dict | None = None,
 ) -> dict:
@@ -117,6 +130,7 @@ def decoder_extras(
             hidden_size,
             tie_word_embeddings,
             embed_norm=embed_norm,
+            final_norm=final_norm,
             final_logit_softcap=final_logit_softcap,
             codebooks=codebooks,
         )

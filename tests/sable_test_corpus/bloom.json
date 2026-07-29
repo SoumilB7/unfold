@@ -70,15 +70,15 @@
     "237f99e04ae8213bb51a11035aaa22e3",
     "9690073a99b038727d8ddfc9d75359d6",
     "984432b9fa84629cfee5bcd871795b3f",
-    "f1b6082bc3d9008ecd1add6cf8000497"
+    "fbbc36f444c41a8959b6be526759acad"
   ],
   "model": "bloom",
   "source": "local",
   "superseded_hash_signature": [
-    "51385b61c23c40ad4d9016d6aed87030",
-    "5e2ea372ffa0d01247ea6e6642b1f03e",
+    "237f99e04ae8213bb51a11035aaa22e3",
     "9690073a99b038727d8ddfc9d75359d6",
-    "984432b9fa84629cfee5bcd871795b3f"
+    "984432b9fa84629cfee5bcd871795b3f",
+    "f1b6082bc3d9008ecd1add6cf8000497"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/bloom",

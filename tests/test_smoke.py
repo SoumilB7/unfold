@@ -148,14 +148,18 @@ def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
     assert "fixed positions" not in attention_summary(ir["layers"][0]["attention"])[1]
 
 
-def test_final_norm_label_uses_the_code_derived_norm_class():
+def test_repeated_layer_norm_does_not_certify_the_model_final_norm():
     from transformers import AutoConfig
 
     layernorm = unfold(AutoConfig.for_model("gpt_bigcode").to_dict()).to_html()
     rmsnorm = unfold(AutoConfig.for_model("llama").to_dict()).to_html()
-    assert "Final LayerNorm" in layernorm
-    assert "Final RMSNorm" not in layernorm
-    assert "Final RMSNorm" in rmsnorm
+    # The layer reader proves the repeated block's norm class.  It does not
+    # prove that the distinct model-stage path applies a norm before the head.
+    # U7 owns that root reader; until then the bookend stays explicitly unknown.
+    for html in (layernorm, rmsnorm):
+        assert "Final LayerNorm" not in html
+        assert "Final RMSNorm" not in html
+        assert "Pre-head path" in html
 
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -1453,8 +1457,12 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     block_by_id = {block["id"]: block for block in blocks}
 
     assert ir["layers"][0]["attention"]["kind"] == "mqa"
-    assert ir["extras"]["parallel_residual"] is True
-    assert block_by_id["rms1"]["label"] == "LayerNorm"
+    # The typed layer field is the one authority.  The retired root-level
+    # ``parallel_residual`` duplicate must not return.
+    assert "parallel_residual" not in ir["extras"]
+    assert ir["layers"][0]["residual_topology"] == "parallel"
+    assert ir["layers"][0]["parallel_norm_count"] is None
+    assert block_by_id["rms1"]["label"] == "Norm inputs unresolved"
     assert block_by_id["add1"]["title"] == "Residual add (parallel)"
     assert block_by_id["ffn"]["lane"] == "left"
     assert block_by_id["ffn"]["tap_from"] == "attn"
@@ -1478,9 +1486,10 @@ def test_new_should_support_family_routes():
         # matching Google's "GQA throughout" naming.
         (GEMMA1_CONFIG, "gqa", "dense", "rmsnorm"),
         (PHI2_CONFIG, "mha", "dense", "layernorm"),
-        # Yi's custom source is unavailable locally. Width/norm remain known,
-        # but U4-C refuses to call the unbound inner mechanism "dense".
-        (YI_34B_CONFIG, "gqa", None, "rmsnorm"),
+        # Yi's custom source is unavailable locally. Width remains known, but
+        # U4-C/U4-D refuse to infer either FFN or norm mechanism from config
+        # spellings alone.
+        (YI_34B_CONFIG, "gqa", None, "unknown"),
         (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
         (OLMOE_CONFIG, "mha", "moe", "rmsnorm"),
     ]
@@ -1760,21 +1769,24 @@ def _with_fake_transformers(auto_config, fn):
             del sys.modules["transformers"]
 
 
-def test_residual_multiplier_draws_scale_connectors_with_the_constant():
-    """A declared residual_multiplier (Granite's depth-scaled residual:
-    h = residual + sublayer(h) * m) is a REAL per-sublayer multiply — drawn as
-    a × connector BEFORE each residual ⊕, with its constant operand painted
-    beside the glyph (the labelled-constant rule: a bare × reads "× what?").
-    GENERAL: keyed off the config field; absent field -> no glyph fabricated."""
+def test_declared_residual_multiplier_does_not_manufacture_scale_connectors():
+    """A numeric operand does not prove that this layer applies it.
+
+    Source-proven scaled residuals belong to U7.  Until then, adding the field
+    to an otherwise identical Llama config must not change its layer drawing.
+    """
     from model_unfolder.block_schema import validate_click_coupling
     cfg = dict(LLAMA3_8B_CONFIG, residual_multiplier=0.22)
     html = unfold(cfg).to_html(standalone=True)
-    assert 'data-id="res_scale1"' in html and 'data-id="res_scale2"' in html
-    assert "× 0.22" in html                    # the constant, beside the glyph
+    assert 'data-id="res_scale1"' not in html
+    assert 'data-id="res_scale2"' not in html
+    assert "× 0.22" not in html
     assert validate_click_coupling(html) == []
-    # No declaration -> no scale connectors (nothing invented for llama).
     plain = unfold(LLAMA3_8B_CONFIG).to_html(standalone=True)
     assert "res_scale" not in plain
+    assert unfold(cfg).ir.layers[0].signature() == unfold(
+        LLAMA3_8B_CONFIG
+    ).ir.layers[0].signature()
 
 
 def test_declared_scores_scale_does_not_manufacture_an_operation():

@@ -122,14 +122,10 @@ def test_registry_definitions_are_internally_valid():
 
 _INDEX = re.compile(r"\[\d+\]")
 
-# The exact asserted population after U4-B retired attention storage and score
-# conventions (24 records over the blessed corpus). Shrinking is progress;
-# growth means a new default was presented as fact.
-ASSERTED_BASELINE = {
-    # U2-R9: witness 26 (musicgen-small) — the conditioning tower's per-layer
-    # norm-placement tuples. U4-B retired score/storage assertions.
-    "norm_placement": 24,
-}
+# U4-D retired the final 24 asserted norm-placement records: source abstention
+# now projects one unresolved cell. Growth means a new default was presented
+# as fact.
+ASSERTED_BASELINE = {}
 
 
 @pytest.fixture(scope="session")
@@ -306,7 +302,7 @@ def test_asserted_population_matches_pinned_baseline(corpus_fact_rows):
     asserted = Counter(fact for _, _, fact, status, _ in corpus_fact_rows
                        if status == "asserted")
     assert dict(asserted) == ASSERTED_BASELINE
-    assert sum(asserted.values()) == 24
+    assert sum(asserted.values()) == 0
 
 
 # --------------------------------------------------------------------------- #

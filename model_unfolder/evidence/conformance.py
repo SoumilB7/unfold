@@ -148,7 +148,10 @@ def check_model_conformance(
             problems.append(ConformanceProblem("unresolved", "", key))
             continue
         problems.extend(
-            diff_conformance(diagram_op_set(spec), code, family, view, abstractions, cfg=target)
+            diff_conformance(
+                diagram_op_set(spec), code, family, view, abstractions,
+                cfg=target, spec=spec,
+            )
         )
     return problems
 
@@ -1728,13 +1731,29 @@ def _reachable_forward_ops(architecture: str | None,
 
 
 def diff_conformance(diagram: frozenset[str], code: ForwardOps,
-                     family: str, view: str, ab: dict, *, cfg=None) -> list[ConformanceProblem]:
+                     family: str, view: str, ab: dict, *, cfg=None,
+                     spec: dict | None = None) -> list[ConformanceProblem]:
     key = f"{family}/{view}"
     cset = code.op_kinds
     omit = ab["omit_global"] | ab["omit_scoped"].get(key, set())
     composite = ab["composite"]
     draw_extra = ab["draw_extra"].get(key, set())
     problems: list[ConformanceProblem] = []
+    # An explicit typed abstention is itself a declared abstraction boundary.
+    # It may cover ONLY the operations governed by that field:
+    #
+    # * unknown norm placement: the exact norm occurrence is withheld;
+    # * unknown residual topology: residual adds and sublayer-output gates are
+    #   withheld with the residual wiring.
+    #
+    # The rule is dataflow-neutral and identity-free.  Missing attention, FFN,
+    # linear, concat, etc. still fail, and an absent field grants no waiver.
+    typed_unknown_omissions: set[str] = set()
+    if isinstance(spec, dict):
+        if spec.get("norm_placement") == "unknown":
+            typed_unknown_omissions.add("norm")
+        if spec.get("residual_topology") == "unknown":
+            typed_unknown_omissions.update({"gate_mul", "residual_add"})
 
     def _prob(kind: str, op: str) -> ConformanceProblem:
         return ConformanceProblem(
@@ -1744,7 +1763,7 @@ def diff_conformance(diagram: frozenset[str], code: ForwardOps,
 
     # code -> diagram: missing
     for op in sorted(cset):
-        if op in diagram or op in omit:
+        if op in diagram or op in omit or op in typed_unknown_omissions:
             continue
         if any(op in composite.get(drawn, ()) for drawn in diagram):   # subsumed by a drawn composite
             continue

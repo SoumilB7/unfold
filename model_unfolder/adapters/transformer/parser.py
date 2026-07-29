@@ -117,9 +117,9 @@ def _code_layer_topology(cfg: Any, context=None) -> dict | None:
     ``layer_topology.yaml`` model_type table.  "code -> structure": where the
     norms sit and whether attention ∥ FFN is wiring the forward() states, not a
     per-family lookup.  Returns ``{"norm_placement", "parallel_residual"}`` or
-    None (no source / no layer class found → caller falls back to the table
-    cache, then the safe pre/sequential default).  Best-effort, never raises into
-    the parse."""
+    None.  Absence/reader failure stays unknown; there is no table or
+    pre/sequential convention behind this boundary.  The whole-file reader is
+    transitional U7 debt and must not be treated as exact occurrence evidence."""
     try:
         from ...evidence.patterns import decoder_layer_topology_from_files
         files = _source_files(cfg, context)
@@ -1036,7 +1036,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 f"Audio codec ({_codec_sub.get('model_type')}) not drawn — it "
                 "tokenizes/decodes the audio-token streams this decoder "
                 "generates (waveform ↔ codebook tokens).")
-    residual_multiplier = get("residual_multiplier")
+    # A residual multiplier is an operand, not proof that this exact layer
+    # forward applies it.  U7 may promote it after binding the config path to
+    # the resolved residual operation; U4-D keeps the declaration inspected.
+    _scoped("residual_multiplier")
+    residual_multiplier = None
     get("embedding_multiplier")
     attention_multiplier = get("attention_multiplier")
     query_pre_attn_scalar = consume("query_pre_attn_scalar",
@@ -1109,28 +1113,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
         source=("decoder_attention_projection_storage_for_path"
                 if _code_attention_storage is not None else None),
     )
-    # Placement (B2, U2 default-kill), two unknown tiers:
-    # * source ABSENT (oracle_missing) → typed "unknown": the layer draws its
-    #   declared sublayers plus ONE pale "code-defined wiring" block (the
-    #   tower_cell honest-unknown primitive ported to the main path) — never
-    #   an asserted pre-norm shape at zero evidence.
-    # * source PRESENT but the reader abstained on the idiom (T5's ModuleList
-    #   sublayers, MusicGen's interleaved cross-attn) → AMBIGUOUS: the
-    #   conventional pre cell stays DRAWN — the op/nested-conformance oracle
-    #   still checks its norms/residual ops against the readable forward()
-    #   (dropping them here made the net flag code-proven residual_adds as
-    #   omitted) — recorded ambiguous, tagged asserted, and bannered.
+    # Placement is an owner-bound wiring fact.  Source presence is not proof
+    # of pre-norm: an abstaining reader stays unknown on every surface.
     norm_placement = (_code_topo or {}).get("norm_placement")
-    norm_placement_defaulted = not norm_placement
     _note_fact("decoder.layer", "norm_placement",
-               norm_placement or ("pre" if _source_present else "unknown"),
+               norm_placement or "unknown",
                "code_proven" if norm_placement else _unknown_status,
-               source=("decoder_layer_topology_from_files" if norm_placement
-                       else "pre convention kept (reader abstained on the idiom)"
-                       if _source_present else None))
-    norm_placement_conventional = norm_placement_defaulted and _source_present
+               source=("decoder_layer_topology_from_files"
+                       if norm_placement else None))
     if not norm_placement:
-        norm_placement = "pre" if _source_present else "unknown"
+        norm_placement = "unknown"
     # Position application is a mechanism fact. A declared theta/scaling value
     # remains visible to the config ledger, but cannot create Q/K rotation.
     _position_mechanisms = list(_code_position_evidence.mechanisms)
@@ -1462,10 +1454,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                    "config_declared", "layer_types/sliding_window")
     else:
         _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None)
-    # BLOOM-family topology switch: when TRUE the residual taps the POST-LN
-    # output instead of the raw hidden state — surfaced as a layer annotation
-    # (the tap is a wiring fact; False is the drawn default).
-    residual_post_layernorm = bool(_g(text_cfg, "apply_residual_connection_post_layernorm"))
+    # Declaration-only until U7 proves the exact residual tap in the owner.
+    # Inspect it for ownership, but do not let the flag author a drawing.
+    _scoped("apply_residual_connection_post_layernorm")
 
     # ---- Layer topology ----
     # Parallel residual: a config flag when the family TOGGLES it (Falcon
@@ -1476,20 +1467,46 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Distinct INPUT norms a parallel-residual layer applies, read from the code
     # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
     # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
-    parallel_norm_count = _code_parallel_norm_count(
-        text_cfg, context, config_path=_text_path) or 1
+    parallel_norm_count = None
     # U2-R7: the two rival spellings (GPT-NeoX use_parallel_residual / Falcon
     # parallel_attn) are ONE declared fact — resolved together and consumed
     # into the layer-topology fact; disagreement is typed ambiguity that
     # authors nothing (the code channel then decides).
-    _par_res = _config_access.resolve(
+    _parallel_decl = _config_access.resolve(
         text_cfg, "use_parallel_residual", ("parallel_attn",), path=_text_path)
-    _par_declared = None if _par_res.ambiguous else _par_res.consume_decision(
-        mechanism="residual_topology", fact_owner="decoder.layer",
-        fact_key="parallel_residual",
-        reader="adapters.transformer.parser.parse").value
-    use_parallel_residual = bool(
-        _par_declared or (_code_topo or {}).get("parallel_residual")
+    if _parallel_decl.state == "present":
+        _parallel_decl.ignore(
+            reason=(
+                "declared parallel-residual selector inspected only — the "
+                "exact owner forward must prove the residual topology"
+            )
+        )
+    # A flag is an operand only after code binds it to this exact branch.  The
+    # legacy topology reader proves unconditional structure; conditional flag
+    # binding belongs to U7 and must not be guessed here.
+    code_parallel = (_code_topo or {}).get("parallel_residual")
+    use_parallel_residual = code_parallel is True
+    residual_topology = (
+        "parallel" if code_parallel is True
+        else "sequential" if code_parallel is False
+        else "unknown"
+    )
+    if use_parallel_residual:
+        parallel_norm_count = _code_parallel_norm_count(
+            text_cfg, context, config_path=_text_path)
+    _note_fact(
+        "decoder.layer", "residual_topology", residual_topology,
+        "code_proven" if residual_topology != "unknown" else _unknown_status,
+        source=("decoder_layer_topology_from_files"
+                if residual_topology != "unknown" else None),
+    )
+    _note_fact(
+        "decoder.layer", "parallel_norm_count", parallel_norm_count,
+        "code_proven" if parallel_norm_count is not None else _unknown_status,
+        source=(
+            "decoder_parallel_norm_count_for_path"
+            if parallel_norm_count is not None else None
+        ),
     )
 
     # ---- MoE ----
@@ -1793,13 +1810,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
                 expert_projection_mode=_code_expert_fused,
-                # B5/U2: unbacked activation/norm-kind facts are typed
-                # unknowns (drawn honestly), never "asserted". Two DRAWN
-                # conventions formerly remained tagged here. Exact ordinary
-                # and expert storage has retired the storage tag completely;
-                # only the kept-pre topology convention remains.
-                asserted=tuple(
-                    ["norm_placement"] if norm_placement_conventional else []),
+                # U4-D: unresolved cell topology is represented by the layer's
+                # typed unknown fields, never carried as an asserted FFN fact.
+                asserted=(),
             )
         else:
             ffn = FFNSpec(
@@ -1813,8 +1826,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 # B5/U2: see the MoE branch — unknown FFN storage is represented
                 # by projection_mode=None and an opaque region, never a second
                 # asserted tag.
-                asserted=tuple(
-                    ["norm_placement"] if norm_placement_conventional else []),
+                asserted=(),
             )
 
         # The ADDITIVE cross sublayer's own spec: same construction-declared
@@ -1861,6 +1873,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 i, attn, ffn, hidden_size,
                 norm_kind=norm_kind,
                 norm_placement=norm_placement,
+                residual_topology=residual_topology,
                 extra_blocks=extra_blocks,
                 residual_scale=residual_multiplier,
                 cross_attention_spec=cross_spec,
@@ -2008,39 +2021,38 @@ def parse(cfg: Any, context=None) -> ModelIR:
     final_logit_softcap = consume("final_logit_softcapping",
                                   fact_owner="model",
                                   fact_key="final_logit_softcapping")
+    from ...ir import canonical_norm_kind
+    embedding_norm_kind = canonical_norm_kind(
+        _code_embedding_norm(text_cfg, context))
+    if embedding_norm_kind is not None:
+        _note_fact(
+            "model", "embedding_norm_kind", embedding_norm_kind,
+            "code_proven", source="embedding_stage_norm_evidence",
+        )
+    # U7 owns the root pre-head reader. A repeated layer norm cannot certify
+    # the distinct model-stage final norm.
+    final_norm_kind = None
+    _note_fact(
+        "model", "final_norm_kind", None, _unknown_status, source=None,
+    )
     extras = decoder_extras(
         vocab_size,
         hidden_size,
         tie_word_embeddings,
         per_layer_embedding_extras(hidden_size, ple_dim, ple_vocab, num_layers) if ple_dim else None,
         modality_extras,
-        embed_norm=_code_embedding_norm(text_cfg, context),
+        embed_norm=embedding_norm_kind,
+        final_norm=final_norm_kind,
         # Gemma-2's final_logit_softcapping is a REAL pre-sampling op — the LM
         # head card states it (only-when-present; everyone else byte-stable).
         final_logit_softcap=final_logit_softcap,
         codebooks=codebooks,
     )
-    # U2: an unknown norm kind must not print "Final RMSNorm" — the short
-    # generic label keeps the pill width; the card prose says why it is
-    # generic (metadata's kind-aware tooltip).
-    final_norm_name = {"layernorm": "LayerNorm",
-                       "rmsnorm": "RMSNorm"}.get(norm_kind, "Norm")
-    if residual_post_layernorm:
-        extras["render"].setdefault("layer_annotations", []).append(
-            "residual taps the post-LayerNorm output")
     if _scale_embedding:
         for block in extras["render"]["model_blocks"]:
             if block.get("id") == "embed":
                 block["facts"] = (block.get("facts") or []) + [
                     "scaled × √d (scale_embedding)"]
-    for block in extras["render"]["model_blocks"]:
-        if block.get("id") == "final_rms":
-            block.update({
-                "label": f"Final {final_norm_name}",
-                "description": (
-                    f"{final_norm_name} over the last hidden state before the output head."
-                ),
-            })
     extras["position_encoding"] = {
         **_code_position_evidence.to_dict(),
     }
@@ -2092,7 +2104,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declares; identity must not fill the gap (eradication plan I-07).
     if _g(cfg, "canvas_length") is not None:
         from .blocks.model import block_diffusion_loop_blocks
-        from .blocks.layers import diffusion_gemma_layer_blocks
         canvas_length = int(_g(cfg, "canvas_length") or 256)
         # U2-R7: the occurrence was consumed ONCE above (the LM-head card
         # read) — reuse that value here.
@@ -2118,14 +2129,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "shared by encoder (causal)",
             "& decoder (bidirectional)",
         ]
-        for layer in layers:
-            layer.blocks = diffusion_gemma_layer_blocks(
-                layer.attention,
-                layer.ffn,
-                hidden_size=hidden_size,
-                intermediate_size=intermediate_size,
-                norm_kind=norm_kind,
-            )
 
     # ---- Multi-Token Prediction heads (DeepSeek-V3 style next-token modules) ----
     # U2-R7: consumed into the MTP-modules fact (extras["mtp"]).
@@ -2159,8 +2162,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "window": sliding_window,
             "first_full_layers": max_window_layers or 0,
         }
-    if use_parallel_residual:
-        extras["parallel_residual"] = True
     if moe_active:
         extras["moe"] = {
             "num_experts": num_experts,
@@ -2264,6 +2265,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         max_position_embeddings=consume("max_position_embeddings", fact_owner="model", fact_key="max_position_embeddings"),
         tie_word_embeddings=tie_word_embeddings,
         layers=layers,
+        embedding_norm_kind=embedding_norm_kind,
+        final_norm_kind=final_norm_kind,
         cross_layer_edges=cross_layer_edges,
         extras=extras,
         warnings=warnings,
@@ -2670,17 +2673,11 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
         rms_eps = _g(cfg, "rms_norm_eps")
         ln_eps = _g(cfg, "layer_norm_epsilon")
         ln_eps2 = _g(cfg, "layer_norm_eps") or _g(cfg, "layernorm_epsilon")  # chatglm spelling
-    declared_rms = _g(cfg, "rmsnorm")            # chatglm boolean declaration
-    if declared_rms is True:
-        return "rmsnorm", ("config_declared", "rmsnorm flag")
-    if declared_rms is False:
-        return "layernorm", ("config_declared", "rmsnorm flag")
-    if explicit_norm_type:
-        nt = str(explicit_norm_type).lower()
-        if "rms" in nt:
-            return "rmsnorm", ("config_declared", "norm_type")
-        if "layer" in nt:
-            return "layernorm", ("config_declared", "norm_type")
+    # Keep declarations visible to the access ledger, but do not let a
+    # spelling select a primitive.  The exact block's constructed/called norm
+    # is the authority.
+    _g(cfg, "rmsnorm")
+    _ = explicit_norm_type
     norm_result = _decoder_norm_result(
         context, config_path=tuple(config_path))
     if norm_result is not None and norm_result.status == "resolved":
@@ -2695,13 +2692,9 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
         return None, (
             "ambiguous",
             f"decoder_norm_kind_for_path:{norm_result.status}")
-    # The eps SPELLING is a hint derived from a field NAME, not a declaration
-    # of the kind (PhiMoE carries rms_norm_eps but constructs nn.LayerNorm) —
-    # recorded as ``derived`` so the ledger never upgrades a spelling to fact.
-    if rms_eps is not None:
-        return "rmsnorm", ("derived", "rms_norm_eps spelling")
-    if ln_eps is not None or ln_eps2 is not None:
-        return "layernorm", ("derived", "layer_norm_eps spelling")
+    # Source absence does not make field spelling architectural evidence.
+    # The reads remain classified migration debt for U7.
+    _ = (rms_eps, ln_eps, ln_eps2)
     return None, None
 
 

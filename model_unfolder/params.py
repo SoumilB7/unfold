@@ -133,7 +133,22 @@ def estimate_params(ir: ModelIR) -> dict:
     if ir.tie_word_embeddings is None:
         assumptions.append(
             "embedding/head tying unknown — output head counted untied")
-    final_norm = h
+    embedding_norm = (
+        h if ir.embedding_norm_kind == "rmsnorm"
+        else 2 * h if ir.embedding_norm_kind == "layernorm"
+        else 0
+    )
+    if ir.embedding_norm_kind not in {"rmsnorm", "layernorm"}:
+        assumptions.append(
+            "embedding-stage normalization not proven — its parameters omitted")
+    final_norm = (
+        h if ir.final_norm_kind == "rmsnorm"
+        else 2 * h if ir.final_norm_kind == "layernorm"
+        else 0
+    )
+    if ir.final_norm_kind not in {"rmsnorm", "layernorm"}:
+        assumptions.append(
+            "final-stage normalization unresolved — its parameters omitted")
 
     per_layer = []
     layers_total = 0
@@ -180,15 +195,36 @@ def estimate_params(ir: ModelIR) -> dict:
         for note in pending_notes:
             if note is not None and note not in assumptions:
                 assumptions.append(note)
-        norm_p = 2 * h
+        per_norm = (
+            h if layer.norm_kind == "rmsnorm"
+            else 2 * h if layer.norm_kind == "layernorm"
+            else 0
+        )
+        norm_count = (
+            4 if layer.norm_placement == "double"
+            and layer.residual_topology == "sequential"
+            else 2 if layer.norm_placement in {"pre", "post"}
+            and layer.residual_topology == "sequential"
+            else layer.parallel_norm_count
+            if layer.residual_topology == "parallel"
+            else None
+        )
+        norm_p = per_norm * norm_count if norm_count is not None else 0
+        if per_norm == 0 or norm_count is None:
+            note = (
+                "layer normalization parameters unresolved — omitted until "
+                "kind, placement, and residual topology are owner-proven"
+            )
+            if note not in assumptions:
+                assumptions.append(note)
         t = a_p + f_total + norm_p
         ac = a_p + f_active + norm_p
         per_layer.append({"total": t, "active": ac, "attn": a_p, "ffn": f_total})
         layers_total += t
         layers_active += ac
 
-    total = embed + output + final_norm + layers_total
-    active = embed + output + final_norm + layers_active
+    total = embed + output + embedding_norm + final_norm + layers_total
+    active = embed + output + embedding_norm + final_norm + layers_active
 
     return {
         "total": total,

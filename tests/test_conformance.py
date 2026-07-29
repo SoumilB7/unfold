@@ -82,6 +82,35 @@ def test_negative_control_parallel_sum_rendering_is_caught():
     assert any("transformer_flux" in p.source_file for p in problems if p.kind == "missing")
 
 
+def test_typed_unknown_cell_waives_only_its_wiring_operations():
+    """An honest topology abstention must be mechanically blessable without
+    becoming a blanket conformance escape hatch."""
+    code = _flux_forward_ops()["FluxSingleTransformerBlock"]
+    ab = load_conformance_abstractions()
+    drawn = frozenset({"attention", "ffn"})
+    spec = {
+        "norm_placement": "unknown",
+        "residual_topology": "unknown",
+    }
+    problems = diff_conformance(
+        drawn, code, "flux", "single_stream", ab, spec=spec,
+    )
+    missing = {p.op for p in problems if p.kind == "missing"}
+    assert not ({"norm", "gate_mul", "residual_add"} & missing)
+    # The typed abstention is narrow: unrelated code operations remain visible.
+    assert "concat" in missing
+
+
+def test_absent_unknown_fields_grant_no_conformance_waiver():
+    code = _flux_forward_ops()["FluxTransformerBlock"]
+    problems = diff_conformance(
+        frozenset({"attention", "ffn"}), code, "flux", "block",
+        load_conformance_abstractions(), spec={},
+    )
+    missing = {p.op for p in problems if p.kind == "missing"}
+    assert {"norm", "gate_mul", "residual_add"} <= missing
+
+
 def test_negative_control_end_to_end_pipeline_catches_buggy_render():
     """The FULL path (parser → IR → conformance) catches the bug: mutate Flux's
     single-stream group back to the buggy parallel-sum (no concat/gate) and the

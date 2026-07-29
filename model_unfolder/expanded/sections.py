@@ -99,12 +99,19 @@ def build_io(raw: dict) -> dict[str, Any]:
             "source":        "modalities.fusion",
             "trace":         {"ir_path": "extras.modalities.fusion"},
         })
-    out["final_norm"] = drop_none({
-        "operation":        "norm",
-        "kind":             _final_norm_kind(raw),
-        "normalized_shape": hidden,
-        "trace":            {"ir_path": "extras.render.model_blocks.final_rms"},
-    })
+    final_kind = _final_norm_kind(raw)
+    if final_kind:
+        out["final_norm"] = {
+            "operation": "norm",
+            "kind": final_kind,
+            "normalized_shape": hidden,
+            "trace": {"ir_path": "final_norm_kind"},
+        }
+    else:
+        out["final_stage"] = {
+            "status": "unresolved",
+            "trace": {"ir_path": "final_norm_kind"},
+        }
     lm_head = drop_none({
         "operation":               "linear",
         "in_features":             hidden,
@@ -145,12 +152,19 @@ def _diffusion_io(raw: dict) -> dict[str, Any]:
             "output_width": hidden,
             "trace":        {"ir_path": "extras.render.model_blocks.embed"},
         }),
-        "final_norm": drop_none({
-            "operation":        "norm",
-            "kind":             _final_norm_kind(raw),
-            "normalized_shape": hidden,
-            "trace":            {"ir_path": "extras.render.model_blocks.final_rms"},
-        }),
+        "final_stage": (
+            {
+                "operation": "norm",
+                "kind": _final_norm_kind(raw),
+                "normalized_shape": hidden,
+                "trace": {"ir_path": "final_norm_kind"},
+            }
+            if _final_norm_kind(raw) else
+            {
+                "status": "unresolved",
+                "trace": {"ir_path": "final_norm_kind"},
+            }
+        ),
         "output": drop_none({
             "operation":   "linear",
             "kind":        "noise_prediction",
@@ -161,5 +175,5 @@ def _diffusion_io(raw: dict) -> dict[str, Any]:
 
 
 def _final_norm_kind(raw: dict) -> str | None:
-    layers = raw.get("layers") or []
-    return layers[-1].get("norm_kind") if layers else None
+    value = raw.get("final_norm_kind")
+    return value if value not in {None, "", "unknown"} else None

@@ -48,8 +48,13 @@ EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
 # Surface-level compatibility/obligation view.  Owner-qualified gates use the
 # two sets above and never attribute an expert fact to the ordinary FFN.
 FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN
-LAYER_DRAWN = frozenset({"norm_kind", "norm_placement"})
-MODEL_DRAWN = frozenset({"tie_word_embeddings"})
+LAYER_DRAWN = frozenset({
+    "norm_kind", "norm_placement", "residual_topology",
+    "parallel_norm_count",
+})
+MODEL_DRAWN = frozenset({
+    "tie_word_embeddings", "embedding_norm_kind", "final_norm_kind",
+})
 
 # Soumil's final vet (round 2): the drawn structural inventory is
 # OWNER-QUALIFIED — each drawn leaf is claimed by the owner whose serializer

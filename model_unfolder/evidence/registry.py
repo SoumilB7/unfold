@@ -297,15 +297,38 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     ),
     FactDefinition(
         key="norm_placement",
-        # U2-R9 (witness 26): honest ambiguity + the conditioning tower's
-        # per-layer asserted tuples.
-        value_types=frozenset({"str", "NoneType"}),
-        allowed_statuses=frozenset({"code_proven", "ambiguous", "asserted"}),
-        owner_patterns=frozenset({"decoder.layer", "layers[i].ffn"}),
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({
+            "code_proven", "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
-        unknown_policy="legacy_convention",
-        notes="reader-abstain still draws pre-norm + banner (census: parser "
-              "859-880); H8 replaces with honest-unknown cell",
+        unknown_policy="generic_node",
+        notes="U4-D: abstention draws one unresolved cell; U7 replaces the "
+              "legacy topology reader with exact owner-bound evidence",
+    ),
+    FactDefinition(
+        key="residual_topology",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({
+            "code_proven", "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.layer"}),
+        projections=frozenset({"architecture_view", "json"}),
+        unknown_policy="generic_node",
+        notes="sequential/parallel is independent from norm placement",
+    ),
+    FactDefinition(
+        key="parallel_norm_count",
+        value_types=frozenset({"int", "NoneType"}),
+        allowed_statuses=frozenset({
+            "code_proven", "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.layer"}),
+        projections=frozenset({"architecture_view", "json"}),
+        unknown_policy="omit",
+        notes="exact number of distinct normalization occurrences feeding "
+              "the two proven parallel branches",
     ),
     FactDefinition(
         key="scores_scale",
@@ -352,6 +375,34 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         unknown_policy="assumption_note",
         negative_requires_complete=False,   # config/class tiers, not code claims
         parameter_consumer=True,
+    ),
+    FactDefinition(
+        key="embedding_norm_kind",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"model"}),
+        projections=frozenset({
+            "architecture_view", "params_annotation", "json",
+        }),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes="positive-only exact model-stage norm invocation feeding the "
+              "repeated child; absence never fabricates an entry norm",
+    ),
+    FactDefinition(
+        key="final_norm_kind",
+        value_types=frozenset({"str", "NoneType"}),
+        allowed_statuses=frozenset({
+            "code_proven", "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"model"}),
+        projections=frozenset({
+            "architecture_view", "params_annotation", "json",
+        }),
+        unknown_policy="generic_node",
+        parameter_consumer=True,
+        notes="U4-D root pre-head fact; remains unknown until U7 lands the "
+              "exact final-stage reader and never borrows a layer norm",
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

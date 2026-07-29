@@ -112,18 +112,18 @@
     "vocab_size": 151936
   },
   "hash_signature": [
+    "09eb9ede3df8036573c7142d0e33eb36",
     "12b1bdce7140cb545f7989138979cbfe",
     "9f8549df9150cd0b80187967a0a06c9d",
-    "f7a1d21a7c8882f8076b1489523e16ee",
-    "f9c16fdd17c8ff0fe852745adbfee5ad"
+    "f7a1d21a7c8882f8076b1489523e16ee"
   ],
   "model": "Qwen3-8B",
   "source": "local",
   "superseded_hash_signature": [
     "12b1bdce7140cb545f7989138979cbfe",
-    "15b3c1ad4bb48f40b55d5ef0c152f7a8",
-    "b75aade95db5c927a553047b9a2b5bfc",
-    "f7a1d21a7c8882f8076b1489523e16ee"
+    "9f8549df9150cd0b80187967a0a06c9d",
+    "f7a1d21a7c8882f8076b1489523e16ee",
+    "f9c16fdd17c8ff0fe852745adbfee5ad"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen3-8b",

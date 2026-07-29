@@ -76,17 +76,17 @@
   },
   "hash_signature": [
     "4ddabac361f85744c8fa95e52b1249bd",
+    "685ba36858bbd57c4ea805f0514a48d2",
     "86ec73132aee62e1fd481890bf886ae4",
-    "9c7ebe398faecd2478255d16c20831a3",
-    "f361cb06be666d23a04fe01454d6f95e"
+    "9c7ebe398faecd2478255d16c20831a3"
   ],
   "model": "stablelm-2-1_6b",
   "source": "local",
   "superseded_hash_signature": [
     "4ddabac361f85744c8fa95e52b1249bd",
+    "86ec73132aee62e1fd481890bf886ae4",
     "9c7ebe398faecd2478255d16c20831a3",
-    "cb9281ac0ec2d70b193d402606b27c6b",
-    "ed1b59a2bd54364a61191a66fae44950"
+    "f361cb06be666d23a04fe01454d6f95e"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/stablelm-2-1-6b",

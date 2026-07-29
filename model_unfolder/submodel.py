@@ -396,18 +396,24 @@ def submodel_cell_blocks(
     cards: list[Block] = []
 
     def _cell(group: dict, cell_prefix: str, *, chips: list[str]) -> list[Block]:
-        # The card side MIRRORS the cell projector's node side exactly: an
-        # unknown-placement group renders one honest-unknown node, so it gets
-        # one honest-unknown card; a gated group's × connectors each get their
-        # one-line card (Gate C: a connector explains itself).
+        # The card side MIRRORS the cell projector's evidence boundary.  An
+        # unknown placement withholds only norm occurrences/order and residual
+        # taps: independently known attention and FFN mechanisms remain
+        # drillable, while tower_cell's wiring marker is deliberately static
+        # and therefore has no card.  A gated group's × connectors each get
+        # their one-line card (Gate C: a connector explains itself).
         placement = group.get("norm_placement")
-        if placement is not None and placement not in ("pre", "post", "double"):
-            return [{
-                "id": f"{cell_prefix}_op_unknown",
-                "title": "Code-defined block",
-                "description": ("The exact repeated block could not be resolved "
-                                "from the source; no standard cell is invented."),
-            }]
+        if placement not in ("pre", "post", "double"):
+            attn = group["attention"]
+            title = kind_long(attn).replace(" attention", " self-attention")
+            facts = (attention_summary(attn)[1] if attn.get("num_heads") else [])
+            return [
+                submodel_attention_block(
+                    spec, group, cell_prefix, title=title,
+                    description=attn_description, facts=facts + chips,
+                ),
+                submodel_ffn_block(spec, group, cell_prefix),
+            ]
         attn = group["attention"]
         title = kind_long(attn).replace(" attention", " self-attention")
         facts = (attention_summary(attn)[1] if attn.get("num_heads") else [])
@@ -418,7 +424,7 @@ def submodel_cell_blocks(
             ),
             submodel_ffn_block(spec, group, cell_prefix),
             norm_card(cell_prefix, group.get("norm") or norm_fallback,
-                      placement or "pre"),
+                      placement),
             residual_card(cell_prefix),
         ]
         gate = group.get("residual_gate")

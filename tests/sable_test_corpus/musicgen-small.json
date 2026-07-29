@@ -1,6 +1,6 @@
 {
   "checks": {
-    "asserted_facts": false,
+    "asserted_facts": true,
     "click_coupling": true,
     "config_accessed_unprojected": false,
     "config_ambiguity": true,
@@ -78,6 +78,20 @@
   },
   "hash_signature": [
     "17b33efdad9829a9e1dbeaeb4358b957",
+    "247d83d1c9e2ee8ec91cce23f655c59e",
+    "2a108adba4bc505a7f03bd1852598dc2",
+    "451b5ceb8410bf797f86dc886788fa40",
+    "6c5c89df198db5467d4173b3b414b4ec",
+    "749f31b34142e6320f016f369fc65a3a",
+    "7ff20cffaec012682df143329e716f95",
+    "9631ca8d3bfe9cd7525a5e455280cbe9",
+    "d54b25e5cb51e5d16ee534ab0048fa65",
+    "f50b4ae7af4f499ef3b2f943e9782f24"
+  ],
+  "model": "musicgen-small",
+  "source": "local",
+  "superseded_hash_signature": [
+    "17b33efdad9829a9e1dbeaeb4358b957",
     "2a108adba4bc505a7f03bd1852598dc2",
     "442061d7d96866a724277d04bad95396",
     "451b5ceb8410bf797f86dc886788fa40",
@@ -86,20 +100,6 @@
     "9631ca8d3bfe9cd7525a5e455280cbe9",
     "aac73c18dd3fbd8881dd24b8c223f831",
     "d54b25e5cb51e5d16ee534ab0048fa65",
-    "f50b4ae7af4f499ef3b2f943e9782f24"
-  ],
-  "model": "musicgen-small",
-  "source": "local",
-  "superseded_hash_signature": [
-    "14ab0be8a4214c16397d85ff85045bb7",
-    "17b33efdad9829a9e1dbeaeb4358b957",
-    "2a108adba4bc505a7f03bd1852598dc2",
-    "5d044d54b2702fcbe3520d6201acdbdc",
-    "6c5c89df198db5467d4173b3b414b4ec",
-    "749f31b34142e6320f016f369fc65a3a",
-    "9631ca8d3bfe9cd7525a5e455280cbe9",
-    "d54b25e5cb51e5d16ee534ab0048fa65",
-    "d898895c1246a07999a2a60bbebd85a1",
     "f50b4ae7af4f499ef3b2f943e9782f24"
   ],
   "visual_evidence": {

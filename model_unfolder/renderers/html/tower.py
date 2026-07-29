@@ -46,7 +46,7 @@ def tower_cell(
     *,
     attn_label,
     norm_label,
-    placement: str = "pre",
+    placement: str = "unknown",
     attn_sub=None,
     ffn_kind=None,
     ffn_label=None,
@@ -73,9 +73,6 @@ def tower_cell(
       _op_norm2 / _op_ffn / _op_add2`` (+ ``_post`` norms, ``_gate`` muls) —
       cards and drills key on these, identically in every tower.
     """
-    if placement not in ("pre", "post", "double"):
-        return [{"id": f"{prefix}_op_unknown", "kind": "norm",
-                 "label": unknown_label or "Code-defined block", "resolved": False}]
     if ffn_label is not None:
         ffn_text = ffn_label
     elif isinstance(ffn_fact, dict):
@@ -128,6 +125,29 @@ def tower_cell(
         )
     ):
         ffn.update({"w": 340, "h": 76})
+    if placement not in ("pre", "post", "double"):
+        # Preserve the independently known attention/FFN mechanisms and norm
+        # kind.  Only their order, norm occurrences and residual taps are
+        # withheld; collapsing the entire cell would lose real drills merely
+        # because one different fact is unknown.
+        norm_known = str(norm_label).lower() not in {
+            "", "norm", "normalization", "unknown",
+        }
+        return [
+            attn,
+            {
+                "id": f"{prefix}_op_wiring_unknown",
+                "kind": "norm",
+                "label": (
+                    [norm_label, "wiring unresolved"]
+                    if norm_known else
+                    unknown_label or "Wiring unresolved"
+                ),
+                "resolved": False,
+                "static": True,
+            },
+            ffn,
+        ]
     if placement == "post":
         # BERT shape: h = norm(h + op(h)) — the first skip taps the cell input.
         skip1 = input_id or f"{prefix}_op_in"

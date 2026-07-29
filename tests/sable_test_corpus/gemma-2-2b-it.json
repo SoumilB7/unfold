@@ -112,19 +112,19 @@
     "1f338351f4623b5cd89efcc863e49588",
     "2d1c39ac7aed719b4d7c8cefe79b8e70",
     "49efdb10af46ecb749c15a49e4c85af1",
+    "4eb210f999ae8e6e4e920a0eec1cd73b",
     "97add9fdeb9864e5fdfb6daeac37976b",
-    "ad65dcc0eb8019c60488a1fa42ea30e3",
-    "e51c61fe6418d772df908d059bb4c6e5"
+    "d4230b4558508afae92ffe12bd8a45b2"
   ],
   "model": "gemma-2-2b-it",
   "source": "local",
   "superseded_hash_signature": [
+    "1f338351f4623b5cd89efcc863e49588",
     "2d1c39ac7aed719b4d7c8cefe79b8e70",
     "49efdb10af46ecb749c15a49e4c85af1",
-    "6ad850b94a02840ff6da38e06c4d121d",
-    "6b6b7dedbf280f63f1eaf5783a4b5f26",
-    "93d4193b79d933a34a4bcd3bedd065e3",
-    "97add9fdeb9864e5fdfb6daeac37976b"
+    "97add9fdeb9864e5fdfb6daeac37976b",
+    "ad65dcc0eb8019c60488a1fa42ea30e3",
+    "e51c61fe6418d772df908d059bb4c6e5"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gemma-2-2b-it",

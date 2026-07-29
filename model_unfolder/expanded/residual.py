@@ -6,13 +6,21 @@ from typing import Any
 from .utils import drop_none
 
 
-def build_residual_topology(blocks: list[dict], group_path: str) -> dict[str, Any]:
-    parallel = any(
-        isinstance(b, dict) and b.get("lane") == "left" and b.get("kind") == "ffn"
-        for b in blocks
-    )
+def build_residual_topology(
+    blocks: list[dict],
+    group_path: str,
+    mode: str | None,
+    parallel_norm_count: int | None = None,
+) -> dict[str, Any]:
+    """Serialize the parser's typed topology; never reverse-infer it from layout."""
+    known = mode in {"sequential", "parallel", "fused_parallel"}
     return {
-        "mode": "parallel" if parallel else "sequential",
+        "mode": mode if known else "unknown",
+        **(
+            {"parallel_norm_count": parallel_norm_count}
+            if mode == "parallel" and parallel_norm_count is not None
+            else {}
+        ),
         "residual_adds": [
             drop_none({
                 "id":            b.get("id"),

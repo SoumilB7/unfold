@@ -146,20 +146,58 @@ class FFNSpec:
                                     # (gpt-oss ``swiglu_limit``) — a Tier-3 property
 
 
+def canonical_norm_kind(value) -> str | None:
+    """Normalize an already-proven norm semantic into the closed IR enum.
+
+    This is vocabulary normalization only. It never classifies a constructor
+    or infers a primitive from a model/class name; an evidence reader must
+    first prove the semantic value passed here.
+    """
+    token = str(value or "").strip().lower().replace("_", "")
+    return token if token in {"layernorm", "rmsnorm"} else None
+
+
 @dataclass
 class LayerSpec:
     """One transformer layer. Instances may differ across the stack."""
     index: int
     attention: AttentionSpec
     ffn: FFNSpec
-    norm_kind: str = "rmsnorm"      # "rmsnorm" | "layernorm" | "unknown" (config
-                                    # gives no norm-type signal — don't assert one)
-    norm_placement: str = "pre"     # "pre" | "post" | "double"
+    norm_kind: str = "unknown"      # "rmsnorm" | "layernorm" | "unknown"
+    norm_placement: str = "unknown" # "pre" | "post" | "double" | "unknown"
+    # Independent from norm placement.  A known set of sublayers is not proof
+    # that their residual stream is sequential or parallel.
+    residual_topology: str = "unknown"  # "sequential" | "parallel" |
+                                        # "fused_parallel" | "unknown"
+    # Number of distinct input-norm occurrences feeding a proven parallel
+    # attention/FFN pair.  None is not one: it is genuinely unresolved.
+    parallel_norm_count: Optional[int] = None
     blocks: list = field(default_factory=list)
     #: ADDITIVE cross-attention sublayer (seq2seq decoders — MusicGen builds
     #: encoder_attn IN ADDITION to self_attn).  Distinct from
     #: attention.cross_attention=True, which REPLACES self-attention (mllama).
     cross_attention: Optional[AttentionSpec] = None
+
+    def __post_init__(self) -> None:
+        if self.norm_kind not in {"rmsnorm", "layernorm", "unknown"}:
+            raise ValueError(f"unknown layer norm kind {self.norm_kind!r}")
+        if self.norm_placement not in {"pre", "post", "double", "unknown"}:
+            raise ValueError(
+                f"unknown layer norm placement {self.norm_placement!r}")
+        if self.residual_topology not in {
+                "sequential", "parallel", "fused_parallel", "unknown"}:
+            raise ValueError(
+                f"unknown layer residual topology {self.residual_topology!r}")
+        if self.parallel_norm_count is not None and (
+                not isinstance(self.parallel_norm_count, int)
+                or isinstance(self.parallel_norm_count, bool)
+                or self.parallel_norm_count <= 0):
+            raise ValueError(
+                "parallel_norm_count must be a positive integer or None")
+        if self.residual_topology != "parallel" \
+                and self.parallel_norm_count is not None:
+            raise ValueError(
+                "parallel_norm_count requires residual_topology='parallel'")
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
@@ -254,6 +292,8 @@ def layer_signature(layer) -> tuple:
         ffn = layer.get("ffn")
         norm_kind = layer.get("norm_kind")
         norm_placement = layer.get("norm_placement")
+        residual_topology = layer.get("residual_topology")
+        parallel_norm_count = layer.get("parallel_norm_count")
         blocks = layer.get("blocks") or []
         cross_attention = layer.get("cross_attention")
     else:
@@ -261,6 +301,8 @@ def layer_signature(layer) -> tuple:
         ffn = layer.ffn
         norm_kind = layer.norm_kind
         norm_placement = layer.norm_placement
+        residual_topology = layer.residual_topology
+        parallel_norm_count = layer.parallel_norm_count
         blocks = layer.blocks
         cross_attention = layer.cross_attention
     return (
@@ -268,6 +310,8 @@ def layer_signature(layer) -> tuple:
         ("ffn", ffn_signature(ffn)),
         ("norm_kind", norm_kind),
         ("norm_placement", norm_placement),
+        ("residual_topology", residual_topology),
+        ("parallel_norm_count", parallel_norm_count),
         ("cross_attention", attention_signature(cross_attention)),
         ("blocks", tuple(
             _block_signature(block) for block in blocks if isinstance(block, dict)
@@ -300,10 +344,22 @@ class ModelIR:
                                     # tier); None ⇒ unknown — the param estimate
                                     # annotates, never silently picks a branch
     layers: list                    # list[LayerSpec]
+    # Model-stage bookends are independent from the repeated layer primitive.
+    # In particular, a RMSNorm inside every layer does not prove that the root
+    # applies a final RMSNorm.
+    embedding_norm_kind: Optional[str] = None
+    final_norm_kind: Optional[str] = None
     cross_layer_edges: list = field(default_factory=list)
     extras: dict = field(default_factory=dict)
     warnings: list = field(default_factory=list)  # config GAPS / unknowns → "⚠ partial config"
     notes: list = field(default_factory=list)     # by-design advisories (not deficiencies) → neutral ⓘ
+
+    def __post_init__(self) -> None:
+        for field_name in ("embedding_norm_kind", "final_norm_kind"):
+            value = getattr(self, field_name)
+            if value not in {None, "rmsnorm", "layernorm", "unknown"}:
+                raise ValueError(
+                    f"unknown model-stage norm kind {field_name}={value!r}")
 
     def to_dict(self) -> dict:
         # Avoid dataclasses.asdict here: it recursively deepcopy()s every
@@ -317,6 +373,8 @@ class ModelIR:
             "hidden_size": self.hidden_size,
             "max_position_embeddings": self.max_position_embeddings,
             "tie_word_embeddings": self.tie_word_embeddings,
+            "embedding_norm_kind": self.embedding_norm_kind,
+            "final_norm_kind": self.final_norm_kind,
             "layers": [_layer_to_dict(layer) for layer in self.layers],
             "cross_layer_edges": [_cross_edge_to_dict(edge) for edge in self.cross_layer_edges],
             "extras": self.extras,
@@ -464,6 +522,8 @@ def _layer_to_dict(layer: LayerSpec) -> dict:
         "ffn": _ffn_to_dict(layer.ffn),
         "norm_kind": layer.norm_kind,
         "norm_placement": layer.norm_placement,
+        "residual_topology": layer.residual_topology,
+        "parallel_norm_count": layer.parallel_norm_count,
         "blocks": layer.blocks,
         # Only-when-present: single-attention layers stay byte-identical.
         **({"cross_attention": _attention_to_dict(layer.cross_attention)}

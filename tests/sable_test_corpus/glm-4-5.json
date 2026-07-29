@@ -89,6 +89,21 @@
   },
   "hash_signature": [
     "009d327b28f89283cccea026b2f138e0",
+    "139d121cdcc0c6e1103fab01113f6344",
+    "1903aeb488913c2a82ebb14153dd2502",
+    "1a58f54930d25fa7f9b24be19fed4cbb",
+    "20889ca7018c025f4eda94dc2502ad2e",
+    "25a347680cccc498277025a182245dce",
+    "57a17415a46443e0608bdecd6f278bd6",
+    "92ab533f54b291b7decea0d22b41fd34",
+    "a41b3da0a27034bde0b0486302f94b32",
+    "bdefc6faf978f47be8662e9e530a4ebb",
+    "cdd24b992ae172e22e40afcd4ef44d95"
+  ],
+  "model": "GLM-4.5",
+  "source": "local",
+  "superseded_hash_signature": [
+    "009d327b28f89283cccea026b2f138e0",
     "1903aeb488913c2a82ebb14153dd2502",
     "1a58f54930d25fa7f9b24be19fed4cbb",
     "20889ca7018c025f4eda94dc2502ad2e",
@@ -99,21 +114,6 @@
     "bdefc6faf978f47be8662e9e530a4ebb",
     "cdd24b992ae172e22e40afcd4ef44d95",
     "dca93bf5782c52e2d4f82759311c8045"
-  ],
-  "model": "GLM-4.5",
-  "source": "local",
-  "superseded_hash_signature": [
-    "092c00e05f9a12e98bafa153a51ad521",
-    "1903aeb488913c2a82ebb14153dd2502",
-    "1a58f54930d25fa7f9b24be19fed4cbb",
-    "20889ca7018c025f4eda94dc2502ad2e",
-    "25a347680cccc498277025a182245dce",
-    "62a8c5201b60a44521a6709a79b38945",
-    "92ab533f54b291b7decea0d22b41fd34",
-    "b6bc9074c9eb199cee46b05679c7fe4d",
-    "bdefc6faf978f47be8662e9e530a4ebb",
-    "cdd24b992ae172e22e40afcd4ef44d95",
-    "edb73cf21c6fd53db79344e9d6661d15"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/glm-4-5",

@@ -150,13 +150,27 @@ def test_pixart_caption_projection_is_explicit_and_code_shaped():
     assert "PixArtAlphaTextProjection" in html
 
 
-def test_norm_elementwise_affine_is_a_card_fact_not_a_block_label():
-    ir = config_to_ir(PIXART)
-    norms = [b for b in ir.layers[0].blocks if b.get("kind") == "norm"]
-    assert norms
-    assert all("non-affine (elementwise_affine = false)" in b.get("facts", [])
-               for b in norms)
-    assert all("affine" not in str(b.get("label", "")).lower() for b in norms)
+def test_norm_elementwise_affine_config_cannot_author_a_norm_claim():
+    """A bare config operand is not proof of the constructed norm module.
+
+    Until U10 binds this field to the exact norm owner, changing it must not
+    add an affine/non-affine claim or alter the repeated-cell architecture.
+    """
+    left = config_to_ir({**PIXART, "norm_elementwise_affine": False})
+    right = config_to_ir({**PIXART, "norm_elementwise_affine": True})
+    assert left.layers[0].signature() == right.layers[0].signature()
+    for ir in (left, right):
+        norms = [b for b in ir.layers[0].blocks if b.get("kind") == "norm"]
+        assert norms
+        assert all("affine" not in str(b.get("label", "")).lower() for b in norms)
+        assert all(
+            not any("affine" in str(fact).lower() for fact in b.get("facts", []))
+            for b in norms
+        )
+        assert not any(
+            item.endswith(":norm_elementwise_affine")
+            for item in ir.extras["config_access"]["accessed_unconsumed"]
+        )
 
 
 def test_vae_decoder_surfaces_input_conv_and_attention_mid_block():
@@ -267,14 +281,20 @@ def test_text_encoders_render_as_separate_blocks():
 
 
 def test_text_encoder_breaks_into_drillable_ops():
-    """Clicking an encoder opens its transformer-layer cell; each op (embedding,
-    self-attention, FFN, add & norm) is a clickable node with a matching card,
-    namespaced per encoder so CLIP and T5 don't share a card."""
+    """Known encoder ops stay drillable while unknown wiring stays undrawn.
+
+    CLIP has exact placement evidence and therefore norm/residual nodes. T5's
+    owner remains unresolved, so its independently proven attention and FFN
+    remain clickable without invented norm occurrences or residual adds.
+    """
     html = unfold(FLUX).to_html(standalone=True)
-    for op in ("embed", "norm", "selfattn", "ffn", "add"):
+    for op in ("embed", "selfattn", "ffn"):
         for enc in ("encoder_0", "encoder_1"):
             assert f'data-id="{enc}_op_{op}"' in html
             assert f'data-card-id="{enc}_op_{op}"' in html
+    for op in ("norm", "add"):
+        assert f'data-id="encoder_0_op_{op}"' in html
+        assert f'data-id="encoder_1_op_{op}"' not in html
 
 
 def test_text_encoder_shows_real_config_dims():
@@ -1007,34 +1027,24 @@ COGVIDEO_STYLE = {
 }
 
 
-def test_dit_norm_type_resolved_from_config_not_generic():
-    """A config-declared norm_type names the norm — never the generic 'Normalization'.
-    diffusers DiTs state AdaLN variants (ada_norm_single / ada_norm_zero / ...), which are
-    LayerNorm-based, so they resolve to LayerNorm (the adaptive modulation is shown by the
-    timestep wiring). A model that declares NOTHING stays honest-'Normalization'."""
-    blocks = unfold(PIXART).ir.layers[0].blocks
-    norms = [b for b in blocks if b.get("kind") == "norm"]
-    assert norms and all(b.get("label") == "LayerNorm" for b in norms), \
-        f"ada_norm_single must resolve to LayerNorm, got {[(b['id'], b.get('label')) for b in norms]}"
-    # the AdaLN modulation must be NAMED in the self-attn & FFN norm cards (the defining
-    # DiT mechanism). ada_norm_single (PixArt) has NO pre-cross-attn norm, so there is no
-    # xattn_norm card here — but when one IS drawn (cross_attn_norm=True) it's a plain norm.
-    by = {b["id"]: b for b in blocks}
-    assert all("AdaLN" in by[n]["description"] for n in ("rms1", "rms2"))
-    assert "xattn_norm" not in by
-    by_wn = {b["id"]: b for b in unfold({**PIXART, "cross_attn_norm": True}).ir.layers[0].blocks}
-    assert "plain norm" in by_wn["xattn_norm"]["description"]
-    # rms_norm config → RMSNorm (an explicit declaration always wins).
-    rms = {**PIXART, "norm_type": "rms_norm"}
-    assert any(b.get("label") == "RMSNorm" for b in unfold(rms).ir.layers[0].blocks if b.get("kind") == "norm")
-    # An UNDECLARED norm no longer stays pale when the model's own classes are
-    # readable: C4 resolves it in-adapter (root-scoped) WITH code provenance —
-    # the generic "Normalization" survives only when config AND source are both
-    # silent (covered by test_dit_norm_kind_resolved_from_classes_when_config_silent).
-    bare = {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")}
-    bare_norms = [b for b in unfold(bare).ir.layers[0].blocks if b.get("kind") == "norm"]
-    assert bare_norms and all(b.get("label") == "LayerNorm" for b in bare_norms)
-    assert any("read from the model code" in (b.get("description") or "") for b in bare_norms)
+def test_dit_norm_kind_is_code_authoritative_and_wiring_stays_independent():
+    """A norm selector spelling cannot manufacture kind, placement, or skips."""
+    variants = [
+        PIXART,
+        {**PIXART, "norm_type": "rms_norm"},
+        {k: v for k, v in PIXART.items() if k not in ("norm_type", "norm_eps")},
+    ]
+    layers = [unfold(cfg).ir.layers[0] for cfg in variants]
+    assert all(layer.norm_kind == "layernorm" for layer in layers)
+    assert all(layer.norm_placement == "unknown" for layer in layers)
+    assert all(layer.residual_topology == "unknown" for layer in layers)
+    assert len({layer.signature() for layer in layers}) == 1
+    for layer in layers:
+        by = {b["id"]: b for b in layer.blocks}
+        assert by["wiring_unresolved"]["label"] == [
+            "LayerNorm", "wiring unresolved",
+        ]
+        assert {"rms1", "rms2", "add1", "add2", "xattn_norm", "add_xattn"}.isdisjoint(by)
 
 
 def test_clickable_highlight_is_image_only():
@@ -1065,34 +1075,43 @@ def test_inspect_code_resolves_diffusion_norm_from_diffusers_source():
     if not resolve_source_files(FLUX, source="local").files:
         return  # installed diffusers doesn't define this class — skip
 
-    norms = [b for b in unfold(FLUX, inspect_code=True).ir.layers[0].blocks if b.get("kind") == "norm"]
-    assert norms and all(b["label"] == "LayerNorm" for b in norms), \
-        f"inspect_code should resolve FLUX norm to LayerNorm, got {[(b['id'], b['label']) for b in norms]}"
-    assert any("read from the model code" in b.get("description", "") for b in norms), \
-        "a code-resolved norm must be marked as code-derived (tier-2), not config"
+    layer = unfold(FLUX, inspect_code=True).ir.layers[0]
+    assert layer.norm_kind == "layernorm"
+    assert layer.norm_placement == "unknown"
+    assert layer.residual_topology == "unknown"
+    by = {b["id"]: b for b in layer.blocks}
+    assert by["wiring_unresolved"]["label"] == [
+        "LayerNorm", "wiring unresolved",
+    ]
+    assert {"rms1", "rms2", "add1", "add2"}.isdisjoint(by)
 
 
-def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
+def test_cross_attn_dit_preserves_mechanisms_without_inventing_wiring():
     """Cross-attention DiTs (PixArt/Sana/Wan/video) have THREE sublayers —
-    self-attn → cross-attn(to text) → FFN — each AdaLN-gated where the source gates
-    (self + FFN). MM-DiT (joint) has NO separate cross-attention sublayer.
-
-    The PRE-cross-attention norm is model-dependent and code-derived: PixArt
-    (norm_type=ada_norm_single) and LTX apply attn2 to the raw post-self-attn hidden
-    (NO pre-norm — the diffusers "For PixArt norm2 isn't applied here" branch), while
-    Wan declares cross_attn_norm=True and DOES pre-norm. Neither is fabricated."""
+    self-attn, cross-attn(to text), and FFN.  They remain independently visible
+    when the owner-bound placement/residual reader abstains; a config spelling
+    cannot fill that gap. MM-DiT (joint) has no separate cross-attention
+    sublayer."""
     d = unfold(PIXART)
     ids = [b["id"] for b in d.ir.layers[0].blocks]
-    # ada_norm_single → cross-attn has NO pre-norm (attn2 reads the raw hidden state).
-    assert ids[:10] == ["rms1", "attn", "gate_msa", "add1",
-                        "cross_attn", "add_xattn",
-                        "rms2", "ffn", "gate_mlp", "add2"]
-    assert "xattn_norm" not in ids
-    # A config that declares cross_attn_norm=True DOES draw the pre-cross-attn norm.
-    with_norm = [b["id"] for b in unfold({**PIXART, "cross_attn_norm": True}).ir.layers[0].blocks]
-    assert with_norm[:11] == ["rms1", "attn", "gate_msa", "add1",
-                              "xattn_norm", "cross_attn", "add_xattn",
-                              "rms2", "ffn", "gate_mlp", "add2"]
+    # The three mechanisms survive independently.  Source abstention on norm
+    # placement/residual taps withholds only their wiring.
+    assert all(op in ids for op in ("attn", "cross_attn", "ffn", "wiring_unresolved"))
+    assert all(op not in ids for op in (
+        "rms1", "rms2", "add1", "add2", "xattn_norm", "add_xattn",
+    ))
+    # A bare config flag cannot author the missing pre-norm or residual.
+    with_norm_diagram = unfold({**PIXART, "cross_attn_norm": True})
+    with_norm = [
+        b["id"]
+        for b in with_norm_diagram.ir.layers[0].blocks
+    ]
+    assert with_norm == ids
+    assert not any(
+        item.endswith(":cross_attn_norm")
+        for item in with_norm_diagram.ir.extras[
+            "config_access"]["accessed_unconsumed"]
+    )
     cross = next(b for b in d.ir.layers[0].blocks if b["id"] == "cross_attn")
     # The cross-attn drill is the CANONICAL attention view, hybridised with the input
     # change (cross_attention spec: image Q, encoded-text K/V, non-cached) — no bespoke fork.
@@ -1110,12 +1129,6 @@ def test_cross_attn_dit_has_three_sublayers_and_adaln_gates():
     self_ids = {c["id"] for c in self_attn["children"]}
     assert {"q_proj", "k_proj", "scaled_scores", "o_proj"}.isdisjoint(self_ids)
     assert "opaque_mixer" in self_ids
-    # AdaLN gates are Tier-2 connectors (× glyph) on self-attn + FFN (not on cross-attn) —
-    # glyphs, but now clickable with a describing card (not static).
-    gates = [b for b in d.ir.layers[0].blocks if b["id"] in ("gate_msa", "gate_mlp")]
-    assert all(g["kind"] == "gate_mul" and not g.get("static") and g.get("description") for g in gates)
-    add_x = next(b for b in d.ir.layers[0].blocks if b["id"] == "add_xattn")
-    assert add_x["kind"] == "residual_add" and not add_x.get("static") and add_x.get("description")
     html = d.to_html(standalone=True)
     assert "Encoded text" in html
     assert "Attention mechanism unresolved" in html
@@ -1139,7 +1152,8 @@ def test_video_dit_detected_and_honest():
     assert "Cross-Attention" in html
     assert "Cross-attention mechanism unresolved" in html
     block_ids = [b["id"] for b in d.ir.layers[0].blocks]
-    assert "cross_attn" in block_ids and "add_xattn" in block_ids
+    assert "cross_attn" in block_ids
+    assert "add_xattn" not in block_ids
     assert "MM-DiT" not in html
     assert ">Frames<" in html                             # video output, not "Image"
     assert validate_click_coupling(html) == []
@@ -1334,15 +1348,15 @@ def test_text_cond_rail_requires_attention_text_signal():
     from model_unfolder.adapters.diffusor.parser import _conditioning_side_blocks
 
     ids = lambda blks: {b["id"] for b in blks}
-    # No attention-text signal: only the AdaLN rail, no text_cond.
+    # With no source proof of per-block conditioning, no AdaLN rail is drawn.
     plain = _conditioning_side_blocks(text_in_attention=False, pooled_in_adaln=False,
                                       guidance=False)
-    assert ids(plain) == {"adaln_cond"}
-    assert "pooled text" not in plain[0]["description"]
+    assert ids(plain) == set()
 
-    # Attention consumes text: the text_cond rail appears.
+    # Positive source proof creates AdaLN; the independently proven
+    # attention-text route creates text_cond.
     joint = _conditioning_side_blocks(text_in_attention=True, pooled_in_adaln=True,
-                                      guidance=False)
+                                      guidance=False, block_conditioning=True)
     assert ids(joint) == {"adaln_cond", "text_cond"}
     assert "pooled text" in joint[0]["description"]
 
@@ -1451,8 +1465,9 @@ IDEO_STYLE = {
 def test_ideogram_style_dit_captures_declared_facts():
     """GAP-4: adaln_dim / llm_features_dim are captured; the CFG twin is a NOTE
     (by-design advisory, not a config gap — must NOT raise "partial config"); the
-    AdaLN rail carries its dim — and (FAIL-1) no text->attention rail appears
-    without an attention-text signal."""
+    AdaLN dimension remains inspected metadata, but cannot author a rail;
+    and (FAIL-1) no text->attention rail appears without an attention-text
+    signal."""
     ir = config_to_ir(IDEO_STYLE)
     diff = (ir.extras or {}).get("diffusion") or {}
     assert diff["adaln_dim"] == 512 and diff["llm_features_dim"] == 53248
@@ -1463,7 +1478,7 @@ def test_ideogram_style_dit_captures_declared_facts():
 
     side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
     assert "text_cond" not in side                       # no attention-text dim
-    assert "AdaLN dim 512" in (side["adaln_cond"].get("facts") or [])
+    assert "adaln_cond" not in side                      # no source-bound block proof
     # WEAK-3: no invented activation and no invented gating.
     assert ir.layers[0].ffn.activation_assumed is False
     assert ir.layers[0].ffn.gated is None

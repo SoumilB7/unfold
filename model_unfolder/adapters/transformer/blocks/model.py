@@ -8,6 +8,7 @@ from ..common import format_dim as _fmt
 
 def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                              embed_norm: str | None = None,
+                             final_norm: str | None = None,
                              final_logit_softcap: float | None = None,
                              codebooks: dict | None = None) -> dict:
     return {
@@ -15,6 +16,7 @@ def decoder_only_render_spec(vocab_size: int, hidden_size: int, tie_word_embeddi
         "layout": "decoder_only",
         "model_blocks": decoder_model_blocks(
             vocab_size, hidden_size, tie_word_embeddings, embed_norm=embed_norm,
+            final_norm=final_norm,
             final_logit_softcap=final_logit_softcap, codebooks=codebooks),
     }
 
@@ -269,10 +271,14 @@ def block_diffusion_loop_blocks(
 
 def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings: bool | None,
                          embed_norm: str | None = None,
+                         final_norm: str | None = None,
                          final_logit_softcap: float | None = None,
                          codebooks: dict | None = None) -> list[Block]:
     vocab = _fmt(vocab_size)
     hidden = _fmt(hidden_size)
+    norm_labels = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}
+    embed_norm_label = norm_labels.get(embed_norm)
+    final_norm_label = norm_labels.get(final_norm)
     # Multi-codebook token streams (MusicGen-family): K is the config's own
     # num_codebooks; the summed-embeddings / stacked-heads SHAPE is only
     # stated when the construction+forward reader proved it (tri-state).
@@ -331,22 +337,35 @@ def decoder_model_blocks(vocab_size: int, hidden_size: int, tie_word_embeddings:
             "id": "embed_norm",
             "role": "norm",
             "kind": "norm",
-            "label": embed_norm,
+            "label": embed_norm_label,
             "title": "Embedding norm",
             "description": (
-                f"{embed_norm} applied to the token embeddings BEFORE the layer "
-                "stack — a code-level stage of this family (BLOOM's "
-                "word-embedding LayerNorm), read from the modeling source."
+                f"{embed_norm_label} applied to the token embeddings BEFORE "
+                "the layer stack, proven from the exact model-stage dataflow."
             ),
-        }] if embed_norm else []),
+        }] if embed_norm_label else []),
         {
             "id": "final_rms",
             "role": "norm",
             "kind": "norm",
-            "label": "Final RMSNorm",
-            "title": "Final norm",
-            "description": "RMSNorm over the last hidden state before the output head.",
-            "facts": [f"dim {hidden}"],
+            "label": (
+                f"Final {final_norm_label}"
+                if final_norm_label else ["Pre-head path", "unresolved"]
+            ),
+            "title": (
+                "Final norm" if final_norm_label
+                else "Pre-head path unresolved"
+            ),
+            "description": (
+                f"{final_norm_label} over the last hidden state before the "
+                "output head."
+                if final_norm_label else
+                "The repeated layer's normalization kind cannot prove that "
+                "the model root applies a final normalization. The exact "
+                "pre-head stage remains unresolved until its owner is read."
+            ),
+            "facts": [f"dim {hidden}"] if final_norm_label else [],
+            "resolved": final_norm_label is not None,
         },
         *([{
             "id": "lm_head",

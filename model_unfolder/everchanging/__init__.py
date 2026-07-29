@@ -155,22 +155,6 @@ def load_composite_slots() -> dict:
             "undrawn_component_fields": undrawn}
 
 
-def load_layer_topology() -> dict:
-    """Per-family macro-topology (``transformer/layer_topology.yaml``): which
-    model_types use post/sandwich norm placement or flag-less parallel residual.
-
-    Returns ``{"norm_placement": {model_type: pre|post|double},
-    "parallel_residual": [model_type, ...]}``."""
-    data = load("transformer", "layer_topology")
-    placement: dict[str, str] = {}
-    for item in data.get("norm_placement") or []:
-        if isinstance(item, str) and "=" in item:
-            mt, _, place = item.partition("=")
-            placement[mt.strip()] = place.strip()
-    return {"norm_placement": placement,
-            "parallel_residual": list(data.get("parallel_residual") or [])}
-
-
 def _pairs(rows) -> dict[str, str]:
     """``["raw=canonical", …]`` -> ``{"raw": "canonical"}`` (lowercased keys)."""
     out: dict[str, str] = {}
@@ -525,7 +509,6 @@ __all__ = [
     "load_ignored_fields",
     "load_transformer_typing",
     "load_layer_type_labels",
-    "load_layer_topology",
     "load_layer_schedules",
     "load_diffusion_aliases",
     "load_diffusion_typing",

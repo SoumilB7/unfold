@@ -74,17 +74,17 @@
     "vocab_size": 32000
   },
   "hash_signature": [
-    "0906417b9411abb79f795df485b1719c",
     "54315394778ef9776664c58ee5c7c8e3",
     "b744f95082cfc83307ae9d819f726742",
-    "d3314cccdb744f3767be47b560187b9c"
+    "d3314cccdb744f3767be47b560187b9c",
+    "e954f06b49dfb916e12bac3c3cfd2f4d"
   ],
   "model": "llama-7b",
   "source": "local",
   "superseded_hash_signature": [
-    "4cd2f1b767e62d06cd5c03bcb28092dd",
+    "0906417b9411abb79f795df485b1719c",
+    "54315394778ef9776664c58ee5c7c8e3",
     "b744f95082cfc83307ae9d819f726742",
-    "ce58330a56a0dd139200f32bfb4c35e4",
     "d3314cccdb744f3767be47b560187b9c"
   ],
   "visual_evidence": {

@@ -76,6 +76,18 @@ def _inspect(cfg: Any, canonical: str, default=None):
     return res.value
 
 
+def _inspect_only(cfg: Any, canonical: str, *, reason: str) -> None:
+    """Record a declaration without granting it architecture authority.
+
+    This is an owner-scoped, reason-bearing disposition—not a global bare-key
+    exemption.  It is for values whose spelling is relevant to the audit but
+    whose mechanism must be proven from the owning source class.
+    """
+    res = _config_access.resolve(cfg, canonical, _ALIASES.get(canonical, ()))
+    if res.state == "present":
+        res.ignore(reason=reason)
+
+
 def _consume_geom(cfg: Any, canonical: str, fact_owner: str, fact_key: str,
                   default=None):
     """CONSUME a denoiser geometry declaration into its exact fact target
@@ -168,7 +180,8 @@ def _code_ffn_kind(cfg: Any, context=None):
 def _code_block_conditioning(cfg: Any, context=None) -> bool | None:
     """Does the stack block take per-block timestep conditioning?  Root-scoped
     source read (denoiser_block_timestep_conditioning_from_files); None when
-    the block class can't be resolved — callers keep the conventional cell."""
+    the block class can't be resolved.  Callers preserve unknown rather than
+    drawing a conventional conditioned cell."""
     try:
         from ...evidence.patterns import (
             denoiser_block_timestep_conditioning_from_files,
@@ -818,8 +831,26 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # LayerNorm): resolve from the root-scoped source and annotate provenance —
     # the pale "Normalization" label was honest but under-informative on every
     # config-silent DiT (SD3.5/FLUX/Sana/Lumina).
-    norm_kind = _dit_norm_kind(cfg)
-    code_norm_kind = _code_norm_kind(cfg, context) if norm_kind == "unknown" else None
+    # Norm selector/epsilon spellings are declarations, not primitive proof.
+    # Keep them visible to the config ledger; the root block's constructed
+    # norm class is the only U4-D authority.
+    for _norm_spelling in (
+        "norm_type", "norm_layer", "rms_norm_eps",
+        "layer_norm_eps", "layer_norm_epsilon",
+    ):
+        _inspect_only(
+            cfg, _norm_spelling,
+            reason=(
+                "declared norm operand inspected only — the owning source "
+                "class must prove norm kind and placement"
+            ),
+        )
+    code_norm_kind = _code_norm_kind(cfg, context)
+    from ...ir import canonical_norm_kind
+    norm_kind = (
+        canonical_norm_kind(code_norm_kind[0])
+        if code_norm_kind else None
+    ) or "unknown"
     # A code-proven sandwich/post placement on the MAIN block is stated on the
     # norm cards (the assembled cell stays pre-norm — layout flips are their
     # own scoped, pixel-reviewed change; the dropped Lumina post-norms were
@@ -834,8 +865,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     caption_projection_dim = _consume_geom(
         cfg, "caption_projection_dim", "denoiser.conditioning",
         "caption_projection_dim")
-    norm_elementwise_affine = _consume_geom(
-        cfg, "norm_elementwise_affine", "denoiser.layer", "norm_affine")
+    # Parameterization operand pending an exact owner binding in U10.
+    _inspect_only(
+        cfg, "norm_elementwise_affine",
+        reason=(
+            "declared norm parameterization inspected only — no structural "
+            "projection until the exact owning norm constructor is bound"
+        ),
+    )
 
     if not num_layers and not num_single:
         warnings.append(
@@ -851,8 +888,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # PER-BLOCK timestep conditioning is a code fact: the stack block's own
     # forward takes a temb/timestep (AdaLN dialects) or it does not (Stable
     # Audio's plain pre-LN block — its conditioning is a global PREPENDED
-    # token).  Only a POSITIVE False changes the drawing; None keeps the
-    # conventional AdaLN cell (every image DiT tested).
+    # token).  Only a positive source proof draws the AdaLN rail/gates; None
+    # remains unknown rather than selecting the common image-DiT convention.
     code_block_conditioning = _code_block_conditioning(cfg, context)
 
     # ONE text-encoder sub-parse: names derive from the SAME namespaced specs
@@ -910,7 +947,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "llm_features_dim": _inspect(cfg, "llm_features_dim"),
         "caption_input_dim": caption_input_dim,
         "caption_projection_dim": caption_projection_dim,
-        "norm_elementwise_affine": norm_elementwise_affine,
         "video": _temporal_axis(cfg, cls, context),
         "audio": _audio_latent_domain(cfg),
         "block_conditioning": code_block_conditioning,
@@ -1100,9 +1136,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declares cross_attn_norm=True in config; any other verified case is a class
     # default (cross_attn_norm=true). A drawn norm with no evidence would fabricate a
     # block; a dropped real norm is the rarer, less-wrong miss (caught when Sabled).
-    _can = _consume_geom(cfg, "cross_attn_norm",
-                         "denoiser.attention", "cross_attn_norm")
-    cross_attn_prenorm = bool(_can)   # default: no pre-cross-attn norm without evidence
+    _inspect_only(
+        cfg, "cross_attn_norm",
+        reason=(
+            "declared cross-attention norm selector inspected only — the "
+            "exact owning block must prove the norm occurrence"
+        ),
+    )
+    cross_attn_prenorm = None
 
     # Self-attention kind is a code fact.  A special processor can prove linear
     # attention; an abstaining reader leaves the mechanism unresolved.  U4:
@@ -1138,6 +1179,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 intermediate_size, cfg, code_activation=code_ffn_act,
                 code_ffn_kind=code_ffn_kind),
             hidden_size, norm_kind=norm_kind,
+            norm_placement=code_block_placement or "unknown",
+            residual_topology=(
+                "sequential"
+                if code_block_placement in {"post", "double"}
+                else "unknown"
+            ),
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
         # self-attention and the FFN — insert it before the AdaLN gates so each
@@ -1145,7 +1192,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if cond["cross_attn_sublayer"]:
             layer.blocks = _insert_cross_attention(
                 layer.blocks, attn_spec, hidden_size, norm_kind,
-                cross_dim=geom.get("cross_attention_dim"), pre_norm=cross_attn_prenorm,
+                cross_dim=geom.get("cross_attention_dim"),
+                pre_norm=cross_attn_prenorm,
                 cross_qk_norm=code_cross_qk_norm)
         # Timestep gating of each sublayer output before its residual add comes in
         # two code dialects: the common AdaLN-Zero one multiplies by a bare gate
@@ -1157,12 +1205,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if code_gate_via_norm:
             layer.blocks = _insert_output_gated_norms(layer.blocks)
             _annotate_adaln_norms(layer.blocks)
-        elif code_block_conditioning is False:
-            pass    # plain pre-LN block: no timestep gates, no AdaLN naming
-        else:
+        elif code_block_conditioning is True:
             layer.blocks = _insert_adaln_gates(layer.blocks)
             _annotate_adaln_norms(layer.blocks)   # name the AdaLN modulation in the norm cards
-        _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
         _annotate_code_norm_kind(layer.blocks, code_norm_kind)
         _annotate_block_placement(layer.blocks, code_block_placement)
         layers.append(layer)
@@ -1191,21 +1236,38 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
             # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
-            layer = decoder_layer(idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind)
-            layer.blocks = _insert_adaln_gates(layer.blocks)
-            _annotate_adaln_norms(layer.blocks)
-            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            layer = decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind,
+                norm_placement=code_block_placement or "unknown",
+                residual_topology="sequential",
+            )
+            if code_block_conditioning is True:
+                layer.blocks = _insert_adaln_gates(layer.blocks)
+                _annotate_adaln_norms(layer.blocks)
+            _annotate_code_norm_kind(layer.blocks, code_norm_kind)
+            _annotate_block_placement(layer.blocks, code_block_placement)
+            layers.append(layer)
+        elif single_fusion in {"parallel", "concat_fused"}:
+            # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
+            # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block).
+            layer = single_stream_decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind,
+                norm_placement="unknown", fused_in=single_fused_in)
             _annotate_code_norm_kind(layer.blocks, code_norm_kind)
             _annotate_block_placement(layer.blocks, code_block_placement)
             layers.append(layer)
         else:
-            # Fused single-stream MM-DiT block: attn ∥ MLP(up+act) → ‖ concat →
-            # shared proj_out → × AdaLN gate → ⊕ residual (Flux's single-stream block).
-            layer = single_stream_decoder_layer(
-                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind, fused_in=single_fused_in)
-            _annotate_norm_affine(layer.blocks, norm_elementwise_affine)
+            # A configured single-block count proves repetition, not whether
+            # the exact block is sequential or fused. Preserve the known
+            # attention/FFN children inside one unresolved cell.
+            layer = decoder_layer(
+                idx, s_attn, s_ffn, hidden_size, norm_kind=norm_kind,
+                norm_placement="unknown", residual_topology="unknown",
+            )
+            if code_block_conditioning is True:
+                layer.blocks = _insert_adaln_gates(layer.blocks)
+                _annotate_adaln_norms(layer.blocks)
             _annotate_code_norm_kind(layer.blocks, code_norm_kind)
-            _annotate_block_placement(layer.blocks, code_block_placement)
             layers.append(layer)
         idx += 1
 
@@ -1283,7 +1345,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         "pooled_projection_dim": geom["pooled_projection_dim"],
         "caption_input_dim": geom["caption_input_dim"],
         "caption_projection_dim": geom["caption_projection_dim"],
-        "norm_elementwise_affine": geom["norm_elementwise_affine"],
         "guidance_embeds": geom["guidance_embeds"],
         "text_encoders": geom["text_encoders"] or None,
         "scheduler": geom.get("scheduler"),
@@ -1371,12 +1432,20 @@ def _insert_adaln_gates(blocks: list[dict]) -> list[dict]:
     the timestep gating each sublayer output (the DiT conditioning mechanism) as a
     drawn connector, not only as prose on the side rail."""
     out: list[dict] = []
+    has_residual_adds = any(
+        b.get("id") in {"add1", "add2"} for b in blocks)
     for b in blocks:
         if b.get("id") == "add1":
             out.append(_adaln_gate("gate_msa", "attention"))
         elif b.get("id") == "add2":
             out.append(_adaln_gate("gate_mlp", "feed-forward"))
         out.append(b)
+        # Under unresolved residual wiring, retain the independently proven
+        # post-sublayer gates without inventing an add/tap topology.
+        if not has_residual_adds and b.get("id") == "attn":
+            out.append(_adaln_gate("gate_msa", "attention"))
+        elif not has_residual_adds and b.get("id") == "ffn":
+            out.append(_adaln_gate("gate_mlp", "feed-forward"))
     return out
 
 
@@ -1405,12 +1474,18 @@ def _insert_output_gated_norms(blocks: list[dict]) -> list[dict]:
     just before each residual ⊕, instead of the AdaLN × connector (see
     :func:`_output_gated_norm`)."""
     out: list[dict] = []
+    has_residual_adds = any(
+        b.get("id") in {"add1", "add2"} for b in blocks)
     for b in blocks:
         if b.get("id") == "add1":
             out.append(_output_gated_norm("out_norm_msa", "attention"))
         elif b.get("id") == "add2":
             out.append(_output_gated_norm("out_norm_mlp", "feed-forward"))
         out.append(b)
+        if not has_residual_adds and b.get("id") == "attn":
+            out.append(_output_gated_norm("out_norm_msa", "attention"))
+        elif not has_residual_adds and b.get("id") == "ffn":
+            out.append(_output_gated_norm("out_norm_mlp", "feed-forward"))
     return out
 
 
@@ -1431,26 +1506,6 @@ def _annotate_adaln_norms(blocks: list[dict]) -> None:
     for b in blocks:
         if b.get("id") in ("rms1", "rms2") and b.get("kind") == "norm":
             b["description"] = (b.get("description") or "").rstrip() + adaln
-
-
-def _annotate_norm_affine(blocks: list[dict], affine) -> None:
-    """Surface diffusers' ``norm_elementwise_affine`` as a card fact.
-
-    This flag changes the parameterization of the block norms even when their
-    placement is unchanged.  It belongs on cards (Tier 3), not in topology or
-    painted into the block label.  Output-gated custom norms are excluded: the
-    BasicTransformerBlock flag does not describe those separate modules.
-    """
-    if affine is None:
-        return
-    fact = ("learned affine scale + bias" if bool(affine)
-            else "non-affine (elementwise_affine = false)")
-    for block in blocks:
-        if block.get("kind") != "norm" or str(block.get("id", "")).startswith("out_norm"):
-            continue
-        facts = block.setdefault("facts", [])
-        if fact not in facts:
-            facts.append(fact)
 
 
 _NORM_SILENT_NOTE = (" The config does not declare whether this is RMSNorm or "
@@ -1505,7 +1560,7 @@ def _annotate_code_norm_kind(blocks: list[dict], code_norm) -> None:
 
 def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
                             hidden_size: int, norm_kind: str, *, cross_dim=None,
-                            pre_norm: bool = True,
+                            pre_norm: bool | None = None,
                             cross_qk_norm: str | None = None) -> list[dict]:
     """Insert the cross-attention sublayer (`norm → cross-attn → ⊕`) between the
     self-attention residual and the FFN, for cross-attention DiTs (PixArt / Sana /
@@ -1567,16 +1622,18 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
         "facts": [f"K/V source ({_fmt(cross_dim)})" if cross_dim else "K/V from encoded text"],
     })
     _no_prenorm_clause = (
-        "" if pre_norm else
+        "" if pre_norm is True else
         " It reads the post-self-attention hidden states directly — LTX applies no "
         "pre-cross-attention norm (only its self-attention and FFN are pre-normed)."
+        if pre_norm is False else
+        " Whether a separate norm precedes this sublayer is unresolved."
     )
     cross_norm = [{
         "id": "xattn_norm", "role": "norm", "kind": "norm",
         "diffusion_stage": "norm",
         "label": norm_label, "title": "Pre-cross-attention norm",
         "description": f"{norm_label} before cross-attention — a plain norm (not AdaLN-modulated).",
-    }] if pre_norm else []
+    }] if pre_norm is True else []
     cross = cross_norm + [
         {
             "id": "cross_attn", "role": "attention", "kind": "attention",
@@ -1610,19 +1667,25 @@ def _insert_cross_attention(blocks: list[dict], self_spec: AttentionSpec,
             "detail": {"attention": {**attention_detail(cross_spec), "node_prefix": "x_"}},
             "children": cross_children,
         },
-        {
+        *([{
             "id": "add_xattn", "role": "residual", "kind": "residual_add",
             "diffusion_stage": "residual",
             # skip taps the pre-norm (when present) else the self-attention residual.
             "residual_from": "xattn_norm" if pre_norm else "add1",
             "label": "+", "title": "Residual add (cross-attention)",
             "description": "self-attention output + cross-attention output",
-        },
+        }] if pre_norm is not None else []),
     ]
     out: list[dict] = []
+    has_first_add = any(b.get("id") == "add1" for b in blocks)
     for b in blocks:
+        if not has_first_add and b.get("id") == "ffn":
+            # The cross-attention stage itself is known, while its norm and
+            # residual placement remain inside the shared unresolved-wiring
+            # block. Preserve the operation without fabricating those edges.
+            out.extend(cross)
         out.append(b)
-        if b.get("id") == "add1":          # right after the self-attention residual
+        if has_first_add and b.get("id") == "add1":
             out.extend(cross)
     return out
 
@@ -1686,7 +1749,9 @@ def _conditioning_side_blocks(text_in_attention: bool, pooled_in_adaln: bool,
     ``block_conditioning is False`` (code-proven: the block's forward takes NO
     timestep — Stable Audio) DROPS the per-block timestep rail: the block
     genuinely receives none; the timestep story stays on the loop view."""
-    blocks: list[dict] = [] if block_conditioning is False else [{
+    # Only a positive source proof creates a per-block AdaLN lane. Unknown is
+    # not the conventional conditioned block.
+    blocks: list[dict] = [] if block_conditioning is not True else [{
         "id": "adaln_cond",
         "role": "norm",
         "kind": "adaln",
