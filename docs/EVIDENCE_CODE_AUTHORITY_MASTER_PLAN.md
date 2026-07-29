@@ -1547,7 +1547,7 @@ controls and preservation delta must close together.
 |---|---|---|
 | U4-A | attention mechanism + mask vocabulary: missing/novel kind cannot become MHA/SDPA; missing/novel mask cannot become causal; known geometry may ride one opaque region | DONE — Soumil approved 2026-07-28; 14 inspected galleries/fixtures re-blessed; 26-witness preservation 46/46 green |
 | U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | DONE — Soumil approved 2026-07-29; guarded artifacts audited; commit `4857026`; detached-worktree receipt fully green |
-| U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | ACTIVE — implementation and 26-witness review complete; committed-tree acceptance pending |
+| U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | DONE — commit `c7e125b`; 26-witness review and detached-worktree receipt green |
 | U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | PENDING |
 | U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
 | U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | PENDING |
@@ -1793,7 +1793,7 @@ the same independent-fact and opaque-region law to FFN mechanism, gating,
 activation, ordinary/expert storage and widths.  U4-B supplies no permission
 to infer any FFN fact from attention or from a model/config identity.
 
-#### U4-C implementation ledger (local candidate, final gate pending)
+#### U4-C implementation and closure ledger
 
 U4-C applies that law to the complete feed-forward fact without pretending that
 U7 has already migrated every FFN reader:
@@ -1835,7 +1835,7 @@ group.  It does **not** complete U4-D or U4-F: norm/cell facts are not made more
 authoritative here, and final all-fact cross-surface closure remains its own
 acceptance unit.
 
-Real-model controls on the local candidate:
+Real-model controls on the committed implementation:
 
 - DeepSeek-V3 retains its code-proven ordinary FFN and fused expert storage;
   an unbound expert activation stays generic rather than borrowing the sibling
@@ -1872,12 +1872,44 @@ selected a fixture path from a reconstructed display name, so an offline
 MusicGen config could create a second witness instead of updating
 `musicgen-small`.  That is acceptance-infrastructure—not FFN semantics—and will
 remain identified as such even though the already-running local completion step
-amended it into the same unpushed candidate.  The repaired boundary selects an
+amended it into the same unpushed implementation commit.  The repaired boundary selects an
 existing exact config, preserves its reviewed name/gallery path and rejects
 duplicate config witnesses.  This co-location grants the guard no architectural
-authority: it neither reads facts nor changes parsing/rendering.  U4-C is not
-`DONE` until this exact committed tree reproduces and the full
-frozen-fingerprint bracket is green.
+authority: it neither reads facts nor changes parsing/rendering.
+
+The first committed-tree exhaustive gate earned three further corrections
+instead of being overwritten as “test churn”:
+
+- CLIP's `quick_gelu` expectation was a checkpoint spelling without a proven
+  ACT2FN binding to the exact FFN owner, so the expected activation was removed
+  and assigned to U7 rather than restored as a config fallback.
+- Qwen2-VL's vision evidence still proves `rope=True`,
+  `position_application=qk_rotation` and fused-QKV storage, but `softmax` alone
+  does not prove MHA/GQA/MQA.  The permanent control now requires those facts to
+  survive while forbidding detailed RoPE/QKV nodes under an unresolved
+  mechanism.
+- Gemma-4 still proves double layer norms and Q/K/V normalization in its source
+  evidence.  Its graph likewise stays one unresolved attention mechanism rather
+  than using those internal facts to silently choose a parent mechanism.
+
+After those corrections, semantic tree
+`769ca0da1fb08c5cd0b973c98dfef009e10b4f12` (verified as commit `bda576b`,
+then metadata-only amended to current local commit `c7e125b` with the identical
+tree and parent) passed the detached-worktree coordinator at
+`/private/tmp/model-unfolder-verification/6f07ace2b7`:
+
+- changed-Python static gate: **47 files clean**;
+- focused U4-C and correction controls: **379 passed**;
+- U2 authority ratchets: **44 passed**;
+- collection: **2313 tests**;
+- preservation: **46 passed**;
+- exhaustive non-preservation partition: **2210 passed, 11 skipped,
+  2 xfailed, 0 failed**;
+- every lane's complete tree fingerprint is identical before/after.
+
+U4-C is therefore `DONE`.  U4-D is the next permitted semantic unit, but its
+model-by-model norm/cell-topology honesty delta must be measured and shown to
+Soumil before any fixture is re-blessed.
 
 ### 20.8 U5 — establish consumer firewalls
 
@@ -2188,7 +2220,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A/U4-B DONE; U4-C final gate | `4857026`, local U4-C candidate | C-01 to C-07/C-12 plus attention/FFN halves of T-05/T-08/T-10/D-08/U-07 | independent attention and FFN facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | norm/cell topology defaults, synthetic dominant layer/card reconstruction, UNet internal templates, final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries with exact corpus identity | U4-C affected 164p; fresh Sable corpus 1p/419.67s; final committed-tree bracket pending | U4-B `/private/tmp/model-unfolder-verification/598777dc06`; U4-C receipt pending | asserted attention/storage/scale debt retired; FFN config fallbacks removed or assigned exact U7 debt | Soumil approved U4-A/U4-B and U4-C honesty direction; close U4-C only after frozen committed-tree gate |
+| U4 | ACTIVE — U4-A/U4-B/U4-C DONE; U4-D next | `4857026`, `c7e125b` | C-01 to C-07/C-12 plus attention/FFN halves of T-05/T-08/T-10/D-08/U-07 | independent attention and FFN facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | norm/cell topology defaults, synthetic dominant layer/card reconstruction, UNet internal templates, final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries with exact corpus identity | U4-C focused 379p; U2 44p; preservation 46p; exhaustive 2210p+11s+2xf | U4-C `/private/tmp/model-unfolder-verification/6f07ace2b7`; every lane fingerprint identical | asserted attention/storage/scale debt retired; FFN config fallbacks removed or assigned exact U7 debt | U4-C closed locally; measure and seek approval for U4-D norm/cell-topology honesty deltas before blessing |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
