@@ -10,6 +10,7 @@ re-authored drill SVGs, no second card tree.
 """
 from __future__ import annotations
 
+from .....labels import attention_tower_label
 from ...graph_engine import render_graph
 from ...tower import tower_cell, tower_graph
 from .common import vision_input
@@ -66,10 +67,10 @@ def _cell(group: dict, prefix: str) -> list[dict]:
     gate = group.get("residual_gate")
     return tower_cell(
         prefix,
-        attn_label="Self-attention",
+        attn_label=attention_tower_label(group.get("attention") or {}),
         norm_label=group.get("norm") or "Norm",
         placement=placement if placement in ("pre", "post", "double") else "unknown",
-        ffn_label="MLP",
+        ffn_fact=group.get("ffn") or {},
         attn_gate=gate,
         ffn_gate=gate,
         unknown_label="Code-defined vision block",

@@ -208,6 +208,17 @@ def kind_long(attention: dict) -> str:
         extras.append("no positional encoding (NoPE)")
     return f"{base}; {'; '.join(extras)}" if extras else base
 
+
+def attention_tower_label(attention: dict) -> str | list[str]:
+    """Compact repeated-cell label without strengthening an unknown kind."""
+    kind = attention.get("kind")
+    if kind in (None, "", "unknown"):
+        return [
+            "Cross-attention" if attention.get("cross_attention") else "Self-attention",
+            "mechanism unresolved",
+        ]
+    return kind_short(attention)
+
 def moe_router_detail(ffn: dict) -> str:
     """Longer router tooltip describing the gating and selection behaviour."""
     r = ffn.get("routing") or {}
@@ -509,10 +520,15 @@ def _dim_fact(attention: dict, facts: list[str]) -> None:
 
 def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
     """(explanation sentence, fact chips) for an FFN / MoE block."""
-    if ffn.get("kind") == "moe":
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    if state == "moe":
         desc = ("Mixture of experts — the router sends each token through a few "
                 "expert FFNs instead of one dense MLP.")
-        facts = [f"{_fmt_int(ffn.get('num_experts'))} experts"]
+        facts = []
+        if ffn.get("num_experts") is not None:
+            facts.append(f"{_fmt_int(ffn.get('num_experts'))} experts")
         if ffn.get("num_experts_per_tok"):
             chip = f"top-{ffn.get('num_experts_per_tok')}"
             if ffn.get("num_shared_experts"):
@@ -520,34 +536,157 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
             facts.append(chip)
         if ffn.get("num_experts") and ffn.get("num_experts_per_tok"):
             facts.append(f"{100 * ffn['num_experts_per_tok'] / ffn['num_experts']:.1f}% active")
-        facts.append(f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size') or ffn.get('intermediate_size'))}")
+        if ffn.get("expert_intermediate_size") is not None:
+            facts.append(
+                f"expert hidden {_fmt_int(ffn.get('expert_intermediate_size'))}")
+        expert_storage = ffn.get("expert_projection_mode")
+        if expert_storage is None:
+            facts.append("expert storage unresolved")
+        elif expert_storage == "fused_gate_up":
+            facts.append("fused expert gate+up")
+        elif expert_storage == "split":
+            facts.append("split expert gate/up")
+        elif expert_storage == "dense":
+            facts.append("plain expert MLP")
+        if ffn.get("num_shared_experts") and ffn.get("activation") is not None:
+            facts.append(
+                "shared FFN activation "
+                + activation_label(ffn.get("activation")))
         if ffn.get("activation_clip"):
             facts.append(f"clamped ±{ffn['activation_clip']:g}")
         if ffn.get("bias"):
             facts.append("learned bias")
         return desc, facts
-    if ffn.get("gated") is None:
-        # Config declares the FFN and its inner width, but not whether it gates
-        # or which activation it uses — say exactly that, assert no shape.
-        desc = ("Feed-forward — expands to an inner width and projects back. The "
-                "config does not declare the gating or activation (these live in "
-                "the model's code).")
-        return desc, [f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
-    if ffn.get("gated"):
+    if state == "mechanism_unresolved":
+        desc = (
+            "Feed-forward mechanism unresolved — known geometry is retained, "
+            "but no dense, gated, projection-storage, or activation path is "
+            "invented."
+        )
+        facts = ["mechanism unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "unsupported":
+        name = str(ffn.get("class_name") or ffn.get("kind") or "custom FFN")
+        return (
+            f"Unsupported feed-forward mechanism ({name}) — retained as one "
+            "opaque block rather than mapped to a familiar MLP.",
+            ["unsupported mechanism"],
+        )
+    if state == "gating_unresolved":
+        desc = (
+            "Feed-forward — its gate topology is unresolved from source "
+            "evidence, so no dense or gated inner graph is drawn."
+        )
+        facts = ["gating unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "storage_unresolved":
+        gated = ffn.get("gated")
+        shape = "gated" if gated is True else "plain" if gated is False else "feed-forward"
+        desc = (
+            f"The {shape} FFN mechanism is known, but its projection storage is "
+            "unresolved; no split, fused, or dense module layout is invented."
+        )
+        facts = ["projection storage unresolved"]
+        if ffn.get("intermediate_size") is not None:
+            facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+        if ffn.get("activation") is not None:
+            facts.append(activation_label(ffn.get("activation")))
+        return desc, facts
+    if state == "conv_glu":
+        desc = (
+            "Convolutional gated linear unit — pointwise expansion, local "
+            "depthwise mixing, a gated activation, then pointwise projection."
+        )
+    elif state == "gated":
         desc = ("Gated MLP — a gate path modulates the up projection before "
                 "projecting back down.")
     else:
         desc = "Two-layer MLP — expand, apply the non-linearity, project back."
     if ffn.get("activation_from_class"):
-        # The activation (and so the gate-or-not shape) was read from the model
-        # class, not the config — say where the fact comes from (code-derived).
+        # Activation provenance is independent of gate/storage topology.
         desc += (" The activation is fixed in the model class, not the config "
                  "(surfaced as a code-derived fact).")
-    facts = [activation_label(ffn.get("activation")),
-             f"hidden {_fmt_int(ffn.get('intermediate_size'))}"]
+    facts = []
+    if ffn.get("activation") is not None:
+        facts.append(activation_label(ffn.get("activation")))
+    else:
+        facts.append("activation unresolved")
+    if ffn.get("intermediate_size") is not None:
+        facts.append(f"hidden {_fmt_int(ffn.get('intermediate_size'))}")
+    storage = ffn.get("projection_mode")
+    if storage is None:
+        facts.append("projection storage unresolved")
+    elif storage == "fused_gate_up":
+        facts.append("fused gate+up")
+    elif storage == "split":
+        facts.append("split gate/up")
     if ffn.get("activation_clip"):
         facts.append(f"clamped ±{ffn['activation_clip']:g}")
     return desc, facts
+
+
+def ffn_label(ffn: dict) -> str | list[str]:
+    """Compact block label derived from the one canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    if state == "moe":
+        return ["Mixture of Experts", "(MoE)"]
+    if state == "conv_glu":
+        return ["Conv-GLU", "Feed-forward"]
+    if state == "mechanism_unresolved":
+        return ["Feed-forward", "mechanism unresolved"]
+    if state == "unsupported":
+        return ["Feed-forward", "unsupported mechanism"]
+    if state == "gating_unresolved":
+        return ["Feed-forward", "gating unresolved"]
+    if state == "storage_unresolved":
+        return [
+            "Gated FFN" if ffn.get("gated") is True else "Feed-forward",
+            "storage unresolved",
+        ]
+    return "Gated FFN" if state == "gated" else "Feed-forward (FFN)"
+
+
+def ffn_title(ffn: dict) -> str:
+    """Card title derived from the one canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    state = ffn_structure_state(ffn)
+    return {
+        "moe": "Mixture of experts",
+        "conv_glu": "Convolutional gated feed-forward",
+        "mechanism_unresolved": "Feed-forward mechanism unresolved",
+        "unsupported": "Unsupported feed-forward mechanism",
+        "gating_unresolved": "Feed-forward gating unresolved",
+        "storage_unresolved": "Feed-forward projection storage unresolved",
+        "gated": "Gated feed-forward",
+        "dense": "Feed-forward",
+    }[state]
+
+
+def ffn_short(ffn: dict) -> str:
+    """One-line group/badge vocabulary from the canonical FFN state."""
+    from .opgraph import ffn_structure_state
+
+    return {
+        "moe": "MoE",
+        "conv_glu": "Conv-GLU",
+        "mechanism_unresolved": "FFN unresolved",
+        "unsupported": "FFN unsupported",
+        "gating_unresolved": "Gating unresolved",
+        "storage_unresolved": "Storage unresolved",
+        "gated": "Gated FFN",
+        "dense": "Dense FFN",
+    }[ffn_structure_state(ffn)]
 
 
 def router_facts(ffn: dict) -> list[str]:
@@ -766,13 +905,17 @@ def op_card(op) -> dict:
     carry ``desc`` to override the kind sentence.
     """
     kind = op.kind
-    title = op.label or _OP_TITLES.get(kind, kind)
+    raw_title = op.label or _OP_TITLES.get(kind, kind)
+    title = " — ".join(str(line) for line in raw_title) \
+        if isinstance(raw_title, (list, tuple)) else raw_title
     if kind == "activation" and op.fn and not op.label:
         title = activation_label(op.fn)
     elif kind == "elementwise" and op.fn and not op.label:
         title = _ELEMENTWISE_TITLES.get(op.fn, title)
     elif kind == "opaque":
-        title = (op.meta or {}).get("class_name") or op.label or title
+        opaque_title = op.label or (op.meta or {}).get("class_name") or title
+        title = " — ".join(str(line) for line in opaque_title) \
+            if isinstance(opaque_title, (list, tuple)) else opaque_title
     facts = []
     if op.in_features and op.out_features:
         facts.append(f"{_fmt_int(op.in_features)} → {_fmt_int(op.out_features)}")

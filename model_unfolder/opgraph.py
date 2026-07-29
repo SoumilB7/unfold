@@ -11,13 +11,10 @@ Two ideas keep it open-world (so a *custom* FFN isn't a dead end):
   ``elementwise``, ``norm``, ``route``, ``attention_core``, ``conv``, ``opaque``.
   Variety lives in *composition*, not in new types.  A "custom" FFN is a different
   arrangement of the same ops — never a new enum value, never a ``variant: dict``.
-* A three-tier resolver (see :func:`ffn_region`):
-  1. **config template** — a recognised signature (gated / dense / moe) builds the
-     subgraph from known dims;
-  2. **code-evidence** — when config can't classify it, the AST scan (``evidence/``)
-     supplies the real ops (hook reserved here);
-  3. **opaque** — when neither resolves, a single honest ``opaque`` node labelled
-     from the class name + I/O dims, never a fabricated structure.
+* A fact-driven resolver (see :func:`ffn_region`) builds a detailed subgraph
+  only from a recognised, internally consistent mechanism/storage fact set.
+  Missing, conflicting or unsupported facts produce one typed opaque node;
+  checkpoint configuration never selects a template here.
 
 A ``Region`` is pure structure (ops + edges).  Layout, glyphs, labels, and JSON
 keys are decided by the *projections*, not stored here.
@@ -48,7 +45,7 @@ OP_KINDS = frozenset({
 class Op:
     id: str
     kind: str                          # one of OP_KINDS
-    label: str | None = None
+    label: str | list[str] | None = None
     in_features: int | None = None
     out_features: int | None = None
     fn: str | None = None              # activation name / elementwise op ("mul")
@@ -89,6 +86,57 @@ class Region:
 # FFN resolver — the three tiers
 # ---------------------------------------------------------------------------
 
+_DENSE_FFN_KINDS = frozenset({"dense", "mlp", "ffn"})
+_FFN_STATES = frozenset({
+    "moe", "conv_glu", "mechanism_unresolved", "unsupported",
+    "gating_unresolved", "storage_unresolved", "gated", "dense",
+})
+
+
+def ffn_structure_state(ffn: dict) -> str:
+    """Classify only the independently established FFN structural facts.
+
+    This is the single closed vocabulary consumed by the op graph, labels,
+    metadata and expanded JSON.  It deliberately does not inspect model names,
+    configuration aliases or presentation fields.
+    """
+    kind = ffn.get("kind")
+    if kind == "moe":
+        return "moe"
+    if kind == "conv_glu":
+        return "conv_glu"
+    if kind in (None, "", "unknown"):
+        return "mechanism_unresolved"
+    if kind not in _DENSE_FFN_KINDS:
+        return "unsupported"
+    gated = ffn.get("gated")
+    if gated is None:
+        return "gating_unresolved"
+    storage = ffn.get("projection_mode")
+    if storage not in {"dense", "split", "fused_gate_up"}:
+        return "storage_unresolved"
+    if (gated is False and storage != "dense") or (
+        gated is True and storage not in {"split", "fused_gate_up"}
+    ):
+        return "storage_unresolved"
+    return "gated" if gated else "dense"
+
+
+def ffn_structure_declared(ffn: dict) -> bool:
+    """Compatibility verdict derived from :func:`ffn_structure_state`.
+
+    For MoE, the router mechanism can be known while the expert's inner storage
+    remains opaque.  The whole FFN is therefore declared only when the expert
+    storage fact is independently known.
+    """
+    state = ffn_structure_state(ffn)
+    if state == "moe":
+        return ffn.get("expert_projection_mode") in {
+            "dense", "split", "fused_gate_up",
+        }
+    return state in {"conv_glu", "gated", "dense"}
+
+
 def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -> Region:
     """Resolve a feed-forward block's facts into a canonical :class:`Region`.
 
@@ -97,48 +145,50 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     (MoE has its own resolver; ``evidence`` is the reserved tier-2 hook.)
     """
     kind = ffn.get("kind")
-    inter = ffn.get("expert_intermediate_size") or ffn.get("intermediate_size")
+    state = ffn_structure_state(ffn)
+    inter = (
+        ffn.get("expert_intermediate_size")
+        if kind == "moe"
+        else ffn.get("intermediate_size")
+    )
 
-    if kind == "moe":
+    if state == "moe":
         return _moe_region(ffn, hidden, inter)
 
-    if kind == "conv_glu":
-        return _conv_glu_mlp_region(hidden, inter, ffn.get("activation") or "silu")
+    if state == "conv_glu":
+        # ``conv_glu`` is a mechanism fact.  Its activation is a separate fact;
+        # a missing activation remains the generic activation node.
+        return _conv_glu_mlp_region(hidden, inter, ffn.get("activation"))
 
-    # Honest-unknown: the config declares the block IS a feed-forward and how wide
-    # its inner projection is, but NOT whether it gates (2 vs 3 projections) or
-    # which activation it uses — those live in the model code.  Draw one honest
-    # block with the widths we know, never a fabricated gate-or-not shape.
-    if ffn.get("gated") is None and kind in (None, "dense", "mlp", "ffn"):
-        return _undeclared_ffn(hidden, inter)
+    if state == "mechanism_unresolved":
+        return _undeclared_ffn(hidden, inter, ffn, reason="mechanism")
 
-    # Some callers know that the FFN is gated from config but cannot prove how
-    # the weights are stored (separate gate/up vs fused gate-up) because source
-    # is missing or ambiguous.  Do not silently choose the common split layout.
-    if ffn.get("structure_status") in {"ambiguous", "oracle_missing"}:
+    if state == "unsupported":
+        return _opaque(
+            ffn, hidden, role="ffn",
+            label=[
+                str(ffn.get("class_name") or kind or "Custom FFN"),
+                "unsupported mechanism",
+            ],
+            status="unsupported",
+        )
+
+    if state == "gating_unresolved":
+        return _undeclared_ffn(hidden, inter, ffn, reason="gating")
+    if state == "storage_unresolved":
         return _unresolved_ffn_storage(hidden, inter, ffn)
 
-    # A recognised dense/gated MLP: build from config (tier 1) or from PROVEN
-    # source structure (tier 2 — ``structure_status: "proven"`` is the facts
-    # dialect's spelling of ``source_proven``; one meaning, both honored).
-    structure_proven = bool(ffn.get("source_proven")
-                            or ffn.get("structure_status") == "proven")
-    if kind in (None, "dense", "mlp", "ffn") and (inter is not None or structure_proven):
-        gated = bool(ffn.get("gated", True))
-        # U2: an unnamed activation stays honestly unlabeled (generic
-        # "Activation" node) on EVERY tier — the old config-tier
-        # silu/gelu family convention was a render-layer default-from-default
-        # (blast_radius Q4 #5) and is killed with the parser's default layer.
-        act = ffn.get("activation") or None
-        if gated and ffn.get("projection_mode") == "fused_gate_up":
-            return _fused_gated_mlp(hidden, inter, act)
-        return _gated_mlp(hidden, inter, act) if gated else _dense_mlp(hidden, inter, act)
-
-    # Tier 3: unrecognised — one honest opaque node, no fabricated internals.
-    return _opaque(ffn, hidden, role="ffn", label=str(ffn.get("class_name") or kind or "Custom FFN"))
+    storage = ffn.get("projection_mode")
+    act = ffn.get("activation")
+    if state == "dense":
+        return _dense_mlp(hidden, inter, act)
+    if storage == "fused_gate_up":
+        return _fused_gated_mlp(hidden, inter, act)
+    return _gated_mlp(hidden, inter, act)
 
 
-def _gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _gated_mlp(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_proj", "linear", "Linear (gate)", in_features=hidden, out_features=inter),
@@ -153,7 +203,8 @@ def _gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
     return Region("ffn", "ffn", "Gated MLP", ops, edges, template="gated_mlp")
 
 
-def _fused_gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _fused_gated_mlp(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_up_proj", "linear", "Linear (gate + up)", in_features=hidden,
@@ -172,20 +223,8 @@ def _fused_gated_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
                   template="fused_gated_mlp")
 
 
-#: Sana's GLUMBConv — the code-proven gated CONV Mix-FFN, drawn as its real op
-#: chain (1×1 expand ×2 → depthwise 3×3 → split value/gate → value·act(gate) →
-#: 1×1 project back).  Every op here is named by the class's own forward; the
-#: earlier single-opaque-leaf rendering hid a proven structure (and drew no
-#: input port at all).
-_GLUMBCONV_DESC = (
-    "Sana's GLUMBConv — a GATED CONV Mix-FFN, not a Linear MLP: a 1×1 conv expands "
-    "the width to 2× the inner channels, a depthwise 3×3 conv mixes locally, the "
-    "result splits in half (value · SiLU(gate)), and a 1×1 conv projects back. The "
-    "conv feed-forward paired with linear attention is what makes Sana efficient."
-)
-
-
-def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu") -> Region:
+def _conv_glu_mlp_region(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("conv_in", "conv", "Conv 1×1",
@@ -214,7 +253,8 @@ def _conv_glu_mlp_region(hidden: int | None, inter: int | None, act: str = "silu
                   template="conv_glu", resolved=True)
 
 
-def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
+def _dense_mlp(
+        hidden: int | None, inter: int | None, act: str | None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("up_proj", "linear", "Linear (in)", in_features=hidden, out_features=inter),
@@ -226,21 +266,40 @@ def _dense_mlp(hidden: int | None, inter: int | None, act: str) -> Region:
     return Region("ffn", "ffn", "MLP", ops, edges, template="dense_mlp")
 
 
-def _undeclared_ffn(hidden: int | None, inter: int | None) -> Region:
-    """A feed-forward whose inner structure the config does not declare.
-
-    We know it expands the residual width to an inner width and projects back; we
-    do NOT know the gating (2 vs 3 projections) or the activation.  So it is one
-    honest ``opaque`` block carrying the widths — ``resolved=False`` renders it
-    pale, the visual signal for "config-incomplete, not fabricated"."""
-    desc = (
-        "Position-wise feed-forward: expands to an inner width and projects back. "
-        "The config does not declare the inner structure (whether it gates) or the "
-        "activation — those live in the model's code, not its config."
+def _undeclared_ffn(
+        hidden: int | None,
+        inter: int | None,
+        facts: dict,
+        *,
+        reason: str,
+) -> Region:
+    """An opaque FFN carrying only independently established facts."""
+    missing = (
+        "mechanism"
+        if reason == "mechanism"
+        else "gate topology"
     )
-    op = Op("block", "opaque", "Feed-forward",
+    desc = (
+        f"The FFN's {missing} is unresolved from the available source evidence. "
+        "Known width and activation facts are retained, but no gate, up, down, "
+        "multiply, or storage layout is inferred."
+    )
+    status = "mechanism_unresolved" if reason == "mechanism" else "gating_unresolved"
+    label = (
+        ["Feed-forward", "mechanism unresolved"]
+        if reason == "mechanism"
+        else ["Feed-forward", "gating unresolved"]
+    )
+    op = Op("block", "opaque", label,
             in_features=hidden, out_features=hidden,
-            meta={"intermediate_size": inter, "desc": desc})
+            meta={
+                "status": status,
+                "intermediate_size": inter,
+                "activation": facts.get("activation"),
+                "gated": facts.get("gated"),
+                "projection_mode": facts.get("projection_mode"),
+                "desc": desc,
+            })
     return Region("ffn", "ffn", "Feed-forward", [op], [],
                   template="undeclared", source="opaque", resolved=False)
 
@@ -249,14 +308,19 @@ def _unresolved_ffn_storage(hidden: int | None, inter: int | None, facts: dict) 
     gated = facts.get("gated")
     known = "gated" if gated is True else "dense" if gated is False else "feed-forward"
     desc = (
-        f"The {known} FFN is known from config, but its exact projection storage "
-        "could not be resolved from modeling source. It is kept opaque rather "
-        "than inventing separate or fused projection modules."
+        f"The {known} FFN's exact projection storage is unresolved from source "
+        "evidence. It is kept opaque rather than inventing separate, fused, or "
+        "dense projection modules."
     )
     op = Op(
-        "block", "opaque", "Gated FFN" if gated is True else "Feed-forward",
+        "block", "opaque",
+        ["Gated FFN" if gated is True else "Feed-forward", "storage unresolved"],
         in_features=hidden, out_features=hidden,
-        meta={"intermediate_size": inter, "desc": desc},
+        meta={
+            "status": "storage_unresolved",
+            "intermediate_size": inter,
+            "desc": desc,
+        },
     )
     return Region(
         "ffn", "ffn", "Feed-forward", [op], [], template="unresolved_storage",
@@ -266,13 +330,25 @@ def _unresolved_ffn_storage(hidden: int | None, inter: int | None, facts: dict) 
 
 def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
     n, k = ffn.get("num_experts"), ffn.get("num_experts_per_tok")
+    expert_mode = ffn.get("expert_projection_mode")
+    expert_gated = (
+        True if expert_mode in {"split", "fused_gate_up"}
+        else False if expert_mode == "dense"
+        else None
+    )
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("router", "route", in_features=hidden, meta={"num_experts": n, "top_k": k}),
-        # U2: gated rides tri-state (None = undeclared) — never coerced to a
-        # concrete claim by bool().
-        Op("expert", "opaque", "Expert FFN", meta={"gated": ffn.get("gated", True),
-                                                   "intermediate_size": inter}),
+        # Routed experts are a separate callable from the ordinary/shared FFN.
+        # Only expert-local storage may determine their gate topology.
+        Op("expert", "opaque", ["Expert FFN", "storage unresolved"], meta={
+            "status": "storage_unresolved" if expert_mode is None else None,
+            "gated": expert_gated,
+            "projection_mode": expert_mode,
+            "intermediate_size": inter,
+            # The ordinary/shared activation is not expert evidence.
+            "activation": None,
+        }),
         Op("weighted_sum", "elementwise", fn="add"),
     ]
     edges = [Edge("hidden", "router"), Edge("router", "expert"),
@@ -280,9 +356,16 @@ def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
     return Region("ffn", "ffn", "Mixture of experts", ops, edges, template="moe")
 
 
-def _opaque(facts: dict, hidden: int | None, *, role: str, label: str) -> Region:
+def _opaque(
+    facts: dict,
+    hidden: int | None,
+    *,
+    role: str,
+    label: str | list[str],
+    status: str | None = None,
+) -> Region:
     op = Op("block", "opaque", label, in_features=hidden, out_features=hidden,
-            meta={"class_name": facts.get("class_name")})
+            meta={"class_name": facts.get("class_name"), "status": status})
     return Region(role, role, label, [op], [], template="opaque", source="opaque", resolved=False)
 
 

@@ -100,16 +100,20 @@ def submodel_spec(
             fact = ffn_detail(ffn)
             fact["hidden"] = ir.hidden_size
             return fact
+        structure_proven = (
+            structure_status == "proven"
+            and gated is not None
+            and projection_mode in {"dense", "split", "fused_gate_up"}
+        )
         fact = {
-            "kind": "dense",
+            "kind": "dense" if structure_proven else None,
             "hidden": ir.hidden_size,
             "intermediate_size": ffn.intermediate_size,
             "activation": activation,
-            "gated": gated,
+            "gated": gated if structure_proven else None,
             "structure_status": structure_status or "oracle_missing",
+            "projection_mode": projection_mode if structure_proven else None,
         }
-        if structure_status == "proven" and projection_mode:
-            fact["projection_mode"] = projection_mode
         return fact
 
     def _norm_for(group_layer) -> str | None:
@@ -286,7 +290,7 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
     MoE opens: the child subtree is derived here from the serialized facts
     through the one decoder builder — nothing re-authored, nothing cached.
     """
-    from .labels import cards_from_region, ffn_summary
+    from .labels import cards_from_region, ffn_summary, ffn_title
     from .opgraph import ffn_region, rename_ops
 
     fact = dict(group["ffn"])
@@ -323,7 +327,7 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
         "id": f"{prefix}_op_ffn",
         "role": "ffn",
         "kind": "ffn",
-        "title": "Feed-forward",
+        "title": ffn_title(fact),
         "description": desc,
         "facts": facts,
         "view": "ffn",

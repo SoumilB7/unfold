@@ -382,11 +382,11 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
     if ffn_act:
         ff_spec = FFNSpec(kind="dense", activation=ffn_act,
                           activation_from_class=True,
-                          intermediate_size=(ch * 4 if ch else 0),
+                          intermediate_size=None,
                           gated="glu" in ffn_act)
     else:
-        ff_spec = FFNSpec(kind="dense", activation=None, activation_assumed=True,
-                          intermediate_size=(ch * 4 if ch else 0), gated=None)
+        ff_spec = FFNSpec(
+            kind=None, activation=None, intermediate_size=None, gated=None)
     hidden = ch or 0
     # Each inner op (Q/K/V proj, scaled scores, softmax, apply-V, concat, output
     # proj) is ATOMIC — it gets a description card, not a further view. Supplying

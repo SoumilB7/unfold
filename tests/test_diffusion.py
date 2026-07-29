@@ -286,15 +286,19 @@ def test_text_encoder_shows_real_config_dims():
                                 "attention_detail", "position_evidence",
                                 "sub_model"}}
                   for spec in specs]
-    # CLIP's structured return now resolves its exact CLIPEncoderLayer and its
-    # two torch.nn.LayerNorm calls.  T5 still has explicit encoder/decoder
-    # rivals, so its epsilon spelling may not manufacture a norm kind.
+    # CLIP's structured return resolves its exact CLIPEncoderLayer and its two
+    # torch.nn.LayerNorm calls.  Its checkpoint ``hidden_act`` spelling is not,
+    # however, proof that this exact FFN consumes the ACT2FN selection; U7 owns
+    # that binding, so quick_gelu must stay absent here.  T5 still has explicit
+    # encoder/decoder rivals, so its epsilon spelling may not manufacture a
+    # norm kind either.
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
-         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77,
-         "norm": "LayerNorm", "gated": False},
+         "vocab": 49408, "max_pos": 77, "norm": "LayerNorm", "gated": False},
+        # The exact T5 encoder FFN owner is unresolved. Its width and separate
+        # gate evidence remain, but activation cannot cross that owner boundary.
         {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
-         "activation": "gelu_new", "vocab": 32128, "gated": True},
+         "vocab": 32128, "gated": True},
     ]
     # Attention geometry lives ONLY on the typed sub-model facts — never
     # duplicated as flat scalars (the dead add-on vocabulary this replaced).
@@ -1156,17 +1160,20 @@ def test_unet_is_a_loadable_denoiser_key():
     assert "unet" in _DENOISER_KEYS
 
 
-def test_moe_dit_routes_experts_not_dense():
-    """HiDream-I1 style: num_routed_experts/num_activated_experts in a DiT
-    block ⇒ MoE FFN with router — never silently flattened to dense."""
+def test_moe_dit_counts_do_not_manufacture_a_router():
+    """Expert counts are geometry, not proof that this exact DiT routes."""
     cfg = {"_class_name": "HiDreamImageTransformer2DModel",
            "num_layers": 4, "num_attention_heads": 20, "attention_head_dim": 128,
            "num_routed_experts": 4, "num_activated_experts": 2,
            "joint_attention_dim": 4096}
     ir = unfold(cfg).to_ir()
     ffn = ir["layers"][0]["ffn"]
-    assert ffn["kind"] == "moe" and ffn["num_experts"] == 4
-    assert ffn["num_experts_per_tok"] == 2
+    assert ffn["kind"] is None
+    assert ffn["num_experts"] == 4 and ffn["num_experts_per_tok"] == 2
+    assert not any(
+        block.get("view") == "moe"
+        for block in ir["layers"][0]["blocks"]
+    )
 
 
 def test_non_kl_vae_stays_honest():
@@ -1374,21 +1381,21 @@ def test_dit_ffn_undeclared_structure_is_honest_not_fabricated():
     assert f.get("activation") is None          # no fabricated default
     assert f.get("gated") is None               # gating undeclared
     assert f.get("structure_declared") is False
-    assert f.get("activation_assumed") is True
+    assert f.get("activation_assumed") is None
     assert not f.get("activation_from_class")   # not code-derived either — truly unknown
     # The FFN block's card says exactly that — never a fabricated GELU shape.
     import re
     html = unfold(IDEO_STYLE).to_html(standalone=True)
     m = re.search(r'data-card-id="ffn"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert m and "does not declare the gating or activation" in m.group(1)
+    assert m and "Feed-forward mechanism unresolved" in m.group(1)
     assert "GELU" not in m.group(1)   # activation is unknown → never fabricated
     # LLAMA declares its activation — gating/activation are real facts, not flagged.
     lf = unfold(LLAMA).to_json()["layer_groups"][0]["ffn"]
-    assert lf["activation"] == "silu" and "activation_assumed" not in lf
+    assert lf["activation"] == "silu" and lf["activation_assumed"] is None
     assert lf["gated"] is True
 
 
-def test_flux_ffn_activation_is_code_derived_gelu():
+def test_flux_ffn_activation_is_code_derived_but_storage_stays_opaque():
     """Flux declares no FFN activation in config, but its model class fixes it
     (``FeedForward(activation_fn="gelu-approximate")`` / ``nn.GELU(approximate=
     "tanh")`` after proj_mlp, both mult=4, NON-gated).  We surface that from
@@ -1410,19 +1417,21 @@ def test_flux_ffn_activation_is_code_derived_gelu():
         assert L.ffn.gated is False                 # derived from the non-glu name
         assert L.ffn.activation_from_class is True   # code-derived, marked
 
-    # JSON parity + the dense drill is real (Linear → GELU → Linear), not opaque.
+    # JSON parity keeps the known activation/gating. Projection storage is a
+    # separate U10 fact, so the drill stays opaque rather than inventing three
+    # stored modules from an activation spelling.
     fj = unfold(FLUX).to_json()["layer_groups"][0]["ffn"]
     assert fj.get("activation") == "gelu-approximate"
     assert fj.get("activation_from_class") is True and fj.get("gated") is False
     dual = next(L for L in ir.layers if not _is_single(L))
     ffn_block = next(b for b in dual.blocks if b.get("id") == "ffn")
-    assert [c["id"] for c in ffn_block["children"]] == ["up_proj", "activation", "down_proj"]
+    assert [c["id"] for c in ffn_block["children"]] == ["block"]
+    assert "storage unresolved" in ffn_block["children"][0]["title"].lower()
 
     html = unfold(FLUX).to_html(standalone=True)
-    # The activation card marks the fact code-derived; the single-stream lane marks
-    # it too and shows the clean math name (GELU), never the backend spelling.
-    act = re.search(r'data-card-id="activation"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
-    assert act and "fixed in the model class" in act.group(1)
+    # No activation child is drawn while storage is unresolved. The separate
+    # single-stream lane may still report the independently known activation.
+    assert 'data-card-id="activation"' not in html
     ss = re.search(r'data-card-id="ss_mlp"[^>]*>.*?uf-card-desc">(.*?)</div>', html, re.S)
     assert ss and "code-derived" in ss.group(1) and "GELU" in ss.group(1)
 
@@ -1455,8 +1464,8 @@ def test_ideogram_style_dit_captures_declared_facts():
     side = {b["id"]: b for b in ir.layers[0].blocks if b.get("lane")}
     assert "text_cond" not in side                       # no attention-text dim
     assert "AdaLN dim 512" in (side["adaln_cond"].get("facts") or [])
-    # WEAK-3: undeclared activation flagged assumed, gating undeclared (honest).
-    assert ir.layers[0].ffn.activation_assumed is True
+    # WEAK-3: no invented activation and no invented gating.
+    assert ir.layers[0].ffn.activation_assumed is False
     assert ir.layers[0].ffn.gated is None
     # Norm kind is not declared (only a bare norm_eps) — don't assert RMS/Layer.
     assert ir.layers[0].norm_kind == "unknown"

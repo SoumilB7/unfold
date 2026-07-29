@@ -50,6 +50,7 @@ def tower_cell(
     attn_sub=None,
     ffn_kind=None,
     ffn_label=None,
+    ffn_fact: dict | None = None,
     input_id: str | None = None,
     attn_gate: str | None = None,
     ffn_gate: str | None = None,
@@ -75,8 +76,17 @@ def tower_cell(
     if placement not in ("pre", "post", "double"):
         return [{"id": f"{prefix}_op_unknown", "kind": "norm",
                  "label": unknown_label or "Code-defined block", "resolved": False}]
-    ffn_text = ffn_label or (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
-                             else "Feed-forward (FFN)")
+    if ffn_label is not None:
+        ffn_text = ffn_label
+    elif isinstance(ffn_fact, dict):
+        from ...labels import ffn_label as canonical_ffn_label
+        ffn_text = canonical_ffn_label(ffn_fact)
+    else:
+        # Role-only fallback for legacy callers that have not yet supplied a
+        # canonical FFN fact.  It says only that this is the FFN sublayer; it
+        # does not claim dense/gated/storage internals.
+        ffn_text = (["Mixture of Experts", "(MoE)"] if ffn_kind == "moe"
+                    else "Feed-forward (FFN)")
 
     def _sublayer(op_block: dict, n: str, add_id: str, skip_from: str,
                   gate: str | None, align: dict) -> list[dict]:
@@ -103,6 +113,21 @@ def tower_cell(
     attn = {"id": f"{prefix}_op_selfattn", "kind": "attention",
             "label": attn_label, "sub": attn_sub}
     ffn = {"id": f"{prefix}_op_ffn", "kind": "ffn", "label": ffn_text}
+    # The handwriting font is materially wider/taller than the conservative
+    # character metric used by the generic graph node.  Unknown-safe FFN
+    # labels deliberately carry a second explanatory line; give that exact
+    # truth-bearing form enough room instead of letting "storage unresolved"
+    # escape the node in denoiser/refiner towers.  Ordinary one-line and MoE
+    # labels retain the canonical glyph dimensions.
+    if (
+        isinstance(ffn_text, list)
+        and any(
+            marker in str(line).lower()
+            for line in ffn_text
+            for marker in ("unresolved", "unsupported")
+        )
+    ):
+        ffn.update({"w": 340, "h": 76})
     if placement == "post":
         # BERT shape: h = norm(h + op(h)) — the first skip taps the cell input.
         skip1 = input_id or f"{prefix}_op_in"

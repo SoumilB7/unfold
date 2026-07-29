@@ -112,6 +112,26 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
         projection_mode = variant.get("projection_mode")
         if projection_mode == "separate_qkv":
             projection_mode = "split_qkv"
+        if projection_mode not in {"split_qkv", "fused_qkv"}:
+            projection_mode = None
+        observed_attention_kind = variant.get("attention_kind")
+        attention_kind = (
+            observed_attention_kind
+            if observed_attention_kind in {
+                "mha", "gqa", "mqa", "mla", "linear", "gated_delta",
+                "recurrent", "rwkv", "ssm",
+            }
+            else None
+        )
+        ffn_gated = variant.get("ffn_gated")
+        ffn_projection_mode = variant.get("ffn_projection_mode")
+        if ffn_projection_mode not in {"dense", "split", "fused_gate_up"}:
+            ffn_projection_mode = None
+        ffn_kind = (
+            "dense"
+            if ffn_gated is not None and ffn_projection_mode is not None
+            else None
+        )
         if variant.get("residual_gated"):
             act = variant.get("gate_activation")
             source = variant.get("gate_source")
@@ -122,7 +142,10 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
             "count": variant.get("repeat"),
             "tag": tags[i],
             "attention": {
-                "kind": ("linear" if variant.get("attention_kind") == "linear" else "mha"),
+                # "softmax" proves a kernel family, not MHA/GQA/MQA projection
+                # geometry.  Only an exact canonical kind may select a detailed
+                # attention region; otherwise the tower stays opaque.
+                "kind": attention_kind,
                 "num_heads": heads,
                 "head_dim": head_dim,
                 "hidden": hidden,
@@ -144,13 +167,13 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
                 "v_norm": variant.get("v_norm"),
             },
             "ffn": {
-                "kind": "dense",
+                "kind": ffn_kind,
                 "hidden": hidden,
-                "gated": variant.get("ffn_gated"),
+                "gated": ffn_gated if ffn_kind else None,
                 "activation": encoder.get("activation"),
                 "intermediate_size": encoder.get("intermediate_size"),
-                "projection_mode": variant.get("ffn_projection_mode"),
-                "structure_status": "proven",
+                "projection_mode": ffn_projection_mode if ffn_kind else None,
+                "structure_status": "proven" if ffn_kind else "ambiguous",
             },
             "norm": {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
                 str(variant.get("norm_kind") or "").lower()),

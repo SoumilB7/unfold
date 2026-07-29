@@ -595,18 +595,16 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
     if not ffn:
         return problems
     if ffn.get("num_experts"):
-        drawn_fused = ffn.get("expert_projection_mode") == "fused_gate_up"
-        if code_expert is True and not drawn_fused:
+        drawn = ffn.get("expert_projection_mode")
+        if code_expert is not None and drawn != code_expert:
             problems.append(ConformanceProblem(
-                "wrong_storage", "expert gate/up is stored FUSED, drawn split", key,
-                source_component=component))
-        elif code_expert is False and drawn_fused:
-            problems.append(ConformanceProblem(
-                "wrong_storage", "expert gate/up is stored SPLIT, drawn fused", key,
+                "wrong_storage",
+                f"expert projection storage is {str(code_expert).upper()}, "
+                f"drawn {drawn}",
+                key,
                 source_component=component))
     elif code_ffn_mode is not None:
-        drawn = ffn.get("projection_mode") or (
-            "split" if ffn.get("gated") else "dense")
+        drawn = ffn.get("projection_mode")
         if drawn != code_ffn_mode:
             problems.append(ConformanceProblem(
                 "wrong_storage",
@@ -615,7 +613,7 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
     elif use_legacy_ffn and ffn.get("gated"):
         evidence = ffn_structure_evidence(files, expected_gated=True)
         if evidence.status == "proven" and evidence.projection_mode:
-            drawn = ffn.get("projection_mode") or "split"
+            drawn = ffn.get("projection_mode")
             if drawn != evidence.projection_mode:
                 problems.append(ConformanceProblem(
                     "wrong_storage",
@@ -687,8 +685,8 @@ def _check_component_storage_facts(
             if has_experts else None
         )
         code_expert = (
-            True if expert is not None and expert.status == "resolved"
-            and expert.value.projection_mode == "fused_gate_up"
+            expert.value.projection_mode
+            if expert is not None and expert.status == "resolved"
             else None
         )
         for i, group in enumerate(sub_model.get("groups") or []):
@@ -758,9 +756,9 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         expert_storage = decoder_routed_expert_storage_for_path(
             program_index, bundle, path, allow_root_stage=True)
     code_expert = (
-        True if expert_storage is not None
+        expert_storage.value.projection_mode
+        if expert_storage is not None
         and expert_storage.status == "resolved"
-        and expert_storage.value.projection_mode == "fused_gate_up"
         else None
     )
     from .ffn_mechanism import decoder_ffn_mechanism_for_path

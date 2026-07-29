@@ -998,7 +998,9 @@ _EXPECTED_NESTED_UNRESOLVED = {
     # ForwardOps record-shape fix lets the conformance reader see the real
     # rotary/signature evidence instead of silently abstaining.  FFN/router
     # attribution remains genuinely unresolved.
-    "self_cond": {"ffn", "moe_router"},
+    # U4-C: config-only MoE/FFN identity no longer authors a drill, so there is
+    # no fabricated nested compute region to excuse.
+    "self_cond": set(),
     # MusicGen's nested decoder is now joined to its exact component/config
     # path and exact inline FFN owner; the former audio/ffn unresolved pin was
     # retired by the shared U3 FFN result.
@@ -1327,7 +1329,7 @@ def test_storage_conformance_flags_fused_experts_drawn_split():
     for layer in tampered["layers"]:
         if (layer.get("ffn") or {}).get("num_experts"):
             layer["ffn"]["expert_projection_mode"] = None
-    assert any(p.kind == "wrong_storage" and "expert gate/up" in p.op
+    assert any(p.kind == "wrong_storage" and "expert projection storage" in p.op
                for p in _fact_problems(cfg, tampered))
 
 

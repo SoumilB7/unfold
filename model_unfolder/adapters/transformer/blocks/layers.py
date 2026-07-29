@@ -281,8 +281,10 @@ def single_stream_decoder_layer_blocks(
     elif act:
         act_note = ""
     else:
-        act_note = (" The config does not declare the activation function (it is "
-                    "fixed in the model class).")
+        act_note = (
+            " The exact activation is unresolved from the available source "
+            "evidence; no conventional default is shown."
+        )
     mlp_branch = {
         "id": "ss_mlp", "role": "ffn", "kind": "ffn",
         "branch_side": "right", "feeds": "ss_concat",
@@ -353,17 +355,20 @@ def _attention_block(attention: AttentionSpec, hidden_size: int,
 
 
 def _ffn_block(ffn: FFNSpec, hidden_size: int) -> Block:
+    from ....labels import ffn_label, ffn_title
+
     desc, facts = ffn_summary(ffn_detail(ffn))
+    detail = ffn_detail(ffn)
     return {
         "id": "ffn",
         "role": "ffn",
         "kind": "ffn",
-        "label": "MoE" if ffn.kind == "moe" else "Feed-Forward",
-        "title": "Mixture of experts" if ffn.kind == "moe" else "Feed-forward",
+        "label": ffn_label(detail),
+        "title": ffn_title(detail),
         "description": desc,
         "facts": facts,
         "view": ffn_view(ffn),
-        "detail": {"ffn": ffn_detail(ffn)},
+        "detail": {"ffn": detail},
         "children": ffn_child_blocks(ffn, hidden_size),
     }
 
@@ -454,8 +459,9 @@ def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_siz
     """The layer's parallel feed-forward, divided INLINE in the architecture:
     ``rms2`` fans out to two side-by-side branches that converge at a ⊕ merge.
 
-      * ``ffn_mlp`` — the always-on dense SwiGLU MLP (Text4MLP); left branch,
-        opens the gated FFN view (gate/up/act/mul/down children).
+      * ``ffn_mlp`` — the always-on ordinary/shared FFN; left branch. Its inner
+        mechanism is projected only from the ordinary FFN facts carried by
+        ``ffn``—never from the Text4 class identity.
       * ``ffn_moe`` — the routed MoE (TextMoE); right branch, opens the MoE view
         (router / experts / weighted-sum children).
       * ``ffn_merge`` — the additive ⊕ (mlp_out + moe_out); a Tier-2 connector
@@ -464,11 +470,24 @@ def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_siz
     ``branch_side`` marks a block as a parallel branch (drawn off the central
     column, not in the chain); ``feeds`` names the merge it converges into.
     """
+    if ffn.kind != "moe":
+        # The legacy block-diffusion template knew that two FFN lanes existed
+        # from config identity alone.  Until U7 proves that exact topology,
+        # reader abstention projects one honest FFN block rather than a
+        # fabricated ordinary+MoE fork.
+        return [_ffn_block(ffn, hidden_size)]
+
     dense = FFNSpec(
-        kind="dense",
+        kind=(
+            "dense"
+            if ffn.gated is not None and ffn.projection_mode is not None
+            else None
+        ),
         activation=ffn.activation,
-        intermediate_size=intermediate_size or hidden_size,
-        gated=True,  # Text4MLP is a Gemma SwiGLU MLP
+        intermediate_size=(
+            intermediate_size if intermediate_size else None),
+        gated=ffn.gated,
+        projection_mode=ffn.projection_mode,
     )
     dense_desc, dense_facts = ffn_summary(ffn_detail(dense))
     moe_desc, moe_facts = ffn_summary(ffn_detail(ffn))
@@ -479,11 +498,15 @@ def _diffusion_gemma_ffn_blocks(ffn: FFNSpec, hidden_size: int, intermediate_siz
         "kind": "ffn",
         "branch_side": "left",
         "feeds": "ffn_merge",
-        "label": ["Dense MLP", "SwiGLU"],
-        "title": "Dense MLP (Text4MLP)",
+        "label": (
+            ["Dense MLP", activation_label(dense.activation)]
+            if dense.kind == "dense" and dense.gated is not None
+            else ["Feed-forward", "(mechanism unresolved)"]
+        ),
+        "title": "Always-on feed-forward",
         "description": (
-            "A standard gated SwiGLU MLP that runs on every token — the always-on "
-            "dense path. " + dense_desc
+            "The always-on feed-forward path that runs on every token. "
+            + dense_desc
         ),
         "facts": dense_facts,
         "view": ffn_view(dense),

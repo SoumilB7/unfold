@@ -134,7 +134,8 @@ def test_evidence_backed_values_are_unchanged_and_status_real():
     # CODE-AND-CONFIG (code proves the mechanism + names the field, config
     # supplies which) — stronger than a bare declaration.
     assert prov["decoder.ffn.activation"]["status"] == "code_and_config"
-    assert prov["decoder.ffn.activation"]["source"] == "ACT2FN[config.hidden_act]"
+    assert prov["decoder.ffn.activation"]["source"] == \
+        "decoder_ffn_mechanism_for_path:hidden_act"
     assert prov["model.tie_word_embeddings"]["status"] == "config_declared"
     # U2 P2d strengthening: installed llama source proves the causal mask.
     assert prov["decoder.attention.mask"]["status"] == "code_proven"
@@ -163,21 +164,19 @@ def test_gated_heuristic_abstains_instead_of_reading_norm_kind():
     assert _is_gated(None, "rmsnorm", None) is None        # zero evidence
 
 
-def test_direct_ffn_gate_declarations_beat_activation_ambiguity():
-    """T5-style config declarations are FACTS and outrank the activation
-    family signal; a bare silu contributes only the weakest (derived) tier.
-    """
+def test_direct_ffn_gate_declarations_cannot_replace_source_binding():
+    """A gate declaration is an operand, not proof that this exact FFN uses it."""
     dense = config_to_ir(dict(
         ZERO_EVIDENCE, hidden_act="relu", is_gated_act=False,
         feed_forward_proj="relu",
     ))
-    assert dense.layers[0].ffn.gated is False
-    assert _prov(dense)["decoder.ffn.gated"]["status"] == "config_declared"
+    assert dense.layers[0].ffn.gated is None
+    assert "decoder.ffn.gated" not in _prov(dense)
 
     gated = config_to_ir(dict(
         ZERO_EVIDENCE, hidden_act="gelu", feed_forward_proj="gated-gelu",
     ))
-    assert gated.layers[0].ffn.gated is True
+    assert gated.layers[0].ffn.gated is None
 
     # A bare silu proves NOTHING (STRICT rule, tier retired): at zero code /
     # config / class-default evidence the FFN stays a typed unknown — the
@@ -269,36 +268,26 @@ def test_mask_code_causal_discarded_on_flat_encdec(tmp_path):
     assert _prov(ir2)["decoder.attention.mask"]["status"] == "code_proven"
 
 
-def test_t5_family_ffn_truth_at_fact_level():
-    """U2 P3b: is_gated_act/feed_forward_proj are read, not ignored.
-
-    t5-base's checkpoint declares NEITHER key — the installed T5Config class
-    defaults decide (is_gated_act=False, dense-relu): the census's silently
-    mis-gated standalone T5 becomes dense-relu TRUTH at the fact level.
-    flan-t5-large declares feed_forward_proj='gated-gelu' → gated-gelu,
-    config_declared.  (The enc-dec topology collapse itself remains U4 —
-    this test pins FACTS, not the drawn two-stack topology.)"""
+def test_t5_declarations_stay_unknown_until_the_exact_encoder_ffn_is_bound():
+    """Class/checkpoint defaults cannot by themselves author T5's FFN graph."""
     t5_shape = {"model_type": "t5",
                 "architectures": ["T5ForConditionalGeneration"],
                 "d_model": 768, "d_ff": 3072, "num_layers": 12, "num_heads": 12,
                 "vocab_size": 32128, "is_encoder_decoder": True,
                 "layer_norm_epsilon": 1e-6}
     ir = config_to_ir(t5_shape)
-    assert ir.layers[0].ffn.gated is False
-    assert ir.layers[0].ffn.activation == "relu"
+    assert ir.layers[0].ffn.gated is None
+    assert ir.layers[0].ffn.activation is None
     prov = _prov(ir)
-    assert prov["decoder.ffn.gated"]["status"] == "class_default"
-    assert "is_gated_act" in prov["decoder.ffn.gated"]["source"]
-    assert prov["decoder.ffn.activation"]["status"] == "class_default"
+    assert "decoder.ffn.gated" not in prov
+    assert prov["decoder.ffn.activation"]["status"] == "ambiguous"
 
     flan = config_to_ir(dict(t5_shape, feed_forward_proj="gated-gelu"))
-    assert flan.layers[0].ffn.gated is True
-    assert flan.layers[0].ffn.activation == "gelu"
+    assert flan.layers[0].ffn.gated is None
+    assert flan.layers[0].ffn.activation is None
     prov2 = _prov(flan)
-    assert prov2["decoder.ffn.gated"] == {
-        "value": True, "status": "config_declared",
-        "source": "feed_forward_proj"}
-    assert prov2["decoder.ffn.activation"]["source"] == "feed_forward_proj"
+    assert "decoder.ffn.gated" not in prov2
+    assert prov2["decoder.ffn.activation"]["value"] is None
 
 
 def test_position_declaration_cannot_author_qk_rotation():

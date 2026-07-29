@@ -5,7 +5,7 @@ from pathlib import Path
 
 import model_unfolder as mu
 
-from model_unfolder.ir import AttentionSpec
+from model_unfolder.ir import AttentionSpec, FFNSpec
 from model_unfolder.labels import (
     attention_label,
     attention_title,
@@ -13,10 +13,15 @@ from model_unfolder.labels import (
     kind_short,
     mask_long,
     mask_short,
+    ffn_summary,
 )
-from model_unfolder.opgraph import attention_region
+from model_unfolder.opgraph import attention_region, ffn_region
 from model_unfolder.opgraph import mla_kv_region, mla_query_region
 from model_unfolder.expanded.attention import build_attention
+from model_unfolder.expanded.ffn import build_ffn
+from model_unfolder.adapters.transformer.blocks.feed_forward import (
+    ffn_child_blocks,
+)
 from model_unfolder.adapters.transformer.blocks.attention import (
     attention_detail,
 )
@@ -366,3 +371,172 @@ def test_mla_latent_structure_does_not_imply_cache_rope_or_scaling():
     scores = next(op for op in parent.ops if op.id == "scaled_scores")
     assert scores.meta["status"] == "unresolved"
     assert "formula" not in scores.meta
+
+
+# ---------------------------------------------------------------------------
+# U4-C — FFN facts are independent and unknown never picks a familiar MLP.
+# ---------------------------------------------------------------------------
+
+
+def test_omitted_ffn_fields_are_typed_unknown_not_modern_decoder_defaults():
+    ffn = FFNSpec()
+    assert ffn.kind is None
+    assert ffn.activation is None
+    assert ffn.intermediate_size is None
+    assert ffn.gated is None
+    assert ffn.projection_mode is None
+    assert ffn.expert_projection_mode is None
+
+
+def test_unknown_ffn_mechanism_keeps_width_without_gate_up_down():
+    region = ffn_region(
+        {
+            "kind": None,
+            "intermediate_size": 256,
+            "activation": "gelu",
+        },
+        64,
+    )
+    assert region.template == "undeclared"
+    assert region.resolved is False
+    assert [op.kind for op in region.ops] == ["opaque"]
+    assert region.ops[0].meta["intermediate_size"] == 256
+    assert region.ops[0].meta["activation"] == "gelu"
+    assert not {
+        "gate_proj", "up_proj", "down_proj", "multiply",
+    } & {op.id for op in region.ops}
+
+
+def test_known_gate_without_storage_stays_opaque():
+    for gated in (True, False):
+        region = ffn_region(
+            {
+                "kind": "dense",
+                "gated": gated,
+                "activation": "silu",
+                "intermediate_size": 256,
+                "projection_mode": None,
+            },
+            64,
+        )
+        assert region.template == "unresolved_storage"
+        assert [op.kind for op in region.ops] == ["opaque"]
+
+
+def test_ffn_storage_must_agree_with_gate_topology():
+    for values in (
+        {"gated": False, "projection_mode": "split"},
+        {"gated": False, "projection_mode": "fused_gate_up"},
+        {"gated": True, "projection_mode": "dense"},
+    ):
+        region = ffn_region(
+            {
+                "kind": "dense",
+                "activation": "silu",
+                "intermediate_size": 256,
+                **values,
+            },
+            64,
+        )
+        assert region.template == "unresolved_storage"
+
+
+def test_known_ffn_shape_does_not_require_a_guessed_activation():
+    dense = ffn_region(
+        {
+            "kind": "dense", "gated": False,
+            "projection_mode": "dense", "activation": None,
+            "intermediate_size": 256,
+        },
+        64,
+    )
+    gated = ffn_region(
+        {
+            "kind": "dense", "gated": True,
+            "projection_mode": "split", "activation": None,
+            "intermediate_size": 256,
+        },
+        64,
+    )
+    assert dense.template == "dense_mlp"
+    assert gated.template == "gated_mlp"
+    assert next(op for op in dense.ops if op.id == "activation").fn is None
+    assert next(op for op in gated.ops if op.id == "activation").fn is None
+
+
+def test_routed_expert_never_borrows_ordinary_shared_ffn_facts():
+    spec = FFNSpec(
+        kind="moe",
+        gated=True,
+        projection_mode="split",
+        activation="silu",
+        intermediate_size=128,
+        expert_intermediate_size=64,
+        expert_projection_mode=None,
+        num_experts=8,
+        num_experts_per_tok=2,
+    )
+    children = ffn_child_blocks(spec, 32)
+    expert = next(child for child in children if child["id"] == "expert_1")
+    assert [child["id"] for child in expert["children"]] == ["block"]
+    detail = expert["detail"]["ffn"]
+    assert detail["gated"] is None
+    assert detail["expert_projection_mode"] is None
+    assert detail["activation"] is None
+
+    region = ffn_region(
+        {
+            "kind": "moe",
+            "gated": True,
+            "projection_mode": "split",
+            "activation": "silu",
+            "expert_projection_mode": None,
+            "intermediate_size": 128,
+            "expert_intermediate_size": 64,
+            "num_experts": 8,
+            "num_experts_per_tok": 2,
+        },
+        32,
+    )
+    expert_op = next(op for op in region.ops if op.id == "expert")
+    assert expert_op.meta["gated"] is None
+    assert expert_op.meta["intermediate_size"] == 64
+    assert expert_op.meta["activation"] is None
+
+
+def test_expanded_ffn_projects_exact_tri_states_and_expert_width():
+    ffn = {
+        "kind": "moe",
+        "gated": None,
+        "projection_mode": None,
+        "activation": None,
+        "intermediate_size": 128,
+        "expert_intermediate_size": 64,
+        "expert_projection_mode": None,
+        "num_experts": 8,
+        "num_experts_per_tok": 2,
+        "num_shared_experts": None,
+    }
+    expanded = build_ffn(ffn, 32, "layers[0]", None)
+    assert expanded["gated"] is None
+    assert expanded["structure_declared"] is False
+    assert expanded["experts"]["expert_intermediate_size"] == 64
+    assert expanded["experts"]["shared"] is None
+    expert_graph = next(
+        node for node in expanded["operation_graph"]["nodes"]
+        if node["id"] == "expert_template"
+    )["graph"]
+    assert [node["operation"] for node in expert_graph["nodes"]] == ["opaque"]
+
+
+def test_ffn_summary_never_calls_unknown_dense_or_swiglu():
+    desc, facts = ffn_summary({
+        "kind": None,
+        "gated": None,
+        "activation": None,
+        "intermediate_size": 256,
+    })
+    assert "mechanism unresolved" in desc
+    assert "mechanism unresolved" in facts
+    assert "Dense" not in desc
+    assert "SwiGLU" not in desc

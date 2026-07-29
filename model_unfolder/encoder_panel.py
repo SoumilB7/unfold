@@ -143,14 +143,16 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
         files, expected_gated=explicit_gated, component=component,
         architecture=architecture,
     )
-    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else explicit_gated
+    # The config value is an expected selector supplied to the source reader;
+    # it is not independently allowed to author gate topology.  Only a proven
+    # callable result reaches the canonical FFN fact.
+    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else None
 
-    activation_explicit = _has(
-        "hidden_act", "hidden_activation", "activation_function", "activation_fn",
-        "dense_act_fn", "feed_forward_proj", "ffn_act_fn",
-    )
     code_activation = decoder_ffn_activation_from_files(files)
-    act = (ffn.activation if activation_explicit else code_activation) or None
+    # A bare checkpoint activation spelling does not prove that this exact FFN
+    # consumes it.  Retain only the activation fixed by the resolved code path;
+    # U7 may restore config-selected activations after binding the dispatch.
+    act = code_activation or None
     # Flat fields are PROSE/legacy-display only — attention geometry lives on
     # the sub-model spec's typed facts (attention_detail per group), never
     # duplicated here.

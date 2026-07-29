@@ -77,10 +77,13 @@ def _ffn_params(f: FFNSpec, hidden: int) -> tuple:
             else 2
         )
         shared_g = 3 if f.gated else 2
-        width = _as_count(
-            f.expert_intermediate_size or f.intermediate_size)
-        per_expert = expert_g * hidden * width
-        per_shared = shared_g * hidden * width
+        expert_width = _as_count(f.expert_intermediate_size)
+        # Shared experts are instances of the expert-width lane; the ordinary
+        # dense-layer width is a separate layer-variant fact and must not be
+        # substituted here.
+        shared_width = expert_width
+        per_expert = expert_g * hidden * expert_width
+        per_shared = shared_g * hidden * shared_width
         n_routed = _as_count(f.num_experts)
         n_shared = _as_count(f.num_shared_experts)
         n_active = _as_count(f.num_experts_per_tok)
@@ -145,15 +148,33 @@ def estimate_params(ir: ModelIR) -> dict:
         pending_notes = (
             (_EXPERT_GATED_NOTE
              if layer.ffn.kind == "moe"
-             and layer.ffn.expert_projection_mode is None else None),
+             and layer.ffn.expert_projection_mode is None
+             and layer.ffn.expert_intermediate_size is not None else None),
             # ``gated`` describes the ordinary/shared FFN lane.  A routed-only
             # MoE with zero shared experts has no such parameters, so its
             # unknown value cannot affect this formula and must not manufacture
             # a misleading assumption (GPT-OSS is the real control).
             (_GATED_NOTE
              if layer.ffn.gated is None
-             and (layer.ffn.kind != "moe"
-                  or _as_count(layer.ffn.num_shared_experts) > 0)
+             and (
+                 (
+                     layer.ffn.kind == "moe"
+                     and _as_count(layer.ffn.num_shared_experts) > 0
+                     and layer.ffn.expert_intermediate_size is not None
+                 )
+                 or (
+                     layer.ffn.kind != "moe"
+                     and layer.ffn.intermediate_size is not None
+                 )
+             )
+             else None),
+            (_EXPERT_WIDTH_NOTE
+             if layer.ffn.kind == "moe"
+             and layer.ffn.expert_intermediate_size is None
+             else None),
+            (_ORDINARY_WIDTH_NOTE
+             if layer.ffn.intermediate_size is None
+             and layer.ffn.kind != "moe"
              else None),
         )
         for note in pending_notes:
@@ -187,6 +208,10 @@ _GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
 _EXPERT_GATED_NOTE = (
     "routed-expert structure unknown — counted as 2 projections "
     "(a gated expert would add hidden x expert-inner per expert)")
+_EXPERT_WIDTH_NOTE = (
+    "routed-expert inner width unknown — expert matrix terms omitted")
+_ORDINARY_WIDTH_NOTE = (
+    "ordinary/shared FFN inner width unknown — its matrix terms omitted")
 
 
 def humanize(n: int) -> str:

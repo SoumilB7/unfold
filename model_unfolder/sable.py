@@ -689,13 +689,19 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
                          "(pipeline wiring not self-contained?) — not lockable.")
     corpus = Path(corpus_dir) if corpus_dir else DEFAULT_CORPUS
     corpus.mkdir(parents=True, exist_ok=True)
-    path = corpus / f"{_slug(report.model)}.json"
+    path = _fixture_path_for_config(corpus, report.model, cfg_dict)
     # The reviewed pixels are PART of the lock's provenance, so they are copied
     # into a DURABLE home beside the fixture (galleries/<slug>/) — a
     # visual_evidence pointer into a scratch/session directory dies with the
     # session and leaves the lock claiming a review nobody can re-open.
     import shutil
-    gallery_home = corpus / "galleries" / _slug(report.model)
+    # An offline config does not necessarily retain the repository display
+    # name used by the original report (for example ``facebook/musicgen-small``
+    # reloads as ``MusicgenForConditionalGeneration``).  Keep an existing
+    # fixture's durable gallery under that fixture's stable identity; otherwise
+    # a re-bless would leave the reviewed gallery behind and create a duplicate
+    # witness under the reconstructed class name.
+    gallery_home = corpus / "galleries" / path.stem
     # A guarded re-bless replaces generated pixels and their manifest, but it
     # must not erase durable human-review evidence stored beside them.  Keep
     # every non-generated sidecar byte-for-byte (for example
@@ -721,8 +727,18 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(content)
         destination.chmod(mode)
+    previous = {}
+    if path.exists():
+        try:
+            previous = json.loads(path.read_text())
+        except (OSError, ValueError):
+            previous = {}
     fixture = {
-        "model": report.model,
+        # Keep the reviewed witness identity when the offline reconstruction
+        # loses its repository display name.  The exact config match above
+        # proves this is the same witness; replacing ``musicgen-small`` with a
+        # reconstructed class name would be identity drift, not a re-bless.
+        "model": previous.get("model") or report.model,
         "source": source,
         "config": cfg_dict,
         "hash_signature": report.hash_signature(),
@@ -736,11 +752,7 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
     # A re-bless is a VISIBLE transition, never a silent overwrite: the previous
     # lock's signature is carried in the new fixture so the review diff states
     # exactly which pictures were re-approved.
-    if path.exists():
-        try:
-            previous = json.loads(path.read_text())
-        except (OSError, ValueError):
-            previous = {}
+    if previous:
         old_signature = previous.get("hash_signature")
         if old_signature and old_signature != fixture["hash_signature"]:
             fixture["superseded_hash_signature"] = old_signature
@@ -750,6 +762,34 @@ def bless(report: SableReport, model_or_id, *, token=None, source: str = "local"
             fixture["superseded_hash_signature"] = previous["superseded_hash_signature"]
     path.write_text(json.dumps(fixture, indent=2, sort_keys=True, default=str))
     return str(path)
+
+
+def _fixture_path_for_config(corpus: Path, report_model: str, config: dict) -> Path:
+    """Return the one stable corpus path for ``config``.
+
+    A fixture is evidence for an exact frozen input, not for whichever display
+    name a particular loading route happened to retain.  Re-blessing an
+    existing frozen config therefore updates its existing path.  Two existing
+    paths for the same config are an invalid, ambiguous corpus: choosing either
+    would allow divergent locks for one input, so fail before writing.
+    """
+    matches: list[Path] = []
+    for candidate in sorted(corpus.glob("*.json")):
+        try:
+            frozen = json.loads(candidate.read_text())
+        except (OSError, ValueError):
+            continue
+        if frozen.get("config") == config:
+            matches.append(candidate)
+    if len(matches) > 1:
+        names = ", ".join(path.name for path in matches)
+        raise ValueError(
+            "duplicate corpus fixtures freeze the same config: "
+            f"{names} — reconcile them before blessing"
+        )
+    if matches:
+        return matches[0]
+    return corpus / f"{_slug(report_model)}.json"
 
 
 def check_regression(fixture: dict) -> list[str]:

@@ -109,22 +109,22 @@
     "vocab_size": 256000
   },
   "hash_signature": [
+    "1f338351f4623b5cd89efcc863e49588",
     "2d1c39ac7aed719b4d7c8cefe79b8e70",
-    "52a8b14de9f77cc647e93c81572bd05a",
-    "6ad850b94a02840ff6da38e06c4d121d",
-    "6b6b7dedbf280f63f1eaf5783a4b5f26",
-    "93d4193b79d933a34a4bcd3bedd065e3",
-    "97add9fdeb9864e5fdfb6daeac37976b"
+    "49efdb10af46ecb749c15a49e4c85af1",
+    "97add9fdeb9864e5fdfb6daeac37976b",
+    "ad65dcc0eb8019c60488a1fa42ea30e3",
+    "e51c61fe6418d772df908d059bb4c6e5"
   ],
   "model": "gemma-2-2b-it",
   "source": "local",
   "superseded_hash_signature": [
-    "11e09523430e387330b01adb9f63e55f",
-    "52a8b14de9f77cc647e93c81572bd05a",
+    "2d1c39ac7aed719b4d7c8cefe79b8e70",
+    "49efdb10af46ecb749c15a49e4c85af1",
     "6ad850b94a02840ff6da38e06c4d121d",
     "6b6b7dedbf280f63f1eaf5783a4b5f26",
     "93d4193b79d933a34a4bcd3bedd065e3",
-    "f4b64ac4d882c40b7ae523239cfd90a2"
+    "97add9fdeb9864e5fdfb6daeac37976b"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gemma-2-2b-it",

@@ -1,33 +1,15 @@
 """The transformer-LLM parser — the only adapter.
 
 There are no per-family adapters and no "supported model" gate.  Every
-transformer-LLM config flows through ``parse()``; the IR is derived from
-the config fields actually present.
+transformer-LLM config flows through ``parse()``.
 
-Detection is config-driven:
-
-* ``use_parallel_residual`` / ``parallel_attn``  → parallel-residual layer
-* ``q_lora_rank`` / ``kv_lora_rank``             → MLA attention
-* ``multi_query``                                → explicit MQA
-* ``layer_types`` list                           → per-layer mask interleave
-* ``sliding_window`` / ``sliding_window_pattern``→ sliding-window mask
-* ``no_rope_layer_interval``                     → NoPE every Nth layer
-* ``first_k_dense_replace`` / ``moe_layer_freq`` → MoE / dense interleave
-* ``interleave_moe_layer_step``                  → Llama 4-style MoE interleave
-* ``enable_moe_block``                           → explicit MoE gate
-* ``attn_logit_softcapping`` / ``final_logit_softcapping`` → softcap extras
-* ``query_pre_attn_scalar``                      → Q pre-scale extra
-* ``use_qk_norm`` / ``qk_norm``                  → QK-norm flag
-* ``rope_parameters`` / ``rope_scaling``         → RoPE scaling extras
-* ``rotary_pct`` / ``rotary_dim``                → partial RoPE
-* ``num_kv_shared_layers``                       → cross-layer KV-share edges
-* ``num_global_key_value_heads`` / ``global_head_dim`` → per-layer dual KV
-* ``hidden_size_per_layer_input``                → Per-Layer Embedding side blocks
-* ``num_local_experts`` / ``n_routed_experts``   → MoE FFN
-* ``n_shared_experts`` / ``num_shared_experts``  → shared experts
-* ``clip_qkv``                                   → attention extras
-* ``cross_attention_layers``                     → vision side-attention layers
-* ``num_nextn_predict_layers`` / ``num_mtp_layers`` → Multi-Token Prediction head stack
+Architectural mechanisms are source- and owner-driven. Config values are
+operands only after an exact reader proves where the modeling code consumes
+them. A count or activation spelling may remain useful geometry while the
+mechanism that uses it stays unknown; it cannot select attention, FFN, MoE,
+position, or layer topology by itself. Transitional config-authored facts are
+named in the structural-debt register and migrate in U7/U8 rather than being
+extended here.
 
 Warnings policy: warn only for *specific* config problems (missing
 critical field, unrecognized layer_type value, …).  Never warn just
@@ -180,36 +162,6 @@ def _ffn_mechanism_result(context=None, *, config_path=()):
             allow_root_stage=True,
         ),
     )
-
-
-def _code_ffn_gated(
-        cfg: Any, context=None, *, config_path=()) -> bool | None:
-    """Gate structure from the exact selected decoder FFN occurrence."""
-    result = _ffn_mechanism_result(
-        context, config_path=config_path)
-    return result.value.gated \
-        if result is not None and result.status == "resolved" else None
-
-
-def _code_ffn_storage_mode(
-        cfg: Any, context=None, *, expected_gated=None,
-        config_path=()) -> str | None:
-    """FFN projection STORAGE read from the modeling source: split gate/up/down
-    modules vs a fused ``gate_up_proj`` that is chunked in forward (Mixtral /
-    DeepSeek-V3 naive MoE / gpt-oss experts).  A whiteboard-equivalent split
-    drawing is NOT code-faithful when the source stores fused — the drill must
-    show the fused projection + split (anti-overlook rule).  None keeps the
-    default split rendering (unproven storage stays the conventional shape only
-    for the ALREADY-drawn gated structure; the gate-or-not fact itself remains
-    evidence/tri-state via ``_code_ffn_gated``)."""
-    result = _ffn_mechanism_result(
-        context, config_path=config_path)
-    if result is None or result.status != "resolved":
-        return None
-    if expected_gated is not None \
-            and result.value.gated != expected_gated:
-        return None
-    return result.value.projection_mode
 
 
 def _code_embedding_norm(cfg: Any, context=None) -> str | None:
@@ -393,7 +345,7 @@ def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
     the code-authoritative replacement for the config schedule flags: which
     layers build an experts class (name-independent) as their FFN field, gated
     per layer.  Returns ``list[bool]`` (len num_layers) or None on any doubt
-    (hybrid SSM-MoE, exotic gate, no source) → caller falls back to config.
+    (hybrid SSM-MoE, exotic gate, no source) → caller stays unknown.
     Best-effort, never raises into the parse."""
     try:
         from ...evidence.patterns import decoder_moe_schedule_from_files
@@ -545,15 +497,6 @@ def _code_expert_storage(
         if result is not None and result.status == "resolved" else None
 
 
-def _code_ffn_activation(
-        cfg: Any, context=None, *, config_path=()) -> str | None:
-    """Config-silent FFN activation read from the exact modeling source."""
-    result = _ffn_mechanism_result(
-        context, config_path=config_path)
-    return result.value.activation \
-        if result is not None and result.status == "resolved" else None
-
-
 def _code_lm_head_tying(
     cfg: Any, context=None, *, config_path=(),
 ) -> bool | None:
@@ -568,21 +511,6 @@ def _code_lm_head_tying(
     result = manual_weight_tying_for_path(
         context.program_index(), context.source_bundle, tuple(config_path))
     return True if result.status == "resolved" else None
-
-
-def _code_ffn_activation_dispatch(
-        cfg: Any, context=None, *, config_path=()) -> str | None:
-    """The config field the FFN's ``ACT2FN[...]``/``get_activation(...)``
-    dispatch reads (U2 P2c) — names the deciding field so a config-supplied
-    activation can be recorded ``code_and_config``, not merely declared."""
-    result = _ffn_mechanism_result(
-        context, config_path=config_path)
-    if result is None or result.status != "resolved":
-        return None
-    path = result.value.activation_config_path
-    if not path or tuple(path[:-1]) != tuple(config_path):
-        return None
-    return path[-1]
 
 
 def _code_attention_causality(cfg: Any, context=None) -> str | None:
@@ -896,7 +824,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if code_inter:
             intermediate_size = code_inter
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
-    activation_raw = consume("hidden_act", fact_owner="decoder.ffn", fact_key="activation")
+    # Read the declared value for the config ledger, but project it only when
+    # the exact-owner mechanism reader proves either a literal activation or
+    # the exact config-dispatch path that selects this value.
+    _ffn_mechanism = _ffn_mechanism_result(
+        context, config_path=_text_path)
+    _ffn_mechanism_value = (
+        _ffn_mechanism.value
+        if _ffn_mechanism is not None
+        and _ffn_mechanism.status == "resolved"
+        else None
+    )
+    _activation_res = _scoped("hidden_act")
+    _activation_decision_res = _activation_res
+    # Inspect the alternate declaration regardless of which spelling wins.
+    # Inspection is not consumption: the value is projected only if the exact
+    # source mechanism below proves that it dispatches through this path.
+    _ffp_res_for_act = _scoped("feed_forward_proj")
+    activation_raw = (
+        None if _activation_res.ambiguous
+        else _activation_res.value
+    )
+    _activation_selected_path = _activation_res.selected_path
     if isinstance(activation_raw, dict):
         activation_raw = activation_raw.get("name")
     if activation_raw is None:
@@ -910,52 +859,75 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # decision below).  Un-ignored: a positive declaration, never noise.
         # U2-R7: ONE consumption for the occurrence, into its PRIMARY decision
         # (activation); the gate decision below re-inspects the same value.
-        _ffp_for_act = consume("feed_forward_proj",
-                               fact_owner="decoder.ffn", fact_key="activation")
+        _ffp_for_act = (
+            None if _ffp_res_for_act.ambiguous
+            else _ffp_res_for_act.value
+        )
         if isinstance(_ffp_for_act, str) and _ffp_for_act:
+            _activation_decision_res = _ffp_res_for_act
+            _activation_selected_path = _ffp_res_for_act.selected_path
             activation_raw = _ffp_for_act.lower()
             if activation_raw.startswith("gated-"):
                 activation_raw = activation_raw[len("gated-"):]
             _activation_status, _activation_src = (
                 "config_declared", "feed_forward_proj")
     if activation_raw is None:
-        activation_raw = _code_ffn_activation(
-            text_cfg, context, config_path=_text_path)
+        # A hydrated class default may supply an operand, but it cannot prove
+        # this exact FFN consumes that operand. The mechanism join below is
+        # still mandatory.
+        _cd_for_act = _fact_class_defaults
+        _cd_act = next((_cd_for_act.get(s) for s in _spellings("hidden_act")
+                        if _cd_for_act.get(s) is not None), None)
+        _cd_src = "hidden_act"
+        if not isinstance(_cd_act, str):
+            _cd_ffp = _cd_for_act.get("feed_forward_proj")
+            if isinstance(_cd_ffp, str) and _cd_ffp:
+                _cd_act = _cd_ffp.lower()
+                if _cd_act.startswith("gated-"):
+                    _cd_act = _cd_act[len("gated-"):]
+                _cd_src = "feed_forward_proj"
+        if isinstance(_cd_act, str) and _cd_act:
+            activation_raw = _cd_act
+            _activation_selected_path = ".".join((*_text_path, _cd_src))
+            _activation_status, _activation_src = (
+                "class_default",
+                f"installed config-class default ({_cd_src})")
+    # U4-C: declaration is not application.  The exact mechanism must prove a
+    # literal activation or the exact config path it dispatches through.
+    if _ffn_mechanism_value is None:
+        activation_raw = None
+        _activation_status, _activation_src = _unknown_status, None
+    elif _ffn_mechanism_value.activation is not None:
+        activation_raw = _ffn_mechanism_value.activation
         _activation_status, _activation_src = (
             "code_proven", "decoder_ffn_mechanism_for_path")
-        if activation_raw is None:
-            # U2 P3b class_default tier (the hydration channel): the installed
-            # config CLASS's own activation default decides before the typed
-            # unknown (t5-base: dense_act_fn='relu' — the dense-relu truth).
-            _cd_for_act = _fact_class_defaults
-            _cd_act = next((_cd_for_act.get(s) for s in _spellings("hidden_act")
-                            if _cd_for_act.get(s) is not None), None)
-            _cd_src = "hidden_act family"
-            if not isinstance(_cd_act, str):
-                _cd_ffp = _cd_for_act.get("feed_forward_proj")
-                if isinstance(_cd_ffp, str) and _cd_ffp:
-                    _cd_act = _cd_ffp.lower()
-                    if _cd_act.startswith("gated-"):
-                        _cd_act = _cd_act[len("gated-"):]
-                    _cd_src = "feed_forward_proj"
-            if isinstance(_cd_act, str) and _cd_act:
-                activation_raw = _cd_act
-                _activation_status, _activation_src = (
-                    "class_default",
-                    f"installed config-class default ({_cd_src})")
-    elif _activation_status == "config_declared" and _activation_src == "hidden_act":
-        # U2 P2c: the config supplied the value — when the source also proves
-        # the ACT2FN/get_activation dispatch, the fact is CODE-AND-CONFIG:
-        # code proves an activation applies and NAMES the deciding field,
-        # config supplies which (the endorsed envelope's fourth tier).
-        _dispatch_field = _code_ffn_activation_dispatch(
-            text_cfg, context, config_path=_text_path)
-        if _dispatch_field:
-            _activation_status = "code_and_config"
-            _activation_src = f"ACT2FN[config.{_dispatch_field}]"
-    # U2 default-kill: when neither config nor code names the activation it is
-    # a typed UNKNOWN (None), never a silent ``silu`` — the render tier shows
-    # an unresolved activation instead of a confident label.
+    elif _ffn_mechanism_value.activation_config_path:
+        dispatch_path = tuple(
+            _ffn_mechanism_value.activation_config_path)
+        if activation_raw is None \
+                or _activation_decision_res.state != "present" \
+                or _activation_selected_path != ".".join(dispatch_path):
+            activation_raw = None
+            _activation_status, _activation_src = _unknown_status, None
+        else:
+            # Consume only after code and the exact selected config occurrence
+            # agree. Losing declarations remain inspections, not pseudo-use.
+            _activation_decision_res.consume_decision(
+                mechanism="ffn_activation",
+                fact_owner="decoder.ffn",
+                fact_key="activation",
+                reader="adapters.transformer.parser.parse",
+                status=_activation_status,
+            )
+            if _activation_status == "config_declared":
+                _activation_status = "code_and_config"
+                _activation_src = (
+                    "decoder_ffn_mechanism_for_path:"
+                    + ".".join(dispatch_path))
+    else:
+        activation_raw = None
+        _activation_status, _activation_src = _unknown_status, None
+
     activation_defaulted = activation_raw is None
     activation = activation_raw.lower() if isinstance(activation_raw, str) else None
     if activation_defaulted:
@@ -1095,89 +1067,32 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # a gate-family activation string is the config-derived second channel; NO
     # channel ⇒ typed unknown (None) drawn as the honest undeclared-FFN block,
     # never derived from norm_kind (the census cascade, killed in U2).
-    _code_gated = _code_ffn_gated(
-        text_cfg, context, config_path=_text_path)
-    # Some configs declare gate-ness directly (T5's is_gated_act /
-    # feed_forward_proj).  These are semantic declarations, unlike a plain
-    # activation such as ``silu`` which does NOT by itself prove a third gate
-    # projection.  Source remains authoritative when present.
-    # U2-R7: ``is_gated_act`` is consumed into the gate decision.  When it is
-    # absent, ``feed_forward_proj`` DECIDES gate-ness and that deciding read
-    # is consumed too — one declaration lawfully feeding two facts
-    # (activation above, gated here); when is_gated_act is present the
-    # feed_forward_proj glance stays an inspection (redundant, not deciding).
-    _declared_gated = consume("is_gated_act",
-                              fact_owner="decoder.ffn", fact_key="gated")
-    if _declared_gated is not None:
-        # is_gated_act decided; a feed_forward_proj beside it is a redundant
-        # co-declaration of the same mechanism — a conscious scoped ignore,
-        # never accessed-but-unconsumed debt.
-        with _config_access.config_container(_text_path, obj=text_cfg):
-            _ffp_res = _config_access.resolve(text_cfg, "feed_forward_proj", ())
-        if _ffp_res.state == "present":
-            _ffp_res.ignore(reason="redundant co-declaration beside "
-                                   "is_gated_act — the consumed occurrence "
-                                   "decided the gate fact")
-        _feed_forward_proj = _ffp_res.value if _ffp_res.state == "present" \
-            else None
-        _config_gated = bool(_declared_gated)
-        _config_gated_source = "is_gated_act"
-    else:
-        _feed_forward_proj = consume("feed_forward_proj",
-                                     fact_owner="decoder.ffn",
-                                     fact_key="gated")
-        if isinstance(_feed_forward_proj, str):
-            _config_gated = "gated" in _feed_forward_proj.lower()
-            _config_gated_source = "feed_forward_proj"
-        else:
-            _config_gated = None
-            _config_gated_source = None
-    # U2 P3b class_default tier: the installed config CLASS's own gate
-    # declaration (T5Config: is_gated_act=False / feed_forward_proj='relu' —
-    # t5-base omits both keys yet IS dense-relu).  Sits below the checkpoint
-    # declaration, above the derived activation-family signal.
-    _clsdef_gated = None
-    _clsdef_gated_source = None
-    if _config_gated is None:
-        _cd_for_gate = _fact_class_defaults
-        _cd_gate_flag = _cd_for_gate.get("is_gated_act")
-        _cd_gate_ffp = _cd_for_gate.get("feed_forward_proj")
-        if _cd_gate_flag is not None:
-            _clsdef_gated = bool(_cd_gate_flag)
-            _clsdef_gated_source = ("installed config-class default "
-                                    "(is_gated_act)")
-        elif isinstance(_cd_gate_ffp, str) and _cd_gate_ffp:
-            _clsdef_gated = "gated" in _cd_gate_ffp.lower()
-            _clsdef_gated_source = ("installed config-class default "
-                                    "(feed_forward_proj)")
-    if _code_gated is not None:
-        ffn_gated = bool(_code_gated)
-    elif _config_gated is not None:
-        ffn_gated = _config_gated
-    elif _clsdef_gated is not None:
-        ffn_gated = _clsdef_gated
-    else:
-        ffn_gated = _is_gated(activation, norm_kind, None)
+    _code_gated = (
+        _ffn_mechanism_value.gated
+        if _ffn_mechanism_value is not None else None
+    )
+    # Gate declarations remain visible to the config ledger, but they do not
+    # prove that this exact FFN has a third projection.  The old path consumed
+    # ``is_gated_act`` / ``feed_forward_proj`` as architecture on sight.  U4-C
+    # deliberately leaves the declaration inspected until the exact source
+    # mechanism proves the projection topology.
+    _scoped("is_gated_act")
+    # U4-C: a config/class declaration or activation spelling may be useful
+    # evidence only after exact source binds it to this FFN.  The ordinary
+    # mechanism reader is that binding.  Without it, gate topology is unknown.
+    ffn_gated = bool(_code_gated) if _code_gated is not None else None
     # ``decoder.ffn.gated`` names the ordinary/shared FFN mechanism.  A routed
     # expert proof must never be laundered into this owner, and a routed-only
     # block has no ordinary gate fact to record.  The exact reader result
     # remains in ``context.reader_results`` as the typed abstention.
     if ffn_gated is not None:
         _note_fact("decoder.ffn", "gated", ffn_gated,
-                   "code_proven" if _code_gated is not None
-                   else "config_declared" if _config_gated is not None
-                   else "class_default" if _clsdef_gated is not None
-                   else "derived",
-                   source=("decoder_ffn_mechanism_for_path"
-                           if _code_gated is not None
-                           else _config_gated_source
-                           if _config_gated is not None
-                           else _clsdef_gated_source
-                           if _clsdef_gated is not None
-                           else "explicit GLU activation name (hidden_act)"))
-    _code_storage_mode = _code_ffn_storage_mode(
-        text_cfg, context, expected_gated=_code_gated,
-        config_path=_text_path)
+                   "code_proven",
+                   source="decoder_ffn_mechanism_for_path")
+    _code_storage_mode = (
+        _ffn_mechanism_value.projection_mode
+        if _ffn_mechanism_value is not None else None
+    )
     _code_attention_storage = _code_attention_storage_mode(
         text_cfg, context, config_path=_text_path)
     _code_position_evidence = _code_position(cfg, context)
@@ -1578,10 +1493,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
 
     # ---- MoE ----
-    num_experts         = consume("num_experts", fact_owner="decoder.ffn", fact_key="num_experts") or 0  # iteration count only — ambiguity already blocks
-    num_experts_per_tok = consume("num_experts_per_tok", 0, fact_owner="decoder.ffn", fact_key="num_experts_per_tok") or 0
-    num_shared_experts  = consume("num_shared_experts", 0, fact_owner="decoder.ffn", fact_key="num_shared_experts") or 0
-    moe_intermediate_size = consume("moe_intermediate_size", 0, fact_owner="decoder.ffn", fact_key="moe_intermediate_size") or 0
+    num_experts = consume(
+        "num_experts", fact_owner="decoder.ffn", fact_key="num_experts")
+    num_experts_per_tok = consume(
+        "num_experts_per_tok", fact_owner="decoder.ffn",
+        fact_key="num_experts_per_tok")
+    num_shared_experts = consume(
+        "num_shared_experts", fact_owner="decoder.ffn",
+        fact_key="num_shared_experts")
+    moe_intermediate_size = consume(
+        "moe_intermediate_size", fact_owner="decoder.ffn",
+        fact_key="moe_intermediate_size")
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
     _code_expert_fused = (
@@ -1592,54 +1514,44 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact("decoder.ffn.expert", "expert_projection_mode",
                    _code_expert_fused, "code_proven",
                    source="decoder_routed_expert_storage_for_path")
-    # U2-R7: both feed the per-layer dense/MoE schedule (FFNSpec.kind).
-    first_k_dense       = consume("first_k_dense_replace",
-                                  fact_owner="decoder.ffn",
-                                  fact_key="moe_schedule") or 0
-    moe_layer_freq      = consume("moe_layer_freq",
-                                  fact_owner="decoder.ffn",
-                                  fact_key="moe_schedule") or 1
-    interleave_moe_step = _g(text_cfg, "interleave_moe_layer_step") or 0
-    # Qwen3-MoE: MoE applies every ``decoder_sparse_step`` layers, except the
-    # explicit ``mlp_only_layers`` which stay dense.
-    decoder_sparse_step = _g(text_cfg, "decoder_sparse_step") or 0
-    mlp_only_layers     = set(_g(text_cfg, "mlp_only_layers") or [])
-    # Llama-4's explicit MoE-layer LIST — the code schedule reads its VALUE, so
-    # record ownership here (the audit tracks _g access); also the direct config
-    # fallback (layer i is MoE iff i in moe_layers) for a source-less parse.
-    moe_layers_list     = _g(text_cfg, "moe_layers")
-    # U3: step3 spells the same MoE-layer membership as a comma-STRING
-    # (``moe_layers_enum = "4,5,…,60"``) — parse it into the SAME list the
-    # ``moe_layers`` reader consumes so layers 0-3 stay dense instead of being
-    # fabricated as MoE.  Only when the explicit list is absent.
-    if moe_layers_list is None:
-        _enum_moe = _moe_layers_from_enum(text_cfg)
-        if _enum_moe is not None:
-            moe_layers_list = _enum_moe
-            _note_fact("decoder.ffn", "moe_schedule",
-                       f"{len(_enum_moe)} MoE layers over {num_layers}",
-                       "config_declared", "moe_layers_enum")
-    moe_every_layer     = moe_active and not any([
-        first_k_dense,
-        interleave_moe_step,
-        decoder_sparse_step and decoder_sparse_step > 1,
-        mlp_only_layers,
-    ])
+    # Schedule declarations stay visible as inputs to the legacy source reader,
+    # but are not consumed as a diagram fact merely because they exist.
+    # U7 owns their exact source/config binding.  Until then only the
+    # source-resolved schedule below may author per-layer kind or the
+    # ``every_layer`` summary.
+    _g(text_cfg, "first_k_dense_replace")
+    _g(text_cfg, "moe_layer_freq")
+    _g(text_cfg, "interleave_moe_layer_step")
+    _g(text_cfg, "decoder_sparse_step")
+    _g(text_cfg, "mlp_only_layers")
+    _g(text_cfg, "moe_layers")
+    for _field in _LAYER_SCHEDULES["moe_comma_string_fields"]:
+        _g(text_cfg, _field)
     # CODE-AUTHORITATIVE per-layer MoE schedule (which layers build an experts
     # class as their FFN field) — read from the decoder layer's construction,
     # name-independent.  Supplies the per-layer SHAPE; ``moe_active``
     # (num_experts>0) stays the is-this-MoE-at-all geometry gate.  None when the
     # code can't resolve it (hybrid SSM-MoE / exotic gate / no source) → the
-    # config ``_is_dense_at_layer`` path is used unchanged (the 12 agreeing
-    # families stay byte-identical; llama-4 + ernie are the code-right fixes).
-    code_moe_schedule   = _code_moe_schedule(text_cfg, context, num_layers) if moe_active else None
+    # schedule stays unknown. Config schedule fields remain visible evidence
+    # for U7, but never select layer architecture here.
+    code_moe_schedule = (
+        _code_moe_schedule(text_cfg, context, num_layers)
+        if moe_active else None
+    )
+    moe_every_layer = (
+        all(code_moe_schedule)
+        if code_moe_schedule is not None else None
+    )
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
     moe_routing = (_moe_routing(text_cfg, context, path=_text_path)
                    if moe_active else None)
-    # gpt-oss clamps its SwiGLU activation to ±swiglu_limit — a Tier-3 property.
-    activation_clip = consume("swiglu_limit", fact_owner="decoder.ffn",
-                              fact_key="activation_clip")
+    # A clip declaration is not enough to prove which exact activation consumes
+    # it (GPT-OSS applies this inside routed experts, not the ordinary/shared
+    # mechanism read above). Keep it inspected until U7 binds the exact expert
+    # callable and dispatch.
+    _scoped("swiglu_limit")
+    activation_clip = None
 
     # ---- Cross-layer KV
     #  sharing (the last N layers reuse K/V from earlier) ----
@@ -1838,35 +1750,44 @@ def parse(cfg: Any, context=None) -> ModelIR:
             variant=_mixer_variant(mixer_kind),
         )
 
-        # Code decides the per-layer shape when it resolved the construction;
-        # else the config schedule path (unchanged).  moe_active is the shared
-        # is-this-MoE gate in both branches.
-        if code_moe_schedule is not None:
-            is_dense_at_layer = not code_moe_schedule[i]
-        elif isinstance(moe_layers_list, (list, tuple, set)):
-            # config fallback for the explicit MoE-layer list (Llama-4 w/o source)
-            is_dense_at_layer = i not in moe_layers_list
-        else:
-            is_dense_at_layer = _is_dense_at_layer(
-                i,
-                moe_active=moe_active,
-                first_k_dense=first_k_dense,
-                interleave_moe_step=interleave_moe_step,
-                moe_layer_freq=moe_layer_freq,
-                decoder_sparse_step=decoder_sparse_step,
-                mlp_only_layers=mlp_only_layers,
-            )
+        # Code decides per-layer kind only when exact construction resolution
+        # succeeds. A config schedule remains visible evidence for U8 but is
+        # not a fallback architecture selector.
+        # U4-C: per-layer kind is projected only from source-resolved
+        # construction. Config schedules remain visible evidence/debt for U7;
+        # they no longer manufacture dense/MoE variants on reader abstention.
+        code_layer_is_moe = (
+            bool(code_moe_schedule[i])
+            if code_moe_schedule is not None else None
+        )
+        ffn_kind = (
+            "moe" if code_layer_is_moe is True
+            # The exact construction schedule proves the layer selects its
+            # ordinary (non-routed) FFN occurrence. That is sufficient for the
+            # outer kind "dense"; gate/storage/activation remain independent
+            # and may still be unknown.
+            else "dense" if code_layer_is_moe is False
+            else "dense"
+            if not moe_active and _ffn_mechanism_value is not None
+            else None
+        )
 
-        if moe_active and not is_dense_at_layer:
+        if ffn_kind == "moe":
             ffn = FFNSpec(
                 kind="moe",
+                # The resolved activation belongs to the ordinary/shared FFN
+                # owner. Routed experts require their own activation proof.
                 activation=activation,
-                intermediate_size=intermediate_size or moe_intermediate_size,
+                # The declared ordinary/shared width remains its own lane.
+                # Routed experts never borrow it; DBRX is the control.
+                intermediate_size=intermediate_size,
                 gated=ffn_gated,
                 num_experts=num_experts,
                 num_experts_per_tok=num_experts_per_tok,
                 num_shared_experts=num_shared_experts,
-                expert_intermediate_size=moe_intermediate_size or intermediate_size,
+                # Routed-expert width is an independent lane. An absent expert
+                # width cannot borrow the ordinary/shared FFN width.
+                expert_intermediate_size=moe_intermediate_size or None,
                 routing=moe_routing,
                 activation_clip=activation_clip,
                 bias=use_mlp_bias,
@@ -1882,7 +1803,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             )
         else:
             ffn = FFNSpec(
-                kind="dense",
+                kind=ffn_kind,
                 activation=activation,
                 intermediate_size=intermediate_size,
                 gated=ffn_gated,
@@ -2596,19 +2517,6 @@ def _normalize_layer_schedule(text_cfg, num_layers: int, sliding_window):
     return None, None
 
 
-def _moe_layers_from_enum(text_cfg) -> list[int] | None:
-    """step3 ``moe_layers_enum = "4,5,…,60"`` -> the MoE-layer membership list the
-    ``moe_layers`` reader already consumes.  None when absent/unparseable."""
-    for field in _LAYER_SCHEDULES["moe_comma_string_fields"]:
-        raw = _g(text_cfg, field)
-        if isinstance(raw, str) and raw.strip():
-            try:
-                return [int(x) for x in raw.strip().split(",") if x.strip()]
-            except ValueError:
-                return None
-    return None
-
-
 def _moe_routing(cfg: Any, context=None, path: tuple = ()) -> dict | None:
     """Collect the MoE router knobs that decide *how* experts get picked.
 
@@ -2682,25 +2590,6 @@ def _moe_routing(cfg: Any, context=None, path: tuple = ()) -> dict | None:
             }
 
     return routing or None
-
-
-def _is_dense_at_layer(i: int, *, moe_active: bool, first_k_dense: int, interleave_moe_step: int, moe_layer_freq: int, decoder_sparse_step: int = 0, mlp_only_layers=()) -> bool:
-    """Is layer ``i`` a dense FFN (vs MoE) given the config flags?"""
-    if not moe_active:
-        return True
-    if first_k_dense and i < first_k_dense:
-        return True
-    if interleave_moe_step and (i % interleave_moe_step == 0):
-        return True
-    if moe_layer_freq and moe_layer_freq > 1 and (i % moe_layer_freq != 0):
-        return True
-    # Qwen3-MoE: dense when explicitly listed, or when this layer isn't on the
-    # sparse step (HF: MoE iff (i + 1) % decoder_sparse_step == 0).
-    if mlp_only_layers and i in mlp_only_layers:
-        return True
-    if decoder_sparse_step and decoder_sparse_step > 1 and ((i + 1) % decoder_sparse_step != 0):
-        return True
-    return False
 
 
 def _attention_kind(is_mla: bool, num_q: int, num_kv: int,

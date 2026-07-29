@@ -792,10 +792,26 @@ def _attention_kind(info: CallableInfo | None) -> str:
 def _ffn_projection_mode(info: CallableInfo | None) -> str:
     if info is None:
         return "unknown"
-    fields = {field.lower() for field in info.field_types}
-    return "fused_gate_up" if any(
-        ("gate_up" in field or "up_gate" in field) for field in fields
-    ) else "split"
+    # ``CallableInfo`` and ``ForwardOps`` deliberately expose different
+    # contracts.  This reader receives the folded callable view, so a
+    # projection is live only when its exact ``self.<field>(...)`` call was
+    # observed.  ``call_tokens`` supplies the split/chunk operation.  Reaching
+    # into ForwardOps.signature_tokens here both violates that boundary and
+    # crashes secondary diffusion stacks, whose reader passes CallableInfo.
+    linear_fields = [
+        field for field, class_name in info.field_types.items()
+        if _role_of(class_name) == "linear" and field in info.self_field_calls
+    ]
+    gated = "gate_mul" in info.op_kinds
+    if gated and len(linear_fields) == 2 and (
+        {"chunk", "split"} & set(info.call_tokens)
+    ):
+        return "fused_gate_up"
+    if gated and len(linear_fields) >= 3:
+        return "split"
+    if not gated and len(linear_fields) >= 2:
+        return "dense"
+    return "unknown"
 
 
 def _has_norm_field(info: CallableInfo | None, lane: str) -> bool:

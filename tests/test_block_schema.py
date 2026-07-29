@@ -35,7 +35,9 @@ _BASE = dict(
 CORPUS = {
     "dense": _BASE,
     "moe_mla": dict(
-        _BASE, kv_lora_rank=64, q_lora_rank=96, n_routed_experts=8,
+        _BASE, model_type="deepseek_v3",
+        architectures=["DeepseekV3ForCausalLM"],
+        kv_lora_rank=64, q_lora_rank=96, n_routed_experts=8,
         num_experts_per_tok=2, moe_intermediate_size=128, first_k_dense_replace=1,
         scoring_func="sigmoid", n_group=4, topk_group=2, norm_topk_prob=True,
         routed_scaling_factor=2.5,
@@ -188,7 +190,8 @@ def test_ffn_detail_view_uses_clicked_block_not_dominant_group():
     from model_unfolder.renderers.html.metadata import _make_info
 
     dense_ir = parse(dict(
-        model_type="phi", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        model_type="phi", architectures=["PhiForCausalLM"],
+        num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
         intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
     )).to_dict()
     moe_ir = parse(CORPUS["moe_mla"]).to_dict()

@@ -1,8 +1,16 @@
 {
   "checks": {
+    "asserted_facts": true,
     "click_coupling": true,
+    "config_accessed_unprojected": false,
+    "config_ambiguity": true,
+    "config_audit_incomplete": true,
+    "config_consumed_unreceipted": true,
     "config_field_audit": true,
+    "config_migration_claims": true,
+    "config_standing_unconsumed": true,
     "dangling_connectors": true,
+    "document_boundary_completeness": true,
     "evidence_ambiguity": true,
     "fact_conformance": true,
     "label_lint": true,
@@ -10,8 +18,12 @@
     "no_dotted_arrows": true,
     "no_dotted_boundaries": true,
     "op_conformance": true,
+    "projection_audit": true,
+    "receipt_fabrication": true,
+    "structural_debt_register": true,
     "unique_ref_ids": true,
-    "wiring_conformance": true
+    "wiring_conformance": true,
+    "zero_asserted_census": true
   },
   "config": {
     "_name_or_path": "bigscience/bloom",
@@ -55,16 +67,16 @@
     "vocab_size": 250880
   },
   "hash_signature": [
-    "51385b61c23c40ad4d9016d6aed87030",
-    "5e2ea372ffa0d01247ea6e6642b1f03e",
+    "237f99e04ae8213bb51a11035aaa22e3",
     "9690073a99b038727d8ddfc9d75359d6",
-    "984432b9fa84629cfee5bcd871795b3f"
+    "984432b9fa84629cfee5bcd871795b3f",
+    "f1b6082bc3d9008ecd1add6cf8000497"
   ],
   "model": "bloom",
   "source": "local",
   "superseded_hash_signature": [
+    "51385b61c23c40ad4d9016d6aed87030",
     "5e2ea372ffa0d01247ea6e6642b1f03e",
-    "87dd661e5c59ae7cf3eb3a79cd23c871",
     "9690073a99b038727d8ddfc9d75359d6",
     "984432b9fa84629cfee5bcd871795b3f"
   ],

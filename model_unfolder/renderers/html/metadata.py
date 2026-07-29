@@ -9,10 +9,13 @@ model header.
 """
 from __future__ import annotations
 
+from ...ir import layer_signature
 from ...labels import (
     activation_label,
     attention_summary as _attention_summary,
     ffn_summary as _ffn_summary,
+    ffn_short,
+    ffn_title,
     is_sliding,
     kind_long,
     kind_short,
@@ -62,8 +65,17 @@ def _make_info(ir: dict) -> dict:
             "indices": [],
             "runs": [],
             "spec": {
-                "attention": {"kind": "mha", "num_heads": 0, "num_kv_heads": 0},
-                "ffn": {"kind": "dense", "activation": "silu", "intermediate_size": 0, "gated": True},
+                # U4-E will remove this synthetic empty-layer carrier entirely.
+                # Until then it must remain semantically empty: an absent layer
+                # stack is not evidence for a conventional MHA/SwiGLU cell.
+                "attention": {"kind": None, "num_heads": 0, "num_kv_heads": 0},
+                "ffn": {
+                    "kind": None,
+                    "activation": None,
+                    "intermediate_size": None,
+                    "gated": None,
+                    "projection_mode": None,
+                },
             },
         }
 
@@ -107,7 +119,11 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
     # U2: never re-assert silu at render time — an unnamed activation stays
     # the honest generic "Activation" label (the parser's typed unknown).
     activation = activation_label(ffn.get("activation"))
-    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
+    inter = _fmt_int(
+        ffn.get("expert_intermediate_size")
+        if ffn.get("kind") == "moe"
+        else ffn.get("intermediate_size")
+    )
     tied = ir.get("tie_word_embeddings")
     embed_tie = (" — weights tied with the output head." if tied is True else
                  "." if tied is False else
@@ -124,8 +140,11 @@ def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
                        " in the model's code.")
     attn_desc, attn_facts = _attention_summary(attention)
     ffn_desc, ffn_facts = _ffn_summary(ffn)
-    expert = ("One expert — a dense FFN; only the routed tokens pass through it.",
-              [f"{hidden} → {inter} → {hidden}", activation])
+    expert = (
+        "One routed expert. Its internal projection shape is shown only when "
+        "expert-local source evidence proves it.",
+        [f"{hidden} → {inter} → {hidden}", "activation unresolved"],
+    )
     fallback = {
         "tok_text": ("Tokenized text", "Input token IDs.", ["shape [batch, seq_len]"]),
         "embed": ("Token embedding",
@@ -240,7 +259,7 @@ def _group_label(group: dict, info: dict | None = None) -> str:
     if attn.get("mask") and attn.get("mask") != "causal":
         bits.append(mask_short(attn))
     bits.append(kind_short(attn))
-    bits.append("MoE" if ffn.get("kind") == "moe" else "Dense")
+    bits.append(ffn_short(ffn))
     if _has_cross_attention_adapter(group["spec"]) and not attn.get("cross_attention"):
         bits.append("Vision XAttn")
     return f"{' · '.join(bits)}  ({_indices_summary(group, info)})"
@@ -274,47 +293,9 @@ def _indices_summary(group: dict, info: dict | None) -> str:
     return f"{n} layers · L{indices[0]}–L{indices[-1]}"
 
 
-def _signature(layer: dict) -> str:
-    attention = layer.get("attention", {})
-    ffn = layer.get("ffn", {})
-    return "|".join(
-        str(value)
-        for value in (
-            attention.get("kind"),
-            attention.get("mask"),
-            attention.get("window_size"),
-            attention.get("qk_norm"),
-            attention.get("bias"),
-            attention.get("cached"),
-            attention.get("projection_mode"),
-            attention.get("scores_scale"),
-            attention.get("scores_scaled"),
-            attention.get("rope"),
-            attention.get("position_kind"),
-            attention.get("position_application"),
-            attention.get("shared"),
-            attention.get("no_rope"),
-            attention.get("cross_attention"),
-            ffn.get("kind"),
-            ffn.get("num_experts"),
-            layer.get("norm_kind"),
-            layer.get("norm_placement"),
-            # Parallel topology is structural — it separates e.g. Flux
-            # double-stream (sequential) from single-stream (a parallel branch
-            # split: attn ∥ MLP → ‖). Both a side-LANE FFN and a BRANCH split
-            # count; external lanes (conditioning side-rails) aren't topology.
-            any((b.get("lane") and not str(b.get("lane")).startswith("external"))
-                or b.get("branch_side")
-                for b in layer.get("blocks", []) or []),
-            _has_cross_attention_adapter(layer),
-            # The attention VARIANT tag is itself a topology discriminator — it
-            # separates streams that share the same op-signature but differ in how
-            # text enters (AuraFlow: 4 dual-stream MM-DiT blocks vs 32 concat-joint
-            # "text + latent" blocks — both sequential gated, identical op-set, so
-            # only the variant tells them apart). No-op for single-variant models.
-            (attention.get("variant") or {}).get("tag"),
-        )
-    )
+def _signature(layer: dict) -> tuple:
+    """Project the IR's one canonical layer grouping contract."""
+    return layer_signature(layer)
 
 
 def _has_cross_attention_adapter(layer: dict) -> bool:
@@ -363,7 +344,10 @@ def _arch_badges(ir: dict, info: dict) -> list[dict[str, str]]:
             }
         )
     else:
-        badges.append({"text": "Dense FFN", "title": "Dense feed-forward"})
+        badges.append({
+            "text": ffn_short(ffn),
+            "title": ffn_title(ffn),
+        })
 
     if len(info["groups"]) > 1:
         badges.append({"text": f"{len(info['groups'])} layer types", "title": ""})

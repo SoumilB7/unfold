@@ -16,6 +16,7 @@ T5 don't share a drill card — see ``_text_encoder_ops`` in
 """
 from __future__ import annotations
 
+from ....labels import attention_tower_label
 from ..graph_engine import render_graph
 from ..tower import tower_cell, tower_graph
 
@@ -65,11 +66,12 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
     }
 
     def _cell(prefix: str, *, attn_label, attn_sub=None, norm_label=norm,
-              ffn_kind=None, placement="pre", input_id=None) -> list[dict]:
+              ffn_kind=None, ffn_fact=None, placement="pre", input_id=None) -> list[dict]:
         # THE one cell projector (tower.py) — placement comes from the
         # sub-parse's code-derived norm_placement fact, never assumed.
         return tower_cell(prefix, attn_label=attn_label, attn_sub=attn_sub,
                           norm_label=norm_label, ffn_kind=ffn_kind,
+                          ffn_fact=ffn_fact,
                           placement=placement, input_id=input_id)
 
     sub_model = d.get("sub_model") if isinstance(d.get("sub_model"), dict) else {}
@@ -101,6 +103,7 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
                          attn_label=label, attn_sub=group.get("tag"),
                          norm_label=group.get("norm") or norm,
                          ffn_kind=(group.get("ffn") or {}).get("kind"),
+                         ffn_fact=group.get("ffn") or {},
                          placement=placement if placement in ("pre", "post", "double")
                          else "unknown")
 
@@ -129,8 +132,10 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
             spec["note"] = "layer types interleave across the stack · " + note
     else:
         single = (groups[0] if groups else {})
-        spec["cell"] = _cell(pfx, attn_label="Multi-head self-attention",
+        single_attention = single.get("attention") or {}
+        spec["cell"] = _cell(pfx, attn_label=attention_tower_label(single_attention),
                              ffn_kind=(single.get("ffn") or {}).get("kind"),
+                             ffn_fact=single.get("ffn") or {},
                              placement=single.get("norm_placement") or "pre",
                              input_id=f"{pfx}_op_embed")
         spec["repeat"] = layers
@@ -141,13 +146,4 @@ def build_text_encoder_view(ir: dict, info: dict, mount_id: str, block: dict) ->
 
 def _attn_label(attn: dict):
     """Bare mixer-op label for a grouped cell — the operation, never the facts."""
-    kind = str(attn.get("kind") or "")
-    if kind == "gated_delta":
-        return ["Gated DeltaNet", "token mixer"]
-    if kind in ("linear",):
-        return ["Linear attention"]
-    if kind in ("gqa", "mqa"):
-        return ["Grouped-query self-attention"] if kind == "gqa" else ["Multi-query self-attention"]
-    return "Multi-head self-attention"
-
-
+    return attention_tower_label(attn)

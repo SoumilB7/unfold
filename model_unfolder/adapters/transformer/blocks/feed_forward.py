@@ -11,7 +11,7 @@ from ..common import format_dim as _fmt
 def ffn_view(ffn: FFNSpec) -> str:
     if ffn.kind == "moe":
         return "moe"
-    if ffn.gated is None:
+    if ffn.kind is None or ffn.gated is None:
         # Inner structure undeclared — opens the same FFN view, which renders the
         # honest opaque region resolved from the op-graph (no gate-or-not shape).
         return "dense_ffn"
@@ -40,12 +40,16 @@ def ffn_detail(ffn: FFNSpec) -> dict:
 
 def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
     hidden = _fmt(hidden_size)
-    inter = _fmt(ffn.expert_intermediate_size or ffn.intermediate_size)
+    inter = _fmt(
+        ffn.expert_intermediate_size
+        if ffn.kind == "moe"
+        else ffn.intermediate_size
+    )
     activation = activation_label(ffn.activation)
     if ffn.kind == "conv_glu":
-        # Sana's GLUMBConv — the code-proven gated CONV chain, one card per op
+        # Code-proven gated convolutional chain, one card per op
         # (ids match the op-graph region's nodes so every drawn box drills).
-        children = _conv_glu_ffn_child_blocks(hidden, inter)
+        children = _conv_glu_ffn_child_blocks(hidden, inter, activation)
     elif ffn.kind == "moe":
         # An MoE block is router + routed experts (+ optional shared expert).
         # The ordinary FFN fields on FFNSpec are not permission to prepend a
@@ -53,11 +57,13 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
         # expert derives its own drill from ``expert_projection_mode`` below;
         # a shared expert stays opaque until its separate exact owner resolves.
         children = _moe_child_blocks(ffn, hidden, inter)
-    elif ffn.gated is None:
+    elif ffn.kind is None or ffn.gated is None:
         # Inner structure undeclared: one honest node (id matches the op-graph's
         # opaque region node, so the click target stays coupled to its card).
         children = _undeclared_ffn_child_blocks(hidden, inter)
-    elif ffn.kind != "moe" and not ffn.gated:
+    elif ffn.projection_mode not in {"dense", "split", "fused_gate_up"}:
+        children = _unresolved_storage_ffn_child_blocks(hidden, inter, ffn.gated)
+    elif not ffn.gated:
         children = _dense_ffn_child_blocks(hidden, inter, activation,
                                            ffn.activation_assumed, ffn.activation_from_class)
     else:
@@ -75,7 +81,8 @@ def ffn_child_blocks(ffn: FFNSpec, hidden_size: int, *, generic: bool = False) -
     return children
 
 
-def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
+def _conv_glu_ffn_child_blocks(
+        hidden: str, inter: str, activation: str) -> list[Block]:
     """One card per op of the GLUMBConv chain — ids match the conv_glu region."""
     return [
         {
@@ -93,8 +100,7 @@ def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
             "title": "Depthwise Conv 3×3",
             "description": (
                 "3×3 depthwise convolution mixing each channel locally across "
-                "space — the spatial mixer inside the FFN, which is what lets "
-                "Sana pair a cheap linear attention with a conv feed-forward."
+                "space — the spatial mixer inside this convolutional FFN."
             ),
             "facts": ["per-channel 3×3"],
         },
@@ -109,14 +115,14 @@ def _conv_glu_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
         },
         {
             "id": "glu_act",
-            "title": "SiLU (gate)",
-            "description": "The gate lane passes through SiLU before gating.",
+            "title": f"{activation} (gate)",
+            "description": f"The gate lane passes through {activation} before gating.",
         },
         {
             "id": "glu_mul",
             "title": "Gate multiply",
             "description": (
-                "Elementwise product: value · SiLU(gate) — the gated activation "
+                f"Elementwise product: value · {activation}(gate) — the gated activation "
                 "of the conv GLU."
             ),
         },
@@ -140,24 +146,40 @@ def _undeclared_ffn_child_blocks(hidden: str, inter: str) -> list[Block]:
             "title": "Feed-forward (structure not declared)",
             "description": (
                 "Expands the residual width to an inner width and projects back. "
-                "The config does not declare whether this FFN gates (2 vs 3 "
-                "projections) or which activation it uses — those live in the "
-                "model's code, not its config, so they are not drawn."
+                "The available source evidence does not prove this FFN's "
+                "mechanism or gate topology. Known widths are retained, but "
+                "no projection layout or activation path is invented."
             ),
             "facts": [f"{hidden} → {inter} → {hidden}"],
         },
     ]
 
 
+def _unresolved_storage_ffn_child_blocks(
+        hidden: str, inter: str, gated: bool) -> list[Block]:
+    shape = "gated" if gated else "plain"
+    return [{
+        "id": "block",
+        "label": "Feed-forward",
+        "title": "Feed-forward (storage unresolved)",
+        "description": (
+            f"The {shape} FFN mechanism is proven, but its projection storage "
+            "is not. The drill stays opaque instead of choosing split, fused, "
+            "or dense modules."
+        ),
+        "facts": [f"{hidden} → {inter} → {hidden}"],
+    }]
+
+
 def _act_sentence(where: str, assumed: bool, from_class: bool = False) -> str:
     base = f"Element-wise non-linearity applied {where}."
     if from_class:
-        base += (" The activation (and hence whether the FFN gates) is fixed in the "
-                 "model class, not declared in the config \u2014 surfaced as a "
-                 "code-derived fact.")
+        base += (" The activation is fixed in the model class, not declared in "
+                 "the config — surfaced as a code-derived fact. Gate topology "
+                 "remains an independent source fact.")
     elif assumed:
-        base += (" The config declares no activation \u2014 this is the standard "
-                 "DiT MLP default, not a config-stated fact.")
+        base += (" The activation is unresolved; no conventional DiT default "
+                 "is being claimed.")
     return base
 
 
@@ -433,7 +455,6 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     n_experts = _fmt(ffn.num_experts) if ffn.num_experts else "N"
     n_active = ffn.num_experts_per_tok or "k"
     n_shared = ffn.num_shared_experts or 0
-    activation = activation_label(ffn.activation)
     # Routed experts are a distinct callable/storage boundary from the
     # ordinary/shared FFN.  Never let the ordinary FFN's gate verdict certify
     # an expert.  A fused gate+up projection, however, is itself positive
@@ -443,30 +464,33 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         else False if ffn.expert_projection_mode == "dense"
         else None
     )
-    if ffn.expert_projection_mode == "fused_gate_up":
-        # Code-proven fused storage: the expert cards derive from the SAME
-        # canonical region the drill draws (fused Linear(gate+up) -> split),
-        # so ids can never drift — a hand-authored split card set here would
-        # be the exact fabrication the storage evidence exists to prevent.
-        from ....labels import cards_from_region
-        from ....opgraph import ffn_region, rename_ops
-        from ....renderers.html.block_views.mixture_of_experts import _EXPERT_IDS
-        region = ffn_region(
-            {"kind": "dense", "gated": expert_gated,
-             "activation": ffn.activation,
-             "intermediate_size": ffn.expert_intermediate_size or ffn.intermediate_size,
-             "projection_mode": "fused_gate_up"},
-            None,
-        )
-        expert_children = cards_from_region(rename_ops(region, _EXPERT_IDS))
-    else:
-        expert_children = _moe_expert_child_blocks(hidden, inter, activation)
+    # Every expert card set comes from the same canonical region as its drill.
+    # This is essential for unknown and dense experts too: the old hand-authored
+    # fallback always drew split gate/up paths whenever storage was not fused.
+    from ....labels import cards_from_region
+    from ....opgraph import ffn_region, rename_ops
+    from ....renderers.html.block_views.mixture_of_experts import _EXPERT_IDS
+    region = ffn_region(
+        {
+            "kind": "dense",
+            "gated": expert_gated,
+            # ``ffn.activation`` belongs to the ordinary/shared mechanism.
+            # Routed experts require an expert-local activation reader in U7.
+            "activation": None,
+            "intermediate_size": ffn.expert_intermediate_size,
+            "projection_mode": ffn.expert_projection_mode,
+        },
+        None,
+    )
+    expert_children = cards_from_region(rename_ops(region, _EXPERT_IDS))
     expert_desc = (
-        "One dense FFN expert \u2014 only the routed tokens pass through it"
+        "One routed FFN expert \u2014 only the routed tokens pass through it"
         + (f"; {n_shared} shared expert(s) are always active" if n_shared else "")
         + "."
     )
     expert_facts = [f"{hidden} \u2192 {inter} \u2192 {hidden}", f"top-{n_active} of {n_experts}"]
+    if ffn.expert_projection_mode is None:
+        expert_facts.append("storage unresolved")
     router_detail = moe_router_detail(_ffn_routing_dict(ffn))
     router_desc = "Scores every expert per token and keeps the top-k."
     if router_detail:
@@ -477,6 +501,13 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     # caught by the BLOCKING evidence_ambiguity net instead of a silently
     # asserted softmax (the dead `or "softmax"` this replaces).
     routing_evidence = (ffn.routing or {}).get("evidence")
+    expert_detail = {
+        **ffn_detail(ffn),
+        "activation": None,
+        "intermediate_size": ffn.expert_intermediate_size,
+        "gated": expert_gated,
+        "projection_mode": ffn.expert_projection_mode,
+    }
     blocks: list[Block] = [
         {
             "id": "router",
@@ -498,8 +529,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": {
-                **ffn_detail(ffn), "gated": expert_gated}},
+            "detail": {"ffn": expert_detail},
             "children": expert_children,
         },
         {
@@ -508,8 +538,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": {
-                **ffn_detail(ffn), "gated": expert_gated}},
+            "detail": {"ffn": expert_detail},
             "children": expert_children,
         },
         {
@@ -518,8 +547,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": {
-                **ffn_detail(ffn), "gated": expert_gated}},
+            "detail": {"ffn": expert_detail},
             "children": expert_children,
         },
         {
@@ -528,8 +556,7 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
             "description": expert_desc,
             "facts": expert_facts,
             "view": "moe_expert",
-            "detail": {"ffn": {
-                **ffn_detail(ffn), "gated": expert_gated}},
+            "detail": {"ffn": expert_detail},
             "children": expert_children,
         },
         {
@@ -544,7 +571,10 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     if n_shared:
         # The shared expert(s) run on EVERY token (no routing) and are summed with
         # the routed output — a Tier-1 always-on FFN, not part of the gated set.
-        shared_inter = _fmt((ffn.expert_intermediate_size or ffn.intermediate_size or 0) * n_shared)
+        shared_inter = _fmt(
+            ffn.expert_intermediate_size * n_shared
+            if ffn.expert_intermediate_size is not None else None
+        )
         blocks.insert(-1, {
             "id": "shared_expert",
             "title": "Shared expert",
@@ -558,36 +588,3 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
                       f"{n_shared} shared, always active"],
         })
     return blocks
-
-
-def _moe_expert_child_blocks(hidden: str, inter: str, activation: str) -> list[Block]:
-    return [
-        {
-            "id": "expert_gate_proj",
-            "title": "Expert gate projection",
-            "description": "Linear producing this expert's gate path.",
-            "facts": [f"{hidden} \u2192 {inter}"],
-        },
-        {
-            "id": "expert_act",
-            "title": activation,
-            "description": "Element-wise non-linearity applied to the expert gate path.",
-        },
-        {
-            "id": "expert_up_proj",
-            "title": "Expert up projection",
-            "description": "Linear into this expert's inner width.",
-            "facts": [f"{hidden} \u2192 {inter}"],
-        },
-        {
-            "id": "expert_mul",
-            "title": "Expert multiply",
-            "description": f"{activation}(gate) \u00d7 up \u2014 combines this expert's two paths.",
-        },
-        {
-            "id": "expert_down_proj",
-            "title": "Expert down projection",
-            "description": "Linear back to the residual width.",
-            "facts": [f"{inter} \u2192 {hidden}"],
-        },
-    ]

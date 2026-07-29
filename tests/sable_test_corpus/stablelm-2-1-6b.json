@@ -76,16 +76,16 @@
   },
   "hash_signature": [
     "4ddabac361f85744c8fa95e52b1249bd",
+    "86ec73132aee62e1fd481890bf886ae4",
     "9c7ebe398faecd2478255d16c20831a3",
-    "cb9281ac0ec2d70b193d402606b27c6b",
-    "ed1b59a2bd54364a61191a66fae44950"
+    "f361cb06be666d23a04fe01454d6f95e"
   ],
   "model": "stablelm-2-1_6b",
   "source": "local",
   "superseded_hash_signature": [
-    "27e589c20e8e988f8449da2eb97a12c1",
+    "4ddabac361f85744c8fa95e52b1249bd",
     "9c7ebe398faecd2478255d16c20831a3",
-    "dd71a8638db4f0c3e0fac88c19fabe41",
+    "cb9281ac0ec2d70b193d402606b27c6b",
     "ed1b59a2bd54364a61191a66fae44950"
   ],
   "visual_evidence": {

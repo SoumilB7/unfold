@@ -195,7 +195,11 @@ def test_dense_interval_alternates_dense_and_sparse():
 # ---------------------------------------------------------------------------
 
 def test_moe_layers_enum_comma_string_membership():
-    """"2,3,4,5" carves the MoE layers out of the dense ones (layers 0,1 dense)."""
+    """A serialized membership declaration is an operand, not a mechanism.
+
+    U7 may recover the 2..5 schedule only after exact Step3 construction code
+    binds this path. With no source oracle here, every layer stays unknown.
+    """
     cfg = {
         "model_type": "step3_text", "architectures": ["Step3TextForCausalLM"],
         "hidden_size": 64, "intermediate_size": 128,
@@ -204,10 +208,9 @@ def test_moe_layers_enum_comma_string_membership():
         "moe_layers_enum": "2,3,4,5",
     }
     ir = config_to_ir(cfg)
-    assert _ffns(ir) == {"dense": 2, "moe": 4}
-    assert [l.index for l in ir.layers if l.ffn.kind == "dense"] == [0, 1]
-    fact = _sched_fact(ir, "moe_schedule")
-    assert fact and fact["source"] == "moe_layers_enum"
+    assert _ffns(ir) == {None: 6}
+    assert not [l.index for l in ir.layers if l.ffn.kind == "dense"]
+    assert _sched_fact(ir, "moe_schedule") is None
 
 
 # ---------------------------------------------------------------------------
@@ -304,6 +307,7 @@ def test_real_step3_moe_membership():
     if cfg is None:
         pytest.skip("step3 not cached")
     ir = config_to_ir(cfg)
-    dense = [l.index for l in ir.layers if l.ffn.kind == "dense"]
-    # enum "4..59" -> layers 0-3 and 60 are dense (5 dense)
-    assert dense == [0, 1, 2, 3, 60]
+    # This optional cached config path does not provide an exact resolved
+    # Step3 layer-construction owner. The old assertion decoded the enum
+    # directly from config; U4-C forbids that. U7 owns the source-bound reader.
+    assert all(layer.ffn.kind is None for layer in ir.layers)

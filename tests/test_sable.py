@@ -16,7 +16,7 @@ import pytest
 import model_unfolder as mu
 from model_unfolder import lint_labels, sable, bless, check_regression, load_corpus
 from model_unfolder.evidence import check_fact_conformance, check_wiring_conformance
-from test_support import FLUX, PIXART, LLAMA
+from test_support import FLUX, PIXART, LLAMA, MUSICGEN_SMALL
 
 CORPUS = [("FLUX", FLUX), ("PIXART", PIXART), ("LLAMA", LLAMA)]
 
@@ -404,6 +404,56 @@ def test_bless_refuses_without_visual_artifacts(tmp_path):
             bless(r, FLUX, corpus_dir=str(tmp_path))
 
 
+def test_bless_reuses_the_existing_fixture_for_an_identical_frozen_config(tmp_path):
+    """A loader-lost display name cannot fork one input into two witnesses."""
+    from model_unfolder.sable import _fixture_path_for_config
+
+    legacy = tmp_path / "musicgen-small.json"
+    legacy.write_text(json.dumps({
+        "model": "musicgen-small",
+        "config": MUSICGEN_SMALL,
+        "hash_signature": ["old-lock"],
+    }))
+
+    selected = _fixture_path_for_config(
+        tmp_path, "MusicgenForConditionalGeneration", deepcopy(MUSICGEN_SMALL)
+    )
+
+    assert selected == legacy
+    assert not (tmp_path / "musicgenforconditionalgeneration.json").exists()
+
+
+def test_bless_refuses_two_fixture_paths_for_the_same_frozen_config(tmp_path):
+    """Divergent locks for one exact input are ambiguous, never auto-selected."""
+    from model_unfolder.sable import _fixture_path_for_config
+
+    for name in ("first.json", "second.json"):
+        (tmp_path / name).write_text(json.dumps({
+            "model": name,
+            "config": MUSICGEN_SMALL,
+            "hash_signature": [name],
+        }))
+
+    with pytest.raises(ValueError, match="duplicate corpus fixtures freeze the same config"):
+        _fixture_path_for_config(
+            tmp_path, "MusicgenForConditionalGeneration", deepcopy(MUSICGEN_SMALL)
+        )
+
+
+def test_corpus_has_one_fixture_per_exact_frozen_config():
+    """The CI lock has one verdict per exact input, never contradictory twins."""
+    seen: dict[str, str] = {}
+    for filename, fixture in load_corpus():
+        identity = json.dumps(
+            fixture.get("config"), sort_keys=True, separators=(",", ":"), default=str
+        )
+        assert identity not in seen, (
+            f"{filename} and {seen.get(identity)} freeze the same config; "
+            "keep one stable fixture and one visual verdict"
+        )
+        seen[identity] = filename
+
+
 def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     """Success path: a real gallery blesses, reproduces drift-free, and a
     RE-bless after drift carries the superseded signature (a visible
@@ -423,6 +473,9 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     # Tamper the locked signature -> drift is detected.
     tampered = dict(fixture)
     tampered["hash_signature"] = ["deadbeef"] + fixture["hash_signature"][1:]
+    # The reviewed witness name may be a repository id that an offline config
+    # cannot reconstruct.  A same-config re-bless must preserve it.
+    tampered["model"] = "reviewed-flux-name"
     assert any("view drift" in m for m in check_regression(tampered))
     # Simulate an older lock with a different signature on disk, then re-bless:
     # the new fixture must carry the superseded signature.
@@ -435,6 +488,7 @@ def test_bless_round_trips_with_real_gallery_and_records_supersession(tmp_path):
     refreshed = json.loads(open(path2).read())
     assert refreshed["hash_signature"] == fixture["hash_signature"]
     assert refreshed["superseded_hash_signature"] == tampered["hash_signature"]
+    assert refreshed["model"] == "reviewed-flux-name"
     assert review.read_text() == "human review evidence must survive a re-bless\n"
 
 

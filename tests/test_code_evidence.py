@@ -1161,6 +1161,102 @@ def test_tower_lane_norms_read_the_construction_site_not_field_presence(tmp_path
     assert plain["q_norm"] is False and plain["k_norm"] is False
 
 
+def test_tower_ffn_projection_reads_the_callable_info_contract(tmp_path):
+    """The tower reader consumes ``CallableInfo``, not ``ForwardOps``.
+
+    Pin all supported storage forms through the real registry and shared
+    ``layer_facts_from_block`` path.  The unused Linear on the fused MLP is a
+    poison: constructor presence must not be counted as a live projection.
+    """
+    source = '''
+import torch
+from torch import nn
+
+class Attention(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.q_proj = nn.Linear(dim, dim)
+        self.k_proj = nn.Linear(dim, dim)
+        self.v_proj = nn.Linear(dim, dim)
+    def forward(self, x):
+        return self.q_proj(x) + self.k_proj(x) + self.v_proj(x)
+
+class FusedMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.gate_up_proj = nn.Linear(dim, 8 * dim)
+        self.down_proj = nn.Linear(4 * dim, dim)
+        self.unused_proj = nn.Linear(dim, dim)
+    def forward(self, x):
+        gate, up = self.gate_up_proj(x).chunk(2, dim=-1)
+        return self.down_proj(torch.nn.functional.silu(gate) * up)
+
+class SplitMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.gate_proj = nn.Linear(dim, 4 * dim)
+        self.up_proj = nn.Linear(dim, 4 * dim)
+        self.down_proj = nn.Linear(4 * dim, dim)
+    def forward(self, x):
+        return self.down_proj(
+            torch.nn.functional.silu(self.gate_proj(x)) * self.up_proj(x)
+        )
+
+class DenseMLP(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.fc1 = nn.Linear(dim, 4 * dim)
+        self.fc2 = nn.Linear(4 * dim, dim)
+    def forward(self, x):
+        return self.fc2(torch.nn.functional.gelu(self.fc1(x)))
+
+class FusedBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = FusedMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class SplitBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = SplitMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+
+class DenseBlock(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.attn = Attention(dim)
+        self.mlp = DenseMLP(dim)
+    def forward(self, x):
+        return self.mlp(self.attn(x))
+'''
+    path = tmp_path / "modeling_tower_ffn_storage.py"
+    path.write_text(source)
+
+    from model_unfolder.evidence.transitive import build_registry
+    from model_unfolder.everchanging import load_conformance_transitive
+    from model_unfolder.evidence.vision import layer_facts_from_block
+
+    registry = build_registry([str(path)])
+    vocab = load_conformance_transitive()
+    assert registry["FusedMLP"].self_field_calls == {
+        "gate_up_proj", "down_proj",
+    }
+    assert layer_facts_from_block(
+        "FusedBlock", registry, vocab,
+    )["ffn_projection_mode"] == "fused_gate_up"
+    assert layer_facts_from_block(
+        "SplitBlock", registry, vocab,
+    )["ffn_projection_mode"] == "split"
+    assert layer_facts_from_block(
+        "DenseBlock", registry, vocab,
+    )["ffn_projection_mode"] == "dense"
+
+
 # ---------------------------------------------------------------------------
 # Partial rotary — surfaced from every dialect, incl. code-only (S1b)
 # ---------------------------------------------------------------------------
@@ -2376,9 +2472,10 @@ class OpaqueBlock(nn.Module):
         assert '"status": "ambiguous"' not in blob.replace("'", '"'), stem
 
 
-def test_router_ambiguity_reaches_blocking_net(tmp_path):
-    """B4 end-to-end: the routing envelope lands on the router BLOCK's detail
-    and the blocking evidence_ambiguity finder reports it."""
+def test_config_only_expert_counts_do_not_create_a_router_block(tmp_path):
+    """The direct routing reader above retains its ambiguity control, but an
+    expert count alone cannot create a MoE/router surface for that ambiguity
+    to inhabit. U4-C must leave this exact opaque block source unresolved."""
     import hashlib
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
@@ -2406,7 +2503,8 @@ class OpaqueBlock(nn.Module):
     from model_unfolder.diagram import Diagram
     diagram = Diagram(config_to_ir(cfg, parse_context=ctx))
     findings = _ambiguous_evidence_findings(diagram.to_ir())
-    assert any("router" in x for x in findings), findings
+    assert not any("router" in x for x in findings), findings
+    assert all(layer.ffn.kind is None for layer in diagram.ir.layers)
 
 
 def test_companion_denoiser_notes_from_vocabulary():

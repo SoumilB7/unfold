@@ -224,12 +224,15 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="activation",
-        value_types=frozenset({"str"}),
+        value_types=frozenset({"str", "NoneType"}),
         allowed_statuses=frozenset({"code_proven", "code_and_config",
-                                    "config_declared"}),
+                                    "config_declared", "class_default",
+                                    "ambiguous", "oracle_missing"}),
         owner_patterns=frozenset({"decoder.ffn"}),
         projections=frozenset({"ffn_detail", "json"}),
         unknown_policy="generic_node",
+        notes="U4-C: declarations project only after the exact FFN owner binds "
+              "their dispatch; reader abstention is an explicit None fact.",
         conformance="nested_callable",
     ),
     FactDefinition(

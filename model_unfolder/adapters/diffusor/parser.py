@@ -785,12 +785,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _isz = _consume_geom(cfg, "intermediate_size", "denoiser.ffn", "intermediate_size")
     intermediate_size = int(_isz) if _isz is not None else None
     if not intermediate_size and hidden_size:
-        # DiT/Flux FFN expands by mlp_ratio (default 4) when not stated outright.
-        # U2-R7: the ratio is the derivation INPUT of the drawn FFN width — a
-        # declared value is consumed into the FFN fact, keyed by its own name.
-        mlp_ratio = float(_consume_geom(cfg, "mlp_ratio", "denoiser.ffn",
-                                        "mlp_ratio") or 4.0)
-        intermediate_size = int(hidden_size * mlp_ratio)
+        # A declared ratio is the derivation input of the drawn width. Silence
+        # is not permission to inject the conventional 4× DiT expansion.
+        _ratio = _consume_geom(
+            cfg, "mlp_ratio", "denoiser.ffn", "mlp_ratio")
+        if _ratio is not None:
+            intermediate_size = int(hidden_size * float(_ratio))
     # Read the activation from any key a DiT might use.  We do NOT fall back to a
     # convention: when no activation is declared the FFN's inner structure
     # (activation AND gating) is simply not a config fact — ``_dit_ffn`` renders it
@@ -798,20 +798,18 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # COR-3 (§8.B): rival activation spellings resolve EXACTLY ONCE as one
     # family — gelu-vs-silu is a typed blocking ambiguity, and no later read
     # may retry a single spelling after the combined resolution abstained.
-    _act_res = _config_access.resolve(
+    _config_access.resolve(
         cfg, "hidden_act", ("activation_fn", "act_fn", "mlp_activation"))
-    # U2-R7: a declared activation IS the drawn FFN activation (and, in
-    # diffusers, its gating) — consumed into the FFN fact; ambiguity stays
-    # unchosen (the blocking config_ambiguity net already refused the model).
-    declared_act = (None if _act_res.ambiguous else _act_res.consume_decision(
-        mechanism="ffn_activation",
-        fact_owner="denoiser.ffn", fact_key="activation",
-        reader="adapters.diffusor.parser.dit_ffn").value)
+    # Keep the declared operand visible to the access ledger, but do not
+    # consume it into an FFN fact until U10 proves the exact owning constructor
+    # dispatches through this occurrence.
+    # ``resolve`` itself records the inspection and ambiguity; intentionally
+    # do not read or forward its value into the mechanism constructor.
     # The DiT FFN's activation/gating is almost never in the config — it lives in
     # the block's `FeedForward(activation_fn=…)` / named SwiGLU class. Read it from
     # the modeling SOURCE (pure code-based, no per-model table). Best-effort: when
     # the source isn't resolvable the FFN renders honestly as undeclared.
-    code_ffn_act = _code_ffn_activation(cfg, context) if declared_act is None else None
+    code_ffn_act = _code_ffn_activation(cfg, context)
     code_ffn_kind = _code_ffn_kind(cfg, context)
     code_gate_via_norm = _code_gate_via_norm(cfg, context)
     # Norm type only when the config gives an explicit signal; a bare ``norm_eps``
@@ -1136,8 +1134,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
         layer = decoder_layer(
             idx, attn_spec,
-            _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
-                     code_ffn_kind=code_ffn_kind),
+            _dit_ffn(
+                intermediate_size, cfg, code_activation=code_ffn_act,
+                code_ffn_kind=code_ffn_kind),
             hidden_size, norm_kind=norm_kind,
         )
         # Cross-attention DiTs have a SEPARATE cross-attention sublayer between
@@ -1186,8 +1185,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             num_kv_heads=num_kv_heads, scores_scaled=code_scores_scaled,
             bias=dit_attention_bias, position_applied=has_rope,
         )
-        s_ffn = _dit_ffn(declared_act, intermediate_size, cfg, cls=cls, code_activation=code_ffn_act,
-                         code_ffn_kind=code_ffn_kind)
+        s_ffn = _dit_ffn(
+            intermediate_size, cfg, code_activation=code_ffn_act,
+            code_ffn_kind=code_ffn_kind)
         if single_fusion == "sequential":
             # Sequential gated DiT block over the joined sequence (AuraFlow): the
             # same self-attn → FFN structure as a concat-joint layer, AdaLN-gated.
@@ -1915,72 +1915,66 @@ def _plain_dit_variant(rope_note: str, *, pre_block_fusion: bool = False,
     }
 
 
-def _dit_ffn(declared_activation: Any, intermediate_size: int, cfg: Any = None,
-             cls: Any = None, code_activation: Any = None, code_ffn_kind: Any = None) -> FFNSpec:
+def _dit_ffn(
+        intermediate_size: int | None,
+        cfg: Any = None,
+        *,
+        code_activation: Any = None,
+        code_ffn_kind: Any = None,
+) -> FFNSpec:
     # ``code_activation`` is the FFN activation_fn READ FROM THE MODELING SOURCE
     # (the block's ``FeedForward(activation_fn=…)`` / named SwiGLU class) — the pure
     # code-based replacement for the old per-model ``class_defaults`` table. The
-    # config almost never declares the DiT FFN's activation/gating; the code always
-    # does, so we read it there.
-    moe_act = declared_activation or code_activation
+    # A config declaration is not accepted here at all: this constructor only
+    # receives source-resolved mechanism evidence. If the source reader
+    # abstains, the result stays opaque.
+    # U4-C: a declared activation/count is an operand, not proof that this
+    # denoiser applies a particular FFN mechanism. Only source evidence may
+    # project the mechanism; config-only detail rides an opaque FFN.
+    source_act = code_activation
     # MoE-DiT (HiDream-I1): the block FFN routes through experts — same MoE
     # facts/views the LLM side uses, never silently flattened to dense.
     num_experts = int(_inspect(cfg, "num_experts", 0) or 0) if cfg is not None else 0
     if num_experts > 1:
         return FFNSpec(
-            kind="moe",
-            activation=(str(moe_act).lower() if moe_act else None),
-            activation_assumed=moe_act is None,
+            kind=None,
+            activation=None,
             intermediate_size=intermediate_size,
-            gated=False,
+            gated=None,
             num_experts=num_experts,
             num_experts_per_tok=int(_inspect(cfg, "num_experts_per_tok", 0) or 0) or None,
         )
     # Conv Mix-FFN (Sana's GLUMBConv): a GATED CONV feed-forward (1×1 conv expand →
-    # depthwise 3×3 conv → SiLU gate → 1×1 conv project), NOT a Linear MLP. READ FROM
-    # THE SOURCE (the block builds self.ff = GLUMBConv); unreadable source falls to
-    # the honest default (a Linear MLP), never an identity guess.
+    # depthwise 3×3 conv → activation gate → 1×1 conv project), NOT a Linear MLP.
+    # READ FROM THE SOURCE (the block builds self.ff = GLUMBConv); unreadable
+    # source stays opaque, never an identity or Linear-MLP guess.
     if code_ffn_kind == "conv_glu":
         return FFNSpec(
             kind="conv_glu",
-            activation=(str(declared_activation).lower() if declared_activation else "silu"),
-            activation_assumed=declared_activation is None,
+            activation=(str(source_act).lower() if source_act else None),
             intermediate_size=intermediate_size,
             gated=True,
         )
-    # Code-derived: when the config declares no activation but the model class fixes
-    # it (Flux's FeedForward is gelu-approximate; HiDream/Lumina build a SwiGLU FFN),
-    # surface the activation_fn READ FROM THE SOURCE. In diffusers the activation_fn
-    # name fully specifies the FFN, so this also resolves the gating below; never
-    # overrides a config-declared value. When the SOURCE can't be read the activation
-    # stays unknown/assumed, never identity-guessed from a class-name table.
-    from_class = False
-    if declared_activation is None:
-        resolved = code_activation
-        if resolved:
-            declared_activation, from_class = resolved, True
-    if declared_activation is None:
-        # Honest-unknown: no activation is declared (config OR class), so the gating
-        # (gate-or-not, i.e. 2 vs 3 projections) is not a fact we have either — it
-        # lives in the block class. ``gated=None`` makes the renderer draw the FFN
-        # honestly as "inner structure not declared", never a fabricated shape.
+    # Code-derived: when the exact model class fixes the activation
+    # (Flux's FeedForward is gelu-approximate; HiDream/Lumina build a SwiGLU
+    # FFN), surface it. In diffusers this constructor selector also resolves
+    # gate topology. When source cannot prove it, stay opaque.
+    if source_act is None:
+        # Honest-unknown: exact source did not prove activation or gating.
         return FFNSpec(
-            kind="dense",
+            kind=None,
             activation=None,
-            activation_assumed=True,
             intermediate_size=intermediate_size,
             gated=None,
         )
-    # A declared (or code-derived) activation IS a gating fact in diffusers: the
-    # activation_fn name fully specifies the FFN — a "*glu" name (geglu / swiglu)
-    # is gated; a plain name (gelu / gelu-approximate / silu) is the non-gated
-    # two-layer MLP.
-    act = str(declared_activation).lower()
+    # A source-resolved diffusers FeedForward selector specifies the branch:
+    # "*glu" is gated; a plain selector is the non-gated two-layer MLP.
+    act = str(source_act).lower()
     return FFNSpec(
         kind="dense",
         activation=act,
         activation_assumed=False,
-        activation_from_class=from_class,
+        activation_from_class=True,
         intermediate_size=intermediate_size,
         gated="glu" in act,
     )

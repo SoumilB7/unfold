@@ -78,6 +78,7 @@ def _audio_cell_tower_spec(encoder: dict, sub_model: dict, *, prefix: str) -> di
     The per-op truth (fc1/activation/fc2, projections) lives at drill depth in
     the canonical attention/FFN views; dropout and fp16-clamp guards are
     inference no-ops the cell deliberately does not draw as blocks (Gate C)."""
+    from .....labels import attention_tower_label
     from ...tower import tower_cell
 
     hidden = encoder.get("hidden_size")
@@ -97,9 +98,10 @@ def _audio_cell_tower_spec(encoder: dict, sub_model: dict, *, prefix: str) -> di
         gate = group.get("residual_gate")
         cell = tower_cell(
             cell_prefix,
-            attn_label="Self-attention",
+            attn_label=attention_tower_label(group.get("attention") or {}),
             norm_label=group.get("norm") or "Norm",
             placement=placement if placement in ("pre", "post", "double") else "unknown",
+            ffn_fact=group.get("ffn") or {},
             attn_gate=gate,
             ffn_gate=gate,
             unknown_label="Code-defined audio block",

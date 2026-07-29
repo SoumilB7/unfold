@@ -97,11 +97,13 @@ def test_gemma4_surfaces_double_norm_and_qkv_norms():
     assert layer.norm_placement == "double"
     assert (layer.q_norm, layer.k_norm, layer.v_norm) == (True, True, True)
     html = unfold(GEMMA4_VISION_TINY_CONFIG).to_html(standalone=False)
-    # Q/K/V norms surface inside the ONE namespaced canonical attention region.
+    # The exact source retains every norm fact.  ``softmax`` does not by itself
+    # decide MHA/GQA/MQA, so the canonical attention mechanism stays opaque;
+    # drawing Q/K/V nodes here would silently choose a detailed mechanism.
     for node in ("vision_enc_attn_q_norm", "vision_enc_attn_k_norm",
                  "vision_enc_attn_v_norm"):
-        assert f'data-id="{node}"' in html
-        assert f'data-card-id="{node}"' in html
+        assert f'data-id="{node}"' not in html
+    assert "Attention mechanism unresolved" in html
     # Sandwich placement: 4 norm NODES share the cell's one norm card (pre +
     # post per sublayer) — a pre-norm tower draws exactly 2.
     assert html.count('data-id="vision_enc_op_norm"') == 4

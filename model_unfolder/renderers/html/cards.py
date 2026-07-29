@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import re
 
-from ...labels import activation_label
 from .block_views import attention_card, block_detail_svg, sub_block_detail_svg
 from .utils import _attr, _fmt_int, _html, facts_html
 
@@ -226,91 +225,9 @@ def _unique_children(children: list[dict]) -> list[dict]:
 
 
 def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
-    h = _fmt_int(ir.get("hidden_size"))
-    inter = _fmt_int(ffn.get("expert_intermediate_size") or ffn.get("intermediate_size"))
-    # U2: no render-time silu re-assert; an unnamed activation gets the honest
-    # generic "Activation" label.
-    activation = activation_label(ffn.get("activation"))
-    if ffn.get("kind") != "moe" and ffn.get("gated", True) is None:
-        # Inner structure undeclared (typed unknown) — one honest card, the
-        # same shape the drill's _undeclared_ffn_child_blocks presents.
-        return [
-            {"id": "block", "title": "Feed-forward (structure not declared)",
-             "description": ("Expands the residual width to an inner width and "
-                             "projects back. Whether it gates, and its "
-                             "activation, live in the model's code and are "
-                             "unresolved — not drawn rather than guessed.")},
-        ]
-    if ffn.get("kind") != "moe" and not ffn.get("gated", True):
-        return [
-            {"id": "up_proj", "title": "Input projection", "description": f"Linear · {h} → {inter}"},
-            {
-                "id": "activation",
-                "title": activation,
-                "description": "Element-wise non-linearity after the input projection",
-            },
-            {"id": "down_proj", "title": "Output projection", "description": f"Linear · {inter} → {h}"},
-        ]
+    # This compatibility path may not reconstruct architecture independently.
+    # Derive its cards from the same canonical region used by the real drill.
+    from ...labels import cards_from_region
+    from ...opgraph import ffn_region
 
-    if ffn.get("projection_mode") == "fused_gate_up":
-        # Source-proven FUSED storage: one gate+up matrix, split in forward —
-        # the drill draws gate_up_proj + gate_up_split, so those ids get the
-        # cards (Phi-3/phi-4; any fused-proven root).
-        first = [
-            {
-                "id": "gate_up_proj",
-                "title": "Fused gate+up projection",
-                "description": (f"One Linear · {h} → 2×{inter} — the gate and up "
-                                "projections stored as a single fused matrix."),
-            },
-            {
-                "id": "gate_up_split",
-                "title": "Split gate / up",
-                "description": "Chunks the fused projection into the gate and up halves.",
-            },
-        ]
-    else:
-        first = [
-            {
-                "id": "gate_proj",
-                "title": "Gate projection",
-                "description": f"Linear · {h} → {inter} (gated path through {activation})",
-            },
-            {"id": "up_proj", "title": "Up projection", "description": f"Linear · {h} → {inter}"},
-        ]
-    panels = [
-        *first,
-        {
-            "id": "activation",
-            "title": activation,
-            "description": "Element-wise non-linearity applied to the gate path.",
-        },
-        {
-            "id": "multiply",
-            "title": "Element-wise multiply",
-            "description": f"{activation}(gate) × up — combines the gated and ungated paths",
-        },
-        {"id": "down_proj", "title": "Down projection", "description": f"Linear · {inter} → {h}"},
-    ]
-    if ffn.get("kind") == "moe":
-        n_experts = _fmt_int(ffn.get("num_experts")) if ffn.get("num_experts") else "N"
-        n_active = ffn.get("num_experts_per_tok") or "k"
-        n_shared = ffn.get("num_shared_experts") or 0
-        panels.append({
-            "id": "router",
-            "title": "Router",
-            "description": f"Linear · {h} → {n_experts} (selects top-{n_active} experts per token)",
-        })
-        expert_desc = (
-            f"Dense FFN with same shape as above · {h} → {inter} → {h} · "
-            f"only top-{n_active} of {n_experts} active per token"
-            + (f" · plus {n_shared} shared expert(s) always active" if n_shared else "")
-        )
-        for eid in ("expert_1", "expert_k", "expert_kp1", "expert_n"):
-            panels.append({"id": eid, "title": "Expert FFN", "description": expert_desc})
-        panels.append({
-            "id": "add_moe",
-            "title": "Weighted sum",
-            "description": f"Combines top-{n_active} expert outputs weighted by router probabilities",
-        })
-    return panels
+    return cards_from_region(ffn_region(ffn, ir.get("hidden_size")))

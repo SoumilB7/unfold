@@ -452,6 +452,122 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "max text-token sequence the denoiser conditions on (Mochi) — "
             "a declared conditioning limit",
             "U10", "fact_registered:denoiser_conditioning_limit"),
+    # U4-C exposes these declarations instead of consuming them as FFN
+    # architecture on sight. They remain exact, owner-qualified input debt
+    # until U7/U10 proves the corresponding constructor dispatch. A row for
+    # one encoder slot or spelling excuses no sibling occurrence.
+    _config("the decoder FFN activation dispatch",
+            "root", "hidden_act",
+            "activation declaration is visible but the exact decoder FFN "
+            "reader has not yet bound every supported occurrence that reads it",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "first_k_dense_replace",
+            "the checkpoint supplies the dense-prefix value, but U7 must bind "
+            "that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "moe_layer_freq",
+            "the checkpoint supplies the routed-layer frequency, but U7 must "
+            "bind that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "interleave_moe_layer_step",
+            "the checkpoint supplies an interleave interval, but U7 must bind "
+            "that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "decoder_sparse_step",
+            "the checkpoint supplies a sparse-layer step, but U7 must bind "
+            "that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "mlp_only_layers",
+            "the checkpoint supplies an ordinary-MLP membership list, but U7 "
+            "must bind it to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "moe_layers",
+            "the checkpoint supplies routed-layer membership, but U7 must bind "
+            "that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the decoder routed-FFN layer schedule",
+            "root", "moe_layers_enum",
+            "the checkpoint supplies a serialized membership set, but U7 must "
+            "bind that path to the exact source schedule before consuming it",
+            "U7", "fact_registered:moe_schedule_binding"),
+    _config("the routed-expert activation clipping operand",
+            "root", "swiglu_limit",
+            "the clipping value is visible, but U7 must bind it to the exact "
+            "expert activation callable before it may enter a fact or view",
+            "U7", "fact_registered:expert_activation_clip"),
+    _config("the text-encoder FFN activation dispatch",
+            "root.text_encoder", "hidden_act",
+            "activation declaration is visible but the exact encoder FFN "
+            "reader does not yet prove this occurrence consumes it",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the text-encoder FFN activation dispatch",
+            "root.text_encoder", "dense_act_fn",
+            "T5-style activation declaration awaits exact dataflow through "
+            "the encoder FFN owner",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the text-encoder FFN mechanism dispatch",
+            "root.text_encoder", "feed_forward_proj",
+            "combined activation/gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_mechanism_binding"),
+    _config("the text-encoder FFN gate dispatch",
+            "root.text_encoder", "is_gated_act",
+            "gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_gate_binding"),
+    _config("the second text-encoder FFN activation dispatch",
+            "root.text_encoder_2", "hidden_act",
+            "activation declaration is visible but the exact encoder FFN "
+            "reader does not yet prove this occurrence consumes it",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the second text-encoder FFN activation dispatch",
+            "root.text_encoder_2", "dense_act_fn",
+            "T5-style activation declaration awaits exact dataflow through "
+            "the encoder FFN owner",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the second text-encoder FFN mechanism dispatch",
+            "root.text_encoder_2", "feed_forward_proj",
+            "combined activation/gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_mechanism_binding"),
+    _config("the second text-encoder FFN gate dispatch",
+            "root.text_encoder_2", "is_gated_act",
+            "gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_gate_binding"),
+    _config("the third text-encoder FFN activation dispatch",
+            "root.text_encoder_3", "dense_act_fn",
+            "T5-style activation declaration awaits exact dataflow through "
+            "the encoder FFN owner",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the third text-encoder FFN mechanism dispatch",
+            "root.text_encoder_3", "feed_forward_proj",
+            "combined activation/gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_mechanism_binding"),
+    _config("the third text-encoder FFN gate dispatch",
+            "root.text_encoder_3", "is_gated_act",
+            "gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_gate_binding"),
+    _config("the conditioning-encoder FFN activation dispatch",
+            "root.conditioning", "dense_act_fn",
+            "T5-style activation declaration awaits exact dataflow through "
+            "the conditioning encoder FFN owner",
+            "U7", "fact_registered:ffn_activation_binding"),
+    _config("the conditioning-encoder FFN mechanism dispatch",
+            "root.conditioning", "feed_forward_proj",
+            "combined activation/gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_mechanism_binding"),
+    _config("the conditioning-encoder FFN gate dispatch",
+            "root.conditioning", "is_gated_act",
+            "gate declaration awaits exact source binding",
+            "U7", "fact_registered:ffn_gate_binding"),
+    _config("the denoiser FFN activation dispatch",
+            "root.denoiser", "activation_fn",
+            "the activation operand is visible, but only an exact denoiser "
+            "constructor dispatch may project it as FFN mechanism evidence",
+            "U10", "fact_registered:dit_ffn_activation_binding"),
     _config("the VAE-decoder ResNet cells' activation chip",
             "root.vae", "_vae_config.act_fn",
             "the VAE decoder's convolution activation (video VAEs) — a "
@@ -693,7 +809,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "ffn_dim_multiplier",
             "Lumina-family inner width = round(2/3*4h; multiple_of, "
             "ffn_dim_multiplier); chip-only today while the drawn width "
-            "falls back to mlp_ratio=4 — possible mis-drawn width",
+            "stays unknown until the derivation is registered",
             "U10", "fact_registered:ffn_width_derived"),
     _config("the DiT FFN inner-width derivation (rounding quantum)",
             "root.denoiser", "multiple_of",

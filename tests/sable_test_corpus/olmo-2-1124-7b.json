@@ -70,9 +70,9 @@
     "vocab_size": 100352
   },
   "hash_signature": [
+    "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
-    "53a77fd451abcf4054824f59a2beeb38",
-    "954d1836f6b2de15544c299e5657ab13",
+    "375ae74c9482f6208152cd7e1e00c56b",
     "c446162572f392d444e26b7476bbc1ae"
   ],
   "model": "OLMo-2-1124-7B",
@@ -80,8 +80,8 @@
   "superseded_hash_signature": [
     "1ae3e6e5656fd8d7a8df14271e75d850",
     "53a77fd451abcf4054824f59a2beeb38",
-    "5e3aba5ff4c58e2d3c8782ca554fc3f7",
-    "954d1836f6b2de15544c299e5657ab13"
+    "954d1836f6b2de15544c299e5657ab13",
+    "c446162572f392d444e26b7476bbc1ae"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/olmo-2-1124-7b",

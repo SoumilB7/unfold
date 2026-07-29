@@ -41,7 +41,7 @@ def test_pending_projection_debt_is_fully_qualified():
     # and the excusal writer/consumer (constructor-enforced).  U2-R7 added the
     # standing-occurrence dispositions, which legitimately span the parse root
     # and the pipeline text-encoder slots.
-    owners = {"root", "root.denoiser", "root.vae", "root.vision",
+    owners = {"root", "root.conditioning", "root.denoiser", "root.vae", "root.vision",
               "root.text_encoder", "root.text_encoder_2",
               "root.text_encoder_3", "root.text_encoder.vision"}
     rows = [r for r in STRUCTURAL_DEBT if r.sink_kind == "config_read"

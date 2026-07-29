@@ -71,10 +71,17 @@ def test_musicgen_conditioning_tower_rides_the_universal_roundtrip():
     assert encoder["hidden_size"] == 768 and encoder["num_layers"] == 12
     # Deep tower through the ONE encoder round-trip (embedded ≡ standalone).
     # T5Model exposes rival encoder/decoder stages here, so norm stays omitted
-    # until the stage address is proven; the FFN remains proven dense relu.
+    # until the stage address is proven. The FFN's dense, ungated storage is
+    # source-proven independently; its activation declaration is not yet bound
+    # to this exact occurrence and must therefore remain absent/unknown.
     assert encoder["sub_model"]["groups"]
     assert "norm" not in encoder
-    assert encoder["gated"] is False and encoder["activation"] == "relu"
+    assert encoder["gated"] is False
+    assert "activation" not in encoder
+    group_ffn = encoder["sub_model"]["groups"][0]["ffn"]
+    assert group_ffn["kind"] == "dense"
+    assert group_ffn["gated"] is False
+    assert group_ffn["activation"] is None
     # Width projection is shape-REQUIRED (768 -> 1024).
     assert cond["projector"] == {"kind": "code_defined_projector",
                                  "in_features": 768, "out_features": 1024}

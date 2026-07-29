@@ -1,13 +1,13 @@
-"""
-Intermediate Representation (IR) for transformer architectures.
+"""Intermediate representation shared by evidence and every projection.
 
-The IR is the contract between parsers (which read HuggingFace configs)
-and the renderer (which produces SVG/HTML). It is layer-aware to support
-heterogeneous architectures (Gemma sliding-window patterns, DeepSeek
-dense+MoE phase changes, YOCO/CLA cross-layer KV sharing, etc.).
+Parsers populate this contract from owner-qualified facts.  Renderers, expanded
+JSON and parameter consumers project it; they do not reinterpret configuration
+or source code.  The layer-aware shape supports heterogeneous stacks (sliding
+versus global attention, dense versus expert FFNs, cross-layer KV sharing, and
+other per-occurrence differences).
 """
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import MISSING, dataclass, field, fields
 from typing import Optional
 
 
@@ -114,42 +114,34 @@ class AttentionSpec:
 @dataclass
 class FFNSpec:
     """Specification of the feed-forward block within a layer."""
-    kind: str                       # "dense" | "moe"
-    activation: Optional[str]       # "silu" | "gelu" | "relu" | "geglu" | "swiglu";
-                                    # None ⇒ neither config nor code names it (U2
-                                    # typed unknown) — render/JSON must say so,
-                                    # never assert a silu convention
-    intermediate_size: int
-    gated: Optional[bool] = True    # SwiGLU/GeGLU style gated MLP. None ⇒ the
-                                    # config does not declare the FFN's inner
-                                    # structure (gate-or-not lives in the model
-                                    # code, not the config) — render/JSON must say
-                                    # so, never assert a shape it can't see.
-    activation_assumed: bool = False  # True ⇒ config declared no activation; the
-                                      # value is a convention (DiT default), not a
-                                      # config fact — render/JSON must say so
-    activation_from_class: bool = False  # True ⇒ the activation (and hence the
-                                      # gate-or-not structure) was read from the
-                                      # model CLASS, not the config (a code-derived
-                                      # fact, e.g. Flux's fixed gelu-approximate) —
-                                      # render/JSON must mark it as such
+    kind: Optional[str] = None      # "dense" | "moe" | "conv_glu";
+                                    # None ⇒ the mechanism is unresolved. Known
+                                    # widths may still ride an opaque region.
+    activation: Optional[str] = None  # independently resolved activation;
+                                    # None never supplies a SiLU/GELU convention
+    intermediate_size: Optional[int] = None
+    gated: Optional[bool] = None    # independently proven gate topology.
+                                    # None must never become dense or gated by
+                                    # truthiness/default coercion.
+    activation_assumed: bool = False  # transitional provenance field; U4-C
+                                      # never authors a conventional activation
+    activation_from_class: bool = False  # activation was read from source code,
+                                      # rather than supplied as a bare config value
     bias: Optional[bool] = None    # MLP projection bias (mlp_bias) — a Tier-3
                                    # chip when True; None ⇒ config silent.
-    projection_mode: Optional[str] = None  # code-proven STORAGE of the plain
+    projection_mode: Optional[str] = None  # code-proven STORAGE of the ordinary
                                    # MLP: "split" | "fused_gate_up" | "dense";
-                                   # None ⇒ unproven (conventional shape kept).
+                                   # None ⇒ unproven and therefore opaque.
     expert_projection_mode: Optional[str] = None  # code-proven STORAGE of the
                                    # ROUTED EXPERTS — an independent callable
                                    # (DeepSeek: split MLP + fused experts).
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
-    num_shared_experts: int = 0
+    num_shared_experts: Optional[int] = None
     expert_intermediate_size: Optional[int] = None
     routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
-    asserted: tuple = ()            # B5: facts that fell to generic defaults
-                                    # (activation → "silu", norm_kind →
-                                    # "rmsnorm", storage → split); emitted
-                                    # only when non-empty
+    asserted: tuple = ()            # transitional debt surface for facts still
+                                    # projected by later U4 slices
     activation_clip: Optional[float] = None  # clamp bound on the (Swi)GLU activation
                                     # (gpt-oss ``swiglu_limit``) — a Tier-3 property
 
@@ -171,27 +163,116 @@ class LayerSpec:
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
-        a = self.attention
-        f = self.ffn
-        return (
-            a.kind, a.mask, a.window_size, a.kv_source_layer is not None,
-            a.qk_norm, a.bias, a.cached, a.projection_mode,
-            a.scores_scale, a.scores_scaled, a.rope,
-            a.shared, a.no_rope, a.output_gate,
-            a.position_kind, a.position_application,
-            a.cross_attention,
-            self.cross_attention is not None,
-            f.kind, f.gated, f.num_experts,
-            self.norm_kind, self.norm_placement,
-            # Parallel-residual topology (a side-lane FFN) is a structural
-            # difference the spec fields above don't capture — it distinguishes
-            # e.g. Flux double-stream (sequential) from single-stream (parallel).
-            # External lanes (conditioning side-rails) are NOT topology and are
-            # identical across block types, so they're excluded here.
-            any(b.get("lane") and not str(b.get("lane")).startswith("external")
-                for b in self.blocks),
-            any(block.get("id") == "cross_attention_adapter" for block in self.blocks),
+        return layer_signature(self)
+
+
+_NON_STRUCTURAL_FACT_FIELDS = frozenset({"asserted"})
+_BLOCK_STRUCTURAL_FIELDS = (
+    "id", "role", "kind", "view", "lane", "branch_side", "residual_from",
+    "diffusion_stage", "feeds", "also_feeds", "target", "resolved",
+)
+
+
+def _freeze_signature_value(value):
+    """Return a deterministic, hashable representation of structural data."""
+    if isinstance(value, dict):
+        return tuple(
+            (str(key), _freeze_signature_value(item))
+            for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))
         )
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_signature_value(item) for item in value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted((_freeze_signature_value(item) for item in value), key=repr))
+    return value
+
+
+def _default_for(dataclass_field):
+    if dataclass_field.default is not MISSING:
+        return dataclass_field.default
+    if dataclass_field.default_factory is not MISSING:
+        return dataclass_field.default_factory()
+    return None
+
+
+def _fact_signature(cls, value) -> tuple:
+    """One schema-derived signature for a typed fact or its dict projection.
+
+    Missing dict keys receive the dataclass default, so the typed IR and its
+    serialized form cannot disagree merely because an optional false/empty
+    value was omitted.  Provenance/debt fields are excluded explicitly; every
+    architectural field added to the dataclass participates automatically.
+    """
+    if value is None:
+        return ()
+    out = []
+    for item in fields(cls):
+        if item.name in _NON_STRUCTURAL_FACT_FIELDS:
+            continue
+        if isinstance(value, dict):
+            raw = value.get(item.name, _default_for(item))
+        else:
+            raw = getattr(value, item.name)
+        # The exact source layer is represented by CrossLayerEdge.  At layer
+        # grouping altitude only "computes K/V" versus "reuses K/V" changes
+        # the cell; retaining the integer would fabricate one group per source.
+        if cls is AttentionSpec and item.name == "kv_source_layer":
+            raw = raw is not None
+        out.append((item.name, _freeze_signature_value(raw)))
+    return tuple(out)
+
+
+def attention_signature(attention) -> tuple:
+    """Canonical grouping signature for :class:`AttentionSpec` facts."""
+    return _fact_signature(AttentionSpec, attention)
+
+
+def ffn_signature(ffn) -> tuple:
+    """Canonical grouping signature for :class:`FFNSpec` facts."""
+    return _fact_signature(FFNSpec, ffn)
+
+
+def _block_signature(block: dict) -> tuple:
+    """Structural cell topology only; presentation prose is deliberately out."""
+    return (
+        tuple(
+            (name, _freeze_signature_value(block.get(name)))
+            for name in _BLOCK_STRUCTURAL_FIELDS
+        ),
+        tuple(
+            _block_signature(child)
+            for child in block.get("children") or []
+            if isinstance(child, dict)
+        ),
+    )
+
+
+def layer_signature(layer) -> tuple:
+    """The sole layer grouping contract for typed IR and dict projections."""
+    if isinstance(layer, dict):
+        attention = layer.get("attention")
+        ffn = layer.get("ffn")
+        norm_kind = layer.get("norm_kind")
+        norm_placement = layer.get("norm_placement")
+        blocks = layer.get("blocks") or []
+        cross_attention = layer.get("cross_attention")
+    else:
+        attention = layer.attention
+        ffn = layer.ffn
+        norm_kind = layer.norm_kind
+        norm_placement = layer.norm_placement
+        blocks = layer.blocks
+        cross_attention = layer.cross_attention
+    return (
+        ("attention", attention_signature(attention)),
+        ("ffn", ffn_signature(ffn)),
+        ("norm_kind", norm_kind),
+        ("norm_placement", norm_placement),
+        ("cross_attention", attention_signature(cross_attention)),
+        ("blocks", tuple(
+            _block_signature(block) for block in blocks if isinstance(block, dict)
+        )),
+    )
 
 
 @dataclass

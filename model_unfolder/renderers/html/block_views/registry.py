@@ -24,7 +24,7 @@ from .attention import (
 )
 from .block_facts import ffn_from_block, info_with_block_fact
 from .declared_ops import build_declared_ops_view
-from .feed_forward import build_dense_ffn_view, build_ffn_view
+from .feed_forward import build_ffn_view
 from .mixture_of_experts import build_moe_expert_view, build_moe_view
 from .moe_router import build_moe_router_view, build_topk_selection_view
 from .dsa_indexer import build_dsa_indexer_view
@@ -153,12 +153,14 @@ def _from_block(fn: Callable[[dict, dict, str, dict], "str | None"]) -> ViewFn:
 
 
 def _render_ffn_detail(ir: dict, info: dict, mount_id: str, block: dict) -> str:
-    """Pick the right FFN detail variant for dense / gated / MoE blocks."""
+    """Render the clicked FFN from its canonical region.
+
+    Dense, gated and unresolved ordinary FFNs deliberately share the same
+    renderer: :func:`ffn_region` is the sole authority for their inner shape.
+    """
     ffn = ffn_from_block(block, info)
     if ffn.get("kind") == "moe":
         return build_moe_view(ir, info, mount_id, block)
-    if view_key(block) == "dense_ffn" or not ffn.get("gated", True):
-        return build_dense_ffn_view(ir, info, mount_id, block)
     return build_ffn_view(ir, info, mount_id, block)
 
 
@@ -192,7 +194,7 @@ VIEW_REGISTRY: dict[str | None, ViewFn] = {
     # Scheduler/sampler step: prediction → scale → combine with z_t → z_{t-1}.
     "scheduler_step": _from_block(build_scheduler_step_view),
     "gated_ffn": _from_block(build_ffn_view),
-    "dense_ffn": _from_block(build_dense_ffn_view),
+    "dense_ffn": _from_block(build_ffn_view),
     # Model-level / path / tower / merge layouts.
     "per_layer_embedding": _from_block(build_per_layer_embedding_view),
     "vision_path": _from_block(build_vision_path_view),

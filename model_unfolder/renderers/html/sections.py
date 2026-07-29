@@ -44,8 +44,20 @@ def _header(ir: dict, info: dict, mount_id: str) -> str:
         wid = f"{mount_id}-msg-warn"
         toggles.append(f'<input type="checkbox" id="{_attr(wid)}" class="uf-msg-toggle" hidden>')
         bars.append(_msg_bar("uf-msg-bar-warn", warnings))
+        # A source-reader abstention is not a malformed checkpoint. Keep the
+        # warning visible, but do not mislabel an honestly opaque mechanism as
+        # "partial config".
+        unresolved_only = all(
+            warning.startswith("Unresolved code-defined facts")
+            for warning in warnings
+        )
+        warning_label = (
+            "⚠ unresolved evidence" if unresolved_only
+            else "⚠ partial config"
+        )
         badges.append(
-            f'<label for="{_attr(wid)}" class="uf-badge uf-badge-warn">⚠ partial config</label>'
+            f'<label for="{_attr(wid)}" class="uf-badge uf-badge-warn">'
+            f'{warning_label}</label>'
         )
 
     notes = ir.get("notes") or []

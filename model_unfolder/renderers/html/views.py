@@ -48,6 +48,30 @@ _BLOCK_GAP = 32  # vertical gap between consecutive layer-body blocks
 # Larger than the arrow padding (`GAP` ×2) so the chain arrow has a visible
 # stem between blocks rather than collapsing to just an arrowhead.
 
+
+def _block_layout(block: dict) -> tuple[dict, float, float, int]:
+    """Resolve one architecture block's geometry, including stacked labels.
+
+    The top-level architecture renderer predates :class:`graph.Node`, so it
+    cannot inherit that engine's automatic multi-line sizing.  Apply the same
+    principle here: explicit dimensions win, nominal kind dimensions are the
+    floor, and a list-valued truth-bearing label grows the box.  This is purely
+    presentation geometry; no model or mechanism identity participates.
+    """
+    layout = _KIND_LAYOUT.get(block.get("kind")) or _KIND_LAYOUT["norm"]
+    font = block.get("font") or layout.get("font", 16)
+    width = block.get("w") or layout["w"]
+    height = block.get("h") or layout["h"]
+    label = block.get("label")
+    if isinstance(label, (list, tuple)) and label:
+        # The handwritten SVG font is wider than a monospace estimate; 0.8 is
+        # the measured safe bound for the standing "storage unresolved" label.
+        widest = max(len(str(line)) for line in label)
+        width = max(width, widest * (font + 5) * 0.8 + 32)
+        height = max(height, 24 + len(label) * (font + 7))
+    return layout, width, height, font
+
+
 def _is_diffusion_architecture(ir: dict) -> bool:
     return ((ir.get("extras") or {}).get("render") or {}).get("family") == "diffusion"
 
@@ -133,11 +157,11 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     ]
     if _tap_left:
         side_right = max(
-            inner_x + 30 + (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"])
+            inner_x + 30 + _block_layout(b)[1]
             for b in _tap_left
         )
         chain_half_w = max(
-            (_KIND_LAYOUT.get(b.get("kind"), _KIND_LAYOUT["norm"])["w"]) // 2
+            _block_layout(b)[1] // 2
             for b in chain_blocks
         ) if chain_blocks else 115
         cx = max(cx, side_right + 20 + chain_half_w)
@@ -155,10 +179,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     merge_id = branch_blocks[0].get("feeds") if branch_blocks else None
     branch_row_h = 0
     if branch_blocks:
-        branch_h = max(
-            b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
-            for b in branch_blocks
-        )
+        branch_h = max(_block_layout(b)[2] for b in branch_blocks)
         branch_row_h = branch_h + 2 * _BLOCK_GAP
     stack_h = _layer_stack_height(chain_blocks) + branch_row_h
     inner_h = max(340, stack_h + 2 * inner_padding)
@@ -277,10 +298,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     free = inner_h - stack_h
     y_cursor = inner_y + inner_h - free / 2
     for block in chain_blocks:
-        layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-        block_w = block.get("w") or layout["w"]
-        block_h = block.get("h") or layout["h"]
-        font_size = block.get("font") or layout.get("font", 16)
+        layout, block_w, block_h, font_size = _block_layout(block)
         # Tier-2 connectors (residual ⊕, gate ×) are drawn as glyphs on the
         # topology, not first-class blocks: `static` makes them non-clickable
         # with no card.  The block-tier paradigm lives in the adapter (which
@@ -518,7 +536,7 @@ def _draw_branch_split(
     ordered = left + right
     n = len(ordered)
     # Centre the branch row on the spine; widest branch sets the column pitch.
-    col_w = max(b.get("w") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["w"] for b in ordered)
+    col_w = max(_block_layout(b)[1] for b in ordered)
     pitch = col_w + 44
     start_x = cx - pitch * (n - 1) / 2
 
@@ -531,14 +549,13 @@ def _draw_branch_split(
 
     branch_geoms: list[dict] = []
     for i, block in enumerate(ordered):
-        b_w = block.get("w") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["w"]
-        b_h = block.get("h") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"])["h"]
+        _layout, b_w, b_h, font_size = _block_layout(block)
         b_cx = start_x + i * pitch
         geom = _rect_block(
             parts, info, shadow_id, block["id"],
             b_cx - b_w / 2, row_cy - b_h / 2, b_w, b_h,
             _block_label(info, block["id"], block.get("label")),
-            font_size=block.get("font") or _KIND_LAYOUT.get(block["kind"], _KIND_LAYOUT["norm"]).get("font", 16),
+            font_size=font_size,
             resolved=_is_resolved_diffusion_block(is_diffusion, info, block["id"], block),
         )
         block_pos[block["id"]] = geom
@@ -620,10 +637,7 @@ def _draw_mtp_head(
 def _layer_stack_height(layer_blocks: list[dict]) -> int:
     if not layer_blocks:
         return 0
-    total = sum(
-        b.get("h") or _KIND_LAYOUT.get(b["kind"], _KIND_LAYOUT["norm"])["h"]
-        for b in layer_blocks
-    )
+    total = sum(_block_layout(b)[2] for b in layer_blocks)
     total += _BLOCK_GAP * (len(layer_blocks) - 1)
     return total
 
@@ -652,10 +666,7 @@ def _draw_side_block(
     chain at the bottom of the ``tap_from`` block; its output is a short
     horizontal arrow into the ``feeds`` target.
     """
-    layout = _KIND_LAYOUT.get(block["kind"]) or _KIND_LAYOUT["norm"]
-    block_w = block.get("w") or layout["w"]
-    block_h = block.get("h") or layout["h"]
-    font_size = block.get("font") or layout.get("font", 16)
+    _layout, block_w, block_h, font_size = _block_layout(block)
     lane = block.get("lane", "left")
     feeds_id = block.get("feeds")
     tap_id = block.get("tap_from")
@@ -1072,7 +1083,8 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
     lx, ly = strip_x, legend_y
     for group in info["groups"]:
         spec = group["spec"]
-        ffn_kind = "MoE" if spec["ffn"].get("kind") == "moe" else "Dense"
+        from ...labels import ffn_short
+        ffn_kind = ffn_short(spec["ffn"])
         attn = spec.get("attention", {})
         label = (
             f"{kind_short(attn)} + {ffn_kind} ({mask_short(attn)})"

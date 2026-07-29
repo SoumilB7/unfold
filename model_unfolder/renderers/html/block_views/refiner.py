@@ -8,6 +8,7 @@ canonical views, namespaced per group by the shared card builder.
 """
 from __future__ import annotations
 
+from ....labels import attention_tower_label
 from ..tower import tower_cell, tower_graph
 from ..graph_engine import render_graph
 
@@ -43,9 +44,10 @@ def _cell(group: dict, prefix: str) -> list[dict]:
     gate = group.get("residual_gate")
     return tower_cell(
         prefix,
-        attn_label="Self-attention",
+        attn_label=attention_tower_label(group.get("attention") or {}),
         norm_label=group.get("norm") or "Norm",
         placement=placement if placement in ("pre", "post", "double") else "unknown",
+        ffn_fact=group.get("ffn") or {},
         attn_gate=gate,
         ffn_gate=gate,
         unknown_label="Code-defined block",

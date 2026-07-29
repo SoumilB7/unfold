@@ -995,3 +995,42 @@ def test_routed_only_moe_does_not_claim_an_unused_shared_ffn_assumption():
     assert any(
         "FFN structure unknown" in note
         for note in shared.get("assumptions") or ())
+
+
+def test_shared_expert_gate_assumption_tracks_the_expert_width_lane():
+    """The shared expert term uses expert_intermediate_size, never the
+    ordinary dense-layer width. Its uncertainty note must follow that same
+    operand or the parameter card can describe a term it did not count."""
+    from model_unfolder.ir import AttentionSpec, FFNSpec, LayerSpec, ModelIR
+    from model_unfolder.params import estimate_params
+
+    def estimate(*, ordinary_width, expert_width):
+        return estimate_params(ModelIR(
+            name="moe", architecture="Synthetic", vocab_size=8,
+            hidden_size=8, max_position_embeddings=None,
+            tie_word_embeddings=True,
+            layers=[LayerSpec(
+                index=0,
+                attention=AttentionSpec(kind="mha", num_heads=1),
+                ffn=FFNSpec(
+                    kind="moe", gated=None,
+                    intermediate_size=ordinary_width,
+                    expert_intermediate_size=expert_width,
+                    num_experts=4, num_experts_per_tok=2,
+                    num_shared_experts=1,
+                    expert_projection_mode="fused_gate_up"),
+                norm_kind="unknown")],
+        ))
+
+    counted_shared = estimate(ordinary_width=None, expert_width=16)
+    assert any(
+        "FFN structure unknown" in note
+        for note in counted_shared.get("assumptions") or ())
+
+    omitted_shared = estimate(ordinary_width=16, expert_width=None)
+    assert not any(
+        "FFN structure unknown" in note
+        for note in omitted_shared.get("assumptions") or ())
+    assert any(
+        "routed-expert inner width unknown" in note
+        for note in omitted_shared.get("assumptions") or ())

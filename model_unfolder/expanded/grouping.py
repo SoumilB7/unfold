@@ -7,40 +7,12 @@ be diffed against the dominant by callers.
 """
 from __future__ import annotations
 
-
-_SIG_ATTN = (
-    "kind", "num_heads", "num_kv_heads", "head_dim",
-    "kv_lora_rank", "q_lora_rank", "rope_dim",
-    "mask", "window_size", "kv_source_layer",
-    "qk_norm", "shared", "no_rope",
-)
-_SIG_FFN = (
-    "kind", "activation", "intermediate_size", "gated",
-    "num_experts", "num_experts_per_tok", "num_shared_experts",
-    "expert_intermediate_size",
-)
+from ..ir import layer_signature
 
 
 def signature(layer: dict) -> tuple:
-    """Hashable structural fingerprint of one layer."""
-    attn = layer.get("attention") or {}
-    ffn  = layer.get("ffn") or {}
-    return (
-        tuple((k, attn.get(k)) for k in _SIG_ATTN),
-        tuple((k, ffn.get(k))  for k in _SIG_FFN),
-        layer.get("norm_kind"),
-        layer.get("norm_placement"),
-        tuple(_block_sig(b) for b in layer.get("blocks") or [] if isinstance(b, dict)),
-    )
-
-
-def _block_sig(block: dict) -> tuple:
-    return (
-        block.get("id"),
-        block.get("role"),
-        block.get("kind"),
-        tuple(_block_sig(c) for c in block.get("children") or [] if isinstance(c, dict)),
-    )
+    """Project the IR's one canonical layer grouping contract."""
+    return layer_signature(layer)
 
 
 def group_layers(layers: list[dict]) -> list[dict]:

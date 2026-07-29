@@ -44,7 +44,7 @@ def _proven_mla(**values):
 
 def test_gated_ffn_resolves_to_a_gated_region():
     r = ffn_region({"kind": "dense", "gated": True, "activation": "silu",
-                    "intermediate_size": 256}, 64)
+                    "intermediate_size": 256, "projection_mode": "split"}, 64)
     assert r.template == "gated_mlp" and r.resolved
     ids = {o.id for o in r.ops}
     assert {"gate_proj", "up_proj", "activation", "multiply", "down_proj"} <= ids
@@ -53,7 +53,7 @@ def test_gated_ffn_resolves_to_a_gated_region():
 
 def test_dense_ffn_is_a_plain_chain():
     r = ffn_region({"kind": "dense", "gated": False, "activation": "gelu",
-                    "intermediate_size": 256}, 64)
+                    "intermediate_size": 256, "projection_mode": "dense"}, 64)
     assert r.template == "dense_mlp"
     assert r.merges() == []                     # no branch — a straight column
 
@@ -69,7 +69,10 @@ def test_custom_ffn_falls_back_to_one_honest_opaque_node():
 
 def test_render_and_json_project_from_the_same_region():
     """The whole point: render and JSON consume ONE region (no second authoring)."""
-    r = ffn_region({"kind": "dense", "gated": True, "intermediate_size": 256}, 64)
+    r = ffn_region({
+        "kind": "dense", "gated": True, "intermediate_size": 256,
+        "projection_mode": "split",
+    }, 64)
     json_ids = {n["id"] for n in _region_to_json(r)["nodes"]}
     graph_ids = {n.id for n in region_to_graph(r).nodes}
     # every structural op id appears in both projections (the render adds only a

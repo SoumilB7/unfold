@@ -582,7 +582,10 @@ def test_gemma4_31b():
             assert attn["num_kv_heads"] == 16
             assert attn["head_dim"] == 256
         assert attn["num_heads"] == 32
-        assert layer["ffn"]["kind"] == "dense"
+        # This future/custom architecture has no exact FFN owner source in the
+        # fixture. U4-C keeps its width but does not infer "dense" from absence
+        # of expert fields.
+        assert layer["ffn"]["kind"] is None
 
     # Two distinct layer signatures → layer-map shows two colored groups.
     sigs = {(l["attention"]["mask"], l["attention"]["window_size"]) for l in ir["layers"]}
@@ -644,7 +647,7 @@ def test_diffusion_gemma_block_diffusion():
 
 def test_diffusion_gemma_block_worthiness():
     """Gate C pin: the per-layer view obeys the three-tier block paradigm AND
-    divides the parallel FFN inline (no collapsed '∥' block).
+    keeps an unproved FFN mechanism opaque.
 
     Tier-1 blocks (attention, the two FFN branches, norms) are clickable; Tier-2
     connectors (residual ⊕ and the FFN merge ⊕) are static glyphs with no card;
@@ -659,28 +662,27 @@ def test_diffusion_gemma_block_worthiness():
     assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
     assert not ir["extras"]["render"].get("layer_annotations"), "scalar caption was removed"
 
-    # Tier-2: residual adds AND the FFN merge are connector GLYPHS (⊕, not boxes) —
+    # Tier-2: residual adds are connector GLYPHS (⊕, not boxes) —
     # clickable for a describing card (not static, but still kind residual_add).
-    for add_id in ("add1", "add2", "ffn_merge"):
+    for add_id in ("add1", "add2"):
         assert blocks[add_id]["kind"] == "residual_add"
         assert not blocks[add_id].get("static"), f"{add_id} connector is now clickable, not static"
         assert blocks[add_id].get("description"), f"{add_id} must describe itself on click"
 
-    # The parallel FFN is divided inline: two branch blocks, no collapsed block.
-    assert "ffn" not in blocks, "the collapsed 'MLP ∥ MoE' block must be gone"
-    assert blocks["ffn_mlp"]["branch_side"] == "left" and blocks["ffn_mlp"]["feeds"] == "ffn_merge"
-    assert blocks["ffn_moe"]["branch_side"] == "right" and blocks["ffn_moe"]["feeds"] == "ffn_merge"
-    assert blocks["ffn_mlp"]["view"] and blocks["ffn_moe"]["view"] == "moe"  # each branch drills down
+    # Config identity cannot author the former Text4MLP ∥ TextMoE fork. Until
+    # U7 proves that exact topology, one opaque FFN remains clickable.
+    assert "ffn" in blocks
+    assert blocks["ffn"]["detail"]["ffn"]["kind"] is None
+    assert "ffn_mlp" not in blocks and "ffn_moe" not in blocks
+    assert "ffn_merge" not in blocks
     assert blocks["attn"]["kind"] == "attention"
 
     html = d.to_html()
     # The connector glyphs are clickable with a describing card (still glyphs, not boxes).
-    for add_id in ("add1", "add2", "ffn_merge"):
+    for add_id in ("add1", "add2"):
         assert f'data-id="{add_id}"' in html, f"{add_id} connector must be clickable"
         assert f'data-card-id="{add_id}"' in html, f"{add_id} must have a describing card"
-    # Both branches ARE clickable blocks inline in the architecture.
-    for bid in ("ffn_mlp", "ffn_moe"):
-        assert f'data-id="{bid}"' in html and f'data-card-id="{bid}"' in html
+    assert 'data-id="ffn"' in html and 'data-card-id="ffn"' in html
     # layer_scalar is not surfaced anywhere — not a block, not a caption.
     assert 'data-id="layer_scalar"' not in html
     assert "learned per-layer scalar" not in html
@@ -717,23 +719,23 @@ def test_sliding_window_toggle_and_split():
     assert masks == ["global", "global", "sliding", "sliding", "sliding", "sliding"]
 
 
-def test_qwen3_moe_dense_sparse_pattern():
-    """AP-2: decoder_sparse_step + mlp_only_layers decide dense-vs-MoE layers."""
+def test_qwen3_moe_source_schedule_keeps_kind_independent_of_inner_form():
+    """The exact construction schedule may prove dense/MoE layer kind while
+    the separate ordinary FFN gate/storage reader remains unresolved."""
     base = dict(
         model_type="qwen3_moe", num_hidden_layers=6, hidden_size=64,
+        architectures=["Qwen3MoeForCausalLM"],
         num_attention_heads=8, intermediate_size=128, moe_intermediate_size=64,
         vocab_size=100, rms_norm_eps=1e-5, num_experts=8, num_experts_per_tok=2,
+        mlp_only_layers=[],
     )
 
     def kinds(**over):
         ir = unfold({**base, **over}).to_ir()
         return [l["ffn"]["kind"] for l in ir["layers"]]
 
-    # step=1 -> every layer MoE (Qwen3-30B-A3B shape).
     assert kinds(decoder_sparse_step=1) == ["moe"] * 6
-    # step=2 -> MoE only where (i + 1) % 2 == 0.
     assert kinds(decoder_sparse_step=2) == ["dense", "moe"] * 3
-    # mlp_only_layers force those indices dense even on the sparse step.
     assert kinds(decoder_sparse_step=1, mlp_only_layers=[0, 2]) == \
         ["dense", "moe", "dense", "moe", "moe", "moe"]
 
@@ -808,9 +810,10 @@ def test_compress_rates_alias_derives_csa_hca_masks():
 
 
 def test_moe_routing_detail():
-    """AP-7: surface gating / grouped routing / top-k renorm / scale on the router."""
+    """AP-7: surface source-bound routing facts on the router."""
     cfg = dict(
         model_type="deepseek_v3", num_hidden_layers=3, hidden_size=128,
+        architectures=["DeepseekV3ForCausalLM"],
         num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
         moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
         kv_lora_rank=64, q_lora_rank=96, n_routed_experts=64, num_experts_per_tok=8,
@@ -842,7 +845,7 @@ def test_moe_routing_detail():
     assert not any("groups" in f for f in router_facts(ffn))
 
 
-def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
+def test_moe_gate_view_is_source_bound_and_shared_expert_drawn():
     """The MoE diagram must SHOW the modern router (not just card facts), draw the
     always-on shared expert, and adapt the gate pipeline to the config — closing
     the 'diagram shows plain top-k' gap across DeepSeek/Kimi/GLM/Qwen3-MoE."""
@@ -861,6 +864,7 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
 
     base = dict(
         model_type="deepseek_v3", num_hidden_layers=3, hidden_size=128,
+        architectures=["DeepseekV3ForCausalLM"],
         num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
         moe_intermediate_size=128, vocab_size=1000, rms_norm_eps=1e-6,
         kv_lora_rank=64, q_lora_rank=96, n_routed_experts=64, num_experts_per_tok=8,
@@ -922,7 +926,8 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
 
     # Dynamic (Gate A.3): a plain softmax top-k router collapses — no group / bias /
     # scale, and its single torch.topk is an honest LEAF (no drill).
-    plain = dict(model_type="m", num_hidden_layers=2, hidden_size=128,
+    plain = dict(model_type="mixtral", architectures=["MixtralForCausalLM"],
+                 num_hidden_layers=2, hidden_size=128,
                  num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
                  vocab_size=1000, rms_norm_eps=1e-5, num_local_experts=8,
                  num_experts_per_tok=2)
@@ -938,12 +943,8 @@ def test_moe_gate_view_is_config_driven_and_shared_expert_drawn():
     assert validate_click_coupling(unfold(base).to_html(standalone=True)) == []
 
 
-def test_router_topk_drill_adapts_per_family_not_inherited():
-    """Lock the router DESIGN across families while the STEPS adapt per config: the
-    Top-k drill must add group steps only when grouped, a gather only when a bias
-    splits selection-scores from weight-scores, and never inherit one family's
-    specifics for another (DeepSeek-V2's max-per-group ≠ V3's top-2-sum). Every
-    drilled child card must have a matching node in its view (no orphans)."""
+def test_router_topk_drill_adapts_to_source_bound_policy_not_identity():
+    """The drill follows resolved routing policy, never an ambient family."""
     from model_unfolder.renderers.html.metadata import _make_info
     from model_unfolder.renderers.html.block_views.registry import render_sub_block_detail
 
@@ -967,12 +968,17 @@ def test_router_topk_drill_adapts_per_family_not_inherited():
         return gt, svg
 
     # plain softmax (Mixtral): single torch.topk → an honest LEAF, no drill.
-    gt, _ = topk_block(dict(base, model_type="mixtral", num_local_experts=8, num_experts_per_tok=2))
+    gt, _ = topk_block(dict(
+        base, model_type="mixtral", architectures=["MixtralForCausalLM"],
+        num_local_experts=8, num_experts_per_tok=2))
     assert gt.get("view") is None and not gt.get("children")
 
     # grouped + group_limited_greedy, NO bias (DeepSeek-V2): group steps, NO gather,
     # and the group score is the MAX (never V3's top-2-sum).
-    gt, svg = topk_block(dict(base, model_type="deepseek_v2", n_routed_experts=64,
+    gt, svg = topk_block(dict(
+        base, model_type="deepseek_v2",
+        architectures=["DeepseekV2ForCausalLM"], n_routed_experts=64,
+        first_k_dense_replace=0,
         num_experts_per_tok=6, n_group=8, topk_group=3, topk_method="group_limited_greedy",
         scoring_func="softmax", routed_scaling_factor=16.0))
     assert [c["id"] for c in gt["children"]] == ["ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts"]
@@ -981,30 +987,44 @@ def test_router_topk_drill_adapts_per_family_not_inherited():
     assert "top expert" in gs["description"] and "top-2" not in gs["description"]
 
     # grouped + noaux bias (DeepSeek-V3): full sequence WITH gather.
-    gt, svg = topk_block(dict(base, model_type="deepseek_v3", n_routed_experts=256,
+    gt, svg = topk_block(dict(
+        base, model_type="deepseek_v3",
+        architectures=["DeepseekV3ForCausalLM"], n_routed_experts=256,
+        first_k_dense_replace=0,
         num_experts_per_tok=8, n_group=8, topk_group=4, topk_method="noaux_tc",
         scoring_func="sigmoid", norm_topk_prob=True, routed_scaling_factor=2.5))
     assert [c["id"] for c in gt["children"]] == ["ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts", "ts_gather"]
     assert "top-2" in find(gt["children"], "ts_group")["description"]
 
     # noaux bias but NOT grouped (edge): gather WITHOUT group steps.
-    gt, svg = topk_block(dict(base, model_type="deepseek_v3", n_routed_experts=64,
+    gt, svg = topk_block(dict(
+        base, model_type="deepseek_v3",
+        architectures=["DeepseekV3ForCausalLM"], n_routed_experts=64,
+        first_k_dense_replace=0,
         num_experts_per_tok=8, topk_method="noaux_tc", scoring_func="sigmoid"))
     assert [c["id"] for c in gt["children"]] == ["ts_topk_experts", "ts_gather"]
 
     # No orphan cards: every drilled child card has a node (its title) in the view.
-    for cfg in (dict(base, model_type="deepseek_v2", n_routed_experts=64, num_experts_per_tok=6,
+    for cfg in (dict(
+                         base, model_type="deepseek_v2",
+                         architectures=["DeepseekV2ForCausalLM"],
+                         n_routed_experts=64, num_experts_per_tok=6,
+                     first_k_dense_replace=0,
                      n_group=8, topk_group=3, topk_method="group_limited_greedy", scoring_func="softmax"),
-                dict(base, model_type="deepseek_v3", n_routed_experts=256, num_experts_per_tok=8,
+                dict(
+                     base, model_type="deepseek_v3",
+                     architectures=["DeepseekV3ForCausalLM"],
+                     n_routed_experts=256, num_experts_per_tok=8,
+                     first_k_dense_replace=0,
                      n_group=8, topk_group=4, topk_method="noaux_tc", scoring_func="sigmoid")):
         gt, svg = topk_block(cfg)
         for child in gt["children"]:
             assert child["title"] in svg, f"orphan card {child['id']!r}: no node in its drill view"
 
 
-def test_dsa_indexer_and_clamped_swiglu_are_surfaced():
-    """Two Tier-3 properties that used to be silently dropped must now read from
-    config: DeepSeek-V3.2's sparse-attention indexer and gpt-oss's clamped SwiGLU."""
+def test_dsa_indexer_is_surfaced_but_declared_swiglu_clip_needs_source_binding():
+    """Known DSA geometry remains visible, while a bare expert-activation
+    declaration cannot author a clipping operation without its exact callable."""
     from model_unfolder.labels import attention_summary, ffn_summary
 
     # DSA: indexer geometry + top-k are consumed and surfaced (not 'unparsed').
@@ -1022,7 +1042,10 @@ def test_dsa_indexer_and_clamped_swiglu_are_surfaced():
     assert "DeepSeek Sparse Attention" in desc
     assert any("DSA top-2,048" in f for f in facts) and any("indexer 64×128" in f for f in facts)
 
-    # Clamped SwiGLU: gpt-oss swiglu_limit becomes a Tier-3 chip on the FFN.
+    # U4-C: the checkpoint value alone does not prove which exact expert
+    # activation consumes it. U7 may restore the clipping chip only after
+    # binding swiglu_limit to that callable; until then it is exact pending
+    # config debt and the FFN must not claim a clamp.
     oss = parse(dict(
         model_type="gpt_oss", num_hidden_layers=2, hidden_size=128,
         num_attention_heads=8, num_key_value_heads=8, intermediate_size=256,
@@ -1030,8 +1053,8 @@ def test_dsa_indexer_and_clamped_swiglu_are_surfaced():
         num_experts_per_tok=2, swiglu_limit=7.0,
     )).to_dict()
     ffn = next(l["ffn"] for l in oss["layers"] if l["ffn"]["kind"] == "moe")
-    assert ffn["activation_clip"] == 7.0
-    assert any("clamped ±7" in f for f in ffn_summary(ffn)[1])
+    assert ffn["activation_clip"] is None
+    assert not any("clamped" in f for f in ffn_summary(ffn)[1])
 
     # M-RoPE: Qwen-VL's rope_scaling.mrope_section becomes a Tier-3 chip.
     vl = parse(dict(
@@ -1258,27 +1281,24 @@ def test_cross_attention_fusion_side_block_does_not_overlap_the_spine():
     assert vr < al, f"side block (right {vr}) overlaps the spine block (left {al})"
 
 
-def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
-    """The vision tower's self-attention REUSES the one canonical SDPA region, but
-    whether it draws RoPE must come from the tower's position scheme — a learned
-    table (SigLIP/CLIP/ViT) has NO RoPE, only rope_2d / multimodal_rope towers do.
-    Regression: it inherited the text default and fabricated a RoPE that
-    contradicted the learned-position node it already draws."""
+def test_vision_position_fact_survives_without_fabricating_an_attention_mechanism():
+    """Position evidence and the drawn attention mechanism are independent.
+
+    A learned table proves no RoPE.  Qwen2-VL's exact vision source proves
+    qk-rotation, but ``softmax`` alone does not prove MHA/GQA/MQA; the position
+    fact must survive on the block while the detailed graph remains opaque.
+    """
     from model_unfolder.renderers.html.metadata import _make_info
     from model_unfolder.renderers.html.block_views.registry import render_sub_block_detail
 
-    def vision_attn_svg(cfg):
+    def vision_attn(cfg):
         d = unfold(cfg); ir = d.to_ir(); info = _make_info(ir)
         blocks = info.get("blocks", {})
         idx = next((b for b in blocks.values()
                     if str(b.get("id", "")).startswith("vision_enc")
                     and str(b.get("id", "")).endswith("_op_selfattn")), None)
-        if idx is None:  # find it nested under the vision encoder
-            for l, s in __import__("model_unfolder.preview", fromlist=["svg_views"]).svg_views(d.to_html(standalone=True)):
-                if l.startswith("vision_enc") and l.endswith("_op_selfattn"):
-                    return s
-            return ""
-        return render_sub_block_detail(ir, info, "v", idx)
+        assert idx is not None
+        return idx, render_sub_block_detail(ir, info, "v", idx)
 
     # SigLIP-style learned table → NO RoPE in vision attention.
     siglip = dict(model_type="gemma3", num_hidden_layers=2, hidden_size=128,
@@ -1287,7 +1307,9 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
                   "architectures": ["SiglipVisionModel"], "hidden_size": 128, "num_hidden_layers": 2,
                   "num_attention_heads": 8, "intermediate_size": 256, "patch_size": 14,
                   "image_size": 224, "num_positions": 256})
-    assert "apply RoPE" not in vision_attn_svg(siglip), "SigLIP vision must NOT draw RoPE"
+    siglip_block, siglip_svg = vision_attn(siglip)
+    assert siglip_block["detail"]["attention"].get("rope") is not True
+    assert "apply RoPE" not in siglip_svg, "SigLIP vision must NOT draw RoPE"
 
     # multimodal-RoPE tower (Qwen2-VL grid stream) → RoPE present.
     qwen = dict(model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
@@ -1297,19 +1319,27 @@ def test_vision_self_attention_rope_is_derived_from_the_position_scheme():
                                "architectures": ["Qwen2VisionTransformerPretrainedModel"],
                                "depth": 2, "hidden_size": 128, "num_heads": 8,
                                "patch_size": 14, "in_channels": 3, "spatial_merge_size": 2})
-    assert "apply RoPE" in vision_attn_svg(qwen), "Qwen2-VL vision uses RoPE — must draw it"
+    qwen_block, qwen_svg = vision_attn(qwen)
+    qwen_fact = qwen_block["detail"]["attention"]
+    assert qwen_fact["rope"] is True
+    assert qwen_fact["position_kind"] == "rope"
+    assert qwen_fact["position_application"] == "qk_rotation"
+    assert qwen_fact["projection_mode"] == "fused_qkv"
+    assert qwen_fact["kind"] is None
+    assert "Attention mechanism unresolved" in qwen_svg
+    assert "apply RoPE" not in qwen_svg
 
-    # Vision RoPE leaves are namespaced and carded at the next drill depth. The
-    # old bare q_rope/k_rope ids were accidentally validated by text-attention
-    # cards elsewhere in the document, while vision clicks opened nothing.
+    # The unresolved mechanism owns one namespaced, clickable opaque node.  A
+    # source-proven position fact must not smuggle q_rope/k_rope leaves into
+    # that graph before the exact attention mechanism is bound.
     from model_unfolder.block_schema import validate_click_coupling
     from model_unfolder.preview import svg_views
     qwen_html = unfold(qwen).to_html(standalone=True)
     vision_svg = next(svg for label, svg in svg_views(qwen_html)
                       if label.startswith("vision_enc") and label.endswith("_op_selfattn"))
     for node_id in ("vision_enc_attn_q_rope", "vision_enc_attn_k_rope"):
-        assert f'data-id="{node_id}"' in vision_svg
-        assert f'data-card-id="{node_id}"' in qwen_html
+        assert f'data-id="{node_id}"' not in vision_svg
+        assert f'data-card-id="{node_id}"' not in qwen_html
     assert validate_click_coupling(qwen_html) == []
 
 
@@ -1332,7 +1362,10 @@ def test_qwen2_audio_sparse_text_config_is_completed():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG)
     ir = d.to_ir()
 
-    assert ir["warnings"] == []
+    assert all(
+        warning.startswith("Unresolved code-defined facts")
+        for warning in ir["warnings"]
+    )
     assert ir["name"] == "Qwen2-Audio-7B"
     assert ir["hidden_size"] == 4096
     assert ir["vocab_size"] == 156032
@@ -1350,6 +1383,7 @@ def test_qwen2_audio_sparse_text_config_is_completed():
 
     html = d.to_html(standalone=True)
     assert "partial config" not in html
+    assert "unresolved evidence" in html
     assert "Audio → tokens" in html
 
 
@@ -1357,12 +1391,16 @@ def test_qwen2_audio_code_evidence_does_not_mark_config_partial():
     d = unfold(QWEN2_AUDIO_SPARSE_CONFIG, inspect_code=True)
     ir = d.to_ir()
 
-    assert ir["warnings"] == []
+    assert all(
+        warning.startswith("Unresolved code-defined facts")
+        for warning in ir["warnings"]
+    )
     assert ir["extras"]["code_evidence"]["provenance"]["model_type"] == "qwen2_audio"
     assert ir["extras"]["code_evidence"]["provenance"]["files"]
 
     html = d.to_html(standalone=True)
     assert "partial config" not in html
+    assert "unresolved evidence" in html
     assert "CODE EVIDENCE" in html
 
 
@@ -1440,7 +1478,9 @@ def test_new_should_support_family_routes():
         # matching Google's "GQA throughout" naming.
         (GEMMA1_CONFIG, "gqa", "dense", "rmsnorm"),
         (PHI2_CONFIG, "mha", "dense", "layernorm"),
-        (YI_34B_CONFIG, "gqa", "dense", "rmsnorm"),
+        # Yi's custom source is unavailable locally. Width/norm remain known,
+        # but U4-C refuses to call the unbound inner mechanism "dense".
+        (YI_34B_CONFIG, "gqa", None, "rmsnorm"),
         (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
         (OLMOE_CONFIG, "mha", "moe", "rmsnorm"),
     ]
@@ -1494,7 +1534,9 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     assert layer["ffn"]["kind"] == "moe"
     assert layer["ffn"]["num_experts"] == 16
     assert layer["ffn"]["num_experts_per_tok"] == 4
-    assert layer["ffn"]["expert_intermediate_size"] == 3584
+    # The nested ordinary width cannot certify the routed expert lane.
+    assert layer["ffn"]["intermediate_size"] == 3584
+    assert layer["ffn"]["expert_intermediate_size"] is None
     assert ir["extras"]["attention"]["clip_qkv"] == 8
 
     html = d.to_html(standalone=True)
