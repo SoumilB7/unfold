@@ -1548,7 +1548,7 @@ controls and preservation delta must close together.
 | U4-A | attention mechanism + mask vocabulary: missing/novel kind cannot become MHA/SDPA; missing/novel mask cannot become causal; known geometry may ride one opaque region | DONE — Soumil approved 2026-07-28; 14 inspected galleries/fixtures re-blessed; 26-witness preservation 46/46 green |
 | U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | DONE — Soumil approved 2026-07-29; guarded artifacts audited; commit `4857026`; detached-worktree receipt fully green |
 | U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | DONE — commit `c7e125b`; 26-witness review and detached-worktree receipt green |
-| U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | PENDING |
+| U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | DONE — Soumil approved the 26-witness honesty delta before blessing; commits `4724a4a` + `a08a561`; committed-tree receipt fully green |
 | U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
 | U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | PENDING |
 
@@ -1911,6 +1911,78 @@ U4-C is therefore `DONE`.  U4-D is the next permitted semantic unit, but its
 model-by-model norm/cell-topology honesty delta must be measured and shown to
 Soumil before any fixture is re-blessed.
 
+#### U4-D implementation and closure ledger
+
+U4-D makes the repeated cell and its model-stage bookends obey the same
+independent-fact law as U4-A through U4-C:
+
+- `LayerSpec` no longer defaults norm placement or residual wiring to a
+  conventional transformer cell.  Norm primitive, norm placement, residual
+  topology and the number of parallel norm occurrences are separate facts.
+- `ModelIR` carries embedding-stage and final-stage normalization separately.
+  A repeated-layer norm is never borrowed to manufacture either bookend.
+- code-proven norm kind survives when topology is unresolved.  The diagram
+  renders one `Wiring unresolved` cell that names the proven primitive but
+  does not invent pre/post/sandwich placement or residual taps.
+- independently code-proven detailed topology remains detailed.  Lumina's
+  four RMSNorm sandwich/sequential cell is a permanent positive control,
+  while SD3 is the complementary control whose LayerNorm primitive is known
+  but whose cell wiring remains unresolved.
+- config norm/residual flags are checkpoint operands only.  They cannot author
+  placement, residual structure or a bookend without an owner-bound source
+  reader.
+- canonical IR, expanded JSON, parameters, HTML/tower/submodel views,
+  conformance and grouping consume the same typed facts.  Parameter estimates
+  explicitly name omitted entry/final norms instead of silently charging a
+  conventional pair.
+- the identity/config table
+  `everchanging/transformer/layer_topology.yaml` and its loader were deleted.
+  The remaining broad topology reader is visible U7 migration debt; U4-D
+  handles its abstention safely rather than replacing it with a family branch.
+- conformance waives only the exact facts made typed-unknown by this slice:
+  norm operations when norm placement is unknown, and gate/residual operations
+  when residual topology is unknown.  Unrelated missing operations still
+  block.
+
+Soumil approved the measured 26-witness artifact delta before the fixtures and
+preservation manifest were rebuilt.  Twenty-five fixture JSONs changed (SDXL's
+separately-authored visual signature remained unchanged); the guarded review
+covered transformer, diffusion, multimodal and composite controls including
+Gemma, PixArt, FLUX, MusicGen, Wan and StableLM.  Every distinct view retained a
+matching certified gallery artifact and no duplicate fixture/gallery identity
+was introduced.
+
+The first committed-tree exhaustive run found four stale tests rather than a
+production defect:
+
+- a typed topology test still requested the now-forbidden `asserted` status;
+- T5 expected a generic normalization label even though its exact stage is
+  ambiguous;
+- a DiT test coupled a proven norm primitive to a proven cell topology;
+- a parameter test called a populated config “evidence-rich” for entry/final
+  normalization calls.
+
+Commit `a08a561` corrects those contracts without restoring config authority.
+It also pins the important asymmetric control: SD3 stays primitive-known /
+wiring-unknown, while Lumina stays fully detailed.
+
+Final committed-tree receipt for `a08a561` at
+`/private/tmp/model-unfolder-verification/1e6b8b09e8`:
+
+- changed-Python static gate: **3 files clean**;
+- collection: **2333 tests**;
+- focused U4-D plus complete affected contract files: **881 passed**;
+- U2 authority ratchets: **44 passed**;
+- preservation: **46 passed**, zero drift against the approved 26-witness
+  manifest;
+- exhaustive suite: **2230 passed, 11 skipped, 2 xfailed, 0 failed**;
+- every isolated lane's complete-tree fingerprint was identical before/after.
+
+U4-D is therefore `DONE`.  U4-E is the next permitted unit: remove the
+synthetic dominant-layer and card-side structural reconstruction paths.  U4-E
+must delete presentation-authored structure; it must not add a new semantic
+reader or make any unknown fact more specific.
+
 ### 20.8 U5 — establish consumer firewalls
 
 Perform exactly:
@@ -2220,7 +2292,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A/U4-B/U4-C DONE; U4-D next | `4857026`, `c7e125b` | C-01 to C-07/C-12 plus attention/FFN halves of T-05/T-08/T-10/D-08/U-07 | independent attention and FFN facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | norm/cell topology defaults, synthetic dominant layer/card reconstruction, UNet internal templates, final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries with exact corpus identity | U4-C focused 379p; U2 44p; preservation 46p; exhaustive 2210p+11s+2xf | U4-C `/private/tmp/model-unfolder-verification/6f07ace2b7`; every lane fingerprint identical | asserted attention/storage/scale debt retired; FFN config fallbacks removed or assigned exact U7 debt | U4-C closed locally; measure and seek approval for U4-D norm/cell-topology honesty deltas before blessing |
+| U4 | ACTIVE — U4-A/U4-B/U4-C/U4-D DONE; U4-E next | `4857026`, `c7e125b`, `4724a4a`, `a08a561` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | synthetic dominant layer/card reconstruction, UNet internal templates, final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta with 25 fixture JSON changes | U4-D focused 881p; U2 44p; preservation 46p; exhaustive 2230p+11s+2xf | U4-D `/private/tmp/model-unfolder-verification/1e6b8b09e8`; every lane fingerprint identical | asserted attention/storage/scale debt retired; FFN/config topology fallbacks removed or assigned exact U7 debt; `layer_topology.yaml` deleted | U4-D closed locally after approved re-bless; U4-E may delete presentation reconstruction only |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
