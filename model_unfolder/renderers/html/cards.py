@@ -11,14 +11,20 @@ _VIEWBOX_RE = re.compile(r'viewBox="0 0 ([0-9.]+) ([0-9.]+)"')
 
 def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
     """Cards-only HTML for the L2 inspect panel."""
-    panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
+    dominant = info.get("dominant")
+    if not dominant:
+        return _hint_card(
+            "default",
+            "No repeated layer structure is available to inspect",
+        )
 
-    spec = info["dominant"]["spec"]
+    panels: list[str] = [_hint_card("default", "Click a block above to inspect it")]
+    spec = dominant["spec"]
     layer_blocks = spec.get("blocks") or []
 
     for node_id in ("tok_text", "embed", "embed_norm", "join_concat",
                     "position_ids", "position_embed", "position_add"):
-        if node_id not in info.get("blocks", {}) and node_id not in {"tok_text", "embed"}:
+        if node_id not in info.get("blocks", {}):
             continue
         panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
@@ -57,7 +63,8 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
             panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     for node_id in ("final_rms", "lm_head"):
-        panels.append(_simple_card(node_id, *_meta(info, node_id)))
+        if node_id in info.get("blocks", {}):
+            panels.append(_simple_card(node_id, *_meta(info, node_id)))
 
     entry_block = info.get("blocks", {}).get("entry_stage")
     if entry_block:
@@ -83,8 +90,6 @@ def _build_inspect_cards(ir: dict, info: dict, mount_id: str) -> str:
 def _build_nested_inspect_panels(ir: dict, info: dict, mount_id: str) -> list[str]:
     """Cards-only HTML for recursive nested inspect panels."""
     levels = _nested_child_levels(info)
-    if not levels:
-        levels = [_fallback_sub_inspect_children(ir, info["dominant"]["spec"]["ffn"])]
     return [_nested_panel(ir, info, mount_id, children) for children in levels if children]
 
 
@@ -194,8 +199,10 @@ def _sub_inspect_children(info: dict) -> list[dict]:
         if (block.get("role") in {"modality_input", "fusion", "mtp"}
                 or block.get("id") == "entry_stage"):
             children.extend(block.get("children") or [])
-    for block in (info["dominant"]["spec"].get("blocks") or []):
-        children.extend(block.get("children") or [])
+    dominant = info.get("dominant")
+    if dominant:
+        for block in (dominant["spec"].get("blocks") or []):
+            children.extend(block.get("children") or [])
     return children
 
 
@@ -222,12 +229,3 @@ def _unique_children(children: list[dict]) -> list[dict]:
         seen.add(child_id)
         unique.append(child)
     return unique
-
-
-def _fallback_sub_inspect_children(ir: dict, ffn: dict) -> list[dict]:
-    # This compatibility path may not reconstruct architecture independently.
-    # Derive its cards from the same canonical region used by the real drill.
-    from ...labels import cards_from_region
-    from ...opgraph import ffn_region
-
-    return cards_from_region(ffn_region(ffn, ir.get("hidden_size")))

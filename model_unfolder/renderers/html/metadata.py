@@ -11,9 +11,6 @@ from __future__ import annotations
 
 from ...ir import layer_signature
 from ...labels import (
-    activation_label,
-    attention_summary as _attention_summary,
-    ffn_summary as _ffn_summary,
     ffn_short,
     ffn_title,
     is_sliding,
@@ -22,10 +19,8 @@ from ...labels import (
     mask_chip,
     mask_short,
     mask_title,
-    router_facts as _router_facts,
 )
 from .metadata_modalities import _modality_badges, _multimodal_block_lookup
-from .utils import _fmt_int
 
 
 def _make_info(ir: dict) -> dict:
@@ -57,29 +52,12 @@ def _make_info(ir: dict) -> dict:
 
     period = _detect_period(sigs)
 
-    if groups:
-        dominant = max(groups, key=lambda group: len(group["indices"]))
-    else:
-        dominant = {
-            "sig": "",
-            "indices": [],
-            "runs": [],
-            "spec": {
-                # U4-E will remove this synthetic empty-layer carrier entirely.
-                # Until then it must remain semantically empty: an absent layer
-                # stack is not evidence for a conventional MHA/SwiGLU cell.
-                "attention": {"kind": None, "num_heads": 0, "num_kv_heads": 0},
-                "ffn": {
-                    "kind": None,
-                    "activation": None,
-                    "intermediate_size": None,
-                    "gated": None,
-                    "projection_mode": None,
-                },
-            },
-        }
-
-    blocks = _block_lookup(ir, dominant["spec"])
+    dominant = (
+        max(groups, key=lambda group: len(group["indices"]))
+        if groups else None
+    )
+    spec = dominant["spec"] if dominant is not None else {}
+    blocks = _block_lookup(ir, spec)
     return {
         "groups": groups,
         "dominant": dominant,
@@ -87,7 +65,14 @@ def _make_info(ir: dict) -> dict:
         "n_layers": len(layers),
         "layer_sigs": sigs,
         "blocks": blocks,
-        "meta": _meta_for(ir, dominant["spec"], blocks),
+        # With no repeated layer there is no layer spec from which presentation
+        # may manufacture conventional cards.  Genuine model-level blocks keep
+        # their own authored title/description/facts.
+        "meta": (
+            _meta_for(ir, spec, blocks)
+            if dominant is not None
+            else _block_meta(blocks)
+        ),
     }
 
 
@@ -109,77 +94,15 @@ def _detect_period(sigs: list) -> int | None:
 
 
 def _meta_for(ir: dict, spec: dict, blocks: dict | None = None) -> dict:
-    """Tooltip / detail-card text for one layer-type's spec.  Re-computed per
-    variant so a heterogeneous model (e.g. DeepSeek-V3 dense + MoE) gets
-    correct tooltips for whichever layer type is currently displayed."""
-    attention = spec.get("attention", {})
-    ffn = spec.get("ffn", {})
-    hidden = _fmt_int(ir.get("hidden_size"))
-    vocab = _fmt_int(ir.get("vocab_size"))
-    # U2: never re-assert silu at render time — an unnamed activation stays
-    # the honest generic "Activation" label (the parser's typed unknown).
-    activation = activation_label(ffn.get("activation"))
-    inter = _fmt_int(
-        ffn.get("expert_intermediate_size")
-        if ffn.get("kind") == "moe"
-        else ffn.get("intermediate_size")
+    """Project card metadata from canonical blocks only.
+
+    U4-E removes the former conventional dictionary for attention, FFN, norms,
+    residuals and model bookends.  A fact/spec value may format an existing
+    block, but it cannot create a card when no block was authored.
+    """
+    return _block_meta(
+        blocks if blocks is not None else _block_lookup(ir, spec)
     )
-    tied = ir.get("tie_word_embeddings")
-    embed_tie = (" — weights tied with the output head." if tied is True else
-                 "." if tied is False else
-                 " — output-head tying is unresolved.")
-    head_tie = (" — weights tied with the embedding." if tied is True else
-                "." if tied is False else
-                " — embedding tying is unresolved.")
-    # U2: the norm tooltips name the LAYER's actual norm kind (bloom is
-    # LayerNorm; unknown says so) instead of a hardcoded "RMSNorm" string.
-    _norm_word = {"layernorm": "LayerNorm", "rmsnorm": "RMSNorm"}.get(
-        spec.get("norm_kind"), "Normalization")
-    _norm_note = ("" if spec.get("norm_kind") in ("layernorm", "rmsnorm")
-                  else " The norm kind is not declared by the config — it lives"
-                       " in the model's code.")
-    attn_desc, attn_facts = _attention_summary(attention)
-    ffn_desc, ffn_facts = _ffn_summary(ffn)
-    expert = (
-        "One routed expert. Its internal projection shape is shown only when "
-        "expert-local source evidence proves it.",
-        [f"{hidden} → {inter} → {hidden}", "activation unresolved"],
-    )
-    fallback = {
-        "tok_text": ("Tokenized text", "Input token IDs.", ["shape [batch, seq_len]"]),
-        "embed": ("Token embedding",
-                  "Maps each token id to its vector" + embed_tie,
-                  [f"{vocab} vocab", f"{hidden}-d"]),
-        "rms1": ("Pre-attention norm",
-                 f"{_norm_word} keeps activation scales stable before attention.{_norm_note}",
-                 [f"dim {hidden}"]),
-        "attn": ("Attention", attn_desc, attn_facts),
-        "add1": ("Residual add", "block input + attention output", []),
-        "rms2": ("Pre-FFN norm",
-                 f"{_norm_word} keeps activation scales stable before the FFN.{_norm_note}",
-                 [f"dim {hidden}"]),
-        "ffn": ("Mixture of experts" if ffn.get("kind") == "moe" else "Feed-forward", ffn_desc, ffn_facts),
-        "add2": ("Residual add", "post-attention + FFN output", []),
-        "final_rms": ("Final norm",
-                      f"{_norm_word} over the last hidden state before the output head.{_norm_note}",
-                      [f"dim {hidden}"]),
-        "lm_head": ("LM head",
-                    "Projects the final hidden state into vocabulary logits" + head_tie,
-                    [f"{hidden} → {vocab}"]),
-        "router": ("Router", "Scores every expert per token and keeps the top-k.", _router_facts(ffn)),
-        "add_moe": ("Weighted sum", "Combines selected expert outputs, weighted by router probabilities.", []),
-        "expert_1": ("Expert", *expert),
-        "expert_k": ("Expert", *expert),
-        "expert_kp1": ("Expert", *expert),
-        "expert_n": ("Expert", *expert),
-        "down_proj": ("Down projection", "Linear back to the residual width.", [f"{inter} → {hidden}"]),
-        "mul": ("Gate product", "activation(gate) × up projection", []),
-        "silu": ("Activation", "Element-wise non-linearity.", [activation]),
-        "up_proj": ("Up projection", "Linear into the FFN's inner width.", [f"{hidden} → {inter}"]),
-        "gate_proj": ("Gate projection", "Linear producing the gate path.", [f"{hidden} → {inter}"]),
-    }
-    fallback.update(_block_meta(blocks if blocks is not None else _block_lookup(ir, spec)))
-    return fallback
 
 
 def _ensure_declared_op_cards(block: dict) -> None:

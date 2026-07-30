@@ -139,39 +139,59 @@ def _render_fragment_body(ir: dict, mount_id: str, include_font_import: bool) ->
         if variant_idx > 1 else ""
     )
 
+    empty_stack = not groups
+    arch_body = (
+        '<div>'
+        '<div class="uf-card-title">Repeated layer structure unavailable</div>'
+        '<div class="uf-card-desc">'
+        'No canonical repeated-layer block was produced. '
+        'Attention, feed-forward and residual wiring are not inferred here.'
+        '</div>'
+        '</div>'
+        if empty_stack
+        else f'{toggle_html}{"".join(arch_variants)}'
+    )
+    arch_sub = (
+        "No repeated-layer structure available"
+        if empty_stack
+        else f'Per-layer block · repeats × {len(ir.get("layers", []))}'
+    )
     arch_section = (
         '<details class="uf-section uf-section-arch uf-section-collapsible" open>'
         '<summary class="uf-section-head">'
         '<span class="uf-section-label">ARCHITECTURE</span>'
-        f'<span class="uf-section-sub">Per-layer block · repeats × {len(ir.get("layers", []))}</span>'
+        f'<span class="uf-section-sub">{arch_sub}</span>'
         '<span class="uf-chevron" aria-hidden="true">›</span>'
         '</summary>'
-        f'<div class="uf-section-body">{toggle_html}{"".join(arch_variants)}</div>'
+        f'<div class="uf-section-body">{arch_body}</div>'
         '</details>'
     )
-    inspect_panel = (
+    inspect_panel = "" if empty_stack else (
         f'<div class="uf-inspect uf-inspect-panel uf-panel-hint" data-depth="2">'
         f'{"".join(l2_variants)}</div>'
     )
-    nested_inspect_panels = "".join(
+    nested_inspect_panels = "" if empty_stack else "".join(
         f'<div class="uf-nested-inspect uf-inspect-panel uf-panel-compact" '
         f'data-depth="{depth_idx + 3}">{"".join(variants)}</div>'
         for depth_idx, variants in enumerate(nested_variants_by_depth)
     )
 
-    map_svg = _build_layer_map(ir, info, mount_id)
-    n_groups = len(groups)
-    n_layers = len(ir.get("layers", []))
-    if n_groups <= 1:
-        map_sub = "All layers structurally identical"
-    elif info.get("period") and info["period"] < n_layers:
-        cycles = n_layers // info["period"]
-        map_sub = (
-            f"{n_groups} layer types  ·  {info['period']}-layer cycle ×{cycles}"
-        )
+    if empty_stack:
+        layer_map_section = ""
     else:
-        map_sub = f"{n_groups} layer types across {n_layers} layers"
-    layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
+        map_svg = _build_layer_map(ir, info, mount_id)
+        n_groups = len(groups)
+        n_layers = len(ir.get("layers", []))
+        if n_groups <= 1:
+            map_sub = "All layers structurally identical"
+        elif info.get("period") and info["period"] < n_layers:
+            cycles = n_layers // info["period"]
+            map_sub = (
+                f"{n_groups} layer types  ·  {info['period']}-layer cycle ×{cycles}"
+            )
+        else:
+            map_sub = f"{n_groups} layer types across {n_layers} layers"
+        layer_map_section = _details_section("LAYER MAP", map_sub, map_svg)
     evidence_section = _code_evidence_section(ir)
 
     return f"""
