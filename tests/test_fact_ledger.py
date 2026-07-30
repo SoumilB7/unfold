@@ -422,9 +422,14 @@ def test_param_estimate_annotates_unknowns_never_silently_branches():
     notes = est.get("assumptions") or []
     assert any("tying unknown" in n for n in notes)
     assert any("FFN structure unknown" in n for n in notes)
-    # evidence-rich control stays annotation-free (byte-stable)
+    # A populated config is not code evidence for model-stage bookends.  The
+    # estimator must name both omissions rather than silently charging the
+    # conventional two norms.
     est2 = estimate_params(config_to_ir(dict(LLAMA_MINIMAL, tie_word_embeddings=False)))
-    assert "assumptions" not in est2
+    assert est2.get("assumptions") == [
+        "embedding-stage normalization not proven — its parameters omitted",
+        "final-stage normalization unresolved — its parameters omitted",
+    ]
 
 
 def test_unknown_tying_survives_every_projection():

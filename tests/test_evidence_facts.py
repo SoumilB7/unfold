@@ -298,13 +298,12 @@ def test_typed_records_lifts_legacy_rows_and_keeps_native_ones():
     assert ledger.strength("decoder.ffn.gated") == strength_of("code_proven")
 
 
-def test_asserted_census_unaffected_by_typed_channel():
+def test_legacy_asserted_census_ignores_nonasserted_typed_channel():
     ledger = FactLedger()
     ledger.record("decoder.attention", "scores_scale", "sqrt", "asserted", None)
     ledger.record_typed(_fact(key="norm_placement", owner="decoder.layer",
-                              value="pre", status="asserted"))
-    assert ledger.asserted() == ("decoder.attention.scores_scale",
-                                 "decoder.layer.norm_placement")
+                              value="pre", status="code_proven"))
+    assert ledger.asserted() == ("decoder.attention.scores_scale",)
 
 
 # --- integration: a real parse's whole ledger is representable ----------------

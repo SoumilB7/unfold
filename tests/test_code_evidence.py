@@ -1483,7 +1483,7 @@ def test_norm_kind_math_outranks_the_rms_eps_spelling():
     cannot stand in for an exact primitive and the diagram stays generic.
     Every unambiguous plain RMS/LN control is unchanged."""
     from transformers import AutoConfig
-    expect = {"phimoe": "LayerNorm", "t5": "Normalization", "llama": "RMSNorm",
+    expect = {"phimoe": "LayerNorm", "t5": "Wiring unresolved", "llama": "RMSNorm",
               "bloom": "LayerNorm", "gemma2": "RMSNorm", "qwen3": "RMSNorm"}
     for mt, want in expect.items():
         ir = config_to_ir(AutoConfig.for_model(mt))
@@ -2558,23 +2558,45 @@ def test_dit_attention_bias_declaration_does_not_prove_application():
 
 
 def test_dit_norm_kind_resolved_from_classes_when_config_silent():
-    """C4: config-silent DiT norms resolve from ROOT-scoped class evidence
-    (never the pale "Normalization"), with code provenance in the prose;
-    an explicit config `norm_type` still wins (config-first on diffusers)."""
+    """A code-proven DiT norm primitive survives independently of topology.
+
+    The primitive remains visible, while the unproved placement/residual
+    wiring is explicitly unresolved.  A config ``norm_type`` cannot promote
+    that separate topology claim.
+    """
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
     from model_unfolder.evidence.context import ParseContext
     from model_unfolder.adapters.diffusor.parser import parse as dparse
 
-    want = {"stable-diffusion-3-5-large": "LayerNorm",
-            "lumina-image-2-0": "RMSNorm"}
-    for stem, kind in want.items():
+    want = {
+        "stable-diffusion-3-5-large": (
+            "LayerNorm", "layernorm", "unknown", "unknown"),
+        "lumina-image-2-0": (
+            "RMSNorm", "rmsnorm", "double", "sequential"),
+    }
+    for stem, (label, kind, placement, residual) in want.items():
         fx = json.loads((pathlib.Path(DEFAULT_CORPUS) / f"{stem}.json").read_text())
         ir = dparse(fx["config"], context=ParseContext.build(fx["config"], source="local"))
-        norm = next(b for b in ir.layers[0].blocks
-                    if isinstance(b, dict) and b.get("kind") == "norm")
-        assert norm["label"] == kind, (stem, norm["label"])
-        assert "read from the model code" in (norm.get("description") or ""), stem
+        layer = ir.layers[0]
+        norms = [b for b in layer.blocks
+                 if isinstance(b, dict) and b.get("kind") == "norm"]
+        assert layer.norm_kind == kind
+        assert layer.norm_placement == placement
+        assert layer.residual_topology == residual
+        if placement == "unknown":
+            assert len(norms) == 1
+            assert norms[0]["label"] == [label, "wiring unresolved"], (
+                stem, norms[0]["label"])
+            description = norms[0].get("description") or ""
+            assert f"source proves the repeated layer uses {label}" in description, stem
+            assert "NOT drawn rather than guessed" in description, stem
+            assert norms[0].get("resolved") is False, stem
+        else:
+            assert len(norms) == 4
+            assert {norm["label"] for norm in norms} == {label}
+            assert all("read from the model code" in
+                       (norm.get("description") or "") for norm in norms)
 
 
 def test_gemma2_softcaps_drawn_not_parked():
