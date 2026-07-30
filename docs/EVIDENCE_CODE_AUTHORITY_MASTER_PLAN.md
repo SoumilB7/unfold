@@ -1549,7 +1549,7 @@ controls and preservation delta must close together.
 | U4-B | attention internals: position application, QK norm, projection bias, cache, projection storage and score scaling are independently true/false/unknown/not-applicable | DONE — Soumil approved 2026-07-29; guarded artifacts audited; commit `4857026`; detached-worktree receipt fully green |
 | U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | DONE — commit `c7e125b`; 26-witness review and detached-worktree receipt green |
 | U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | DONE — Soumil approved the 26-witness honesty delta before blessing; commits `4724a4a` + `a08a561`; committed-tree receipt fully green |
-| U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | PENDING |
+| U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | DONE — commit `59dd22f`; no witness or pixel delta; committed-tree receipt fully green |
 | U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | PENDING |
 
 U4-A's semantic controls are deliberately asymmetric:
@@ -1983,6 +1983,49 @@ synthetic dominant-layer and card-side structural reconstruction paths.  U4-E
 must delete presentation-authored structure; it must not add a new semantic
 reader or make any unknown fact more specific.
 
+#### U4-E implementation and closure ledger
+
+U4-E deletes presentation authority without changing any reviewed model:
+
+- `_make_info` returns `dominant=None` when no repeated layer exists.  It no
+  longer creates a synthetic attention/FFN carrier.
+- an empty transformer stack renders one explicit
+  `Repeated layer structure unavailable` state.  It has no invented layer map,
+  inspect depth, attention, FFN, norm or residual cell.
+- inspect cards are emitted only for IDs present in the canonical block
+  inventory.  Token/embed/final-norm/head cards are no longer created merely
+  because their conventional IDs are known to the renderer.
+- `_fallback_sub_inspect_children` is deleted.  Nested panels exist only when a
+  canonical block carries actual children.
+- the renderer-local metadata dictionary that independently described
+  attention, FFN, norms, residual adds, router/experts and model bookends is
+  deleted.  Card metadata now comes exclusively from the canonical blocks'
+  authored title, description and facts.
+
+The corpus audit found no canonical block among the 26 witnesses lacking its
+own title/description.  Real unfolds for Llama, DeepSeek-V3, Qwen2-VL,
+MusicGen, FLUX and SDXL retained complete node-to-card coupling.  The direct
+poisons cover empty stacks, undeclared conventional card IDs, fact-rich FFNs
+with no declared children, and the positive case where declared nested children
+remain drillable.
+
+Final committed-tree receipt for `59dd22f` at
+`/private/tmp/model-unfolder-verification/a5b5caf788`:
+
+- static gate: **4 changed Python files clean**, with the deleted fallback
+  symbol permanently forbidden;
+- collection: **2338 tests**;
+- focused renderer/diffusion/U4 bracket: **390 passed**;
+- U2 authority ratchets: **44 passed**;
+- preservation: **46 passed**, zero drift across all 26 witnesses;
+- exhaustive suite: **2235 passed, 11 skipped, 2 xfailed, 0 failed**;
+- every isolated lane's complete-tree fingerprint was identical before/after.
+
+U4-E is therefore `DONE`.  U4-F is the final U4 unit: prove that every unknown
+fact has the same meaning on canonical IR/regions, HTML/cards/metadata, expanded
+JSON, parameters and conformance, and that no consumer reconstructs a stronger
+claim.
+
 ### 20.8 U5 — establish consumer firewalls
 
 Perform exactly:
@@ -2292,7 +2335,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A/U4-B/U4-C/U4-D DONE; U4-E next | `4857026`, `c7e125b`, `4724a4a`, `a08a561` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | synthetic dominant layer/card reconstruction, UNet internal templates, final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta with 25 fixture JSON changes | U4-D focused 881p; U2 44p; preservation 46p; exhaustive 2230p+11s+2xf | U4-D `/private/tmp/model-unfolder-verification/1e6b8b09e8`; every lane fingerprint identical | asserted attention/storage/scale debt retired; FFN/config topology fallbacks removed or assigned exact U7 debt; `layer_topology.yaml` deleted | U4-D closed locally after approved re-bless; U4-E may delete presentation reconstruction only |
+| U4 | ACTIVE — U4-A/U4-B/U4-C/U4-D/U4-E DONE; U4-F next | `4857026`, `c7e125b`, `4724a4a`, `a08a561`, `59dd22f` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | UNet internal templates and final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail and empty-presentation poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta; U4-E zero artifact delta | U4-E focused 390p; U2 44p; preservation 46p; exhaustive 2235p+11s+2xf | U4-E `/private/tmp/model-unfolder-verification/a5b5caf788`; every lane fingerprint identical | renderer synthetic dominant/FFN-card/metadata reconstruction deleted; earlier FFN/config topology debt remains assigned to U7 | U4-E closed locally with no re-bless; U4-F is cross-surface acceptance only |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
