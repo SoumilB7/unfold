@@ -15,8 +15,15 @@ BLOCK_LABEL_FONT_BOOST = 3
 # and in the browser url(#dup) binds to the FIRST match, which is a hidden drill panel,
 # so the arrowheads silently vanished (rsvg renders each svg isolated, hiding it). A
 def _ids(mount_id: str, view: str) -> tuple[str, str]:
-    from .render_context import ensure_render_context
-    n = ensure_render_context().next_id()
+    from .render_context import current_render_context
+    context = current_render_context()
+    # ID allocation may CONSUME the explicitly active document/render context;
+    # it must never CREATE ambient state.  Raw SVG helpers are also useful as
+    # standalone compatibility entry points, and installing a ContextVar here
+    # leaked one render's diagnostics/events into the next unrelated call.
+    # A standalone SVG is its own namespace, so ordinal zero is sufficient;
+    # composed documents always activate a shared context before reaching us.
+    n = context.next_id() if context is not None else 0
     return f"{mount_id}-{view}-{n}-arrow", f"{mount_id}-{view}-{n}-shadow"
 
 

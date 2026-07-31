@@ -88,8 +88,17 @@ def test_unknown_cross_attention_opgraph_preserves_its_proven_role():
     assert region.resolved is False
     assert region.label == "Cross-attention mechanism unresolved"
     assert [(op.kind, op.label) for op in region.ops] == [
+        ("input", None),
         ("opaque", "Cross-attention mechanism unresolved"),
+        ("input", ["Encoded text"]),
     ]
+    assert [(edge.src, edge.dst) for edge in region.edges] == [
+        ("hidden", "block"),
+        ("cross_attention_states", "block"),
+    ]
+    assert not {"q_proj", "k_proj", "v_proj", "scaled_scores"} & set(
+        region.by_id()
+    )
 
 
 def test_variant_cannot_hide_an_unknown_attention_mechanism():
@@ -173,7 +182,10 @@ def test_expanded_unknown_attention_keeps_geometry_without_qkv_or_sdpa():
             attention["operation_graph"]["nodes"]] == ["opaque"]
     # Cache is not applicable until an attention mechanism is known; it must
     # not be inferred from mask/geometry or represented as a proven negative.
-    assert attention["cache"] == {"enabled": False}
+    assert attention["cache"] == {
+        "enabled": None,
+        "status": "not_applicable",
+    }
 
 
 def test_attention_internal_defaults_are_unknown_not_conventional():

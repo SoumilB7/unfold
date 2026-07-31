@@ -84,67 +84,37 @@ def build_mtp_transformer_block_view(ir: dict, info: dict, mount_id: str, block:
     It *is* a decoder layer, so node ids/labels come from the real layer blocks
     handed to it as ``block['children']`` — the attention/FFN render through the
     same router and drill into the same MLA / MoE views as the main stack."""
+    # The adapter hands this view the representative layer's canonical blocks.
+    # Project them verbatim.  This renderer must not reconstruct a conventional
+    # two-norm/two-add cell from missing children, and it must not change an
+    # unrecognized child into a norm.  Known residual edges and aliases remain
+    # data carried by the child itself.
     children = block.get("children") or []
-    unresolved_wiring = next(
-        (c for c in children if c.get("id") == "wiring_unresolved"
-         or c.get("resolved") is False),
-        None,
-    )
-    if unresolved_wiring is not None:
-        # The representative layer deliberately refused to assert pre/post
-        # norm and residual placement.  Do not reconstruct the conventional
-        # two-norm/two-add MTP cell here: that would reintroduce the exact lie
-        # the main layer removed, and it creates clickable nodes with no facts.
-        # Render only the declared sublayers plus the same pale wiring node.
-        cell = [
-            {
-                "id": child["id"],
-                "kind": child.get("kind") or "norm",
-                "label": child.get("label") or child.get("title") or child["id"],
-                "resolved": child.get("resolved", True),
-                "static": child.get("static", False),
-            }
-            for child in children
-            if child.get("id")
-        ]
-        graph = tower_graph({
-            "source": {"id": "mtp_block_in", "kind": "port",
-                       "label": "from eh_proj  (d)"},
-            "cell": cell,
-            "repeat": 1,
-            "output": {"id": "mtp_block_out", "kind": "port",
-                       "label": "to shared output head", "static": True},
-        })
-        return render_graph(
-            graph, info, mount_id, "mtp-transformer-block",
-            f"{ir.get('name', 'model')} MTP transformer block",
-        )
-
-    norms = [c for c in children if c.get("kind") == "norm"]
-    cn1 = norms[0] if norms else {}
-    cn2 = norms[1] if len(norms) > 1 else {}
-    ca = next((c for c in children if c.get("kind") == "attention"), {})
-    cf = next((c for c in children if c.get("kind") == "ffn"), {})
-    adds = [c for c in children if c.get("kind") == "residual_add"]
-
-    norm1_id = cn1.get("id", "mtp_block_norm1")
-    norm2_id = cn2.get("id", "mtp_block_norm2")
-    add1_id = adds[0].get("id", "mtp_block_add1") if adds else "mtp_block_add1"
-    add2_id = adds[1].get("id", "mtp_block_add2") if len(adds) > 1 else "mtp_block_add2"
+    cell = [
+        {
+            "id": child["id"],
+            "kind": child.get("kind") or "opaque",
+            "label": child.get("label") or child.get("title") or child["id"],
+            "resolved": child.get("resolved", True),
+            "static": child.get("static", False),
+            **({"sub": child["sub"]} if child.get("sub") is not None else {}),
+            **(
+                {"target": child["target"]}
+                if child.get("target") is not None else {}
+            ),
+            **(
+                {"residual_from": child["residual_from"]}
+                if child.get("residual_from") is not None else {}
+            ),
+            **({"w": child["w"]} if child.get("w") is not None else {}),
+            **({"h": child["h"]} if child.get("h") is not None else {}),
+        }
+        for child in children
+        if isinstance(child, dict) and child.get("id")
+    ]
     graph = tower_graph({
         "source": {"id": "mtp_block_in", "kind": "port", "label": "from eh_proj  (d)"},
-        "cell": [
-            {"id": norm1_id, "kind": "norm", "label": cn1.get("label") or "RMSNorm"},
-            {"id": ca.get("id", "mtp_block_attn"), "kind": "attention",
-             "label": ca.get("label") or "Attention"},
-            {"id": add1_id, "kind": "residual_add",
-             "residual_from": norm1_id},
-            {"id": norm2_id, "kind": "norm", "label": cn2.get("label") or "RMSNorm"},
-            {"id": cf.get("id", "mtp_block_ffn"), "kind": "ffn",
-             "label": cf.get("label") or "Feed-Forward"},
-            {"id": add2_id, "kind": "residual_add",
-             "residual_from": norm2_id},
-        ],
+        "cell": cell,
         # One MTP module owns exactly one decoder block.  Declaring repeat=1
         # suppresses both repeat frame and pill; "decoder layer" is a card title,
         # not a repetition count.

@@ -33,7 +33,11 @@ from .svg import (
     _window_strip,
 )
 from .theme import C, FONT_HEAD, FONT_MONO, GAP
-from .render_context import ensure_render_context
+from .render_context import (
+    RenderContext,
+    activate_render_context,
+    current_render_context,
+)
 
 _FLOW_GAP = 30.0          # vertical gap between consecutive flow nodes
 _GROUP_PAD = 26.0         # padding between a repeat-frame and its members
@@ -69,7 +73,47 @@ def render_graph(
     facts_projected=frozenset(),
     receipts=(),
 ) -> str:
-    context = ensure_render_context()
+    """Render one graph without leaking compatibility state across calls.
+
+    A document render activates its own :class:`RenderContext`, which this
+    function must reuse so all nested graph events reach the same audit rail.
+    A direct graph render has no such owner; give it a context whose lifetime
+    is exactly this call.  Installing an unowned context here used to let one
+    raw graph render contaminate the next unrelated diagram on the same thread
+    (and, in tests, the next case scheduled on an xdist worker).
+    """
+    context = current_render_context()
+    if context is not None:
+        return _render_graph_in_context(
+            graph, info, mount_id, view_key, title,
+            min_width=min_width, pad=pad,
+            facts_projected=facts_projected, receipts=receipts,
+            context=context,
+        )
+
+    context = RenderContext()
+    with activate_render_context(context):
+        return _render_graph_in_context(
+            graph, info, mount_id, view_key, title,
+            min_width=min_width, pad=pad,
+            facts_projected=facts_projected, receipts=receipts,
+            context=context,
+        )
+
+
+def _render_graph_in_context(
+    graph: Graph,
+    info: dict,
+    mount_id: str,
+    view_key: str,
+    title: str,
+    *,
+    min_width: int,
+    pad: int,
+    facts_projected,
+    receipts,
+    context: RenderContext,
+) -> str:
     by_id = graph.by_id()
     for _p in wiring_problems(graph):           # Dable: flag dangling connectors
         context.wiring_findings.append(f"{view_key}: {_p}")
@@ -241,8 +285,8 @@ def _draw_node(parts, info, shadow_id, node, g) -> None:
     elif shape == "formula":
         _formula_block(parts, info, shadow_id, node.data_id(), g["left"], g["top"],
                        g["w"], g["h"],
-                       numerator=node.meta.get("numerator", "Q K^T"),
-                       denominator=node.meta.get("denominator", "sqrt(dim)"),
+                       numerator=node.meta.get("numerator") or "Scores",
+                       denominator=node.meta.get("denominator"),
                        clickable=not node.static)
     elif shape == "window":
         _window_strip(parts, g["left"], g["top"], g["w"], g["h"],

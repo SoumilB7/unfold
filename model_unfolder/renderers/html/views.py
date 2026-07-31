@@ -31,6 +31,11 @@ from .views_modalities import draw_multimodal_input_scaffold
 # A new architectural feature gets rendered by adding a kind here and tagging
 # the relevant blocks in the adapter — no edits to the layout engine itself.
 _KIND_LAYOUT = {
+    # Neutral rectangle for an unrecognized block kind.  It intentionally has
+    # its own entry even though the geometry resembles an ordinary box: using
+    # the norm entry as a fallback let later presentation changes silently
+    # recast an unknown operation as normalization.
+    "opaque":       {"shape": "rect",   "w": 200, "h": 44, "font": 15},
     "norm":         {"shape": "rect",   "w": 160, "h": 36, "font": 16},
     "linear":       {"shape": "rect",   "w": 200, "h": 38, "font": 15},
     "activation":   {"shape": "rect",   "w": 150, "h": 36, "font": 15},
@@ -58,7 +63,7 @@ def _block_layout(block: dict) -> tuple[dict, float, float, int]:
     floor, and a list-valued truth-bearing label grows the box.  This is purely
     presentation geometry; no model or mechanism identity participates.
     """
-    layout = _KIND_LAYOUT.get(block.get("kind")) or _KIND_LAYOUT["norm"]
+    layout = _KIND_LAYOUT.get(block.get("kind")) or _KIND_LAYOUT["opaque"]
     font = block.get("font") or layout.get("font", 16)
     width = block.get("w") or layout["w"]
     height = block.get("h") or layout["h"]
@@ -194,13 +199,14 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
     # An embedding-stage norm (BLOOM's word-embedding LayerNorm) adds one quiet
     # bookend box between the embedding and the stack — reserve its slot.
-    has_embed_norm = bool((info.get("blocks") or {}).get("embed_norm"))
+    canonical_blocks = info.get("blocks") or {}
+    has_embed_norm = bool(canonical_blocks.get("embed_norm"))
     embed_norm_pad = 64 if has_embed_norm else 0
     # A model-level ENTRY STAGE (a latent refiner between patchify and the
     # stack — the general secondary-stack slot): one more chain block.
-    entry_stage = (info.get("blocks") or {}).get("entry_stage")
+    entry_stage = canonical_blocks.get("entry_stage")
     embed_norm_pad += 84 if entry_stage else 0
-    embed_norm_pad += 66 if (info.get("blocks") or {}).get("join_concat") else 0
+    embed_norm_pad += 66 if canonical_blocks.get("join_concat") else 0
     if has_modality_fusion and not has_cross_attention_fusion:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292) + embed_norm_pad
     else:
@@ -223,19 +229,25 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     elif has_absolute_position:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 280, h - 100, 220, 44,
-                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
-                               resolved=True)
+                               _block_label(info, "tok_text", "Model input"), font_size=17,
+                               resolved=canonical_blocks.get("tok_text") is not None)
         position_ids = _rect_block(parts, info, shadow_id, "position_ids",
                                    cx + 60, h - 100, 220, 44,
                                    _block_label(info, "position_ids", "Position IDs"), font_size=17,
                                    resolved=True)
         embed = _rect_block(parts, info, shadow_id, "embed",
                             cx - 300, h - 174, 260, 44,
-                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
-                            resolved=True)
+                            _block_label(
+                                info, "embed", "Embedding stage unresolved"),
+                            font_size=17,
+                            resolved=canonical_blocks.get("embed") is not None)
         position_embed = _rect_block(parts, info, shadow_id, "position_embed",
                                      cx + 40, h - 174, 260, 44,
-                                     _block_label(info, "position_embed", "Learned Position Embedding"),
+                                     _block_label(
+                                         info,
+                                         "position_embed",
+                                         "Position embedding stage",
+                                     ),
                                      font_size=15, resolved=True)
         position_add = _plus_block(parts, info, shadow_id, "position_add",
                                    cx, h - 230, sym="+", clickable=True)
@@ -249,12 +261,26 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     else:
         tok_text = _rect_block(parts, info, shadow_id, "tok_text",
                                cx - 110, h - 100, 220, 44,
-                               _block_label(info, "tok_text", "Tokenized text"), font_size=17,
-                               resolved=_is_resolved_diffusion_block(is_diffusion, info, "tok_text"))
+                               _block_label(info, "tok_text", "Model input"), font_size=17,
+                               resolved=(
+                                   canonical_blocks.get("tok_text") is not None
+                                   and _is_resolved_diffusion_block(
+                                       is_diffusion, info, "tok_text",
+                                       canonical_blocks.get("tok_text"),
+                                   )
+                               ))
         embed = _rect_block(parts, info, shadow_id, "embed",
                             cx - 130, h - 168, 260, 44,
-                            _block_label(info, "embed", "Token Embedding layer"), font_size=17,
-                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "embed"))
+                            _block_label(
+                                info, "embed", "Embedding stage unresolved"),
+                            font_size=17,
+                            resolved=(
+                                canonical_blocks.get("embed") is not None
+                                and _is_resolved_diffusion_block(
+                                    is_diffusion, info, "embed",
+                                    canonical_blocks.get("embed"),
+                                )
+                            ))
         stack_input = embed
         # The ENTRY CHAIN in scaffold order — part 4 draws its consecutive
         # segments, so an intermediate entry block (embed_norm, an entry-stage
@@ -275,7 +301,7 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
                                 font_size=15)
             stack_input = stage
             entry_chain.append(stage)
-        if (info.get("blocks") or {}).get("join_concat"):
+        if canonical_blocks.get("join_concat"):
             # The one-time text+latent JOIN as a TRUE ‖ (strict two-input):
             # the latent flow enters from below; the drawn text lane's rail
             # bends into it from the side (part 6 targets it via block_pos).
@@ -285,14 +311,44 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
             block_pos["join_concat"] = join
             stack_input = join
             entry_chain.append(join)
-    final_rms = _rect_block(parts, info, shadow_id, "final_rms",
-                            cx - 90, 140 + mtp_pad, 180, 36,
-                            _block_label(info, "final_rms", "Final RMSNorm"), font_size=16,
-                            resolved=_is_resolved_diffusion_block(is_diffusion, info, "final_rms"))
+    final_block = canonical_blocks.get("final_rms")
+    final_rms = _rect_block(
+        parts,
+        info,
+        shadow_id,
+        "final_rms",
+        cx - 90,
+        140 + mtp_pad,
+        180,
+        36,
+        _block_label(
+            info,
+            "final_rms",
+            ["Pre-head path", "unresolved"],
+        ),
+        font_size=16,
+        # The fixed scaffold keeps an explicit pre-head stage visible, but only
+        # a canonical block may make that stage solid/resolved.  An absent card
+        # must never fall back to the historical "Final RMSNorm" assertion.
+        resolved=(
+            final_block is not None
+            and _is_resolved_diffusion_block(
+                is_diffusion, info, "final_rms", final_block
+            )
+        ),
+    )
     lm_head = _rect_block(parts, info, shadow_id, "lm_head",
                           cx - 130, 70 + mtp_pad, 260, 44,
-                          _block_label(info, "lm_head", "Linear output layer"), font_size=17,
-                          resolved=_is_resolved_diffusion_block(is_diffusion, info, "lm_head"))
+                          _block_label(
+                              info, "lm_head", "Output stage unresolved"),
+                          font_size=17,
+                          resolved=(
+                              canonical_blocks.get("lm_head") is not None
+                              and _is_resolved_diffusion_block(
+                                  is_diffusion, info, "lm_head",
+                                  canonical_blocks.get("lm_head"),
+                              )
+                          ))
 
     # --- 3. Layer body (data-driven, stacked bottom-up) ---
     free = inner_h - stack_h

@@ -1616,15 +1616,15 @@ def test_unet_resnet_block_has_no_repeat_pill():
 
 
 def test_unet_attention_internals_do_not_gain_unproved_u4b_details():
-    """U4-B removes QKV-storage, cache, position and scale assumptions. U10
-    separately owns retiring the hand-authored UNet MHA/SDPA mechanism."""
+    """A proven UNet cell/placement cannot manufacture inner MHA/SDPA."""
     html = unfold(SDXL_UNET).to_html(standalone=True)
     for op in ("q_proj", "k_proj", "v_proj", "qkv_proj"):
         assert f'data-id="{op}"' not in html
-    assert 'data-id="qkv_projection_unresolved"' in html
-    assert 'data-id="scaled_scores"' in html
-    assert "Q/K/V projection storage unresolved" in html
-    assert "Attention scores (scaling unresolved)" in html
+    assert 'data-id="qkv_projection_unresolved"' not in html
+    assert "Cross-attention mechanism unresolved" in html
+    assert 'data-id="scaled_scores"' not in html
+    assert "Q/K/V projection storage unresolved" not in html
+    assert "Attention scores (scaling unresolved)" not in html
     assert 'data-id="kv_cache"' not in html
     assert 'data-id="q_rope"' not in html
     assert 'data-id="k_rope"' not in html

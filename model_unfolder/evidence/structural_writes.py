@@ -707,6 +707,13 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     # exact writer rather than broadening an opgraph/table exemption.
     ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
      'Op:block'),
+    # U4-F: cross-attention source and mechanism are independent facts.  These
+    # two exact authors preserve a proven external source beside an opaque
+    # mechanism; they do not authorize Q/K/V or score-path authors.
+    ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
+     'Op:cross_attention_states'),
+    ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
+     'Op:hidden'),
     ('model_unfolder/opgraph.py', '_unknown_attention_region', 'opgraph',
      'Region:attention'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.asserted'),
@@ -927,10 +934,20 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/opgraph.py', 'ops_region', 'opgraph', 'Op:hidden'),
     ('model_unfolder/params.py', '<module>', 'params_formula', '_attn_params'),
     ('model_unfolder/params.py', '<module>', 'params_formula', '_ffn_params'),
-    ('model_unfolder/params.py', 'estimate_params', 'params', 'estimate_params:append'),
+    # U4-F: unknown attention keeps the temporary Q/K/V/O estimate visibly
+    # qualified until U5 replaces the convention with an owner-bound graph.
+    ('model_unfolder/params.py', 'estimate_params', 'params',
+     'estimate_params:append'),
     ('model_unfolder/parser.py', 'config_to_ir', 'ledger', '<dynamic>'),
     ('model_unfolder/renderers/html/block_views/attention.py', '_apply_presentation', 'spec_mutation', 'kind'),
     ('model_unfolder/renderers/html/block_views/mixture_of_experts.py', 'build_moe_expert_view', 'card', 'kind'),
+    # U4-F: the MTP drill projects each canonical child id/kind verbatim.  The
+    # former eleven hand-authored cell entries are gone; these three AST writes
+    # are the one generic projection expression, not renderer-owned structure.
+    ('model_unfolder/renderers/html/block_views/mtp_head.py',
+     'build_mtp_transformer_block_view', 'card', 'id'),
+    ('model_unfolder/renderers/html/block_views/mtp_head.py',
+     'build_mtp_transformer_block_view', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_audio_cell_tower_spec', 'card', 'id'),
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_audio_cell_tower_spec', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_ops_to_blocks', 'card', 'id'),
@@ -941,8 +958,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'id'),
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'),
-    ('model_unfolder/renderers/html/block_views/mtp_head.py', 'build_mtp_transformer_block_view', 'card', 'id'),
-    ('model_unfolder/renderers/html/block_views/mtp_head.py', 'build_mtp_transformer_block_view', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'id'),
     ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'kind'),
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'),
@@ -989,7 +1004,12 @@ _STRUCTURAL_WRITERS_MULTI = {
      'Region:mla_kv_path'): 2,
     ('model_unfolder/opgraph.py', 'mla_query_region', 'opgraph',
      'Region:mla_query_path'): 2,
-    ('model_unfolder/params.py', 'estimate_params', 'params', 'estimate_params:append'): 6,
+    ('model_unfolder/params.py', 'estimate_params', 'params',
+     'estimate_params:append'): 7,
+    ('model_unfolder/renderers/html/block_views/mtp_head.py',
+     'build_mtp_transformer_block_view', 'card', 'id'): 3,
+    ('model_unfolder/renderers/html/block_views/mtp_head.py',
+     'build_mtp_transformer_block_view', 'card', 'kind'): 3,
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_audio_cell_tower_spec', 'card', 'id'): 3,
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_ops_to_blocks', 'card', 'id'): 2,
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', '_ops_to_blocks', 'card', 'kind'): 2,
@@ -999,8 +1019,6 @@ _STRUCTURAL_WRITERS_MULTI = {
     ('model_unfolder/renderers/html/block_views/modality_views/audio.py', 'encoder_tower_spec', 'card', 'kind'): 3,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'id'): 5,
     ('model_unfolder/renderers/html/block_views/modality_views/vision_details.py', 'build_vision_encoder_view', 'card', 'kind'): 4,
-    ('model_unfolder/renderers/html/block_views/mtp_head.py', 'build_mtp_transformer_block_view', 'card', 'id'): 11,
-    ('model_unfolder/renderers/html/block_views/mtp_head.py', 'build_mtp_transformer_block_view', 'card', 'kind'): 11,
     ('model_unfolder/renderers/html/block_views/refiner.py', 'build_refiner_tower_view', 'card', 'id'): 3,
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'id'): 4,
     ('model_unfolder/renderers/html/block_views/text_encoder.py', 'build_text_encoder_view', 'card', 'kind'): 2,

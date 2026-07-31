@@ -41,11 +41,20 @@ def build_dimensions(raw: dict) -> dict[str, Any]:
 
 
 def build_parameters(params: dict) -> dict[str, Any]:
-    return {
+    out = {
         "total":  {"value": params["total"],  "human": humanize(params["total"])},
         "active": {"value": params["active"], "human": humanize(params["active"])},
         "sparse": bool(params["is_sparse"]),
     }
+    # Parameter estimates may deliberately retain a deterministic convention
+    # while a mechanism is unresolved.  The raw IR and HTML already disclose
+    # those conventions; expanded JSON must carry the same qualification or it
+    # would present the identical number as a stronger architectural claim.
+    if params.get("assumptions"):
+        out["assumptions"] = list(params["assumptions"])
+    if params.get("incomplete"):
+        out["incomplete"] = params["incomplete"]
+    return out
 
 
 def build_io(raw: dict) -> dict[str, Any]:

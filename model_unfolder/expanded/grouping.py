@@ -45,10 +45,10 @@ def _group_name(group: dict, groups: list[dict]) -> str:
     ffn  = rep.get("ffn") or {}
     masks = {(g["representative"].get("attention") or {}).get("mask") for g in groups}
     if len(masks) > 1:
-        return str(attn.get("mask") or "default")
+        return str(attn.get("mask") or "unresolved")
     ffn_kinds = {(g["representative"].get("ffn") or {}).get("kind") for g in groups}
     if len(ffn_kinds) > 1:
-        return str(ffn.get("kind") or "default")
+        return str(ffn.get("kind") or "unresolved")
     return "main"
 
 

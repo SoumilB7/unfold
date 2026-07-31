@@ -142,7 +142,10 @@ def _cache(attn: dict) -> dict[str, Any]:
             "kv_heads": attn.get("num_kv_heads"),
             "head_dim": attn.get("head_dim"),
         })
-    return {"enabled": False}
+    # An unresolved or non-KV attention mechanism cannot carry a KV-cache
+    # verdict.  ``False`` is reserved for a code/config-proven uncached
+    # cache-capable mechanism; do not collapse not-applicable into that fact.
+    return {"enabled": None, "status": "not_applicable"}
 
 
 # ---------- operation graph (projected from the canonical region) ----------

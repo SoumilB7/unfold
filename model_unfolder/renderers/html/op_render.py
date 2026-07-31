@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from ...labels import activation_label
 from ...opgraph import Op, Region
-from .graph import Graph, Lane, Node, Parallel
+from .graph import Graph, Lane, Node, Parallel, SideInput
 
 
 def region_to_graph(
@@ -86,12 +86,20 @@ def region_to_graph(
 
     # Lanes fed by secondary inputs (side sources) wait at the first branch point.
     pending: list[Lane] = []
+    side_inputs: list[SideInput] = []
     for ext in inputs:
         if ext == primary:
             continue
         for s in succ.get(ext, []):
-            ids, dsts, _pure = chase(s)
-            pending.append(Lane(ids, dst=dsts, src=ext))
+            # When both the primary and secondary input feed the same op, that
+            # op is the join itself.  With no operation between the external
+            # source and that join, Graph's SideInput is the exact relation:
+            # it owns both lateral placement and the visible incoming edge.
+            if is_merge(s):
+                side_inputs.append(SideInput(ext, s, "right"))
+            else:
+                ids, dsts, _pure = chase(s)
+                pending.append(Lane(ids, dst=dsts, src=ext))
 
     flow = [primary]
     parallels: list[Parallel] = []
@@ -104,6 +112,20 @@ def region_to_graph(
         if len(branches) == 1 and not pending:
             flow.append(branches[0])
             cur = branches[0]
+            continue
+        if len(branches) == 1 and pending and is_merge(branches[0]):
+            # The primary flow and one or more secondary inputs meet directly
+            # at a single operation.  Keep the primary edge as the spine and
+            # add only the secondary lanes; inventing a second empty primary
+            # lane draws a disconnected dot and can duplicate the join node.
+            join = branches[0]
+            for lane in pending:
+                if lane.dst == [join]:
+                    lane.dst = None
+            parallels.append(Parallel(cur, join, pending))
+            pending = []
+            flow.append(join)
+            cur = join
             continue
 
         # A branch point (or pending lanes that must join): classify branches.
@@ -177,7 +199,12 @@ def region_to_graph(
     nodes.append(Node("region_out", "port", out_label, static=True))
     flow = [*flow, "region_out"]
 
-    return Graph(nodes=nodes, flow=flow, parallels=parallels)
+    return Graph(
+        nodes=nodes,
+        flow=flow,
+        parallels=parallels,
+        side_inputs=side_inputs,
+    )
 
 
 def _lane_out_label(lane: Lane, by_op: dict[str, Op]) -> str | None:
@@ -215,10 +242,22 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
     if op.kind == "position":
         return Node(op.id, "embedding", op.label or "Position encoding", static=static)
     if op.kind == "elementwise":
-        if op.fn not in {"mul", "add", "matmul"} and op.label:
-            return Node(op.id, "activation", op.label, static=static)
-        kind = {"mul": "gate_mul", "add": "residual_add"}.get(op.fn or "", "dot_product")
-        return Node(op.id, kind, static=static)
+        kind = {
+            "mul": "gate_mul",
+            "add": "residual_add",
+            "matmul": "dot_product",
+        }.get(op.fn or "")
+        if kind is not None:
+            return Node(op.id, kind, static=static)
+        # A label is presentation, not proof that an arbitrary element-wise
+        # operation is an activation; an absent fn is likewise not matmul.
+        return Node(
+            op.id,
+            "opaque",
+            op.label or "Element-wise operation unresolved",
+            resolved=region.resolved,
+            static=static,
+        )
     if op.kind == "attention_core":
         if op.fn == "scaled_dot_product":
             return Node(op.id, "formula", static=static, meta=dict(op.meta))

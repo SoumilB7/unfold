@@ -35,10 +35,26 @@ def test_tower_graph_builds_cell_group_and_residuals_from_the_spec():
 
 def test_custom_tower_renders_with_no_view_code():
     """An adapter that emits view:'tower' + detail.tower gets the backbone."""
+    from model_unfolder.renderers.html.render_context import current_render_context
+
     assert "tower" in VIEW_REGISTRY
     svg = render_graph(tower_graph(SPEC), {}, "t0", "tower-test", "custom tower")
     for marker in ("Custom mixer", "Embed", "× 24", "Custom output"):
         assert marker in svg
+    assert current_render_context() is None
+
+
+def test_low_level_svg_id_allocation_never_creates_ambient_render_state():
+    """Manual SVG builders may consume a document context, never install one."""
+    from model_unfolder.renderers.html.render_context import current_render_context
+    from model_unfolder.renderers.html.svg import _ids
+
+    assert current_render_context() is None
+    assert _ids("standalone", "view") == (
+        "standalone-view-0-arrow",
+        "standalone-view-0-shadow",
+    )
+    assert current_render_context() is None
 
 
 def test_single_cell_never_draws_repeat_frame_or_pill_even_with_a_label():

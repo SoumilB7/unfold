@@ -153,10 +153,11 @@ def parse_unet(cfg: Any) -> dict:
     # defaults the type to "text_proj" = one nn.Linear — same rule as the code).
     ehd = _g(cfg, "encoder_hid_dim")
     ehdt = _g(cfg, "encoder_hid_dim_type") or ("text_proj" if ehd else None)
-    # U2-R7: act_fn is read ONCE (it was two bare reads) — the declared value
-    # is the drawn ResNet/conv activation label, consumed into the same FFN
-    # fact as the DiT activation; absence falls to the class default ("silu")
-    # carried with default-provenance (act_declared).
+    # U2-R7: act_fn is read ONCE (it was two bare reads) — a resolved value is
+    # the drawn ResNet/conv activation label, consumed into the same FFN fact as
+    # the DiT activation.  U4-F: absence stays None.  A renderer cannot install
+    # the common diffusers SiLU default; an exact config-class/source binding in
+    # a later mechanism unit may prove it.
     _act = _consume(cfg, "act_fn", "denoiser.ffn", "activation")
     return {
         "in_channels": _consume(cfg, "in_channels", "denoiser.patch",
@@ -174,12 +175,9 @@ def parse_unet(cfg: Any) -> dict:
         # the model code, not the config — the caller surfaces that honestly rather
         # than letting the absent lists read as "no attention anywhere".
         "declares_block_types": bool(down_types or up_types),
-        # ResNet/conv activation: a diffusers config is a constructor record —
-        # act_fn drives every ResnetBlock2D non_linearity and the conv_out
-        # activation.  An absent field falls to the CLASS default ("silu"),
-        # carried with default-provenance so the prose never presents the
-        # convention as a declared fact (the old hardcoded "SiLU" strings did).
-        "act_fn": str(_act or "silu"),
+        # ResNet/conv activation: only an owner-bound resolved value may name
+        # the operation.  Missing evidence remains an unresolved Activation.
+        "act_fn": str(_act) if _act is not None else None,
         "act_declared": _act is not None,
     }
 
@@ -291,7 +289,7 @@ def _stage_detail(st: dict, direction) -> dict:
             "attn_kind": st.get("attn_kind")}
 
 
-def _unet_resnet_ops(act_label: str = "SiLU", act_note: str = "",
+def _unet_resnet_ops(act_label: str, act_note: str = "",
                      temporal: bool = False) -> list[dict]:
     """Cards for the ResNet residual cell.
 
@@ -316,7 +314,8 @@ def _unet_resnet_ops(act_label: str = "SiLU", act_note: str = "",
         {"id": "unet_op_conv1", "title": "Conv 3×3", "description": conv_desc},
         {"id": "unet_op_temb", "title": "⊕ Timestep embedding",
          "description": ("The linear-projected timestep embedding is added here "
-                         "(ResnetBlock2D: hidden_states = hidden_states + time_emb_proj(SiLU(temb))). "
+                         f"(ResnetBlock2D: hidden_states = hidden_states + "
+                         f"time_emb_proj({act_label}(temb))). "
                          "This is the mechanism by which a UNet ResNet receives the current noise "
                          "level — distinct from DiT/AdaLN, which gates normalization parameters. "
                          "The projection adjusts the channel width to match the residual branch.")},
@@ -325,15 +324,17 @@ def _unet_resnet_ops(act_label: str = "SiLU", act_note: str = "",
         {"id": "unet_op_residual", "title": "Residual add",
          "description": ("Adds the block's raw input back onto the convolved output — "
                          "(input_tensor + hidden_states) / output_scale_factor. The bypass "
-                         "goes around the entire cell: norm1, SiLU, conv1, timestep injection, "
-                         "norm2, SiLU, conv2. When in/out channels differ a 1×1 conv adjusts "
+                         f"goes around the entire cell: norm1, {act_label}, conv1, "
+                         f"timestep injection, norm2, {act_label}, conv2. When "
+                         "in/out channels differ a 1×1 conv adjusts "
                          "the shortcut (conv_shortcut).")},
     ]
     if temporal:
         ops += [
             {"id": "unet_op_temporal", "title": "Temporal conv (over frames)",
              "description": ("A TemporalResnetBlock: a 1-D convolution along the FRAMES "
-                             "axis (GroupNorm → SiLU → Conv3d over time). It mixes each "
+                             f"axis (GroupNorm → {act_label} → Conv3d over time). "
+                             "It mixes each "
                              "spatial position's features across the video's frames — the "
                              "temporal half of the SpatioTemporalResBlock, absent from any "
                              "image U-net.")},
@@ -366,15 +367,17 @@ def _unet_transformer_subblocks(st: dict, cross_dim, prefix: str = "unet",
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
     kv_from = "text" if kv_text else str(kv_label)
-    self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                              head_dim=hd, mask="full")
+    # ``attn_kind == transformer2d`` proves the enclosing cell and its
+    # self/cross placement.  It does not prove the inner attention mechanism,
+    # head sharing, projection storage, or score path.  U10 owns that reader.
+    self_spec = AttentionSpec(
+        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full")
     # Cross-attention pulls K/V from the resolved conditioning source (encoded
     # text for SD/SDXL, image embeds for image_proj decoders), not the latent —
     # give it a real cross spec so its drilled view shows those states entering.
-    cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                               head_dim=hd, mask="full",
-                               cross_attention=True,
-                               cross_kv_source=kv_source)
+    cross_spec = AttentionSpec(
+        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full",
+        cross_attention=True, cross_kv_source=kv_source)
     # FFN inner shape: ANCHORED code evidence when available (the block class
     # the config's block-type strings name — SDXL proves geglu), else the
     # honest-undeclared card.  Never a hardcoded assertion, never an
@@ -477,9 +480,9 @@ def _simple_cross_card(sid: str, st: dict, cross_dim, kv_label: str | None = Non
     kv_from = "text" if kv_text else str(kv_label)
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
-    cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh,
-                               head_dim=hd, mask="full",
-                               cross_attention=True, cross_kv_source=kv_source)
+    cross_spec = AttentionSpec(
+        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd, mask="full",
+        cross_attention=True, cross_kv_source=kv_source)
     return {
         "id": f"{sid}__crossattn", "title": "Cross-attention",
         "description": (
@@ -488,7 +491,8 @@ def _simple_cross_card(sid: str, st: dict, cross_dim, kv_label: str | None = Non
             + (f" (dim {cross_dim})" if cross_dim else "")
             + ". Unlike SD/SDXL's CrossAttn blocks there is NO Transformer2D "
             "wrapper, NO self-attention sublayer and NO feed-forward — just the "
-            "ResNet cell and this cross-attention. Click to open its Q/K/V structure."),
+            "ResNet cell and this cross-attention. Its inner attention mechanism "
+            "remains unresolved until the exact Attention implementation is read."),
         "facts": [f for f in (f"{nh} heads" if nh else "",
                               f"K/V ({cross_dim:,})" if cross_dim else "") if f] or None,
         "view": "attention", "detail": {"attention": attention_detail(cross_spec)},
@@ -514,9 +518,9 @@ def _unknown_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = Non
     kv_from = "text" if kv_text else str(kv_label)
     kv_name = "Encoded text" if kv_text else str(kv_label)
     kv_source = "encoded text prompt" if kv_text else str(kv_label).lower()
-    cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                               mask="full", cross_attention=True,
-                               cross_kv_source=kv_source)
+    cross_spec = AttentionSpec(
+        kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+        mask="full", cross_attention=True, cross_kv_source=kv_source)
     return {
         "id": f"{sid}__crossattn", "title": "Cross-attention",
         "description": (
@@ -551,8 +555,9 @@ def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) 
              else "Cross-attention" if has_cross else "Self-attention")
     children: list[dict] = []
     if has_self:
-        self_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                                  mask="full")
+        self_spec = AttentionSpec(
+            kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+            mask="full")
         children.append({
             "id": f"{sid}__code_self", "title": "Self-attention",
             "description": ("Self-attention over the spatial latent tokens at this "
@@ -560,9 +565,9 @@ def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) 
                             "from add_self_attention)."),
             "view": "attention", "detail": {"attention": attention_detail(self_spec)}})
     if has_cross:
-        cross_spec = AttentionSpec(kind="mha", num_heads=nh, num_kv_heads=nh, head_dim=hd,
-                                   mask="full", cross_attention=True,
-                                   cross_kv_source=kv_source)
+        cross_spec = AttentionSpec(
+            kind=None, num_heads=nh, num_kv_heads=None, head_dim=hd,
+            mask="full", cross_attention=True, cross_kv_source=kv_source)
         children.append({
             "id": f"{sid}__code_cross", "title": f"Cross-attention ({kv_from})",
             "description": (f"Cross-attention: queries from the latent tokens, keys/values "
@@ -597,8 +602,15 @@ def _code_attn_card(sid: str, st: dict, cross_dim, kv_label: str | None = None) 
     }
 
 
-def _resnet_card(sid: str, st: dict, rn_label: str = "", act_label: str = "SiLU",
-                 act_note: str = "the class default", temporal: bool = False) -> dict:
+def _resnet_card(
+    sid: str,
+    st: dict,
+    rn_label: str = "",
+    *,
+    act_label: str,
+    act_note: str,
+    temporal: bool = False,
+) -> dict:
     """One ResNet block card, scoped by stage id.  Both the description and children
     now name the timestep injection (the ⊕ between conv1 and norm2).  ``temporal``
     (F3) adds the SpatioTemporalResBlock's temporal branch + AlphaBlender."""
@@ -614,7 +626,8 @@ def _resnet_card(sid: str, st: dict, rn_label: str = "", act_label: str = "SiLU"
                         "injecting the current noise level into the residual branch."
                         + temporal_note
                         + (f" {rn_label} per stage (layers_per_block)." if rn_label else "")),
-        "view": "unet_resnet", "detail": {"channels": st.get("channels"), "temporal": temporal},
+        "view": "unet_resnet",
+        "detail": {"channels": st.get("channels"), "temporal": temporal},
         "children": _unet_resnet_ops(act_label, act_note, temporal=temporal),
     }
 
@@ -647,11 +660,17 @@ def _transformer_card(sid: str, st: dict, t, cross_dim, ffn_act: str | None = No
     }
 
 
-def _unet_stage_children(st: dict, direction, cross_dim, act_label: str = "SiLU",
-                         act_note: str = "the class default",
-                         ffn_act: str | None = None,
-                         kv_label: str | None = None,
-                         temporal: bool = False) -> list[dict]:
+def _unet_stage_children(
+    st: dict,
+    direction,
+    cross_dim,
+    *,
+    act_label: str,
+    act_note: str,
+    ffn_act: str | None = None,
+    kv_label: str | None = None,
+    temporal: bool = False,
+) -> list[dict]:
     """A stage's drill: a clickable ResNet block (drills into its residual cell) and,
     for cross-attn stages, a Transformer block (drills into self→cross→FF × depth),
     plus the resample.  Real nested blocks — not a flat op list.
@@ -733,13 +752,15 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
     boc = unet.get("block_out_channels") or []
     in_ch, out_ch = unet.get("in_channels"), unet.get("out_channels")
     down, up, mid = unet.get("down") or [], unet.get("up") or [], unet.get("mid") or {}
-    # ResNet/conv activation from the config's act_fn (constructor record) with
-    # provenance — the class default is stated as a default, never as a read.
+    # ResNet/conv activation from an owner-bound act_fn input.  Absence stays
+    # unresolved; neither this adapter nor a renderer installs a class default.
     from ...labels import activation_label
-    act_label = activation_label(unet.get("act_fn") or "silu")
-    act_note = ("declared by the config's act_fn"
-                if unet.get("act_declared")
-                else "the diffusers class default (the config declares no act_fn)")
+    act_label = activation_label(unet.get("act_fn"))
+    act_note = (
+        "resolved through the denoiser's act_fn input"
+        if unet.get("act_fn") is not None
+        else "unresolved because no owner-bound act_fn evidence is available"
+    )
     # F1: the cross-attention conditioning modality (text for SD/SDXL, image for
     # image_proj decoders) — drives the "text/image cross-attention" wording so an
     # image-conditioned decoder is never described as text-conditioned.
@@ -772,8 +793,9 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "down"),
-            "children": _unet_stage_children(st, "down", unet.get("cross_attention_dim"),
-                                             act_label, act_note,
+            "children": _unet_stage_children(
+                                             st, "down", unet.get("cross_attention_dim"),
+                                             act_label=act_label, act_note=act_note,
                                              ffn_act=unet.get("transformer_ffn_act"),
                                              kv_label=kv_label, temporal=temporal),
         })
@@ -796,8 +818,9 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 if ch else "U-net bottleneck stage."),
             "facts": _stage_facts(mid) or None,
             "view": "unet_stage", "detail": _stage_detail(mid, None),
-            "children": _unet_stage_children(mid, None, unet.get("cross_attention_dim"),
-                                             act_label, act_note,
+            "children": _unet_stage_children(
+                                             mid, None, unet.get("cross_attention_dim"),
+                                             act_label=act_label, act_note=act_note,
                                              ffn_act=unet.get("transformer_ffn_act"),
                                              kv_label=kv_label, temporal=temporal),
         })
@@ -815,8 +838,9 @@ def unet_denoiser_children(unet: dict, text_encoder_specs: list | None = None) -
                 + (" / transformer_layers_per_block." if attn else ".")),
             "facts": _stage_facts(st) or None,
             "view": "unet_stage", "detail": _stage_detail(st, "up"),
-            "children": _unet_stage_children(st, "up", unet.get("cross_attention_dim"),
-                                             act_label, act_note,
+            "children": _unet_stage_children(
+                                             st, "up", unet.get("cross_attention_dim"),
+                                             act_label=act_label, act_note=act_note,
                                              ffn_act=unet.get("transformer_ffn_act"),
                                              kv_label=kv_label, temporal=temporal),
         })

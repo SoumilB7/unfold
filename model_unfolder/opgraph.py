@@ -445,7 +445,7 @@ def _unknown_attention_region(attn: dict, hidden: int | None) -> Region:
         if attn.get("cross_attention")
         else "Attention mechanism unresolved"
     )
-    op = Op(
+    mechanism = Op(
         "block",
         "opaque",
         label,
@@ -460,12 +460,28 @@ def _unknown_attention_region(attn: dict, hidden: int | None) -> Region:
             ),
         },
     )
+    ops = [mechanism]
+    edges: list[Edge] = []
+    # Cross-attention placement and its external K/V source are independent
+    # facts from the inner token-mixing mechanism.  Preserve that known input
+    # beside the opaque mechanism; do not require an invented SDPA/QKV graph
+    # merely to show where conditioning enters.
+    if attn.get("cross_attention") and attn.get("cross_kv_source"):
+        ops = [
+            Op("hidden", "input", out_features=hidden),
+            mechanism,
+            Op("cross_attention_states", "input", _cross_kv_label(attn)),
+        ]
+        edges = [
+            Edge("hidden", "block"),
+            Edge("cross_attention_states", "block"),
+        ]
     return Region(
         "attention",
         "attention",
         label,
-        [op],
-        [],
+        ops,
+        edges,
         template="unknown_attention",
         source="opaque",
         resolved=False,

@@ -2689,8 +2689,8 @@ def test_norm_placement_defaults_two_unknown_tiers():
 
 
 def test_unet_prose_on_code_evidence_rail():
-    """B3: UNet ResNet/conv activation follows the config's act_fn with
-    provenance (class default stated as default); the Transformer2D FFN is
+    """B3/U4-F: a resolved UNet activation follows the owner-bound act_fn
+    input; absence stays unresolved.  The Transformer2D FFN is independently
     honest-undeclared (never the old hardcoded GEGLU assertion)."""
     import json, pathlib
     from model_unfolder.sable import DEFAULT_CORPUS
@@ -2724,7 +2724,7 @@ def test_unet_prose_on_code_evidence_rail():
                         "act_fn": "gelu"})
     blob2 = json.dumps(unet_denoiser_children(unet2))
     assert "GroupNorm+GELU" in blob2 or "GroupNorm + GELU" in blob2
-    assert "declared by the config" in blob2
+    assert "resolved through the denoiser's act_fn input" in blob2
 
 
 def test_asserted_facts_tagged_and_advisory():

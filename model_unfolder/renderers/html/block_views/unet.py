@@ -297,26 +297,40 @@ def build_unet_stage_view(ir: dict, info: dict, mount_id: str, block: dict) -> s
 
 def build_unet_resnet_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """One ResNet block — the actual ResnetBlock2D.forward() cell:
-    in → GroupNorm+SiLU → Conv 3×3 → ⊕ timestep emb → GroupNorm+SiLU → Conv 3×3 → ⊕ → out.
+    in → GroupNorm+activation → Conv 3×3 → ⊕ timestep emb →
+    GroupNorm+activation → Conv 3×3 → ⊕ → out.
 
     The residual bypass (shortcut) goes around the ENTIRE cell from the raw block
     input — not from norm1.  The timestep embedding is injected between conv1 and
-    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN)."""
+    norm2 (the UNet's conditioning mechanism, as distinct from DiT/AdaLN).
+    The activation label is projected from the canonical child card; this renderer
+    never supplies a SiLU/GELU mechanism default."""
     d = block.get("detail") or {}
     ch = d.get("channels")
     temporal = bool(d.get("temporal"))
+    child_by_id = {
+        child.get("id"): child
+        for child in (block.get("children") or [])
+        if isinstance(child, dict)
+    }
+    norm_activation = str(
+        (child_by_id.get("unet_op_norm1") or {}).get("title")
+        or "GroupNorm + Activation"
+    )
     op = {"w": 216, "h": 44}
     # A ResNet block is ONE residual cell, not a repeated stack (the per-stage
     # repeat = layers_per_block is shown one level up, on the stage). So its ops
     # are ``pre`` (a plain chain + residual loop), never a "× N" repeat-frame.
     # residual_from "unet_res_in" (the block's input port): the shortcut bypasses
-    # norm1 + SiLU + conv1 + temb_inject + norm2 + SiLU + conv2 — the whole cell.
+    # norm1 + activation + conv1 + temb_inject + norm2 + activation + conv2.
     # F3: a spatio-temporal block appends the temporal 1-D-conv branch + AlphaBlender.
     pre = [
-        {"id": "unet_op_norm1", "kind": "norm", "label": "GroupNorm + SiLU", **op},
+        {"id": "unet_op_norm1", "kind": "norm",
+         "label": norm_activation, **op},
         {"id": "unet_op_conv1", "kind": "embedding", "label": "Conv 3×3", **op},
         {"id": "unet_op_temb", "kind": "residual_add", "label": "⊕ Timestep emb"},
-        {"id": "unet_op_norm2", "kind": "norm", "label": "GroupNorm + SiLU", **op},
+        {"id": "unet_op_norm2", "kind": "norm",
+         "label": norm_activation, **op},
         {"id": "unet_op_conv2", "kind": "embedding", "label": "Conv 3×3", **op},
         {"id": "unet_op_residual", "kind": "residual_add", "residual_from": "unet_res_in"},
     ]

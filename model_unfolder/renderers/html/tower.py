@@ -20,7 +20,9 @@ from __future__ import annotations
 from .graph import Edge, Graph, Group, Node, SideInput
 from .graph_engine import render_graph
 
-#: tower block ``kind`` -> engine node kind (anything else falls back to norm).
+#: tower block ``kind`` -> engine node kind.  Unknown values are rendered as
+#: opaque by :func:`tower_graph`; presentation must never turn an unrecognized
+#: architectural block into a familiar normalization operation.
 _KIND_TO_NODE = {
     "norm": "norm",
     "attention": "attention",
@@ -171,7 +173,8 @@ def tower_graph(spec: dict) -> Graph:
     flow: list[str] = []
     edges: list[Edge] = []
 
-    def add(block: dict, *, default_kind: str = "norm", static: bool | None = None) -> str:
+    def add(block: dict, *, default_kind: str = "opaque",
+            static: bool | None = None) -> str:
         node_id = block["id"]
         kind = _KIND_TO_NODE.get(block.get("kind"), default_kind)
         nodes.append(Node(

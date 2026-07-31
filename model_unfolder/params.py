@@ -158,6 +158,9 @@ def estimate_params(ir: ModelIR) -> dict:
     for layer in ir.layers:
         a_p = _attn_params(layer.attention, h)
         f_total, f_active = _ffn_params(layer.ffn, h)
+        if layer.attention.kind in {None, "", "unknown"} \
+                and _ATTENTION_UNKNOWN_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_UNKNOWN_NOTE)
         if layer.ffn.kind == "moe":
             is_sparse = True
         pending_notes = (
@@ -239,6 +242,10 @@ def estimate_params(ir: ModelIR) -> dict:
 
 
 #: U2: the one-line annotation for an unknown FFN gate structure.
+_ATTENTION_UNKNOWN_NOTE = (
+    "attention mechanism unknown — Q/K/V/O parameter estimate is a "
+    "temporary estimation convention, not code-proven architecture"
+)
 _GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
                "(a gated FFN would add hidden x inner per layer)")
 _EXPERT_GATED_NOTE = (
