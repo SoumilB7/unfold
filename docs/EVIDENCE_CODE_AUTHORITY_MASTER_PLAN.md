@@ -1550,7 +1550,7 @@ controls and preservation delta must close together.
 | U4-C | FFN mechanism: kind, gating, activation, ordinary/expert storage and widths project independently; an unknown inner form is opaque | DONE — commit `c7e125b`; 26-witness review and detached-worktree receipt green |
 | U4-D | layer cell: norm kind, placement, residual topology, parallel/sandwich structure and bookends require an owner-bound fact | DONE — Soumil approved the 26-witness honesty delta before blessing; commits `4724a4a` + `a08a561`; committed-tree receipt fully green |
 | U4-E | empty/unresolved presentation: remove the synthetic dominant layer and card-side structural reconstruction | DONE — commit `59dd22f`; no witness or pixel delta; committed-tree receipt fully green |
-| U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | PENDING |
+| U4-F | cross-surface closure: IR, canonical regions, HTML, cards, metadata, expanded JSON and params preserve unknown identically; full poisons and 26-witness acceptance | DONE — Soumil approved the exact 9-fixture / 10-image honesty delta; commit `e77f014`; all committed-tree gates green |
 
 U4-A's semantic controls are deliberately asymmetric:
 
@@ -2026,6 +2026,83 @@ fact has the same meaning on canonical IR/regions, HTML/cards/metadata, expanded
 JSON, parameters and conformance, and that no consumer reconstructs a stronger
 claim.
 
+#### U4-F implementation and closure ledger
+
+U4-F closes the remaining cross-surface routes that could strengthen an
+unknown fact after parsing:
+
+- a UNet cell classification proves the cell/container placement only.  It no
+  longer manufactures MHA, equal K/V heads, split Q/K/V, scaled scores or a
+  cache for the cell's inner self/cross-attention;
+- an absent UNet `act_fn` stays unresolved.  ResNet cards and drills use a
+  named activation only when the denoiser's owner-bound input resolves it; the
+  adapter/renderer no longer installs the common SiLU class convention;
+- an unresolved cross-attention region remains one opaque mechanism while
+  retaining its independently proven conditioning source.  The graph renderer
+  represents that source as a real side input, so it neither disappears nor
+  becomes the primary-only path;
+- tower and legacy-layout fallbacks map unknown kinds to `opaque`, never to
+  normalization geometry.  Missing model bookends use neutral unresolved
+  placeholders rather than `Token Embedding`, `Final RMSNorm` or `Linear
+  output` claims;
+- the MTP drill projects canonical children verbatim.  Its former renderer-
+  authored two-norm/attention/FFN/two-residual decoder reconstruction is
+  deleted;
+- unknown element-wise operations and formula nodes remain opaque/generic;
+  labels cannot turn them into an activation, matmul, `Q K^T` or
+  `sqrt(dim)` operation;
+- expanded JSON now carries the same parameter assumptions as raw IR/HTML and
+  represents cache on an unresolved/non-KV attention mechanism as
+  `{enabled: null, status: not_applicable}` rather than a proven `false`;
+- deterministic temporary parameter estimates remain visibly qualified when
+  attention/FFN/norm/final-stage structure is unknown.  U5 still owns replacing
+  those conventions with owner-bound parameter graphs;
+- heterogeneous unknown layer groups are called `unresolved`, never
+  `default`.
+
+The acceptance run found and closed a shared call-locality defect instead of
+masking it with test order.  A raw graph render and the low-level SVG ID helper
+could install an unowned ambient `RenderContext`; a later render on the same
+thread/xdist worker then inherited stale events and wiring diagnostics.  Graph
+renders now create a context whose lifetime is exactly a direct call, while SVG
+ID allocation may consume an explicitly active document context but can never
+create one.  Dedicated direct-call poisons pin both boundaries.
+
+Soumil approved the measured U4-F visual/artifact delta on 2026-07-31:
+
+- exactly **9 fixture signatures** changed; all preserve their exact model
+  identity, source and frozen config and carry the former signature as
+  `superseded_hash_signature`;
+- exactly **10 of 325 distinct PNG views** changed: three denoiser overview
+  nodes use neutral opaque geometry, six cross-attention drills retain their
+  real conditioning side rail, and SDXL's self-attention drill removes its
+  fabricated internal MHA graph;
+- the remaining **17 fixture signatures** and every unrelated architecture,
+  FFN, ResNet, VAE, scheduler and tower PNG stayed unchanged;
+- durable gallery bytes match the reviewed re-render, and the canonical
+  26-witness manifest was rebuilt from the approved tree.
+
+The first committed-tree bracket caught one remaining SVG context leak.  The
+corrected bracket then caught one stale test that required the retired prose
+`declared by the config`; the test now requires the honest owner-bound
+`act_fn` statement.  Neither correction restores a structural default or adds
+a model/family branch.
+
+Final committed-tree receipt for `e77f014` at
+`/private/tmp/model-unfolder-verification/c0604f8ef8`:
+
+- static gate: **19 changed Python files clean**;
+- collection: **2360 tests**;
+- focused U4-F/cross-surface lane: **172 passed**;
+- U2 authority ratchets: **44 passed**;
+- preservation: **46 passed**, zero drift against all 26 reviewed witnesses;
+- exhaustive suite: **2257 passed, 11 skipped, 2 xfailed, 0 failed**;
+- every isolated lane's complete-tree fingerprint was identical before/after.
+
+U4 is therefore `DONE`.  U5 is the next permitted unit: establish consumer
+dependency firewalls and make any remaining raw-config/source reconstruction
+in renderers, expanded JSON, parameter estimation or conformance blocking.
+
 ### 20.8 U5 — establish consumer firewalls
 
 Perform exactly:
@@ -2335,7 +2412,7 @@ append a superseding row.
 | U1 | PENDING | — | T-01, D-02 | — | — | — | — | — | not run | not recorded | — | — |
 | U2 | PENDING | — | C-08..C-13 | — | — | — | — | — | not run | not recorded | — | — |
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
-| U4 | ACTIVE — U4-A/U4-B/U4-C/U4-D/U4-E DONE; U4-F next | `4857026`, `c7e125b`, `4724a4a`, `a08a561`, `59dd22f` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | UNet internal templates and final cross-surface closure | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail and empty-presentation poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta; U4-E zero artifact delta | U4-E focused 390p; U2 44p; preservation 46p; exhaustive 2235p+11s+2xf | U4-E `/private/tmp/model-unfolder-verification/a5b5caf788`; every lane fingerprint identical | renderer synthetic dominant/FFN-card/metadata reconstruction deleted; earlier FFN/config topology debt remains assigned to U7 | U4-E closed locally with no re-bless; U4-F is cross-surface acceptance only |
+| U4 | DONE | `4857026`, `c7e125b`, `4724a4a`, `a08a561`, `59dd22f`, `e77f014` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | renderer defaults for UNet attention/activation, MTP reconstruction, norm-layout fallback, formula/elementwise defaults and cross-surface unknown strengthening deleted | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail, context-isolation and empty-presentation poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta; U4-E zero artifact delta; U4-F 9 signatures / 10 of 325 PNGs approved | U4-F focused 172p; U2 44p; preservation 46p; exhaustive 2257p+11s+2xf | U4-F `/private/tmp/model-unfolder-verification/c0604f8ef8`; every lane fingerprint identical | unknown is closed across all current surfaces; deterministic parameter conventions remain explicitly qualified and assigned to U5 | Soumil approved U4-F delta; U4 closed locally, no push |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
