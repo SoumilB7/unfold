@@ -1299,6 +1299,11 @@ class _SourceWalker:
         # source line (``self.a = A(); self.b = B()`` or ``Sequential(A(), B())``)
         # get distinct ConstructionSiteIds (boundary: honest site identity).
         self._line_ordinals: dict = {}
+        # Exact ``self.<container>.append(Constructor(...))`` observations are
+        # folded into their one unambiguous container declaration after the
+        # callable walk completes.  This is syntax-only container membership;
+        # execution/address resolution remains outside ProgramIndex.
+        self._container_appends: list = []
 
     # -- passes ------------------------------------------------------------- #
 
@@ -1311,6 +1316,7 @@ class _SourceWalker:
                 self._class(node, scope="")
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 self._callable(node, owner=None, scope="")
+        self._fold_container_appends()
         return self
 
     def _collect_definitions(self, body, scope: str, guard: tuple) -> None:
@@ -1591,6 +1597,7 @@ class _SourceWalker:
                 self._visit_stmts(case.body, guard, scan)
             return
         if isinstance(stmt, ast.Expr):
+            self._maybe_container_append(stmt.value, guard, scan)
             self._walk_expr(stmt.value, guard, scan)
             return
         # Any other statement is published as an UNKNOWN/unmodelled coverage gap,
@@ -1714,6 +1721,71 @@ class _SourceWalker:
         if isinstance(arg, ast.Dict):
             return [v for v in arg.values if isinstance(v, ast.Call)], None
         return [], None
+
+    def _maybe_container_append(self, value, guard: tuple,
+                                scan: _CallableScan) -> None:
+        """Observe one exact append construction without assigning semantics.
+
+        Only the closed syntactic form ``self.<field>.append(<Call>)`` enters
+        this channel.  Whether ``field`` is a container is established later by
+        joining to its unique ContainerElementsRecord; unmatched/dynamic calls
+        remain ordinary CallObservations and cannot author a child occurrence.
+        """
+        if scan.owner is None or not isinstance(value, ast.Call) \
+                or len(value.args) != 1 or value.keywords \
+                or not isinstance(value.args[0], ast.Call):
+            return
+        callee = value.func
+        if not isinstance(callee, ast.Attribute) or callee.attr != "append" \
+                or not isinstance(callee.value, ast.Attribute) \
+                or not isinstance(callee.value.value, ast.Name) \
+                or callee.value.value.id != "self":
+            return
+        field = callee.value.attr
+        site = self._site(
+            field, "element", value.args[0], guard, scan, via="append")
+        self._container_appends.append((
+            scan.owner, scan.enclosing, field, site, self._span(value)))
+        self.sites.append(site)
+
+    def _fold_container_appends(self) -> None:
+        """Attach append sites only to one exact, never-reassigned container.
+
+        A second field assignment makes the receiver identity uncertain, so no
+        append is folded.  This deliberately leaves such calls unresolved
+        rather than associating a constructor with the wrong container.
+        """
+        if not self._container_appends:
+            return
+        assignments: dict[tuple, list] = {}
+        for item in self.field_assigns:
+            assignments.setdefault(
+                (item.owner, item.enclosing_callable, item.field), []).append(item)
+        mutations: dict[tuple, list] = {}
+        for owner, callable_symbol, field, site, span in self._container_appends:
+            mutations.setdefault((owner, callable_symbol, field), []).append(
+                (site, span))
+
+        replaced = []
+        for record in self.containers:
+            key = (record.owner, record.enclosing_callable, record.field)
+            additions = mutations.get(key, ())
+            field_writes = assignments.get(key, ())
+            if additions and len(field_writes) == 1:
+                later = tuple(
+                    site for site, span in additions
+                    if _span_after(span, record.span))
+                if later:
+                    elements = tuple(sorted(
+                        (*record.elements, *later), key=lambda item: (
+                            item.span.line if item.span else 0,
+                            item.span.col if item.span else 0,
+                            item.site_id.ordinal)))
+                    record = ContainerElementsRecord(
+                        record.owner, record.enclosing_callable, record.field,
+                        record.kind, elements, record.count, record.span)
+            replaced.append(record)
+        self.containers[:] = replaced
 
     def _site(self, target: str, target_kind: str, call: ast.Call,
               guard: tuple, scan: _CallableScan, *, via: str) -> ConstructionSite:
@@ -2078,6 +2150,18 @@ def _short_name(node) -> str:
     if isinstance(node, ast.Attribute):
         return node.attr
     return ""
+
+
+def _span_after(later: SourceSpan | None,
+                earlier: SourceSpan | None) -> bool:
+    """True only when two exact same-source spans prove lexical succession."""
+    if later is None or earlier is None or later.source != earlier.source:
+        return False
+    earlier_end = (
+        earlier.end_line or earlier.line,
+        earlier.end_col or earlier.col,
+    )
+    return (later.line, later.col) >= earlier_end
 
 
 # =========================================================================== #

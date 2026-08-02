@@ -118,6 +118,16 @@ def _norm_kind_at_block(index, root, owner):
         if invocation.call_site in seen_sites:
             continue
         seen_sites.add(invocation.call_site)
+        # Indexed container calls are now exact internal child addresses, but
+        # this primitive reader classifies the constructor behind a direct
+        # ``self.<field>(...)`` call.  Do not feed a different call shape into
+        # that resolver; a dedicated container-element primitive proof can be
+        # added without weakening this boundary.
+        callee = invocation.call.callee
+        if callee.kind != "attribute" or not callee.children \
+                or callee.children[0].kind != "name" \
+                or callee.children[0].name != "self":
+            continue
         construction = resolve_construction_call(
             index, root, owner, invocation.call)
         primitive = classify_primitive_call(index, construction)

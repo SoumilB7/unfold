@@ -87,7 +87,7 @@ class AttentionProjectionStorage:
             raise TypeError("storage evidence carries its compute-entry call")
         if self.compute_entry != self.attention.compute.entry_call:
             raise ValueError("storage and attention proofs share one compute entry")
-        if any(item.parent != self.attention.child_occurrence
+        if any(item.parent != self.attention.compute_occurrence
                for item in self.projections):
             raise ValueError(
                 "every projection occurrence belongs to the exact attention child")
@@ -445,7 +445,8 @@ def attention_projection_storage_for_child_evidence(
             or not isinstance(child, AttentionChildEvidence):
         raise TypeError("storage child evidence requires exact block + child proofs")
     if child.block_occurrence != block_occurrence \
-            or root.graph.node_for(child.child_occurrence) is None:
+            or root.graph.node_for(child.child_occurrence) is None \
+            or root.graph.node_for(child.compute_occurrence) is None:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner",
             "the attention child does not belong to the exact block/root"),))
@@ -462,7 +463,7 @@ def attention_projection_storage_for_child_evidence(
         if _self_field(call.callee) is None:
             continue
         construction = resolve_construction_call(
-            index, root, child.child_occurrence, call)
+            index, root, child.compute_occurrence, call)
         if construction.status != "resolved" \
                 or construction.selected.kind != "external" \
                 or construction.selected.external_reference.qualified_target \
@@ -777,6 +778,10 @@ def _proves_lane_unpack(
     if value.kind != "call" or not value.children:
         return False
     callee = value.children[0]
+    if _proves_tensor_lane_unpack(
+            value, callee, caller_env, calls_by_span, dependencies,
+            occurrence, width):
+        return True
     method = _self_field(callee)
     if method is None:
         return False
@@ -833,6 +838,36 @@ def _proves_lane_unpack(
                 for child in returned.value.children[:width]):
             return False
     return True
+
+
+def _proves_tensor_lane_unpack(
+        value, callee, env, calls_by_span, dependencies, occurrence, width):
+    """Closed torch-Tensor ``split``/``chunk`` lane protocol.
+
+    The receiver must trace uniquely to the exact projection occurrence and
+    the literal lane declaration must match the destructuring width.  A method
+    spelling on an unrelated/ambiguous receiver is powerless.
+    """
+    if callee.kind != "attribute" or not callee.children \
+            or callee.name not in {"split", "chunk"}:
+        return False
+    receiver_sources, receiver_uncertain = _expression_sources(
+        callee.children[0], env, calls_by_span, dependencies)
+    if receiver_uncertain or receiver_sources != frozenset((occurrence,)):
+        return False
+    args = tuple(
+        child for child in value.children[1:]
+        if isinstance(child, ExprNode))
+    if not args:
+        return False
+    declared = args[0]
+    if callee.name == "split":
+        return declared.kind in {"list", "tuple"} \
+            and len(declared.children) == width
+    return declared.kind == "constant" \
+        and isinstance(declared.const_value, int) \
+        and not isinstance(declared.const_value, bool) \
+        and declared.const_value == width
 
 
 def _return_guards_are_exhaustive(returns):

@@ -412,9 +412,50 @@ def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
             site, owner_occurrence, "local_or_free_name_call", call, guard))
         return
 
-    if _indexed_self_field(callee) is not None:
-        unresolved.append(UnresolvedInvocation(
-            site, owner_occurrence, "indexed_access_unproven", call, guard))
+    indexed = _literal_indexed_self_field(callee)
+    if indexed is not None:
+        field, position = indexed
+        container = container_by_field.get(field)
+        if container is None:
+            unresolved.append(UnresolvedInvocation(
+                site, owner_occurrence, "indexed_access_unproven", call, guard))
+            return
+        # A non-negative literal index is exact only when every storage slot up
+        # to it is unconditionally present.  Guarded earlier appends can shift
+        # the position and therefore remain unresolved.
+        elements = tuple(container.element_sites)
+        if position >= len(elements) or any(
+                item.guard for item in elements[:position + 1]):
+            unresolved.append(UnresolvedInvocation(
+                site, owner_occurrence,
+                "indexed_container_position_unproven", call, guard,
+                elements[:position + 1]))
+            return
+        element = elements[position]
+        if len(element.candidates) != 1 \
+                or element.candidates[0].symbol is None:
+            unresolved.append(UnresolvedInvocation(
+                site, owner_occurrence,
+                "indexed_container_element_unresolved", call, guard,
+                (element,)))
+            return
+        children = tuple(
+            child for child in node.children
+            if child.via_field == field
+            and child.via_site == element.site_id
+            and child.symbol == element.candidates[0].symbol
+            and root_resolution.graph.node_for(child.occurrence) is child)
+        if len(children) != 1:
+            unresolved.append(UnresolvedInvocation(
+                site, owner_occurrence,
+                "indexed_container_owner_unresolved", call, guard,
+                tuple(child.occurrence for child in children)))
+            return
+        addressed.append(AddressedInvocation(
+            site, owner_occurrence, children[0].occurrence, call, guard,
+            tuple(dict.fromkeys(
+                span for span in (call.span, element.span)
+                if isinstance(span, SourceSpan)))))
         return
 
     unresolved.append(UnresolvedInvocation(
@@ -441,6 +482,19 @@ def _indexed_self_field(callee):
     if callee.kind == "subscript" and callee.children:
         return _self_field(callee.children[0])
     return None
+
+
+def _literal_indexed_self_field(callee):
+    """Return ``(field, index)`` for exact ``self.field[<nonnegative int>]``."""
+    field = _indexed_self_field(callee)
+    if field is None or len(callee.children) != 2:
+        return None
+    index = callee.children[1]
+    if index.kind != "constant" or isinstance(index.const_value, bool) \
+            or not isinstance(index.const_value, int) \
+            or index.const_value < 0:
+        return None
+    return field, index.const_value
 
 
 def _enclosing_iteration(index, loops, call, name):

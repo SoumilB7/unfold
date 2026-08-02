@@ -1149,7 +1149,7 @@ def test_layer_norm_placement_matches_source_topology():
     assert order == ["rms1", "attn", "add1", "rms2", "ffn", "add2"]
 
 
-def test_single_kv_gemma4_stays_gqa_view():
+def test_single_kv_gemma4_keeps_geometry_without_inventing_gqa():
     cfg = dict(GEMMA4_31B_CONFIG)
     text_cfg = dict(GEMMA4_31B_CONFIG["text_config"])
     text_cfg.update(
@@ -1169,15 +1169,20 @@ def test_single_kv_gemma4_stays_gqa_view():
 
     d = unfold(cfg)
     ir = d.to_ir()
-    assert ir["layers"][0]["attention"]["kind"] == "gqa"
+    # The installed Gemma4 wrapper delegates through AutoModel.from_config.
+    # Until that framework dispatch is resolved to one exact text-model owner,
+    # the checkpoint's 8/1 counts remain geometry—not proof of GQA.
+    assert ir["layers"][0]["attention"]["kind"] is None
     assert ir["layers"][0]["attention"]["num_kv_heads"] == 1
 
     html = d.to_html(standalone=True)
-    assert "Grouped-query attention" in html
-    assert "Grouped scaled dot-product attention" in html
-    assert "GQA 8/1" in html
-    assert "Q0-Q7" in html
-    assert "use KV0" in html
+    assert "Attention mechanism unresolved" in html
+    assert "1 KV head" in html  # known geometry survives unknown mechanism
+    assert "Grouped-query attention" not in html
+    assert "Grouped scaled dot-product attention" not in html
+    assert "GQA 8/1" not in html
+    assert "Q0-Q7" not in html
+    assert "use KV0" not in html
     assert "Multi-query attention" not in html
     assert "Multi-query scaled dot-product attention" not in html
 
@@ -1489,7 +1494,7 @@ def test_new_should_support_family_routes():
         # Yi's custom source is unavailable locally. Width remains known, but
         # U4-C/U4-D refuse to infer either FFN or norm mechanism from config
         # spellings alone.
-        (YI_34B_CONFIG, "gqa", None, "unknown"),
+            (YI_34B_CONFIG, None, None, "unknown"),
         (OLMO_7B_CONFIG, "mha", "dense", "layernorm"),
         (OLMOE_CONFIG, "mha", "moe", "rmsnorm"),
     ]
@@ -1809,7 +1814,8 @@ def test_declared_scores_scale_does_not_manufacture_an_operation():
         {},
     ):
         html = unfold({**base, **extra}).to_html(standalone=True)
-        assert "Attention scores (scaling unresolved)" in html
+        assert "Attention mechanism unresolved" in html
+        assert "Attention scores" not in html
         assert "sqrt(dim)" not in html
         assert validate_click_coupling(html) == []
 
@@ -1826,7 +1832,10 @@ def test_multi_query_flag_defers_to_declared_group_count():
            "ffn_hidden_size": 13696, "padded_vocab_size": 65024,
            "seq_length": 8192, "kv_channels": 128}
     a = unfold(glm).to_ir()["layers"][0]["attention"]
-    assert (a["num_kv_heads"], a["kind"]) == (2, "gqa")
+    # The group count is valid geometry, but counts + a config flag do not
+    # prove the exact projection/compute mechanism when this source owner is
+    # unresolved.  U6 therefore keeps the mechanism honest-unknown.
+    assert (a["num_kv_heads"], a["kind"]) == (2, None)
     falcon = {"model_type": "falcon", "architectures": ["FalconForCausalLM"],
               "hidden_size": 4544, "num_hidden_layers": 32,
               "num_attention_heads": 71, "multi_query": True, "vocab_size": 65024}

@@ -219,7 +219,8 @@ def test_attention_detail_view_uses_clicked_block_not_dominant_group():
         intermediate_size=256, vocab_size=1000, hidden_act="gelu", layer_norm_eps=1e-5,
     )).to_dict()
     gqa_ir = parse(dict(
-        model_type="m", num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
+        model_type="gemma", architectures=["GemmaForCausalLM"],
+        num_hidden_layers=1, hidden_size=128, num_attention_heads=8,
         num_key_value_heads=2, intermediate_size=256, vocab_size=1000, rms_norm_eps=1e-5,
     )).to_dict()
 

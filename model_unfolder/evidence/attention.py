@@ -141,8 +141,9 @@ class AttentionHeadBinding:
     * ``grouped_kv``: one lane uses ``query_heads_path`` and two lanes use
       ``key_value_heads_path``.
 
-    The 1:2 multiplicity is not a field-name guess.  It is proved over the
-    three affine producers that reach the exact attention computation.
+    The 1:2 multiplicity is not a field-name guess.  It is proved over either
+    three affine producers or one packed producer's exact three-lane split,
+    with every lane reaching the exact attention computation.
     """
 
     block_occurrence: OwnerOccurrenceId
@@ -179,10 +180,6 @@ class AttentionHeadBinding:
                 or len(set(self.projections)) != expected:
             raise ValueError(
                 f"{self.storage_mode} head evidence carries {expected} projection(s)")
-        if self.storage_mode == "fused_qkv" \
-                and self.protocol != "equal_heads":
-            raise ValueError(
-                "the current fused protocol proves equal Q/K/V lanes only")
         if any(item.parent != self.attention_occurrence
                for item in self.projections):
             raise ValueError("every projection belongs to the exact attention owner")
@@ -541,38 +538,39 @@ def attention_head_binding_at_block(
                 "incomplete_graph", "attention storage is unresolved"),),
             provenance=storage.provenance)
     attention = storage.value.attention
-    node = root.graph.node_for(attention.child_occurrence)
+    node = root.graph.node_for(attention.compute_occurrence)
     if node is None:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner", "attention owner is absent from the owner graph"),))
 
     if storage.value.mode == "fused_qkv":
-        fused = _fused_equal_head_binding(
-            index, node, storage.value,
+        fused = _fused_head_binding(
+            index, root, node, storage.value,
             config_prefix=config_prefix)
         if fused is None:
             return ReaderResult.failed(block_occurrence, (ReaderFailure(
                 "unsupported_syntax",
                 "fused QKV storage lacks one exact packed-width, reshape and "
-                "head-count relation proving equal lanes"),),
+                "head-count relation proving its Q/K/V lane protocol"),),
                 provenance=storage.provenance)
-        count_path, common, extra_spans = fused
+        protocol, query_path, kv_path, common, extra_spans = fused
         spans = tuple(dict.fromkeys(
             span for span in (
                 *storage.value.spans, common.span, *extra_spans)
             if isinstance(span, SourceSpan)))
         value = AttentionHeadBinding(
-            block_occurrence, attention.child_occurrence,
-            "fused_qkv", "equal_heads", count_path, count_path,
+            block_occurrence, attention.compute_occurrence,
+            "fused_qkv", protocol, query_path, kv_path,
             storage.value.projections, common, spans)
         return ReaderResult.resolved(
             block_occurrence, value,
             provenance=(ReaderProvenance(
                 "code_and_config", spans=spans,
-                config_paths=(count_path,),
+                config_paths=tuple(dict.fromkeys((query_path, kv_path))),
                 detail=(
-                    "one exact packed projection, exact three-lane reshape "
-                    "and exact count×head-width relation prove equal heads")),))
+                    "one exact packed projection, exact three-lane split and "
+                    "reshape, and exact count×head-width relations prove "
+                    "the Q/K/V head protocol")),))
 
     widths = []
     for occurrence in storage.value.projections:
@@ -582,13 +580,14 @@ def attention_head_binding_at_block(
                 "unsupported_syntax",
                 "a split projection has no exact Linear output-width expression",
                 occurrence.site.span),))
-        factors = _multiplication_factors(width)
-        if factors is None:
-            return ReaderResult.failed(block_occurrence, (ReaderFailure(
-                "unsupported_syntax",
-                "a split projection width is not an exact two-factor product",
-                width.span),))
-        widths.append((occurrence, width, factors))
+        structural_width = _exact_field_value(
+            index, node, width, seen=frozenset())
+        factors = _multiplication_factors(structural_width)
+        # Equal-width implementations (for example CLIP's Linear(d, d)) state
+        # the factorization at their reshape, not in the constructor width.
+        # Keep the row for the exact reshape proof below; an empty factor tuple
+        # cannot enter the ordinary multiplication proof.
+        widths.append((occurrence, width, factors or ()))
 
     candidates = []
     first_factors = widths[0][2]
@@ -625,6 +624,55 @@ def attention_head_binding_at_block(
         for protocol, query, kv, common in candidates
     }
     output_gate = None
+    reshape_spans = ()
+    # When both multiplicative factors are config-bound (for example T5's
+    # ``inner_dim = num_heads * d_kv``), multiplication alone cannot say which
+    # factor is the count.  Keep only the candidate whose proposed dimension
+    # is explicitly present in every Q/K/V reshape before compute; an inferred
+    # ``-1`` supplies the count lane.  This is code-flow disambiguation, never
+    # a field-name preference.
+    if len(distinct) > 1:
+        reshaped_candidates = {}
+        candidate_spans = {}
+        for key, candidate in distinct.items():
+            protocol, query_path, _kv_path, common = candidate
+            dim_field = _self_field(common)
+            if dim_field is None:
+                continue
+            count_fields = {
+                _self_field(factor)
+                for factor in widths[0][2]
+                if _expr_key(factor) != _expr_key(common)
+                and _exact_config_path_for_expression(
+                    index, node, factor, seen=frozenset(),
+                    config_prefix=config_prefix) == query_path
+            }
+            count_fields.discard(None)
+            if len(count_fields) != 1:
+                continue
+            proven = _projection_head_reshape_chain(
+                index, root, node, storage.value, widths,
+                next(iter(count_fields)), dim_field)
+            if proven is not None:
+                _dimension, spans = proven
+                reshaped_candidates[key] = candidate
+                candidate_spans[key] = spans
+        if len(reshaped_candidates) == 1:
+            distinct = reshaped_candidates
+            reshape_spans = next(iter(candidate_spans.values()))
+    if not distinct:
+        reshaped = _split_equal_head_reshape_protocol(
+            index, root, node, storage.value, widths,
+            config_prefix=config_prefix)
+        if reshaped is not None:
+            query_path, common, reshape_spans = reshaped
+            distinct = {
+                ("equal_heads", query_path, query_path,
+                 _expr_key(common)):
+                    ("equal_heads", query_path, query_path, common)
+            }
+        else:
+            reshape_spans = ()
     if not distinct:
         gated = _gated_query_head_protocol(
             index, node, storage.value, widths,
@@ -652,10 +700,11 @@ def attention_head_binding_at_block(
             *(width.span for _item, width, _factors in widths),
             common.span,
             *storage.value.spans,
+            *reshape_spans,
             *(output_gate.spans if output_gate is not None else ()),
         ) if isinstance(span, SourceSpan)))
     value = AttentionHeadBinding(
-        block_occurrence, attention.child_occurrence, "split", protocol,
+        block_occurrence, attention.compute_occurrence, "split", protocol,
         query_path, kv_path, storage.value.projections, common, spans,
         output_gate)
     return ReaderResult.resolved(
@@ -666,6 +715,252 @@ def attention_head_binding_at_block(
             detail=(
                 "exact split Q/K/V producers share one structural factor and "
                 "bind their count factors to exact config paths")),))
+
+
+def _split_equal_head_reshape_protocol(
+        index, root, node, storage, widths, *, config_prefix):
+    """Prove equal heads when Q/K/V widths are stored as one shared width.
+
+    CLIP-style implementations construct three ``Linear(d, d)`` projections,
+    so the constructor does not spell ``heads * head_dim`` three times.  The
+    missing multiplication is nevertheless explicit in code when the same
+    owner defines ``head_dim = d // heads`` and every projection is reshaped
+    through that head dimension before reaching the exact attention compute.
+
+    Merely assigning ``num_heads`` or ``head_dim`` is powerless: all three
+    projection occurrences must reach their own shape call, every shape must
+    cite the proven dimension plus either the count or an inferred ``-1``
+    lane, and all shaped values must reach the compute entry.
+    """
+    if len(widths) != 3:
+        return None
+    width_keys = {_expr_key(width) for _occurrence, width, _factors in widths}
+    if len(width_keys) != 1:
+        return None
+    base = widths[0][1]
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if not item.guard)
+    candidates = []
+    for count_assignment in assignments:
+        count_expr = ExprNode(
+            "attribute", name=count_assignment.field,
+            children=(ExprNode("name", name="self"),))
+        count_path = _exact_config_path_for_expression(
+            index, node, count_expr, seen=frozenset(),
+            config_prefix=config_prefix)
+        if count_path is None:
+            continue
+        for dim_assignment in assignments:
+            relation = dim_assignment.value
+            if relation.kind != "binop" or relation.operator != "//" \
+                    or len(relation.children) != 2:
+                continue
+            left, right = relation.children
+            if _expr_key(left) != _expr_key(base) \
+                    or _self_field(right) != count_assignment.field:
+                continue
+            proven = _projection_head_reshape_chain(
+                index, root, node, storage, widths,
+                count_assignment.field, dim_assignment.field)
+            if proven is not None:
+                common, spans = proven
+                candidates.append((count_path, common, (
+                    count_assignment.span, dim_assignment.span, *spans)))
+    distinct = {
+        (path, _expr_key(common)): (path, common, spans)
+        for path, common, spans in candidates
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
+
+
+def _projection_head_reshape_chain(
+        index, root, node, storage, widths, count_field, dim_field):
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    all_linear_calls = _linear_calls_in_forward(
+        index, root,
+        storage.attention.compute_occurrence, forward)
+    projection_ids = frozenset(item[0] for item in widths)
+    projection_calls = {
+        occurrence: call
+        for occurrence, call in all_linear_calls.items()
+        if occurrence in projection_ids
+    }
+    if frozenset(projection_calls) != projection_ids:
+        return None
+
+    shaped = {}
+    common_nodes = []
+    for call in index.calls_in(forward):
+        if call.span is None or call.callee.kind != "attribute" \
+                or call.callee.name not in {"view", "reshape"} \
+                or not call.callee.children:
+            continue
+        receiver = call.callee.children[0]
+        dimension_nodes = tuple(
+            node for argument in call.args
+            for node in _resolved_expression_field_nodes(
+                index, forward, argument, dim_field, call.span,
+                guard=call.guard, seen=frozenset()))
+        if not dimension_nodes:
+            continue
+        count_is_explicit = any(
+            _resolved_expression_has_field(
+                index, forward, argument, count_field, call.span,
+                guard=call.guard, seen=frozenset())
+            for argument in call.args)
+        inferred_lane = any(
+            _resolved_expression_has_negative_one(
+                index, forward, argument, call.span,
+                guard=call.guard, seen=frozenset())
+            for argument in call.args)
+        if not (count_is_explicit or inferred_lane):
+            continue
+        sources, _widths, _deps, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, ((call.span, (receiver,)),),
+                projection_calls)
+        if uncertain or len(sources) != 1:
+            continue
+        source = next(iter(sources))
+        if source not in projection_ids or source in shaped:
+            return None
+        shaped[source] = call
+        common_nodes.extend(dimension_nodes)
+    if frozenset(shaped) != projection_ids:
+        return None
+
+    shape_producers = {
+        ("head_shape", source): call for source, call in shaped.items()
+    }
+    consumers = tuple(
+        (call.span, (*call.args, *(value for _name, value in call.kwargs)))
+        for call in (
+            storage.compute_entry, *storage.attention.compute.input_calls)
+        if call.enclosing_callable == forward and call.span is not None)
+    if not consumers:
+        return None
+    sources, _widths, dependencies, _uncertain = \
+        producer_sources_reaching_expressions(
+            index, forward, consumers, shape_producers)
+    closure = _dependency_closure(sources, dependencies)
+    # Cached-attention branches may bypass K/V projection on some invocations;
+    # that makes the reaching set non-universal but does not erase the positive
+    # source fact that every stored Q/K/V projection has an exact shaped path
+    # into attention compute.  Require all three producers in the possible-path
+    # closure; never infer that the path runs on every call.
+    if not frozenset(shape_producers).issubset(closure):
+        return None
+    common = common_nodes[0]
+    if any(_expr_key(item) != _expr_key(common) for item in common_nodes[1:]):
+        return None
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            *(call.span for call in shaped.values()),
+            *(span for span, _expressions in consumers),
+            common.span,
+        ) if isinstance(span, SourceSpan)))
+    return common, spans
+
+
+def _resolved_expression_field_nodes(
+        index, callable_symbol, expression, field, before, *, guard, seen):
+    if not isinstance(expression, ExprNode):
+        return ()
+    if _self_field(expression) == field:
+        return (expression,)
+    if expression.kind == "name" and expression.name:
+        if expression.name in seen:
+            return ()
+        binding = _latest_binding_for_guard(
+            index, callable_symbol, expression.name, before, guard)
+        if binding is None:
+            return ()
+        return _resolved_expression_field_nodes(
+            index, callable_symbol, binding.value, field, binding.span,
+            guard=guard, seen=seen | frozenset((expression.name,)))
+    return tuple(
+        item for child in expression.children
+        if isinstance(child, ExprNode)
+        for item in _resolved_expression_field_nodes(
+            index, callable_symbol, child, field, before,
+            guard=guard, seen=seen)) + tuple(
+        item for _name, child in expression.keyword_children
+        for item in _resolved_expression_field_nodes(
+            index, callable_symbol, child, field, before,
+            guard=guard, seen=seen))
+
+
+def _resolved_expression_has_field(
+        index, callable_symbol, expression, field, before, *, guard, seen):
+    return bool(_resolved_expression_field_nodes(
+        index, callable_symbol, expression, field, before,
+        guard=guard, seen=seen))
+
+
+def _resolved_expression_has_negative_one(
+        index, callable_symbol, expression, before, *, guard, seen):
+    if not isinstance(expression, ExprNode):
+        return False
+    if expression.kind == "unaryop" and expression.operator == "-" \
+            and len(expression.children) == 1 \
+            and expression.children[0].kind == "constant" \
+            and expression.children[0].const_value == 1:
+        return True
+    if expression.kind == "constant" and expression.const_value == -1:
+        return True
+    if expression.kind == "name" and expression.name:
+        if expression.name in seen:
+            return False
+        binding = _latest_binding_for_guard(
+            index, callable_symbol, expression.name, before, guard)
+        return binding is not None and _resolved_expression_has_negative_one(
+            index, callable_symbol, binding.value, binding.span,
+            guard=guard, seen=seen | frozenset((expression.name,)))
+    return any(
+        _resolved_expression_has_negative_one(
+            index, callable_symbol, child, before, guard=guard, seen=seen)
+        for child in expression.children if isinstance(child, ExprNode)) \
+        or any(
+            _resolved_expression_has_negative_one(
+                index, callable_symbol, child, before,
+                guard=guard, seen=seen)
+            for _name, child in expression.keyword_children)
+
+
+def _latest_unconditional_binding(index, callable_symbol, name, before):
+    matches = tuple(
+        binding for binding in index.bindings_in(callable_symbol)
+        if not binding.guard and binding.span is not None
+        and _span_before(binding.span, before)
+        and any(name in _target_names(target)
+                for target in binding.targets))
+    if not matches:
+        return None
+    return max(matches, key=lambda item: (
+        item.span.line, item.span.col,
+        item.span.end_line or item.span.line,
+        item.span.end_col or item.span.col))
+
+
+def _latest_binding_for_guard(index, callable_symbol, name, before, guard):
+    """Latest definition proven on the exact lexical path of a use."""
+    matches = tuple(
+        binding for binding in index.bindings_in(callable_symbol)
+        if (not binding.guard or binding.guard == guard)
+        and binding.span is not None
+        and _span_before(binding.span, before)
+        and any(name in _target_names(target)
+                for target in binding.targets))
+    if not matches:
+        return None
+    return max(matches, key=lambda item: (
+        item.span.line, item.span.col,
+        item.span.end_line or item.span.line,
+        item.span.end_col or item.span.col))
 
 
 def multi_query_attention_binding_at_block(
@@ -713,12 +1008,12 @@ def multi_query_attention_binding_at_block(
             "selector→one-K/V→projection→split→compute proof"),),
             provenance=census.provenance)
     projection, heads_path, selector_path, split_call, spans = proof
-    node = root.graph.node_for(primary[0].child_occurrence)
+    node = root.graph.node_for(primary[0].compute_occurrence)
     if node is None:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner", "the attention occurrence left its owner graph"),))
     value = MultiQueryAttentionBinding(
-        block_occurrence, primary[0].child_occurrence, node.symbol, projection,
+        block_occurrence, primary[0].compute_occurrence, node.symbol, projection,
         heads_path, selector_path, split_call, spans)
     return ReaderResult.resolved(
         block_occurrence, value,
@@ -731,7 +1026,7 @@ def multi_query_attention_binding_at_block(
 
 
 def _multi_query_protocol_for_child(index, root, child):
-    occurrence = child.child_occurrence
+    occurrence = child.compute_occurrence
     node = root.graph.node_for(occurrence)
     if node is None:
         return None
@@ -920,13 +1215,13 @@ def latent_attention_binding_at_block(
                 "incomplete_graph", "attention child is unresolved"),),
             provenance=attention.provenance)
     child = attention.value
-    node = root.graph.node_for(child.child_occurrence)
+    node = root.graph.node_for(child.compute_occurrence)
     if node is None:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner", "attention child is absent from the owner graph"),))
     forward = child.compute.entry_call.enclosing_callable
     linear_calls = _linear_calls_in_forward(
-        index, root, child.child_occurrence, forward)
+        index, root, child.compute_occurrence, forward)
     if len(linear_calls) < 3:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", "latent attention has no exact affine chain"),))
@@ -976,7 +1271,7 @@ def latent_attention_binding_at_block(
             *proof_spans, *child.compute.spans)
         if isinstance(span, SourceSpan)))
     value = LatentAttentionBinding(
-        block_occurrence, child.child_occurrence,
+        block_occurrence, child.compute_occurrence,
         compressed, expanded, num_heads, latent, rope_dim, nope_dim,
         value_dim, spans)
     paths = (num_heads, latent, rope_dim, nope_dim, value_dim)
@@ -1237,7 +1532,7 @@ def _output_gate_for_query_projection(index, node, storage, query_projection):
         if len(sites) != 1:
             continue
         occurrence = ConstructionOccurrenceId(
-            storage.attention.child_occurrence, sites[0].site_id)
+            storage.attention.compute_occurrence, sites[0].site_id)
         if occurrence not in projection_set \
                 and _name_lineage_preserved_between(
                     bindings, output_name, application.span, call.span):
@@ -1252,7 +1547,7 @@ def _output_gate_for_query_projection(index, node, storage, query_projection):
             compute_call.span, application.span, output_call.span)
         if isinstance(span, SourceSpan)))
     return AttentionOutputGateBinding(
-        storage.attention.child_occurrence,
+        storage.attention.compute_occurrence,
         query_projection, output_projection, split_call,
         projection_call, output_call,
         application.span, "sigmoid", 2, spans)
@@ -1510,6 +1805,26 @@ def _linear_output_width(index, occurrence: ConstructionOccurrenceId):
     return kwargs.get("out_features")
 
 
+def _exact_field_value(index, node, expression, *, seen):
+    """Dereference one exact unconditional ``self.<field>`` assignment.
+
+    This exposes constructor aliases such as ``self.inner_dim = heads * dim``
+    without treating a field spelling as evidence.  Rival, guarded and cyclic
+    assignments leave the original expression opaque.
+    """
+    field = _self_field(expression)
+    if field is None or field in seen:
+        return expression
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if item.field == field and not item.guard)
+    if len(assignments) != 1:
+        return expression
+    value = assignments[0].value
+    return _exact_field_value(
+        index, node, value, seen=seen | frozenset((field,)))
+
+
 def _linear_input_width(index, occurrence: ConstructionOccurrenceId):
     site = _construction_site(index, occurrence)
     if site is None:
@@ -1674,6 +1989,290 @@ def _binary_factors(expression, operator):
                     for child in expression.children):
         return tuple(expression.children)
     return None
+
+
+def _fused_head_binding(index, root, node, storage, *, config_prefix):
+    grouped = _fused_grouped_head_binding(
+        index, root, node, storage, config_prefix=config_prefix)
+    if grouped is not None:
+        query_path, kv_path, common, spans = grouped
+        return "grouped_kv", query_path, kv_path, common, spans
+    equal = _fused_equal_head_binding(
+        index, node, storage, config_prefix=config_prefix)
+    if equal is None:
+        return None
+    count_path, common, spans = equal
+    return "equal_heads", count_path, count_path, common, spans
+
+
+def _fused_grouped_head_binding(
+        index, root, node, storage, *, config_prefix):
+    """Prove grouped heads from one packed projection and its exact split.
+
+    The proof is deliberately algebraic and flow-bound: it requires the packed
+    width to equal the three declared lane widths, the query lane to equal
+    ``query_count × common_dim``, both K/V lanes to equal
+    ``kv_count × common_dim``, and all three exact split outputs to be reshaped
+    through that common dimension before reaching attention compute.  No field
+    or class spelling selects the result.
+    """
+    if len(storage.projections) != 1:
+        return None
+    occurrence = storage.projections[0]
+    width = _linear_output_width(index, occurrence)
+    if width is None:
+        return None
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    producer_calls = _linear_calls_in_forward(
+        index, root,
+        storage.attention.compute_occurrence, forward)
+    producer_call = producer_calls.get(occurrence)
+    if producer_call is None:
+        return None
+
+    candidates = []
+    for binding in index.bindings_in(forward):
+        targets = tuple(
+            name for target in binding.targets for name in _target_names(target))
+        value = binding.value
+        if binding.guard or len(targets) != 3 or value is None \
+                or value.kind != "call" or not value.children:
+            continue
+        callee = value.children[0]
+        if callee.kind != "attribute" or not callee.children \
+                or callee.name not in {"split", "tensor_split"}:
+            continue
+        size = next((
+            child for child in value.children[1:]
+            if isinstance(child, ExprNode) and child.kind in {"list", "tuple"}
+            and len(child.children) == 3), None)
+        if size is None:
+            continue
+        receiver = callee.children[0]
+        sources, _unpack, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, ((binding.span, (receiver,)),),
+                {occurrence: producer_call})
+        if uncertain or _dependency_closure(sources, dependencies) \
+                != {occurrence}:
+            continue
+        query_width, key_width, value_width = size.children
+        if _expanded_expr_key(index, node, key_width) \
+                != _expanded_expr_key(index, node, value_width):
+            continue
+        relation = _grouped_lane_relations(
+            index, node, query_width, key_width,
+            config_prefix=config_prefix)
+        if relation is None or not _packed_width_matches_lanes(
+                index, node, width, query_width, key_width):
+            continue
+        query_path, kv_path, common = relation
+        split_call = next((
+            call for call in index.calls_in(forward)
+            if call.span == value.span), None)
+        if split_call is None:
+            continue
+        shape_spans = _fused_lane_reshape_chain(
+            index, forward, storage, binding, split_call,
+            targets, common)
+        if shape_spans is None:
+            continue
+        candidates.append((query_path, kv_path, common, (
+            occurrence.site.span, width.span, binding.span,
+            split_call.span, *shape_spans)))
+    distinct = {
+        (query, kv, _expr_key(common)):
+            (query, kv, common, spans)
+        for query, kv, common, spans in candidates
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
+
+
+def _grouped_lane_relations(
+        index, node, query_width, kv_width, *, config_prefix):
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if not item.guard)
+    candidates = []
+    query_key = _expanded_expr_key(index, node, query_width)
+    kv_factors = _expanded_product_factors(index, node, kv_width)
+    for dim_assignment in assignments:
+        relation = dim_assignment.value
+        if relation.kind != "binop" or relation.operator != "//" \
+                or len(relation.children) != 2:
+            continue
+        numerator, query_count_expr = relation.children
+        if _expanded_expr_key(index, node, numerator) != query_key:
+            continue
+        query_path = _exact_config_path_for_expression(
+            index, node, query_count_expr, seen=frozenset(),
+            config_prefix=config_prefix)
+        if query_path is None:
+            continue
+        dim_expr = ExprNode(
+            "attribute", name=dim_assignment.field,
+            children=(ExprNode("name", name="self"),),
+            span=dim_assignment.span)
+        dim_key = _expanded_expr_key(index, node, dim_expr)
+        matching = [
+            position for position, factor in enumerate(kv_factors)
+            if factor == dim_key]
+        if len(matching) != 1 or len(kv_factors) != 2:
+            continue
+        kv_factor_exprs = _flatten_product_expressions(
+            index, node, kv_width)
+        kv_count_expr = kv_factor_exprs[1 - matching[0]]
+        kv_path = _exact_config_path_for_expression(
+            index, node, kv_count_expr, seen=frozenset(),
+            config_prefix=config_prefix)
+        if kv_path is None or kv_path == query_path:
+            continue
+        candidates.append((query_path, kv_path, dim_expr))
+    distinct = {
+        (query, kv, _expr_key(common)): (query, kv, common)
+        for query, kv, common in candidates
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
+
+
+def _packed_width_matches_lanes(index, node, packed, query, kv):
+    terms = _flatten_sum_expressions(index, node, packed)
+    if len(terms) != 2:
+        return False
+    query_key = _expanded_expr_key(index, node, query)
+    query_matches = [i for i, item in enumerate(terms)
+                     if _expanded_expr_key(index, node, item) == query_key]
+    if len(query_matches) != 1:
+        return False
+    compressed = terms[1 - query_matches[0]]
+    factors = _expanded_product_factors(index, node, compressed)
+    expected = [
+        _expanded_expr_key(index, node, ExprNode("constant", const_value=2)),
+        *_expanded_product_factors(index, node, kv),
+    ]
+    return sorted(map(repr, factors)) == sorted(map(repr, expected))
+
+
+def _fused_lane_reshape_chain(
+        index, forward, storage, split_binding, split_call, lane_names, common):
+    dim_field = _self_field(common)
+    if dim_field is None:
+        return None
+    lane_keys = tuple(("fused_lane", split_call.span, position)
+                      for position in range(3))
+    shaped = {}
+    for call in index.calls_in(forward):
+        if call.span is None or not _span_before(split_binding.span, call.span) \
+                or call.callee.kind != "attribute" \
+                or call.callee.name not in {"view", "reshape"} \
+                or not call.callee.children:
+            continue
+        if not any(_resolved_expression_has_field(
+                index, forward, argument, dim_field, call.span,
+                guard=call.guard, seen=frozenset()) for argument in call.args):
+            continue
+        if not any(_resolved_expression_has_negative_one(
+                index, forward, argument, call.span,
+                guard=call.guard, seen=frozenset()) for argument in call.args):
+            continue
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, ((call.span, (call.callee.children[0],)),), {},
+                initial_sources=dict(zip(lane_names, lane_keys)),
+                binding_predicate=lambda item: _span_before(
+                    split_binding.span, item.span))
+        closure = _dependency_closure(sources, dependencies)
+        if uncertain or len(closure) != 1:
+            continue
+        lane = next(iter(closure))
+        if lane not in lane_keys or lane in shaped:
+            return None
+        shaped[lane] = call
+    if frozenset(shaped) != frozenset(lane_keys):
+        return None
+    shape_producers = {
+        ("fused_shape", position): shaped[lane]
+        for position, lane in enumerate(lane_keys)
+    }
+    consumers = tuple(
+        (call.span, (*call.args, *(value for _name, value in call.kwargs)))
+        for call in (storage.compute_entry,
+                     *storage.attention.compute.input_calls)
+        if call.enclosing_callable == forward and call.span is not None)
+    if not consumers:
+        return None
+    sources, _widths, dependencies, _uncertain = \
+        producer_sources_reaching_expressions(
+            index, forward, consumers, shape_producers)
+    if not frozenset(shape_producers).issubset(
+            _dependency_closure(sources, dependencies)):
+        return None
+    return tuple(dict.fromkeys(
+        span for span in (
+            *(call.span for call in shaped.values()),
+            *(span for span, _expressions in consumers),
+            common.span)
+        if isinstance(span, SourceSpan)))
+
+
+def _flatten_sum_expressions(index, node, expression):
+    expanded = _exact_field_expression(index, node, expression, frozenset())
+    if expanded.kind == "binop" and expanded.operator == "+" \
+            and len(expanded.children) == 2:
+        return tuple(
+            item for child in expanded.children
+            for item in _flatten_sum_expressions(index, node, child))
+    return (expanded,)
+
+
+def _flatten_product_expressions(index, node, expression):
+    expanded = _exact_field_expression(index, node, expression, frozenset())
+    if expanded.kind == "binop" and expanded.operator == "*" \
+            and len(expanded.children) == 2:
+        return tuple(
+            item for child in expanded.children
+            for item in _flatten_product_expressions(index, node, child))
+    return (expanded,)
+
+
+def _expanded_product_factors(index, node, expression):
+    return tuple(
+        _expanded_expr_key(index, node, item)
+        for item in _flatten_product_expressions(index, node, expression))
+
+
+def _expanded_expr_key(index, node, expression):
+    return _expr_key(_exact_field_expression(
+        index, node, expression, frozenset()))
+
+
+def _exact_field_expression(index, node, expression, seen):
+    if not isinstance(expression, ExprNode):
+        return expression
+    field = _self_field(expression)
+    if field is not None:
+        if field in seen:
+            return expression
+        assignments = tuple(
+            item for item in index.field_assigns_of(node.symbol)
+            if item.field == field and not item.guard)
+        if len(assignments) != 1:
+            return expression
+        return _exact_field_expression(
+            index, node, assignments[0].value,
+            seen | frozenset((field,)))
+    return ExprNode(
+        expression.kind, name=expression.name,
+        const_value=expression.const_value, operator=expression.operator,
+        children=tuple(_exact_field_expression(index, node, child, seen)
+                       for child in expression.children),
+        keyword_children=tuple(
+            (name, _exact_field_expression(index, node, child, seen))
+            for name, child in expression.keyword_children),
+        span=expression.span, source_segment=expression.source_segment)
 
 
 def _fused_equal_head_binding(index, node, storage, *, config_prefix):
@@ -1900,6 +2499,39 @@ def _exact_config_path_for_expression(
                 index, node, assigns[0].value,
                 seen=seen | {field}, config_prefix=config_prefix)
 
+    # Follow one exact straight-line local alias, for example
+    # ``section = config.attention; self.kv = section.kv_heads``.  The alias is
+    # syntax, not semantic evidence: rival, guarded, cyclic, late or dynamic
+    # definitions remain unknown.  This is intentionally local to the exact
+    # constructor callable and never searches sibling classes or field names.
+    local = _local_attribute_chain(expression)
+    if local is not None:
+        local_name, trailing = local
+        callable_symbol = _enclosing_callable_for_expression(
+            index, node, expression)
+        if callable_symbol is not None and local_name not in seen:
+            bindings = tuple(
+                binding for binding in index.bindings_in(callable_symbol)
+                if not binding.guard and binding.span is not None
+                and expression.span is not None
+                and _span_before(binding.span, expression.span)
+                and tuple(
+                    name for target in binding.targets
+                    for name in _target_names(target)) == (local_name,))
+            all_defs = tuple(
+                binding for binding in index.bindings_in(callable_symbol)
+                if binding.span is not None and expression.span is not None
+                and _span_before(binding.span, expression.span)
+                and any(local_name in _target_names(target)
+                        for target in binding.targets))
+            if len(bindings) == 1 and len(all_defs) == 1:
+                base = _exact_config_path_for_expression(
+                    index, node, bindings[0].value,
+                    seen=seen | frozenset((local_name,)),
+                    config_prefix=config_prefix)
+                if base is not None:
+                    return (*base, *trailing)
+
     observations = tuple(
         item for item in index.config_paths_in(
             _enclosing_callable_for_expression(index, node, expression))
@@ -1910,6 +2542,19 @@ def _exact_config_path_for_expression(
     return ((*config_prefix, *relative) if relative is not None else None)
 
 
+def _local_attribute_chain(expression):
+    segments = []
+    current = expression
+    while isinstance(current, ExprNode) and current.kind == "attribute" \
+            and current.children and current.name:
+        segments.append(current.name)
+        current = current.children[0]
+    if not isinstance(current, ExprNode) or current.kind != "name" \
+            or not current.name or not segments:
+        return None
+    return current.name, tuple(reversed(segments))
+
+
 def _enclosing_callable_for_expression(index, node, expression):
     candidates = tuple(
         item.enclosing_callable
@@ -1918,6 +2563,14 @@ def _enclosing_callable_for_expression(index, node, expression):
     )
     if len(set(candidates)) == 1:
         return candidates[0]
+    binding_callables = tuple(
+        item.enclosing_callable
+        for callable_item in index.callables
+        if callable_item.owner == node.symbol
+        for item in index.bindings_in(callable_item.symbol)
+        if item.value is not None and item.value.span == expression.span)
+    if len(set(binding_callables)) == 1:
+        return binding_callables[0]
     # A direct config factor nested inside a constructor argument belongs to
     # that construction site's callable.  Search only this exact owner.
     construction_callables = tuple(

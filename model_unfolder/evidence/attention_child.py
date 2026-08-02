@@ -113,11 +113,21 @@ class AttentionComputeProof:
 
 @dataclass(frozen=True)
 class AttentionChildEvidence:
-    """A graph-authoritative block invocation plus code-compute proof."""
+    """A graph-authoritative lane invocation plus exact compute descent.
+
+    ``child_occurrence`` is the immediate lane called by the block (needed for
+    self/cross scheduling). ``compute_occurrence`` is the exact descendant that
+    owns the projections and compute callable.  They are equal for ordinary
+    attention modules and differ for structural wrappers such as a layer whose
+    forward delegates to its contained attention module.
+    """
 
     block_occurrence: OwnerOccurrenceId
     child_occurrence: OwnerOccurrenceId
     invocation: AddressedInvocation
+    compute_occurrence: OwnerOccurrenceId
+    compute_owner_symbol: SymbolId
+    invocation_path: tuple[AddressedInvocation, ...]
     compute: AttentionComputeProof
 
     def __post_init__(self) -> None:
@@ -127,6 +137,14 @@ class AttentionChildEvidence:
             raise TypeError("attention-child evidence names its exact child")
         if not isinstance(self.invocation, AddressedInvocation):
             raise TypeError("attention-child evidence carries its invocation")
+        if not isinstance(self.compute_occurrence, OwnerOccurrenceId):
+            raise TypeError("attention-child evidence names its compute owner")
+        if not isinstance(self.compute_owner_symbol, SymbolId):
+            raise TypeError("attention-child evidence names its compute symbol")
+        if not self.invocation_path or any(
+                not isinstance(item, AddressedInvocation)
+                for item in self.invocation_path):
+            raise TypeError("attention-child evidence carries an exact invocation path")
         if not isinstance(self.compute, AttentionComputeProof):
             raise TypeError("attention-child evidence carries compute proof")
         if self.invocation.caller_occurrence != self.block_occurrence:
@@ -135,6 +153,19 @@ class AttentionChildEvidence:
             raise ValueError("the invocation addresses the exact child")
         if self.child_occurrence.sites[:-1] != self.block_occurrence.sites:
             raise ValueError("the attention child is an immediate block child")
+        if self.invocation_path[0] != self.invocation:
+            raise ValueError("the compute path starts at the block lane invocation")
+        previous = self.block_occurrence
+        for step in self.invocation_path:
+            if step.caller_occurrence != previous:
+                raise ValueError("the compute path is a contiguous owner chain")
+            previous = step.callee_owner_occurrence
+        if previous != self.compute_occurrence:
+            raise ValueError("the compute path ends at the exact compute owner")
+        if self.compute.child_symbol != self.compute_owner_symbol:
+            raise ValueError("the compute proof names the exact compute owner symbol")
+        if self.compute_owner_symbol.source != self.compute_occurrence.root.source:
+            raise ValueError("the compute symbol and owner share exact source identity")
 
 
 @dataclass(frozen=True)
@@ -158,7 +189,8 @@ class AttentionChildCensus:
                for item in self.candidates):
             raise ValueError("every positive attention child belongs to the block")
         identities = tuple(
-            (item.child_occurrence, item.invocation.call_site)
+            (item.child_occurrence, item.compute_occurrence,
+             tuple(step.call_site for step in item.invocation_path))
             for item in self.candidates)
         if len(set(identities)) != len(identities):
             raise ValueError("attention-child census identities are unique")
@@ -207,12 +239,11 @@ def attention_child_positive_census(
         child = graph.node_for(invocation.callee_owner_occurrence)
         if child is None or index.class_by_symbol(child.symbol) is None:
             continue
-        proof = _attention_compute_proof(index, child.symbol)
-        if proof is not None:
-            candidates.append(AttentionChildEvidence(
-                block_occurrence, child.occurrence, invocation, proof))
+        candidates.extend(_attention_descents(
+            index, root, block_occurrence, invocation, child.occurrence))
     unique = {
-        (item.child_occurrence, item.invocation.call_site): item
+        (item.child_occurrence, item.compute_occurrence,
+         tuple(step.call_site for step in item.invocation_path)): item
         for item in candidates
     }
     if not unique:
@@ -229,12 +260,13 @@ def attention_child_positive_census(
 
     ordered = tuple(sorted(
         unique.values(),
-        key=lambda item: _span_sort_key(item.invocation.call.span)))
+        key=lambda item: tuple(
+            _span_sort_key(step.call.span) for step in item.invocation_path)))
     spans = tuple(dict.fromkeys(
         span for evidence in ordered
         for span in (
-            evidence.invocation.call.span,
-            *evidence.invocation.provenance_spans,
+            *(span for step in evidence.invocation_path
+              for span in (step.call.span, *step.provenance_spans)),
             *evidence.compute.spans,
         )
         if isinstance(span, SourceSpan)))
@@ -274,8 +306,8 @@ def attention_child_evidence(
 
     evidence = candidates[0]
     spans = tuple(dict.fromkeys((
-        evidence.invocation.call.span,
-        *evidence.invocation.provenance_spans,
+        *(span for step in evidence.invocation_path
+          for span in (step.call.span, *step.provenance_spans)),
         *evidence.compute.spans,
     )))
     return ReaderResult.resolved(
@@ -289,6 +321,42 @@ def attention_child_evidence(
                 "exact block invocation plus code-proven attention "
                 "computation")),),
     )
+
+
+def _attention_descents(index, root, block_occurrence, lane_invocation,
+                        lane_occurrence):
+    """Return every positively proven compute descendant of one exact lane."""
+    graph = root.graph
+    queue = [(lane_occurrence, (lane_invocation,))]
+    seen: set[OwnerOccurrenceId] = set()
+    out: list[AttentionChildEvidence] = []
+    while queue:
+        occurrence, path = queue.pop(0)
+        if occurrence in seen:
+            continue
+        seen.add(occurrence)
+        node = graph.node_for(occurrence)
+        if node is None or index.class_by_symbol(node.symbol) is None:
+            continue
+        proof = _attention_compute_proof(index, node.symbol)
+        if proof is not None:
+            out.append(AttentionChildEvidence(
+                block_occurrence, lane_occurrence, lane_invocation,
+                occurrence, node.symbol, path, proof))
+            # A proven compute owner is the mechanism boundary.  Do not search
+            # below it for auxiliary children and accidentally create rivals.
+            continue
+        inventory = resolve_container_inventory(index, root, occurrence)
+        nested = resolve_addressed_invocations(
+            index, root, occurrence, inventory)
+        if nested.status != "resolved":
+            continue
+        for invocation in nested.addressed:
+            if graph.node_for(invocation.callee_owner_occurrence) is not None:
+                queue.append((
+                    invocation.callee_owner_occurrence,
+                    (*path, invocation)))
+    return tuple(out)
 
 
 def _attention_compute_proof(

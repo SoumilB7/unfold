@@ -372,7 +372,12 @@ def _diffusers_class_file(arch: str) -> str | None:
     across models/ AND pipelines/ (supporting encoders live under pipelines)."""
     try:
         import diffusers
-    except ImportError:
+    except (ImportError, ValueError):
+        # Test/frozen environments may provide a deliberately minimal
+        # ``transformers`` module with no import spec.  Diffusers' optional
+        # dependency probe then raises ValueError from find_spec(); that means
+        # the diffusers address channel is unavailable, not that parsing the
+        # already-loaded transformer config should fail.
         return None
     import re
     root = Path(diffusers.__file__).resolve().parent

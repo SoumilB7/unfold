@@ -746,8 +746,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             line=span.line,
         ) for span in spans)
         config_paths = tuple(
-            ".".join(actual_config_paths.get(path, path))
-            for path, _value in bound.premises)
+            ".".join(actual)
+            for path, _value in bound.premises
+            if (actual := actual_config_paths.get(path)) is not None)
         _facts.record_typed(EvidenceFact(
             key="mechanism",
             owner="decoder.attention",
@@ -858,10 +859,19 @@ def parse(cfg: Any, context=None) -> ModelIR:
     def _consume_code_bound_path(field, exact_path, *, fact_key=None):
         """Consume only when U1 selected the exact path proven by source code."""
         res = _scoped(field)
+        exact = tuple(exact_path)
+        # A complete, exact source reader may name a config-class property that
+        # the checkpoint omits.  In that one case the installed class default
+        # is a lawful operand of the code proof (Falcon's alternate dispatch
+        # selector), but it is not laundered into a checkpoint occurrence.
+        if res.state == "absent" and exact and exact[-1] == field \
+                and _fact_class_defaults.get(field) is not None:
+            res = _config_access.resolve(
+                text_cfg, field, _ALIASES.get(field, ()), path=_text_path,
+                class_defaults={field: _fact_class_defaults[field]})
         selected = (
             tuple(res.selected_path.split("."))
             if isinstance(res.selected_path, str) and res.selected_path else ())
-        exact = tuple(exact_path)
         # Modeling code reads the config CLASS's canonical property while a
         # checkpoint may use one of that property's audited input spellings
         # (GPT-BigCode: ``num_attention_heads`` versus ``n_head``).  The alias
@@ -872,15 +882,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
             bool(exact) and exact[-1] == field
             and selected[:-1] == exact[:-1]
             and bool(selected))
-        if res.ambiguous or (selected != exact and not same_property):
+        class_default = (
+            res.state == "absent" and res.source_kind == "class_default"
+            and res.value is not None and exact[-1] == field)
+        if res.ambiguous or (
+                not class_default and selected != exact and not same_property):
             return None
-        value = res.consume(
+        decision = res.consume_decision(
+            reader="adapters.transformer.parser.parse",
             fact_owner="decoder.attention",
             fact_key=fact_key or field,
             mechanism="attention_mechanism",
         )
-        _attention_actual_config_paths[exact] = selected
-        return value
+        _attention_actual_config_paths[exact] = (
+            None if class_default else selected)
+        return decision.value
 
     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
     hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
@@ -1051,10 +1067,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # U3: the six per-layer TYPE-SCHEDULE spellings (attn_type_list / block_types
     # / attention_types / dense_attention_every_n_layers) normalize into the SAME
     # layer_types list the working schedules flow through — the config channel,
-    # consulted ONLY when no canonical layer_types list exists (so families that
-    # build it stay byte-identical).  A remote-code model whose modeling oracle
-    # is missing (MiniMax-Text-01 / Phi-3-small) is served this config-declared
-    # schedule rather than a fabricated uniform tower.
+    # consulted ONLY when no canonical layer_types list exists.  This proves
+    # placement of declared opaque mixers and full-attention routes; it does
+    # NOT classify the full route as MHA/GQA when modeling source is missing.
     _schedule_source = None
     if not layer_types:
         _sched, _schedule_source = _normalize_layer_schedule(
@@ -1335,16 +1350,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact(
             "decoder.attention", "mechanism", None,
             _unknown_status, None)
-    has_multi_query_flag = bool(_g(text_cfg, "multi_query")
-                                or _g(text_cfg, "multi_query_attention"))  # chatglm spelling
-    # The flag means "KV heads are shared", NOT "exactly one": ChatGLM declares
-    # multi_query_attention: true AND multi_query_group_num: 2 (a 2-group GQA).
-    # Only when NO explicit group count is declared does the flag default the
-    # KV count to 1 (Falcon-7B / GPT-BigCode true MQA).
-    # U6 owns head-sharing SEMANTICS and the evidence-strength migration; U2
-    # keeps this behaviour-preserving precedence.
-    if has_multi_query_flag and not get("num_key_value_heads"):
-        num_kv_heads = 1
     # Hybrid linear-recurrent token mixers (for example a gated delta network)
     # carry geometry separate from the full-attention head fields.
     linear_num_k_heads = _g(text_cfg, "linear_num_key_heads")
@@ -1827,12 +1832,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 and layer_kv_heads == _bound_attention.num_kv_heads:
             attn_kind = _bound_attention.kind
         else:
-            # Transitional only until the explicit multi-query source protocol
-            # lands in this U6 campaign.  Other unsupported source shapes stay
-            # unknown rather than falling through from counts.
-            attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads,
-                                        has_multi_query_flag) \
-                if has_multi_query_flag else None
+            attn_kind = None
         # The layer TYPE follows the declared schedule alone: a bare component
         # config (mllama_text_model) declares cross_attention_layers without a
         # vision_config sibling, and its cross layers ARE cross-attention
@@ -2749,26 +2749,6 @@ def _moe_routing(cfg: Any, context=None, path: tuple = ()) -> dict | None:
             }
 
     return routing or None
-
-
-def _attention_kind(is_mla: bool, num_q: int, num_kv: int,
-                    has_multi_query_flag: bool) -> str | None:
-    """Classify the attention head pattern.
-
-    Note: ``num_kv == 1`` alone is *not* enough to label a layer as MQA.  Many
-    GQA models (e.g. Gemma 4 global layers) reach 1 KV head as an extreme of
-    grouping; their designers still call it GQA.  Only when the config carries
-    an explicit ``multi_query`` flag (Falcon 7B, GPT-BigCode) do we tag MQA.
-    """
-    if is_mla:
-        return "mla"
-    if not num_q or not num_kv:
-        return None
-    if num_kv == num_q:
-        return "mha"
-    if has_multi_query_flag and num_kv == 1:
-        return "mqa"
-    return "gqa"
 
 
 def _norm_kind_evidence(

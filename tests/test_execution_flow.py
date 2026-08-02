@@ -3,7 +3,9 @@
 Resolves WHO each call site in the EXPLICIT execution owner's forward invokes, by
 joining to exact OwnerGraph child occurrences + the B2 ContainerInventory.  Never
 selects the owner; never fabricates a runtime index; a sliced iterable never binds
-a loop; ModuleDict/ModuleList/Sequential execution stays unresolved.
+a loop.  One exact nonnegative literal ModuleList index may address one exact
+unconditional stored element; dynamic/guarded indices and container execution
+protocols remain unresolved.
 """
 from __future__ import annotations
 
@@ -243,10 +245,12 @@ def test_module_shadowed_enumerate_is_not_a_builtin_protocol(tmp_path):
                for binding in idx.module_bindings_in(b1.occurrence.root.source))
 
 
-def test_indexed_access_is_unresolved(tmp_path):
+def test_literal_index_of_exact_single_template_is_addressed(tmp_path):
     idx, cr, occ, inv, res = _pipeline(tmp_path, "            return self.layers[0](x)")
-    assert res.addressed == () and res.templates == ()
-    assert any(u.reason == "indexed_access_unproven" for u in res.unresolved)
+    assert res.templates == () and res.unresolved == ()
+    (addressed,) = res.addressed
+    assert cr.graph.node_for(
+        addressed.callee_owner_occurrence).symbol.qualified_name == "Block"
 
 
 def test_moduledict_items_loop_is_unresolved(tmp_path):
@@ -552,3 +556,54 @@ def test_exception_target_cannot_launder_shadowed_enumerate_as_builtin(tmp_path)
     assert res.templates == ()
     assert any(region.construct_kind == "try"
                for region in idx.unsupported_execution_in(res.callable_symbol))
+
+
+def test_literal_container_index_resolves_exact_unconditional_append(tmp_path):
+    source = """
+        class First:
+            def __init__(self, config): pass
+            def forward(self, x): return x
+        class Optional:
+            def __init__(self, config): pass
+        class BaseModel:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                self.parts.append(First(config))
+                if config.extra:
+                    self.parts.append(Optional(config))
+            def forward(self, x):
+                return self.parts[0](x)
+        class Wrapper:
+            base_model_prefix = "model"
+            def __init__(self, config): self.model = BaseModel(config)
+    """
+    idx, cr, occ, inv, res = _from_src(tmp_path, source)
+    assert not res.unresolved
+    (addressed,) = res.addressed
+    assert cr.graph.node_for(
+        addressed.callee_owner_occurrence).symbol.qualified_name == "First"
+    assert len(addressed.provenance_spans) == 2
+
+
+def test_literal_index_does_not_cross_a_guarded_prior_append(tmp_path):
+    source = """
+        class Optional:
+            def __init__(self, config): pass
+        class Second:
+            def __init__(self, config): pass
+        class BaseModel:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                if config.extra:
+                    self.parts.append(Optional(config))
+                self.parts.append(Second(config))
+            def forward(self, x):
+                return self.parts[1](x)
+        class Wrapper:
+            base_model_prefix = "model"
+            def __init__(self, config): self.model = BaseModel(config)
+    """
+    idx, cr, occ, inv, res = _from_src(tmp_path, source)
+    assert not res.addressed
+    assert any(item.reason == "indexed_container_position_unproven"
+               for item in res.unresolved)

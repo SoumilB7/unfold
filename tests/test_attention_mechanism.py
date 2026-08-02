@@ -22,6 +22,7 @@ from model_unfolder.evidence.attention import (
     latent_attention_binding_at_block,
     multi_query_attention_binding_at_block,
 )
+from model_unfolder.evidence.attention_child import attention_child_evidence
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
@@ -106,6 +107,68 @@ class Mixer:
 """
 
 
+def _equal_width_reshaped_attention(*, use_dimension=True,
+                                    bypass_value_shape=False):
+    shape = "(*x.shape[:-1], -1, self.unit)" if use_dimension else \
+        "(*x.shape[:-1], -1)"
+    value = "value" if bypass_value_shape else f"value.view({shape})"
+    return f"""
+class Mixer:
+    def __init__(self, config):
+        self.width = config.hidden
+        self.groups = config.query_groups
+        self.unit = self.width // self.groups
+        self.a = nn.Linear(self.width, self.width)
+        self.b = nn.Linear(self.width, self.width)
+        self.c = nn.Linear(self.width, self.width)
+    def forward(self, x):
+        query = self.a(x)
+        key = self.b(x)
+        value = self.c(x)
+        query = query.view({shape})
+        key = key.view({shape})
+        value = {value}
+        score = torch.matmul(query, key.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), value)
+"""
+
+
+def _fused_grouped_attention(*, packed_width=None, value_width=None,
+                             shape_value=True, local_section=True):
+    packed_width = packed_width or \
+        "self.width + 2 * self.shared_groups * self.unit"
+    value_width = value_width or "self.shared_groups * self.unit"
+    section = (
+        "section = config.attention\n"
+        "        self.shared_groups = section.shared_groups"
+        if local_section else
+        "self.shared_groups = config.shared_groups")
+    value_shape = (
+        "value = value.view(shape)" if shape_value else "value = value")
+    return f"""
+class Mixer:
+    def __init__(self, config):
+        self.width = config.hidden
+        self.query_groups = config.query_groups
+        self.unit = self.width // self.query_groups
+        {section}
+        self.packed = nn.Linear(config.hidden, {packed_width})
+    def forward(self, x):
+        shape = (*x.shape[:-1], -1, self.unit)
+        packed = self.packed(x)
+        query, key, value = packed.split([
+            self.width,
+            self.shared_groups * self.unit,
+            {value_width},
+        ], dim=-1)
+        query = query.view(shape)
+        key = key.view(shape)
+        {value_shape}
+        score = torch.matmul(query, key.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), value)
+"""
+
+
 def _pipeline(tmp_path, attention, *, sibling=""):
     path = tmp_path / "model.py"
     path.write_text(
@@ -150,6 +213,94 @@ def test_one_query_lane_and_two_kv_lanes_prove_grouped_binding(tmp_path):
     assert result.value.protocol == "grouped_kv"
     assert result.value.query_heads_path == ("query_groups",)
     assert result.value.key_value_heads_path == ("shared_groups",)
+
+
+def test_equal_width_lanes_bind_only_through_exact_head_reshape(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _equal_width_reshaped_attention())
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.protocol == "equal_heads"
+    assert result.value.query_heads_path == ("query_groups",)
+    assert result.value.key_value_heads_path == ("query_groups",)
+
+
+def test_attention_compute_descends_only_through_exact_invoked_owner(tmp_path):
+    nested = """
+class Inner:
+    def __init__(self, config):
+        self.unit = config.hidden // config.query_groups
+        self.a = nn.Linear(config.hidden, config.query_groups * self.unit)
+        self.b = nn.Linear(config.hidden, config.query_groups * self.unit)
+        self.c = nn.Linear(config.hidden, config.query_groups * self.unit)
+    def forward(self, x):
+        q = self.a(x)
+        k = self.b(x)
+        v = self.c(x)
+        score = torch.matmul(q, k.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), v)
+class Mixer:
+    def __init__(self, config):
+        self.inner = Inner(config)
+    def forward(self, x):
+        return self.inner(x)
+"""
+    index, _bundle, root, block = _pipeline(tmp_path, nested)
+    child = attention_child_evidence(index, root, block)
+    assert child.status == "resolved", child.failures
+    assert len(child.value.invocation_path) == 2
+    assert root.graph.node_for(
+        child.value.child_occurrence).symbol.qualified_name == "Mixer"
+    assert root.graph.node_for(
+        child.value.compute_occurrence).symbol.qualified_name == "Inner"
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.protocol == "equal_heads"
+
+
+def test_attention_child_dto_rejects_same_source_compute_symbol_forgery(
+        tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _split_attention(
+            "config.query_groups", "config.query_groups"))
+    child = attention_child_evidence(index, root, block)
+    assert child.status == "resolved"
+    forged = pi.SymbolId(
+        child.value.compute_owner_symbol.source, "DifferentComputeOwner")
+    with pytest.raises(ValueError, match="exact compute owner symbol"):
+        replace(child.value, compute_owner_symbol=forged)
+
+
+def test_uninvoked_nested_attention_cannot_certify_wrapper(tmp_path):
+    nested = """
+class Inner:
+    def __init__(self, config):
+        self.a = nn.Linear(config.hidden, config.hidden)
+        self.b = nn.Linear(config.hidden, config.hidden)
+        self.c = nn.Linear(config.hidden, config.hidden)
+    def forward(self, x):
+        q, k, v = self.a(x), self.b(x), self.c(x)
+        return torch.matmul(F.softmax(torch.matmul(q, k.transpose(-1, -2)), dim=-1), v)
+class Mixer:
+    def __init__(self, config):
+        self.inner = Inner(config)
+    def forward(self, x):
+        return x
+"""
+    index, _bundle, root, block = _pipeline(tmp_path, nested)
+    result = attention_child_evidence(index, root, block)
+    assert result.status == "failed"
+
+
+@pytest.mark.parametrize("source", [
+    _equal_width_reshaped_attention(use_dimension=False),
+    _equal_width_reshaped_attention(bypass_value_shape=True),
+])
+def test_equal_projection_width_without_complete_shape_chain_is_powerless(
+        tmp_path, source):
+    index, _bundle, root, block = _pipeline(tmp_path, source)
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "failed"
 
 
 def test_doubled_query_lane_is_removed_only_by_exact_output_gate(tmp_path):
@@ -328,6 +479,30 @@ class Mixer:
     assert result.value.storage_mode == "fused_qkv"
     assert result.value.protocol == "equal_heads"
     assert result.value.query_heads_path == ("query_groups",)
+
+
+def test_fused_grouped_lanes_bind_exact_query_and_nested_kv_paths(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _fused_grouped_attention())
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.storage_mode == "fused_qkv"
+    assert result.value.protocol == "grouped_kv"
+    assert result.value.query_heads_path == ("query_groups",)
+    assert result.value.key_value_heads_path == (
+        "attention", "shared_groups")
+
+
+@pytest.mark.parametrize("attention", [
+    _fused_grouped_attention(packed_width="3 * self.width"),
+    _fused_grouped_attention(value_width="self.query_groups * self.unit"),
+    _fused_grouped_attention(shape_value=False),
+])
+def test_fused_grouped_claim_requires_width_split_and_all_shape_links(
+        tmp_path, attention):
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "failed"
 
 
 def test_unrelated_equal_lane_reshape_cannot_certify_returned_packed_aliases(

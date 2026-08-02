@@ -144,7 +144,7 @@ def _qk_norm_at_attention(
     root,
     child: AttentionChildEvidence,
 ) -> ReaderResult[QKNormCodeEvidence]:
-    owner = child.child_occurrence
+    owner = child.compute_occurrence
     storage = attention_projection_storage_for_child_evidence(
         index, root, child.block_occurrence, child)
     if storage.status != "resolved":

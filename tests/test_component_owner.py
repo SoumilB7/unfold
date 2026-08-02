@@ -86,6 +86,59 @@ def test_owner_chain_and_config_prefix_propagate(tmp_path):
     assert norm.config_prefix == ("text_config", "hidden_size")  # nested prefix
 
 
+def test_straight_line_local_alias_preserves_config_prefix(tmp_path):
+    src = """
+        class Child:
+            def __init__(self, settings): pass
+        class Root:
+            def __init__(self, config):
+                local = config
+                local.flag = False
+                self.child = Child(local)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "alias.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Root"))
+    child = _child(graph.root, "child")
+    assert child.config_bindings[0].parameter == "settings"
+    assert child.config_prefix == ()
+
+
+def test_reassigned_local_uses_only_its_latest_exact_prefix(tmp_path):
+    src = """
+        class Child:
+            def __init__(self, settings): pass
+        class Root:
+            def __init__(self, config, other):
+                local = config
+                local = other
+                self.child = Child(local)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "alias_bad.py", src),)})
+    graph = resolve_owner_graph(
+        idx, _root(idx, "Root"),
+        root_param_prefixes={"config": (), "other": ("other",)})
+    child = _child(graph.root, "child")
+    assert child.config_prefix == ("other",)
+
+
+def test_guarded_local_rebinding_makes_prefix_unresolved(tmp_path):
+    src = """
+        class Child:
+            def __init__(self, settings): pass
+        class Root:
+            def __init__(self, config, other):
+                local = config
+                if config.flag:
+                    local = other
+                self.child = Child(local)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "alias_guard.py", src),)})
+    graph = resolve_owner_graph(
+        idx, _root(idx, "Root"),
+        root_param_prefixes={"config": (), "other": ("other",)})
+    assert _child(graph.root, "child").config_bindings == ()
+
+
 # --------------------------------------------------------------------------- #
 # Helper fold: self.x = self._build(...) -> the helper's return construction
 # --------------------------------------------------------------------------- #

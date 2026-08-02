@@ -55,8 +55,12 @@ def _sched_fact(ir, name="layer_schedule"):
 # ---------------------------------------------------------------------------
 
 def test_attn_type_list_int_codes_split_lightning_and_full():
-    """0 = lightning (linear) mixer, 1 = full softmax attention — a per-layer
-    int-coded list, one token per layer."""
+    """0 declares a Lightning mixer and 1 selects the full-attention route.
+
+    The schedule proves placement, but without modeling source it does not
+    prove whether the full route uses MHA, GQA, or another head-sharing
+    mechanism.
+    """
     cfg = {
         "model_type": "minimax_text_01",
         "architectures": ["MiniMaxText01ForCausalLM"],
@@ -65,7 +69,7 @@ def test_attn_type_list_int_codes_split_lightning_and_full():
         "attn_type_list": [0, 0, 0, 0, 0, 0, 0, 1],
     }
     ir = config_to_ir(cfg)
-    assert _kinds(ir) == {"declared_lightning_mixer": 7, "mha": 1}
+    assert _kinds(ir) == {"declared_lightning_mixer": 7, None: 1}
     # The schedule proves placement/name, not Lightning's internal graph or
     # positional behavior. The mixer remains opaque and position-unknown.
     mixers = [l.attention for l in ir.layers
@@ -93,7 +97,8 @@ def test_declared_mixer_cannot_fall_through_to_familiar_internals():
 
 def test_attn_type_list_all_full_stays_uniform():
     """MiniMax-M2 ships attn_type_list all-1s — every layer is full attention, so
-    the honest verdict is ONE type (no false split)."""
+    the exact installed source proves one uniform MHA mechanism (no false
+    schedule split)."""
     cfg = {
         "model_type": "minimax_m2", "architectures": ["MiniMaxM2ForCausalLM"],
         "hidden_size": 64, "intermediate_size": 128,
@@ -134,7 +139,11 @@ def test_block_types_tiles_recurrent_and_local_attention():
         "attention_window_size": 2048,
     }
     ir = config_to_ir(cfg)
-    assert _kinds(ir) == {"declared_recurrent_mixer": 4, "mha": 2}
+    # The schedule proves which positions invoke the attention route, but the
+    # installed source dispatches the temporal child through a dynamic class
+    # table.  Until that exact selector/candidate join is proven, the two
+    # attention positions retain their local mask and geometry but not MHA.
+    assert _kinds(ir) == {"declared_recurrent_mixer": 4, None: 2}
     # the attention layers slide (local window), the recurrent ones are mixers
     assert _masks(ir)["sliding"] == 2
     assert all(l.attention.position_kind == "unknown" for l in ir.layers
@@ -223,7 +232,8 @@ def test_canonical_layer_types_wins_over_schedule_spellings():
     cfg = {
         "model_type": "qwen3", "architectures": ["Qwen3ForCausalLM"],
         "hidden_size": 64, "intermediate_size": 128,
-        "num_hidden_layers": 4, "num_attention_heads": 8, "vocab_size": 128,
+        "num_hidden_layers": 4, "num_attention_heads": 8,
+        "num_key_value_heads": 8, "vocab_size": 128,
         "layer_types": ["full_attention", "full_attention",
                         "full_attention", "full_attention"],
         # a stray schedule spelling must NOT re-carve the stack
@@ -284,8 +294,8 @@ def test_block_configs_nas_projection_is_quarantined_until_source_bound():
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("repo,expect_kinds,expect_masks", [
-    ("MiniMaxAI/MiniMax-Text-01", {"declared_lightning_mixer": 70, "gqa": 10}, None),
-    ("google/recurrentgemma-2b", {"declared_recurrent_mixer": 18, "gqa": 8}, {"sliding": 8}),
+    ("MiniMaxAI/MiniMax-Text-01", {"declared_lightning_mixer": 70, None: 10}, None),
+    ("google/recurrentgemma-2b", {"declared_recurrent_mixer": 18, None: 8}, {"sliding": 8}),
     ("microsoft/Phi-3-small-8k-instruct", None, {"causal": 16, "compressed_sparse": 16}),
     ("EleutherAI/gpt-neo-125M", None, {"global": 6, "sliding": 6}),
 ])

@@ -32,6 +32,14 @@ from .program_index import (
 ConfigPrefix = tuple[str, ...]
 
 
+def _span_before(left: SourceSpan | None,
+                 right: SourceSpan | None) -> bool:
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) \
+        <= (right.line, right.col)
+
+
 @dataclass(frozen=True)
 class OwnerOccurrenceId:
     """Identity of one constructed occurrence.
@@ -613,6 +621,12 @@ class _Resolver:
 
     def _child_bindings(self, site, child_symbol, param_prefixes,
                         parent_occurrence) -> tuple[ConfigBinding, ...]:
+        # Resolve straight-line local aliases at the exact construction site.
+        # ``local = config; self.child = Child(local)`` preserves the same
+        # address.  Guarded/rival/reassigned locals are killed rather than
+        # guessed.  This is address propagation only; no field/class spelling
+        # selects an architectural role.
+        param_prefixes = self._local_prefixes_at_site(site, param_prefixes)
         # A class factory proves the component input prefix at the call site,
         # but not, by itself, how that factory forwards it into __init__.  When
         # the exact factory body is indexed we may prove the two call bindings
@@ -656,6 +670,36 @@ class _Resolver:
                          for name, prefixes in found.items())
         self._record_prefix_conflicts(site, bindings, parent_occurrence)
         return bindings
+
+    def _local_prefixes_at_site(self, site, initial) -> dict:
+        environment = dict(initial)
+        if site.span is None:
+            return environment
+        bindings = tuple(sorted(
+            (item for item in self.program_index.bindings_in(
+                site.enclosing_callable)
+             if item.span is not None
+             and _span_before(item.span, site.span)),
+            key=lambda item: (
+                item.span.line, item.span.col,
+                item.span.end_line or item.span.line,
+                item.span.end_col or item.span.col)))
+        for binding in bindings:
+            targets = tuple(
+                target.name for target in binding.targets
+                if target.kind == "name" and target.name)
+            if len(targets) != 1:
+                continue
+            target = targets[0]
+            if binding.guard or binding.value is None:
+                environment.pop(target, None)
+                continue
+            prefixes = _arg_prefixes(binding.value, environment)
+            if prefixes:
+                environment[target] = prefixes
+            else:
+                environment.pop(target, None)
+        return environment
 
     def _indexed_factory_bindings(
             self, site, child_symbol, parent_prefixes) -> tuple[ConfigBinding, ...]:

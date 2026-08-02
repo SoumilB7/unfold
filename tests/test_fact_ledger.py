@@ -429,6 +429,8 @@ def test_param_estimate_annotates_unknowns_never_silently_branches():
     assert est2.get("assumptions") == [
         "embedding-stage normalization not proven — its parameters omitted",
         "final-stage normalization unresolved — its parameters omitted",
+        "attention mechanism unknown — Q/K/V/O parameter estimate is a temporary "
+        "estimation convention, not code-proven architecture",
     ]
 
 

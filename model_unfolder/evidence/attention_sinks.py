@@ -149,7 +149,7 @@ def _attention_sink_at_child(
     attention: AttentionChildEvidence,
 ) -> ReaderResult[AttentionSinkEvidence]:
     child = attention.compute.child_symbol
-    owner = attention.child_occurrence
+    owner = attention.compute_occurrence
     compute = attention.compute.callable_symbol
     root_binding = _compute_receiver_binding(index, attention)
     if root_binding is None:

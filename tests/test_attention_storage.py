@@ -127,6 +127,62 @@ def test_one_linear_feeding_three_lane_unpack_is_fused(tmp_path):
     assert len(result.value.projections) == 1
 
 
+def _tensor_split_source(unpack):
+    return _SOURCE.replace(
+        """            self.a = nn.Linear(config.hidden, config.hidden)
+            self.b = nn.Linear(config.hidden, config.hidden)
+            self.c = nn.Linear(config.hidden, config.hidden)""",
+        "            self.packed = nn.Linear(config.hidden, config.hidden * 3)",
+    ).replace(
+        """        def forward(self, x):
+            one = self.a(x)
+            two = self.b(x)
+            three = self.c(x)""",
+        """        def forward(self, x):
+            packed = self.packed(x)
+%s""" % textwrap.indent(unpack, "            "),
+    )
+
+
+def test_exact_tensor_split_of_fused_projection_proves_three_lanes(tmp_path):
+    source = _tensor_split_source(
+        "one, two, three = packed.split([1, 1, 1], dim=-1)")
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "resolved"
+    assert result.value.mode == "fused_qkv"
+
+
+def test_tensor_split_on_unrelated_receiver_cannot_prove_fused(tmp_path):
+    source = _tensor_split_source(
+        "one, two, three = x.split([1, 1, 1], dim=-1)")
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "failed"
+
+
+def test_tensor_split_with_wrong_lane_count_cannot_prove_fused(tmp_path):
+    source = _tensor_split_source(
+        "one, two, three = packed.split([1, 2], dim=-1)")
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "failed"
+
+
+def test_tensor_split_with_ambiguous_receiver_cannot_prove_fused(tmp_path):
+    source = _tensor_split_source(
+        """if self.training:
+    packed = x
+one, two, three = packed.split([1, 1, 1], dim=-1)""")
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "failed"
+
+
 def test_two_unguarded_attention_children_never_become_unanimous_storage(
         tmp_path):
     source = _SOURCE.replace(

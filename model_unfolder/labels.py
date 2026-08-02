@@ -735,10 +735,15 @@ def attention_label(attention: AttentionSpec) -> list[str]:
                 # a third line overflows the block.
                 return [label[0], "(unresolved)"]
         if attention.cross_attention:
-            # Hero blocks have a constrained two-line width.  The title,
-            # description, fact chip and drill carry the full "mechanism
-            # unresolved" wording; keep the visible box truthful and legible.
-            return _prefixed_label(prefix, "Cross-Attention", "(unresolved)")
+            # The side-source ROLE is independent of the attention MECHANISM.
+            # Keep a code-proven prompt/vision lane visible even when Q/K/V
+            # sharing is unresolved; otherwise unknown-safety erases a fact
+            # that the construction reader did prove (MusicGen is the
+            # counterexample).  The second line still states the mechanism
+            # uncertainty explicitly.
+            side = ("Prompt" if "prompt states" in
+                    str(attention.cross_kv_source or "") else "Vision")
+            return _prefixed_label(prefix, side, "Cross-Attn unresolved")
         return _prefixed_label(prefix, "Attention", "(mechanism unresolved)")
     if attention.variant and attention.variant.get("label"):
         return list(attention.variant["label"])

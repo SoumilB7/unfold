@@ -1056,3 +1056,39 @@ def test_query_surface_is_address_only(tmp_path):
     foo = _class(idx, "Foo")
     assert idx.class_by_symbol(foo.symbol) is foo
     assert idx.classes_in(foo.symbol.source)
+
+
+def test_modulelist_append_constructors_join_the_unique_container(tmp_path):
+    idx = _index(tmp_path, "append_container.py", """
+        class First: pass
+        class Optional: pass
+        class Cell:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                self.parts.append(First(config))
+                if config.extra:
+                    self.parts.append(Optional(config))
+    """)
+    (record,) = tuple(
+        item for item in idx.containers if item.field == "parts")
+    assert [site.candidates[0].symbol.qualified_name
+            for site in record.elements] == ["First", "Optional"]
+    assert record.elements[0].guard == ()
+    assert record.elements[1].guard
+    assert all(site.target_kind == "element" and site.via == "append"
+               for site in record.elements)
+    assert all(site in idx.construction_sites for site in record.elements)
+
+
+def test_append_is_not_folded_when_container_field_is_reassigned(tmp_path):
+    idx = _index(tmp_path, "reassigned_container.py", """
+        class First: pass
+        class Cell:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                self.parts.append(First(config))
+                self.parts = ModuleList()
+    """)
+    records = tuple(item for item in idx.containers if item.field == "parts")
+    assert len(records) == 2
+    assert all(record.elements == () for record in records)
