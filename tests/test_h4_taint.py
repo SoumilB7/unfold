@@ -172,37 +172,18 @@ def test_taint_net_adds_no_debt_to_the_clean_production_tree():
 # --- item 1: the corpus invariant (real facts, not synthetic) -----------------
 
 def test_renderer_parser_dependency_firewall():
-    """H4 (§16.6) — the renderer/parser firewall: the renderer consumes the IR,
-    never raw config or the parser.  No ``renderers/`` module may import the
-    parser/adapter layer or a config accessor — so a lying render can only come
-    from a wrong IR, never from the renderer re-reading and re-guessing config.
-    Currently clean; this gate keeps it so."""
-    import ast
-    import pathlib
+    """H4 preservation probe delegates to U5's exact shrinking quarantine."""
+    from model_unfolder.evidence.consumer_firewall import group_consumer_accesses
+    from model_unfolder.evidence.structural_debt import STRUCTURAL_DEBT
 
-    import model_unfolder
-
-    renderers = pathlib.Path(model_unfolder.__file__).parent / "renderers"
-    forbidden_names = {"get_config_value", "note_access", "config_access",
-                       "resolve_source_files"}
-    violations: list[str] = []
-    for path in renderers.rglob("*.py"):
-        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
-            if isinstance(node, ast.ImportFrom):
-                if node.module and ("adapters" in node.module
-                                    or node.module.endswith("parser")
-                                    or node.module.endswith("transformer.debug")):
-                    violations.append(f"{path.name}:{node.lineno} imports {node.module}")
-                for alias in node.names:
-                    if alias.name in forbidden_names:
-                        violations.append(f"{path.name}:{node.lineno} imports {alias.name}")
-            elif isinstance(node, ast.Import):
-                for alias in node.names:
-                    if "adapters" in alias.name or alias.name in forbidden_names:
-                        violations.append(f"{path.name}:{node.lineno} imports {alias.name}")
-    assert not violations, (
-        "renderer/parser firewall breached — the renderer must consume the IR, "
-        "not raw config/source:\n" + "\n".join(violations))
+    live = {group.key for group in group_consumer_accesses()
+            if group.consumer == "renderer"
+            and group.kind == "backward_import"}
+    rowed = {row.writer_key for row in STRUCTURAL_DEBT
+             if row.sink_kind == "consumer_read"}
+    assert live and live <= rowed, (
+        "renderer/parser firewall grew outside exact debt:\n"
+        + "\n".join(map(str, sorted(live - rowed))))
 
 
 def test_no_corpus_fact_cites_identity_as_its_deciding_source():

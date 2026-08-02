@@ -242,6 +242,8 @@ PARSE_AUTHORITY_SITES = (
            "repository_audit"),
     _parse("model_unfolder/evidence/structural_writes.py", "_scan_raw",
            "repository_audit"),
+    _parse("model_unfolder/evidence/consumer_firewall.py",
+           "scan_consumer_source", "repository_audit"),
     _parse("model_unfolder/evidence/legacy_reader_quarantine.py",
            "observed_evidence_parse_sites", "repository_audit"),
     _parse("model_unfolder/evidence/legacy_reader_quarantine.py",

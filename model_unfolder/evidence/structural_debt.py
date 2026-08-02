@@ -45,7 +45,7 @@ MIGRATION_UNITS = frozenset(f"U{i}" for i in range(3, 15))
 # the former PENDING_PROJECTION_DEBT / PENDING_CONFIG_CLASSIFICATION).
 SINK_KINDS = frozenset({
     "ledger", "spec", "spec_field", "extras", "opgraph", "card", "params",
-    "drawn_leaf", "config_read",
+    "drawn_leaf", "config_read", "consumer_read",
 })
 
 _CONDITION_VERBS = frozenset({
@@ -890,6 +890,133 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
 )
 
 
+# U5 consumer firewall: one exact, content-fingerprinted row per terminal
+# consumer symbol/kind.  This is NOT a second allowlist.  Rows are ordinary
+# StructuralDebt and participate in the same live writer/consumer/shrink gates.
+# The fingerprint is over the complete normalized target set for that symbol;
+# any added/removed path changes the live census key and fails in both
+# directions.  The human-readable targets are always available from
+# ``group_consumer_accesses()``.
+_CONSUMER_DEBT_BASELINE = (
+    ('model_unfolder/evidence/conformance.py', '<module>', 'conformance', 'backward_import', '58ce4a82144f8b64'),
+    ('model_unfolder/evidence/conformance.py', '_as_mapping', 'conformance', 'raw_config', '06bfc54c63be216f'),
+    ('model_unfolder/evidence/conformance.py', '_branch_inactive', 'conformance', 'raw_config', 'd0391b30cd356cd9'),
+    ('model_unfolder/evidence/conformance.py', '_check_audio_facts', 'conformance', 'raw_extras', '2dc8a1f8de49ea25'),
+    ('model_unfolder/evidence/conformance.py', '_check_component_storage_facts', 'conformance', 'raw_extras', '261bebf740a7e89d'),
+    ('model_unfolder/evidence/conformance.py', '_check_fusion_facts', 'conformance', 'raw_extras', '007defd60449a154'),
+    ('model_unfolder/evidence/conformance.py', '_check_projector_facts', 'conformance', 'raw_extras', 'bfb96c435232e9b2'),
+    ('model_unfolder/evidence/conformance.py', '_check_storage_facts', 'conformance', 'backward_import', 'b5c1d62f90035b94'),
+    ('model_unfolder/evidence/conformance.py', '_check_storage_facts', 'conformance', 'raw_extras', '8309e956d0a3abbf'),
+    ('model_unfolder/evidence/conformance.py', '_check_vision_facts', 'conformance', 'raw_extras', 'abeededaa3def2a3'),
+    ('model_unfolder/evidence/conformance.py', '_config_field_value', 'conformance', 'raw_config', 'f9c05d8e8878f612'),
+    ('model_unfolder/evidence/conformance.py', '_constructor_envs', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
+    ('model_unfolder/evidence/conformance.py', '_drawn_fusion_routes', 'conformance', 'raw_extras', '342c661d01d15158'),
+    ('model_unfolder/evidence/conformance.py', '_drawn_position_kinds', 'conformance', 'raw_extras', '2e884d5ab0b3db2d'),
+    ('model_unfolder/evidence/conformance.py', '_family', 'conformance', 'raw_config', '6aed1a33205d116b'),
+    ('model_unfolder/evidence/conformance.py', '_imported_model_files', 'conformance', 'source_reopen', '7fef0151ecf6fcd9'),
+    ('model_unfolder/evidence/conformance.py', '_init_helper_block_classes', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
+    ('model_unfolder/evidence/conformance.py', '_is_block_class', 'conformance', 'backward_import', 'd0e50b755ed393d8'),
+    ('model_unfolder/evidence/conformance.py', '_op_is_dormant', 'conformance', 'raw_config', '6aff71a545173320'),
+    ('model_unfolder/evidence/conformance.py', '_reachable_forward_ops', 'conformance', 'backward_import', 'd3dd4554c4cd31a7'),
+    ('model_unfolder/evidence/conformance.py', '_selected_init_refs', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
+    ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'backward_import', 'd0e50b755ed393d8'),
+    ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'raw_config', 'e9e2a14f8eec059c'),
+    ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
+    ('model_unfolder/evidence/conformance.py', 'check_model_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
+    ('model_unfolder/evidence/conformance.py', 'check_nested_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
+    ('model_unfolder/evidence/conformance.py', 'check_wiring_conformance', 'conformance', 'raw_config', 'd0391b30cd356cd9'),
+    ('model_unfolder/evidence/conformance.py', 'check_wiring_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
+    ('model_unfolder/evidence/conformance.py', 'diff_conformance', 'conformance', 'raw_config', 'b03beb21e8e55c5b'),
+    ('model_unfolder/expanded/__init__.py', 'build_expanded', 'json', 'raw_extras', '6f5f5a85d05778f7'),
+    ('model_unfolder/expanded/attention.py', 'build_attention', 'json', 'truthy_cleanup', 'ba941c7678d03b43'),
+    ('model_unfolder/expanded/block_graph.py', '_block_node', 'json', 'truthy_cleanup', '10910087de24bfca'),
+    ('model_unfolder/expanded/ffn.py', 'build_ffn', 'json', 'truthy_cleanup', '2355e1a94c38a944'),
+    ('model_unfolder/expanded/loop.py', 'build_sampling_loop', 'json', 'raw_extras', '6857ba8217a73268'),
+    ('model_unfolder/expanded/loop.py', 'build_sampling_loop', 'json', 'truthy_cleanup', '66f649a8fc8501f7'),
+    ('model_unfolder/expanded/modalities.py', 'build_modalities', 'json', 'raw_extras', 'ff158202af354f0a'),
+    ('model_unfolder/expanded/modalities.py', '_normalise_fusion', 'json', 'raw_extras', 'dc4c7690e4e88477'),
+    ('model_unfolder/expanded/pathways.py', 'build_external_pathways', 'json', 'raw_extras', '8b89b379fd823424'),
+    ('model_unfolder/expanded/sections.py', '_diffusion_io', 'json', 'raw_extras', '720bc5b7888319bc'),
+    ('model_unfolder/expanded/sections.py', '_is_diffusion', 'json', 'raw_extras', '538efc70e7a2bf65'),
+    ('model_unfolder/expanded/sections.py', 'build_dimensions', 'json', 'raw_extras', 'ab038e67ecaac4d6'),
+    ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', '5a84fc171da4bbf5'),
+    ('model_unfolder/params.py', '_attn_params', 'params', 'spec_default', 'afaeb4c00bd9dee4'),
+    ('model_unfolder/params.py', '_ffn_params', 'params', 'spec_default', '949c0c547ad432a2'),
+    ('model_unfolder/renderers/html/block_views/declared_ops.py', 'build_declared_ops_view', 'renderer', 'raw_extras', 'ba8f51d3eafee8db'),
+    ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'audio_input', 'renderer', 'raw_extras', '680261edc5f7acee'),
+    ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'fusion_spec', 'renderer', 'raw_extras', 'dad11fdde8a702b6'),
+    ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'video_input', 'renderer', 'raw_extras', '658b78f2c8b074a7'),
+    ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'vision_input', 'renderer', 'raw_extras', 'aec51c4910a259ec'),
+    ('model_unfolder/renderers/html/block_views/modality_views/conditioning.py', 'conditioning_input', 'renderer', 'raw_extras', '3fbbeba7773755e3'),
+    ('model_unfolder/renderers/html/block_views/modality_views/video.py', 'build_video_path_view', 'renderer', 'raw_extras', '9f0b39c9d9150f2d'),
+    ('model_unfolder/renderers/html/block_views/registry.py', 'render_view', 'renderer', 'raw_extras', 'f6568ea08cd6042b'),
+    ('model_unfolder/renderers/html/block_views/unet.py', '_text_source_label', 'renderer', 'raw_extras', '94cf4b192dfe8dc8'),
+    ('model_unfolder/renderers/html/block_views/unet.py', '_draw_text_conditioning', 'renderer', 'raw_extras', '4271fc2560fe3393'),
+    ('model_unfolder/renderers/html/block_views/unet.py', '_stage_title', 'renderer', 'raw_extras', '7f1d4831e31adb5b'),
+    ('model_unfolder/renderers/html/block_views/unet.py', 'build_unet_view', 'renderer', 'raw_extras', 'f337a110eca6bd73'),
+    ('model_unfolder/renderers/html/document.py', '_render_fragment_body', 'renderer', 'raw_extras', '4e0f5a0ff4503742'),
+    ('model_unfolder/renderers/html/document.py', 'render_fragment', 'renderer', 'raw_extras', '4592b54801fb2c20'),
+    ('model_unfolder/renderers/html/evidence.py', '_code_evidence_section', 'renderer', 'raw_extras', 'ce0f5f767cc3d150'),
+    ('model_unfolder/renderers/html/fact_projection.py', 'fact_provenance', 'renderer', 'raw_extras', 'a9089eb1467f73d3'),
+    ('model_unfolder/renderers/html/metadata.py', '_arch_badges', 'renderer', 'raw_extras', '3b120c902b366719'),
+    ('model_unfolder/renderers/html/metadata.py', '_block_lookup', 'renderer', 'raw_extras', '2b00ebf355b64033'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_audio_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_conditioning_children', 'renderer', 'backward_import', '3dfe0c4d151975ba'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_modality_badges', 'renderer', 'raw_extras', '72aee0d2fbeff24f'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_children', 'renderer', 'raw_extras', 'b5786f19ba04bd6a'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_fusion_description', 'renderer', 'raw_extras', '3649e8c389d841d0'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_is_conditioning_fusion', 'renderer', 'raw_extras', '944dba77202a5d65'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_multimodal_block_lookup', 'renderer', 'raw_extras', '09b28173badb0c5f'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_unified_fusion_children', 'renderer', 'raw_extras', '6d2771bda17006b0'),
+    ('model_unfolder/renderers/html/metadata_modalities.py', '_vision_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
+    ('model_unfolder/renderers/html/sections.py', '_diffusion_stats', 'renderer', 'raw_extras', 'da27bb4cf97df230'),
+    ('model_unfolder/renderers/html/sections.py', '_stats_banner', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
+    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', 'c2f7729c70d3b7ef'),
+    ('model_unfolder/renderers/html/views.py', '_draw_mtp_head', 'renderer', 'raw_extras', '9254d402d9451cd0'),
+    ('model_unfolder/renderers/html/views.py', '_is_diffusion_architecture', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_loop_cards', 'renderer', 'raw_extras', '261bebf740a7e89d'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_view', 'renderer', 'raw_extras', '1c3216f252696602'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_cards', 'renderer', 'raw_extras', '1daab3bea1a4e581'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_descendant_levels', 'renderer', 'raw_extras', '261bebf740a7e89d'),
+    ('model_unfolder/renderers/html/views_diffusion.py', '_build_loop_view', 'renderer', 'raw_extras', 'b6d427b43e3e45aa'),
+    ('model_unfolder/renderers/html/views_diffusion.py', 'render_diffusion_fragment', 'renderer', 'raw_extras', '2a9f26e37a501e39'),
+)
+
+_CONSUMER_REASONS = {
+    "backward_import": "terminal consumer still imports an upstream reader/vocabulary",
+    "raw_config": "terminal consumer still reinterprets raw config instead of an owner-bound fact",
+    "raw_extras": "terminal consumer still projects transitional raw extras",
+    "semantic_bucket": "JSON trace still matches evidence by global semantic bucket",
+    "source_reopen": "conformance still reopens/reparses source instead of receiving ProgramIndex",
+    "spec_default": "parameter formula still selects a conventional branch from an unresolved spec",
+    "truthy_cleanup": "JSON truthiness cleanup still conflates explicit false/empty with absence",
+}
+
+
+def _consumer_debt(module: str, symbol: str, consumer: str,
+                   kind: str, fingerprint: str) -> StructuralDebt:
+    target = f"{consumer}.{kind}.{fingerprint}"
+    return StructuralDebt(
+        owner=f"consumer.{consumer}",
+        source_occurrence=f"normalized-target-set:{fingerprint}",
+        writer_module=module,
+        writer_symbol=symbol,
+        sink_kind="consumer_read",
+        structural_target=target,
+        reason=_CONSUMER_REASONS[kind],
+        last_consumer=f"{module}::{symbol}",
+        migration_unit="U14",
+        deletion_condition=(
+            f"writer_gone:{module}::{symbol}:consumer_read:{target}"
+        ),
+        census_target=target,
+    )
+
+
+STRUCTURAL_DEBT += tuple(_consumer_debt(*spec)
+                         for spec in _CONSUMER_DEBT_BASELINE)
+
+
 # ---- derived join surfaces (the parser/sable joins the old registers fed) -- #
 
 def _is_classification(row: StructuralDebt) -> bool:
@@ -977,8 +1104,7 @@ _PKG_ROOT = Path(__file__).resolve().parent.parent.parent
 
 @lru_cache(maxsize=256)
 def _module_symbols(module: str) -> frozenset[str] | None:
-    """Top-level and nested def/class names in a production module, or None
-    if the module file does not exist."""
+    """Bare compatibility names plus exact qualified symbol paths."""
     path = _PKG_ROOT / module
     if not path.is_file():
         return None
@@ -987,10 +1113,18 @@ def _module_symbols(module: str) -> frozenset[str] | None:
     except SyntaxError:
         return None
     names = {"<module>"}
-    for node in ast.walk(tree):
+
+    def visit(node: ast.AST, scope: tuple[str, ...]) -> None:
+        next_scope = scope
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
                              ast.ClassDef)):
-            names.add(node.name)
+            names.add(node.name)  # compatibility for pre-U5 debt rows
+            next_scope = scope + (node.name,)
+            names.add(".".join(next_scope))
+        for child in ast.iter_child_nodes(node):
+            visit(child, next_scope)
+
+    visit(tree, ())
     return frozenset(names)
 
 
@@ -1001,8 +1135,11 @@ def _symbol_exists(module: str, symbol: str) -> bool:
 
 def _live_census_keys():
     from .structural_writes import scan_structural_write_multiset
-    return {(k.module, k.enclosing_symbol, k.sink_kind, k.normalized_target)
+    keys = {(k.module, k.enclosing_symbol, k.sink_kind, k.normalized_target)
             for k in scan_structural_write_multiset()}
+    from .consumer_firewall import group_consumer_accesses
+    keys.update(group.key for group in group_consumer_accesses())
+    return keys
 
 
 def _fact_definition(fact_key: str):
@@ -1097,7 +1234,7 @@ def unbacked_debt_rows(rows=None, *, census_keys=None) -> list[StructuralDebt]:
     still exists in its module."""
     rows = STRUCTURAL_DEBT if rows is None else rows
     census_sinks = {"ledger", "spec", "spec_field", "extras", "opgraph",
-                    "card", "params"}
+                    "card", "params", "consumer_read"}
     keys = None
     dead: list[StructuralDebt] = []
     for r in rows:
@@ -1156,20 +1293,46 @@ def unrowed_extras_writes(rows=None, *, census_keys=None) -> list[str]:
     return sorted(missing)
 
 
+def unrowed_consumer_reads(rows=None, *, census_keys=None) -> list[str]:
+    """Every terminal-consumer dependency/read group needs one exact row.
+
+    The group's target contains a fingerprint of its complete normalized path
+    set.  Adding or removing a read therefore strands the old row *and* creates
+    an unrowed new group; an exact-symbol quarantine cannot silently grow.
+    """
+    rows = STRUCTURAL_DEBT if rows is None else rows
+    keys = _live_census_keys() if census_keys is None else census_keys
+    rowed = frozenset(r.writer_key for r in rows
+                      if r.sink_kind == "consumer_read")
+    return sorted(
+        f"{module}::{symbol} -> {target}"
+        for module, symbol, sink, target in keys
+        if sink == "consumer_read"
+        and (module, symbol, sink, target) not in rowed
+    )
+
+
 def debt_problems(rows=None, *, census_keys=None) -> list[str]:
     """Every §R6 gate in one blocking report (empty == lawful)."""
     rows = STRUCTURAL_DEBT if rows is None else rows
+    # One immutable census per audit.  Recomputing it inside every
+    # writer_gone condition made the exact U5 consumer rows multiply a full
+    # AST scan by the number of rows and could turn a blocking gate into a
+    # minutes-long accidental denial of service.
+    keys = _live_census_keys() if census_keys is None else census_keys
     problems = [f"duplicate debt row {k}" for k in duplicate_debt_rows(rows)]
     problems += [f"dead writer: {r.writer_module}::{r.writer_symbol} for "
                  f"{r.sink_kind}:{r.structural_target}"
-                 for r in unbacked_debt_rows(rows, census_keys=census_keys)]
+                 for r in unbacked_debt_rows(rows, census_keys=keys)]
     problems += [f"dead consumer: {r.last_consumer} for "
                  f"{r.sink_kind}:{r.structural_target}"
                  for r in unconsumed_debt_rows(rows)]
     problems += [f"deletion condition already met "
                  f"({r.deletion_condition}) — delete the row: "
                  f"{r.sink_kind}:{r.structural_target}"
-                 for r in satisfied_debt_rows(rows, census_keys=census_keys)]
+                 for r in satisfied_debt_rows(rows, census_keys=keys)]
     problems += [f"raw extras write without a writer-exact debt row: {t}"
-                 for t in unrowed_extras_writes(rows, census_keys=census_keys)]
+                 for t in unrowed_extras_writes(rows, census_keys=keys)]
+    problems += [f"terminal consumer read without an exact debt row: {t}"
+                 for t in unrowed_consumer_reads(rows, census_keys=keys)]
     return problems

@@ -14,7 +14,9 @@ from .region import region_to_json as _region_to_json
 from .utils import drop_none
 
 
-def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
+def build_ffn(ffn: dict, hidden: int | None,
+              group_path: str, evidence: dict | None = None) -> dict[str, Any]:
+    """Project canonical FFN; legacy global ``evidence`` is intentionally ignored."""
     kind = ffn.get("kind")
     structure_state = ffn_structure_state(ffn)
     out: dict[str, Any] = {
@@ -30,7 +32,8 @@ def build_ffn(ffn: dict, hidden: int | None, group_path: str, evidence: dict | N
         "operation_graph":   _operation_graph(ffn, hidden),
         "trace": {
             "ir_path":          f"{group_path}.ffn",
-            "code_finding_ids": _evidence_ids(evidence, "ffn", _evidence_values(ffn)),
+            # A global (kind, value) bucket can belong to a sibling owner.
+            "code_finding_ids": [],
         },
     }
     if kind == "moe":
@@ -87,24 +90,3 @@ def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
         ]
         return {"nodes": nodes, "edges": edges_from_nodes(nodes)}
     return _region_to_json(ffn_region(ffn, hidden))
-
-
-# ---------- evidence linking ----------
-
-
-def _evidence_values(ffn: dict) -> list[str]:
-    if ffn.get("kind") == "moe":
-        return ["mixture_of_experts"]
-    if ffn.get("gated") is None:
-        return []   # inner structure undeclared — claim no specific FFN evidence
-    return ["gated_dense_ffn" if ffn.get("gated") else "plain_dense_ffn"]
-
-
-def _evidence_ids(evidence: dict | None, kind: str, values: list[str]) -> list[str]:
-    if not evidence:
-        return []
-    detections = evidence.get("detections") or {}
-    out: list[str] = []
-    for v in values:
-        out.extend(((detections.get(kind) or {}).get(v) or {}).get("finding_ids") or [])
-    return out

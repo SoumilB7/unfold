@@ -2129,6 +2129,47 @@ sinks. Raw `extras` access is a shrinking, exact-symbol quarantine until U15.
 **Done means:** an attempted raw-config branch in a renderer, JSON serializer,
 parameter formula or conformance rule fails a blocking static test.
 
+#### U5 implementation ledger (verification pending)
+
+U5 is deliberately a **firewall**, not an early implementation of U6–U14.
+It establishes the boundary that later mechanism migrations must cross and
+turns every existing exception into exact, shrinking debt:
+
+- `evidence/consumer_firewall.py` is the one AST policy for HTML renderers,
+  expanded JSON, parameter estimation and conformance. It rejects backward
+  imports, unknown internal bridge modules, raw config/source reopening, raw
+  `extras`, global semantic evidence buckets, truthiness cleanup and
+  spec-default formula selection. Typed receipt imports and typed
+  conformance graph DTOs are allowed; graph builders/readers are not.
+- Taint crosses assignments, positional/keyword helper calls and exact
+  `self.method` calls. Occurrence identity is a line-insensitive **multiset**:
+  adding a second read of an existing path changes the fingerprint and blocks.
+  Rival helper paths collapse to an explicit `<multiple>` path, never one
+  arbitrarily selected path.
+- The live tree currently contains **340 exact occurrences in 82
+  symbol/kind groups**: 38 renderer groups, 13 expanded-JSON groups, 29
+  conformance groups and 2 parameter groups. Every group is an ordinary
+  `StructuralDebt(sink_kind="consumer_read", migration_unit="U14")` row in
+  the one register; live↔row equality, dead writers, satisfied rows and growth
+  are blocking. This is a census, not an assertion that the reads are lawful.
+- The audit exposed three previously hidden renderer→`submodel` imports; they
+  are now visible exact U14 debt. It also exposed the old global
+  `(kind, value)` evidence-to-trace join as owner-unsound. Attention/FFN JSON
+  traces keep their exact IR path but publish no finding id until U14 can
+  supply an owner-qualified fact receipt. The standalone diagnostic
+  `code_evidence` document remains intact.
+- Existing truthiness cleanup is **not** called fixed. `shared`, `no_rope` and
+  similar fields are not universally tri-state facts yet; serializing their
+  dataclass defaults as proven `false` would fabricate a negative. Four exact
+  JSON cleanup groups remain U14 debt until the producer facts themselves are
+  tri-state.
+
+No raw `extras`, parameter convention or legacy conformance reader was silently
+blessed as correct. U14 must delete these 82 rows as it replaces each group with
+owner-qualified facts/routes. U5 completion requires the focused, authority,
+preservation, example and exhaustive receipts below; this ledger must not be
+changed to `DONE` before those receipts are recorded.
+
 ### 20.9 U6 — migrate attention once for every altitude
 
 **Reader:** create/centralize owner-bound attention interpretation in

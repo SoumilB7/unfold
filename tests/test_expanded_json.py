@@ -173,7 +173,10 @@ class FakeMLP:
     assert evidence["provenance"]["source"] == "path"
     assert "grouped_kv_attention" in evidence["detections"]["attention"]
     assert evidence["detections"]["attention"]["grouped_kv_attention"]["locations"][0]["class"] == "FakeAttention"
-    assert data["layer_groups"][0]["attention"]["trace"]["code_finding_ids"]
+    # A global semantic detection can belong to a sibling owner. Expanded
+    # JSON keeps the exact IR path but cites no finding until a fact-level,
+    # owner-qualified receipt exists.
+    assert data["layer_groups"][0]["attention"]["trace"]["code_finding_ids"] == []
 
 
 def test_expanded_json_carries_structured_multimodal_inputs():

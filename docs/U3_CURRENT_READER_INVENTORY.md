@@ -9,7 +9,7 @@ This is the current authority/deletion worklist. The older
 ## Summary
 
 - quarantined semantic readers: **25**
-- exact evidence-layer `ast.parse` sites: **33**
+- exact evidence-layer `ast.parse` sites: **34**
 - legacy model-source parse sites: **23**
 - frozen reader/helper implementation digest: `9330c5930fd4a6866fbd53c45dc7ca97bd6c6f8d31399aa811f30b01bc4fc60e`
 - frozen legacy-parse caller digest: `c677eb34678995d37a9f239c58340b664a68d120fa3b992eae1c8894b872b899`
@@ -83,6 +83,7 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/projector.py::_class_node` | U9 | projector evidence reparses its component source |
 | `legacy_model_source` | `model_unfolder/evidence/transitive.py::_parse_file` | U14 | parallel callable/transitive parser shared by conformance |
 | `legacy_model_source` | `model_unfolder/evidence/vision.py::_parsed_classes` | U9 | vision evidence reparses its component source |
+| `repository_audit` | `model_unfolder/evidence/consumer_firewall.py::scan_consumer_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/identity_guard.py::scan_identity_source` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/legacy_reader_quarantine.py::_observed_callers` | — | lawful retained authority |
 | `repository_audit` | `model_unfolder/evidence/legacy_reader_quarantine.py::observed_evidence_parse_sites` | — | lawful retained authority |

@@ -17,7 +17,9 @@ Schema (per the test contract):
 * ``projections``         — named linear specs (query, key, value, output | MLA: q_lora_*, kv_lora_*, output)
 * ``operation_graph``     — DAG of {id, operation, inputs, outputs, parameters?, formula?}
 * ``cache``               — kv-cache descriptor
-* ``trace``               — ir_path + code_finding_ids
+* ``trace``               — exact IR path. Finding ids remain empty until an
+                            owner-qualified fact receipt exists; global
+                            semantic buckets are not provenance.
 """
 from __future__ import annotations
 
@@ -29,7 +31,15 @@ from .region import region_to_json
 from .utils import drop_none
 
 
-def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: dict | None) -> dict[str, Any]:
+def build_attention(attn: dict, hidden: int | None,
+                    group_path: str, evidence: dict | None = None) -> dict[str, Any]:
+    """Project canonical attention; ``evidence`` is ignored compatibility input.
+
+    The global diagnostic document has no owner identity, so consuming it here
+    would recreate the sibling-provenance bug. U14 may replace this argument
+    with a typed owner-qualified receipt; U5 deliberately does not reinterpret
+    it.
+    """
     kind = attn.get("kind")
     heads = _heads(attn, hidden)
     out: dict[str, Any] = {
@@ -48,7 +58,7 @@ def build_attention(attn: dict, hidden: int | None, group_path: str, evidence: d
         "scores_scaled":   attn.get("scores_scaled"),
         "trace": {
             "ir_path":          f"{group_path}.attention",
-            "code_finding_ids": _evidence_ids(evidence, "attention", _evidence_values(kind)),
+            "code_finding_ids": [],
         },
     }
     out.update(drop_none({
@@ -202,28 +212,3 @@ def _splice_kv_cache(graph: dict[str, Any], attn: dict) -> None:
         {"from": "k_proj", "to": "kv_cache"}, {"from": "v_proj", "to": "kv_cache"},
         {"from": "kv_cache", "to": "scores"}, {"from": "kv_cache", "to": "context"},
     ]
-
-
-# ---------- evidence linking ----------
-
-
-def _evidence_values(kind: str | None) -> list[str]:
-    if kind == "mla":
-        return ["mla", "grouped_kv_attention"]
-    if kind == "mqa":
-        return ["multi_query_attention", "grouped_kv_attention", "split_qkv_attention", "fused_qkv_attention"]
-    if kind == "gqa":
-        return ["grouped_kv_attention", "split_qkv_attention", "fused_qkv_attention"]
-    if kind == "mha":
-        return ["split_qkv_attention", "fused_qkv_attention"]
-    return [kind] if kind else []
-
-
-def _evidence_ids(evidence: dict | None, kind: str, values: list[str]) -> list[str]:
-    if not evidence:
-        return []
-    detections = evidence.get("detections") or {}
-    out: list[str] = []
-    for v in values:
-        out.extend(((detections.get(kind) or {}).get(v) or {}).get("finding_ids") or [])
-    return out
