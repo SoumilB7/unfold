@@ -63,6 +63,73 @@ _LINEAR_PROTOCOLS = frozenset({
     "torch.nn.modules.linear.Linear",
 })
 
+_SIGMOID_PROTOCOLS = frozenset({
+    "torch.sigmoid",
+    "torch.nn.functional.sigmoid",
+})
+
+
+@dataclass(frozen=True)
+class AttentionOutputGateBinding:
+    """Exact query-lane split whose sibling gates the attention output.
+
+    This is independent evidence from the attention mechanism.  It is carried
+    by a head binding only when the query projection has an extra literal lane
+    multiplier and the owner's forward proves the complete
+    projection -> two-lane split -> attention -> sigmoid multiply -> output
+    projection chain.  A doubled width or a sigmoid token alone is powerless.
+    """
+
+    attention_occurrence: OwnerOccurrenceId
+    query_projection: ConstructionOccurrenceId
+    output_projection: ConstructionOccurrenceId
+    split_call: CallObservation
+    query_projection_call: CallObservation
+    output_projection_call: CallObservation
+    application_span: SourceSpan
+    activation: str
+    lane_multiplier: int
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("an attention output gate names its exact owner")
+        for projection in (self.query_projection, self.output_projection):
+            if not isinstance(projection, ConstructionOccurrenceId) \
+                    or projection.parent != self.attention_occurrence:
+                raise ValueError(
+                    "gate projections belong to the exact attention owner")
+        if self.query_projection == self.output_projection:
+            raise ValueError("query and output projections are distinct")
+        calls = (self.split_call, self.query_projection_call,
+                 self.output_projection_call)
+        if any(not isinstance(call, CallObservation)
+               or call.owner.source != self.attention_occurrence.root.source
+               or call.span is None for call in calls):
+            raise TypeError("the gate carries its exact owner calls")
+        if any(call.owner != self.split_call.owner for call in calls[1:]):
+            raise ValueError("gate calls belong to one exact attention class")
+        if not isinstance(self.application_span, SourceSpan) \
+                or self.application_span.source != self.attention_occurrence.root.source:
+            raise TypeError("the gate carries its exact application span")
+        if self.activation != "sigmoid" or self.lane_multiplier != 2:
+            raise ValueError("the proven output-gate protocol is sigmoid over two lanes")
+        if not self.spans or any(
+                not isinstance(span, SourceSpan)
+                or span.source != self.attention_occurrence.root.source
+                for span in self.spans):
+            raise ValueError("output-gate provenance belongs to its owner")
+        required = {
+            self.query_projection.site.span,
+            self.output_projection.site.span,
+            self.split_call.span,
+            self.query_projection_call.span,
+            self.output_projection_call.span,
+            self.application_span,
+        }
+        if None in required or not required.issubset(self.spans):
+            raise ValueError("output-gate provenance cites every decisive site")
+
 
 @dataclass(frozen=True)
 class AttentionHeadBinding:
@@ -87,6 +154,7 @@ class AttentionHeadBinding:
     projections: tuple[ConstructionOccurrenceId, ...]
     common_factor: ExprNode
     spans: tuple[SourceSpan, ...]
+    output_gate: AttentionOutputGateBinding | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -129,6 +197,15 @@ class AttentionHeadBinding:
         required = {item.site.span for item in self.projections}
         if not required.issubset(self.spans):
             raise ValueError("head evidence cites every projection construction")
+        if self.output_gate is not None:
+            if not isinstance(self.output_gate, AttentionOutputGateBinding) \
+                    or self.output_gate.attention_occurrence != \
+                    self.attention_occurrence \
+                    or self.output_gate.query_projection not in self.projections:
+                raise ValueError(
+                    "head evidence carries an exact gate for its query lane")
+            if not set(self.output_gate.spans).issubset(self.spans):
+                raise ValueError("head provenance includes the output-gate proof")
 
 
 @dataclass(frozen=True)
@@ -547,11 +624,21 @@ def attention_head_binding_at_block(
             (protocol, query, kv, common)
         for protocol, query, kv, common in candidates
     }
+    output_gate = None
     if not distinct:
-        return ReaderResult.failed(block_occurrence, (ReaderFailure(
-            "incomplete_graph",
-            "split Q/K/V widths do not prove one shared factor plus exact "
-            "head-count config bindings"),), provenance=storage.provenance)
+        gated = _gated_query_head_protocol(
+            index, node, storage.value, widths,
+            config_prefix=config_prefix)
+        if gated is None:
+            return ReaderResult.failed(block_occurrence, (ReaderFailure(
+                "incomplete_graph",
+                "split Q/K/V widths do not prove one shared factor plus exact "
+                "head-count config bindings"),), provenance=storage.provenance)
+        protocol, query_path, kv_path, common, output_gate = gated
+        distinct = {
+            (protocol, query_path, kv_path, _expr_key(common)):
+                (protocol, query_path, kv_path, common)
+        }
     if len(distinct) != 1:
         return ReaderResult.ambiguous(
             block_occurrence,
@@ -565,10 +652,12 @@ def attention_head_binding_at_block(
             *(width.span for _item, width, _factors in widths),
             common.span,
             *storage.value.spans,
+            *(output_gate.spans if output_gate is not None else ()),
         ) if isinstance(span, SourceSpan)))
     value = AttentionHeadBinding(
         block_occurrence, attention.child_occurrence, "split", protocol,
-        query_path, kv_path, storage.value.projections, common, spans)
+        query_path, kv_path, storage.value.projections, common, spans,
+        output_gate)
     return ReaderResult.resolved(
         block_occurrence, value,
         provenance=(ReaderProvenance(
@@ -905,6 +994,343 @@ def _multiplication_contains_field(expression, field):
     factors = _multiplication_factors(expression)
     return factors is not None and sum(
         _self_field(item) == field for item in factors) == 1
+
+
+def _gated_query_head_protocol(
+    index, node, storage, widths, *, config_prefix,
+):
+    """Prove head geometry when Q carries one extra output-gate lane.
+
+    The ordinary width proof accepts exactly ``count * common`` on each Q/K/V
+    projection.  Some mechanisms intentionally construct
+    ``query_count * common * 2`` and split that exact projection into query and
+    gate lanes.  The extra factor is removable only when the same owner's
+    forward proves the full gate application.  This helper therefore cannot
+    turn a coincidental doubled projection or an unused sigmoid into geometry.
+    """
+    factor_rows = []
+    for occurrence, width, _old_factors in widths:
+        factors = _flatten_multiplication(width)
+        if len(factors) not in {2, 3}:
+            return None
+        factor_rows.append((occurrence, width, factors))
+
+    candidates = []
+    for common in factor_rows[0][2]:
+        if _positive_int_constant(common) is not None:
+            continue
+        common_key = _expr_key(common)
+        paths = []
+        constants = []
+        valid = True
+        for _occurrence, _width, factors in factor_rows:
+            positions = [i for i, factor in enumerate(factors)
+                         if _expr_key(factor) == common_key]
+            if len(positions) != 1:
+                valid = False
+                break
+            remaining = list(factors)
+            remaining.pop(positions[0])
+            path_factors = []
+            literal_factors = []
+            for factor in remaining:
+                literal = _positive_int_constant(factor)
+                if literal is not None:
+                    literal_factors.append(literal)
+                    continue
+                path = _exact_config_path_for_expression(
+                    index, node, factor, seen=frozenset(),
+                    config_prefix=config_prefix)
+                if path is None:
+                    valid = False
+                    break
+                path_factors.append(path)
+            if not valid or len(path_factors) != 1 \
+                    or len(literal_factors) > 1:
+                valid = False
+                break
+            paths.append(path_factors[0])
+            constants.append(tuple(literal_factors))
+        if not valid or constants.count((2,)) != 1 \
+                or any(item not in {(), (2,)} for item in constants):
+            continue
+        query_index = constants.index((2,))
+        counts = {path: paths.count(path) for path in set(paths)}
+        if len(counts) == 1:
+            protocol = "equal_heads"
+            query_path = kv_path = paths[query_index]
+        elif sorted(counts.values()) == [1, 2]:
+            query_path = next(path for path, count in counts.items()
+                              if count == 1)
+            kv_path = next(path for path, count in counts.items()
+                           if count == 2)
+            if paths[query_index] != query_path:
+                continue
+            protocol = "grouped_kv"
+        else:
+            continue
+        gate = _output_gate_for_query_projection(
+            index, node, storage, factor_rows[query_index][0])
+        if gate is not None:
+            candidates.append((
+                protocol, query_path, kv_path, common, gate))
+
+    distinct = {
+        (protocol, query, kv, _expr_key(common), gate.split_call.span,
+         gate.application_span):
+            (protocol, query, kv, common, gate)
+        for protocol, query, kv, common, gate in candidates
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
+
+
+def _output_gate_for_query_projection(index, node, storage, query_projection):
+    """Return the one exact two-lane sigmoid output-gate proof, if any."""
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    sites = tuple(
+        site for site in index.construction_sites_of(node.symbol)
+        if site.site_id == query_projection.site)
+    if len(sites) != 1 or sites[0].target_kind != "field":
+        return None
+    query_field = sites[0].target
+
+    calls = tuple(index.calls_in(forward))
+    bindings = tuple(index.bindings_in(forward))
+    chunk_candidates = []
+    for call in calls:
+        if call.guard or call.callee.kind != "attribute" \
+                or call.callee.name != "chunk" or call.span is None:
+            continue
+        chunks = (
+            call.args[1] if len(call.args) >= 2 else
+            dict(call.kwargs).get("chunks"))
+        if _positive_int_constant(chunks) != 2:
+            continue
+        nested_fields = set()
+        for expression in call.args:
+            nested_fields.update(_nested_self_call_fields(expression))
+        for _name, expression in call.kwargs:
+            nested_fields.update(_nested_self_call_fields(expression))
+        if nested_fields != {query_field}:
+            continue
+        projection_calls = tuple(
+            item for item in calls
+            if _self_field(item.callee) == query_field
+            and item.span is not None
+            and _span_contains(call.span, item.span))
+        if len(projection_calls) != 1:
+            continue
+        assignments = tuple(
+            binding for binding in bindings
+            if not binding.guard
+            and _expr_contains_span(binding.value, call.span))
+        if len(assignments) != 1:
+            continue
+        lane_names = tuple(
+            name for target in assignments[0].targets
+            for name in _target_names(target))
+        if len(lane_names) != 2 or len(set(lane_names)) != 2:
+            continue
+        chunk_candidates.append((call, lane_names, projection_calls[0]))
+    if len(chunk_candidates) != 1:
+        return None
+    split_call, lane_names, projection_call = chunk_candidates[0]
+    split_bindings = tuple(
+        binding for binding in bindings
+        if not binding.guard and _expr_contains_span(binding.value, split_call.span))
+    if len(split_bindings) != 1:
+        return None
+    split_binding = split_bindings[0]
+
+    compute_calls = tuple(dict.fromkeys((
+        storage.compute_entry,
+        *storage.attention.compute.input_calls,
+    )))
+    compute_bindings = tuple(
+        (call, binding)
+        for call in compute_calls
+        for binding in bindings
+        if not binding.guard and call.span is not None
+        and binding.value.span == call.span)
+    if not compute_bindings:
+        return None
+
+    gate_applications = []
+    for compute_call, compute_binding in compute_bindings:
+        compute_outputs = tuple(
+            name for target in compute_binding.targets
+            for name in _target_names(target))
+        for binding in bindings:
+            if binding.guard or binding.value.kind != "binop" \
+                    or binding.value.operator != "*" \
+                    or not _span_before(compute_call.span, binding.span):
+                continue
+            targets = tuple(
+                name for target in binding.targets
+                for name in _target_names(target))
+            for output_name in compute_outputs:
+                if targets != (output_name,) \
+                        or not _expr_contains_name(binding.value, output_name):
+                    continue
+                for gate_name in lane_names:
+                    query_names = tuple(
+                        name for name in lane_names if name != gate_name)
+                    if len(query_names) != 1:
+                        continue
+                    query_name = query_names[0]
+                    query_consumers = tuple(
+                        item for item in compute_calls
+                        if item.span is not None
+                        and any(_expr_contains_name(arg, query_name)
+                                for arg in (*item.args,
+                                            *(value for _key, value in item.kwargs))))
+                    sigmoid_calls = tuple(
+                        item for item in calls
+                        if item.span is not None
+                        and _span_contains(binding.value.span, item.span)
+                        and any(_expr_contains_name(arg, gate_name)
+                                for arg in (*item.args,
+                                            *(value for _key, value in item.kwargs)))
+                        and _call_has_external_protocol(
+                            index, item, _SIGMOID_PROTOCOLS))
+                    if len(query_consumers) != 1 or len(sigmoid_calls) != 1 \
+                            or not _expr_contains_span(
+                                binding.value, sigmoid_calls[0].span) \
+                            or not _span_before(
+                                split_binding.span, query_consumers[0].span) \
+                            or not _name_lineage_preserved_between(
+                                bindings, query_name, split_binding.span,
+                                query_consumers[0].span) \
+                            or not _name_lineage_preserved_between(
+                                bindings, gate_name, split_binding.span,
+                                binding.span) \
+                            or not _name_lineage_preserved_between(
+                                bindings, output_name, compute_binding.span,
+                                binding.span):
+                        continue
+                    gate_applications.append((
+                        compute_call, binding, output_name, gate_name,
+                        sigmoid_calls[0]))
+    if len(gate_applications) != 1:
+        return None
+    compute_call, application, output_name, _gate_name, _sigmoid_call = \
+        gate_applications[0]
+
+    output_candidates = []
+    projection_set = set(storage.projections)
+    for call in calls:
+        if call.guard or call.span is None \
+                or not _span_before(application.span, call.span) \
+                or not any(_expr_contains_name(arg, output_name)
+                           for arg in call.args):
+            continue
+        field = _self_field(call.callee)
+        if field is None:
+            continue
+        sites = tuple(
+            site for site in index.construction_sites_of(node.symbol)
+            if site.target_kind == "field" and site.target == field
+            and _site_is_external_linear(index, site))
+        if len(sites) != 1:
+            continue
+        occurrence = ConstructionOccurrenceId(
+            storage.attention.child_occurrence, sites[0].site_id)
+        if occurrence not in projection_set \
+                and _name_lineage_preserved_between(
+                    bindings, output_name, application.span, call.span):
+            output_candidates.append((occurrence, call))
+    if len(output_candidates) != 1:
+        return None
+    output_projection, output_call = output_candidates[0]
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            query_projection.site.span, output_projection.site.span,
+            projection_call.span, split_call.span,
+            compute_call.span, application.span, output_call.span)
+        if isinstance(span, SourceSpan)))
+    return AttentionOutputGateBinding(
+        storage.attention.child_occurrence,
+        query_projection, output_projection, split_call,
+        projection_call, output_call,
+        application.span, "sigmoid", 2, spans)
+
+
+def _flatten_multiplication(expression):
+    if isinstance(expression, ExprNode) and expression.kind == "binop" \
+            and expression.operator == "*" and len(expression.children) == 2:
+        return tuple(
+            factor for child in expression.children
+            for factor in _flatten_multiplication(child))
+    return (expression,) if isinstance(expression, ExprNode) else ()
+
+
+def _positive_int_constant(expression):
+    if not isinstance(expression, ExprNode) or expression.kind != "constant" \
+            or not isinstance(expression.const_value, int) \
+            or isinstance(expression.const_value, bool) \
+            or expression.const_value <= 0:
+        return None
+    return expression.const_value
+
+
+def _expr_contains_span(expression, span):
+    if not isinstance(expression, ExprNode) or span is None:
+        return False
+    if expression.span == span:
+        return True
+    return any(_expr_contains_span(child, span) for child in expression.children) \
+        or any(_expr_contains_span(child, span)
+               for _name, child in expression.keyword_children)
+
+
+def _expr_contains_name(expression, name):
+    if not isinstance(expression, ExprNode):
+        return False
+    if expression.kind == "name" and expression.name == name:
+        return True
+    return any(_expr_contains_name(child, name)
+               for child in expression.children) \
+        or any(_expr_contains_name(child, name)
+               for _keyword, child in expression.keyword_children)
+
+
+def _call_has_external_protocol(index, call, protocols):
+    proof = resolve_import_reference(
+        index, call.enclosing_callable.source,
+        call.enclosing_callable, call.callee)
+    return proof is not None and proof.qualified_target in protocols
+
+
+def _name_lineage_preserved_between(bindings, name, start, end):
+    """Whether every intervening rebind structurally consumes the prior value.
+
+    This is deliberately weaker than semantic equivalence and stronger than
+    spelling continuity.  It permits ordinary view/norm/rotary transformations
+    such as ``q = norm(q)`` while rejecting ``q = other``.  The result is used
+    only as one link in the complete owner/call/projection protocol above.
+    """
+    if start is None or end is None:
+        return False
+    for binding in bindings:
+        if binding.span is None \
+                or not _span_before(start, binding.span) \
+                or not _span_before(binding.span, end):
+            continue
+        if any(name in _target_names(target) for target in binding.targets) \
+                and (binding.value is None
+                     or not _expr_contains_name(binding.value, name)):
+            return False
+    return True
+
+
+def _span_before(left, right):
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) \
+        <= (right.line, right.col)
 
 
 def _nested_self_call_fields(expression):
@@ -1532,6 +1958,7 @@ def _span_contains(outer, inner):
 
 __all__ = [
     "AttentionHeadBinding",
+    "AttentionOutputGateBinding",
     "BoundAttentionMechanism",
     "EquivalentDispatchMultiQueryBinding",
     "LatentAttentionBinding",

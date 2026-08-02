@@ -11,6 +11,7 @@ import pytest
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
+    AttentionOutputGateBinding,
     BoundAttentionMechanism,
     LatentAttentionBinding,
     MultiQueryAttentionBinding,
@@ -77,6 +78,34 @@ class Mixer:
 """
 
 
+def _gated_query_attention(*, activation="sigmoid", multiplier=2,
+                           apply_gate=True):
+    application = (
+        f"mixed = mixed * torch.{activation}(gate)"
+        if apply_gate else
+        f"unused = torch.{activation}(gate)")
+    return f"""
+class Mixer:
+    def __init__(self, config):
+        self.unit = config.hidden // config.query_groups
+        self.red = nn.Linear(
+            config.hidden, config.query_groups * self.unit * {multiplier})
+        self.green = nn.Linear(
+            config.hidden, config.shared_groups * self.unit)
+        self.blue = nn.Linear(
+            config.hidden, config.shared_groups * self.unit)
+        self.finish = nn.Linear(config.hidden, config.hidden)
+    def forward(self, x):
+        query, gate = torch.chunk(self.red(x), {multiplier}, dim=-1)
+        key = self.green(x)
+        value = self.blue(x)
+        score = torch.matmul(query, key.transpose(-1, -2))
+        mixed = torch.matmul(F.softmax(score, dim=-1), value)
+        {application}
+        return self.finish(mixed)
+"""
+
+
 def _pipeline(tmp_path, attention, *, sibling=""):
     path = tmp_path / "model.py"
     path.write_text(
@@ -121,6 +150,99 @@ def test_one_query_lane_and_two_kv_lanes_prove_grouped_binding(tmp_path):
     assert result.value.protocol == "grouped_kv"
     assert result.value.query_heads_path == ("query_groups",)
     assert result.value.key_value_heads_path == ("shared_groups",)
+
+
+def test_doubled_query_lane_is_removed_only_by_exact_output_gate(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _gated_query_attention())
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.protocol == "grouped_kv"
+    assert result.value.query_heads_path == ("query_groups",)
+    assert result.value.key_value_heads_path == ("shared_groups",)
+    gate = result.value.output_gate
+    assert isinstance(gate, AttentionOutputGateBinding)
+    assert (gate.activation, gate.lane_multiplier) == ("sigmoid", 2)
+    assert gate.query_projection in result.value.projections
+
+
+@pytest.mark.parametrize("source", [
+    _gated_query_attention(apply_gate=False),
+    _gated_query_attention(activation="tanh"),
+    _gated_query_attention(multiplier=3),
+    _gated_query_attention().replace(
+        "torch.sigmoid(gate)", "self.sigmoid(gate)"),
+    _gated_query_attention().replace(
+        "key = self.green(x)", "query = x\n        key = self.green(x)"),
+    _gated_query_attention().replace(
+        "key = self.green(x)", "gate = x\n        key = self.green(x)"),
+    _gated_query_attention().replace(
+        "mixed = mixed * torch.sigmoid(gate)",
+        "mixed = x\n        mixed = mixed * torch.sigmoid(gate)"),
+    _gated_query_attention().replace(
+        "return self.finish(mixed)",
+        "mixed = x\n        return self.finish(mixed)"),
+])
+def test_extra_query_width_without_exact_gate_chain_is_powerless(
+        tmp_path, source):
+    index, _bundle, root, block = _pipeline(tmp_path, source)
+    result = attention_head_binding_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+def test_output_gate_and_head_binding_reject_cross_owner_or_incomplete_forgery(
+        tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _gated_query_attention())
+    value = attention_head_binding_at_block(index, root, block).value
+    gate = value.output_gate
+    with pytest.raises(ValueError):
+        replace(gate, output_projection=gate.query_projection)
+    with pytest.raises(ValueError):
+        replace(gate, lane_multiplier=1)
+    with pytest.raises(ValueError):
+        replace(gate, spans=gate.spans[:-1])
+    with pytest.raises(ValueError):
+        replace(value, output_gate=replace(
+            gate, attention_occurrence=block))
+
+
+def test_real_qwen35_query_gate_keeps_hybrid_full_attention_code_bound():
+    config = {
+        "model_type": "qwen3_5_text",
+        "architectures": ["Qwen3_5ForCausalLM"],
+        "vocab_size": 1000,
+        "hidden_size": 512,
+        "intermediate_size": 1024,
+        "num_hidden_layers": 8,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "head_dim": 64,
+        "hidden_act": "silu",
+        "layer_types": [
+            "linear_attention", "linear_attention", "linear_attention",
+            "full_attention", "linear_attention", "linear_attention",
+            "linear_attention", "full_attention",
+        ],
+        "linear_num_key_heads": 4,
+        "linear_num_value_heads": 8,
+        "linear_key_head_dim": 64,
+        "linear_value_head_dim": 64,
+        "linear_conv_kernel_dim": 4,
+        # Deliberately false: the installed forward applies the gate
+        # unconditionally, so this familiar config spelling is not authority.
+        "attn_output_gate": False,
+        "output_gate_type": "swish",
+    }
+    context = ParseContext.build(config)
+    result = decoder_attention_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value.output_gate, AttentionOutputGateBinding)
+    assert (result.value.query_heads_path,
+            result.value.key_value_heads_path) == (
+                ("num_attention_heads",), ("num_key_value_heads",))
 
 
 def test_field_and_class_renaming_do_not_change_the_shape_proof(tmp_path):
