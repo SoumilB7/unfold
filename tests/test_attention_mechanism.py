@@ -11,8 +11,11 @@ import pytest
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
+    LatentAttentionBinding,
     attention_head_binding_at_block,
     decoder_attention_head_binding_for_path,
+    decoder_attention_mechanism_for_path,
+    latent_attention_binding_at_block,
 )
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
@@ -337,3 +340,101 @@ def test_latent_real_model_remains_typed_until_its_protocol_lands():
         allow_root_stage=True)
     assert result.status == "failed"
     assert result.failures[0].kind == "incomplete_graph"
+
+
+_LATENT_ATTENTION = """
+class Mixer:
+    def __init__(self, config):
+        self.groups = config.query_groups
+        self.latent = config.latent_width
+        self.rope = config.rope_width
+        self.nope = config.nope_width
+        self.value = config.value_width
+        self.query = nn.Linear(
+            config.hidden, self.groups * (self.nope + self.rope))
+        self.compress = nn.Linear(config.hidden, self.latent + self.rope)
+        self.expand = nn.Linear(
+            self.latent, self.groups * (self.nope + self.value))
+    def forward(self, x):
+        query = self.query(x)
+        compressed = self.compress(x)
+        latent, key_rope = torch.split(
+            compressed, [self.latent, self.rope], dim=-1)
+        expanded = self.expand(latent)
+        key_nope, value = torch.split(
+            expanded, [self.nope, self.value], dim=-1)
+        key = torch.cat((key_nope, key_rope), dim=-1)
+        score = torch.matmul(query, key.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), value)
+"""
+
+
+def test_latent_attention_requires_exact_compress_expand_and_two_splits(
+        tmp_path):
+    index, _bundle, root, block = _pipeline(tmp_path, _LATENT_ATTENTION)
+    result = latent_attention_binding_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    value = result.value
+    assert isinstance(value, LatentAttentionBinding)
+    assert value.num_heads_path == ("query_groups",)
+    assert value.kv_lora_rank_path == ("latent_width",)
+    assert value.qk_rope_head_dim_path == ("rope_width",)
+    assert value.qk_nope_head_dim_path == ("nope_width",)
+    assert value.value_head_dim_path == ("value_width",)
+
+
+def test_latent_dimension_fields_without_dependent_dataflow_are_powerless(
+        tmp_path):
+    source = _LATENT_ATTENTION.replace(
+        "expanded = self.expand(latent)",
+        "expanded = self.expand(x)")
+    index, _bundle, root, block = _pipeline(tmp_path, source)
+    result = latent_attention_binding_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+def test_latent_split_must_act_on_the_matching_projection(tmp_path):
+    source = _LATENT_ATTENTION.replace(
+        "compressed, [self.latent, self.rope]",
+        "query, [self.latent, self.rope]")
+    index, _bundle, root, block = _pipeline(tmp_path, source)
+    result = latent_attention_binding_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+def test_public_mechanism_reader_selects_latent_only_after_head_shape_abstains(
+        tmp_path):
+    index, bundle, _root, _block = _pipeline(tmp_path, _LATENT_ATTENTION)
+    result = decoder_attention_mechanism_for_path(
+        index, bundle, (), allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, LatentAttentionBinding)
+
+
+def test_real_deepseek_latent_paths_are_source_bound():
+    config = json.loads(
+        (_CORPUS / "deepseek-v3.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_attention_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    value = result.value
+    assert isinstance(value, LatentAttentionBinding)
+    assert value.num_heads_path == ("num_attention_heads",)
+    assert value.kv_lora_rank_path == ("kv_lora_rank",)
+    assert value.qk_rope_head_dim_path == ("qk_rope_head_dim",)
+    assert value.qk_nope_head_dim_path == ("qk_nope_head_dim",)
+    assert value.value_head_dim_path == ("v_head_dim",)
+
+
+def test_latent_result_closure_rejects_cross_owner_and_path_laundering(
+        tmp_path):
+    index, _bundle, root, block = _pipeline(tmp_path, _LATENT_ATTENTION)
+    value = latent_attention_binding_at_block(index, root, block).value
+    with pytest.raises(ValueError):
+        replace(value, expanded_projection=value.compressed_projection)
+    with pytest.raises(ValueError):
+        replace(value, attention_occurrence=block)
+    with pytest.raises(ValueError):
+        replace(value, value_head_dim_path=value.qk_nope_head_dim_path)

@@ -18,15 +18,20 @@ from dataclasses import dataclass
 
 from .attention_storage import (
     attention_projection_storage_evidence,
+    projection_sources_reaching_calls,
     producer_sources_reaching_expressions,
 )
+from .attention_child import attention_child_evidence
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
     OwnerOccurrenceId,
     require_resolved_component_root,
 )
-from .construction_calls import ConstructionOccurrenceId
+from .construction_calls import (
+    ConstructionOccurrenceId,
+    resolve_construction_call,
+)
 from .decoder_block import decoder_block_path_for_config
 from .models import SourceBundle
 from .program_index import (
@@ -111,6 +116,51 @@ class AttentionHeadBinding:
             raise ValueError("head evidence cites every projection construction")
 
 
+@dataclass(frozen=True)
+class LatentAttentionBinding:
+    """Exact compressed-KV/expanded-KV attention mechanism proof."""
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    compressed_projection: ConstructionOccurrenceId
+    expanded_projection: ConstructionOccurrenceId
+    num_heads_path: tuple[str, ...]
+    kv_lora_rank_path: tuple[str, ...]
+    qk_rope_head_dim_path: tuple[str, ...]
+    qk_nope_head_dim_path: tuple[str, ...]
+    value_head_dim_path: tuple[str, ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("latent attention names exact owner occurrences")
+        projections = (self.compressed_projection, self.expanded_projection)
+        if any(not isinstance(item, ConstructionOccurrenceId)
+               or item.parent != self.attention_occurrence
+               for item in projections) or len(set(projections)) != 2:
+            raise ValueError("latent attention carries two exact owner projections")
+        paths = (
+            self.num_heads_path, self.kv_lora_rank_path,
+            self.qk_rope_head_dim_path, self.qk_nope_head_dim_path,
+            self.value_head_dim_path,
+        )
+        if any(not path or any(not isinstance(part, str) or not part
+                               for part in path) for path in paths):
+            raise TypeError("latent attention carries five exact config paths")
+        if len(set(paths)) != len(paths):
+            raise ValueError("latent attention roles bind distinct config paths")
+        if not self.spans or any(not isinstance(span, SourceSpan)
+                                 for span in self.spans):
+            raise ValueError("latent attention carries exact source provenance")
+        source = self.attention_occurrence.root.source
+        if any(span.source != source for span in self.spans):
+            raise ValueError("latent attention provenance belongs to its source")
+        required = {item.site.span for item in projections}
+        if not required.issubset(self.spans):
+            raise ValueError("latent attention cites both construction sites")
+
+
 def decoder_attention_head_binding_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -133,6 +183,40 @@ def decoder_attention_head_binding_for_path(
         return block
     result = attention_head_binding_at_block(
         index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
+def decoder_attention_mechanism_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionHeadBinding | LatentAttentionBinding]:
+    """Resolve the strongest exact mechanism proof at a selected decoder path."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention mechanism requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("attention mechanism requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    head = attention_head_binding_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if head.status in {"resolved", "ambiguous"}:
+        result = head
+    else:
+        result = latent_attention_binding_at_block(
+            index, block.value.component_root, block.value.block_occurrence)
     if result.status != "resolved":
         return result
     return ReaderResult.resolved(
@@ -284,6 +368,104 @@ def attention_head_binding_at_block(
                 "bind their count factors to exact config paths")),))
 
 
+def latent_attention_binding_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[LatentAttentionBinding]:
+    """Prove one exact compressed-KV -> expanded-K/V attention path."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("latent_attention_binding_at_block requires ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="latent_attention_binding_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("latent attention requires an exact block occurrence")
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+
+    attention = attention_child_evidence(index, root, block_occurrence)
+    if attention.status == "ambiguous":
+        return ReaderResult.ambiguous(
+            block_occurrence, attention.ambiguity,
+            provenance=attention.provenance)
+    if attention.status != "resolved":
+        return ReaderResult.failed(
+            block_occurrence,
+            attention.failures or (ReaderFailure(
+                "incomplete_graph", "attention child is unresolved"),),
+            provenance=attention.provenance)
+    child = attention.value
+    node = root.graph.node_for(child.child_occurrence)
+    if node is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "attention child is absent from the owner graph"),))
+    forward = child.compute.entry_call.enclosing_callable
+    linear_calls = _linear_calls_in_forward(
+        index, root, child.child_occurrence, forward)
+    if len(linear_calls) < 3:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "latent attention has no exact affine chain"),))
+    sources, _unpack, dependencies, _uncertain = \
+        projection_sources_reaching_calls(
+            index, forward, child.compute.input_calls, linear_calls)
+    if len(sources) < 3:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "attention compute lacks a complete compressed/expanded source set"),))
+
+    candidates = []
+    for expanded in sources:
+        upstream = _dependency_closure(
+            dependencies.get(expanded, ()), dependencies)
+        for compressed in upstream.intersection(sources):
+            proof = _latent_projection_pair(
+                index, node, forward, linear_calls,
+                compressed, expanded,
+                config_prefix=config_prefix)
+            if proof is not None:
+                candidates.append((compressed, expanded, proof))
+    distinct = {
+        (compressed, expanded, proof[:5]):
+            (compressed, expanded, proof)
+        for compressed, expanded, proof in candidates
+    }
+    if not distinct:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "no exact compressed-KV/expanded-KV projection pair and split "
+            "dataflow binds the latent attention dimensions"),))
+    if len(distinct) != 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(dict.fromkeys(
+                occurrence.site.span
+                for compressed, expanded, _proof in distinct.values()
+                for occurrence in (compressed, expanded)))))
+
+    compressed, expanded, proof = next(iter(distinct.values()))
+    num_heads, latent, rope_dim, nope_dim, value_dim, proof_spans = proof
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            compressed.site.span, expanded.site.span,
+            linear_calls[compressed].span, linear_calls[expanded].span,
+            *proof_spans, *child.compute.spans)
+        if isinstance(span, SourceSpan)))
+    value = LatentAttentionBinding(
+        block_occurrence, child.child_occurrence,
+        compressed, expanded, num_heads, latent, rope_dim, nope_dim,
+        value_dim, spans)
+    paths = (num_heads, latent, rope_dim, nope_dim, value_dim)
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config", spans=spans, config_paths=paths,
+            detail=(
+                "exact compressed-KV projection, dependent expansion, two "
+                "exact split sites and attention-compute dataflow prove latent "
+                "attention")),))
+
+
 def _linear_output_width(index, occurrence: ConstructionOccurrenceId):
     sites = tuple(
         item for item in index.construction_sites_in(
@@ -296,6 +478,172 @@ def _linear_output_width(index, occurrence: ConstructionOccurrenceId):
         return site.args[1]
     kwargs = dict(site.kwargs)
     return kwargs.get("out_features")
+
+
+def _linear_input_width(index, occurrence: ConstructionOccurrenceId):
+    site = _construction_site(index, occurrence)
+    if site is None:
+        return None
+    if site.args:
+        return site.args[0]
+    return dict(site.kwargs).get("in_features")
+
+
+def _construction_site(index, occurrence):
+    sites = tuple(
+        item for item in index.construction_sites_in(
+            occurrence.site.enclosing_callable)
+        if item.site_id == occurrence.site)
+    return sites[0] if len(sites) == 1 else None
+
+
+def _linear_calls_in_forward(index, root, owner_occurrence, forward):
+    out = {}
+    for call in index.calls_in(forward):
+        if _self_field(call.callee) is None:
+            continue
+        construction = resolve_construction_call(
+            index, root, owner_occurrence, call)
+        if construction.status != "resolved" \
+                or construction.selected.kind != "external" \
+                or construction.selected.external_reference.qualified_target \
+                not in {
+                    "torch.nn.Linear",
+                    "torch.nn.modules.linear.Linear",
+                }:
+            continue
+        occurrence = construction.selected.occurrence
+        if occurrence in out:
+            # Reusing one stored projection at two unrelated sites needs an
+            # execution proof; never overwrite and pick one.
+            return {}
+        out[occurrence] = call
+    return out
+
+
+def _latent_projection_pair(
+        index, node, forward, linear_calls, compressed, expanded, *,
+        config_prefix):
+    compressed_output = _linear_output_width(index, compressed)
+    expanded_input = _linear_input_width(index, expanded)
+    expanded_output = _linear_output_width(index, expanded)
+    compressed_sum = _binary_factors(compressed_output, "+")
+    expanded_product = _binary_factors(expanded_output, "*")
+    if compressed_sum is None or expanded_product is None:
+        return None
+
+    compressed_paths = tuple(
+        _exact_config_path_for_expression(
+            index, node, factor, seen=frozenset(),
+            config_prefix=config_prefix)
+        for factor in compressed_sum)
+    if any(path is None for path in compressed_paths):
+        return None
+    expanded_input_path = _exact_config_path_for_expression(
+        index, node, expanded_input, seen=frozenset(),
+        config_prefix=config_prefix)
+    if expanded_input_path not in compressed_paths:
+        return None
+    latent = expanded_input_path
+    rope_dim = next(path for path in compressed_paths if path != latent)
+
+    product_candidates = []
+    for count_factor, width_factor in (
+            expanded_product, tuple(reversed(expanded_product))):
+        count_path = _exact_config_path_for_expression(
+            index, node, count_factor, seen=frozenset(),
+            config_prefix=config_prefix)
+        width_sum = _binary_factors(width_factor, "+")
+        if count_path is None or width_sum is None:
+            continue
+        width_paths = tuple(
+            _exact_config_path_for_expression(
+                index, node, factor, seen=frozenset(),
+                config_prefix=config_prefix)
+            for factor in width_sum)
+        if any(path is None for path in width_paths) \
+                or len(set(width_paths)) != 2:
+            continue
+        product_candidates.append((count_path, width_paths))
+    if len(product_candidates) != 1:
+        return None
+    num_heads, width_paths = product_candidates[0]
+    if len({num_heads, latent, rope_dim, *width_paths}) != 5:
+        return None
+
+    compressed_split = _split_call_for_paths(
+        index, node, forward, linear_calls, compressed,
+        frozenset((latent, rope_dim)), config_prefix=config_prefix)
+    expanded_split = _split_call_for_paths(
+        index, node, forward, linear_calls, expanded,
+        frozenset(width_paths), config_prefix=config_prefix)
+    if compressed_split is None or expanded_split is None:
+        return None
+    nope_dim, value_dim = _ordered_split_paths(
+        index, node, expanded_split, config_prefix=config_prefix)
+    if frozenset((nope_dim, value_dim)) != frozenset(width_paths):
+        return None
+    return (
+        num_heads, latent, rope_dim, nope_dim, value_dim,
+        (compressed_output.span, expanded_input.span, expanded_output.span,
+         compressed_split.span, expanded_split.span),
+    )
+
+
+def _split_call_for_paths(
+        index, node, forward, linear_calls, source, expected_paths, *,
+        config_prefix):
+    candidates = []
+    for call in index.calls_in(forward):
+        leaf = call.callee.name if call.callee.kind == "attribute" else ""
+        if leaf not in {"split", "chunk", "tensor_split"} or call.guard:
+            continue
+        size_expr = next((
+            item for item in call.args
+            if item.kind in {"tuple", "list"} and len(item.children) == 2),
+            None)
+        if size_expr is None:
+            continue
+        paths = tuple(
+            _exact_config_path_for_expression(
+                index, node, item, seen=frozenset(),
+                config_prefix=config_prefix)
+            for item in size_expr.children)
+        if frozenset(paths) != expected_paths:
+            continue
+        receiver = call.callee.children[0] if call.callee.children else None
+        inputs = tuple(item for item in (
+            receiver,
+            call.args[0] if call.args else None,
+        ) if isinstance(item, ExprNode))
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, ((call.span, inputs),), linear_calls)
+        if not uncertain and source in _dependency_closure(
+                sources, dependencies):
+            candidates.append(call)
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def _ordered_split_paths(index, node, call, *, config_prefix):
+    size_expr = next(
+        item for item in call.args
+        if item.kind in {"tuple", "list"} and len(item.children) == 2)
+    return tuple(
+        _exact_config_path_for_expression(
+            index, node, item, seen=frozenset(),
+            config_prefix=config_prefix)
+        for item in size_expr.children)
+
+
+def _binary_factors(expression, operator):
+    if expression is not None and expression.kind == "binop" \
+            and expression.operator == operator \
+            and len(expression.children) == 2 \
+            and all(isinstance(child, ExprNode)
+                    for child in expression.children):
+        return tuple(expression.children)
+    return None
 
 
 def _fused_equal_head_binding(index, node, storage, *, config_prefix):
@@ -580,6 +928,9 @@ def _span_contains(outer, inner):
 
 __all__ = [
     "AttentionHeadBinding",
+    "LatentAttentionBinding",
     "attention_head_binding_at_block",
+    "latent_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
+    "decoder_attention_mechanism_for_path",
 ]
