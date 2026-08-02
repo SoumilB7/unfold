@@ -21,7 +21,10 @@ from .attention_storage import (
     projection_sources_reaching_calls,
     producer_sources_reaching_expressions,
 )
-from .attention_child import attention_child_evidence
+from .attention_child import (
+    attention_child_evidence,
+    attention_child_positive_census,
+)
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
@@ -31,10 +34,12 @@ from .component_owner import (
 from .construction_calls import (
     ConstructionOccurrenceId,
     resolve_construction_call,
+    resolve_import_reference,
 )
 from .decoder_block import decoder_block_path_for_config
 from .models import SourceBundle
 from .program_index import (
+    CallObservation,
     ConfigPathObservation,
     ExprNode,
     ProgramIndex,
@@ -47,6 +52,12 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
+
+
+_LINEAR_PROTOCOLS = frozenset({
+    "torch.nn.Linear",
+    "torch.nn.modules.linear.Linear",
+})
 
 
 @dataclass(frozen=True)
@@ -162,24 +173,72 @@ class LatentAttentionBinding:
 
 
 @dataclass(frozen=True)
+class MultiQueryAttentionBinding:
+    """Exact selector-controlled one-K/V-head path at one attention owner."""
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    attention_symbol: SymbolId
+    projection: ConstructionOccurrenceId
+    num_heads_path: tuple[str, ...]
+    selector_path: tuple[str, ...]
+    split_call: CallObservation
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("multi-query evidence names exact occurrences")
+        if not isinstance(self.attention_symbol, SymbolId):
+            raise TypeError("multi-query evidence names its exact owner symbol")
+        if not isinstance(self.projection, ConstructionOccurrenceId) \
+                or self.projection.parent != self.attention_occurrence \
+                or self.projection.site.owner != self.attention_symbol:
+            raise ValueError("multi-query evidence carries its exact projection")
+        for path in (self.num_heads_path, self.selector_path):
+            if not path or any(not isinstance(part, str) or not part
+                               for part in path):
+                raise TypeError("multi-query evidence carries exact config paths")
+        if self.num_heads_path == self.selector_path:
+            raise ValueError("head-count and selector paths are distinct")
+        if not isinstance(self.split_call, CallObservation) \
+                or self.split_call.span is None:
+            raise TypeError("multi-query evidence carries its exact split call")
+        source = self.attention_occurrence.root.source
+        if self.split_call.owner != self.attention_symbol \
+                or self.attention_symbol.source != source:
+            raise ValueError("the split call belongs to the attention source")
+        if not self.spans or any(not isinstance(span, SourceSpan)
+                                 or span.source != source
+                                 for span in self.spans):
+            raise ValueError("multi-query evidence carries exact provenance")
+        required = {self.projection.site.span, self.split_call.span}
+        if not required.issubset(self.spans):
+            raise ValueError("multi-query provenance cites projection and split")
+
+
+@dataclass(frozen=True)
 class BoundAttentionMechanism:
     """Final mechanism after exact code paths join U1 checkpoint values."""
 
     kind: str
     num_heads: int
     num_kv_heads: int
-    binding: AttentionHeadBinding | LatentAttentionBinding
+    binding: (AttentionHeadBinding | LatentAttentionBinding
+              | MultiQueryAttentionBinding)
     premises: tuple[tuple[tuple[str, ...], object], ...]
 
     def __post_init__(self) -> None:
-        if self.kind not in {"mha", "gqa", "mla"}:
+        if self.kind not in {"mha", "gqa", "mqa", "mla"}:
             raise ValueError("unknown bound attention mechanism")
         if not isinstance(self.num_heads, int) or self.num_heads <= 0 \
                 or not isinstance(self.num_kv_heads, int) \
                 or self.num_kv_heads <= 0:
             raise ValueError("bound attention geometry is positive integer")
         if not isinstance(
-                self.binding, (AttentionHeadBinding, LatentAttentionBinding)):
+                self.binding, (
+                    AttentionHeadBinding, LatentAttentionBinding,
+                    MultiQueryAttentionBinding)):
             raise TypeError("bound mechanism carries exact code evidence")
         if not self.premises or any(
                 not isinstance(path, tuple) or not path
@@ -202,14 +261,23 @@ class BoundAttentionMechanism:
                     or self.num_heads != self.num_kv_heads:
                 raise ValueError(
                     "latent attention expands K/V at query-head count")
+        elif isinstance(self.binding, MultiQueryAttentionBinding):
+            if self.kind != "mqa" or self.num_kv_heads != 1 \
+                    or self.binding.num_heads_path not in values \
+                    or values.get(self.binding.selector_path) is not True:
+                raise ValueError("multi-query requires its true selector premise")
 
 
 def bind_attention_mechanism(
-    binding: AttentionHeadBinding | LatentAttentionBinding,
+    binding: (AttentionHeadBinding | LatentAttentionBinding
+              | MultiQueryAttentionBinding),
     values_by_path: dict[tuple[str, ...], object],
 ) -> BoundAttentionMechanism | None:
     """Join code-bound paths to exact U1 values; path mismatch stays unknown."""
-    if not isinstance(binding, (AttentionHeadBinding, LatentAttentionBinding)):
+    if not isinstance(
+            binding, (
+                AttentionHeadBinding, LatentAttentionBinding,
+                MultiQueryAttentionBinding)):
         raise TypeError("bind_attention_mechanism requires exact code evidence")
     if not isinstance(values_by_path, dict) or any(
             not isinstance(path, tuple) for path in values_by_path):
@@ -232,6 +300,18 @@ def bind_attention_mechanism(
             (binding.key_value_heads_path, kv),
         )
         return BoundAttentionMechanism(kind, q, kv, binding, premises)
+
+    if isinstance(binding, MultiQueryAttentionBinding):
+        heads = values_by_path.get(binding.num_heads_path)
+        selector = values_by_path.get(binding.selector_path)
+        if not isinstance(heads, int) or isinstance(heads, bool) \
+                or heads <= 0 or selector is not True:
+            return None
+        return BoundAttentionMechanism(
+            "mqa", heads, 1, binding, (
+                (binding.num_heads_path, heads),
+                (binding.selector_path, selector),
+            ))
 
     paths = (
         binding.num_heads_path,
@@ -283,7 +363,9 @@ def decoder_attention_mechanism_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
-) -> ReaderResult[AttentionHeadBinding | LatentAttentionBinding]:
+) -> ReaderResult[
+        AttentionHeadBinding | LatentAttentionBinding
+        | MultiQueryAttentionBinding]:
     """Resolve the strongest exact mechanism proof at a selected decoder path."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("attention mechanism requires a ProgramIndex")
@@ -299,11 +381,19 @@ def decoder_attention_mechanism_for_path(
         return block
     head = attention_head_binding_at_block(
         index, block.value.component_root, block.value.block_occurrence)
-    if head.status in {"resolved", "ambiguous"}:
+    if head.status == "resolved":
         result = head
     else:
-        result = latent_attention_binding_at_block(
+        multi_query = multi_query_attention_binding_at_block(
             index, block.value.component_root, block.value.block_occurrence)
+        if multi_query.status in {"resolved", "ambiguous"}:
+            result = multi_query
+        elif head.status == "ambiguous":
+            result = head
+        else:
+            result = latent_attention_binding_at_block(
+                index, block.value.component_root,
+                block.value.block_occurrence)
     if result.status != "resolved":
         return result
     return ReaderResult.resolved(
@@ -455,6 +545,230 @@ def attention_head_binding_at_block(
                 "bind their count factors to exact config paths")),))
 
 
+def multi_query_attention_binding_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[MultiQueryAttentionBinding]:
+    """Prove selector→singleton-K/V→projection→split→attention dataflow."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "multi_query_attention_binding_at_block requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="multi_query_attention_binding_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("multi-query evidence requires an exact block")
+
+    census = attention_child_positive_census(
+        index, root, block_occurrence)
+    if census.status != "resolved":
+        return ReaderResult.failed(
+            block_occurrence,
+            census.failures or (ReaderFailure(
+                "incomplete_graph",
+                "no positive attention-child census is available"),),
+            provenance=census.provenance)
+    primary = tuple(
+        child for child in census.value.candidates
+        if not child.invocation.call.guard)
+    if not primary:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "no unguarded exact attention invocation identifies the primary "
+            "attention occurrence"),), provenance=census.provenance)
+    if len(primary) != 1:
+        return ReaderResult.ambiguous(
+            block_occurrence, Ambiguity(sites=tuple(
+                child.invocation.call.span for child in primary)),
+            provenance=census.provenance)
+
+    proof = _multi_query_protocol_for_child(index, root, primary[0])
+    if proof is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "the exact primary attention occurrence lacks a complete "
+            "selector→one-K/V→projection→split→compute proof"),),
+            provenance=census.provenance)
+    projection, heads_path, selector_path, split_call, spans = proof
+    node = root.graph.node_for(primary[0].child_occurrence)
+    if node is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "the attention occurrence left its owner graph"),))
+    value = MultiQueryAttentionBinding(
+        block_occurrence, primary[0].child_occurrence, node.symbol, projection,
+        heads_path, selector_path, split_call, spans)
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config", spans=spans,
+            config_paths=(heads_path, selector_path),
+            detail=(
+                "exact selector-controlled singleton K/V construction and "
+                "split dataflow reach the exact attention computation")),))
+
+
+def _multi_query_protocol_for_child(index, root, child):
+    occurrence = child.child_occurrence
+    node = root.graph.node_for(occurrence)
+    if node is None:
+        return None
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if not item.guard)
+    by_field = {}
+    for item in assignments:
+        by_field.setdefault(item.field, []).append(item)
+
+    structural = []
+    for kv_assignment in assignments:
+        value = kv_assignment.value
+        if value.kind != "ifexp" or len(value.children) != 3:
+            continue
+        one, selector_expr, heads_expr = value.children
+        selector_field = _self_field(selector_expr)
+        heads_field = _self_field(heads_expr)
+        if one.kind != "constant" or one.const_value != 1 \
+                or selector_field is None or heads_field is None:
+            continue
+        selector_assigns = tuple(by_field.get(selector_field, ()))
+        heads_assigns = tuple(by_field.get(heads_field, ()))
+        if len(selector_assigns) != 1 or len(heads_assigns) != 1:
+            continue
+        selector_path = _exact_config_path_for_expression(
+            index, node, selector_assigns[0].value, seen=frozenset(),
+            config_prefix=config_prefix)
+        heads_path = _exact_config_path_for_expression(
+            index, node, heads_assigns[0].value, seen=frozenset(),
+            config_prefix=config_prefix)
+        if selector_path is None or heads_path is None \
+                or selector_path == heads_path:
+            continue
+        kv_dims = tuple(
+            item for item in assignments
+            if _multiplication_contains_field(
+                item.value, kv_assignment.field))
+        if len(kv_dims) != 1:
+            continue
+        structural.append((
+            selector_field, selector_path, heads_path,
+            kv_dims[0].field,
+            (kv_assignment.span, selector_assigns[0].span,
+             heads_assigns[0].span, kv_dims[0].span),
+        ))
+    if len(structural) != 1:
+        return None
+    selector_field, selector_path, heads_path, kv_dim_field, field_spans = \
+        structural[0]
+
+    # Mechanism preparation belongs to the attention OWNER'S forward.  The
+    # compute proof may follow an exact dispatch fallback into a free helper;
+    # inspecting that helper would lose the owner's projection/split path.
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    matches = []
+    for split_call in index.calls_in(forward):
+        leaf = split_call.callee.name \
+            if split_call.callee.kind == "attribute" else ""
+        if leaf not in {"split", "tensor_split"} \
+                or not _guard_proves_selector_true(
+                    index, node, occurrence, split_call,
+                    selector_field):
+            continue
+        sizes = tuple(
+            arg for arg in split_call.args
+            if arg.kind in {"tuple", "list"} and len(arg.children) == 3)
+        if len(sizes) != 1:
+            continue
+        lanes = sizes[0].children
+        if _self_field(lanes[1]) != kv_dim_field \
+                or _self_field(lanes[2]) != kv_dim_field:
+            continue
+        projection_fields = _nested_self_call_fields(split_call.callee)
+        if len(projection_fields) != 1:
+            continue
+        projection_field = next(iter(projection_fields))
+        projection_sites = tuple(
+            site for site in index.construction_sites_of(node.symbol)
+            if site.target_kind == "field"
+            and site.target == projection_field
+            and _site_is_external_linear(index, site)
+            and _guard_is_active_for_occurrence(
+                index, node, occurrence, site.guard,
+                site.enclosing_callable))
+        if len(projection_sites) != 1:
+            continue
+        site = projection_sites[0]
+        projection = ConstructionOccurrenceId(occurrence, site.site_id)
+        projection_calls = tuple(
+            call for call in index.calls_in(forward)
+            if _self_field(call.callee) == projection_field
+            and call.span is not None and split_call.span is not None
+            and _span_contains(split_call.span, call.span))
+        if len(projection_calls) != 1:
+            continue
+        projection_call = projection_calls[0]
+
+        split_receiver = (
+            split_call.callee.children[0]
+            if split_call.callee.children else None)
+        if split_receiver is None:
+            continue
+        split_sources, _widths, split_dependencies, _uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward,
+                ((split_call.span, (split_receiver,)),),
+                {projection: projection_call},
+                binding_predicate=lambda binding: _binding_is_active_for_path(
+                    index, node, occurrence, binding,
+                    selector_field))
+        if projection not in _dependency_closure(
+                split_sources, split_dependencies):
+            continue
+
+        split_identity = ("multi_query_split", split_call.span)
+        input_calls = tuple(
+            call for call in child.compute.input_calls
+            if call.enclosing_callable == forward)
+        if child.compute.entry_call.enclosing_callable == forward:
+            input_calls = tuple(dict.fromkeys((
+                *input_calls, child.compute.entry_call)))
+        consumers = tuple(
+            (input_call.span, (
+                *input_call.args,
+                *(value for _name, value in input_call.kwargs),
+            ))
+            for input_call in input_calls)
+        if not consumers:
+            continue
+        compute_sources, _widths, compute_dependencies, _uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, consumers,
+                {split_identity: split_call},
+                binding_predicate=lambda binding: _binding_is_active_for_path(
+                    index, node, occurrence, binding,
+                    selector_field))
+        if split_identity not in _dependency_closure(
+                compute_sources, compute_dependencies):
+            continue
+        spans = tuple(dict.fromkeys(
+            span for span in (
+                *field_spans, site.span, projection_call.span,
+                split_call.span, *child.compute.spans)
+            if isinstance(span, SourceSpan)))
+        matches.append((
+            projection, heads_path, selector_path, split_call, spans))
+    distinct = {
+        (item[0], item[1], item[2], item[3].span): item
+        for item in matches
+    }
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
+
+
 def latent_attention_binding_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -551,6 +865,175 @@ def latent_attention_binding_at_block(
                 "exact compressed-KV projection, dependent expansion, two "
                 "exact split sites and attention-compute dataflow prove latent "
                 "attention")),))
+
+
+def _multiplication_contains_field(expression, field):
+    factors = _multiplication_factors(expression)
+    return factors is not None and sum(
+        _self_field(item) == field for item in factors) == 1
+
+
+def _nested_self_call_fields(expression):
+    fields = set()
+
+    def visit(item):
+        if not isinstance(item, ExprNode):
+            return
+        if item.kind == "call" and item.children:
+            field = _self_field(item.children[0])
+            if field is not None:
+                fields.add(field)
+        for child in item.children:
+            visit(child)
+        for _name, child in item.keyword_children:
+            visit(child)
+
+    visit(expression)
+    return frozenset(fields)
+
+
+def _site_is_external_linear(index, site):
+    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
+        return False
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        site.candidates[0].reference)
+    return proof is not None and proof.qualified_target in _LINEAR_PROTOCOLS
+
+
+def _guard_proves_selector_true(
+        index, node, occurrence, call, selector_field):
+    selector_steps = 0
+    for step in call.guard:
+        resolved = _guard_step_expression(
+            index, call.enclosing_callable, step)
+        if resolved is None:
+            return False
+        expression, expected = resolved
+        requirement = _boolean_field_requirement(expression, selector_field)
+        if requirement is not None:
+            if requirement != expected:
+                return False
+            selector_steps += 1
+            continue
+        value = _static_bool_expression_at_occurrence(
+            index, node, occurrence, expression)
+        if value is None or value != expected:
+            return False
+    return selector_steps == 1
+
+
+def _guard_is_active_for_occurrence(
+        index, node, occurrence, guard, callable_symbol):
+    for step in guard:
+        resolved = _guard_step_expression(index, callable_symbol, step)
+        if resolved is None:
+            return False
+        expression, expected = resolved
+        value = _static_bool_expression_at_occurrence(
+            index, node, occurrence, expression)
+        if value is None or value != expected:
+            return False
+    return True
+
+
+def _binding_is_active_for_path(
+        index, node, occurrence, binding, selector_field):
+    for step in binding.guard:
+        resolved = _guard_step_expression(
+            index, binding.enclosing_callable, step)
+        if resolved is None:
+            return False
+        expression, expected = resolved
+        requirement = _boolean_field_requirement(expression, selector_field)
+        if requirement is not None:
+            if requirement != expected:
+                return False
+            continue
+        value = _static_bool_expression_at_occurrence(
+            index, node, occurrence, expression)
+        if value is None or value != expected:
+            return False
+    return True
+
+
+def _guard_step_expression(index, callable_symbol, step):
+    if step.kind in {"if", "elif"} and step.test is not None:
+        return step.test, True
+    if step.kind != "else":
+        return None
+    controls = tuple(
+        item for item in index.controls
+        if item.enclosing_callable == callable_symbol
+        and item.kind == "if" and item.span == step.span
+        and item.controlling is not None)
+    return (controls[0].controlling, False) if len(controls) == 1 else None
+
+
+def _boolean_field_requirement(expression, field):
+    if _self_field(expression) == field:
+        return True
+    if expression.kind == "unaryop" and expression.operator == "not" \
+            and len(expression.children) == 1 \
+            and _self_field(expression.children[0]) == field:
+        return False
+    return None
+
+
+def _static_bool_expression_at_occurrence(index, node, occurrence, expression):
+    if expression.kind == "constant" and isinstance(expression.const_value, bool):
+        return expression.const_value
+    if expression.kind == "unaryop" and expression.operator == "not" \
+            and len(expression.children) == 1:
+        value = _static_bool_expression_at_occurrence(
+            index, node, occurrence, expression.children[0])
+        return None if value is None else not value
+    field = _self_field(expression)
+    if field is None:
+        return None
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if item.field == field and not item.guard)
+    if len(assignments) != 1:
+        return None
+    value = assignments[0].value
+    if value.kind == "constant" and isinstance(value.const_value, bool):
+        return value.const_value
+    if value.kind != "name" or not value.name:
+        return None
+    actual = _constructor_argument_for_parameter(
+        index, node, occurrence, value.name)
+    if actual is None or actual.kind != "constant" \
+            or not isinstance(actual.const_value, bool):
+        return None
+    return actual.const_value
+
+
+def _constructor_argument_for_parameter(index, node, occurrence, parameter):
+    if not occurrence.sites:
+        return None
+    site_id = occurrence.sites[-1]
+    sites = tuple(
+        item for item in index.construction_sites_in(site_id.enclosing_callable)
+        if item.site_id == site_id)
+    if len(sites) != 1:
+        return None
+    site = sites[0]
+    init = index.callable_by_symbol(SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.__init__"))
+    if init is None:
+        return None
+    params = tuple(item for item in init.params if item.name != "self")
+    selected = dict(site.kwargs)
+    for position, argument in enumerate(site.args):
+        if position < len(params):
+            selected.setdefault(params[position].name, argument)
+    if parameter in selected:
+        return selected[parameter]
+    matches = tuple(item for item in params if item.name == parameter)
+    if len(matches) != 1 or not matches[0].has_default:
+        return None
+    return matches[0].default
 
 
 def _linear_output_width(index, occurrence: ConstructionOccurrenceId):
@@ -1017,9 +1500,11 @@ __all__ = [
     "AttentionHeadBinding",
     "BoundAttentionMechanism",
     "LatentAttentionBinding",
+    "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",
     "bind_attention_mechanism",
     "latent_attention_binding_at_block",
+    "multi_query_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
     "decoder_attention_mechanism_for_path",
 ]

@@ -515,6 +515,7 @@ def producer_sources_reaching_expressions(
     method_resolver=None, initial_sources=None,
     preserve_local_tuple_lanes=False,
     include_guarded_bindings=True,
+    binding_predicate=None,
 ):
     """Conservative local reaching definitions for exact consumer expressions.
 
@@ -550,6 +551,9 @@ def producer_sources_reaching_expressions(
         for binding in bindings:
             if binding.span is None \
                     or not _span_before(binding.span, consumer_span):
+                continue
+            if binding_predicate is not None \
+                    and not binding_predicate(binding):
                 continue
             if binding.guard and not include_guarded_bindings:
                 continue

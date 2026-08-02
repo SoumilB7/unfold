@@ -730,7 +730,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if _facts is not None:
             _facts.record(owner, name, value, status, source)
 
-    def _note_bound_attention_fact(bound, reader_result):
+    def _note_bound_attention_fact(
+            bound, reader_result, actual_config_paths):
         """Publish the U6 mechanism with its exact typed evidence channels."""
         if _facts is None:
             return
@@ -745,7 +746,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             line=span.line,
         ) for span in spans)
         config_paths = tuple(
-            ".".join(path) for path, _value in bound.premises)
+            ".".join(actual_config_paths.get(path, path))
+            for path, _value in bound.premises)
         _facts.record_typed(EvidenceFact(
             key="mechanism",
             owner="decoder.attention",
@@ -851,19 +853,34 @@ def parse(cfg: Any, context=None) -> ModelIR:
         value = res.consume(fact_owner=fact_owner, fact_key=fact_key or field)
         return default if value is None else value
 
+    _attention_actual_config_paths = {}
+
     def _consume_code_bound_path(field, exact_path, *, fact_key=None):
         """Consume only when U1 selected the exact path proven by source code."""
         res = _scoped(field)
         selected = (
             tuple(res.selected_path.split("."))
             if isinstance(res.selected_path, str) and res.selected_path else ())
-        if res.ambiguous or selected != tuple(exact_path):
+        exact = tuple(exact_path)
+        # Modeling code reads the config CLASS's canonical property while a
+        # checkpoint may use one of that property's audited input spellings
+        # (GPT-BigCode: ``num_attention_heads`` versus ``n_head``).  The alias
+        # resolver has already proven which spelling supplied this canonical
+        # field.  Accept only that same-owner bridge: the exact source leaf
+        # must be this canonical field and the parent path must be identical.
+        same_property = (
+            bool(exact) and exact[-1] == field
+            and selected[:-1] == exact[:-1]
+            and bool(selected))
+        if res.ambiguous or (selected != exact and not same_property):
             return None
-        return res.consume(
+        value = res.consume(
             fact_owner="decoder.attention",
             fact_key=fact_key or field,
             mechanism="attention_mechanism",
         )
+        _attention_actual_config_paths[exact] = selected
+        return value
 
     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
     hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
@@ -1254,6 +1271,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         from ...evidence.attention import (
             AttentionHeadBinding,
             LatentAttentionBinding,
+            MultiQueryAttentionBinding,
             bind_attention_mechanism,
         )
         _binding = _attention_mechanism_evidence.value
@@ -1281,6 +1299,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
             ):
                 _bound_values[_path] = _consume_code_bound_path(
                     _field, _path, fact_key=_fact_key)
+        elif isinstance(_binding, MultiQueryAttentionBinding):
+            _bound_values[_binding.num_heads_path] = \
+                _consume_code_bound_path(
+                    "num_attention_heads", _binding.num_heads_path,
+                    fact_key="num_heads")
+            _bound_values[_binding.selector_path] = \
+                _consume_code_bound_path(
+                    "multi_query", _binding.selector_path,
+                    fact_key="mechanism")
         _bound_attention = bind_attention_mechanism(
             _binding, _bound_values)
     if _bound_attention is not None:
@@ -1291,7 +1318,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             q_lora_rank = kv_lora_rank = None
             qk_nope_head_dim = qk_rope_head_dim = v_head_dim_cfg = None
         _note_bound_attention_fact(
-            _bound_attention, _attention_mechanism_evidence)
+            _bound_attention, _attention_mechanism_evidence,
+            _attention_actual_config_paths)
     else:
         is_mla = False
         _note_fact(

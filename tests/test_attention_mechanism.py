@@ -13,11 +13,13 @@ from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
     BoundAttentionMechanism,
     LatentAttentionBinding,
+    MultiQueryAttentionBinding,
     attention_head_binding_at_block,
     bind_attention_mechanism,
     decoder_attention_head_binding_for_path,
     decoder_attention_mechanism_for_path,
     latent_attention_binding_at_block,
+    multi_query_attention_binding_at_block,
 )
 from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
@@ -371,6 +373,38 @@ class Mixer:
 """
 
 
+_MULTI_QUERY_ATTENTION = """
+class Mixer:
+    def __init__(self, config, cross=False):
+        self.selector = config.use_one_kv
+        self.hidden = config.hidden
+        self.heads = config.query_groups
+        self.head_dim = self.hidden // self.heads
+        self.kv_heads = 1 if self.selector else self.heads
+        self.kv_dim = self.kv_heads * self.head_dim
+        self.cross = cross
+        if self.cross:
+            self.packed = nn.Linear(self.hidden, 2 * self.hidden)
+        else:
+            self.packed = nn.Linear(
+                self.hidden, self.hidden + 2 * self.kv_dim)
+    def forward(self, x):
+        if self.cross:
+            query = x
+            key, value = self.packed(x).split(
+                (self.hidden, self.hidden), dim=-1)
+        else:
+            if self.selector:
+                query, key, value = self.packed(x).split(
+                    (self.hidden, self.kv_dim, self.kv_dim), dim=-1)
+            else:
+                query, key, value = self.packed(x).split(
+                    (self.hidden, self.hidden, self.hidden), dim=-1)
+        score = torch.matmul(query, key.transpose(-1, -2))
+        return torch.matmul(F.softmax(score, dim=-1), value)
+"""
+
+
 def test_latent_attention_requires_exact_compress_expand_and_two_splits(
         tmp_path):
     index, _bundle, root, block = _pipeline(tmp_path, _LATENT_ATTENTION)
@@ -513,6 +547,84 @@ def test_latent_binding_requires_every_exact_dimension_value(tmp_path):
     assert mechanism.num_kv_heads == 8
     values.pop(binding.value_head_dim_path)
     assert bind_attention_mechanism(binding, values) is None
+
+
+def test_exact_selector_controlled_single_kv_path_proves_mqa(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _MULTI_QUERY_ATTENTION)
+    result = multi_query_attention_binding_at_block(
+        index, root, block)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, MultiQueryAttentionBinding)
+    assert result.value.num_heads_path == ("query_groups",)
+    assert result.value.selector_path == ("use_one_kv",)
+    mechanism = bind_attention_mechanism(result.value, {
+        ("query_groups",): 16,
+        ("use_one_kv",): True,
+    })
+    assert (mechanism.kind, mechanism.num_heads,
+            mechanism.num_kv_heads) == ("mqa", 16, 1)
+
+
+def test_mqa_selector_false_or_missing_does_not_invent_a_mechanism(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _MULTI_QUERY_ATTENTION)
+    binding = multi_query_attention_binding_at_block(
+        index, root, block).value
+    assert bind_attention_mechanism(binding, {
+        ("query_groups",): 16,
+        ("use_one_kv",): False,
+    }) is None
+    assert bind_attention_mechanism(binding, {
+        ("query_groups",): 16,
+    }) is None
+
+
+def test_mqa_result_closure_rejects_sibling_symbol_and_call_laundering(
+        tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _MULTI_QUERY_ATTENTION)
+    binding = multi_query_attention_binding_at_block(
+        index, root, block).value
+    block_node = root.graph.node_for(block)
+    with pytest.raises(ValueError):
+        replace(binding, attention_symbol=block_node.symbol)
+    sibling_call = index.calls_in(
+        next(item.symbol for item in index.callables_of(block_node.symbol)
+             if item.symbol.qualified_name.endswith(".forward")))[0]
+    with pytest.raises(ValueError):
+        replace(binding, split_call=sibling_call)
+
+
+def test_flag_presence_without_singleton_split_dataflow_is_not_mqa(tmp_path):
+    source = _MULTI_QUERY_ATTENTION.replace(
+        "if self.selector:", "if True:")
+    index, _bundle, root, block = _pipeline(tmp_path, source)
+    result = multi_query_attention_binding_at_block(
+        index, root, block)
+    assert result.status == "failed"
+
+
+def test_real_gpt_bigcode_mqa_is_source_bound_not_family_selected():
+    from transformers import AutoConfig
+    from model_unfolder import config_to_ir
+    from model_unfolder.parser import _coerce
+
+    config = _coerce(AutoConfig.for_model("gpt_bigcode").to_dict())
+    context = ParseContext.build(config)
+    result = decoder_attention_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, MultiQueryAttentionBinding)
+    ir = config_to_ir(config, parse_context=context)
+    attention = ir.layers[0].attention
+    assert (attention.kind, attention.num_kv_heads) == ("mqa", 1)
+    fact = context.facts.typed["decoder.attention.mechanism"]
+    assert fact.status == "code_and_config"
+    assert "multi_query" in fact.config_paths
+    assert "n_head" in fact.config_paths
+    assert "num_attention_heads" not in fact.config_paths
 
 
 @pytest.mark.parametrize(("slug", "kind", "q_heads", "kv_heads", "path"), [
