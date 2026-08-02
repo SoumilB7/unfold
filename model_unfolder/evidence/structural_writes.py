@@ -661,6 +661,11 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     # its owner/key/status/value/provenance before this exact writer is pinned.
     ('model_unfolder/adapters/transformer/parser.py',
      '_note_bound_attention_fact', 'ledger', '<dynamic>'),
+    # U6: the single native writer for exact code+config attention leaves.
+    # Each caller supplies an already-resolved reader result and config path;
+    # FactLedger's closed registry validates the fact before it is stored.
+    ('model_unfolder/adapters/transformer/parser.py',
+     '_note_typed_code_config_fact', 'ledger', '<dynamic>'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion.canvas_length'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'dual_kv'),

@@ -280,6 +280,21 @@ def test_guarded_projection_definition_without_reaching_proof_stays_unknown(
     assert result.status == "failed"
 
 
+def test_unconditional_reassignment_kills_an_earlier_guarded_definition(
+        tmp_path):
+    source = _SOURCE.replace(
+        "            one = self.a(x)",
+        """            if self.training:
+                one = self.out(x)
+            one = self.a(x)""",
+    )
+    index, root, repeated = _pipeline(tmp_path, source)
+    result = attention_projection_storage_evidence(
+        index, root, repeated.child_occurrence)
+    assert result.status == "resolved", result.failures
+    assert result.value.mode == "split"
+
+
 def test_guarded_projection_construction_cannot_prove_split(tmp_path):
     source = _SOURCE.replace(
         "            self.a = nn.Linear(config.hidden, config.hidden)",

@@ -630,7 +630,15 @@ def producer_sources_reaching_expressions(
                 )
                 env[name] = (
                     frozenset(target_sources),
-                    target_uncertain or previous_uncertain
+                    target_uncertain
+                    # An unconditional ordinary assignment replaces the old
+                    # reaching definition.  Carrying its prior uncertainty
+                    # forward made a later exact value look conditional (for
+                    # example BLOOM's unconditionally assigned softmax result
+                    # after an optional mask update).  Guarded writes keep the
+                    # rival path; augmented assignments already read the prior
+                    # value explicitly above.
+                    or (previous_uncertain if binding.guard else False)
                     or introduces_conditional_producer,
                 )
             if not binding.guard and not source_uncertain \

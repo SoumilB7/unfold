@@ -2877,6 +2877,29 @@ def _exact_config_path_for_expression(
     return ((*config_prefix, *relative) if relative is not None else None)
 
 
+def exact_config_path_for_expression(
+        index: ProgramIndex, node, expression: ExprNode, *,
+        config_prefix: tuple[str, ...] = ()) -> tuple[str, ...] | None:
+    """Public U6 join from one exact source expression to one config path.
+
+    This is deliberately an interpretation above :class:`ProgramIndex`: the
+    index observes syntax, while this join requires the exact owner-graph node
+    and its construction-derived config bindings.  Projection bias, head
+    geometry and selector readers must share this implementation so a config
+    path cannot mean one thing in one attention fact and another elsewhere.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("config-expression binding requires a ProgramIndex")
+    if not isinstance(expression, ExprNode):
+        raise TypeError("config-expression binding requires an ExprNode")
+    if not isinstance(config_prefix, tuple) or any(
+            not isinstance(part, str) or not part for part in config_prefix):
+        raise TypeError("config_prefix is tuple[str, ...]")
+    return _exact_config_path_for_expression(
+        index, node, expression, seen=frozenset(),
+        config_prefix=config_prefix)
+
+
 def _local_attribute_chain(expression):
     segments = []
     current = expression
@@ -2960,4 +2983,5 @@ __all__ = [
     "decoder_attention_head_binding_for_path",
     "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
+    "exact_config_path_for_expression",
 ]

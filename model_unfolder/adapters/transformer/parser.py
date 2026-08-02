@@ -344,16 +344,9 @@ def _projection_bias_result(context, mechanism, config_path):
 
 
 def _code_attention_bias(cfg: Any, context=None, *, config_path=()):
-    """Source-only bias of the exact Q/K/V projection occurrences.
-
-    Config-dependent bias expressions intentionally abstain here and stay on
-    the parser's owner-scoped config channel.
-    """
+    """Uniform exact Q/K/V/O bias or their one exact bound config path."""
     result = _projection_bias_result(context, "attention", config_path)
-    return (
-        result.value.value
-        if result is not None and result.status == "resolved" else None
-    )
+    return result if result is not None and result.status == "resolved" else None
 
 
 def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
@@ -774,6 +767,38 @@ def parse(cfg: Any, context=None) -> ModelIR:
             reason=(
                 "exact owner source protocol joined to the exact selected "
                 "checkpoint occurrences"),
+        ))
+
+    def _note_typed_code_config_fact(
+            *, key, owner, value, reader_result, config_paths, reader, reason):
+        """One native typed-fact writer shared by exact U6 source/config joins.
+
+        Keeping the registry-validated write here prevents every migrated
+        attention leaf from becoming a new unreviewed structural writer.  The
+        caller still supplies the exact reader result and selected config
+        occurrence; this helper performs no interpretation or fallback.
+        """
+        if _facts is None:
+            return
+        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
+
+        spans = tuple(dict.fromkeys(
+            span for provenance in reader_result.provenance
+            for span in provenance.spans))
+        _facts.record_typed(EvidenceFact(
+            key=key,
+            owner=owner,
+            value=value,
+            status="code_and_config",
+            completeness="complete",
+            source_spans=tuple(FactSourceSpan(
+                component=span.source.component_key or "root",
+                file=span.source.canonical_path,
+                line=span.line,
+            ) for span in spans),
+            config_paths=tuple(".".join(path) for path in config_paths),
+            legacy_source=reader,
+            reason=reason,
         ))
 
     _unknown_status = "ambiguous" if _source_present else "oracle_missing"
@@ -1496,8 +1521,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
         context=context, config_path=_text_path)
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
-    # CODE construction is authoritative (Bloom/Qwen2 hardcode
-    # `nn.Linear(..., bias=True)` on QKV while declaring no `attention_bias`);
+    # CODE construction is authoritative.  The fact is intentionally uniform
+    # across Q/K/V/O: QKV alone cannot certify an output projection, and a
+    # mixed layout stays unknown until a richer per-lane fact is introduced.
     # the config spelling is the declared channel behind it. U2 default-kill:
     # when BOTH are silent the bias is a typed UNKNOWN (None) — never a
     # silent False indistinguishable from proven-False.
@@ -1507,17 +1533,58 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # but it cannot decide the fact.  U6 will bind the winning spelling to the
     # exact ``Linear(..., bias=config.<field>)`` expression; until then the
     # occurrence is explicit pending debt rather than an unread config field.
-    _config_access.resolve(
-        text_cfg, "attention_bias", _ALIASES.get("attention_bias", ()),
-        path=_text_path,
-    )
+    _declared_bias_resolution = None
     _code_bias = _code_attention_bias(
         text_cfg, context, config_path=_text_path)
-    if _code_bias is not None:
-        use_attention_bias = bool(_code_bias)
+    if _code_bias is not None and _code_bias.value.value is not None:
+        use_attention_bias = _code_bias.value.value
         _note_fact("decoder.attention", "bias", use_attention_bias,
                    "code_proven", "decoder_attention_bias_for_path")
+    elif _code_bias is not None and _code_bias.value.config_path is not None:
+        _bound_path = _code_bias.value.config_path
+        _prefix = tuple(_text_path)
+        if len(_bound_path) == len(_prefix) + 1 \
+                and _bound_path[:len(_prefix)] == _prefix:
+            _bound_leaf = _bound_path[-1]
+            _declared_bias_resolution = _config_access.resolve(
+                text_cfg, _bound_leaf, (), path=_text_path)
+        if _declared_bias_resolution is not None \
+                and not _declared_bias_resolution.ambiguous \
+                and _declared_bias_resolution.present \
+                and _declared_bias_resolution.selected_path \
+                == ".".join(_bound_path) \
+                and isinstance(_declared_bias_resolution.value, bool):
+            _declared_bias_resolution.bind(
+                "decoder_attention_bias_for_path",
+                fact_owner="decoder.attention", fact_key="bias")
+            _bias_decision = _declared_bias_resolution.consume_decision(
+                mechanism="projection_bias",
+                fact_owner="decoder.attention", fact_key="bias",
+                reader="decoder_attention_bias_for_path",
+                status="code_and_config")
+            use_attention_bias = _bias_decision.value
+            _note_typed_code_config_fact(
+                key="bias",
+                owner="decoder.attention",
+                value=use_attention_bias,
+                reader_result=_code_bias,
+                config_paths=(_bound_path,),
+                reader="decoder_attention_bias_for_path",
+                reason=(
+                    "exact Q/K/V/O projection constructors bind their bias "
+                    "operand to this exact config occurrence"),
+            )
+        else:
+            use_attention_bias = None
+            _note_fact("decoder.attention", "bias", None,
+                       _unknown_status, None)
     else:
+        # Keep an unbound declaration visible to the U6 debt audit.  It cannot
+        # author a bias fact until the exact projection constructor names it.
+        _declared_bias_resolution = _config_access.resolve(
+            text_cfg, "attention_bias", _ALIASES.get("attention_bias", ()),
+            path=_text_path,
+        )
         use_attention_bias = None
         _note_fact("decoder.attention", "bias", None, _unknown_status, None)
     # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).
