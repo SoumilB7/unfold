@@ -416,8 +416,13 @@ def test_mllama_cross_attention_is_layer_variant_only():
         if layer["attention"]["cross_attention"]
     ] == [3, 8, 13, 18, 23, 28, 33, 38]
 
+    # The layer role is exact, but its nested AutoModel attention owner is not
+    # source-addressable yet.  Preserve cross-attention while refusing to
+    # manufacture GQA from checkpoint head counts alone.
+    assert ir["layers"][3]["attention"]["kind"] is None
     html = diagram.to_html(standalone=False)
-    assert "GQA XAttn" in html
+    assert "Cross-Attention" in html
+    assert "GQA XAttn" not in html
     assert "Cross-Attention" in html
     assert "cross_attention_states" in html
     assert "Projected image states" in html

@@ -57,10 +57,12 @@ def test_musicgen_cross_attention_is_construction_proven_and_additive():
     assert side["title"] == "Encoded prompt states"
     assert side["feeds"] == "cross_attn"
     assert side["view"] == "conditioning_path"
-    # The cross block names the prompt, never "Vision".
+    # The compact block carries only the typed cross-attention role.  Prompt
+    # provenance is independently typed by the side-state block above; the
+    # renderer must not recover it by searching prose.
     cross_block = next(b for b in ir.layers[0].blocks if b["id"] == "cross_attn")
     assert "Vision" not in " ".join(cross_block["label"])
-    assert "Prompt" in " ".join(cross_block["label"])
+    assert "Cross-Attention" in " ".join(cross_block["label"])
 
 
 def test_musicgen_conditioning_tower_rides_the_universal_roundtrip():

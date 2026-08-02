@@ -68,6 +68,71 @@ _SIGMOID_PROTOCOLS = frozenset({
     "torch.nn.functional.sigmoid",
 })
 
+_SCORE_PRODUCT_PROTOCOLS = frozenset({
+    "torch.matmul",
+    "torch.bmm",
+    "torch.einsum",
+})
+
+_SOFTMAX_PROTOCOLS = frozenset({
+    "torch.softmax",
+    "torch.nn.functional.softmax",
+})
+
+
+@dataclass(frozen=True)
+class AttentionScoreScalingBinding:
+    """Exact score-product path into softmax and whether it scales QK.
+
+    ``scaled=False`` is not an absence scan.  It is a positive raw-score
+    protocol: one exact score product reaches one exact softmax only through
+    explicitly neutral aliases/additive masks, while both product operands
+    have complete non-scaling local lineages.  Unsupported transformations
+    return a typed failure instead of being interpreted as unscaled.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    protocol: str
+    scaled: bool
+    score_call: CallObservation
+    softmax_call: CallObservation
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("score scaling evidence names exact occurrences")
+        if not isinstance(self.scaled, bool):
+            raise TypeError("score scaling evidence is an exact boolean")
+        if self.protocol not in {"explicit_product", "sdpa_terminal"}:
+            raise ValueError("unknown score scaling protocol")
+        if not isinstance(self.score_call, CallObservation) \
+                or not isinstance(self.softmax_call, CallObservation):
+            raise TypeError("score scaling evidence carries exact calls")
+        if self.score_call.enclosing_callable \
+                != self.softmax_call.enclosing_callable:
+            raise ValueError("score and softmax calls belong to one callable")
+        if self.score_call.enclosing_callable.source \
+                != self.attention_occurrence.root.source \
+                or self.softmax_call.enclosing_callable.source \
+                != self.attention_occurrence.root.source:
+            raise ValueError("score scaling calls belong to the attention source")
+        if self.score_call.span is None or self.softmax_call.span is None:
+            raise ValueError("score scaling calls carry exact spans")
+        if self.protocol == "sdpa_terminal":
+            if not self.scaled or self.score_call != self.softmax_call:
+                raise ValueError("SDPA is one exact scaled score/softmax terminal")
+        elif self.score_call == self.softmax_call \
+                or not _span_before(self.score_call.span, self.softmax_call.span):
+            raise ValueError("the explicit score call precedes its softmax")
+        if not self.spans or any(not isinstance(span, SourceSpan)
+                                 for span in self.spans):
+            raise ValueError("score scaling evidence carries exact spans")
+        if self.score_call.span not in self.spans \
+                or self.softmax_call.span not in self.spans:
+            raise ValueError("score scaling provenance cites both decisive calls")
+
 
 @dataclass(frozen=True)
 class AttentionOutputGateBinding:
@@ -455,6 +520,119 @@ def decoder_attention_head_binding_for_path(
     return ReaderResult.resolved(
         result.owner, result.value,
         provenance=(*block.provenance, *result.provenance))
+
+
+def decoder_attention_score_scaling_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionScoreScalingBinding]:
+    """Resolve one config occurrence to its exact score-scaling path."""
+    block = decoder_block_path_for_config(
+        index, bundle, tuple(config_path),
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    result = attention_score_scaling_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
+def attention_score_scaling_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionScoreScalingBinding]:
+    """Prove scaled or raw QK scores at one exact attention occurrence."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention score scaling requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_score_scaling_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("attention score scaling requires an exact block")
+    attention = attention_child_evidence(index, root, block_occurrence)
+    if attention.status != "resolved":
+        return attention
+    child = attention.value
+    proof = child.compute
+    if proof.protocol == "scaled_dot_product_attention":
+        spans = tuple(dict.fromkeys(
+            span for span in proof.spans if isinstance(span, SourceSpan)))
+        value = AttentionScoreScalingBinding(
+            block_occurrence, child.compute_occurrence, "sdpa_terminal", True,
+            proof.entry_call, proof.entry_call, spans)
+        return ReaderResult.resolved(
+            block_occurrence, value,
+            provenance=(ReaderProvenance(
+                "source", spans=spans,
+                detail="exact torch SDPA terminal applies score scaling"),))
+
+    callable_symbol = proof.callable_symbol
+    calls = tuple(index.calls_in(callable_symbol))
+    softmaxes = tuple(
+        call for call in calls
+        if _call_has_external_protocol(index, call, _SOFTMAX_PROTOCOLS))
+    score_calls = tuple(
+        call for call in calls
+        if _score_product_kind(index, call) is not None)
+    candidates = []
+    for softmax in softmaxes:
+        producers = {
+            ("score_product", call.span): call
+            for call in score_calls
+            if call.span is not None and softmax.span is not None
+            and _span_before(call.span, softmax.span)}
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, callable_symbol,
+                ((softmax.span, softmax.args),), producers)
+        closure = _dependency_closure(sources, dependencies)
+        reaching = tuple(
+            call for key, call in producers.items() if key in closure)
+        if uncertain or len(reaching) != 1:
+            continue
+        score = reaching[0]
+        classified = _classify_score_path(
+            index, callable_symbol, score, softmax, producers)
+        if classified is not None:
+            candidates.append((score, softmax, *classified))
+    distinct = {
+        (score.span, softmax.span, scaled):
+            (score, softmax, scaled, spans)
+        for score, softmax, scaled, spans in candidates}
+    if len(distinct) > 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (item[0].span for item in distinct.values()),
+                key=_span_sort_key))),
+            provenance=attention.provenance)
+    if not distinct:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "unsupported_syntax",
+            "the exact score-to-softmax path is not a supported scaled or "
+            "raw-score protocol"),), provenance=attention.provenance)
+    score, softmax, scaled, path_spans = next(iter(distinct.values()))
+    spans = tuple(dict.fromkeys(
+        span for span in (*proof.spans, *path_spans)
+        if isinstance(span, SourceSpan)))
+    value = AttentionScoreScalingBinding(
+        block_occurrence, child.compute_occurrence, "explicit_product",
+        scaled, score, softmax, spans)
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=(
+                "exact score product reaches exact softmax through a "
+                + ("multiplicative scaling" if scaled else
+                   "complete raw/additive local") + " path")),))
 
 
 def decoder_attention_mechanism_for_path(
@@ -1562,6 +1740,154 @@ def _flatten_multiplication(expression):
     return (expression,) if isinstance(expression, ExprNode) else ()
 
 
+def _score_product_kind(index, call):
+    if _call_has_external_protocol(index, call, _SCORE_PRODUCT_PROTOCOLS):
+        return "product"
+    # ``Tensor.baddbmm`` is a closed torch tensor operation.  Its receiver is
+    # the additive bias and its batch operands are explicit keyword/positional
+    # arguments; the operation spelling is syntax, not a model/class marker.
+    if call.callee.kind == "attribute" and call.callee.name == "baddbmm" \
+            and call.callee.children:
+        arguments = (*call.args, *(value for _name, value in call.kwargs))
+        if len(arguments) >= 2:
+            return "baddbmm"
+    return None
+
+
+def _classify_score_path(index, callable_symbol, score, softmax, producers):
+    del producers  # exact producer identity is ``score.span`` below
+    lanes = set()
+    path_bindings = []
+    for binding in sorted(
+            index.bindings_in(callable_symbol),
+            key=lambda item: _span_sort_key(item.span)):
+        if binding.span is None or binding.value is None \
+                or softmax.span is None \
+                or not _span_before(binding.span, softmax.span):
+            continue
+        targets = tuple(
+            name for target in binding.targets for name in _target_names(target))
+        direct = _expr_contains_span(binding.value, score.span)
+        reads_lane = _expression_uses_lane_value(binding.value, lanes)
+        augments_lane = binding.assignment_kind == "augassign" \
+            and any(target in lanes for target in targets)
+        if not (direct or reads_lane or augments_lane):
+            for target in targets:
+                lanes.discard(target)
+            continue
+        state = _score_transform_state(
+            index, callable_symbol, binding, score, lanes)
+        if state is None:
+            return None
+        path_bindings.append((binding, state))
+        lanes.update(targets)
+    if not path_bindings or not any(
+            _expression_uses_lane_value(argument, lanes)
+            for argument in softmax.args):
+        return None
+
+    needed = set(
+        name for argument in softmax.args
+        for name in _lane_names_in_expression(argument, lanes))
+    live_bindings = []
+    for binding, state in reversed(path_bindings):
+        targets = {
+            name for target in binding.targets for name in _target_names(target)}
+        if not targets.intersection(needed):
+            continue
+        live_bindings.append((binding, state))
+        if binding.assignment_kind != "augassign":
+            needed.difference_update(targets)
+        needed.update(_lane_names_in_expression(binding.value, lanes))
+    path_bindings = tuple(reversed(live_bindings))
+    if not path_bindings:
+        return None
+
+    scaled = _score_product_kind(index, score) == "baddbmm" \
+        and any(name == "alpha" for name, _value in score.kwargs)
+    spans = [score.span, softmax.span]
+    for binding, state in path_bindings:
+        scaled = scaled or state
+        spans.append(binding.span)
+    return bool(scaled), tuple(dict.fromkeys(
+        span for span in spans if isinstance(span, SourceSpan)))
+
+
+def _score_transform_state(
+        index, callable_symbol, binding, score, lanes):
+    """True=scale, False=neutral, None=unsupported score transformation."""
+    value = binding.value
+    if binding.assignment_kind == "augassign":
+        relations = tuple(
+            item.op for item in index.dataflow
+            if item.enclosing_callable == callable_symbol
+            and item.span == binding.span
+            and item.op.startswith("aug:"))
+        if len(relations) != 1:
+            return None
+        operator = relations[0][4:]
+        if operator in {"*", "/"}:
+            return True
+        return False if operator in {"+", "-"} else None
+    if value.kind == "binop" and len(value.children) == 2:
+        carrying = [
+            _expr_contains_span(child, score.span)
+            or _expression_uses_lane_value(child, lanes)
+            for child in value.children]
+        if sum(carrying) != 1:
+            return None
+        if value.operator in {"*", "/"}:
+            return True
+        if value.operator in {"+", "-"}:
+            return False
+        return None
+    if value.kind == "name":
+        return False if value.name in lanes else None
+    if value.kind == "call" and value.children:
+        callee = value.children[0]
+        if value.span == score.span:
+            return False
+        leaf = callee.name if callee.kind == "attribute" else ""
+        # Shape/dtype/mask wrappers preserve the numerical score scale.  This
+        # is a closed framework/local tensor protocol; an unknown helper call
+        # remains unsupported instead of being assumed neutral.
+        if leaf in {
+                "float", "to", "type_as", "view", "reshape",
+                "masked_fill", "masked_fill_", "clamp"}:
+            return False
+        return None
+    return False if value.kind in {"attribute", "subscript"} else None
+
+
+def _expression_uses_lane_value(expression, lanes):
+    if not isinstance(expression, ExprNode):
+        return False
+    if expression.kind == "name":
+        return expression.name in lanes
+    if expression.kind == "attribute" and expression.name in {
+            "device", "dtype", "shape"}:
+        return False
+    return any(_expression_uses_lane_value(child, lanes)
+               for child in expression.children) \
+        or any(_expression_uses_lane_value(child, lanes)
+               for _name, child in expression.keyword_children)
+
+
+def _lane_names_in_expression(expression, lanes):
+    if not isinstance(expression, ExprNode):
+        return ()
+    if expression.kind == "name":
+        return (expression.name,) if expression.name in lanes else ()
+    if expression.kind == "attribute" and expression.name in {
+            "device", "dtype", "shape"}:
+        return ()
+    return tuple(dict.fromkeys(
+        name for child in expression.children
+        for name in _lane_names_in_expression(child, lanes))) + tuple(
+        name for _key, child in expression.keyword_children
+        for name in _lane_names_in_expression(child, lanes))
+
+
 def _positive_int_constant(expression):
     if not isinstance(expression, ExprNode) or expression.kind != "constant" \
             or not isinstance(expression.const_value, int) \
@@ -1626,6 +1952,15 @@ def _span_before(left, right):
         return False
     return (left.end_line or left.line, left.end_col or left.col) \
         <= (right.line, right.col)
+
+
+def _span_sort_key(span):
+    if span is None:
+        return ("", "", -1, -1, -1, -1)
+    return (
+        span.source.component_key, span.source.canonical_path,
+        span.line, span.col,
+        span.end_line or span.line, span.end_col or span.col)
 
 
 def _nested_self_call_fields(expression):
@@ -2612,14 +2947,17 @@ def _span_contains(outer, inner):
 __all__ = [
     "AttentionHeadBinding",
     "AttentionOutputGateBinding",
+    "AttentionScoreScalingBinding",
     "BoundAttentionMechanism",
     "EquivalentDispatchMultiQueryBinding",
     "LatentAttentionBinding",
     "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",
+    "attention_score_scaling_at_block",
     "bind_attention_mechanism",
     "latent_attention_binding_at_block",
     "multi_query_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
+    "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
 ]

@@ -735,15 +735,10 @@ def attention_label(attention: AttentionSpec) -> list[str]:
                 # a third line overflows the block.
                 return [label[0], "(unresolved)"]
         if attention.cross_attention:
-            # The side-source ROLE is independent of the attention MECHANISM.
-            # Keep a code-proven prompt/vision lane visible even when Q/K/V
-            # sharing is unresolved; otherwise unknown-safety erases a fact
-            # that the construction reader did prove (MusicGen is the
-            # counterexample).  The second line still states the mechanism
-            # uncertainty explicitly.
-            side = ("Prompt" if "prompt states" in
-                    str(attention.cross_kv_source or "") else "Vision")
-            return _prefixed_label(prefix, side, "Cross-Attn unresolved")
+            # Cross-attention is the typed role we know.  The K/V source stays
+            # in its own typed fact/card; never recover a source modality by
+            # searching prose here.
+            return _prefixed_label(prefix, "Cross-Attention", "(unresolved)")
         return _prefixed_label(prefix, "Attention", "(mechanism unresolved)")
     if attention.variant and attention.variant.get("label"):
         return list(attention.variant["label"])

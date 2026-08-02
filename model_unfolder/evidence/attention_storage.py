@@ -595,6 +595,18 @@ def producer_sources_reaching_expressions(
                 binding.value, env, calls_by_span, dependencies)
             targets = tuple(_target_names(target) for target in binding.targets)
             flat_targets = tuple(name for group in targets for name in group)
+            # ``x += y`` reads the prior x and writes the result.  Treating it
+            # as ``x = y`` erased the exact score lineage in T5's
+            # ``scores += position_bias`` and can erase any producer passing
+            # through an augmented assignment.  BindingObservation retains
+            # the augassign kind, so preserve the prior reaching version here;
+            # operation semantics remain in the matching DataflowObservation.
+            if binding.assignment_kind == "augassign" \
+                    and len(flat_targets) == 1:
+                prior_sources, prior_uncertain = env.get(
+                    flat_targets[0], (frozenset(), False))
+                sources = frozenset((*sources, *prior_sources))
+                source_uncertain = source_uncertain or prior_uncertain
             lane_states = (
                 _tuple_expression_lane_states(
                     index, callable_symbol, binding.value, len(flat_targets),

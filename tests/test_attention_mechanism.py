@@ -12,19 +12,22 @@ from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
     AttentionOutputGateBinding,
+    AttentionScoreScalingBinding,
     BoundAttentionMechanism,
     LatentAttentionBinding,
     MultiQueryAttentionBinding,
     attention_head_binding_at_block,
+    attention_score_scaling_at_block,
     bind_attention_mechanism,
     decoder_attention_head_binding_for_path,
     decoder_attention_mechanism_for_path,
+    decoder_attention_score_scaling_for_path,
     latent_attention_binding_at_block,
     multi_query_attention_binding_at_block,
 )
 from model_unfolder.evidence.attention_child import attention_child_evidence
 from model_unfolder.evidence.component_owner import resolve_component_root
-from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.context import ParseContext, slot_parse_context
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
 from model_unfolder.evidence.models import SourceBundle
 
@@ -201,6 +204,80 @@ def test_equal_split_lanes_bind_one_exact_count_path(tmp_path):
     assert result.value.query_heads_path == ("query_groups",)
     assert result.value.key_value_heads_path == ("query_groups",)
     assert result.provenance[0].kind == "code_and_config"
+
+
+@pytest.mark.parametrize(("score", "expected"), [
+    ("torch.matmul(one, two.transpose(-1, -2))", False),
+    ("torch.matmul(one, two.transpose(-1, -2)) * self.scale", True),
+])
+def test_score_scaling_follows_exact_product_to_softmax(
+        tmp_path, score, expected):
+    attention = _split_attention(
+        "config.query_groups", "config.query_groups").replace(
+        "        score = torch.matmul(one, two.transpose(-1, -2))",
+        f"        score = {score}").replace(
+        "        return torch.matmul(F.softmax(score, dim=-1), three)",
+        "        weights = F.softmax(score, dim=-1)\n"
+        "        return torch.matmul(weights, three)").replace(
+        "        self.width = config.hidden // config.query_groups",
+        "        self.width = config.hidden // config.query_groups\n"
+        "        self.scale = config.scale")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, AttentionScoreScalingBinding)
+    assert result.value.scaled is expected
+
+
+def test_unused_scaled_score_copy_cannot_launder_raw_softmax_path(tmp_path):
+    attention = _split_attention(
+        "config.query_groups", "config.query_groups").replace(
+        "        score = torch.matmul(one, two.transpose(-1, -2))",
+        "        score = torch.matmul(one, two.transpose(-1, -2))\n"
+        "        unused = score * self.scale").replace(
+        "        self.width = config.hidden // config.query_groups",
+        "        self.width = config.hidden // config.query_groups\n"
+        "        self.scale = config.scale")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is False
+
+
+def test_additive_augassign_preserves_raw_score_producer(tmp_path):
+    attention = _split_attention(
+        "config.query_groups", "config.query_groups").replace(
+        "        score = torch.matmul(one, two.transpose(-1, -2))",
+        "        score = torch.matmul(one, two.transpose(-1, -2))\n"
+        "        score += x")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is False
+
+
+def test_unknown_score_helper_cannot_be_reported_as_raw_or_scaled(tmp_path):
+    attention = _split_attention(
+        "config.query_groups", "config.query_groups").replace(
+        "        score = torch.matmul(one, two.transpose(-1, -2))",
+        "        score = torch.matmul(one, two.transpose(-1, -2))\n"
+        "        score = custom_transform(score)")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+def test_score_scaling_dto_rejects_protocol_and_call_forgery(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path, _split_attention(
+            "config.query_groups", "config.query_groups"))
+    value = attention_score_scaling_at_block(index, root, block).value
+    with pytest.raises(ValueError, match="unknown score scaling protocol"):
+        replace(value, protocol="model_default")
+    with pytest.raises(ValueError, match="SDPA"):
+        replace(value, protocol="sdpa_terminal")
+    with pytest.raises(ValueError, match="precedes"):
+        replace(value, softmax_call=value.score_call)
 
 
 def test_one_query_lane_and_two_kv_lanes_prove_grouped_binding(tmp_path):
@@ -629,6 +706,35 @@ def test_real_bloom_fused_qkv_proves_equal_head_protocol():
     assert result.value.storage_mode == "fused_qkv"
     assert result.value.protocol == "equal_heads"
     assert result.value.query_heads_path == ("n_head",)
+
+
+@pytest.mark.parametrize(("slug", "expected"), [
+    ("llama-7b", True),
+    ("bloom", True),
+])
+def test_real_decoder_score_scaling_is_bound_to_exact_attention_path(
+        slug, expected):
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_attention_score_scaling_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is expected
+
+
+def test_real_t5_proves_raw_scores_at_its_exact_embedded_owner():
+    root_config = json.loads(
+        (_CORPUS / "fluxtransformer2dmodel.json").read_text(
+            encoding="utf-8"))["config"]
+    context = slot_parse_context(
+        ParseContext.build(root_config), "text_encoder_2")
+    result = decoder_attention_score_scaling_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is False
 
 
 def test_latent_real_model_remains_typed_until_its_protocol_lands():

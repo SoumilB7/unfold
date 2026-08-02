@@ -386,18 +386,31 @@ def _code_router(cfg: Any, context=None):
         return None
 
 
-def _code_scores_scaled(cfg: Any, context=None) -> bool | None:
-    """Whether the attention forward SCALES its scores, READ FROM THE MODELING
-    SOURCE (``attention_score_scaling_from_files``) — the same verdict the
-    encoder-tower path already draws (T5's raw ``QK^T``).  False ⇒ the forward
-    performs no scale (folded into init); True/None keep the sqrt(dim)
-    rendering.  Wiring this on the MAIN path removes the one asserted default
-    that had a live, unread oracle.  Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import attention_score_scaling_from_files
-        return attention_score_scaling_from_files(_source_files(cfg, context))
-    except Exception:
+def _score_scaling_result(context=None, *, config_path=()):
+    """One call-local exact score-product-to-softmax result."""
+    if context is None:
         return None
+    from ...evidence.attention import (
+        decoder_attention_score_scaling_for_path,
+    )
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.score_scaling",
+        config_path,
+        lambda: decoder_attention_score_scaling_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
+def _code_scores_scaled(
+        cfg: Any, context=None, *, config_path=()) -> bool | None:
+    """Score scaling from the exact selected attention occurrence."""
+    result = _score_scaling_result(context, config_path=config_path)
+    return (
+        result.value.scaled
+        if result is not None and result.status == "resolved" else None)
 
 
 def _code_mlp_bias(cfg: Any, context=None, *, config_path=()) -> bool | None:
@@ -1511,7 +1524,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # A declared constant supplies the OPERAND only after code has proved that
     # this exact attention path applies a scale.  A number in config cannot,
     # by itself, manufacture an operation.
-    code_scores_scaled = _code_scores_scaled(text_cfg, context)
+    code_scores_scaled = _code_scores_scaled(
+        text_cfg, context, config_path=_text_path)
     _declared_score_scale = (
         attention_multiplier is not None or bool(query_pre_attn_scalar)
     )
@@ -1527,7 +1541,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                else _unknown_status,
                source=("attention_multiplier/query_pre_attn_scalar"
                        if _applied_declared_scale
-                       else "attention_score_scaling_from_files"
+                       else "decoder_attention_score_scaling_for_path"
                        if code_scores_scaled is not None
                        else None))
     # Learned sink logits in the softmax — config-silent, code-only.
