@@ -1270,6 +1270,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             and _attention_mechanism_evidence.status == "resolved":
         from ...evidence.attention import (
             AttentionHeadBinding,
+            EquivalentDispatchMultiQueryBinding,
             LatentAttentionBinding,
             MultiQueryAttentionBinding,
             bind_attention_mechanism,
@@ -1299,7 +1300,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             ):
                 _bound_values[_path] = _consume_code_bound_path(
                     _field, _path, fact_key=_fact_key)
-        elif isinstance(_binding, MultiQueryAttentionBinding):
+        elif isinstance(
+                _binding,
+                (MultiQueryAttentionBinding,
+                 EquivalentDispatchMultiQueryBinding)):
             _bound_values[_binding.num_heads_path] = \
                 _consume_code_bound_path(
                     "num_attention_heads", _binding.num_heads_path,
@@ -1308,6 +1312,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 _consume_code_bound_path(
                     "multi_query", _binding.selector_path,
                     fact_key="mechanism")
+            if isinstance(_binding, EquivalentDispatchMultiQueryBinding):
+                _bound_values[_binding.alternate_architecture_path] = \
+                    _consume_code_bound_path(
+                        "new_decoder_architecture",
+                        _binding.alternate_architecture_path,
+                        fact_key="mechanism")
         _bound_attention = bind_attention_mechanism(
             _binding, _bound_values)
     if _bound_attention is not None:

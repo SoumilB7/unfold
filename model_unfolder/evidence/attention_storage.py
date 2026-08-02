@@ -314,21 +314,56 @@ def _attention_projection_storage_mode_for_block_path(
                                 f"projection storage is {mode}")),
                     ))
 
-    child_inventory = resolve_container_inventory(
+    dispatch = dispatch_attention_projection_storage_at_block(
         index, root, block)
+    if dispatch.status == "ambiguous":
+        return dispatch
+    if dispatch.status == "resolved":
+        return ReaderResult.resolved(
+            block, dispatch.value.mode,
+            provenance=dispatch.provenance)
+    return direct
+
+
+def dispatch_attention_projection_storage_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block: OwnerOccurrenceId,
+):
+    """Return one complete dispatch-candidate storage proof at an exact block.
+
+    The owner graph intentionally leaves a registry-selected child unresolved.
+    This boundary preserves that fact: it returns candidate-equivalence evidence
+    and never manufactures a child :class:`OwnerOccurrenceId`.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("dispatch attention storage requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="dispatch_attention_projection_storage_at_block")
+    if not isinstance(block, OwnerOccurrenceId):
+        raise TypeError("dispatch attention storage requires an exact block")
+    block_node = root.graph.node_for(block)
+    if block_node is None:
+        return ReaderResult.failed(block, (ReaderFailure(
+            "out_of_owner", "the block is absent from the owner graph"),))
+
+    child_inventory = resolve_container_inventory(index, root, block)
     invocations = resolve_addressed_invocations(
         index, root, block, child_inventory)
     if invocations.status != "resolved":
-        return direct
+        return ReaderResult.failed(block, (ReaderFailure(
+            "incomplete_graph",
+            "the block invocation census is not resolved: "
+            f"{invocations.failure_kind or invocations.status} "
+            f"{invocations.failure_detail}".strip()),))
 
     from .dispatch_attention_storage import (
         dispatch_attention_projection_storage_evidence,
     )
     dispatch_results = []
-    block_node = root.graph.node_for(block)
     for unresolved in invocations.unresolved:
         field = _self_field(unresolved.call.callee)
-        if field is None or block_node is None:
+        if field is None:
             continue
         sites = tuple(
             site for site in index.construction_sites_of(block_node.symbol)
@@ -353,14 +388,12 @@ def _attention_projection_storage_mode_for_block_path(
                     proof.candidate.candidate.reference.span
                     for proof in item.value.proofs))
             if isinstance(span, SourceSpan)))
-        return ReaderResult.ambiguous(
-            block, Ambiguity(sites=spans))
+        return ReaderResult.ambiguous(block, Ambiguity(sites=spans))
     if len(resolved) == 1:
-        result = resolved[0]
-        return ReaderResult.resolved(
-            block, result.value.mode,
-            provenance=result.provenance)
-    return direct
+        return resolved[0]
+    return ReaderResult.failed(block, (ReaderFailure(
+        "incomplete_graph",
+        "no exact registry-dispatched attention construction is proven"),))
 
 
 def attention_projection_storage_evidence(
@@ -970,6 +1003,7 @@ __all__ = [
     "decoder_attention_projection_storage_evidence",
     "decoder_attention_projection_storage_for_path",
     "decoder_attention_projection_storage_mode_evidence",
+    "dispatch_attention_projection_storage_at_block",
     "producer_sources_reaching_expressions",
     "projection_sources_reaching_calls",
 ]

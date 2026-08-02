@@ -37,6 +37,10 @@ from .construction_calls import (
     resolve_import_reference,
 )
 from .decoder_block import decoder_block_path_for_config
+from .dispatch_attention_mechanism import (
+    EquivalentDispatchMultiQueryBinding,
+    dispatch_multi_query_attention_binding_at_block,
+)
 from .models import SourceBundle
 from .program_index import (
     CallObservation,
@@ -225,7 +229,8 @@ class BoundAttentionMechanism:
     num_heads: int
     num_kv_heads: int
     binding: (AttentionHeadBinding | LatentAttentionBinding
-              | MultiQueryAttentionBinding)
+              | MultiQueryAttentionBinding
+              | EquivalentDispatchMultiQueryBinding)
     premises: tuple[tuple[tuple[str, ...], object], ...]
 
     def __post_init__(self) -> None:
@@ -238,7 +243,8 @@ class BoundAttentionMechanism:
         if not isinstance(
                 self.binding, (
                     AttentionHeadBinding, LatentAttentionBinding,
-                    MultiQueryAttentionBinding)):
+                    MultiQueryAttentionBinding,
+                    EquivalentDispatchMultiQueryBinding)):
             raise TypeError("bound mechanism carries exact code evidence")
         if not self.premises or any(
                 not isinstance(path, tuple) or not path
@@ -261,23 +267,33 @@ class BoundAttentionMechanism:
                     or self.num_heads != self.num_kv_heads:
                 raise ValueError(
                     "latent attention expands K/V at query-head count")
-        elif isinstance(self.binding, MultiQueryAttentionBinding):
+        elif isinstance(
+                self.binding,
+                (MultiQueryAttentionBinding,
+                 EquivalentDispatchMultiQueryBinding)):
             if self.kind != "mqa" or self.num_kv_heads != 1 \
                     or self.binding.num_heads_path not in values \
                     or values.get(self.binding.selector_path) is not True:
                 raise ValueError("multi-query requires its true selector premise")
+            if isinstance(self.binding, EquivalentDispatchMultiQueryBinding) \
+                    and values.get(
+                        self.binding.alternate_architecture_path) is not False:
+                raise ValueError(
+                    "dispatch multi-query requires its alternate path false")
 
 
 def bind_attention_mechanism(
     binding: (AttentionHeadBinding | LatentAttentionBinding
-              | MultiQueryAttentionBinding),
+              | MultiQueryAttentionBinding
+              | EquivalentDispatchMultiQueryBinding),
     values_by_path: dict[tuple[str, ...], object],
 ) -> BoundAttentionMechanism | None:
     """Join code-bound paths to exact U1 values; path mismatch stays unknown."""
     if not isinstance(
             binding, (
                 AttentionHeadBinding, LatentAttentionBinding,
-                MultiQueryAttentionBinding)):
+                MultiQueryAttentionBinding,
+                EquivalentDispatchMultiQueryBinding)):
         raise TypeError("bind_attention_mechanism requires exact code evidence")
     if not isinstance(values_by_path, dict) or any(
             not isinstance(path, tuple) for path in values_by_path):
@@ -301,17 +317,27 @@ def bind_attention_mechanism(
         )
         return BoundAttentionMechanism(kind, q, kv, binding, premises)
 
-    if isinstance(binding, MultiQueryAttentionBinding):
+    if isinstance(
+            binding,
+            (MultiQueryAttentionBinding,
+             EquivalentDispatchMultiQueryBinding)):
         heads = values_by_path.get(binding.num_heads_path)
         selector = values_by_path.get(binding.selector_path)
         if not isinstance(heads, int) or isinstance(heads, bool) \
                 or heads <= 0 or selector is not True:
             return None
+        premises = [
+            (binding.num_heads_path, heads),
+            (binding.selector_path, selector),
+        ]
+        if isinstance(binding, EquivalentDispatchMultiQueryBinding):
+            alternate = values_by_path.get(
+                binding.alternate_architecture_path)
+            if alternate is not False:
+                return None
+            premises.append((binding.alternate_architecture_path, alternate))
         return BoundAttentionMechanism(
-            "mqa", heads, 1, binding, (
-                (binding.num_heads_path, heads),
-                (binding.selector_path, selector),
-            ))
+            "mqa", heads, 1, binding, tuple(premises))
 
     paths = (
         binding.num_heads_path,
@@ -365,7 +391,8 @@ def decoder_attention_mechanism_for_path(
     allow_root_stage: bool,
 ) -> ReaderResult[
         AttentionHeadBinding | LatentAttentionBinding
-        | MultiQueryAttentionBinding]:
+        | MultiQueryAttentionBinding
+        | EquivalentDispatchMultiQueryBinding]:
     """Resolve the strongest exact mechanism proof at a selected decoder path."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("attention mechanism requires a ProgramIndex")
@@ -388,12 +415,19 @@ def decoder_attention_mechanism_for_path(
             index, block.value.component_root, block.value.block_occurrence)
         if multi_query.status in {"resolved", "ambiguous"}:
             result = multi_query
-        elif head.status == "ambiguous":
-            result = head
         else:
-            result = latent_attention_binding_at_block(
-                index, block.value.component_root,
-                block.value.block_occurrence)
+            dispatch_multi_query = \
+                dispatch_multi_query_attention_binding_at_block(
+                    index, block.value.component_root,
+                    block.value.block_occurrence)
+            if dispatch_multi_query.status in {"resolved", "ambiguous"}:
+                result = dispatch_multi_query
+            elif head.status == "ambiguous":
+                result = head
+            else:
+                result = latent_attention_binding_at_block(
+                    index, block.value.component_root,
+                    block.value.block_occurrence)
     if result.status != "resolved":
         return result
     return ReaderResult.resolved(
@@ -1499,6 +1533,7 @@ def _span_contains(outer, inner):
 __all__ = [
     "AttentionHeadBinding",
     "BoundAttentionMechanism",
+    "EquivalentDispatchMultiQueryBinding",
     "LatentAttentionBinding",
     "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",

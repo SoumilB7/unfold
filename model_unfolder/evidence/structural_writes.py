@@ -657,6 +657,10 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/adapters/transformer/assembly.py', 'parallel_decoder_layer', 'spec', 'LayerSpec'),
     ('model_unfolder/adapters/transformer/assembly.py', 'single_stream_decoder_layer', 'spec', 'LayerSpec'),
     ('model_unfolder/adapters/transformer/parser.py', '_note_fact', 'ledger', '<dynamic>'),
+    # U6: native typed attention-mechanism fact author.  The registry validates
+    # its owner/key/status/value/provenance before this exact writer is pinned.
+    ('model_unfolder/adapters/transformer/parser.py',
+     '_note_bound_attention_fact', 'ledger', '<dynamic>'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion.canvas_length'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'dual_kv'),

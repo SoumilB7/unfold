@@ -214,13 +214,13 @@ def _candidate_storage(
     candidate: DispatchCandidateAddress,
 ) -> ReaderResult[DispatchCandidateStorageProof]:
     symbol = candidate.candidate.symbol
-    forward = _effective_method(index, symbol, "forward")
+    forward = effective_candidate_method(index, symbol, "forward")
     if forward is None:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "the candidate's effective forward is not exactly resolvable",
             candidate.candidate.reference.span),))
-    constructor_owners = _constructor_owners(index, symbol)
+    constructor_owners = candidate_constructor_owners(index, symbol)
     if not constructor_owners:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
@@ -259,7 +259,7 @@ def _candidate_storage(
     sources, unpack_widths, dependencies, uncertain = \
         projection_sources_reaching_calls(
             index, forward, attention_inputs, linear_calls,
-            method_resolver=lambda owner, name: _effective_method(
+            method_resolver=lambda owner, name: effective_candidate_method(
                 index, owner, name))
     ordered = tuple(sorted(sources, key=_projection_sort_key))
     mode = None
@@ -294,7 +294,7 @@ def _candidate_storage(
                 "closed attention-input protocol")),))
 
 
-def _constructor_owners(
+def candidate_constructor_owners(
     index: ProgramIndex,
     symbol: SymbolId,
     seen: frozenset[SymbolId] = frozenset(),
@@ -305,13 +305,13 @@ def _constructor_owners(
     record = index.callable_by_symbol(init)
     base_kind, base = _first_base(index, symbol)
     if record is None:
-        return ((symbol, *_constructor_owners(
+        return ((symbol, *candidate_constructor_owners(
             index, base, seen | {symbol}))
                 if base_kind == "internal" else (symbol,)
                 if base_kind == "external" else ())
     if _calls_exact_super_init(index, init):
         if base_kind == "internal":
-            return (symbol, *_constructor_owners(
+            return (symbol, *candidate_constructor_owners(
                 index, base, seen | {symbol}))
         if base_kind == "external":
             return (symbol,)
@@ -319,7 +319,7 @@ def _constructor_owners(
     return (symbol,)
 
 
-def _effective_method(
+def effective_candidate_method(
     index: ProgramIndex,
     symbol: SymbolId,
     name: str,
@@ -333,7 +333,7 @@ def _effective_method(
     base_kind, base = _first_base(index, symbol)
     if base_kind != "internal":
         return None
-    return _effective_method(index, base, name, seen | {symbol})
+    return effective_candidate_method(index, base, name, seen | {symbol})
 
 
 def _first_base(
@@ -448,5 +448,7 @@ __all__ = [
     "DispatchProjectionAddress",
     "DispatchCandidateStorageProof",
     "EquivalentDispatchStorage",
+    "candidate_constructor_owners",
     "dispatch_attention_projection_storage_evidence",
+    "effective_candidate_method",
 ]
