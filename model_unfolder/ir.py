@@ -45,7 +45,7 @@ class AttentionSpec:
                                     # ("Append sink column" between scores and softmax —
                                     # the logits are PARAMETERS of that op; weights are
                                     # never input nodes).  Emitted only when True.
-    logit_softcap: Optional[float] = None   # attn_logit_softcapping (Gemma-2 ±50):
+    logit_softcap: Optional[float] = None   # code-bound score/tanh softcap operand:
                                     # scores/cap → tanh → ×cap between QK^T and the
                                     # softmax — a REAL forward op, drawn as a node.
                                     # Emitted only when declared.
@@ -487,7 +487,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
         # emitted only when code proves learned sink logits join the softmax
         **({"sinks": True} if a.sinks else {}),
-        # emitted only when DECLARED (attn_logit_softcapping) — a real op node
+        # emitted only when exact code+config evidence proves the real op node
         **({"logit_softcap": a.logit_softcap} if a.logit_softcap else {}),
         # B5: defaults distinguishable-from-declared, only-when-non-empty
         **({"asserted": list(a.asserted)} if a.asserted else {}),

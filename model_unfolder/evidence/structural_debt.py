@@ -295,12 +295,11 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "AttentionSpec.rope via attention_detail)",
             "U8", "fact_registered:rope_theta",
             occurrence="text_cfg rope_theta + rope_parameters|rope_scaling"),
-    _extras("softcap", "root.decoder.attention",
-            "attention/final softcap descriptor as raw extras (drawn softcap "
-            "is AttentionSpec.logit_softcap -> Op:attn_softcap)",
-            "U6", "fact_routed:logit_softcap",
-            occurrence="text_cfg attn_logit_softcapping | "
-                       "final_logit_softcapping | query_pre_attn_scalar"),
+    _extras("softcap", "model",
+            "final vocabulary-logit softcap descriptor as raw extras; the "
+            "attention cap and query-score operand have left this legacy lane",
+            "U14", "fact_routed:final_logit_softcap",
+            occurrence="text_cfg final_logit_softcapping"),
     _extras("attention", "root.decoder.attention",
             "clip-QKV info-only attention annotation as raw extras",
             "U6", "fact_registered:clip_qkv",
@@ -419,13 +418,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            "U6", "fact_registered:k_norm",
            occurrence="attention_detail derived leaf bool(qk_norm)",
            module=_AT, symbol="attention_detail",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
-    _drawn("logit_softcap", "root.decoder.attention",
-           "logit soft-cap op drawn from spec.logit_softcap",
-           "U6", "fact_routed:logit_softcap",
-           occurrence="AttentionSpec.logit_softcap",
-           module=_OG, symbol="_sdpa_core_ops",
            consumer="model_unfolder/renderers/html/fact_projection.py::"
                     "attention_facts"),
     # ---- config occurrences awaiting their consumer (former

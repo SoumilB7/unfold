@@ -217,8 +217,8 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # consumers from params.py's assumption channel.
 #
 # Known debt stated where it lives:
-# * Six DRAWN leaf names (position_kind, qk_norm, q_norm, k_norm, sinks,
-#   logit_softcap) never appear in any ledger — drawn-but-unledgered facts
+# * Four DRAWN leaf names (position_kind, qk_norm, q_norm, k_norm) never
+#   appear in any ledger — drawn-but-unledgered facts
 #   (census §0.6); they get definitions when H8 gives them writers.
 # ---------------------------------------------------------------------------
 REGISTRY: dict[str, FactDefinition] = _definition_map([
@@ -300,6 +300,28 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         conformance="fact_markers",
         notes="H8/U3: exact Parameter -> score concat -> softmax evidence "
               "(decoder_attention_sinks_for_path); gpt-oss witnesses it",
+    ),
+    FactDefinition(
+        key="logit_softcap",
+        value_types=frozenset({"int", "float"}),
+        allowed_statuses=frozenset({"code_and_config"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "attention_logit_softcap", "opgraph",
+                "attn_softcap", frozenset({"op"}),
+                frozenset({("attn_softcap",)}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes="U6: exact score/cap -> tanh -> *cap path joined to the exact "
+              "selected config operand; raw declarations are powerless. "
+              "The exact attention opgraph emits the projection receipt.",
     ),
     FactDefinition(
         key="norm_kind",

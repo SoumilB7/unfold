@@ -70,7 +70,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         # emitted only when code proves learned sink logits join the softmax
         # (the opgraph draws the sink lane from this key)
         **({"sinks": True} if attention.sinks else {}),
-        # emitted only when DECLARED — the opgraph draws the tanh softcap node
+        # emitted only when exact code+config evidence proves the tanh node
         **({"logit_softcap": attention.logit_softcap}
            if attention.logit_softcap else {}),
     }
@@ -410,7 +410,7 @@ def _sdpa_detailed_child_blocks(
         })
     if attention.logit_softcap:
         # The tanh softcap is a REAL forward op between QK^T and the softmax
-        # (config-declared attn_logit_softcapping) — its node needs a card.
+        # (exact score/cap -> tanh -> *cap evidence) — its node needs a card.
         _cap = attention.logit_softcap
         cards.append({
             "id": "attn_softcap", "title": f"Logit softcap ±{_cap:g}",
@@ -418,7 +418,7 @@ def _sdpa_detailed_child_blocks(
                             f"softmax: scores/{_cap:g} → tanh → ×{_cap:g}. "
                             f"Bounds every logit to ±{_cap:g} without hard "
                             f"clipping, keeping gradients healthy at the "
-                            f"extremes (declared by attn_logit_softcapping)."),
+                            f"extremes (proven on this attention path)."),
             "facts": [f"±{_cap:g}"],
         })
     if (

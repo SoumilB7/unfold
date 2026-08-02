@@ -397,6 +397,24 @@ def _score_scaling_result(context=None, *, config_path=()):
     )
 
 
+def _attention_logit_softcap_result(context=None, *, config_path=()):
+    """Call-local exact score-softcap source/config binding."""
+    if context is None:
+        return None
+    from ...evidence.attention import (
+        decoder_attention_logit_softcap_for_path,
+    )
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.logit_softcap",
+        config_path,
+        lambda: decoder_attention_logit_softcap_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
 def _code_scores_scaled(
         cfg: Any, context=None, *, config_path=()) -> bool | None:
     """Score scaling from the exact selected attention occurrence."""
@@ -1621,11 +1639,52 @@ def parse(cfg: Any, context=None) -> ModelIR:
     if code_attention_sinks:
         _note_fact("decoder.attention", "sinks", True, "code_proven",
                    "decoder_attention_sinks_for_path")
-    # Gemma-2's attention-logit softcap is a REAL op between QK^T and the
-    # softmax (scores/cap → tanh → ×cap) — drawn as a node, not extras-only.
-    attn_logit_softcap = consume("attn_logit_softcapping",
-                                 fact_owner="decoder.attention",
-                                 fact_key="logit_softcap")
+    # U6: a softcap node is authored only when the exact selected attention
+    # callable proves scores/cap -> tanh -> *cap before softmax AND binds that
+    # same cap operand to this exact checkpoint occurrence.  A familiar key or
+    # a positive number alone is not mechanism evidence.
+    attn_logit_softcap = None
+    _softcap_code = _attention_logit_softcap_result(
+        context, config_path=_text_path)
+    _softcap_resolution = None
+    if _softcap_code is not None and _softcap_code.status == "resolved":
+        _bound_path = _softcap_code.value.config_path
+        _prefix = tuple(_text_path)
+        if len(_bound_path) == len(_prefix) + 1 \
+                and _bound_path[:len(_prefix)] == _prefix:
+            _softcap_resolution = _config_access.resolve(
+                text_cfg, _bound_path[-1], (), path=_text_path)
+        if _softcap_resolution is not None \
+                and not _softcap_resolution.ambiguous \
+                and _softcap_resolution.present \
+                and _softcap_resolution.selected_path == ".".join(_bound_path) \
+                and isinstance(_softcap_resolution.value, (int, float)) \
+                and not isinstance(_softcap_resolution.value, bool):
+            _softcap_resolution.bind(
+                "decoder_attention_logit_softcap_for_path",
+                fact_owner="decoder.attention", fact_key="logit_softcap")
+            _softcap_decision = _softcap_resolution.consume_decision(
+                mechanism="attention_logit_softcap",
+                fact_owner="decoder.attention", fact_key="logit_softcap",
+                reader="decoder_attention_logit_softcap_for_path",
+                status="code_and_config")
+            attn_logit_softcap = _softcap_decision.value
+            _note_typed_code_config_fact(
+                key="logit_softcap",
+                owner="decoder.attention",
+                value=attn_logit_softcap,
+                reader_result=_softcap_code,
+                config_paths=(_bound_path,),
+                reader="decoder_attention_logit_softcap_for_path",
+                reason=(
+                    "the exact attention score path divides by, tanh-clamps, "
+                    "and multiplies by this exact config-bound operand"),
+            )
+    else:
+        # Keep an unproven declaration visible to the scoped config ledger; it
+        # remains pending U6 debt and cannot reach AttentionSpec.
+        _softcap_resolution = _config_access.resolve(
+            text_cfg, "attn_logit_softcapping", (), path=_text_path)
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").  Code-authoritative like
     # its twin: Bloom's MLP Linears default to bias=True with a silent config;
@@ -2448,7 +2507,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
         extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
 
     # Logit / query softcap (Gemma 2/3 style) — info-only annotation.
-    for cap_key in ("attn_logit_softcapping", "final_logit_softcapping", "query_pre_attn_scalar"):
+    # The attention cap and query-score operand now live on their typed U6
+    # facts/specs.  Keep only the distinct model-head cap in this legacy extras
+    # family until its own exact pre-sampling projection is migrated.
+    for cap_key in ("final_logit_softcapping",):
         val = _g(text_cfg, cap_key)
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val

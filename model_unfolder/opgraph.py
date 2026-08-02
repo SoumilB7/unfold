@@ -553,7 +553,7 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),
              Edge("attn_apply_v", "concat_heads"), Edge("concat_heads", "o_proj")]
     if softcap:
-        # attn_logit_softcapping (Gemma-2): scores/cap → tanh → ×cap runs
+        # Code-bound softcap (Gemma-2): scores/cap → tanh → ×cap runs
         # BETWEEN the scores and the softmax in the forward — a real op, so it
         # is a drawn node on the spine, never a chip-only annotation.
         ops.insert(1, Op(

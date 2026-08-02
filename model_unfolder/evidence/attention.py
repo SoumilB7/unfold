@@ -79,6 +79,10 @@ _SOFTMAX_PROTOCOLS = frozenset({
     "torch.nn.functional.softmax",
 })
 
+_TANH_PROTOCOLS = frozenset({
+    "torch.tanh",
+})
+
 
 @dataclass(frozen=True)
 class AttentionScoreScalingBinding:
@@ -132,6 +136,63 @@ class AttentionScoreScalingBinding:
         if self.score_call.span not in self.spans \
                 or self.softmax_call.span not in self.spans:
             raise ValueError("score scaling provenance cites both decisive calls")
+
+
+@dataclass(frozen=True)
+class AttentionLogitSoftcapBinding:
+    """Exact score/cap -> tanh -> *cap path before one exact softmax.
+
+    The config path is only the operand address.  The mechanism is proved by
+    the selected attention callable's numerical dataflow; neither a familiar
+    field spelling nor a positive checkpoint number can author this fact.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    compute_callable: SymbolId
+    config_path: tuple[str, ...]
+    parameter: str
+    score_call: CallObservation
+    tanh_call: CallObservation
+    softmax_call: CallObservation
+    divide_span: SourceSpan
+    multiply_span: SourceSpan
+    guard_span: SourceSpan
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("softcap evidence names exact occurrences")
+        if not isinstance(self.compute_callable, SymbolId) \
+                or self.compute_callable.source != self.attention_occurrence.root.source:
+            raise TypeError("softcap evidence names its exact compute callable")
+        if not self.config_path or any(
+                not isinstance(part, str) or not part
+                for part in self.config_path):
+            raise TypeError("softcap evidence carries one exact config path")
+        if not isinstance(self.parameter, str) or not self.parameter:
+            raise TypeError("softcap evidence carries one exact parameter")
+        calls = (self.score_call, self.tanh_call, self.softmax_call)
+        if any(not isinstance(call, CallObservation)
+               or call.enclosing_callable != self.compute_callable
+               or call.span is None for call in calls):
+            raise TypeError("softcap evidence carries exact same-callable calls")
+        if not (_span_before(self.score_call.span, self.divide_span)
+                and _span_before(self.divide_span, self.tanh_call.span)
+                and _span_before(self.tanh_call.span, self.multiply_span)
+                and _span_before(self.multiply_span, self.softmax_call.span)):
+            raise ValueError("softcap operations must precede softmax in order")
+        decisive = {
+            self.score_call.span, self.tanh_call.span, self.softmax_call.span,
+            self.divide_span, self.multiply_span, self.guard_span,
+        }
+        if any(not isinstance(span, SourceSpan)
+               or span.source != self.compute_callable.source
+               for span in decisive):
+            raise TypeError("softcap provenance belongs to its compute source")
+        if not self.spans or not decisive.issubset(self.spans):
+            raise ValueError("softcap provenance cites every decisive operation")
 
 
 @dataclass(frozen=True)
@@ -544,6 +605,35 @@ def decoder_attention_score_scaling_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+def decoder_attention_logit_softcap_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionLogitSoftcapBinding]:
+    """Resolve one config occurrence to its exact attention softcap path."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention softcap requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("attention softcap requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, tuple(config_path),
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    result = attention_logit_softcap_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
 def attention_score_scaling_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -633,6 +723,136 @@ def attention_score_scaling_at_block(
                 "exact score product reaches exact softmax through a "
                 + ("multiplicative scaling" if scaled else
                    "complete raw/additive local") + " path")),))
+
+
+def attention_logit_softcap_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionLogitSoftcapBinding]:
+    """Prove one exact guarded score/cap -> tanh -> *cap protocol.
+
+    This reader deliberately supports only an explicit score-product path.
+    A fused SDPA terminal may implement softcapping internally in the future,
+    but source outside the selected callable cannot be inferred here.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention softcap requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_logit_softcap_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("attention softcap requires an exact block")
+
+    attention = attention_child_evidence(index, root, block_occurrence)
+    if attention.status != "resolved":
+        return attention
+    child = attention.value
+    compute = index.callable_by_symbol(child.compute.callable_symbol)
+    if compute is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the exact attention callable is unindexed"),),
+            provenance=attention.provenance)
+    entry = child.compute.entry_call
+    node = root.graph.node_for(child.compute_occurrence)
+    if node is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the exact attention owner is unindexed"),),
+            provenance=attention.provenance)
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+
+    calls = tuple(index.calls_in(compute.symbol))
+    softmaxes = tuple(
+        call for call in calls
+        if _call_has_external_protocol(index, call, _SOFTMAX_PROTOCOLS))
+    score_calls = tuple(
+        call for call in calls
+        if _score_product_kind(index, call) is not None)
+    score_softmax_pairs = []
+    for softmax in softmaxes:
+        producers = {
+            ("score_product", call.span): call
+            for call in score_calls
+            if call.span is not None and softmax.span is not None
+            and _span_before(call.span, softmax.span)}
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, compute.symbol,
+                ((softmax.span, softmax.args),), producers)
+        closure = _dependency_closure(sources, dependencies)
+        reaching = tuple(
+            call for key, call in producers.items() if key in closure)
+        if not uncertain and len(reaching) == 1:
+            score_softmax_pairs.append((reaching[0], softmax))
+
+    candidates = []
+    for parameter_record in compute.params:
+        parameter = parameter_record.name
+        actual = _call_argument_for_parameter(entry, compute, parameter)
+        if actual is None:
+            continue
+        config_path = _exact_config_path_for_expression(
+            index, node, actual, seen=frozenset(),
+            config_prefix=config_prefix)
+        if config_path is None:
+            continue
+        for score_call, softmax_call in score_softmax_pairs:
+            protocol = _explicit_softcap_protocol(
+                index, compute.symbol, score_call, softmax_call, parameter)
+            if protocol is not None:
+                candidates.append((
+                    parameter, config_path, actual,
+                    score_call, softmax_call, protocol))
+
+    distinct = {
+        (parameter, config_path, score_call.span, softmax_call.span,
+         protocol[0].span, protocol[1], protocol[2], protocol[3]):
+        (parameter, config_path, actual, score_call, softmax_call, protocol)
+        for (parameter, config_path, actual, score_call, softmax_call,
+             protocol) in candidates}
+    if len(distinct) > 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (item[5][0].span for item in distinct.values()),
+                key=_span_sort_key))),
+            provenance=attention.provenance)
+    if not distinct:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "unsupported_syntax",
+            "the exact score path does not prove one config-bound guarded "
+            "divide/tanh/multiply softcap protocol"),),
+            provenance=attention.provenance)
+
+    parameter, config_path, actual, score_call, softmax_call, protocol = \
+        next(iter(distinct.values()))
+    tanh_call, divide_span, multiply_span, guard_span, protocol_spans = protocol
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            *child.compute.spans, score_call.span, softmax_call.span,
+            actual.span, *protocol_spans)
+        if isinstance(span, SourceSpan)))
+    value = AttentionLogitSoftcapBinding(
+        block_occurrence=block_occurrence,
+        attention_occurrence=child.compute_occurrence,
+        compute_callable=compute.symbol,
+        config_path=config_path,
+        parameter=parameter,
+        score_call=score_call,
+        tanh_call=tanh_call,
+        softmax_call=softmax_call,
+        divide_span=divide_span,
+        multiply_span=multiply_span,
+        guard_span=guard_span,
+        spans=spans,
+    )
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config", spans=spans, config_paths=(config_path,),
+            detail=("exact score/cap -> tanh -> *cap path binds the same "
+                    "parameter to one exact config occurrence")),))
 
 
 def decoder_attention_mechanism_for_path(
@@ -1754,6 +1974,149 @@ def _score_product_kind(index, call):
     return None
 
 
+def _call_argument_for_parameter(call, callable_record, parameter):
+    """Map one exact invocation argument to one exact callable parameter."""
+    keywords = dict(call.kwargs)
+    if parameter in keywords:
+        return keywords[parameter]
+    params = tuple(callable_record.params)
+    if callable_record.owner is not None and params \
+            and params[0].name in {"self", "cls"}:
+        params = params[1:]
+    positional_params = tuple(
+        item for item in params if item.kind == "positional")
+    for position, item in enumerate(positional_params):
+        if item.name == parameter:
+            return call.args[position] if position < len(call.args) else None
+    return None
+
+
+def _guard_proves_parameter_present(guard, parameter):
+    """Accept only the literal ``parameter is not None`` branch."""
+    if len(guard) != 1:
+        return None
+    step = guard[0]
+    test = step.test
+    if step.kind not in {"if", "elif"} or test is None \
+            or test.kind != "compare" or test.operator != "is not" \
+            or len(test.children) != 2:
+        return None
+    left, right = test.children
+    if left.kind == "name" and left.name == parameter \
+            and right.kind == "constant" and right.const_value is None:
+        return step.span
+    if right.kind == "name" and right.name == parameter \
+            and left.kind == "constant" and left.const_value is None:
+        return step.span
+    return None
+
+
+def _binop_is_lane_and_parameter(expression, operator, lane, parameter, *,
+                                  parameter_must_be_right=False):
+    if expression is None or expression.kind != "binop" \
+            or expression.operator != operator or len(expression.children) != 2:
+        return False
+    left, right = expression.children
+    left_lane = left.kind == "name" and left.name == lane
+    right_lane = right.kind == "name" and right.name == lane
+    left_parameter = left.kind == "name" and left.name == parameter
+    right_parameter = right.kind == "name" and right.name == parameter
+    if parameter_must_be_right:
+        return left_lane and right_parameter
+    return (left_lane and right_parameter) or (left_parameter and right_lane)
+
+
+def _binding_single_target(binding):
+    names = tuple(
+        name for target in binding.targets for name in _target_names(target))
+    return names[0] if len(names) == 1 else None
+
+
+def _explicit_softcap_protocol(
+        index, callable_symbol, score, softmax, parameter):
+    """Return the exact divide/tanh/multiply proof or ``None``.
+
+    The score/softmax pair already has an exact reaching-source relationship.
+    The protocol stays deliberately narrow: one score lane is reassigned under
+    one exact presence guard, and the multiplied lane still reaches softmax.
+    """
+    bindings = tuple(sorted(
+        (item for item in index.bindings_in(callable_symbol)
+         if item.span is not None and item.value is not None),
+        key=lambda item: _span_sort_key(item.span)))
+    score_defs = tuple(
+        item for item in bindings
+        if _expr_contains_span(item.value, score.span)
+        and _binding_single_target(item) is not None)
+    if len(score_defs) != 1:
+        return None
+    lane = _binding_single_target(score_defs[0])
+    between = tuple(
+        item for item in bindings
+        if _span_before(score_defs[0].span, item.span)
+        and _span_before(item.span, softmax.span))
+
+    divides = tuple(
+        item for item in between
+        if _binding_single_target(item) == lane
+        and item.assignment_kind != "augassign"
+        and _binop_is_lane_and_parameter(
+            item.value, "/", lane, parameter,
+            parameter_must_be_right=True))
+    if len(divides) != 1:
+        return None
+    divide = divides[0]
+    guard_span = _guard_proves_parameter_present(divide.guard, parameter)
+    if guard_span is None:
+        return None
+
+    tanh_pairs = []
+    for item in between:
+        if _binding_single_target(item) != lane or item.guard != divide.guard \
+                or not _span_before(divide.span, item.span):
+            continue
+        matches = tuple(
+            call for call in index.calls_in(callable_symbol)
+            if call.span is not None and _expr_contains_span(item.value, call.span)
+            and _call_has_external_protocol(index, call, _TANH_PROTOCOLS)
+            and len(call.args) == 1
+            and call.args[0].kind == "name" and call.args[0].name == lane)
+        if len(matches) == 1:
+            tanh_pairs.append((item, matches[0]))
+    if len(tanh_pairs) != 1:
+        return None
+    tanh_binding, tanh_call = tanh_pairs[0]
+
+    multiplies = tuple(
+        item for item in between
+        if _binding_single_target(item) == lane
+        and item.guard == divide.guard
+        and _span_before(tanh_binding.span, item.span)
+        and _binop_is_lane_and_parameter(
+            item.value, "*", lane, parameter))
+    if len(multiplies) != 1:
+        return None
+    multiply = multiplies[0]
+
+    # Every later write to the lane before softmax must preserve that exact
+    # reaching value.  This admits additive masks and transparent aliases, but
+    # rejects an overwrite that would make the observed tanh irrelevant.
+    for item in between:
+        if not _span_before(multiply.span, item.span) \
+                or _binding_single_target(item) != lane:
+            continue
+        state = _score_transform_state(
+            index, callable_symbol, item, score, {lane})
+        if state is None or not _expression_uses_lane_value(item.value, {lane}):
+            return None
+    if not any(_expr_contains_name(argument, lane) for argument in softmax.args):
+        return None
+    spans = tuple(dict.fromkeys((
+        divide.span, tanh_call.span, multiply.span, guard_span,
+    )))
+    return tanh_call, divide.span, multiply.span, guard_span, spans
+
+
 def _classify_score_path(index, callable_symbol, score, softmax, producers):
     del producers  # exact producer identity is ``score.span`` below
     lanes = set()
@@ -2819,20 +3182,32 @@ def _exact_config_path_for_expression(
     the same owner.  Any rival, guard, cycle, dynamic segment or unbound config
     parameter makes the path unknown.
     """
-    if expression.kind == "attribute" and expression.children:
-        base = expression.children[0]
-        if base.kind == "name" and base.name == "self":
-            field = expression.name
-            if field in seen:
-                return None
-            assigns = tuple(
-                item for item in index.field_assigns_of(node.symbol)
-                if item.field == field and not item.guard)
-            if len(assigns) != 1:
-                return None
-            return _exact_config_path_for_expression(
-                index, node, assigns[0].value,
-                seen=seen | {field}, config_prefix=config_prefix)
+    self_chain = _self_attribute_chain(expression)
+    if self_chain:
+        field, *trailing = self_chain
+        if field in seen:
+            return None
+        assigns = tuple(
+            item for item in index.field_assigns_of(node.symbol)
+            if item.field == field and not item.guard)
+        if len(assigns) != 1:
+            return None
+        base = _exact_config_path_for_expression(
+            index, node, assigns[0].value,
+            seen=seen | {field}, config_prefix=config_prefix)
+        return ((*base, *trailing) if base is not None else None)
+
+    # A bare constructor config parameter is the exact owner prefix.  This is
+    # the base case needed for syntax such as ``self.config = config`` followed
+    # by ``self.cap = self.config.cap``; the two field assignments are still
+    # followed exactly above and rivals remain unresolved.
+    if expression.kind == "name" and expression.name:
+        bindings = tuple(
+            item for item in node.config_bindings
+            if item.parameter == expression.name
+            and item.resolved_prefix is not None)
+        if len(bindings) == 1:
+            return (*config_prefix, *bindings[0].resolved_prefix)
 
     # Follow one exact straight-line local alias, for example
     # ``section = config.attention; self.kv = section.kv_heads``.  The alias is
@@ -2913,6 +3288,13 @@ def _local_attribute_chain(expression):
     return current.name, tuple(reversed(segments))
 
 
+def _self_attribute_chain(expression):
+    chain = _local_attribute_chain(expression)
+    if chain is None or chain[0] != "self":
+        return None
+    return chain[1]
+
+
 def _enclosing_callable_for_expression(index, node, expression):
     candidates = tuple(
         item.enclosing_callable
@@ -2969,6 +3351,7 @@ def _span_contains(outer, inner):
 
 __all__ = [
     "AttentionHeadBinding",
+    "AttentionLogitSoftcapBinding",
     "AttentionOutputGateBinding",
     "AttentionScoreScalingBinding",
     "BoundAttentionMechanism",
@@ -2976,11 +3359,13 @@ __all__ = [
     "LatentAttentionBinding",
     "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",
+    "attention_logit_softcap_at_block",
     "attention_score_scaling_at_block",
     "bind_attention_mechanism",
     "latent_attention_binding_at_block",
     "multi_query_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
+    "decoder_attention_logit_softcap_for_path",
     "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
     "exact_config_path_for_expression",

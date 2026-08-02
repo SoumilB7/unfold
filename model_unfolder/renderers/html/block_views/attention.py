@@ -12,8 +12,9 @@ from __future__ import annotations
 
 from ....labels import describe_attention, kv_shared, mask_long
 from ....opgraph import attention_region, mla_kv_region, mla_query_region, prefix_region
+from ....evidence.receipts import receipts_from_projects
 from ..graph_engine import render_graph
-from ..fact_projection import attention_facts
+from ..fact_projection import attention_facts, fact_provenance
 from ..utils import _html, facts_html
 from ..op_render import region_to_graph
 
@@ -60,10 +61,31 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
     _apply_presentation(graph, attn)
     title = _TITLES.get(kind, "attention")
     key = _VIEW_KEYS.get(kind, "attn")
+    # U6: emit the softcap receipt at the actual projector, and only for the
+    # unprefixed dominant decoder-attention graph whose canonical node is
+    # ``attn_softcap``.  Supporting/prefixed drills cannot receipt the root
+    # decoder fact merely because they share the same presentation template.
+    softcap_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "logit_softcap",
+            "mechanism": "attention_logit_softcap",
+            "value": attn["logit_softcap"],
+        },)
+        if attn.get("logit_softcap") is not None
+        and not attn.get("node_prefix") else ())
     return render_graph(
         graph, info, mount_id, key,
         f"{ir.get('name', 'model')} {title}", min_width=640,
         facts_projected=attention_facts(ir),
+        receipts=receipts_from_projects(
+            softcap_projects,
+            surface="opgraph", structural_target="attn_softcap",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=("attn_softcap",), projection_kind="op",
+            fact_rows=fact_provenance(ir),
+        ),
     )
 
 
