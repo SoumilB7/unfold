@@ -265,6 +265,20 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         negative_requires_complete=True,
     ),
     FactDefinition(
+        key="mechanism",
+        value_types=frozenset({"str", "NoneType"}),
+        allowed_statuses=frozenset({
+            "code_and_config", "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({
+            "attention_detail", "params_annotation", "json"}),
+        unknown_policy="pale_undeclared",
+        parameter_consumer=True,
+        notes="U6: exact owner/source mechanism binding joined to the exact "
+              "U1 checkpoint occurrences; head counts alone are powerless",
+    ),
+    FactDefinition(
         key="mask",
         # U2-R9: declared decoderness (is_decoder / is_encoder_decoder) is
         # config EVIDENCE for the mask fact — the final-vet consumption tier.

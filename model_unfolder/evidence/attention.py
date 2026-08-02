@@ -161,6 +161,93 @@ class LatentAttentionBinding:
             raise ValueError("latent attention cites both construction sites")
 
 
+@dataclass(frozen=True)
+class BoundAttentionMechanism:
+    """Final mechanism after exact code paths join U1 checkpoint values."""
+
+    kind: str
+    num_heads: int
+    num_kv_heads: int
+    binding: AttentionHeadBinding | LatentAttentionBinding
+    premises: tuple[tuple[tuple[str, ...], object], ...]
+
+    def __post_init__(self) -> None:
+        if self.kind not in {"mha", "gqa", "mla"}:
+            raise ValueError("unknown bound attention mechanism")
+        if not isinstance(self.num_heads, int) or self.num_heads <= 0 \
+                or not isinstance(self.num_kv_heads, int) \
+                or self.num_kv_heads <= 0:
+            raise ValueError("bound attention geometry is positive integer")
+        if not isinstance(
+                self.binding, (AttentionHeadBinding, LatentAttentionBinding)):
+            raise TypeError("bound mechanism carries exact code evidence")
+        if not self.premises or any(
+                not isinstance(path, tuple) or not path
+                for path, _value in self.premises):
+            raise ValueError("bound mechanism carries exact config premises")
+        if len({path for path, _value in self.premises}) != len(self.premises):
+            raise ValueError("bound mechanism premise paths are unique")
+        values = dict(self.premises)
+        if isinstance(self.binding, AttentionHeadBinding):
+            if self.binding.query_heads_path not in values:
+                raise ValueError("head binding's query path is a premise")
+            if self.binding.protocol == "grouped_kv" \
+                    and self.binding.key_value_heads_path not in values:
+                raise ValueError("grouped binding's KV path is a premise")
+            expected = "mha" if self.num_heads == self.num_kv_heads else "gqa"
+            if self.kind != expected:
+                raise ValueError("head values and final mechanism agree")
+        elif isinstance(self.binding, LatentAttentionBinding):
+            if self.kind != "mla" \
+                    or self.num_heads != self.num_kv_heads:
+                raise ValueError(
+                    "latent attention expands K/V at query-head count")
+
+
+def bind_attention_mechanism(
+    binding: AttentionHeadBinding | LatentAttentionBinding,
+    values_by_path: dict[tuple[str, ...], object],
+) -> BoundAttentionMechanism | None:
+    """Join code-bound paths to exact U1 values; path mismatch stays unknown."""
+    if not isinstance(binding, (AttentionHeadBinding, LatentAttentionBinding)):
+        raise TypeError("bind_attention_mechanism requires exact code evidence")
+    if not isinstance(values_by_path, dict) or any(
+            not isinstance(path, tuple) for path in values_by_path):
+        raise TypeError("values_by_path is an exact-path mapping")
+
+    if isinstance(binding, AttentionHeadBinding):
+        q = values_by_path.get(binding.query_heads_path)
+        if not isinstance(q, int) or isinstance(q, bool) or q <= 0:
+            return None
+        if binding.protocol == "equal_heads":
+            premises = ((binding.query_heads_path, q),)
+            return BoundAttentionMechanism("mha", q, q, binding, premises)
+        kv = values_by_path.get(binding.key_value_heads_path)
+        if not isinstance(kv, int) or isinstance(kv, bool) or kv <= 0 \
+                or kv > q or q % kv:
+            return None
+        kind = "mha" if q == kv else "gqa"
+        premises = (
+            (binding.query_heads_path, q),
+            (binding.key_value_heads_path, kv),
+        )
+        return BoundAttentionMechanism(kind, q, kv, binding, premises)
+
+    paths = (
+        binding.num_heads_path,
+        binding.kv_lora_rank_path,
+        binding.qk_rope_head_dim_path,
+        binding.qk_nope_head_dim_path,
+        binding.value_head_dim_path,
+    )
+    selected = tuple((path, values_by_path.get(path)) for path in paths)
+    if any(not isinstance(value, int) or isinstance(value, bool) or value <= 0
+           for _path, value in selected):
+        return None
+    heads = dict(selected)[binding.num_heads_path]
+    return BoundAttentionMechanism("mla", heads, heads, binding, selected)
+
+
 def decoder_attention_head_binding_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -928,8 +1015,10 @@ def _span_contains(outer, inner):
 
 __all__ = [
     "AttentionHeadBinding",
+    "BoundAttentionMechanism",
     "LatentAttentionBinding",
     "attention_head_binding_at_block",
+    "bind_attention_mechanism",
     "latent_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
     "decoder_attention_mechanism_for_path",

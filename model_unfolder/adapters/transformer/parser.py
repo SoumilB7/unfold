@@ -197,6 +197,22 @@ def _attention_storage_result(context, config_path):
     )
 
 
+def _attention_mechanism_result(context=None, *, config_path=()):
+    """One call-local exact-owner attention mechanism binding."""
+    if context is None:
+        return None
+    from ...evidence.attention import decoder_attention_mechanism_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.mechanism",
+        config_path,
+        lambda: decoder_attention_mechanism_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
 def _code_attention_storage_mode(
         cfg: Any, context=None, *, config_path=()) -> str | None:
     """Owner-qualified Q/K/V storage; uncertainty never becomes split/fused."""
@@ -714,6 +730,36 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if _facts is not None:
             _facts.record(owner, name, value, status, source)
 
+    def _note_bound_attention_fact(bound, reader_result):
+        """Publish the U6 mechanism with its exact typed evidence channels."""
+        if _facts is None:
+            return
+        from ...evidence.facts import EvidenceFact, SourceSpan as FactSourceSpan
+
+        spans = tuple(dict.fromkeys(
+            span for provenance in reader_result.provenance
+            for span in provenance.spans))
+        fact_spans = tuple(FactSourceSpan(
+            component=span.source.component_key or "root",
+            file=span.source.canonical_path,
+            line=span.line,
+        ) for span in spans)
+        config_paths = tuple(
+            ".".join(path) for path, _value in bound.premises)
+        _facts.record_typed(EvidenceFact(
+            key="mechanism",
+            owner="decoder.attention",
+            value=bound.kind,
+            status="code_and_config",
+            completeness="presence_only",
+            source_spans=fact_spans,
+            config_paths=config_paths,
+            legacy_source="decoder_attention_mechanism_for_path",
+            reason=(
+                "exact owner source protocol joined to the exact selected "
+                "checkpoint occurrences"),
+        ))
+
     _unknown_status = "ambiguous" if _source_present else "oracle_missing"
     model_type = (_g(cfg, "model_type") or "unknown").lower()
     arch_name  = architecture_name(cfg, model_type)
@@ -804,6 +850,20 @@ def parse(cfg: Any, context=None) -> ModelIR:
             return None
         value = res.consume(fact_owner=fact_owner, fact_key=fact_key or field)
         return default if value is None else value
+
+    def _consume_code_bound_path(field, exact_path, *, fact_key=None):
+        """Consume only when U1 selected the exact path proven by source code."""
+        res = _scoped(field)
+        selected = (
+            tuple(res.selected_path.split("."))
+            if isinstance(res.selected_path, str) and res.selected_path else ())
+        if res.ambiguous or selected != tuple(exact_path):
+            return None
+        return res.consume(
+            fact_owner="decoder.attention",
+            fact_key=fact_key or field,
+            mechanism="attention_mechanism",
+        )
 
     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
     hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
@@ -1186,6 +1246,57 @@ def parse(cfg: Any, context=None) -> ModelIR:
                                fact_key="qk_rope_head_dim")
     v_head_dim_cfg   = consume("v_head_dim", fact_owner="decoder.attention",
                                fact_key="v_head_dim")
+    _attention_mechanism_evidence = _attention_mechanism_result(
+        context, config_path=_text_path)
+    _bound_attention = None
+    if _attention_mechanism_evidence is not None \
+            and _attention_mechanism_evidence.status == "resolved":
+        from ...evidence.attention import (
+            AttentionHeadBinding,
+            LatentAttentionBinding,
+            bind_attention_mechanism,
+        )
+        _binding = _attention_mechanism_evidence.value
+        _bound_values = {}
+        if isinstance(_binding, AttentionHeadBinding):
+            _bound_values[_binding.query_heads_path] = \
+                _consume_code_bound_path(
+                    "num_attention_heads", _binding.query_heads_path,
+                    fact_key="num_heads")
+            if _binding.protocol == "grouped_kv":
+                _bound_values[_binding.key_value_heads_path] = \
+                    _consume_code_bound_path(
+                        "num_key_value_heads",
+                        _binding.key_value_heads_path,
+                        fact_key="num_kv_heads")
+        elif isinstance(_binding, LatentAttentionBinding):
+            for _field, _path, _fact_key in (
+                ("num_attention_heads", _binding.num_heads_path, "num_heads"),
+                ("kv_lora_rank", _binding.kv_lora_rank_path, "kv_lora_rank"),
+                ("qk_rope_head_dim", _binding.qk_rope_head_dim_path,
+                 "qk_rope_head_dim"),
+                ("qk_nope_head_dim", _binding.qk_nope_head_dim_path,
+                 "qk_nope_head_dim"),
+                ("v_head_dim", _binding.value_head_dim_path, "v_head_dim"),
+            ):
+                _bound_values[_path] = _consume_code_bound_path(
+                    _field, _path, fact_key=_fact_key)
+        _bound_attention = bind_attention_mechanism(
+            _binding, _bound_values)
+    if _bound_attention is not None:
+        num_heads = _bound_attention.num_heads
+        num_kv_heads = _bound_attention.num_kv_heads
+        is_mla = _bound_attention.kind == "mla"
+        if not is_mla:
+            q_lora_rank = kv_lora_rank = None
+            qk_nope_head_dim = qk_rope_head_dim = v_head_dim_cfg = None
+        _note_bound_attention_fact(
+            _bound_attention, _attention_mechanism_evidence)
+    else:
+        is_mla = False
+        _note_fact(
+            "decoder.attention", "mechanism", None,
+            _unknown_status, None)
     has_multi_query_flag = bool(_g(text_cfg, "multi_query")
                                 or _g(text_cfg, "multi_query_attention"))  # chatglm spelling
     # The flag means "KV heads are shared", NOT "exactly one": ChatGLM declares
@@ -1674,9 +1785,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
         is_mixer = mixer_kind is not None
         if mixer_kind:
             attn_kind = mixer_kind
+        elif _bound_attention is not None \
+                and layer_kv_heads == _bound_attention.num_kv_heads:
+            attn_kind = _bound_attention.kind
         else:
+            # Transitional only until the explicit multi-query source protocol
+            # lands in this U6 campaign.  Other unsupported source shapes stay
+            # unknown rather than falling through from counts.
             attn_kind = _attention_kind(is_mla, num_heads, layer_kv_heads,
-                                        has_multi_query_flag)
+                                        has_multi_query_flag) \
+                if has_multi_query_flag else None
         # The layer TYPE follows the declared schedule alone: a bare component
         # config (mllama_text_model) declares cross_attention_layers without a
         # vision_config sibling, and its cross layers ARE cross-attention

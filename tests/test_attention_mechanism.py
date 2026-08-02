@@ -11,8 +11,10 @@ import pytest
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
+    BoundAttentionMechanism,
     LatentAttentionBinding,
     attention_head_binding_at_block,
+    bind_attention_mechanism,
     decoder_attention_head_binding_for_path,
     decoder_attention_mechanism_for_path,
     latent_attention_binding_at_block,
@@ -438,3 +440,120 @@ def test_latent_result_closure_rejects_cross_owner_and_path_laundering(
         replace(value, attention_occurrence=block)
     with pytest.raises(ValueError):
         replace(value, value_head_dim_path=value.qk_nope_head_dim_path)
+
+
+def test_bound_grouped_protocol_uses_only_its_exact_paths(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path,
+        _split_attention(
+            "config.query_groups", "config.shared_groups"))
+    binding = attention_head_binding_at_block(index, root, block).value
+    mechanism = bind_attention_mechanism(binding, {
+        ("query_groups",): 16,
+        ("shared_groups",): 4,
+        ("unrelated",): 1,
+    })
+    assert isinstance(mechanism, BoundAttentionMechanism)
+    assert (mechanism.kind, mechanism.num_heads,
+            mechanism.num_kv_heads) == ("gqa", 16, 4)
+    assert dict(mechanism.premises) == {
+        ("query_groups",): 16, ("shared_groups",): 4}
+
+
+def test_grouped_kv_one_is_not_relabelled_mqa_without_selector_proof(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path,
+        _split_attention(
+            "config.query_groups", "config.shared_groups"))
+    binding = attention_head_binding_at_block(index, root, block).value
+    mechanism = bind_attention_mechanism(binding, {
+        ("query_groups",): 16, ("shared_groups",): 1})
+    assert mechanism.kind == "gqa"
+
+
+def test_equal_protocol_ignores_an_unbound_conflicting_kv_number(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path,
+        _split_attention(
+            "config.query_groups", "config.query_groups"))
+    binding = attention_head_binding_at_block(index, root, block).value
+    mechanism = bind_attention_mechanism(binding, {
+        ("query_groups",): 16, ("shared_groups",): 2})
+    assert mechanism.kind == "mha"
+    assert mechanism.num_kv_heads == 16
+    assert ("shared_groups",) not in dict(mechanism.premises)
+
+
+def test_path_mismatch_invalid_or_nondivisible_values_stay_unknown(tmp_path):
+    index, _bundle, root, block = _pipeline(
+        tmp_path,
+        _split_attention(
+            "config.query_groups", "config.shared_groups"))
+    binding = attention_head_binding_at_block(index, root, block).value
+    assert bind_attention_mechanism(binding, {
+        ("other",): 16, ("shared_groups",): 4}) is None
+    assert bind_attention_mechanism(binding, {
+        ("query_groups",): 16, ("shared_groups",): 3}) is None
+    assert bind_attention_mechanism(binding, {
+        ("query_groups",): True, ("shared_groups",): 1}) is None
+
+
+def test_latent_binding_requires_every_exact_dimension_value(tmp_path):
+    index, _bundle, root, block = _pipeline(tmp_path, _LATENT_ATTENTION)
+    binding = latent_attention_binding_at_block(index, root, block).value
+    values = {
+        binding.num_heads_path: 8,
+        binding.kv_lora_rank_path: 32,
+        binding.qk_rope_head_dim_path: 8,
+        binding.qk_nope_head_dim_path: 16,
+        binding.value_head_dim_path: 16,
+    }
+    mechanism = bind_attention_mechanism(binding, values)
+    assert mechanism.kind == "mla"
+    assert mechanism.num_kv_heads == 8
+    values.pop(binding.value_head_dim_path)
+    assert bind_attention_mechanism(binding, values) is None
+
+
+@pytest.mark.parametrize(("slug", "kind", "q_heads", "kv_heads", "path"), [
+    ("llama-7b", "mha", 32, 32, ()),
+    ("gemma-2-2b-it", "gqa", 8, 4, ()),
+    ("bloom", "mha", 112, 112, ()),
+    ("deepseek-v3", "mla", 128, 128, ()),
+    ("qwen2-vl-7b-instruct", "gqa", 28, 4, ("text_config",)),
+])
+def test_parser_projects_only_the_same_exact_attention_mechanism_result(
+        slug, kind, q_heads, kv_heads, path):
+    from model_unfolder import config_to_ir
+
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    ir = config_to_ir(config, parse_context=context)
+    attention = ir.layers[0].attention
+    assert (attention.kind, attention.num_heads,
+            attention.num_kv_heads) == (kind, q_heads, kv_heads)
+    result = context.reader_results[("decoder.attention.mechanism", path)]
+    assert result.status == "resolved"
+    fact = context.facts.records["decoder.attention.mechanism"]
+    assert (fact.value, fact.status, fact.source) == (
+        kind, "code_and_config", "decoder_attention_mechanism_for_path")
+    typed = context.facts.typed["decoder.attention.mechanism"]
+    assert typed.completeness == "presence_only"
+    assert typed.source_spans and typed.config_paths
+    assert all(
+        tuple(config_path.split("."))[:len(path)] == path
+        for config_path in typed.config_paths)
+
+
+def test_parser_refuses_nondivisible_group_counts_even_when_config_has_numbers():
+    from model_unfolder import config_to_ir
+
+    config = json.loads(
+        (_CORPUS / "llama-7b.json").read_text(encoding="utf-8"))["config"]
+    config["num_key_value_heads"] = 3
+    context = ParseContext.build(config)
+    ir = config_to_ir(config, parse_context=context)
+    assert ir.layers[0].attention.kind is None
+    fact = context.facts.records["decoder.attention.mechanism"]
+    assert fact.value is None and fact.status == "ambiguous"
