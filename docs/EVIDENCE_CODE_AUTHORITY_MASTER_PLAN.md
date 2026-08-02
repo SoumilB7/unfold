@@ -2129,7 +2129,7 @@ sinks. Raw `extras` access is a shrinking, exact-symbol quarantine until U15.
 **Done means:** an attempted raw-config branch in a renderer, JSON serializer,
 parameter formula or conformance rule fails a blocking static test.
 
-#### U5 implementation ledger (verification pending)
+#### U5 implementation ledger (complete)
 
 U5 is deliberately a **firewall**, not an early implementation of U6–U14.
 It establishes the boundary that later mechanism migrations must cross and
@@ -2166,9 +2166,19 @@ turns every existing exception into exact, shrinking debt:
 
 No raw `extras`, parameter convention or legacy conformance reader was silently
 blessed as correct. U14 must delete these 82 rows as it replaces each group with
-owner-qualified facts/routes. U5 completion requires the focused, authority,
-preservation, example and exhaustive receipts below; this ledger must not be
-changed to `DONE` before those receipts are recorded.
+owner-qualified facts/routes.
+
+**Completion receipt (`569cd8b`, 2026-08-02):** the committed-tree coordinator
+collected 2,381 tests; passed 332 focused tests, 44 U2 authority tests, 46
+preservation tests and 2,278 exhaustive tests (11 skipped, 2 expected xfailed).
+Every detached-worktree fingerprint was identical before/after. The first
+bracket correctly caught the new audit scanner's unclassified `ast.parse`;
+U5 now registers it as `repository_audit` and regenerates the exact U3
+inventory. Five representative baselines (Llama, BLOOM, DeepSeek-V3, Qwen2-VL
+and FLUX) had empty structural/evidence drift, and all 26 preservation witnesses
+were byte-identical. U5 is therefore complete as the firewall unit; the 82
+quarantined groups remain explicit U14 deletion work, not silently accepted
+architecture authority.
 
 ### 20.9 U6 — migrate attention once for every altitude
 
@@ -2455,6 +2465,7 @@ append a superseding row.
 | U3 | PENDING | — | X-08..X-11 | — | — | — | — | — | not run | not recorded | — | — |
 | U4 | DONE | `4857026`, `c7e125b`, `4724a4a`, `a08a561`, `59dd22f`, `e77f014` | C-01 to C-07/C-12 plus attention/FFN/cell halves of T-05/T-08/T-10/D-08/U-07 | independent attention, FFN, norm, residual-topology and bookend facts with canonical opaque/partial projection | IR, opgraph, labels/cards, metadata, expanded JSON, params, Sable/conformance, towers and nested submodels | renderer defaults for UNet attention/activation, MTP reconstruction, norm-layout fallback, formula/elementwise defaults and cross-surface unknown strengthening deleted | Llama/BLOOM/Qwen3/T5/DeepSeek-V3/GPT-OSS/Qwen2-VL/MusicGen/FLUX/PixArt/SDXL/Lumina plus independent-detail, context-isolation and empty-presentation poisons | U4-A 14 guarded re-blesses; U4-B 25 changed fixture signatures; U4-C 26 reviewed/reproduced galleries; U4-D approved 26-witness honesty delta; U4-E zero artifact delta; U4-F 9 signatures / 10 of 325 PNGs approved | U4-F focused 172p; U2 44p; preservation 46p; exhaustive 2257p+11s+2xf | U4-F `/private/tmp/model-unfolder-verification/c0604f8ef8`; every lane fingerprint identical | unknown is closed across all current surfaces; deterministic parameter conventions remain explicitly qualified and assigned to U5 | Soumil approved U4-F delta; U4 closed locally, no push |
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
+| U5 | DONE | `569cd8b` | X-01, X-06/X-07, J-09..J-12 | terminal-consumer authority boundary; no mechanism producer migrated early | HTML, expanded JSON, params and conformance statically censused behind one firewall | owner-unsound global `(kind,value)` evidence-to-trace join deleted; exact IR paths retained | Llama, BLOOM, DeepSeek-V3, Qwen2-VL and FLUX zero-drift examples; all 26 preservation witnesses; helper/alias/duplicate-read/backward-import/raw-config/raw-extras/source-reopen/spec-default/semantic-bucket poisons | no corpus artifact delta; synthetic inspect-code trace no longer cites a sibling-capable global finding id | 332 focused + 44 U2 authority + 46 preservation + 2,278 exhaustive passed; 11 skipped/2 expected xfailed | `/private/tmp/model-unfolder-verification/b1ac54cc57`; every lane fingerprint identical | 340 pre-existing terminal occurrences made visible as 82 exact U14 rows; live↔row equality blocking | firewall scope approved by execution directive; no blessing required |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
 | U8 | PENDING | — | positions/masks/schedules | — | — | — | — | — | not run | not recorded | — | — |
