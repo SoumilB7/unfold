@@ -82,7 +82,7 @@ _SOURCE = """
 """
 
 
-def _reader(tmp_path, norm_init, norm_forward):
+def _bundle(tmp_path, norm_init, norm_forward):
     path = tmp_path / "model.py"
     source = textwrap.dedent(_SOURCE.format(
         norm_init=textwrap.indent(
@@ -98,6 +98,11 @@ def _reader(tmp_path, norm_init, norm_forward):
         component_architectures={"root": "Wrapper"},
         architecture="Wrapper",
     )
+    return bundle
+
+
+def _reader(tmp_path, norm_init, norm_forward):
+    bundle = _bundle(tmp_path, norm_init, norm_forward)
     index = pi.build_program_index(bundle)
     return decoder_qk_norm_evidence_for_path(
         index, bundle, (), allow_root_stage=True)
@@ -264,3 +269,159 @@ def test_qk_evidence_dto_rejects_absence_and_path_forgery():
         replace(atom, config_path=("other",))
     with pytest.raises(ValueError):
         QKNormCodeEvidence(True, (atom,))
+
+
+def test_parser_records_and_receipts_uniform_gated_false(tmp_path):
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.diagram import Diagram
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.receipts import join_obligation_receipts
+    from model_unfolder.parser import _coerce
+
+    bundle = _bundle(
+        tmp_path,
+        """
+        self.enabled = config.use_qk_norm
+        if self.enabled:
+            self.first = Norm(config.hidden)
+            self.second = Norm(config.hidden)
+        """,
+        """
+        if self.enabled:
+            q = self.first(q)
+            k = self.second(k)
+        """,
+    )
+    config = json.loads((Path(__file__).parent / "sable_test_corpus" /
+                         "llama-7b.json").read_text())["config"]
+    config.update({
+        "hidden": 128, "wide": 256, "layers": 2,
+        "use_qk_norm": False,
+    })
+    cfg = _coerce(config)
+    context = ParseContext(
+        source_bundle=bundle,
+        declared_decoderness="decoder_only_wrapper",
+    )
+    diagram = Diagram(config_to_ir(cfg, parse_context=context))
+    assert diagram.ir.layers and all(
+        layer.attention.qk_norm is False for layer in diagram.ir.layers)
+    fact = context.facts.typed["decoder.attention.qk_norm"]
+    assert fact.value is False
+    assert fact.status == "code_and_config"
+    assert fact.config_paths == ("use_qk_norm",)
+    diagram.to_html(standalone=True)
+    receipts = tuple(
+        receipt for event in diagram.render_events()
+        for receipt in event.receipts if receipt.fact_key == "qk_norm")
+    assert receipts
+    assert {receipt.node_ids for receipt in receipts} == {()}
+    assert {receipt.mechanism for receipt in receipts} == {"qk_norm_gate"}
+    serialized = diagram.to_ir()
+    joined = join_obligation_receipts(
+        serialized["extras"]["config_access"]["projection_obligations"],
+        receipts,
+        serialized["extras"]["fact_provenance"],
+        context_token=receipts[0].context_token,
+    )
+    assert joined["findings"] == []
+    assert joined["receipted_targets"] == [(
+        "decoder.attention", "decoder.attention.qk_norm", "qk_norm_gate")]
+
+
+def test_heterogeneous_qk_schedule_never_becomes_owner_wide_fact(tmp_path):
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    bundle = _bundle(
+        tmp_path,
+        """
+        self.per_layer = config.no_rope_layers[layer_idx]
+        if config.use_qk_norm and self.per_layer:
+            self.shared = Norm(config.hidden)
+        """,
+        """
+        if hasattr(self, "shared"):
+            q = self.shared(q)
+            k = self.shared(k)
+        """,
+    )
+    config = json.loads((Path(__file__).parent / "sable_test_corpus" /
+                         "llama-7b.json").read_text())["config"]
+    layers = int(config["num_hidden_layers"])
+    schedule = [bool(index % 2) for index in range(layers)]
+    config.update({
+        "hidden": 128, "wide": 256, "layers": layers,
+        "use_qk_norm": True, "no_rope_layers": schedule,
+    })
+    cfg = _coerce(config)
+    context = ParseContext(
+        source_bundle=bundle,
+        declared_decoderness="decoder_only_wrapper",
+    )
+    ir = config_to_ir(cfg, parse_context=context)
+    assert [layer.attention.qk_norm for layer in ir.layers] == schedule
+    assert "decoder.attention.qk_norm" not in context.facts.typed
+
+
+def test_raw_qk_declaration_cannot_fabricate_fact_on_plain_attention():
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    config = json.loads((Path(__file__).parent / "sable_test_corpus" /
+                         "llama-7b.json").read_text())["config"]
+    config["use_qk_norm"] = True
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=context)
+    assert all(layer.attention.qk_norm is None for layer in ir.layers)
+    assert "decoder.attention.qk_norm" not in context.facts.typed
+
+
+@pytest.mark.parametrize(("slug", "expected_status"), (
+    ("glm-4-5", "code_and_config"),
+    ("olmo-2-1124-7b", "code_proven"),
+    ("qwen3-8b", "code_proven"),
+    ("llama-7b", None),
+))
+def test_real_models_keep_qk_norm_evidence_honest(slug, expected_status):
+    """Real-source bracket: gated, unconditional, and negative controls."""
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.diagram import Diagram
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = Path(__file__).parent / "sable_test_corpus"
+    cfg = _coerce(json.loads((corpus / f"{slug}.json").read_text())["config"])
+    context = ParseContext.build(cfg)
+    diagram = Diagram(config_to_ir(cfg, parse_context=context))
+    fact = context.facts.typed.get("decoder.attention.qk_norm")
+    if expected_status is None:
+        assert fact is None
+        assert all(layer.attention.qk_norm is None
+                   for layer in diagram.ir.layers)
+    else:
+        assert fact is not None
+        assert fact.value is True
+        assert fact.status == expected_status
+        assert all(layer.attention.qk_norm is True
+                   for layer in diagram.ir.layers)
+    diagram.to_html(standalone=True)
+    receipts = tuple(
+        receipt for event in diagram.render_events()
+        for receipt in event.receipts if receipt.fact_key == "qk_norm")
+    assert bool(receipts) is (expected_status is not None)

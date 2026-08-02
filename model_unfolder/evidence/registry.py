@@ -217,8 +217,8 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # consumers from params.py's assumption channel.
 #
 # Known debt stated where it lives:
-# * Four DRAWN leaf names (position_kind, qk_norm, q_norm, k_norm) never
-#   appear in any ledger — drawn-but-unledgered facts
+# * ``position_kind`` remains a DRAWN leaf without a complete typed route;
+#   the other attention leaves are registered as their U6 migrations land.
 #   (census §0.6); they get definitions when H8 gives them writers.
 # ---------------------------------------------------------------------------
 REGISTRY: dict[str, FactDefinition] = _definition_map([
@@ -322,6 +322,31 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         notes="U6: exact score/cap -> tanh -> *cap path joined to the exact "
               "selected config operand; raw declarations are powerless. "
               "The exact attention opgraph emits the projection receipt.",
+    ),
+    FactDefinition(
+        key="qk_norm",
+        value_types=frozenset({"bool"}),
+        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "qk_norm_gate", "opgraph", "qk_norm",
+                frozenset({"field"}),
+                # True projects two exact lane nodes; False truthfully
+                # projects their omission as the same canonical field.
+                frozenset({("q_norm", "k_norm"), ()}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        negative_requires_complete=True,
+        notes="U6: two exact norm applications descend from selected Q/K "
+              "projections and feed the exact score operands. Only uniform "
+              "stacks author this owner-level fact; schedules belong to U8.",
     ),
     FactDefinition(
         key="norm_kind",

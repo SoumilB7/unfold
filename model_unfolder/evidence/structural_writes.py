@@ -148,7 +148,7 @@ _EXTRAS = frozenset({
     "moe.num_experts_per_tok", "moe.num_shared_experts", "mtp",
     "mtp.num_modules", "mtp.predicts_extra_tokens", "mtp.shares_embedding",
     "mtp.shares_output_head", "num_kv_shared_layers",
-    "partial_rotary_factor", "position_encoding", "qk_norm", "sliding_window",
+    "partial_rotary_factor", "position_encoding", "sliding_window",
     "sliding_window.first_full_layers", "sliding_window.window",
 })
 _OPGRAPH = frozenset({
@@ -665,7 +665,7 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     # Each caller supplies an already-resolved reader result and config path;
     # FactLedger's closed registry validates the fact before it is stored.
     ('model_unfolder/adapters/transformer/parser.py',
-     '_note_typed_code_config_fact', 'ledger', '<dynamic>'),
+     '_note_typed_fact', 'ledger', '<dynamic>'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'block_diffusion.canvas_length'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'dual_kv'),
@@ -686,7 +686,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'num_kv_shared_layers'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'partial_rotary_factor'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'position_encoding'),
-    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'qk_norm'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'sliding_window'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'sliding_window.first_full_layers'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'sliding_window.window'),

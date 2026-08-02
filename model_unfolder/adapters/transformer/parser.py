@@ -240,18 +240,6 @@ def _qk_norm_result(context=None, *, config_path=()):
     )
 
 
-def _code_qk_norm(cfg: Any, context=None, *, config_path=()):
-    """Positive Q/K normalization from the exact selected decoder owner.
-
-    Missing or incomplete source evidence returns ``None`` so the checkpoint's
-    declaration remains the fallback.  It is never converted to code-proven
-    absence.
-    """
-    result = _qk_norm_result(context, config_path=config_path)
-    return result.value if result is not None and result.status == "resolved" \
-        else None
-
-
 def _resolve_qk_norm_layers(
         code_ev, cfg, num_layers: int, *,
         context=None, config_path=()) -> list[bool | None]:
@@ -287,6 +275,7 @@ def _resolve_qk_norm_layers(
                 fact_owner="decoder.attention",
                 fact_key="qk_norm",
                 reader="adapters.transformer.parser._resolve_qk_norm_layers",
+                status="code_and_config",
             ).value
         if atom.per_layer:
             if not isinstance(raw, (list, tuple)) or len(raw) < n:
@@ -787,9 +776,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 "checkpoint occurrences"),
         ))
 
-    def _note_typed_code_config_fact(
-            *, key, owner, value, reader_result, config_paths, reader, reason):
-        """One native typed-fact writer shared by exact U6 source/config joins.
+    def _note_typed_fact(
+            *, key, owner, value, status, reader_result, config_paths, reader,
+            reason, completeness="complete"):
+        """One native typed-fact writer shared by exact U6 evidence joins.
 
         Keeping the registry-validated write here prevents every migrated
         attention leaf from becoming a new unreviewed structural writer.  The
@@ -807,8 +797,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             key=key,
             owner=owner,
             value=value,
-            status="code_and_config",
-            completeness="complete",
+            status=status,
+            completeness=completeness,
             source_spans=tuple(FactSourceSpan(
                 component=span.source.component_key or "root",
                 file=span.source.canonical_path,
@@ -1533,10 +1523,41 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _config_access.resolve(
         text_cfg, "use_qk_norm", ("qk_norm", "qk_layernorm"), path=_text_path)
     use_qk_norm = None
+    _qk_code_result = _qk_norm_result(context, config_path=_text_path)
+    _qk_code = (
+        _qk_code_result.value
+        if _qk_code_result is not None
+        and _qk_code_result.status == "resolved" else None)
     qk_norm_layers = _resolve_qk_norm_layers(
-        _code_qk_norm(text_cfg, context, config_path=_text_path),
+        _qk_code,
         text_cfg, num_layers,
         context=context, config_path=_text_path)
+    # U6 owns the uniform attention fact.  A heterogeneous per-layer schedule
+    # is deliberately not collapsed into one model-wide boolean; U8 will emit
+    # occurrence-qualified schedule facts.  This preserves the exact source
+    # reader's strength instead of laundering a mixed stack through ``any``.
+    if _qk_code_result is not None and _qk_code_result.status == "resolved" \
+            and qk_norm_layers \
+            and all(value is not None for value in qk_norm_layers) \
+            and len(set(qk_norm_layers)) == 1:
+        _qk_value = bool(qk_norm_layers[0])
+        _qk_status = (
+            "code_proven" if _qk_code.present is True
+            else "code_and_config")
+        _note_typed_fact(
+            key="qk_norm",
+            owner="decoder.attention",
+            value=_qk_value,
+            status=_qk_status,
+            reader_result=_qk_code_result,
+            config_paths=tuple(atom.config_path for atom in _qk_code.gate),
+            reader="decoder_qk_norm_evidence_for_path",
+            reason=(
+                "two exact normalization applications independently feed the "
+                "selected attention score's Q and K lanes"
+                + (" under the exact selected config gate"
+                   if _qk_code.gate else "")),
+        )
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
     # CODE construction is authoritative.  The fact is intentionally uniform
@@ -1581,10 +1602,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 reader="decoder_attention_bias_for_path",
                 status="code_and_config")
             use_attention_bias = _bias_decision.value
-            _note_typed_code_config_fact(
+            _note_typed_fact(
                 key="bias",
                 owner="decoder.attention",
                 value=use_attention_bias,
+                status="code_and_config",
                 reader_result=_code_bias,
                 config_paths=(_bound_path,),
                 reader="decoder_attention_bias_for_path",
@@ -1669,10 +1691,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 reader="decoder_attention_logit_softcap_for_path",
                 status="code_and_config")
             attn_logit_softcap = _softcap_decision.value
-            _note_typed_code_config_fact(
+            _note_typed_fact(
                 key="logit_softcap",
                 owner="decoder.attention",
                 value=attn_logit_softcap,
+                status="code_and_config",
                 reader_result=_softcap_code,
                 config_paths=(_bound_path,),
                 reader="decoder_attention_logit_softcap_for_path",
@@ -2514,9 +2537,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         val = _g(text_cfg, cap_key)
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val
-
-    if any(qk_norm_layers) if qk_norm_layers else use_qk_norm:
-        extras["qk_norm"] = True
 
     # Generic attention-side knobs surfaced as info-only annotations.
     clip_qkv = _g(text_cfg, "clip_qkv") or _g(attn_cfg, "clip_qkv")

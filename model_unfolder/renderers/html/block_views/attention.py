@@ -65,6 +65,7 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
     # unprefixed dominant decoder-attention graph whose canonical node is
     # ``attn_softcap``.  Supporting/prefixed drills cannot receipt the root
     # decoder fact merely because they share the same presentation template.
+    fact_rows = fact_provenance(ir)
     softcap_projects = (
         ({
             "owner": "decoder.attention",
@@ -73,19 +74,47 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             "value": attn["logit_softcap"],
         },)
         if attn.get("logit_softcap") is not None
+        and "decoder.attention.logit_softcap" in fact_rows
         and not attn.get("node_prefix") else ())
-    return render_graph(
-        graph, info, mount_id, key,
-        f"{ir.get('name', 'model')} {title}", min_width=640,
-        facts_projected=attention_facts(ir),
-        receipts=receipts_from_projects(
+    qk_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "qk_norm",
+            # This is the same mechanism named by the exact config
+            # consumption.  The receipt therefore closes that obligation;
+            # it is not a renderer-local alias for the fact name.
+            "mechanism": "qk_norm_gate",
+            "value": attn.get("qk_norm"),
+        },)
+        if "decoder.attention.qk_norm" in fact_rows
+        and attn.get("qk_norm") is not None
+        and not attn.get("node_prefix") else ())
+    qk_node_ids = tuple(
+        node_id for node_id in ("q_norm", "k_norm")
+        if node_id in graph.by_id())
+    receipts = (
+        receipts_from_projects(
             softcap_projects,
             surface="opgraph", structural_target="attn_softcap",
             projector_symbol=(
                 "renderers.html.block_views.attention.build_attention_view"),
             node_ids=("attn_softcap",), projection_kind="op",
-            fact_rows=fact_provenance(ir),
-        ),
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            qk_projects,
+            surface="opgraph", structural_target="qk_norm",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=qk_node_ids, projection_kind="field",
+            fact_rows=fact_rows,
+        )
+    )
+    return render_graph(
+        graph, info, mount_id, key,
+        f"{ir.get('name', 'model')} {title}", min_width=640,
+        facts_projected=attention_facts(ir),
+        receipts=receipts,
     )
 
 

@@ -250,11 +250,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     _extras("sliding_window.first_full_layers", "root.decoder.attention",
             "first-full-attention layer count as a raw extras leaf", "U8",
             "fact_registered:window_schedule"),
-    _extras("qk_norm", "root.decoder.attention",
-            "model-level QK-norm bool as raw extras (drawn QK-norm reads "
-            "AttentionSpec.qk_norm, never this key)",
-            "U6", "fact_routed:qk_norm",
-            occurrence="text_cfg use_qk_norm | qk_norm | qk_layernorm"),
     _extras("dual_kv", "root.decoder.attention",
             "dual global/sliding KV schedule as raw extras",
             "U6", "fact_registered:kv_schedule",
@@ -398,26 +393,12 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
            consumer="model_unfolder/renderers/html/fact_projection.py::"
                     "attention_facts"),
     _drawn("qk_norm", "root.decoder.attention",
-           "per-head Q/K normalisation drawn from spec.qk_norm",
-           "U6", "fact_routed:qk_norm",
-           occurrence="AttentionSpec.qk_norm",
+           "the uniform owner-level Q/K-norm fact is routed in U6, but a "
+           "heterogeneous layer schedule still projects from per-layer specs "
+           "without occurrence-qualified facts; U8 must close that schedule",
+           "U8", "fact_registered:qk_norm_schedule",
+           occurrence="AttentionSpec.qk_norm on a mixed layer schedule",
            module=_AT, symbol="_sdpa_detailed_child_blocks",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
-    _drawn("q_norm", "root.decoder.attention",
-           "separate Q-norm variant drawn from spec (folds into qk_norm "
-           "when the registered fact declares per-lane leaves)",
-           "U6", "fact_registered:q_norm",
-           occurrence="attention_detail derived leaf bool(qk_norm)",
-           module=_AT, symbol="attention_detail",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
-    _drawn("k_norm", "root.decoder.attention",
-           "separate K-norm variant drawn from spec (folds into qk_norm "
-           "when the registered fact declares per-lane leaves)",
-           "U6", "fact_registered:k_norm",
-           occurrence="attention_detail derived leaf bool(qk_norm)",
-           module=_AT, symbol="attention_detail",
            consumer="model_unfolder/renderers/html/fact_projection.py::"
                     "attention_facts"),
     # ---- config occurrences awaiting their consumer (former
