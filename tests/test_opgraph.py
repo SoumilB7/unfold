@@ -96,8 +96,10 @@ def test_custom_ffn_json_is_one_opaque_node():
 def test_gqa_attention_region_is_a_multi_merge_dag():
     r = attention_region(GQA, 4096)
     assert r.template == "gqa" and r.resolved
-    # two merge points: Q,K meet at the scores; softmax,V meet at apply-V.
-    assert set(r.merges()) == {"scaled_scores", "attn_apply_v"}
+    # Cached attention has three real merges: K,V enter the cache; Q and the
+    # cached K meet at scores; softmax and the cached V meet at apply-V.
+    assert set(r.merges()) == {
+        "kv_cache", "scaled_scores", "attn_apply_v"}
     # op ids ARE the inspect-card ids — one identity for structure and clicks.
     assert {"q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
             "attn_apply_v", "concat_heads", "o_proj"} <= {o.id for o in r.ops}
@@ -105,11 +107,12 @@ def test_gqa_attention_region_is_a_multi_merge_dag():
 
 def test_attention_lanes_and_spine_are_derived_from_edges():
     g = region_to_graph(attention_region(GQA, 4096), clickable=True)
-    assert g.flow[:2] == ["hidden", "scaled_scores"]          # spine jumps to the join
+    assert g.flow[:3] == ["hidden", "kv_cache", "scaled_scores"]
     lanes = g.parallels[0].norm_lanes()
     # Q and K pass through RoPE before the scores (apply_rotary_pos_emb); V does not.
     assert [lane.ids for lane in lanes] == [["q_proj", "q_rope"], ["k_proj", "k_rope"], ["v_proj"]]
-    assert lanes[2].dst == ["attn_apply_v"]                   # V merges above the join
+    assert lanes[0].dst == ["scaled_scores"]  # Q bypasses the K/V cache.
+    assert g.parallels[1].norm_lanes()[1].dst == ["attn_apply_v"]
 
 
 def test_non_rope_family_omits_the_rope_step():
@@ -135,7 +138,11 @@ def test_alibi_bias_is_a_real_two_input_score_add():
     ordered = _lane_draw_order(parallel.norm_lanes(), parallel.dst)
     alibi_lane = next(lane for lane in ordered if lane.ids == ["alibi_bias"])
     v_lane = next(lane for lane in ordered if lane.ids == ["v_proj"])
-    assert ordered.index(v_lane) == 0
+    # Cached K/V stay adjacent while the independent ALiBi side input remains
+    # the outermost lane. The cache introduces a real earlier merge, so V no
+    # longer has to be the first lane merely to reach apply-V later.
+    k_lane = next(lane for lane in ordered if lane.ids == ["k_proj"])
+    assert abs(ordered.index(k_lane) - ordered.index(v_lane)) == 1
     assert ordered.index(alibi_lane) == len(ordered) - 1
 
 

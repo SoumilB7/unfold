@@ -436,6 +436,22 @@ def _attention_qkv_clip_result(context=None, *, config_path=()):
     )
 
 
+def _attention_cache_result(context=None, *, config_path=()):
+    """Call-local exact projected K/V -> cache update -> compute result."""
+    if context is None:
+        return None
+    from ...evidence.attention import decoder_attention_cache_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.cached",
+        config_path,
+        lambda: decoder_attention_cache_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
 def _code_scores_scaled(
         cfg: Any, context=None, *, config_path=()) -> bool | None:
     """Score scaling from the exact selected attention occurrence."""
@@ -1890,6 +1906,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 reason=(
                     "clip_qkv is a declaration only; the selected attention "
                     "source does not prove a live projection/clamp path"))
+    # Cache capability is an independent code fact.  A use_cache declaration,
+    # decoder-ness, or a cache-looking parameter cannot author it.  The exact
+    # source must prove projected K/V -> parameter update -> two replacement
+    # lanes reaching the selected attention compute.  A failed proof remains
+    # None (unknown), never False.
+    attention_cached = None
+    _cache_code = _attention_cache_result(context, config_path=_text_path)
+    if _cache_code is not None and _cache_code.status == "resolved":
+        attention_cached = True
+        _note_typed_fact(
+            key="cached",
+            owner="decoder.attention",
+            value=True,
+            status="code_proven",
+            reader_result=_cache_code,
+            config_paths=(),
+            reader="decoder_attention_cache_for_path",
+            reason=(
+                "two exact projected lanes update a callable parameter and "
+                "both returned replacements reach the selected attention "
+                "compute"),
+        )
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").  Code-authoritative like
     # its twin: Bloom's MLP Linears default to bias=True with a silent config;
@@ -2259,6 +2297,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
             logit_softcap=attn_logit_softcap,
             qkv_clip=qkv_clip,
+            cached=attention_cached,
             asserted=(),
             projection_mode=(
                 _code_attention_storage

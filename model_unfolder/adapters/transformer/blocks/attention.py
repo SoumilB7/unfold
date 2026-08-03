@@ -381,6 +381,17 @@ def _sdpa_detailed_child_blocks(
             "facts": [f"{q_out} → {hidden}"],
         },
     ]
+    if attention.cached is True and not cross_attention and not generic:
+        cards.append({
+            "id": "kv_cache",
+            "title": "K/V cache update and read",
+            "description": (
+                "Writes the newly projected key and value lanes into the "
+                "caller's cache object and uses the returned accumulated K/V "
+                "lanes for the selected attention computation. The node is "
+                "shown only when this exact source path is proven."),
+            "facts": ["stores key + value", "source-proven cache path"],
+        })
     if attention.qk_norm:
         # QK-norm is two REAL ops in forward; the drill draws them on the Q/K
         # lanes (projection → norm → RoPE/scores), so each node needs its card.

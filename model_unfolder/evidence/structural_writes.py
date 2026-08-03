@@ -894,6 +894,9 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:k_proj'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:k_rope'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:k_split'),
+    # U6: exact projected K/V -> parameter update -> live attention inputs.
+    # The registered cached fact and real-projector receipt authorize this op.
+    ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:kv_cache'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_gate_split'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_proj'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_rope'),

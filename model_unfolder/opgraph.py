@@ -716,6 +716,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("attn_output_mul", "o_proj"),
         ]
         q_source = "q_gate_split"
+    v_final = v_source
     for lane, source_id in (("q", q_source), ("k", k_source), ("v", v_source)):
         if not attn.get(f"{lane}_norm"):
             continue
@@ -731,6 +732,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             edges = [edge for edge in edges
                      if not (edge.src == source_id and edge.dst == "attn_apply_v")]
             edges.append(Edge(norm_id, "attn_apply_v"))
+            v_final = norm_id
     if attn.get("output_gate"):
         # The gated output replaces the ordinary concat-heads -> output
         # projection edge.  Keep this outside the optional Q/K/V-norm loop:
@@ -790,8 +792,29 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge(q_source, "q_rope"), Edge("q_rope", "scaled_scores"),
             Edge(k_source, "k_rope"), Edge("k_rope", "scaled_scores"),
         ]
+        k_final = "k_rope"
     else:
         edges += [Edge(q_source, "scaled_scores"), Edge(k_source, "scaled_scores")]
+        k_final = k_source
+    if cached and not cross:
+        # Canonical cache authoring lives here—not in expanded JSON.  The
+        # selected source evidence proves the update/read path; projections
+        # merely render this one op on their own surfaces.
+        ops.append(Op(
+            "kv_cache", "cache", ["K/V cache", "update + read"],
+            meta={"stores": ["key", "value"]},
+        ))
+        edges = [
+            edge for edge in edges
+            if not (
+                (edge.src == k_final and edge.dst == "scaled_scores")
+                or (edge.src == v_final and edge.dst == "attn_apply_v"))
+        ]
+        edges += [
+            Edge(k_final, "kv_cache"), Edge(v_final, "kv_cache"),
+            Edge("kv_cache", "scaled_scores"),
+            Edge("kv_cache", "attn_apply_v"),
+        ]
     return Region("attention", "attention", kind, ops, edges, template=kind)
 
 

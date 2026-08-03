@@ -371,6 +371,30 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "powerless.",
     ),
     FactDefinition(
+        key="cached",
+        value_types=frozenset({"bool"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "attention_cache_update", "opgraph",
+                "cached", frozenset({"op"}),
+                frozenset({("kv_cache",)}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        negative_requires_complete=True,
+        notes="U6: two exact projected lanes update one callable parameter; "
+              "both returned replacements reach the selected attention "
+              "compute. Only positive cache capability is currently authored; "
+              "unmatched source remains unknown.",
+    ),
+    FactDefinition(
         key="output_gate",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({"code_proven"}),

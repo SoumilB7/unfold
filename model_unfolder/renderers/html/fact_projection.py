@@ -42,7 +42,7 @@ DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
 ATTENTION_DRAWN = frozenset({
     "mechanism", "scores_scale", "projection_mode", "mask", "bias", "position_kind",
     "qk_norm", "output_gate", "gated_delta_geometry", "sinks",
-    "logit_softcap", "qkv_clip",
+    "logit_softcap", "qkv_clip", "cached",
 })
 ORDINARY_FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
 EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})

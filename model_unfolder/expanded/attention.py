@@ -5,7 +5,7 @@ canonical :func:`...opgraph.attention_region`, the same region the HTML
 renderer draws (MLA's query/KV drill regions are embedded as nested
 ``subgraph`` graphs).  The schema keeps its published node names
 (``scores``/``softmax``/``context``) via an explicit rename of the region's
-ids, and the kv-cache node is spliced into the dataflow for cached SDPA kinds.
+ids; cached SDPA kinds project the canonical region's own K/V-cache node.
 
 Schema (per the test contract):
 
@@ -26,7 +26,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..opgraph import attention_region, mla_kv_region, mla_query_region
-from .ops import linear, node
+from .ops import linear
 from .region import region_to_json
 from .utils import drop_none
 
@@ -169,9 +169,6 @@ _PUBLIC_IDS = {
     "attn_apply_v": "context",
 }
 
-_CACHED_SDPA_KINDS = {"mha", "gqa", "mqa"}
-
-
 def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, Any]:
     region = attention_region(attn, hidden)
     kind = attn.get("kind")
@@ -184,32 +181,4 @@ def _operation_graph(attn: dict, hidden: int | None, heads: dict) -> dict[str, A
             if op.id in nested:
                 op.meta["region"] = nested[op.id]
     graph = region_to_json(region, rename=_PUBLIC_IDS)
-    if kind in _CACHED_SDPA_KINDS and attn.get("cached") is True:
-        _splice_kv_cache(graph, attn)
     return graph
-
-
-def _splice_kv_cache(graph: dict[str, Any], attn: dict) -> None:
-    """Insert the kv-cache node into the K/V dataflow (write after the
-    projections, read by scores and context) — a cache-semantics enrichment of
-    the projected structure, not a second authoring of it."""
-    nodes = graph["nodes"]
-    ids = {n["id"] for n in nodes}
-    if not {"k_proj", "v_proj", "scores", "context"} <= ids:
-        return
-    cache = node("kv_cache", "cache", inputs=["k_proj", "v_proj"],
-                 outputs=["kv_cache"], stores=["key", "value"],
-                 kv_heads=attn.get("num_kv_heads"))
-    at = next(i for i, n in enumerate(nodes) if n["id"] == "v_proj") + 1
-    nodes.insert(at, cache)
-    for n in nodes:
-        if n["id"] in {"scores", "context"} and n.get("inputs"):
-            n["inputs"] = ["kv_cache" if i in {"k_proj", "v_proj"} else i
-                           for i in n["inputs"]]
-    graph["edges"] = [
-        e for e in graph["edges"]
-        if not (e["from"] in {"k_proj", "v_proj"} and e["to"] in {"scores", "context"})
-    ] + [
-        {"from": "k_proj", "to": "kv_cache"}, {"from": "v_proj", "to": "kv_cache"},
-        {"from": "kv_cache", "to": "scores"}, {"from": "kv_cache", "to": "context"},
-    ]

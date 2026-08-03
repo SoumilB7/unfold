@@ -261,6 +261,95 @@ class AttentionQKVClipBinding:
 
 
 @dataclass(frozen=True)
+class AttentionCacheBinding:
+    """Exact projected K/V -> parameter update -> attention-input proof.
+
+    This is a positive capability fact.  Decoder-ness, a ``use_cache`` value,
+    a parameter spelling, or an unrelated ``update`` call is powerless.  The
+    exact attention callable must pass two live projection lanes into an
+    update on one of its parameters, bind the two returned lanes, and feed both
+    replacements into the selected attention computation.  Failure to prove
+    this remains unknown; it is never interpreted as an uncached mechanism.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    compute_callable: SymbolId
+    storage_mode: str
+    receiver_parameter: str
+    update_call: CallObservation
+    input_projections: tuple[ConstructionOccurrenceId, ConstructionOccurrenceId]
+    output_names: tuple[str, str]
+    layer_index: ExprNode
+    compute_entry: CallObservation
+    conditional: bool
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("cache evidence names exact owner occurrences")
+        if not isinstance(self.compute_callable, SymbolId) \
+                or self.compute_callable.source \
+                != self.attention_occurrence.root.source:
+            raise TypeError("cache evidence names its exact attention callable")
+        if self.storage_mode not in {"split", "fused_qkv"}:
+            raise ValueError("cache evidence carries exact projection storage")
+        if not isinstance(self.receiver_parameter, str) \
+                or not self.receiver_parameter:
+            raise TypeError("cache evidence names its exact receiver parameter")
+        if any(not isinstance(call, CallObservation)
+               or call.enclosing_callable != self.compute_callable
+               or call.span is None
+               for call in (self.update_call, self.compute_entry)):
+            raise TypeError("cache evidence carries exact same-callable calls")
+        if self.update_call.callee.kind != "attribute" \
+                or self.update_call.callee.name != "update" \
+                or self.update_call.receiver is None \
+                or self.update_call.receiver.kind != "name" \
+                or self.update_call.receiver.name != self.receiver_parameter:
+            raise ValueError("cache update is bound to its parameter receiver")
+        if len(self.update_call.args) < 3 \
+                or not isinstance(self.layer_index, ExprNode) \
+                or self.update_call.args[2] != self.layer_index \
+                or _self_field(self.layer_index) is None:
+            raise ValueError(
+                "cache update carries its exact owner layer-index operand")
+        if len(self.input_projections) != 2 or any(
+                not isinstance(item, ConstructionOccurrenceId)
+                or item.parent != self.attention_occurrence
+                for item in self.input_projections):
+            raise ValueError("cache inputs are exact attention projections")
+        if self.storage_mode == "split" \
+                and len(set(self.input_projections)) != 2:
+            raise ValueError("split K/V inputs are two distinct projections")
+        if self.storage_mode == "fused_qkv" \
+                and len(set(self.input_projections)) != 1:
+            raise ValueError("fused K/V inputs descend from one projection")
+        input_names = tuple(
+            item.name if item.kind == "name" else None
+            for item in self.update_call.args[:2])
+        if len(self.output_names) != 2 or len(set(self.output_names)) != 2 \
+                or any(not isinstance(name, str) or not name
+                       for name in self.output_names) \
+                or self.output_names != input_names:
+            raise ValueError("cache evidence carries two replacement lanes")
+        if not isinstance(self.conditional, bool):
+            raise TypeError("cache conditional marker is boolean")
+        if not _span_before(self.update_call.span, self.compute_entry.span):
+            raise ValueError("the cache update precedes attention computation")
+        decisive = {
+            self.update_call.span, self.compute_entry.span,
+            *(item.site.span for item in self.input_projections),
+        }
+        if not self.spans or not decisive.issubset(self.spans) \
+                or any(not isinstance(span, SourceSpan)
+                       or span.source != self.compute_callable.source
+                       for span in self.spans):
+            raise ValueError("cache provenance cites every decisive source site")
+
+
+@dataclass(frozen=True)
 class AttentionOutputGateBinding:
     """Exact query-lane split whose sibling gates the attention output.
 
@@ -796,6 +885,35 @@ def decoder_attention_qkv_clip_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+def decoder_attention_cache_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionCacheBinding]:
+    """Resolve one config occurrence to its exact K/V-cache update path."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention cache requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("attention cache requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    result = attention_cache_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
 def attention_score_scaling_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -1135,6 +1253,284 @@ def attention_qkv_clip_at_block(
             detail=("one exact fused QKV projection reaches a config-bound "
                     "clamp whose result reaches the selected attention "
                     "compute")),))
+
+
+def attention_cache_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionCacheBinding]:
+    """Prove a live two-lane cache update for one exact attention owner.
+
+    ``True`` means the source contains a cache-capable path.  This reader does
+    not attempt a negative absence proof: a model without a matched protocol is
+    unresolved, not code-proven uncached.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention cache requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_cache_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("attention cache requires an exact block")
+
+    storage = attention_projection_storage_evidence(
+        index, root, block_occurrence)
+    if storage.status != "resolved":
+        return storage
+    value = storage.value
+    child = value.attention
+    callable_symbol = child.compute.entry_call.enclosing_callable
+    callable_record = index.callable_by_symbol(callable_symbol)
+    if callable_record is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the exact attention callable is unindexed"),),
+            provenance=storage.provenance)
+    parameter_names = frozenset(
+        param.name for param in callable_record.params
+        if param.kind not in {"vararg", "kwarg"} and param.name != "self")
+    projection_calls = {
+        occurrence: call
+        for occurrence, call in _linear_calls_in_forward(
+            index, root, child.compute_occurrence, callable_symbol).items()
+        if occurrence in value.projections
+    }
+    if set(projection_calls) != set(value.projections):
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the exact projection calls are unresolved"),),
+            provenance=storage.provenance)
+
+    bindings = tuple(index.bindings_in(callable_symbol))
+    candidates = []
+    rival_spans = []
+    for update in index.calls_in(callable_symbol):
+        receiver = update.receiver
+        if update.callee.kind != "attribute" \
+                or update.callee.name != "update" \
+                or receiver is None or receiver.kind != "name" \
+                or receiver.name not in parameter_names \
+                or update.span is None or len(update.args) < 3 \
+                or _self_field(update.args[2]) is None \
+                or any(argument.kind != "name" or not argument.name
+                       for argument in update.args[:2]) \
+                or not _span_before(update.span, child.compute.entry_call.span):
+            continue
+        # A guarded update must positively prove that this exact receiver is
+        # present.  An unguarded update is a mandatory cache path and needs no
+        # synthetic condition.
+        if update.guard and not _guard_proves_parameter_present(
+                update.guard, receiver.name):
+            continue
+        input_sources = []
+        uncertain_input = False
+        for argument in update.args[:2]:
+            sources, _widths, _deps, uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol,
+                    ((update.span, (argument,)),), projection_calls,
+                    preserve_local_tuple_lanes=True)
+            input_sources.append(sources)
+            uncertain_input = uncertain_input or uncertain
+        if uncertain_input:
+            continue
+        if value.mode == "split":
+            if any(len(sources) != 1 for sources in input_sources):
+                continue
+            input_projections = tuple(next(iter(item))
+                                      for item in input_sources)
+            if len(set(input_projections)) != 2:
+                continue
+        else:
+            projection = value.projections[0]
+            if any(sources != frozenset((projection,))
+                   for sources in input_sources):
+                continue
+            input_projections = (projection, projection)
+
+        matching_bindings = tuple(
+            binding for binding in bindings
+            if binding.value is not None
+            and binding.value.kind == "call"
+            and binding.value.span == update.span)
+        if len(matching_bindings) != 1:
+            rival_spans.append(update.span)
+            continue
+        binding = matching_bindings[0]
+        output_names = tuple(
+            name for target in binding.targets
+            for name in _target_names(target))
+        if len(output_names) != 2 or len(set(output_names)) != 2:
+            continue
+        if output_names != tuple(argument.name for argument in update.args[:2]):
+            continue
+
+        update_key = ("attention_cache_update", update.span)
+        reached_triples = []
+        for input_call in child.compute.input_calls:
+            args = tuple(input_call.args)
+            for position in range(max(0, len(args) - 2)):
+                query_arg, key_arg, value_arg = args[position:position + 3]
+                if key_arg.kind != "name" or value_arg.kind != "name" \
+                        or (key_arg.name, value_arg.name) != output_names:
+                    continue
+                query_sources, _widths, _deps, query_uncertain = \
+                    producer_sources_reaching_expressions(
+                        index, callable_symbol,
+                        ((input_call.span, (query_arg,)),), projection_calls,
+                        preserve_local_tuple_lanes=True)
+                cached_sources = []
+                cached_uncertain = []
+                for argument in (key_arg, value_arg):
+                    sources, _widths, _deps, uncertain = \
+                        producer_sources_reaching_expressions(
+                            index, callable_symbol,
+                            ((input_call.span, (argument,)),),
+                            {update_key: update},
+                            preserve_local_tuple_lanes=True)
+                    cached_sources.append(sources)
+                    cached_uncertain.append(uncertain)
+                expected_query = (
+                    frozenset(set(value.projections) - set(input_projections))
+                    if value.mode == "split"
+                    else frozenset((value.projections[0],)))
+                # A guarded update is necessarily a conditional reaching
+                # definition: on the other path the original K/V lanes reach
+                # compute. That uncertainty is the capability's condition,
+                # not evidence against the positive cache path.
+                if query_uncertain or query_sources != expected_query \
+                        or any(item != frozenset((update_key,))
+                               for item in cached_sources) \
+                        or any(flag and not update.guard
+                               for flag in cached_uncertain):
+                    continue
+                reached_triples.append((input_call.span, position))
+        cache_reaches_compute = len(set(reached_triples)) == 1
+        if not cache_reaches_compute \
+                and child.compute.protocol == "dot_softmax":
+            cache_reaches_compute = _dot_softmax_cache_path(
+                index, callable_symbol, child, update, update_key,
+                output_names, projection_calls,
+                (frozenset(set(value.projections) - set(input_projections))
+                 if value.mode == "split"
+                 else frozenset((value.projections[0],))))
+        if not cache_reaches_compute:
+            continue
+
+        spans = tuple(dict.fromkeys(
+            span for span in (
+                *(item.site.span for item in input_projections),
+                *(projection_calls[item].span for item in input_projections),
+                update.span, binding.span, child.compute.entry_call.span,
+                *(step.span for step in update.guard),
+            ) if isinstance(span, SourceSpan)))
+        candidates.append(AttentionCacheBinding(
+            block_occurrence, child.compute_occurrence, callable_symbol,
+            value.mode, receiver.name, update, input_projections,
+            output_names, update.args[2], child.compute.entry_call,
+            bool(update.guard), spans))
+
+    distinct = {
+        (candidate.update_call.span, candidate.input_projections,
+         candidate.output_names): candidate
+        for candidate in candidates
+    }
+    if len(distinct) > 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (candidate.update_call.span for candidate in distinct.values()),
+                key=_span_sort_key))),
+            provenance=storage.provenance)
+    if not distinct:
+        detail = (
+            "no exact projected two-lane parameter update whose returned "
+            "lanes reach the selected attention compute was proven")
+        if rival_spans:
+            detail += " (update result binding was unresolved)"
+        return ReaderResult.failed(
+            block_occurrence,
+            (ReaderFailure("unsupported_syntax", detail),),
+            provenance=storage.provenance)
+    cache = next(iter(distinct.values()))
+    return ReaderResult.resolved(
+        block_occurrence, cache,
+        provenance=(ReaderProvenance(
+            "source", spans=cache.spans,
+            detail=("two exact projected lanes update a callable parameter; "
+                    "both returned replacements reach the selected attention "
+                    "compute")),))
+
+
+def _dot_softmax_cache_path(
+    index, callable_symbol, child, update, update_key, output_names,
+    projection_calls, expected_query,
+):
+    """Prove cached K at the score product and cached V at apply-V.
+
+    Explicit dot/softmax implementations do not carry one Q/K/V terminal call.
+    Their semantic boundary is instead the exact score product plus the exact
+    value-application product already selected by ``AttentionComputeProof``.
+    """
+    score_calls = tuple(
+        call for call in index.calls_in(callable_symbol)
+        if call.span is not None and _score_product_kind(index, call) is not None)
+    softmaxes = tuple(
+        call for call in child.compute.input_calls
+        if _call_has_external_protocol(index, call, _SOFTMAX_PROTOCOLS))
+    reaching_scores = []
+    for score in score_calls:
+        key = ("cache_score", score.span)
+        reaches_softmax = False
+        for softmax in softmaxes:
+            sources, _widths, dependencies, uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol,
+                    ((softmax.span, softmax.args),), {key: score})
+            if not uncertain and key in _dependency_closure(
+                    sources, dependencies):
+                reaches_softmax = True
+                break
+        if reaches_softmax:
+            reaching_scores.append(score)
+    matches = []
+    for score in reaching_scores:
+        score_operands = (
+            *score.args, *(value for _name, value in score.kwargs))
+        for key_position, key_arg in enumerate(score_operands):
+            if not _expression_contains_name(key_arg, output_names[0]) \
+                    or _expression_contains_name(key_arg, output_names[1]):
+                continue
+            key_sources, _w, _d, key_uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol, ((score.span, (key_arg,)),),
+                    {update_key: update}, preserve_local_tuple_lanes=True)
+            other_args = tuple(
+                arg for position, arg in enumerate(score_operands)
+                if position != key_position)
+            query_sources, _w, _d, query_uncertain = \
+                producer_sources_reaching_expressions(
+                    index, callable_symbol, ((score.span, other_args),),
+                    projection_calls, preserve_local_tuple_lanes=True)
+            if key_sources != frozenset((update_key,)) \
+                    or (key_uncertain and not update.guard) \
+                    or query_uncertain or query_sources != expected_query:
+                continue
+            for value_call in child.compute.input_calls:
+                for value_arg in value_call.args:
+                    if not _expression_contains_name(
+                            value_arg, output_names[1]) \
+                            or _expression_contains_name(
+                                value_arg, output_names[0]):
+                        continue
+                    value_sources, _w, _d, value_uncertain = \
+                        producer_sources_reaching_expressions(
+                            index, callable_symbol,
+                            ((value_call.span, (value_arg,)),),
+                            {update_key: update},
+                            preserve_local_tuple_lanes=True)
+                    if value_sources == frozenset((update_key,)) \
+                            and (not value_uncertain or update.guard):
+                        matches.append((score.span, value_call.span))
+    return len(set(matches)) == 1
 
 
 def decoder_attention_mechanism_for_path(
@@ -3695,6 +4091,21 @@ def _target_names(expression):
             if isinstance(child, ExprNode)
             for name in _target_names(child))
     return ()
+
+
+def _expression_contains_name(expression, name):
+    if not isinstance(expression, ExprNode):
+        return False
+    if expression.kind == "name" and expression.name == name:
+        return True
+    return any(
+        _expression_contains_name(child, name)
+        for child in expression.children if isinstance(child, ExprNode)
+    ) or any(
+        _expression_contains_name(child, name)
+        for _key, child in expression.keyword_children
+        if isinstance(child, ExprNode)
+    )
 
 
 def _self_field(expression):
