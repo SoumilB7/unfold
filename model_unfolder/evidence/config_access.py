@@ -893,6 +893,25 @@ class ConfigResolution:
     def _source_obj_id(self):
         return None if self.source_obj is None else id(self.source_obj)
 
+    def _target_owner(self, fact_owner: str) -> str:
+        """Qualify a parse-local target under this component occurrence.
+
+        Reusable readers name relative owners such as ``decoder.attention``.
+        At a pipeline root that spelling is canonical.  Inside a component
+        such as ``root.text_encoder``, leaving it relative would let the child
+        consumption enter the root decoder's receipt scope: the event and its
+        target would name different owners.  Absolute owners are preserved.
+
+        Later recursive migrations may register projection routes for these
+        qualified owners.  Until then their obligations remain visible
+        migration debt instead of falsely certifying a root-owner route.
+        """
+        owner = fact_owner or self.component
+        if (self.component and self.component != "root"
+                and owner != "root" and not owner.startswith("root.")):
+            return f"{self.component}.{owner}"
+        return owner
+
     @property
     def present(self) -> bool:
         return self.state == "present"
@@ -931,7 +950,7 @@ class ConfigResolution:
         emit(self.canonical,
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
-             fact_owner=fact_owner or self.component, fact_key=fact_key,
+             fact_owner=self._target_owner(fact_owner), fact_key=fact_key,
              mechanism=mechanism, value_status_hash=expected,
              component=self.component, config_path=self.selected_path,
              source_obj_id=self._source_obj_id,
@@ -973,7 +992,7 @@ class ConfigResolution:
             value_state=("value" if self.value is not None else "explicit_null")
             if self.state == "present" else "missing",
             provenance=self.provenance, mechanism=mechanism,
-            target=ProjectionTarget(owner=fact_owner or self.component,
+            target=ProjectionTarget(owner=self._target_owner(fact_owner),
                                     fact_key=fact_key),
             reader=reader, reason=self.reason)
 
@@ -991,7 +1010,7 @@ class ConfigResolution:
         emit(self.canonical,
              intent="bound" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
-             fact_owner=fact_owner or self.component, fact_key=fact_key,
+             fact_owner=self._target_owner(fact_owner), fact_key=fact_key,
              reader=reader, component=self.component, reason=self.reason,
              config_path=self.selected_path, source_obj_id=self._source_obj_id,
              value_state=("value" if self.value is not None else

@@ -110,6 +110,38 @@ def test_sibling_owners_with_the_same_leaf_never_discharge_each_other():
                 for e in ledger.events if e.intent == "consumed"}) == 2
 
 
+def test_nested_component_qualifies_a_relative_fact_owner_once():
+    """A reusable parser's relative target belongs to the component that
+    invoked it, never to the pipeline root's same-named decoder."""
+    doc = {"attn_logit_softcapping": 50.0}
+    with ca.capture_events() as ledger, ca.owner_scope("root.text_encoder"), \
+            _in_scope(doc, {
+                "attn_logit_softcapping": ca.CHECKPOINT_DECLARED,
+            }):
+        decision = ca.resolve(
+            doc, "attn_logit_softcapping", ()).consume_decision(
+                mechanism="attention_logit_softcap",
+                fact_owner="decoder.attention",
+                fact_key="logit_softcap",
+                reader="attention_reader")
+    assert decision.target.owner == "root.text_encoder.decoder.attention"
+    [event] = [e for e in ledger.events if e.intent == "consumed"]
+    assert event.component == "root.text_encoder"
+    assert event.fact_owner == "root.text_encoder.decoder.attention"
+
+
+def test_nested_component_does_not_double_qualify_an_absolute_owner():
+    doc = {"hidden_size": 1280}
+    with ca.capture_events() as ledger, ca.owner_scope("root.text_encoder"), \
+            _in_scope(doc, {"hidden_size": ca.CHECKPOINT_DECLARED}):
+        decision = ca.resolve(doc, "hidden_size", ()).consume_decision(
+            mechanism="vision_width", fact_owner="root.text_encoder.vision",
+            fact_key="hidden_size", reader="vision_reader")
+    assert decision.target.owner == "root.text_encoder.vision"
+    [event] = [e for e in ledger.events if e.intent == "consumed"]
+    assert event.fact_owner == "root.text_encoder.vision"
+
+
 def test_the_same_path_in_two_documents_is_two_occurrences():
     """U2-R2 vet: the DOCUMENT is part of the occurrence identity.  A pipeline
     root ``hidden_size`` and an embedded encoder ``hidden_size`` are different
