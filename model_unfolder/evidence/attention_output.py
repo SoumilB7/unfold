@@ -10,10 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .attention import (
-    attention_score_scaling_at_block,
-    latent_attention_binding_at_block,
-)
+from .attention import latent_attention_binding_at_block
 from .attention_child import AttentionChildEvidence, attention_child_evidence
 from .attention_storage import (
     AttentionProjectionStorage,
@@ -46,6 +43,10 @@ _VALUE_PROTOCOLS = frozenset({
     "torch.bmm",
     "torch.einsum",
     "torch.matmul",
+})
+_SOFTMAX_PROTOCOLS = frozenset({
+    "torch.nn.functional.softmax",
+    "torch.softmax",
 })
 
 
@@ -199,33 +200,13 @@ def _attention_output_projection_for_sources(
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner", "input projections belong to another owner"),))
     callable_symbol = attention.compute.callable_symbol
-    score = attention_score_scaling_at_block(index, root, block_occurrence)
-    if score.status != "resolved":
-        return score
-    score_value = score.value
-    if score_value.protocol == "sdpa_terminal":
-        terminal = score_value.score_call
-    else:
-        softmax = score_value.softmax_call
-        candidates = tuple(
-            call for call in index.calls_in(callable_symbol)
-            if call.span is not None
-            and call.enclosing_callable == callable_symbol
-            and _exact_call_target(index, call) in _VALUE_PROTOCOLS
-            and (_span_before(softmax.span, call.span)
-                 or _span_contains(call.span, softmax.span))
-            and _expression_reached_by_call(
-                index, callable_symbol, call.span,
-                (*call.args, *(value for _name, value in call.kwargs)),
-                softmax)
-        )
-        if len(candidates) != 1:
-            return ReaderResult.failed(
-                attention.compute_occurrence, (ReaderFailure(
-                    "incomplete_graph",
-                    "the exact softmax does not reach one unique "
-                    "attention-value terminal"),))
-        terminal = candidates[0]
+    terminal = _attention_value_terminal(index, attention)
+    if terminal is None:
+        return ReaderResult.failed(
+            attention.compute_occurrence, (ReaderFailure(
+                "incomplete_graph",
+                "the exact attention protocol does not expose one unique "
+                "attention-value terminal"),))
 
     output_callable = attention.compute.entry_call.enclosing_callable
     output_source = (
@@ -301,6 +282,42 @@ def _attention_output_projection_for_sources(
             detail=(
                 "the exact attention-value terminal reaches one exact Linear "
                 "output projection")),))
+
+
+def _attention_value_terminal(index, attention):
+    """Resolve the value terminal without also classifying score scaling.
+
+    Output projection and score scaling are independent architectural claims.
+    The exact attention-child proof already fixes the compute callable.  A
+    fused SDPA call is its own value terminal; an explicit protocol must expose
+    one exact softmax result reaching one exact dot-product call after it.
+    Unfamiliar logit transforms no longer erase an otherwise exact output path,
+    while rival softmax/value paths remain unknown.
+    """
+    proof = attention.compute
+    if proof.protocol == "scaled_dot_product_attention":
+        return proof.entry_call
+    callable_symbol = proof.callable_symbol
+    calls = tuple(index.calls_in(callable_symbol))
+    softmaxes = tuple(
+        call for call in calls
+        if call.span is not None
+        and _exact_call_target(index, call) in _SOFTMAX_PROTOCOLS)
+    candidates = []
+    for softmax in softmaxes:
+        for call in calls:
+            if call.span is None \
+                    or _exact_call_target(index, call) not in _VALUE_PROTOCOLS \
+                    or not (_span_before(softmax.span, call.span)
+                            or _span_contains(call.span, softmax.span)):
+                continue
+            expressions = (
+                *call.args, *(value for _name, value in call.kwargs))
+            if _expression_reached_by_call(
+                    index, callable_symbol, call.span, expressions, softmax):
+                candidates.append(call)
+    distinct = {call.span: call for call in candidates}
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
 
 
 def _expression_reached_by_call(

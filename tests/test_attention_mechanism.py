@@ -11,6 +11,7 @@ import pytest
 from model_unfolder.evidence import program_index as pi
 from model_unfolder.evidence.attention import (
     AttentionHeadBinding,
+    EquivalentAttentionScoreScalingBinding,
     AttentionOutputGateBinding,
     AttentionScoreScalingBinding,
     BoundAttentionMechanism,
@@ -271,6 +272,35 @@ def test_score_scaling_follows_exact_product_to_softmax(
     assert result.status == "resolved", result.failures
     assert isinstance(result.value, AttentionScoreScalingBinding)
     assert result.value.scaled is expected
+
+
+def test_two_exact_attention_children_must_independently_agree_on_scaling(
+        tmp_path):
+    source = _source(_split_attention(
+        "config.query_groups", "config.query_groups")).replace(
+            "self.left = Mixer(config)",
+            "self.left = Mixer(config)\n        self.right = Mixer(config)").replace(
+            "return self.left(x)",
+            "x = self.left(x)\n        return self.right(x)")
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(
+        index, root, allow_root_stage=True).value.block_occurrence
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, EquivalentAttentionScoreScalingBinding)
+    assert result.value.scaled is False
+    assert len(result.value.variants) == 2
+    with pytest.raises(ValueError, match="unanimously agree"):
+        replace(result.value, variants=(
+            result.value.variants[0],
+            replace(result.value.variants[1], scaled=True)))
 
 
 def test_unused_scaled_score_copy_cannot_launder_raw_softmax_path(tmp_path):

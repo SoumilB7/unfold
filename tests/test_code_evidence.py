@@ -1055,14 +1055,14 @@ def test_qk_norm_ships_for_config_silent_oracle_models():
         assert ir.layers and all(l.attention.qk_norm for l in ir.layers), mt
 
 
-def test_stablelm_qk_norm_stays_unknown_until_per_head_execution_is_proved():
-    """StableLM wraps per-head norms in a ModuleList. Until that exact
-    container execution is proved, its declaration cannot author the op."""
+def test_stablelm_qk_norm_uses_the_proven_repeated_per_head_protocol():
+    """A repeated norm is code evidence only after its exact
+    split -> homogeneous primitive map -> concat protocol is proven."""
     from transformers import AutoConfig
     cfg = AutoConfig.for_model("stablelm")
-    assert all(l.attention.qk_norm is None for l in config_to_ir(cfg).layers)
+    assert all(l.attention.qk_norm is False for l in config_to_ir(cfg).layers)
     cfg.qk_layernorm = True
-    assert all(l.attention.qk_norm is None for l in config_to_ir(cfg).layers)
+    assert all(l.attention.qk_norm is True for l in config_to_ir(cfg).layers)
 
 
 def test_llama4_qk_schedule_survives_while_position_selector_stays_unknown():
@@ -2161,11 +2161,16 @@ class OddBlock(nn.Module):
 
 
 def test_scores_scaling_wired_to_main_paths():
-    """B1: the unscaled-scores verdict reaches the MAIN paths' spec + all three
-    projections — reader witnesses (T5 raw QK^T → False, Llama SDPA → True),
-    wrapper root-scoping, spec emission only-when-False (byte-stability)."""
+    """The exact transformer path refuses an ambiguous encoder/decoder owner.
+
+    The quarantined whole-file reader remains only for the U10 diffusion path;
+    it cannot certify a transformer fact merely because every class it scanned
+    happened to agree.
+    """
     import transformers, pathlib
+    from transformers import AutoConfig
     from model_unfolder.evidence.patterns import attention_score_scaling_from_files
+    from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
 
     base = pathlib.Path(transformers.__file__).parent / "models"
@@ -2182,8 +2187,8 @@ def test_scores_scaling_wired_to_main_paths():
         _code_scores_scaled as t_scaled)
     from model_unfolder.adapters.diffusor.parser import (
         _code_scores_scaled as d_scaled)
-    t5_bundle = SourceBundle(source="local", files=(str(t5),))
-    assert t_scaled({}, _Ctx(t5_bundle)) is False
+    assert t_scaled({}, ParseContext.build(AutoConfig.for_model("t5"))) is None
+    assert t_scaled({}, ParseContext.build(AutoConfig.for_model("llama"))) is True
     # Diffusor wrapper is ROOT-scoped: an unscaled encoder in the union must
     # not flip the denoiser's verdict (the A1 scoping discipline).
     mixed = SourceBundle(

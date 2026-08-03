@@ -190,3 +190,63 @@ def test_shadowed_external_reference_never_recovers_by_familiar_spelling(tmp_pat
         index, _construction(index, root, stage, "embedding"))
     assert result.status == "failed"
     assert result.failures[0].kind == "incomplete_graph"
+
+
+def _repeated_primitive_source(*, element="nn.LayerNorm", output="op(chunk)",
+                               clause=""):
+    replacement = f"""
+    class UnknownPrimitive:
+        def __init__(self, config):
+            self.parts = nn.ModuleList(
+                [{element}(config.hidden) for _ in range(config.parts)])
+        def forward(self, x):
+            chunks = torch.split(x, 1, dim=1)
+            return torch.cat(
+                [{output} for op, chunk in zip(self.parts, chunks){clause}],
+                dim=1)
+"""
+    start = _SOURCE.index("    class UnknownPrimitive:")
+    end = _SOURCE.index("\n    class Base:", start)
+    return _SOURCE[:start] + replacement + _SOURCE[end:]
+
+
+def test_partition_map_reassemble_proves_repeated_layernorm_primitive(tmp_path):
+    index, root, stage = _pipeline(tmp_path, _repeated_primitive_source())
+    result = classify_primitive_call(
+        index, _construction(index, root, stage, "unknown"))
+    assert result.status == "resolved", result.failures
+    assert result.value == "layernorm"
+
+
+def test_repeated_non_norm_elements_cannot_impersonate_normalization(tmp_path):
+    index, root, stage = _pipeline(
+        tmp_path, _repeated_primitive_source(element="nn.Linear"))
+    result = classify_primitive_call(
+        index, _construction(index, root, stage, "unknown"))
+    assert result.status == "failed"
+
+
+def test_repeated_container_without_element_application_is_not_a_norm(tmp_path):
+    index, root, stage = _pipeline(
+        tmp_path, _repeated_primitive_source(output="chunk"))
+    result = classify_primitive_call(
+        index, _construction(index, root, stage, "unknown"))
+    assert result.status == "failed"
+
+
+def test_filtered_repeated_application_is_not_a_complete_norm_protocol(tmp_path):
+    index, root, stage = _pipeline(
+        tmp_path, _repeated_primitive_source(clause=" if chunk is not None"))
+    result = classify_primitive_call(
+        index, _construction(index, root, stage, "unknown"))
+    assert result.status == "failed"
+
+
+def test_shadowed_zip_cannot_author_repeated_primitive_semantics(tmp_path):
+    source = _repeated_primitive_source().replace(
+        "    class UnknownPrimitive:",
+        "    zip = replacement_zip\n\n    class UnknownPrimitive:")
+    index, root, stage = _pipeline(tmp_path, source)
+    result = classify_primitive_call(
+        index, _construction(index, root, stage, "unknown"))
+    assert result.status == "failed"

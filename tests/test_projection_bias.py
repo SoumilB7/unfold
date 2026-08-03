@@ -202,7 +202,9 @@ def test_attention_output_rejects_projecting_the_helper_weights_lane(tmp_path):
     assert {failure.kind for failure in result.failures} == {"incomplete_graph"}
 
 
-@pytest.mark.parametrize("slug", ["llama-7b", "bloom", "qwen3-8b"])
+@pytest.mark.parametrize("slug", [
+    "llama-7b", "bloom", "qwen3-8b", "gemma-2-2b-it", "gpt-oss-20b",
+])
 def test_real_decoder_output_projection_is_exactly_proven(slug):
     data = json.loads((_CORPUS / f"{slug}.json").read_text())
     context = ParseContext.build(_coerce(data["config"]))
@@ -210,6 +212,23 @@ def test_real_decoder_output_projection_is_exactly_proven(slug):
         context.program_index(), context.source_bundle, (),
         allow_root_stage=True)
     assert result.status == "resolved", (slug, result.failures)
+
+
+@pytest.mark.parametrize("slug", ["gemma-2-2b-it", "gpt-oss-20b"])
+def test_output_bias_survives_an_independently_unsupported_score_path(slug):
+    """Logit transforms may exceed the score-scaling reader's protocol.
+
+    They cannot erase the separately proven attention-result -> output-Linear
+    path or the exact config expression used by all four projections.
+    """
+    data = json.loads((_CORPUS / f"{slug}.json").read_text())
+    context = ParseContext.build(_coerce(data["config"]))
+    result = decoder_attention_bias_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", (slug, result.failures)
+    assert result.value.config_path == ("attention_bias",)
+    assert len(result.value.projections) == 4
 
 
 def test_parser_fact_region_and_receipt_share_output_projection_claim():

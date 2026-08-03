@@ -1724,6 +1724,31 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _qk_code_result.value
         if _qk_code_result is not None
         and _qk_code_result.status == "resolved" else None)
+    # A failed mechanism reader may still prove that one exact config
+    # occurrence controls distinct Q/K transformations.  Bind that occurrence
+    # to the unresolved claim, but do not consume its value and do not assert
+    # Q/K normalization until the child primitive is itself proven.  This is
+    # the honest boundary for composite/repeated transforms whose execution is
+    # outside the current ProgramIndex contract.
+    if _qk_code_result is not None \
+            and _qk_code_result.status != "resolved":
+        _unresolved_qk_paths = tuple(dict.fromkeys(
+            path
+            for provenance in _qk_code_result.provenance
+            for path in provenance.config_paths))
+        for _bound_path in _unresolved_qk_paths:
+            _prefix = tuple(_text_path)
+            if len(_bound_path) != len(_prefix) + 1 \
+                    or _bound_path[:len(_prefix)] != _prefix:
+                continue
+            _resolution = _config_access.resolve(
+                text_cfg, _bound_path[-1], (), path=_text_path)
+            if _resolution.ambiguous or not _resolution.present \
+                    or _resolution.selected_path != ".".join(_bound_path):
+                continue
+            _resolution.bind(
+                "decoder_qk_norm_evidence_for_path:unclassified_qk_transform",
+                fact_owner="decoder.attention", fact_key="qk_norm")
     qk_norm_layers = _resolve_qk_norm_layers(
         _qk_code,
         text_cfg, num_layers,

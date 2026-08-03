@@ -183,10 +183,16 @@ def _qk_norm_at_attention(
                 CallSiteId.of(call), call, resolution, primitive.value))
 
     if not norm_calls or not linear_calls:
+        unresolved_provenance = _guarded_unclassified_qk_provenance(
+            index, owner, callable_symbol, score_lanes,
+            construction_calls, linear_calls, storage_projections,
+            tuple(root.config_path) if hasattr(root, "config_path") else ())
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "the exact attention callable has no complete norm-from-Linear "
-            "candidate chain"),))
+            "candidate chain"),),
+            provenance=(unresolved_provenance,)
+            if unresolved_provenance is not None else ())
 
     norm_by_site = {item.call_site: item.call for item in norm_calls}
     lane_producers = {**linear_calls, **norm_by_site}
@@ -354,6 +360,85 @@ def _qk_norm_at_attention(
                 "two exact norm applications descend from exact Linear "
                 "constructions and reach the code-proven Q/K score operands"),
         ),),
+    )
+
+
+def _guarded_unclassified_qk_provenance(
+    index, owner, callable_symbol, score_lanes, construction_calls,
+    linear_calls, storage_projections, config_prefix,
+):
+    """Bind an exact config gate without misclassifying its Q/K transform.
+
+    Some attention implementations apply graph-authoritative child modules to
+    both score operands, but the children's primitive semantics are not yet
+    complete (for example a repeated per-head container).  This is still
+    enough to prove which config occurrence controls an unresolved Q/K
+    transform, but not enough to call that transform normalization.  Returning
+    provenance on the failed reader keeps the config read visible and bound
+    while the architectural fact remains unknown.
+    """
+    candidates = []
+    for call, resolution in construction_calls:
+        if resolution.selected.occurrence in linear_calls:
+            continue
+        primitive = classify_primitive_call(index, resolution)
+        if primitive.status == "resolved":
+            continue
+        if not call.args or not (
+                resolution.selected.site.guard or call.guard):
+            continue
+        candidates.append(_NormApplication(
+            CallSiteId.of(call), call, resolution, "unclassified"))
+    if len(candidates) < 2:
+        return None
+
+    calls_by_site = {item.call_site: item.call for item in candidates}
+    live_sites = set()
+    for score_span, q_expressions, k_expressions in score_lanes:
+        lanes = []
+        for expressions in (q_expressions, k_expressions):
+            reaching, _, _, uncertain = producer_sources_reaching_expressions(
+                index, callable_symbol, ((score_span, expressions),),
+                calls_by_site, preserve_local_tuple_lanes=True)
+            selected = frozenset(set(reaching).intersection(calls_by_site))
+            if not selected or (uncertain and any(
+                    not calls_by_site[site].guard for site in selected)):
+                return None
+            lanes.append(selected)
+        if not lanes[0].isdisjoint(lanes[1]):
+            return None
+        live_sites.update(lanes[0])
+        live_sites.update(lanes[1])
+    live = tuple(item for item in candidates if item.call_site in live_sites)
+    if len(live) < 2:
+        return None
+
+    for application in live:
+        upstream, _, _, uncertain = producer_sources_reaching_expressions(
+            index, callable_symbol,
+            ((application.call.span, (application.call.args[0],)),),
+            linear_calls)
+        if uncertain or not upstream \
+                or not set(upstream).issubset(storage_projections):
+            return None
+
+    atoms, gate_spans, gate_failure = _gate_atoms(
+        index, owner, live, config_prefix)
+    if gate_failure is not None or not atoms:
+        return None
+    config_paths = tuple(atom.config_path for atom in sorted(atoms))
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            *(item.call.span for item in live),
+            *(item.construction.selected.site.span for item in live),
+            *gate_spans,
+        ) if isinstance(span, SourceSpan)))
+    return ReaderProvenance(
+        "code_and_config", spans=spans, config_paths=config_paths,
+        detail=(
+            "the exact config gate controls distinct source-bound Q and K "
+            "transforms whose primitive semantics remain unclassified; no "
+            "Q/K-normalization fact is asserted"),
     )
 
 

@@ -27,6 +27,10 @@ _SOURCE = """
             variance = x.pow(2).mean(-1, keepdim=True)
             return self.weight * (x * torch.rsqrt(variance + 1e-6))
 
+    class Transform:
+        def forward(self, x):
+            return x * 2
+
     def preserve_pair(q, k):
         q_out = q * 2
         k_out = k * 3
@@ -145,6 +149,28 @@ def test_gate_is_the_exact_config_path_read_by_the_code(tmp_path):
         None, (QKNormGateAtom(
             "qk_layernorm", ("qk_layernorm",)),))
     assert result.provenance[0].config_paths == (("qk_layernorm",),)
+
+
+def test_guarded_unclassified_qk_transforms_bind_but_do_not_claim_norm(tmp_path):
+    result = _reader(
+        tmp_path,
+        """
+        self.enabled = config.qk_layernorm
+        if self.enabled:
+            self.first = Transform()
+            self.second = Transform()
+        """,
+        """
+        if self.enabled:
+            q = self.first(q)
+            k = self.second(k)
+        """,
+    )
+    assert result.status == "failed"
+    assert result.provenance
+    assert result.provenance[0].config_paths == (("qk_layernorm",),)
+    assert "no Q/K-normalization fact is asserted" in \
+        result.provenance[0].detail
 
 
 def test_shared_norm_extracts_composite_and_per_layer_gate(tmp_path):

@@ -36,7 +36,10 @@ from .construction_calls import (
     resolve_construction_call,
     resolve_import_reference,
 )
-from .decoder_block import decoder_block_path_for_config
+from .decoder_block import (
+    decoder_block_candidates_for_config,
+    decoder_block_path_for_config,
+)
 from .dispatch_attention_mechanism import (
     EquivalentDispatchMultiQueryBinding,
     dispatch_multi_query_attention_binding_at_block,
@@ -146,6 +149,45 @@ class AttentionScoreScalingBinding:
         if self.score_call.span not in self.spans \
                 or self.softmax_call.span not in self.spans:
             raise ValueError("score scaling provenance cites both decisive calls")
+
+
+@dataclass(frozen=True)
+class EquivalentAttentionScoreScalingBinding:
+    """Unanimous score-scaling evidence across exact sibling attention lanes.
+
+    Encoder-decoder blocks can invoke more than one positively proven attention
+    child (for example self- and cross-attention).  One lane may not certify its
+    sibling, but independently proven lanes may project one shared model-level
+    boolean when—and only when—they unanimously agree.
+    """
+
+    owner_occurrence: OwnerOccurrenceId
+    variants: tuple[AttentionScoreScalingBinding, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.owner_occurrence, OwnerOccurrenceId):
+            raise TypeError("equivalent score scaling names one exact owner scope")
+        if len(self.variants) < 2 or any(
+                not isinstance(item, AttentionScoreScalingBinding)
+                for item in self.variants):
+            raise ValueError(
+                "equivalent score scaling carries >=2 exact sibling variants")
+        if any(
+                item.block_occurrence.root != self.owner_occurrence.root
+                or item.block_occurrence.sites[:len(self.owner_occurrence.sites)]
+                != self.owner_occurrence.sites
+                for item in self.variants):
+            raise ValueError(
+                "equivalent score variants descend from the exact owner scope")
+        if len({item.attention_occurrence for item in self.variants}) \
+                != len(self.variants):
+            raise ValueError("equivalent score variants retain distinct owners")
+        if len({item.scaled for item in self.variants}) != 1:
+            raise ValueError("equivalent score variants unanimously agree")
+
+    @property
+    def scaled(self) -> bool:
+        return self.variants[0].scaled
 
 
 @dataclass(frozen=True)
@@ -820,20 +862,42 @@ def decoder_attention_score_scaling_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
-) -> ReaderResult[AttentionScoreScalingBinding]:
+) -> ReaderResult[
+        AttentionScoreScalingBinding | EquivalentAttentionScoreScalingBinding]:
     """Resolve one config occurrence to its exact score-scaling path."""
-    block = decoder_block_path_for_config(
+    candidates = decoder_block_candidates_for_config(
         index, bundle, tuple(config_path),
         allow_root_stage=allow_root_stage)
-    if block.status != "resolved":
-        return block
-    result = attention_score_scaling_at_block(
-        index, block.value.component_root, block.value.block_occurrence)
-    if result.status != "resolved":
-        return result
+    if candidates.status != "resolved":
+        return candidates
+    variants = []
+    provenance = list(candidates.provenance)
+    for occurrence in candidates.value.occurrences:
+        result = attention_score_scaling_at_block(
+            index, candidates.value.component_root, occurrence)
+        if result.status != "resolved":
+            return result
+        if isinstance(result.value, EquivalentAttentionScoreScalingBinding):
+            variants.extend(result.value.variants)
+        else:
+            variants.append(result.value)
+        provenance.extend(result.provenance)
+    if len(variants) == 1:
+        return ReaderResult.resolved(
+            variants[0].block_occurrence, variants[0],
+            provenance=tuple(provenance))
+    if len({item.scaled for item in variants}) != 1:
+        return ReaderResult.ambiguous(
+            candidates.value.stage_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (item.score_call.span for item in variants),
+                key=_span_sort_key))),
+            provenance=tuple(provenance))
+    value = EquivalentAttentionScoreScalingBinding(
+        candidates.value.stage_occurrence, tuple(variants))
     return ReaderResult.resolved(
-        result.owner, result.value,
-        provenance=(*block.provenance, *result.provenance))
+        candidates.value.stage_occurrence, value,
+        provenance=tuple(dict.fromkeys(provenance)))
 
 
 def decoder_attention_logit_softcap_for_path(
@@ -927,8 +991,9 @@ def attention_score_scaling_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
-) -> ReaderResult[AttentionScoreScalingBinding]:
-    """Prove scaled or raw QK scores at one exact attention occurrence."""
+) -> ReaderResult[
+        AttentionScoreScalingBinding | EquivalentAttentionScoreScalingBinding]:
+    """Prove scaled or raw QK scores at exact attention occurrence(s)."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("attention score scaling requires a ProgramIndex")
     root = require_resolved_component_root(
@@ -936,9 +1001,42 @@ def attention_score_scaling_at_block(
     if not isinstance(block_occurrence, OwnerOccurrenceId):
         raise TypeError("attention score scaling requires an exact block")
     attention = attention_child_evidence(index, root, block_occurrence)
-    if attention.status != "resolved":
+    if attention.status == "resolved":
+        return _score_scaling_for_attention_child(
+            index, block_occurrence, attention.value,
+            provenance=attention.provenance)
+    if attention.status != "ambiguous":
         return attention
-    child = attention.value
+
+    census = attention_child_positive_census(index, root, block_occurrence)
+    if census.status != "resolved" or len(census.value.candidates) < 2:
+        return attention
+    variants = []
+    provenance = list(census.provenance)
+    for child in census.value.candidates:
+        result = _score_scaling_for_attention_child(
+            index, block_occurrence, child,
+            provenance=census.provenance)
+        if result.status != "resolved":
+            return result
+        variants.append(result.value)
+        provenance.extend(result.provenance)
+    if len({item.scaled for item in variants}) != 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (item.score_call.span for item in variants),
+                key=_span_sort_key))),
+            provenance=tuple(provenance))
+    value = EquivalentAttentionScoreScalingBinding(
+        block_occurrence, tuple(variants))
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=tuple(dict.fromkeys(provenance)))
+
+
+def _score_scaling_for_attention_child(
+        index, block_occurrence, child, *, provenance=()):
     proof = child.compute
     if proof.protocol == "scaled_dot_product_attention":
         spans = tuple(dict.fromkeys(
@@ -991,12 +1089,12 @@ def attention_score_scaling_at_block(
             Ambiguity(sites=tuple(sorted(
                 (item[0].span for item in distinct.values()),
                 key=_span_sort_key))),
-            provenance=attention.provenance)
+            provenance=provenance)
     if not distinct:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "unsupported_syntax",
             "the exact score-to-softmax path is not a supported scaled or "
-            "raw-score protocol"),), provenance=attention.provenance)
+            "raw-score protocol"),), provenance=provenance)
     score, softmax, scaled, path_spans = next(iter(distinct.values()))
     spans = tuple(dict.fromkeys(
         span for span in (*proof.spans, *path_spans)
@@ -4345,6 +4443,7 @@ __all__ = [
     "AttentionOutputGateBinding",
     "AttentionQKVClipBinding",
     "AttentionScoreScalingBinding",
+    "EquivalentAttentionScoreScalingBinding",
     "BoundAttentionMechanism",
     "EquivalentDispatchMultiQueryBinding",
     "GatedDeltaGeometryBinding",
