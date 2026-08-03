@@ -18,12 +18,23 @@ def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
     kv = encoder.get("num_key_value_heads")
     head_dim = encoder.get("head_dim") or (
         hidden // heads if (hidden and heads and hidden % heads == 0) else None)
+    observed_kind = encoder.get("attention_kind")
+    kind = (
+        observed_kind
+        if observed_kind in {
+            "mha", "gqa", "mqa", "mla", "linear", "gated_delta",
+            "recurrent", "rwkv", "ssm",
+        }
+        else None
+    )
     # ONE source: this dict feeds the embedded view AND (via the central
     # vocabulary) the title + chips, so they cannot disagree.
     attn = {
-        "kind": ("gqa" if (kv and kv != heads) else "mha"),
+        # Head counts are geometry, not a mechanism classifier.  Unknown code
+        # stays an opaque attention region while preserving those dimensions.
+        "kind": kind,
         "num_heads": heads,
-        "num_kv_heads": kv or heads,
+        "num_kv_heads": kv,
         "head_dim": head_dim,
         "hidden": hidden,
         "cached": None,
@@ -33,9 +44,14 @@ def _encoder_attention_child(prefix: str, encoder: dict) -> list[dict]:
         facts = facts + [f"hidden {_fmt_int(hidden)}"]
     return [{
         "id": f"{prefix}_attn",
-        "title": kind_long(attn).replace(" attention", " self-attention"),
-        "description": "Self-attention over the encoder's token sequence — each token mixes "
-                       "context across the sequence.",
+        "title": (
+            kind_long(attn).replace(" attention", " self-attention")
+            if kind else "Attention mechanism unresolved"),
+        "description": (
+            "The exact tower source proves this token-mixing mechanism."
+            if kind else
+            "The tower declares head geometry, but its source evidence does "
+            "not yet prove how tokens are mixed; no MHA/GQA graph is inferred."),
         "facts": facts,
         # A supporting encoder tower's sublayer: a clickable DESCRIPTION card (dims + what
         # it does), not a generic Q/K/V drill (which would render all-static here). The hero
