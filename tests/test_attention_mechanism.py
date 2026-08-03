@@ -472,6 +472,55 @@ def test_real_qwen35_query_gate_keeps_hybrid_full_attention_code_bound():
             result.value.key_value_heads_path) == (
                 ("num_attention_heads",), ("num_key_value_heads",))
 
+    # The parser must consume that exact proof, not the deliberately false
+    # familiar config flag above.  The actual attention projector then emits
+    # one route-valid receipt for the three-node gate chain.
+    from model_unfolder import config_to_ir
+    from model_unfolder.diagram import Diagram
+    from model_unfolder.parser import _coerce
+
+    parsed_cfg = _coerce(config)
+    parsed_context = ParseContext.build(parsed_cfg)
+    diagram = Diagram(config_to_ir(
+        parsed_cfg, parse_context=parsed_context))
+    fact = parsed_context.facts.typed["decoder.attention.output_gate"]
+    assert fact.value == "sigmoid"
+    assert fact.status == "code_proven"
+    full_attention = tuple(
+        layer.attention for layer in diagram.ir.layers
+        if layer.attention.kind in {"mha", "gqa", "mqa"})
+    assert full_attention
+    assert {attention.output_gate for attention in full_attention} == {
+        "sigmoid"}
+    diagram.to_html(standalone=True)
+    receipts = tuple(
+        receipt for event in diagram.render_events()
+        for receipt in event.receipts if receipt.fact_key == "output_gate")
+    assert receipts
+    assert {receipt.mechanism for receipt in receipts} == {
+        "attention_output_gate"}
+    assert {receipt.node_ids for receipt in receipts} == {(
+        "q_gate_split", "attn_output_gate", "attn_output_mul")}
+
+
+def test_raw_output_gate_flag_cannot_fabricate_a_gate_on_llama():
+    import json
+    from pathlib import Path
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = Path(__file__).parent / "sable_test_corpus"
+    config = json.loads((corpus / "llama-7b.json").read_text())["config"]
+    config["attn_output_gate"] = True
+    config["output_gate_type"] = "sigmoid"
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=context)
+    assert "decoder.attention.output_gate" not in context.facts.typed
+    assert all(layer.attention.output_gate is None for layer in ir.layers)
+
 
 def test_field_and_class_renaming_do_not_change_the_shape_proof(tmp_path):
     index, _bundle, root, block = _pipeline(

@@ -584,6 +584,40 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "the declaration cannot prove execution of its ModuleList-backed "
             "per-head norms; U6 must bind the exact call path",
             "U6", "fact_registered:qk_norm"),
+    # Qwen3.5's real text component makes the remaining hybrid-attention debt
+    # concrete.  These are exact owner/path rows, not a family exemption: U6
+    # deletes the five geometry rows when the gated-delta construction binds
+    # them; U8 deletes the position row when its exact RoPE application lands.
+    _config("the gated-delta key-head geometry", "root",
+            "linear_num_key_heads",
+            "raw geometry currently reaches the linear-mixer spec without an "
+            "exact construction binding",
+            "U6", "fact_registered:gated_delta_geometry"),
+    _config("the gated-delta value-head geometry", "root",
+            "linear_num_value_heads",
+            "raw geometry currently reaches the linear-mixer spec without an "
+            "exact construction binding",
+            "U6", "fact_registered:gated_delta_geometry"),
+    _config("the gated-delta key-head width", "root",
+            "linear_key_head_dim",
+            "raw geometry currently reaches the linear-mixer spec without an "
+            "exact construction binding",
+            "U6", "fact_registered:gated_delta_geometry"),
+    _config("the gated-delta value-head width", "root",
+            "linear_value_head_dim",
+            "raw geometry currently reaches the linear-mixer spec without an "
+            "exact construction binding",
+            "U6", "fact_registered:gated_delta_geometry"),
+    _config("the gated-delta convolution width", "root",
+            "linear_conv_kernel_dim",
+            "raw geometry currently reaches the linear-mixer spec without an "
+            "exact construction binding",
+            "U6", "fact_registered:gated_delta_geometry"),
+    _config("the interleaved multimodal rotary application", "root",
+            "rope_parameters.mrope_interleaved",
+            "the checkpoint declaration is visible, but U8 must bind it to "
+            "the exact rotary application before projecting the schedule",
+            "U8", "fact_registered:mrope_interleaving"),
     _config("the denoiser projection-bias fact", "root.denoiser",
             "attention_bias",
             "declaration awaits exact denoiser projection-construction binding",

@@ -349,6 +349,31 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "stacks author this owner-level fact; schedules belong to U8.",
     ),
     FactDefinition(
+        key="output_gate",
+        value_types=frozenset({"str"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "attention_output_gate", "opgraph",
+                "output_gate", frozenset({"op"}),
+                frozenset({(
+                    "q_gate_split", "attn_output_gate", "attn_output_mul",
+                )}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        negative_requires_complete=True,
+        notes="U6: exact query-lane split -> sigmoid -> attention-result "
+              "multiply -> output-projection chain; config flags do not "
+              "author the gate.",
+    ),
+    FactDefinition(
         key="norm_kind",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({"code_proven"}),

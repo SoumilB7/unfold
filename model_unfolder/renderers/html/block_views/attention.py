@@ -92,6 +92,22 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
     qk_node_ids = tuple(
         node_id for node_id in ("q_norm", "k_norm")
         if node_id in graph.by_id())
+    gate_node_ids = tuple(
+        node_id for node_id in (
+            "q_gate_split", "attn_output_gate", "attn_output_mul")
+        if node_id in graph.by_id())
+    gate_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "output_gate",
+            "mechanism": "attention_output_gate",
+            "value": attn.get("output_gate"),
+        },)
+        if "decoder.attention.output_gate" in fact_rows
+        and attn.get("output_gate") is not None
+        and gate_node_ids == (
+            "q_gate_split", "attn_output_gate", "attn_output_mul")
+        and not attn.get("node_prefix") else ())
     receipts = (
         receipts_from_projects(
             softcap_projects,
@@ -107,6 +123,14 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             projector_symbol=(
                 "renderers.html.block_views.attention.build_attention_view"),
             node_ids=qk_node_ids, projection_kind="field",
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            gate_projects,
+            surface="opgraph", structural_target="output_gate",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=gate_node_ids, projection_kind="op",
             fact_rows=fact_rows,
         )
     )

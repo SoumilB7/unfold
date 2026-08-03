@@ -1391,8 +1391,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_bound_attention_fact(
             _bound_attention, _attention_mechanism_evidence,
             _attention_actual_config_paths)
+        _output_gate = getattr(_binding, "output_gate", None)
+        if _output_gate is not None:
+            _note_typed_fact(
+                key="output_gate",
+                owner="decoder.attention",
+                value=_output_gate.activation,
+                status="code_proven",
+                reader_result=_attention_mechanism_evidence,
+                config_paths=(),
+                reader="decoder_attention_mechanism_for_path",
+                reason=(
+                    "the exact query projection is split into query and gate "
+                    "lanes; the sibling lane passes through sigmoid and "
+                    "multiplies the attention result before the exact output "
+                    "projection"),
+            )
+            attn_output_gate = _output_gate.activation
+        else:
+            attn_output_gate = None
     else:
         is_mla = False
+        attn_output_gate = None
         _note_fact(
             "decoder.attention", "mechanism", None,
             _unknown_status, None)
@@ -1403,8 +1423,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     linear_k_head_dim = _g(text_cfg, "linear_key_head_dim")
     linear_v_head_dim = _g(text_cfg, "linear_value_head_dim")
     linear_conv_kernel = _g(text_cfg, "linear_conv_kernel_dim")
-    attn_output_gate = _g(text_cfg, "attn_output_gate")
-    _g(text_cfg, "output_gate_type")  # ownership acknowledged; source applies sigmoid
+    # These declarations remain visible to the config-access audit, but they
+    # cannot author the mechanism.  Some implementations apply the proven
+    # sigmoid gate even when a familiar flag is false; the exact forward chain
+    # above is the authority.
+    _g(text_cfg, "attn_output_gate")
+    _g(text_cfg, "output_gate_type")
     # Determine if the stack mixes sliding + full layers — affects mask labeling
     # (a full layer in a sliding stack is labeled "global", not "causal").
     sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
@@ -2064,7 +2088,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             index_head_dim=_g(text_cfg, "index_head_dim"),
             mrope_section=mrope_section,
             conv_kernel_size=linear_conv_kernel if is_gated_delta else None,
-            output_gate=("sigmoid" if attn_output_gate and not is_gated_delta else None),
+            output_gate=(attn_output_gate if not is_gated_delta else None),
             scores_scale=(
                 _declared_scores_scale(
                     attention_multiplier, query_pre_attn_scalar,
