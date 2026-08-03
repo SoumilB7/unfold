@@ -62,6 +62,7 @@ def build_attention(attn: dict, hidden: int | None,
         },
     }
     out.update(drop_none({
+        "qkv_clip":        attn.get("qkv_clip"),
         "shared":          attn.get("shared") or None,
         "no_rope":         attn.get("no_rope") or None,
         "kv_source_layer": attn.get("kv_source_layer"),

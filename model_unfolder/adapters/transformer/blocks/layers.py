@@ -237,7 +237,8 @@ def parallel_decoder_layer_blocks(
         )
     return [
         _norm_block(
-            "rms1", norm_label if norm_count in {1, 2} else "Norm inputs unresolved",
+            "rms1", norm_label if norm_count in {1, 2}
+            else ["Norm inputs", "unresolved"],
             norm_title, norm_desc, facts=[f"dim {hidden}"],
         ),
         _attention_block(attention, hidden_size),

@@ -109,6 +109,7 @@ _SPEC_FIELDS = frozenset({
     'AttentionSpec.output_gate', 'AttentionSpec.position_application',
     'AttentionSpec.position_declared', 'AttentionSpec.position_kind',
     'AttentionSpec.projection_mode', 'AttentionSpec.q_lora_rank',
+    'AttentionSpec.qkv_clip',
     'AttentionSpec.qk_nope_head_dim', 'AttentionSpec.qk_norm',
     'AttentionSpec.qk_rope_head_dim', 'AttentionSpec.rope', 'AttentionSpec.rope_3d',
     'AttentionSpec.rope_dim', 'AttentionSpec.rope_theta_declared',
@@ -141,7 +142,7 @@ _EXTRAS = frozenset({
     # top-level ``extras.setdefault``, dict-literal/AnnAssign extras binding,
     # and ``extras.update``.  These writes always existed; the census was
     # blind to their shapes (they were the "writer-less" LEGACY_EXTRAS rows).
-    "attention", "render", "rope", "softcap", "unet", "<dynamic>",
+    "render", "rope", "softcap", "unet", "<dynamic>",
     "block_diffusion", "block_diffusion.canvas_length", "codebooks",
     "diffusion", "dual_kv", "dual_kv.global", "dual_kv.sliding", "irope",
     "irope.no_rope_interval", "moe", "moe.every_layer", "moe.num_experts",
@@ -170,7 +171,8 @@ _OPGRAPH = frozenset({
     'Op:mla_q_position_unresolved', 'Op:mla_q_rope',
     'Op:mla_q_rope_apply', 'Op:mla_query_path', 'Op:mla_v', 'Op:multiply',
     'Op:o_proj', 'Op:q_gate_split', 'Op:q_proj', 'Op:q_rope', 'Op:q_split',
-    'Op:qkv_proj', 'Op:qkv_projection_unresolved', 'Op:rel_pos_bias',
+    'Op:qkv_clip', 'Op:qkv_proj', 'Op:qkv_projection_unresolved',
+    'Op:rel_pos_bias',
     'Op:router', 'Op:rwkv_key', 'Op:rwkv_out',
     'Op:rwkv_receptance', 'Op:rwkv_time_mix', 'Op:rwkv_value', 'Op:scaled_scores',
     'Op:score_bias_add', 'Op:sink_concat', 'Op:ssm_conv', 'Op:ssm_gate',
@@ -634,7 +636,6 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/adapters/diffusor/parser.py', '_parse_unet_model', 'extras', 'unet'),
     ('model_unfolder/adapters/diffusor/parser.py', 'parse', 'extras', 'render'),
     ('model_unfolder/adapters/transformer/assembly.py', 'decoder_extras', 'extras', 'render'),
-    ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'attention'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'rope'),
     ('model_unfolder/adapters/transformer/parser.py', 'parse', 'extras', 'softcap'),
     # U2-R5 (reviewed): the pilot's typed-fact author — the projector
@@ -743,6 +744,7 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.mrope_section'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.no_rope'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.num_heads'),
+    ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.qkv_clip'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.num_kv_heads'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.output_gate'),
     ('model_unfolder/ir.py', '<module>', 'spec_field', 'AttentionSpec.position_application'),
@@ -896,6 +898,9 @@ _STRUCTURAL_WRITERS_BASELINE = frozenset({
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_proj'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_rope'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:q_split'),
+    # U6: exact fused projection -> clamp -> live attention compute.  The
+    # registry and projector receipt authorize this reviewed op author.
+    ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:qkv_clip'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph', 'Op:qkv_proj'),
     ('model_unfolder/opgraph.py', '_sdpa_region', 'opgraph',
      'Op:qkv_projection_unresolved'),

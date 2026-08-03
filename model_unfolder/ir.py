@@ -49,6 +49,8 @@ class AttentionSpec:
                                     # scores/cap → tanh → ×cap between QK^T and the
                                     # softmax — a REAL forward op, drawn as a node.
                                     # Emitted only when declared.
+    qkv_clip: Optional[float] = None # exact projection-clamp operand; a config
+                                    # value alone cannot create this operation.
     rope: Optional[bool] = None     # applies rotary position embedding to Q/K.
                                     # This compatibility value is never enough
                                     # to draw the operation by itself: consumers
@@ -489,6 +491,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         **({"sinks": True} if a.sinks else {}),
         # emitted only when exact code+config evidence proves the real op node
         **({"logit_softcap": a.logit_softcap} if a.logit_softcap else {}),
+        **({"qkv_clip": a.qkv_clip} if a.qkv_clip is not None else {}),
         # B5: defaults distinguishable-from-declared, only-when-non-empty
         **({"asserted": list(a.asserted)} if a.asserted else {}),
     }

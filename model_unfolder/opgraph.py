@@ -608,10 +608,24 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Op("v_split", "slice", "Split V", out_features=kv_w,
                meta={"cached": True} if cached else {}),
         ]
-        edges = [
-            Edge("hidden", "qkv_proj"),
-            Edge("qkv_proj", "q_split"), Edge("qkv_proj", "k_split"),
-            Edge("qkv_proj", "v_split"), Edge("v_split", "attn_apply_v"),
+        qkv_source = "qkv_proj"
+        if attn.get("qkv_clip") is not None:
+            clip = attn["qkv_clip"]
+            ops.append(Op(
+                "qkv_clip", "elementwise", f"Clamp Q/K/V ≤ {clip:g}",
+                meta={
+                    "desc": (
+                        "Clamps the exact fused Q/K/V projection before it is "
+                        "split into attention lanes; the bound is supplied by "
+                        "the checkpoint only after source proves this path."),
+                }))
+            qkv_source = "qkv_clip"
+        edges = [Edge("hidden", "qkv_proj")]
+        if qkv_source == "qkv_clip":
+            edges.append(Edge("qkv_proj", "qkv_clip"))
+        edges += [
+            Edge(qkv_source, "q_split"), Edge(qkv_source, "k_split"),
+            Edge(qkv_source, "v_split"), Edge("v_split", "attn_apply_v"),
         ]
         q_source, k_source = "q_split", "k_split"
         v_source = "v_split"

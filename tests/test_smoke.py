@@ -1467,7 +1467,7 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     assert "parallel_residual" not in ir["extras"]
     assert ir["layers"][0]["residual_topology"] == "parallel"
     assert ir["layers"][0]["parallel_norm_count"] is None
-    assert block_by_id["rms1"]["label"] == "Norm inputs unresolved"
+    assert block_by_id["rms1"]["label"] == ["Norm inputs", "unresolved"]
     assert block_by_id["add1"]["title"] == "Residual add (parallel)"
     assert block_by_id["ffn"]["lane"] == "left"
     assert block_by_id["ffn"]["tap_from"] == "attn"
@@ -1551,12 +1551,23 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     # The nested ordinary width cannot certify the routed expert lane.
     assert layer["ffn"]["intermediate_size"] == 3584
     assert layer["ffn"]["expert_intermediate_size"] is None
-    assert ir["extras"]["attention"]["clip_qkv"] == 8
+    assert layer["attention"]["qkv_clip"] == 8
+    assert "attention" not in ir["extras"]
+    clip_fact = ir["extras"]["fact_provenance"][
+        "decoder.attention.qkv_clip"]
+    assert clip_fact["status"] == "code_and_config"
 
     html = d.to_html(standalone=True)
     assert "GQA 48/8" in html
     assert "MoE" in html
     assert "16 experts" in html
+    assert "Clamp Q/K/V ≤ 8" in html
+    # The wide parallel MoE lane shifts the central spine. The architecture
+    # canvas must grow with that shift instead of clipping the pre-head/output
+    # blocks at the historical 720-unit boundary.
+    import re
+    arch_box = re.search(r'<svg[^>]+viewBox="0 0 ([0-9.]+) ', html)
+    assert arch_box and float(arch_box.group(1)) > 720
 
 
 def test_attention_detail_views_dispatch_by_kind():

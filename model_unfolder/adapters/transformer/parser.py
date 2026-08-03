@@ -420,6 +420,22 @@ def _attention_logit_softcap_result(context=None, *, config_path=()):
     )
 
 
+def _attention_qkv_clip_result(context=None, *, config_path=()):
+    """Call-local exact fused-QKV projection/clamp result."""
+    if context is None:
+        return None
+    from ...evidence.attention import decoder_attention_qkv_clip_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.qkv_clip",
+        config_path,
+        lambda: decoder_attention_qkv_clip_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
 def _code_scores_scaled(
         cfg: Any, context=None, *, config_path=()) -> bool | None:
     """Score scaling from the exact selected attention occurrence."""
@@ -720,12 +736,6 @@ def _has_transformer_shape(cfg: Any) -> bool:
     )
 
 
-def _nested(cfg: Any, key: str) -> Any:
-    """Some configs (DBRX) nest fields under sub-dicts like ``attn_config``."""
-    val = _g(cfg, key)
-    return val if isinstance(val, dict) else {}
-
-
 # ---------------------------------------------------------------------------
 # Adapter interface
 # ---------------------------------------------------------------------------
@@ -853,11 +863,31 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if _text_path else (getattr(context, "class_defaults", None) or {}))
     # Nested text_config (multimodal wrapper) is fully supported — no warning needed.
 
-    # DBRX-style nested config dicts: pull through transparently.
-    attn_cfg = _nested(text_cfg, "attn_config")
-    ffn_cfg  = _nested(text_cfg, "ffn_config")
-
     from ...evidence import config_access as _config_access
+
+    # DBRX-style nested config dictionaries are address containers, not
+    # architectural claims. Resolve their exact checkpoint locations and mark
+    # the containers themselves as syntax-only; their child fields keep their
+    # own independent evidence/consumption decisions below.
+    def _nested_scope(key: str) -> dict:
+        carries = (
+            key in text_cfg if isinstance(text_cfg, dict)
+            else hasattr(text_cfg, key))
+        if not carries:
+            # Do not manufacture an absent read on every ordinary model merely
+            # because DBRX supports this optional namespace.
+            return {}
+        resolved = _config_access.resolve(
+            text_cfg, key, (), path=_text_path)
+        value = resolved.value if resolved.present else None
+        if resolved.present:
+            resolved.ignore(
+                reason=(f"{key} is a config namespace; only independently "
+                        "resolved child occurrences can author facts"))
+        return value if isinstance(value, dict) else {}
+
+    attn_cfg = _nested_scope("attn_config")
+    ffn_cfg = _nested_scope("ffn_config")
 
     # The selector carries this address through sparse config completion.
     # Identity lookup remains a consistency check for unmodified child objects,
@@ -1003,10 +1033,27 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _activation_selected_path = _activation_res.selected_path
     if isinstance(activation_raw, dict):
         activation_raw = activation_raw.get("name")
-    if activation_raw is None:
-        nested_act = _g(ffn_cfg, "ffn_act_fn")
+    _nested_activation_res = None
+    if activation_raw is None and ffn_cfg:
+        _ffn_path = (*_text_path, "ffn_config")
+        _nested_act_res = _config_access.resolve(
+            ffn_cfg, "ffn_act_fn", (), path=_ffn_path)
+        nested_act = (
+            _nested_act_res.value if _nested_act_res.present else None)
         if isinstance(nested_act, dict):
-            activation_raw = nested_act.get("name")
+            # The object is another namespace; the actual declared operand is
+            # its exact ``name`` occurrence.
+            _nested_act_res.ignore(
+                reason=("ffn_act_fn is a declaration container; its exact "
+                        "name child is arbitrated against source evidence"))
+            _nested_activation_res = _config_access.resolve(
+                nested_act, "name", (),
+                path=(*_ffn_path, "ffn_act_fn"))
+            if _nested_activation_res.present:
+                activation_raw = _nested_activation_res.value
+                _activation_decision_res = _nested_activation_res
+                _activation_selected_path = (
+                    _nested_activation_res.selected_path)
     _activation_status, _activation_src = "config_declared", "hidden_act"
     if activation_raw is None:
         # U2 P3b: the T5-family declaration — ``feed_forward_proj`` names the
@@ -1089,6 +1136,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _activation_status, _activation_src = _unknown_status, None
     _note_fact("decoder.ffn", "activation", activation,
                _activation_status, _activation_src)
+    if _nested_activation_res is not None \
+            and _nested_activation_res.present \
+            and not (
+                _activation_status == "code_and_config"
+                and _activation_decision_res is _nested_activation_res):
+        _nested_activation_res.ignore(
+            reason=("the checkpoint declares an activation name, but exact "
+                    "FFN source did not prove this occurrence selects the "
+                    "executed activation"))
     sliding_window = consume("sliding_window", fact_owner="decoder.attention", fact_key="sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
     # A config may declare a window size but turn SWA *off* (use_sliding_window
@@ -1798,9 +1854,42 @@ def parse(cfg: Any, context=None) -> ModelIR:
             )
     else:
         # Keep an unproven declaration visible to the scoped config ledger; it
-        # remains pending U6 debt and cannot reach AttentionSpec.
+        # cannot reach AttentionSpec.
         _softcap_resolution = _config_access.resolve(
             text_cfg, "attn_logit_softcapping", (), path=_text_path)
+    # Fused-QKV clipping is a separate numerical operation.  The source must
+    # prove projection -> clamp -> live attention compute before the exact
+    # config value is consumed.  Merely declaring ``clip_qkv`` is powerless.
+    qkv_clip = None
+    _qkv_clip_code = _attention_qkv_clip_result(
+        context, config_path=_text_path)
+    if _qkv_clip_code is not None and _qkv_clip_code.status == "resolved":
+        _clip_path = _qkv_clip_code.value.config_path
+        _clip_value = _consume_code_bound_path(
+            "clip_qkv", _clip_path, fact_key="qkv_clip")
+        if isinstance(_clip_value, (int, float)) \
+                and not isinstance(_clip_value, bool):
+            qkv_clip = _clip_value
+            _note_typed_fact(
+                key="qkv_clip",
+                owner="decoder.attention",
+                value=qkv_clip,
+                status="code_and_config",
+                reader_result=_qkv_clip_code,
+                config_paths=(_clip_path,),
+                reader="decoder_attention_qkv_clip_for_path",
+                reason=(
+                    "the exact fused QKV projection reaches a clamp bound by "
+                    "this exact config operand and the clamped lane reaches "
+                    "the selected attention compute"),
+            )
+    else:
+        _clip_resolution = _scoped("clip_qkv")
+        if _clip_resolution.present and not _clip_resolution.ambiguous:
+            _clip_resolution.ignore(
+                reason=(
+                    "clip_qkv is a declaration only; the selected attention "
+                    "source does not prove a live projection/clamp path"))
     # MLP projection bias — the FFN twin of attention_bias (a Tier-3 chip when
     # True; None keeps "config does not declare it").  Code-authoritative like
     # its twin: Bloom's MLP Linears default to bias=True with a silent config;
@@ -2169,6 +2258,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             scores_scaled=code_scores_scaled,
             sinks=(code_attention_sinks and attn_kind in ("mha", "gqa", "mqa")),
             logit_softcap=attn_logit_softcap,
+            qkv_clip=qkv_clip,
             asserted=(),
             projection_mode=(
                 _code_attention_storage
@@ -2620,7 +2710,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # dict (the block above only fires when one is declared); surface it always.
     with _config_access.config_container(_text_path, obj=text_cfg):
         rope_theta = _g(text_cfg, "rope_theta")
-    rope_theta = rope_theta or _g(attn_cfg, "rope_theta")
+    if rope_theta is None and attn_cfg:
+        with _config_access.config_container(
+                (*_text_path, "attn_config"), obj=attn_cfg):
+            rope_theta = _g(attn_cfg, "rope_theta")
     if rope_theta is not None:
         extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
 
@@ -2632,11 +2725,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         val = _g(text_cfg, cap_key)
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val
-
-    # Generic attention-side knobs surfaced as info-only annotations.
-    clip_qkv = _g(text_cfg, "clip_qkv") or _g(attn_cfg, "clip_qkv")
-    if clip_qkv is not None:
-        extras.setdefault("attention", {})["clip_qkv"] = clip_qkv
 
     # Surface the raw partial-rotary fraction the config declared, when present.
     if partial_rotary_fac is not None:

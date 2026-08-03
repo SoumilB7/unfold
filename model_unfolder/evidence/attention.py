@@ -206,6 +206,61 @@ class AttentionLogitSoftcapBinding:
 
 
 @dataclass(frozen=True)
+class AttentionQKVClipBinding:
+    """Exact Q/K/V projection -> clamp -> attention-compute path.
+
+    The numeric value remains a checkpoint operand.  This record proves that
+    one exact attention occurrence applies the operand as the clamp's maximum
+    to the projected Q/K/V lane and that the clamped value—not an unused side
+    computation—reaches the selected attention terminal.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    attention_occurrence: OwnerOccurrenceId
+    compute_callable: SymbolId
+    config_path: tuple[str, ...]
+    projection: ConstructionOccurrenceId
+    clamp_call: CallObservation
+    compute_entry: CallObservation
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
+            raise TypeError("QKV clipping names exact owner occurrences")
+        if not isinstance(self.compute_callable, SymbolId) \
+                or self.compute_callable.source \
+                != self.attention_occurrence.root.source:
+            raise TypeError("QKV clipping names its exact callable")
+        if not self.config_path or any(
+                not isinstance(part, str) or not part
+                for part in self.config_path):
+            raise TypeError("QKV clipping carries one exact config path")
+        if not isinstance(self.projection, ConstructionOccurrenceId) \
+                or self.projection.parent != self.attention_occurrence:
+            raise ValueError("the clipped projection belongs to the attention")
+        for call in (self.clamp_call, self.compute_entry):
+            if not isinstance(call, CallObservation) or call.span is None \
+                    or call.enclosing_callable != self.compute_callable:
+                raise TypeError("QKV clipping carries exact same-callable calls")
+        if self.clamp_call.callee.kind != "attribute" \
+                or self.clamp_call.callee.name not in {"clamp", "clamp_"}:
+            raise ValueError("QKV clipping carries an exact clamp call")
+        if not _span_before(self.clamp_call.span, self.compute_entry.span):
+            raise ValueError("the clamp precedes the selected attention compute")
+        decisive = {
+            self.projection.site.span,
+            self.clamp_call.span,
+            self.compute_entry.span,
+        }
+        if not self.spans or not decisive.issubset(self.spans) \
+                or any(not isinstance(span, SourceSpan)
+                       or span.source != self.compute_callable.source
+                       for span in self.spans):
+            raise ValueError("QKV clipping cites every decisive source span")
+
+
+@dataclass(frozen=True)
 class AttentionOutputGateBinding:
     """Exact query-lane split whose sibling gates the attention output.
 
@@ -712,6 +767,35 @@ def decoder_attention_logit_softcap_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+def decoder_attention_qkv_clip_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[AttentionQKVClipBinding]:
+    """Resolve one config occurrence to its exact Q/K/V clamp path."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("QKV clipping requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("QKV clipping requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    result = attention_qkv_clip_at_block(
+        index, block.value.component_root, block.value.block_occurrence)
+    if result.status != "resolved":
+        return result
+    return ReaderResult.resolved(
+        result.owner, result.value,
+        provenance=(*block.provenance, *result.provenance))
+
+
 def attention_score_scaling_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -931,6 +1015,126 @@ def attention_logit_softcap_at_block(
             "code_and_config", spans=spans, config_paths=(config_path,),
             detail=("exact score/cap -> tanh -> *cap path binds the same "
                     "parameter to one exact config occurrence")),))
+
+
+def attention_qkv_clip_at_block(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[AttentionQKVClipBinding]:
+    """Prove one exact fused-QKV projection -> clamp -> compute chain.
+
+    This first protocol is deliberately narrow: it accepts a single fused QKV
+    projection whose local result is clamped and whose clamped version reaches
+    the already-selected attention compute.  Split-lane or helper-mediated
+    clipping remains a typed unsupported result rather than being guessed.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("QKV clipping requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="attention_qkv_clip_at_block")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("QKV clipping requires an exact block")
+
+    storage = attention_projection_storage_evidence(
+        index, root, block_occurrence)
+    if storage.status != "resolved":
+        return storage
+    if storage.value.mode != "fused_qkv" \
+            or len(storage.value.projections) != 1:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "unsupported_syntax",
+            "the selected attention does not have one exact fused QKV lane"),),
+            provenance=storage.provenance)
+    child = storage.value.attention
+    node = root.graph.node_for(child.compute_occurrence)
+    if node is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the attention owner is absent from its graph"),),
+            provenance=storage.provenance)
+    callable_symbol = child.compute.entry_call.enclosing_callable
+    calls = tuple(index.calls_in(callable_symbol))
+    projection = storage.value.projections[0]
+    projection_calls = {
+        occurrence: call
+        for occurrence, call in _linear_calls_in_forward(
+            index, root, child.compute_occurrence, callable_symbol).items()
+        if occurrence == projection
+    }
+    if len(projection_calls) != 1:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the fused projection call is unresolved"),),
+            provenance=storage.provenance)
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+
+    candidates = []
+    for clamp in calls:
+        if clamp.callee.kind != "attribute" \
+                or clamp.callee.name not in {"clamp", "clamp_"} \
+                or clamp.receiver is None or clamp.span is None \
+                or not _span_before(clamp.span, child.compute.entry_call.span):
+            continue
+        maximum = dict(clamp.kwargs).get("max")
+        if maximum is None:
+            continue
+        path = _exact_config_path_for_expression(
+            index, node, maximum, seen=frozenset(),
+            config_prefix=config_prefix)
+        if path is None:
+            continue
+        reaching_projection, _widths, _deps, projection_uncertain = \
+            producer_sources_reaching_expressions(
+                index, callable_symbol,
+                ((clamp.span, (clamp.receiver,)),), projection_calls)
+        clamp_key = ("qkv_clamp", clamp.span)
+        reaching_compute, _widths, _deps, compute_uncertain = \
+            producer_sources_reaching_expressions(
+                index, callable_symbol,
+                ((child.compute.entry_call.span,
+                  (*child.compute.entry_call.args,
+                   *(value for _name, value
+                     in child.compute.entry_call.kwargs))),),
+                {clamp_key: clamp}, preserve_local_tuple_lanes=True)
+        if projection_uncertain or compute_uncertain \
+                or reaching_projection != frozenset((projection,)) \
+                or reaching_compute != frozenset((clamp_key,)):
+            continue
+        candidates.append((path, clamp))
+
+    distinct = {
+        (path, clamp.span): (path, clamp)
+        for path, clamp in candidates
+    }
+    if len(distinct) > 1:
+        return ReaderResult.ambiguous(
+            block_occurrence,
+            Ambiguity(sites=tuple(sorted(
+                (clamp.span for _path, clamp in distinct.values()),
+                key=_span_sort_key))),
+            provenance=storage.provenance)
+    if not distinct:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "unsupported_syntax",
+            "no exact fused-QKV projection -> config-bound clamp -> "
+            "attention-compute path was proven"),),
+            provenance=storage.provenance)
+    path, clamp = next(iter(distinct.values()))
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            projection.site.span, clamp.span, child.compute.entry_call.span)
+        if isinstance(span, SourceSpan)))
+    value = AttentionQKVClipBinding(
+        block_occurrence, child.compute_occurrence, callable_symbol,
+        path, projection, clamp, child.compute.entry_call, spans)
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config", spans=spans, config_paths=(path,),
+            detail=("one exact fused QKV projection reaches a config-bound "
+                    "clamp whose result reaches the selected attention "
+                    "compute")),))
 
 
 def decoder_attention_mechanism_for_path(
@@ -3711,6 +3915,7 @@ __all__ = [
     "AttentionHeadBinding",
     "AttentionLogitSoftcapBinding",
     "AttentionOutputGateBinding",
+    "AttentionQKVClipBinding",
     "AttentionScoreScalingBinding",
     "BoundAttentionMechanism",
     "EquivalentDispatchMultiQueryBinding",
@@ -3719,12 +3924,14 @@ __all__ = [
     "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",
     "attention_logit_softcap_at_block",
+    "attention_qkv_clip_at_block",
     "attention_score_scaling_at_block",
     "bind_attention_mechanism",
     "latent_attention_binding_at_block",
     "multi_query_attention_binding_at_block",
     "decoder_attention_head_binding_for_path",
     "decoder_attention_logit_softcap_for_path",
+    "decoder_attention_qkv_clip_for_path",
     "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
     "decoder_gated_delta_geometry_for_path",

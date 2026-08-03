@@ -126,6 +126,17 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
         and attn.get("kind") == "gated_delta"
         and geometry_node_ids == ("delta_conv", "delta_rule")
         and not attn.get("node_prefix") else ())
+    clip_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "qkv_clip",
+            "mechanism": "attention_qkv_clip",
+            "value": attn.get("qkv_clip"),
+        },)
+        if "decoder.attention.qkv_clip" in fact_rows
+        and attn.get("qkv_clip") is not None
+        and "qkv_clip" in graph.by_id()
+        and not attn.get("node_prefix") else ())
     receipts = (
         receipts_from_projects(
             softcap_projects,
@@ -157,6 +168,14 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             projector_symbol=(
                 "renderers.html.block_views.attention.build_attention_view"),
             node_ids=geometry_node_ids, projection_kind="field",
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            clip_projects,
+            surface="opgraph", structural_target="qkv_clip",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=("qkv_clip",), projection_kind="op",
             fact_rows=fact_rows,
         )
     )

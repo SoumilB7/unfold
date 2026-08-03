@@ -196,7 +196,7 @@ def test_parallel_topology_never_invents_one_shared_norm():
     assert unresolved.norm_placement == "unknown"
     assert unresolved.parallel_norm_count is None
     norm = unresolved.blocks[0]
-    assert norm["label"] == "Norm inputs unresolved"
+    assert norm["label"] == ["Norm inputs", "unresolved"]
     assert "share one" in norm["description"]
     assert "shared)" not in norm["title"].lower()
 

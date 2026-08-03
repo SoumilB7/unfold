@@ -73,6 +73,8 @@ def attention_detail(attention: AttentionSpec) -> dict:
         # emitted only when exact code+config evidence proves the tanh node
         **({"logit_softcap": attention.logit_softcap}
            if attention.logit_softcap else {}),
+        **({"qkv_clip": attention.qkv_clip}
+           if attention.qkv_clip is not None else {}),
     }
 
 
@@ -420,6 +422,22 @@ def _sdpa_detailed_child_blocks(
                             f"clipping, keeping gradients healthy at the "
                             f"extremes (proven on this attention path)."),
             "facts": [f"±{_cap:g}"],
+        })
+    if attention.qkv_clip is not None:
+        # A proven fused-QKV clamp is a real clickable operation between the
+        # projection and split lanes, so it needs its own drill card.  The
+        # checkpoint number reaches this card only through the typed fact.
+        _clip = attention.qkv_clip
+        cards.append({
+            "id": "qkv_clip",
+            "title": f"Clamp projected Q/K/V to ±{_clip:g}",
+            "description": (
+                "Clamps the exact fused Q/K/V projection before it is split "
+                "into query, key and value lanes. The source proves that the "
+                "clamped result reaches attention; the checkpoint supplies "
+                "only the numeric bound."
+            ),
+            "facts": [f"range [−{_clip:g}, +{_clip:g}]"],
         })
     if (
         attention.rope is True

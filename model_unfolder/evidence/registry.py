@@ -349,6 +349,28 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "stacks author this owner-level fact; schedules belong to U8.",
     ),
     FactDefinition(
+        key="qkv_clip",
+        value_types=frozenset({"int", "float"}),
+        allowed_statuses=frozenset({"code_and_config"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "attention_qkv_clip", "opgraph",
+                "qkv_clip", frozenset({"op"}),
+                frozenset({("qkv_clip",)}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes="U6: exact fused QKV projection -> config-bound clamp -> "
+              "selected attention compute. A raw clip_qkv declaration is "
+              "powerless.",
+    ),
+    FactDefinition(
         key="output_gate",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({"code_proven"}),
@@ -401,10 +423,15 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="norm_kind",
         value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven"}),
+        allowed_statuses=frozenset({
+            "code_proven", "ambiguous", "oracle_missing",
+        }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
         unknown_policy="generic_node",
+        notes="A failed or unavailable exact layer reader projects the explicit "
+              "generic normalization cell; it never defaults to RMSNorm or "
+              "LayerNorm.",
     ),
     FactDefinition(
         key="norm_placement",

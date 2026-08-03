@@ -160,16 +160,23 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         b for b in side_blocks
         if b.get("side_align") == "tap" and b.get("lane") == "left"
     ]
+    chain_half_w = max(
+        _block_layout(b)[1] / 2
+        for b in chain_blocks
+    ) if chain_blocks else 115
     if _tap_left:
         side_right = max(
             inner_x + 30 + _block_layout(b)[1]
             for b in _tap_left
         )
-        chain_half_w = max(
-            _block_layout(b)[1] // 2
-            for b in chain_blocks
-        ) if chain_blocks else 115
         cx = max(cx, side_right + 20 + chain_half_w)
+    # The repeated-cell backdrop owns both the left tap and shifted spine.
+    # Grow it from the same actual extent as the canvas; otherwise the blocks
+    # fit the SVG but visibly spill outside their ×N region.
+    inner_w = max(
+        inner_w,
+        int(cx + chain_half_w + 40 - inner_x + 0.999),
+    )
 
     # --- 1. Compute heights from the chain block list ---
     # Size the shaded region to the content (chain height + padding).  The floor
@@ -211,7 +218,13 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
         h = inner_y + inner_h + (360 if has_audio_fusion else 292) + embed_norm_pad
     else:
         h = inner_y + inner_h + 232 + position_pad + embed_norm_pad
-    w = 960 if needs_wide_arch else 720
+    base_w = 960 if needs_wide_arch else 720
+    # A wide left tap (for example a parallel MoE branch) may push the spine
+    # right.  The old fixed canvas did not follow that shift and clipped the
+    # pre-head/output stack. Grow from the actual rightmost chain extent plus
+    # the outer-region margin; ordinary centred architectures remain exactly
+    # at their historical 720/960 widths.
+    w = max(base_w, int(cx + chain_half_w + 90 + 0.999))
 
     arrow_id, shadow_id = _ids(mount_id, "arch")
     block_pos: dict[str, dict] = {}
