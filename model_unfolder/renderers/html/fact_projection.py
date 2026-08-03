@@ -41,7 +41,8 @@ DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
 #     placement (norm_placement), and the head-tying note (tie_word_embeddings).
 ATTENTION_DRAWN = frozenset({
     "mechanism", "scores_scale", "projection_mode", "mask", "bias", "position_kind",
-    "qk_norm", "output_gate", "sinks", "logit_softcap",
+    "qk_norm", "output_gate", "gated_delta_geometry", "sinks",
+    "logit_softcap",
 })
 ORDINARY_FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
 EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})

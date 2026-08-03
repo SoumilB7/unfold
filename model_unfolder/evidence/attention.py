@@ -83,6 +83,16 @@ _TANH_PROTOCOLS = frozenset({
     "torch.tanh",
 })
 
+_SPLIT_PROTOCOLS = frozenset({
+    "torch.functional.split",
+    "torch.split",
+})
+
+_CONV1D_PROTOCOLS = frozenset({
+    "torch.nn.Conv1d",
+    "torch.nn.modules.conv.Conv1d",
+})
+
 
 @dataclass(frozen=True)
 class AttentionScoreScalingBinding:
@@ -255,6 +265,74 @@ class AttentionOutputGateBinding:
         }
         if None in required or not required.issubset(self.spans):
             raise ValueError("output-gate provenance cites every decisive site")
+
+
+@dataclass(frozen=True)
+class GatedDeltaGeometryBinding:
+    """Exact config bindings for one structurally proven gated-delta mixer.
+
+    The five paths are assigned architectural roles by their uses, never by
+    their field or class spellings: the Q/K and V split widths, the three
+    reshape widths, the Q/K repeat ratio, and the Conv1d kernel argument.  The
+    recurrence proof additionally requires Q/K/V plus sigmoid-beta and
+    softplus-decay inputs to reach the same two guarded recurrent terminals.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    mixer_occurrence: OwnerOccurrenceId
+    key_heads_path: tuple[str, ...]
+    value_heads_path: tuple[str, ...]
+    key_head_dim_path: tuple[str, ...]
+    value_head_dim_path: tuple[str, ...]
+    conv_kernel_path: tuple[str, ...]
+    split_call: CallObservation
+    reshape_calls: tuple[CallObservation, ...]
+    repeat_calls: tuple[CallObservation, ...]
+    recurrence_calls: tuple[CallObservation, ...]
+    conv_site: ConstructionOccurrenceId
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.mixer_occurrence, OwnerOccurrenceId):
+            raise TypeError("gated-delta geometry names exact occurrences")
+        paths = (
+            self.key_heads_path, self.value_heads_path,
+            self.key_head_dim_path, self.value_head_dim_path,
+            self.conv_kernel_path,
+        )
+        if any(not path or any(not isinstance(part, str) or not part
+                               for part in path) for path in paths):
+            raise TypeError("gated-delta geometry carries five exact paths")
+        if len(set(paths)) != 5:
+            raise ValueError("gated-delta geometry roles bind distinct paths")
+        calls = (
+            self.split_call, *self.reshape_calls, *self.repeat_calls,
+            *self.recurrence_calls,
+        )
+        if len(self.reshape_calls) != 3 or len(self.repeat_calls) != 2 \
+                or len(self.recurrence_calls) != 2:
+            raise ValueError("gated-delta geometry carries the complete call shape")
+        forward = self.split_call.enclosing_callable
+        if any(not isinstance(call, CallObservation)
+               or call.enclosing_callable != forward or call.span is None
+               for call in calls):
+            raise TypeError("gated-delta calls belong to one exact forward")
+        if forward.source != self.mixer_occurrence.root.source:
+            raise ValueError("gated-delta forward belongs to the mixer source")
+        if not isinstance(self.conv_site, ConstructionOccurrenceId) \
+                or self.conv_site.parent != self.mixer_occurrence:
+            raise ValueError("gated-delta convolution belongs to the exact mixer")
+        required = {
+            self.conv_site.site.span,
+            *(call.span for call in calls),
+        }
+        if None in required or not self.spans \
+                or not required.issubset(self.spans) \
+                or any(not isinstance(span, SourceSpan)
+                       or span.source != self.mixer_occurrence.root.source
+                       for span in self.spans):
+            raise ValueError("gated-delta provenance cites every decisive site")
 
 
 @dataclass(frozen=True)
@@ -905,6 +983,277 @@ def decoder_attention_mechanism_for_path(
     return ReaderResult.resolved(
         result.owner, result.value,
         provenance=(*block.provenance, *result.provenance))
+
+
+def decoder_gated_delta_geometry_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+) -> ReaderResult[GatedDeltaGeometryBinding]:
+    """Bind one exact decoder's recurrent-mixer geometry to config paths."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("gated-delta geometry requires a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("gated-delta geometry requires a SourceBundle")
+    if not isinstance(config_path, tuple) or any(
+            not isinstance(part, str) or not part for part in config_path):
+        raise TypeError("config_path is tuple[str, ...]")
+    block = decoder_block_path_for_config(
+        index, bundle, config_path,
+        allow_root_stage=allow_root_stage)
+    if block.status != "resolved":
+        return block
+    root = block.value.component_root
+    block_node = root.graph.node_for(block.value.block_occurrence)
+    if block_node is None:
+        return ReaderResult.failed(block.owner, (ReaderFailure(
+            "incomplete_graph", "decoder block is absent from its owner graph"),))
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+    candidates = tuple(
+        value for child in block_node.children
+        if (value := _gated_delta_geometry_for_node(
+            index, child, block.value.block_occurrence,
+            config_prefix=config_prefix)) is not None)
+    if not candidates:
+        return ReaderResult.failed(block.owner, (ReaderFailure(
+            "unsupported_syntax",
+            "no exact split/reshape/repeat/conv/recurrent geometry protocol "
+            "was proven under the decoder block"),),
+            provenance=block.provenance)
+    if len(candidates) > 1:
+        return ReaderResult.ambiguous(
+            block.owner,
+            Ambiguity(sites=tuple(sorted(
+                (candidate.split_call.span for candidate in candidates),
+                key=_span_sort_key))),
+            provenance=block.provenance)
+    value = candidates[0]
+    return ReaderResult.resolved(
+        block.owner, value,
+        provenance=(*block.provenance, ReaderProvenance(
+            "code_and_config", spans=value.spans,
+            config_paths=(
+                value.key_heads_path, value.value_heads_path,
+                value.key_head_dim_path, value.value_head_dim_path,
+                value.conv_kernel_path,
+            ),
+            detail=(
+                "exact Q/K/V split widths, reshape widths, repeat ratio, "
+                "Conv1d kernel and sigmoid/softplus recurrent terminals bind "
+                "five geometry paths")),))
+
+
+def _gated_delta_geometry_for_node(
+    index: ProgramIndex,
+    node,
+    block_occurrence: OwnerOccurrenceId,
+    *,
+    config_prefix: tuple[str, ...],
+) -> GatedDeltaGeometryBinding | None:
+    """Positive structural protocol; absence is never a negative claim."""
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if not item.guard)
+    by_field = {}
+    for item in assignments:
+        by_field.setdefault(item.field, []).append(item)
+
+    def assignment(field):
+        rows = tuple(by_field.get(field, ()))
+        return rows[0] if len(rows) == 1 else None
+
+    def path_for_field(field):
+        row = assignment(field)
+        if row is None:
+            return None
+        return _exact_config_path_for_expression(
+            index, node, row.value, seen=frozenset(),
+            config_prefix=config_prefix)
+
+    calls = tuple(index.calls_in(forward))
+    splits = tuple(
+        call for call in calls
+        if not call.guard and len(call.args) >= 2
+        and _call_has_external_protocol(index, call, _SPLIT_PROTOCOLS)
+        and call.args[1].kind in {"list", "tuple"}
+        and len(call.args[1].children) == 3)
+    matches = []
+    for split in splits:
+        widths = tuple(_self_field(item) for item in split.args[1].children)
+        if None in widths or widths[0] != widths[1] \
+                or widths[0] == widths[2]:
+            continue
+        split_bindings = tuple(
+            binding for binding in index.bindings_in(forward)
+            if binding.value is not None
+            and binding.value.span == split.span)
+        if len(split_bindings) != 1:
+            continue
+        lanes = tuple(
+            name for target in split_bindings[0].targets
+            for name in _target_names(target))
+        if len(lanes) != 3 or len(set(lanes)) != 3:
+            continue
+        q_name, k_name, v_name = lanes
+
+        reshape_by_lane = {}
+        for lane in lanes:
+            lane_calls = tuple(
+                call for call in calls
+                if not call.guard and call.callee.kind == "attribute"
+                and call.callee.name in {"reshape", "view"}
+                and call.callee.children
+                and call.callee.children[0].kind == "name"
+                and call.callee.children[0].name == lane
+                and any(_self_field(arg) is not None for arg in call.args))
+            if len(lane_calls) != 1:
+                break
+            reshape_by_lane[lane] = lane_calls[0]
+        if len(reshape_by_lane) != 3:
+            continue
+        dims = {}
+        for lane, call in reshape_by_lane.items():
+            fields = tuple(
+                field for arg in call.args
+                if (field := _self_field(arg)) is not None)
+            if len(fields) != 1:
+                break
+            dims[lane] = fields[0]
+        if len(dims) != 3 or dims[q_name] != dims[k_name]:
+            continue
+        key_dim_field = dims[q_name]
+        value_dim_field = dims[v_name]
+        if key_dim_field == value_dim_field:
+            continue
+
+        def count_factor(width_field, head_dim_field):
+            row = assignment(width_field)
+            factors = (
+                _multiplication_factors(row.value) if row is not None else None)
+            fields = tuple(_self_field(item) for item in (factors or ()))
+            if len(fields) != 2 or head_dim_field not in fields \
+                    or None in fields or fields[0] == fields[1]:
+                return None
+            return fields[1] if fields[0] == head_dim_field else fields[0]
+
+        key_heads_field = count_factor(widths[0], key_dim_field)
+        value_heads_field = count_factor(widths[2], value_dim_field)
+        if key_heads_field is None or value_heads_field is None \
+                or key_heads_field == value_heads_field:
+            continue
+
+        ratio = ExprNode(
+            "binop", operator="//", children=(
+                ExprNode("attribute", name=value_heads_field,
+                         children=(ExprNode("name", name="self"),)),
+                ExprNode("attribute", name=key_heads_field,
+                         children=(ExprNode("name", name="self"),)),
+            ))
+        repeats = tuple(
+            call for call in calls
+            if call.callee.kind == "attribute"
+            and call.callee.name == "repeat_interleave"
+            and call.callee.children
+            and call.callee.children[0].kind == "name"
+            and call.callee.children[0].name in {q_name, k_name}
+            and call.args and _expr_key(call.args[0]) == _expr_key(ratio))
+        if len(repeats) != 2 or {
+                call.callee.children[0].name for call in repeats} \
+                != {q_name, k_name}:
+            continue
+
+        beta_bindings = tuple(
+            binding for binding in index.bindings_in(forward)
+            if binding.value is not None and not binding.guard
+            and binding.value.kind == "call" and binding.value.children
+            and binding.value.children[0].kind == "attribute"
+            and binding.value.children[0].name == "sigmoid")
+        softplus_calls = tuple(
+            call for call in calls
+            if not call.guard and _call_has_external_protocol(
+                index, call, {"torch.nn.functional.softplus"}))
+        if len(beta_bindings) != 1 or len(softplus_calls) != 1:
+            continue
+        beta_names = tuple(
+            name for target in beta_bindings[0].targets
+            for name in _target_names(target))
+        decay_bindings = tuple(
+            binding for binding in index.bindings_in(forward)
+            if binding.value is not None and not binding.guard
+            and _expr_contains_span(binding.value, softplus_calls[0].span))
+        if len(beta_names) != 1 or len(decay_bindings) != 1:
+            continue
+        decay_names = tuple(
+            name for target in decay_bindings[0].targets
+            for name in _target_names(target))
+        if len(decay_names) != 1:
+            continue
+        beta_name, decay_name = beta_names[0], decay_names[0]
+        terminals = tuple(
+            call for call in calls
+            if call.guard and len(call.args) >= 3
+            and tuple(arg.name if arg.kind == "name" else None
+                      for arg in call.args[:3]) == lanes
+            and {value.name for _key, value in call.kwargs
+                 if value.kind == "name"}.issuperset({beta_name, decay_name}))
+        if len(terminals) != 2:
+            continue
+
+        role_paths = tuple(path_for_field(field) for field in (
+            key_heads_field, value_heads_field,
+            key_dim_field, value_dim_field))
+        if any(path is None for path in role_paths):
+            continue
+        conv_candidates = []
+        for site in index.construction_sites_of(node.symbol):
+            if not _site_has_external_protocol(index, site, _CONV1D_PROTOCOLS):
+                continue
+            kernel = dict(site.kwargs).get("kernel_size")
+            if kernel is None:
+                continue
+            kernel_path = _exact_config_path_for_expression(
+                index, node, kernel, seen=frozenset(),
+                config_prefix=config_prefix)
+            if kernel_path is not None:
+                conv_candidates.append((site, kernel_path))
+        if len(conv_candidates) != 1:
+            continue
+        conv, conv_path = conv_candidates[0]
+        all_paths = (*role_paths, conv_path)
+        if len(set(all_paths)) != 5:
+            continue
+        reshape_calls = tuple(reshape_by_lane[lane] for lane in lanes)
+        spans = tuple(dict.fromkeys(
+            span for span in (
+                split.span, *(call.span for call in reshape_calls),
+                *(call.span for call in repeats),
+                *(call.span for call in terminals), conv.span,
+                softplus_calls[0].span, beta_bindings[0].span,
+                *(assignment(field).span for field in (
+                    key_heads_field, value_heads_field,
+                    key_dim_field, value_dim_field)
+                  if assignment(field) is not None),
+            ) if isinstance(span, SourceSpan)))
+        matches.append(GatedDeltaGeometryBinding(
+            block_occurrence, node.occurrence,
+            role_paths[0], role_paths[1], role_paths[2], role_paths[3],
+            conv_path, split, reshape_calls, repeats, terminals,
+            ConstructionOccurrenceId(node.occurrence, conv.site_id), spans))
+    distinct = {(
+        value.mixer_occurrence,
+        value.key_heads_path, value.value_heads_path,
+        value.key_head_dim_path, value.value_head_dim_path,
+        value.conv_kernel_path,
+    ): value for value in matches}
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
 
 
 def attention_head_binding_at_block(
@@ -2354,6 +2703,15 @@ def _site_is_external_linear(index, site):
     return proof is not None and proof.qualified_target in _LINEAR_PROTOCOLS
 
 
+def _site_has_external_protocol(index, site, protocols):
+    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
+        return False
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        site.candidates[0].reference)
+    return proof is not None and proof.qualified_target in protocols
+
+
 def _guard_proves_selector_true(
         index, node, occurrence, call, selector_field):
     selector_steps = 0
@@ -3356,6 +3714,7 @@ __all__ = [
     "AttentionScoreScalingBinding",
     "BoundAttentionMechanism",
     "EquivalentDispatchMultiQueryBinding",
+    "GatedDeltaGeometryBinding",
     "LatentAttentionBinding",
     "MultiQueryAttentionBinding",
     "attention_head_binding_at_block",
@@ -3368,5 +3727,6 @@ __all__ = [
     "decoder_attention_logit_softcap_for_path",
     "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
+    "decoder_gated_delta_geometry_for_path",
     "exact_config_path_for_expression",
 ]

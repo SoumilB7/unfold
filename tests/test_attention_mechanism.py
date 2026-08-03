@@ -22,6 +22,7 @@ from model_unfolder.evidence.attention import (
     decoder_attention_head_binding_for_path,
     decoder_attention_mechanism_for_path,
     decoder_attention_score_scaling_for_path,
+    decoder_gated_delta_geometry_for_path,
     latent_attention_binding_at_block,
     multi_query_attention_binding_at_block,
 )
@@ -107,6 +108,49 @@ class Mixer:
         mixed = torch.matmul(F.softmax(score, dim=-1), value)
         {application}
         return self.finish(mixed)
+"""
+
+
+def _gated_delta_mixer(*, fields=("kh", "vh", "kd", "vd", "ck")):
+    kh, vh, kd, vd, ck = fields
+    return f"""
+def step_one(q, k, v, **kwargs):
+    return q, k
+def step_two(q, k, v, **kwargs):
+    return q, k
+class Mixer:
+    def __init__(self, config):
+        self.red = config.{kh}
+        self.green = config.{vh}
+        self.blue = config.{kd}
+        self.gold = config.{vd}
+        self.kw = config.{ck}
+        self.qk_width = self.blue * self.red
+        self.v_width = self.gold * self.green
+        self.conv = nn.Conv1d(
+            self.qk_width * 2 + self.v_width,
+            self.qk_width * 2 + self.v_width,
+            kernel_size=self.kw)
+        self.first = step_one
+        self.second = step_two
+    def forward(self, x):
+        q, k, v = torch.split(
+            x, [self.qk_width, self.qk_width, self.v_width], dim=-1)
+        q = q.reshape(1, 1, -1, self.blue)
+        k = k.reshape(1, 1, -1, self.blue)
+        v = v.reshape(1, 1, -1, self.gold)
+        beta_source = x
+        decay_source = x
+        beta = beta_source.sigmoid()
+        decay = F.softplus(decay_source)
+        if x.shape[0] == 1:
+            out, state = self.first(q, k, v, decay=decay, beta=beta)
+        else:
+            out, state = self.second(q, k, v, decay=decay, beta=beta)
+        if self.green // self.red > 1:
+            q = q.repeat_interleave(self.green // self.red)
+            k = k.repeat_interleave(self.green // self.red)
+        return out
 """
 
 
@@ -501,6 +545,83 @@ def test_real_qwen35_query_gate_keeps_hybrid_full_attention_code_bound():
         "attention_output_gate"}
     assert {receipt.node_ids for receipt in receipts} == {(
         "q_gate_split", "attn_output_gate", "attn_output_mul")}
+
+
+def test_real_qwen35_gated_delta_geometry_is_code_bound():
+    config = json.loads(
+        (_CORPUS / "qwen3-5-27b-text.json").read_text())["config"]
+    context = ParseContext.build(config)
+    result = decoder_gated_delta_geometry_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    value = result.value
+    assert (
+        value.key_heads_path, value.value_heads_path,
+        value.key_head_dim_path, value.value_head_dim_path,
+        value.conv_kernel_path,
+    ) == (
+        ("linear_num_key_heads",), ("linear_num_value_heads",),
+        ("linear_key_head_dim",), ("linear_value_head_dim",),
+        ("linear_conv_kernel_dim",),
+    )
+
+    from model_unfolder import config_to_ir
+    from model_unfolder.diagram import Diagram
+    from model_unfolder.parser import _coerce
+
+    cfg = _coerce(config)
+    parsed_context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=parsed_context)
+    fact = parsed_context.facts.typed[
+        "decoder.attention.gated_delta_geometry"]
+    assert fact.value == (16, 48, 128, 128, 4)
+    assert fact.status == "code_and_config"
+    delta = tuple(
+        layer.attention for layer in ir.layers
+        if layer.attention.kind == "gated_delta")
+    assert len(delta) == 48
+    assert {(item.num_kv_heads, item.num_heads, item.head_dim,
+             item.v_head_dim, item.conv_kernel_size)
+            for item in delta} == {(16, 48, 128, 128, 4)}
+    diagram = Diagram(ir)
+    diagram.to_html(standalone=True)
+    receipts = tuple(
+        receipt for event in diagram.render_events()
+        for receipt in event.receipts
+        if receipt.fact_key == "gated_delta_geometry")
+    assert len(receipts) == 1
+    assert receipts[0].node_ids == ("delta_conv", "delta_rule")
+
+
+def test_gated_delta_geometry_roles_survive_class_and_field_renaming(tmp_path):
+    fields = ("red_count", "green_count", "blue_width", "gold_width", "window")
+    index, bundle, _root, _block = _pipeline(
+        tmp_path, _gated_delta_mixer(fields=fields))
+    result = decoder_gated_delta_geometry_for_path(
+        index, bundle, (), allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert (
+        result.value.key_heads_path, result.value.value_heads_path,
+        result.value.key_head_dim_path, result.value.value_head_dim_path,
+        result.value.conv_kernel_path,
+    ) == tuple((field,) for field in fields)
+
+
+def test_gated_delta_config_fields_without_the_protocol_are_powerless(tmp_path):
+    attention = _split_attention(
+        "config.query_groups", "config.shared_groups").replace(
+        "        self.width = config.hidden // config.query_groups",
+        "        self.width = config.hidden // config.query_groups\n"
+        "        self.kh = config.red_count\n"
+        "        self.vh = config.green_count\n"
+        "        self.kd = config.blue_width\n"
+        "        self.vd = config.gold_width\n"
+        "        self.ck = config.window")
+    index, bundle, _root, _block = _pipeline(tmp_path, attention)
+    result = decoder_gated_delta_geometry_for_path(
+        index, bundle, (), allow_root_stage=True)
+    assert result.status == "failed"
 
 
 def test_raw_output_gate_flag_cannot_fabricate_a_gate_on_llama():

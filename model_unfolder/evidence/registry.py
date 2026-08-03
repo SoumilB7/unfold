@@ -374,6 +374,31 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "author the gate.",
     ),
     FactDefinition(
+        key="gated_delta_geometry",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({"code_and_config"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({
+            "attention_detail", "params_annotation", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "gated_delta_geometry", "opgraph",
+                "gated_delta_geometry", frozenset({"field"}),
+                frozenset({("delta_conv", "delta_rule")}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes="U6: exact Q/K/V split and reshapes, Q/K repeat ratio, "
+              "Conv1d kernel and sigmoid/softplus recurrent terminals bind "
+              "the five recurrent-mixer geometry values. A config field "
+              "spelling alone is powerless.",
+    ),
+    FactDefinition(
         key="norm_kind",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({"code_proven"}),

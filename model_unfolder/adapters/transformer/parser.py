@@ -213,6 +213,22 @@ def _attention_mechanism_result(context=None, *, config_path=()):
     )
 
 
+def _gated_delta_geometry_result(context=None, *, config_path=()):
+    """One call-local exact recurrent-mixer geometry binding."""
+    if context is None:
+        return None
+    from ...evidence.attention import decoder_gated_delta_geometry_for_path
+    config_path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.gated_delta_geometry",
+        config_path,
+        lambda: decoder_gated_delta_geometry_for_path(
+            context.program_index(), context.source_bundle, config_path,
+            allow_root_stage=True,
+        ),
+    )
+
+
 def _code_attention_storage_mode(
         cfg: Any, context=None, *, config_path=()) -> str | None:
     """Owner-qualified Q/K/V storage; uncertainty never becomes split/fused."""
@@ -1416,13 +1432,66 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact(
             "decoder.attention", "mechanism", None,
             _unknown_status, None)
-    # Hybrid linear-recurrent token mixers (for example a gated delta network)
-    # carry geometry separate from the full-attention head fields.
-    linear_num_k_heads = _g(text_cfg, "linear_num_key_heads")
-    linear_num_v_heads = _g(text_cfg, "linear_num_value_heads")
-    linear_k_head_dim = _g(text_cfg, "linear_key_head_dim")
-    linear_v_head_dim = _g(text_cfg, "linear_value_head_dim")
-    linear_conv_kernel = _g(text_cfg, "linear_conv_kernel_dim")
+    # Hybrid linear-recurrent geometry is a code-and-config join.  The reader
+    # assigns all five roles from split/reshape/repeat/Conv1d/recurrent uses;
+    # the familiar config spellings cannot populate a detailed mixer alone.
+    _gated_delta_evidence = _gated_delta_geometry_result(
+        context, config_path=_text_path)
+    _bound_gated_delta_geometry = None
+    if _gated_delta_evidence is not None \
+            and _gated_delta_evidence.status == "resolved":
+        _geometry = _gated_delta_evidence.value
+        _role_paths = (
+            ("linear_num_key_heads", _geometry.key_heads_path),
+            ("linear_num_value_heads", _geometry.value_heads_path),
+            ("linear_key_head_dim", _geometry.key_head_dim_path),
+            ("linear_value_head_dim", _geometry.value_head_dim_path),
+            ("linear_conv_kernel_dim", _geometry.conv_kernel_path),
+        )
+        _role_values = tuple(
+            _consume_code_bound_path(field, path,
+                                     fact_key="gated_delta_geometry")
+            for field, path in _role_paths)
+        if all(isinstance(value, int) and not isinstance(value, bool)
+               and value > 0 for value in _role_values):
+            (_linear_k_heads, _linear_v_heads,
+             _linear_k_dim, _linear_v_dim,
+             _linear_kernel) = _role_values
+            if _linear_v_heads >= _linear_k_heads \
+                    and _linear_v_heads % _linear_k_heads == 0:
+                _bound_gated_delta_geometry = _role_values
+                _note_typed_fact(
+                    key="gated_delta_geometry",
+                    owner="decoder.attention",
+                    value=_role_values,
+                    status="code_and_config",
+                    reader_result=_gated_delta_evidence,
+                    config_paths=tuple(
+                        selected for _field, path in _role_paths
+                        if (selected := _attention_actual_config_paths.get(path))
+                        is not None),
+                    reader="decoder_gated_delta_geometry_for_path",
+                    reason=(
+                        "exact split widths, reshape widths, Q/K repeat ratio, "
+                        "Conv1d kernel and two recurrent terminals bind all "
+                        "five geometry values"),
+                    completeness="presence_only",
+                )
+    if _bound_gated_delta_geometry is None:
+        # Inspected-only compatibility views keep declarations visible to the
+        # access audit while withholding architecture on reader abstention.
+        for _field in (
+                "linear_num_key_heads", "linear_num_value_heads",
+                "linear_key_head_dim", "linear_value_head_dim",
+                "linear_conv_kernel_dim"):
+            _g(text_cfg, _field)
+        linear_num_k_heads = linear_num_v_heads = None
+        linear_k_head_dim = linear_v_head_dim = None
+        linear_conv_kernel = None
+    else:
+        (linear_num_k_heads, linear_num_v_heads,
+         linear_k_head_dim, linear_v_head_dim,
+         linear_conv_kernel) = _bound_gated_delta_geometry
     # These declarations remain visible to the config-access audit, but they
     # cannot author the mechanism.  Some implementations apply the proven
     # sigmoid gate even when a familiar flag is false; the exact forward chain

@@ -108,6 +108,24 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
         and gate_node_ids == (
             "q_gate_split", "attn_output_gate", "attn_output_mul")
         and not attn.get("node_prefix") else ())
+    geometry_node_ids = tuple(
+        node_id for node_id in ("delta_conv", "delta_rule")
+        if node_id in graph.by_id())
+    geometry_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "gated_delta_geometry",
+            "mechanism": "gated_delta_geometry",
+            "value": (
+                attn.get("num_kv_heads"), attn.get("num_heads"),
+                attn.get("head_dim"), attn.get("v_head_dim"),
+                attn.get("conv_kernel_size"),
+            ),
+        },)
+        if "decoder.attention.gated_delta_geometry" in fact_rows
+        and attn.get("kind") == "gated_delta"
+        and geometry_node_ids == ("delta_conv", "delta_rule")
+        and not attn.get("node_prefix") else ())
     receipts = (
         receipts_from_projects(
             softcap_projects,
@@ -131,6 +149,14 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             projector_symbol=(
                 "renderers.html.block_views.attention.build_attention_view"),
             node_ids=gate_node_ids, projection_kind="op",
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            geometry_projects,
+            surface="opgraph", structural_target="gated_delta_geometry",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=geometry_node_ids, projection_kind="field",
             fact_rows=fact_rows,
         )
     )
