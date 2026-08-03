@@ -164,7 +164,7 @@ class VisionLayerEvidence:
     v_norm: bool = False
     post_rope_scale: bool = False
     position_kind: str = "unknown"
-    attention_kind: str = "softmax"
+    attention_kind: str = "unknown"
     ffn_projection_mode: str = "split"
     variant_key: str = ""
     repeat_field: str = ""

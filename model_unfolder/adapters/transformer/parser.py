@@ -2351,7 +2351,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             from ...evidence.vision import vision_tower_evidence
             modality_extras = apply_vision_evidence(
                 modality_extras,
-                vision_tower_evidence(cfg, bundle=context.source_bundle),
+                vision_tower_evidence(
+                    cfg, bundle=context.source_bundle,
+                    index=context.program_index()),
             )
         except Exception:
             # A failed source extractor must leave the path honestly generic;

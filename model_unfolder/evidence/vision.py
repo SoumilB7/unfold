@@ -29,6 +29,7 @@ def vision_tower_evidence(
     *,
     source: str = "local",
     bundle: SourceBundle | None = None,
+    index=None,
 ) -> VisionTowerEvidence:
     """Resolve exact vision blocks and their source-derived architectural facts."""
     from .conformance import (
@@ -38,6 +39,12 @@ def vision_tower_evidence(
     )
 
     bundle = bundle or resolve_source_files(target, source=source)
+    if index is None:
+        # Standalone evidence calls still use the same immutable program
+        # representation.  Production passes ParseContext.program_index() so
+        # the SourceBundle is parsed only once.
+        from .program_index import build_program_index
+        index = build_program_index(bundle)
     component, files = _component_source(bundle, "vision")
     nested_vision = (target.get("vision_config") if isinstance(target, dict)
                      else getattr(target, "vision_config", None))
@@ -78,6 +85,7 @@ def vision_tower_evidence(
 
     owner = _vision_owner(architecture, blocks, registry)
     patch_ops = _patch_ops(owner, blocks, registry)
+    mechanism_root = _vision_mechanism_root(index, bundle, component)
     variants: list[VisionLayerEvidence] = []
     for block in sorted(blocks):
         info = registry[block]
@@ -85,7 +93,11 @@ def vision_tower_evidence(
             block_class=block,
             source_file=info.source_file,
             line=info.line,
-            **layer_facts_from_block(block, registry, vocab),
+            **layer_facts_from_block(
+                block, registry, vocab,
+                attention_kind=_vision_attention_kind(
+                    index, mechanism_root, block, info.source_file),
+            ),
         )
         instances = _configured_block_instances(owner, block, registry)
         if instances:
@@ -187,7 +199,7 @@ def _constructed_class(func: ast.AST) -> str:
 
 
 def layer_facts_from_block(block: str, registry: dict, vocab: dict,
-                           ctor_kwargs=None) -> dict:
+                           ctor_kwargs=None, *, attention_kind=None) -> dict:
     """THE shared per-block typed-fact reader — the exact derivations the
     vision variants have always used (dataflow-order norm placement, tri-state
     projection modes, closure-proven FFN gating, gate activation only when the
@@ -263,7 +275,9 @@ def layer_facts_from_block(block: str, registry: dict, vocab: dict,
         "post_rope_scale": _post_rope_scale(attn),
         "position_kind": ("rope" if attn and _has_marker(attn.call_tokens, _ROPE_MARKERS)
                           else "none"),
-        "attention_kind": _attention_kind(attn),
+        # Mechanism is an owner-bound ProgramIndex proof supplied by the tower
+        # caller.  Callable/class spellings are provenance, never mechanism.
+        "attention_kind": attention_kind or "unknown",
         "ffn_projection_mode": _ffn_projection_mode(ffn_info),
         "standard_cell": standard_cell,
     }
@@ -782,11 +796,49 @@ def _projection_mode(info: CallableInfo | None) -> str:
     return "unknown"
 
 
-def _attention_kind(info: CallableInfo | None) -> str:
-    if info is None:
+def _vision_mechanism_root(index, bundle, component):
+    """Resolve the exact component root used solely as ownership authority."""
+    from .component_owner import resolve_component_root
+    from .program_index import ProgramIndex
+
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("vision mechanism evidence requires a ProgramIndex")
+    result = resolve_component_root(index, bundle, component)
+    return result if result.status == "resolved" else None
+
+
+def _vision_attention_kind(index, root, block: str, source_file: str) -> str:
+    """Return a canonical mechanism only from exact Q/K/V source evidence.
+
+    An equal-head binding proves that the same code-bound head-count path
+    shapes Q, K and V, hence MHA.  A grouped binding needs checkpoint values to
+    distinguish equal-valued MHA from GQA and remains unknown at this boundary.
+    Any missing/rival occurrence or unsupported compute path stays unknown.
+    """
+    if root is None:
         return "unknown"
-    tokens = {info.name, *info.init_class_refs, *info.call_tokens}
-    return "linear" if any("linearatt" in str(item).lower() for item in tokens) else "softmax"
+    from .attention import attention_head_binding_at_block
+
+    symbols = tuple(
+        record.symbol for record in index.classes
+        if record.symbol.qualified_name == block
+        and record.symbol.source.canonical_path == source_file
+        and record.symbol.source.component_key == root.component_key
+    )
+    if len(symbols) != 1:
+        return "unknown"
+    occurrences = root.graph.nodes_for_symbol(symbols[0])
+    if not occurrences:
+        return "unknown"
+    bindings = tuple(
+        attention_head_binding_at_block(index, root, node.occurrence)
+        for node in occurrences
+    )
+    if all(result.status == "resolved"
+           and result.value.protocol == "equal_heads"
+           for result in bindings):
+        return "mha"
+    return "unknown"
 
 
 def _ffn_projection_mode(info: CallableInfo | None) -> str:

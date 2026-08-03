@@ -49,6 +49,7 @@ def test_siglip_and_clip_are_dense_layernorm_towers_with_real_conv_order():
         layer = evidence.variants[0]
         assert (layer.norm_kind, layer.ffn_gated, layer.projection_mode) == (
             "LayerNorm", False, "separate_qkv")
+        assert layer.attention_kind == "mha"
 
 
 def test_pixtral_is_gated_rmsnorm_without_affecting_dense_counterexamples():
@@ -67,6 +68,10 @@ def test_qwen_generations_keep_dense_vs_gated_and_fused_qkv_distinct():
     assert (qwen25.norm_kind, qwen25.ffn_gated, qwen25.projection_mode) == (
         "RMSNorm", True, "fused_qkv")
     assert qwen3.projection_mode == "fused_qkv"
+    # This installed Qwen vision implementation dispatches through a runtime
+    # attention-interface registry.  Until that dispatch is exactly resolved,
+    # a fused QKV projection alone cannot certify the mixing mechanism.
+    assert qwen2.attention_kind == "unknown"
 
 
 def test_mllama_preserves_local_and_global_constructor_variants():
@@ -200,6 +205,18 @@ def test_root_fallback_does_not_guess_automodel_delegate_from_class_names(tmp_pa
     )
     assert evidence.status == "ambiguous"
     assert evidence.reason == "root wrapper does not prove the delegated vision class"
+
+
+def test_attention_class_name_cannot_author_a_tower_mechanism(tmp_path):
+    source = tmp_path / "modeling_wrapper.py"
+    source.write_text(_ROOT_FALLBACK_SOURCE.replace(
+        "OpticalAttention", "LinearAttention"))
+    evidence = vision_tower_evidence(
+        {"vision_config": {}}, bundle=_root_fallback_bundle(source),
+    )
+    assert evidence.status == "proven"
+    assert evidence.variants[0].attention_class == "LinearAttention"
+    assert evidence.variants[0].attention_kind == "unknown"
 
 
 def test_vision_fact_conformance_consumes_the_same_typed_evidence():
