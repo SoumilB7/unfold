@@ -12,7 +12,7 @@ This is the current authority/deletion worklist. The older
 - exact evidence-layer `ast.parse` sites: **34**
 - legacy model-source parse sites: **23**
 - frozen reader/helper implementation digest: `9330c5930fd4a6866fbd53c45dc7ca97bd6c6f8d31399aa811f30b01bc4fc60e`
-- frozen legacy-parse caller digest: `c677eb34678995d37a9f239c58340b664a68d120fa3b992eae1c8894b872b899`
+- frozen legacy-parse caller digest: `39f66049218eefea9cabc072ad4ff75a7fb12c5bc8f224e7882eaee0a2388dc5`
 
 ## Authority classes
 
@@ -28,7 +28,6 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U6 | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled`<br>`model_unfolder/adapters/transformer/parser.py:_code_scores_scaled` | whole-file attention score-scaling interpretation | U6 registers the exact owner-qualified fact and deletes attention_score_scaling_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_ffn_activation_from_files` | `model_unfolder/encoder_panel.py:_project_encoder_spec` | whole-file FFN activation interpretation | U7 registers the exact owner-qualified fact and deletes decoder_ffn_activation_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_intermediate_size_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_intermediate_size` | whole-file FFN dimension interpretation | U7 registers the exact owner-qualified fact and deletes decoder_intermediate_size_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_layer_topology_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_layer_topology` | whole-file decoder cell-topology interpretation | U7 registers the exact owner-qualified fact and deletes decoder_layer_topology_from_files |
@@ -37,6 +36,7 @@ This is the current authority/deletion worklist. The older
 | U8 | `model_unfolder/evidence/patterns.py::attention_causality_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_attention_causality` | whole-file mask/causality interpretation | U8 registers the exact owner-qualified fact and deletes attention_causality_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::decoder_moe_schedule_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_moe_schedule` | whole-file per-layer MoE selector interpretation | U8 registers the exact owner-qualified fact and deletes decoder_moe_schedule_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::decoder_rope_dim_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_rope_dim` | whole-file positional dimension interpretation | U8 registers the exact owner-qualified fact and deletes decoder_rope_dim_from_files |
+| U10 | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled` | whole-file diffusion-attention score-scaling interpretation | U10 registers the exact owner-qualified fact and deletes attention_score_scaling_from_files |
 | U10 | `model_unfolder/evidence/patterns.py::denoiser_block_timestep_conditioning_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_block_conditioning` | diffusion block conditioning interpretation | U10 registers the exact owner-qualified fact and deletes denoiser_block_timestep_conditioning_from_files |
 | U10 | `model_unfolder/evidence/patterns.py::diffusion_attn_kind_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_attn_kind` | diffusion attention mechanism interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_attn_kind_from_files |
 | U10 | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | `model_unfolder/adapters/diffusor/parser.py:_code_axes_dims_rope` | diffusion positional axes interpretation | U10 registers the exact owner-qualified fact and deletes diffusion_axes_dims_rope_from_files |
@@ -71,7 +71,7 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::_find_decoder_layer` | U8 | shared transformer semantic class selector |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U8 | shared transformer/diffusion semantic parser |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_causality_from_files` | U8 | whole-file causality interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | U6 | whole-file score-scaling interpreter |
+| `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | U10 | whole-file diffusion score-scaling interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::decoder_router_evidence_from_files` | U7 | whole-file router interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | U10 | diffusion positional interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_gate_via_norm_from_files` | U10 | diffusion modulation interpreter |

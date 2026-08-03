@@ -1715,13 +1715,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     reader="adapters.transformer.parser.parse").value
 
     # ---- QK-Norm ----
-    # Spelling read stays FIRST for config-ownership (all three aliases are
-    # audited) and as the no-oracle fallback; the code evidence then decides.
-    # U2-R7: the three rival spellings are ONE fact — resolved together (alias
-    # law: equal = redundant, unequal = typed ambiguity that authors nothing)
-    # and consumed into the qk_norm decision.
-    _config_access.resolve(
-        text_cfg, "use_qk_norm", ("qk_norm", "qk_layernorm"), path=_text_path)
+    # Config is consulted only for the exact gate paths named by the source
+    # reader below.  A familiar qk_norm/use_qk_norm spelling on its own is not
+    # an architectural input and must not create an audit occurrence.
     use_qk_norm = None
     _qk_code_result = _qk_norm_result(context, config_path=_text_path)
     _qk_code = (
@@ -1760,18 +1756,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
-    # CODE construction is authoritative.  The fact is intentionally uniform
-    # across Q/K/V/O: QKV alone cannot certify an output projection, and a
-    # mixed layout stays unknown until a richer per-lane fact is introduced.
-    # the config spelling is the declared channel behind it. U2 default-kill:
+    # CODE construction is authoritative. QKV alone cannot certify an output
+    # projection. Exact disagreeing construction expressions are retained as
+    # a mixed pattern; config-bound terms are evaluated only after the reader
+    # names their exact paths. U2 default-kill:
     # when BOTH are silent the bias is a typed UNKNOWN (None) — never a
     # silent False indistinguishable from proven-False.
     # U2-R7: consumed into the bias fact/spec — every alias spelling
     # (use_qkv_bias, add_qkv_bias, ...) resolves through this ONE read.
-    # U4-B keeps the declaration visible in the owner-scoped access ledger,
-    # but it cannot decide the fact.  U6 will bind the winning spelling to the
-    # exact ``Linear(..., bias=config.<field>)`` expression; until then the
-    # occurrence is explicit pending debt rather than an unread config field.
+    # A config occurrence is read only after the source reader binds it to an
+    # exact ``Linear(..., bias=config.<field>)`` expression.  An unrelated
+    # declaration is not even structural input and cannot create audit debt.
     _declared_bias_resolution = None
     _code_bias = _code_attention_bias(
         text_cfg, context, config_path=_text_path)
@@ -1877,12 +1872,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             _note_fact("decoder.attention", "bias", None,
                        _unknown_status, None)
     else:
-        # Keep an unbound declaration visible to the U6 debt audit.  It cannot
-        # author a bias fact until the exact projection constructor names it.
-        _declared_bias_resolution = _config_access.resolve(
-            text_cfg, "attention_bias", _ALIASES.get("attention_bias", ()),
-            path=_text_path,
-        )
+        # Reader failure/absence stays unknown.  Looking up a conventional
+        # alias here would turn config presence back into architectural input.
         use_attention_bias = None
         _note_fact("decoder.attention", "bias", None, _unknown_status, None)
     # Code-proven scores-scaling verdict (False ⇒ raw QK^T, T5 family).

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-_VALID_UNITS = frozenset({"U6", "U7", "U8", "U10", "U11"})
+_VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 
 # Line-insensitive AST/content pins.  They freeze the registered reader bodies
 # plus their same-module helper closure, and the exact callers of every legacy
@@ -24,7 +24,7 @@ _VALID_UNITS = frozenset({"U6", "U7", "U8", "U10", "U11"})
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
     "9330c5930fd4a6866fbd53c45dc7ca97bd6c6f8d31399aa811f30b01bc4fc60e")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "c677eb34678995d37a9f239c58340b664a68d120fa3b992eae1c8894b872b899")
+    "39f66049218eefea9cabc072ad4ff75a7fb12c5bc8f224e7882eaee0a2388dc5")
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,7 @@ class LegacySemanticReader:
         if not self.symbol.endswith("_from_files"):
             raise ValueError("legacy reader symbols retain their exact debt spelling")
         if self.migration_unit not in _VALID_UNITS:
-            raise ValueError("legacy readers are assigned to U6/U7/U8/U10/U11")
+            raise ValueError("legacy readers are assigned to U7/U8/U10/U11")
         if not self.reason or not self.deletion_condition:
             raise ValueError("legacy reader debt needs reason + deletion condition")
         if tuple(sorted(set(self.callers))) != self.callers:
@@ -97,11 +97,10 @@ def _row(symbol: str, unit: str, reason: str, *, module: str = "patterns.py",
 
 
 LEGACY_SEMANTIC_READERS = (
-    _row("attention_score_scaling_from_files", "U6",
-         "whole-file attention score-scaling interpretation",
+    _row("attention_score_scaling_from_files", "U10",
+         "whole-file diffusion-attention score-scaling interpretation",
          callers=(
              "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
-             "model_unfolder/adapters/transformer/parser.py:_code_scores_scaled",
          )),
     _row("decoder_ffn_activation_from_files", "U7",
          "whole-file FFN activation interpretation",
@@ -288,8 +287,8 @@ PARSE_AUTHORITY_SITES = (
            "attention_causality_from_files", "legacy_model_source", "U8",
            "whole-file causality interpreter"),
     _parse("model_unfolder/evidence/patterns.py",
-           "attention_score_scaling_from_files", "legacy_model_source", "U6",
-           "whole-file score-scaling interpreter"),
+           "attention_score_scaling_from_files", "legacy_model_source", "U10",
+           "whole-file diffusion score-scaling interpreter"),
     _parse("model_unfolder/evidence/patterns.py",
            "decoder_router_evidence_from_files", "legacy_model_source", "U7",
            "whole-file router interpreter"),
