@@ -22,14 +22,16 @@ from dataclasses import dataclass
 
 from .attention_storage import attention_projection_storage_evidence
 from .attention import (
-    attention_score_scaling_at_block,
     exact_config_path_for_expression,
+    latent_attention_binding_at_block,
 )
-from .attention_storage import producer_sources_reaching_expressions
+from .attention_output import (
+    attention_output_projection_at_block,
+    decoder_attention_output_projection_for_path,
+)
 from .component_owner import OwnerNode
 from .construction_calls import (
     ConstructionOccurrenceId,
-    resolve_construction_call,
     resolve_import_reference,
 )
 from .decoder_block import decoder_block_path_for_config
@@ -97,6 +99,72 @@ class ProjectionBiasEvidence:
 
 
 @dataclass(frozen=True)
+class ProjectionBiasTerm:
+    """Bias expression on one exact projection construction."""
+
+    projection: ConstructionOccurrenceId
+    value: bool | None
+    config_path: tuple[str, ...] | None
+    span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.projection, ConstructionOccurrenceId) \
+                or not isinstance(self.span, SourceSpan) \
+                or self.projection.site.span != self.span \
+                or self.span.source != self.projection.site.owner.source:
+            raise ValueError("a bias term names its exact construction site")
+        if (isinstance(self.value, bool)) == (self.config_path is not None):
+            raise ValueError("a bias term is one literal/default or config path")
+        if self.config_path is not None and (
+                not isinstance(self.config_path, tuple) or not self.config_path
+                or any(not isinstance(part, str) or not part
+                       for part in self.config_path)):
+            raise TypeError("a bias term carries one exact config path")
+
+
+@dataclass(frozen=True)
+class ProjectionBiasPatternEvidence:
+    """Non-uniform bias expressions across one exact attention affine path.
+
+    This is still resolved source evidence.  The parser supplies the values of
+    the exact config-bound terms; only then can the checkpoint be classified as
+    uniformly biased, uniformly bias-free, or a genuinely mixed layout.
+    """
+
+    mechanism: str
+    owner_symbol: SymbolId
+    terms: tuple[ProjectionBiasTerm, ...]
+
+    def __post_init__(self) -> None:
+        if self.mechanism != "attention" \
+                or not isinstance(self.owner_symbol, SymbolId):
+            raise ValueError("mixed bias evidence belongs to exact attention")
+        if len(self.terms) < 2 or any(
+                not isinstance(item, ProjectionBiasTerm)
+                for item in self.terms) \
+                or len({item.projection for item in self.terms}) != len(self.terms) \
+                or any(item.projection.site.owner != self.owner_symbol
+                       for item in self.terms) \
+                or len({(item.value, item.config_path)
+                        for item in self.terms}) < 2:
+            raise ValueError("a bias pattern retains distinct exact expressions")
+
+    @property
+    def projections(self) -> tuple[ConstructionOccurrenceId, ...]:
+        return tuple(item.projection for item in self.terms)
+
+    @property
+    def config_paths(self) -> tuple[tuple[str, ...], ...]:
+        return tuple(dict.fromkeys(
+            item.config_path for item in self.terms
+            if item.config_path is not None))
+
+    @property
+    def spans(self) -> tuple[SourceSpan, ...]:
+        return tuple(item.span for item in self.terms)
+
+
+@dataclass(frozen=True)
 class EquivalentProjectionBiasEvidence:
     """Unanimous projection bias across exact FFN construction variants."""
 
@@ -147,7 +215,7 @@ def decoder_attention_bias_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
-) -> ReaderResult[ProjectionBiasEvidence]:
+) -> ReaderResult[ProjectionBiasEvidence | ProjectionBiasPatternEvidence]:
     """Read bias from the exact attention projections for ``config_path``."""
     block = decoder_block_path_for_config(
         index, bundle, config_path, allow_root_stage=allow_root_stage)
@@ -155,21 +223,35 @@ def decoder_attention_bias_for_path(
         return block
     storage = attention_projection_storage_evidence(
         index, block.value.component_root, block.value.block_occurrence)
-    if storage.status != "resolved":
-        return storage
-    output = _attention_output_projection(
-        index, block.value.component_root, block.value.block_occurrence,
-        storage.value)
+    if storage.status == "resolved":
+        input_projections = storage.value.projections
+        output = attention_output_projection_at_block(
+            index, block.value.component_root, block.value.block_occurrence,
+            storage.value)
+        input_provenance = storage.provenance
+        owner_occurrence = storage.value.attention.compute_occurrence
+    else:
+        latent = latent_attention_binding_at_block(
+            index, block.value.component_root, block.value.block_occurrence)
+        if latent.status != "resolved":
+            return storage
+        output = decoder_attention_output_projection_for_path(
+            index, bundle, config_path,
+            allow_root_stage=allow_root_stage)
+        input_projections = latent.value.input_projections
+        input_provenance = latent.provenance
+        owner_occurrence = latent.value.attention_occurrence
     if output.status != "resolved":
         return output
-    projections = (*storage.value.projections, output.value)
+    projections = (*input_projections, output.value.projection)
+    owner_symbol = output.value.attention.compute.child_symbol
     value = _bias_for_projections(
         index,
-        storage.value.attention.compute.child_symbol,
+        owner_symbol,
         projections,
         mechanism="attention",
         owner_node=block.value.component_root.graph.node_for(
-            storage.value.attention.compute_occurrence),
+            owner_occurrence),
         config_prefix=tuple(config_path),
     )
     if value.status != "resolved":
@@ -178,7 +260,7 @@ def decoder_attention_bias_for_path(
         value.owner, value.value,
         provenance=(
             *block.provenance,
-            *storage.provenance,
+            *input_provenance,
             *output.provenance,
             *value.provenance,
         ))
@@ -242,8 +324,7 @@ def _bias_for_projections(
         site.site_id: site
         for site in index.construction_sites_of(owner_symbol)
     }
-    verdicts = []
-    spans = []
+    terms = []
     for occurrence in projections:
         site = sites.get(occurrence.site)
         if site is None:
@@ -263,10 +344,10 @@ def _bias_for_projections(
         kwargs = tuple((name, value) for name, value in site.kwargs
                        if name == "bias")
         if not kwargs:
-            verdicts.append((True, None))
+            value, config_path = True, None
         elif len(kwargs) == 1 and kwargs[0][1].kind == "constant" \
                 and isinstance(kwargs[0][1].const_value, bool):
-            verdicts.append((kwargs[0][1].const_value, None))
+            value, config_path = kwargs[0][1].const_value, None
         elif len(kwargs) == 1 and owner_node is not None:
             path = exact_config_path_for_expression(
                 index, owner_node, kwargs[0][1],
@@ -276,22 +357,34 @@ def _bias_for_projections(
                     "unsupported_syntax",
                     "the exact bias expression has no unique owner-bound "
                     "config path"),))
-            verdicts.append((None, path))
+            value, config_path = None, path
         else:
             return ReaderResult.failed(occurrence.parent, (ReaderFailure(
                 "unsupported_syntax",
                 "the exact bias expression is not a source-only boolean"),))
-        spans.append(site.span)
+        terms.append(ProjectionBiasTerm(
+            occurrence, value, config_path, site.span))
 
-    if len(set(verdicts)) != 1:
+    verdicts = {(item.value, item.config_path) for item in terms}
+    if len(verdicts) != 1 and mechanism == "attention":
+        evidence = ProjectionBiasPatternEvidence(
+            mechanism, owner_symbol, tuple(terms))
+        return ReaderResult.resolved(
+            projections[0].parent, evidence,
+            provenance=(ReaderProvenance(
+                "code_and_config" if evidence.config_paths else "source",
+                spans=evidence.spans, config_paths=evidence.config_paths,
+                detail=(
+                    "exact attention affine constructions retain a non-uniform "
+                    "bias-expression pattern for checkpoint arbitration")),))
+    if len(verdicts) != 1:
         return ReaderResult.ambiguous(
             projections[0].parent,
-            Ambiguity(sites=tuple(span for span in spans
-                                  if isinstance(span, SourceSpan))))
-    value, config_path = verdicts[0]
+            Ambiguity(sites=tuple(item.span for item in terms)))
+    value, config_path = next(iter(verdicts))
     evidence = ProjectionBiasEvidence(
         mechanism, owner_symbol, projections, value, config_path,
-        tuple(dict.fromkeys(spans)))
+        tuple(item.span for item in terms))
     return ReaderResult.resolved(
         projections[0].parent, evidence,
         provenance=(ReaderProvenance(
@@ -303,116 +396,6 @@ def _bias_for_projections(
                 "config occurrence"),
             config_paths=((config_path,) if config_path is not None else ())),),
     )
-
-
-def _attention_output_projection(index, root, block_occurrence, storage):
-    """Prove the exact affine consuming the attention-value result.
-
-    The output projection is not selected by an ``o_proj``-style field name.
-    We first prove the exact score/softmax protocol, then identify the exact
-    attention-value terminal, and finally require one exact Linear call whose
-    argument is reached by that terminal.  Every join is local to the selected
-    compute callable and occurrence.
-    """
-    attention = storage.attention
-    callable_symbol = attention.compute.callable_symbol
-    score = attention_score_scaling_at_block(
-        index, root, block_occurrence)
-    if score.status != "resolved":
-        return score
-    score_value = score.value
-    if score_value.protocol == "sdpa_terminal":
-        terminal = score_value.score_call
-    else:
-        softmax = score_value.softmax_call
-        candidates = tuple(
-            call for call in attention.compute.input_calls
-            if call.span is not None
-            and call.enclosing_callable == callable_symbol
-            and (_span_before(softmax.span, call.span)
-                 or _span_contains(call.span, softmax.span))
-            and _expression_reached_by_call(
-                index, callable_symbol, call.span,
-                (*call.args, *(value for _name, value in call.kwargs)),
-                softmax)
-        )
-        if len(candidates) != 1:
-            return ReaderResult.failed(
-                attention.compute_occurrence, (ReaderFailure(
-                    "incomplete_graph",
-                    "the exact softmax does not reach one unique attention-value "
-                    "terminal"),))
-        terminal = candidates[0]
-
-    qkv = set(storage.projections)
-    outputs = []
-    for call in index.calls_in(callable_symbol):
-        if call.guard or call.span is None \
-                or not _span_before(terminal.span, call.span) \
-                or _self_field(call.callee) is None:
-            continue
-        construction = resolve_construction_call(
-            index, root, attention.compute_occurrence, call)
-        if construction.status != "resolved" \
-                or construction.selected.kind != "external" \
-                or construction.selected.external_reference.qualified_target \
-                not in _LINEAR_PROTOCOLS \
-                or construction.selected.occurrence in qkv:
-            continue
-        expressions = (*call.args, *(value for _name, value in call.kwargs))
-        if _expression_reached_by_call(
-                index, callable_symbol, call.span, expressions, terminal):
-            outputs.append((construction.selected.occurrence, call))
-    if len(outputs) != 1:
-        return ReaderResult.failed(
-            attention.compute_occurrence, (ReaderFailure(
-                "incomplete_graph",
-                "the attention-value terminal does not reach one unique exact "
-                "Linear output projection"),))
-    occurrence, call = outputs[0]
-    spans = tuple(dict.fromkeys((
-        terminal.span, occurrence.site.span, call.span)))
-    return ReaderResult.resolved(
-        attention.compute_occurrence, occurrence,
-        provenance=(ReaderProvenance(
-            "source", spans=spans,
-            detail=(
-                "the exact attention-value terminal reaches one exact Linear "
-                "output projection")),))
-
-
-def _expression_reached_by_call(
-        index, callable_symbol, consumer_span, expressions, producer_call):
-    sources, _unpacks, _dependencies, uncertain = \
-        producer_sources_reaching_expressions(
-            index, callable_symbol,
-            ((consumer_span, tuple(expressions)),),
-            {producer_call: producer_call})
-    return not uncertain and sources == frozenset((producer_call,))
-
-
-def _span_before(left, right):
-    if left is None or right is None or left.source != right.source:
-        return False
-    return (left.line, left.col) < (right.line, right.col)
-
-
-def _span_contains(outer, inner):
-    if outer is None or inner is None or outer.source != inner.source:
-        return False
-    return (
-        (outer.line, outer.col) <= (inner.line, inner.col)
-        and (inner.end_line or inner.line, inner.end_col or inner.col)
-        <= (outer.end_line or outer.line, outer.end_col or outer.col)
-    )
-
-
-def _self_field(expression):
-    if expression.kind != "attribute" or not expression.children:
-        return None
-    root = expression.children[0]
-    return expression.name \
-        if root.kind == "name" and root.name == "self" else None
 
 
 def _merge_result(block, storage, value):
@@ -436,6 +419,8 @@ def _call_callee(expression: ExprNode) -> ExprNode | None:
 
 __all__ = [
     "ProjectionBiasEvidence",
+    "ProjectionBiasPatternEvidence",
+    "ProjectionBiasTerm",
     "decoder_attention_bias_for_path",
     "decoder_ffn_bias_for_path",
 ]

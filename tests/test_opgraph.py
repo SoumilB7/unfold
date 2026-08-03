@@ -27,6 +27,7 @@ GQA = {
     "position_kind": "rope",
     "position_application": "qk_rotation",
     "cached": True,
+    "output_projection": True,
 }
 
 
@@ -103,6 +104,13 @@ def test_gqa_attention_region_is_a_multi_merge_dag():
     # op ids ARE the inspect-card ids — one identity for structure and clicks.
     assert {"q_proj", "k_proj", "v_proj", "scaled_scores", "attn_softmax",
             "attn_apply_v", "concat_heads", "o_proj"} <= {o.id for o in r.ops}
+
+
+def test_known_attention_without_output_proof_uses_an_opaque_output_path():
+    r = attention_region({**GQA, "output_projection": None}, 4096)
+    assert "o_proj" not in r.by_id()
+    assert r.by_id()["attention_output_unresolved"].kind == "opaque"
+    assert r.inputs_of("attention_output_unresolved") == ["concat_heads"]
 
 
 def test_attention_lanes_and_spine_are_derived_from_edges():

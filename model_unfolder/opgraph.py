@@ -500,7 +500,9 @@ def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int |
 def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | None,
                    *, scaled: bool | None = None,
                    scale: float | None = None,
-                   softcap: float | None = None) -> tuple[list[Op], list[Edge]]:
+                   softcap: float | None = None,
+                   output_projected: bool | None = None,
+                   ) -> tuple[list[Op], list[Edge]]:
     """The shared SDPA spine: scores → softmax → ⊙V → concat → out.
 
     ``scaled=False`` is the code-proven "raw QK^T" variant (T5-family folds the
@@ -537,6 +539,19 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
                     "an explicit scale is unresolved, so no denominator or "
                     "scaling formula is asserted.",
         }
+    output_id = (
+        "o_proj" if output_projected is True
+        else "attention_output_unresolved")
+    output_op = (
+        Op("o_proj", "linear", "Linear (out)",
+           in_features=q_w, out_features=hidden)
+        if output_projected is True else
+        Op(
+            "attention_output_unresolved", "opaque",
+            "Attention output path unresolved",
+            in_features=q_w, out_features=hidden,
+            meta={"status": "unresolved"},
+        ))
     ops = [
         Op("scaled_scores", "attention_core",
            "Attention scores (scaling unresolved)" if scaled is None else None,
@@ -548,10 +563,11 @@ def _sdpa_core_ops(heads: int, head_dim: int, q_w: int | None, hidden: int | Non
         # Merging per-head outputs back to model dim is a single-stream RESHAPE,
         # not a two-lane merge — a plain box, never the ‖ concat glyph.
         Op("concat_heads", "reshape", "Concat heads", out_features=q_w),
-        Op("o_proj", "linear", "Linear (out)", in_features=q_w, out_features=hidden),
+        output_op,
     ]
     edges = [Edge("scaled_scores", "attn_softmax"), Edge("attn_softmax", "attn_apply_v"),
-             Edge("attn_apply_v", "concat_heads"), Edge("concat_heads", "o_proj")]
+             Edge("attn_apply_v", "concat_heads"),
+             Edge("concat_heads", output_id)]
     if softcap:
         # Code-bound softcap (Gemma-2): scores/cap → tanh → ×cap runs
         # BETWEEN the scores and the softmax in the forward — a real op, so it
@@ -671,6 +687,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         scaled=attn.get("scores_scaled"),
         scale=attn.get("scores_scale"),
         softcap=attn.get("logit_softcap"),
+        output_projected=attn.get("output_projection"),
     )
     ops += core_ops
     if projection_mode == "split_qkv":
@@ -702,6 +719,9 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("sink_concat", "attn_softmax"),
         ]
     if attn.get("output_gate"):
+        output_id = (
+            "o_proj" if attn.get("output_projection") is True
+            else "attention_output_unresolved")
         projected_q = q_source
         ops += [
             Op("q_gate_split", "slice", "Split Q / gate"),
@@ -713,7 +733,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
             Edge("q_gate_split", "attn_output_gate"),
             Edge("attn_output_gate", "attn_output_mul"),
             Edge("concat_heads", "attn_output_mul"),
-            Edge("attn_output_mul", "o_proj"),
+            Edge("attn_output_mul", output_id),
         ]
         q_source = "q_gate_split"
     v_final = v_source
@@ -738,7 +758,7 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
         # projection edge.  Keep this outside the optional Q/K/V-norm loop:
         # an output gate is independent of whether any lane is normalized.
         edges = [edge for edge in edges
-                 if not (edge.src == "concat_heads" and edge.dst == "o_proj")]
+                 if not (edge.src == "concat_heads" and edge.dst == output_id)]
     # A position bias ADDED to the pre-softmax scores is one lane shape with two
     # code-proven flavours: ALiBi (fixed head-specific slopes) and the learned
     # relative bias (T5-family bucketed-distance Embedding).  Same topology,
@@ -838,6 +858,7 @@ def _mla_region(attn: dict, hidden: int | None) -> Region:
         scaled=attn.get("scores_scaled"),
         scale=attn.get("scores_scale"),
         softcap=attn.get("logit_softcap"),
+        output_projected=attn.get("output_projection"),
     )
     ops += core_ops
     edges = [

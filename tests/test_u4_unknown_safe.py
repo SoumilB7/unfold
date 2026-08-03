@@ -227,13 +227,13 @@ def test_attention_summary_distinguishes_false_unknown_and_position_unknown():
             "no attention-stage position op"} <= set(negative)
 
 
-def test_nested_attention_bias_debt_is_owner_exact():
-    """The root projection-bias row may not excuse a recursive text encoder."""
+def test_u6_projection_bias_debt_rows_are_retired_at_both_owner_altitudes():
+    """Exact source readers replaced both root and recursive pending rows."""
     from model_unfolder.evidence.structural_debt import pending_projection_paths
 
     pending = pending_projection_paths()
-    assert ("root", "attention_bias") in pending
-    assert ("root.text_encoder", "attention_bias") in pending
+    assert ("root", "attention_bias") not in pending
+    assert ("root.text_encoder", "attention_bias") not in pending
 
 
 def test_unknown_projection_storage_never_becomes_split_qkv():

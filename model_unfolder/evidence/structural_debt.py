@@ -252,14 +252,14 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "fact_registered:window_schedule"),
     _extras("dual_kv", "root.decoder.attention",
             "dual global/sliding KV schedule as raw extras",
-            "U6", "fact_registered:kv_schedule",
+            "U8", "fact_registered:kv_schedule",
             occurrence="text_cfg num_global_key_value_heads | "
                        "global_head_dim"),
     _extras("dual_kv.global", "root.decoder.attention",
-            "global-lane KV geometry as a raw extras leaf", "U6",
+            "global-lane KV geometry as a raw extras leaf", "U8",
             "fact_registered:kv_schedule"),
     _extras("dual_kv.sliding", "root.decoder.attention",
-            "sliding-lane KV geometry as a raw extras leaf", "U6",
+            "sliding-lane KV geometry as a raw extras leaf", "U8",
             "fact_registered:kv_schedule"),
     _extras("irope", "root.decoder.attention",
             "interleaved-RoPE (NoPE-interval) schedule as raw extras",
@@ -271,7 +271,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     _extras("num_kv_shared_layers", "root.decoder.attention",
             "cross-layer KV-sharing count as raw extras (drawn sharing "
             "comes from CrossLayerEdge spec fields)",
-            "U6", "fact_registered:kv_shared_layers",
+            "U8", "fact_registered:kv_shared_layers",
             occurrence="text_cfg num_kv_shared_layers"),
     _extras("partial_rotary_factor", "root.decoder.attention",
             "partial-rotary fraction as raw extras (drawn partial rotary "
@@ -295,12 +295,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "attention cap and query-score operand have left this legacy lane",
             "U14", "fact_routed:final_logit_softcap",
             occurrence="text_cfg final_logit_softcapping"),
-    _extras("attention_k_eq_v + use_double_wide_mlp pass-through flags",
-            "root",
-            "variable-keyed pass-through flag loop (extras[flag] = val)",
-            "U6", "classified:attention_k_eq_v",
-            occurrence="text_cfg attention_k_eq_v | use_double_wide_mlp",
-            census="<dynamic>"),
     _extras("block_diffusion", "root",
             "block-diffusion canvas descriptor as raw extras",
             "U10", "fact_registered:block_diffusion_canvas",
@@ -555,31 +549,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.vae", "_vae_config.attention_head_dim",
             "DC-AE decoder attention head width (Sana) — V-05",
             "U12", "fact_registered:vae_decoder_attention"),
-    # U4-B: these declarations remain visible but cannot author their
-    # mechanisms.  U6/U8/U10 must bind each exact occurrence to the owning
-    # source expression before it may leave this register.
-    _config("the decoder projection-bias fact", "root", "attention_bias",
-            "declaration awaits exact Linear(..., bias=config.<field>) "
-            "binding; declaration alone authors no bias operation",
-            "U6", "status_retired:bias:config_declared"),
-    _config("the decoder projection-bias fact", "root", "use_qkv_bias",
-            "alias occurrence awaits the same exact projection binding",
-            "U6", "status_retired:bias:config_declared"),
-    _config("the embedded decoder projection-bias fact", "root",
-            "text_config.attention_bias",
-            "nested text-config occurrence awaits exact projection binding",
-            "U6", "status_retired:bias:config_declared"),
-    _config("the recursively parsed decoder projection-bias fact",
-            "root.text_encoder", "attention_bias",
-            "the nested encoder declaration awaits the same exact "
-            "Linear(..., bias=config.<field>) binding; recursive ownership "
-            "must not be laundered through the top-level root row",
-            "U6", "status_retired:bias:config_declared"),
-    _config("the decoder per-head Q/K-normalization fact", "root",
-            "qk_layernorm",
-            "the declaration cannot prove execution of its ModuleList-backed "
-            "per-head norms; U6 must bind the exact call path",
-            "U6", "fact_registered:qk_norm"),
     # Qwen3.5's position declaration remains exact U8 work.  Its five
     # recurrent-mixer geometry paths left this register in U6 once the exact
     # split/reshape/repeat/Conv1d/recurrent protocol bound them.

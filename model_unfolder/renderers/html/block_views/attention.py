@@ -148,6 +148,17 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
         and attn.get("cached") is True
         and "kv_cache" in graph.by_id()
         and not attn.get("node_prefix") else ())
+    output_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "output_projection",
+            "mechanism": "attention_output_projection",
+            "value": attn.get("output_projection"),
+        },)
+        if "decoder.attention.output_projection" in fact_rows
+        and attn.get("output_projection") is True
+        and "o_proj" in graph.by_id()
+        and not attn.get("node_prefix") else ())
     receipts = (
         receipts_from_projects(
             softcap_projects,
@@ -195,6 +206,14 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             projector_symbol=(
                 "renderers.html.block_views.attention.build_attention_view"),
             node_ids=("kv_cache",), projection_kind="op",
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            output_projects,
+            surface="opgraph", structural_target="output_projection",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=("o_proj",), projection_kind="op",
             fact_rows=fact_rows,
         )
     )

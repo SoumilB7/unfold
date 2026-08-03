@@ -76,6 +76,7 @@ def test_qwen_generations_keep_dense_vs_gated_and_fused_qkv_distinct():
 
 def test_mllama_preserves_local_and_global_constructor_variants():
     evidence = _evidence(MLLAMA_VISION_TINY_CONFIG)
+    assert {item.attention_kind for item in evidence.variants} == {"mha"}
     assert [(item.variant_key, item.repeat_field, item.residual_gated)
             for item in evidence.variants] == [
         ("transformer", "num_hidden_layers", False),

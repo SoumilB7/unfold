@@ -561,6 +561,7 @@ class LatentAttentionBinding:
     attention_occurrence: OwnerOccurrenceId
     compressed_projection: ConstructionOccurrenceId
     expanded_projection: ConstructionOccurrenceId
+    input_projections: tuple[ConstructionOccurrenceId, ...]
     num_heads_path: tuple[str, ...]
     kv_lora_rank_path: tuple[str, ...]
     qk_rope_head_dim_path: tuple[str, ...]
@@ -577,6 +578,14 @@ class LatentAttentionBinding:
                or item.parent != self.attention_occurrence
                for item in projections) or len(set(projections)) != 2:
             raise ValueError("latent attention carries two exact owner projections")
+        if len(self.input_projections) < 3 or any(
+                not isinstance(item, ConstructionOccurrenceId)
+                or item.parent != self.attention_occurrence
+                for item in self.input_projections) \
+                or len(set(self.input_projections)) != len(self.input_projections) \
+                or not set(projections).issubset(self.input_projections):
+            raise ValueError(
+                "latent attention retains every proven exact input projection")
         paths = (
             self.num_heads_path, self.kv_lora_rank_path,
             self.qk_rope_head_dim_path, self.qk_nope_head_dim_path,
@@ -593,9 +602,9 @@ class LatentAttentionBinding:
         source = self.attention_occurrence.root.source
         if any(span.source != source for span in self.spans):
             raise ValueError("latent attention provenance belongs to its source")
-        required = {item.site.span for item in projections}
+        required = {item.site.span for item in self.input_projections}
         if not required.issubset(self.spans):
-            raise ValueError("latent attention cites both construction sites")
+            raise ValueError("latent attention cites every proven input site")
 
 
 @dataclass(frozen=True)
@@ -2611,15 +2620,23 @@ def latent_attention_binding_at_block(
 
     compressed, expanded, proof = next(iter(distinct.values()))
     num_heads, latent, rope_dim, nope_dim, value_dim, proof_spans = proof
+    # Keep every proven affine input path, not only the terminal producers.
+    # DeepSeek-style latent attention has q_a -> q_b and kv_a -> kv_b chains;
+    # retaining only q_b/kv_b would make downstream construction facts (for
+    # example projection bias) silently ignore the compression stages.
+    input_projections = tuple(sorted(
+        _dependency_closure(sources, dependencies).intersection(linear_calls),
+        key=lambda item: _span_sort_key(item.site.span)))
     spans = tuple(dict.fromkeys(
         span for span in (
-            compressed.site.span, expanded.site.span,
-            linear_calls[compressed].span, linear_calls[expanded].span,
+            *(item.site.span for item in input_projections),
+            *(linear_calls[item].span for item in input_projections),
             *proof_spans, *child.compute.spans)
         if isinstance(span, SourceSpan)))
     value = LatentAttentionBinding(
         block_occurrence, child.compute_occurrence,
-        compressed, expanded, num_heads, latent, rope_dim, nope_dim,
+        compressed, expanded, input_projections,
+        num_heads, latent, rope_dim, nope_dim,
         value_dim, spans)
     paths = (num_heads, latent, rope_dim, nope_dim, value_dim)
     return ReaderResult.resolved(

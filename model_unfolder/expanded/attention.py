@@ -55,6 +55,7 @@ def build_attention(attn: dict, hidden: int | None,
         "position_kind":   attn.get("position_kind"),
         "position_application": attn.get("position_application"),
         "projection_mode": attn.get("projection_mode"),
+        "output_projection": attn.get("output_projection"),
         "scores_scaled":   attn.get("scores_scaled"),
         "trace": {
             "ir_path":          f"{group_path}.attention",

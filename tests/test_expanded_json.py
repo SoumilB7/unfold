@@ -431,20 +431,21 @@ def test_mllama_cross_attention_is_layer_variant_only():
     assert "Projected image states" in html
     assert "Flatten spatial grid" in html
     assert 'data-id="vision_enc_g0_op_selfattn"' in html
-    # The vision reader proves a softmax-style kernel and split QKV storage,
-    # but not MHA/GQA/MQA head-sharing.  A kernel family must not manufacture
-    # the overall mechanism: keep the known 16×80 geometry on one opaque
-    # attention region until the exact kind is source-proven.
+    # The vision reader now proves more than a softmax kernel: one exact
+    # owner-bound head-count path shapes Q, K and V equally.  That is the MHA
+    # mechanism law itself, so this tower may open without borrowing the
+    # checkpoint's head counts or a model-family label.
     vision_groups = ir["extras"]["modalities"]["inputs"]["vision"]["encoder"][
         "sub_model"
     ]["groups"]
-    assert all(group["attention"]["kind"] is None for group in vision_groups)
+    assert all(group["attention"]["kind"] == "mha" for group in vision_groups)
     assert all(
         group["attention"]["projection_mode"] == "split_qkv"
         for group in vision_groups
     )
-    assert "vision_enc_g0_attn_scaled_scores" not in html
-    assert "Attention mechanism unresolved" in html
+    assert "vision_enc_g0_attn_scaled_scores" in html
+    # The separate text-decoder cross-attention remains honestly unresolved;
+    # this assertion is scoped to the source-proven vision owner above.
     assert "vision_enc_g0_ffn_" in html
     assert "separate vision tower" in html
     assert "Vision context" not in html

@@ -66,8 +66,9 @@ class AttentionSpec:
                                     # so every code-proven model stays byte-identical.
     rope_theta_declared: Optional[float] = None  # the declared θ carried onto the chip
                                     # (emitted only alongside position_declared).
-    bias: Optional[bool] = None     # bias terms on the Q/K/V/O projections (Qwen2,
-                                    # GPT-2, Phi). Tri-state (U2): True/False are
+    bias: Optional[bool | str] = None  # uniform True/False or exact "mixed"
+                                    # bias terms across the attention affine path (Qwen2,
+                                    # GPT-2, Phi). True/False/"mixed" are
                                     # evidence-backed (config or code); None ⇒ no
                                     # channel decided — cards say "bias unresolved"
                                     # instead of silently drawing bias-less.
@@ -78,6 +79,9 @@ class AttentionSpec:
                                     # axis as a chip so the block reads as video without drilling
     cached: Optional[bool] = None   # whether K/V are written to a cache.
                                     # None is unresolved, never "causal ⇒ cache".
+    output_projection: Optional[bool] = None  # exact attention-result ->
+                                    # output-Linear path. True is code-proven;
+                                    # None renders an honest opaque output path.
     cross_attention: bool = False   # decoder Q attends to external encoder/modality K/V states
     cross_kv_source: Optional[str] = None  # what supplies the external K/V when
                                     # cross_attention is set — e.g. "encoded text
@@ -468,6 +472,7 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "no_rope": a.no_rope,
         "rope_3d": a.rope_3d,
         "cached": a.cached,
+        "output_projection": a.output_projection,
         "cross_attention": a.cross_attention,
         "cross_kv_source": a.cross_kv_source,
         "compress_ratio": a.compress_ratio,

@@ -766,39 +766,36 @@ def test_omni_nested_thinker_text_config_unwrapped():
                 if not w.startswith("Unresolved code-defined facts")]
 
 
-def test_attention_bias_and_rope_theta():
-    """AP-4/AP-5: read attention_bias onto the spec, surface rope_theta always."""
+def test_unbound_attention_bias_is_powerless_and_rope_theta_is_visible():
+    """A declaration cannot author bias; the numeric RoPE operand stays visible."""
     base = dict(
         model_type="qwen2", num_hidden_layers=2, hidden_size=64,
         num_attention_heads=8, intermediate_size=128, vocab_size=100,
         rms_norm_eps=1e-5, rope_theta=1000000,
     )
 
-    # attention_bias=True -> per-layer spec flag + "+bias" in the label.
-    d = unfold({**base, "attention_bias": True})
-    assert all(l["attention"]["bias"] for l in d.to_ir()["layers"])
-    assert "+bias" in d.to_html()
+    # Qwen2's exact code has biased Q/K/V projections and a bias-free output
+    # projection.  Its unrelated attention_bias declaration cannot change that
+    # source-proven mixed layout.
+    for declared in (True, False, None):
+        cfg = base if declared is None else {**base, "attention_bias": declared}
+        d = unfold(cfg)
+        assert {l["attention"]["bias"] for l in d.to_ir()["layers"]} == {"mixed"}
+        assert "mixed projection bias" in d.to_html()
 
     # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
     assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
 
-    # CODE-AUTHORITATIVE bias: Qwen2's attention hardcodes `nn.Linear(..., bias=
-    # True)` on QKV and NEVER reads `config.attention_bias`, so a config
-    # `attention_bias=False` is a DEAD flag — the code truth (bias) wins.
-    assert all(l["attention"]["bias"] for l in unfold({**base, "attention_bias": False}).to_ir()["layers"])
-    assert all(l["attention"]["bias"] for l in unfold(base).to_ir()["layers"])
-
-    # A config-gated construction (Llama: ``bias=config.attention_bias``)
-    # remains unknown in U4-B.  The source-only reader proves that the exact
-    # projection exists but deliberately cannot upgrade a bare declaration
-    # into the constructor result; U6 owns the exact code+config binding.
+    # Llama's exact source binds all four projections to the one declaration;
+    # the checkpoint value therefore decides a uniform result only after that
+    # source binding is proven.
     llama = dict(model_type="llama", num_hidden_layers=2, hidden_size=64,
                  num_attention_heads=8, intermediate_size=128, vocab_size=100, rms_norm_eps=1e-5)
     for declared in (False, True):
-        assert all(
-            l["attention"]["bias"] is None
+        assert {
+            l["attention"]["bias"]
             for l in unfold({**llama, "attention_bias": declared}).to_ir()["layers"]
-        )
+        } == {declared}
 
 
 def test_compress_rates_alias_derives_csa_hca_masks():

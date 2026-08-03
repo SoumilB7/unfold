@@ -250,11 +250,12 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="bias",
         # U2-R9 (witness 26): a composite decoder whose bias evidence cannot
         # resolve records an HONEST ambiguous/None row (never a chosen value).
-        value_types=frozenset({"bool", "NoneType"}),
+        value_types=frozenset({"bool", "str", "NoneType"}),
         # Exact source-only literals/framework defaults are code_proven only
-        # after the exact Q/K/V/O projections agree. ``bias=config.<field>``
-        # is code_and_config only when those same constructors bind one exact
-        # path; a raw declaration or QKV-only proof is powerless.
+        # after the exact ordinary Q/K/V/O projections agree. Latent attention
+        # retains every affine stage and may emit the closed ``mixed`` layout
+        # after its exact config-bound expressions are evaluated. A raw
+        # declaration or QKV-only proof is powerless.
         allowed_statuses=frozenset({
             "code_proven", "code_and_config", "config_declared",
             "class_default", "ambiguous",
@@ -393,6 +394,29 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "both returned replacements reach the selected attention "
               "compute. Only positive cache capability is currently authored; "
               "unmatched source remains unknown.",
+    ),
+    FactDefinition(
+        key="output_projection",
+        value_types=frozenset({"bool"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "attention_output_projection", "opgraph",
+                "output_projection", frozenset({"op"}),
+                frozenset({("o_proj",)}),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                }),
+            ),
+        ),
+        unknown_policy="pale_undeclared",
+        negative_requires_complete=True,
+        notes="U6: the selected attention-value terminal reaches one unique "
+              "exact Linear construction and call. Unmatched source remains "
+              "an opaque output path, never a conventional output Linear.",
     ),
     FactDefinition(
         key="output_gate",

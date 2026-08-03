@@ -149,7 +149,9 @@ def kind_short(attention: dict) -> str:
     tags = []
     if attention.get("qk_norm"):
         tags.append("QK-Norm")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        tags.append("mixed bias")
+    elif attention.get("bias") is True:
         tags.append("+bias")
     if attention.get("shared"):
         tags.append("Shared")
@@ -197,7 +199,9 @@ def kind_long(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("per-head Q/K normalisation")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        extras.append("mixed projection bias")
+    elif attention.get("bias") is True:
         extras.append("bias on Q/K/V/O projections")
     if attention.get("shared"):
         extras.append("weight-shared across positions")
@@ -336,7 +340,9 @@ def describe_attention(attention: dict) -> str:
     extras = []
     if attention.get("qk_norm"):
         extras.append("QK-Norm")
-    if attention.get("bias"):
+    if attention.get("bias") == "mixed":
+        extras.append("mixed bias")
+    elif attention.get("bias") is True:
         extras.append("+bias")
     if attention.get("shared"):
         extras.append("weight-shared")
@@ -469,11 +475,15 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     # like the evidence-backed causal/bias-less case.
     if attention.get("mask") in (None, "unknown"):
         facts.append("mask unresolved")
-    for flag, chip in (("qk_norm", "QK-Norm"), ("bias", "+bias"),
+    for flag, chip in (("qk_norm", "QK-Norm"),
                        ("shared", "weight-shared"), ("no_rope", "NoPE")):
         if attention.get(flag):
             facts.append(chip)
-    if attention.get("bias") is None and "bias" in attention:
+    if attention.get("bias") == "mixed":
+        facts.append("mixed projection bias")
+    elif attention.get("bias") is True:
+        facts.append("+bias")
+    elif attention.get("bias") is None and "bias" in attention:
         facts.append("bias unresolved")
     elif attention.get("bias") is False:
         facts.append("bias-free projections")

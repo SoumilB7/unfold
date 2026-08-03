@@ -45,6 +45,7 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "shared": attention.shared,
         "no_rope": attention.no_rope,
         "cached": attention.cached,
+        "output_projection": attention.output_projection,
         "cross_attention": attention.cross_attention,
         "cross_kv_source": attention.cross_kv_source,
         "compress_ratio": attention.compress_ratio,
@@ -186,12 +187,20 @@ def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int, *, generic: b
             "title": attention_title,
             "description": attention_desc,
         },
-        {
+        ({
             "id": "o_proj",
             "title": "Output projection",
             "description": "Linear recombining every head back into the residual width.",
             "facts": [f"{q_out} → {hidden}"],
-        },
+        } if attention.output_projection is True else {
+            "id": "attention_output_unresolved",
+            "title": "Attention output path unresolved",
+            "description": (
+                "The attention result returns to the layer, but source evidence "
+                "has not proven one exact Linear output projection."
+            ),
+            "resolved": False,
+        }),
     ]
 
 
@@ -374,12 +383,20 @@ def _sdpa_detailed_child_blocks(
             "description": "Stack the per-head context vectors back into one width.",
             "facts": [f"{num_heads} × {d_k}", f"→ {q_out}"],
         },
-        {
+        ({
             "id": "o_proj",
             "title": "Output projection",
             "description": "Linear mixing information across heads, back to the residual width.",
             "facts": [f"{q_out} → {hidden}"],
-        },
+        } if attention.output_projection is True else {
+            "id": "attention_output_unresolved",
+            "title": "Attention output path unresolved",
+            "description": (
+                "The attention result returns to the layer, but source evidence "
+                "has not proven one exact Linear output projection."
+            ),
+            "resolved": False,
+        }),
     ]
     if attention.cached is True and not cross_attention and not generic:
         cards.append({

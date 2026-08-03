@@ -354,6 +354,23 @@ def _code_attention_bias(cfg: Any, context=None, *, config_path=()):
     return result if result is not None and result.status == "resolved" else None
 
 
+def _attention_output_projection_result(context=None, *, config_path=()):
+    """One call-local exact attention-result -> output-Linear proof."""
+    if context is None:
+        return None
+    from ...evidence.attention_output import (
+        decoder_attention_output_projection_for_path,
+    )
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.output_projection",
+        path,
+        lambda: decoder_attention_output_projection_for_path(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True),
+    )
+
+
 def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
     """Per-layer MoE?/dense schedule READ FROM THE DECODER LAYER's CONSTRUCTION —
     the code-authoritative replacement for the config schedule flags: which
@@ -1339,6 +1356,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
         source=("decoder_attention_projection_storage_for_path"
                 if _code_attention_storage is not None else None),
     )
+    _output_projection_result = _attention_output_projection_result(
+        context, config_path=_text_path)
+    attention_output_projection = (
+        True if _output_projection_result is not None
+        and _output_projection_result.status == "resolved" else None)
+    if attention_output_projection is True:
+        _note_typed_fact(
+            key="output_projection",
+            owner="decoder.attention",
+            value=True,
+            status="code_proven",
+            reader_result=_output_projection_result,
+            config_paths=(),
+            reader="decoder_attention_output_projection_for_path",
+            reason=(
+                "the selected attention-value terminal reaches one unique "
+                "exact Linear construction and call"),
+        )
     # Placement is an owner-bound wiring fact.  Source presence is not proof
     # of pre-norm: an abstaining reader stays unknown on every surface.
     norm_placement = (_code_topo or {}).get("norm_placement")
@@ -1740,7 +1775,65 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _declared_bias_resolution = None
     _code_bias = _code_attention_bias(
         text_cfg, context, config_path=_text_path)
-    if _code_bias is not None and _code_bias.value.value is not None:
+    from ...evidence.projection_bias import ProjectionBiasPatternEvidence
+    if _code_bias is not None and isinstance(
+            _code_bias.value, ProjectionBiasPatternEvidence):
+        # A latent path may deliberately mix literal bias=False stages with
+        # stages bound to one exact config occurrence.  Resolve the expressions
+        # only after source has identified every exact construction; the raw
+        # config value never authors the projection layout by itself.
+        decisions = {}
+        for _bound_path in _code_bias.value.config_paths:
+            _prefix = tuple(_text_path)
+            if len(_bound_path) != len(_prefix) + 1 \
+                    or _bound_path[:len(_prefix)] != _prefix:
+                continue
+            _resolution = _config_access.resolve(
+                text_cfg, _bound_path[-1], (), path=_text_path)
+            if _resolution.ambiguous or not _resolution.present \
+                    or _resolution.selected_path != ".".join(_bound_path) \
+                    or not isinstance(_resolution.value, bool):
+                continue
+            _resolution.bind(
+                "decoder_attention_bias_for_path",
+                fact_owner="decoder.attention", fact_key="bias")
+            decisions[_bound_path] = _resolution.consume_decision(
+                mechanism="projection_bias",
+                fact_owner="decoder.attention", fact_key="bias",
+                reader="decoder_attention_bias_for_path",
+                status="code_and_config")
+        if len(decisions) == len(_code_bias.value.config_paths):
+            _bias_values = {
+                term.value if term.config_path is None
+                else decisions[term.config_path].value
+                for term in _code_bias.value.terms
+            }
+            use_attention_bias = (
+                next(iter(_bias_values))
+                if len(_bias_values) == 1 else "mixed")
+            _bias_status = (
+                "code_and_config"
+                if _code_bias.value.config_paths else "code_proven")
+            _note_typed_fact(
+                key="bias",
+                owner="decoder.attention",
+                value=use_attention_bias,
+                status=_bias_status,
+                reader_result=_code_bias,
+                config_paths=_code_bias.value.config_paths,
+                reader="decoder_attention_bias_for_path",
+                reason=(
+                    "every exact attention affine construction contributes its "
+                    "literal or config-bound bias expression"
+                    + ("; the selected checkpoint makes them uniform"
+                       if len(_bias_values) == 1
+                       else "; the selected checkpoint produces a mixed layout")),
+            )
+        else:
+            use_attention_bias = None
+            _note_fact("decoder.attention", "bias", None,
+                       _unknown_status, None)
+    elif _code_bias is not None and _code_bias.value.value is not None:
         use_attention_bias = _code_bias.value.value
         _note_fact("decoder.attention", "bias", use_attention_bias,
                    "code_proven", "decoder_attention_bias_for_path")
@@ -2298,6 +2391,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             logit_softcap=attn_logit_softcap,
             qkv_clip=qkv_clip,
             cached=attention_cached,
+            output_projection=attention_output_projection,
             asserted=(),
             projection_mode=(
                 _code_attention_storage
@@ -2775,12 +2869,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "sliding": {"num_kv_heads": num_kv_heads, "head_dim": head_dim},
             "global":  {"num_kv_heads": num_kv_global, "head_dim": head_dim_global},
         }
-
-    # Pass-through flags that show up on a few families and are interesting at the model card level.
-    for flag in ("attention_k_eq_v", "use_double_wide_mlp"):
-        val = _g(text_cfg, flag)
-        if val:
-            extras[flag] = val
 
     # U2: ONE consolidated banner line for every fact the ledger left
     # unresolved (position warns separately, unchanged) — the render tier
