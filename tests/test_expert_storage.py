@@ -70,6 +70,59 @@ class {name}(nn.Module):
 """
 
 
+def _split_expert_class(*, product=True, return_down=True):
+    product_line = (
+        "mixed = F.silu(left) * right" if product else
+        "mixed = F.silu(left)"
+    )
+    return f"""
+class OpaqueKernel(nn.Module):
+    def __init__(self, config):
+        self.count = config.num_experts
+        self.width = config.intermediate
+        self.hidden = config.hidden
+        self.alpha = nn.Parameter(torch.empty(
+            self.count * self.width, self.hidden))
+        self.beta = nn.Parameter(torch.empty(
+            self.count * self.width, self.hidden))
+        self.omega = nn.Parameter(torch.empty(
+            self.count * self.width, self.hidden))
+    def forward(self, signal, one, two, three):
+        left = signal.matmul(one)
+        right = signal.matmul(two)
+        {product_line}
+        down = mixed.matmul(three.t())
+        return {"down" if return_down else "signal"}
+
+class ShardedCompute(nn.Module):
+    def __init__(self, config):
+        self.unit = OpaqueKernel(config)
+        self.count = config.num_experts
+        self.width = config.intermediate
+        self.hidden = config.hidden
+    def forward(self, hidden, routes, weights):
+        output = torch.zeros_like(hidden)
+        shape = (-1, self.width, self.hidden)
+        for index in routes:
+            first = self.unit.alpha.view(shape)[index]
+            second = self.unit.beta.view(shape)[index]
+            third = self.unit.omega.view(shape)[index]
+            value = self.unit(hidden[index], first, second, third)
+            output.index_add_(0, index, value)
+        return output
+"""
+
+
+def _split_expert_with_dead_product():
+    """A dead gate/up product must not certify a different down path."""
+    return _split_expert_class().replace(
+        "mixed = F.silu(left) * right\n        down = mixed.matmul(three.t())",
+        "dead = F.silu(left) * right\n"
+        "        mixed = left + right\n"
+        "        down = mixed.matmul(three.t())",
+    )
+
+
 def _bundle(tmp_path, *, expert_source=None, block_init=None, extra=""):
     expert_source = expert_source or _expert_class()
     block_init = block_init or "self.compute = Routed(config)"
@@ -129,6 +182,37 @@ def test_fused_expert_requires_exact_stacked_two_lane_flow(tmp_path):
     assert [symbol.qualified_name for symbol in result.value.owner_trace] == [
         "Block", "Routed", "ShardedCompute"]
     assert len(result.value.construction_path) == 2
+
+
+def test_split_expert_requires_repeated_selection_and_three_stage_dataflow(
+        tmp_path):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_split_expert_class())
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "split"
+    assert len(result.value.input_parameters) == 2
+    assert len(result.value.construction_path) == 3
+
+
+@pytest.mark.parametrize(("product", "return_down"), [
+    (False, True),
+    (True, False),
+])
+def test_split_parameter_trio_without_live_gate_down_flow_abstains(
+        tmp_path, product, return_down):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_split_expert_class(
+            product=product, return_down=return_down))
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+def test_dead_gate_product_cannot_certify_an_unrelated_down_path(tmp_path):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_split_expert_with_dead_product())
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "failed"
 
 
 @pytest.mark.parametrize(("split", "product"), [
@@ -204,6 +288,7 @@ def test_result_closure_rejects_cross_owner_parameter_forgery(tmp_path):
     ("deepseek-v3", "resolved"),
     ("glm-4-5", "resolved"),
     ("gpt-oss-20b", "resolved"),
+    ("dbrx-base", "resolved"),
     ("llama-7b", "failed"),
 ])
 def test_real_routed_expert_controls(slug, expected):
@@ -215,13 +300,15 @@ def test_real_routed_expert_controls(slug, expected):
         allow_root_stage=True)
     assert result.status == expected, result.failures
     if expected == "resolved":
-        assert result.value.projection_mode == "fused_gate_up"
+        assert result.value.projection_mode == (
+            "split" if slug == "dbrx-base" else "fused_gate_up")
 
 
 @pytest.mark.parametrize("slug", [
     "deepseek-v3",
     "glm-4-5",
     "gpt-oss-20b",
+    "dbrx-base",
 ])
 def test_parser_consumes_the_same_exact_expert_storage_result(slug):
     from model_unfolder import config_to_ir
@@ -238,7 +325,7 @@ def test_parser_consumes_the_same_exact_expert_storage_result(slug):
     assert moe_layers
     assert {
         layer.ffn.expert_projection_mode for layer in moe_layers
-    } == {"fused_gate_up"}
+    } == {"split" if slug == "dbrx-base" else "fused_gate_up"}
 
 
 @pytest.mark.parametrize("slug", [

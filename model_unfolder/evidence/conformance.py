@@ -852,6 +852,7 @@ def _drawn_position_kinds(ir: dict) -> set[str]:
 
 def check_nested_conformance(
     target, render_log, *, source: str = "local", bundle: SourceBundle | None = None,
+    fact_rows=None,
 ) -> list[ConformanceProblem]:
     """Recurse INTO every drill view and diff its DRAWN op-set against the model's
     own code — one altitude below :func:`check_model_conformance` (which stops at
@@ -1005,8 +1006,34 @@ def check_nested_conformance(
                         "unresolved", "", f"{family}/{view_key}", source_component=component))
                 continue
             ops, evidence = closure
+            # A parameterized expert may spell its affine projections as
+            # ``x.matmul(weight)`` rather than ``nn.Linear``.  The transitive
+            # scanner correctly sees ``dot_product`` and must NOT globally
+            # equate that with a linear layer (attention would launder through
+            # the same rule).  The parser's exact routed-storage fact is the
+            # positive proof that THIS expert's matmuls use the selected learned
+            # gate/up/down Parameters, so the checker consumes the same fact as
+            # the renderer and authorizes ``linear`` only at this expert drill.
+            if drill_role == "expert" and _expert_fact_proves_affine(fact_rows):
+                ops = frozenset({*ops, "linear"})
             problems.extend(_diff_drill(family, view_key, drill_role, drawn, ops, evidence, vocab, ab))
     return problems
+
+
+def _expert_fact_proves_affine(fact_rows) -> bool:
+    """Whether the native expert-storage fact proves learned projections.
+
+    This is deliberately a closed fact/status/value check.  A config assertion,
+    unknown fact, or missing ledger can never relax nested conformance.
+    """
+    if not isinstance(fact_rows, dict):
+        return False
+    row = fact_rows.get("decoder.ffn.expert.expert_projection_mode")
+    return (
+        isinstance(row, dict)
+        and row.get("status") in {"code_proven", "code_and_config"}
+        and row.get("value") in {"fused_gate_up", "split"}
+    )
 
 
 def _block_classes(registry) -> list[str]:

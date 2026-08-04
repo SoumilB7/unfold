@@ -474,7 +474,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
         # processor / the FeedForward ModuleList). One altitude below op_conformance.
         SableCheck("nested_conformance",
                    [p.message for p in (check_nested_conformance(
-                       cfg, render_log, source=source, bundle=context.source_bundle
+                       cfg, render_log, source=source, bundle=context.source_bundle,
+                       fact_rows=_fact_rows,
                    ) if oracle_files else [])],
                    note="" if oracle_files else "skipped — no code oracle"),
         SableCheck("label_lint", lint_labels(ir)),

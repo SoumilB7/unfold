@@ -695,158 +695,6 @@ def test_diffusor_class_defaults_mechanism_is_eradicated():
 
 
 # ---------------------------------------------------------------------------
-# Decoder-layer MACRO-TOPOLOGY read from the forward() dataflow (code ->
-# structure), the general replacement for the layer_topology.yaml model_type
-# table. Asserts the GENERAL dataflow-classifier behavior on synthetic source,
-# never a single family.
-# ---------------------------------------------------------------------------
-
-_PRE_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = RMSNorm(8)\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        x = self.self_attn(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = self.mlp(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_DOUBLE_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = RMSNorm(8)\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.pre_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        x = self.self_attn(x)\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.pre_feedforward_layernorm(x)\n"
-    "        x = self.mlp(x)\n"
-    "        x = self.post_feedforward_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_POST_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.post_attention_layernorm = RMSNorm(8)\n"
-    "        self.post_feedforward_layernorm = RMSNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.self_attn(x)\n"
-    "        x = self.post_attention_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        residual = x\n"
-    "        x = self.mlp(x)\n"
-    "        x = self.post_feedforward_layernorm(x)\n"
-    "        x = residual + x\n"
-    "        return x\n"
-)
-_PARALLEL_LAYER = (
-    "class FooDecoderLayer:\n"
-    "    def __init__(self):\n"
-    "        self.input_layernorm = LayerNorm(8)\n"
-    "        self.self_attn = FooAttention(8)\n"
-    "        self.mlp = FooMLP(8)\n"
-    "    def forward(self, x, past_key_values=None):\n"
-    "        residual = x\n"
-    "        x = self.input_layernorm(x)\n"
-    "        attn_out = self.self_attn(x)\n"
-    "        mlp_out = self.mlp(x)\n"
-    "        x = residual + attn_out + mlp_out\n"
-    "        return x\n"
-)
-
-
-def _topo(tmp_path, src):
-    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
-    f = tmp_path / "modeling_topo.py"
-    f.write_text(src)
-    return decoder_layer_topology_from_files([str(f)])
-
-
-def test_layer_topology_classifies_norm_placement_from_dataflow(tmp_path):
-    """norm placement is read from where the norms sit relative to each sublayer in
-    the forward() — not a model_type row. norm-before-sublayer => pre, norm-after =>
-    post, both => double (sandwich)."""
-    assert _topo(tmp_path, _PRE_LAYER)["norm_placement"] == "pre"
-    assert _topo(tmp_path, _DOUBLE_LAYER)["norm_placement"] == "double"
-    assert _topo(tmp_path, _POST_LAYER)["norm_placement"] == "post"
-
-
-def test_layer_topology_detects_parallel_residual_from_shared_input(tmp_path):
-    """parallel residual is read from the forward: attention and the FFN consumed in
-    one residual segment (one norm feeds both, one combined add) => parallel; the
-    sequential layer where the FFN follows the attention add => not parallel.
-    Catches GPT-J / Phi / Cohere, all flagless and all missed by the old table."""
-    assert _topo(tmp_path, _PARALLEL_LAYER)["parallel_residual"] is True
-    assert _topo(tmp_path, _PRE_LAYER)["parallel_residual"] is False
-
-
-def test_layer_topology_finds_decoder_not_encoder_in_multimodal_file(tmp_path):
-    """When a modeling file bundles several attention+ffn classes (a multimodal
-    file's vision/audio ENCODER layers + the text decoder), the decoder is picked
-    by its KV-cache forward parameter — an encoder doesn't cache. Without this the
-    first class (an encoder, often parallel) is misread as the decoder's topology."""
-    src = (
-        "class FooVisionEncoderLayer:\n"          # first, but an encoder (no cache)
-        "    def __init__(self):\n"
-        "        self.norm1 = LayerNorm(8)\n"
-        "        self.attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x):\n"
-        "        residual = x\n"
-        "        a = self.attn(self.norm1(x))\n"
-        "        m = self.mlp(self.norm1(x))\n"
-        "        return residual + a + m\n"        # parallel — would mislead
-        "\n\n" + _PRE_LAYER
-    )
-    topo = _topo(tmp_path, src)
-    assert topo["norm_placement"] == "pre"
-    assert topo["parallel_residual"] is False     # decoder picked, not the encoder
-
-
-def test_layer_topology_real_families_match_code(tmp_path):
-    """The installed modeling source must classify each family as its known
-    structure — zero drift from the emptied table — and CATCH the flagless parallels
-    (GPT-J / Phi) the table never listed. Skips a family whose source isn't
-    installed (a gap, not a failure)."""
-    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
-    from model_unfolder.evidence.sources import resolve_source_files
-    expect = {
-        "llama": ("pre", False), "gemma2": ("double", False), "olmo2": ("post", False),
-        "cohere": ("pre", True), "gpt_j": ("pre", True), "phi": ("pre", True),
-        "phi3": ("pre", False), "bloom": ("pre", False),
-    }
-    seen = 0
-    for mt, (place, parallel) in expect.items():
-        files = resolve_source_files({"model_type": mt}, source="local").files
-        topo = decoder_layer_topology_from_files(files)
-        if topo is None:
-            continue
-        seen += 1
-        assert topo["norm_placement"] == place, f"{mt}: {topo} != {place}"
-        assert topo["parallel_residual"] is parallel, f"{mt}: {topo} parallel != {parallel}"
-    assert seen >= 4, "too few installed families exercised — resolver may be broken"
-
-
 def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
     """A multi-variant modeling file is detected by counting distinct LAYER classes
     (attention + ffn/norm), not a hardcoded family name: one decoder layer => 1
@@ -1308,6 +1156,27 @@ def test_real_moe_models_nested_clean(mt):
         pytest.skip(f"{mt} source not installed")
     problems = check_nested_conformance(cfg, _render_log(cfg))
     assert problems == [], "\n".join(p.message for p in problems)
+
+
+def test_parameter_matmul_expert_uses_exact_storage_proof_for_linear():
+    """DBRX stores three repeated expert Parameters and applies them with
+    ``matmul``.  A global dot-product→linear equivalence would be unsound for
+    attention; the exact routed-storage proof must close only this expert
+    occurrence, and every nested expert drill must remain conformance-clean.
+    """
+    fixture = Path(__file__).parent / "sable_test_corpus" / "dbrx-base.json"
+    cfg = __import__("json").loads(fixture.read_text())["config"]
+    if not resolve_source_files(cfg, source="local").files:
+        pytest.skip("transformers DBRX source not installed")
+    ir = mu.config_to_ir(cfg).to_dict()
+    facts = (ir.get("extras") or {}).get("fact_provenance") or {}
+    problems = check_nested_conformance(
+        cfg, _render_log(cfg), fact_rows=facts)
+    fabricated = [
+        problem for problem in problems
+        if problem.kind == "fabricated" and "expert" in problem.view
+    ]
+    assert fabricated == [], "\n".join(p.message for p in fabricated)
 
 
 # ---------------------------------------------------------------------------

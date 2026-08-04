@@ -188,51 +188,6 @@ def test_audio_witnesses_render_and_couple():
         assert d.wiring_problems() == []
 
 
-# ---- TTS honesty: classic post-norm is sequential, never parallel ------------
-
-def test_classic_post_norm_reads_sequential_post_never_parallel():
-    """The original-Transformer idiom — wrapped ``norm(residual + x)`` (VITS)
-    and the split-statement form ``x = residual + sub(x); x = norm(x)``
-    (SpeechT5) — must classify as sequential post-norm.  Both misread as
-    PARALLEL (+double) before: the add hid inside the norm's argument, fusing
-    the sublayers into one segment (caught on the VITS TTS gallery)."""
-    from model_unfolder.evidence.patterns import _classify_topology
-
-    # Wrapped (VITS): attention, norm(+add)  |  ffn, norm(+add)
-    wrapped = ["attention", "norm", "add", "ffn", "norm", "add"]
-    assert _classify_topology(wrapped) == {
-        "norm_placement": "post", "parallel_residual": False}
-
-    # Split statements (SpeechT5): bare sublayer, add, then a leading norm
-    # that CLOSES the previous sublayer.
-    split = ["attention", "add", "norm", "ffn", "add", "norm"]
-    assert _classify_topology(split) == {
-        "norm_placement": "post", "parallel_residual": False}
-
-    # Pre-norm families keep their leading norms (llama shape).
-    pre = ["norm", "attention", "add", "norm", "ffn", "add"]
-    assert _classify_topology(pre) == {
-        "norm_placement": "pre", "parallel_residual": False}
-
-    # True parallel residual (GPT-J): one segment, both sublayers.
-    parallel = ["norm", "attention", "ffn", "add"]
-    assert _classify_topology(parallel)["parallel_residual"] is True
-
-
-def test_vits_layer_topology_from_installed_source():
-    """End-to-end on the installed modeling source (offline)."""
-    import os
-    import pytest
-    import transformers
-    from model_unfolder.evidence.patterns import decoder_layer_topology_from_files
-    path = os.path.join(os.path.dirname(transformers.__file__),
-                        "models/vits/modeling_vits.py")
-    if not os.path.exists(path):
-        pytest.skip("vits source not installed")
-    assert decoder_layer_topology_from_files([path]) == {
-        "norm_placement": "post", "parallel_residual": False}
-
-
 def test_tts_silent_drops_are_stated_omissions():
     """A config declaring flows / duration predictor / HiFiGAN ladder /
     speech pre-post-nets (VITS, SpeechT5 spellings) must WARN about what is
@@ -245,8 +200,10 @@ def test_tts_silent_drops_are_stated_omissions():
     assert "not drawn" in joined
     for label in ("normalizing flows", "duration predictor", "HiFiGAN"):
         assert label in joined
-    # And the parallel/double misread stays dead: VITS is sequential post-norm.
-    assert ir.layers[0].norm_placement == "post"
+    # This bare config declares no exact architecture/root occurrence.  The old
+    # whole-file scan selected a post-norm-looking class anyway; the exact U7
+    # reader must keep rival model stages unknown instead of first-picking one.
+    assert ir.layers[0].norm_placement == "unknown"
 
     ir2 = config_to_ir(SpeechT5Config())
     joined2 = " ".join(ir2.warnings)

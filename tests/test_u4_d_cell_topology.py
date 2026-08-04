@@ -359,17 +359,49 @@ def test_musicgen_does_not_borrow_a_pre_norm_convention():
     assert not {"rms1", "rms2", "add1", "add2"} & set(_ids(layer))
 
 
-def test_parallel_residual_declaration_is_a_scoped_non_authoritative_read():
+def test_stablelm_selector_is_consumed_only_for_the_fact_it_decides():
     cfg = _corpus_config("stablelm-2-1-6b")
     ir = config_to_ir(
         cfg, parse_context=ParseContext.build(cfg, source="local")
     )
-    # The source reader may independently prove a topology; the declaration
-    # itself is not the author and therefore carries no standing config debt.
-    assert ir.layers[0].residual_topology in {
-        "sequential", "parallel", "unknown",
-    }
+    assert ir.layers[0].norm_placement == "pre"
+    assert ir.layers[0].residual_topology == "sequential"
+    facts = ir.extras["fact_provenance"]
+    assert facts["decoder.layer.norm_placement"]["status"] == "code_proven"
+    assert facts["decoder.layer.residual_topology"]["status"] \
+        == "code_and_config"
     assert not any(
         item.endswith(":use_parallel_residual")
         for item in ir.extras["config_access"]["accessed_unconsumed"]
     )
+    obligations = [
+        item for item in ir.extras["config_access"]["projection_obligations"]
+        if item["mechanism"] == "cell_topology"
+    ]
+    assert [(item["source"]["path"], item["target"]["key"])
+            for item in obligations] \
+        == [("use_parallel_residual", "residual_topology")]
+
+
+def test_qwen35_declared_variant_domain_is_cited_by_both_cell_facts():
+    cfg = _corpus_config("qwen3-5-27b-text")
+    ir = config_to_ir(
+        cfg, parse_context=ParseContext.build(cfg, source="local")
+    )
+    assert (ir.layers[0].norm_placement,
+            ir.layers[0].residual_topology) == ("pre", "sequential")
+    facts = ir.extras["fact_provenance"]
+    assert facts["decoder.layer.norm_placement"]["status"] \
+        == "code_and_config"
+    assert facts["decoder.layer.residual_topology"]["status"] \
+        == "code_and_config"
+    obligations = [
+        item for item in ir.extras["config_access"]["projection_obligations"]
+        if item["mechanism"] == "cell_topology"
+    ]
+    assert sorted(
+        (item["source"]["path"], item["target"]["key"])
+        for item in obligations) == [
+            ("layer_types", "norm_placement"),
+            ("layer_types", "residual_topology"),
+        ]

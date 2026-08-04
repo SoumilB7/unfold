@@ -12,8 +12,12 @@ decoder block occurrence
   -> those lanes multiply
   -> the product feeds a different stacked Parameter.
 
-Silence is unknown.  Split expert storage and router policy are separate U3
-facts and are deliberately not inferred here.
+The U7 extension also proves split expert storage, but only through the full
+construction/use chain: three repeated Parameters on one exact child, exact
+per-expert selection of all three inside its parent's expert loop, and a
+positive gate/up -> activation/product -> down dataflow in that child.  A trio
+of parameters or an expert-looking field name alone remains powerless.  Router
+policy is a separate fact.
 """
 from __future__ import annotations
 
@@ -72,7 +76,7 @@ class RoutedExpertStorage:
     owner_trace: tuple[SymbolId, ...]
     construction_path: tuple[ConstructionSiteId, ...]
     projection_mode: str
-    fused_parameter: FieldAssignRecord
+    input_parameters: tuple[FieldAssignRecord, ...]
     down_parameter: FieldAssignRecord
     spans: tuple[SourceSpan, ...]
 
@@ -96,30 +100,35 @@ class RoutedExpertStorage:
         if any(site.owner != self.owner_trace[index]
                for index, site in enumerate(self.construction_path)):
             raise ValueError("each construction site belongs to its trace parent")
-        if self.projection_mode != "fused_gate_up":
-            raise ValueError("this positive-only boundary proves fused_gate_up")
-        for record in (self.fused_parameter, self.down_parameter):
+        if self.projection_mode not in {"fused_gate_up", "split"}:
+            raise ValueError("expert storage has a closed projection mode")
+        expected_inputs = 1 if self.projection_mode == "fused_gate_up" else 2
+        if len(self.input_parameters) != expected_inputs:
+            raise ValueError(
+                "expert storage mode fixes its exact input-parameter count")
+        records = (*self.input_parameters, self.down_parameter)
+        for record in records:
             if not isinstance(record, FieldAssignRecord):
                 raise TypeError("expert projection fields retain field records")
             if record.owner != self.owner_symbol:
                 raise ValueError("expert projection fields belong to the exact owner")
-        if self.fused_parameter == self.down_parameter:
-            raise ValueError("fused input and down storage are distinct fields")
+        identities = tuple(
+            (record.owner, record.field, record.span) for record in records)
+        if len(set(identities)) != len(identities):
+            raise ValueError("expert projection storage fields are distinct")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
             raise ValueError("expert storage carries exact source provenance")
         if any(site.span.source != site.owner.source
                for site in self.construction_path):
             raise ValueError("each construction span belongs to its trace parent")
-        if self.fused_parameter.span is None \
-                or self.down_parameter.span is None \
-                or self.fused_parameter.span.source != self.owner_symbol.source \
-                or self.down_parameter.span.source != self.owner_symbol.source:
+        if any(record.span is None
+               or record.span.source != self.owner_symbol.source
+               for record in records):
             raise ValueError("expert storage field spans belong to the expert source")
         required_spans = {
             *(site.span for site in self.construction_path),
-            self.fused_parameter.span,
-            self.down_parameter.span,
+            *(record.span for record in records),
         }
         if not required_spans.issubset(set(self.spans)):
             raise ValueError("expert provenance retains path and storage spans")
@@ -146,6 +155,9 @@ def routed_expert_storage_at_block(
     for symbol, trace, sites in _reachable_invoked_classes(index, block.symbol):
         evidence = _fused_expert_evidence(
             index, block_occurrence, block.symbol, symbol, trace, sites)
+        if evidence is None:
+            evidence = _split_expert_evidence(
+                index, block_occurrence, block.symbol, symbol, trace, sites)
         if evidence is not None:
             candidates.append(evidence)
     distinct = {
@@ -161,7 +173,7 @@ def routed_expert_storage_at_block(
     if not ordered:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph",
-            "no exact invoked variant proves stacked two-lane expert storage"),))
+                "no exact invoked variant proves fused or split expert storage"),))
     if len(ordered) > 1:
         return ReaderResult.ambiguous(
             block_occurrence,
@@ -172,8 +184,8 @@ def routed_expert_storage_at_block(
         provenance=(ReaderProvenance(
             "source", spans=value.spans,
             detail=(
-                "exact construction path and local two-lane expert dataflow "
-                "prove fused routed-expert storage")),),
+                "exact construction path, repeated expert storage and local "
+                "gate/up/down dataflow prove the routed-expert projection mode")),),
     )
 
 
@@ -288,10 +300,274 @@ def _fused_expert_evidence(
         ) if isinstance(span, SourceSpan)))
     return RoutedExpertStorage(
         block_occurrence, block_symbol, owner, trace, path,
-        "fused_gate_up", fused_record, down_record, spans)
+        "fused_gate_up", (fused_record,), down_record, spans)
+
+
+def _split_expert_evidence(
+    index, block_occurrence, block_symbol, owner, trace, path,
+):
+    """Prove independently stored gate/up/down parameters under expert dispatch.
+
+    The storage owner is the exact child that performs the three-projection
+    dataflow.  Its parent must select every cited parameter inside one exact
+    loop and pass those selected tensors to that child.  This is deliberately
+    stronger than seeing three Parameters or a class/field spelling.
+    """
+    if len(trace) < 2 or not path:
+        return None
+    parent = trace[-2]
+    parent_forward = SymbolId(
+        parent.source, f"{parent.qualified_name}.forward")
+    child_forward = SymbolId(
+        owner.source, f"{owner.qualified_name}.forward")
+    child_callable = index.callable_by_symbol(child_forward)
+    if child_callable is None:
+        return None
+    loops = tuple(
+        item for item in index.loops_in(parent_forward)
+        if item.kind == "for" and item.body_span is not None)
+    if not loops:
+        return None
+    site = next((
+        item for item in index.construction_sites_of(parent)
+        if item.site_id == path[-1] and item.target_kind == "field"
+        and item.target), None)
+    if site is None:
+        return None
+    child_calls = tuple(
+        call for call in index.calls_in(parent_forward)
+        if _self_field(call.callee) == site.target
+        and call.span is not None
+        and any(_span_within(call.span, loop.body_span) for loop in loops))
+    if len(child_calls) != 1:
+        return None
+    child_call = child_calls[0]
+    active_loops = tuple(
+        loop for loop in loops if _span_within(child_call.span, loop.body_span))
+    if len(active_loops) != 1:
+        return None
+
+    parameters = tuple(
+        record for record in index.field_assigns_of(owner)
+        if _repeated_parameter_dimensions(index, record) is not None)
+    if len(parameters) < 3:
+        return None
+    formals = tuple(
+        item.name for item in child_callable.params if item.name != "self")
+    if len(child_call.args) > len(formals):
+        return None
+    actuals = {
+        formals[position]: expression
+        for position, expression in enumerate(child_call.args)
+    }
+    for name, expression in child_call.kwargs:
+        if name not in formals or name in actuals:
+            return None
+        actuals[name] = expression
+
+    formal_records = {}
+    producer_spans = []
+    for formal, actual in actuals.items():
+        matches, spans = _selected_parameter_records(
+            index, parent_forward, child_call.span, actual,
+            site.target, parameters, active_loops[0].body_span)
+        if len(matches) == 1:
+            formal_records[formal] = matches[0]
+            producer_spans.extend(spans)
+        elif matches:
+            return None
+    if len(set(record.field for record in formal_records.values())) < 3:
+        return None
+    roles = _split_projection_roles(
+        index, child_forward, tuple(formal_records))
+    if roles is None:
+        return None
+    input_formals, down_formal, flow_spans = roles
+    if any(formal not in formal_records for formal in (*input_formals, down_formal)):
+        return None
+    input_records = tuple(formal_records[item] for item in input_formals)
+    down_record = formal_records[down_formal]
+    records = (*input_records, down_record)
+    if len({record.field for record in records}) != 3:
+        return None
+    spans = tuple(dict.fromkeys(
+        span for span in (
+            *(item.span for item in path),
+            active_loops[0].span, child_call.span,
+            *producer_spans, *flow_spans,
+            *(record.span for record in records),
+        ) if isinstance(span, SourceSpan)))
+    return RoutedExpertStorage(
+        block_occurrence, block_symbol, owner, trace, path,
+        "split", input_records, down_record, spans)
+
+
+def _selected_parameter_records(
+        index, callable_symbol, call_span, actual, child_field, records,
+        loop_span):
+    """Map one child-call actual to exact selected child Parameter fields."""
+    expressions = [actual]
+    spans = []
+    if actual.kind == "name":
+        producers = tuple(
+            binding for binding in index.bindings_in(callable_symbol)
+            if binding.value is not None
+            and actual.name in _target_names(binding.targets)
+            and _span_key(binding.span) < _span_key(call_span)
+            and _span_within(binding.span, loop_span))
+        if producers:
+            latest_key = max(_span_key(item.span) for item in producers)
+            latest = tuple(
+                item for item in producers if _span_key(item.span) == latest_key)
+            if len(latest) != 1:
+                return (), ()
+            expressions.append(latest[0].value)
+            spans.append(latest[0].span)
+    fields = {
+        field for expression in expressions
+        for node in _expressions(expression)
+        if (field := _nested_self_field(node, child_field)) is not None
+    }
+    matches = tuple(record for record in records if record.field in fields)
+    return matches, tuple(spans)
+
+
+def _nested_self_field(expression, child_field):
+    """Return ``weight`` from the exact chain ``self.<child>.<weight>``."""
+    if expression.kind != "attribute" or len(expression.children) != 1:
+        return None
+    child = expression.children[0]
+    if child.kind != "attribute" or child.name != child_field \
+            or len(child.children) != 1:
+        return None
+    root = child.children[0]
+    return expression.name \
+        if root.kind == "name" and root.name == "self" else None
+
+
+def _split_projection_roles(index, callable_symbol, weight_formals):
+    """Prove two input projections multiply and feed a third projection."""
+    record = index.callable_by_symbol(callable_symbol)
+    if record is None:
+        return None
+    ordinary_formals = tuple(
+        item.name for item in record.params if item.name != "self")
+    inputs = tuple(item for item in ordinary_formals if item not in weight_formals)
+    if not inputs:
+        return None
+    signal = inputs[0]
+    lineage = {signal: frozenset({("signal", signal)})}
+    projection_targets = {}
+    product_targets = set()
+    down_targets = {}
+    proof_spans = []
+
+    for binding in sorted(
+            index.bindings_in(callable_symbol), key=lambda item: _span_key(item.span)):
+        if binding.value is None or binding.guard:
+            continue
+        targets = _target_names(binding.targets)
+        if len(targets) != 1:
+            continue
+        target = targets[0]
+        value = binding.value
+        matmul = _matmul_parts(value)
+        if matmul is not None:
+            receiver, argument = matmul
+            receiver_lineage = set().union(*(
+                lineage.get(name, frozenset()) for name in _names(receiver)))
+            weights = tuple(
+                name for name in weight_formals if name in _names(argument))
+            if len(weights) == 1 \
+                    and receiver_lineage == {("signal", signal)}:
+                lineage[target] = frozenset({("projection", weights[0])})
+                projection_targets[target] = weights[0]
+                proof_spans.append(binding.span)
+                continue
+            projected = {
+                item[1] for item in receiver_lineage
+                if item[0] == "projection"
+            }
+            products = {
+                item[1] for item in receiver_lineage
+                if item[0] == "product"
+            }
+            if len(projected) == 2 and len(weights) == 1 \
+                    and weights[0] not in projected \
+                    and "|".join(sorted(projected)) in products:
+                lineage[target] = frozenset(
+                    {*(('projection', item) for item in projected),
+                     ("down", weights[0])})
+                down_targets[target] = (tuple(sorted(projected)), weights[0])
+                proof_spans.append(binding.span)
+                continue
+        dependencies = set().union(*(
+            lineage.get(name, frozenset()) for name in _names(value)))
+        if dependencies:
+            lineage[target] = frozenset(dependencies)
+        projected = {
+            item[1] for item in dependencies if item[0] == "projection"
+        }
+        if len(projected) == 2 and any(
+                node.kind == "binop" and node.operator == "*"
+                for node in _expressions(value)):
+            product_targets.add(target)
+            lineage[target] = frozenset({
+                *dependencies,
+                ("product", "|".join(sorted(projected))),
+            })
+            proof_spans.append(binding.span)
+
+    returns = tuple(
+        item for item in index.return_observations_in(callable_symbol)
+        if item.value is not None and not item.guard)
+    if len(returns) != 1:
+        return None
+    returned = set().union(*(
+        lineage.get(name, frozenset()) for name in _names(returns[0].value)))
+    valid = tuple(
+        (inputs_, down, target)
+        for target, (inputs_, down) in down_targets.items()
+        if target in _names(returns[0].value)
+        or {("projection", item) for item in inputs_}
+           | {("down", down)} <= returned)
+    if len(valid) != 1:
+        return None
+    input_weights, down_weight, _target = valid[0]
+    if not product_targets or len(set(input_weights)) != 2:
+        return None
+    return input_weights, down_weight, tuple(dict.fromkeys(
+        (*proof_spans, returns[0].span)))
+
+
+def _matmul_parts(expression):
+    calls = tuple(
+        item for item in _expressions(expression)
+        if item.kind == "call" and item.children
+        and item.children[0].kind == "attribute"
+        and item.children[0].name == "matmul"
+        and item.children[0].children and len(item.children) >= 2)
+    if len(calls) != 1:
+        return None
+    call = calls[0]
+    return call.children[0].children[0], call.children[1]
+
+
+def _repeated_parameter_dimensions(index, record):
+    dimensions = _parameter_dimensions(index, record)
+    if dimensions is None or len(dimensions) < 2:
+        return None
+    return dimensions if any(
+        node.kind == "binop" and node.operator == "*"
+        for dimension in dimensions for node in _expressions(dimension)) else None
 
 
 def _stacked_parameter_dimensions(index, record):
+    dimensions = _parameter_dimensions(index, record)
+    return dimensions if dimensions is not None and len(dimensions) >= 3 else None
+
+
+def _parameter_dimensions(index, record):
     value = record.value
     if value.kind != "call" or not value.children:
         return None
@@ -313,7 +589,7 @@ def _stacked_parameter_dimensions(index, record):
     dimensions = tuple(storage.children[1:])
     if len(dimensions) == 1 and dimensions[0].kind in {"tuple", "list"}:
         dimensions = tuple(dimensions[0].children)
-    return dimensions if len(dimensions) >= 3 else None
+    return dimensions if len(dimensions) >= 2 else None
 
 
 def _shape_has_two_lane_factor(dimensions):

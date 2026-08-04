@@ -9,8 +9,12 @@ import textwrap
 import pytest
 
 from model_unfolder.evidence.context import ParseContext
+from model_unfolder.evidence.decoder_block import (
+    decoder_block_candidates_for_config,
+)
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.parallel_norm import (
+    exact_branch_census_at_block,
     ParallelNormEvidence,
     decoder_parallel_norm_count_for_path,
 )
@@ -98,6 +102,22 @@ def _read(tmp_path, *, block_forward, norm_fields=None, extra=""):
     )
     return decoder_parallel_norm_count_for_path(
         build_program_index(bundle), bundle, (), allow_root_stage=True)
+
+
+def _census(tmp_path, *, block_forward):
+    path = tmp_path / "model.py"
+    path.write_text(textwrap.dedent(_source(
+        block_forward=block_forward)), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Outer"}, architecture="Outer")
+    index = build_program_index(bundle)
+    candidates = decoder_block_candidates_for_config(
+        index, bundle, (), allow_root_stage=True)
+    return exact_branch_census_at_block(
+        index, candidates.value.component_root,
+        candidates.value.occurrences[0])
 
 
 def test_one_exact_shared_norm_occurrence_feeds_both_branches(tmp_path):
@@ -305,3 +325,16 @@ def test_result_closure_rejects_a_fabricated_count(tmp_path):
             value.ffn_inputs,
             value.norm_count,
             ())
+
+
+def test_shared_branch_census_rejects_wrong_substrate_and_role(tmp_path):
+    census = _census(tmp_path, block_forward="""
+                normalized = self.before(signal)
+                attention = self.compute(normalized)
+                transformed = self.transform(self.after(signal))
+                return signal + attention + transformed
+    """).value
+    with pytest.raises(TypeError, match="invocation census"):
+        replace(census, invocations=object())
+    with pytest.raises(ValueError, match="one attention"):
+        replace(census, ffn=(census.attention,))

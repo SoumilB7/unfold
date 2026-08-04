@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "01da018088949ea2fc2e081a7e127dd916e4bb8f3e0f8019f3aad254b0424264")
+    "b686e01988110c9b3188e637b94e3b5651104f2fc39331ed0607876b691d186b")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "3c1efd6a9da25584b2a89a1b241e2a310f044dbdc5469f2f4ec40a5062622d55")
+    "f41ca24a161d5c5ecc32d42fd66b3d5a5001135ca4ee85d700a3d0ad1d6ba280")
 
 
 @dataclass(frozen=True)
@@ -101,11 +101,6 @@ LEGACY_SEMANTIC_READERS = (
          "whole-file diffusion-attention score-scaling interpretation",
          callers=(
              "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
-         )),
-    _row("decoder_layer_topology_from_files", "U7",
-         "whole-file decoder cell-topology interpretation",
-         callers=(
-             "model_unfolder/adapters/transformer/parser.py:_code_layer_topology",
          )),
     _row("decoder_router_evidence_from_files", "U7",
          "whole-file router/mechanism interpretation",

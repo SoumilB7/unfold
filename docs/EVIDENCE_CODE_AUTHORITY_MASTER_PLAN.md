@@ -2331,12 +2331,34 @@ field as loss of every field, and activation operands are read from the exact
   on the projection data path.  The reviewed matrix has one intended visual
   delta: Gemma-2's FFN drill names the code-selected GELU instead of generic
   `Activation`; its other five views and every other reviewed PNG are unchanged.
-  The remaining fixture changes are evidence/IR/provenance truth.  U7 remains
-  open for routed/shared expert closure, Conv-GLU, norm/cell topology, terminal
-  receipts and default deletion.  The legacy whole-file intermediate-width
-  reader is now deleted: exact output-projection input geometry is evaluated
-  through the canonical FFN occurrence chain with every config operand cited,
-  including GPT-J/CodeGen/GPT-2 defaults and BLOOM's inline expansion.
+  The remaining fixture changes are evidence/IR/provenance truth.  The legacy
+  whole-file intermediate-width reader is now deleted: exact output-projection
+  input geometry is evaluated through the canonical FFN occurrence chain with
+  every config operand cited, including GPT-J/CodeGen/GPT-2 defaults and
+  BLOOM's inline expansion.
+
+  The exact cell-topology slice is also closed.  `norm_placement` and
+  `residual_topology` come from one owner-qualified attention/FFN call census
+  plus live positive residual equations.  Guarded variants use a config value
+  only when the exact constructor assignment proves the guard's exact config
+  path.  StableLM's sequential/parallel choice and Qwen3.5's
+  attention/recurrent layer variants are therefore `code_and_config`; an
+  arbitrary runtime subscript, incomplete branch domain, dead equation or
+  sibling class remains unknown.  The old whole-file topology scan, its broad
+  exception wrapper and its first-candidate tests are deleted together.
+
+  Routed expert storage now proves fused gate-up and split gate/up/down layouts.
+  Split storage requires three exact repeated Parameters selected in the
+  parent expert loop and a live child dataflow where the exact gate/up product
+  feeds the exact down projection and reaches the return.  DBRX is the positive
+  split-storage/nested-attention control; DeepSeek-V3, GLM-4.5 and GPT-OSS
+  retain fused storage.  Nested conformance consumes the same typed storage
+  fact, scoped only to the expert drill, rather than globally equating every
+  matmul with a linear projection.
+
+  U7 remains open for exact router/class-count replacement, Conv-GLU, Falcon's
+  nested config-guard/augmented-assignment control path, and any remaining
+  cross-altitude/default-deletion acceptance work.
 
 ### 20.11 U8 — migrate position, masks, schedules and layer selectors
 

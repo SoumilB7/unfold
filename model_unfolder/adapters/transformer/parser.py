@@ -111,21 +111,74 @@ def _source_files(cfg: Any, context=None):
     return resolve_source_files(cfg, source="local").files
 
 
-def _code_layer_topology(cfg: Any, context=None) -> dict | None:
-    """The decoder layer's macro-topology (norm placement + parallel residual)
-    READ FROM THE MODELING SOURCE — the code-based replacement for the
-    ``layer_topology.yaml`` model_type table.  "code -> structure": where the
-    norms sit and whether attention ∥ FFN is wiring the forward() states, not a
-    per-family lookup.  Returns ``{"norm_placement", "parallel_residual"}`` or
-    None.  Absence/reader failure stays unknown; there is no table or
-    pre/sequential convention behind this boundary.  The whole-file reader is
-    transitional U7 debt and must not be treated as exact occurrence evidence."""
-    try:
-        from ...evidence.patterns import decoder_layer_topology_from_files
-        files = _source_files(cfg, context)
-        return decoder_layer_topology_from_files(files)
-    except Exception:
+def _cell_topology_result(
+        context=None, *, config_path=(), config_root=None):
+    """One call-local exact decoder-cell topology result.
+
+    The reader starts at the selected config path and exact repeated-block
+    occurrence, then joins the canonical attention/FFN/norm calls to positive
+    residual equations.  It has no whole-file candidate selection and no
+    conventional pre/sequential fallback.
+    """
+    if context is None:
         return None
+    from ...evidence.cell_topology import decoder_cell_topology_for_path
+    from ...evidence import config_access as _config_access
+    path = tuple(config_path)
+    resolutions = {}
+
+    def _select(exact_path):
+        if config_root is None or not exact_path:
+            return None
+        parent = config_root
+        for part in exact_path[:-1]:
+            parent = (parent.get(part) if isinstance(parent, dict)
+                      else getattr(parent, part, None))
+            if parent is None:
+                return None
+        resolution = _config_access.resolve(
+            parent, exact_path[-1], path=tuple(exact_path[:-1]))
+        expected = ".".join(exact_path)
+        if resolution.ambiguous or not resolution.present \
+                or resolution.selected_path != expected:
+            return None
+        resolutions[tuple(exact_path)] = resolution
+        return resolution.value
+
+    def _consume_dependency(exact_path, fact_key):
+        resolution = resolutions.get(tuple(exact_path))
+        if resolution is None:
+            raise ValueError(
+                "cell topology cited a config path it did not resolve")
+        resolution.bind(
+            reader="decoder_cell_topology_for_path",
+            fact_owner="decoder.layer", fact_key=fact_key)
+        resolution.consume_decision(
+            mechanism="cell_topology",
+            fact_owner="decoder.layer", fact_key=fact_key,
+            reader="decoder_cell_topology_for_path",
+            status="code_and_config")
+
+    def _read():
+        result = decoder_cell_topology_for_path(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True,
+            config_selector=_select,
+        )
+        if result.status == "resolved":
+            for fact_key, dependencies in (
+                    ("norm_placement", result.value.norm_config_paths),
+                    ("residual_topology",
+                     result.value.residual_config_paths)):
+                for dependency in dependencies:
+                    _consume_dependency(dependency, fact_key)
+        return result
+
+    return context.cached_reader_result(
+        "decoder.layer.cell_topology",
+        path,
+        _read,
+    )
 
 
 def _decoder_norm_result(context=None, *, config_path=()):
@@ -1444,7 +1497,13 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # Norm placement (pre / post / double-sandwich) is STRUCTURE and carries no
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
-    _code_topo = _code_layer_topology(text_cfg, context)
+    _cell_topology_result_value = _cell_topology_result(
+        context, config_path=_text_path, config_root=cfg)
+    _cell_topology = (
+        _cell_topology_result_value.value
+        if _cell_topology_result_value is not None
+        and _cell_topology_result_value.status == "resolved" else None
+    )
     # FFN gating READ FROM THE MLP's forward() (gate_mul present?) — code wins;
     # a gate-family activation string is the config-derived second channel; NO
     # channel ⇒ typed unknown (None) drawn as the honest undeclared-FFN block,
@@ -1528,12 +1587,28 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
     # Placement is an owner-bound wiring fact.  Source presence is not proof
     # of pre-norm: an abstaining reader stays unknown on every surface.
-    norm_placement = (_code_topo or {}).get("norm_placement")
-    _note_fact("decoder.layer", "norm_placement",
-               norm_placement or "unknown",
-               "code_proven" if norm_placement else _unknown_status,
-               source=("decoder_layer_topology_from_files"
-                       if norm_placement else None))
+    norm_placement = (
+        _cell_topology.norm_placement if _cell_topology is not None else None)
+    _norm_placement_config_paths = (
+        _cell_topology.norm_config_paths
+        if _cell_topology is not None else ())
+    _norm_placement_status = (
+        "code_and_config"
+        if _norm_placement_config_paths else "code_proven")
+    if norm_placement is not None:
+        _note_typed_fact(
+            key="norm_placement", owner="decoder.layer",
+            value=norm_placement, status=_norm_placement_status,
+            reader_result=_cell_topology_result_value,
+            config_paths=_norm_placement_config_paths,
+            reader="decoder_cell_topology_for_path",
+            reason=(
+                "exact attention/FFN norm boundaries and residual equations "
+                "prove the cell placement"),
+        )
+    else:
+        _note_fact(
+            "decoder.layer", "norm_placement", "unknown", _unknown_status)
     if not norm_placement:
         norm_placement = "unknown"
     # Position application is a mechanism fact. A declared theta/scaling value
@@ -2258,47 +2333,45 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _scoped("apply_residual_connection_post_layernorm")
 
     # ---- Layer topology ----
-    # Parallel residual: a config flag when the family TOGGLES it (Falcon
-    # new_decoder_architecture / GPT-NeoX use_parallel_residual — gated inside an
-    # `if`, so the config decides); else READ FROM the forward() when it is
-    # UNCONDITIONAL structure with no flag (Cohere, GPT-J, Phi — all flagless,
-    # all missed by the old model_type table, so all silently drawn sequential).
+    # Parallel residual is projected only after the exact cell reader proves its
+    # residual equations.  A config selector can choose guarded alternatives
+    # only when the exact block assignment binds that guard operand to the exact
+    # config path; an unbound declaration remains unknown.
     # Distinct INPUT norms a parallel-residual layer applies, read from the code
     # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
     # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
     parallel_norm_count = None
-    # U2-R7: the two rival spellings (GPT-NeoX use_parallel_residual / Falcon
-    # parallel_attn) are ONE declared fact — resolved together and consumed
-    # into the layer-topology fact; disagreement is typed ambiguity that
-    # authors nothing (the code channel then decides).
-    _parallel_decl = _config_access.resolve(
-        text_cfg, "use_parallel_residual", ("parallel_attn",), path=_text_path)
-    if _parallel_decl.state == "present":
-        _parallel_decl.ignore(
-            reason=(
-                "declared parallel-residual selector inspected only — the "
-                "exact owner forward must prove the residual topology"
-            )
-        )
-    # A flag is an operand only after code binds it to this exact branch.  The
-    # legacy topology reader proves unconditional structure; conditional flag
-    # binding belongs to U7 and must not be guessed here.
-    code_parallel = (_code_topo or {}).get("parallel_residual")
-    use_parallel_residual = code_parallel is True
+    # A selector is consumed only inside ``_cell_topology_result`` after the
+    # exact block assignment and guard bind that occurrence to one derived fact.
+    # Unbound declarations remain visible audit debt; they are never globally
+    # ignored and never author a conventional topology.
     residual_topology = (
-        "parallel" if code_parallel is True
-        else "sequential" if code_parallel is False
-        else "unknown"
-    )
+        _cell_topology.residual_topology
+        if _cell_topology is not None else "unknown")
+    _residual_topology_config_paths = (
+        _cell_topology.residual_config_paths
+        if _cell_topology is not None else ())
+    _residual_topology_status = (
+        "code_and_config"
+        if _residual_topology_config_paths else "code_proven")
+    use_parallel_residual = residual_topology == "parallel"
     if use_parallel_residual:
         parallel_norm_count = _code_parallel_norm_count(
             text_cfg, context, config_path=_text_path)
-    _note_fact(
-        "decoder.layer", "residual_topology", residual_topology,
-        "code_proven" if residual_topology != "unknown" else _unknown_status,
-        source=("decoder_layer_topology_from_files"
-                if residual_topology != "unknown" else None),
-    )
+    if residual_topology != "unknown":
+        _note_typed_fact(
+            key="residual_topology", owner="decoder.layer",
+            value=residual_topology, status=_residual_topology_status,
+            reader_result=_cell_topology_result_value,
+            config_paths=_residual_topology_config_paths,
+            reader="decoder_cell_topology_for_path",
+            reason=(
+                "exact residual equations prove sequential or parallel cell "
+                "topology"),
+        )
+    else:
+        _note_fact(
+            "decoder.layer", "residual_topology", "unknown", _unknown_status)
     _note_fact(
         "decoder.layer", "parallel_norm_count", parallel_norm_count,
         "code_proven" if parallel_norm_count is not None else _unknown_status,

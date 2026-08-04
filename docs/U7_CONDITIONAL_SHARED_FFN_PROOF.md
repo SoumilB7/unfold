@@ -198,3 +198,56 @@ and two expected xfails.  Every lane's complete source-tree and ignored
 blessed-artifact fingerprint was identical before and after.  The sanctioned
 manifest generator changed exactly BLOOM's ledger hash; structural, expanded,
 parameter, HTML, Sable, gallery and all per-view hashes stayed byte-identical.
+
+## Exact cell topology and split-expert storage slice
+
+The next bounded U7 slice replaces the whole-file cell-topology scan with
+`decoder_cell_topology_for_path`.  It starts at the exact repeated decoder-block
+occurrence and shares one attention/FFN invocation census with the parallel-norm
+reader.  It resolves only from live positive residual equations:
+
+- sequential means the attention merge reaches the FFN input and a second live
+  merge reaches the final return;
+- parallel means the exact attention and FFN calls consume one proven input and
+  one live merge contains both contributions;
+- pre/post/double derives independently from the exact norm boundary on both
+  branches;
+- a residual merge inside an exact addressed child is accepted only when its
+  computed and residual terms both reach that child's return.
+
+Guarded alternatives are never unioned.  An exact source-bound selector may
+choose them only after its constructor assignment identifies one exact config
+path.  StableLM therefore cites `use_parallel_residual`; Qwen3.5 cites
+`layer_types` for both norm and residual facts.  Unknown selector values,
+dynamic config subscripts, dead equations, opaque transforms, unrelated sibling
+classes and incomplete path domains all abstain.
+
+The same slice extends routed-expert storage without an identity branch.  A
+split result requires three exact repeated Parameter fields, their exact
+selection in the parent expert loop, exact binding to child formals, two input
+matmuls, a live gate/up product, the exact down matmul consuming that product,
+and a live return.  A dead side-product cannot certify an unrelated down path.
+DBRX proves this split form; the existing DeepSeek-V3, GLM-4.5 and GPT-OSS
+controls retain fused gate-up storage.
+
+DBRX's old diagram was not merely generic: the whole-file scan had selected a
+false parallel shell and the expert drill was opaque.  Its reviewed replacement
+shows the real nested sequence—norm, attention, residual add, norm, routed FFN,
+residual add—and the exact split expert gate/up/product/down path.  Only DBRX's
+architecture and expert PNGs change; the other DBRX views and every unaffected
+witness remain byte-identical.  Evidence-ledger hashes change corpus-wide
+because the fact source moves from the deleted legacy reader to the exact
+owner-qualified reader, not because those diagrams change.
+
+This slice retires one quarantined semantic reader (23 to 22) and one broad
+transformer-parser exception baseline (13 to 12).  U7 remains open: the
+quarantine still contains `decoder_router_evidence_from_files` and
+`layer_class_count_from_files`, and Conv-GLU/cross-altitude terminal closure
+still require explicit proof or a documented non-applicability decision.
+Falcon is an explicit topology carry-forward, not a hidden regression: its
+parallel cell is distributed across nested `self.config` boolean guards and an
+augmented assignment.  The removed whole-file scan happened to classify this
+fixture correctly but did not prove that exact path.  Until an owner-qualified
+control-path evaluator binds those conditions, Falcon retains its independently
+proved MQA details and draws one `wiring unresolved` cell instead of accepting
+`parallel_attn` as architecture by declaration alone.

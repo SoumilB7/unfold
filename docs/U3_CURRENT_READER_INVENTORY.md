@@ -8,11 +8,11 @@ This is the current authority/deletion worklist. The older
 
 ## Summary
 
-- quarantined semantic readers: **23**
+- quarantined semantic readers: **22**
 - exact evidence-layer `ast.parse` sites: **34**
 - legacy model-source parse sites: **23**
-- frozen reader/helper implementation digest: `01da018088949ea2fc2e081a7e127dd916e4bb8f3e0f8019f3aad254b0424264`
-- frozen legacy-parse caller digest: `3c1efd6a9da25584b2a89a1b241e2a310f044dbdc5469f2f4ec40a5062622d55`
+- frozen reader/helper implementation digest: `b686e01988110c9b3188e637b94e3b5651104f2fc39331ed0607876b691d186b`
+- frozen legacy-parse caller digest: `f41ca24a161d5c5ecc32d42fd66b3d5a5001135ca4ee85d700a3d0ad1d6ba280`
 
 ## Authority classes
 
@@ -28,7 +28,6 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U7 | `model_unfolder/evidence/patterns.py::decoder_layer_topology_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_layer_topology` | whole-file decoder cell-topology interpretation | U7 registers the exact owner-qualified fact and deletes decoder_layer_topology_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_router_evidence_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_router` | whole-file router/mechanism interpretation | U7 registers the exact owner-qualified fact and deletes decoder_router_evidence_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::layer_class_count_from_files` | `model_unfolder/evidence/validate.py:_looks_like_multi_variant_file` | whole-file layer-class counting used as topology evidence | U7 registers the exact owner-qualified fact and deletes layer_class_count_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::attention_causality_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_attention_causality` | whole-file mask/causality interpretation | U8 registers the exact owner-qualified fact and deletes attention_causality_from_files |

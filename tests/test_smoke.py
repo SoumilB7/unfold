@@ -666,12 +666,13 @@ def test_diffusion_gemma_block_worthiness():
     assert "layer_scalar" not in blocks, "learned scalar must not be a block (Tier-3)"
     assert not ir["extras"]["render"].get("layer_annotations"), "scalar caption was removed"
 
-    # Tier-2: residual adds are connector GLYPHS (⊕, not boxes) —
-    # clickable for a describing card (not static, but still kind residual_add).
-    for add_id in ("add1", "add2"):
-        assert blocks[add_id]["kind"] == "residual_add"
-        assert not blocks[add_id].get("static"), f"{add_id} connector is now clickable, not static"
-        assert blocks[add_id].get("description"), f"{add_id} must describe itself on click"
+    # This synthetic/uninstalled architecture has no exact source owner.  The
+    # old whole-file reader fabricated the conventional two residual adds; the
+    # exact reader must retain the known attention/FFN regions while replacing
+    # the unproved wiring with one explicit Tier-1 honesty node.
+    assert {"add1", "add2"}.isdisjoint(blocks)
+    assert blocks["wiring_unresolved"]["resolved"] is False
+    assert blocks["wiring_unresolved"]["kind"] == "norm"
 
     # Config identity cannot author the former Text4MLP ∥ TextMoE fork. Until
     # U7 proves that exact topology, one opaque FFN remains clickable.
@@ -682,10 +683,8 @@ def test_diffusion_gemma_block_worthiness():
     assert blocks["attn"]["kind"] == "attention"
 
     html = d.to_html()
-    # The connector glyphs are clickable with a describing card (still glyphs, not boxes).
-    for add_id in ("add1", "add2"):
-        assert f'data-id="{add_id}"' in html, f"{add_id} connector must be clickable"
-        assert f'data-card-id="{add_id}"' in html, f"{add_id} must have a describing card"
+    assert 'data-id="wiring_unresolved"' in html
+    assert 'data-card-id="wiring_unresolved"' in html
     assert 'data-id="ffn"' in html and 'data-card-id="ffn"' in html
     # layer_scalar is not surfaced anywhere — not a block, not a caption.
     assert 'data-id="layer_scalar"' not in html
@@ -1453,7 +1452,7 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     assert 'data-card-id="multiply"' not in html
 
 
-def test_falcon_parallel_attn_uses_parallel_topology():
+def test_falcon_parallel_attn_does_not_bypass_exact_guard_binding():
     d = unfold(FALCON_PARALLEL_CONFIG)
     ir = d.to_ir()
     blocks = ir["layers"][0]["blocks"]
@@ -1463,15 +1462,16 @@ def test_falcon_parallel_attn_uses_parallel_topology():
     # The typed layer field is the one authority.  The retired root-level
     # ``parallel_residual`` duplicate must not return.
     assert "parallel_residual" not in ir["extras"]
-    assert ir["layers"][0]["residual_topology"] == "parallel"
+    # Falcon's forward distributes this decision across nested boolean guards
+    # over ``self.config`` plus an augmented assignment.  The former whole-file
+    # classifier happened to return the right answer for this fixture but could
+    # not prove the exact path.  Until the exact control-path evaluator closes
+    # that source shape, keep only independently proved MQA detail and make the
+    # cell shell unknown; the config spelling alone cannot author parallelism.
+    assert ir["layers"][0]["residual_topology"] == "unknown"
     assert ir["layers"][0]["parallel_norm_count"] is None
-    assert block_by_id["rms1"]["label"] == ["Norm inputs", "unresolved"]
-    assert block_by_id["add1"]["title"] == "Residual add (parallel)"
-    assert block_by_id["ffn"]["lane"] == "left"
-    assert block_by_id["ffn"]["tap_from"] == "attn"
-    assert block_by_id["ffn"]["feeds"] == "add1"
-    assert block_by_id["ffn"]["side_align"] == "tap"
-    assert "add2" not in block_by_id
+    assert block_by_id["wiring_unresolved"]["resolved"] is False
+    assert {"rms1", "add1", "add2"}.isdisjoint(block_by_id)
 
     html = d.to_html(standalone=True)
     assert "Multi-query scaled dot-product attention" in html
@@ -1560,12 +1560,15 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     assert "MoE" in html
     assert "16 experts" in html
     assert "Clamp Q/K/V ≤ 8" in html
-    # The wide parallel MoE lane shifts the central spine. The architecture
-    # canvas must grow with that shift instead of clipping the pre-head/output
-    # blocks at the historical 720-unit boundary.
+    # Exact nested topology proves a sequential shell, so the former false wide
+    # parallel lane is gone and the canonical architecture canvas remains 720.
+    assert layer["norm_placement"] == "pre"
+    assert layer["residual_topology"] == "sequential"
+    assert {block["id"] for block in layer["blocks"]} >= {
+        "rms1", "attn", "add1", "rms2", "ffn", "add2"}
     import re
     arch_box = re.search(r'<svg[^>]+viewBox="0 0 ([0-9.]+) ', html)
-    assert arch_box and float(arch_box.group(1)) > 720
+    assert arch_box and float(arch_box.group(1)) == 720
 
 
 def test_attention_detail_views_dispatch_by_kind():

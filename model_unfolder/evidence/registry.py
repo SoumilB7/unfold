@@ -498,24 +498,27 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="norm_placement",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({
-            "code_proven", "ambiguous", "oracle_missing",
+            "code_proven", "code_and_config", "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
         unknown_policy="generic_node",
         notes="U4-D: abstention draws one unresolved cell; U7 replaces the "
-              "legacy topology reader with exact owner-bound evidence",
+              "legacy topology reader with exact owner-bound evidence. A "
+              "guarded topology is code_and_config only when its exact "
+              "source-bound selector is needed to prove this fact.",
     ),
     FactDefinition(
         key="residual_topology",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({
-            "code_proven", "ambiguous", "oracle_missing",
+            "code_proven", "code_and_config", "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
         unknown_policy="generic_node",
-        notes="sequential/parallel is independent from norm placement",
+        notes="sequential/parallel is independent from norm placement; a "
+              "config status requires an exact code-bound branch operand",
     ),
     FactDefinition(
         key="parallel_norm_count",

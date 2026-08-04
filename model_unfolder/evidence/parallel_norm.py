@@ -1,7 +1,7 @@
 """Exact input-normalization evidence for parallel decoder branches.
 
-This reader answers one narrow question: do the exact attention and ordinary
-FFN invocations in a selected decoder block consume the same normalization
+This reader answers one narrow question: do the exact attention and FFN
+invocations in a selected decoder block consume the same normalization
 construction occurrence or two distinct occurrences?
 
 Names and field roles are never evidence.  Each norm is classified from its
@@ -27,11 +27,14 @@ from .decoder_block import decoder_block_candidates_for_config
 from .dispatch_selection import resolve_dispatch_candidates
 from .execution_flow import (
     AddressedInvocation,
+    ExecutionFlowResolution,
     HappensBeforeEdge,
     InvocationNodeId,
+    InvocationResolution,
     resolve_addressed_invocations,
     resolve_execution_flow,
 )
+from .expert_storage import routed_expert_storage_at_block
 from .ffn_mechanism import (
     EquivalentFFNMechanism,
     ffn_mechanism_at_block,
@@ -76,7 +79,9 @@ class ExactBranchInvocation:
                 or not isinstance(self.node, InvocationNodeId) \
                 or self.node.call_site != CallSiteId.of(self.call):
             raise ValueError("a branch invocation retains its exact call node")
-        if self.mechanism not in {"attention", "ordinary_ffn"}:
+        if self.mechanism not in {
+                "attention", "gated_delta_mixer",
+                "ordinary_ffn", "routed_ffn"}:
             raise ValueError("a branch invocation has a closed mechanism kind")
         if self.proof_kind not in {
                 "addressed_child", "dispatch_equivalent",
@@ -182,6 +187,67 @@ class ParallelNormEvidence:
             raise TypeError("parallel-norm spans are exact SourceSpan values")
 
 
+@dataclass(frozen=True)
+class ExactBranchCensus:
+    """The exact attention and ordinary/routed FFN calls in one decoder block.
+
+    This is deliberately mechanism/address evidence only.  It does not infer
+    residual order or norm placement.  Cell-topology and parallel-norm readers
+    consume the same census so those two facts cannot select different calls.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    attention: ExactBranchInvocation
+    ffn: tuple[ExactBranchInvocation, ...]
+    invocations: InvocationResolution
+    flow: ExecutionFlowResolution
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("an exact branch census names its decoder block")
+        if not isinstance(self.attention, ExactBranchInvocation) \
+                or not self.ffn \
+                or any(not isinstance(item, ExactBranchInvocation)
+                       for item in self.ffn):
+            raise TypeError("the census carries exact attention and FFN calls")
+        if self.attention.mechanism != "attention" \
+                or any(item.mechanism not in {"ordinary_ffn", "routed_ffn"}
+                       for item in self.ffn):
+            raise ValueError("the census has one attention and exact FFN calls")
+        if not isinstance(self.invocations, InvocationResolution) \
+                or self.invocations.status != "resolved":
+            raise TypeError("the census carries one resolved invocation census")
+        if not isinstance(self.flow, ExecutionFlowResolution) \
+                or self.flow.status != "partial":
+            raise TypeError("the census carries one open execution-flow graph")
+        if self.invocations.owner_occurrence != self.block_occurrence \
+                or self.flow.owner_occurrence != self.block_occurrence:
+            raise ValueError("the census substrates belong to the exact block")
+        if self.invocations.callable_symbol != self.flow.callable_symbol:
+            raise ValueError("invocation and flow substrates share one callable")
+        branches = (self.attention, *self.ffn)
+        if any(item.caller_occurrence != self.block_occurrence
+               for item in branches):
+            raise ValueError("every branch is invoked by the exact decoder block")
+        if len({item.node.call_site for item in self.ffn}) != len(self.ffn):
+            raise ValueError("FFN branch call sites are unique")
+        sites = {item.node.call_site for item in branches}
+        if len(sites) != len(branches):
+            raise ValueError("attention and FFN branch sites are disjoint")
+        if not sites <= set(self.invocations.call_sites) \
+                or any(item.node not in self.flow.nodes for item in branches):
+            raise ValueError(
+                "every branch round-trips through the shared invocation/flow graph")
+        required = {
+            span for item in branches for span in item.spans
+        }
+        if not required or not required <= set(self.spans):
+            raise ValueError("the census retains every branch proof span")
+        if any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise TypeError("branch-census spans are exact SourceSpan values")
+
+
 def decoder_parallel_norm_count_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
@@ -255,44 +321,16 @@ def _parallel_norm_at_block(index, root, block_occurrence):
             "out_of_owner",
             "the exact decoder block does not round-trip through the index"),))
 
-    ffn = ffn_mechanism_at_block(index, root, block_occurrence)
-    if ffn.status == "ambiguous":
-        return ReaderResult.ambiguous(
-            block_occurrence, ffn.ambiguity, provenance=ffn.provenance)
-    if ffn.status != "resolved":
-        return ReaderResult.failed(
-            block_occurrence,
-            ffn.failures or (ReaderFailure(
-                "incomplete_graph",
-                "the exact ordinary-FFN branch is unresolved"),),
-            provenance=ffn.provenance)
-    if isinstance(ffn.value, EquivalentFFNMechanism):
-        ffn_branches = (_conditional_equivalent_branch(ffn.value),)
-    elif not ffn.value.invocations:
-        return ReaderResult.failed(block_occurrence, (ReaderFailure(
-            "incomplete_graph",
-            "an inline FFN has no addressed branch-input call"),))
-    else:
-        ffn_branches = tuple(
-            _addressed_branch(
-                root, invocation, "ordinary_ffn")
-            for invocation in ffn.value.invocations)
+    census = exact_branch_census_at_block(
+        index, root, block_occurrence)
+    if census.status != "resolved":
+        return census
+    ffn_branches = census.value.ffn
+    invocations = census.value.invocations
+    flow = census.value.flow
+    attention = census.value.attention
 
-    inventory = resolve_container_inventory(index, root, block_occurrence)
-    invocations = resolve_addressed_invocations(
-        index, root, block_occurrence, inventory)
-    flow = resolve_execution_flow(
-        index, root, block_occurrence, inventory)
-    if invocations.status != "resolved" or flow.status != "partial":
-        return ReaderResult.failed(block_occurrence, (ReaderFailure(
-            "incomplete_graph",
-            "the exact block invocation/dataflow graph is unavailable"),))
-
-    attention = _attention_branch(
-        index, root, block_occurrence, invocations, flow)
-    if isinstance(attention, ReaderResult):
-        return attention
-    norms = _norm_sources(
+    norms = exact_norm_sources_at_block(
         index, root, block_occurrence, invocations)
     attention_input = _branch_norm_input(
         index, attention, norms, flow)
@@ -323,7 +361,79 @@ def _parallel_norm_at_block(index, root, block_occurrence):
             "source", spans=spans,
             detail=(
                 "exact normalization construction occurrences feed the exact "
-                "attention and ordinary-FFN input formals")),))
+                "attention and FFN input formals")),))
+
+
+def exact_branch_census_at_block(index, root, block_occurrence):
+    """Resolve the exact block-local attention/FFN call census.
+
+    This composes already-closed mechanism readers with the one owner-qualified
+    invocation/flow graph.  It never chooses by field/class name and never
+    interprets lexical order as execution order.
+    """
+    root = require_resolved_component_root(
+        root, caller="exact_branch_census_at_block")
+    block = root.graph.node_for(block_occurrence)
+    if block is None or index.class_by_symbol(block.symbol) is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the exact decoder block does not round-trip through the index"),))
+
+    inventory = resolve_container_inventory(index, root, block_occurrence)
+    invocations = resolve_addressed_invocations(
+        index, root, block_occurrence, inventory)
+    flow = resolve_execution_flow(
+        index, root, block_occurrence, inventory)
+    if invocations.status != "resolved" or flow.status != "partial":
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "the exact block invocation/dataflow graph is unavailable"),))
+
+    ffn = ffn_mechanism_at_block(index, root, block_occurrence)
+    if ffn.status == "ambiguous":
+        return ReaderResult.ambiguous(
+            block_occurrence, ffn.ambiguity, provenance=ffn.provenance)
+    if ffn.status == "resolved":
+        if isinstance(ffn.value, EquivalentFFNMechanism):
+            ffn_branches = (_conditional_equivalent_branch(ffn.value),)
+        elif not ffn.value.invocations:
+            return ReaderResult.failed(block_occurrence, (ReaderFailure(
+                "incomplete_graph",
+                "an inline FFN has no addressed branch-input call"),))
+        else:
+            ffn_branches = tuple(
+                _addressed_branch(
+                    root, invocation, "ordinary_ffn")
+                for invocation in ffn.value.invocations)
+    else:
+        routed = _routed_ffn_branch(
+            index, root, block_occurrence, invocations)
+        if isinstance(routed, ExactBranchInvocation):
+            ffn_branches = (routed,)
+        else:
+            return ReaderResult.failed(
+                block_occurrence,
+                ffn.failures or (ReaderFailure(
+                    "incomplete_graph", "the exact FFN branch is unresolved"),),
+                provenance=ffn.provenance)
+
+    attention = _attention_branch(
+        index, root, block_occurrence, invocations, flow)
+    if isinstance(attention, ReaderResult):
+        return attention
+    spans = tuple(dict.fromkeys(
+        span for item in (attention, *ffn_branches)
+        for span in item.spans))
+    value = ExactBranchCensus(
+        block_occurrence, attention, tuple(ffn_branches),
+        invocations, flow, spans)
+    return ReaderResult.resolved(
+        block_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=(
+                "exact attention and FFN mechanisms join the same "
+                "owner-qualified invocation/dataflow graph")),))
 
 
 def _addressed_branch(root, invocation, mechanism):
@@ -343,6 +453,31 @@ def _addressed_branch(root, invocation, mechanism):
         mechanism,
         "addressed_child",
         spans,
+    )
+
+
+def _routed_ffn_branch(index, root, block_occurrence, invocations):
+    """Address the block call owning a positive routed-expert storage path.
+
+    This proves only that the exact child is the routed FFN cell stage.  Router
+    policy and expert internals remain separate evidence; names never vote.
+    """
+    storage = routed_expert_storage_at_block(
+        index, root, block_occurrence)
+    if storage.status != "resolved" or not storage.value.construction_path:
+        return None
+    first_site = storage.value.construction_path[0]
+    matches = tuple(
+        item for item in invocations.addressed
+        if item.callee_owner_occurrence.sites
+        and item.callee_owner_occurrence.sites[-1] == first_site)
+    if len(matches) != 1:
+        return None
+    branch = _addressed_branch(root, matches[0], "routed_ffn")
+    return ExactBranchInvocation(
+        branch.caller_occurrence, branch.call, branch.node,
+        branch.candidate_symbols, branch.mechanism, branch.proof_kind,
+        tuple(dict.fromkeys((*branch.spans, *storage.value.spans))),
     )
 
 
@@ -433,7 +568,13 @@ def _attention_branch(index, root, block_occurrence, invocations, flow):
         provenance=direct.provenance)
 
 
-def _norm_sources(index, root, owner, invocations):
+def exact_norm_sources_at_block(index, root, owner, invocations):
+    """Classify every exactly-addressed block-local norm invocation.
+
+    The mapping key is the authoritative call site; the value retains the exact
+    construction occurrence, primitive family, and all source spans.  Absence
+    means unproved, never non-normalization.
+    """
     sources = {}
     for invocation in (
             *invocations.addressed, *invocations.external_addressed):
@@ -539,7 +680,10 @@ def _span_key(span):
 
 __all__ = [
     "ExactBranchInvocation",
+    "ExactBranchCensus",
     "BranchNormInput",
     "ParallelNormEvidence",
+    "exact_branch_census_at_block",
+    "exact_norm_sources_at_block",
     "decoder_parallel_norm_count_for_path",
 ]

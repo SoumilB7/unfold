@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_legacy_semantic_reader_quarantine_is_exact_and_cannot_grow():
-    assert len(LEGACY_SEMANTIC_READERS) == 23
+    assert len(LEGACY_SEMANTIC_READERS) == 22
     assert legacy_reader_quarantine_problems(ROOT) == ()
 
 
