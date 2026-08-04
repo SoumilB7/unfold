@@ -70,7 +70,6 @@ _BASELINE = {
     "evidence/identity_guard.py": 1,
     "evidence/patterns.py": 1,
     "evidence/sources.py": 2,
-    "evidence/validate.py": 1,
     "parser.py": 7,
     "sable.py": 2,
 }

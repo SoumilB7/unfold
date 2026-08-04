@@ -242,8 +242,8 @@ owner-qualified reader, not because those diagrams change.
 This slice retires one quarantined semantic reader (23 to 22) and one broad
 transformer-parser exception baseline (13 to 12).  U7 remains open: the
 quarantine still contains `decoder_router_evidence_from_files` and
-`layer_class_count_from_files`, and Conv-GLU/cross-altitude terminal closure
-still require explicit proof or a documented non-applicability decision.
+Conv-GLU/cross-altitude terminal closure still require explicit proof or a
+documented non-applicability decision.
 Falcon is an explicit topology carry-forward, not a hidden regression: its
 parallel cell is distributed across nested `self.config` boolean guards and an
 augmented assignment.  The removed whole-file scan happened to classify this
@@ -251,3 +251,19 @@ fixture correctly but did not prove that exact path.  Until an owner-qualified
 control-path evaluator binds those conditions, Falcon retains its independently
 proved MQA details and draws one `wiring unresolved` cell instead of accepting
 `parallel_attn` as architecture by declaration alone.
+
+The following bounded cleanup deletes `layer_class_count_from_files` rather
+than replacing it.  That reader counted layer-looking classes across an entire
+source bundle and used the count to decide whether owner-unqualified validation
+findings should be emitted.  It could therefore let an arbitrary sibling class
+silence every warning, while a single-class file could assign a feature found
+in one owner to another parsed owner.  A class count cannot repair that missing
+join.  The owner-unqualified MoE, KV-sharing, softcap, partial-RoPE, NoPE,
+fine-grained-routing, shared-expert, PLE, AltUp and double-FFN-norm comparisons
+are removed with it.  Independent MLA, ALiBi and MTP checks are intentionally
+left for their own owner-qualification audit; this slice does not broaden its
+scope merely because they share the validation file.  A permanent negative
+control proves a whole-file PLE signal cannot be assigned to an unqualified
+Llama owner, while the existing MLA positive remains green.  The quarantine
+shrinks 22 to 21 and evidence-layer parse authorities 34 to 33 (legacy
+model-source sites 23 to 22), with all 28 preservation witnesses unchanged.

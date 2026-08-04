@@ -635,7 +635,7 @@ class DeepseekV3Attention:
     assert any("MLA" in w for w in ir.warnings)
 
 
-def test_validate_warns_on_ple_in_code_but_not_in_ir(tmp_path):
+def test_validate_does_not_assign_whole_file_ple_to_an_unqualified_owner(tmp_path):
     _write_modeling_file(
         tmp_path,
         """
@@ -653,7 +653,7 @@ class GemmaLikeDecoderLayer:
 
     ir = config_to_ir(LLAMA_TINY_CONFIG, inspect_code=True, code_source=str(tmp_path))
 
-    assert any("Per-Layer Embedding" in w or "PLE" in w for w in ir.warnings)
+    assert not any("Per-Layer Embedding" in w or "PLE" in w for w in ir.warnings)
 
 
 def _write_modeling_file(tmp_path, body: str):

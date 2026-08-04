@@ -1278,30 +1278,6 @@ def _find_decoder_layer(files, _ast, required_roles=("attention", "ffn")):
     return node, ftypes
 
 
-def layer_class_count_from_files(files) -> int:
-    """How many distinct LAYER classes (a class building an attention submodule
-    AND an ffn- or norm-role one) the modeling source defines.  A single-tower
-    decoder file has 1 (the decoder layer); a multimodal/multi-variant file has
-    ≥2 (text decoder + vision/audio encoder layers — Gemma-3n/Gemma-4/Llama-4/
-    Qwen2-VL).  The general, name-free replacement for the hardcoded multi-variant
-    family list used to gate code↔IR topology warnings."""
-    import ast as _ast
-    from .forward_ops import _field_types, _method, _role_of
-    names: set[str] = set()
-    for path in (files or ()):
-        try:
-            tree = _ast.parse(Path(str(path)).read_text(encoding="utf-8"))
-        except (OSError, SyntaxError, UnicodeDecodeError):
-            continue
-        for node in _ast.walk(tree):
-            if not isinstance(node, _ast.ClassDef) or _method(node, "forward") is None:
-                continue
-            roles = {_role_of(c) for c in _field_types(_method(node, "__init__")).values()}
-            if "attention" in roles and ({"ffn", "norm"} & roles):
-                names.add(node.name)
-    return len(names)
-
-
 def _qk_self_attr(expr) -> str | None:
     """``self.<f>`` → ``f`` (else None)."""
     if (isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name)

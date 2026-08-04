@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "b686e01988110c9b3188e637b94e3b5651104f2fc39331ed0607876b691d186b")
+    "e69194ab94e1ca8ec05c6b25add33de4622ef9ebb45fcf7a4a9c2bfc0e20dcae")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "f41ca24a161d5c5ecc32d42fd66b3d5a5001135ca4ee85d700a3d0ad1d6ba280")
+    "717825d6bd031930c20d571de6befc65faea5d7a3a00a5fa17f566b0d48140ab")
 
 
 @dataclass(frozen=True)
@@ -106,11 +106,6 @@ LEGACY_SEMANTIC_READERS = (
          "whole-file router/mechanism interpretation",
          callers=(
              "model_unfolder/adapters/transformer/parser.py:_code_router",
-         )),
-    _row("layer_class_count_from_files", "U7",
-         "whole-file layer-class counting used as topology evidence",
-         callers=(
-             "model_unfolder/evidence/validate.py:_looks_like_multi_variant_file",
          )),
     _row("attention_causality_from_files", "U8",
          "whole-file mask/causality interpretation",
@@ -291,9 +286,6 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/patterns.py",
            "diffusion_single_stream_fusion_from_files", "legacy_model_source",
            "U10", "diffusion stream interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "layer_class_count_from_files", "legacy_model_source", "U7",
-           "whole-file layer/topology counter"),
     _parse("model_unfolder/evidence/position.py", "_call_line",
            "legacy_model_source", "U8",
            "position reader reparses source for a call span"),

@@ -695,35 +695,6 @@ def test_diffusor_class_defaults_mechanism_is_eradicated():
 
 
 # ---------------------------------------------------------------------------
-def test_multi_variant_file_detected_by_layer_class_count(tmp_path):
-    """A multi-variant modeling file is detected by counting distinct LAYER classes
-    (attention + ffn/norm), not a hardcoded family name: one decoder layer => 1
-    (single tower), + a vision encoder layer => 2 (multi-variant)."""
-    from model_unfolder.evidence.patterns import layer_class_count_from_files
-    one = (
-        "class FooDecoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.input_layernorm = FooRMSNorm(8)\n"
-        "        self.self_attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x, past_key_values=None):\n"
-        "        return x\n"
-    )
-    two = one + (
-        "\n\nclass FooVisionEncoderLayer:\n"
-        "    def __init__(self):\n"
-        "        self.norm1 = FooLayerNorm(8)\n"
-        "        self.attn = FooAttention(8)\n"
-        "        self.mlp = FooMLP(8)\n"
-        "    def forward(self, x):\n"
-        "        return x\n"
-    )
-    f1 = tmp_path / "m_one.py"; f1.write_text(one)
-    f2 = tmp_path / "m_two.py"; f2.write_text(two)
-    assert layer_class_count_from_files([str(f1)]) == 1
-    assert layer_class_count_from_files([str(f2)]) == 2
-
-
 def test_dormant_config_gated_op_is_not_required_but_an_active_one_is(tmp_path):
     """An op the code performs ONLY inside a positive config-gated ``if`` branch
     (PLE's ``hidden_states * per_layer_input`` under ``if self.flag:``) is not
