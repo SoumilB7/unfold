@@ -8,11 +8,11 @@ This is the current authority/deletion worklist. The older
 
 ## Summary
 
-- quarantined semantic readers: **24**
+- quarantined semantic readers: **23**
 - exact evidence-layer `ast.parse` sites: **34**
 - legacy model-source parse sites: **23**
-- frozen reader/helper implementation digest: `8c0c241584a65f18bdf58aff2ca618186ddaf71034b466bf33edd2c63212bc38`
-- frozen legacy-parse caller digest: `de2edd99a532a29f6e1d65afe528264bc72583bf7543b33573328fad9e7903d5`
+- frozen reader/helper implementation digest: `01da018088949ea2fc2e081a7e127dd916e4bb8f3e0f8019f3aad254b0424264`
+- frozen legacy-parse caller digest: `3c1efd6a9da25584b2a89a1b241e2a310f044dbdc5469f2f4ec40a5062622d55`
 
 ## Authority classes
 
@@ -28,7 +28,6 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U7 | `model_unfolder/evidence/patterns.py::decoder_intermediate_size_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_intermediate_size` | whole-file FFN dimension interpretation | U7 registers the exact owner-qualified fact and deletes decoder_intermediate_size_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_layer_topology_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_layer_topology` | whole-file decoder cell-topology interpretation | U7 registers the exact owner-qualified fact and deletes decoder_layer_topology_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::decoder_router_evidence_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_router` | whole-file router/mechanism interpretation | U7 registers the exact owner-qualified fact and deletes decoder_router_evidence_from_files |
 | U7 | `model_unfolder/evidence/patterns.py::layer_class_count_from_files` | `model_unfolder/evidence/validate.py:_looks_like_multi_variant_file` | whole-file layer-class counting used as topology evidence | U7 registers the exact owner-qualified fact and deletes layer_class_count_from_files |

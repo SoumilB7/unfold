@@ -247,6 +247,19 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         conformance="nested_callable",
     ),
     FactDefinition(
+        key="intermediate_size",
+        value_types=frozenset({"int"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.ffn"}),
+        projections=frozenset({"ffn_detail", "params_annotation", "json"}),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes="U7: exact output-projection input expression evaluated through "
+              "the FFN occurrence chain; every config operand is cited and a "
+              "class-supplied operand keeps the weaker class_default tier.",
+        conformance="nested_callable",
+    ),
+    FactDefinition(
         key="bias",
         # U2-R9 (witness 26): a composite decoder whose bias evidence cannot
         # resolve records an HONEST ambiguous/None row (never a chosen value).

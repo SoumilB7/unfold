@@ -163,3 +163,27 @@ Wan and MusicGen.  The intended outcomes include:
 The pre-existing MusicGen top-level architecture label overflow is explicitly
 not blessed as a new U7 behavior: it is byte-identical to the prior gallery and
 remains separate visual debt.
+
+## Exact intermediate-width cutover (current U7 slice)
+
+The whole-file `decoder_intermediate_size_from_files` reader is deleted.  Its
+replacement starts from the exact decoder-block occurrence and the canonical
+FFN mechanism, then evaluates the input expression of that mechanism's proven
+output projection through the exact constructor occurrence chain.  Every
+config operand is retained as an exact premise and consumed under
+`decoder.ffn.intermediate_size`; a missing condition operand is not treated as
+an explicit `None`.  Operand origin is not flattened: checkpoint operands yield
+`code_and_config`, while any installed-class operand keeps the fact at the
+weaker `class_default` tier.  A directly supplied runtime `PretrainedConfig`
+has no checkpoint-origin claim, but its exact current value may still certify
+the runtime geometry as `code_and_config`; its access event remains explicitly
+unestablished, never relabelled checkpoint-declared.  Loader-only metadata
+cannot certify the geometry.
+
+The same rule covers GPT-J/CodeGen/GPT-2 `n_inner=None` defaults, BLOOM's inline
+`4 * hidden_size`, ordinary declared-width FFNs and Transformers' package-
+relative `Conv1D` import.  `Conv1D` is recognized only through the exact
+`...pytorch_utils.Conv1D` protocol binding; an unrelated class with the same
+final name remains powerless.  The reader also requires every upstream
+projection output to equal the down projection input, so inconsistent gated
+lanes abstain instead of letting the down projection certify itself.

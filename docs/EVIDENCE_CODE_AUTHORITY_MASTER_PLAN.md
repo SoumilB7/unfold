@@ -2332,8 +2332,11 @@ field as loss of every field, and activation operands are read from the exact
   delta: Gemma-2's FFN drill names the code-selected GELU instead of generic
   `Activation`; its other five views and every other reviewed PNG are unchanged.
   The remaining fixture changes are evidence/IR/provenance truth.  U7 remains
-  open for routed/shared expert closure, Conv-GLU, norm/cell topology, remaining
-  width readers, terminal receipts and default deletion.
+  open for routed/shared expert closure, Conv-GLU, norm/cell topology, terminal
+  receipts and default deletion.  The legacy whole-file intermediate-width
+  reader is now deleted: exact output-projection input geometry is evaluated
+  through the canonical FFN occurrence chain with every config operand cited,
+  including GPT-J/CodeGen/GPT-2 defaults and BLOOM's inline expansion.
 
 ### 20.11 U8 — migrate position, masks, schedules and layer selectors
 

@@ -1368,80 +1368,6 @@ def test_qk_norm_draws_real_ops_in_the_drill():
 # Code-derived FFN intermediate width (GPT-J/GPT-2/CodeGen n_inner=None -> 4*hidden)
 # ---------------------------------------------------------------------------
 
-_GPTJ_SHAPED_INNER = '''
-import torch
-from torch import nn
-
-
-class XMLP(nn.Module):
-    def __init__(self, intermediate_size, config):
-        super().__init__()
-        self.fc_in = nn.Linear(config.n_embd, intermediate_size)
-        self.fc_out = nn.Linear(intermediate_size, config.n_embd)
-
-    def forward(self, x):
-        return self.fc_out(torch.nn.functional.gelu(self.fc_in(x)))
-
-
-class XAttention(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.q_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.k_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.v_proj = nn.Linear(config.n_embd, config.n_embd)
-        self.out_proj = nn.Linear(config.n_embd, config.n_embd)
-
-    def forward(self, hidden_states, layer_past=None, use_cache=None):
-        q, k, v = self.q_proj(hidden_states), self.k_proj(hidden_states), self.v_proj(hidden_states)
-        return self.out_proj(v)
-
-
-class XBlock(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        inner_dim = config.n_inner if config.n_inner is not None else 4 * config.n_embd
-        self.ln_1 = nn.LayerNorm(config.n_embd)
-        self.attn = XAttention(config)
-        self.mlp = XMLP(inner_dim, config)
-
-    def forward(self, hidden_states, layer_past=None, use_cache=None):
-        return hidden_states + self.mlp(self.attn(self.ln_1(hidden_states)))
-'''
-
-
-def test_intermediate_size_from_the_constructor_default_expression(tmp_path):
-    """GPT-J shape: ``inner_dim = config.n_inner if config.n_inner is not None
-    else 4 * config.n_embd`` — with n_inner absent, the FFN width is read from
-    the code's own default expression (4×hidden), never a per-model table."""
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    f = tmp_path / "modeling_x.py"
-    f.write_text(_GPTJ_SHAPED_INNER)
-    files = (str(f),)
-    aliases = ("intermediate_size", "n_inner", "d_ff", "ffn_hidden_size")
-    # n_inner absent -> 4 * n_embd
-    assert decoder_intermediate_size_from_files(files, {"n_embd": 4096}, aliases) == 16384
-    # n_inner present -> the ternary yields it (code default not applied)
-    assert decoder_intermediate_size_from_files(
-        files, {"n_embd": 4096, "n_inner": 9000}, aliases) == 9000
-
-
-def test_intermediate_size_reader_ignores_a_sibling_rope_ternary(tmp_path):
-    """The reader is keyed on the intermediate_size vocabulary, so a different
-    config-default ternary in the same __init__ is not mistaken for the FFN
-    width."""
-    src = _GPTJ_SHAPED_INNER.replace(
-        "        self.ln_1 = nn.LayerNorm(config.n_embd)",
-        "        rot = config.rotary_dim if config.rotary_dim is not None else 64\n"
-        "        self.ln_1 = nn.LayerNorm(config.n_embd)")
-    f = tmp_path / "modeling_y.py"
-    f.write_text(src)
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    aliases = ("intermediate_size", "n_inner")
-    # rotary_dim ternary must NOT be picked; n_inner default (4*n_embd) wins
-    assert decoder_intermediate_size_from_files(
-        (str(f),), {"n_embd": 1024, "rotary_dim": None}, aliases) == 4096
-
-
 def test_gptj_family_derives_the_ffn_width_end_to_end():
     """GPT-J/CodeGen/GPT-2 carry ``n_inner=None`` and compute 4×hidden — the
     parse must surface the real FFN width, not undercount it to zero."""
@@ -1452,6 +1378,9 @@ def test_gptj_family_derives_the_ffn_width_end_to_end():
         ir = config_to_ir(cfg)
         hidden = getattr(cfg, "hidden_size", None) or getattr(cfg, embd_field)
         assert ir.layers[0].ffn.intermediate_size == 4 * hidden, mt
+        fact = ir.extras["fact_provenance"]["decoder.ffn.intermediate_size"]
+        assert fact["value"] == 4 * hidden
+        assert fact["status"] == "code_and_config"
 
 
 def test_declared_intermediate_size_is_never_overridden_by_code():
@@ -2091,64 +2020,6 @@ def test_diffusor_source_files_root_scoped():
 
     flat = SourceBundle(source="local", files=("dit.py", "enc.py"))
     assert _source_files({}, _Ctx(flat)) == ("dit.py", "enc.py")
-
-
-def test_intermediate_size_follows_into_ffn_class():
-    """Width-default idioms BELOW the layer init: the ternary or the inline
-    widened-Linear in the FFN-role class's own __init__ (BLOOM's
-    ``nn.Linear(hidden, 4*hidden)``); layer-init ternary (GPT-J) unchanged;
-    ambiguity (two distinct widened values) → None, never a guess."""
-    import transformers, pathlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    base = pathlib.Path(transformers.__file__).parent / "models"
-    cfg = AutoConfig.for_model("bloom"); cfg.hidden_size = 14336
-    assert decoder_intermediate_size_from_files(
-        (str(base / "bloom/modeling_bloom.py"),), cfg,
-        ("intermediate_size", "n_inner", "ffn_dim")) == 4 * 14336
-    cfgj = AutoConfig.for_model("gptj")
-    assert decoder_intermediate_size_from_files(
-        (str(base / "gptj/modeling_gptj.py"),), cfgj,
-        ("intermediate_size", "n_inner")) == 4 * cfgj.n_embd
-
-
-def test_intermediate_size_ambiguous_widths_refuse(tmp_path):
-    """Two DIFFERENT widened Linears in one FFN init → None (tri-state law)."""
-    import hashlib
-    from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_intermediate_size_from_files
-    src = '''
-import torch.nn as nn
-class OddMLP(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        hidden_size = config.hidden_size
-        self.a = nn.Linear(hidden_size, 4 * hidden_size)
-        self.b = nn.Linear(hidden_size, 8 * hidden_size)
-        self.down = nn.Linear(4 * hidden_size, hidden_size)
-    def forward(self, x):
-        return self.down(self.a(x) * self.b(x))
-class OddAttention(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.q_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.k_proj = nn.Linear(config.hidden_size, config.hidden_size)
-        self.v_proj = nn.Linear(config.hidden_size, config.hidden_size)
-    def forward(self, x, past_key_value=None):
-        return x
-class OddBlock(nn.Module):
-    def __init__(self, config):
-        super().__init__()
-        self.self_attn = OddAttention(config)
-        self.mlp = OddMLP(config)
-    def forward(self, x, past_key_value=None):
-        return self.mlp(self.self_attn(x, past_key_value))
-'''
-    f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
-    f.write_text(src)
-    cfg = AutoConfig.for_model("bloom"); cfg.hidden_size = 128
-    assert decoder_intermediate_size_from_files(
-        (str(f),), cfg, ("intermediate_size",)) is None
 
 
 def test_scores_scaling_wired_to_main_paths():

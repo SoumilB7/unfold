@@ -44,7 +44,9 @@ ATTENTION_DRAWN = frozenset({
     "qk_norm", "output_gate", "gated_delta_geometry", "sinks",
     "logit_softcap", "qkv_clip", "cached", "output_projection",
 })
-ORDINARY_FFN_DRAWN = frozenset({"activation", "gated", "projection_mode"})
+ORDINARY_FFN_DRAWN = frozenset({
+    "activation", "gated", "projection_mode", "intermediate_size",
+})
 EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
 # Surface-level compatibility/obligation view.  Owner-qualified gates use the
 # two sets above and never attribute an expert fact to the ordinary FFN.

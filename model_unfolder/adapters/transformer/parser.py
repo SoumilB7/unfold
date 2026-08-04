@@ -578,17 +578,19 @@ def _code_cross_attention_all_layers(context=None, *, config_path=()):
     return result is not None and result.status == "resolved"
 
 
-def _code_intermediate_size(cfg: Any, context=None) -> int | None:
-    """FFN intermediate width from the modeling source's OWN default expression
-    when the config field is absent (GPT-J/GPT-2/CodeGen ``n_inner=None →
-    4×n_embd``) — fixes the param undercount without a per-model table.
-    Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_intermediate_size_from_files
-        return decoder_intermediate_size_from_files(
-            _source_files(cfg, context), cfg, _ALIASES.get("intermediate_size", ()))
-    except Exception:
+def _code_intermediate_size(cfg: Any, context=None, *, config_path=()):
+    """Exact-owner FFN width from its output-projection input expression."""
+    if context is None:
         return None
+    from ...evidence.ffn_width import \
+        decoder_ffn_intermediate_width_for_path
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.ffn.intermediate_width", path,
+        lambda: decoder_ffn_intermediate_width_for_path(
+            context.program_index(), context.source_bundle, path, cfg,
+            allow_root_stage=True),
+    )
 
 
 def _code_rope_dim(cfg: Any, context=None) -> int | None:
@@ -1063,6 +1065,33 @@ def parse(cfg: Any, context=None) -> ModelIR:
             None if class_default else selected)
         return decision.value
 
+    def _resolve_exact_config_path(exact_path):
+        """Resolve one source-proven spelling without alias search.
+
+        Width formulas may cite several independently meaningful operands
+        (for example explicit ``n_inner=None`` plus ``n_embd``).  Each must
+        round-trip through the exact document occurrence before the derived
+        geometry is accepted.  Resolution and consumption are deliberately
+        separate: the weakest deciding origin sets ONE honest fact status
+        before any obligation is emitted.
+        """
+        exact = tuple(exact_path)
+        if not exact:
+            return None
+        container = cfg
+        for segment in exact[:-1]:
+            if isinstance(container, dict):
+                if segment not in container:
+                    return None
+                container = container[segment]
+            elif hasattr(container, segment):
+                container = getattr(container, segment)
+            else:
+                return None
+        resolution = _config_access.resolve(
+            container, exact[-1], (), path=exact[:-1])
+        return resolution if resolution.state == "present" else None
+
     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
     hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
     num_heads    = consume("num_attention_heads", fact_owner="decoder.attention", fact_key="num_heads")
@@ -1078,9 +1107,48 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # ``4 * n_embd`` itself — read that default EXPRESSION from the source so the
     # FFN width (and thus the param count) isn't undercounted to zero.
     if not intermediate_size:
-        code_inter = _code_intermediate_size(text_cfg, context)
-        if code_inter:
-            intermediate_size = code_inter
+        _width_result = _code_intermediate_size(
+            cfg, context, config_path=_text_path)
+        if _width_result is not None and _width_result.status == "resolved":
+            _width_resolutions = []
+            for _path, _expected in _width_result.value.premises:
+                _resolution = _resolve_exact_config_path(_path)
+                # ``""`` is legal only for a caller-supplied runtime
+                # PretrainedConfig: it proves the value the current model code
+                # will consume, but the access event keeps origin unestablished
+                # and is never promoted to checkpoint_declared.  Loader stamps
+                # remain powerless.
+                if _resolution is None or _resolution.value != _expected \
+                        or _resolution.provenance not in {
+                            "", "checkpoint_declared", "class_default"}:
+                    _width_resolutions = []
+                    break
+                _width_resolutions.append(_resolution)
+            if len(_width_resolutions) == len(_width_result.value.premises):
+                _width_status = (
+                    "class_default"
+                    if any(item.provenance == "class_default"
+                           for item in _width_resolutions)
+                    else "code_and_config")
+                for _resolution in _width_resolutions:
+                    _resolution.consume_decision(
+                        reader="decoder_ffn_intermediate_width_for_path",
+                        fact_owner="decoder.ffn",
+                        fact_key="intermediate_size",
+                        mechanism="ffn_intermediate_width",
+                        status=_width_status)
+                intermediate_size = _width_result.value.value
+                _note_typed_fact(
+                    key="intermediate_size", owner="decoder.ffn",
+                    value=intermediate_size, status=_width_status,
+                    reader_result=_width_result,
+                    config_paths=tuple(
+                        path for path, _value
+                        in _width_result.value.premises),
+                    reader="decoder_ffn_intermediate_width_for_path",
+                    reason=("the exact FFN output-projection input expression "
+                            "evaluates from the cited config operands"),
+                )
     # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
     # Read the declared value for the config ledger, but project it only when
     # the exact-owner mechanism reader proves either a literal activation or

@@ -55,8 +55,11 @@ _LINEAR_PROTOCOLS = frozenset({
     "torch.nn.Linear",
     "torch.nn.modules.linear.Linear",
     # Transformers' Conv1D is a transposed-storage affine projection, not a
-    # convolutional architecture primitive.
+    # convolutional architecture primitive.  Modeling modules normally import
+    # it through a package-relative binding; ExternalReferenceProof preserves
+    # that spelling exactly instead of guessing the installed package root.
     "transformers.pytorch_utils.Conv1D",
+    "...pytorch_utils.Conv1D",
 })
 _FUNCTIONAL_ACTIVATIONS = {
     "torch.nn.functional.gelu": "gelu",
@@ -129,6 +132,8 @@ class FFNMechanism:
     activation: str | None = None
     activation_config_path: tuple[str, ...] = ()
     projections: tuple[ConstructionOccurrenceId, ...] = ()
+    input_projections: tuple[ConstructionOccurrenceId, ...] = ()
+    output_projection: ConstructionOccurrenceId | None = None
     spans: tuple[SourceSpan, ...] = ()
     conditional_entry: ConditionalFFNEntry | None = None
 
@@ -180,6 +185,13 @@ class FFNMechanism:
             raise ValueError("FFN storage carries its exact projection occurrences")
         if any(item.parent != self.owner_occurrence for item in self.projections):
             raise ValueError("every FFN projection belongs to the exact owner")
+        if self.output_projection not in self.projections \
+                or len(self.input_projections) != expected - 1 \
+                or len(set(self.input_projections)) != expected - 1 \
+                or set(self.input_projections) | {self.output_projection} \
+                != set(self.projections):
+            raise ValueError(
+                "FFN input/output projection roles exactly partition storage")
         if self.activation and self.activation_config_path:
             raise ValueError(
                 "activation is either code-literal or exact config dispatch")
@@ -252,6 +264,14 @@ class EquivalentFFNMechanism:
                 item.conditional_entry.call.span,
                 *item.spans,
             ) if isinstance(span, SourceSpan)))
+
+    @property
+    def input_projections(self) -> tuple[ConstructionOccurrenceId, ...]:
+        return self.variants[0].input_projections
+
+    @property
+    def output_projection(self) -> ConstructionOccurrenceId:
+        return self.variants[0].output_projection
 
 
 @dataclass(frozen=True)
@@ -329,6 +349,14 @@ class ConfigSelectedFFNMechanism:
     @property
     def projections(self) -> tuple[ConstructionOccurrenceId, ...]:
         return self.selected.projections
+
+    @property
+    def input_projections(self) -> tuple[ConstructionOccurrenceId, ...]:
+        return self.selected.input_projections
+
+    @property
+    def output_projection(self) -> ConstructionOccurrenceId:
+        return self.selected.output_projection
 
     @property
     def spans(self) -> tuple[SourceSpan, ...]:
@@ -923,7 +951,9 @@ def _mechanism_for_owner(
     return FFNMechanism(
         block_occurrence, owner_occurrence, owner_symbol, invocations,
         mode != "dense", mode, activation, activation_path,
-        projection_order, spans, conditional_entry)
+        projection_order,
+        tuple(sorted(upstream, key=lambda item: _span_key(item.site.span))),
+        sink, spans, conditional_entry)
 
 
 def _invocations_are_exact_alternatives(index, block_symbol, invocations):

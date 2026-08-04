@@ -1211,3 +1211,38 @@ def test_shared_expert_gate_assumption_tracks_the_expert_width_lane():
     assert any(
         "routed-expert inner width unknown" in note
         for note in omitted_shared.get("assumptions") or ())
+
+
+def test_exact_transformers_relative_conv1d_is_an_affine_protocol(tmp_path):
+    """HF modeling modules import Conv1D relatively.  The exact import target
+    is a lawful protocol spelling; refusing it would make GPT-2 fall back to a
+    whole-file FFN scan even though both projection occurrences are addressed.
+    """
+    result = _reader(tmp_path, """
+from ...pytorch_utils import Conv1D
+class FeedForward:
+    def __init__(self, config):
+        self.up = Conv1D(config.inner, config.hidden)
+        self.down = Conv1D(config.hidden, config.inner)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+    assert result.value.activation == "gelu"
+
+
+def test_unrelated_relative_conv1d_spelling_is_not_an_affine_protocol(tmp_path):
+    """A familiar final class name is not enough; the exact imported protocol
+    target must be the transformers primitive, not an arbitrary sibling.
+    """
+    result = _reader(tmp_path, """
+from ...somewhere_else import Conv1D
+class FeedForward:
+    def __init__(self, config):
+        self.up = Conv1D(config.inner, config.hidden)
+        self.down = Conv1D(config.hidden, config.inner)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "failed"
