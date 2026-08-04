@@ -909,6 +909,17 @@ class ConfigResolution:
         owner = fact_owner or self.component
         if (self.component and self.component != "root"
                 and owner != "root" and not owner.startswith("root.")):
+            component_parts = self.component.split(".")
+            owner_parts = owner.split(".")
+            # Both spellings are structural owner paths.  A component may
+            # already name the first segment of a reusable reader's relative
+            # target (``root.denoiser`` + ``denoiser.attention``).  Compose
+            # their exact overlap once; blindly concatenating them fabricates
+            # ``root.denoiser.denoiser.attention``.  Non-overlapping targets
+            # such as ``root.text_encoder`` + ``decoder.attention`` retain the
+            # full nested path.
+            if component_parts[-1] == owner_parts[0]:
+                return ".".join((*component_parts[:-1], *owner_parts))
             return f"{self.component}.{owner}"
         return owner
 

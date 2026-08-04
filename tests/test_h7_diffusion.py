@@ -111,14 +111,17 @@ def test_diffusion_consumed_census_is_non_empty_and_exact():
     consumed = [e for e in ledger.events if e.intent == "consumed"]
     assert consumed, "diffusion consumed census is EMPTY"
     owners = {e.fact_owner for e in consumed}
-    assert "denoiser.stack" in owners and "denoiser.attention" in owners
-    assert "vae.geometry" in owners, owners
+    assert "root.denoiser.stack" in owners
+    assert "root.denoiser.attention" in owners
+    assert "root.vae.geometry" in owners, owners
     # exact keys ride along
     keys = {(e.fact_owner, e.fact_key) for e in consumed}
-    assert ("denoiser.stack", "num_layers") in keys
-    assert ("denoiser.attention", "num_heads") in keys
+    assert ("root.denoiser.stack", "num_layers") in keys
+    assert ("root.denoiser.attention", "num_heads") in keys
     # and the VAE events carry the exact container path
-    vae_paths = {e.config_path for e in consumed if e.fact_owner == "vae.geometry"}
+    vae_paths = {
+        e.config_path for e in consumed if e.fact_owner == "root.vae.geometry"
+    }
     assert any(path.startswith("_vae_config.") for path in vae_paths), vae_paths
 
 

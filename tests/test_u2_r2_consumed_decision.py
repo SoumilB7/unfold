@@ -142,6 +142,24 @@ def test_nested_component_does_not_double_qualify_an_absolute_owner():
     assert event.fact_owner == "root.text_encoder.vision"
 
 
+def test_nested_component_composes_an_overlapping_relative_owner_once():
+    """A component boundary and a relative target may share their boundary
+    segment; that segment is an exact path overlap, not two nested owners."""
+    doc = {"num_attention_heads": 24}
+    with ca.capture_events() as ledger, ca.owner_scope("root.denoiser"), \
+            _in_scope(doc, {
+                "num_attention_heads": ca.CHECKPOINT_DECLARED,
+            }):
+        decision = ca.resolve(doc, "num_attention_heads", ()).consume_decision(
+            mechanism="attention_head_geometry",
+            fact_owner="denoiser.attention", fact_key="num_heads",
+            reader="diffusion_attention_reader")
+    assert decision.target.owner == "root.denoiser.attention"
+    [event] = [e for e in ledger.events if e.intent == "consumed"]
+    assert event.component == "root.denoiser"
+    assert event.fact_owner == "root.denoiser.attention"
+
+
 def test_the_same_path_in_two_documents_is_two_occurrences():
     """U2-R2 vet: the DOCUMENT is part of the occurrence identity.  A pipeline
     root ``hidden_size`` and an embedded encoder ``hidden_size`` are different

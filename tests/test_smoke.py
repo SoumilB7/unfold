@@ -1425,8 +1425,9 @@ def test_llama3():
     assert "KV sharing pattern" in html
     assert "Q0-Q3" in html
     assert "use KV0" in html
-    assert "cache unresolved" in html
-    assert "KV cache 4x smaller" not in html
+    assert "KV cache 4x smaller" in html
+    assert "source-proven cache path" in html
+    assert "cache unresolved" not in html
     assert "Grouped scaled dot-product attention" in html
 
     print(f"Llama-3 OK  — ~{ir['params']['total_h']} params")
