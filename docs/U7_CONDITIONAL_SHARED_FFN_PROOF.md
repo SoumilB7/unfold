@@ -187,3 +187,14 @@ relative `Conv1D` import.  `Conv1D` is recognized only through the exact
 final name remains powerless.  The reader also requires every upstream
 projection output to equal the down projection input, so inconsistent gated
 lanes abstain instead of letting the down projection certify itself.
+
+### Width-slice receipt
+
+The final commit is `039f66c`.  Its detached-worktree coordinator receipt is
+`/private/tmp/model-unfolder-verification/9c1a39dbaa`: 2,584 tests collected,
+275 focused tests passed, 44 U2 authority tests passed, all 48 preservation
+checks passed, and the exhaustive partition passed 2,477 tests with 13 skips
+and two expected xfails.  Every lane's complete source-tree and ignored
+blessed-artifact fingerprint was identical before and after.  The sanctioned
+manifest generator changed exactly BLOOM's ledger hash; structural, expanded,
+parameter, HTML, Sable, gallery and all per-view hashes stayed byte-identical.
