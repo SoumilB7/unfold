@@ -2250,6 +2250,50 @@ quarantined to U9/U10/U11.  Any remaining root-transformer convention,
 unregistered attention fact, alternative detailed graph, or config/name-based
 mechanism decision is U6 contract debt and blocks U6 completion.
 
+#### U6 completion receipt
+
+U6 is complete at `a055591` (campaign `74c50ec..a055591`).  The canonical
+owner-bound attention evidence and `attention_region` now independently carry
+mechanism/storage, exact head bindings, score scaling, projection bias,
+logit-softcap, Q/K normalization, output gates, recurrent-mixer geometry, QKV
+clipping, cache updates and output projection.  Root transformer parsing and
+all current terminal projections consume that shared contract.  Class/model
+names, head counts and config presence no longer select an attention
+mechanism, and an unresolved fact remains unresolved instead of being replaced
+by MHA, split-QKV, scaling, bias or cache conventions.
+
+The closure gate caught two genuine defects before completion.  First, nested
+owner composition could fabricate paths such as
+`root.denoiser.denoiser.attention`; owner paths now compose their exact shared
+boundary segment once, with an anti-double-prefix poison.  Second, the Llama-3
+smoke test still required “cache unresolved” after source code had proven the
+live K/V-cache update; it now pins the code-proven cache path.  The failed
+serial control at `e758be4` is therefore historical evidence, not a green
+receipt: it passed 2,547 tests and exposed exactly those two failures.
+
+The corrected committed-tree receipt at `a055591` collected **2,565 tests**:
+**2,458** exhaustive-core, **44** U2-authority and **48** preservation tests
+passed; **13** were skipped and **2** remained expected xfails.  The focused
+U6 bracket added **343/343 green** checks.  Every lane ran in a detached
+worktree and retained identical source and external-artifact fingerprints.
+Receipt: `/private/tmp/model-unfolder-verification/f9a358eae1`.
+
+The reviewed corpus is now a closed **28-witness** bracket: the original 26
+plus Qwen3.5 and DBRX.  Twenty-seven fixture signatures changed to the exact
+attention evidence; DeepSeek-V3 stayed byte-identical.  Only the Qwen3.5 and
+DBRX galleries changed (three PNGs total); the original 26 galleries remained
+byte-identical.  All 28 regenerated with zero structural, parameter,
+HTML-metadata or gallery drift after the final owner-path correction; its only
+manifest delta was the expected ledger hash for 16 diffusion witnesses.
+
+The remaining attention-related work is deliberately **not** a second U6:
+U3-G owns standalone multi-stage T5 occurrence resolution; U8 owns position,
+mask and per-layer schedules; U9 owns exhaustive modality-owner traversal;
+U10 owns diffusion-root/block traversal; and U11 owns UNet stage/cell
+placement.  Each must invoke the U6 schema/readers and `attention_region`; none
+may introduce a family table, head-count classifier, renderer-local mechanism
+choice or alternate attention graph.
+
 ### 20.10 U7 — migrate FFN, norm and cell topology once
 
 **Readers:** `evidence/ffn.py` plus one owner-bound norm/cell reader backed by U3.
@@ -2501,6 +2545,7 @@ append a superseding row.
 | U5 | PENDING | — | X-01, X-06/X-07, J-09..J-12 | — | — | — | — | — | not run | not recorded | — | — |
 | U5 | DONE | `569cd8b` | X-01, X-06/X-07, J-09..J-12 | terminal-consumer authority boundary; no mechanism producer migrated early | HTML, expanded JSON, params and conformance statically censused behind one firewall | owner-unsound global `(kind,value)` evidence-to-trace join deleted; exact IR paths retained | Llama, BLOOM, DeepSeek-V3, Qwen2-VL and FLUX zero-drift examples; all 26 preservation witnesses; helper/alias/duplicate-read/backward-import/raw-config/raw-extras/source-reopen/spec-default/semantic-bucket poisons | no corpus artifact delta; synthetic inspect-code trace no longer cites a sibling-capable global finding id | 332 focused + 44 U2 authority + 46 preservation + 2,278 exhaustive passed; 11 skipped/2 expected xfailed | `/private/tmp/model-unfolder-verification/b1ac54cc57`; every lane fingerprint identical | 340 pre-existing terminal occurrences made visible as 82 exact U14 rows; live↔row equality blocking | firewall scope approved by execution directive; no blessing required |
 | U6 | PENDING | — | attention slice | — | — | — | — | — | not run | not recorded | — | — |
+| U6 | DONE | `74c50ec..a055591` | T-02, T-08..T-11, D-05, M-14/M-15, J-02/J-03 | exact owner-bound attention mechanism/storage/head/scale/bias/softcap/QK-norm/gate/recurrent/clip/cache/output evidence | transformer parser/spec, fact ledger, canonical opgraph, HTML drills/cards, expanded JSON, receipts and conformance; nested vision controls use the same contract | transformer mechanism/config conventions, modality head-count mechanism classification, unbound attention config reads and alternative cache/output inference paths retired | Llama, BLOOM, Qwen3, Qwen3.5, DBRX, DeepSeek-V3, StableLM, Gemma, GPT-OSS, Qwen2-VL, Hunyuan and negative/ambiguity/rename/sibling-owner poisons | 27 fixture signatures; 3 reviewed PNGs in Qwen3.5/DBRX; original 26 galleries and DeepSeek signature byte-identical; final correction changed only 16 diffusion ledger hashes | 343 focused + 44 authority + 48 preservation + 2,458 exhaustive-core passed; 13 skipped/2 expected xfailed; 2,565 collected | `/private/tmp/model-unfolder-verification/f9a358eae1`; every lane source/artifact fingerprint identical | U6 contract debt zero; explicit owner/topology migrations assigned to U3-G/U8/U9/U10/U11 | Soumil approved the Qwen3.5/DBRX witness expansion and 27-witness honesty re-bless |
 | U7 | PENDING | — | FFN/norm/cell slice | — | — | — | — | — | not run | not recorded | — | — |
 | U8 | PENDING | — | positions/masks/schedules | — | — | — | — | — | not run | not recorded | — | — |
 | U9 | PENDING | — | M-01..M-16 | — | — | — | — | — | not run | not recorded | — | — |
