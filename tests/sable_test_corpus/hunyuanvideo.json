@@ -232,17 +232,16 @@
     "b04ca2a6ee9a0546595d8564f6841bb3",
     "bf1a49ca1544f7363b05aa64d64ea45d",
     "bf38a076baa29fc5858612bbd71d0fe5",
+    "c2981dc8dba569c8b40c652f99dd954e",
     "c554a7b119091b80e1b2306025d6c1ab",
     "d0e62906b10104564fcfa582b4232f8d",
     "d1c84104e399fd2b01a9463008f05c8b",
     "d4c39a539ae210be97c669952e172ace",
-    "e61a83137bf7f8efd7fa6bc30ad12024",
-    "e984c9143c238218c87a3c1c72b1dfef"
+    "e61a83137bf7f8efd7fa6bc30ad12024"
   ],
   "model": "HunyuanVideo",
   "source": "local",
   "superseded_hash_signature": [
-    "2d3e15c61114c1a4b38a0b994905544e",
     "30514691da513ec4ac4962bb1d572db9",
     "30b5201d259e95a942012b0a27fe6d7f",
     "34829e302343eaa19667bcba8a150848",
@@ -255,6 +254,7 @@
     "7afb01b9d7ac072ddcf62251ed13ea45",
     "8df75c06f9f0a30aab0fb5cbcde3a971",
     "962812afb72cf79183812517aaf62933",
+    "b04ca2a6ee9a0546595d8564f6841bb3",
     "bf1a49ca1544f7363b05aa64d64ea45d",
     "bf38a076baa29fc5858612bbd71d0fe5",
     "c554a7b119091b80e1b2306025d6c1ab",

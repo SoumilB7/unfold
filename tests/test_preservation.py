@@ -1,11 +1,8 @@
-"""REC-1 (§7) — deterministic preservation harness, SHADOW mode.
+"""REC-1 (§7) — deterministic preservation harness, now blocking.
 
 The synthetic poison matrix and reproducibility contracts are BLOCKING from
-day one; the live 25-model comparison is a shadow TRIPWIRE — it names the
-known U1 diffusion drift (report-only, per §7.2), fails if any NEW structural
-drift appears, and shrinks to fully clean as REC-4/REC-5 restore parity.
-REC-7 flips the live comparison to blocking; no manifest/blessing is modified
-here.
+day one. REC-7 promoted the live corpus comparison to a blocking zero-drift
+gate; U6 extends that reviewed corpus to 28 witnesses.
 """
 from __future__ import annotations
 
@@ -141,11 +138,11 @@ def test_canonical_surfaces_are_deterministic_end_to_end():
 
 
 # --------------------------------------------------------------------------- #
-# §7.2 / §7.8 — the LIVE 25-model comparison (shadow tripwire)
+# §7.2 / §7.8 — the live closed-corpus comparison
 # --------------------------------------------------------------------------- #
 
 def test_expected_manifest_zero_drift_zero_skip():
-    """COR-0 (§5): the BLOCKING clean-checkout gate — regenerate all 25
+    """COR-0 (§5): the BLOCKING clean-checkout gate — regenerate every
     witnesses fresh and compare EVERY committed hash (inputs, surfaces, views).
     A missing manifest/input/surface/view or a None hash is a FAILURE; there
     is no skip path."""
@@ -174,15 +171,15 @@ def _manifest_doc():
 
 
 @pytest.mark.parametrize("mutate,expect", [
-    ("drop_one", "witness_count != 26"),
+    ("drop_one", "witness_count != 28"),
     ("drop_first_input", "corpus input MISSING"),
-    ("add_extra", "witness_count != 26"),
+    ("add_extra", "witness_count != 28"),
     ("mutate_input_hash", "corpus input hash MISMATCH"),
     ("none_hash", "expected hash is None"),
     ("mutate_view", "view"),
 ])
 def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
-    """COR-0 (§5.7): 0/24/26 witnesses, missing/mutated input, None hash, and
+    """COR-0 (§5.7): wrong witness counts, missing/mutated input, None hash, and
     view drift each fail for the intended reason."""
     doc = _manifest_doc()
     corpus = tmp_path / "corpus"
@@ -191,12 +188,12 @@ def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
         (corpus / src.name).write_bytes(src.read_bytes())
     slugs = sorted(doc["witnesses"])
     if mutate == "drop_one":
-        doc["witnesses"].pop(slugs[0]); doc["witness_count"] = 24
+        doc["witnesses"].pop(slugs[0]); doc["witness_count"] = 27
     elif mutate == "drop_first_input":
         (corpus / f"{slugs[0]}.json").unlink()
     elif mutate == "add_extra":
         doc["witnesses"]["zzz-extra"] = doc["witnesses"][slugs[0]]
-        doc["witness_count"] = 26
+        doc["witness_count"] = 28
     elif mutate == "mutate_input_hash":
         doc["witnesses"][slugs[0]]["input_sha256"] = "0" * 64
     elif mutate == "none_hash":
@@ -209,12 +206,13 @@ def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
         views[next(iter(views))] = "f" * 12
     mp = tmp_path / "m.json"
     mp.write_text(json.dumps(doc))
-    # poison verification must not need a full 25-model regen: findings for
+    # poison verification must not need a full-corpus regen: findings for
     # count/input-level poisons surface before regeneration; content poisons
     # are exercised on the FIRST witness only via a pruned manifest.
     if mutate in ("none_hash", "mutate_view"):
         doc["witnesses"] = {slugs[0]: doc["witnesses"][slugs[0]]}
-        doc["witness_count"] = 25   # keep count clean; isolate the content poison
+        doc["witness_count"] = P.PRESERVATION_WITNESS_COUNT
+        # Shape is intentionally not the subject of this pruned content poison.
         mp.write_text(json.dumps(doc))
         findings = P.verify_against_expected(corpus, mp, limit=1)
         assert any(expect in f for f in findings), findings[:6]

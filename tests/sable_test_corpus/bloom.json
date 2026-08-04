@@ -69,7 +69,7 @@
   "hash_signature": [
     "237f99e04ae8213bb51a11035aaa22e3",
     "9690073a99b038727d8ddfc9d75359d6",
-    "984432b9fa84629cfee5bcd871795b3f",
+    "bf0b533e1c953f2a11117824d0343219",
     "fbbc36f444c41a8959b6be526759acad"
   ],
   "model": "bloom",
@@ -78,7 +78,7 @@
     "237f99e04ae8213bb51a11035aaa22e3",
     "9690073a99b038727d8ddfc9d75359d6",
     "984432b9fa84629cfee5bcd871795b3f",
-    "f1b6082bc3d9008ecd1add6cf8000497"
+    "fbbc36f444c41a8959b6be526759acad"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/bloom",

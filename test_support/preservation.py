@@ -1,10 +1,10 @@
-"""REC-1 (§7) — the deterministic preservation harness (shadow mode).
+"""REC-1 (§7) — the deterministic preservation harness.
 
 Produces CANONICAL witness surfaces for a corpus model from the production
 APIs, canonicalizes the frozen U0 baseline the same way, and diffs the two.
-The live 25-model comparison stays SHADOW (report-only) until REC-7 flips it
-to blocking after REC-4/REC-5 restore structural parity; the synthetic poison
-machinery is blocking from day one.
+The historical live comparison began in shadow mode; REC-7 made it blocking.
+The current closed witness count is declared below, and the synthetic poison
+machinery remains blocking.
 
 Canonical rules (§7.4/§7.5):
 - The structural IR separates ONLY the five exact audit-sidecar roots below —
@@ -40,6 +40,11 @@ _MOUNT_RE = re.compile(r"uf-[0-9a-f]{6,32}\b")
 STRUCTURAL_SURFACES = ("ir", "expanded", "params", "html_meta", "gallery")
 EVIDENCE_SURFACES = ("ledgers", "sable")
 ALL_SURFACES = STRUCTURAL_SURFACES + EVIDENCE_SURFACES
+
+# The preservation bracket is intentionally closed-world.  Adding a corpus
+# input is not enough to make it a witness: the count changes only in the same
+# reviewed commit that adds its regenerated surfaces and visual evidence.
+PRESERVATION_WITNESS_COUNT = 28
 
 
 def split_structural_ir(ir: dict) -> tuple[dict, dict]:
@@ -249,7 +254,7 @@ def _view_hashes(cfg: dict) -> dict:
 
 
 def build_expected_manifest(corpus_dir, out_path) -> dict:
-    """COR-0 (§5): the AUTHORITATIVE executable manifest — for each of the 25
+    """COR-0 (§5): the AUTHORITATIVE executable manifest — for every reviewed
     witnesses: input hash, canonical surface hashes (none None), required view
     names + hashes, and the tool versions the hashes were produced under."""
     corpus_dir = pathlib.Path(corpus_dir)
@@ -292,7 +297,7 @@ def verify_against_expected(corpus_dir, manifest_path, *, limit=None) -> list[st
 
 
 def verify_expected_manifest_shape(corpus_dir, manifest_path) -> list[str]:
-    """Validate the global 26-witness contract without rendering a model.
+    """Validate the closed preservation-witness contract without rendering.
 
     Keeping this separate from per-witness regeneration lets pytest distribute
     expensive witnesses across processes without weakening count/input-growth
@@ -303,8 +308,11 @@ def verify_expected_manifest_shape(corpus_dir, manifest_path) -> list[str]:
     expected = manifest["witnesses"]
     inputs = {p.stem for p in sorted(corpus_dir.glob("*.json"))}
     findings: list[str] = []
-    if manifest.get("witness_count") != 26 or len(expected) != 26:
-        findings.append(f"manifest witness_count != 26: {manifest.get('witness_count')}")
+    if (manifest.get("witness_count") != PRESERVATION_WITNESS_COUNT
+            or len(expected) != PRESERVATION_WITNESS_COUNT):
+        findings.append(
+            "manifest witness_count != "
+            f"{PRESERVATION_WITNESS_COUNT}: {manifest.get('witness_count')}")
     for extra in sorted(inputs - set(expected)):
         findings.append(f"unexpected extra witness input: {extra}")
     return findings

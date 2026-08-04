@@ -110,13 +110,13 @@
   },
   "hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
-    "1b70ca1cf185629c46b125b6ae0b188f",
     "27b21fb0fe667354b04d7eb72363edc4",
     "392a52b0932b100dedc639a5dcaa3125",
     "41775f1b911b015df5720f7528286587",
     "44928e6fc5754eae24b47f4634f6b9e8",
     "455fcad6f15a7a8642673b21b0f8fcd7",
     "4b2014faefb4b62e7de73bd1ea4c0c76",
+    "86cc7e6da609750be2d4e60a0f52b528",
     "b71eb6feae06badfeaa50453bc0725f5"
   ],
   "model": "prxpixel-t2i",
@@ -126,10 +126,10 @@
     "1b70ca1cf185629c46b125b6ae0b188f",
     "27b21fb0fe667354b04d7eb72363edc4",
     "392a52b0932b100dedc639a5dcaa3125",
+    "41775f1b911b015df5720f7528286587",
     "44928e6fc5754eae24b47f4634f6b9e8",
     "455fcad6f15a7a8642673b21b0f8fcd7",
     "4b2014faefb4b62e7de73bd1ea4c0c76",
-    "7c38cedae4533e8ac6b18f8482d7e995",
     "b71eb6feae06badfeaa50453bc0725f5"
   ],
   "visual_evidence": {

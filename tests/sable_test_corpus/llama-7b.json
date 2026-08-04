@@ -75,17 +75,17 @@
   },
   "hash_signature": [
     "54315394778ef9776664c58ee5c7c8e3",
-    "b744f95082cfc83307ae9d819f726742",
     "d3314cccdb744f3767be47b560187b9c",
-    "e954f06b49dfb916e12bac3c3cfd2f4d"
+    "e954f06b49dfb916e12bac3c3cfd2f4d",
+    "f9efab61a8945442d1424055ccda9741"
   ],
   "model": "llama-7b",
   "source": "local",
   "superseded_hash_signature": [
-    "0906417b9411abb79f795df485b1719c",
     "54315394778ef9776664c58ee5c7c8e3",
     "b744f95082cfc83307ae9d819f726742",
-    "d3314cccdb744f3767be47b560187b9c"
+    "d3314cccdb744f3767be47b560187b9c",
+    "e954f06b49dfb916e12bac3c3cfd2f4d"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/llama-7b",

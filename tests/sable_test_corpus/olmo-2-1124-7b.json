@@ -72,16 +72,16 @@
   "hash_signature": [
     "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
-    "c446162572f392d444e26b7476bbc1ae",
-    "e07deb5f9eea6adf9aa6471c6494a672"
+    "e07deb5f9eea6adf9aa6471c6494a672",
+    "e0e970b04bc1418c5ee3791eeb168410"
   ],
   "model": "OLMo-2-1124-7B",
   "source": "local",
   "superseded_hash_signature": [
     "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
-    "375ae74c9482f6208152cd7e1e00c56b",
-    "c446162572f392d444e26b7476bbc1ae"
+    "c446162572f392d444e26b7476bbc1ae",
+    "e07deb5f9eea6adf9aa6471c6494a672"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/olmo-2-1124-7b",

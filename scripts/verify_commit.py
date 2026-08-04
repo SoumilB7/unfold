@@ -234,7 +234,10 @@ def _worker_plan(cpu_count: int,
     cpu_count = max(4, cpu_count)
     focused = 1
     authority = min(4, max(2, cpu_count // 3))
-    # Preservation is itself a 26-model production render bracket.  Giving it
+    # Preservation is itself the complete production-witness render bracket.
+    # The bracket currently contains 28 witnesses; its size is owned by the
+    # preservation manifest rather than duplicated as executable policy here.
+    # Giving it
     # only two workers made it a 30+ minute long pole while full-suite workers
     # finished or became stranded behind file-scoped corpus tests.  Keep enough
     # cores for the full lane, but distribute witnesses across up to four

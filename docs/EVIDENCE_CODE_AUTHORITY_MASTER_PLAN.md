@@ -1670,8 +1670,12 @@ Real-model controls already exercised on the local tree:
   unknown rather than inferred.
 - BLOOM: fused QKV, biased projections, scaled scores and ALiBi remain.
 - Qwen3: GQA, split QKV, QK norm, scaled scores and RoPE remain.
-- T5: raw unscaled `QK^T` and relative-position bias remain; storage/cache stay
-  unknown.
+- T5: the exact embedded T5 owner used by the diffusion corpus proves raw
+  unscaled `QK^T`.  A standalone T5 root still exposes rival encoder/decoder
+  stages, so the root-wide fact is withheld rather than borrowed from the
+  quarantined whole-file reader.  Resolving both stage occurrences is explicit
+  U3-G owner-migration debt; any later root-topology consumer must prove their
+  equivalence before publishing one shared fact.  Storage/cache stay unknown.
 - FLUX: its separately proven QK norm, scaling and RoPE facts remain, while
   U4-A's unresolved overall attention mechanism keeps the canonical graph
   opaque.
@@ -2215,6 +2219,36 @@ JSON-local projection/cache construction.
 QKV, split QKV, T5/raw-score attention, cached causal decoder, bidirectional
 vision and diffusion no-cache attention, cross-attention, linear/recurrent mixer,
 unknown source, and a sibling tower with a different mechanism.
+
+#### U6 ownership boundary (binding clarification)
+
+“Once for every altitude” defines **one fact/region contract**, not one unit
+that discovers and migrates every future component owner.  U6 owns the
+canonical attention evidence vocabulary, the canonical detailed attention
+region, the root-transformer migration, and representative nested-owner
+controls proving that the contract is reusable.  It must not duplicate the
+owner discovery or topology work explicitly assigned below:
+
+- U8 owns positional application, masks and per-layer attention/mixer
+  schedules;
+- U9 resolves vision/audio/text/codec owners and recursively invokes the U6
+  readers for them;
+- U10 resolves diffusion-root/block owners and invokes the same readers;
+- U11 resolves UNet stage/cell owners and invokes the same readers there.
+
+Those later units may add owner resolution needed to reach an attention
+implementation, but may not add a second attention schema, a renderer-local
+attention classifier, or a family/config fallback.  Their attention output
+must project through the U6 fact definitions and `attention_region` unchanged.
+This is the only interpretation that both prevents duplicated readers and
+keeps the U8–U11 scopes meaningful.
+
+The U6 completion audit must therefore distinguish **migration debt** from
+**contract debt**.  Modality/diffusion/UNet callers awaiting their assigned
+owner-resolution unit are lawful migration debt only when they are named and
+quarantined to U9/U10/U11.  Any remaining root-transformer convention,
+unregistered attention fact, alternative detailed graph, or config/name-based
+mechanism decision is U6 contract debt and blocks U6 completion.
 
 ### 20.10 U7 — migrate FFN, norm and cell topology once
 
