@@ -607,3 +607,55 @@ def test_literal_index_does_not_cross_a_guarded_prior_append(tmp_path):
     assert not res.addressed
     assert any(item.reason == "indexed_container_position_unproven"
                for item in res.unresolved)
+
+
+def test_negative_index_resolves_an_unconditional_suffix_after_optional_prefix(
+        tmp_path):
+    source = """
+        class Optional:
+            def __init__(self, config): pass
+        class Last:
+            def __init__(self, config): pass
+            def forward(self, x): return x
+        class BaseModel:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                if config.extra:
+                    self.parts.append(Optional(config))
+                self.parts.append(Last(config))
+            def forward(self, x):
+                return self.parts[-1](x)
+        class Wrapper:
+            base_model_prefix = "model"
+            def __init__(self, config): self.model = BaseModel(config)
+    """
+    idx, cr, occ, inv, res = _from_src(tmp_path, source)
+    assert not res.unresolved
+    (addressed,) = res.addressed
+    assert cr.graph.node_for(
+        addressed.callee_owner_occurrence).symbol.qualified_name == "Last"
+
+
+def test_negative_index_refuses_an_optional_suffix(tmp_path):
+    source = """
+        class First:
+            def __init__(self, config): pass
+            def forward(self, x): return x
+        class Optional:
+            def __init__(self, config): pass
+        class BaseModel:
+            def __init__(self, config):
+                self.parts = ModuleList()
+                self.parts.append(First(config))
+                if config.extra:
+                    self.parts.append(Optional(config))
+            def forward(self, x):
+                return self.parts[-1](x)
+        class Wrapper:
+            base_model_prefix = "model"
+            def __init__(self, config): self.model = BaseModel(config)
+    """
+    idx, cr, occ, inv, res = _from_src(tmp_path, source)
+    assert not res.addressed
+    assert any(item.reason == "indexed_container_position_unproven"
+               for item in res.unresolved)

@@ -180,7 +180,7 @@ class FFNMechanism:
             raise ValueError("FFN storage carries its exact projection occurrences")
         if any(item.parent != self.owner_occurrence for item in self.projections):
             raise ValueError("every FFN projection belongs to the exact owner")
-        if bool(self.activation) == bool(self.activation_config_path):
+        if self.activation and self.activation_config_path:
             raise ValueError(
                 "activation is either code-literal or exact config dispatch")
         if self.activation_config_path and any(
@@ -254,11 +254,100 @@ class EquivalentFFNMechanism:
             ) if isinstance(span, SourceSpan)))
 
 
+@dataclass(frozen=True)
+class ConfigSelectedFFNMechanism:
+    """One nested FFN branch selected by an exact code-bound config read.
+
+    Some blocks invoke a wrapper stored in a container slot; that wrapper then
+    constructs one of several FFN implementations under an exhaustive config
+    decision.  The source proves every alternative and the exact selector
+    path, while the checkpoint supplies only the boolean operand.  Keeping the
+    outer invocation and selected inner mechanism together prevents a
+    whole-file candidate or a bare config flag from certifying the result.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    wrapper_invocation: AddressedInvocation
+    selector_config_path: tuple[str, ...]
+    selector_value: bool
+    selected: FFNMechanism
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("a selected FFN names the exact decoder block")
+        if not isinstance(self.wrapper_invocation, AddressedInvocation):
+            raise TypeError("a selected FFN carries its exact wrapper call")
+        if self.wrapper_invocation.caller_occurrence != self.block_occurrence:
+            raise ValueError("the wrapper is invoked by the exact decoder block")
+        if not self.selector_config_path or any(
+                not isinstance(part, str) or not part
+                for part in self.selector_config_path):
+            raise TypeError("the selector path is a non-empty tuple[str, ...]")
+        if not isinstance(self.selector_value, bool):
+            raise TypeError("the selector value is an exact boolean operand")
+        if not isinstance(self.selected, FFNMechanism) \
+                or self.selected.conditional_entry is None:
+            raise ValueError("the selected value is one exact conditional FFN")
+        wrapper = self.wrapper_invocation.callee_owner_occurrence
+        if self.selected.block_occurrence != wrapper \
+                or self.selected.conditional_entry.block_occurrence != wrapper:
+            raise ValueError("the selected branch belongs to the invoked wrapper")
+        kind = self.selected.conditional_entry.site.guard[0].kind
+        if kind != ("if" if self.selector_value else "else"):
+            raise ValueError("the selected branch agrees with the boolean operand")
+
+    @property
+    def owner_occurrence(self) -> OwnerOccurrenceId:
+        return self.selected.owner_occurrence
+
+    @property
+    def owner_symbol(self) -> SymbolId:
+        return self.selected.owner_symbol
+
+    @property
+    def invocations(self) -> tuple[AddressedInvocation, ...]:
+        # Cell-topology consumers need the block's branch-input invocation;
+        # the selected object retains the inner wrapper call separately.
+        return (self.wrapper_invocation,)
+
+    @property
+    def gated(self) -> bool:
+        return self.selected.gated
+
+    @property
+    def projection_mode(self) -> str:
+        return self.selected.projection_mode
+
+    @property
+    def activation(self) -> str | None:
+        return self.selected.activation
+
+    @property
+    def activation_config_path(self) -> tuple[str, ...]:
+        return self.selected.activation_config_path
+
+    @property
+    def projections(self) -> tuple[ConstructionOccurrenceId, ...]:
+        return self.selected.projections
+
+    @property
+    def spans(self) -> tuple[SourceSpan, ...]:
+        return tuple(dict.fromkeys((
+            self.wrapper_invocation.call.span,
+            *self.wrapper_invocation.provenance_spans,
+            self.selected.conditional_entry.site.guard[0].span,
+            *self.selected.spans,
+        )))
+
+
 def ffn_mechanism_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
-) -> ReaderResult[FFNMechanism | EquivalentFFNMechanism]:
+    *,
+    config_selector=None,
+) -> ReaderResult[
+        FFNMechanism | EquivalentFFNMechanism | ConfigSelectedFFNMechanism]:
     """Classify the one exact ordinary FFN invoked by a decoder block."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("ffn_mechanism_at_block requires a ProgramIndex")
@@ -305,6 +394,14 @@ def ffn_mechanism_at_block(
                 child.symbol, tuple(child_invocations))
             if evidence is not None:
                 candidates.append(evidence)
+
+        if config_selector is not None:
+            for invocation in invocations.addressed:
+                selected = _config_selected_nested_ffn(
+                    index, root, block_occurrence, invocation,
+                    config_selector)
+                if selected is not None:
+                    candidates.append(selected)
 
     # Some architectures store the two FFN projections directly on the block.
     inline = _mechanism_for_owner(
@@ -364,10 +461,12 @@ def ffn_mechanism_at_block(
             block_occurrence,
             Ambiguity(sites=tuple(item.spans[0] for item in ordered)))
     value = ordered[0]
-    config_paths = (
-        (value.activation_config_path,)
-        if value.activation_config_path else ()
-    )
+    config_paths = tuple(dict.fromkeys((
+        *((value.selector_config_path,)
+          if isinstance(value, ConfigSelectedFFNMechanism) else ()),
+        *((value.activation_config_path,)
+          if value.activation_config_path else ()),
+    )))
     kind = "code_and_config" if config_paths else "source"
     return ReaderResult.resolved(
         value.owner_occurrence, value,
@@ -381,13 +480,115 @@ def ffn_mechanism_at_block(
     )
 
 
+def _config_selected_nested_ffn(
+    index, root, block_occurrence, wrapper_invocation, config_selector,
+):
+    """Resolve one exact exhaustive wrapper decision through its config read.
+
+    The wrapper must be the exact child invoked by the decoder block, its call
+    must reach the wrapper return, and every construction alternative must be a
+    proven FFN.  Only then may the exact source-bound boolean path select one
+    branch.  A missing/ambiguous/non-boolean operand leaves the reader unknown.
+    """
+    wrapper_occurrence = wrapper_invocation.callee_owner_occurrence
+    wrapper = root.graph.node_for(wrapper_occurrence)
+    if wrapper is None:
+        return None
+    forward = SymbolId(
+        wrapper.symbol.source, f"{wrapper.symbol.qualified_name}.forward")
+    alternatives = _conditional_ffn_alternatives(
+        index, root, wrapper_occurrence, wrapper.symbol)
+    if not alternatives or len(alternatives) != 2:
+        return None
+    entries = tuple(item.conditional_entry for item in alternatives)
+    inner_calls = {entry.call for entry in entries}
+    if len(inner_calls) != 1:
+        return None
+    inner_call = next(iter(inner_calls))
+    if not _call_reaches_return(index, forward, inner_call):
+        return None
+    selector_path = _conditional_selector_config_path(
+        index, root, wrapper, tuple(entry.site for entry in entries))
+    if not selector_path:
+        return None
+    selected_value = config_selector(selector_path)
+    if not isinstance(selected_value, bool):
+        return None
+    wanted = "if" if selected_value else "else"
+    selected = tuple(
+        item for item in alternatives
+        if item.conditional_entry.site.guard[0].kind == wanted)
+    if len(selected) != 1:
+        return None
+    return ConfigSelectedFFNMechanism(
+        block_occurrence, wrapper_invocation, selector_path,
+        selected_value, selected[0])
+
+
+def _call_reaches_return(index, forward, call):
+    if call is None or index.callable_by_symbol(forward) is None:
+        return False
+    returns = tuple(
+        item for item in index.return_observations_in(forward)
+        if not item.guard and item.value is not None)
+    if len(returns) != 1:
+        return False
+    returned = returns[0]
+    key = ("selected_nested_ffn", call.span)
+    sources, _, dependencies, uncertain = \
+        producer_sources_reaching_expressions(
+            index, forward, ((returned.span, (returned.value,)),),
+            {key: call})
+    return not uncertain \
+        and key in _dependency_closure(sources, dependencies)
+
+
+def _conditional_selector_config_path(index, root, wrapper, sites):
+    """The one exact config path controlling one binary if/else decision."""
+    if not _construction_sites_are_exact_alternatives(sites):
+        return ()
+    deciding = next(
+        (site.guard[0] for site in sites
+         if site.guard[0].kind in {"if", "elif"}
+         and site.guard[0].test is not None), None)
+    if deciding is None or deciding.test.span is None:
+        return ()
+    observations = tuple(
+        item for item in index.config_paths_in(sites[0].enclosing_callable)
+        if _span_within(item.span, deciding.test.span)
+        and item.segments
+        and all(not segment.dynamic and segment.name
+                for segment in item.segments))
+    if len(observations) != 1:
+        return ()
+    selected = observations[0]
+    root_name = (
+        selected.root_binding.name
+        if selected.root_binding.kind == "name" else None)
+    local_path = tuple(segment.name for segment in selected.segments)
+    bindings = tuple(
+        item for item in wrapper.config_bindings
+        if item.parameter == root_name)
+    if len(bindings) != 1:
+        return ()
+    resolved = bindings[0].resolved_path(local_path)
+    if resolved is None:
+        return ()
+    return (
+        *_config_path_prefix(root),
+        *resolved,
+    )
+
+
 def decoder_ffn_mechanism_for_path(
     index: ProgramIndex,
     bundle: SourceBundle,
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
-) -> ReaderResult[FFNMechanism | EquivalentFFNMechanism]:
+    config_selector=None,
+) -> ReaderResult[
+        FFNMechanism | EquivalentFFNMechanism | ConfigSelectedFFNMechanism]:
     """Resolve one parser-selected config to its exact ordinary FFN."""
     if not isinstance(index, ProgramIndex):
         raise TypeError("decoder_ffn_mechanism_for_path requires a ProgramIndex")
@@ -402,7 +603,8 @@ def decoder_ffn_mechanism_for_path(
     if block.status != "resolved":
         return block
     result = ffn_mechanism_at_block(
-        index, block.value.component_root, block.value.block_occurrence)
+        index, block.value.component_root, block.value.block_occurrence,
+        config_selector=config_selector)
     if result.status != "resolved":
         return result
     return ReaderResult.resolved(
@@ -523,9 +725,8 @@ def _alternative_root_param_prefixes(index, parent_node, site, candidate):
         item for item in params if item.kind in {"positional", "posonly"})
     by_name = {item.name: item for item in params}
     parent_prefixes = {
-        item.parameter: item.resolved_prefix
+        item.parameter: item
         for item in parent_node.config_bindings
-        if item.resolved_prefix is not None
     }
     mapped = {}
     for position, argument in enumerate(site.args):
@@ -533,12 +734,15 @@ def _alternative_root_param_prefixes(index, parent_node, site, candidate):
             break
         if argument.kind == "name" \
                 and argument.name in parent_prefixes:
-            mapped[positional[position].name] = \
-                parent_prefixes[argument.name]
+            resolved = parent_prefixes[argument.name].resolved_path(())
+            if resolved is not None:
+                mapped[positional[position].name] = resolved
     for name, argument in site.kwargs:
         if name in by_name and argument.kind == "name" \
                 and argument.name in parent_prefixes:
-            mapped[name] = parent_prefixes[argument.name]
+            resolved = parent_prefixes[argument.name].resolved_path(())
+            if resolved is not None:
+                mapped[name] = resolved
     return mapped or None
 
 
@@ -671,11 +875,18 @@ def _mechanism_for_owner(
             dependencies.get(sink, ()), dependencies) != upstream:
         return None
 
-    activation, activation_path, activation_spans = _activation_evidence(
+    activation, activation_path, activation_spans, activation_reaches = \
+        _activation_evidence(
         index, graph, config_path_prefix, owner_occurrence,
         owner_symbol, forward,
         linear_calls, guarded_linear_calls, returned, upstream)
-    if activation is None and not activation_path:
+    # Projection topology and activation selection are independent facts.  An
+    # opaque/unbound activation dispatch must not erase a fully proven dense or
+    # gated affine graph; it leaves only ``activation`` unknown.  The transform
+    # must still be proven between the input and output projections.  Merely
+    # seeing an unrelated activation (or one after the output projection) does
+    # not certify an FFN.
+    if not activation_reaches:
         return None
     multiplications = _multiplication_sources(
         index, forward, linear_calls)
@@ -785,10 +996,13 @@ def _activation_evidence(
     reaching-definition analysis used for the affine storage.
     """
     candidates = []
+    opaque_candidates = []
+    rejected_semantic = False
     for call in index.calls_in(forward):
         value = None
         path = ()
         spans = []
+        opaque = False
         proof = resolve_import_reference(
             index, forward.source, forward, call.callee)
         if proof is not None and proof.qualified_target in _FUNCTIONAL_ACTIVATIONS:
@@ -810,13 +1024,30 @@ def _activation_evidence(
                     if value is not None:
                         spans.extend(
                             (call.span, selected.site.span, *inner_spans))
+                    else:
+                        # The exact internal transform is on the data path, but
+                        # its mathematical activation kind is opaque.  Preserve
+                        # the projection topology without inventing a label.
+                        opaque = True
+                        spans.extend((call.span, selected.site.span))
+            else:
+                # A dynamically selected ``self.<field>`` can still be an
+                # exact, occurrence-local transform between the two affine
+                # projections even when its constructor target is unresolved
+                # (for example ACT2FN[config.hidden_act] after a config factory
+                # boundary).  Dataflow below must prove that exact invocation
+                # reaches the down projection; this permits the affine topology
+                # while keeping the activation kind unknown.
+                opaque = True
+                spans.append(call.span)
             if value is None:
                 path, path_span = _activation_dispatch_path(
                     index, graph, config_path_prefix, occurrence, owner,
                     _self_field(call.callee))
                 if path:
                     spans.extend((call.span, path_span))
-        if value is None and not path:
+        semantic = value is not None or bool(path)
+        if not semantic and not opaque:
             continue
 
         key = ("activation", call.span)
@@ -828,23 +1059,36 @@ def _activation_evidence(
         closure = _dependency_closure(output_sources, dependencies)
         activation_inputs = _dependency_closure(
             dependencies.get(key, ()), dependencies)
-        if key not in closure or not activation_inputs \
-                or not set(activation_inputs).issubset(upstream):
+        relation_is_valid = key in closure and bool(activation_inputs) \
+            and set(activation_inputs).issubset(upstream)
+        if not relation_is_valid:
+            if semantic:
+                rejected_semantic = True
             continue
-        if any(not _activation_reaches_guarded_storage_paths(
+        storage_paths_are_valid = not any(
+            not _activation_reaches_guarded_storage_paths(
                 index, forward, key, call, module_call,
                 projection, linear_calls)
-                for projection, module_call in guarded_linear_calls.items()):
+            for projection, module_call in guarded_linear_calls.items())
+        if not storage_paths_are_valid:
+            if semantic:
+                rejected_semantic = True
             continue
-        candidates.append((value, path, _typed_spans(spans)))
+        if semantic:
+            candidates.append((value, path, _typed_spans(spans)))
+        else:
+            opaque_candidates.append(_typed_spans(spans))
 
     distinct = {
         (value, path): spans for value, path, spans in candidates
     }
     if len(distinct) == 1:
         (value, path), spans = next(iter(distinct.items()))
-        return value, path, spans
-    return None, (), ()
+        return value, path, spans, not rejected_semantic
+    if not distinct and len(opaque_candidates) == 1 \
+            and not rejected_semantic:
+        return None, (), opaque_candidates[0], True
+    return None, (), (), False
 
 
 def _internal_activation(index, symbol):
@@ -970,12 +1214,14 @@ def _activation_dispatch_path(
     bindings = tuple(
         binding for binding in (node.config_bindings if node else ())
         if binding.parameter == root_name)
-    if len(bindings) != 1 or bindings[0].resolved_prefix is None:
+    if len(bindings) != 1:
         return (), None
-    prefix = tuple(bindings[0].resolved_prefix)
-    prefix = (*config_path_prefix, *prefix)
+    local_path = tuple(segment.name for segment in selected.segments)
+    resolved = bindings[0].resolved_path(local_path)
+    if resolved is None:
+        return (), None
     return (
-        (*prefix, *(segment.name for segment in selected.segments)),
+        (*config_path_prefix, *resolved),
         selected.span,
     )
 
@@ -1169,6 +1415,7 @@ def _span_key(span):
 
 __all__ = [
     "ConditionalFFNEntry",
+    "ConfigSelectedFFNMechanism",
     "FFNMechanism",
     "EquivalentFFNMechanism",
     "decoder_ffn_mechanism_for_path",

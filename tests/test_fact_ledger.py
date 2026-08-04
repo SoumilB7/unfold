@@ -144,26 +144,6 @@ def test_evidence_backed_values_are_unchanged_and_status_real():
     assert prov["decoder.layer.norm_placement"]["status"] == "code_proven"
 
 
-def test_gated_heuristic_abstains_instead_of_reading_norm_kind():
-    """The census cascade is dead: rmsnorm + non-gate activation + no code
-    verdict must yield None (undeclared FFN), never gated=True.
-
-    U2 P2c retirement (STRICT rule): the silu/swish/tanh-GELU family tier is
-    GONE — plain elementwise spellings are used by dense and gated FFNs
-    alike, so they were never proof.  The MoE expert-hop in
-    decoder_ffn_mechanism_for_path code-proves the fixtures that tier was
-    protecting (deepseek-v3 / glm-4-5 / gpt-oss), corpus-audited at zero
-    derived reliance before retiring."""
-    from model_unfolder.adapters.transformer.parser import _is_gated
-    assert _is_gated("relu", "rmsnorm", None) is None      # was True (cascade)
-    assert _is_gated("gelu", "layernorm", None) is None    # was False (cascade)
-    assert _is_gated("silu", None, None) is None           # STRICT: not gate proof
-    assert _is_gated("gelu_pytorch_tanh", None, None) is None  # STRICT
-    assert _is_gated("swiglu", None, None) is True         # explicit GLU channel
-    assert _is_gated("gelu", "rmsnorm", False) is False    # code always wins
-    assert _is_gated(None, "rmsnorm", None) is None        # zero evidence
-
-
 def test_direct_ffn_gate_declarations_cannot_replace_source_binding():
     """A gate declaration is an operand, not proof that this exact FFN uses it."""
     dense = config_to_ir(dict(

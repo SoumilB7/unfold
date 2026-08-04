@@ -146,12 +146,43 @@ def _decoder_norm_result(context=None, *, config_path=()):
     )
 
 
-def _ffn_mechanism_result(context=None, *, config_path=()):
+def _ffn_mechanism_result(
+    context=None, *, config_path=(), config_root=None,
+):
     """One call-local exact-owner ordinary FFN result."""
     if context is None:
         return None
     from ...evidence.ffn_mechanism import decoder_ffn_mechanism_for_path
+    from ...evidence import config_access as _config_access
     config_path = tuple(config_path)
+
+    def _select(exact_path):
+        """Supply one exact boolean only after the source reader names it."""
+        if config_root is None or not exact_path:
+            return None
+        parent = config_root
+        for part in exact_path[:-1]:
+            parent = (parent.get(part) if isinstance(parent, dict)
+                      else getattr(parent, part, None))
+            if parent is None:
+                return None
+        resolution = _config_access.resolve(
+            parent, exact_path[-1], path=tuple(exact_path[:-1]))
+        expected = ".".join(exact_path)
+        if resolution.ambiguous or not resolution.present \
+                or resolution.selected_path != expected \
+                or not isinstance(resolution.value, bool):
+            return None
+        resolution.bind(
+            reader="decoder_ffn_mechanism_for_path",
+            fact_owner="decoder.ffn", fact_key="gated")
+        decision = resolution.consume_decision(
+            mechanism="ffn_mechanism",
+            fact_owner="decoder.ffn", fact_key="gated",
+            reader="decoder_ffn_mechanism_for_path",
+            status="code_and_config")
+        return decision.value
+
     return context.cached_reader_result(
         "decoder.ffn.mechanism",
         config_path,
@@ -160,6 +191,7 @@ def _ffn_mechanism_result(context=None, *, config_path=()):
             context.source_bundle,
             config_path,
             allow_root_stage=True,
+            config_selector=_select,
         ),
     )
 
@@ -325,7 +357,9 @@ def _code_parallel_norm_count(
     )
 
 
-def _projection_bias_result(context, mechanism, config_path):
+def _projection_bias_result(
+    context, mechanism, config_path, *, ffn_mechanism_result=None,
+):
     """Call-local exact-owner projection bias evidence."""
     if context is None:
         return None
@@ -344,7 +378,9 @@ def _projection_bias_result(context, mechanism, config_path):
         path,
         lambda: reader(
             context.program_index(), context.source_bundle, path,
-            allow_root_stage=True),
+            allow_root_stage=True,
+            **({"mechanism_result": ffn_mechanism_result}
+               if mechanism == "ordinary_ffn" else {})),
     )
 
 
@@ -478,9 +514,13 @@ def _code_scores_scaled(
         if result is not None and result.status == "resolved" else None)
 
 
-def _code_mlp_bias(cfg: Any, context=None, *, config_path=()) -> bool | None:
+def _code_mlp_bias(
+    cfg: Any, context=None, *, config_path=(), ffn_mechanism_result=None,
+) -> bool | None:
     """Source-only bias of the exact ordinary-FFN projection occurrences."""
-    result = _projection_bias_result(context, "ordinary_ffn", config_path)
+    result = _projection_bias_result(
+        context, "ordinary_ffn", config_path,
+        ffn_mechanism_result=ffn_mechanism_result)
     return (
         result.value.value
         if result is not None and result.status == "resolved" else None
@@ -1046,7 +1086,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # the exact-owner mechanism reader proves either a literal activation or
     # the exact config-dispatch path that selects this value.
     _ffn_mechanism = _ffn_mechanism_result(
-        context, config_path=_text_path)
+        context, config_path=_text_path, config_root=cfg)
     _ffn_mechanism_value = (
         _ffn_mechanism.value
         if _ffn_mechanism is not None
@@ -1063,7 +1103,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         None if _activation_res.ambiguous
         else _activation_res.value
     )
-    _activation_selected_path = _activation_res.selected_path
     if isinstance(activation_raw, dict):
         activation_raw = activation_raw.get("name")
     _nested_activation_res = None
@@ -1085,8 +1124,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
             if _nested_activation_res.present:
                 activation_raw = _nested_activation_res.value
                 _activation_decision_res = _nested_activation_res
-                _activation_selected_path = (
-                    _nested_activation_res.selected_path)
     _activation_status, _activation_src = "config_declared", "hidden_act"
     if activation_raw is None:
         # U2 P3b: the T5-family declaration — ``feed_forward_proj`` names the
@@ -1100,7 +1137,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
         if isinstance(_ffp_for_act, str) and _ffp_for_act:
             _activation_decision_res = _ffp_res_for_act
-            _activation_selected_path = _ffp_res_for_act.selected_path
             activation_raw = _ffp_for_act.lower()
             if activation_raw.startswith("gated-"):
                 activation_raw = activation_raw[len("gated-"):]
@@ -1123,7 +1159,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 _cd_src = "feed_forward_proj"
         if isinstance(_cd_act, str) and _cd_act:
             activation_raw = _cd_act
-            _activation_selected_path = ".".join((*_text_path, _cd_src))
             _activation_status, _activation_src = (
                 "class_default",
                 f"installed config-class default ({_cd_src})")
@@ -1139,15 +1174,47 @@ def parse(cfg: Any, context=None) -> ModelIR:
     elif _ffn_mechanism_value.activation_config_path:
         dispatch_path = tuple(
             _ffn_mechanism_value.activation_config_path)
-        if activation_raw is None \
-                or _activation_decision_res.state != "present" \
-                or _activation_selected_path != ".".join(dispatch_path):
+        # Source has already proved the exact config spelling used by this
+        # activation dispatch.  Resolve THAT occurrence directly; canonical
+        # alias arbitration must not choose an equal sibling spelling and then
+        # reject the path the callable actually reads (Gemma configs commonly
+        # carry both hidden_act and hidden_activation).
+        _dispatch_parent = cfg
+        for _part in dispatch_path[:-1]:
+            _dispatch_parent = (
+                _dispatch_parent.get(_part)
+                if isinstance(_dispatch_parent, dict)
+                else getattr(_dispatch_parent, _part, None))
+            if _dispatch_parent is None:
+                break
+        _dispatch_res = (
+            _config_access.resolve(
+                _dispatch_parent, dispatch_path[-1], (),
+                path=dispatch_path[:-1])
+            if _dispatch_parent is not None else None)
+        _dispatch_value = (
+            _dispatch_res.value
+            if _dispatch_res is not None and _dispatch_res.present
+            and not _dispatch_res.ambiguous else None)
+        if isinstance(_dispatch_value, dict):
+            _dispatch_value = _dispatch_value.get("name")
+        if isinstance(_dispatch_value, str):
+            _dispatch_value = _dispatch_value.lower()
+            if _dispatch_value.startswith("gated-"):
+                _dispatch_value = _dispatch_value[len("gated-"):]
+        if not isinstance(_dispatch_value, str) or not _dispatch_value:
             activation_raw = None
             _activation_status, _activation_src = _unknown_status, None
         else:
-            # Consume only after code and the exact selected config occurrence
-            # agree. Losing declarations remain inspections, not pseudo-use.
-            _activation_decision_res.consume_decision(
+            activation_raw = _dispatch_value
+            _activation_decision_res = _dispatch_res
+            _activation_status = (
+                "class_default"
+                if _dispatch_res.provenance == "class_default"
+                else "config_declared")
+            # Consume only the exact occurrence the source dispatch names.
+            # Equal aliases remain visible inspections, never alternate proof.
+            _dispatch_res.consume_decision(
                 mechanism="ffn_activation",
                 fact_owner="decoder.ffn",
                 fact_key="activation",
@@ -1156,9 +1223,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             )
             if _activation_status == "config_declared":
                 _activation_status = "code_and_config"
-                _activation_src = (
-                    "decoder_ffn_mechanism_for_path:"
-                    + ".".join(dispatch_path))
+            _activation_src = (
+                "decoder_ffn_mechanism_for_path:"
+                + ".".join(dispatch_path))
     else:
         activation_raw = None
         _activation_status, _activation_src = _unknown_status, None
@@ -1323,7 +1390,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # ``is_gated_act`` / ``feed_forward_proj`` as architecture on sight.  U4-C
     # deliberately leaves the declaration inspected until the exact source
     # mechanism proves the projection topology.
-    _scoped("is_gated_act")
+    from ...evidence.ffn_mechanism import ConfigSelectedFFNMechanism
+    _ffn_selected_by_config = isinstance(
+        _ffn_mechanism_value, ConfigSelectedFFNMechanism)
+    if not _ffn_selected_by_config:
+        _scoped("is_gated_act")
     # U4-C: a config/class declaration or activation spelling may be useful
     # evidence only after exact source binds it to this FFN.  The ordinary
     # mechanism reader is that binding.  Without it, gate topology is unknown.
@@ -1334,8 +1405,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # remains in ``context.reader_results`` as the typed abstention.
     if ffn_gated is not None:
         _note_fact("decoder.ffn", "gated", ffn_gated,
-                   "code_proven",
-                   source="decoder_ffn_mechanism_for_path")
+                   ("code_and_config" if _ffn_selected_by_config
+                    else "code_proven"),
+                   source=(
+                       "decoder_ffn_mechanism_for_path:"
+                       + ".".join(
+                           _ffn_mechanism_value.selector_config_path)
+                       if _ffn_selected_by_config else
+                       "decoder_ffn_mechanism_for_path"))
     _code_storage_mode = (
         _ffn_mechanism_value.projection_mode
         if _ffn_mechanism_value is not None else None
@@ -1347,8 +1424,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # ordinary ``split`` fact when only a routed-expert mechanism exists.
     if _code_storage_mode is not None:
         _note_fact("decoder.ffn", "projection_mode",
-                   _code_storage_mode, "code_proven",
-                   source="decoder_ffn_mechanism_for_path")
+                   _code_storage_mode,
+                   ("code_and_config" if _ffn_selected_by_config
+                    else "code_proven"),
+                   source=(
+                       "decoder_ffn_mechanism_for_path:"
+                       + ".".join(
+                           _ffn_mechanism_value.selector_config_path)
+                       if _ffn_selected_by_config else
+                       "decoder_ffn_mechanism_for_path"))
     _note_fact(
         "decoder.attention", "projection_mode",
         _code_attention_storage,
@@ -2049,7 +2133,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _mlp_bias = _fact_class_defaults.get("mlp_bias")
     use_mlp_bias = bool(_mlp_bias) if _mlp_bias is not None else None
     _code_mlp = _code_mlp_bias(
-        text_cfg, context, config_path=_text_path)
+        text_cfg, context, config_path=_text_path,
+        ffn_mechanism_result=_ffn_mechanism)
     if _code_mlp is not None:
         use_mlp_bias = _code_mlp
     # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
@@ -3321,46 +3406,6 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
     # The reads remain classified migration debt for U7.
     _ = (rms_eps, ln_eps, ln_eps2)
     return None, None
-
-
-def _is_gated(activation: str | None, norm_kind: str | None = None,
-              code_gated: bool | None = None) -> bool | None:
-    """Whether the FFN has a separate gate projection (SwiGLU/GeGLU style).
-
-    Evidence order (code > config-signal > ABSTAIN):
-
-    * ``code_gated`` — the MLP class's ``forward()`` either does a ``gate_mul`` or
-      not (read from the modeling source). The ground truth: it wins whenever
-      available, so a dense RMSNorm decoder (Phi) is no longer mis-gated.
-      This is the SAME evidence the nested-conformance net reads, so the
-      drawing and the net cannot diverge.
-    * An activation whose NAME explicitly declares a GLU (``swiglu``,
-      ``geglu``). A plain elementwise activation such as ``silu``/``gelu`` is
-      deliberately insufficient: both dense and gated FFNs use those
-      nonlinearities. Direct config declarations (``is_gated_act`` /
-      ``feed_forward_proj``) are handled at the caller before this helper.
-    * Otherwise ABSTAIN (``None``). Gate-or-not is a CODE fact; the old
-      ``norm_kind == "rmsnorm"`` terminal fabricated a gate for dense RMSNorm
-      decoders at zero evidence — the census's cascade (a defaulted norm_kind
-      feeding a structural guess). ``None`` draws the honest undeclared-FFN
-      block instead (U2 default-kill).  ``norm_kind`` stays in the signature
-      only so call sites read naturally; it no longer decides anything.
-    """
-    if code_gated is not None:
-        return code_gated
-    a = (activation or "").lower()
-    if "glu" in a:
-        return True
-    # U2 P2c/P3b RETIRED the gate-family activation tier (silu/swish/tanh-GELU
-    # → True): plain elementwise spellings are used by dense AND gated FFNs,
-    # so they were never proof.  The tier existed only to keep the blessed
-    # MoE fixtures' expert drills drawn — the MoE expert-hop in
-    # the exact-owner FFN mechanism reader code-proves ordinary FFNs; routed
-    # experts remain on their separately owned U3-F reader. The corpus audit
-    # shows ZERO derived-tier
-    # reliance, so retirement is drift-free.  Strict rule: no evidence ⇒
-    # abstain (the honest undeclared-FFN block).
-    return None
 
 
 def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | None:

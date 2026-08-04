@@ -1357,42 +1357,6 @@ def layer_class_count_from_files(files) -> int:
     return len(names)
 
 
-def decoder_ffn_activation_from_files(files) -> str | None:
-    """Read a config-silent dense-FFN activation from its constructed class.
-
-    Some families hardcode the activation in modeling code (BLOOM constructs
-    ``BloomGelu``) and expose no ``hidden_act`` config field. Returning a source
-    fact here prevents the parser's last-resort SiLU default from fabricating a
-    gated modern-MLP shape for a legacy dense GELU block.
-    """
-    import ast as _ast
-    from .forward_ops import _role_of
-    layer = _find_decoder_layer(files, _ast, required_roles=("attention", "ffn"))
-    if layer is None:
-        return None
-    _, field_types = layer
-    from .forward_ops import extract_forward_ops
-    fo = extract_forward_ops(tuple(str(f) for f in (files or ())))
-    for cls_name in field_types.values():
-        if _role_of(cls_name) != "ffn":
-            continue
-        info = fo.get(cls_name)
-        if info is None:
-            continue
-        names = [
-            class_name.lower() for class_name in info.field_types.values()
-            if _role_of(class_name) == "activation"
-        ]
-        for name in names:
-            if "silu" in name or "swish" in name:
-                return "silu"
-            if "gelu" in name:
-                return "gelu"
-            if "relu" in name:
-                return "relu"
-    return None
-
-
 def _qk_self_attr(expr) -> str | None:
     """``self.<f>`` → ``f`` (else None)."""
     if (isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name)

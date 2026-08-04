@@ -420,18 +420,27 @@ def _classify(index, root_resolution, site, call, node, owner_occurrence, loops,
             unresolved.append(UnresolvedInvocation(
                 site, owner_occurrence, "indexed_access_unproven", call, guard))
             return
-        # A non-negative literal index is exact only when every storage slot up
-        # to it is unconditionally present.  Guarded earlier appends can shift
-        # the position and therefore remain unresolved.
+        # A positive index is exact only when every slot through that position
+        # is unconditional.  A negative index is exact only when the selected
+        # suffix is unconditional: earlier optional elements cannot change
+        # ``[-1]`` (or a longer fully-present suffix), while an optional suffix
+        # element would change the addressed occurrence.  This is Python list
+        # indexing semantics over the authoritative source-ordered element
+        # census, never a model/container-role convention.
         elements = tuple(container.element_sites)
-        if position >= len(elements) or any(
-                item.guard for item in elements[:position + 1]):
+        selected_position = (
+            position if position >= 0 else len(elements) + position)
+        required = (
+            elements[:selected_position + 1]
+            if position >= 0 else elements[selected_position:])
+        if selected_position < 0 or selected_position >= len(elements) \
+                or any(item.guard for item in required):
             unresolved.append(UnresolvedInvocation(
                 site, owner_occurrence,
                 "indexed_container_position_unproven", call, guard,
-                elements[:position + 1]))
+                required))
             return
-        element = elements[position]
+        element = elements[selected_position]
         if len(element.candidates) != 1 \
                 or element.candidates[0].symbol is None:
             unresolved.append(UnresolvedInvocation(
@@ -485,16 +494,27 @@ def _indexed_self_field(callee):
 
 
 def _literal_indexed_self_field(callee):
-    """Return ``(field, index)`` for exact ``self.field[<nonnegative int>]``."""
+    """Return ``(field, index)`` for an exact signed integer literal.
+
+    ``-1`` is represented by the AST as unary-minus over a positive constant;
+    retaining that syntax here lets the caller apply exact Python suffix
+    semantics without evaluating an arbitrary expression.
+    """
     field = _indexed_self_field(callee)
     if field is None or len(callee.children) != 2:
         return None
     index = callee.children[1]
-    if index.kind != "constant" or isinstance(index.const_value, bool) \
-            or not isinstance(index.const_value, int) \
-            or index.const_value < 0:
-        return None
-    return field, index.const_value
+    if index.kind == "constant" and not isinstance(index.const_value, bool) \
+            and isinstance(index.const_value, int):
+        return field, index.const_value
+    if index.kind == "unaryop" and index.operator == "-" \
+            and len(index.children) == 1:
+        value = index.children[0]
+        if value.kind == "constant" and not isinstance(value.const_value, bool) \
+                and isinstance(value.const_value, int) \
+                and value.const_value > 0:
+            return field, -value.const_value
+    return None
 
 
 def _enclosing_iteration(index, loops, call, name):

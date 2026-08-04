@@ -812,3 +812,94 @@ def test_helper_with_rival_return_constructions_is_not_selected(tmp_path):
                for u in graph.root.unresolved)
     conflict = next(c for c in graph.conflicts if c.kind == "rival_owner_chain")
     assert len(conflict.rivals) == 2
+
+
+# --------------------------------------------------------------------------- #
+# Path-qualified stdlib deepcopy propagation
+# --------------------------------------------------------------------------- #
+
+def test_exact_deepcopy_preserves_only_unmodified_config_paths(tmp_path):
+    src = """
+        import copy
+        class Stage:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                cloned = copy.deepcopy(config)
+                cloned.runtime_only = False
+                self.stage = Stage(cloned)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    stage = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
+    binding = stage.config_bindings[0]
+    assert binding.origin == "transformed_constructor_argument"
+    assert binding.resolved_prefix is None
+    assert binding.resolved_path(("selector",)) == ("selector",)
+    assert binding.resolved_path(("runtime_only",)) is None
+
+
+def test_mutating_a_parent_path_invalidates_its_descendants(tmp_path):
+    src = """
+        import copy
+        class Stage:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                cloned = copy.deepcopy(config)
+                cloned.routing = object()
+                self.stage = Stage(cloned)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    stage = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
+    binding = stage.config_bindings[0]
+    assert binding.resolved_path(("routing", "choice")) is None
+    assert binding.resolved_path(("unrelated",)) == ("unrelated",)
+
+
+@pytest.mark.parametrize("setup", [
+    "copy = helper",
+    "alias = cloned",
+    "touch(cloned)",
+])
+def test_shadow_alias_or_opaque_call_cannot_certify_a_deepcopy(
+        tmp_path, setup):
+    statements = ["cloned = copy.deepcopy(config)"]
+    if setup == "copy = helper":
+        statements.insert(0, "copy = helper")
+    else:
+        statements.append(setup)
+    body = "\n".join(f"        {line}" for line in statements)
+    src = f"""import copy
+def helper(value): return value
+def touch(value): pass
+class Stage:
+    def __init__(self, config): pass
+class Wrapper:
+    def __init__(self, config):
+{body}
+        self.stage = Stage(cloned)
+"""
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    stage = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
+    assert stage.config_bindings == ()
+
+
+def test_mutation_after_construction_does_not_rewrite_prior_address_proof(
+        tmp_path):
+    src = """
+        import copy
+        class Stage:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                cloned = copy.deepcopy(config)
+                self.stage = Stage(cloned)
+                cloned.selector = False
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    stage = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
+    assert stage.config_bindings[0].resolved_path(("selector",)) == ("selector",)

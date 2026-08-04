@@ -111,19 +111,19 @@
   "hash_signature": [
     "118d4f1c646a2958e31a763b44b0854f",
     "1f338351f4623b5cd89efcc863e49588",
-    "49efdb10af46ecb749c15a49e4c85af1",
     "4eb210f999ae8e6e4e920a0eec1cd73b",
+    "52a8b14de9f77cc647e93c81572bd05a",
     "cdaad27c838d69d80a62a3044973ebdd",
     "d4230b4558508afae92ffe12bd8a45b2"
   ],
   "model": "gemma-2-2b-it",
   "source": "local",
   "superseded_hash_signature": [
+    "118d4f1c646a2958e31a763b44b0854f",
     "1f338351f4623b5cd89efcc863e49588",
-    "2d1c39ac7aed719b4d7c8cefe79b8e70",
     "49efdb10af46ecb749c15a49e4c85af1",
     "4eb210f999ae8e6e4e920a0eec1cd73b",
-    "97add9fdeb9864e5fdfb6daeac37976b",
+    "cdaad27c838d69d80a62a3044973ebdd",
     "d4230b4558508afae92ffe12bd8a45b2"
   ],
   "visual_evidence": {

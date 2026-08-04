@@ -565,13 +565,15 @@ def _site_path_proof(
             # those must carry a propagated OwnerGraph ConfigBinding.
             bound = (ConfigBinding(
                 parameter, ((),), "selected_root_document"),)
-        if len(bound) != 1 or bound[0].resolved_prefix is None:
+        resolved = (bound[0].resolved_path(tuple(local_path))
+                    if len(bound) == 1 else None)
+        if resolved is None:
             if _path_can_end_with(selected_path, local_path):
                 problems.append(
                     f"{site.owner.qualified_name}.{parameter} has no unique "
                     "owner-graph config prefix")
             continue
-        if (*bound[0].resolved_prefix, *local_path) == selected_path:
+        if resolved == selected_path:
             matches.append((params[parameter], bound[0], local_path))
     if len(matches) == 1 and not problems:
         return matches[0], ""
@@ -588,8 +590,10 @@ def _expr_may_address_selected_path(expr, params, bindings, selected_path):
         bound = tuple(
             binding for binding in bindings
             if binding.parameter == parameter)
-        if len(bound) == 1 and bound[0].resolved_prefix is not None:
-            return (*bound[0].resolved_prefix, *local_path) == selected_path
+        if len(bound) == 1:
+            resolved = bound[0].resolved_path(tuple(local_path))
+            if resolved is not None:
+                return resolved == selected_path
         return _path_can_end_with(selected_path, local_path)
     return (
         any(_expr_may_address_selected_path(

@@ -14,6 +14,7 @@ from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
 from model_unfolder.evidence.decoder_block import decoder_block_path_for_config
 from model_unfolder.evidence.ffn_mechanism import (
+    ConfigSelectedFFNMechanism,
     ConditionalFFNEntry,
     EquivalentFFNMechanism,
     decoder_ffn_mechanism_for_path,
@@ -24,6 +25,7 @@ from model_unfolder.evidence.models import SourceBundle
 
 _CORPUS = Path(__file__).parent / "sable_test_corpus"
 _PREFIX = """
+import copy
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -87,6 +89,143 @@ class Wrapper:
     assert block.status == "resolved", block.failures
     return ffn_mechanism_at_block(
         index, root, block.value.block_occurrence)
+
+
+def _config_selected_wrapper_reader(
+        tmp_path, selector, *, wrapper_forward="return self.inner(x)",
+        wrapper_setup="", model_argument="config"):
+    """A name-neutral T5-shaped boundary: last slot -> config-selected FFN."""
+    source = _PREFIX + _ATTENTION + f"""
+class DensePath:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = nn.GELU()
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+
+class SplitPath:
+    def __init__(self, config):
+        self.gate = nn.Linear(config.hidden, config.wide)
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        return self.down(F.silu(self.gate(x)) * self.up(x))
+
+class Choice:
+    def __init__(self, config):
+        if config.choose_split:
+            self.inner = SplitPath(config)
+        else:
+            self.inner = DensePath(config)
+    def forward(self, x):
+        {wrapper_forward}
+
+class Block:
+    def __init__(self, config):
+        self.parts = nn.ModuleList()
+        if config.add_attention:
+            self.parts.append(Attention(config))
+        self.parts.append(Choice(config))
+    def forward(self, x):
+        return self.parts[-1](x)
+
+class Model:
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+class Wrapper:
+    base_model_prefix = "model"
+    def __init__(self, config):
+        {wrapper_setup}
+        self.model = Model({model_argument})
+"""
+    path = tmp_path / "selected.py"
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper",
+    )
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(
+        index, root, allow_root_stage=True)
+    assert root.status == block.status == "resolved"
+    result = ffn_mechanism_at_block(
+        index, root, block.value.block_occurrence,
+        config_selector=selector)
+    return result
+
+
+@pytest.mark.parametrize(("selected", "mode", "gated"), [
+    (True, "split", True),
+    (False, "dense", False),
+])
+def test_exact_boolean_selects_one_exhaustive_nested_ffn_branch(
+        tmp_path, selected, mode, gated):
+    requested = []
+
+    def selector(path):
+        requested.append(path)
+        return selected
+
+    result = _config_selected_wrapper_reader(tmp_path, selector)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, ConfigSelectedFFNMechanism)
+    assert requested == [("choose_split",)]
+    assert result.value.selector_config_path == ("choose_split",)
+    assert (result.value.projection_mode, result.value.gated) == (mode, gated)
+    assert result.provenance[0].kind == "code_and_config"
+
+
+@pytest.mark.parametrize("selected", [None, "true", 1])
+def test_missing_or_non_boolean_selector_cannot_choose_nested_ffn(
+        tmp_path, selected):
+    result = _config_selected_wrapper_reader(
+        tmp_path, lambda _path: selected)
+    assert result.status == "failed"
+
+
+def test_selected_nested_ffn_must_reach_the_wrapper_return(tmp_path):
+    result = _config_selected_wrapper_reader(
+        tmp_path, lambda _path: True,
+        wrapper_forward="self.inner(x)\n        return x")
+    assert result.status == "failed"
+
+
+def test_unmodified_selector_survives_an_exact_deepcopied_config(tmp_path):
+    requested = []
+    result = _config_selected_wrapper_reader(
+        tmp_path,
+        lambda path: requested.append(path) or True,
+        wrapper_setup=(
+            "cloned = copy.deepcopy(config)\n"
+            "        cloned.runtime_only = False"),
+        model_argument="cloned")
+    assert result.status == "resolved", result.failures
+    assert requested == [("choose_split",)]
+    assert result.value.gated is True
+
+
+def test_mutated_selector_on_a_deepcopied_config_cannot_select_a_branch(
+        tmp_path):
+    requested = []
+    result = _config_selected_wrapper_reader(
+        tmp_path,
+        lambda path: requested.append(path) or True,
+        wrapper_setup=(
+            "cloned = copy.deepcopy(config)\n"
+            "        cloned.choose_split = False"),
+        model_argument="cloned")
+    assert result.status == "failed"
+    assert requested == []
 
 
 def test_dense_ffn_requires_exact_two_projection_chain_and_activation(tmp_path):
@@ -157,6 +296,44 @@ class FeedForward:
     assert result.value.activation is None
     assert result.value.activation_config_path == ("hidden_act",)
     assert result.provenance[0].kind == "code_and_config"
+
+
+def test_unbound_activation_does_not_erase_proven_projection_topology(tmp_path):
+    result = _reader(tmp_path, """
+class OpaqueActivation:
+    def __init__(self, config): pass
+    def forward(self, x): return x
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = OpaqueActivation(config)
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+    assert result.value.gated is False
+    assert result.value.activation is None
+    assert result.value.activation_config_path == ()
+
+
+def test_dynamic_activation_field_preserves_only_the_proven_affine_topology(
+        tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+        self.act = build_activation(config.hidden_act)
+    def forward(self, x):
+        return self.down(self.act(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+    assert result.value.gated is False
+    assert result.value.activation is None
+    assert result.value.activation_config_path == ()
 
 
 def test_nested_activation_dispatch_carries_the_full_selected_config_path(

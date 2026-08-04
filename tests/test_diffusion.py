@@ -306,29 +306,30 @@ def test_text_encoder_shows_real_config_dims():
                                 "attention_detail", "position_evidence",
                                 "sub_model"}}
                   for spec in specs]
-    # CLIP's structured return resolves its exact CLIPEncoderLayer and its two
-    # torch.nn.LayerNorm calls.  Its checkpoint ``hidden_act`` spelling is not,
-    # however, proof that this exact FFN consumes the ACT2FN selection; U7 owns
-    # that binding, so quick_gelu must stay absent here.  T5 still has explicit
-    # encoder/decoder rivals, so its epsilon spelling may not manufacture a
-    # norm kind either.
+    # U7 binds each activation to the exact selected FFN occurrence: CLIP's
+    # ACT2FN dispatch consumes quick_gelu, while T5's exact final wrapper slot
+    # and boolean construction branch consume dense_act_fn=gelu_new.  Neither
+    # value is admitted from config presence alone.  T5's norm remains unknown
+    # because its separate encoder/decoder norm owner is still unresolved.
     assert structural == [
         {"name": "CLIP", "family": "CLIP", "layers": 12, "hidden": 768, "ffn": 3072,
-         "vocab": 49408, "max_pos": 77, "norm": "LayerNorm", "gated": False},
-        # The exact T5 encoder FFN owner is unresolved. Its width and separate
-        # gate evidence remain, but activation cannot cross that owner boundary.
+         "activation": "quick_gelu", "vocab": 49408, "max_pos": 77,
+         "norm": "LayerNorm", "gated": False},
         {"name": "T5", "family": "T5", "layers": 24, "hidden": 4096, "ffn": 10240,
-         "vocab": 32128, "gated": True},
+         "activation": "gelu_new", "vocab": 32128, "gated": True},
     ]
     # Attention geometry lives ONLY on the typed sub-model facts — never
     # duplicated as flat scalars (the dead add-on vocabulary this replaced).
     assert [(s["attention_detail"]["kind"], s["attention_detail"]["num_heads"],
              s["attention_detail"]["num_kv_heads"], s["attention_detail"]["head_dim"])
             for s in specs] == [("mha", 12, 12, 64), ("mha", 64, 64, 64)]
-    assert [(s["ffn_evidence"]["status"], s["ffn_evidence"]["owner_class"],
-             s["ffn_projection_mode"]) for s in specs] == [
-        ("proven", "CLIPMLP", "dense"),
-        ("proven", "T5DenseGatedActDense", "split"),
+    # No parallel free-form FFN envelope remains.  The canonical group fact and
+    # its exact mechanism provenance are the sole shape/owner surfaces.
+    assert [(s["sub_model"]["groups"][0]["ffn_source_owner"],
+             s["sub_model"]["groups"][0]["ffn"]["projection_mode"])
+            for s in specs] == [
+        ("CLIPMLP", "dense"),
+        ("T5DenseGatedActDense", "split"),
     ]
     # The typed attention facts ride the same spec: positional scheme + score
     # scaling are evidence, per encoder (CLIP learned-absolute + scaled;
@@ -360,6 +361,9 @@ def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
     t5_fact = t5["detail"]["ffn"]
     assert ffn_region(clip_fact, clip_fact["hidden"]).template == "dense_mlp"
     assert ffn_region(t5_fact, t5_fact["hidden"]).template == "gated_mlp"
+    # Bias is projected from the same selected DenseGated branch.  A second
+    # mechanism scan used to lose this conditional owner and return unknown.
+    assert t5_fact["bias"] is False
     assert "Two-layer MLP" in clip["description"]
     assert "Gated MLP" in t5["description"] and "SwiGLU" not in t5["description"]
     assert {c["id"] for c in t5["children"]} == {

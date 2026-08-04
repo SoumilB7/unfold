@@ -245,10 +245,10 @@ def _dispatch_config_prefix(parent, storage):
         return None
     bindings = tuple(
         item for item in parent.config_bindings
-        if item.parameter == root_name and item.resolved_prefix is not None)
+        if item.parameter == root_name)
     if len(bindings) != 1:
         return None
-    return (*bindings[0].resolved_prefix, *segments)
+    return bindings[0].resolved_path(tuple(segments))
 
 
 def _candidate_multi_query_proof(index, storage, prefix):

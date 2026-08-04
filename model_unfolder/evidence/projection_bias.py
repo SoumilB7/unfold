@@ -272,10 +272,33 @@ def decoder_ffn_bias_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    mechanism_result=None,
 ) -> ReaderResult[ProjectionBiasEvidence]:
-    """Read bias from the exact ordinary-FFN projections for ``config_path``."""
-    mechanism = decoder_ffn_mechanism_for_path(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
+    """Read bias from the exact ordinary-FFN projections for ``config_path``.
+
+    A parser that already resolved the mechanism supplies that ReaderResult so
+    shape and bias cannot independently select different conditional branches.
+    The exact decoder-block occurrence is re-resolved and cross-checked here;
+    passing a result from another config scope cannot launder its projections.
+    """
+    mechanism = mechanism_result
+    if mechanism is None:
+        mechanism = decoder_ffn_mechanism_for_path(
+            index, bundle, config_path, allow_root_stage=allow_root_stage)
+    else:
+        block = decoder_block_path_for_config(
+            index, bundle, config_path,
+            allow_root_stage=allow_root_stage)
+        if block.status != "resolved":
+            return block
+        if mechanism.status == "resolved" and (
+                mechanism.value.block_occurrence
+                != block.value.block_occurrence):
+            return ReaderResult.failed(block.value.block_occurrence, (
+                ReaderFailure(
+                    "scope_mismatch",
+                    "the supplied FFN mechanism belongs to another exact "
+                    "decoder-block occurrence"),))
     if mechanism.status != "resolved":
         return mechanism
     if isinstance(mechanism.value, EquivalentFFNMechanism):

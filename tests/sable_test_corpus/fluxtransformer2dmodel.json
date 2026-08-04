@@ -108,17 +108,16 @@
     "b354d4cb12016360e1a9612e0000ac6e",
     "ba0a8422185c20fb776481aa67bfa522",
     "badaa1497d2255d8845e9ce6ea4314aa",
-    "bc4aa7b8151ce2268abd3302cea99711",
-    "be709b713c6bdb1e00cfd4b8acdede4d",
     "bf7b50ecd75684e8a39b4248976719b8",
     "c9cee6b79d339d76616db6a1f685c359",
     "cab11650142d0a456aca749072e2d76c",
-    "ecfc076a5de5fdabf3744363aaa85405"
+    "ecfc076a5de5fdabf3744363aaa85405",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
   "model": "FluxTransformer2DModel",
   "source": "local",
   "superseded_hash_signature": [
-    "02386a9f30d6d1e3313feddbfbe7c783",
     "0751c0064be790891edf52f8bed807bb",
     "2c40b324832c488a353ff4a3ac719206",
     "48125ea1e7d6a56703533d06cb377d75",
@@ -134,6 +133,7 @@
     "bc4aa7b8151ce2268abd3302cea99711",
     "be709b713c6bdb1e00cfd4b8acdede4d",
     "bf7b50ecd75684e8a39b4248976719b8",
+    "c9cee6b79d339d76616db6a1f685c359",
     "cab11650142d0a456aca749072e2d76c",
     "ecfc076a5de5fdabf3744363aaa85405"
   ],

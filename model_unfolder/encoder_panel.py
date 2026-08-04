@@ -83,8 +83,6 @@ def normalize_encoder_config(c: dict, context=None, binding=None) -> dict:
 def _project_encoder_spec(c: dict, ir, context) -> dict:
     """Project the parsed IR into the neutral encoder spec.  Runs INSIDE the
     slot's bound document scope, so the evidence reads below stay located."""
-    from .evidence.ffn import ffn_structure_evidence
-    from .evidence.patterns import decoder_ffn_activation_from_files
     # Grouped, not layer-0: the flat summary fields describe the DOMINANT layer
     # type, and a heterogeneous stack (sliding/global alternation, hybrid
     # full/linear mixers) additionally carries one entry per distinct signature
@@ -119,40 +117,28 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
                 (inner.get("norm_type") if isinstance(inner, dict) else None)
                 or c.get("norm_type"),
                 context) or "").lower())
-    # Gating and projection storage are code/config facts, never encoder-family
-    # conventions.  A config may explicitly select a gated branch (T5's
-    # ``is_gated_act`` / ``feed_forward_proj``); otherwise source evidence must
-    # resolve the callable.  Missing/ambiguous source stays tri-state unknown.
-    explicit_gated = None
-    for src in (c, inner):
-        if "is_gated_act" in src:
-            explicit_gated = bool(src.get("is_gated_act"))
-            break
-        proj = src.get("feed_forward_proj")
-        if isinstance(proj, str):
-            explicit_gated = proj.lower().startswith("gated-")
-            break
-    bundle = context.source_bundle
-    component_files = bundle.component_files or {"root": bundle.files}
-    text_components = [name for name in component_files
-                       if name == "text_config" or name.endswith(".text_config")]
-    component = text_components[0] if len(text_components) == 1 else "root"
-    files = component_files.get(component, bundle.files)
-    architecture = (bundle.component_architectures or {}).get(component) or bundle.architecture
-    ffn_evidence = ffn_structure_evidence(
-        files, expected_gated=explicit_gated, component=component,
-        architecture=architecture,
-    )
-    # The config value is an expected selector supplied to the source reader;
-    # it is not independently allowed to author gate topology.  Only a proven
-    # callable result reaches the canonical FFN fact.
-    gated = ffn_evidence.gated if ffn_evidence.status == "proven" else None
-
-    code_activation = decoder_ffn_activation_from_files(files)
-    # A bare checkpoint activation spelling does not prove that this exact FFN
-    # consumes it.  Retain only the activation fixed by the resolved code path;
-    # U7 may restore config-selected activations after binding the dispatch.
-    act = code_activation or None
+    # The transformer parse above already resolved this exact decoder-block
+    # occurrence through ``decoder_ffn_mechanism_for_path``.  Re-scanning the
+    # component here used to create a second, whole-file FFN authority and let
+    # config selectors filter its answer.  Project the canonical typed fact
+    # directly instead: embedded and standalone parses now share one result.
+    gated = ffn.gated
+    act = ffn.activation
+    # Preserve the exact mechanism owner as render provenance.  This replaces
+    # the retired whole-file evidence envelope; it is copied from the SAME
+    # cached ReaderResult that authored FFNSpec and cannot change the fact.
+    _ffn_result = context.reader_results.get(
+        ("decoder.ffn.mechanism", tuple(_wrapper_path(c, text_cfg))))
+    _ffn_value = (
+        _ffn_result.value if _ffn_result is not None
+        and _ffn_result.status == "resolved" else None)
+    _ffn_symbol = getattr(_ffn_value, "owner_symbol", None)
+    _ffn_source_owner = (
+        _ffn_symbol.qualified_name.rsplit(".", 1)[0]
+        if _ffn_symbol is not None else None)
+    _ffn_source_file = (
+        _ffn_symbol.source.canonical_path
+        if _ffn_symbol is not None else None)
     # Flat fields are PROSE/legacy-display only — attention geometry lives on
     # the sub-model spec's typed facts (attention_detail per group), never
     # duplicated here.
@@ -168,9 +154,6 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     out = {k: v for k, v in fields.items() if v}
     if gated is not None:
         out["gated"] = bool(gated)
-    out["ffn_evidence"] = ffn_evidence.to_dict()
-    if ffn_evidence.status == "proven":
-        out["ffn_projection_mode"] = ffn_evidence.projection_mode
     position = (ir.extras or {}).get("position_encoding")
 
     # The ONE facts-only sub-model spec — groups, schedule, per-group typed
@@ -184,13 +167,9 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
         ir,
         altitude="tower",
         norm_label=norm,
-        activation=act,
-        gated=gated,
-        structure_status=ffn_evidence.status,
-        projection_mode=(ffn_evidence.projection_mode
-                         if ffn_evidence.status == "proven" else None),
         position_evidence=position if isinstance(position, dict) else None,
-        ffn_evidence=ffn_evidence.to_dict(),
+        ffn_source_owner=_ffn_source_owner,
+        ffn_source_file=_ffn_source_file,
     )
     # Flat prose fields (title/chips wording) derive from the spec's dominant
     # group — never hand-built a second time.

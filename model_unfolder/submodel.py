@@ -57,12 +57,9 @@ def submodel_spec(
     component: str = "",
     altitude: str = "tower",
     norm_label: str | None = None,
-    activation: str | None = None,
-    gated: bool | None = None,
-    structure_status: str | None = None,
-    projection_mode: str | None = None,
     position_evidence: dict | None = None,
-    ffn_evidence: dict | None = None,
+    ffn_source_owner: str | None = None,
+    ffn_source_file: str | None = None,
     sub_models: list[dict] | None = None,
 ) -> dict:
     """Derive the embedded-model spec from a full sub-parse ``ModelIR``.
@@ -71,12 +68,15 @@ def submodel_spec(
     time from these facts through the same canonical builders the root model
     uses, so the spec can never hold a stale copy of a drawable.
 
-    The honesty overrides (``activation``/``gated``/``norm_label``/…) exist
-    because the universal parser fills modern-LM defaults when a config is
-    silent — right for a standalone decoder, invented facts for an encoder.
-    The caller passes the evidence-resolved values; ``None`` keeps the
-    tri-state unknown.  ``sub_models`` nests further embedded specs (a tower
-    inside a tower) — the projector recurses through them with composed
+    ``FFNSpec`` is the sole FFN authority.  The universal parser already keeps
+    mechanism, activation, gating and projection storage independently
+    tri-state; projecting a second caller-supplied copy here would allow an
+    embedded tower to disagree with the same config parsed standalone.
+    ``norm_label`` remains a presentation override while the norm-bookend
+    migration is incomplete.  ``ffn_source_owner``/``ffn_source_file`` are
+    provenance copied from that same exact mechanism result; they cannot alter
+    the serialized FFN fact.  ``sub_models`` nests further embedded specs (a
+    tower inside a tower) — the projector recurses through them with composed
     namespaces and dotted component paths.
     """
     from .adapters.transformer.blocks.attention import attention_detail
@@ -94,26 +94,11 @@ def submodel_spec(
 
     def _ffn_fact(group_layer) -> dict:
         ffn = group_layer.ffn
-        if ffn.kind == "moe":
-            # The full canonical MoE serialization — routing, experts, shared,
-            # clip — exactly what a decoder MoE block carries.
-            fact = ffn_detail(ffn)
-            fact["hidden"] = ir.hidden_size
-            return fact
-        structure_proven = (
-            structure_status == "proven"
-            and gated is not None
-            and projection_mode in {"dense", "split", "fused_gate_up"}
-        )
-        fact = {
-            "kind": "dense" if structure_proven else None,
-            "hidden": ir.hidden_size,
-            "intermediate_size": ffn.intermediate_size,
-            "activation": activation,
-            "gated": gated if structure_proven else None,
-            "structure_status": structure_status or "oracle_missing",
-            "projection_mode": projection_mode if structure_proven else None,
-        }
+        # The complete canonical serialization for ordinary, convolutional and
+        # MoE FFNs alike.  Unknown fields stay unknown; this function does not
+        # promote a width or an activation spelling into mechanism evidence.
+        fact = ffn_detail(ffn)
+        fact["hidden"] = ir.hidden_size
         return fact
 
     def _norm_for(group_layer) -> str | None:
@@ -131,6 +116,9 @@ def submodel_spec(
             "tag": tags[k],
             "attention": _attention_fact(group["layer"]),
             "ffn": _ffn_fact(group["layer"]),
+            **({"ffn_source_owner": ffn_source_owner,
+                "ffn_source_file": ffn_source_file}
+               if ffn_source_owner else {}),
             "norm": _norm_for(group["layer"]),
             # Norm PLACEMENT is a per-group structural fact (pre / post /
             # double sandwich), code-derived by the sub-parse's topology
@@ -170,7 +158,10 @@ def submodel_spec(
         # object would double-prefix the component path.
         "evidence": {
             "position": dict(position_evidence) if isinstance(position_evidence, dict) else None,
-            "ffn": dict(ffn_evidence) if isinstance(ffn_evidence, dict) else None,
+            # FFN provenance is carried by the typed fact ledger/read result.
+            # A second free-form envelope previously came from the retired
+            # whole-file detector and could disagree with the FFNSpec above.
+            "ffn": None,
         },
         "sub_models": list(sub_models or []),
     }
@@ -273,7 +264,8 @@ def submodel_attention_block(spec: dict, group: dict, prefix: str, *,
         "facts": facts,
         "view": "attention",
         "source_component": _owning_component(spec, evidence),
-        **({"source_owner": group["source_owner"], "source_file": group.get("source_file")}
+        **({"source_owner": group["source_owner"],
+            "source_file": group.get("source_file")}
            if group.get("source_owner") else {}),
         "detail": {
             "attention": {**fact, "node_prefix": namespace},
@@ -332,8 +324,9 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
         "facts": facts,
         "view": "ffn",
         "source_component": component,
-        **({"source_owner": group["source_owner"], "source_file": group.get("source_file")}
-           if group.get("source_owner") else {}),
+        **({"source_owner": group["ffn_source_owner"],
+            "source_file": group.get("ffn_source_file")}
+           if group.get("ffn_source_owner") else {}),
         "detail": {
             "ffn": fact,
             "op_namespace": namespace,

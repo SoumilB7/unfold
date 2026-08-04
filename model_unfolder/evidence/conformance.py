@@ -574,16 +574,13 @@ def check_fact_conformance(
     return problems
 
 
-def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
+def _storage_problems_for_spec(key: str, attn: dict, ffn: dict,
                                code_qkv, code_expert, *,
                                component: str = "",
-                               code_ffn_mode=None,
-                               use_legacy_ffn=True) -> list[ConformanceProblem]:
+                               code_ffn_mode=None) -> list[ConformanceProblem]:
     """The fused-vs-split comparisons for ONE layer/group spec — shared by the
     root pass and the per-pipeline-component pass so the vocabulary and rules
     can never diverge."""
-    from .ffn import ffn_structure_evidence
-
     problems: list[ConformanceProblem] = []
     if attn.get("kind") in ("mha", "gqa", "mqa") and code_qkv is not None:
         drawn_fused = attn.get("projection_mode") == "fused_qkv"
@@ -613,15 +610,6 @@ def _storage_problems_for_spec(key: str, attn: dict, ffn: dict, files,
                 "wrong_storage",
                 f"FFN projection storage is {code_ffn_mode.upper()}, "
                 f"drawn {drawn}", key, source_component=component))
-    elif use_legacy_ffn and ffn.get("gated"):
-        evidence = ffn_structure_evidence(files, expected_gated=True)
-        if evidence.status == "proven" and evidence.projection_mode:
-            drawn = ffn.get("projection_mode")
-            if drawn != evidence.projection_mode:
-                problems.append(ConformanceProblem(
-                    "wrong_storage",
-                    f"FFN gate/up is stored {evidence.projection_mode.upper()}, "
-                    f"drawn {drawn}", key, source_component=component))
     return problems
 
 
@@ -696,8 +684,8 @@ def _check_component_storage_facts(
             problems.extend(_storage_problems_for_spec(
                 f"{family}/{block.get('id') or slot}/g{i}",
                 group.get("attention") or {}, group.get("ffn") or {},
-                files, code_qkv, code_expert,
-                code_ffn_mode=code_ffn_mode, use_legacy_ffn=False,
+                code_qkv, code_expert,
+                code_ffn_mode=code_ffn_mode,
                 component=slot))
     return problems
 
@@ -786,9 +774,8 @@ def _check_storage_facts(family: str, ir: dict, files, representatives,
         # FFN/expert "fused_gate_up" | "split" | "dense" | None(=conventional).
         problems.extend(_storage_problems_for_spec(
             key, spec.get("attention") or {}, spec.get("ffn") or {},
-            files, code_qkv, code_expert,
-            code_ffn_mode=code_ffn_mode,
-            use_legacy_ffn=False))
+            code_qkv, code_expert,
+            code_ffn_mode=code_ffn_mode))
 
     if not check_bookend:
         return problems

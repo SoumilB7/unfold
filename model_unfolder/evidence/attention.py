@@ -4417,14 +4417,11 @@ def _bound_config_path(node, observation: ConfigPathObservation):
         return None
     bindings = tuple(
         item for item in node.config_bindings
-        if item.parameter == observation.root_binding.name
-        and item.resolved_prefix is not None)
+        if item.parameter == observation.root_binding.name)
     if len(bindings) != 1:
         return None
-    return (
-        *tuple(bindings[0].resolved_prefix),
-        *(segment.name for segment in observation.segments),
-    )
+    return bindings[0].resolved_path(tuple(
+        segment.name for segment in observation.segments))
 
 
 def _span_contains(outer, inner):

@@ -67,6 +67,7 @@ class ConfigBinding:
     parameter: str
     prefixes: tuple[ConfigPrefix, ...]
     origin: str = "constructor_argument"
+    invalidated_paths: tuple[ConfigPrefix, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.parameter:
@@ -78,10 +79,43 @@ class ConfigBinding:
         normalized = _unique_prefixes(*self.prefixes)
         if normalized != self.prefixes:
             object.__setattr__(self, "prefixes", normalized)
+        if any(not isinstance(path, tuple) or
+               any(not isinstance(part, str) or not part for part in path)
+               for path in self.invalidated_paths):
+            raise TypeError("invalidated config paths must be tuple[str, ...] values")
+        invalidated = tuple(dict.fromkeys(self.invalidated_paths))
+        if invalidated != self.invalidated_paths:
+            object.__setattr__(self, "invalidated_paths", invalidated)
 
     @property
     def resolved_prefix(self) -> ConfigPrefix | None:
-        return self.prefixes[0] if len(self.prefixes) == 1 else None
+        # A transformed config object is not a whole-prefix alias.  Existing
+        # consumers therefore remain conservative until they ask for one exact
+        # unaffected path through ``resolved_path``.
+        return (self.prefixes[0]
+                if len(self.prefixes) == 1 and not self.invalidated_paths
+                else None)
+
+    def resolved_path(self, local_path: ConfigPrefix) -> ConfigPrefix | None:
+        """Resolve one exact local path when no transform can affect it."""
+        if not isinstance(local_path, tuple) or any(
+                not isinstance(part, str) or not part for part in local_path):
+            raise TypeError("a local config path is tuple[str, ...]")
+        if len(self.prefixes) != 1 or any(
+                _paths_overlap(local_path, path)
+                for path in self.invalidated_paths):
+            return None
+        return (*self.prefixes[0], *local_path)
+
+
+@dataclass(frozen=True)
+class _ConfigFlow:
+    """Internal straight-line address flow, including clone invalidations."""
+
+    prefixes: tuple[ConfigPrefix, ...]
+    invalidated_paths: tuple[ConfigPrefix, ...] = ()
+    origin: str = "alias"
+    clone_span: SourceSpan | None = None
 
 
 @dataclass(frozen=True)
@@ -403,7 +437,8 @@ class _Resolver:
                              via_kind, unresolved=tuple(unresolved))
 
         children: list[OwnerNode] = []
-        param_prefixes = {binding.parameter: binding.prefixes
+        param_prefixes = {binding.parameter: _ConfigFlow(
+            binding.prefixes, binding.invalidated_paths, binding.origin)
                           for binding in config_bindings}
         next_ancestors = ancestor_symbols + (owner_symbol,)
         sites = self._owner_sites(owner_symbol)
@@ -640,11 +675,12 @@ class _Resolver:
                 self._record_prefix_conflicts(
                     site, forwarded, parent_occurrence)
                 return forwarded
-            prefixes = (_arg_prefixes(site.args[0], param_prefixes)
-                        if site.args else ())
+            flow = (_arg_config_flow(site.args[0], param_prefixes)
+                    if site.args else None)
             bindings = ((ConfigBinding("@factory_input", prefixes,
-                                       "factory_input_unproven_forwarding"),)
-                        if prefixes else ())
+                                       "factory_input_unproven_forwarding",
+                                       flow.invalidated_paths),)
+                        if flow and (prefixes := flow.prefixes) else ())
             self._record_prefix_conflicts(
                 site, bindings, parent_occurrence)
             return bindings
@@ -656,18 +692,21 @@ class _Resolver:
         for index, argument in enumerate(site.args):
             if index >= len(positional):
                 break
-            prefixes = _arg_prefixes(argument, param_prefixes)
-            if prefixes:
-                found[positional[index].name] = prefixes
+            flow = _arg_config_flow(argument, param_prefixes)
+            if flow and flow.prefixes:
+                found[positional[index].name] = flow
         for name, argument in site.kwargs:
             if name in all_params:
-                prefixes = _arg_prefixes(argument, param_prefixes)
-                if prefixes:
-                    found[name] = prefixes
+                flow = _arg_config_flow(argument, param_prefixes)
+                if flow and flow.prefixes:
+                    found[name] = flow
 
-        bindings = tuple(ConfigBinding(name, prefixes,
-                                       "constructor_argument")
-                         for name, prefixes in found.items())
+        bindings = tuple(ConfigBinding(
+            name, flow.prefixes,
+            ("transformed_constructor_argument"
+             if flow.invalidated_paths else "constructor_argument"),
+            flow.invalidated_paths)
+                         for name, flow in found.items())
         self._record_prefix_conflicts(site, bindings, parent_occurrence)
         return bindings
 
@@ -685,6 +724,17 @@ class _Resolver:
                 item.span.end_line or item.span.line,
                 item.span.end_col or item.span.col)))
         for binding in bindings:
+            attribute_target = _attribute_target(binding.targets)
+            if attribute_target is not None:
+                root_name, segments = attribute_target
+                flow = environment.get(root_name)
+                if flow is not None:
+                    environment[root_name] = _ConfigFlow(
+                        flow.prefixes,
+                        tuple(dict.fromkeys((
+                            *flow.invalidated_paths, tuple(segments)))),
+                        flow.origin, flow.clone_span)
+                continue
             targets = tuple(
                 target.name for target in binding.targets
                 if target.kind == "name" and target.name)
@@ -694,11 +744,37 @@ class _Resolver:
             if binding.guard or binding.value is None:
                 environment.pop(target, None)
                 continue
-            prefixes = _arg_prefixes(binding.value, environment)
-            if prefixes:
-                environment[target] = prefixes
+            flow = _arg_config_flow(
+                binding.value, environment,
+                index=self.program_index,
+                callable_symbol=site.enclosing_callable)
+            if flow and flow.prefixes:
+                # A second local name would alias a mutable clone.  Without a
+                # points-to graph a later write through either spelling cannot
+                # be attributed soundly, so neither spelling is published.
+                source_name = _plain_name(binding.value)
+                if source_name is not None \
+                        and flow.clone_span is not None:
+                    environment.pop(source_name, None)
+                    environment.pop(target, None)
+                else:
+                    environment[target] = flow
             else:
                 environment.pop(target, None)
+        for name, flow in tuple(environment.items()):
+            if flow.clone_span is None:
+                continue
+            for call in self.program_index.calls_in(site.enclosing_callable):
+                if call.span is None or not _span_before(call.span, site.span) \
+                        or not _span_before(flow.clone_span, call.span):
+                    continue
+                expressions = (
+                    call.callee, call.receiver, *call.args,
+                    *(value for _key, value in call.kwargs))
+                if any(_expr_mentions_name(expr, name)
+                       for expr in expressions if expr is not None):
+                    environment.pop(name, None)
+                    break
         return environment
 
     def _indexed_factory_bindings(
@@ -772,19 +848,31 @@ class _Resolver:
             ))
 
 
-def _arg_prefixes(expr, param_prefixes) -> tuple[ConfigPrefix, ...]:
-    """Return every config prefix structurally reachable from ``expr``."""
+def _arg_config_flow(expr, param_prefixes, *, index=None,
+                     callable_symbol=None) -> _ConfigFlow | None:
+    """Return exact config-address flow through one expression.
+
+    ``copy.deepcopy(config)`` is a lawful value-preserving clone only when the
+    imported callable binding is exact and unshadowed.  Subsequent writes are
+    attached as invalidated relative paths by ``_local_prefixes_at_site``.
+    """
     if expr is None:
-        return ()
+        return None
+    if index is not None and callable_symbol is not None:
+        copied = _exact_deepcopy_argument(
+            index, callable_symbol, expr, param_prefixes)
+        if copied is not None:
+            return _ConfigFlow(
+                copied.prefixes, copied.invalidated_paths,
+                "stdlib_deepcopy", expr.span)
     if expr.kind == "ifexp" and len(expr.children) == 3:
-        return _unique_prefixes(
-            *_arg_prefixes(expr.children[0], param_prefixes),
-            *_arg_prefixes(expr.children[2], param_prefixes),
-        )
+        return _merge_config_flows(
+            _arg_config_flow(expr.children[0], param_prefixes),
+            _arg_config_flow(expr.children[2], param_prefixes))
     if expr.kind == "boolop":
-        return _unique_prefixes(*(
-            prefix for child in expr.children
-            for prefix in _arg_prefixes(child, param_prefixes)))
+        return _merge_config_flows(*(
+            _arg_config_flow(child, param_prefixes)
+            for child in expr.children))
 
     segments: list[str] = []
     current = expr
@@ -793,10 +881,120 @@ def _arg_prefixes(expr, param_prefixes) -> tuple[ConfigPrefix, ...]:
         current = current.children[0] if current.children else None
     if current is not None and current.kind == "name" \
             and current.name in param_prefixes:
-        return _unique_prefixes(*(
-            (*prefix, *reversed(segments))
-            for prefix in param_prefixes[current.name]))
-    return ()
+        source = param_prefixes[current.name]
+        if not isinstance(source, _ConfigFlow):
+            source = _ConfigFlow(tuple(source))
+        suffix = tuple(reversed(segments))
+        invalidated = _invalidations_below(source.invalidated_paths, suffix)
+        return _ConfigFlow(
+            _unique_prefixes(*(
+                (*prefix, *suffix) for prefix in source.prefixes)),
+            invalidated, source.origin, source.clone_span)
+    return None
+
+
+def _arg_prefixes(expr, param_prefixes) -> tuple[ConfigPrefix, ...]:
+    """Compatibility helper for forwarding that requires a whole alias."""
+    flow = _arg_config_flow(expr, param_prefixes)
+    return (flow.prefixes
+            if flow is not None and not flow.invalidated_paths else ())
+
+
+def _merge_config_flows(*flows) -> _ConfigFlow | None:
+    present = tuple(flow for flow in flows if flow is not None)
+    if not present:
+        return None
+    return _ConfigFlow(
+        _unique_prefixes(*(prefix for flow in present
+                           for prefix in flow.prefixes)),
+        tuple(dict.fromkeys(path for flow in present
+                            for path in flow.invalidated_paths)),
+        "conditional",
+        next((flow.clone_span for flow in present
+              if flow.clone_span is not None), None))
+
+
+def _invalidations_below(paths, suffix):
+    out = []
+    for path in paths:
+        if path[:len(suffix)] == suffix:
+            out.append(path[len(suffix):])
+        elif suffix[:len(path)] == path:
+            out.append(())
+    return tuple(dict.fromkeys(out))
+
+
+def _paths_overlap(left, right) -> bool:
+    length = min(len(left), len(right))
+    return left[:length] == right[:length]
+
+
+def _plain_name(expr):
+    return expr.name if expr is not None and expr.kind == "name" else None
+
+
+def _attribute_target(targets):
+    if len(targets) != 1:
+        return None
+    current = targets[0]
+    segments = []
+    while current is not None and current.kind == "attribute" \
+            and current.children:
+        segments.append(current.name)
+        current = current.children[0]
+    if current is None or current.kind != "name" or not current.name \
+            or not segments:
+        return None
+    return current.name, tuple(reversed(segments))
+
+
+def _expr_mentions_name(expr, name):
+    if expr.kind == "name" and expr.name == name:
+        return True
+    return any(_expr_mentions_name(child, name) for child in expr.children) \
+        or any(_expr_mentions_name(child, name)
+               for _key, child in expr.keyword_children)
+
+
+def _exact_deepcopy_argument(index, callable_symbol, expr, environment):
+    if expr.kind != "call" or len(expr.children) != 2 \
+            or expr.keyword_children:
+        return None
+    callee, argument = expr.children
+    local = target = None
+    if callee.kind == "attribute" and callee.name == "deepcopy" \
+            and len(callee.children) == 1 \
+            and callee.children[0].kind == "name":
+        local = callee.children[0].name
+        target = "copy"
+    elif callee.kind == "name":
+        local = callee.name
+        target = "copy.deepcopy"
+    if not local or not _exact_import_binding(
+            index, callable_symbol, local, target, expr.span):
+        return None
+    return _arg_config_flow(argument, environment)
+
+
+def _exact_import_binding(index, callable_symbol, local, target, use_span):
+    imports = tuple(item for item in index.imports
+                    if item.source == callable_symbol.source
+                    and item.alias == local and item.target == target
+                    and not item.guard)
+    module_bindings = tuple(item for item in index.module_bindings_in(
+        callable_symbol.source) if item.name == local)
+    if len(imports) != 1 or len(module_bindings) != 1 \
+            or module_bindings[0].kind != "import":
+        return False
+    callable_record = index.callable_by_symbol(callable_symbol)
+    if callable_record is None or any(
+            param.name == local for param in callable_record.params):
+        return False
+    return not any(
+        identifier.name == local
+        and identifier.context in {"store", "del"}
+        and _span_before(identifier.span, use_span)
+        for identifier in index.identifiers_in(callable_symbol))
 
 
 def _bind_call_prefixes(args, kwargs, params, source_prefixes):

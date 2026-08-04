@@ -858,23 +858,14 @@ class GLMBlock(nn.Module):
 """
 
 
-def test_init_local_fn_and_inner_kernel_evidence(tmp_path):
-    """The ChatGLM-shaped code signatures, read GENERALLY (no names):
-
-    1. a nested fn bound to ``self.F`` in __init__ (swiglu) is FOLDED into the
-       class's op scan — so a 2-linear MLP that chunks one fused projection and
-       multiplies the halves is proven GATED with fused storage;
-    2. an inner attention kernel constructed as a FIELD of the attention class
-       (core_attention) is not a rival positional candidate — the owner's RoPE
-       application is proven, never "candidates disagree".
-    """
+def test_inner_kernel_evidence(tmp_path):
+    """An inner attention kernel constructed as a FIELD of the attention
+    class is not a rival positional candidate.  Exact fused FFN storage is
+    covered by the owner-qualified FFN-mechanism tests; this control no longer
+    invokes the retired whole-file FFN union as a second authority."""
     f = tmp_path / "modeling_x.py"
     f.write_text(_CHATGLM_SHAPED)
     files = (str(f),)
-
-    from model_unfolder.evidence.ffn import ffn_structure_evidence
-    ev = ffn_structure_evidence(files, expected_gated=True)
-    assert ev.status == "proven" and ev.projection_mode == "fused_gate_up"
 
     from model_unfolder.evidence.position import decoder_positional_evidence
     from model_unfolder.evidence.models import SourceBundle

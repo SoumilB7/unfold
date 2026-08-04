@@ -118,3 +118,48 @@ It does not complete the full U7 program: canonical shared-expert child
 projection at every owner altitude, remaining norm/cell topology, Conv-GLU,
 nested modality/diffusion consumers, default deletion, and all reverse
 fabrication/parameter receipts remain governed by the master plan.
+
+## Canonical embedded-encoder cutover (current U7 slice)
+
+The next U7 slice removes the second FFN authority that survived in embedded
+text-encoder panels.  The transformer parser's owner-qualified
+`decoder_ffn_mechanism_for_path` result now authors the canonical `FFNSpec`, and
+the encoder panel plus nested sub-model projections consume that exact spec.
+The former `evidence/ffn.py` whole-file scan and
+`decoder_ffn_activation_from_files` path are deleted rather than retained as a
+fallback.
+
+Two general substrate corrections were required; neither is model-specific:
+
+1. A copied config is not all-or-nothing evidence.  Exact, unshadowed
+   `copy.deepcopy(config)` preserves each unchanged path, while an assignment
+   invalidates only that path and its descendants.  Escaped aliases, opaque
+   mutation calls, local `copy` shadowing and ambiguous flows remain unproved.
+   All config-path consumers use the same `ConfigBinding.resolved_path()` law.
+2. FFN projection topology and activation identity are independent.  An exact
+   two/three-projection graph may remain dense/split/fused when an intervening
+   transform is proved on the data path but its activation kind is opaque.
+   Unrelated activations, post-output activations and guarded activation bypasses
+   still reject the mechanism.  Where source names an exact config dispatch
+   path, the parser consumes that exact spelling; an equal alias cannot replace
+   the occurrence the code actually reads.
+
+The real-model review covers UMT5, T5, Gemma-2, Llama, Mistral, Qwen2/Qwen3-VL,
+CLIP and CLIP-with-projection encoders across AuraFlow, HunyuanVideo, SD3.5,
+SDXL, Sana, Lumina, PixArt, CogVideoX, LTX, Mochi, PRX, Qwen-Image, FLUX.2,
+Wan and MusicGen.  The intended outcomes include:
+
+- exact split-gated GELU/SiLU paths where source and config dispatch join;
+- exact dense CLIP topology with an opaque activation when an inherited factory
+  prevents exact constructor-config forwarding proof;
+- an unresolved MusicGen conditioning FFN because `T5Model` exposes rival
+  encoder/decoder stages and no lawful owner selection exists yet;
+- no pixel change across the diffusion/embedded-encoder galleries except the
+  Gemma-2 FFN drill: its source-selected `hidden_activation` value now renders
+  `GELU` instead of the former generic `Activation` label.  The other five
+  Gemma-2 views and every other reviewed PNG remain byte-identical.  This is an
+  evidence-driven label correction, not a renderer redesign.
+
+The pre-existing MusicGen top-level architecture label overflow is explicitly
+not blessed as a new U7 behavior: it is byte-identical to the prior gallery and
+remains separate visual debt.

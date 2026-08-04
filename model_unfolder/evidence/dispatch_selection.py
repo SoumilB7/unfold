@@ -366,9 +366,9 @@ def _decision_path(node, expression):
     bindings = tuple(
         binding for binding in node.config_bindings
         if binding.parameter == root_name)
-    if len(bindings) != 1 or bindings[0].resolved_prefix is None:
+    if len(bindings) != 1:
         return None
-    return (*bindings[0].resolved_prefix, *segments)
+    return bindings[0].resolved_path(tuple(segments))
 
 
 def _config_expression_path(expression):

@@ -275,6 +275,23 @@
   "hash_signature": [
     "06c3c450e5129ad3ad44c6d69696969e",
     "42f2abd963cf2f7046986695b4f83fb5",
+    "44214a47b62afb95cf44b9c9a99c6eae",
+    "53d8ea59b2c5e3a6f828d93744984a65",
+    "6f3ff3d93134f0e32a666f32805babb4",
+    "7b8543951da5d030f7fcbd979cd40049",
+    "7fa8ba3824ca9c1245b42b4764f65232",
+    "8a360c4f1e446063bd592a6f7c329e78",
+    "989bd4ca1cfad3b694dfcd4c5d2ee259",
+    "a9e394c91eee1b190650d2ee86697573",
+    "b268ddb98d302b36f13866c181a485eb",
+    "bfad087b7f6e85ae065ca31e113cc472",
+    "c3b47dc7cf4b0422fe0b553c1dbe768b"
+  ],
+  "model": "Sana_1600M_1024px_diffusers",
+  "source": "local",
+  "superseded_hash_signature": [
+    "06c3c450e5129ad3ad44c6d69696969e",
+    "42f2abd963cf2f7046986695b4f83fb5",
     "53d8ea59b2c5e3a6f828d93744984a65",
     "6f3ff3d93134f0e32a666f32805babb4",
     "7b8543951da5d030f7fcbd979cd40049",
@@ -285,23 +302,6 @@
     "a9e394c91eee1b190650d2ee86697573",
     "b268ddb98d302b36f13866c181a485eb",
     "bfad087b7f6e85ae065ca31e113cc472",
-    "c3b47dc7cf4b0422fe0b553c1dbe768b"
-  ],
-  "model": "Sana_1600M_1024px_diffusers",
-  "source": "local",
-  "superseded_hash_signature": [
-    "42f2abd963cf2f7046986695b4f83fb5",
-    "53d8ea59b2c5e3a6f828d93744984a65",
-    "6f3ff3d93134f0e32a666f32805babb4",
-    "7b8543951da5d030f7fcbd979cd40049",
-    "7e5be0f60202a4676b32bbd943e3a8c3",
-    "7fa8ba3824ca9c1245b42b4764f65232",
-    "8a360c4f1e446063bd592a6f7c329e78",
-    "8b41bf877ac6a0340e12362ef7717152",
-    "a9e394c91eee1b190650d2ee86697573",
-    "b268ddb98d302b36f13866c181a485eb",
-    "bfad087b7f6e85ae065ca31e113cc472",
-    "c368ee238fa79a35ba9cebcde5a51490",
     "c3b47dc7cf4b0422fe0b553c1dbe768b"
   ],
   "visual_evidence": {

@@ -226,12 +226,9 @@ def test_component_scoped_evidence_keeps_text_and_vision_oracles_separate():
     assert text_code.component == "text_config"
     assert Path(text_code.source_file).name == "modeling_gemma2.py"
 
-    vision_component, vision_files = conf._component_source(bundle, "vision")
-    from model_unfolder.evidence.ffn import ffn_structure_evidence
-    vision_evidence = ffn_structure_evidence(
-        vision_files, component=vision_component,
-        architecture=(bundle.component_architectures or {}).get(vision_component))
-    assert vision_evidence.status == "proven", "SigLIP vision MLP did not resolve"
+    from model_unfolder.evidence.vision import vision_tower_evidence
+    vision_evidence = vision_tower_evidence(cfg, bundle=bundle)
+    assert vision_evidence.status == "proven", "SigLIP vision tower did not resolve"
     assert vision_evidence.component == "vision_config"
     assert Path(vision_evidence.source_file).name == "modeling_siglip.py"
 
@@ -1172,13 +1169,20 @@ def test_bloom_dormant_tensor_parallel_multiply_is_not_an_ffn_gate():
     """BLOOM's disabled slow path multiplies slice indices/weights; that is not
     gate*up and must not turn its dense GELU MLP into a gated SiLU diagram."""
     from transformers import AutoConfig
-    from model_unfolder.evidence.patterns import decoder_ffn_activation_from_files
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.evidence.ffn_mechanism import (
+        decoder_ffn_mechanism_for_path,
+    )
 
     cfg = AutoConfig.for_model("bloom").to_dict()
-    bundle = resolve_source_files(cfg, source="local")
-    if not bundle.files:
+    context = ParseContext.build(cfg)
+    if not context.source_bundle.files:
         pytest.skip("transformers BLOOM source not installed")
-    assert decoder_ffn_activation_from_files(bundle.files) == "gelu"
+    exact = decoder_ffn_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert exact.status == "resolved", exact.failures
+    assert exact.value.activation == "gelu"
     ffn = mu.unfold(cfg).to_ir()["layers"][0]["ffn"]
     assert ffn["gated"] is False
     assert ffn["activation"] == "gelu"
