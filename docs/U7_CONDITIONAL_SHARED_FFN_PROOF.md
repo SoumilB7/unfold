@@ -267,3 +267,11 @@ control proves a whole-file PLE signal cannot be assigned to an unqualified
 Llama owner, while the existing MLA positive remains green.  The quarantine
 shrinks 22 to 21 and evidence-layer parse authorities 34 to 33 (legacy
 model-source sites 23 to 22), with all 28 preservation witnesses unchanged.
+Its committed-tree receipt is
+`/private/tmp/model-unfolder-verification/34ef32ea0e`: 2,619 tests collected,
+356 focused and 44 U2-authority tests passed, all 48 preservation tests passed,
+and the exhaustive partition passed 2,512 tests with 13 skips and 2 expected
+xfails.  Every detached lane retained identical source and blessed-artifact
+fingerprints.  The gate caught and locked an additional real debt reduction:
+deleting the warning wrapper removed `evidence/validate.py`'s last broad
+`except Exception`, so that module is no longer present in the ratchet baseline.
