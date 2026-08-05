@@ -24,6 +24,11 @@ from dataclasses import dataclass
 from .component_owner import OwnerOccurrenceId, require_resolved_component_root
 from .attention import decoder_gated_delta_geometry_for_path
 from .attention_child import attention_child_evidence
+from .config_guard import (
+    ExactConfigGuardResolver,
+    NormalizedConfigValue,
+    constructor_normalized_config_selector,
+)
 from .container_inventory import resolve_container_inventory
 from .construction_calls import resolve_import_reference
 from .decoder_block import decoder_block_candidates_for_config
@@ -114,11 +119,13 @@ class DecoderCellTopologyEvidence:
     block_occurrence: OwnerOccurrenceId
     norm_placement: str            # pre | post | double
     residual_topology: str         # sequential | parallel
+    parallel_input_norm_count: int | None
     mixers: tuple[CellBranchProof, ...]
     ffns: tuple[CellBranchProof, ...]
     final_return_span: SourceSpan
     norm_config_paths: tuple[tuple[str, ...], ...]
     residual_config_paths: tuple[tuple[str, ...], ...]
+    config_source_kinds: tuple[tuple[tuple[str, ...], str], ...]
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -128,6 +135,21 @@ class DecoderCellTopologyEvidence:
             raise ValueError("cell topology has a closed norm placement")
         if self.residual_topology not in {"sequential", "parallel"}:
             raise ValueError("cell topology has a closed residual topology")
+        if self.parallel_input_norm_count is not None and (
+                self.residual_topology != "parallel"
+                or self.norm_placement not in {"pre", "double"}
+                or self.parallel_input_norm_count not in {1, 2}):
+            raise ValueError(
+                "parallel input norm count requires one/two exact pre-norms")
+        if self.residual_topology == "parallel" \
+                and self.norm_placement in {"pre", "double"} \
+                and self.parallel_input_norm_count is None:
+            raise ValueError(
+                "a pre-normalized parallel cell retains its exact norm count")
+        if self.residual_topology != "parallel" \
+                and self.parallel_input_norm_count is not None:
+            raise ValueError(
+                "sequential topology cannot carry a parallel norm count")
         if not self.mixers or not self.ffns \
                 or any(not isinstance(item, CellBranchProof)
                        for item in (*self.mixers, *self.ffns)):
@@ -152,6 +174,14 @@ class DecoderCellTopologyEvidence:
         if len(states) != 1 or expected.get(next(iter(states))) \
                 != self.norm_placement:
             raise ValueError("placement derives from both exact branch boundaries")
+        exact_input_norm_count = len({
+            item.pre_norm_site for item in branches
+            if item.pre_norm_site is not None
+        })
+        if self.parallel_input_norm_count is not None \
+                and self.parallel_input_norm_count != exact_input_norm_count:
+            raise ValueError(
+                "parallel norm count derives from the exact branch norm sites")
         if not isinstance(self.final_return_span, SourceSpan):
             raise TypeError("cell topology retains the exact final return")
         for paths in (self.norm_config_paths, self.residual_config_paths):
@@ -163,6 +193,13 @@ class DecoderCellTopologyEvidence:
             if tuple(dict.fromkeys(paths)) != paths:
                 raise ValueError(
                     "cell topology config dependencies are occurrence-unique")
+        all_paths = tuple(dict.fromkeys((
+            *self.norm_config_paths, *self.residual_config_paths)))
+        if tuple(path for path, _kind in self.config_source_kinds) != all_paths \
+                or any(kind not in {"config_declared", "class_default"}
+                       for _path, kind in self.config_source_kinds):
+            raise ValueError(
+                "every cell config dependency carries one exact source kind")
         required = {
             self.final_return_span,
             *(span for item in branches for span in item.spans),
@@ -203,6 +240,11 @@ class _Value:
     span: SourceSpan | None = None
     label: str = ""
     actuals: tuple[_Actual, ...] = ()
+    # A helper body may be inlined at more than one exact call site.  Its AST
+    # spans are identical across those invocations, so span alone is not an
+    # occurrence identity.  Keep the outer call site on values CREATED inside
+    # the helper; caller-supplied values retain their original identity.
+    inline_origin: CallSiteId | None = None
 
 
 @dataclass(frozen=True)
@@ -219,6 +261,10 @@ class _EvaluatedCallable:
     values: tuple[_Value, ...]
     returns: tuple[tuple[_Value, SourceSpan, tuple], ...]
     role_calls: tuple[tuple[CallSiteId, _Value], ...]
+    guard_config_paths: tuple[tuple[str, ...], ...] = ()
+    guard_spans: tuple[SourceSpan, ...] = ()
+    guard_source_kinds: tuple[tuple[tuple[str, ...], str], ...] = ()
+    guard_complete: bool = True
 
 
 @dataclass(frozen=True)
@@ -247,6 +293,7 @@ class _BranchCases:
               ExactBranchInvocation], ...]
     source_exhaustive: bool
     config_paths: tuple[tuple[str, ...], ...] = ()
+    config_source_kinds: tuple[tuple[tuple[str, ...], str], ...] = ()
     spans: tuple[SourceSpan, ...] = ()
 
     def __post_init__(self) -> None:
@@ -256,6 +303,12 @@ class _BranchCases:
             raise ValueError("selected cell cases are an exact source-case subset")
         if self.config_paths and not self.spans:
             raise ValueError("config-selected cases retain source binding spans")
+        if tuple(path for path, _kind in self.config_source_kinds) \
+                != self.config_paths or any(
+                    kind not in {"config_declared", "class_default"}
+                    for _path, kind in self.config_source_kinds):
+            raise ValueError(
+                "selected cell cases retain every exact config source kind")
 
 
 def _branch_cases(
@@ -327,9 +380,32 @@ def _branch_cases(
             "incomplete_graph",
             "guarded cell alternatives lack an exact source-bound selector")
     selector_path, selector_field, assignment_span = path_info
-    selected_value = (
-        config_selector(selector_path)
-        if config_selector is not None else None)
+    selected_value = None
+    selected_dependencies = ()
+    selected_spans = ()
+    if config_selector is not None:
+        selected = config_selector(selector_path)
+        if isinstance(selected, NormalizedConfigValue):
+            selected_value = selected.value
+            selected_dependencies = selected.dependencies
+            selected_spans = selected.spans
+        elif isinstance(selected, tuple) and len(selected) == 3 \
+                and isinstance(selected[0], bool):
+            present, selected_value, selected_kind = selected
+            if not present:
+                selected_value = None
+            else:
+                selected_dependencies = ((selector_path, selected_kind),)
+        else:
+            selected_value = selected
+            if selected is not None:
+                selected_dependencies = (
+                    (selector_path, "config_declared"),)
+        if any(kind not in {"config_declared", "class_default"}
+               for _path, kind in selected_dependencies):
+            return ReaderFailure(
+                "incomplete_graph",
+                "the exact cell selector has untyped config provenance")
     selected_guards = _guards_for_selected_value(
         case_guards, selector_field, selected_value,
         source_exhaustive=source_exhaustive)
@@ -346,10 +422,14 @@ def _branch_cases(
             "incomplete_graph", "the exact cell selector chose no path")
     spans = tuple(dict.fromkeys((
         assignment_span,
+        *selected_spans,
         *(step.span for guard in selected_guards for step in guard),
     )))
+    dependency_paths = tuple(
+        path for path, _kind in selected_dependencies)
     return _BranchCases(
-        selected, tuple(cases), source_exhaustive, (selector_path,), spans)
+        selected, tuple(cases), source_exhaustive, dependency_paths,
+        tuple(selected_dependencies), spans)
 
 
 def _guard_selector_path(index, root, block_occurrence, guards):
@@ -477,6 +557,7 @@ def decoder_cell_topology_for_path(
     *,
     allow_root_stage: bool,
     config_selector=None,
+    guard_config_selector=None,
 ) -> ReaderResult[DecoderCellTopologyEvidence]:
     """Prove one unanimous exact cell topology for a selected config path."""
     if not isinstance(index, ProgramIndex):
@@ -500,7 +581,8 @@ def decoder_cell_topology_for_path(
         _cell_topology_at_block(
             index, candidates.value.component_root, occurrence,
             gated_delta=gated_delta_by_block.get(occurrence),
-            config_selector=config_selector)
+            config_selector=config_selector,
+            guard_config_selector=guard_config_selector)
         for occurrence in candidates.value.occurrences)
     ambiguous = tuple(item for item in results if item.status == "ambiguous")
     if ambiguous:
@@ -519,7 +601,8 @@ def decoder_cell_topology_for_path(
                 "not every exact block candidate proves a cell topology"),),
             provenance=candidates.provenance)
     signatures = {
-        (item.value.norm_placement, item.value.residual_topology)
+        (item.value.norm_placement, item.value.residual_topology,
+         item.value.parallel_input_norm_count)
         for item in results
     }
     if len(signatures) != 1:
@@ -544,12 +627,20 @@ def decoder_cell_topology_for_path(
 
 def _cell_topology_at_block(
         index, root, block_occurrence, *, gated_delta=None,
-        config_selector=None):
+        config_selector=None, guard_config_selector=None):
     root = require_resolved_component_root(
         root, caller="_cell_topology_at_block")
     census = exact_branch_census_at_block(index, root, block_occurrence)
     if census.status != "resolved":
         return census
+    block = root.graph.node_for(block_occurrence)
+    if block is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "the decoder block is absent from its owner graph"),))
+    base_selector = guard_config_selector or config_selector
+    effective_selector = constructor_normalized_config_selector(
+        index, block, base_selector,
+        config_prefix=tuple(getattr(root, "config_path", ()) or ()))
     mixers = [census.value.attention]
     if gated_delta is not None:
         addressed = tuple(
@@ -575,12 +666,13 @@ def _cell_topology_at_block(
 
     cases = _branch_cases(
         index, root, block_occurrence, tuple(mixers), census.value.ffn,
-        config_selector=config_selector)
+        config_selector=effective_selector)
     if isinstance(cases, ReaderFailure):
         return ReaderResult.failed(block_occurrence, (cases,))
 
     norms = exact_norm_sources_at_block(
-        index, root, block_occurrence, census.value.invocations)
+        index, root, block_occurrence, census.value.invocations,
+        config_selector=effective_selector)
     transparent_sites = frozenset(
         item.call_site for item in census.value.invocations.external_addressed
         if item.construction.external_reference.qualified_target
@@ -597,15 +689,26 @@ def _cell_topology_at_block(
             return ReaderResult.failed(block_occurrence, (expansion,))
         expansions[census.value.attention.node.call_site] = expansion
         norms = {**norms, **dict(expansion.norms)}
-    block = root.graph.node_for(block_occurrence)
-    if block is None:
-        return ReaderResult.failed(block_occurrence, (ReaderFailure(
-            "out_of_owner", "the decoder block is absent from its owner graph"),))
     evaluated_cases = {}
     for active_guard, mixer, ffn in cases.all_cases:
         result = _evaluate_topology_case(
             index, census.value.flow.callable_symbol, mixer, ffn, norms,
             transparent_sites, active_guard, expansions)
+        # Preserve source-only proofs as the first authority.  A concrete
+        # config path is consulted only when unresolved guarded assignments
+        # prevent those equations from closing (for example, unguarded branch
+        # calls with guarded inputs followed by ``branch += other``).
+        # This prevents an unrelated training/debug guard from weakening an
+        # otherwise source-invariant topology.
+        if isinstance(result, ReaderFailure) \
+                and config_selector is not None and not active_guard:
+            resolver = ExactConfigGuardResolver(
+                index, block, effective_selector,
+                config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+            result = _evaluate_topology_case(
+                index, census.value.flow.callable_symbol, mixer, ffn, norms,
+                transparent_sites, active_guard, expansions,
+                guard_resolver=resolver)
         evaluated_cases[(active_guard, mixer, ffn)] = result
     values = tuple(evaluated_cases[item] for item in cases.selected)
     if any(isinstance(item, ReaderFailure) for item in values):
@@ -627,26 +730,62 @@ def _cell_topology_at_block(
     all_values = tuple(evaluated_cases.values())
     all_source_proven = all(
         not isinstance(item, ReaderFailure) for item in all_values)
+    evaluated_config_paths = tuple(dict.fromkeys(
+        path for item in values for path in item[5]))
+    evaluated_guard_spans = tuple(dict.fromkeys(
+        span for item in values for span in item[6]))
+    evaluated_source_kinds = tuple(dict.fromkeys((
+        *cases.config_source_kinds,
+        *(source for item in values for source in item[7]),
+    )))
+    if any(len({kind for candidate, kind in evaluated_source_kinds
+                if candidate == path}) != 1
+           for path in {candidate for candidate, _kind
+                        in evaluated_source_kinds}):
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "conflict",
+            "one cell config dependency has rival evidence origins"),))
     norm_source_invariant = (
         cases.source_exhaustive and all_source_proven
-        and len({item[0] for item in all_values}) == 1)
+        and len({item[0] for item in all_values}) == 1
+        and not evaluated_config_paths)
     residual_source_invariant = (
         cases.source_exhaustive and all_source_proven
-        and len({item[1] for item in all_values}) == 1)
-    norm_config_paths = () if norm_source_invariant else cases.config_paths
+        and len({item[1] for item in all_values}) == 1
+        and not evaluated_config_paths)
+    all_config_paths = tuple(dict.fromkeys((
+        *cases.config_paths, *evaluated_config_paths)))
+    norm_config_paths = () if norm_source_invariant else all_config_paths
     residual_config_paths = (
-        () if residual_source_invariant else cases.config_paths)
+        () if residual_source_invariant else all_config_paths)
     spans = tuple(dict.fromkeys((
         *census.value.spans,
         *(span for item in mixer_proofs for span in item.spans),
         *(span for item in ffn_proofs for span in item.spans),
         final_span,
         *cases.spans,
+        *evaluated_guard_spans,
     )))
+    input_norm_sites = {
+        item.pre_norm_site for item in (*mixer_proofs, *ffn_proofs)
+        if item.pre_norm_site is not None
+    }
+    parallel_input_norm_count = (
+        len(input_norm_sites)
+        if topology == "parallel" and placement in {"pre", "double"}
+        else None)
+    if parallel_input_norm_count not in {None, 1, 2}:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "conflict",
+            "parallel branches use more than two distinct input norms"),))
     value = DecoderCellTopologyEvidence(
-        block_occurrence, placement, topology,
+        block_occurrence, placement, topology, parallel_input_norm_count,
         mixer_proofs, ffn_proofs, final_span,
-        norm_config_paths, residual_config_paths, spans)
+        norm_config_paths, residual_config_paths,
+        tuple((path, dict(evaluated_source_kinds).get(
+            path, "config_declared")) for path in dict.fromkeys((
+                *norm_config_paths, *residual_config_paths))),
+        spans)
     config_paths = tuple(dict.fromkeys((
         *norm_config_paths, *residual_config_paths)))
     provenance_kind = "code_and_config" if config_paths else "source"
@@ -724,7 +863,7 @@ def _functional_transparent_sites(index, callable_symbol):
 
 def _evaluate_topology_case(
         index, forward, mixer, ffn, norms, transparent_sites, active_guard,
-        expansions):
+        expansions, guard_resolver=None):
     role_by_site = {
         mixer.node.call_site: "mixer",
         ffn.node.call_site: "ffn",
@@ -737,7 +876,12 @@ def _evaluate_topology_case(
     }
     evaluated = _evaluate_callable(
         index, forward, role_by_site, branch_by_site,
-        active_guard=(active_guard or None), expansions=expansions)
+        active_guard=(active_guard or None), expansions=expansions,
+        guard_resolver=guard_resolver)
+    if not evaluated.guard_complete:
+        return ReaderFailure(
+            "incomplete_graph",
+            "the exact cell control path contains an unresolved guard")
     role_values = dict(evaluated.role_calls)
     if set(branch_by_site) - set(role_values):
         return ReaderFailure(
@@ -765,12 +909,15 @@ def _evaluate_topology_case(
         final_span)
     if isinstance(result, ReaderFailure):
         return result
-    return (*result, final_span)
+    return (
+        *result, final_span,
+        evaluated.guard_config_paths, evaluated.guard_spans,
+        evaluated.guard_source_kinds)
 
 
 def _evaluate_callable(index, callable_symbol, role_by_site, branch_by_site,
                        initial_env=None, depth=0, active_guard=None,
-                       expansions=None):
+                       expansions=None, guard_resolver=None):
     callable_record = index.callable_by_symbol(callable_symbol)
     if callable_record is None:
         return _EvaluatedCallable((), (), ())
@@ -786,16 +933,24 @@ def _evaluate_callable(index, callable_symbol, role_by_site, branch_by_site,
     values = []
     role_calls = {}
     returns = []
+    def event_is_enabled(item):
+        if active_guard is not None:
+            return _event_on_path(item.guard, active_guard)
+        if guard_resolver is None:
+            return True
+        enabled = guard_resolver.enabled(item.guard, callable_symbol)
+        return enabled is not False
+
     events = [
         (_position(item.span), 0, "binding", item)
         for item in index.bindings_in(callable_symbol)
         if item.span is not None
-        and _event_on_path(item.guard, active_guard)
+        and event_is_enabled(item)
     ] + [
         (_position(item.span), 1, "return", item)
         for item in index.return_observations_in(callable_symbol)
         if item.span is not None
-        and _event_on_path(item.guard, active_guard)
+        and event_is_enabled(item)
     ]
     events.sort(key=lambda item: (item[0], item[1]))
 
@@ -903,19 +1058,54 @@ def _evaluate_callable(index, callable_symbol, role_by_site, branch_by_site,
     for _pos, _priority, kind, item in events:
         if kind == "binding":
             value = evaluate(item.value)
+            if item.assignment_kind == "augassign":
+                prior = _augmented_assignment_prior(
+                    index, callable_symbol, item, env)
+                operator = _augmented_assignment_operator(
+                    index, callable_symbol, item)
+                if prior is None or operator != "+":
+                    value = _Value("unknown", span=item.span)
+                else:
+                    value = _Value(
+                        "add", (prior, value), span=item.span)
             values.append(value)
             # Once a single exact path is selected, its guarded statements are
             # unconditional within that path.  Keeping the original guard here
             # would manufacture a rival old value and launder it into `choice`.
             _bind(
                 env, item.targets, value,
-                () if active_guard is not None else item.guard)
+                () if active_guard is not None or guard_resolver is not None
+                else item.guard)
         else:
             value = evaluate(item.value)
             values.append(value)
             returns.append((value, item.span, item.guard))
     return _EvaluatedCallable(
-        tuple(values), tuple(returns), tuple(role_calls.items()))
+        tuple(values), tuple(returns), tuple(role_calls.items()),
+        tuple(dict.fromkeys(guard_resolver.paths)) if guard_resolver else (),
+        tuple(dict.fromkeys(guard_resolver.spans)) if guard_resolver else (),
+        tuple(dict.fromkeys(guard_resolver.source_kinds))
+        if guard_resolver else (),
+        guard_resolver.complete if guard_resolver else True)
+
+
+def _augmented_assignment_prior(index, callable_symbol, binding, env):
+    if len(binding.targets) != 1:
+        return None
+    target = binding.targets[0]
+    if target.kind != "name" or not target.name:
+        return None
+    return env.get(target.name)
+
+
+def _augmented_assignment_operator(index, callable_symbol, binding):
+    edges = tuple(
+        item for item in index.dataflow
+        if item.enclosing_callable == callable_symbol
+        and item.span == binding.span and item.op.startswith("aug:"))
+    if len(edges) != 1:
+        return None
+    return edges[0].op.removeprefix("aug:")
 
 
 def _receiver_is_data(expression, env):
@@ -972,11 +1162,41 @@ def _inline_module_function(index, caller_symbol, call, evaluate, depth):
     if bindings is None:
         return None
     env = {name: evaluate(expr) for name, expr in bindings}
+    transparent = _functional_transparent_sites(index, symbol)
     result = _evaluate_callable(
-        index, symbol, {}, {}, initial_env=env, depth=depth + 1)
+        index, symbol,
+        {site: "transparent" for site in transparent}, {},
+        initial_env=env, depth=depth + 1)
     if len(result.returns) != 1 or result.returns[0][2]:
         return None
-    return result.returns[0][0]
+    return _qualify_inline_value(
+        result.returns[0][0], CallSiteId.of(call), target.span)
+
+
+def _qualify_inline_value(value, origin, callable_span):
+    """Namespace helper-created values by their exact invocation.
+
+    Values injected as call arguments have spans outside ``callable_span`` and
+    therefore remain the caller's values.  Values whose syntax belongs to the
+    helper body receive the outer call-site occurrence.  Two calls to one
+    residual helper can then never be collapsed merely because their internal
+    ``+`` expression has the same source line.
+    """
+    children = tuple(
+        _qualify_inline_value(item, origin, callable_span)
+        for item in value.children)
+    actuals = tuple(
+        _Actual(
+            item.name,
+            _qualify_inline_value(item.value, origin, callable_span))
+        for item in value.actuals)
+    inline_origin = value.inline_origin
+    if inline_origin is None and value.span is not None \
+            and _span_within(value.span, callable_span):
+        inline_origin = origin
+    return _Value(
+        value.kind, children, value.call_site, value.span, value.label,
+        actuals, inline_origin)
 
 
 def _replace_call_site(value, old_site, new_site):
@@ -988,7 +1208,8 @@ def _replace_call_site(value, old_site, new_site):
         for item in value.actuals)
     site = new_site if value.call_site == old_site else value.call_site
     return _Value(
-        value.kind, children, site, value.span, value.label, actuals)
+        value.kind, children, site, value.span, value.label, actuals,
+        value.inline_origin)
 
 
 def _bind(env, targets, value, guard):
@@ -1081,7 +1302,10 @@ def _block_merges(values, final_value, branch_sites):
         for item in _walk_values(value):
             if item.kind != "add" or item.span is None:
                 continue
-            key = _span_key(item.span)
+            # An inlined helper span is source identity, not invocation
+            # identity.  Pair it with the exact outer call occurrence so two
+            # calls to the same helper remain two residual equations.
+            key = (_span_key(item.span), item.inline_origin)
             if key in seen:
                 continue
             seen.add(key)
@@ -1163,10 +1387,13 @@ def _classify_equations(attention, ffn, role_values, norms, merges,
         return ReaderFailure(
             "incomplete_graph", "branch first-input expressions are unresolved")
 
-    parallel = tuple(
+    parallel_shape = tuple(
         item for item in merges
         if item.returned and item.branch_sites == frozenset((a_site, f_site))
         and _has_residual_term(item.value, {a_site, f_site}))
+    parallel = tuple(
+        item for item in parallel_shape
+        if _base_input(a_input, norms) == _base_input(f_input, norms))
     sequential = []
     for a_merge in merges:
         if a_merge.branch_sites != frozenset((a_site,)):
@@ -1189,13 +1416,13 @@ def _classify_equations(attention, ffn, role_values, norms, merges,
     if len(parallel) == 1:
         topology = "parallel"
         a_merge = f_merge = parallel[0]
-        if _base_input(a_input, norms) != _base_input(f_input, norms):
-            return ReaderFailure(
-                "incomplete_graph",
-                "parallel branches do not prove one shared residual input")
     elif len(sequential) == 1:
         topology = "sequential"
         a_merge, f_merge = sequential[0]
+    elif parallel_shape:
+        return ReaderFailure(
+            "incomplete_graph",
+            "parallel branches do not prove one shared residual input")
     else:
         return ReaderFailure(
             "incomplete_graph",
@@ -1257,6 +1484,12 @@ def _post_norm_state(value, branch_site, norms):
         return True
     if value.kind == "transparent" and len(value.children) == 1:
         return _post_norm_state(value.children[0], branch_site, norms)
+    if value.kind == "add":
+        matched = tuple(
+            child for child in value.children
+            if _contains_site(child, branch_site))
+        return (_post_norm_state(matched[0], branch_site, norms)
+                if len(matched) == 1 else None)
     if value.kind in {"mixer", "ffn"} \
             and value.call_site == branch_site:
         return False
@@ -1308,7 +1541,7 @@ def _residual_contains_merge(value, branch_site, prior_site, prior_merge):
         and (_contains_value(term, prior_merge.value)
              or (prior_merge.kind == "child_integrated_add"
                  and _contains_site(term, prior_site)))
-        for term in _flatten_add(value))
+        for term in _residual_terms(value))
 
 
 def _post_norm_site(value, branch_site, norms):
@@ -1336,11 +1569,39 @@ def _base_input(value, norms):
 
 
 def _flatten_add(value):
+    # Assignment references are transparent to the residual equation.  This
+    # matters for augmented assignments (``branch += other``), whose exact
+    # addition is necessarily reached through the later variable reference.
+    # Unwrap only the single-source reference chain; choices and opaque
+    # transforms remain boundaries and therefore cannot be laundered into an
+    # additive proof.
+    value = _unwrap_reference(value)
     if value.kind != "add":
         return (value,)
     result = []
     for child in value.children:
         result.extend(_flatten_add(child))
+    return tuple(result)
+
+
+def _residual_terms(value):
+    """Return top-level residual terms without erasing assignment stages.
+
+    A reference to a prior residual addition is one term of the later
+    equation, not merely another flat summand.  Keeping that reference intact
+    is what distinguishes sequential ``(x + attention) + ffn`` from parallel
+    ``x + attention + ffn`` even though their fully flattened algebra is the
+    same.
+    """
+    value = _unwrap_reference(value)
+    if value.kind != "add":
+        return (value,)
+    result = []
+    for child in value.children:
+        if child.kind == "add":
+            result.extend(_residual_terms(child))
+        else:
+            result.append(child)
     return tuple(result)
 
 
@@ -1373,6 +1634,16 @@ def _contains_value(value, wanted):
 
 def _position(span):
     return (span.line, span.col, span.end_line, span.end_col)
+
+
+def _span_within(inner, outer):
+    if inner is None or outer is None or inner.source != outer.source:
+        return False
+    return (
+        (inner.line, inner.col) >= (outer.line, outer.col)
+        and (inner.end_line, inner.end_col)
+        <= (outer.end_line, outer.end_col)
+    )
 
 
 def _span_key(span):

@@ -7,6 +7,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import unfold
 from model_unfolder.adapters.transformer.parser import parse
+from model_unfolder.evidence.context import ParseContext
+from model_unfolder.parser import config_to_ir
 
 KIMI_K2_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -824,12 +826,14 @@ def test_moe_routing_detail():
     d = unfold(cfg)
     ffn = next(l["ffn"] for l in d.to_ir()["layers"] if l["ffn"]["kind"] == "moe")
     assert ffn["routing"] == {
-        "scoring_func": "sigmoid", "topk_method": "noaux_tc",
-        "n_group": 8, "topk_group": 4, "norm_topk_prob": True,
+        "selection_kind": "topk", "scoring_func": "sigmoid",
+        "score_source_kind": "affine", "selection_count": 8,
+        "n_group": 8, "topk_group": 4, "grouped": True,
+        "group_score_kind": "top2_sum", "normalization_kind": "sum",
         "routed_scaling_factor": 2.5,
         # code-derived resolved facts: the deepseek_v3 source enacts the
-        # aux-loss-free e_score_correction_bias (agrees with the declared
-        # noaux_tc string) and scores (sigmoid) BEFORE the top-k, so both
+            # selection-only correction bias and scores (sigmoid) BEFORE the
+            # top-k, so both
         # resolved keys the render reads are present.
         "bias_correction": True,
         "scoring_before_topk": True,
@@ -887,7 +891,10 @@ def test_moe_gate_view_is_source_bound_and_shared_expert_drawn():
     # every count/flag is a chip on a card, never on a block. The gate's scoring
     # fn, the selection counts, the scale value all live in cards now.
     gate = render_sub_block_detail(ir, info, "m", router)
-    for token in ("Gate", "Top-k", "renormalize", "learned bias"):
+    # The route proves a stored selection-only adjustment.  It does not prove
+    # whether that state is a trainable parameter, a buffer, or maintained by
+    # an external balancing update, so the view must not call it "learned".
+    for token in ("Gate", "Top-k", "renormalize", "stored bias"):
         assert token in gate, f"router view missing label {token!r}"
     # The score transform is a REAL op node with a bare op-name label — the code
     # scores (sigmoid) BEFORE selection, so it's drawn between Gate and Top-k so
@@ -901,9 +908,15 @@ def test_moe_gate_view_is_source_bound_and_shared_expert_drawn():
         assert leaked not in gate, f"label text {leaked!r} should be in a card, not the diagram"
 
     rcards = {c["id"]: c for c in router["children"]}
-    # Gate card carries the Linear + scoring detail and count chips.
-    assert "sigmoid" in rcards["g_gate"]["description"] and "Linear" in rcards["g_gate"]["description"]
-    assert any("experts" in f for f in rcards["g_gate"]["facts"])
+    # The proof boundary certifies an affine score source; it does not promote
+    # that protocol to a framework-specific ``Linear`` class name.
+    assert "sigmoid" in rcards["g_gate"]["description"] \
+        and "affine" in rcards["g_gate"]["description"]
+    assert "affine producer" in rcards["g_gate"]["facts"]
+    # The score-source proof establishes the operation kind, not the affine
+    # constructor's input/output dimensions.  Those numbers must not leak from
+    # unrelated model-level config into this exact child card.
+    assert not any("\u2192" in f for f in rcards["g_gate"]["facts"])
     # routed scale is a × glyph, but its CONSTANT OPERAND is shown beside the glyph
     # (answers "× what?") — a labelled-constant connector, not a bare ×.
     assert ">2.5</text>" in gate, "the × must show its constant operand (2.5) on the diagram"
@@ -996,13 +1009,20 @@ def test_router_topk_drill_adapts_to_source_bound_policy_not_identity():
     assert [c["id"] for c in gt["children"]] == ["ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts", "ts_gather"]
     assert "top-2" in find(gt["children"], "ts_group")["description"]
 
-    # noaux bias but NOT grouped (edge): gather WITHOUT group steps.
+    # Omitting fields from the input dict does not invent a non-grouped edge:
+    # the installed config class supplies the runtime defaults (8 groups / 4
+    # kept), and the source-bound route consumes those weaker class-default
+    # operands.  It therefore remains the same grouped enacted mechanism.
     gt, svg = topk_block(dict(
         base, model_type="deepseek_v3",
         architectures=["DeepseekV3ForCausalLM"], n_routed_experts=64,
         first_k_dense_replace=0,
         num_experts_per_tok=8, topk_method="noaux_tc", scoring_func="sigmoid"))
-    assert [c["id"] for c in gt["children"]] == ["ts_topk_experts", "ts_gather"]
+    assert [c["id"] for c in gt["children"]] == [
+        "ts_group", "ts_topk_groups", "ts_mask", "ts_topk_experts",
+        "ts_gather",
+    ]
+    assert "top-2" in find(gt["children"], "ts_group")["description"]
 
     # No orphan cards: every drilled child card has a node (its title) in the view.
     for cfg in (dict(
@@ -1452,7 +1472,7 @@ def test_non_gated_dense_ffn_has_plain_mlp_view():
     assert 'data-card-id="multiply"' not in html
 
 
-def test_falcon_parallel_attn_does_not_bypass_exact_guard_binding():
+def test_falcon_parallel_attn_uses_exact_guard_and_augassign_proof():
     d = unfold(FALCON_PARALLEL_CONFIG)
     ir = d.to_ir()
     blocks = ir["layers"][0]["blocks"]
@@ -1462,16 +1482,34 @@ def test_falcon_parallel_attn_does_not_bypass_exact_guard_binding():
     # The typed layer field is the one authority.  The retired root-level
     # ``parallel_residual`` duplicate must not return.
     assert "parallel_residual" not in ir["extras"]
-    # Falcon's forward distributes this decision across nested boolean guards
-    # over ``self.config`` plus an augmented assignment.  The former whole-file
-    # classifier happened to return the right answer for this fixture but could
-    # not prove the exact path.  Until the exact control-path evaluator closes
-    # that source shape, keep only independently proved MQA detail and make the
-    # cell shell unknown; the config spelling alone cannot author parallelism.
-    assert ir["layers"][0]["residual_topology"] == "unknown"
-    assert ir["layers"][0]["parallel_norm_count"] is None
-    assert block_by_id["wiring_unresolved"]["resolved"] is False
-    assert {"rms1", "add1", "add2"}.isdisjoint(block_by_id)
+    # The exact owner forward binds both nested boolean guards to their exact
+    # config occurrences and interprets ``output += mlp_output`` as addition.
+    # The installed class supplies the absent new-architecture flag as a weak
+    # class-default premise; the checkpoint itself supplies parallel_attn.
+    assert ir["layers"][0]["norm_placement"] == "pre"
+    assert ir["layers"][0]["residual_topology"] == "parallel"
+    assert ir["layers"][0]["parallel_norm_count"] == 1
+    assert "wiring_unresolved" not in block_by_id
+    assert {"rms1", "attn", "add1", "ffn"} == set(block_by_id)
+    provenance = ir["extras"]["fact_provenance"]
+    for key in (
+            "decoder.layer.norm_placement",
+            "decoder.layer.residual_topology",
+            "decoder.layer.parallel_norm_count"):
+        assert provenance[key]["status"] == "class_default"
+        assert provenance[key]["source"] == "decoder_cell_topology_for_path"
+
+    # The checkpoint supplied only ``parallel_attn``.  The installed Falcon
+    # config class supplied ``new_decoder_architecture``; its weaker status is
+    # retained above, but that absent checkpoint spelling must not be forged
+    # into the typed config-path channel.
+    context = ParseContext.build(FALCON_PARALLEL_CONFIG, source="local")
+    config_to_ir(FALCON_PARALLEL_CONFIG, parse_context=context)
+    for key in (
+            "decoder.layer.norm_placement",
+            "decoder.layer.residual_topology",
+            "decoder.layer.parallel_norm_count"):
+        assert context.facts.typed[key].config_paths == ("parallel_attn",)
 
     html = d.to_html(standalone=True)
     assert "Multi-query scaled dot-product attention" in html

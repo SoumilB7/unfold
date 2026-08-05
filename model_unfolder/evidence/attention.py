@@ -4305,6 +4305,16 @@ def _exact_config_path_for_expression(
     local = _local_attribute_chain(expression)
     if local is not None:
         local_name, trailing = local
+        direct_bindings = tuple(
+            item for item in node.config_bindings
+            if item.parameter == local_name
+            and item.resolved_prefix is not None)
+        if len(direct_bindings) == 1:
+            return (
+                *config_prefix,
+                *direct_bindings[0].resolved_prefix,
+                *trailing,
+            )
         callable_symbol = _enclosing_callable_for_expression(
             index, node, expression)
         if callable_symbol is not None and local_name not in seen:

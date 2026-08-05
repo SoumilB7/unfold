@@ -8,11 +8,11 @@ This is the current authority/deletion worklist. The older
 
 ## Summary
 
-- quarantined semantic readers: **21**
-- exact evidence-layer `ast.parse` sites: **33**
-- legacy model-source parse sites: **22**
-- frozen reader/helper implementation digest: `e69194ab94e1ca8ec05c6b25add33de4622ef9ebb45fcf7a4a9c2bfc0e20dcae`
-- frozen legacy-parse caller digest: `717825d6bd031930c20d571de6befc65faea5d7a3a00a5fa17f566b0d48140ab`
+- quarantined semantic readers: **20**
+- exact evidence-layer `ast.parse` sites: **32**
+- legacy model-source parse sites: **21**
+- frozen reader/helper implementation digest: `fa1e6452c14b6bd31b060f3044058facf9d0f12a7f5b74c69b9289b451a0fbb3`
+- frozen legacy-parse caller digest: `fb858b985a61052d95d7c852dd3a6d4f8b6d3ed58421e4141e59dce49e0a1480`
 
 ## Authority classes
 
@@ -28,7 +28,6 @@ This is the current authority/deletion worklist. The older
 
 | Future unit | Definition | Exact production callers | Reason | Deletion condition |
 |---|---|---|---|---|
-| U7 | `model_unfolder/evidence/patterns.py::decoder_router_evidence_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_router` | whole-file router/mechanism interpretation | U7 registers the exact owner-qualified fact and deletes decoder_router_evidence_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::attention_causality_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_attention_causality` | whole-file mask/causality interpretation | U8 registers the exact owner-qualified fact and deletes attention_causality_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::decoder_moe_schedule_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_moe_schedule` | whole-file per-layer MoE selector interpretation | U8 registers the exact owner-qualified fact and deletes decoder_moe_schedule_from_files |
 | U8 | `model_unfolder/evidence/patterns.py::decoder_rope_dim_from_files` | `model_unfolder/adapters/transformer/parser.py:_code_rope_dim` | whole-file positional dimension interpretation | U8 registers the exact owner-qualified fact and deletes decoder_rope_dim_from_files |
@@ -68,7 +67,6 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U8 | shared transformer/diffusion semantic parser |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_causality_from_files` | U8 | whole-file causality interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | U10 | whole-file diffusion score-scaling interpreter |
-| `legacy_model_source` | `model_unfolder/evidence/patterns.py::decoder_router_evidence_from_files` | U7 | whole-file router interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | U10 | diffusion positional interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_gate_via_norm_from_files` | U10 | diffusion modulation interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_qk_norm_from_files` | U10 | diffusion normalization interpreter |

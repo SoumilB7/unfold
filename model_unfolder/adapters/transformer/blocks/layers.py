@@ -199,7 +199,7 @@ def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block
 
 def parallel_decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "unknown",
-    norm_count: int | None = None,
+    norm_placement: str = "unknown", norm_count: int | None = None,
 ) -> list[Block]:
     """Blocks for parallel residual topology (GPT-NeoX / GPT-J / Falcon).
 
@@ -210,6 +210,12 @@ def parallel_decoder_layer_blocks(
     ``post_attention_layernorm``).  Their outputs are summed into one residual
     add with the direct bypass from the layer input.
     """
+    if norm_placement not in {"pre", "unknown"}:
+        # The current parallel presentation has a precise pre-norm contract.
+        # Preserve a proven post/double topology in the typed layer fields, but
+        # do not redraw it as the pre-norm layout until that projection exists.
+        return _unknown_placement_layer_blocks(
+            attention, ffn, hidden_size, norm_kind)
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     ffn_block = _ffn_block(ffn, hidden_size)

@@ -15,20 +15,18 @@ from dataclasses import dataclass
 
 from .attention_child import (
     attention_child_evidence,
-    attention_compute_proof_for_symbol,
+    attention_compute_positive_proof_for_symbol,
 )
 from .component_owner import OwnerOccurrenceId, require_resolved_component_root
+from .config_guard import ExactConfigGuardResolver
 from .construction_calls import (
-    ConstructionOccurrenceId,
     resolve_construction_call,
 )
 from .container_inventory import resolve_container_inventory
-from .decoder_block import decoder_block_candidates_for_config
 from .dispatch_selection import resolve_dispatch_candidates
 from .execution_flow import (
     AddressedInvocation,
     ExecutionFlowResolution,
-    HappensBeforeEdge,
     InvocationNodeId,
     InvocationResolution,
     resolve_addressed_invocations,
@@ -39,13 +37,13 @@ from .ffn_mechanism import (
     EquivalentFFNMechanism,
     ffn_mechanism_at_block,
 )
-from .models import SourceBundle
-from .primitive_semantics import classify_primitive_call
+from .primitive_semantics import (
+    classify_primitive_call,
+    primitive_kind_for_site,
+)
 from .program_index import (
     CallObservation,
     CallSiteId,
-    ExprNode,
-    ProgramIndex,
     SourceSpan,
     SymbolId,
 )
@@ -111,89 +109,12 @@ class ExactBranchInvocation:
 
 
 @dataclass(frozen=True)
-class BranchNormInput:
-    """One exact norm occurrence feeding one exact child input."""
-
-    branch: ExactBranchInvocation
-    input_expression: ExprNode
-    norm_occurrence: ConstructionOccurrenceId
-    edge: HappensBeforeEdge
-    primitive: str
-    spans: tuple[SourceSpan, ...]
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.branch, ExactBranchInvocation):
-            raise TypeError("a branch input carries an exact branch invocation")
-        if not isinstance(self.input_expression, ExprNode) \
-                or self.input_expression.span is None:
-            raise TypeError("a branch input carries an exact input expression")
-        if not isinstance(self.norm_occurrence, ConstructionOccurrenceId):
-            raise TypeError("a branch input carries an exact norm occurrence")
-        if not isinstance(self.edge, HappensBeforeEdge) \
-                or self.edge.target != self.branch.node \
-                or self.edge.proof_kind != "versioned_def_use":
-            raise ValueError("the norm has an exact local def-use edge to the branch")
-        if self.edge.supporting_spans[-1] != self.input_expression.span:
-            raise ValueError("the edge terminates at the exact branch input expression")
-        if self.primitive not in _NORMS:
-            raise ValueError("the input primitive is a proven normalization")
-        required = {
-            *self.branch.spans,
-            self.input_expression.span,
-            self.norm_occurrence.site.span,
-            *self.edge.supporting_spans,
-        }
-        if None in required or not required <= set(self.spans):
-            raise ValueError("branch-normalization provenance is closed")
-        if any(not isinstance(span, SourceSpan) for span in self.spans):
-            raise TypeError("branch-normalization spans are exact SourceSpan values")
-
-
-@dataclass(frozen=True)
-class ParallelNormEvidence:
-    """Exact attention/FFN normalization occurrence comparison."""
-
-    block_occurrence: OwnerOccurrenceId
-    attention: BranchNormInput
-    ffn_inputs: tuple[BranchNormInput, ...]
-    norm_count: int
-    spans: tuple[SourceSpan, ...]
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
-            raise TypeError("parallel-norm evidence names its exact decoder block")
-        if not isinstance(self.attention, BranchNormInput) \
-                or not self.ffn_inputs \
-                or any(not isinstance(item, BranchNormInput)
-                       for item in self.ffn_inputs):
-            raise TypeError("parallel-norm evidence carries attention and FFN inputs")
-        inputs = (self.attention, *self.ffn_inputs)
-        if any(item.branch.caller_occurrence != self.block_occurrence
-               or item.norm_occurrence.parent != self.block_occurrence
-               for item in inputs):
-            raise ValueError("all branch inputs and norms belong to the exact block")
-        if len({item.branch.node.call_site for item in self.ffn_inputs}) \
-                != len(self.ffn_inputs):
-            raise ValueError("FFN branch input sites are unique")
-        expected = len({item.norm_occurrence for item in inputs})
-        if self.norm_count != expected or self.norm_count not in {1, 2}:
-            raise ValueError("norm_count is the exact one/two-occurrence union")
-        required = {
-            span for item in inputs for span in item.spans
-        }
-        if not required or not required <= set(self.spans):
-            raise ValueError("parallel-norm evidence retains every branch proof")
-        if any(not isinstance(span, SourceSpan) for span in self.spans):
-            raise TypeError("parallel-norm spans are exact SourceSpan values")
-
-
-@dataclass(frozen=True)
 class ExactBranchCensus:
     """The exact attention and ordinary/routed FFN calls in one decoder block.
 
     This is deliberately mechanism/address evidence only.  It does not infer
-    residual order or norm placement.  Cell-topology and parallel-norm readers
-    consume the same census so those two facts cannot select different calls.
+    residual order or norm placement.  The cell-topology reader consumes this
+    one census for every norm, residual, and parallel-input-count fact.
     """
 
     block_occurrence: OwnerOccurrenceId
@@ -246,122 +167,6 @@ class ExactBranchCensus:
             raise ValueError("the census retains every branch proof span")
         if any(not isinstance(span, SourceSpan) for span in self.spans):
             raise TypeError("branch-census spans are exact SourceSpan values")
-
-
-def decoder_parallel_norm_count_for_path(
-    index: ProgramIndex,
-    bundle: SourceBundle,
-    config_path: tuple[str, ...],
-    *,
-    allow_root_stage: bool,
-) -> ReaderResult[ParallelNormEvidence]:
-    """Compare exact branch-input norms for every selected block candidate."""
-    if not isinstance(index, ProgramIndex):
-        raise TypeError(
-            "decoder_parallel_norm_count_for_path requires a ProgramIndex")
-    if not isinstance(bundle, SourceBundle):
-        raise TypeError(
-            "decoder_parallel_norm_count_for_path requires a SourceBundle")
-    if not isinstance(config_path, tuple) or any(
-            not isinstance(part, str) or not part for part in config_path):
-        raise TypeError("config_path is tuple[str, ...]")
-
-    candidates = decoder_block_candidates_for_config(
-        index, bundle, config_path, allow_root_stage=allow_root_stage)
-    if candidates.status != "resolved":
-        return candidates
-    results = tuple(
-        _parallel_norm_at_block(
-            index, candidates.value.component_root, occurrence)
-        for occurrence in candidates.value.occurrences)
-    ambiguous = tuple(item for item in results if item.status == "ambiguous")
-    if ambiguous:
-        return ReaderResult.ambiguous(
-            candidates.value.stage_occurrence,
-            Ambiguity(sites=tuple(dict.fromkeys(
-                span for item in ambiguous
-                for span in item.ambiguity.sites))),
-            provenance=candidates.provenance)
-    if any(item.status != "resolved" for item in results):
-        failures = tuple(
-            failure for item in results for failure in item.failures)
-        return ReaderResult.failed(
-            candidates.value.stage_occurrence,
-            failures or (ReaderFailure(
-                "incomplete_graph",
-                "not every exact block candidate proves branch-input norms"),),
-            provenance=candidates.provenance)
-    counts = {item.value.norm_count for item in results}
-    if len(counts) != 1:
-        return ReaderResult.ambiguous(
-            candidates.value.stage_occurrence,
-            Ambiguity(sites=tuple(dict.fromkeys(
-                item.value.spans[0] for item in results))),
-            provenance=candidates.provenance)
-    value = results[0].value
-    return ReaderResult.resolved(
-        candidates.value.stage_occurrence, value,
-        provenance=(
-            *candidates.provenance,
-            *(origin for item in results for origin in item.provenance),
-            ReaderProvenance(
-                "derived",
-                detail=(
-                    "every exact repeated-child candidate proves the same "
-                    "one/two normalization-occurrence count")),
-        ))
-
-
-def _parallel_norm_at_block(index, root, block_occurrence):
-    root = require_resolved_component_root(
-        root, caller="_parallel_norm_at_block")
-    block = root.graph.node_for(block_occurrence)
-    if block is None or index.class_by_symbol(block.symbol) is None:
-        return ReaderResult.failed(block_occurrence, (ReaderFailure(
-            "out_of_owner",
-            "the exact decoder block does not round-trip through the index"),))
-
-    census = exact_branch_census_at_block(
-        index, root, block_occurrence)
-    if census.status != "resolved":
-        return census
-    ffn_branches = census.value.ffn
-    invocations = census.value.invocations
-    flow = census.value.flow
-    attention = census.value.attention
-
-    norms = exact_norm_sources_at_block(
-        index, root, block_occurrence, invocations)
-    attention_input = _branch_norm_input(
-        index, attention, norms, flow)
-    if isinstance(attention_input, ReaderResult):
-        return attention_input
-    ffn_inputs = []
-    for branch in ffn_branches:
-        item = _branch_norm_input(
-            index, branch, norms, flow)
-        if isinstance(item, ReaderResult):
-            return item
-        ffn_inputs.append(item)
-
-    inputs = (attention_input, *ffn_inputs)
-    count = len({item.norm_occurrence for item in inputs})
-    if count not in {1, 2}:
-        return ReaderResult.ambiguous(
-            block_occurrence,
-            Ambiguity(sites=tuple(dict.fromkeys(
-                item.norm_occurrence.site.span for item in inputs))))
-    spans = tuple(dict.fromkeys(
-        span for item in inputs for span in item.spans))
-    value = ParallelNormEvidence(
-        block_occurrence, attention_input, tuple(ffn_inputs), count, spans)
-    return ReaderResult.resolved(
-        block_occurrence, value,
-        provenance=(ReaderProvenance(
-            "source", spans=spans,
-            detail=(
-                "exact normalization construction occurrences feed the exact "
-                "attention and FFN input formals")),))
 
 
 def exact_branch_census_at_block(index, root, block_occurrence):
@@ -525,7 +330,7 @@ def _attention_branch(index, root, block_occurrence, invocations, flow):
         if census.status != "resolved":
             continue
         proofs = tuple(
-            attention_compute_proof_for_symbol(
+            attention_compute_positive_proof_for_symbol(
                 index, candidate.candidate.symbol)
             for candidate in census.value.candidates)
         if not proofs or any(proof is None for proof in proofs):
@@ -568,7 +373,8 @@ def _attention_branch(index, root, block_occurrence, invocations, flow):
         provenance=direct.provenance)
 
 
-def exact_norm_sources_at_block(index, root, owner, invocations):
+def exact_norm_sources_at_block(
+        index, root, owner, invocations, *, config_selector=None):
     """Classify every exactly-addressed block-local norm invocation.
 
     The mapping key is the authoritative call site; the value retains the exact
@@ -594,96 +400,52 @@ def exact_norm_sources_at_block(index, root, owner, invocations):
                       for span in origin.spans),
                 ) if isinstance(span, SourceSpan))),
         )
+    if config_selector is None:
+        return sources
+    node = root.graph.node_for(owner)
+    if node is None:
+        return sources
+    resolver = ExactConfigGuardResolver(
+        index, node, config_selector,
+        config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+    for invocation in invocations.unresolved:
+        callee = invocation.call.callee
+        if callee.kind != "attribute" or len(callee.children) != 1 \
+                or callee.children[0].kind != "name" \
+                or callee.children[0].name != "self":
+            continue
+        construction = resolve_construction_call(
+            index, root, owner, invocation.call)
+        if construction.status != "ambiguous":
+            continue
+        selected = tuple(
+            alternative for alternative in construction.alternatives
+            if resolver.enabled(
+                alternative.site.guard,
+                alternative.site.enclosing_callable) is True)
+        if len(selected) != 1:
+            continue
+        primitive = primitive_kind_for_site(index, selected[0].site)
+        if primitive is None or primitive[0] not in _NORMS:
+            continue
+        alternative = selected[0]
+        sources[invocation.call_site] = (
+            alternative.occurrence,
+            primitive[0],
+            tuple(dict.fromkeys(
+                span for span in (
+                    invocation.call.span,
+                    alternative.site.span,
+                    *resolver.spans,
+                    *primitive[1],
+                ) if isinstance(span, SourceSpan))),
+        )
     return sources
-
-
-def _branch_norm_input(index, branch, norms, flow):
-    if not isinstance(branch, ExactBranchInvocation):
-        raise TypeError("_branch_norm_input requires an ExactBranchInvocation")
-    input_expression = _first_formal_actual(
-        index, branch.candidate_symbols, branch.call)
-    if input_expression is None or input_expression.span is None:
-        return ReaderResult.failed(flow.owner_occurrence, (ReaderFailure(
-            "incomplete_graph",
-            "the branch's first non-receiver positional input is unresolved"),))
-
-    target = branch.node
-    edges = tuple(
-        edge for edge in (*flow.proven_edges, *flow.conditional_edges)
-        if edge.target == target
-        and edge.source.call_site in norms
-        and edge.supporting_spans[-1] == input_expression.span)
-    occurrences = {
-        norms[edge.source.call_site][0] for edge in edges
-    }
-    if len(occurrences) > 1:
-        return ReaderResult.ambiguous(
-            flow.owner_occurrence,
-            Ambiguity(sites=tuple(sorted(
-                (item.site.span for item in occurrences),
-                key=_span_key))))
-    if len(occurrences) != 1 or len(edges) != 1:
-        return ReaderResult.failed(flow.owner_occurrence, (ReaderFailure(
-            "incomplete_graph",
-            "one exact normalization occurrence does not uniquely feed "
-            "the branch input"),))
-    edge = edges[0]
-    occurrence, primitive, norm_spans = norms[edge.source.call_site]
-    spans = tuple(dict.fromkeys(
-        span for span in (
-            *branch.spans,
-            input_expression.span,
-            *norm_spans,
-            *edge.supporting_spans,
-        ) if isinstance(span, SourceSpan)))
-    return BranchNormInput(
-        branch, input_expression, occurrence, edge, primitive, spans)
-
-
-def _first_formal_actual(
-    index: ProgramIndex,
-    candidate_symbols: tuple[SymbolId, ...],
-    call: CallObservation,
-) -> ExprNode | None:
-    formals = []
-    for child_symbol in candidate_symbols:
-        forward = index.callable_by_symbol(SymbolId(
-            child_symbol.source, f"{child_symbol.qualified_name}.forward"))
-        if forward is None:
-            return None
-        positional = tuple(
-            param for param in forward.params if param.kind == "positional")
-        if forward.owner is not None:
-            positional = positional[1:]
-        if not positional:
-            return None
-        formals.append(positional[0].name)
-    if len(set(formals)) != 1:
-        return None
-    if call.args:
-        return call.args[0]
-    matches = tuple(
-        value for key, value in call.kwargs if key == formals[0])
-    return matches[0] if len(matches) == 1 else None
-
-
-def _span_key(span):
-    return (
-        span.source.component_key or "",
-        span.source.canonical_path,
-        span.line,
-        span.col,
-        span.end_line or span.line,
-        span.end_col or span.col,
-    )
 
 
 __all__ = [
     "ExactBranchInvocation",
     "ExactBranchCensus",
-    "BranchNormInput",
-    "ParallelNormEvidence",
     "exact_branch_census_at_block",
     "exact_norm_sources_at_block",
-    "decoder_parallel_norm_count_for_path",
 ]

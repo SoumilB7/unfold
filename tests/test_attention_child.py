@@ -8,7 +8,10 @@ import textwrap
 import pytest
 
 from model_unfolder.evidence import program_index as pi
-from model_unfolder.evidence.attention_child import attention_child_evidence
+from model_unfolder.evidence.attention_child import (
+    attention_child_evidence,
+    attention_compute_positive_proof_for_symbol,
+)
 from model_unfolder.evidence.component_owner import (
     resolve_component_root,
     resolve_declared_model_stage,
@@ -238,6 +241,136 @@ def test_guarded_compute_is_not_promoted_to_unconditional_attention(tmp_path):
     result = attention_child_evidence(
         index, root, repeated.child_occurrence)
     assert result.status == "failed"
+
+
+def test_guarded_partial_attention_path_is_not_candidate_equivalence(tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                weights = F.softmax(torch.matmul(q, k), dim=-1)
+                return torch.matmul(weights, v)
+            return q""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    assert attention_compute_positive_proof_for_symbol(index, symbol) is None
+
+
+def test_exhaustive_attention_branches_are_positive_candidate_evidence(
+        tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                return F.scaled_dot_product_attention(q, k, v)
+            else:
+                scores = torch.matmul(q, k)
+                weights = F.softmax(scores, dim=-1)
+                return torch.matmul(weights, v)""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    proof = attention_compute_positive_proof_for_symbol(index, symbol)
+    assert proof is not None
+    assert proof.protocol == "branch_exhaustive"
+
+
+def test_exhaustive_attention_proof_refuses_one_opaque_branch(tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                return F.scaled_dot_product_attention(q, k, v)
+            else:
+                return q""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    assert attention_compute_positive_proof_for_symbol(index, symbol) is None
+
+
+def test_exhaustive_attention_proof_refuses_dead_protocol_calls(tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                unused = F.scaled_dot_product_attention(q, k, v)
+                return q
+            else:
+                scores = torch.matmul(q, k)
+                unused = F.softmax(scores, dim=-1)
+                return q""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    assert attention_compute_positive_proof_for_symbol(index, symbol) is None
+
+
+def test_exhaustive_attention_proof_requires_dot_to_feed_softmax(tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                return F.scaled_dot_product_attention(q, k, v)
+            else:
+                unused_scores = torch.matmul(q, k)
+                weights = F.softmax(q, dim=-1)
+                return torch.matmul(weights, v)""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    assert attention_compute_positive_proof_for_symbol(index, symbol) is None
+
+
+def test_availability_guarded_framework_import_is_positive_when_call_is_exact(
+        tmp_path):
+    source = _SOURCE.replace(
+        "    class DefinitelyAnMLP:",
+        """    if dependency_is_available():
+        from torch.nn.functional import scaled_dot_product_attention as kernel
+
+    class DefinitelyAnMLP:""",
+    ).replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        "            return kernel(q, k, v)",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    proof = attention_compute_positive_proof_for_symbol(index, symbol)
+    assert proof is not None
+    assert proof.protocol == "scaled_dot_product_attention"
+
+
+def test_dot_and_softmax_on_rival_guards_are_not_positive_attention(tmp_path):
+    source = _SOURCE.replace(
+        """            weights = F.softmax(torch.matmul(q, k), dim=-1)
+            return torch.matmul(weights, v)""",
+        """            if self.training:
+                scores = torch.matmul(q, k)
+            if self.other_mode:
+                weights = F.softmax(scores, dim=-1)
+                return weights
+            return q""",
+    )
+    _, index, _root, _repeated = _pipeline(tmp_path, source)
+    symbol = next(
+        item.symbol for item in index.classes
+        if item.symbol.qualified_name == "DefinitelyAnFFN")
+    assert attention_compute_positive_proof_for_symbol(index, symbol) is None
 
 
 def test_unreferenced_attention_helper_cannot_launder_an_mlp(tmp_path):

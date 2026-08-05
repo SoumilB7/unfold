@@ -2358,10 +2358,40 @@ field as loss of every field, and activation operands are read from the exact
 
   The former layer-class counter is not replaced: whole-file class cardinality
   cannot qualify a finding to an exact owner.  Its owner-unqualified validation
-  comparisons are deleted; exact typed facts own those mechanisms.  U7 remains
-  open for the exact router replacement, Conv-GLU, Falcon's
-  nested config-guard/augmented-assignment control path, and any remaining
-  cross-altitude/default-deletion acceptance work.
+  comparisons are deleted; exact typed facts own those mechanisms.
+
+  The final transformer-side slice replaces the whole-file router union with
+  one exact block-to-routed-storage-to-router address.  It proves score
+  transform and order, top-k versus sparse mixing, stored selection-only bias, exact
+  group aggregation, normalization, scale and source-selected alternatives.
+  Config contributes only operands explicitly read by that proven callable.
+  The renderer consumes the same fact, including post-selection scoring; it no
+  longer drops a top-k-then-softmax operation or describes raw logits as final
+  weights.  Unknown group aggregation stays wholly unknown.  The legacy router
+  reader and its parse authority are deleted.
+
+  Falcon's nested selector is now handled generically by exact constructor
+  normalization: a literal assignment to the constructor's config parameter
+  may feed the later forward guard, while a dynamic assignment, a mutation of
+  some other object, or an unbound declaration abstains.  Parallel calls
+  through one helper retain their distinct outer call-site identities.  The
+  resulting norm placement, residual topology and one/two input-norm count are
+  emitted by the same cell reader with the weakest deciding provenance.  The
+  superseded public parallel-norm reader and DTO are deleted so a second
+  architecture authority cannot reappear.
+
+  **Boundary correction:** the remaining diffusion `conv_glu` consumer is not
+  a lawful U7 cutover.  Exact denoiser-block occurrence resolution belongs to
+  U10 (§20.13), and the current `diffusion_ffn_kind_from_files` is explicitly
+  quarantined there.  U7 owns the canonical `conv_glu` fact/region contract;
+  U10 must bind it to the exact diffusion block and delete the whole-file
+  marker reader in the same commit.  Treating that reader as a U7 shortcut
+  would violate the owner boundary this plan exists to enforce.
+
+  U7 is a closure candidate pending the final unchanged-tree bracket and any
+  reviewed preservation delta.  No remaining transformer FFN/router/norm/cell
+  mechanism is allowed to use a family table, bare config presence, or a
+  second path-level reader.
 
 ### 20.11 U8 — migrate position, masks, schedules and layer selectors
 
@@ -2593,6 +2623,7 @@ append a superseding row.
 | U7 | ACTIVE (supersedes prior U7 row) | `0402fe7`, `039f66c` | FFN mechanism/activation/ordinary width | exact ordinary FFN occurrence, transformed config path and output-projection input expression; routed/norm/cell producers remain | root and embedded encoder `FFNSpec`, FFN detail/JSON/params fact channels and projection audit | whole-file `evidence/ffn.py`, activation scan and `decoder_intermediate_size_from_files` deleted | GPT-J, CodeGen, GPT-2, BLOOM, Llama plus mismatched-gated-lane and unrelated-Conv1D poisons; all 28 preservation witnesses | Gemma-2 FFN names exact GELU from the preceding slice; width slice changes only BLOOM's evidence ledger (new typed width fact + obligation), zero structural/view/pixel delta | `039f66c`: 2,584 collected; 275 focused; 44 authority; 48 preservation; 2,477 exhaustive passed, 13 skipped, 2 expected xfailed | `/private/tmp/model-unfolder-verification/9c1a39dbaa`; every source and blessed-artifact fingerprint identical | quarantine 24→23; exact width reader registered; topology/router/class-count debt remains visible | evidence-only BLOOM manifest delta inspected exactly; no gallery bless |
 | U7 | ACTIVE (supersedes prior U7 row) | `92a29f2` | exact cell topology + routed expert storage | one owner-qualified attention/FFN census, live residual equations, exact config-bound guarded alternatives, fused/split expert Parameter dataflow | transformer layer facts/blocks, expert drill, nested conformance and preservation surfaces | `decoder_layer_topology_from_files`, broad parser wrapper and first-candidate topology tests deleted | Llama/Gemma-2/OLMo-2/BLOOM/StableLM/Qwen3.5/GPT-OSS/DBRX plus dead equation, dynamic selector, dead product, sibling and source-missing controls | DBRX corrected false parallel→sequential and opaque→split expert; two reviewed PNGs; all unaffected witness structures/pixels unchanged; Falcon and source-unavailable DiffusionGemma explicitly retain unknown wiring | 2,620 collected; 291 focused; 44 authority; 48 preservation; 2,513 exhaustive passed, 13 skipped, 2 expected xfailed | `/private/tmp/model-unfolder-verification/9c9a692797`; every isolated lane fingerprint identical | quarantine 23→22; broad-exception baseline 13→12; router/class-count/Conv-GLU/Falcon control path remain | DBRX gallery re-bless inspected; architecture semantic-view hash did not detect its layout delta, but the gallery byte hash did—carry this acceptance-infrastructure weakness to U14 |
 | U7 | ACTIVE (supersedes prior U7 row) | `a8efdbe` | retire owner-unqualified layer-class warning gate | no new producer: exact owner-qualified facts remain the only lawful mechanism claims | validation diagnostics only | `layer_class_count_from_files`, its parse authority and the MoE/KV-sharing/softcap/partial-RoPE/NoPE/routing/shared-expert/PLE/AltUp/double-norm whole-file-to-owner warning comparisons deleted | synthetic PLE-in-source/Llama-owner negative; existing MLA positive; all 28 preservation witnesses | no structural, view or pixel delta | 2,619 collected; 356 focused; 44 authority; 48 preservation; 2,512 exhaustive passed, 13 skipped, 2 expected xfailed | `/private/tmp/model-unfolder-verification/34ef32ea0e`; every detached source/artifact fingerprint identical | quarantine 22→21; parse authorities 34→33; legacy model-source sites 23→22; broad-exception module baseline 1→0; router/Conv-GLU/Falcon remain | no blessing required; warnings cannot substitute for an absent owner join |
+| U7 | CLOSURE CANDIDATE (supersedes prior U7 row) | working tree | T-12 + exact constructor-guard/cell closure | exact routed-storage-anchored router policy and exact constructor-normalized cell alternatives; canonical cell reader remains sole norm/residual/count authority | transformer parser/facts, canonical FFN/router cards and HTML, JSON/params/conformance through existing canonical facts | `decoder_router_evidence_from_files`, its parse-authority row, and the superseded public parallel-norm reader/DTO deleted | DeepSeek-V3/GLM-4.5/GPT-OSS/DBRX router matrix; Falcon old/new/one/two-norm matrix; Llama/BLOOM/Qwen/StableLM and adjusted-bias/unknown-group/sibling/cross-graph/dynamic-selector poisons | post-top-k softmax now appears in the GPT-OSS-style router drill; other intended artifact deltas pending preservation inspection | focused semantic lanes: 23 router + 63 cell/census + 93 FFN/router + 187 code/conformance + 5 smoke + 105 ownership/config/quarantine; authority 44; final collection/preservation/exhaustive pending | pending final coordinator | quarantine 21→20; parse authorities 33→32; legacy model-source sites 22→21; parser broad-exception baseline 12→10; diffusion Conv-GLU reader stays explicit U10 debt | no new semantic decision; final delta inspection/receipt pending |
 | U8 | PENDING | — | positions/masks/schedules | — | — | — | — | — | not run | not recorded | — | — |
 | U9 | PENDING | — | M-01..M-16 | — | — | — | — | — | not run | not recorded | — | — |
 | U10 | PENDING | — | diffusion root/conditioning | — | — | — | — | — | not run | not recorded | — | — |

@@ -336,6 +336,19 @@ class FeedForward:
     assert result.value.activation_config_path == ()
 
 
+def test_attention_shaped_softmax_between_two_affines_is_not_an_ffn(tmp_path):
+    result = _reader(tmp_path, """
+class FeedForward:
+    def __init__(self, config):
+        self.up = nn.Linear(config.hidden, config.wide)
+        self.down = nn.Linear(config.wide, config.hidden)
+    def forward(self, x):
+        scores = F.softmax(self.up(x), dim=-1)
+        return self.down(scores)
+""")
+    assert result.status == "failed"
+
+
 def test_nested_activation_dispatch_carries_the_full_selected_config_path(
         tmp_path):
     child_source = _PREFIX + _ATTENTION + """
@@ -1232,6 +1245,34 @@ class FeedForward:
     assert result.value.activation == "gelu"
 
 
+def test_real_internal_linear_subclass_keeps_exact_falcon_ffn_storage():
+    """The class spelling is irrelevant; its exact nn.Linear base is proof."""
+    config = {
+        "architectures": ["FalconForCausalLM"],
+        "model_type": "falcon",
+        "hidden_size": 4544,
+        "intermediate_size": 18176,
+        "num_hidden_layers": 32,
+        "num_attention_heads": 71,
+        "num_kv_heads": 1,
+        "multi_query": True,
+        "parallel_attn": True,
+    }
+    context = ParseContext.build(config)
+    block = decoder_block_path_for_config(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert block.status == "resolved", block.failures
+    result = ffn_mechanism_at_block(
+        context.program_index(), block.value.component_root,
+        block.value.block_occurrence)
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+    assert result.value.gated is False
+    assert len(result.value.projections) == 2
+    assert result.value.activation_config_path == ("activation",)
+
+
 def test_unrelated_relative_conv1d_spelling_is_not_an_affine_protocol(tmp_path):
     """A familiar final class name is not enough; the exact imported protocol
     target must be the transformers primitive, not an arbitrary sibling.
@@ -1242,6 +1283,83 @@ class FeedForward:
     def __init__(self, config):
         self.up = Conv1D(config.inner, config.hidden)
         self.down = Conv1D(config.hidden, config.inner)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "failed"
+
+
+def test_internal_linear_subclass_is_affine_only_with_proven_storage_init(
+        tmp_path):
+    result = _reader(tmp_path, """
+class Projection(nn.Linear):
+    def __init__(self, incoming, outgoing):
+        super().__init__(incoming, outgoing, bias=False)
+class FeedForward:
+    def __init__(self, config):
+        self.up = Projection(config.hidden, config.inner)
+        self.down = Projection(config.inner, config.hidden)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+
+
+def test_internal_linear_subclass_with_overridden_forward_is_not_affine_proof(
+        tmp_path):
+    result = _reader(tmp_path, """
+class Projection(nn.Linear):
+    def __init__(self, incoming, outgoing):
+        super().__init__(incoming, outgoing, bias=False)
+    def forward(self, value):
+        return value
+class FeedForward:
+    def __init__(self, config):
+        self.up = Projection(config.hidden, config.inner)
+        self.down = Projection(config.inner, config.hidden)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "failed"
+
+
+def test_internal_linear_subclass_exact_weight_bias_forward_is_affine(tmp_path):
+    result = _reader(tmp_path, """
+class Projection(nn.Linear):
+    def __init__(self, incoming, outgoing):
+        super().__init__(incoming, outgoing, bias=True)
+    def forward(self, value):
+        projected = value @ self.weight.T
+        if self.bias is None:
+            return projected
+        return projected + self.bias
+class FeedForward:
+    def __init__(self, config):
+        self.up = Projection(config.hidden, config.inner)
+        self.down = Projection(config.inner, config.hidden)
+    def forward(self, x):
+        return self.down(F.gelu(self.up(x)))
+""")
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "dense"
+
+
+@pytest.mark.parametrize("initializer", [
+    "self.weight = None",
+    "if config.enabled:\n            super().__init__(incoming, outgoing)",
+    "super = lambda: object()\n        super().__init__()",
+])
+def test_internal_linear_subclass_cannot_borrow_unproven_affine_storage(
+        tmp_path, initializer):
+    result = _reader(tmp_path, f"""
+class Projection(nn.Linear):
+    def __init__(self, incoming, outgoing, config=None):
+        {initializer}
+class FeedForward:
+    def __init__(self, config):
+        self.up = Projection(config.hidden, config.inner, config)
+        self.down = Projection(config.inner, config.hidden, config)
     def forward(self, x):
         return self.down(F.gelu(self.up(x)))
 """)

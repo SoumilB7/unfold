@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_legacy_semantic_reader_quarantine_is_exact_and_cannot_grow():
-    assert len(LEGACY_SEMANTIC_READERS) == 21
+    assert len(LEGACY_SEMANTIC_READERS) == 20
     assert legacy_reader_quarantine_problems(ROOT) == ()
 
 
@@ -26,11 +26,11 @@ def test_every_quarantined_reader_has_one_future_owner_and_deletion_condition():
 
 
 def test_every_evidence_parse_site_has_one_explicit_authority_class():
-    assert len(PARSE_AUTHORITY_SITES) == 33
-    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 33
+    assert len(PARSE_AUTHORITY_SITES) == 32
+    assert len({row.site for row in PARSE_AUTHORITY_SITES}) == 32
     legacy = [row for row in PARSE_AUTHORITY_SITES
               if row.category == "legacy_model_source"]
-    assert len(legacy) == 22
+    assert len(legacy) == 21
     assert all(row.deletion_unit and row.reason for row in legacy)
     assert {row.category for row in PARSE_AUTHORITY_SITES} == {
         "central_program_index",

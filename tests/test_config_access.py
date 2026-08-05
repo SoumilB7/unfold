@@ -306,6 +306,18 @@ def test_resolve_class_default_is_distinguishable_from_checkpoint_truth():
     assert event.intent == "absent_default" and "class default" in event.reason
 
 
+def test_explicit_null_class_default_is_present_as_a_default_premise():
+    """Membership, not truthiness, establishes an installed class default."""
+    with capture_events() as ledger:
+        res = resolve({}, "optional_mode", [], component="root",
+                      class_defaults={"optional_mode": None})
+    assert res.state == "absent"
+    assert res.value is None and res.source_kind == "class_default"
+    [event] = ledger.events
+    assert event.intent == "absent_default" and event.present is False
+    assert "installed class default None" in event.reason
+
+
 def test_consume_present_emits_under_the_selected_spelling_with_fact_linkage():
     with capture_events() as ledger:
         res = resolve({"n_embd": 64}, "hidden_size", ["n_embd"], component="root")

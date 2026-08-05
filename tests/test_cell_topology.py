@@ -84,7 +84,9 @@ class Outer:
 """
 
 
-def _read(tmp_path, block_forward, **kwargs):
+def _read(
+        tmp_path, block_forward, *, selected_config=None,
+        selected_source_kinds=None, **kwargs):
     path = tmp_path / "model.py"
     path.write_text(textwrap.dedent(_source(
         textwrap.indent(textwrap.dedent(block_forward).strip(), " " * 8),
@@ -93,8 +95,242 @@ def _read(tmp_path, block_forward, **kwargs):
         source="local", files=(str(path),),
         component_files={"root": (str(path),)},
         component_architectures={"root": "Outer"}, architecture="Outer")
+    missing = object()
+
+    def selected_value(path):
+        current = selected_config
+        for part in path:
+            if not isinstance(current, dict) or part not in current:
+                return missing
+            current = current[part]
+        return current
+
+    def select(path):
+        value = selected_value(path)
+        return None if value is missing else value
+
+    def select_guard(path):
+        value = selected_value(path)
+        return (
+            value is not missing,
+            None if value is missing else value,
+            (selected_source_kinds or {}).get(
+                tuple(path), "config_declared"),
+        )
+
     return decoder_cell_topology_for_path(
-        build_program_index(bundle), bundle, (), allow_root_stage=True)
+        build_program_index(bundle), bundle, (), allow_root_stage=True,
+        config_selector=(select if selected_config is not None else None),
+        guard_config_selector=(
+            select_guard if selected_config is not None else None))
+
+
+_GUARDED_AUGMENTED_CELL = """
+residual = signal
+if self.config.new_decoder_architecture and self.config.num_norms == 2:
+    attention_input = self.attention_norm(signal)
+    mlp_input = self.mlp_norm(signal)
+else:
+    attention_input = self.input_norm(signal)
+attention_output = self.compute(attention_input)
+if not self.config.new_decoder_architecture:
+    if self.config.parallel:
+        mlp_input = attention_input
+    else:
+        residual = residual + attention_output
+        mlp_input = self.post_norm(residual)
+if self.config.new_decoder_architecture and self.config.parallel and self.config.num_norms == 1:
+    mlp_input = attention_input
+mlp_output = self.transform(mlp_input)
+if self.config.new_decoder_architecture or self.config.parallel:
+    mlp_output += attention_output
+output = residual + mlp_output
+return output
+"""
+
+
+_GUARDED_NORMS = """
+        self.config = config
+        self.attention_norm = nn.LayerNorm(config.hidden)
+        self.mlp_norm = nn.LayerNorm(config.hidden)
+        self.input_norm = nn.LayerNorm(config.hidden)
+        self.post_norm = nn.LayerNorm(config.hidden)
+"""
+
+
+@pytest.mark.parametrize(("selected", "topology"), (
+    ({"new_decoder_architecture": False, "parallel": True, "num_norms": 1},
+     "parallel"),
+    ({"new_decoder_architecture": False, "parallel": False, "num_norms": 1},
+     "sequential"),
+))
+def test_nested_config_guards_and_augmented_add_prove_exact_cell(
+        tmp_path, selected, topology):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config=selected, norm_fields=_GUARDED_NORMS)
+    assert result.status == "resolved", result.failures
+    assert result.value.norm_placement == "pre"
+    assert result.value.residual_topology == topology
+    assert set(result.value.residual_config_paths) == {
+        ("new_decoder_architecture",), ("parallel",),
+    }
+    assert result.value.norm_config_paths == result.value.residual_config_paths
+
+
+def test_nested_config_guards_never_select_without_exact_values(tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={"parallel": True}, norm_fields=_GUARDED_NORMS)
+    assert result.status == "failed"
+    assert any("unresolved guard" in failure.detail
+               for failure in result.failures)
+
+
+def test_exact_constructor_config_normalization_feeds_forward_guards(tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "new_decoder_architecture": True,
+            "parallel": True,
+            "num_norms": None,
+        },
+        cell_fields="""
+        if config.num_norms is None and config.new_decoder_architecture:
+            config.num_norms = 2
+        """,
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "resolved", result.failures
+    assert (result.value.norm_placement,
+            result.value.residual_topology,
+            result.value.parallel_input_norm_count) \
+        == ("pre", "parallel", 2)
+    assert set(result.value.norm_config_paths) == {
+        ("new_decoder_architecture",), ("num_norms",), ("parallel",),
+    }
+
+
+def test_dynamic_constructor_config_mutation_cannot_select_a_cell(tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "new_decoder_architecture": True,
+            "parallel": True,
+            "num_norms": None,
+        },
+        cell_fields="""
+        if config.num_norms is None and config.new_decoder_architecture:
+            config.num_norms = choose_norm_count()
+        """,
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "failed"
+
+
+def test_constructor_normalization_cannot_execute_after_selected_return(
+        tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "skip_setup": True,
+            "new_decoder_architecture": True,
+            "parallel": True,
+            "num_norms": None,
+        },
+        cell_fields="""
+        if config.skip_setup:
+            return
+        config.num_norms = 2
+        """,
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "failed"
+
+
+def test_constructor_normalization_executes_after_proven_inactive_return(
+        tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "skip_setup": False,
+            "new_decoder_architecture": True,
+            "parallel": True,
+            "num_norms": None,
+        },
+        cell_fields="""
+        if config.skip_setup:
+            return
+        config.num_norms = 2
+        """,
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "resolved", result.failures
+    assert result.value.parallel_input_norm_count == 2
+
+
+def test_constructor_normalization_inside_unsupported_region_is_unknown(
+        tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "new_decoder_architecture": True,
+            "parallel": True,
+            "num_norms": None,
+        },
+        cell_fields="""
+        try:
+            config.num_norms = 2
+        finally:
+            pass
+        """,
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "failed"
+
+
+def test_guard_dependencies_retain_class_default_origin_in_reader_result(
+        tmp_path):
+    result = _read(
+        tmp_path, _GUARDED_AUGMENTED_CELL,
+        selected_config={
+            "new_decoder_architecture": False,
+            "parallel": True,
+            "num_norms": 1,
+        },
+        selected_source_kinds={
+            ("new_decoder_architecture",): "class_default",
+            ("num_norms",): "class_default",
+        },
+        norm_fields=_GUARDED_NORMS)
+    assert result.status == "resolved", result.failures
+    kinds = dict(result.value.config_source_kinds)
+    assert kinds[("new_decoder_architecture",)] == "class_default"
+    assert kinds[("parallel",)] == "config_declared"
+
+
+def test_non_add_augmented_assignment_cannot_prove_residual_merge(tmp_path):
+    result = _read(
+        tmp_path,
+        """
+        residual = signal
+        attention_output = self.compute(self.first(signal))
+        mlp_output = self.transform(self.second(signal))
+        mlp_output *= attention_output
+        return residual + mlp_output
+        """)
+    assert result.status == "failed"
+
+
+def test_parallel_norm_count_cannot_disagree_with_exact_branch_sites(tmp_path):
+    result = _read(
+        tmp_path,
+        """
+        residual = signal
+        shared = self.first(signal)
+        attention_output = self.compute(shared)
+        mlp_output = self.transform(shared)
+        return residual + attention_output + mlp_output
+        """)
+    assert result.status == "resolved", result.failures
+    assert result.value.parallel_input_norm_count == 1
+    with pytest.raises(ValueError, match="exact branch norm sites"):
+        replace(result.value, parallel_input_norm_count=2)
 
 
 @pytest.mark.parametrize(("forward", "placement"), (
@@ -225,6 +461,35 @@ def combine(alpha, beta):
         result.value.attention.merge_kind,
         result.value.ffn.merge_kind,
     } == {"child_integrated_add"}
+
+
+def test_two_calls_to_one_residual_helper_remain_distinct_occurrences(tmp_path):
+    """One helper source span does not mean one runtime residual equation."""
+    result = _read(
+        tmp_path,
+        """
+        residual = signal
+        attention_input = self.first(signal)
+        attention_output = self.compute(attention_input)
+        residual = combine(attention_output, residual)
+        mlp_input = self.second(residual)
+        mlp_output = self.transform(mlp_input)
+        output = combine(mlp_output, residual)
+        return output
+        """,
+        helper="""
+def combine(value, residual):
+    kept = F.dropout(value, p=0.0)
+    output = residual + kept
+    return output
+""")
+    assert result.status == "resolved", result.failures
+    assert (result.value.norm_placement,
+            result.value.residual_topology) == ("pre", "sequential")
+    assert result.value.attention.merge_span \
+        == result.value.ffn.merge_span
+    assert result.value.attention.invocation.node.call_site \
+        != result.value.ffn.invocation.node.call_site
 
 
 def test_keyword_residual_cannot_shift_into_an_omitted_optional_formal(tmp_path):
@@ -452,6 +717,105 @@ def test_real_conditional_parallel_selector_uses_exact_source_bound_operand(
     assert any(
         provenance.config_paths == (("use_parallel_residual",),)
         for provenance in result.provenance)
+
+
+def test_real_falcon_source_proves_all_guarded_cell_variants():
+    """One installed source contains sequential and one/two-norm parallel cells."""
+    base = {
+        "architectures": ["FalconForCausalLM"],
+        "model_type": "falcon",
+        "hidden_size": 4544,
+        "intermediate_size": 18176,
+        "num_hidden_layers": 32,
+        "num_attention_heads": 71,
+        "num_kv_heads": 1,
+        "multi_query": True,
+    }
+    context = ParseContext.build(base, source="local")
+    index = context.program_index()
+    variants = (
+        (False, True, None, "parallel", 1),
+        (False, False, None, "sequential", None),
+        # The exact constructor normalizes absent/None to two norms for the
+        # new architecture before the same config object reaches forward().
+        (True, True, None, "parallel", 2),
+        (True, True, 1, "parallel", 1),
+        (True, True, 2, "parallel", 2),
+    )
+    for new_architecture, parallel, norm_count, topology, expected_count \
+            in variants:
+        selected = {
+            **base,
+            "new_decoder_architecture": new_architecture,
+            "parallel_attn": parallel,
+            "num_ln_in_parallel_attn": norm_count,
+        }
+
+        def choose(path):
+            current = selected
+            for part in path:
+                if not isinstance(current, dict) or part not in current:
+                    return False, None, ""
+                current = current[part]
+            return True, current, "config_declared"
+
+        result = decoder_cell_topology_for_path(
+            index, context.source_bundle, (), allow_root_stage=True,
+            config_selector=choose, guard_config_selector=choose)
+        assert result.status == "resolved", (
+            new_architecture, parallel, norm_count, result.failures)
+        assert (result.value.norm_placement,
+                result.value.residual_topology,
+                result.value.parallel_input_norm_count) \
+            == ("pre", topology, expected_count)
+
+
+def _installed_transformers_topology(relative, architecture, **kwargs):
+    import transformers
+
+    source = Path(transformers.__file__).parent / "models" / relative
+    if not source.exists():
+        pytest.skip(f"{relative} modeling source is unavailable")
+    bundle = SourceBundle(
+        source="local",
+        files=(str(source),),
+        component_files={"root": (str(source),)},
+        component_architectures={"root": architecture},
+        architecture=architecture,
+    )
+    return decoder_cell_topology_for_path(
+        build_program_index(bundle), bundle, (),
+        allow_root_stage=True, **kwargs)
+
+
+def test_real_gptj_source_proves_one_shared_parallel_input_norm():
+    result = _installed_transformers_topology(
+        "gptj/modeling_gptj.py", "GPTJForCausalLM")
+    assert result.status == "resolved", result.failures
+    assert (result.value.norm_placement,
+            result.value.residual_topology,
+            result.value.parallel_input_norm_count) \
+        == ("pre", "parallel", 1)
+
+
+def test_real_gpt_neox_selected_path_proves_two_parallel_input_norms():
+    selected = {"use_parallel_residual": True}
+    result = _installed_transformers_topology(
+        "gpt_neox/modeling_gpt_neox.py", "GPTNeoXForCausalLM",
+        config_selector=lambda path: selected.get(path[0]),
+        guard_config_selector=lambda path: (
+            path[0] in selected,
+            selected.get(path[0]),
+            "config_declared",
+        ),
+    )
+    assert result.status == "resolved", result.failures
+    assert (result.value.norm_placement,
+            result.value.residual_topology,
+            result.value.parallel_input_norm_count) \
+        == ("pre", "parallel", 2)
+    assert result.value.residual_config_paths == (
+        ("use_parallel_residual",),)
 
 
 def test_real_routed_ffn_is_still_the_exact_sequential_cell_stage():

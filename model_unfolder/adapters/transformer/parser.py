@@ -17,6 +17,7 @@ because no family-specific code path matched — there are none.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from . import debug
@@ -126,23 +127,56 @@ def _cell_topology_result(
     from ...evidence import config_access as _config_access
     path = tuple(config_path)
     resolutions = {}
+    source_kinds = {}
+    selected_values = {}
+    selected_defaults = (
+        (getattr(context, "class_defaults_by_path", None) or {}).get(path)
+        or {})
 
     def _select(exact_path):
         if config_root is None or not exact_path:
             return None
+        exact_path = tuple(exact_path)
+        if exact_path in selected_values:
+            present, value = selected_values[exact_path]
+            return value if present else None
+        relative = (
+            exact_path[len(path):]
+            if exact_path[:len(path)] == path else exact_path)
+        if not relative:
+            selected_values[exact_path] = (False, None)
+            return None
         parent = config_root
-        for part in exact_path[:-1]:
+        # ``config_root`` is already the object at ``path``.  Traverse only
+        # the source reader's path below that component; re-applying ``path``
+        # would turn ``text_config.flag`` into
+        # ``text_config.text_config.flag`` and silently lose nested evidence.
+        for part in relative[:-1]:
             parent = (parent.get(part) if isinstance(parent, dict)
                       else getattr(parent, part, None))
             if parent is None:
-                return None
+                parent = {}
+                break
+        default_parent = selected_defaults
+        for part in relative[:-1]:
+            default_parent = (
+                default_parent.get(part)
+                if isinstance(default_parent, dict) else None)
         resolution = _config_access.resolve(
-            parent, exact_path[-1], path=tuple(exact_path[:-1]))
+            parent, exact_path[-1], path=tuple(exact_path[:-1]),
+            class_defaults=default_parent)
         expected = ".".join(exact_path)
-        if resolution.ambiguous or not resolution.present \
-                or resolution.selected_path != expected:
+        class_default = (
+            resolution.state == "absent"
+            and resolution.source_kind == "class_default")
+        if resolution.ambiguous or not class_default and (
+                not resolution.present or resolution.selected_path != expected):
+            selected_values[exact_path] = (False, None)
             return None
-        resolutions[tuple(exact_path)] = resolution
+        resolutions[exact_path] = resolution
+        source_kinds[exact_path] = (
+            "class_default" if class_default else "config_declared")
+        selected_values[exact_path] = (True, resolution.value)
         return resolution.value
 
     def _consume_dependency(exact_path, fact_key):
@@ -150,6 +184,8 @@ def _cell_topology_result(
         if resolution is None:
             raise ValueError(
                 "cell topology cited a config path it did not resolve")
+        if source_kinds.get(tuple(exact_path)) == "class_default":
+            return
         resolution.bind(
             reader="decoder_cell_topology_for_path",
             fact_owner="decoder.layer", fact_key=fact_key)
@@ -159,13 +195,34 @@ def _cell_topology_result(
             reader="decoder_cell_topology_for_path",
             status="code_and_config")
 
+    def _select_guard(exact_path):
+        value = _select(exact_path)
+        resolution = resolutions.get(tuple(exact_path))
+        return (
+            resolution is not None,
+            value,
+            source_kinds.get(tuple(exact_path), ""),
+        )
+
     def _read():
         result = decoder_cell_topology_for_path(
             context.program_index(), context.source_bundle, path,
             allow_root_stage=True,
             config_selector=_select,
+            guard_config_selector=_select_guard,
         )
         if result.status == "resolved":
+            dependencies = tuple(dict.fromkeys((
+                *result.value.norm_config_paths,
+                *result.value.residual_config_paths)))
+            fact_source_kinds = tuple(
+                (dependency,
+                 source_kinds.get(dependency, "config_declared"))
+                for dependency in dependencies)
+            result = replace(
+                result,
+                value=replace(
+                    result.value, config_source_kinds=fact_source_kinds))
             for fact_key, dependencies in (
                     ("norm_placement", result.value.norm_config_paths),
                     ("residual_topology",
@@ -389,27 +446,6 @@ def _resolve_qk_norm_layers(
     return per_layer
 
 
-def _code_parallel_norm_count(
-    cfg: Any, context=None, *, config_path=(),
-):
-    """Exact norm occurrences feeding the selected attention and FFN inputs."""
-    if context is None:
-        return None
-    from ...evidence.parallel_norm import (
-        decoder_parallel_norm_count_for_path,
-    )
-    result = decoder_parallel_norm_count_for_path(
-        context.program_index(),
-        context.source_bundle,
-        tuple(config_path),
-        allow_root_stage=True,
-    )
-    return (
-        result.value.norm_count
-        if result.status == "resolved" else None
-    )
-
-
 def _projection_bias_result(
     context, mechanism, config_path, *, ffn_mechanism_result=None,
 ):
@@ -477,17 +513,62 @@ def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
         return None
 
 
-def _code_router(cfg: Any, context=None):
-    """MoE routing behaviour READ FROM THE MODELING SOURCE — the code channel
-    for the score transform / aux-loss-free bias / sparsemixer that modern
-    checkpoints leave out of config (GLM-4.5 copied DeepSeek-V3's routing code
-    but not its ``scoring_func``/``topk_method`` strings).  Best-effort, never
-    raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_router_evidence_from_files
-        return decoder_router_evidence_from_files(_source_files(cfg, context))
-    except Exception:
+def _router_result(
+        cfg=None, context=None, *, config_path=(), class_defaults=None):
+    """One call-local exact decoder-block router-selection result."""
+    if context is None or not hasattr(context, "program_index"):
         return None
+    from ...evidence.router import decoder_router_selection_for_path
+    path = tuple(config_path)
+    selected_values = {}
+
+    def _select(exact_path):
+        exact_path = tuple(exact_path)
+        if exact_path in selected_values:
+            return selected_values[exact_path]
+        if cfg is None or exact_path[:len(path)] != path:
+            selected_values[exact_path] = (False, None, "")
+            return selected_values[exact_path]
+        relative = exact_path[len(path):]
+        if not relative:
+            selected_values[exact_path] = (False, None, "")
+            return selected_values[exact_path]
+        parent = cfg
+        default_parent = class_defaults
+        for part in relative[:-1]:
+            parent = (parent.get(part) if isinstance(parent, dict)
+                      else getattr(parent, part, None))
+            default_parent = (
+                default_parent.get(part)
+                if isinstance(default_parent, dict) else None)
+            if parent is None and default_parent is None:
+                selected_values[exact_path] = (False, None, "")
+                return selected_values[exact_path]
+        if parent is None:
+            parent = {}
+        resolution = _config_access.resolve(
+            parent, relative[-1], path=exact_path[:-1],
+            class_defaults=default_parent)
+        class_default = (
+            resolution.state == "absent"
+            and resolution.source_kind == "class_default")
+        if resolution.ambiguous or not class_default and (
+                not resolution.present
+                or resolution.selected_path != ".".join(exact_path)):
+            selected_values[exact_path] = (False, None, "")
+            return selected_values[exact_path]
+        selected_values[exact_path] = (
+            True, resolution.value,
+            "class_default" if class_default else "config_declared")
+        return selected_values[exact_path]
+
+    return context.cached_reader_result(
+        "decoder.ffn.router_selection",
+        path,
+        lambda: decoder_router_selection_for_path(
+            context.program_index(), context.source_bundle, path,
+            allow_root_stage=True, config_selector=_select),
+    )
 
 
 def _score_scaling_result(context=None, *, config_path=()):
@@ -1498,7 +1579,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # config flag — so it is READ FROM THE LAYER'S forward() dataflow (code ->
     # structure), the general replacement for the model_type identity table.
     _cell_topology_result_value = _cell_topology_result(
-        context, config_path=_text_path, config_root=cfg)
+        context, config_path=_text_path, config_root=text_cfg)
     _cell_topology = (
         _cell_topology_result_value.value
         if _cell_topology_result_value is not None
@@ -1592,7 +1673,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _norm_placement_config_paths = (
         _cell_topology.norm_config_paths
         if _cell_topology is not None else ())
+    _cell_topology_source_kinds = dict(
+        _cell_topology.config_source_kinds
+        if _cell_topology is not None else ())
+    def _checkpoint_paths(paths):
+        """Only checkpoint-declared dependencies are config provenance.
+
+        A class default may lawfully select a source guard, but the checkpoint
+        did not contain that path.  Its epistemic tier is carried by the fact
+        status instead of fabricating a checkpoint occurrence.
+        """
+        return tuple(
+            path for path in paths
+            if _cell_topology_source_kinds.get(path) != "class_default")
+
     _norm_placement_status = (
+        "class_default"
+        if any(_cell_topology_source_kinds.get(path) == "class_default"
+               for path in _norm_placement_config_paths) else
         "code_and_config"
         if _norm_placement_config_paths else "code_proven")
     if norm_placement is not None:
@@ -1600,7 +1698,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             key="norm_placement", owner="decoder.layer",
             value=norm_placement, status=_norm_placement_status,
             reader_result=_cell_topology_result_value,
-            config_paths=_norm_placement_config_paths,
+            config_paths=_checkpoint_paths(_norm_placement_config_paths),
             reader="decoder_cell_topology_for_path",
             reason=(
                 "exact attention/FFN norm boundaries and residual equations "
@@ -2339,7 +2437,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # config path; an unbound declaration remains unknown.
     # Distinct INPUT norms a parallel-residual layer applies, read from the code
     # dataflow: 1 = SHARED (GPT-J), 2 = SEPARATE (GPT-NeoX input+post norms) —
-    # fixes the "two-norms-drawn-as-one" bug; None (Falcon conditional) → 1.
+    # fixes the "two-norms-drawn-as-one" bug. Guarded alternatives remain
+    # unknown unless the exact constructor/forward selector proves the live
+    # branch; no model-specific fallback supplies a count.
     parallel_norm_count = None
     # A selector is consumed only inside ``_cell_topology_result`` after the
     # exact block assignment and guard bind that occurrence to one derived fact.
@@ -2352,18 +2452,30 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _cell_topology.residual_config_paths
         if _cell_topology is not None else ())
     _residual_topology_status = (
+        "class_default"
+        if any(_cell_topology_source_kinds.get(path) == "class_default"
+               for path in _residual_topology_config_paths) else
         "code_and_config"
         if _residual_topology_config_paths else "code_proven")
     use_parallel_residual = residual_topology == "parallel"
     if use_parallel_residual:
-        parallel_norm_count = _code_parallel_norm_count(
-            text_cfg, context, config_path=_text_path)
+        parallel_norm_count = _cell_topology.parallel_input_norm_count
+    _parallel_norm_config_paths = tuple(dict.fromkeys((
+        *_norm_placement_config_paths,
+        *_residual_topology_config_paths,
+    )))
+    _parallel_norm_status = (
+        "class_default"
+        if any(_cell_topology_source_kinds.get(path) == "class_default"
+               for path in _parallel_norm_config_paths) else
+        "code_and_config"
+        if _parallel_norm_config_paths else "code_proven")
     if residual_topology != "unknown":
         _note_typed_fact(
             key="residual_topology", owner="decoder.layer",
             value=residual_topology, status=_residual_topology_status,
             reader_result=_cell_topology_result_value,
-            config_paths=_residual_topology_config_paths,
+            config_paths=_checkpoint_paths(_residual_topology_config_paths),
             reader="decoder_cell_topology_for_path",
             reason=(
                 "exact residual equations prove sequential or parallel cell "
@@ -2372,14 +2484,20 @@ def parse(cfg: Any, context=None) -> ModelIR:
     else:
         _note_fact(
             "decoder.layer", "residual_topology", "unknown", _unknown_status)
-    _note_fact(
-        "decoder.layer", "parallel_norm_count", parallel_norm_count,
-        "code_proven" if parallel_norm_count is not None else _unknown_status,
-        source=(
-            "decoder_parallel_norm_count_for_path"
-            if parallel_norm_count is not None else None
-        ),
-    )
+    if parallel_norm_count is not None:
+        _note_typed_fact(
+            key="parallel_norm_count", owner="decoder.layer",
+            value=parallel_norm_count, status=_parallel_norm_status,
+            reader_result=_cell_topology_result_value,
+            config_paths=_checkpoint_paths(_parallel_norm_config_paths),
+            reader="decoder_cell_topology_for_path",
+            reason=(
+                "the exact parallel attention and FFN branches prove one or "
+                "two distinct normalization inputs"),
+        )
+    else:
+        _note_fact(
+            "decoder.layer", "parallel_norm_count", None, _unknown_status)
 
     # ---- MoE ----
     num_experts = consume(
@@ -2433,7 +2551,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
-    moe_routing = (_moe_routing(text_cfg, context, path=_text_path)
+    moe_routing = (_moe_routing(
+        text_cfg, context, path=_text_path,
+        note_typed_fact=_note_typed_fact,
+        class_defaults=_fact_class_defaults)
                    if moe_active else None)
     # A clip declaration is not enough to prove which exact activation consumes
     # it (GPT-OSS applies this inside routed experts, not the ordinary/shared
@@ -2744,6 +2865,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if use_parallel_residual:
             layers.append(parallel_decoder_layer(
                 i, attn, ffn, hidden_size, norm_kind=norm_kind,
+                norm_placement=norm_placement,
                 norm_count=parallel_norm_count))
         else:
             layers.append(decoder_layer(
@@ -3391,78 +3513,199 @@ def _normalize_layer_schedule(text_cfg, num_layers: int, sliding_window):
     return None, None
 
 
-def _moe_routing(cfg: Any, context=None, path: tuple = ()) -> dict | None:
-    """Collect the MoE router knobs that decide *how* experts get picked.
+def _moe_routing(
+        cfg: Any, context=None, path: tuple = (),
+        note_typed_fact=None, class_defaults=None) -> dict | None:
+    """Project the exact source-proven router policy for this config occurrence.
 
-    Config strings first (DeepSeek/Kimi declare the full set), then the CODE
-    channel fills/overrides the two facts modern checkpoints omit: GLM-4.5
-    copied DeepSeek-V3's routing CODE (``.sigmoid()`` + ``e_score_correction_bias``)
-    but not its ``scoring_func``/``topk_method`` STRINGS, so the string reader
-    drew softmax and dropped the bias.  Code is the enacted truth: it decides the
-    score transform and the aux-loss-free bias; a declared string that agrees is
-    confirmation, one that disagrees loses to the code (with a recorded note).
-    ``None`` when neither channel declares anything.
+    Code decides which operations exist and their order.  Config contributes
+    only the numeric/boolean operands whose exact paths the selected route
+    callable reads.  Merely declaring ``n_group``, ``norm_topk_prob`` or a
+    family-flavoured ``topk_method`` can therefore never manufacture a node.
+    """
+    path = tuple(path)
+    code_result = _router_result(
+        cfg, context, config_path=path, class_defaults=class_defaults)
+    code = (code_result.value if code_result is not None
+            and code_result.status == "resolved" else None)
+    def _record(value, status, config_paths=()):
+        if note_typed_fact is None or code_result is None:
+            return
+        note_typed_fact(
+            key="routing_policy", owner="decoder.ffn", value=value,
+            status=status, reader_result=code_result,
+            config_paths=tuple(config_paths),
+            reader="decoder_router_selection_for_path",
+            reason=("exact route callable owns operation presence/order; "
+                    "config contributes only cited operands"),
+        )
 
-    U2-R7: each declared knob is CONSUMED into its routing fact
-    (``decoder.ffn.routing_<field>`` — the dict the render reads); ``path``
-    locates ``cfg`` in its document (the caller's text-scope path)."""
-    def _knob(field):
-        res = _config_access.resolve(
-            cfg, field, _ALIASES.get(field, ()), path=tuple(path))
-        if res.ambiguous:
-            return None
-        return res.consume_decision(
-            mechanism="moe_routing", fact_owner="decoder.ffn",
-            fact_key=f"routing_{field}",
-            reader="adapters.transformer.parser._moe_routing").value
-    routing = {
-        "scoring_func":          _knob("scoring_func"),          # sigmoid | softmax
-        "topk_method":           _knob("topk_method"),           # noaux_tc, group_limited_greedy, ...
-        "n_group":               _knob("n_group"),               # expert groups (node-limited routing)
-        "topk_group":            _knob("topk_group"),            # groups kept per token
-        "norm_topk_prob":        _knob("norm_topk_prob"),        # renormalize the top-k gate weights
-        "routed_scaling_factor": _knob("routed_scaling_factor"),  # scale on routed-expert output
-    }
-    routing = {k: v for k, v in routing.items() if v is not None}
-
-    code = _code_router(cfg, context)
-    if code is not None:
-        # Score transform: code decides; a declared string only confirms.
-        if code.scoring_fn:
-            declared = routing.get("scoring_func")
-            if declared and str(declared).lower() != code.scoring_fn:
-                routing["_scoring_declared"] = declared      # disagreement note (audit)
-            routing["scoring_func"] = code.scoring_fn
-        # Aux-loss-free bias correction: code proof (e_score_correction_bias) OR
-        # a declared ``noaux_tc``.  A resolved boolean the render reads directly,
-        # so a checkpoint that enacts the bias without the string still draws it.
-        if code.bias_correction or routing.get("topk_method") == "noaux_tc":
-            routing["bias_correction"] = True
-        if code.sparsemixer:
-            routing["sparsemixer"] = True
-        # The score transform is drawn as its OWN node only when the code runs it
-        # BEFORE the top-k (Mixtral/GLM/DSV3) — a node before top-k would misdraw
-        # gpt-oss/Granite, which top-k the raw logits and softmax the winners.
-        if code.scoring_fn and code.scoring_before_topk:
-            routing["scoring_before_topk"] = True
-
-    # BOTH channels silent on the score transform while the modeling source IS
-    # installed ⇒ an extractor/vocabulary gap, not an honest absence — stamp
-    # the ambiguity envelope the BLOCKING evidence_ambiguity net reads (the
-    # honest replacement for the old render-side `or "softmax"` assertion).
-    # No source at all stays exempt (oracle_missing discipline).
-    if "scoring_func" not in routing and code is None:
-        try:
-            has_source = bool(_source_files(cfg, context))
-        except Exception:
-            has_source = False
+    if code is None:
+        has_source = bool(context is not None
+                          and getattr(context, "source_bundle", None)
+                          and context.source_bundle.files)
         if has_source:
-            routing["evidence"] = {
+            status = (getattr(code_result, "status", "unavailable")
+                      if code_result is not None else "unavailable")
+            _record(None, "ambiguous")
+            return {"evidence": {
                 "status": "ambiguous", "component": "router",
-                "reason": "score transform not declared in config and no "
-                          "router class resolved from the installed source",
-            }
+                "reason": "the exact decoder-block router reader is " + status,
+            }}
+        _record(None, "oracle_missing")
+        return None
 
+    def _object_member(obj, name):
+        if isinstance(obj, dict):
+            return obj.get(name, _config_access.MISSING)
+        return getattr(obj, name, _config_access.MISSING)
+
+    consumed_paths = []
+    source_kinds = []
+
+    def _operand(config_path):
+        """Consume only the exact operand path cited by the source reader."""
+        config_path = tuple(config_path)
+        if not config_path or config_path[:len(path)] != path:
+            return _config_access.MISSING
+        relative = config_path[len(path):]
+        if not relative:
+            return _config_access.MISSING
+        obj = cfg
+        default_obj = class_defaults
+        for segment in relative[:-1]:
+            obj = _object_member(obj, segment)
+            default_obj = (
+                default_obj.get(segment)
+                if isinstance(default_obj, dict) else None)
+            if obj is _config_access.MISSING and default_obj is None:
+                return obj
+        if obj is _config_access.MISSING:
+            obj = {}
+        resolution = _config_access.resolve(
+            obj, relative[-1], (), path=config_path[:-1],
+            class_defaults=default_obj)
+        class_default = (
+            resolution.state == "absent"
+            and resolution.source_kind == "class_default")
+        if resolution.ambiguous or not class_default and (
+                not resolution.present
+                or resolution.selected_path != ".".join(config_path)):
+            return _config_access.MISSING
+        decision = resolution.consume_decision(
+            mechanism="moe_routing", fact_owner="decoder.ffn",
+            fact_key="routing_policy",
+            reader="adapters.transformer.parser._moe_routing")
+        if not class_default:
+            consumed_paths.append(config_path)
+        source_kinds.append(resolution.source_kind)
+        return decision.value
+
+    # A source guard is part of the mechanism proof.  Its exact checkpoint
+    # operand must therefore be consumed just like group counts or scale.  A
+    # same-named metadata field that the selected callable never reads remains
+    # descriptive and powerless.
+    branch_paths = set(code.branch_config_paths)
+    for branch_path in code.branch_config_paths:
+        if _operand(branch_path) is _config_access.MISSING:
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound router branch operand is unresolved",
+            }}
+    for field in ("scoring_func", "topk_method"):
+        declared = _config_access.resolve(
+            cfg, field, _ALIASES.get(field, ()), path=path)
+        if declared.state == "present" \
+                and tuple(declared.selected_path.split(".")) not in branch_paths:
+            declared.ignore(
+                "descriptive router metadata; exact route code owns mechanism")
+
+    routing = {
+        "selection_kind": code.selection_kind,
+        "scoring_func": code.scoring_fn,
+        "scoring_before_topk": code.scoring_before_topk,
+        "score_source_kind": code.score_source_kind,
+        "bias_correction": code.bias_correction,
+    }
+    if code.selection_count_literal is not None:
+        routing["selection_count"] = code.selection_count_literal
+    elif code.selection_count_path:
+        selection_count = _operand(code.selection_count_path)
+        if not isinstance(selection_count, int) \
+                or isinstance(selection_count, bool) \
+                or selection_count <= 0:
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound selection count is unresolved",
+            }}
+        routing["selection_count"] = selection_count
+    if code.selection_kind == "sparse_mixer":
+        routing["sparsemixer"] = True       # compatibility projection only
+
+    if code.group_count_path and code.topk_group_path:
+        n_group = _operand(code.group_count_path)
+        topk_group = _operand(code.topk_group_path)
+        if not (isinstance(n_group, int) and n_group > 0
+                and isinstance(topk_group, int) and topk_group > 0):
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound grouped-router operands are unresolved",
+            }}
+        # The source branch is dormant for a single group.  Its exact operands
+        # are still consumed as the proof of that omission, but no group node
+        # or chip is projected.
+        if n_group > 1:
+            routing.update({
+                "grouped": True,
+                "group_score_kind": code.group_score_kind,
+                "n_group": n_group,
+                "topk_group": topk_group,
+            })
+
+    if code.normalization_kind == "sum":
+        enabled = (True if not code.normalization_path
+                   else _operand(code.normalization_path))
+        if enabled is _config_access.MISSING:
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound router normalization is unresolved",
+            }}
+        if enabled is True:
+            routing["normalization_kind"] = "sum"
+    elif code.normalization_kind == "p_norm":
+        p_value = _operand(code.normalization_path)
+        if p_value is not None and not (
+                isinstance(p_value, (int, float))
+                and not isinstance(p_value, bool)):
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound router p-norm operand is unresolved",
+            }}
+        if p_value is not None:
+            routing.update({
+                "normalization_kind": "p_norm",
+                "normalization_value": p_value,
+            })
+
+    if code.scale_path:
+        scale = _operand(code.scale_path)
+        if not (isinstance(scale, (int, float))
+                and not isinstance(scale, bool)):
+            _record(None, "ambiguous", consumed_paths)
+            return {"evidence": {
+                "status": "ambiguous", "component": "router",
+                "reason": "source-bound routed scale is unresolved",
+            }}
+        routing["routed_scaling_factor"] = scale
+
+    fact_status = ("class_default" if "class_default" in source_kinds
+                   else "code_and_config" if consumed_paths else "code_proven")
+    _record(routing, fact_status, consumed_paths)
     return routing or None
 
 

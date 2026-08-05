@@ -1138,7 +1138,7 @@ def resolve(cfg: Any, canonical: str, aliases: Iterable[str] = (), *,
 
     if not occurrences:
         default_value, source_kind, reason = None, "checkpoint", ""
-        if isinstance(class_defaults, dict) and class_defaults.get(canonical) is not None:
+        if isinstance(class_defaults, dict) and canonical in class_defaults:
             default_value = class_defaults[canonical]
             source_kind = "class_default"
             reason = f"absent from checkpoint — installed class default {default_value!r}"

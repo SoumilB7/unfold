@@ -229,13 +229,15 @@ def moe_router_detail(ffn: dict) -> str:
     bits = []
     if r.get("scoring_func"):
         bits.append(f"{r['scoring_func']} gating")
-    if r.get("topk_method"):
-        bits.append(f"{r['topk_method']} selection")
-    if (r.get("n_group") or 0) > 1 and r.get("topk_group"):
+    if r.get("selection_kind") == "sparse_mixer":
+        bits.append("sparse-mixer selection")
+    if r.get("grouped"):
         bits.append(f"group-limited: top-{r['topk_group']} of {r['n_group']} groups")
-    if r.get("norm_topk_prob"):
-        bits.append("normalized top-k weights")
-    if r.get("routed_scaling_factor"):
+    if r.get("normalization_kind") == "sum":
+        bits.append("sum-renormalized weights")
+    elif r.get("normalization_kind") == "p_norm":
+        bits.append(f"p-norm weights (p={r.get('normalization_value')})")
+    if r.get("routed_scaling_factor") not in (None, 1, 1.0):
         bits.append(f"routed output ×{r['routed_scaling_factor']}")
     return "; ".join(bits)
 
@@ -700,20 +702,22 @@ def ffn_short(ffn: dict) -> str:
 
 
 def router_facts(ffn: dict) -> list[str]:
-    """Fact chips for an MoE router (selection knobs the config declares)."""
+    """Fact chips projected from the canonical source-proven router policy."""
     facts = []
     if ffn.get("num_experts"):
         facts.append(f"{_fmt_int(ffn.get('num_experts'))} experts")
-    if ffn.get("num_experts_per_tok"):
-        facts.append(f"top-{ffn.get('num_experts_per_tok')}")
     routing = ffn.get("routing") or {}
+    if routing.get("selection_count"):
+        facts.append(f"top-{routing.get('selection_count')}")
     if routing.get("scoring_func"):
         facts.append(str(routing["scoring_func"]))
-    if (routing.get("n_group") or 0) > 1 and routing.get("topk_group"):
+    if routing.get("grouped"):
         facts.append(f"keep {routing['topk_group']}/{routing['n_group']} groups")
-    if routing.get("norm_topk_prob"):
-        facts.append("renormalized")
-    if routing.get("routed_scaling_factor"):
+    if routing.get("normalization_kind") == "sum":
+        facts.append("sum-renormalized")
+    elif routing.get("normalization_kind") == "p_norm":
+        facts.append(f"p-norm {routing.get('normalization_value')}")
+    if routing.get("routed_scaling_factor") not in (None, 1, 1.0):
         facts.append(f"scale {routing['routed_scaling_factor']}")
     return facts
 

@@ -793,6 +793,27 @@ def test_guarded_constructors_for_one_field_are_rivals_not_two_children(tmp_path
     assert len({r.site for r in conflict.rivals}) == 2
 
 
+def test_ifexp_constructor_and_none_are_rivals_not_one_child(tmp_path):
+    src = """
+        class Dense: pass
+        class Block:
+            def __init__(self, config):
+                self.ffn = Dense() if config.enabled else None
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Block"))
+    assert _child(graph.root, "ffn") is None
+    assert any(
+        item.field == "ffn" and item.kind == "rival_owner"
+        for item in graph.root.unresolved)
+    conflict = next(
+        item for item in graph.conflicts
+        if item.kind == "rival_owner_chain")
+    assert len(conflict.rivals) == 2
+    assert sum(item.candidate is None for item in conflict.rivals) == 1
+    assert sum(item.candidate is not None for item in conflict.rivals) == 1
+
+
 def test_helper_with_rival_return_constructions_is_not_selected(tmp_path):
     src = """
         class Dense: pass

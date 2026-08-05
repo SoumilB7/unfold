@@ -48,9 +48,10 @@ ORDINARY_FFN_DRAWN = frozenset({
     "activation", "gated", "projection_mode", "intermediate_size",
 })
 EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
+ROUTER_DRAWN = frozenset({"routing_policy"})
 # Surface-level compatibility/obligation view.  Owner-qualified gates use the
-# two sets above and never attribute an expert fact to the ordinary FFN.
-FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN
+# three sets above and never attribute an expert fact to the ordinary FFN.
+FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN | ROUTER_DRAWN
 LAYER_DRAWN = frozenset({
     "norm_kind", "norm_placement", "residual_topology",
     "parallel_norm_count",
@@ -67,6 +68,7 @@ MODEL_DRAWN = frozenset({
 DRAWN_PAIRS = frozenset(
     [("decoder.attention", leaf) for leaf in ATTENTION_DRAWN]
     + [("decoder.ffn", leaf) for leaf in ORDINARY_FFN_DRAWN]
+    + [("decoder.ffn", leaf) for leaf in ROUTER_DRAWN]
     + [("decoder.ffn.expert", leaf) for leaf in EXPERT_FFN_DRAWN]
     + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]
     + [("model", leaf) for leaf in MODEL_DRAWN]
@@ -108,6 +110,11 @@ def ffn_facts(ir) -> frozenset:
     )
 
 
+def router_facts(ir) -> frozenset:
+    """Facts visibly projected by the exact router-policy drill."""
+    return projected_keys(ir, "ffn", ROUTER_DRAWN)
+
+
 def layer_and_model_facts(ir) -> frozenset:
     return projected_keys(ir, "layer", LAYER_DRAWN) | projected_keys(ir, "model", MODEL_DRAWN)
 
@@ -115,7 +122,9 @@ def layer_and_model_facts(ir) -> frozenset:
 __all__ = [
     "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
     "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "ORDINARY_FFN_DRAWN",
+    "ROUTER_DRAWN",
     "EXPERT_FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN",
     "family_segment", "fact_provenance", "projected_keys",
-    "attention_facts", "ffn_facts", "layer_and_model_facts",
+    "attention_facts", "ffn_facts", "router_facts",
+    "layer_and_model_facts",
 ]

@@ -260,6 +260,20 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         conformance="nested_callable",
     ),
     FactDefinition(
+        key="routing_policy",
+        value_types=frozenset({"dict", "NoneType"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default",
+            "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.ffn"}),
+        projections=frozenset({"ffn_detail", "json"}),
+        unknown_policy="pale_undeclared",
+        notes="U7/T-12: the exact route callable owns operation presence and "
+              "order; config supplies only exact operands cited by that code.",
+        conformance="nested_callable",
+    ),
+    FactDefinition(
         key="bias",
         # U2-R9 (witness 26): a composite decoder whose bias evidence cannot
         # resolve records an HONEST ambiguous/None row (never a chosen value).
@@ -498,7 +512,8 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="norm_placement",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({
-            "code_proven", "code_and_config", "ambiguous", "oracle_missing",
+            "code_proven", "code_and_config", "class_default",
+            "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
@@ -512,7 +527,8 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="residual_topology",
         value_types=frozenset({"str"}),
         allowed_statuses=frozenset({
-            "code_proven", "code_and_config", "ambiguous", "oracle_missing",
+            "code_proven", "code_and_config", "class_default",
+            "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
@@ -524,13 +540,15 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="parallel_norm_count",
         value_types=frozenset({"int", "NoneType"}),
         allowed_statuses=frozenset({
-            "code_proven", "ambiguous", "oracle_missing",
+            "code_proven", "code_and_config", "class_default",
+            "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.layer"}),
         projections=frozenset({"architecture_view", "json"}),
         unknown_policy="omit",
         notes="exact number of distinct normalization occurrences feeding "
-              "the two proven parallel branches",
+              "the two proven parallel branches; a config tier is legal only "
+              "when exact source guards select those branches",
     ),
     FactDefinition(
         key="scores_scale",

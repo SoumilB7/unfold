@@ -1502,7 +1502,8 @@ class XMoE(nn.Module):
         return topk_indices, topk_weights
 
     def forward(self, hidden_states):
-        return hidden_states
+        indices, weights = self.route_tokens_to_experts(hidden_states)
+        return indices, weights
 '''
 
 _MIXTRAL_SHAPED_ROUTER = '''
@@ -1520,7 +1521,7 @@ class XSparseMoeBlock(nn.Module):
         router_logits = self.gate(hidden_states)
         routing_weights = torch.nn.functional.softmax(router_logits, dim=1, dtype=torch.float)
         routing_weights, selected_experts = torch.topk(routing_weights, self.top_k, dim=-1)
-        return routing_weights
+        return selected_experts, routing_weights
 '''
 
 _SPARSEMIXER_SHAPED_ROUTER = '''
@@ -1529,11 +1530,20 @@ from torch import nn
 
 
 def sparsemixer(scores, top_k, jitter_eps):
-    masked_scores = scores.masked_fill(scores < 0, float("-inf"))
+    threshold, selected = scores.max(dim=-1, keepdim=True)
+    masked_scores = scores.masked_fill(scores < threshold, float("-inf"))
     masked_scores = torch.softmax(masked_scores, dim=-1)
-    selected = torch.topk(masked_scores, top_k, dim=-1)[1]
     weights = masked_scores.gather(dim=-1, index=selected)
-    return weights, selected
+    remainder = torch.scatter(scores, -1, selected, float("-inf"))
+    threshold_2, selected_2 = remainder.max(dim=-1, keepdim=True)
+    masked_scores_2 = remainder.masked_fill(
+        remainder < threshold_2, float("-inf"))
+    masked_scores_2 = torch.softmax(masked_scores_2, dim=-1)
+    weights_2 = masked_scores_2.gather(dim=-1, index=selected_2)
+    return (
+        torch.concat((weights, weights_2), dim=-1),
+        torch.concat((selected, selected_2), dim=-1),
+    )
 
 
 class XPhiMoeBlock(nn.Module):
@@ -1545,7 +1555,7 @@ class XPhiMoeBlock(nn.Module):
     def forward(self, hidden_states):
         router_logits = self.gate(hidden_states)
         routing_weights, selected_experts = sparsemixer(router_logits, self.top_k, jitter_eps=0.01)
-        return routing_weights
+        return selected_experts, routing_weights
 '''
 
 _GPTOSS_SHAPED_ROUTER = '''
@@ -1577,71 +1587,161 @@ class XTopKRouter(nn.Module):
         router_logits = F.linear(hidden_states, self.weight)
         router_top_value, router_indices = torch.topk(router_logits, self.top_k, dim=-1)
         router_scores = torch.nn.functional.softmax(router_top_value, dim=1)
-        return router_scores, router_indices
+        return router_indices, router_scores
 '''
 
 
-def _router_ev(tmp_path, src):
-    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
+def _router_ev(tmp_path, src, implementation):
+    from model_unfolder.evidence import program_index as pi
+    from model_unfolder.evidence.router import (
+        decoder_router_selection_for_path,
+    )
+    from model_unfolder.evidence.models import SourceBundle
     import hashlib
-    # unique filename per distinct source: _parse_defs is lru_cached on path, so
-    # two calls to the same path in one test would reuse the first parse.
+    src += f'''\n
+class XExpertStorage(nn.Module):
+    def __init__(self, config):
+        self.count = config.num_local_experts
+        self.width = config.intermediate_size
+        self.hidden = config.hidden_size
+        self.fused = nn.Parameter(torch.empty(
+            self.count, 2 * self.width, self.hidden))
+        self.down = nn.Parameter(torch.empty(
+            self.count, self.hidden, self.width))
+    def forward(self, hidden_states, routes, weights):
+        out = torch.zeros_like(hidden_states)
+        for expert in routes:
+            gate, up = torch.nn.functional.linear(
+                hidden_states, self.fused[expert]).chunk(2, dim=-1)
+            mixed = torch.nn.functional.silu(gate) * up
+            value = torch.nn.functional.linear(mixed, self.down[expert])
+            out.index_add_(0, expert, value * weights)
+        return out
+
+class XRoutedCompute(nn.Module):
+    def __init__(self, config):
+        self.route = {implementation}(config)
+        self.experts = XExpertStorage(config)
+    def forward(self, hidden_states):
+        indices, weights = self.route(hidden_states)
+        return self.experts(hidden_states, indices, weights)
+
+class Block(nn.Module):
+    def __init__(self, config):
+        self.compute = XRoutedCompute(config)
+    def forward(self, hidden_states):
+        return self.compute(hidden_states)
+
+class Model(nn.Module):
+    def __init__(self, config):
+        self.layers = nn.ModuleList(
+            [Block(config) for _ in range(config.num_hidden_layers)])
+    def forward(self, hidden_states):
+        for layer in self.layers:
+            hidden_states = layer(hidden_states)
+        return hidden_states
+
+class Wrapper(nn.Module):
+    base_model_prefix = "model"
+    def __init__(self, config):
+        self.model = Model(config)
+'''
     f = tmp_path / f"modeling_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
     f.write_text(src)
-    return decoder_router_evidence_from_files((str(f),))
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "Wrapper"},
+        architecture="Wrapper")
+    result = decoder_router_selection_for_path(
+        pi.build_program_index(bundle), bundle, (), allow_root_stage=True)
+    assert result.status == "resolved", result
+    return result.value
 
 
 def test_router_sigmoid_and_aux_free_bias_from_split_router_and_block(tmp_path):
     """DeepSeek-V3/GLM-4.5 shape: the bias buffer lives in the router class, the
     sigmoid + group + gather in the MoE block's route_tokens_to_experts — the
-    reader scans the UNION and reports sigmoid + bias + grouped."""
-    ev = _router_ev(tmp_path, _DSV3_SHAPED_ROUTER)
-    assert ev is not None
-    assert ev.scoring_fn == "sigmoid" and ev.bias_correction and ev.grouped
-    assert not ev.sparsemixer
+    exact reader follows the invoked block/helper path and proves sigmoid+bias."""
+    ev = _router_ev(tmp_path, _DSV3_SHAPED_ROUTER, "XMoE")
+    assert ev.scoring_fn == "sigmoid" and ev.bias_correction
+    assert ev.selection_kind == "topk"
 
 
 def test_router_plain_softmax_topk(tmp_path):
-    ev = _router_ev(tmp_path, _MIXTRAL_SHAPED_ROUTER)
+    ev = _router_ev(tmp_path, _MIXTRAL_SHAPED_ROUTER, "XSparseMoeBlock")
     assert ev.scoring_fn == "softmax"
-    assert not ev.bias_correction and not ev.grouped and not ev.sparsemixer
+    assert not ev.bias_correction and ev.selection_kind == "topk"
 
 
 def test_router_sparsemixer_followed_into_the_free_function(tmp_path):
     """Phi shape: routing delegates to a module-level ``sparsemixer`` — the
     reader follows it one hop, reports sparsemixer + its softmax scoring."""
-    ev = _router_ev(tmp_path, _SPARSEMIXER_SHAPED_ROUTER)
-    assert ev.sparsemixer and ev.scoring_fn == "softmax"
+    ev = _router_ev(tmp_path, _SPARSEMIXER_SHAPED_ROUTER, "XPhiMoeBlock")
+    assert ev.selection_kind == "sparse_mixer" and ev.scoring_fn == "softmax"
     assert not ev.bias_correction
 
 
 def test_router_ignores_expert_activation_sigmoid(tmp_path):
     """gpt-oss shape: the EXPERT GLU uses ``torch.sigmoid(gate * alpha)`` — an
-    activation, not routing.  The score-transform detector keys on routing-logit
-    NAMES, so scoring resolves to the router's softmax, never the expert sigmoid."""
-    ev = _router_ev(tmp_path, _GPTOSS_SHAPED_ROUTER)
+    activation, not routing.  Exact expert-storage ownership plus local
+    score-to-selection dataflow resolves the router's softmax and prevents the
+    expert sigmoid from leaking across that boundary."""
+    ev = _router_ev(tmp_path, _GPTOSS_SHAPED_ROUTER, "XTopKRouter")
     assert ev.scoring_fn == "softmax", f"expert sigmoid leaked: {ev}"
-    assert not ev.bias_correction and not ev.sparsemixer
+    assert not ev.bias_correction and ev.selection_kind == "topk"
 
 
 def test_router_none_for_dense_model(tmp_path):
-    from model_unfolder.evidence.patterns import decoder_router_evidence_from_files
-    f = tmp_path / "modeling_dense.py"
-    f.write_text("import torch\nfrom torch import nn\n\nclass XMLP(nn.Module):\n"
-                 "    def __init__(self, config):\n        super().__init__()\n"
-                 "        self.fc = nn.Linear(4, 4)\n    def forward(self, x):\n        return self.fc(x)\n")
-    assert decoder_router_evidence_from_files((str(f),)) is None
+    src = """
+import torch
+from torch import nn
+class XMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.fc = nn.Linear(4, 4)
+    def forward(self, x):
+        return self.fc(x)
+"""
+    from model_unfolder.evidence import program_index as pi
+    from model_unfolder.evidence.router import decoder_router_selection_for_path
+    from model_unfolder.evidence.models import SourceBundle
+    import hashlib
+    src += """
+class Block(nn.Module):
+    def __init__(self, config): self.compute = XMLP(config)
+    def forward(self, x): return self.compute(x)
+class Model(nn.Module):
+    def __init__(self, config):
+        self.layers = nn.ModuleList([Block(config) for _ in range(config.num_hidden_layers)])
+    def forward(self, x):
+        for layer in self.layers: x = layer(x)
+        return x
+class Wrapper(nn.Module):
+    base_model_prefix = "model"
+    def __init__(self, config): self.model = Model(config)
+"""
+    f = tmp_path / f"dense_{hashlib.md5(src.encode()).hexdigest()[:8]}.py"
+    f.write_text(src)
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    result = decoder_router_selection_for_path(
+        pi.build_program_index(bundle), bundle, (), allow_root_stage=True)
+    assert result.status == "failed"
 
 
 def test_glm45_router_draws_sigmoid_bias_and_gather_from_code():
     """The headline S2 fix: GLM-4.5's config lacks scoring_func/topk_method but
     its code enacts DeepSeek-V3 routing — the drawn router must be sigmoid with
-    the aux-loss-free bias and the raw-weight gather, not a plain softmax."""
+    a stored selection-only bias and raw-weight gather, not a plain softmax."""
     from transformers import AutoConfig
     import model_unfolder as mu
     html = mu.unfold(AutoConfig.for_model("glm4_moe")).to_html()
     assert "sigmoid" in html
-    assert "load-balancing" in html          # aux-loss-free bias card
+    assert "Stored selection bias" in html   # exact selection-only bias card
+    assert "load-balancing" not in html      # purpose/update policy is unproved
     assert "Gather weights" in html          # raw-weight gather step
     assert "softmax gating" not in html
 
@@ -1669,8 +1769,8 @@ def test_router_scoring_position_before_vs_after_topk(tmp_path):
     gpt-oss."""
     before_shape = _DSV3_SHAPED_ROUTER                 # sigmoid() ... then torch.topk
     after_shape = _GPTOSS_SHAPED_ROUTER                # torch.topk ... then softmax
-    assert _router_ev(tmp_path, before_shape).scoring_before_topk is True
-    assert _router_ev(tmp_path, after_shape).scoring_before_topk is False
+    assert _router_ev(tmp_path, before_shape, "XMoE").scoring_before_topk is True
+    assert _router_ev(tmp_path, after_shape, "XTopKRouter").scoring_before_topk is False
 
 
 def test_router_ignores_framework_container_aux_loss_softmax(tmp_path):
@@ -1690,7 +1790,7 @@ class XForCausalLM(nn.Module):
         routing_weights = torch.nn.functional.softmax(router_logits, dim=-1)
         return routing_weights
 '''
-    ev = _router_ev(tmp_path, src)
+    ev = _router_ev(tmp_path, src, "XTopKRouter")
     assert ev.scoring_fn == "softmax" and ev.scoring_before_topk is False
 
 
@@ -2296,11 +2396,8 @@ def test_unparsed_router_raises_ambiguity_not_softmax(tmp_path):
     (config-declared or code-read) carry no envelope."""
     import hashlib, json, pathlib
     from model_unfolder.adapters.transformer.parser import _moe_routing
+    from model_unfolder.evidence.context import ParseContext
     from model_unfolder.evidence.models import SourceBundle
-
-    class _Ctx:
-        def __init__(self, bundle):
-            self.source_bundle = bundle
 
     # A MoE-ish source whose router class the extractor can't resolve (no
     # routing tokens at all) — scoring stays unread while source exists.
@@ -2320,12 +2417,18 @@ class OpaqueBlock(nn.Module):
     class _Cfg:
         num_experts = 8
         num_experts_per_tok = 2
-    routing = _moe_routing(_Cfg(), _Ctx(SourceBundle(source="local", files=(str(f),))))
+    bundle = SourceBundle(
+        source="local", files=(str(f),),
+        component_files={"root": (str(f),)},
+        component_architectures={"root": "OpaqueBlock"},
+        architecture="OpaqueBlock")
+    routing = _moe_routing(_Cfg(), ParseContext(bundle))
     assert routing and routing.get("evidence", {}).get("status") == "ambiguous"
     assert "scoring_func" not in routing
 
     # no source at all → oracle_missing territory, NO ambiguity stamp
-    routing2 = _moe_routing(_Cfg(), _Ctx(SourceBundle(source="local", files=())))
+    routing2 = _moe_routing(
+        _Cfg(), ParseContext(SourceBundle(source="local", files=())))
     assert not (routing2 or {}).get("evidence")
 
     # blessed MoE fixtures stay envelope-free (config- or code-resolved)

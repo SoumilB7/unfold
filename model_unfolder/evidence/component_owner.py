@@ -21,6 +21,7 @@ from typing import Mapping
 
 from .program_index import (
     ConflictRecord,
+    ConstructionSite,
     ConstructionSiteId,
     ParseFailure,
     ProgramIndex,
@@ -366,6 +367,37 @@ def resolve_construction_candidate_symbols(
     if candidate.symbol is not None:
         return (candidate.symbol,)
     return _Resolver(index, 64)._resolve_import_binding(site.owner.source, candidate)
+
+
+def resolve_child_config_bindings(
+    index: ProgramIndex,
+    parent: OwnerNode,
+    site: ConstructionSite,
+    child_symbol: SymbolId,
+) -> tuple[ConfigBinding, ...]:
+    """Propagate exact config addresses across one proven construction edge.
+
+    This is neutral address evidence.  It uses the owner resolver's canonical
+    constructor argument/local-alias flow and preserves rival or invalidated
+    prefixes.  A mechanism reader may consume only a binding whose
+    ``resolved_prefix`` is unique.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("child config binding requires a ProgramIndex")
+    if not isinstance(parent, OwnerNode):
+        raise TypeError("child config binding requires an OwnerNode")
+    if not isinstance(site, ConstructionSite) or site.owner != parent.symbol:
+        raise ValueError("the construction site belongs to the exact parent")
+    if not isinstance(child_symbol, SymbolId) \
+            or child_symbol not in resolve_construction_candidate_symbols(index, site):
+        raise ValueError("the child is an exact candidate of the construction site")
+    flows = {
+        binding.parameter: _ConfigFlow(
+            binding.prefixes, binding.invalidated_paths, binding.origin)
+        for binding in parent.config_bindings
+    }
+    return _Resolver(index, 64)._child_bindings(
+        site, child_symbol, flows, parent.occurrence)
 
 
 class _Resolver:
@@ -1845,6 +1877,7 @@ __all__ = [
     "ConfigPrefixRival", "UnresolvedChild", "OwnerNode", "OwnerGraph",
     "ConstructedComponentRoot", "require_resolved_component_root",
     "resolve_owner_graph", "resolve_construction_candidate_symbols",
+    "resolve_child_config_bindings",
     "ComponentRootCandidate", "ComponentRootResolution", "resolve_component_root",
     "FrameworkAddressProtocol", "ModelStageDeclaration",
     "DeclaredModelStageResolution", "resolve_declared_model_stage",

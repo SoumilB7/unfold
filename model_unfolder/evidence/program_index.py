@@ -1679,6 +1679,36 @@ class _SourceWalker:
 
     def _maybe_construction(self, field_name: str, value, guard: tuple,
                             scan: _CallableScan) -> None:
+        # Conditional-expression construction is two exact occurrences, not
+        # one multi-candidate occurrence and not an omitted dynamic field.
+        # Both sites retain the same decision span so a later address resolver
+        # can prove (or refuse) exhaustiveness without re-opening the AST.
+        # This is syntax observation only: the index never chooses a branch.
+        if isinstance(value, ast.IfExp):
+            decision_span = self._span(value)
+            branches = (
+                (value.body, GuardStep(
+                    "if", self._expr(value.test), decision_span)),
+                (value.orelse, GuardStep("else", None, decision_span)),
+            )
+            if not any(isinstance(branch, ast.Call)
+                       for branch, _step in branches):
+                return
+            for branch, step in branches:
+                if isinstance(branch, ast.Call):
+                    self.sites.append(self._site(
+                        field_name, "field", branch, guard + (step,), scan,
+                        via="conditional_expression"))
+                else:
+                    # A non-constructor alternative is still material owner
+                    # evidence once its rival branch constructs.  Omitting it
+                    # would let ``Child(...) if flag else None`` certify Child
+                    # unconditionally.  Preserve an exact zero-candidate site
+                    # so ComponentOwner reports the field as unresolved/rival.
+                    self.sites.append(self._opaque_construction_site(
+                        field_name, branch, guard + (step,), scan,
+                        via="conditional_expression_non_constructor"))
+            return
         # container? self.x = nn.ModuleList([...]) / Sequential(...) / ModuleDict
         if isinstance(value, ast.Call):
             cname = _short_name(value.func)
@@ -1808,6 +1838,32 @@ class _SourceWalker:
                          for k in call.keywords),
             guard=guard, candidates=candidates,
             via=resolved_via or via, span=span)
+
+    def _opaque_construction_site(
+            self, target: str, expression, guard: tuple,
+            scan: _CallableScan, *, via: str) -> ConstructionSite:
+        """Retain one exact non-constructor rival of a constructor branch."""
+        key = (scan.enclosing.qualified_name, expression.lineno)
+        ordinal = self._line_ordinals.get(key, 0)
+        self._line_ordinals[key] = ordinal + 1
+        span = self._span(expression)
+        site_id = ConstructionSiteId(
+            scan.owner, scan.enclosing, span, ordinal)
+        self.unsupported.append(UnsupportedSyntaxRecord(
+            scan.owner, scan.enclosing,
+            "conditional_non_constructor", self._seg(expression), span))
+        return ConstructionSite(
+            site_id=site_id,
+            owner=scan.owner,
+            enclosing_callable=scan.enclosing,
+            target_kind="field",
+            target=target,
+            constructor=self._expr(expression),
+            guard=guard,
+            candidates=(),
+            via=via,
+            span=span,
+        )
 
     def _candidates(self, func) -> tuple:
         """Zero, one or several proof-bearing child candidates.  The walker

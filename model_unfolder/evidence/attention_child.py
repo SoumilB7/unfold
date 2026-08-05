@@ -47,6 +47,8 @@ from .reader_result import (
 
 _SDPA_PROTOCOLS = frozenset({
     "torch.nn.functional.scaled_dot_product_attention",
+    "...modeling_flash_attention_utils._flash_attention_forward",
+    "transformers.modeling_flash_attention_utils._flash_attention_forward",
 })
 _SOFTMAX_PROTOCOLS = frozenset({
     "torch.nn.functional.softmax",
@@ -89,7 +91,8 @@ class AttentionComputeProof:
         if len(set(self.input_calls)) != len(self.input_calls):
             raise ValueError("attention input calls are unique")
         if self.protocol not in {
-                "scaled_dot_product_attention", "dot_softmax"}:
+                "scaled_dot_product_attention", "dot_softmax",
+                "branch_exhaustive"}:
             raise ValueError(f"unknown attention-compute protocol {self.protocol!r}")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
@@ -443,6 +446,383 @@ def attention_compute_proof_for_symbol(
     return _attention_compute_proof(index, child_symbol)
 
 
+def attention_compute_positive_proof_for_symbol(
+    index: ProgramIndex,
+    child_symbol: SymbolId,
+) -> AttentionComputeProof | None:
+    """Positive attention evidence for candidate-equivalence boundaries.
+
+    The ordinary child resolver remains strict about unconditional compute.
+    The only extra positive case admitted here is an unconditional exact call
+    whose framework-protocol import is availability-guarded at module scope.
+    The guard controls whether that implementation class can be imported; it
+    does not select a different mechanism inside the callable.  A merely
+    guarded dot/softmax path is insufficient because another runtime branch
+    could implement something else.  Rival candidates are still evaluated
+    independently by the caller; this function never selects one.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError(
+            "attention_compute_positive_proof_for_symbol requires a ProgramIndex")
+    if not isinstance(child_symbol, SymbolId):
+        raise TypeError(
+            "attention_compute_positive_proof_for_symbol requires an exact SymbolId")
+    strict = _attention_compute_proof(index, child_symbol)
+    return strict \
+        or _exhaustive_branch_attention_compute_proof(index, child_symbol) \
+        or _guarded_attention_compute_proof(index, child_symbol)
+
+
+def _exhaustive_branch_attention_compute_proof(index, child_symbol):
+    """Prove attention on every leaf of one exact ``if``/``else`` tree.
+
+    This is deliberately narrower than general control-flow completeness.  It
+    accepts only a callable with no published unsupported execution region and
+    a set of positive protocol paths that recursively covers both sides of
+    every observed decision.  A lone familiar branch, two unrelated guards,
+    or a missing ``else`` therefore remains unknown.
+    """
+    for callable_symbol, entry_call in _reachable_compute_callables(
+            index, child_symbol):
+        if index.unsupported_execution_in(callable_symbol):
+            continue
+        calls = index.calls_in(callable_symbol)
+        sdpa = []
+        softmax = []
+        dots = []
+        for call in calls:
+            target, spans = _positive_call_target(index, call)
+            if target in _SDPA_PROTOCOLS:
+                sdpa.append((call.guard, call, spans))
+            elif target in _SOFTMAX_PROTOCOLS:
+                softmax.append((call.guard, call, spans))
+            elif target in _DOT_PROTOCOLS:
+                dots.append((call.guard, call, spans))
+        expression_dots = []
+        for expression, guard in _callable_expressions(
+                index, callable_symbol):
+            spans = _matmul_spans(expression)
+            if spans:
+                expression_dots.append((guard, spans))
+
+        paths = []
+        path_calls = []
+        path_spans = []
+        for guard, call, spans in sdpa:
+            if not guard or not _call_reaches_callable_return(index, call):
+                continue
+            paths.append(guard)
+            path_calls.append(call)
+            path_spans.extend((call.span, *spans))
+        dot_guards = {
+            guard for guard, _call, _spans in dots
+        } | {
+            guard for guard, _spans in expression_dots
+        }
+        for guard, call, spans in softmax:
+            live_dots = tuple(
+                dot_call for dot_guard, dot_call, _dot_spans in dots
+                if dot_guard == guard
+                and _call_reaches_call_input(index, dot_call, call))
+            expression_dot = any(
+                dot_guard == guard and any(
+                    _matmul_reaches_call(index, callable_symbol, dot_span, call)
+                    for dot_span in dot_spans)
+                for dot_guard, dot_spans in expression_dots)
+            if not guard or guard not in dot_guards \
+                    or not _call_reaches_callable_return(index, call) \
+                    or not (live_dots or expression_dot):
+                continue
+            paths.append(guard)
+            path_calls.append(call)
+            path_spans.extend((call.span, *spans))
+            path_spans.extend(
+                span
+                for dot_guard, dot_call, dot_spans in dots
+                if dot_guard == guard
+                for span in (dot_call.span, *dot_spans))
+            path_spans.extend(
+                span
+                for dot_guard, dot_spans in expression_dots
+                if dot_guard == guard
+                for span in dot_spans)
+        unique_paths = tuple(dict.fromkeys(paths))
+        if not unique_paths or not _guard_paths_are_exhaustive(unique_paths):
+            continue
+        calls_on_paths = tuple(dict.fromkeys(path_calls))
+        if not calls_on_paths:
+            continue
+        selected_entry = entry_call or min(
+            calls_on_paths, key=lambda item: item.lexical_order)
+        spans = tuple(dict.fromkeys(
+            span for span in (selected_entry.span, *path_spans)
+            if isinstance(span, SourceSpan)))
+        return AttentionComputeProof(
+            child_symbol, callable_symbol, selected_entry, calls_on_paths,
+            "branch_exhaustive", spans)
+    return None
+
+
+def _call_reaches_callable_return(index, producer):
+    returns = tuple(
+        item for item in index.return_observations_in(
+            producer.enclosing_callable)
+        if item.value is not None and item.span is not None)
+    return any(_call_reaches_expressions(
+        index, producer, item.span, (item.value,), item.guard)
+        for item in returns)
+
+
+def _call_reaches_call_input(index, producer, consumer):
+    if producer.enclosing_callable != consumer.enclosing_callable \
+            or consumer.span is None:
+        return False
+    return _call_reaches_expressions(
+        index, producer, consumer.span,
+        (*consumer.args, *(value for _key, value in consumer.kwargs)),
+        consumer.guard)
+
+
+def _call_reaches_expressions(
+        index, producer, consumer_span, expressions, consumer_guard):
+    """Positive versioned name flow on one exact already-proven branch leaf.
+
+    The whole callable is not claimed complete.  We follow only bindings on
+    the producer leaf itself or its enclosing ancestor path; a rival ``else``
+    neither donates data nor kills the live version.  Unsupported regions or
+    intervening transfers on that path refuse the relation.
+    """
+    if producer.span is None or consumer_span is None \
+            or not _guard_on_path(consumer_guard, producer.guard):
+        return False
+    if any(_expression_contains_span(item, producer.span)
+           for item in expressions):
+        return True
+    if not _span_before(producer.span, consumer_span):
+        return False
+    if any(_span_between(producer.span, region.span, consumer_span)
+           and _guard_on_path(region.guard, producer.guard)
+           for region in index.unsupported_execution_in(
+               producer.enclosing_callable)
+           if region.span is not None):
+        return False
+    if any(_span_between(producer.span, transfer.span, consumer_span)
+           and _guard_on_path(transfer.guard, producer.guard)
+           for transfer in index.control_transfers_in(
+               producer.enclosing_callable)
+           if transfer.span is not None):
+        return False
+    sources = tuple(
+        item for item in index.bindings_in(producer.enclosing_callable)
+        if item.value is not None and item.span is not None
+        and _expression_contains_span(item.value, producer.span))
+    if not sources:
+        return any(_expression_contains_span(item, producer.span)
+                   for item in expressions)
+    if len(sources) != 1 or sources[0].guard != producer.guard:
+        return False
+    source = sources[0]
+    live = set(_target_names(source.targets))
+    if not live:
+        return False
+    for binding in sorted(
+            index.bindings_in(producer.enclosing_callable),
+            key=lambda item: _span_sort_key(item.span)):
+        if binding is source or binding.span is None \
+                or not _span_before(source.span, binding.span) \
+                or not _span_before(binding.span, consumer_span):
+            continue
+        if not _guard_on_path(binding.guard, producer.guard):
+            continue
+        read = _expression_names(binding.value)
+        written = set(_target_names(binding.targets))
+        if binding.assignment_kind == "augassign":
+            read.update(written)
+        live.difference_update(written - read)
+        if read & live:
+            live.update(written)
+    return bool(live & set().union(*(
+        _expression_names(item) for item in expressions)))
+
+
+def _guard_on_path(candidate, leaf):
+    """Candidate is the exact leaf or one of its enclosing guard prefixes."""
+    candidate = tuple(candidate)
+    leaf = tuple(leaf)
+    return len(candidate) <= len(leaf) and leaf[:len(candidate)] == candidate
+
+
+def _span_between(start, middle, end):
+    return middle is not None and _span_before(start, middle) \
+        and _span_strict_before(middle, end)
+
+
+def _matmul_reaches_call(index, callable_symbol, dot_span, consumer):
+    inputs = (*consumer.args, *(value for _key, value in consumer.kwargs))
+    if any(_expression_contains_span(item, dot_span) for item in inputs):
+        return True
+    sources = tuple(
+        item for item in index.bindings_in(callable_symbol)
+        if item.value is not None and item.span is not None
+        and _expression_contains_span(item.value, dot_span))
+    if len(sources) != 1 or not _guard_on_path(
+            consumer.guard, sources[0].guard):
+        return False
+    source = sources[0]
+    live = set(_target_names(source.targets))
+    if not live:
+        return False
+    for binding in sorted(
+            index.bindings_in(callable_symbol),
+            key=lambda item: _span_sort_key(item.span)):
+        if binding is source or binding.span is None \
+                or not _span_before(source.span, binding.span) \
+                or not _span_before(binding.span, consumer.span):
+            continue
+        # A rival/opaque path cannot be used as an alias proof.  Bindings on
+        # the exact same leaf are ordinary versioned local dataflow.
+        if not _guard_on_path(binding.guard, source.guard):
+            continue
+        read = _expression_names(binding.value)
+        written = set(_target_names(binding.targets))
+        if binding.assignment_kind == "augassign":
+            read.update(written)
+        live.difference_update(written - read)
+        if read & live:
+            live.update(written)
+    return bool(live & set().union(*(
+        _expression_names(item) for item in inputs)))
+
+
+def _target_names(targets):
+    names = []
+    for target in targets:
+        if target.kind == "name" and target.name:
+            names.append(target.name)
+        elif target.kind in {"tuple", "list"}:
+            nested = _target_names(target.children)
+            if not nested:
+                return ()
+            names.extend(nested)
+        else:
+            return ()
+    return tuple(names)
+
+
+def _expression_names(expression):
+    if expression is None:
+        return set()
+    out = {expression.name} \
+        if expression.kind == "name" and expression.name else set()
+    for child in expression.children:
+        if isinstance(child, ExprNode):
+            out.update(_expression_names(child))
+    for _key, child in expression.keyword_children:
+        if isinstance(child, ExprNode):
+            out.update(_expression_names(child))
+    return out
+
+
+def _expression_contains_span(expression, span):
+    if expression is None or span is None:
+        return False
+    if expression.span == span:
+        return True
+    return any(
+        _expression_contains_span(child, span)
+        for child in expression.children
+        if isinstance(child, ExprNode)) or any(
+        _expression_contains_span(child, span)
+        for _key, child in expression.keyword_children
+        if isinstance(child, ExprNode))
+
+
+def _span_before(left, right):
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) \
+        <= (right.line, right.col)
+
+
+def _span_strict_before(left, right):
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) \
+        < (right.line, right.col)
+
+
+def _guard_paths_are_exhaustive(paths):
+    """Prove an exact nested if/else tree from positive leaf paths only."""
+    paths = tuple(tuple(path) for path in paths)
+    if not paths or any(not path for path in paths):
+        return False
+
+    def covers(active):
+        if any(not path for path in active):
+            return all(not path for path in active)
+        identities = {_guard_identity(path[0]) for path in active}
+        if len(identities) != 1:
+            return False
+        positive = tuple(
+            path[1:] for path in active
+            if path[0].kind in {"if", "elif"})
+        negative = tuple(
+            path[1:] for path in active if path[0].kind == "else")
+        return bool(positive and negative) \
+            and covers(positive) and covers(negative)
+
+    return covers(paths)
+
+
+def _guard_identity(step):
+    if step.span is None:
+        return None
+    span = step.span
+    return (
+        span.source, span.line, span.col,
+        span.end_line or span.line, span.end_col or span.col)
+
+
+def _guarded_attention_compute_proof(index, child_symbol):
+    for callable_symbol, entry_call in _reachable_compute_callables(
+            index, child_symbol):
+        for call in index.calls_in(callable_symbol):
+            target, spans = _positive_call_target(index, call)
+            if target in _SDPA_PROTOCOLS and not call.guard:
+                selected = entry_call or call
+                proof_spans = tuple(dict.fromkeys((
+                    selected.span, call.span, *spans)))
+                return AttentionComputeProof(
+                    child_symbol, callable_symbol, selected,
+                    ((entry_call,) if entry_call is not None else (call,)),
+                    "scaled_dot_product_attention", proof_spans)
+    return None
+
+
+def _positive_call_target(index, call):
+    """Resolve an exact call including an availability-guarded import.
+
+    The general import resolver correctly refuses guarded bindings as an
+    unconditional address.  At this positive-only boundary, however, an exact
+    call through a uniquely imported framework protocol proves what executes
+    whenever that candidate is runnable; a missing optional dependency would
+    raise rather than silently become another architecture mechanism.
+    """
+    target, spans = _exact_call_target(index, call)
+    if target is not None or call.callee.kind != "name" \
+            or not call.callee.name:
+        return target, spans
+    imports = tuple(
+        item for item in index.imports
+        if item.source == call.enclosing_callable.source
+        and item.alias == call.callee.name
+        and item.target in _SDPA_PROTOCOLS)
+    if len(imports) != 1:
+        return None, ()
+    binding = imports[0]
+    return binding.target, tuple(dict.fromkeys((call.span, binding.span)))
+
+
 def _reachable_compute_callables(
     index: ProgramIndex,
     child_symbol: SymbolId,
@@ -642,6 +1022,7 @@ __all__ = [
     "AttentionChildCensus",
     "AttentionComputeProof",
     "attention_compute_proof_for_symbol",
+    "attention_compute_positive_proof_for_symbol",
     "attention_child_positive_census",
     "attention_child_evidence",
 ]

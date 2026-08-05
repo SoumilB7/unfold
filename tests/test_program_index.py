@@ -425,6 +425,54 @@ def test_conditional_construction_keeps_both_branches_with_guards(tmp_path):
     assert {f.guard[-1].kind for f in assigns} == {"if", "else"}
 
 
+def test_conditional_expression_construction_keeps_two_exact_sites(tmp_path):
+    idx = _index(tmp_path, "modeling_ifexp_cond.py", """
+        class A:
+            pass
+        class B:
+            pass
+        class Blk:
+            def __init__(self, config):
+                self.ffn = A(config) if config.routed else B(config)
+    """)
+    sites = tuple(
+        item for item in idx.construction_sites if item.target == "ffn")
+    assert len(sites) == 2
+    assert {item.via for item in sites} == {"conditional_expression"}
+    assert {item.guard[-1].kind for item in sites} == {"if", "else"}
+    assert len({item.guard[-1].span for item in sites}) == 1
+    assert {
+        item.candidates[0].symbol.qualified_name for item in sites
+    } == {"A", "B"}
+    # The neutral execution boundary remains honest: observing both
+    # constructors does not make the conditional expression CFG-complete.
+    assert any(
+        item.construct_kind == "ifexp"
+        for item in idx.unsupported_execution)
+
+
+def test_conditional_expression_keeps_a_non_constructor_rival(tmp_path):
+    idx = _index(tmp_path, "modeling_ifexp_none.py", """
+        class A:
+            pass
+        class Blk:
+            def __init__(self, config):
+                self.ffn = A(config) if config.enabled else None
+    """)
+    sites = tuple(
+        item for item in idx.construction_sites if item.target == "ffn")
+    assert len(sites) == 2
+    assert {item.guard[-1].kind for item in sites} == {"if", "else"}
+    assert sorted(len(item.candidates) for item in sites) == [0, 1]
+    opaque = next(item for item in sites if not item.candidates)
+    assert opaque.via == "conditional_expression_non_constructor"
+    assert opaque.constructor.kind == "constant"
+    assert any(
+        item.syntax_kind == "conditional_non_constructor"
+        and item.span == opaque.span
+        for item in idx.unsupported_syntax)
+
+
 # --------------------------------------------------------------------------- #
 # Spec family 7 — equivalent candidates (same proven symbol at two sites)
 # --------------------------------------------------------------------------- #

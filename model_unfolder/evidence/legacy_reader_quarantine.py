@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "e69194ab94e1ca8ec05c6b25add33de4622ef9ebb45fcf7a4a9c2bfc0e20dcae")
+    "fa1e6452c14b6bd31b060f3044058facf9d0f12a7f5b74c69b9289b451a0fbb3")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "717825d6bd031930c20d571de6befc65faea5d7a3a00a5fa17f566b0d48140ab")
+    "fb858b985a61052d95d7c852dd3a6d4f8b6d3ed58421e4141e59dce49e0a1480")
 
 
 @dataclass(frozen=True)
@@ -101,11 +101,6 @@ LEGACY_SEMANTIC_READERS = (
          "whole-file diffusion-attention score-scaling interpretation",
          callers=(
              "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
-         )),
-    _row("decoder_router_evidence_from_files", "U7",
-         "whole-file router/mechanism interpretation",
-         callers=(
-             "model_unfolder/adapters/transformer/parser.py:_code_router",
          )),
     _row("attention_causality_from_files", "U8",
          "whole-file mask/causality interpretation",
@@ -271,9 +266,6 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/patterns.py",
            "attention_score_scaling_from_files", "legacy_model_source", "U10",
            "whole-file diffusion score-scaling interpreter"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "decoder_router_evidence_from_files", "legacy_model_source", "U7",
-           "whole-file router interpreter"),
     _parse("model_unfolder/evidence/patterns.py",
            "diffusion_axes_dims_rope_from_files", "legacy_model_source", "U10",
            "diffusion positional interpreter"),

@@ -53,6 +53,7 @@ def parallel_decoder_layer(
     hidden_size: int,
     *,
     norm_kind: str = "unknown",
+    norm_placement: str = "unknown",
     norm_count: int | None = None,
 ) -> LayerSpec:
     """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
@@ -61,8 +62,9 @@ def parallel_decoder_layer(
     1 = SHARED (GPT-J); 2 = SEPARATE norms before attention and the FFN (GPT-NeoX
     ``input_layernorm``+``post_attention_layernorm``, drawn as two, not one).
     """
-    blocks = parallel_decoder_layer_blocks(attention, ffn, hidden_size,
-                                           norm_kind=norm_kind, norm_count=norm_count)
+    blocks = parallel_decoder_layer_blocks(
+        attention, ffn, hidden_size, norm_kind=norm_kind,
+        norm_placement=norm_placement, norm_count=norm_count)
     return LayerSpec(
         index=index,
         attention=attention,
@@ -71,7 +73,7 @@ def parallel_decoder_layer(
         # The exact parallel-input reader proves pre-normalization only when it
         # resolves the real occurrences.  Parallel wiring alone is not a
         # one-norm convention.
-        norm_placement="pre" if norm_count in {1, 2} else "unknown",
+        norm_placement=norm_placement,
         residual_topology="parallel",
         parallel_norm_count=norm_count,
         blocks=blocks,

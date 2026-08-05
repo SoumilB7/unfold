@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .affine import construction_is_affine
 from .attention_storage import producer_sources_reaching_expressions
 from .component_owner import (
     ComponentRootResolution,
@@ -51,16 +52,6 @@ from .reader_result import (
 )
 
 
-_LINEAR_PROTOCOLS = frozenset({
-    "torch.nn.Linear",
-    "torch.nn.modules.linear.Linear",
-    # Transformers' Conv1D is a transposed-storage affine projection, not a
-    # convolutional architecture primitive.  Modeling modules normally import
-    # it through a package-relative binding; ExternalReferenceProof preserves
-    # that spelling exactly instead of guessing the installed package root.
-    "transformers.pytorch_utils.Conv1D",
-    "...pytorch_utils.Conv1D",
-})
 _FUNCTIONAL_ACTIVATIONS = {
     "torch.nn.functional.gelu": "gelu",
     "torch.nn.functional.relu": "relu",
@@ -668,8 +659,6 @@ def _conditional_ffn_alternatives(
         if _self_field(call.callee) in rival_fields)
     if not rival_calls:
         return None
-    if any(call.guard for call in rival_calls):
-        return ()
     groups = []
     for call in rival_calls:
         field = _self_field(call.callee)
@@ -692,6 +681,12 @@ def _conditional_ffn_alternatives(
         return ()
 
     call, sites = groups[0]
+    if call.guard:
+        # The field is an applicable FFN construction-alternative group, but
+        # its block invocation is conditional.  This is genuine unresolved
+        # FFN evidence; guarded calls on unrelated rival fields never reach
+        # this point and therefore cannot contaminate a proven direct FFN.
+        return ()
     variants = []
     for site in sites:
         candidates = resolve_construction_candidate_symbols(index, site)
@@ -861,9 +856,7 @@ def _mechanism_for_owner(
         construction = resolve_construction_call_in_graph(
             index, graph, owner_occurrence, call)
         if construction.status != "resolved" \
-                or construction.selected.kind != "external" \
-                or construction.selected.external_reference.qualified_target \
-                not in _LINEAR_PROTOCOLS \
+                or not construction_is_affine(index, construction.selected) \
                 or construction.selected.site.guard:
             continue
         occurrence = construction.selected.occurrence
@@ -908,7 +901,7 @@ def _mechanism_for_owner(
         index, graph, config_path_prefix, owner_occurrence,
         owner_symbol, forward,
         linear_calls, guarded_linear_calls, returned, upstream)
-    # Projection topology and activation selection are independent facts.  An
+    # Projection topology and activation identity are independent facts.  An
     # opaque/unbound activation dispatch must not erase a fully proven dense or
     # gated affine graph; it leaves only ``activation`` unknown.  The transform
     # must still be proven between the input and output projections.  Merely
@@ -1055,19 +1048,16 @@ def _activation_evidence(
                         spans.extend(
                             (call.span, selected.site.span, *inner_spans))
                     else:
-                        # The exact internal transform is on the data path, but
-                        # its mathematical activation kind is opaque.  Preserve
-                        # the projection topology without inventing a label.
+                        # The exact internal transform is on the live affine
+                        # path, but its mathematical kind is opaque.  Preserve
+                        # projection storage without inventing an activation.
                         opaque = True
                         spans.extend((call.span, selected.site.span))
             else:
-                # A dynamically selected ``self.<field>`` can still be an
-                # exact, occurrence-local transform between the two affine
-                # projections even when its constructor target is unresolved
-                # (for example ACT2FN[config.hidden_act] after a config factory
-                # boundary).  Dataflow below must prove that exact invocation
-                # reaches the down projection; this permits the affine topology
-                # while keeping the activation kind unknown.
+                # A dynamically constructed self-field can still be the one
+                # exact transform between the proven affine occurrences.  Its
+                # identity remains unknown unless the config-dispatch path
+                # below resolves exactly.
                 opaque = True
                 spans.append(call.span)
             if value is None:

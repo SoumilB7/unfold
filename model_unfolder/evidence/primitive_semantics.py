@@ -7,10 +7,17 @@ are classified from their exact implementation operations.
 from __future__ import annotations
 
 from .construction_calls import (
+    ConstructionAlternative,
     ConstructionCallResolution,
     resolve_import_reference,
 )
-from .program_index import ExprNode, ProgramIndex, SourceSpan, SymbolId
+from .program_index import (
+    ConstructionSite,
+    ExprNode,
+    ProgramIndex,
+    SourceSpan,
+    SymbolId,
+)
 from .reader_result import (
     Ambiguity,
     ReaderFailure,
@@ -94,6 +101,68 @@ def classify_primitive_call(
         provenance=(ReaderProvenance(
             "source", spans=provenance_spans,
             detail="exact internal primitive implementation"),))
+
+
+def classify_primitive_alternative(
+    index: ProgramIndex,
+    selected: ConstructionAlternative,
+) -> ReaderResult[str]:
+    """Classify one exact alternative after a source guard selected it."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("classify_primitive_alternative requires a ProgramIndex")
+    if not isinstance(selected, ConstructionAlternative) \
+            or selected.kind not in {"external", "internal"}:
+        raise TypeError("primitive alternative must be resolved")
+    owner = selected.occurrence.parent
+    if selected.kind == "external":
+        proof = selected.external_reference
+        value = _EXTERNAL_PRIMITIVES.get(proof.qualified_target)
+        spans = tuple(dict.fromkeys((selected.site.span, proof.binding.span)))
+        if value is None:
+            return ReaderResult.failed(owner, (ReaderFailure(
+                "external_unavailable",
+                f"external constructor {proof.qualified_target!r} has no "
+                "registered primitive protocol",
+                selected.site.span),))
+        return ReaderResult.resolved(
+            owner, value,
+            provenance=(ReaderProvenance(
+                "external", spans=spans, detail=proof.qualified_target),))
+    value, signal_spans, failure = _classify_internal(
+        index, selected.internal_symbol)
+    spans = tuple(dict.fromkeys((selected.site.span, *signal_spans)))
+    if value is None:
+        return ReaderResult.failed(owner, (ReaderFailure(
+            failure[0], failure[1], failure[2]),))
+    return ReaderResult.resolved(
+        owner, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail="exact selected internal primitive implementation"),))
+
+
+def primitive_kind_for_site(
+    index: ProgramIndex,
+    site: ConstructionSite,
+) -> tuple[str, tuple[SourceSpan, ...]] | None:
+    """Classify one exact construction site without inventing an occurrence."""
+    if not isinstance(index, ProgramIndex) or not isinstance(site, ConstructionSite):
+        raise TypeError("site primitive classification requires index + site")
+    if len(site.candidates) != 1:
+        return None
+    candidate = site.candidates[0]
+    if candidate.symbol is not None:
+        value, spans, _failure = _classify_internal(index, candidate.symbol)
+        return ((value, tuple(dict.fromkeys((site.span, *spans))))
+                if value is not None else None)
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        candidate.reference)
+    if proof is None:
+        return None
+    value = _EXTERNAL_PRIMITIVES.get(proof.qualified_target)
+    return ((value, tuple(dict.fromkeys((site.span, proof.binding.span))))
+            if value is not None else None)
 
 
 def _classify_internal(index, symbol):
@@ -382,4 +451,8 @@ def _contains_mean(expr):
                    if child is not None))
 
 
-__all__ = ["classify_primitive_call"]
+__all__ = [
+    "classify_primitive_call",
+    "classify_primitive_alternative",
+    "primitive_kind_for_site",
+]

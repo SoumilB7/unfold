@@ -190,7 +190,7 @@ def test_submodel_card_projector_has_no_missing_placement_default():
 def test_parallel_topology_never_invents_one_shared_norm():
     unresolved = parallel_decoder_layer(
         0, _attention(), _ffn(), 64,
-        norm_kind="layernorm", norm_count=None,
+        norm_kind="layernorm", norm_placement="unknown", norm_count=None,
     )
     assert unresolved.residual_topology == "parallel"
     assert unresolved.norm_placement == "unknown"
@@ -202,7 +202,7 @@ def test_parallel_topology_never_invents_one_shared_norm():
 
     shared = parallel_decoder_layer(
         0, _attention(), _ffn(), 64,
-        norm_kind="layernorm", norm_count=1,
+        norm_kind="layernorm", norm_placement="pre", norm_count=1,
     )
     assert shared.norm_placement == "pre"
     assert shared.parallel_norm_count == 1
