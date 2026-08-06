@@ -379,3 +379,43 @@ private interpreter originally stored `self.index`, which the writer census
 correctly treated as a possible public structural-spec mutation. It now uses
 the established private `_program_index` handle; no debt row or exemption was
 added.
+
+### U8-B1 — Q/K HALF-TURN APPLICATION SHADOW GREEN (local, not pushed)
+
+Implemented the first positive-only position-operation boundary in
+`model_unfolder/evidence/position_application.py`, with adversarial tests in
+`tests/test_position_application.py`.
+
+This is deliberately named `QKHalfTurnApplicationEvidence`, not RoPE evidence.
+It proves that two exact projection-derived lanes enter a two-output rotation
+helper, that the helper implements the exact split-half quarter-turn formula,
+and that both outputs reach the first two projection-derived attention-compute
+operands. It does **not** yet prove that the two factors are position-derived
+cosine/sine values. Therefore it has no fact/IR/renderer consumer and cannot
+draw or claim RoPE by itself.
+
+Soundness closures include:
+
+- exact decoder-block and attention-owner occurrences from the U3 graph;
+- ordered, per-lane Q/K producer identity (one source per lane; fused storage
+  must share one source and split storage must not);
+- exact application/helper/half-turn symbols and source spans;
+- exact factor expressions tied to application arguments 3 and 4;
+- exact first-half and second-half slices, including their order in the
+  concatenation;
+- exact framework `unsqueeze` as the only admitted shape-only factor transform;
+- projection-derived attention operands rather than raw positional argument
+  numbers, so framework dispatch may prepend a module argument safely;
+- multiple valid application paths become ambiguity; broken/partial source and
+  every incomplete path remain failure/unknown, never NoPE.
+
+Focused receipt on the final local tree:
+
+- Q/K half-turn controls and poisons: **16 passed**;
+- selector plus application tests: **36 passed**;
+- affected U2 structural writer/blocking gates: **14 passed**;
+- `py_compile`, `pyflakes`, `git diff --check`: clean.
+
+Real controls: Llama, Gemma-2 and Qwen3 resolve; BLOOM remains a negative
+control. Full RoPE evidence remains blocked on U8-B2 factor provenance, then
+geometry and layer selection. No parser/render cutover is authorized yet.
