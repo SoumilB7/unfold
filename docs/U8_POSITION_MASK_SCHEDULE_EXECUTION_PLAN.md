@@ -651,3 +651,46 @@ shadow-only. Supplying an index manually is not yet a schedule proof: the next
 unit must prove the construction-time index transport from the repeated-layer
 comprehension through the block constructor into the attention constructor,
 then evaluate every layer without caller-authored parameter values.
+
+### U8-B7 — EXACT POSITION-APPLICATION SCHEDULE (local, not pushed)
+
+`evidence/construction_arguments.py` adds the missing neutral address boundary:
+an authoritative `ConstructionSite` is bound to the exact constructed child's
+`__init__` formals only after the site, parent occurrence, child occurrence,
+unique candidate, child symbol and ProgramIndex record all round-trip through
+the resolved OwnerGraph. Positional/positional-only/keyword arguments are
+retained as exact expressions. Defaults are not evidence; variadics, duplicate
+arguments, rival/dynamic candidates, forged site copies and missing callables
+remain typed partial/failure. The boundary assigns no role to any name.
+
+`evidence/position_schedule.py` composes that neutral binding into one exact
+index-transport chain:
+
+`builtin range(exact layer-count path)`
+→ one filter-free construction comprehension target
+→ repeated-child constructor formal
+→ immediate attention constructor formal
+→ the unique attention-field assignment
+→ the exact guarded Q/K rotation application.
+
+Every integer index in the proved `range(count)` is evaluated. Active indices
+must resolve the same application identity and its factor + geometry proof;
+inactive indices mean only that this exact application call is disabled. They
+do **not** claim NoPE, because a complete census of other positional operations
+has not landed yet. The schedule rejects transformed indices, an unproved owner
+hop, shadowed `range`, short or long selector sequences, absent values, rival
+field assignments, all-inactive schedules and rival per-index applications.
+
+The real installed Llama 4 text source resolves all 48 indices and reproduces
+its exact source-enacted sequence:
+
+`1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 1110 1110`
+
+Each active entry cites the `complex_pair` application, unit-complex positional
+factor and full Q/K geometry. Synthetic controls cover alternating schedules,
+complete class/field/local renaming, positional and keyword constructor
+transport, transformed-index attacks, missing/short/long values, shadowed
+builtins, guarded rival fields and forged ProgramIndex-site copies. Focused
+position application/factor/geometry/schedule tests and affected U2 authority
+gates pass; static checks are clean. The rail remains shadow-only and has not
+changed parser, facts, IR, renderer, params, manifest or pixels.
