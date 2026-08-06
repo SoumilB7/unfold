@@ -482,10 +482,27 @@ produced:
 - `git diff --check`, bytecode compilation and pyflakes are clean.
 
 The fingerprint before and after the complete working-tree suite was identical.
-U7 cannot be marked `DONE` yet because
-`test_preservation_is_clean_checkout_reproducible` deliberately executes
-`git archive HEAD`; the current HEAD still contains the preceding 28-witness
-state. The next and only lawful step is a reviewed local U7 commit containing
-the approved source, tests, fixtures, manifest and newly blessed galleries,
-followed by that clean-checkout test and the committed-tree receipt. No parser,
-renderer or evidence work remains pending inside U7.
+
+### Committed-tree closure receipt
+
+U7 landed in `37f3b1b`. The commit also closes an acceptance hole found during
+final staging: the manifest hashed local gallery directories while 27 of the 29
+witness galleries were ignored and absent from `git archive`. All 29 approved
+galleries are now repository-carried evidence. The archive test reconstructs
+each gallery document from the committed files and compares its hash with the
+manifest, so an ignored, missing, added or stale gallery file blocks closure.
+
+On the exact committed tree:
+
+- all 29 local gallery documents matched their approved manifest hashes;
+- the strict preservation lane passed: **52 passed**;
+- `test_preservation_is_clean_checkout_reproducible` passed against
+  `git archive HEAD` with all fixtures and galleries present;
+- `test_clean_checkout_imports_and_parses` passed from the same archive for a
+  transformer and a diffusion witness;
+- the two archive checks completed together: **2 passed**;
+- static diff, bytecode and pyflakes checks were clean.
+
+Together with the unchanged-tree exhaustive receipt above, this closes U7.
+No parser, renderer, evidence or acceptance work remains pending inside U7;
+the next mechanism unit is U8.
