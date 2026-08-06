@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from dataclasses import replace
 
@@ -209,6 +210,59 @@ def test_parallel_topology_never_invents_one_shared_norm():
     assert "shared" in shared.blocks[0]["title"].lower()
 
 
+def test_parallel_residual_scale_is_not_dropped_between_fact_and_view():
+    layer = parallel_decoder_layer(
+        0, _attention(), _ffn(), 64,
+        norm_kind="layernorm", norm_placement="pre", norm_count=1,
+        residual_scale=0.25,
+    )
+    assert layer.residual_scale == 0.25
+    assert _ids(layer) == [
+        "rms1", "attn", "parallel_sum", "res_scale1", "add1", "ffn",
+    ]
+    branch_sum = layer.blocks[2]
+    scale = layer.blocks[3]
+    add = layer.blocks[4]
+    side_ffn = layer.blocks[5]
+    assert branch_sum["kind"] == "residual_add"
+    assert branch_sum["static"] is True
+    assert scale["kind"] == "gate_mul" and scale["sub"] == "× 0.25"
+    assert add["residual_from"] == "rms1"
+    assert side_ffn["feeds"] == "parallel_sum"
+    assert "scaled(attention output + FFN output)" in add["description"]
+
+
+def test_layer_spec_rejects_a_non_finite_residual_scale():
+    with pytest.raises(TypeError, match="residual_scale must be numeric"):
+        LayerSpec(
+            index=0,
+            attention=_attention(),
+            ffn=_ffn(),
+            residual_topology="sequential",
+            residual_scale=math.nan,
+        )
+
+
+def test_self_ffn_scale_cannot_leak_into_additive_cross_attention():
+    layer = decoder_layer(
+        0, _attention(), _ffn(), 64,
+        norm_kind="layernorm", norm_placement="pre",
+        residual_topology="sequential", residual_scale=0.25,
+        cross_attention_spec=_attention(),
+    )
+    assert _ids(layer) == [
+        "rms1", "attn", "res_scale1", "add1",
+        "rms_cross", "cross_attn", "add_cross",
+        "rms2", "ffn", "res_scale2", "add2",
+    ]
+    assert sum(
+        block.get("kind") == "gate_mul" for block in layer.blocks
+    ) == 2
+    cross_add = next(
+        block for block in layer.blocks if block["id"] == "add_cross")
+    assert cross_add["residual_from"] == "rms_cross"
+
+
 def test_topology_and_parallel_norm_count_cannot_collapse_layer_groups():
     base = LayerSpec(index=0, attention=_attention(), ffn=_ffn())
     parallel_unknown = replace(base, residual_topology="parallel")
@@ -302,10 +356,13 @@ def test_entry_norm_is_separate_code_proven_bookend():
     ir = config_to_ir(cfg, parse_context=context)
 
     assert ir.embedding_norm_kind == "layernorm"
-    assert ir.final_norm_kind is None
-    fact = context.facts.records["model.embedding_norm_kind"]
-    assert fact.status == "code_proven"
-    assert fact.value == "layernorm"
+    assert ir.final_norm_kind == "layernorm"
+    entry_fact = context.facts.records["model.embedding_norm_kind"]
+    final_fact = context.facts.records["model.final_norm_kind"]
+    assert entry_fact.status == final_fact.status == "code_proven"
+    assert entry_fact.value == final_fact.value == "layernorm"
+    assert entry_fact.source == "embedding_stage_norm_evidence"
+    assert final_fact.source == "final_stage_norm_evidence"
     embed_norm = next(
         block for block in ir.extras["render"]["model_blocks"]
         if block["id"] == "embed_norm"

@@ -203,41 +203,41 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     # ---- a top-level row excuses nothing below it) ------------------------ #
     _extras("moe", "root.decoder.layer[i].ffn",
             "per-layer MoE schedule (experts/shared/top-k) as raw extras",
-            "U7", "fact_registered:moe_schedule",
+            "U8", "fact_registered:moe_schedule",
             occurrence="num_experts + num_experts_per_tok + "
                        "num_shared_experts (text_cfg)"),
     _extras("moe.every_layer", "root.decoder.layer[i].ffn",
             "which layers are MoE vs dense, as a raw extras leaf",
-            "U7", "fact_registered:moe_schedule"),
+            "U8", "fact_registered:moe_schedule"),
     _extras("moe.num_experts", "root.decoder.layer[i].ffn",
             "routed expert count as a raw extras leaf",
-            "U7", "fact_registered:moe_schedule",
+            "U8", "fact_registered:moe_schedule",
             occurrence="text_cfg num_experts"),
     _extras("moe.num_experts_per_tok", "root.decoder.layer[i].ffn",
             "per-token expert fan-out as a raw extras leaf",
-            "U7", "fact_registered:moe_schedule",
+            "U8", "fact_registered:moe_schedule",
             occurrence="text_cfg num_experts_per_tok"),
     _extras("moe.num_shared_experts", "root.decoder.layer[i].ffn",
             "shared-expert count as a raw extras leaf",
-            "U7", "fact_registered:moe_schedule",
+            "U8", "fact_registered:moe_schedule",
             occurrence="text_cfg num_shared_experts"),
     _extras("mtp", "root",
             "multi-token-prediction module structure as raw extras",
-            "U7", "fact_registered:mtp",
+            "U8", "fact_registered:mtp",
             occurrence="text_cfg num_nextn_predict_layers | num_mtp_layers",
             consumer="model_unfolder/renderers/html/views.py::"
                      "_build_architecture_view"),
     _extras("mtp.num_modules", "root",
-            "MTP module count as a raw extras leaf", "U7",
+            "MTP module count as a raw extras leaf", "U8",
             "fact_registered:mtp"),
     _extras("mtp.predicts_extra_tokens", "root",
-            "MTP extra-token count as a raw extras leaf", "U7",
+            "MTP extra-token count as a raw extras leaf", "U8",
             "fact_registered:mtp"),
     _extras("mtp.shares_embedding", "root",
-            "MTP embedding-sharing flag as a raw extras leaf", "U7",
+            "MTP embedding-sharing flag as a raw extras leaf", "U8",
             "fact_registered:mtp"),
     _extras("mtp.shares_output_head", "root",
-            "MTP head-sharing flag as a raw extras leaf", "U7",
+            "MTP head-sharing flag as a raw extras leaf", "U8",
             "fact_registered:mtp"),
     _extras("sliding_window", "root.decoder.attention",
             "sliding-window schedule (window + first-full layers)",
@@ -309,7 +309,7 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     _extras("codebooks", "root.decoder",
             "audio K-codebook structure as raw extras (render blocks consume "
             "the codebooks ARG, not this key)",
-            "U7", "fact_registered:codebooks",
+            "U8", "fact_registered:codebooks",
             occurrence="text_cfg num_codebooks + audio_channels + "
                        "decoder_codebook_streams_for_path",
             module=_TA, symbol="decoder_extras"),
@@ -398,117 +398,43 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "max text-token sequence the denoiser conditions on (Mochi) — "
             "a declared conditioning limit",
             "U10", "fact_registered:denoiser_conditioning_limit"),
-    # U4-C exposes these declarations instead of consuming them as FFN
-    # architecture on sight. They remain exact, owner-qualified input debt
-    # until U7/U10 proves the corresponding constructor dispatch. A row for
-    # one encoder slot or spelling excuses no sibling occurrence.
-    _config("the decoder FFN activation dispatch",
-            "root", "hidden_act",
-            "activation declaration is visible but the exact decoder FFN "
-            "reader has not yet bound every supported occurrence that reads it",
-            "U7", "fact_registered:ffn_activation_binding"),
+    # Per-layer MoE placement is a U8 schedule/selector question. Expert-local
+    # activation/storage/router semantics are already closed by U7.
     _config("the decoder routed-FFN layer schedule",
             "root", "first_k_dense_replace",
-            "the checkpoint supplies the dense-prefix value, but U7 must bind "
+            "the checkpoint supplies the dense-prefix value, but U8 must bind "
             "that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "moe_layer_freq",
-            "the checkpoint supplies the routed-layer frequency, but U7 must "
+            "the checkpoint supplies the routed-layer frequency, but U8 must "
             "bind that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "interleave_moe_layer_step",
-            "the checkpoint supplies an interleave interval, but U7 must bind "
+            "the checkpoint supplies an interleave interval, but U8 must bind "
             "that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "decoder_sparse_step",
-            "the checkpoint supplies a sparse-layer step, but U7 must bind "
+            "the checkpoint supplies a sparse-layer step, but U8 must bind "
             "that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "mlp_only_layers",
-            "the checkpoint supplies an ordinary-MLP membership list, but U7 "
+            "the checkpoint supplies an ordinary-MLP membership list, but U8 "
             "must bind it to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "moe_layers",
-            "the checkpoint supplies routed-layer membership, but U7 must bind "
+            "the checkpoint supplies routed-layer membership, but U8 must bind "
             "that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the decoder routed-FFN layer schedule",
             "root", "moe_layers_enum",
-            "the checkpoint supplies a serialized membership set, but U7 must "
+            "the checkpoint supplies a serialized membership set, but U8 must "
             "bind that path to the exact source schedule before consuming it",
-            "U7", "fact_registered:moe_schedule_binding"),
-    _config("the routed-expert activation clipping operand",
-            "root", "swiglu_limit",
-            "the clipping value is visible, but U7 must bind it to the exact "
-            "expert activation callable before it may enter a fact or view",
-            "U7", "fact_registered:expert_activation_clip"),
-    _config("the text-encoder FFN activation dispatch",
-            "root.text_encoder", "hidden_act",
-            "activation declaration is visible but the exact encoder FFN "
-            "reader does not yet prove this occurrence consumes it",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the text-encoder FFN activation dispatch",
-            "root.text_encoder", "dense_act_fn",
-            "T5-style activation declaration awaits exact dataflow through "
-            "the encoder FFN owner",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the text-encoder FFN mechanism dispatch",
-            "root.text_encoder", "feed_forward_proj",
-            "combined activation/gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_mechanism_binding"),
-    _config("the text-encoder FFN gate dispatch",
-            "root.text_encoder", "is_gated_act",
-            "gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_gate_binding"),
-    _config("the second text-encoder FFN activation dispatch",
-            "root.text_encoder_2", "hidden_act",
-            "activation declaration is visible but the exact encoder FFN "
-            "reader does not yet prove this occurrence consumes it",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the second text-encoder FFN activation dispatch",
-            "root.text_encoder_2", "dense_act_fn",
-            "T5-style activation declaration awaits exact dataflow through "
-            "the encoder FFN owner",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the second text-encoder FFN mechanism dispatch",
-            "root.text_encoder_2", "feed_forward_proj",
-            "combined activation/gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_mechanism_binding"),
-    _config("the second text-encoder FFN gate dispatch",
-            "root.text_encoder_2", "is_gated_act",
-            "gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_gate_binding"),
-    _config("the third text-encoder FFN activation dispatch",
-            "root.text_encoder_3", "dense_act_fn",
-            "T5-style activation declaration awaits exact dataflow through "
-            "the encoder FFN owner",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the third text-encoder FFN mechanism dispatch",
-            "root.text_encoder_3", "feed_forward_proj",
-            "combined activation/gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_mechanism_binding"),
-    _config("the third text-encoder FFN gate dispatch",
-            "root.text_encoder_3", "is_gated_act",
-            "gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_gate_binding"),
-    _config("the conditioning-encoder FFN activation dispatch",
-            "root.conditioning", "dense_act_fn",
-            "T5-style activation declaration awaits exact dataflow through "
-            "the conditioning encoder FFN owner",
-            "U7", "fact_registered:ffn_activation_binding"),
-    _config("the conditioning-encoder FFN mechanism dispatch",
-            "root.conditioning", "feed_forward_proj",
-            "combined activation/gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_mechanism_binding"),
-    _config("the conditioning-encoder FFN gate dispatch",
-            "root.conditioning", "is_gated_act",
-            "gate declaration awaits exact source binding",
-            "U7", "fact_registered:ffn_gate_binding"),
+            "U8", "fact_registered:moe_schedule_binding"),
     _config("the denoiser FFN activation dispatch",
             "root.denoiser", "activation_fn",
             "the activation operand is visible, but only an exact denoiser "
@@ -630,11 +556,19 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     # reads — debt shrinks in the same commit as the consumption.
     # ---- U2-R7 dispositions: standing occurrences classified PENDING (one
     # ---- exact row per owner x path; readers stay visible pending debt) ---- #
-    _config("the residual-tap topology annotation (post-LN tap on the layer "
-            "card)", "root", "apply_residual_connection_post_layernorm",
-            "declaration is inspected but cannot author the residual tap; U7 "
-            "binds it to the exact owner dataflow",
-            "U7", "fact_registered:residual_topology"),
+    _config("the model-stage embedding-input scale", "root",
+            "embedding_multiplier",
+            "the checkpoint value affects the root embedding path, whose "
+            "exact source-bound input projection is U14 work",
+            "U14", "fact_registered:embedding_scale"),
+    _config("the language-head logits divisor", "root", "logits_scaling",
+            "the checkpoint value affects the root output head, whose exact "
+            "source-bound output projection is U14 work",
+            "U14", "fact_registered:logits_scale"),
+    _config("the root decoder rotary base", "root", "rope_theta",
+            "the declared theta remains separate from proof that the exact "
+            "attention owner applies rotary position encoding",
+            "U8", "fact_registered:rope_theta"),
     # RoPE scaling-descriptor subkeys: feed only raw extras.rope + the
     # declared-tier chip; the rope_theta fact retires the whole family.
     _config("the rope card's scaling-factor line", "root",

@@ -40,6 +40,7 @@ def build_layer_group(group: dict, raw: dict, evidence: dict | None) -> dict[str
             path,
             rep.get("residual_topology"),
             rep.get("parallel_norm_count"),
+            rep.get("residual_scale"),
         ),
         "block_graph":       build_block_graph(blocks, path),
     }

@@ -31,10 +31,10 @@ def ffn_detail(ffn: FFNSpec) -> dict:
         "num_shared_experts": ffn.num_shared_experts,
         "expert_intermediate_size": ffn.expert_intermediate_size,
         "routing": ffn.routing,
-        "activation_clip": ffn.activation_clip,
         "bias": ffn.bias,
         "projection_mode": ffn.projection_mode,
         "expert_projection_mode": ffn.expert_projection_mode,
+        "expert_activation_formula": ffn.expert_activation_formula,
     }
 
 
@@ -495,9 +495,9 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
         {
             "kind": "dense",
             "gated": expert_gated,
-            # ``ffn.activation`` belongs to the ordinary/shared mechanism.
-            # Routed experts require an expert-local activation reader in U7.
-            "activation": None,
+            "activation": (
+                (ffn.expert_activation_formula or {}).get("kind")),
+            "activation_formula": ffn.expert_activation_formula,
             "intermediate_size": ffn.expert_intermediate_size,
             "projection_mode": ffn.expert_projection_mode,
         },
@@ -512,6 +512,13 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     expert_facts = [f"{hidden} \u2192 {inter} \u2192 {hidden}", f"top-{n_active} of {n_experts}"]
     if ffn.expert_projection_mode is None:
         expert_facts.append("storage unresolved")
+    expert_formula = ffn.expert_activation_formula or {}
+    if expert_formula.get("kind"):
+        expert_facts.append(activation_label(expert_formula.get("kind")))
+    else:
+        expert_facts.append("activation unresolved")
+    if expert_formula.get("alpha") is not None:
+        expert_facts.append(f"β={expert_formula['alpha']:g}")
     router_detail = moe_router_detail(_ffn_routing_dict(ffn))
     selection_kind = (ffn.routing or {}).get("selection_kind")
     affine_scores = (ffn.routing or {}).get("score_source_kind") == "affine"
@@ -541,7 +548,9 @@ def _moe_child_blocks(ffn: FFNSpec, hidden: str, inter: str) -> list[Block]:
     routing_evidence = (ffn.routing or {}).get("evidence")
     expert_detail = {
         **ffn_detail(ffn),
-        "activation": None,
+        "activation": (
+            (ffn.expert_activation_formula or {}).get("kind")),
+        "activation_formula": ffn.expert_activation_formula,
         "intermediate_size": ffn.expert_intermediate_size,
         "gated": expert_gated,
         "projection_mode": ffn.expert_projection_mode,

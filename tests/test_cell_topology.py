@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import math
 import json
 from pathlib import Path
 import textwrap
@@ -185,6 +186,97 @@ def test_nested_config_guards_never_select_without_exact_values(tmp_path):
     assert result.status == "failed"
     assert any("unresolved guard" in failure.detail
                for failure in result.failures)
+
+
+_SCALED_SEQUENTIAL = """
+residual = signal
+signal = self.first(signal)
+attention_output = self.compute(signal)
+signal = residual + attention_output * self.residual_multiplier
+residual = signal
+signal = self.second(signal)
+ffn_output = self.transform(signal)
+signal = residual + ffn_output * self.residual_multiplier
+return signal
+"""
+
+
+def test_exact_residual_equations_bind_their_config_scale(tmp_path):
+    result = _read(
+        tmp_path, _SCALED_SEQUENTIAL,
+        selected_config={"residual_multiplier": 0.22},
+        cell_fields="self.residual_multiplier = config.residual_multiplier")
+    assert result.status == "resolved", result.failures
+    assert result.value.residual_scale_path == ("residual_multiplier",)
+    assert result.value.residual_scale_value is None
+    assert result.value.residual_scale_spans
+
+
+def test_unused_residual_multiplier_declaration_is_powerless(tmp_path):
+    result = _read(
+        tmp_path, _SCALED_SEQUENTIAL.replace(
+            " * self.residual_multiplier", ""),
+        selected_config={"residual_multiplier": 0.22},
+        cell_fields="self.residual_multiplier = config.residual_multiplier")
+    assert result.status == "resolved", result.failures
+    assert result.value.residual_scale_path is None
+    assert result.value.residual_scale_value is None
+
+
+def test_one_scaled_branch_cannot_manufacture_two_scale_connectors(tmp_path):
+    result = _read(
+        tmp_path, _SCALED_SEQUENTIAL.replace(
+            "ffn_output * self.residual_multiplier", "ffn_output"),
+        selected_config={"residual_multiplier": 0.22},
+        cell_fields="self.residual_multiplier = config.residual_multiplier")
+    assert result.status == "resolved", result.failures
+    assert result.value.residual_scale_path is None
+    assert result.value.residual_scale_value is None
+
+
+def test_equal_source_literal_scales_are_code_proven(tmp_path):
+    result = _read(
+        tmp_path, _SCALED_SEQUENTIAL.replace(
+            "self.residual_multiplier", "0.5"))
+    assert result.status == "resolved", result.failures
+    assert result.value.residual_scale_path is None
+    assert result.value.residual_scale_value == 0.5
+    assert result.value.residual_scale_spans
+
+
+def test_rival_scale_operands_cannot_be_collapsed(tmp_path):
+    source = _SCALED_SEQUENTIAL.replace(
+        "attention_output * self.residual_multiplier",
+        "attention_output * self.attention_scale",
+    ).replace(
+        "ffn_output * self.residual_multiplier",
+        "ffn_output * self.ffn_scale",
+    )
+    result = _read(
+        tmp_path, source,
+        selected_config={"attention_scale": 0.2, "ffn_scale": 0.3},
+        cell_fields="""
+        self.attention_scale = config.attention_scale
+        self.ffn_scale = config.ffn_scale
+        """)
+    assert result.status == "resolved", result.failures
+    assert result.value.residual_scale_path is None
+    assert result.value.residual_scale_value is None
+
+
+def test_residual_scale_evidence_shape_is_closed(tmp_path):
+    result = _read(
+        tmp_path, _SCALED_SEQUENTIAL,
+        selected_config={"residual_multiplier": 0.22},
+        cell_fields="self.residual_multiplier = config.residual_multiplier")
+    assert result.status == "resolved", result.failures
+    with pytest.raises(ValueError, match="config-bound or source-literal"):
+        replace(result.value, residual_scale_value=0.22)
+    with pytest.raises(ValueError, match="retains exact source spans"):
+        replace(result.value, residual_scale_spans=())
+    with pytest.raises(TypeError, match="scale value is numeric"):
+        replace(result.value, residual_scale_path=None,
+                residual_scale_value=math.inf)
 
 
 def test_exact_constructor_config_normalization_feeds_forward_guards(tmp_path):

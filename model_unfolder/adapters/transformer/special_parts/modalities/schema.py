@@ -135,9 +135,15 @@ def tower_submodel_spec(encoder: dict, variants: list[dict], *, component: str =
         if variant.get("residual_gated"):
             act = variant.get("gate_activation")
             source = variant.get("gate_source")
-            gate = (f"{act} learned gate" if act
-                    else "conditioning gate" if source == "conditioning"
-                    else "learned gate")
+            gate = (
+                f"{act} conditioning gate"
+                if act and source == "conditioning" else
+                "conditioning gate"
+                if source == "conditioning" else
+                f"{act} learned gate"
+                if act else
+                "learned gate"
+            )
         groups.append({
             "count": variant.get("repeat"),
             "tag": tags[i],

@@ -11,6 +11,7 @@ def build_residual_topology(
     group_path: str,
     mode: str | None,
     parallel_norm_count: int | None = None,
+    residual_scale: int | float | None = None,
 ) -> dict[str, Any]:
     """Serialize the parser's typed topology; never reverse-infer it from layout."""
     known = mode in {"sequential", "parallel", "fused_parallel"}
@@ -21,6 +22,8 @@ def build_residual_topology(
             if mode == "parallel" and parallel_norm_count is not None
             else {}
         ),
+        **({"scale": residual_scale}
+           if residual_scale is not None else {}),
         "residual_adds": [
             drop_none({
                 "id":            b.get("id"),

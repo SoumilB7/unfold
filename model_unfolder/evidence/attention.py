@@ -115,6 +115,7 @@ class AttentionScoreScalingBinding:
     score_call: CallObservation
     softmax_call: CallObservation
     spans: tuple[SourceSpan, ...]
+    config_paths: tuple[tuple[str, ...], ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -149,6 +150,14 @@ class AttentionScoreScalingBinding:
         if self.score_call.span not in self.spans \
                 or self.softmax_call.span not in self.spans:
             raise ValueError("score scaling provenance cites both decisive calls")
+        if any(not isinstance(path, tuple) or not path or any(
+                not isinstance(part, str) or not part for part in path)
+               for path in self.config_paths):
+            raise TypeError("score scale operands cite exact config paths")
+        if tuple(dict.fromkeys(self.config_paths)) != self.config_paths:
+            raise ValueError("score scale config paths are occurrence-unique")
+        if self.config_paths and not self.scaled:
+            raise ValueError("an unscaled score path carries no scale operand")
 
 
 @dataclass(frozen=True)
@@ -1003,7 +1012,7 @@ def attention_score_scaling_at_block(
     attention = attention_child_evidence(index, root, block_occurrence)
     if attention.status == "resolved":
         return _score_scaling_for_attention_child(
-            index, block_occurrence, attention.value,
+            index, root, block_occurrence, attention.value,
             provenance=attention.provenance)
     if attention.status != "ambiguous":
         return attention
@@ -1015,7 +1024,7 @@ def attention_score_scaling_at_block(
     provenance = list(census.provenance)
     for child in census.value.candidates:
         result = _score_scaling_for_attention_child(
-            index, block_occurrence, child,
+            index, root, block_occurrence, child,
             provenance=census.provenance)
         if result.status != "resolved":
             return result
@@ -1036,7 +1045,7 @@ def attention_score_scaling_at_block(
 
 
 def _score_scaling_for_attention_child(
-        index, block_occurrence, child, *, provenance=()):
+        index, root, block_occurrence, child, *, provenance=()):
     proof = child.compute
     if proof.protocol == "scaled_dot_product_attention":
         spans = tuple(dict.fromkeys(
@@ -1080,9 +1089,10 @@ def _score_scaling_for_attention_child(
         if classified is not None:
             candidates.append((score, softmax, *classified))
     distinct = {
-        (score.span, softmax.span, scaled):
-            (score, softmax, scaled, spans)
-        for score, softmax, scaled, spans in candidates}
+        (score.span, softmax.span, scaled,
+         tuple(_expr_key(item) for item in scale_operands)):
+            (score, softmax, scaled, spans, scale_operands)
+        for score, softmax, scaled, spans, scale_operands in candidates}
     if len(distinct) > 1:
         return ReaderResult.ambiguous(
             block_occurrence,
@@ -1095,17 +1105,34 @@ def _score_scaling_for_attention_child(
             "unsupported_syntax",
             "the exact score-to-softmax path is not a supported scaled or "
             "raw-score protocol"),), provenance=provenance)
-    score, softmax, scaled, path_spans = next(iter(distinct.values()))
+    score, softmax, scaled, path_spans, scale_operands = next(
+        iter(distinct.values()))
+    node = root.graph.node_for(child.compute_occurrence)
+    if node is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", "the exact attention owner is unindexed"),),
+            provenance=provenance)
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+    config_paths = tuple(dict.fromkeys(
+        path
+        for operand in scale_operands
+        for path in _config_paths_for_scale_operand(
+            index, node, proof.callable_symbol, proof.entry_call, operand,
+            config_prefix=config_prefix)
+        if path))
     spans = tuple(dict.fromkeys(
         span for span in (*proof.spans, *path_spans)
         if isinstance(span, SourceSpan)))
     value = AttentionScoreScalingBinding(
         block_occurrence, child.compute_occurrence, "explicit_product",
-        scaled, score, softmax, spans)
+        scaled, score, softmax, spans, config_paths)
     return ReaderResult.resolved(
         block_occurrence, value,
         provenance=(ReaderProvenance(
-            "source", spans=spans,
+            "code_and_config" if config_paths else "source", spans=spans,
+            config_paths=config_paths,
             detail=(
                 "exact score product reaches exact softmax through a "
                 + ("multiplicative scaling" if scaled else
@@ -3230,14 +3257,148 @@ def _classify_score_path(index, callable_symbol, score, softmax, producers):
     if not path_bindings:
         return None
 
+    # Operand provenance belongs only to the backwards-live path reaching the
+    # selected softmax.  Collecting it before liveness filtering lets an unused
+    # ``scaled_copy = scores * self.scale`` lend a config path to the raw score
+    # lane, even though it cannot change the scaling verdict.
+    scale_operands = []
+    for binding, state in path_bindings:
+        if not state:
+            continue
+        operand = _score_transform_operand(binding, score, lanes)
+        if operand is not None:
+            scale_operands.append(operand)
+
+    score_alpha = next((
+        value for name, value in score.kwargs if name == "alpha"), None)
     scaled = _score_product_kind(index, score) == "baddbmm" \
-        and any(name == "alpha" for name, _value in score.kwargs)
+        and score_alpha is not None
+    if scaled:
+        scale_operands.append(score_alpha)
     spans = [score.span, softmax.span]
     for binding, state in path_bindings:
         scaled = scaled or state
         spans.append(binding.span)
-    return bool(scaled), tuple(dict.fromkeys(
-        span for span in spans if isinstance(span, SourceSpan)))
+    return (
+        bool(scaled),
+        tuple(dict.fromkeys(
+            span for span in spans if isinstance(span, SourceSpan))),
+        tuple(dict.fromkeys(scale_operands)),
+    )
+
+
+def _score_transform_operand(binding, score, lanes):
+    """The non-score operand of one exact multiplicative score transform."""
+    value = binding.value
+    if binding.assignment_kind == "augassign":
+        # ``_score_transform_state`` already proved this augassign is */.
+        return value
+    if value.kind != "binop" or len(value.children) != 2 \
+            or value.operator not in {"*", "/"}:
+        return None
+    carrying = tuple(
+        _expr_contains_span(child, score.span)
+        or _expression_uses_lane_value(child, lanes)
+        for child in value.children)
+    if sum(carrying) != 1:
+        return None
+    return value.children[1 - carrying.index(True)]
+
+
+def _config_paths_in_scale_expression(
+        index, node, expression, *, seen, config_prefix):
+    """Every exact config occurrence inside one proved scale operand.
+
+    The direct resolver handles ``self.scale = config.scale``. Recursive
+    descent additionally handles exact arithmetic such as
+    ``config.query_pre_attn_scalar ** -0.5`` without assigning semantics to
+    that arithmetic; the caller still owns the scale formula.
+    """
+    if not isinstance(expression, ExprNode):
+        return ()
+    direct = _exact_config_path_for_expression(
+        index, node, expression, seen=seen,
+        config_prefix=config_prefix)
+    if direct is not None:
+        return (direct,)
+    self_chain = _self_attribute_chain(expression)
+    if self_chain:
+        field = self_chain[0]
+        if field in seen:
+            return ()
+        assignments = tuple(
+            item for item in index.field_assigns_of(node.symbol)
+            if item.field == field and not item.guard)
+        if len(assignments) == 1:
+            return _config_paths_in_scale_expression(
+                index, node, assignments[0].value,
+                seen=seen | frozenset((field,)),
+                config_prefix=config_prefix)
+        return ()
+    paths = tuple(
+        path
+        for child in expression.children
+        for path in _config_paths_in_scale_expression(
+            index, node, child, seen=seen,
+            config_prefix=config_prefix)
+    ) + tuple(
+        path
+        for _name, child in expression.keyword_children
+        for path in _config_paths_in_scale_expression(
+            index, node, child, seen=seen,
+            config_prefix=config_prefix)
+    )
+    return tuple(dict.fromkeys(paths))
+
+
+def _config_paths_for_scale_operand(
+        index, node, callable_symbol, entry_call, expression, *, config_prefix):
+    """Bind one exact scale operand back to its config occurrence.
+
+    Most attention implementations multiply by a ``self`` field in the same
+    callable.  Transformers' dispatch protocol can instead put the arithmetic
+    in an indexed free function and pass that value as an exact argument, for
+    example ``eager_attention_forward(..., scaling=self.scaling)``.  In that
+    case the free-function parameter is not itself config evidence: this helper
+    follows only the exact entry call selected by the attention-child proof,
+    binds that one parameter, and then resolves the caller expression through
+    the exact attention owner.  No same-name or whole-file search is involved.
+    """
+    direct = _config_paths_in_scale_expression(
+        index, node, expression, seen=frozenset(),
+        config_prefix=config_prefix)
+    if direct or expression.kind != "name" or not expression.name:
+        return direct
+    record = index.callable_by_symbol(callable_symbol)
+    if record is None:
+        return ()
+    matching = tuple(
+        param for param in record.params
+        if param.name == expression.name
+        and param.kind in {"positional", "keyword_only"})
+    if len(matching) != 1:
+        return ()
+    param = matching[0]
+    keyword_values = tuple(
+        value for name, value in entry_call.kwargs
+        if name == expression.name)
+    if len(keyword_values) == 1:
+        argument = keyword_values[0]
+    elif keyword_values or param.kind != "positional":
+        return ()
+    else:
+        positional = tuple(
+            item for item in record.params if item.kind == "positional")
+        offsets = tuple(
+            offset for offset, item in enumerate(positional)
+            if item.name == expression.name)
+        if len(offsets) != 1 or offsets[0] >= len(entry_call.args):
+            return ()
+        offset = offsets[0]
+        argument = entry_call.args[offset]
+    return _config_paths_in_scale_expression(
+        index, node, argument, seen=frozenset(),
+        config_prefix=config_prefix)
 
 
 def _score_transform_state(
@@ -3275,6 +3436,17 @@ def _score_transform_state(
         if value.span == score.span:
             return False
         leaf = callee.name if callee.kind == "attribute" else ""
+        if leaf == "tanh":
+            calls = tuple(
+                call for call in index.calls_in(callable_symbol)
+                if call.span == value.span)
+            if len(calls) == 1 and _call_has_external_protocol(
+                    index, calls[0], _TANH_PROTOCOLS):
+                # A proven score-softcap tanh changes logits but does not undo
+                # whether an earlier multiplicative score scale was applied.
+                # The separate softcap reader owns that mechanism; this reader
+                # merely keeps its exact scale lineage alive through it.
+                return False
         # Shape/dtype/mask wrappers preserve the numerical score scale.  This
         # is a closed framework/local tensor protocol; an unknown helper call
         # remains unsupported instead of being assumed neutral.

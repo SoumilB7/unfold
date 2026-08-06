@@ -51,6 +51,7 @@ def build_ffn(ffn: dict, hidden: int | None,
             "shared": ffn.get("num_shared_experts"),
             "expert_intermediate_size": ffn.get("expert_intermediate_size"),
             "projection_mode": ffn.get("expert_projection_mode"),
+            "activation_formula": ffn.get("expert_activation_formula"),
         }
     # U4-C: unknown is data, not an omitted key that a downstream default may
     # refill. Keep the top-level tri-state fields in the expanded contract.
@@ -74,9 +75,9 @@ def _operation_graph(ffn: dict, hidden: int | None) -> dict[str, Any]:
             {
                 "kind": "dense",
                 "gated": expert_gated,
-                # The top-level activation belongs to the ordinary/shared FFN.
-                # Expert activation remains unknown until U7 proves it locally.
-                "activation": None,
+                "activation": (
+                    (ffn.get("expert_activation_formula") or {}).get("kind")),
+                "activation_formula": ffn.get("expert_activation_formula"),
                 "intermediate_size": ffn.get("expert_intermediate_size"),
                 "projection_mode": expert_mode,
             },

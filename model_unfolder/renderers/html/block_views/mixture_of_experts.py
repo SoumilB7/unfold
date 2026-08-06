@@ -67,7 +67,10 @@ _EXPERT_IDS = {
     "up_proj": "expert_up_proj",
     "gate_up_proj": "expert_gate_up_proj",
     "gate_up_split": "expert_gate_up_split",
+    "gate_clip": "expert_gate_clip",
     "activation": "expert_act",
+    "up_clip": "expert_up_clip",
+    "up_offset": "expert_up_offset",
     "multiply": "expert_mul",
     "down_proj": "expert_down_proj",
 }
@@ -93,9 +96,9 @@ def build_moe_expert_view(ir: dict, info: dict, mount_id: str, child: dict) -> s
                 # (gated None) draws the honest undeclared-FFN region, never a
                 # bool()-fabricated dense expert.
                 "gated": expert_gated,
-                # The top-level activation belongs to the ordinary/shared FFN
-                # owner. Expert activation requires its own U7 proof.
-                "activation": None,
+                "activation": (
+                    (ffn.get("expert_activation_formula") or {}).get("kind")),
+                "activation_formula": ffn.get("expert_activation_formula"),
                 "intermediate_size": ffn.get("expert_intermediate_size"),
                 # Code-proven fused gate_up storage flows into the expert drill —
                 # the fused projection + split IS the faithful picture.

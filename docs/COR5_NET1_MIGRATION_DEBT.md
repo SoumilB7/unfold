@@ -61,7 +61,7 @@ that keeps the key host-independent, so a claim binding matches the same
 mechanism whether a model is parsed standalone or embedded in a pipeline.
 Prefix a row with its document to address the value in the witness file.
 
-## PENDING occurrences (dispositioned, exact debt rows): 36
+## PENDING occurrences (dispositioned, exact debt rows): 43
 
 Each row here is EXCUSED by one exact config_read StructuralDebt row
 (evidence/structural_debt.py): owner + exact path + U3-U14 unit +
@@ -69,13 +69,13 @@ checkable deletion condition + the excusal writer/consumer, all
 gate-enforced.  These are visible debt with an assigned unit — not
 standing UNCLASSIFIED reads, and never a family-wide excuse.
 
-### `root` — 10 pending rows
+### `root` — 12 pending rows
 
-`apply_residual_connection_post_layernorm` (1w, U7), `rope_parameters.factor` (2w, U8), `rope_parameters.original_max_position_embeddings` (2w, U8), `rope_parameters.partial_rotary_factor` (2w, U8), `rope_parameters.rope_theta` (8w, U8), `rope_parameters.rope_type` (8w, U8), `rope_parameters.type` (1w, U8), `text_config.rope_parameters.rope_theta` (1w, U8), `text_config.rope_parameters.rope_type` (1w, U8), `text_config.rope_parameters.type` (1w, U8)
+`attn_config.rope_theta` (1w, U8), `first_k_dense_replace` (2w, U8), `moe_layer_freq` (1w, U8), `rope_parameters.factor` (2w, U8), `rope_parameters.original_max_position_embeddings` (2w, U8), `rope_parameters.partial_rotary_factor` (3w, U8), `rope_parameters.rope_theta` (9w, U8), `rope_parameters.rope_type` (9w, U8), `rope_parameters.type` (1w, U8), `text_config.rope_parameters.rope_theta` (1w, U8), `text_config.rope_parameters.rope_type` (1w, U8), `text_config.rope_parameters.type` (1w, U8)
 
-### `root.denoiser` — 9 pending rows
+### `root.denoiser` — 14 pending rows
 
-`addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11)
+`activation_fn` (4w, U10), `addition_embed_type` (1w, U11), `addition_time_embed_dim` (1w, U11), `attention_bias` (4w, U10), `block_out_channels` (1w, U11), `down_block_types` (1w, U11), `layers_per_block` (1w, U11), `mid_block_type` (1w, U11), `projection_class_embeddings_input_dim` (1w, U11), `qk_norm` (5w, U10), `rope_theta` (2w, U8), `transformer_layers_per_block` (1w, U11), `up_block_types` (1w, U11), `use_rotary_positional_embeddings` (1w, U10)
 
 ### `root.text_encoder` — 11 pending rows
 

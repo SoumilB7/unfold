@@ -183,44 +183,109 @@ def ffn_region(ffn: dict, hidden: int | None, *, evidence: dict | None = None) -
     if state == "dense":
         return _dense_mlp(hidden, inter, act)
     if storage == "fused_gate_up":
-        return _fused_gated_mlp(hidden, inter, act)
-    return _gated_mlp(hidden, inter, act)
+        return _fused_gated_mlp(
+            hidden, inter, act, ffn.get("activation_formula"))
+    return _gated_mlp(
+        hidden, inter, act, ffn.get("activation_formula"))
 
 
 def _gated_mlp(
-        hidden: int | None, inter: int | None, act: str | None) -> Region:
+        hidden: int | None, inter: int | None, act: str | None,
+        formula: dict | None = None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_proj", "linear", "Linear (gate)", in_features=hidden, out_features=inter),
         Op("up_proj", "linear", "Linear (up)", in_features=hidden, out_features=inter),
-        Op("activation", "activation", fn=act),
-        Op("multiply", "elementwise", fn="mul"),
-        Op("down_proj", "linear", "Linear (down)", in_features=inter, out_features=hidden),
     ]
+    formula_ops, gate_entry, up_entry = _gated_formula_ops(act, formula)
+    ops.extend((*formula_ops,
+                Op("multiply", "elementwise", fn="mul"),
+                Op("down_proj", "linear", "Linear (down)",
+                   in_features=inter, out_features=hidden)))
     edges = [Edge("hidden", "gate_proj"), Edge("hidden", "up_proj"),
-             Edge("gate_proj", "activation"), Edge("activation", "multiply"),
-             Edge("up_proj", "multiply"), Edge("multiply", "down_proj")]
+             Edge("gate_proj", gate_entry[0]),
+             *gate_entry[1], Edge("activation", "multiply"),
+             Edge("up_proj", up_entry[0]),
+             *up_entry[1],
+             Edge("multiply", "down_proj")]
     return Region("ffn", "ffn", "Gated MLP", ops, edges, template="gated_mlp")
 
 
 def _fused_gated_mlp(
-        hidden: int | None, inter: int | None, act: str | None) -> Region:
+        hidden: int | None, inter: int | None, act: str | None,
+        formula: dict | None = None) -> Region:
     ops = [
         Op("hidden", "input", out_features=hidden),
         Op("gate_up_proj", "linear", "Linear (gate + up)", in_features=hidden,
            out_features=(2 * inter if inter else None)),
         Op("gate_up_split", "slice", "Split gate / up"),
-        Op("activation", "activation", fn=act),
-        Op("multiply", "elementwise", fn="mul"),
-        Op("down_proj", "linear", "Linear (down)", in_features=inter, out_features=hidden),
     ]
+    formula_ops, gate_entry, up_entry = _gated_formula_ops(act, formula)
+    ops.extend((*formula_ops,
+                Op("multiply", "elementwise", fn="mul"),
+                Op("down_proj", "linear", "Linear (down)",
+                   in_features=inter, out_features=hidden)))
     edges = [
         Edge("hidden", "gate_up_proj"), Edge("gate_up_proj", "gate_up_split"),
-        Edge("gate_up_split", "activation"), Edge("activation", "multiply"),
-        Edge("gate_up_split", "multiply"), Edge("multiply", "down_proj"),
+        Edge("gate_up_split", gate_entry[0]), *gate_entry[1],
+        Edge("activation", "multiply"),
+        Edge("gate_up_split", up_entry[0]), *up_entry[1],
+        Edge("multiply", "down_proj"),
     ]
     return Region("ffn", "ffn", "Fused gated MLP", ops, edges,
                   template="fused_gated_mlp")
+
+
+def _gated_formula_ops(act, formula):
+    """Exact optional gate/up transforms before the canonical multiplication."""
+    formula = formula if isinstance(formula, dict) else {}
+    alpha = formula.get("alpha")
+    activation_label = (
+        f"Swish (β={alpha:g})"
+        if act == "swish" and isinstance(alpha, (int, float)) else None)
+    ops = []
+    gate_first = "activation"
+    gate_edges = []
+    gate_clip = formula.get("gate_clip")
+    if isinstance(gate_clip, (tuple, list)) and len(gate_clip) == 2:
+        lower, upper = gate_clip
+        text = _clip_label(lower, upper)
+        ops.append(Op("gate_clip", "elementwise", text, fn="clamp"))
+        gate_first = "gate_clip"
+        gate_edges.append(Edge("gate_clip", "activation"))
+    ops.append(Op(
+        "activation", "activation", activation_label, fn=act,
+        meta=({"alpha": alpha} if alpha is not None else {})))
+
+    up_first = "multiply"
+    up_last = "multiply"
+    up_edges = []
+    up_clip = formula.get("up_clip")
+    if isinstance(up_clip, (tuple, list)) and len(up_clip) == 2:
+        ops.append(Op(
+            "up_clip", "elementwise", _clip_label(*up_clip), fn="clamp"))
+        up_first = up_last = "up_clip"
+    offset = formula.get("up_offset")
+    if isinstance(offset, (int, float)) and not isinstance(offset, bool):
+        ops.append(Op(
+            "up_offset", "elementwise", f"Add {offset:g}", fn="add",
+            meta={"operand": offset}))
+        if up_first == "multiply":
+            up_first = "up_offset"
+        else:
+            up_edges.append(Edge(up_last, "up_offset"))
+        up_last = "up_offset"
+    if up_last != "multiply":
+        up_edges.append(Edge(up_last, "multiply"))
+    return ops, (gate_first, gate_edges), (up_first, up_edges)
+
+
+def _clip_label(lower, upper):
+    if lower is None:
+        return f"Clamp ≤ {upper:g}"
+    if upper is None:
+        return f"Clamp ≥ {lower:g}"
+    return f"Clamp [{lower:g}, {upper:g}]"
 
 
 def _conv_glu_mlp_region(
@@ -346,8 +411,9 @@ def _moe_region(ffn: dict, hidden: int | None, inter: int | None) -> Region:
             "gated": expert_gated,
             "projection_mode": expert_mode,
             "intermediate_size": inter,
-            # The ordinary/shared activation is not expert evidence.
-            "activation": None,
+            "activation": (
+                (ffn.get("expert_activation_formula") or {}).get("kind")),
+            "activation_formula": ffn.get("expert_activation_formula"),
         }),
         Op("weighted_sum", "elementwise", fn="add"),
     ]

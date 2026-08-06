@@ -23,11 +23,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .activation_semantics import FUNCTIONAL_ACTIVATIONS
+from .attention_storage import producer_sources_reaching_expressions
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
+    OwnerNode,
     OwnerOccurrenceId,
     require_resolved_component_root,
+    resolve_child_config_bindings,
     resolve_construction_candidate_symbols,
 )
 from .construction_calls import resolve_import_reference
@@ -67,6 +71,62 @@ _LANE_1 = ("lane", 1)
 
 
 @dataclass(frozen=True)
+class ExpertActivationEvidence:
+    """Activation/formula proven on one exact routed-expert gate lane.
+
+    ``kind`` is present for a source-literal/formula activation.  A config
+    dispatch instead carries ``config_path`` and may carry the literal fallback
+    used by the indexed source (for example ``dict.get(..., "silu")``).  The
+    remaining operands describe only source-proven formula details; absent
+    values are unknown, never conventional defaults.
+    """
+
+    kind: str | None = None
+    config_path: tuple[str, ...] = ()
+    config_default: str | None = None
+    alpha: float | None = None
+    gate_clip: tuple[float | None, float | None] | None = None
+    up_clip: tuple[float | None, float | None] | None = None
+    up_offset: float | None = None
+    spans: tuple[SourceSpan, ...] = ()
+
+    def __post_init__(self) -> None:
+        if bool(self.kind) == bool(self.config_path):
+            raise ValueError(
+                "expert activation is exactly one of source-literal or config-dispatched")
+        if self.kind is not None and not isinstance(self.kind, str):
+            raise TypeError("expert activation kind is a string")
+        if any(not isinstance(part, str) or not part for part in self.config_path):
+            raise TypeError("expert activation config path is tuple[str, ...]")
+        if self.config_default is not None and not self.config_path:
+            raise ValueError("an activation fallback belongs to a config dispatch")
+        if self.config_default is not None \
+                and not isinstance(self.config_default, str):
+            raise TypeError("expert activation fallback is a string")
+        for value in (self.alpha, self.up_offset):
+            if value is not None and (not isinstance(value, (int, float))
+                                      or isinstance(value, bool)):
+                raise TypeError("expert activation formula operands are numeric")
+        for bounds in (self.gate_clip, self.up_clip):
+            if bounds is None:
+                continue
+            if not isinstance(bounds, tuple) or len(bounds) != 2 or any(
+                    value is not None and (
+                        not isinstance(value, (int, float))
+                        or isinstance(value, bool))
+                    for value in bounds):
+                raise TypeError("expert clipping is a typed (min, max) pair")
+            lower, upper = bounds
+            if lower is None and upper is None:
+                raise ValueError("expert clipping proves at least one bound")
+            if lower is not None and upper is not None and lower > upper:
+                raise ValueError("expert clipping bounds are ordered")
+        if not self.spans or any(not isinstance(span, SourceSpan)
+                                 for span in self.spans):
+            raise ValueError("expert activation retains exact source spans")
+
+
+@dataclass(frozen=True)
 class RoutedExpertStorage:
     """One exact fused routed-expert storage proof."""
 
@@ -78,6 +138,7 @@ class RoutedExpertStorage:
     projection_mode: str
     input_parameters: tuple[FieldAssignRecord, ...]
     down_parameter: FieldAssignRecord
+    activation: ExpertActivationEvidence | None
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -126,9 +187,17 @@ class RoutedExpertStorage:
                or record.span.source != self.owner_symbol.source
                for record in records):
             raise ValueError("expert storage field spans belong to the expert source")
+        if self.activation is not None:
+            if not isinstance(self.activation, ExpertActivationEvidence):
+                raise TypeError("expert activation has a closed evidence type")
+            if any(span.source != self.owner_symbol.source
+                   for span in self.activation.spans):
+                raise ValueError(
+                    "expert activation provenance belongs to the expert source")
         required_spans = {
             *(site.span for site in self.construction_path),
             *(record.span for record in records),
+            *(self.activation.spans if self.activation is not None else ()),
         }
         if not required_spans.issubset(set(self.spans)):
             raise ValueError("expert provenance retains path and storage spans")
@@ -154,10 +223,10 @@ def routed_expert_storage_at_block(
     candidates = []
     for symbol, trace, sites in _reachable_invoked_classes(index, block.symbol):
         evidence = _fused_expert_evidence(
-            index, block_occurrence, block.symbol, symbol, trace, sites)
+            index, root, block_occurrence, block.symbol, symbol, trace, sites)
         if evidence is None:
             evidence = _split_expert_evidence(
-                index, block_occurrence, block.symbol, symbol, trace, sites)
+                index, root, block_occurrence, block.symbol, symbol, trace, sites)
         if evidence is not None:
             candidates.append(evidence)
     distinct = {
@@ -250,7 +319,7 @@ def _reachable_invoked_classes(index, block_symbol, max_depth=3):
 
 
 def _fused_expert_evidence(
-    index, block_occurrence, block_symbol, owner, trace, path,
+    index, root, block_occurrence, block_symbol, owner, trace, path,
 ):
     forward = SymbolId(owner.source, f"{owner.qualified_name}.forward")
     if index.callable_by_symbol(forward) is None or not index.loops_in(forward):
@@ -293,18 +362,22 @@ def _fused_expert_evidence(
     if len(proofs) != 1:
         return None
     fused_record, down_record, flow_spans = proofs[0]
+    activation = _expert_activation_evidence(
+        index, root, block_occurrence, owner, trace, path,
+        forward, flow_spans)
     spans = tuple(dict.fromkeys(
         span for span in (
             *(site.span for site in path),
             fused_record.span, down_record.span, *flow_spans,
+            *(activation.spans if activation is not None else ()),
         ) if isinstance(span, SourceSpan)))
     return RoutedExpertStorage(
         block_occurrence, block_symbol, owner, trace, path,
-        "fused_gate_up", (fused_record,), down_record, spans)
+        "fused_gate_up", (fused_record,), down_record, activation, spans)
 
 
 def _split_expert_evidence(
-    index, block_occurrence, block_symbol, owner, trace, path,
+    index, root, block_occurrence, block_symbol, owner, trace, path,
 ):
     """Prove independently stored gate/up/down parameters under expert dispatch.
 
@@ -390,16 +463,402 @@ def _split_expert_evidence(
     records = (*input_records, down_record)
     if len({record.field for record in records}) != 3:
         return None
+    activation = _expert_activation_evidence(
+        index, root, block_occurrence, owner, trace, path,
+        child_forward, flow_spans)
     spans = tuple(dict.fromkeys(
         span for span in (
             *(item.span for item in path),
             active_loops[0].span, child_call.span,
             *producer_spans, *flow_spans,
+            *(activation.spans if activation is not None else ()),
             *(record.span for record in records),
         ) if isinstance(span, SourceSpan)))
     return RoutedExpertStorage(
         block_occurrence, block_symbol, owner, trace, path,
-        "split", input_records, down_record, spans)
+        "split", input_records, down_record, activation, spans)
+
+
+def _expert_activation_evidence(
+    index, root, block_occurrence, owner, trace, path, forward, flow_spans,
+):
+    """Return one semantic activation that reaches the proven gate/up product.
+
+    Storage and activation deliberately remain independent: a routed expert can
+    retain exact fused/split storage while this function abstains.  Candidates
+    are accepted only when the exact call reaches a multiplication already
+    cited by the storage proof.
+    """
+    node = _expert_owner_config_node(
+        index, root, block_occurrence, owner, trace, path)
+    callables = {
+        forward,
+        *(record.symbol for record in index.callables
+          if record.owner == owner
+          and any(binding.span in flow_spans
+                  for binding in index.bindings_in(record.symbol))),
+    }
+    candidates = []
+    for callable_symbol in callables:
+        products = tuple(
+            expression
+            for binding in index.bindings_in(callable_symbol)
+            if binding.value is not None and binding.span in flow_spans
+            for expression in _expressions(binding.value)
+            if expression.kind == "binop" and expression.operator == "*"
+        )
+        if not products:
+            continue
+        for product in products:
+            reaching = []
+            for call in index.calls_in(callable_symbol):
+                if _call_reaches_expression(
+                        index, callable_symbol, call, product):
+                    evidence = _expert_activation_for_call(
+                        index, owner, callable_symbol, call, node, product)
+                    if evidence is not None:
+                        reaching.append(evidence)
+            distinct = {
+                _activation_signature(item): item for item in reaching
+            }
+            if len(distinct) == 1:
+                candidates.append(next(iter(distinct.values())))
+    distinct = tuple({
+        _activation_signature(item): item for item in candidates
+    }.values())
+    maximal = tuple(
+        candidate for candidate in distinct
+        if not any(
+            other is not candidate
+            and _activation_strictly_refines(other, candidate)
+            for other in distinct))
+    return maximal[0] if len(maximal) == 1 else None
+
+
+def _expert_activation_for_call(
+    index, owner, callable_symbol, call, node, product,
+):
+    proof = resolve_import_reference(
+        index, callable_symbol.source, callable_symbol, call.callee)
+    if proof is not None and proof.qualified_target in FUNCTIONAL_ACTIVATIONS:
+        return ExpertActivationEvidence(
+            kind=FUNCTIONAL_ACTIVATIONS[proof.qualified_target],
+            spans=_typed_spans((call.span, proof.binding.span)))
+
+    # ``gate * sigmoid(alpha * gate)`` is a source-proven swish gate.  Its
+    # alpha/clamps/up offset are extracted only from the same exact helper.
+    if proof is not None and proof.qualified_target == "torch.sigmoid":
+        formula = _swish_formula_evidence(
+            index, owner, callable_symbol, call, product)
+        if formula is not None:
+            return formula
+
+    field = _self_field(call.callee)
+    if field is None or node is None:
+        return None
+    path, default, spans = _activation_dispatch_for_field(
+        index, owner, field, node)
+    if not path:
+        return None
+    return ExpertActivationEvidence(
+        config_path=path, config_default=default,
+        spans=_typed_spans((call.span, *spans)))
+
+
+def _activation_dispatch_for_field(index, owner, field, node):
+    assigns = tuple(
+        item for item in index.field_assigns_of(owner) if item.field == field)
+    if len(assigns) != 1:
+        return (), None, ()
+    assignment = assigns[0]
+    value = assignment.value
+    if value.kind != "subscript" or len(value.children) < 2:
+        return (), None, ()
+    dispatch = resolve_import_reference(
+        index, owner.source, assignment.enclosing_callable, value.children[0])
+    if dispatch is None or not dispatch.qualified_target.endswith(
+            ".activations.ACT2FN"):
+        return (), None, ()
+    key = value.children[1]
+
+    # Direct ``ACT2FN[config.hidden_act]``.
+    observations = tuple(
+        item for item in index.config_paths_in(assignment.enclosing_callable)
+        if item.form == "act2fn" and _span_within(item.span, assignment.span)
+        and item.segments
+        and all(not segment.dynamic and segment.name
+                for segment in item.segments))
+    if len(observations) == 1:
+        selected = observations[0]
+        root_name = (selected.root_binding.name
+                     if selected.root_binding.kind == "name" else None)
+        local = tuple(segment.name for segment in selected.segments)
+        resolved = _resolve_node_config_path(node, root_name, local)
+        return ((resolved, None, (assignment.span, selected.span))
+                if resolved is not None else ((), None, ()))
+
+    # One exact local: ``name = config.table.get("name", "silu");
+    # self.act = ACT2FN[name]``.  This is syntax/dataflow, not a spelling table.
+    if key.kind != "name" or not key.name:
+        return (), None, ()
+    bindings = tuple(
+        item for item in index.bindings_in(assignment.enclosing_callable)
+        if key.name in _target_names(item.targets)
+        and item.value is not None
+        and _span_key(item.span) < _span_key(assignment.span))
+    if not bindings:
+        return (), None, ()
+    latest_key = max(_span_key(item.span) for item in bindings)
+    latest = tuple(item for item in bindings if _span_key(item.span) == latest_key)
+    if len(latest) != 1 or latest[0].guard:
+        return (), None, ()
+    parsed = _config_dict_get(latest[0].value)
+    if parsed is None:
+        return (), None, ()
+    root_name, local, default = parsed
+    resolved = _resolve_node_config_path(node, root_name, local)
+    return ((resolved, default, (assignment.span, latest[0].span))
+            if resolved is not None else ((), None, ()))
+
+
+def _config_dict_get(expression):
+    if expression.kind != "call" or len(expression.children) < 2:
+        return None
+    callee = expression.children[0]
+    if callee.kind != "attribute" or callee.name != "get" \
+            or not callee.children:
+        return None
+    root_name, prefix = _attribute_root_path(callee.children[0])
+    key = expression.children[1]
+    if root_name is None or key.kind != "constant" \
+            or not isinstance(key.const_value, str) or not key.const_value:
+        return None
+    default = None
+    if len(expression.children) >= 3:
+        literal = expression.children[2]
+        if literal.kind != "constant" or not isinstance(
+                literal.const_value, str):
+            return None
+        default = literal.const_value
+    return root_name, (*prefix, key.const_value), default
+
+
+def _attribute_root_path(expression):
+    parts = []
+    current = expression
+    while current.kind == "attribute" and current.children:
+        parts.append(current.name)
+        current = current.children[0]
+    if current.kind != "name" or not current.name:
+        return None, ()
+    return current.name, tuple(reversed(parts))
+
+
+def _resolve_node_config_path(node, parameter, local):
+    matches = tuple(
+        binding for binding in node.config_bindings
+        if binding.parameter == parameter)
+    if len(matches) != 1:
+        return None
+    return matches[0].resolved_path(local)
+
+
+def _expert_owner_config_node(index, root, block_occurrence, owner, trace, path):
+    parent = root.graph.node_for(block_occurrence)
+    if parent is None or parent.symbol != trace[0]:
+        return None
+    for child_symbol, site_id in zip(trace[1:], path):
+        sites = tuple(
+            site for site in index.construction_sites_of(parent.symbol)
+            if site.site_id == site_id)
+        if len(sites) != 1:
+            return None
+        site = sites[0]
+        bindings = resolve_child_config_bindings(
+            index, parent, site, child_symbol)
+        occurrence = parent.occurrence.child(site.site_id)
+        existing = root.graph.node_for(occurrence)
+        if existing is not None:
+            if existing.symbol != child_symbol:
+                return None
+            parent = existing
+            continue
+        prefixes = tuple(dict.fromkeys(
+            prefix for binding in bindings for prefix in binding.prefixes))
+        parent = OwnerNode(
+            occurrence, child_symbol, bindings, prefixes, site.site_id,
+            site.target if site.target_kind == "field" else "",
+            site.target_kind)
+    return parent if parent.symbol == owner else None
+
+
+def _swish_formula_evidence(
+    index, owner, callable_symbol, sigmoid_call, product,
+):
+    if len(sigmoid_call.args) != 1:
+        return None
+    argument = sigmoid_call.args[0]
+    if argument.kind != "binop" or argument.operator != "*":
+        return None
+    alpha_values = tuple(
+        value for child in argument.children
+        if (value := _numeric_expression(index, owner, child)) is not None)
+    if len(alpha_values) != 1:
+        return None
+    alpha, alpha_span = alpha_values[0]
+
+    gate_clips = []
+    up_clips = []
+    for call in index.calls_in(callable_symbol):
+        if call.callee.kind != "attribute" or call.callee.name != "clamp":
+            continue
+        product_reach = _call_reaches_expression(
+            index, callable_symbol, call, product)
+        if not product_reach:
+            continue
+        bounds = {name: _numeric_expression(index, owner, value)
+                  for name, value in call.kwargs}
+        lower = bounds.get("min")
+        upper = bounds.get("max")
+        pair = (
+            lower[0] if lower is not None else None,
+            upper[0] if upper is not None else None,
+        )
+        if pair == (None, None):
+            continue
+        evidence = (pair, _typed_spans((
+            call.span,
+            *(item[1] for item in (lower, upper) if item is not None),
+        )))
+        if _call_reaches_expression(
+                index, callable_symbol, call, argument):
+            gate_clips.append(evidence)
+        else:
+            up_clips.append(evidence)
+    gate_distinct = {
+        pair: spans for pair, spans in gate_clips
+    }
+    up_distinct = {
+        pair: spans for pair, spans in up_clips
+    }
+    if len(gate_distinct) > 1 or len(up_distinct) > 1:
+        return None
+    gate_clip = next(iter(gate_distinct), None)
+    up_clip = next(iter(up_distinct), None)
+    clip_spans = tuple(
+        span for spans in (*gate_distinct.values(), *up_distinct.values())
+        for span in spans)
+
+    offsets = []
+    for expression in _expressions(product):
+        if expression.kind == "binop" and expression.operator == "+":
+            for child in expression.children:
+                numeric = _numeric_expression(index, owner, child)
+                if numeric is not None:
+                    offsets.append(numeric)
+    offset_values = {item[0] for item in offsets}
+    if len(offset_values) > 1:
+        return None
+    offset = next(iter(offset_values), None)
+    offset_spans = tuple(item[1] for item in offsets)
+    return ExpertActivationEvidence(
+        kind="swish", alpha=alpha,
+        gate_clip=gate_clip, up_clip=up_clip, up_offset=offset,
+        spans=_typed_spans((
+            sigmoid_call.span, alpha_span, *clip_spans, *offset_spans)))
+
+
+def _call_reaches_expression(index, callable_symbol, call, expression):
+    key = ("formula_operand", call.span)
+    sources, _, _, uncertain = producer_sources_reaching_expressions(
+        index, callable_symbol,
+        ((expression.span, tuple(expression.children)),),
+        {key: call},
+    )
+    return key in sources and (
+        not uncertain
+        or _span_within(call.span, expression.span)
+        or _call_and_expression_share_guard(
+            index, callable_symbol, call, expression))
+
+
+def _call_and_expression_share_guard(
+    index, callable_symbol, call, expression,
+):
+    """Discharge loop/branch uncertainty only on the exact same path.
+
+    The neutral reaching-def helper marks guarded producers conservative.  A
+    routed expert's entire formula commonly lives under one expert loop, so a
+    producer and consumer with the identical recorded guard are nevertheless
+    an exact local relation.  Rival paths retain different guards and cannot
+    pass this test.
+    """
+    owners = tuple(
+        binding for binding in index.bindings_in(callable_symbol)
+        if binding.value is not None
+        and _span_within(expression.span, binding.value.span))
+    if len(owners) != 1:
+        return False
+    return bool(call.guard) and call.guard == owners[0].guard
+
+
+def _numeric_expression(index, owner, expression):
+    if expression.kind == "constant" and isinstance(
+            expression.const_value, (int, float)) \
+            and not isinstance(expression.const_value, bool):
+        return float(expression.const_value), expression.span
+    if expression.kind == "unaryop" and expression.operator == "-" \
+            and len(expression.children) == 1:
+        resolved = _numeric_expression(index, owner, expression.children[0])
+        return ((-resolved[0], expression.span) if resolved is not None else None)
+    field = _self_field(expression)
+    if field is None:
+        return None
+    matches = tuple(
+        item for item in index.field_assigns_of(owner)
+        if item.field == field and not item.guard)
+    if len(matches) != 1:
+        return None
+    value = matches[0].value
+    if value.kind != "constant" or not isinstance(
+            value.const_value, (int, float)) or isinstance(value.const_value, bool):
+        return None
+    return float(value.const_value), matches[0].span
+
+
+def _activation_signature(value):
+    return (
+        value.kind, value.config_path, value.config_default, value.alpha,
+        value.gate_clip, value.up_clip, value.up_offset,
+    )
+
+
+def _activation_strictly_refines(candidate, weaker):
+    """True when candidate adds only exact details to the same mechanism.
+
+    A helper can expose both the inner ``gate * sigmoid(...)`` product and its
+    downstream ``(up + offset) * glu`` product.  Treating those as rival
+    mechanisms would discard the downstream operands.  Refinement is legal
+    only when every fact already present on the weaker proof agrees exactly;
+    incomparable formulae still force abstention.
+    """
+    authority = ("kind", "config_path", "config_default", "alpha")
+    if any(getattr(candidate, name) != getattr(weaker, name)
+           for name in authority):
+        return False
+    details = ("gate_clip", "up_clip", "up_offset")
+    if any(getattr(weaker, name) is not None
+           and getattr(candidate, name) != getattr(weaker, name)
+           for name in details):
+        return False
+    return any(getattr(weaker, name) is None
+               and getattr(candidate, name) is not None
+               for name in details)
+
+
+def _typed_spans(spans):
+    return tuple(dict.fromkeys(
+        span for span in spans if isinstance(span, SourceSpan)))
 
 
 def _selected_parameter_records(

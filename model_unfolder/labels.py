@@ -564,8 +564,22 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
             facts.append(
                 "shared FFN activation "
                 + activation_label(ffn.get("activation")))
-        if ffn.get("activation_clip"):
-            facts.append(f"clamped ±{ffn['activation_clip']:g}")
+        expert_formula = ffn.get("expert_activation_formula") or {}
+        if expert_formula.get("kind"):
+            facts.append(
+                "expert activation "
+                + activation_label(expert_formula.get("kind")))
+        if expert_formula.get("alpha") is not None:
+            facts.append(f"expert β={expert_formula['alpha']:g}")
+        if expert_formula.get("gate_clip") is not None:
+            lo, hi = expert_formula["gate_clip"]
+            facts.append(
+                f"expert gate {_bounded_phrase(lo, hi)}")
+        if expert_formula.get("up_clip") is not None:
+            lo, hi = expert_formula["up_clip"]
+            facts.append(f"expert up {_bounded_phrase(lo, hi)}")
+        if expert_formula.get("up_offset") is not None:
+            facts.append(f"expert up +{expert_formula['up_offset']:g}")
         if ffn.get("bias"):
             facts.append("learned bias")
         return desc, facts
@@ -640,9 +654,15 @@ def ffn_summary(ffn: dict) -> tuple[str, list[str]]:
         facts.append("fused gate+up")
     elif storage == "split":
         facts.append("split gate/up")
-    if ffn.get("activation_clip"):
-        facts.append(f"clamped ±{ffn['activation_clip']:g}")
     return desc, facts
+
+
+def _bounded_phrase(lower, upper):
+    if lower is None:
+        return f"≤ {upper:g}"
+    if upper is None:
+        return f"≥ {lower:g}"
+    return f"∈ [{lower:g}, {upper:g}]"
 
 
 def ffn_label(ffn: dict) -> str | list[str]:

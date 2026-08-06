@@ -17,6 +17,7 @@ from model_unfolder.evidence.embedding_bookend import (
     embedding_stage_norm_evidence,
     read_embedding_stage_norm,
 )
+from model_unfolder.evidence.final_bookend import final_stage_norm_evidence
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.repeated_child import resolve_repeated_child
 
@@ -137,6 +138,135 @@ def test_final_norm_cannot_be_reversed_into_an_entry_bookend(tmp_path):
     assert "feeds the repeated child" in result.failures[0].detail
 
 
+def _with_final_norm(source=_SOURCE, *, return_expression="self.final(hidden)"):
+    return source.replace(
+        "            self.entry = CustomNorm(config)",
+        "            self.entry = CustomNorm(config)\n"
+        "            self.final = CustomNorm(config)",
+    ).replace(
+        "            return hidden",
+        f"            return {return_expression}",
+    )
+
+
+def test_exact_norm_after_stack_reaching_return_is_final_bookend(tmp_path):
+    bundle, index, *_ = _pipeline(tmp_path, _with_final_norm())
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "resolved"
+    assert result.value == "RMSNorm"
+    assert result.provenance[0].spans
+
+
+def test_entry_norm_does_not_certify_final_bookend(tmp_path):
+    bundle, index, *_ = _pipeline(tmp_path)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert "after the exact repeated child" in result.failures[0].detail
+
+
+def test_auxiliary_post_stack_norm_not_reaching_return_is_rejected(tmp_path):
+    source = _with_final_norm(return_expression="hidden").replace(
+        "            return hidden",
+        "            auxiliary = self.final(hidden)\n            return hidden",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert "reaches every exact primary model-stage return" \
+        in result.failures[0].detail
+
+
+def test_terminal_norm_wins_over_an_earlier_post_stack_norm(tmp_path):
+    source = _with_final_norm().replace(
+        "            self.final = CustomNorm(config)",
+        "            self.final = CustomNorm(config)\n"
+        "            self.last = nn.LayerNorm(config.hidden)",
+    ).replace(
+        "            return self.final(hidden)",
+        "            hidden = self.final(hidden)\n"
+        "            return self.last(hidden)",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "resolved"
+    assert result.value == "LayerNorm"
+
+
+def test_guarded_final_norm_cannot_author_unconditional_bookend(tmp_path):
+    source = _with_final_norm(return_expression="hidden").replace(
+        "            return hidden",
+        "            if token_ids is not None:\n"
+        "                hidden = self.final(hidden)\n"
+        "            return hidden",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert "guarded" in result.failures[0].detail
+
+
+def test_early_return_before_final_norm_blocks_the_bookend(tmp_path):
+    source = _with_final_norm().replace(
+        "            return self.final(hidden)",
+        "            if token_ids is None:\n"
+        "                return hidden\n"
+        "            return self.final(hidden)",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert "does not reach every return" in result.failures[0].detail
+
+
+def test_auxiliary_output_field_cannot_certify_the_primary_hidden_state(tmp_path):
+    source = _with_final_norm(return_expression="hidden").replace(
+        "            return hidden",
+        "            return Result(last_hidden_state=hidden, "
+        "auxiliary=self.final(hidden))",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert "reaches every exact primary model-stage return" \
+        in result.failures[0].detail
+
+
+def test_conditional_expression_cannot_certify_an_unconditional_final_norm(tmp_path):
+    source = _with_final_norm(return_expression="hidden").replace(
+        "            return hidden",
+        "            return self.final(hidden) if token_ids is not None else hidden",
+    )
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+
+
+def test_excessive_lineage_alternatives_fail_instead_of_exploding_or_truncating(
+        tmp_path):
+    branches = []
+    names = []
+    for index in range(9):
+        name = f"path_{index}"
+        names.append(name)
+        branches.extend((
+            f"            {name} = hidden",
+            "            if token_ids is not None:",
+            f"                {name} = self.entry(hidden)",
+        ))
+    replacement = "\n".join((
+        *branches,
+        f"            hidden = {' + '.join(names)}",
+        "            return hidden",
+    ))
+    source = _SOURCE.replace("            return hidden", replacement)
+    bundle, index, *_ = _pipeline(tmp_path, source)
+    result = final_stage_norm_evidence(index, bundle)
+    assert result.status == "failed"
+    assert any(
+        "bounded proof capacity" in failure.detail
+        for failure in result.failures)
+
+
 def test_guarded_norm_does_not_author_an_unconditional_diagram_block(tmp_path):
     source = _SOURCE.replace(
         "            hidden = self.entry(inputs_embeds)",
@@ -206,3 +336,22 @@ def test_real_transformer_bookend_controls(slug, expected):
     else:
         assert result.status == "resolved"
         assert result.value == expected
+
+
+@pytest.mark.parametrize(("slug", "expected"), [
+    ("bloom", "LayerNorm"),
+    ("llama-7b", "RMSNorm"),
+    ("gemma-2-2b-it", "RMSNorm"),
+])
+def test_real_transformer_final_bookend_controls(slug, expected):
+    from model_unfolder.evidence.context import ParseContext
+    from model_unfolder.parser import _coerce
+
+    corpus = pathlib.Path(__file__).parent / "sable_test_corpus"
+    data = json.loads((corpus / f"{slug}.json").read_text())
+    context = ParseContext.build(_coerce(data["config"]))
+    result = final_stage_norm_evidence(
+        context.program_index(), context.source_bundle,
+        allow_root_stage=True)
+    assert result.status == "resolved"
+    assert result.value == expected

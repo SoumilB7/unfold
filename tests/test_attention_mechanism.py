@@ -272,6 +272,46 @@ def test_score_scaling_follows_exact_product_to_softmax(
     assert result.status == "resolved", result.failures
     assert isinstance(result.value, AttentionScoreScalingBinding)
     assert result.value.scaled is expected
+    assert result.value.config_paths == ((("scale",),) if expected else ())
+
+
+def test_dispatch_helper_scale_parameter_binds_only_its_exact_call_argument(
+        tmp_path):
+    """A free-function scale parameter is not itself config evidence.
+
+    The exact dispatch call binds ``scaling`` to ``self.scale`` and only that
+    field's constructor assignment can establish the config occurrence.  An
+    unrelated familiar scale spelling must stay powerless.
+    """
+    attention = """
+from ...modeling_utils import ALL_ATTENTION_FUNCTIONS
+
+def eager_attention_forward(module, one, two, three, *, scaling):
+    score = torch.matmul(one, two.transpose(-1, -2)) * scaling
+    weights = F.softmax(score, dim=-1)
+    return torch.matmul(weights, three)
+
+class Mixer:
+    def __init__(self, config):
+        self.config = config
+        self.scale = config.scale
+        self.width = config.hidden // config.query_groups
+        self.a = nn.Linear(config.hidden, config.query_groups * self.width)
+        self.b = nn.Linear(config.hidden, config.query_groups * self.width)
+        self.c = nn.Linear(config.hidden, config.query_groups * self.width)
+    def forward(self, x):
+        one = self.a(x)
+        two = self.b(x)
+        three = self.c(x)
+        interface = ALL_ATTENTION_FUNCTIONS.get_interface(
+            self.config.impl, eager_attention_forward)
+        return interface(self, one, two, three, scaling=self.scale)
+"""
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is True
+    assert result.value.config_paths == (("scale",),)
 
 
 def test_two_exact_attention_children_must_independently_agree_on_scaling(
@@ -352,6 +392,8 @@ def test_score_scaling_dto_rejects_protocol_and_call_forgery(tmp_path):
         replace(value, protocol="sdpa_terminal")
     with pytest.raises(ValueError, match="precedes"):
         replace(value, softmax_call=value.score_call)
+    with pytest.raises(ValueError, match="unscaled score path"):
+        replace(value, config_paths=(("scale",),))
 
 
 def test_one_query_lane_and_two_kv_lanes_prove_grouped_binding(tmp_path):
@@ -922,6 +964,33 @@ def test_real_decoder_score_scaling_is_bound_to_exact_attention_path(
         allow_root_stage=True)
     assert result.status == "resolved", result.failures
     assert result.value.scaled is expected
+
+
+def test_real_granite_dispatch_scale_binds_attention_multiplier():
+    from transformers import AutoConfig
+
+    config = AutoConfig.for_model("granite").to_dict()
+    context = ParseContext.build(config)
+    result = decoder_attention_score_scaling_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is True
+    assert result.value.config_paths == (("attention_multiplier",),)
+
+
+def test_real_gemma_scale_survives_its_exact_softcap_path():
+    config = json.loads(
+        (_CORPUS / "gemma-2-2b-it.json").read_text(
+            encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_attention_score_scaling_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is True
+    assert result.value.config_paths == (
+        ("query_pre_attn_scalar",), ("attn_logit_softcapping",))
 
 
 def test_real_t5_proves_raw_scores_at_its_exact_embedded_owner():

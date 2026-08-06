@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import fields, replace
+import math
+
+import pytest
 
 from model_unfolder.expanded.ffn import build_ffn
 from model_unfolder.expanded.grouping import signature as expanded_signature
@@ -167,12 +170,12 @@ _FFN_MUTATIONS = {
     "bias": True,
     "projection_mode": "split",
     "expert_projection_mode": "fused_gate_up",
+    "expert_activation_formula": {"kind": "silu"},
     "num_experts": 8,
     "num_experts_per_tok": 2,
     "num_shared_experts": 1,
     "expert_intermediate_size": 64,
     "routing": {"top_k": 2},
-    "activation_clip": 7.0,
 }
 
 
@@ -182,13 +185,36 @@ def test_every_ffn_architecture_field_changes_every_grouping_consumer():
     structural = {item.name for item in fields(FFNSpec)} - {"asserted"}
     assert structural == set(_FFN_MUTATIONS)
     for name, value in _FFN_MUTATIONS.items():
-        candidate = replace(base, ffn=replace(base.ffn, **{name: value}))
+        updates = {name: value}
+        if name == "expert_activation_formula":
+            updates.update(
+                kind="moe", expert_projection_mode="fused_gate_up")
+        candidate = replace(base, ffn=replace(base.ffn, **updates))
         signatures = _all_signatures(candidate)
         assert signatures.count(signatures[0]) == len(signatures), name
         assert signatures[0] != baseline, name
     assert replace(
         base, ffn=replace(base.ffn, asserted=("legacy",))
     ).signature() == baseline
+
+
+def test_expert_formula_cannot_be_attached_to_a_dense_ffn():
+    with pytest.raises(ValueError, match="requires kind='moe'"):
+        FFNSpec(
+            kind="dense",
+            expert_projection_mode="fused_gate_up",
+            expert_activation_formula={"kind": "silu"},
+        )
+
+
+@pytest.mark.parametrize("value", [math.inf, -math.inf, math.nan])
+def test_expert_formula_rejects_non_finite_operands(value):
+    with pytest.raises(TypeError, match="is numeric"):
+        FFNSpec(
+            kind="moe",
+            expert_projection_mode="fused_gate_up",
+            expert_activation_formula={"kind": "silu", "alpha": value},
+        )
 
 
 def test_cross_attention_and_cell_topology_cannot_collapse():

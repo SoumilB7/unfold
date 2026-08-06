@@ -248,7 +248,15 @@ def _node_for(op: Op, region: Region, clickable: bool, primary: str) -> Node:
             "matmul": "dot_product",
         }.get(op.fn or "")
         if kind is not None:
-            return Node(op.id, kind, static=static)
+            operand = op.meta.get("operand")
+            sub = (
+                f"{operand:g}"
+                if isinstance(operand, (int, float))
+                and not isinstance(operand, bool)
+                else None
+            )
+            return Node(
+                op.id, kind, sub=sub, static=static, meta=dict(op.meta))
         # A label is presentation, not proof that an arbitrary element-wise
         # operation is an activation; an absent fn is likewise not matmul.
         return Node(

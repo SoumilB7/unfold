@@ -137,6 +137,18 @@ def test_canonical_surfaces_are_deterministic_end_to_end():
         assert P._canon_bytes(first[surface]) == P._canon_bytes(second[surface]), surface
 
 
+def test_view_manifest_preserves_distinct_occurrences_with_the_same_label():
+    """A repeated display label must never collapse a distinct diagram."""
+    assert P._occurrence_view_rows((
+        ("architecture", "hash-a"),
+        ("architecture", "hash-b"),
+        ("identical-copy", "hash-a"),
+    )) == [
+        {"label": "architecture", "sha256": "hash-a"},
+        {"label": "architecture", "sha256": "hash-b"},
+    ]
+
+
 # --------------------------------------------------------------------------- #
 # §7.2 / §7.8 — the live closed-corpus comparison
 # --------------------------------------------------------------------------- #
@@ -171,12 +183,14 @@ def _manifest_doc():
 
 
 @pytest.mark.parametrize("mutate,expect", [
-    ("drop_one", "witness_count != 28"),
+    ("drop_one", "witness_count != 29"),
     ("drop_first_input", "corpus input MISSING"),
-    ("add_extra", "witness_count != 28"),
+    ("add_extra", "witness_count != 29"),
     ("mutate_input_hash", "corpus input hash MISMATCH"),
     ("none_hash", "expected hash is None"),
     ("mutate_view", "view"),
+    ("drop_view", "view"),
+    ("add_view", "view"),
 ])
 def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
     """COR-0 (§5.7): wrong witness counts, missing/mutated input, None hash, and
@@ -188,12 +202,12 @@ def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
         (corpus / src.name).write_bytes(src.read_bytes())
     slugs = sorted(doc["witnesses"])
     if mutate == "drop_one":
-        doc["witnesses"].pop(slugs[0]); doc["witness_count"] = 27
+        doc["witnesses"].pop(slugs[0]); doc["witness_count"] = 28
     elif mutate == "drop_first_input":
         (corpus / f"{slugs[0]}.json").unlink()
     elif mutate == "add_extra":
         doc["witnesses"]["zzz-extra"] = doc["witnesses"][slugs[0]]
-        doc["witness_count"] = 28
+        doc["witness_count"] = 30
     elif mutate == "mutate_input_hash":
         doc["witnesses"][slugs[0]]["input_sha256"] = "0" * 64
     elif mutate == "none_hash":
@@ -203,13 +217,18 @@ def test_poison_manifest_violations_fail(tmp_path, mutate, expect):
             (corpus / f"{slugs[0]}.json").read_bytes()).hexdigest()
     elif mutate == "mutate_view":
         views = doc["witnesses"][slugs[0]]["views"]
-        views[next(iter(views))] = "f" * 12
+        views[0]["sha256"] = "f" * 12
+    elif mutate == "drop_view":
+        doc["witnesses"][slugs[0]]["views"].pop()
+    elif mutate == "add_view":
+        doc["witnesses"][slugs[0]]["views"].append({
+            "label": "fabricated", "sha256": "f" * 64})
     mp = tmp_path / "m.json"
     mp.write_text(json.dumps(doc))
     # poison verification must not need a full-corpus regen: findings for
     # count/input-level poisons surface before regeneration; content poisons
     # are exercised on the FIRST witness only via a pruned manifest.
-    if mutate in ("none_hash", "mutate_view"):
+    if mutate in ("none_hash", "mutate_view", "drop_view", "add_view"):
         doc["witnesses"] = {slugs[0]: doc["witnesses"][slugs[0]]}
         doc["witness_count"] = P.PRESERVATION_WITNESS_COUNT
         # Shape is intentionally not the subject of this pruned content poison.

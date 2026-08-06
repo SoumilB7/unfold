@@ -8,6 +8,7 @@ other per-occurrence differences).
 """
 from __future__ import annotations
 from dataclasses import MISSING, dataclass, field, fields
+import math
 from typing import Optional
 
 
@@ -141,6 +142,9 @@ class FFNSpec:
     expert_projection_mode: Optional[str] = None  # code-proven STORAGE of the
                                    # ROUTED EXPERTS — an independent callable
                                    # (DeepSeek: split MLP + fused experts).
+    expert_activation_formula: Optional[dict] = None  # exact routed-expert
+                                   # gate activation + optional literal
+                                   # alpha/clamp/up-offset operands
     num_experts: Optional[int] = None
     num_experts_per_tok: Optional[int] = None
     num_shared_experts: Optional[int] = None
@@ -148,8 +152,52 @@ class FFNSpec:
     routing: Optional[dict] = None  # gating fn, grouped routing, top-k renorm, scale
     asserted: tuple = ()            # transitional debt surface for facts still
                                     # projected by later U4 slices
-    activation_clip: Optional[float] = None  # clamp bound on the (Swi)GLU activation
-                                    # (gpt-oss ``swiglu_limit``) — a Tier-3 property
+
+    def __post_init__(self) -> None:
+        formula = self.expert_activation_formula
+        if formula is None:
+            return
+        if self.kind != "moe":
+            raise ValueError(
+                "an expert activation formula requires kind='moe'")
+        if not isinstance(formula, dict):
+            raise TypeError("expert activation formula is a typed mapping")
+        allowed = {
+            "kind", "alpha", "gate_clip", "up_clip", "up_offset",
+        }
+        if set(formula) - allowed:
+            raise ValueError("expert activation formula has unknown operands")
+        kind = formula.get("kind")
+        if not isinstance(kind, str) or not kind:
+            raise ValueError("expert activation formula requires its kind")
+        for name in ("alpha", "up_offset"):
+            value = formula.get(name)
+            if value is not None and (
+                    not isinstance(value, (int, float))
+                    or isinstance(value, bool)
+                    or not math.isfinite(value)):
+                raise TypeError(f"expert activation {name} is numeric")
+        for name in ("gate_clip", "up_clip"):
+            bounds = formula.get(name)
+            if bounds is None:
+                continue
+            if not isinstance(bounds, (tuple, list)) or len(bounds) != 2:
+                raise TypeError(f"expert activation {name} is a bound pair")
+            lower, upper = bounds
+            if any(value is not None and (
+                    not isinstance(value, (int, float))
+                    or isinstance(value, bool)
+                    or not math.isfinite(value))
+                   for value in bounds):
+                raise TypeError(f"expert activation {name} is numeric")
+            if lower is None and upper is None:
+                raise ValueError(f"expert activation {name} is empty")
+            if lower is not None and upper is not None and lower > upper:
+                raise ValueError(f"expert activation {name} is reversed")
+        if self.expert_projection_mode not in {
+                "fused_gate_up", "split", "dense"}:
+            raise ValueError(
+                "an expert activation formula requires proven expert storage")
 
 
 def canonical_norm_kind(value) -> str | None:
@@ -178,6 +226,8 @@ class LayerSpec:
     # Number of distinct input-norm occurrences feeding a proven parallel
     # attention/FFN pair.  None is not one: it is genuinely unresolved.
     parallel_norm_count: Optional[int] = None
+    residual_scale: Optional[float] = None  # exact operand on every rendered
+                                            # residual contribution
     blocks: list = field(default_factory=list)
     #: ADDITIVE cross-attention sublayer (seq2seq decoders — MusicGen builds
     #: encoder_attn IN ADDITION to self_attn).  Distinct from
@@ -204,6 +254,11 @@ class LayerSpec:
                 and self.parallel_norm_count is not None:
             raise ValueError(
                 "parallel_norm_count requires residual_topology='parallel'")
+        if self.residual_scale is not None and (
+                not isinstance(self.residual_scale, (int, float))
+                or isinstance(self.residual_scale, bool)
+                or not math.isfinite(self.residual_scale)):
+            raise TypeError("residual_scale must be numeric or None")
 
     def signature(self) -> tuple:
         """Hashable structural fingerprint used for grouping similar layers."""
@@ -300,6 +355,7 @@ def layer_signature(layer) -> tuple:
         norm_placement = layer.get("norm_placement")
         residual_topology = layer.get("residual_topology")
         parallel_norm_count = layer.get("parallel_norm_count")
+        residual_scale = layer.get("residual_scale")
         blocks = layer.get("blocks") or []
         cross_attention = layer.get("cross_attention")
     else:
@@ -309,6 +365,7 @@ def layer_signature(layer) -> tuple:
         norm_placement = layer.norm_placement
         residual_topology = layer.residual_topology
         parallel_norm_count = layer.parallel_norm_count
+        residual_scale = layer.residual_scale
         blocks = layer.blocks
         cross_attention = layer.cross_attention
     return (
@@ -318,6 +375,7 @@ def layer_signature(layer) -> tuple:
         ("norm_placement", norm_placement),
         ("residual_topology", residual_topology),
         ("parallel_norm_count", parallel_norm_count),
+        ("residual_scale", residual_scale),
         ("cross_attention", attention_signature(cross_attention)),
         ("blocks", tuple(
             _block_signature(block) for block in blocks if isinstance(block, dict)
@@ -516,10 +574,10 @@ def _ffn_to_dict(f: FFNSpec) -> dict:
         "num_shared_experts": f.num_shared_experts,
         "expert_intermediate_size": f.expert_intermediate_size,
         "routing": f.routing,
-        "activation_clip": f.activation_clip,
         "bias": f.bias,
         "projection_mode": f.projection_mode,
         "expert_projection_mode": f.expert_projection_mode,
+        "expert_activation_formula": f.expert_activation_formula,
     }
 
 
@@ -532,6 +590,8 @@ def _layer_to_dict(layer: LayerSpec) -> dict:
         "norm_placement": layer.norm_placement,
         "residual_topology": layer.residual_topology,
         "parallel_norm_count": layer.parallel_norm_count,
+        **({"residual_scale": layer.residual_scale}
+           if layer.residual_scale is not None else {}),
         "blocks": layer.blocks,
         # Only-when-present: single-attention layers stay byte-identical.
         **({"cross_attention": _attention_to_dict(layer.cross_attention)}

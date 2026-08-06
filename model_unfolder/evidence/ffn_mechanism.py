@@ -16,6 +16,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .activation_semantics import (
+    FUNCTIONAL_ACTIVATIONS as _FUNCTIONAL_ACTIVATIONS,
+    MODULE_ACTIVATIONS as _MODULE_ACTIVATIONS,
+)
 from .affine import construction_is_affine
 from .attention_storage import producer_sources_reaching_expressions
 from .component_owner import (
@@ -52,19 +56,6 @@ from .reader_result import (
 )
 
 
-_FUNCTIONAL_ACTIVATIONS = {
-    "torch.nn.functional.gelu": "gelu",
-    "torch.nn.functional.relu": "relu",
-    "torch.nn.functional.silu": "silu",
-}
-_MODULE_ACTIVATIONS = {
-    "torch.nn.GELU": "gelu",
-    "torch.nn.modules.activation.GELU": "gelu",
-    "torch.nn.ReLU": "relu",
-    "torch.nn.modules.activation.ReLU": "relu",
-    "torch.nn.SiLU": "silu",
-    "torch.nn.modules.activation.SiLU": "silu",
-}
 _SPLIT_PROTOCOLS = frozenset({"chunk", "split", "tensor_split"})
 
 

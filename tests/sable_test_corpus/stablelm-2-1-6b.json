@@ -77,15 +77,15 @@
   "hash_signature": [
     "01174cc336ac5b602cbb023207927637",
     "26aab840ec5ea2ced6528c8865f8dec5",
-    "685ba36858bbd57c4ea805f0514a48d2",
-    "9c7ebe398faecd2478255d16c20831a3"
+    "9c7ebe398faecd2478255d16c20831a3",
+    "f361cb06be666d23a04fe01454d6f95e"
   ],
   "model": "stablelm-2-1_6b",
   "source": "local",
   "superseded_hash_signature": [
-    "4ddabac361f85744c8fa95e52b1249bd",
+    "01174cc336ac5b602cbb023207927637",
+    "26aab840ec5ea2ced6528c8865f8dec5",
     "685ba36858bbd57c4ea805f0514a48d2",
-    "86ec73132aee62e1fd481890bf886ae4",
     "9c7ebe398faecd2478255d16c20831a3"
   ],
   "visual_evidence": {

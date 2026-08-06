@@ -57,7 +57,12 @@ def _with_residual_scales(blocks: list[Block], scale) -> list[Block]:
     out: list[Block] = []
     counter = 0
     for block in blocks:
-        if block.get("kind") == "residual_add":
+        # The canonical cell reader proves exactly the self-attention/mixer and
+        # FFN branches.  An additive cross-attention sublayer is independent
+        # evidence and must not inherit their common scale on an unseen seq2seq
+        # model merely because it is another residual_add in this list.
+        if block.get("kind") == "residual_add" \
+                and block.get("id") in {"add1", "add2"}:
             counter += 1
             out.append({
                 "id": f"res_scale{counter}",
@@ -200,6 +205,7 @@ def _sandwich_layer_blocks(attention, ffn, hidden_size, norm_kind) -> list[Block
 def parallel_decoder_layer_blocks(
     attention: AttentionSpec, ffn: FFNSpec, hidden_size: int, norm_kind: str = "unknown",
     norm_placement: str = "unknown", norm_count: int | None = None,
+    residual_scale=None,
 ) -> list[Block]:
     """Blocks for parallel residual topology (GPT-NeoX / GPT-J / Falcon).
 
@@ -219,7 +225,12 @@ def parallel_decoder_layer_blocks(
     hidden = _fmt(hidden_size)
     norm_label = _norm_label(norm_kind)
     ffn_block = _ffn_block(ffn, hidden_size)
-    ffn_block.update({"lane": "left", "tap_from": "attn", "feeds": "add1", "side_align": "tap"})
+    scaled = residual_scale not in (None, 1, 1.0)
+    branch_merge = "parallel_sum" if scaled else "add1"
+    ffn_block.update({
+        "lane": "left", "tap_from": "attn", "feeds": branch_merge,
+        "side_align": "tap", "w": 220,
+    })
     # ``norm_count`` (code-derived) distinguishes SHARED (1, GPT-J) from SEPARATE
     # (2, GPT-NeoX input+post norms).  For count==2 the FACT is stated honestly in
     # the norm's card; drawing the two norms as two boxes in the parallel side-lane
@@ -241,13 +252,38 @@ def parallel_decoder_layer_blocks(
             "whether they share one normalization occurrence or consume "
             "separate norms. No one-norm convention is drawn."
         )
-    return [
+    blocks: list[Block] = [
         _norm_block(
             "rms1", norm_label if norm_count in {1, 2}
             else ["Norm inputs", "unresolved"],
             norm_title, norm_desc, facts=[f"dim {hidden}"],
         ),
         _attention_block(attention, hidden_size),
+    ]
+    if scaled:
+        # Algebraically exact factoring of the code-proven common operand:
+        #   residual + s*attn + s*ffn == residual + s*(attn + ffn)
+        # The first connector merges only the two parallel branch outputs; the
+        # second connector then adds the untouched residual stream.
+        blocks.extend([
+            {
+                "id": "parallel_sum", "role": "combine",
+                "kind": "residual_add", "label": "+", "static": True,
+                "title": "Parallel branch sum",
+                "description": "attention output + FFN output",
+            },
+            {
+                "id": "res_scale1", "role": "residual", "kind": "gate_mul",
+                "label": "\u00d7", "sub": f"\u00d7 {residual_scale}",
+                "title": "Residual scale",
+                "description": (
+                    "The summed attention and FFN contributions are multiplied "
+                    f"by the exact common residual scale {residual_scale} before "
+                    "the residual add."
+                ),
+            },
+        ])
+    blocks.extend([
         {
             "id": "add1",
             "role": "residual",
@@ -255,10 +291,15 @@ def parallel_decoder_layer_blocks(
             "residual_from": "rms1",
             "label": "+",
             "title": "Residual add (parallel)",
-            "description": "layer input + attention output + FFN output (one combined step)",
+            "description": (
+                "layer input + scaled(attention output + FFN output)"
+                if scaled else
+                "layer input + attention output + FFN output (one combined step)"
+            ),
         },
         ffn_block,
-    ]
+    ])
+    return blocks
 
 
 def single_stream_decoder_layer_blocks(

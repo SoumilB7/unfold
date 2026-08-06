@@ -41,6 +41,7 @@ def decoder_layer(
         norm_kind=norm_kind,
         norm_placement=norm_placement,
         residual_topology=residual_topology,
+        residual_scale=residual_scale,
         blocks=blocks,
         cross_attention=cross_attention_spec,
     )
@@ -55,6 +56,7 @@ def parallel_decoder_layer(
     norm_kind: str = "unknown",
     norm_placement: str = "unknown",
     norm_count: int | None = None,
+    residual_scale=None,
 ) -> LayerSpec:
     """Build a parallel-residual decoder layer (GPT-NeoX / GPT-J).
 
@@ -64,7 +66,8 @@ def parallel_decoder_layer(
     """
     blocks = parallel_decoder_layer_blocks(
         attention, ffn, hidden_size, norm_kind=norm_kind,
-        norm_placement=norm_placement, norm_count=norm_count)
+        norm_placement=norm_placement, norm_count=norm_count,
+        residual_scale=residual_scale)
     return LayerSpec(
         index=index,
         attention=attention,
@@ -76,6 +79,7 @@ def parallel_decoder_layer(
         norm_placement=norm_placement,
         residual_topology="parallel",
         parallel_norm_count=norm_count,
+        residual_scale=residual_scale,
         blocks=blocks,
     )
 

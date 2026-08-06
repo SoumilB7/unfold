@@ -3,6 +3,8 @@ import sys
 import os
 import types
 
+import pytest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import unfold
@@ -150,18 +152,19 @@ def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
     assert "fixed positions" not in attention_summary(ir["layers"][0]["attention"])[1]
 
 
-def test_repeated_layer_norm_does_not_certify_the_model_final_norm():
+def test_exact_model_stage_reader_not_repeated_layer_norm_certifies_final_norm():
     from transformers import AutoConfig
 
     layernorm = unfold(AutoConfig.for_model("gpt_bigcode").to_dict()).to_html()
     rmsnorm = unfold(AutoConfig.for_model("llama").to_dict()).to_html()
-    # The layer reader proves the repeated block's norm class.  It does not
-    # prove that the distinct model-stage path applies a norm before the head.
-    # U7 owns that root reader; until then the bookend stays explicitly unknown.
-    for html in (layernorm, rmsnorm):
-        assert "Final LayerNorm" not in html
-        assert "Final RMSNorm" not in html
-        assert "Pre-head path" in html
+    # These labels are now authored by the distinct exact model-stage relation
+    # (repeated child -> norm -> return), never borrowed from the layer norm.
+    assert "Final LayerNorm" in layernorm
+    assert "Final RMSNorm" not in layernorm
+    assert "Final RMSNorm" in rmsnorm
+    assert "Final LayerNorm" not in rmsnorm
+    assert "Pre-head path" not in layernorm
+    assert "Pre-head path" not in rmsnorm
 
 DEEPSEEK_V3_CONFIG = {
     "architectures": ["DeepseekV3ForCausalLM"],
@@ -1062,10 +1065,9 @@ def test_dsa_indexer_is_surfaced_but_declared_swiglu_clip_needs_source_binding()
     assert "DeepSeek Sparse Attention" in desc
     assert any("DSA top-2,048" in f for f in facts) and any("indexer 64×128" in f for f in facts)
 
-    # U4-C: the checkpoint value alone does not prove which exact expert
-    # activation consumes it. U7 may restore the clipping chip only after
-    # binding swiglu_limit to that callable; until then it is exact pending
-    # config debt and the FFN must not claim a clamp.
+    # A checkpoint value alone does not prove which exact expert activation
+    # consumes it. The retired activation_clip lane cannot reappear; an exact
+    # routed-expert formula is the only lawful place for clamp operands.
     oss = parse(dict(
         model_type="gpt_oss", num_hidden_layers=2, hidden_size=128,
         num_attention_heads=8, num_key_value_heads=8, intermediate_size=256,
@@ -1073,7 +1075,7 @@ def test_dsa_indexer_is_surfaced_but_declared_swiglu_clip_needs_source_binding()
         num_experts_per_tok=2, swiglu_limit=7.0,
     )).to_dict()
     ffn = next(l["ffn"] for l in oss["layers"] if l["ffn"]["kind"] == "moe")
-    assert ffn["activation_clip"] is None
+    assert "activation_clip" not in ffn
     assert not any("clamped" in f for f in ffn_summary(ffn)[1])
 
     # M-RoPE: Qwen-VL's rope_scaling.mrope_section becomes a Tier-3 chip.
@@ -1827,8 +1829,8 @@ def _with_fake_transformers(auto_config, fn):
 def test_declared_residual_multiplier_does_not_manufacture_scale_connectors():
     """A numeric operand does not prove that this layer applies it.
 
-    Source-proven scaled residuals belong to U7.  Until then, adding the field
-    to an otherwise identical Llama config must not change its layer drawing.
+    U7 now draws a scale only when exact residual equations apply it. Adding
+    the field to an otherwise identical Llama config remains powerless.
     """
     from model_unfolder.block_schema import validate_click_coupling
     cfg = dict(LLAMA3_8B_CONFIG, residual_multiplier=0.22)
@@ -1842,6 +1844,82 @@ def test_declared_residual_multiplier_does_not_manufacture_scale_connectors():
     assert unfold(cfg).ir.layers[0].signature() == unfold(
         LLAMA3_8B_CONFIG
     ).ir.layers[0].signature()
+
+
+def test_real_granite_source_binds_and_draws_both_residual_scales():
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("granite").to_dict()
+    cfg.update({
+        "num_hidden_layers": 2,
+        "hidden_size": 256,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "intermediate_size": 512,
+        "vocab_size": 1000,
+        "residual_multiplier": 0.22,
+        "attention_multiplier": 0.0078125,
+    })
+    diagram = unfold(cfg)
+    layer = diagram.ir.layers[0]
+    assert layer.residual_scale == 0.22
+    assert layer.attention.scores_scale == 0.0078125
+    assert layer.attention.scores_scaled is True
+    assert [
+        block["sub"] for block in layer.blocks
+        if block.get("id", "").startswith("res_scale")
+    ] == ["× 0.22", "× 0.22"]
+    fact = diagram.ir.extras["fact_provenance"][
+        "decoder.layer.residual_scale"]
+    assert fact["status"] == "code_and_config"
+    assert not any(
+        item.endswith(":residual_multiplier")
+        for item in diagram.ir.extras["config_access"][
+            "accessed_unconsumed"])
+    assert not any(
+        item.endswith(":attention_multiplier")
+        for item in diagram.ir.extras["config_access"][
+            "accessed_unconsumed"])
+    from model_unfolder.opgraph import attention_region
+
+    scores = next(
+        op for op in attention_region(
+            layer.attention.__dict__, diagram.ir.hidden_size).ops
+        if op.id == "scaled_scores")
+    assert scores.meta["formula"] == "QK^T/128"
+    assert diagram.wiring_problems() == []
+
+
+@pytest.mark.parametrize("bad_value", [
+    float("inf"), float("-inf"), float("nan"), "0.22",
+])
+def test_invalid_granite_residual_scale_stays_unknown(bad_value):
+    """A proved operand address does not make a malformed value drawable."""
+    from transformers import AutoConfig
+
+    cfg = AutoConfig.for_model("granite").to_dict()
+    cfg.update({
+        "num_hidden_layers": 2,
+        "hidden_size": 256,
+        "num_attention_heads": 8,
+        "num_key_value_heads": 2,
+        "intermediate_size": 512,
+        "vocab_size": 1000,
+        "residual_multiplier": bad_value,
+    })
+    diagram = unfold(cfg)
+    layer = diagram.ir.layers[0]
+    assert layer.residual_scale is None
+    assert not any(
+        block.get("id", "").startswith("res_scale")
+        for block in layer.blocks)
+    assert "decoder.layer.residual_scale" not in diagram.ir.extras[
+        "fact_provenance"]
+    assert not any(
+        item.endswith(":residual_multiplier")
+        for item in diagram.ir.extras["config_access"][
+            "accessed_unconsumed"])
+    assert diagram.wiring_problems() == []
 
 
 def test_declared_scores_scale_does_not_manufacture_an_operation():

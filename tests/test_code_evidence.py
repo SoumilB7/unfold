@@ -2146,11 +2146,14 @@ def test_scores_scaling_wired_to_main_paths():
             self.source_bundle = bundle
 
     from model_unfolder.adapters.transformer.parser import (
-        _code_scores_scaled as t_scaled)
+        _score_scaling_result as t_scaling)
     from model_unfolder.adapters.diffusor.parser import (
         _code_scores_scaled as d_scaled)
-    assert t_scaled({}, ParseContext.build(AutoConfig.for_model("t5"))) is None
-    assert t_scaled({}, ParseContext.build(AutoConfig.for_model("llama"))) is True
+    t5_result = t_scaling(ParseContext.build(AutoConfig.for_model("t5")))
+    llama_result = t_scaling(ParseContext.build(AutoConfig.for_model("llama")))
+    assert t5_result.status != "resolved"
+    assert llama_result.status == "resolved"
+    assert llama_result.value.scaled is True
     # Diffusor wrapper is ROOT-scoped: an unscaled encoder in the union must
     # not flip the denoiser's verdict (the A1 scoping discipline).
     mixed = SourceBundle(

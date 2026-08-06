@@ -18,6 +18,7 @@ because no family-specific code path matched — there are none.
 from __future__ import annotations
 
 from dataclasses import replace
+import math
 from typing import Any
 
 from . import debug
@@ -319,6 +320,20 @@ def _code_embedding_norm(cfg: Any, context=None) -> str | None:
         context.program_index(), context.source_bundle,
         allow_root_stage=True)
     return evidence.value if evidence.status == "resolved" else None
+
+
+def _code_final_norm(context=None):
+    """Exact model-stage repeated-stack -> norm -> return evidence."""
+    if context is None:
+        return None
+    from ...evidence.final_bookend import final_stage_norm_evidence
+    return context.cached_reader_result(
+        "model.final_norm_kind",
+        (),
+        lambda: final_stage_norm_evidence(
+            context.program_index(), context.source_bundle,
+            allow_root_stage=True),
+    )
 
 
 def _attention_storage_result(context, config_path):
@@ -637,15 +652,6 @@ def _attention_cache_result(context=None, *, config_path=()):
             allow_root_stage=True,
         ),
     )
-
-
-def _code_scores_scaled(
-        cfg: Any, context=None, *, config_path=()) -> bool | None:
-    """Score scaling from the exact selected attention occurrence."""
-    result = _score_scaling_result(context, config_path=config_path)
-    return (
-        result.value.scaled
-        if result is not None and result.status == "resolved" else None)
 
 
 def _code_mlp_bias(
@@ -1447,6 +1453,17 @@ def parse(cfg: Any, context=None) -> ModelIR:
             reason=("the checkpoint declares an activation name, but exact "
                     "FFN source did not prove this occurrence selects the "
                     "executed activation"))
+    # The two eager declaration probes above are candidates, not authorities.
+    # The exact source-named occurrence is re-resolved and consumed separately
+    # when applicable.  Any remaining present candidate is consciously
+    # non-deciding so it cannot linger as fake U7 architecture debt.
+    for _candidate_activation_res in (
+            _activation_res, _ffp_res_for_act):
+        if _candidate_activation_res.present:
+            _candidate_activation_res.ignore(
+                reason=(
+                    "candidate FFN declaration; only the exact source-bound "
+                    "activation dispatch is consumed into architecture"))
     sliding_window = consume("sliding_window", fact_owner="decoder.attention", fact_key="sliding_window")
     # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
     # A config may declare a window size but turn SWA *off* (use_sliding_window
@@ -1549,15 +1566,22 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 "tokenizes/decodes the audio-token streams this decoder "
                 "generates (waveform ↔ codebook tokens).")
     # A residual multiplier is an operand, not proof that this exact layer
-    # forward applies it.  U7 may promote it after binding the config path to
-    # the resolved residual operation; U4-D keeps the declaration inspected.
-    _scoped("residual_multiplier")
+    # forward applies it. The exact cell reader below is the only path allowed
+    # to resolve and consume the field.
     residual_multiplier = None
     get("embedding_multiplier")
-    attention_multiplier = get("attention_multiplier")
-    query_pre_attn_scalar = consume("query_pre_attn_scalar",
-                                    fact_owner="decoder.attention",
-                                    fact_key="scores_scale")
+    _attention_multiplier_res = _scoped("attention_multiplier")
+    attention_multiplier = (
+        _attention_multiplier_res.value
+        if (_attention_multiplier_res.state == "present"
+            or _attention_multiplier_res.source_kind == "class_default")
+        and _attention_multiplier_res.value is not None else None)
+    _query_pre_attn_scalar_res = _scoped("query_pre_attn_scalar")
+    query_pre_attn_scalar = (
+        _query_pre_attn_scalar_res.value
+        if (_query_pre_attn_scalar_res.state == "present"
+            or _query_pre_attn_scalar_res.source_kind == "class_default")
+        and _query_pre_attn_scalar_res.value is not None else None)
     get("logits_scaling")
     # U2-R7: the helper reads eps spellings off the (possibly nested) text
     # config and has no path of its own — the CALLER names the object, and
@@ -1602,7 +1626,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _ffn_selected_by_config = isinstance(
         _ffn_mechanism_value, ConfigSelectedFFNMechanism)
     if not _ffn_selected_by_config:
-        _scoped("is_gated_act")
+        _gate_declaration_res = _scoped("is_gated_act")
+        if _gate_declaration_res.present:
+            _gate_declaration_res.ignore(
+                reason=(
+                    "a gate declaration cannot prove an extra projection; "
+                    "the exact FFN construction/dataflow owns gate topology"))
     # U4-C: a config/class declaration or activation spelling may be useful
     # evidence only after exact source binds it to this FFN.  The ordinary
     # mechanism reader is that binding.  Without it, gate topology is unknown.
@@ -2230,14 +2259,55 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # A declared constant supplies the OPERAND only after code has proved that
     # this exact attention path applies a scale.  A number in config cannot,
     # by itself, manufacture an operation.
-    code_scores_scaled = _code_scores_scaled(
-        text_cfg, context, config_path=_text_path)
+    _score_scaling_evidence = _score_scaling_result(
+        context, config_path=_text_path)
+    code_scores_scaled = (
+        _score_scaling_evidence.value.scaled
+        if _score_scaling_evidence is not None
+        and _score_scaling_evidence.status == "resolved" else None)
+    _score_variants = (
+        _score_scaling_evidence.value.variants
+        if code_scores_scaled is not None
+        and hasattr(_score_scaling_evidence.value, "variants")
+        else (_score_scaling_evidence.value,)
+        if code_scores_scaled is not None else ())
+
+    def _scale_resolution_is_proven(resolution):
+        if resolution is None or resolution.ambiguous \
+                or resolution.selected_path is None or not _score_variants:
+            return False
+        exact = tuple(resolution.selected_path.split("."))
+        return all(exact in variant.config_paths for variant in _score_variants)
+
+    _attention_multiplier_proven = _scale_resolution_is_proven(
+        _attention_multiplier_res)
+    _query_pre_attn_scalar_proven = _scale_resolution_is_proven(
+        _query_pre_attn_scalar_res)
     _declared_score_scale = (
-        attention_multiplier is not None or bool(query_pre_attn_scalar)
-    )
+        (_attention_multiplier_proven and attention_multiplier is not None)
+        or (_query_pre_attn_scalar_proven and bool(query_pre_attn_scalar)))
     _applied_declared_scale = bool(
         _declared_score_scale and code_scores_scaled is True
     )
+    if _applied_declared_scale:
+        for _scale_res, _scale_proven in (
+                (_attention_multiplier_res, _attention_multiplier_proven),
+                (_query_pre_attn_scalar_res, _query_pre_attn_scalar_proven)):
+            if not _scale_proven:
+                continue
+            _scale_res.consume_decision(
+                mechanism="attention_score_scaling",
+                fact_owner="decoder.attention", fact_key="scores_scale",
+                reader="decoder_attention_score_scaling_for_path",
+                status="code_and_config")
+    for _scale_res, _scale_proven in (
+            (_attention_multiplier_res, _attention_multiplier_proven),
+            (_query_pre_attn_scalar_res, _query_pre_attn_scalar_proven)):
+        if _scale_res.present and not (
+                _applied_declared_scale and _scale_proven):
+            _scale_res.ignore(
+                "a candidate attention-scale declaration is not the exact "
+                "config occurrence used by the proved score transform")
     _note_fact("decoder.attention", "scores_scale",
                "declared" if _applied_declared_scale else
                "unscaled (raw QK^T)" if code_scores_scaled is False else
@@ -2426,9 +2496,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
                    "config_declared", "layer_types/sliding_window")
     else:
         _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None)
-    # Declaration-only until U7 proves the exact residual tap in the owner.
-    # Inspect it for ownership, but do not let the flag author a drawing.
-    _scoped("apply_residual_connection_post_layernorm")
+    # The exact cell equations above now own the residual tap.  This historical
+    # declaration is still audited when present, but it cannot corroborate,
+    # override, or manufacture the topology and therefore has a permanent
+    # non-architectural disposition rather than U7 pending debt.
+    _residual_tap_declaration = _scoped(
+        "apply_residual_connection_post_layernorm")
+    if _residual_tap_declaration.present:
+        _residual_tap_declaration.ignore(
+            "exact owner dataflow, not this declaration, owns residual topology")
 
     # ---- Layer topology ----
     # Parallel residual is projected only after the exact cell reader proves its
@@ -2498,6 +2574,66 @@ def parse(cfg: Any, context=None) -> ModelIR:
     else:
         _note_fact(
             "decoder.layer", "parallel_norm_count", None, _unknown_status)
+    _residual_scale_path = (
+        _cell_topology.residual_scale_path
+        if _cell_topology is not None else None)
+    _residual_scale_literal = (
+        _cell_topology.residual_scale_value
+        if _cell_topology is not None else None)
+    _residual_scale_resolution = (
+        _resolve_exact_config_path(_residual_scale_path)
+        if _residual_scale_path is not None else None)
+    if _residual_scale_resolution is not None \
+            and isinstance(_residual_scale_resolution.value, (int, float)) \
+            and not isinstance(_residual_scale_resolution.value, bool) \
+            and math.isfinite(_residual_scale_resolution.value) \
+            and _residual_scale_resolution.value not in (1, 1.0):
+        residual_multiplier = _residual_scale_resolution.value
+        _residual_scale_resolution.bind(
+            reader="decoder_cell_topology_for_path",
+            fact_owner="decoder.layer", fact_key="residual_scale")
+        _residual_scale_resolution.consume_decision(
+            mechanism="cell_topology",
+            fact_owner="decoder.layer", fact_key="residual_scale",
+            reader="decoder_cell_topology_for_path",
+            status="code_and_config")
+        _note_typed_fact(
+            key="residual_scale", owner="decoder.layer",
+            value=residual_multiplier, status="code_and_config",
+            reader_result=_cell_topology_result_value,
+            config_paths=(_residual_scale_path,),
+            reader="decoder_cell_topology_for_path",
+            reason=(
+                "the exact canonical mixer/attention and FFN residual branches "
+                "both multiply their sublayer output by the same source-bound "
+                "config operand"),
+        )
+    elif _residual_scale_resolution is not None \
+            and isinstance(_residual_scale_resolution.value, (int, float)) \
+            and not isinstance(_residual_scale_resolution.value, bool) \
+            and math.isfinite(_residual_scale_resolution.value) \
+            and _residual_scale_resolution.value in (1, 1.0):
+        _residual_scale_resolution.ignore(
+            "the exact source multiplies by the identity operand 1; it "
+            "changes no architecture and projects no connector")
+    elif _residual_scale_resolution is not None:
+        _residual_scale_resolution.ignore(
+            "the exact source consumes this field as a residual multiplier, "
+            "but the supplied value is not a finite numeric operand; the "
+            "architecture remains unknown rather than crashing or drawing it")
+    elif _residual_scale_literal not in (None, 1, 1.0):
+        residual_multiplier = _residual_scale_literal
+        _note_typed_fact(
+            key="residual_scale", owner="decoder.layer",
+            value=residual_multiplier, status="code_proven",
+            reader_result=_cell_topology_result_value,
+            config_paths=(),
+            reader="decoder_cell_topology_for_path",
+            reason=(
+                "the exact canonical mixer/attention and FFN residual branches "
+                "both multiply their sublayer output by the same source-literal "
+                "operand"),
+        )
 
     # ---- MoE ----
     num_experts = consume(
@@ -2513,14 +2649,101 @@ def parse(cfg: Any, context=None) -> ModelIR:
         fact_key="moe_intermediate_size")
     enable_moe_block    = _g(text_cfg, "enable_moe_block")
     moe_active          = bool(num_experts) and (enable_moe_block is not False)
-    _code_expert_fused = (
-        _code_expert_storage(
-            text_cfg, context, config_path=_text_path)
+    _expert_storage_result_value = (
+        _expert_storage_result(context, config_path=_text_path)
         if moe_active else None)
+    _expert_storage_value = (
+        _expert_storage_result_value.value
+        if _expert_storage_result_value is not None
+        and _expert_storage_result_value.status == "resolved"
+        else None)
+    _code_expert_fused = (
+        _expert_storage_value.projection_mode
+        if _expert_storage_value is not None else None)
     if _code_expert_fused is not None:
         _note_fact("decoder.ffn.expert", "expert_projection_mode",
                    _code_expert_fused, "code_proven",
                    source="decoder_routed_expert_storage_for_path")
+    expert_activation_formula = None
+    _expert_activation = (
+        _expert_storage_value.activation
+        if _expert_storage_value is not None else None)
+    if _expert_activation is not None:
+        _expert_activation_kind = _expert_activation.kind
+        _expert_activation_status = "code_proven"
+        _expert_activation_paths = ()
+        if _expert_activation.config_path:
+            _expert_dispatch_path = tuple(_expert_activation.config_path)
+            _expert_dispatch_parent = cfg
+            for _part in _expert_dispatch_path[:-1]:
+                _expert_dispatch_parent = (
+                    _expert_dispatch_parent.get(_part)
+                    if isinstance(_expert_dispatch_parent, dict)
+                    else getattr(_expert_dispatch_parent, _part, None))
+                if _expert_dispatch_parent is None:
+                    break
+            _expert_dispatch_res = (
+                _config_access.resolve(
+                    _expert_dispatch_parent, _expert_dispatch_path[-1], (),
+                    path=_expert_dispatch_path[:-1])
+                if _expert_dispatch_parent is not None else None)
+            _expert_dispatch_value = (
+                _expert_dispatch_res.value
+                if _expert_dispatch_res is not None
+                and _expert_dispatch_res.present
+                and not _expert_dispatch_res.ambiguous else None)
+            if not isinstance(_expert_dispatch_value, str) \
+                    and _expert_activation.config_default is not None \
+                    and _expert_dispatch_res is not None \
+                    and not _expert_dispatch_res.present:
+                # The indexed source itself supplies this literal fallback;
+                # absence in the checkpoint is not a config declaration.
+                _expert_dispatch_value = _expert_activation.config_default
+            if isinstance(_expert_dispatch_value, str) \
+                    and _expert_dispatch_value:
+                _expert_activation_kind = _expert_dispatch_value.lower()
+                if _expert_dispatch_res.present:
+                    _expert_activation_status = (
+                        "class_default"
+                        if _expert_dispatch_res.provenance == "class_default"
+                        else "code_and_config")
+                    _expert_dispatch_res.consume_decision(
+                        mechanism="expert_activation",
+                        fact_owner="decoder.ffn.expert",
+                        fact_key="expert_activation_formula",
+                        reader="adapters.transformer.parser.parse",
+                        status=(
+                            "class_default"
+                            if _expert_dispatch_res.provenance == "class_default"
+                            else "config_declared"),
+                    )
+                    _expert_activation_paths = (_expert_dispatch_path,)
+            else:
+                _expert_activation_kind = None
+        if _expert_activation_kind:
+            expert_activation_formula = {
+                "kind": _expert_activation_kind,
+                **({"alpha": _expert_activation.alpha}
+                   if _expert_activation.alpha is not None else {}),
+                **({"gate_clip": _expert_activation.gate_clip}
+                   if _expert_activation.gate_clip is not None else {}),
+                **({"up_clip": _expert_activation.up_clip}
+                   if _expert_activation.up_clip is not None else {}),
+                **({"up_offset": _expert_activation.up_offset}
+                   if _expert_activation.up_offset is not None else {}),
+            }
+            _note_typed_fact(
+                key="expert_activation_formula",
+                owner="decoder.ffn.expert",
+                value=expert_activation_formula,
+                status=_expert_activation_status,
+                reader_result=_expert_storage_result_value,
+                config_paths=_checkpoint_paths(_expert_activation_paths),
+                reader="decoder_routed_expert_storage_for_path",
+                reason=(
+                    "the exact routed-expert gate lane applies this activation "
+                    "formula before its proven gate/up product"),
+            )
     # Schedule declarations stay visible as inputs to the legacy source reader,
     # but are not consumed as a diagram fact merely because they exist.
     # U7 owns their exact source/config binding.  Until then only the
@@ -2560,9 +2783,22 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # it (GPT-OSS applies this inside routed experts, not the ordinary/shared
     # mechanism read above). Keep it inspected until U7 binds the exact expert
     # callable and dispatch.
-    _scoped("swiglu_limit")
-    activation_clip = None
-
+    _swiglu_limit_res = _scoped("swiglu_limit")
+    if (
+        _swiglu_limit_res.present
+        and _expert_activation is not None
+        and not _expert_activation.config_path
+        and (
+            _expert_activation.gate_clip is not None
+            or _expert_activation.up_clip is not None
+        )
+    ):
+        _swiglu_limit_res.ignore(
+            reason=(
+                "a same-named checkpoint operand cannot override the exact "
+                "routed-expert formula because this exact callable proves its "
+                "own literal clamp; a callable that read the config path would "
+                "have to consume it instead"))
     # ---- Cross-layer KV
     #  sharing (the last N layers reuse K/V from earlier) ----
     num_kv_shared_layers   = _g(text_cfg, "num_kv_shared_layers") or 0
@@ -2743,7 +2979,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             output_gate=(attn_output_gate if not is_gated_delta else None),
             scores_scale=(
                 _declared_scores_scale(
-                    attention_multiplier, query_pre_attn_scalar,
+                    attention_multiplier
+                    if _attention_multiplier_proven else None,
+                    query_pre_attn_scalar
+                    if _query_pre_attn_scalar_proven else None,
                     layer_head_dim or (hidden_size // num_heads
                                        if hidden_size and num_heads else None)
                 )
@@ -2804,7 +3043,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 # width cannot borrow the ordinary/shared FFN width.
                 expert_intermediate_size=moe_intermediate_size or None,
                 routing=moe_routing,
-                activation_clip=activation_clip,
+                expert_activation_formula=expert_activation_formula,
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
                 expert_projection_mode=_code_expert_fused,
@@ -2818,7 +3057,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 activation=activation,
                 intermediate_size=intermediate_size,
                 gated=ffn_gated,
-                activation_clip=activation_clip,
                 bias=use_mlp_bias,
                 projection_mode=_code_storage_mode,
                 # B5/U2: see the MoE branch — unknown FFN storage is represented
@@ -2866,7 +3104,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             layers.append(parallel_decoder_layer(
                 i, attn, ffn, hidden_size, norm_kind=norm_kind,
                 norm_placement=norm_placement,
-                norm_count=parallel_norm_count))
+                norm_count=parallel_norm_count,
+                residual_scale=residual_multiplier))
         else:
             layers.append(decoder_layer(
                 i, attn, ffn, hidden_size,
@@ -3030,12 +3269,29 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "model", "embedding_norm_kind", embedding_norm_kind,
             "code_proven", source="embedding_stage_norm_evidence",
         )
-    # U7 owns the root pre-head reader. A repeated layer norm cannot certify
-    # the distinct model-stage final norm.
-    final_norm_kind = None
-    _note_fact(
-        "model", "final_norm_kind", None, _unknown_status, source=None,
-    )
+    # The final bookend is a distinct positive source relation: exact repeated
+    # child -> exact norm -> every exact primary model-stage return. A layer norm or
+    # a config/class spelling cannot stand in for it.
+    _final_norm_result = _code_final_norm(context)
+    final_norm_kind = canonical_norm_kind(
+        _final_norm_result.value
+        if _final_norm_result is not None
+        and _final_norm_result.status == "resolved" else None)
+    if final_norm_kind is not None:
+        _note_typed_fact(
+            key="final_norm_kind", owner="model",
+            value=final_norm_kind, status="code_proven",
+            reader_result=_final_norm_result,
+            config_paths=(),
+            reader="final_stage_norm_evidence",
+            reason=(
+                "the exact repeated-child output reaches one exact norm whose "
+                "result reaches every exact primary model-stage return"),
+        )
+    else:
+        _note_fact(
+            "model", "final_norm_kind", None, _unknown_status, source=None,
+        )
     extras = decoder_extras(
         vocab_size,
         hidden_size,

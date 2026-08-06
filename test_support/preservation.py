@@ -44,7 +44,7 @@ ALL_SURFACES = STRUCTURAL_SURFACES + EVIDENCE_SURFACES
 # The preservation bracket is intentionally closed-world.  Adding a corpus
 # input is not enough to make it a witness: the count changes only in the same
 # reviewed commit that adds its regenerated surfaces and visual evidence.
-PRESERVATION_WITNESS_COUNT = 28
+PRESERVATION_WITNESS_COUNT = 29
 
 
 def split_structural_ir(ir: dict) -> tuple[dict, dict]:
@@ -243,14 +243,34 @@ def _tool_versions() -> dict:
     return versions
 
 
-def _view_hashes(cfg: dict) -> dict:
-    """Per-view SVG structural hashes through the SAME production extraction
-    path Sable uses (preview.svg_views + _visual_hash); a missing required
-    view surfaces as its absence here and fails the comparison."""
+def _occurrence_view_rows(
+        labelled_hashes) -> list[dict[str, str]]:
+    """Preserve label collisions while deduplicating identical visuals."""
+    out: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for label, sha in labelled_hashes:
+        if sha in seen:
+            continue
+        seen.add(sha)
+        out.append({"label": label, "sha256": sha})
+    return out
+
+
+def _view_hashes(cfg: dict) -> list[dict[str, str]]:
+    """Occurrence-exact distinct-view hashes from Sable's production path.
+
+    Labels are presentation text, not identity: one document may lawfully
+    contain two different views both labelled ``architecture``.  The former
+    ``{label: hash}`` representation silently discarded the earlier one.  A
+    sequence preserves every distinct visual occurrence and lets the verifier
+    reject missing *and* additional views.  Like Sable, byte-equivalent copies
+    are deduplicated by their visual hash.
+    """
     import model_unfolder as mu
     from model_unfolder.preview import svg_views, _visual_hash
     html = mu.unfold(cfg).to_html(standalone=True)
-    return {label: _visual_hash(svg) for label, svg in svg_views(html)}
+    return _occurrence_view_rows(
+        (label, _visual_hash(svg)) for label, svg in svg_views(html))
 
 
 def build_expected_manifest(corpus_dir, out_path) -> dict:
@@ -344,10 +364,10 @@ def verify_expected_witness(corpus_dir, manifest_path, slug: str) -> list[str]:
                   if doc is not None else None)
         if actual != expected_sha:
             findings.append(f"{slug}/{surface}: hash mismatch")
+    expected_views = row.get("views", [])
     actual_views = _view_hashes(cfg)
-    for view, sha in sorted(row.get("views", {}).items()):
-        if actual_views.get(view) != sha:
-            findings.append(
-                f"{slug}/view {view!r}: "
-                + ("ABSENT" if view not in actual_views else "hash mismatch"))
+    if actual_views != expected_views:
+        findings.append(
+            f"{slug}/views: occurrence sequence/hash mismatch "
+            f"(expected {len(expected_views)}, actual {len(actual_views)})")
     return findings

@@ -25,6 +25,7 @@ view computes coordinates, draws a residual, or labels a repeat again.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import re
 
 
 @dataclass(frozen=True)
@@ -258,16 +259,26 @@ _CONNECTOR_KINDS = {"residual_add", "gate_mul", "dot_product", "concat"}
 #: regroups are now ``reshape`` boxes, so a 1-input ‖ is a genuine wiring bug).
 _STRICT_TWO_INPUT = {"residual_add", "dot_product", "concat"}
 _GLYPH_SYM = {"+": "⊕", "×": "×", "dot": "⊙", "‖": "‖"}
+_NUMERIC_OPERAND = re.compile(
+    r"(?<![\w.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?(?![\w.])",
+    re.IGNORECASE,
+)
 
 
 def _has_constant_operand(node: Node) -> bool:
-    """A `×` may legitimately scale by a labelled constant (router
-    `× routed_scaling_factor`) — then one tensor input is fine, because the
-    other operand is the constant printed on the node."""
-    heading = node.label if node.label is not None else ""
-    text = " ".join(heading) if isinstance(heading, list) else str(heading)
-    text = f"{text} {node.sub or ''}"
-    return bool(node.sub) or any(ch.isdigit() for ch in text) or "scale" in text.lower()
+    """A connector may combine one tensor with a visibly shown constant.
+
+    Router scaling uses multiplication by 2.5 and an exact affine formula may
+    add 1. One tensor edge is sufficient only because the other operand is
+    printed on the connector; an unlabelled one-input connector remains red.
+    """
+    operand = node.meta.get("operand")
+    if isinstance(operand, (int, float)) and not isinstance(operand, bool):
+        return True
+    # Presentation labels can contain unrelated numbers ("Top-2") or words
+    # ("scale unresolved").  Only the operand subtitle is allowed to discharge
+    # the missing tensor input, and it must contain an actual numeric literal.
+    return bool(_NUMERIC_OPERAND.search(str(node.sub or "")))
 
 
 def wiring_problems(graph: "Graph") -> list[str]:
@@ -276,7 +287,8 @@ def wiring_problems(graph: "Graph") -> list[str]:
     Counts each connector's DISTINCT inbound sources across the flow chain,
     explicit edges (flow + residual), parallel-lane merges and side-inputs; a
     ``residual_add``/``dot_product``/``concat`` with <2, or a ``gate_mul`` with
-    <2 and no labelled constant, is dangling.  (A single-stream regroup is a
+    <2 and no labelled constant, is dangling. A one-input residual addition is
+    lawful only when its exact scalar operand is likewise labelled. (A regroup is a
     ``reshape`` box, not a ‖, so every ‖ must genuinely merge two lanes.)"""
     par_pairs = {(p.src, p.dst) for p in graph.parallels}
     rel: set[tuple[str, str]] = set()
@@ -302,7 +314,8 @@ def wiring_problems(graph: "Graph") -> list[str]:
     for n in graph.nodes:
         if n.kind not in _CONNECTOR_KINDS or indeg.get(n.id, 0) >= 2:
             continue
-        if n.kind == "gate_mul" and _has_constant_operand(n):
+        if n.kind in {"gate_mul", "residual_add"} \
+                and _has_constant_operand(n):
             continue
         sym = _GLYPH_SYM.get(n.glyph().sym, n.glyph().sym)
         problems.append(

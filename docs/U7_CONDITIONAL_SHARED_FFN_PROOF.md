@@ -275,3 +275,217 @@ xfails.  Every detached lane retained identical source and blessed-artifact
 fingerprints.  The gate caught and locked an additional real debt reduction:
 deleting the warning wrapper removed `evidence/validate.py`'s last broad
 `except Exception`, so that module is no longer present in the ratchet baseline.
+
+## Exact routed-expert activation closure
+
+The final transformer-local U7 gap was not expert storage or router selection:
+those were already exact. The remaining lie was that a proved expert still
+drew a generic activation because activation identity was borrowed only from
+the ordinary/shared FFN lane. The correction extends the same exact
+`RoutedExpertStorage` result; no second reader or family branch was added.
+
+The reader now accepts an activation only when its exact call reaches the
+already-proven gate/up product under the exact expert callable. It supports:
+
+- a functional activation resolved through its import binding;
+- an exact `ACT2FN[config.path]` dispatch;
+- an exact local `dict.get(key, literal_default)` dispatch whose complete
+  config prefix is propagated through the expert construction chain;
+- a source-literal swish formula whose alpha, clamps and additive up operand
+  each reach the same proved product.
+
+Same-function proximity is not evidence. An unrelated activation, clamp or
+numeric addition; an activation after the down projection; rival config
+bindings; or competing formulae all abstain. Formula refinements are combined
+only when one downstream product adds exact operands without contradicting any
+weaker proof. The source span, expert owner and construction route remain closed
+inside the typed evidence.
+
+The four real controls are deliberately different:
+
+- DeepSeek-V3 and GLM-4.5 cite `hidden_act` and draw fused gate/up, SiLU,
+  multiply and down;
+- DBRX cites `ffn_config.ffn_act_fn.name`, retains its source-literal
+  `"silu"` fallback when the key is absent, and draws split gate/up/down;
+- GPT-OSS proves the literal formula
+  `clamp(gate,max=7) * sigmoid(1.702*gate)` with the up lane clamped to
+  `[-7,7]` and incremented by `1`. Its same-named checkpoint
+  `swiglu_limit` does not override source that never reads that field.
+
+The parser records one owner-qualified
+`decoder.ffn.expert.expert_activation_formula` fact and attaches it only to
+MoE layers. Dense siblings in a heterogeneous schedule cannot inherit it.
+Cards, the canonical op graph, HTML expert drills, expanded JSON and projection
+audit all consume that same fact. The former `FFNSpec.activation_clip` lane is
+deleted because it was a dead, config-shaped second authority.
+
+The visual connector law found one final projection defect: the exact GPT-OSS
+`+1` operand initially produced a one-input unlabeled plus glyph. Constant
+operands now remain visible beside their connector, and an unlabeled one-input
+connector still blocks. The whole 28-witness dangling-connector corpus is green.
+
+## Exact final bookend and residual scale closure
+
+The last two transformer-local U7 claims now have positive source proofs. They
+are not declaration fallbacks.
+
+`final_stage_norm_evidence` begins at the D0/B1-resolved model-stage
+occurrence, consumes the exact repeated-child proof, classifies exact norm
+construction/calls through the shared norm primitive, and follows value
+lineage to the exact primary hidden-state slot of every observed return. It
+does not borrow the repeated layer's norm kind. Entry norms, auxiliary output
+fields, guarded final norms, an early unnormalized return, unsupported return
+shapes and conditional-expression alternatives all abstain. Reaching-path
+growth is bounded at 256 alternatives; overflow is typed incompleteness, never
+truncation used as proof. BLOOM proves a final LayerNorm; Llama and Gemma-2
+prove final RMSNorm through the same reader.
+
+Residual scaling extends the canonical cell-equation proof rather than adding
+a config reader. The exact canonical mixer/attention and FFN residual
+contributions must both carry the same explicit multiplier. A `self.field`
+operand is then bound through the
+exact constructor assignment and owner config chain; an exact numeric source
+literal remains code-proven. A bare `residual_multiplier`, a multiplier used on
+only one branch, rival operands, dynamic arithmetic, or an identity value of
+one draws nothing. An additive cross-attention branch cannot inherit that fact;
+it remains unscaled until its own equation is proved. Sequential cells show one
+scale connector per exact scaled branch. Parallel cells use the exact algebraic factorization
+`residual + s*(attention + FFN)`, preserving the untouched residual input.
+Granite is the real positive control; unused and asymmetric synthetic controls
+remain powerless.
+
+Tightening the constant-operand connector rule exposed one independent
+projection defect: shared tower gates in a refiner were captions beside a
+one-input multiplication, not wired operands. The shared tower projector now
+draws variable conditioning/parameter gates as explicit side-source nodes and
+edges. Only an actual numeric subtitle or typed numeric operand can discharge
+the one-input constant exception. HunyuanVideo's token refiner and Lumina's
+latent entry-stage are the two real preservation controls: both now show
+separate, non-overlapping gate sources and the full connector corpus is green.
+
+With these two facts implemented, the transformer-local U7 code scope is a
+closure candidate. U7 is not marked complete until the exact preservation
+delta is reviewed, the 29-witness manifest is consciously re-blessed, and the
+unchanged-tree final gate passes. Universal root token/embedding/head
+scaffolding remains U14; this reader closes only the independently evidenced
+final-normalization bookend.
+
+Per-layer MoE placement, MTP and codebooks are explicitly U8 schedule work;
+diffusion Conv-GLU remains explicitly U10 owner-resolution work. The current
+preservation delta includes the four exact expert formulae, final-bookend fact
+promotion, and the intentional removal of the obsolete nullable
+`activation_clip` schema lane. Its exact surface/view list still requires
+Soumil's review and the final unchanged-tree receipt; implementation success
+alone does not close U7.
+
+## Exact pending acceptance delta
+
+The first authoritative manifest measurement was run against the 28-witness
+corpus before Granite entered. A later full Sable regression run found that
+this measurement was incomplete: the manifest represented views as a mapping
+keyed by their display label, so two distinct views both named `architecture`
+silently overwrote one another. U7 now replaces that representation with an
+occurrence-exact sequence, rejects extra as well as missing views, and pins the
+same-label counterexample. The figures below are the corrected pre-acceptance
+delta, relative to the last committed manifest:
+
+- all 28 witnesses change `ir` and `ledgers` because this U7 slice changes the
+  canonical FFN schema and its authority/debt projection: the obsolete nullable
+  `activation_clip` lane is replaced by the owner-qualified
+  `expert_activation_formula` lane, and final-bookend/residual-scale evidence is
+  now explicit. Most non-applicable witness values remain null/unknown rather
+  than acquiring a mechanism;
+- 11 transformer witnesses also change `expanded` and `params`, 13 change
+  `html_meta`, and 15 change the Sable evidence surface;
+- 34 SVG view hashes change across 14 existing witnesses:
+
+| Witness | Views requiring visual re-approval | Reason |
+|---|---|---|
+| `dbrx-base` | `expert_1`, `expert_k`, `expert_kp1`, `expert_n`, `router` | exact split-expert activation and exact router policy |
+| `deepseek-v3` | `architecture_v1`, four expert views, `router` | exact routed-expert formula and router policy |
+| `gemma-2-2b-it` | `architecture_v1` | exact final-bookend promotion |
+| `glm-4-5` | `architecture_v1`, four expert views, `router` | exact routed-expert formula and router policy |
+| `gpt-oss-20b` | `architecture_v1`, four expert views, `router` | exact Swish/clamp/up-offset formula and router policy |
+| `hunyuanvideo` | `text_refiner` | variable conditioning gate is now an explicit wired operand |
+| `lumina-image-2-0` | `entry_stage` | variable tanh-conditioning gates are explicit wired operands |
+| `qwen3-5-27b-text` | `architecture_v1` | exact final-bookend/residual-cell projection |
+| `bloom` | `architecture` | source-proven final LayerNorm replaces the unresolved pre-head placeholder |
+| `qwen3-8b` | `architecture` | source-proven final RMSNorm replaces the unresolved pre-head placeholder |
+| `llama-7b` | `architecture` | source-proven final RMSNorm replaces the unresolved pre-head placeholder |
+| `olmo-2-1124-7b` | `architecture` | source-proven final RMSNorm replaces the unresolved pre-head placeholder |
+| `stablelm-2-1-6b` | `architecture` | source-proven final LayerNorm replaces the unresolved pre-head placeholder |
+| `sana-1600m-1024px-diffusers` | two embedded Gemma-2 self-attention views | exact `query_pre_attn_scalar=256` score scale survives the proven tanh-softcap path, replacing “scaling unresolved” with `QK^T/sqrt(dim)` |
+
+The remaining 14 pre-Granite witnesses have no SVG-view change. The earlier
+claim that BLOOM, Llama and StableLM were byte-equivalent was false because of
+the duplicate-label collapse described above; Sable's occurrence-independent
+hash multiset correctly exposed the changes. The current working tree has the
+first eight existing galleries and Granite reviewed/blessed. Soumil approved
+the six additional existing witnesses on 2026-08-06 after their seven changed
+PNGs were individually inspected and tied to the exact final-bookend/score
+evidence above. Their durable galleries and fixture signatures are re-blessed;
+the full occurrence-exact 29-witness preservation manifest and final gate are
+the remaining acceptance operations.
+
+### Acceptance audit correction: Granite must become witness 29
+
+The registry/conformance audit found one non-negotiable closure gap:
+`decoder.layer.residual_scale` is a registered native fact, but none of the 28
+frozen witnesses produces it. The real positive control is Granite, currently
+covered only by a source-backed smoke test. Consequently
+`test_every_registered_fact_is_observed_in_corpus` correctly fails with
+`registered but never observed: ['residual_scale']`.
+
+The gate must not be weakened and the fact must not be made synthetic merely to
+turn it green. Granite must be added as witness 29 with its exact frozen config,
+source-backed fact/receipt surfaces, complete rendered gallery and explicit
+visual review. The final acceptance operation is therefore:
+
+1. review/re-bless all 14 changed existing galleries listed above;
+2. review/bless Granite as the new residual-scale witness;
+3. rebuild the full occurrence-exact 29-witness preservation manifest from
+   that exact tree;
+4. rerun registry, authority, conformance, preservation and the exhaustive
+   unchanged-tree bracket.
+
+Until those four steps pass, U7 is code-complete but **not acceptance-complete**
+and must remain a closure candidate rather than `DONE`.
+
+Granite's acceptance inspection also exposed one real source-binding gap before
+blessing: its dispatch helper receives `scaling=self.scaling`, while the helper
+parameter performs the multiplication. The score reader now follows only that
+exact selected call argument back through the exact attention owner's
+constructor assignment to `config.attention_multiplier`; keyword-only and
+positional parameters are both bound without any name search. This changes the
+Granite drill from the conventional `QK^T/sqrt(dim)` to its real `QK^T/128`.
+The same path retains Gemma-2's exact scale through its separately-proven tanh
+softcap. A backwards-liveness poison prevents an unused scaled copy from
+lending config provenance to the live raw-score path.
+
+### Approved working-tree receipt (commit boundary remains)
+
+Soumil approved Granite and every corrected existing-witness delta. The
+guarded fixtures are re-blessed and the occurrence-exact manifest contains 29
+witnesses. Verification on one unchanged working-tree fingerprint
+`69ed17206d7cc5c4f921582bd1796451bd1ced098207d540ae2e420fab635ef6`
+produced:
+
+- 80 attention-mechanism tests passed;
+- 232 focused U7 tests passed;
+- 98 registry/debt/projection tests passed;
+- 52 strict preservation tests passed, including duplicate-label,
+  missing-view and extra-view poisons;
+- 499 changed-file/affected tests passed;
+- the complete working-tree suite, excluding only the committed-HEAD archive
+  assertion, passed: **2706 passed, 14 skipped, 2 expected xfailed**;
+- the Sable regression corpus passed for all 29 frozen fixtures;
+- `git diff --check`, bytecode compilation and pyflakes are clean.
+
+The fingerprint before and after the complete working-tree suite was identical.
+U7 cannot be marked `DONE` yet because
+`test_preservation_is_clean_checkout_reproducible` deliberately executes
+`git archive HEAD`; the current HEAD still contains the preceding 28-witness
+state. The next and only lawful step is a reviewed local U7 commit containing
+the approved source, tests, fixtures, manifest and newly blessed galleries,
+followed by that clean-checkout test and the committed-tree receipt. No parser,
+renderer or evidence work remains pending inside U7.

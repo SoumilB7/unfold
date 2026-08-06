@@ -167,14 +167,31 @@ def test_preservation_is_clean_checkout_reproducible(tmp_path):
                    shell=True, check=True, timeout=180)
     manifest = json.loads(
         (export / "tests" / "preservation_expected_manifest.json").read_text())
-    assert manifest["witness_count"] == 28   # U6: Qwen3.5 + DBRX enter the bracket
+    assert manifest["witness_count"] == 29   # U7: Granite enters the bracket
     corpus = export / "tests" / "sable_test_corpus"
     inputs = sorted(corpus.glob("*.json"))
-    assert len(inputs) == 28, f"clean checkout carries {len(inputs)} inputs"
+    assert len(inputs) == 29, f"clean checkout carries {len(inputs)} inputs"
     for path in inputs:
         row = manifest["witnesses"][path.stem]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == row["input_sha256"]
         assert all(row["surfaces"].values()) and row["views"]
+        # Gallery bytes are human-reviewed preservation evidence, not a local
+        # cache.  Reconstruct the canonical gallery document from the archive
+        # itself so a manifest generated against ignored/untracked PNGs cannot
+        # make a clean checkout look reproducible.
+        gallery_dir = corpus / "galleries" / path.stem
+        gallery = {
+            "present": gallery_dir.is_dir(),
+            "images": {
+                image.name: hashlib.sha256(image.read_bytes()).hexdigest()
+                for image in sorted(gallery_dir.glob("*")) if image.is_file()
+            } if gallery_dir.is_dir() else {},
+        }
+        gallery_sha = hashlib.sha256(
+            json.dumps(gallery, sort_keys=True, default=str).encode()
+        ).hexdigest()
+        assert gallery_sha == row["surfaces"]["gallery"], (
+            f"clean checkout gallery is missing or stale: {path.stem}")
 
 
 def test_clean_checkout_imports_and_parses(tmp_path):

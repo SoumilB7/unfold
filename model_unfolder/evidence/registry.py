@@ -551,6 +551,22 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "when exact source guards select those branches",
     ),
     FactDefinition(
+        key="residual_scale",
+        value_types=frozenset({"int", "float"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default",
+            "ambiguous", "oracle_missing",
+        }),
+        owner_patterns=frozenset({"decoder.layer"}),
+        projections=frozenset({"architecture_view", "json"}),
+        unknown_policy="omit",
+        notes=(
+            "constant applied by both exact canonical mixer/attention and FFN "
+            "residual equations; a config operand is legal only when the cell "
+            "source binds and uses it; additive cross-attention needs its own "
+            "branch proof and cannot inherit this fact"),
+    ),
+    FactDefinition(
         key="scores_scale",
         value_types=frozenset({"str", "NoneType"}),
         allowed_statuses=frozenset({"code_proven", "code_and_config",
@@ -587,6 +603,21 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "certify the ordinary/shared FFN or vice versa",
     ),
     FactDefinition(
+        key="expert_activation_formula",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default",
+        }),
+        owner_patterns=frozenset({"decoder.ffn.expert"}),
+        projections=frozenset({"ffn_detail", "json"}),
+        unknown_policy="generic_node",
+        conformance="nested_callable",
+        notes=(
+            "activation/formula of the exact routed-expert gate lane; optional "
+            "alpha, asymmetric clamps and up offset are source operands, not "
+            "ordinary/shared-FFN facts"),
+    ),
+    FactDefinition(
         key="tie_word_embeddings",
         value_types=frozenset({"bool"}),
         allowed_statuses=frozenset({"config_declared", "class_default"}),
@@ -621,8 +652,11 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         }),
         unknown_policy="generic_node",
         parameter_consumer=True,
-        notes="U4-D root pre-head fact; remains unknown until U7 lands the "
-              "exact final-stage reader and never borrows a layer norm",
+        notes=(
+            "positive-only exact model-stage repeated-child -> final norm -> "
+            "primary-return relation; unsupported return shapes, guarded or "
+            "rival paths, and excessive path alternatives abstain; never "
+            "borrows a repeated-layer norm"),
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

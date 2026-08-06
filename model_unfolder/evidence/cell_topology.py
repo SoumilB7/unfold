@@ -20,6 +20,7 @@ never topology proof.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 from .component_owner import OwnerOccurrenceId, require_resolved_component_root
 from .attention import decoder_gated_delta_geometry_for_path
@@ -70,6 +71,9 @@ class CellBranchProof:
     post_norm_site: CallSiteId | None
     merge_kind: str                # block_add | child_integrated_add
     merge_span: SourceSpan
+    residual_scale_field: str | None
+    residual_scale_value: int | float | None
+    residual_scale_span: SourceSpan | None
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -84,6 +88,22 @@ class CellBranchProof:
             raise ValueError("a branch carries an exact residual-merge proof kind")
         if not isinstance(self.merge_span, SourceSpan):
             raise TypeError("a residual merge carries an exact span")
+        if self.residual_scale_field is not None and (
+                not isinstance(self.residual_scale_field, str)
+                or not self.residual_scale_field):
+            raise TypeError("a residual scale field is an exact spelling")
+        if self.residual_scale_value is not None and (
+                not isinstance(self.residual_scale_value, (int, float))
+                or isinstance(self.residual_scale_value, bool)
+                or not math.isfinite(self.residual_scale_value)):
+            raise TypeError("a literal residual scale is numeric")
+        if self.residual_scale_field is not None \
+                and self.residual_scale_value is not None:
+            raise ValueError("a residual scale is field-bound or literal")
+        if (self.residual_scale_field is None
+                and self.residual_scale_value is None) \
+                != (self.residual_scale_span is None):
+            raise ValueError("a residual scale operand retains its exact span")
         norm_sites = tuple(
             item for item in (self.pre_norm_site, self.post_norm_site)
             if item is not None)
@@ -99,6 +119,8 @@ class CellBranchProof:
         required = {
             self.invocation.call.span, self.merge_span,
             *(item.span for item in norm_sites),
+            *((self.residual_scale_span,)
+              if self.residual_scale_span is not None else ()),
         }
         if None in required or not required <= set(self.spans):
             raise ValueError("branch provenance retains invocation + merge")
@@ -125,6 +147,9 @@ class DecoderCellTopologyEvidence:
     final_return_span: SourceSpan
     norm_config_paths: tuple[tuple[str, ...], ...]
     residual_config_paths: tuple[tuple[str, ...], ...]
+    residual_scale_path: tuple[str, ...] | None
+    residual_scale_value: int | float | None
+    residual_scale_spans: tuple[SourceSpan, ...]
     config_source_kinds: tuple[tuple[tuple[str, ...], str], ...]
     spans: tuple[SourceSpan, ...]
 
@@ -193,6 +218,27 @@ class DecoderCellTopologyEvidence:
             if tuple(dict.fromkeys(paths)) != paths:
                 raise ValueError(
                     "cell topology config dependencies are occurrence-unique")
+        if self.residual_scale_path is not None and (
+                not isinstance(self.residual_scale_path, tuple)
+                or not self.residual_scale_path
+                or any(not isinstance(part, str) or not part
+                       for part in self.residual_scale_path)):
+            raise TypeError("a residual scale carries one exact config path")
+        if self.residual_scale_value is not None and (
+                not isinstance(self.residual_scale_value, (int, float))
+                or isinstance(self.residual_scale_value, bool)
+                or not math.isfinite(self.residual_scale_value)):
+            raise TypeError("a residual scale value is numeric")
+        if self.residual_scale_path is not None \
+                and self.residual_scale_value is not None:
+            raise ValueError("a residual scale is config-bound or source-literal")
+        if (self.residual_scale_path is None
+                and self.residual_scale_value is None) \
+                != (not self.residual_scale_spans):
+            raise ValueError("a proven residual scale retains exact source spans")
+        if any(not isinstance(span, SourceSpan)
+               for span in self.residual_scale_spans):
+            raise TypeError("residual scale provenance uses SourceSpan values")
         all_paths = tuple(dict.fromkeys((
             *self.norm_config_paths, *self.residual_config_paths)))
         if tuple(path for path, _kind in self.config_source_kinds) != all_paths \
@@ -203,6 +249,7 @@ class DecoderCellTopologyEvidence:
         required = {
             self.final_return_span,
             *(span for item in branches for span in item.spans),
+            *self.residual_scale_spans,
         }
         if not required <= set(self.spans):
             raise ValueError("cell topology provenance is closed")
@@ -602,7 +649,9 @@ def decoder_cell_topology_for_path(
             provenance=candidates.provenance)
     signatures = {
         (item.value.norm_placement, item.value.residual_topology,
-         item.value.parallel_input_norm_count)
+         item.value.parallel_input_norm_count,
+         item.value.residual_scale_path,
+         item.value.residual_scale_value)
         for item in results
     }
     if len(signatures) != 1:
@@ -722,11 +771,36 @@ def _cell_topology_at_block(
     placement, topology = next(iter(signatures))
     mixer_proofs = tuple(dict.fromkeys(item[2] for item in values))
     ffn_proofs = tuple(dict.fromkeys(item[3] for item in values))
+    branch_proofs = (*mixer_proofs, *ffn_proofs)
     final_spans = tuple(dict.fromkeys(item[4] for item in values))
     if len(final_spans) != 1:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph", "selected cell paths have rival final returns"),))
     final_span = final_spans[0]
+    scale_signatures = {
+        (item.residual_scale_field, item.residual_scale_value)
+        for item in branch_proofs
+    }
+    residual_scale_path = None
+    residual_scale_value = None
+    residual_scale_spans = ()
+    if len(scale_signatures) == 1:
+        scale_field, scale_literal = next(iter(scale_signatures))
+        if scale_field is not None:
+            path_info = _field_config_path(
+                index, root, block_occurrence, scale_field)
+            if path_info is not None:
+                residual_scale_path, assignment_span = path_info
+                residual_scale_spans = tuple(dict.fromkeys((
+                    assignment_span,
+                    *(item.residual_scale_span for item in branch_proofs
+                      if item.residual_scale_span is not None),
+                )))
+        elif scale_literal is not None:
+            residual_scale_value = scale_literal
+            residual_scale_spans = tuple(dict.fromkeys(
+                item.residual_scale_span for item in branch_proofs
+                if item.residual_scale_span is not None))
     all_values = tuple(evaluated_cases.values())
     all_source_proven = all(
         not isinstance(item, ReaderFailure) for item in all_values)
@@ -765,6 +839,7 @@ def _cell_topology_at_block(
         final_span,
         *cases.spans,
         *evaluated_guard_spans,
+        *residual_scale_spans,
     )))
     input_norm_sites = {
         item.pre_norm_site for item in (*mixer_proofs, *ffn_proofs)
@@ -782,6 +857,7 @@ def _cell_topology_at_block(
         block_occurrence, placement, topology, parallel_input_norm_count,
         mixer_proofs, ffn_proofs, final_span,
         norm_config_paths, residual_config_paths,
+        residual_scale_path, residual_scale_value, residual_scale_spans,
         tuple((path, dict(evaluated_source_kinds).get(
             path, "config_declared")) for path in dict.fromkeys((
                 *norm_config_paths, *residual_config_paths))),
@@ -797,6 +873,37 @@ def _cell_topology_at_block(
                 "every selected exact mixer/FFN path proves the same norm "
                 "boundaries and residual equations; config dependence is "
                 "retained separately for each derived fact")),))
+
+
+def _field_config_path(index, root, owner, field):
+    """Bind one exact ``self.field = config.path`` construction operand."""
+    node = root.graph.node_for(owner)
+    if node is None:
+        return None
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if item.field == field and not item.guard and item.span is not None)
+    if len(assignments) != 1:
+        return None
+    assignment = assignments[0]
+    constructor = index.callable_by_symbol(assignment.enclosing_callable)
+    if constructor is None:
+        return None
+    parameters = frozenset(
+        item.name for item in constructor.params if item.name != "self")
+    access = _config_access_expression(assignment.value, parameters)
+    if access is None:
+        return None
+    parameter, local_path = access
+    bindings = tuple(
+        item for item in node.config_bindings if item.parameter == parameter)
+    if len(bindings) != 1:
+        return None
+    resolved = bindings[0].resolved_path(local_path)
+    if resolved is None:
+        return None
+    prefix = tuple(getattr(root, "config_path", ()) or ())
+    return (*prefix, *resolved), assignment.span
 
 
 def _composite_attention_expansion(index, root, outer_branch, evidence):
@@ -963,6 +1070,16 @@ def _evaluate_callable(index, callable_symbol, role_by_site, branch_by_site,
                     "reference", (env[expr.name],), span=expr.span,
                     label=expr.name)
             return _Value("input", span=expr.span, label=expr.name)
+        if expr.kind == "attribute" and expr.name \
+                and len(expr.children) == 1 \
+                and expr.children[0].kind == "name" \
+                and expr.children[0].name == "self":
+            return _Value("self_field", span=expr.span, label=expr.name)
+        if expr.kind == "constant" \
+                and isinstance(expr.const_value, (int, float)) \
+                and not isinstance(expr.const_value, bool):
+            return _Value(
+                "constant", span=expr.span, label=repr(expr.const_value))
         if expr.kind == "call":
             call = calls.get(_span_key(expr.span)) if expr.span else None
             if call is None:
@@ -1043,6 +1160,11 @@ def _evaluate_callable(index, callable_symbol, role_by_site, branch_by_site,
                 and len(expr.children) == 2:
             return _Value(
                 "add", tuple(evaluate(item) for item in expr.children),
+                span=expr.span)
+        if expr.kind == "binop" and expr.operator == "*" \
+                and len(expr.children) == 2:
+            return _Value(
+                "mul", tuple(evaluate(item) for item in expr.children),
                 span=expr.span)
         if expr.kind in {"tuple", "list"}:
             return _Value(
@@ -1479,6 +1601,9 @@ def _direct_norm_site(value, norms):
 
 def _post_norm_state(value, branch_site, norms):
     value = _unwrap_reference(value)
+    scaled = _scaled_branch_child(value, branch_site)
+    if scaled is not None:
+        return _post_norm_state(scaled, branch_site, norms)
     if value.kind == "norm" and value.call_site in norms \
             and _contains_site(value, branch_site):
         return True
@@ -1510,17 +1635,45 @@ def _branch_proof(branch, state, input_value, merge, norms):
     if contribution is not None:
         post_site = _post_norm_site(
             contribution, branch.node.call_site, norms)
+    scale_field, scale_value, scale_span = _exact_residual_scale(
+        contribution, branch.node.call_site)
     norm_sites = tuple(
         item for item in (pre_site, post_site) if item is not None)
     spans = tuple(dict.fromkeys(
         span for span in (
             *branch.spans,
             merge.span,
+            scale_span,
             *(span for site in norm_sites for span in norms[site][2]),
         ) if isinstance(span, SourceSpan)))
     return CellBranchProof(
         branch.mechanism, branch, pre_site, post_site, merge.kind,
-        merge.span, spans)
+        merge.span, scale_field, scale_value, scale_span, spans)
+
+
+def _exact_residual_scale(value, branch_site):
+    """Return one explicit multiplier on the exact branch contribution."""
+    value = _unwrap_reference(value) if value is not None else None
+    if value is None or value.kind != "mul" or len(value.children) != 2:
+        return None, None, None
+    branch_terms = tuple(
+        child for child in value.children if _contains_site(child, branch_site))
+    operands = tuple(
+        child for child in value.children if not _contains_site(child, branch_site))
+    if len(branch_terms) != 1 or len(operands) != 1:
+        return None, None, None
+    operand = _unwrap_reference(operands[0])
+    if operand.kind == "self_field" and operand.label and operand.span:
+        return operand.label, None, operand.span
+    if operand.kind == "constant" and operand.span:
+        try:
+            number = float(operand.label)
+        except (TypeError, ValueError):
+            return None, None, None
+        if number.is_integer() and "." not in operand.label:
+            number = int(number)
+        return None, number, operand.span
+    return None, None, None
 
 
 def _branch_term(value, site):
@@ -1546,6 +1699,9 @@ def _residual_contains_merge(value, branch_site, prior_site, prior_merge):
 
 def _post_norm_site(value, branch_site, norms):
     value = _unwrap_reference(value)
+    scaled = _scaled_branch_child(value, branch_site)
+    if scaled is not None:
+        return _post_norm_site(scaled, branch_site, norms)
     if value.kind == "norm" and value.call_site in norms \
             and _contains_site(value, branch_site):
         return value.call_site
@@ -1554,6 +1710,21 @@ def _post_norm_site(value, branch_site, norms):
                  for item in value.children}
         return sites.pop() if len(sites) == 1 else None
     return None
+
+
+def _scaled_branch_child(value, branch_site):
+    """Unwrap only an exact branch × (self.field|numeric literal) operand."""
+    if value.kind != "mul" or len(value.children) != 2:
+        return None
+    branches = tuple(
+        child for child in value.children if _contains_site(child, branch_site))
+    operands = tuple(
+        _unwrap_reference(child) for child in value.children
+        if not _contains_site(child, branch_site))
+    if len(branches) != 1 or len(operands) != 1 \
+            or operands[0].kind not in {"self_field", "constant"}:
+        return None
+    return branches[0]
 
 
 def _base_input(value, norms):

@@ -13,6 +13,7 @@ from model_unfolder.evidence.component_owner import resolve_component_root
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.decoder_block import decoder_block_path_at_root
 from model_unfolder.evidence.expert_storage import (
+    ExpertActivationEvidence,
     decoder_routed_expert_storage_for_path,
     routed_expert_storage_at_block,
 )
@@ -123,6 +124,27 @@ def _split_expert_with_dead_product():
     )
 
 
+def _literal_swish_expert(*, distractions=False):
+    source = _expert_class().replace(
+        "self.act = ACT2FN[config.hidden_act]",
+        "self.alpha = 1.702\n        self.limit = 7.0",
+    ).replace(
+        "mixed = self.act(gate) * up",
+        "gate = gate.clamp(max=self.limit)\n"
+        "            up = up.clamp(min=-self.limit, max=self.limit)\n"
+        "            glu = gate * torch.sigmoid(gate * self.alpha)\n"
+        "            mixed = (up + 1) * glu",
+    )
+    if distractions:
+        source = source.replace(
+            "mixed = (up + 1) * glu",
+            "mixed = (up + 1) * glu\n"
+            "            dead_clip = hidden.clamp(max=99)\n"
+            "            dead_offset = hidden + 9",
+        )
+    return source
+
+
 def _bundle(tmp_path, *, expert_source=None, block_init=None, extra=""):
     expert_source = expert_source or _expert_class()
     block_init = block_init or "self.compute = Routed(config)"
@@ -182,6 +204,36 @@ def test_fused_expert_requires_exact_stacked_two_lane_flow(tmp_path):
     assert [symbol.qualified_name for symbol in result.value.owner_trace] == [
         "Block", "Routed", "ShardedCompute"]
     assert len(result.value.construction_path) == 2
+    assert result.value.activation is not None
+    assert result.value.activation.kind is None
+    assert result.value.activation.config_path == ("hidden_act",)
+
+
+def test_unrelated_activation_cannot_launder_the_expert_gate(tmp_path):
+    source = _expert_class().replace(
+        "mixed = self.act(gate) * up",
+        "dead = F.gelu(gate)\n            mixed = gate * up",
+    )
+    index, root, block = _bundle(tmp_path, expert_source=source)
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "fused_gate_up"
+    assert result.value.activation is None
+
+
+def test_activation_after_the_down_projection_cannot_qualify(tmp_path):
+    source = _expert_class().replace(
+        "mixed = self.act(gate) * up",
+        "mixed = gate * up",
+    ).replace(
+        "projected = F.linear(mixed, self.down[index])",
+        "projected = F.linear(mixed, self.down[index])\n"
+        "            dead = self.act(projected)",
+    )
+    index, root, block = _bundle(tmp_path, expert_source=source)
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.activation is None
 
 
 def test_split_expert_requires_repeated_selection_and_three_stage_dataflow(
@@ -193,6 +245,20 @@ def test_split_expert_requires_repeated_selection_and_three_stage_dataflow(
     assert result.value.projection_mode == "split"
     assert len(result.value.input_parameters) == 2
     assert len(result.value.construction_path) == 3
+    assert result.value.activation.kind == "silu"
+
+
+def test_literal_formula_ignores_unrelated_clamp_and_offset(tmp_path):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_literal_swish_expert(distractions=True))
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    activation = result.value.activation
+    assert activation.kind == "swish"
+    assert activation.alpha == 1.702
+    assert activation.gate_clip == (None, 7.0)
+    assert activation.up_clip == (-7.0, 7.0)
+    assert activation.up_offset == 1.0
 
 
 @pytest.mark.parametrize(("product", "return_down"), [
@@ -284,6 +350,30 @@ def test_result_closure_rejects_cross_owner_parameter_forgery(tmp_path):
             value.down_parameter, owner=value.block_symbol))
 
 
+def test_activation_evidence_closure_rejects_competing_authorities(tmp_path):
+    index, root, block = _bundle(tmp_path)
+    value = routed_expert_storage_at_block(index, root, block).value
+    activation = value.activation
+    with pytest.raises(ValueError):
+        replace(activation, kind="silu")
+    with pytest.raises(TypeError):
+        replace(activation, gate_clip=(False, 7.0))
+    with pytest.raises(ValueError):
+        replace(activation, gate_clip=(None, None))
+    with pytest.raises(ValueError):
+        replace(activation, gate_clip=(8.0, 7.0))
+
+
+def test_storage_closure_rejects_foreign_activation_provenance(tmp_path):
+    index, root, block = _bundle(tmp_path)
+    value = routed_expert_storage_at_block(index, root, block).value
+    foreign = replace(value.spans[0], source=replace(
+        value.spans[0].source, component_key="other"))
+    with pytest.raises(ValueError):
+        replace(value, activation=ExpertActivationEvidence(
+            config_path=("hidden_act",), spans=(foreign,)))
+
+
 @pytest.mark.parametrize(("slug", "expected"), [
     ("deepseek-v3", "resolved"),
     ("glm-4-5", "resolved"),
@@ -302,6 +392,78 @@ def test_real_routed_expert_controls(slug, expected):
     if expected == "resolved":
         assert result.value.projection_mode == (
             "split" if slug == "dbrx-base" else "fused_gate_up")
+
+
+@pytest.mark.parametrize(("slug", "kind", "path"), [
+    ("deepseek-v3", None, ("hidden_act",)),
+    ("glm-4-5", None, ("hidden_act",)),
+    ("dbrx-base", None, ("ffn_config", "ffn_act_fn", "name")),
+])
+def test_real_expert_activation_dispatch_keeps_the_exact_config_path(
+        slug, kind, path):
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_routed_expert_storage_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.activation.kind is kind
+    assert result.value.activation.config_path == path
+
+
+def test_gpt_oss_expert_formula_is_literal_and_asymmetric():
+    config = json.loads(
+        (_CORPUS / "gpt-oss-20b.json").read_text(
+            encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_routed_expert_storage_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    activation = result.value.activation
+    assert activation.kind == "swish"
+    assert activation.config_path == ()
+    assert activation.alpha == 1.702
+    assert activation.gate_clip == (None, 7.0)
+    assert activation.up_clip == (-7.0, 7.0)
+    assert activation.up_offset == 1.0
+
+
+def test_dbrx_expert_activation_cannot_borrow_a_root_sibling():
+    from model_unfolder import config_to_ir
+    from model_unfolder.parser import _coerce
+
+    config = json.loads(
+        (_CORPUS / "dbrx-base.json").read_text(encoding="utf-8"))["config"]
+    config["hidden_act"] = "gelu"
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=context)
+    moe = next(layer.ffn for layer in ir.layers if layer.ffn.kind == "moe")
+    assert moe.expert_activation_formula == {"kind": "silu"}
+    fact = context.facts.records[
+        "decoder.ffn.expert.expert_activation_formula"]
+    assert fact.value == {"kind": "silu"}
+    assert fact.status == "code_and_config"
+
+
+def test_dbrx_source_literal_fallback_is_not_reported_as_checkpoint_config():
+    from model_unfolder import config_to_ir
+    from model_unfolder.parser import _coerce
+
+    config = json.loads(
+        (_CORPUS / "dbrx-base.json").read_text(encoding="utf-8"))["config"]
+    config["ffn_config"]["ffn_act_fn"] = {}
+    cfg = _coerce(config)
+    context = ParseContext.build(cfg)
+    ir = config_to_ir(cfg, parse_context=context)
+    moe = next(layer.ffn for layer in ir.layers if layer.ffn.kind == "moe")
+    assert moe.expert_activation_formula == {"kind": "silu"}
+    fact = context.facts.records[
+        "decoder.ffn.expert.expert_activation_formula"]
+    assert fact.value == {"kind": "silu"}
+    assert fact.status == "code_proven"
 
 
 @pytest.mark.parametrize("slug", [
@@ -326,6 +488,39 @@ def test_parser_consumes_the_same_exact_expert_storage_result(slug):
     assert {
         layer.ffn.expert_projection_mode for layer in moe_layers
     } == {"split" if slug == "dbrx-base" else "fused_gate_up"}
+    expected = (
+        {"kind": "swish", "alpha": 1.702,
+         "gate_clip": (None, 7.0), "up_clip": (-7.0, 7.0),
+         "up_offset": 1.0}
+        if slug == "gpt-oss-20b" else {"kind": "silu"})
+    assert {repr(layer.ffn.expert_activation_formula)
+            for layer in moe_layers} == {repr(expected)}
+    dense_layers = [layer for layer in ir.layers if layer.ffn.kind == "dense"]
+    assert all(
+        layer.ffn.expert_activation_formula is None for layer in dense_layers)
+    fact = context.facts.records[
+        "decoder.ffn.expert.expert_activation_formula"]
+    assert fact.value == expected
+    assert fact.status == (
+        "code_proven" if slug == "gpt-oss-20b" else "code_and_config")
+    pending = ir.extras["config_access"]["accessed_unconsumed_exact"]
+    assert not [
+        row for row in pending
+        if row["path"].endswith((
+            "hidden_act", "feed_forward_proj", "is_gated_act",
+            "swiglu_limit"))]
+    if slug == "gpt-oss-20b":
+        block = next(
+            item for layer in moe_layers for item in layer.blocks
+            if item.get("id") == "ffn")
+        expert = next(
+            item for item in block["children"]
+            if item.get("id") == "expert_1")
+        assert [item["id"] for item in expert["children"]] == [
+            "expert_hidden", "expert_gate_up_proj", "expert_gate_up_split",
+            "expert_gate_clip", "expert_act", "expert_up_clip",
+            "expert_up_offset", "expert_mul", "expert_down_proj",
+        ]
 
 
 @pytest.mark.parametrize("slug", [

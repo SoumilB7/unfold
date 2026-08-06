@@ -52,6 +52,79 @@ def test_gated_ffn_resolves_to_a_gated_region():
     assert r.merges() == ["multiply"]          # the single branch-merge point
 
 
+def test_exact_additive_gate_operand_is_visible_and_not_dangling():
+    r = ffn_region({
+        "kind": "dense",
+        "gated": True,
+        "activation": "swish",
+        "activation_formula": {
+            "kind": "swish",
+            "alpha": 1.702,
+            "up_offset": 1.0,
+        },
+        "intermediate_size": 256,
+        "projection_mode": "fused_gate_up",
+    }, 64)
+    graph = region_to_graph(r)
+    offset = next(node for node in graph.nodes if node.id == "up_offset")
+    assert offset.kind == "residual_add"
+    assert offset.sub == "1"
+    assert wiring_problems(graph) == []
+
+
+def test_connector_text_cannot_launder_a_missing_constant_operand():
+    from model_unfolder.renderers.html.graph import Graph, Node
+
+    bad = Graph(
+        nodes=[
+            Node("in", "port", "x", static=True),
+            Node("add", "residual_add", "Top-2 adjustment", sub="unresolved"),
+        ],
+        flow=["in", "add"],
+    )
+    problems = wiring_problems(bad)
+    assert len(problems) == 1 and "add" in problems[0]
+
+    numeric = Graph(
+        nodes=[
+            Node("in", "port", "x", static=True),
+            Node("add", "residual_add", "+", sub="+ 1"),
+        ],
+        flow=["in", "add"],
+    )
+    assert wiring_problems(numeric) == []
+
+
+def test_tower_variable_gate_is_a_real_side_input_not_a_caption_exception():
+    from model_unfolder.renderers.html.tower import tower_cell, tower_graph
+
+    cell = tower_cell(
+        "unit",
+        attn_label="Attention",
+        norm_label="RMSNorm",
+        placement="pre",
+        ffn_label="Feed-forward",
+        attn_gate="tanh conditioning gate",
+        ffn_gate="tanh conditioning gate",
+    )
+    graph = tower_graph({"cell": cell, "repeat": 2})
+    gates = [node for node in graph.nodes if node.kind == "gate_mul"]
+    assert len(gates) == 2
+    assert all(node.sub is None for node in gates)
+    assert {
+        (side.node, side.target)
+        for side in graph.side_inputs
+    } == {
+        ("unit_op_selfattn_gate_operand", "unit_op_selfattn_gate"),
+        ("unit_op_ffn_gate_operand", "unit_op_ffn_gate"),
+    }
+    assert {
+        node.label for node in graph.nodes
+        if node.id.endswith("_gate_operand")
+    } == {"tanh conditioning gate"}
+    assert wiring_problems(graph) == []
+
+
 def test_dense_ffn_is_a_plain_chain():
     r = ffn_region({"kind": "dense", "gated": False, "activation": "gelu",
                     "intermediate_size": 256, "projection_mode": "dense"}, 64)

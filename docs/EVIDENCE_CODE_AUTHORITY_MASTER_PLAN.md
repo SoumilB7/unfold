@@ -2370,6 +2370,16 @@ field as loss of every field, and activation operands are read from the exact
   weights.  Unknown group aggregation stays wholly unknown.  The legacy router
   reader and its parse authority are deleted.
 
+  Routed-expert activation is now closed on the same exact storage result.
+  DeepSeek-V3/GLM-4.5 consume the exact `hidden_act` dispatch, DBRX consumes
+  `ffn_config.ffn_act_fn.name` (including only the literal fallback authored
+  by its source), and GPT-OSS proves its literal Swish alpha, asymmetric clamps
+  and additive up operand. Every operand must reach the proven expert product;
+  unrelated operations in the same callable cannot leak into the fact. The one
+  owner-qualified `expert_activation_formula` drives cards, opgraph, HTML and
+  JSON, and is never attached to dense sibling layers. The dead
+  `FFNSpec.activation_clip` second authority is deleted.
+
   Falcon's nested selector is now handled generically by exact constructor
   normalization: a literal assignment to the constructor's config parameter
   may feed the later forward guard, while a dynamic assignment, a mutation of
@@ -2388,10 +2398,34 @@ field as loss of every field, and activation operands are read from the exact
   marker reader in the same commit.  Treating that reader as a U7 shortcut
   would violate the owner boundary this plan exists to enforce.
 
-  U7 is a closure candidate pending the final unchanged-tree bracket and any
-  reviewed preservation delta.  No remaining transformer FFN/router/norm/cell
-  mechanism is allowed to use a family table, bare config presence, or a
-  second path-level reader.
+  The final-norm and residual-scale implementations now complete the remaining
+  transformer-local U7 code scope. The final norm is a positive exact relation
+  from the B1-resolved model stage through the exact repeated child and norm to
+  every exact primary return; it never borrows a layer norm, and unsupported,
+  guarded, rival or over-capacity paths abstain. Residual scaling is emitted
+  only when every exact residual branch carries the same source/config-bound
+  operand; parallel scaling is factored exactly as
+  ``residual + s*(attention + FFN)``. Bare declarations remain powerless.
+  **U7 is a closure candidate, not DONE:** its evidence/schema and corrected
+  fourteen-existing-witness view delta must be reviewed and re-blessed;
+  Granite enters as witness 29 because it is the real positive
+  `residual_scale` control required by the registry's non-vacuous corpus law.
+  The occurrence-exact 29-witness manifest rebuild and unchanged-tree final
+  bracket follow.
+  Universal root token/embedding/head scaffolding remains U14. Per-layer MoE
+  placement, MTP and codebooks remain U8 schedule work; diffusion Conv-GLU
+  remains U10 exact-block work.
+
+  The original pre-bless manifest reconciliation was not exact: its
+  label-keyed `views` mapping collapsed distinct same-labelled architecture
+  views. A full Sable regression found six additional changed witnesses, making
+  the corrected delta 34 view hashes across 14 existing witnesses. The
+  preservation manifest is being changed to an occurrence-exact sequence with
+  missing/extra/same-label poisons. The per-view list and rationale are recorded
+  in `docs/U7_CONDITIONAL_SHARED_FFN_PROOF.md`. Granite and the first eight
+  existing deltas are approved; Soumil approved the six newly exposed deltas
+  on 2026-08-06 after their seven PNGs were inspected. The occurrence-exact
+  manifest rebuild and final unchanged-tree gate remain.
 
 ### 20.11 U8 — migrate position, masks, schedules and layer selectors
 
@@ -2624,6 +2658,7 @@ append a superseding row.
 | U7 | ACTIVE (supersedes prior U7 row) | `92a29f2` | exact cell topology + routed expert storage | one owner-qualified attention/FFN census, live residual equations, exact config-bound guarded alternatives, fused/split expert Parameter dataflow | transformer layer facts/blocks, expert drill, nested conformance and preservation surfaces | `decoder_layer_topology_from_files`, broad parser wrapper and first-candidate topology tests deleted | Llama/Gemma-2/OLMo-2/BLOOM/StableLM/Qwen3.5/GPT-OSS/DBRX plus dead equation, dynamic selector, dead product, sibling and source-missing controls | DBRX corrected false parallel→sequential and opaque→split expert; two reviewed PNGs; all unaffected witness structures/pixels unchanged; Falcon and source-unavailable DiffusionGemma explicitly retain unknown wiring | 2,620 collected; 291 focused; 44 authority; 48 preservation; 2,513 exhaustive passed, 13 skipped, 2 expected xfailed | `/private/tmp/model-unfolder-verification/9c9a692797`; every isolated lane fingerprint identical | quarantine 23→22; broad-exception baseline 13→12; router/class-count/Conv-GLU/Falcon control path remain | DBRX gallery re-bless inspected; architecture semantic-view hash did not detect its layout delta, but the gallery byte hash did—carry this acceptance-infrastructure weakness to U14 |
 | U7 | ACTIVE (supersedes prior U7 row) | `a8efdbe` | retire owner-unqualified layer-class warning gate | no new producer: exact owner-qualified facts remain the only lawful mechanism claims | validation diagnostics only | `layer_class_count_from_files`, its parse authority and the MoE/KV-sharing/softcap/partial-RoPE/NoPE/routing/shared-expert/PLE/AltUp/double-norm whole-file-to-owner warning comparisons deleted | synthetic PLE-in-source/Llama-owner negative; existing MLA positive; all 28 preservation witnesses | no structural, view or pixel delta | 2,619 collected; 356 focused; 44 authority; 48 preservation; 2,512 exhaustive passed, 13 skipped, 2 expected xfailed | `/private/tmp/model-unfolder-verification/34ef32ea0e`; every detached source/artifact fingerprint identical | quarantine 22→21; parse authorities 34→33; legacy model-source sites 23→22; broad-exception module baseline 1→0; router/Conv-GLU/Falcon remain | no blessing required; warnings cannot substitute for an absent owner join |
 | U7 | CLOSURE CANDIDATE (supersedes prior U7 row) | working tree | T-12 + exact constructor-guard/cell closure | exact routed-storage-anchored router policy and exact constructor-normalized cell alternatives; canonical cell reader remains sole norm/residual/count authority | transformer parser/facts, canonical FFN/router cards and HTML, JSON/params/conformance through existing canonical facts | `decoder_router_evidence_from_files`, its parse-authority row, and the superseded public parallel-norm reader/DTO deleted | DeepSeek-V3/GLM-4.5/GPT-OSS/DBRX router matrix; Falcon old/new/one/two-norm matrix; Llama/BLOOM/Qwen/StableLM and adjusted-bias/unknown-group/sibling/cross-graph/dynamic-selector poisons | post-top-k softmax now appears in the GPT-OSS-style router drill; other intended artifact deltas pending preservation inspection | focused semantic lanes: 23 router + 63 cell/census + 93 FFN/router + 187 code/conformance + 5 smoke + 105 ownership/config/quarantine; authority 44; final collection/preservation/exhaustive pending | pending final coordinator | quarantine 21→20; parse authorities 33→32; legacy model-source sites 22→21; parser broad-exception baseline 12→10; diffusion Conv-GLU reader stays explicit U10 debt | no new semantic decision; final delta inspection/receipt pending |
+| U7 | READY FOR LOCAL COMMIT (supersedes prior U7 row) | working tree | transformer-local FFN/router/cell/final-bookend/residual-scale closure plus exact attention-scale operand binding discovered by Granite | all transformer-local U7 mechanisms are owner-bound typed evidence; Granite's dispatch scale is joined through its exact selected call to `attention_multiplier` | canonical IR/opgraph/cards/HTML/expanded/params/conformance plus occurrence-exact preservation views | legacy U7 readers/nullable activation lane removed; label-keyed preservation-view collapse replaced by exact ordered occurrences | 29 witnesses including Granite; 80 attention + 232 focused + 98 registry/debt/projection + 52 preservation + 499 affected tests; Granite/Gemma dispatch and liveness poisons | all 14 existing deltas + Granite approved and re-blessed; Soumil approved the final six (BLOOM/Qwen3/Llama/OLMo-2/StableLM/Sana) on 2026-08-06 | working-tree full: 2706p/14s/2xf with only committed-HEAD archive assertion excluded; Sable 29/29; static clean | `69ed17206d7cc5c4f921582bd1796451bd1ced098207d540ae2e420fab635ef6` before=after | U7 debt closure measured; U8/U10/U14 carry-forwards remain explicit | all semantic/artifact decisions approved; local commit then clean-checkout receipt required before DONE |
 | U8 | PENDING | — | positions/masks/schedules | — | — | — | — | — | not run | not recorded | — | — |
 | U9 | PENDING | — | M-01..M-16 | — | — | — | — | — | not run | not recorded | — | — |
 | U10 | PENDING | — | diffusion root/conditioning | — | — | — | — | — | not run | not recorded | — | — |

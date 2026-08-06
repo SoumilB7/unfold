@@ -99,8 +99,16 @@ def tower_cell(
             out.append({"id": f"{n}_post", "kind": "norm", "label": norm_label,
                         "target": f"{prefix}_op_norm"})
         if gate:
-            out.append({"id": f"{op_block['id']}_gate", "kind": "gate_mul",
-                        "label": "×", "sub": gate})
+            out.append({
+                "id": f"{op_block['id']}_gate",
+                "kind": "gate_mul",
+                "label": "×",
+                # This is a tensor/parameter operand, not a numeric constant.
+                # The generic tower projector turns it into a visible side
+                # source and edge; a caption alone must never clear Dable's
+                # two-input connector law.
+                "meta": {"operand_source": gate},
+            })
         out.append({"id": add_id, "kind": "residual_add",
                     "residual_from": skip_from, **align.get(add_id, {})})
         if placement == "post":
@@ -172,11 +180,13 @@ def tower_graph(spec: dict) -> Graph:
     nodes: list[Node] = []
     flow: list[str] = []
     edges: list[Edge] = []
+    side_inputs: list[SideInput] = []
 
     def add(block: dict, *, default_kind: str = "opaque",
             static: bool | None = None) -> str:
         node_id = block["id"]
         kind = _KIND_TO_NODE.get(block.get("kind"), default_kind)
+        meta = dict(block.get("meta") or {})
         nodes.append(Node(
             node_id, kind,
             label=block.get("label"),
@@ -186,7 +196,15 @@ def tower_graph(spec: dict) -> Graph:
             static=block.get("static", False) if static is None else static,
             w=block.get("w"),
             h=block.get("h"),
+            meta=meta,
         ))
+        operand_source = meta.get("operand_source")
+        if kind == "gate_mul" and isinstance(operand_source, str) \
+                and operand_source:
+            source_id = f"{node_id}_operand"
+            nodes.append(Node(
+                source_id, "source", label=operand_source, static=True))
+            side_inputs.append(SideInput(source_id, node_id, "right"))
         flow.append(node_id)
         if block.get("residual_from"):
             edges.append(Edge(block["residual_from"], node_id, "residual"))
@@ -220,7 +238,6 @@ def tower_graph(spec: dict) -> Graph:
     # Lateral side inputs: an off-flow source block feeding one flow node from the
     # side (e.g. encoded text → a UNet cross-attention). The node joins ``nodes``
     # (so it has a glyph) but NOT ``flow`` — the engine places it beside its target.
-    side_inputs = []
     for si in spec.get("side_inputs") or []:
         nb = si["node"]
         nodes.append(Node(

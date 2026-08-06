@@ -152,19 +152,19 @@
   "hash_signature": [
     "00818a9cc88b43a59371d901502efdd9",
     "0ebe6773cb674eb590128a6deefe6abc",
-    "1d22934a04a2cf1421fa6e164c7ea2c5",
+    "4ac1aa0fd03816ba07e799dbbaf19eca",
     "71456442dff6a47c6b1fbfa9db9e1f0d",
-    "b9eada94821bda2ba0770188f90b01c0",
+    "a9d70cb5948adfa32ff4583669102d12",
     "f833c45d1b7e9fa29156cf20fb4edff2"
   ],
   "model": "Qwen3.5-27B text component",
   "source": "local",
   "superseded_hash_signature": [
+    "00818a9cc88b43a59371d901502efdd9",
     "0ebe6773cb674eb590128a6deefe6abc",
     "1d22934a04a2cf1421fa6e164c7ea2c5",
-    "2e1254c5beebf56e63454bee278c3384",
     "71456442dff6a47c6b1fbfa9db9e1f0d",
-    "9f672f3d25fa02753f6df7ce3f16ee09",
+    "b9eada94821bda2ba0770188f90b01c0",
     "f833c45d1b7e9fa29156cf20fb4edff2"
   ],
   "visual_evidence": {

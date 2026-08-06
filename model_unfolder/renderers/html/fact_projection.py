@@ -47,14 +47,16 @@ ATTENTION_DRAWN = frozenset({
 ORDINARY_FFN_DRAWN = frozenset({
     "activation", "gated", "projection_mode", "intermediate_size",
 })
-EXPERT_FFN_DRAWN = frozenset({"expert_projection_mode"})
+EXPERT_FFN_DRAWN = frozenset({
+    "expert_projection_mode", "expert_activation_formula",
+})
 ROUTER_DRAWN = frozenset({"routing_policy"})
 # Surface-level compatibility/obligation view.  Owner-qualified gates use the
 # three sets above and never attribute an expert fact to the ordinary FFN.
 FFN_DRAWN = ORDINARY_FFN_DRAWN | EXPERT_FFN_DRAWN | ROUTER_DRAWN
 LAYER_DRAWN = frozenset({
     "norm_kind", "norm_placement", "residual_topology",
-    "parallel_norm_count",
+    "parallel_norm_count", "residual_scale",
 })
 MODEL_DRAWN = frozenset({
     "tie_word_embeddings", "embedding_norm_kind", "final_norm_kind",
