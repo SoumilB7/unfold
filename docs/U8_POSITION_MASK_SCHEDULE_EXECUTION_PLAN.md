@@ -547,3 +547,57 @@ This section supersedes B1's provisional projection-storage coupling. The
 code remains shadow-only: no parser, fact, IR, renderer, params, Sable,
 manifest or gallery consumer exists yet. Geometry, layer selection and
 non-RoPE mechanism proofs remain mandatory before cutover.
+
+### U8-B5 — APPLIED ROTATION GEOMETRY (local, not pushed)
+
+`evidence/position_geometry.py` proves the extent of the already-proven Q/K
+rotation from the executed tensor path. It has three closed layouts:
+
+- `full`: the complete code-proven Q/K projection lanes enter rotation, its
+  outputs reach the score operands, and no exact local split/recombination is
+  present;
+- `partial/prefix`: exact prefix slices are rotated and concatenated before
+  their exact untouched suffixes;
+- `partial/suffix`: an exact two-part split rotates the suffix and concatenates
+  it after the exact untouched prefix.
+
+A full result additionally requires exact Q/K/V storage and exact
+all-elements Q/K producer paths. Producer origin alone is insufficient:
+slicing or opaque narrowing can share the same producer and is therefore
+explicitly rejected. Exact fused-QKV unpack is accepted only after the storage
+boundary independently proves it. A partial result requires both Q and K to
+prove the same layout, exact width evidence, exact pass-through lineage, and
+correct recombination order. Merely declaring a partial factor, slicing only
+one lane, swapping concatenation order or dropping the complement cannot
+author partial geometry. Guarded
+intermediate writes preserve lineage only when both guard alternatives retain
+the same source; the selected interleaved/standard rotation rival is evaluated
+by B4's exact config guard.
+
+`evidence/expression_value.py` supplies the numeric half of the boundary. It is
+a neutral exact-owner constructor interpreter, limited to:
+
+- exact owner-qualified config paths;
+- unique unguarded `self` fields and straight-line locals;
+- numeric constants and `+ - * / // %`;
+- unshadowed builtin `int`/`float` casts.
+
+Every result retains all exact config/class-default premises and source spans.
+Missing operands, guarded/rival writes, shadowed casts, unsupported syntax,
+bad arithmetic, or constructor-normalized values without value-bearing input
+premises remain unknown. No fallback or field-name vocabulary is used.
+
+Real controls prove:
+
+- Llama and GPT-OSS: full rotation;
+- StableLM: prefix-partial, width `20`, evaluated from exact
+  `hidden_size / num_attention_heads * partial_rotary_factor` premises;
+- DeepSeek-V3: suffix-partial, width `64`, from the exact
+  `qk_rope_head_dim` premise.
+
+Focused receipt: expression + geometry + application + factor + operand
+controls **60 passed**; affected U2 authority gates **49 passed**; static checks
+clean. Counterexamples include sliced projection laundering, opaque narrowing,
+wrong recombination, Q/K disagreement, and exact fused-QKV as a positive
+control. This remains shadow-only. The next U8-B work is per-layer application
+selection and the independent learned-absolute/ALiBi/relative-bias proofs.
