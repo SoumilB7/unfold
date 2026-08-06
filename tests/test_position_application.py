@@ -279,6 +279,94 @@ def test_selected_interleaved_branch_requires_exact_rotation_algebra(tmp_path):
     assert result.status == "failed"
 
 
+def _complex_pair_source():
+    helper = """
+def apply_pair(a, b, phase):
+    a_complex = torch.view_as_complex(
+        a.float().reshape(*a.shape[:-1], -1, 2))
+    b_complex = torch.view_as_complex(
+        b.float().reshape(*b.shape[:-1], -1, 2))
+    out_a = torch.view_as_real(
+        a_complex * phase[:, :, None, :]).flatten(3)
+    out_b = torch.view_as_real(
+        b_complex * phase[:, :, None, :]).flatten(3)
+    return out_a.type_as(a), out_b.type_as(b)
+"""
+    start = _BASE.index("def apply_pair")
+    end = _BASE.index("\nclass AttentionLane")
+    source = _BASE[:start] + helper + _BASE[end:]
+    return source.replace(
+        "apply_pair(q, k, first_factor, second_factor)",
+        "apply_pair(q, k, first_factor)")
+
+
+def test_exact_complex_pair_rotation_protocol_resolves(tmp_path):
+    result = _result(tmp_path, _complex_pair_source())
+    assert result.status == "resolved", result
+    assert result.value.rotation_protocol == "complex_pair"
+    assert result.value.factor_parameter_indices == (2,)
+    assert tuple(item.source_segment for item in result.value.factor_arguments) \
+        == ("first_factor",)
+
+
+@pytest.mark.parametrize("old,new", [
+    ("torch.view_as_complex(\n        a.float()", "torch.as_tensor(\n        a.float()"),
+    ("a.float().reshape(*a.shape[:-1], -1, 2)",
+     "a.float().reshape(*a.shape[:-1], -1, 4)"),
+    ("a_complex * phase[:, :, None, :]",
+     "a_complex + phase[:, :, None, :]"),
+    ("b_complex * phase[:, :, None, :]",
+     "b_complex * phase[:, :, :, 0]"),
+    (").flatten(3)", ").flatten(2)"),
+])
+def test_complex_pair_protocol_rejects_inexact_algebra(tmp_path, old, new):
+    source = _complex_pair_source().replace(old, new, 1)
+    assert source != _complex_pair_source()
+    assert _result(tmp_path, source).status == "failed"
+
+
+def test_real_llama4_complex_rotation_and_layer_guard():
+    import inspect
+
+    from transformers import AutoConfig
+    from transformers.models.llama4 import modeling_llama4
+
+    path = inspect.getsourcefile(modeling_llama4)
+    bundle = SourceBundle(
+        source="local", files=(path,),
+        component_files={"root": (path,)},
+        component_architectures={"root": "Llama4TextModel"},
+        architecture="Llama4TextModel")
+    index = build_program_index(bundle)
+    config = AutoConfig.for_model("llama4").text_config
+
+    def select(parts):
+        current = config
+        for part in parts:
+            if isinstance(current, dict):
+                if part not in current:
+                    return False, None, ""
+                current = current[part]
+            elif not hasattr(current, part):
+                return False, None, ""
+            else:
+                current = getattr(current, part)
+        return True, current, "config_declared"
+
+    active = decoder_qk_half_turn_application_for_path(
+        index, bundle, (), allow_root_stage=True,
+        config_selector=select,
+        constructor_parameter_values={"layer_idx": 0})
+    inactive = decoder_qk_half_turn_application_for_path(
+        index, bundle, (), allow_root_stage=True,
+        config_selector=select,
+        constructor_parameter_values={"layer_idx": 3})
+    assert active.status == "resolved", active
+    assert active.value.rotation_protocol == "complex_pair"
+    assert active.value.guard_config_paths == (("no_rope_layers",),)
+    assert inactive.status == "failed"
+
+
 def test_half_turn_must_preserve_the_exact_half_order(tmp_path):
     source = _BASE.replace(
         "return torch.cat((-second, first), dim=-1)",

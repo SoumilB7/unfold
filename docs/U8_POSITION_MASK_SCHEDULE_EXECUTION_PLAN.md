@@ -601,3 +601,53 @@ clean. Counterexamples include sliced projection laundering, opaque narrowing,
 wrong recombination, Q/K disagreement, and exact fused-QKV as a positive
 control. This remains shadow-only. The next U8-B work is per-layer application
 selection and the independent learned-absolute/ALiBi/relative-bias proofs.
+
+### U8-B6 — UNIT-COMPLEX ROTATION + GUARDED LAYER VALUE (local, not pushed)
+
+The application boundary now recognizes a fourth exact algebraic protocol,
+`complex_pair`. Both Q and K must independently prove the complete chain:
+
+1. dtype-only conversion followed by a reshape of the entire final dimension
+   into exact pairs of width two;
+2. `torch.view_as_complex`;
+3. multiplication by the same factor through broadcast-only full slices and
+   inserted singleton axes;
+4. `torch.view_as_real` and exact pair-dimension flattening; and
+5. both returned lanes reaching the exact Q/K score operands.
+
+Names carry no authority. Missing real/complex conversion, pair width other
+than two, addition instead of multiplication, a narrowed factor, a differing
+factor between Q and K, wrong flattening, or a one-lane lookalike fails.
+
+`PositionComplexFactorEvidence` independently proves that the single complex
+factor is a unit phase made by exact `torch.polar(torch.ones_like(angle),
+angle)`, with `angle` containing stored owner state multiplied by one explicitly
+bound coordinate input. Optional scalar owner-state scaling may follow the
+unit phase, but arbitrary complex construction cannot pass. This keeps
+"complex multiplication" separate from "position-derived rotation" just as
+B1 and B2 kept real half-turn application separate from cosine/sine provenance.
+
+The exact guard interpreter gained a deliberately small constructor-parameter
+channel. It can follow one unique unguarded `self` field assignment, exact
+subscript lookup and Python truthiness for closed immutable scalar values.
+Thus source such as `self.flag = config.schedule[layer_idx]` can be evaluated
+for a supplied, exact constructor index. The value only executes the source
+guard; it never names the mechanism. Missing/out-of-range parameters, guarded
+or rival field assignments, non-scalar/user-defined truthiness and unknown
+syntax remain unknown. Geometry threads the same parameter evidence to the
+application boundary.
+
+Real installed-source control: Llama 4 text layer 0 proves `complex_pair`, the
+position producer proves `Llama4TextRotaryEmbedding.forward`'s unit complex
+phase from `inv_freq @ position_ids`, and full applied Q/K geometry resolves.
+Layer 3 does not select the guarded application. This is source-shape support,
+not a Llama/model-family branch: production evidence contains no Llama 4
+spelling.
+
+Focused application/factor/geometry plus config-guard consumers pass; affected
+U2 identity, taint, structural-write, blocking-net and reader-exception gates
+pass; `py_compile`, `pyflakes` and `git diff --check` are clean. This remains
+shadow-only. Supplying an index manually is not yet a schedule proof: the next
+unit must prove the construction-time index transport from the repeated-layer
+comprehension through the block constructor into the attention constructor,
+then evaluate every layer without caller-authored parameter values.

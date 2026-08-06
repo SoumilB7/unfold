@@ -194,13 +194,20 @@ def _expression_root_name(expression):
 
 
 class ExactConfigGuardResolver:
-    def __init__(self, index, owner_node, config_selector, *, config_prefix=()):
+    def __init__(self, index, owner_node, config_selector, *, config_prefix=(),
+                 parameter_values=None):
         # Avoid the public ``index`` structural-spec spelling: this is a
         # private interpreter handle, not an IR/spec field or mutation sink.
         self._program_index = index
         self.owner_node = owner_node
         self.config_selector = config_selector
         self.config_prefix = tuple(config_prefix)
+        parameter_values = parameter_values or {}
+        if not isinstance(parameter_values, dict) or any(
+                not isinstance(name, str) or not name
+                for name in parameter_values):
+            raise TypeError("parameter_values is a mapping with non-empty names")
+        self.parameter_values = dict(parameter_values)
         self.paths = []
         self.spans = []
         self.source_kinds = []
@@ -230,8 +237,8 @@ class ExactConfigGuardResolver:
             if expression is None:
                 self.complete = False
                 return None
-            value = self._expression(expression)
-            if not isinstance(value, bool):
+            value = _exact_truth_value(self._expression(expression))
+            if value is _UNKNOWN:
                 self.complete = False
                 return None
             if negate:
@@ -240,7 +247,7 @@ class ExactConfigGuardResolver:
                 return False
         return True
 
-    def _expression(self, expression):
+    def _expression(self, expression, seen=frozenset()):
         path = exact_config_path_for_expression(
             self._program_index, self.owner_node, expression,
             config_prefix=self.config_prefix)
@@ -273,13 +280,50 @@ class ExactConfigGuardResolver:
             return value
         if expression.kind == "constant":
             return expression.const_value
+        if expression.kind == "name" \
+                and expression.name in self.parameter_values:
+            return self.parameter_values[expression.name]
+        if expression.kind == "attribute" and _self_field(expression):
+            field = expression.name
+            key = ("field", field)
+            if key in seen:
+                return _UNKNOWN
+            constructor = SymbolId(
+                self.owner_node.symbol.source,
+                f"{self.owner_node.symbol.qualified_name}.__init__")
+            assignments = tuple(
+                item for item in self._program_index.field_assigns_of(
+                    self.owner_node.symbol)
+                if item.field == field
+                and item.enclosing_callable == constructor)
+            if len(assignments) != 1 or assignments[0].guard:
+                return _UNKNOWN
+            assignment = assignments[0]
+            if assignment.span is not None:
+                self.spans.append(assignment.span)
+            return self._expression(assignment.value, seen | {key})
+        if expression.kind == "subscript" \
+                and len(expression.children) == 2:
+            base = self._expression(expression.children[0], seen)
+            key = self._expression(expression.children[1], seen)
+            if base is _UNKNOWN or key is _UNKNOWN:
+                return _UNKNOWN
+            try:
+                return base[key]
+            except (IndexError, KeyError, TypeError):
+                return _UNKNOWN
+        if expression.kind in {"tuple", "list"}:
+            values = tuple(self._expression(item, seen)
+                           for item in expression.children)
+            return (_UNKNOWN if any(item is _UNKNOWN for item in values)
+                    else values)
         if expression.kind == "unaryop" and expression.operator == "not" \
                 and len(expression.children) == 1:
-            child = self._expression(expression.children[0])
+            child = self._expression(expression.children[0], seen)
             return not child if isinstance(child, bool) else _UNKNOWN
         if expression.kind == "boolop" and expression.operator in {"and", "or"}:
             for child_expression in expression.children:
-                value = self._expression(child_expression)
+                value = self._expression(child_expression, seen)
                 if not isinstance(value, bool):
                     return _UNKNOWN
                 if expression.operator == "and" and not value:
@@ -288,8 +332,8 @@ class ExactConfigGuardResolver:
                     return True
             return expression.operator == "and"
         if expression.kind == "compare" and len(expression.children) == 2:
-            left = self._expression(expression.children[0])
-            right = self._expression(expression.children[1])
+            left = self._expression(expression.children[0], seen)
+            right = self._expression(expression.children[1], seen)
             if left is _UNKNOWN or right is _UNKNOWN:
                 return _UNKNOWN
             operations = {
@@ -309,6 +353,29 @@ class ExactConfigGuardResolver:
             except TypeError:
                 return _UNKNOWN
         return _UNKNOWN
+
+
+def _self_field(expression):
+    return (expression.kind == "attribute" and expression.name
+            and len(expression.children) == 1
+            and expression.children[0].kind == "name"
+            and expression.children[0].name == "self")
+
+
+def _exact_truth_value(value):
+    """Apply Python truthiness only to closed immutable scalar/container data.
+
+    Config schedules commonly encode boolean selectors as ``0``/``1``.  The
+    interpreter must honor that exact Python behavior without calling
+    user-defined ``__bool__`` methods or treating tensors as scalar guards.
+    """
+    if value is _UNKNOWN:
+        return _UNKNOWN
+    if value is None or isinstance(value, (bool, int, float, str, bytes)):
+        return bool(value)
+    if isinstance(value, tuple):
+        return bool(value)
+    return _UNKNOWN
 
 
 __all__ = [

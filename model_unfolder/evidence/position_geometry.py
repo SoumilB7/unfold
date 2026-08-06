@@ -140,11 +140,13 @@ def decoder_position_application_geometry_for_path(
     *,
     allow_root_stage: bool,
     config_selector=None,
+    constructor_parameter_values=None,
 ) -> ReaderResult[PositionApplicationGeometryEvidence]:
     """Prove full or exact split/recombine geometry on both Q and K."""
     application_result = decoder_qk_half_turn_application_for_path(
         index, bundle, tuple(config_path), allow_root_stage=allow_root_stage,
-        config_selector=config_selector)
+        config_selector=config_selector,
+        constructor_parameter_values=constructor_parameter_values)
     if application_result.status != "resolved":
         return _forward_failure(application_result, "position application")
     application = application_result.value

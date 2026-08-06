@@ -1,4 +1,4 @@
-"""U8-B2 — exact position-derived cosine/sine factor provenance.
+"""U8-B2 — exact position-derived rotation-factor provenance.
 
 This joins the positive Q/K half-turn application to the exact constructed
 producer whose forward returns cosine and sine of one shared phase.  The phase
@@ -20,6 +20,7 @@ from .call_arguments import (
 )
 from .component_owner import OwnerOccurrenceId
 from .container_inventory import resolve_container_inventory
+from .construction_calls import resolve_import_reference
 from .decoder_block import decoder_block_path_for_config
 from .execution_flow import AddressedInvocation, resolve_addressed_invocations
 from .models import SourceBundle
@@ -46,6 +47,8 @@ _TRANSPARENT_VALUE_METHODS = frozenset({"unsqueeze", "to"})
 _PHASE_TRANSPARENT_METHODS = frozenset({
     "float", "to", "expand", "transpose", "reshape", "view", "contiguous",
 })
+_POLAR_PROTOCOLS = frozenset({"torch.polar"})
+_ONES_LIKE_PROTOCOLS = frozenset({"torch.ones_like"})
 
 
 @dataclass(frozen=True)
@@ -110,6 +113,63 @@ class PositionTrigFactorEvidence:
 
 
 @dataclass(frozen=True)
+class PositionComplexFactorEvidence:
+    """One exact unit-complex positional phase feeding Q/K pair rotation."""
+
+    application: QKHalfTurnApplicationEvidence
+    producer_invocation: AddressedInvocation
+    producer_callable: SymbolId
+    phase_binding: CallArgumentBinding
+    polar_call: CallObservation
+    phase_expression: ExprNode
+    factor_expression: ExprNode
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.application, QKHalfTurnApplicationEvidence) \
+                or self.application.rotation_protocol != "complex_pair" \
+                or len(self.application.factor_arguments) != 1:
+            raise TypeError("complex factor evidence carries a complex application")
+        if not isinstance(self.producer_invocation, AddressedInvocation):
+            raise TypeError("complex factor evidence carries an exact invocation")
+        occurrence = self.producer_invocation.callee_owner_occurrence
+        if occurrence.root != self.application.attention_occurrence.root:
+            raise ValueError("complex factor producer and application share one root")
+        if not isinstance(self.producer_callable, SymbolId) \
+                or self.producer_callable.source != occurrence.root.source:
+            raise TypeError("complex factor evidence carries the exact forward")
+        if not isinstance(self.phase_binding, CallArgumentBinding) \
+                or self.phase_binding.call != self.producer_invocation.call \
+                or self.phase_binding.callee_occurrence != occurrence \
+                or self.phase_binding.callee_callable != self.producer_callable:
+            raise ValueError("complex phase input binds at the exact producer call")
+        if not isinstance(self.polar_call, CallObservation) \
+                or self.polar_call.enclosing_callable != self.producer_callable:
+            raise TypeError("complex factor evidence carries its exact polar call")
+        for expression in (self.phase_expression, self.factor_expression):
+            if not isinstance(expression, ExprNode) or expression.span is None:
+                raise TypeError("complex factor evidence carries exact expressions")
+        if self.factor_expression != self.application.factor_arguments[0]:
+            raise ValueError("complex factor expression is the exact application input")
+        required = {
+            self.application.application_call.span,
+            self.producer_invocation.call.span,
+            self.phase_binding.actual.span,
+            self.polar_call.span,
+            self.phase_expression.span,
+            self.factor_expression.span,
+        }
+        if None in required or not required <= set(self.spans):
+            raise ValueError("complex factor provenance cites every exact boundary")
+        if any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise TypeError("complex factor provenance contains exact spans")
+
+    @property
+    def producer_occurrence(self) -> OwnerOccurrenceId:
+        return self.producer_invocation.callee_owner_occurrence
+
+
+@dataclass(frozen=True)
 class _FormalLane:
     name: str
     lane: tuple[int, ...]
@@ -153,26 +213,11 @@ def decoder_position_trig_factors_for_path(
     if attention.status != "resolved":
         return _forward_failure(attention, "attention child address")
 
-    incoming = {}
-    for invocation in attention.value.invocation_path:
-        if invocation.callee_owner_occurrence in incoming:
-            return ReaderResult.failed(application.attention_occurrence, (
-                ReaderFailure("incomplete_graph", "two incoming owner calls rival"),))
-        incoming[invocation.callee_owner_occurrence] = (
-            invocation.caller_occurrence,
-            bind_addressed_invocation(index, root, invocation))
-    repeated_proofs = block.repeated_child.proofs
-    if len(repeated_proofs) != 1:
-        return ReaderResult.failed(application.attention_occurrence, (
-            ReaderFailure(
-                "incomplete_graph", "one exact repeated-child call is required"),))
-    repeated = repeated_proofs[0]
-    if repeated.child_occurrence in incoming:
-        return ReaderResult.failed(application.attention_occurrence, (
-            ReaderFailure("incomplete_graph", "block has rival incoming calls"),))
-    incoming[repeated.child_occurrence] = (
-        repeated.model_stage,
-        bind_repeated_child_call(index, root, repeated))
+    incoming = _incoming_owner_calls(
+        index, root, block, attention.value.invocation_path,
+        application.attention_occurrence)
+    if isinstance(incoming, ReaderFailure):
+        return ReaderResult.failed(application.attention_occurrence, (incoming,))
 
     traced = _trace_factor_lanes(
         index, root, application.attention_occurrence,
@@ -214,6 +259,203 @@ def decoder_position_trig_factors_for_path(
                 "exact producer cos/sin output lanes reach the direct/rotated "
                 "Q/K factors; shared phase multiplies stored state by one "
                 "explicitly bound coordinate input")),))
+
+
+def decoder_position_complex_factors_for_path(
+    index: ProgramIndex,
+    bundle: SourceBundle,
+    config_path: tuple[str, ...],
+    *,
+    allow_root_stage: bool,
+    config_selector=None,
+    constructor_parameter_values=None,
+) -> ReaderResult[PositionComplexFactorEvidence]:
+    """Prove a unit-complex position phase feeding exact Q/K rotation."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("complex position factors require a ProgramIndex")
+    if not isinstance(bundle, SourceBundle):
+        raise TypeError("complex position factors require a SourceBundle")
+    block_result = decoder_block_path_for_config(
+        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage)
+    application_result = decoder_qk_half_turn_application_for_path(
+        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage,
+        config_selector=config_selector,
+        constructor_parameter_values=constructor_parameter_values)
+    if block_result.status != "resolved":
+        return _forward_failure(block_result, "decoder block address")
+    if application_result.status != "resolved":
+        return _forward_failure(application_result, "Q/K rotation application")
+    application = application_result.value
+    if application.rotation_protocol != "complex_pair":
+        return ReaderResult.failed(application.attention_occurrence, (
+            ReaderFailure(
+                "unsupported_syntax",
+                "the selected application is not a unit-complex protocol"),))
+    block = block_result.value
+    root = block.component_root
+
+    from .attention_child import attention_child_evidence
+    attention = attention_child_evidence(
+        index, root, block.block_occurrence)
+    if attention.status != "resolved":
+        return _forward_failure(attention, "attention child address")
+    incoming = _incoming_owner_calls(
+        index, root, block, attention.value.invocation_path,
+        application.attention_occurrence)
+    if isinstance(incoming, ReaderFailure):
+        return ReaderResult.failed(application.attention_occurrence, (incoming,))
+    traced = _trace_factor_lanes(
+        index, root, application.attention_occurrence,
+        application.application_call.enclosing_callable,
+        application.factor_arguments, application.application_call.span,
+        incoming)
+    if isinstance(traced, ReaderFailure):
+        return ReaderResult.failed(application.attention_occurrence, (traced,))
+    if len(traced) != 1 or not isinstance(traced[0], _ProducerLane):
+        return ReaderResult.failed(application.attention_occurrence, (
+            ReaderFailure("incomplete_graph", "complex factor origin is not exact"),))
+    producer = traced[0].invocation
+    if traced[0].lane:
+        return ReaderResult.failed(application.attention_occurrence, (
+            ReaderFailure(
+                "incomplete_graph", "complex factor is not the complete producer output"),))
+    phase = _complex_phase_protocol(index, root, producer)
+    if isinstance(phase, ReaderFailure):
+        return ReaderResult.failed(application.attention_occurrence, (phase,))
+    producer_callable, phase_binding, polar_call, phase_expression, phase_spans = phase
+    spans = tuple(dict.fromkeys((
+        *application.spans, producer.call.span,
+        *phase_binding.spans, *phase_spans,
+    )))
+    value = PositionComplexFactorEvidence(
+        application, producer, producer_callable, phase_binding,
+        polar_call, phase_expression, application.factor_arguments[0], spans)
+    return ReaderResult.resolved(
+        application.attention_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=("an exact unit-complex phase built from stored frequency "
+                    "state and one bound coordinate input reaches Q/K")),))
+
+
+def _incoming_owner_calls(index, root, block, invocation_path, owner):
+    incoming = {}
+    for invocation in invocation_path:
+        if invocation.callee_owner_occurrence in incoming:
+            return ReaderFailure("incomplete_graph", "two incoming owner calls rival")
+        incoming[invocation.callee_owner_occurrence] = (
+            invocation.caller_occurrence,
+            bind_addressed_invocation(index, root, invocation))
+    repeated_proofs = block.repeated_child.proofs
+    if len(repeated_proofs) != 1:
+        return ReaderFailure(
+            "incomplete_graph", "one exact repeated-child call is required")
+    repeated = repeated_proofs[0]
+    if repeated.child_occurrence in incoming:
+        return ReaderFailure("incomplete_graph", "block has rival incoming calls")
+    incoming[repeated.child_occurrence] = (
+        repeated.model_stage,
+        bind_repeated_child_call(index, root, repeated))
+    return incoming
+
+
+def _complex_phase_protocol(index, root, invocation):
+    binding_result = bind_addressed_invocation(index, root, invocation)
+    if binding_result.status not in {"resolved", "partial"}:
+        return ReaderFailure(
+            "incomplete_graph", "complex factor producer call is unbindable")
+    callable_symbol = binding_result.callee_callable
+    returns = tuple(item for item in index.return_observations_in(callable_symbol)
+                    if not item.guard and item.value is not None)
+    if len(returns) != 1:
+        return ReaderFailure(
+            "incomplete_graph", "complex factor producer has no unique return")
+    bindings = index.bindings_in(callable_symbol)
+    polar = _unit_polar_phase(
+        index, callable_symbol, bindings, returns[0].value,
+        returns[0].span, frozenset())
+    if polar is None:
+        return ReaderFailure(
+            "incomplete_graph",
+            "producer output is not one exact unit-complex phase")
+    polar_call, phase_expression = polar
+    phase_formal = _phase_coordinate_formal(
+        index, callable_symbol, bindings, phase_expression, frozenset())
+    if phase_formal is None:
+        return ReaderFailure(
+            "incomplete_graph",
+            "complex phase is not stored-state × coordinate-input math")
+    phase_binding = binding_result.for_formal(phase_formal.name)
+    if phase_binding is None:
+        return ReaderFailure(
+            "incomplete_graph", "phase coordinate has no explicit producer input")
+    spans = tuple(dict.fromkeys((
+        returns[0].span, polar_call.span, phase_expression.span,
+        *phase_binding.spans,
+    )))
+    return callable_symbol, phase_binding, polar_call, phase_expression, spans
+
+
+def _unit_polar_phase(
+        index, callable_symbol, bindings, expression, before, seen):
+    expression = _resolve_name(bindings, expression, before, seen)
+    if expression is None:
+        return None
+    direct = _polar_call(index, callable_symbol, bindings, expression, seen)
+    if direct is not None:
+        return direct
+    if expression.kind != "binop" or expression.operator != "*" \
+            or len(expression.children) != 2:
+        return None
+    candidates = []
+    for possible_polar, scale in (
+            (expression.children[0], expression.children[1]),
+            (expression.children[1], expression.children[0])):
+        found = _unit_polar_phase(
+            index, callable_symbol, bindings, possible_polar,
+            expression.span, seen)
+        if found is None:
+            continue
+        scale = _resolve_name(
+            bindings, scale, expression.span, frozenset())
+        if scale is not None and (
+                _contains_self_state(
+                    bindings, scale, scale.span, frozenset())
+                or (scale.kind == "constant"
+                    and isinstance(scale.const_value, (int, float))
+                    and not isinstance(scale.const_value, bool))):
+            candidates.append(found)
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def _polar_call(index, callable_symbol, bindings, expression, seen):
+    if expression.kind != "call" or len(expression.children) != 3:
+        return None
+    call = next((item for item in index.calls_in(callable_symbol)
+                 if item.span == expression.span), None)
+    proof = (resolve_import_reference(
+        index, callable_symbol.source, callable_symbol, call.callee)
+        if call is not None else None)
+    if proof is None or proof.qualified_target not in _POLAR_PROTOCOLS:
+        return None
+    magnitude, angle = expression.children[1:]
+    if magnitude.kind != "call" or len(magnitude.children) != 2:
+        return None
+    magnitude_call = next((item for item in index.calls_in(callable_symbol)
+                           if item.span == magnitude.span), None)
+    magnitude_proof = (resolve_import_reference(
+        index, callable_symbol.source, callable_symbol, magnitude_call.callee)
+        if magnitude_call is not None else None)
+    if magnitude_proof is None \
+            or magnitude_proof.qualified_target not in _ONES_LIKE_PROTOCOLS:
+        return None
+    magnitude_phase = _resolve_name(
+        bindings, magnitude.children[1], magnitude.span, seen)
+    angle_phase = _resolve_name(bindings, angle, expression.span, seen)
+    if magnitude_phase is None or angle_phase is None \
+            or magnitude_phase != angle_phase:
+        return None
+    return call, angle_phase
 
 
 def _trace_factor_lanes(
@@ -286,7 +528,8 @@ def _trace_local_lane(
                 paths = _target_paths(target, expression.name)
                 matches.extend((binding, path) for path in paths)
         if matches:
-            latest_span = max(item[0].span for item in matches)
+            latest_span = max(
+                (item[0].span for item in matches), key=_span_sort_key)
             latest = tuple(item for item in matches if item[0].span == latest_span)
             if len(latest) != 1 or latest[0][0].guard \
                     or latest[0][0].value is None:
@@ -429,7 +672,7 @@ def _resolve_name(bindings, expression, before, seen):
                         and item.targets[0].name == current.name)
         if not matches:
             return current
-        latest = max(matches, key=lambda item: item.span)
+        latest = max(matches, key=lambda item: _span_sort_key(item.span))
         current = latest.value
         current_before = latest.span
     return current
@@ -528,6 +771,11 @@ def _span_before(left, right):
         right.line, right.col)
 
 
+def _span_sort_key(span):
+    return (span.line, span.col, span.end_line or span.line,
+            span.end_col or span.col)
+
+
 def _is_zero_arg_tensor_method(call, name):
     callee = call.callee
     return (callee.kind == "attribute" and callee.name == name
@@ -545,6 +793,8 @@ def _forward_failure(result, boundary):
 
 
 __all__ = [
+    "PositionComplexFactorEvidence",
     "PositionTrigFactorEvidence",
+    "decoder_position_complex_factors_for_path",
     "decoder_position_trig_factors_for_path",
 ]

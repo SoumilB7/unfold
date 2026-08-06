@@ -1,13 +1,11 @@
-"""U8-B — exact Q/K half-turn-application evidence.
+"""U8-B — exact Q/K position-rotation application evidence.
 
 This reader recognizes a mathematical/dataflow protocol, never a function,
 class, field, or model spelling:
 
 * one local helper returns two exact tensor lanes;
-* that helper returns two outputs, each computed as
-  ``x * factor_a + half_turn(x) * factor_b``;
-* ``half_turn`` is itself proved as an exact half split followed by
-  concatenation of ``(-second_half, first_half)``; and
+* that helper implements one closed, algebraically proved rotation protocol
+  (real half-turn, chunk-pair, interleaved-pair, or real/complex pair); and
 * the two helper outputs reach the exact query/key score operands proven by
   the attention computation itself.
 
@@ -49,6 +47,8 @@ _CAT_PROTOCOLS = frozenset({
     "torch.concat",
 })
 _CHUNK_PROTOCOLS = frozenset({"torch.chunk"})
+_VIEW_AS_COMPLEX_PROTOCOLS = frozenset({"torch.view_as_complex"})
+_VIEW_AS_REAL_PROTOCOLS = frozenset({"torch.view_as_real"})
 
 
 @dataclass(frozen=True)
@@ -79,21 +79,25 @@ class QKHalfTurnApplicationEvidence:
                 or not isinstance(self.rotation_callable, SymbolId):
             raise TypeError("half-turn application carries exact helper symbols")
         if self.rotation_protocol not in {
-                "split_half_turn", "chunk_pair", "interleaved_pair"}:
-            raise ValueError("half-turn application carries a proved rotation protocol")
+                "split_half_turn", "chunk_pair", "interleaved_pair",
+                "complex_pair"}:
+            raise ValueError("application carries a proved rotation protocol")
         if not isinstance(self.attention_operands, AttentionQKOperandsEvidence) \
                 or self.attention_operands.attention_occurrence \
                 != self.attention_occurrence:
             raise ValueError("half-turn application cites exact attention operands")
-        if len(self.factor_parameter_indices) != 2 \
-                or len(set(self.factor_parameter_indices)) != 2 \
+        expected_factor_count = (
+            1 if self.rotation_protocol == "complex_pair" else 2)
+        if len(self.factor_parameter_indices) != expected_factor_count \
+                or len(set(self.factor_parameter_indices)) \
+                != expected_factor_count \
                 or any(not isinstance(item, int) or item < 2
                        for item in self.factor_parameter_indices):
-            raise TypeError("half-turn application carries direct/rotated factor indices")
-        if len(self.factor_arguments) != 2 or any(
+            raise TypeError("application carries protocol-exact factor indices")
+        if len(self.factor_arguments) != expected_factor_count or any(
                 not isinstance(item, ExprNode) or item.span is None
                 for item in self.factor_arguments):
-            raise TypeError("half-turn application carries exact factor arguments")
+            raise TypeError("application carries protocol-exact factor arguments")
         if max(self.factor_parameter_indices) >= len(self.application_call.args) \
                 or self.factor_arguments != tuple(
                     self.application_call.args[item]
@@ -139,6 +143,7 @@ def decoder_qk_half_turn_application_for_path(
     *,
     allow_root_stage: bool,
     config_selector=None,
+    constructor_parameter_values=None,
 ) -> ReaderResult[QKHalfTurnApplicationEvidence]:
     """Prove exact Q/K half-turn application for one selected decoder path."""
     if not isinstance(index, ProgramIndex):
@@ -160,11 +165,13 @@ def decoder_qk_half_turn_application_for_path(
         return _forward_failure(operands, "attention score operands")
     return _rotary_at_attention(
         index, root, attention.value, operands.value,
-        config_selector=config_selector)
+        config_selector=config_selector,
+        constructor_parameter_values=constructor_parameter_values)
 
 
 def _rotary_at_attention(
-        index, root, child, operands, *, config_selector=None):
+        index, root, child, operands, *, config_selector=None,
+        constructor_parameter_values=None):
     owner = child.compute_occurrence
     node = root.graph.node_for(owner)
     if node is None or index.class_by_symbol(node.symbol) is None:
@@ -187,7 +194,8 @@ def _rotary_at_attention(
                 index, node,
                 (config_selector if config_selector is not None
                  else lambda _path: (False, None, "")),
-                config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+                config_prefix=tuple(getattr(root, "config_path", ()) or ()),
+                parameter_values=constructor_parameter_values)
             if resolver.enabled(call.guard, callable_symbol) is not True:
                 continue
             guard_paths = tuple(dict.fromkeys(resolver.paths))
@@ -201,7 +209,9 @@ def _rotary_at_attention(
         if max(factor_indices) >= len(call.args):
             continue
         factor_args = tuple(call.args[item] for item in factor_indices)
-        if len(call.args) < 2 or len(factor_args) != 2 or call.span is None:
+        if len(call.args) < 2 \
+                or len(factor_args) != len(factor_indices) \
+                or call.span is None:
             continue
         if not _two_targets_reach_qk_operands(
                 index.bindings_in(callable_symbol), binding, targets,
@@ -226,7 +236,7 @@ def _rotary_at_attention(
             ReaderProvenance(
                 "source", spans=value.spans,
                 detail=(
-                    "a proved two-lane half-turn rotation reaches the exact "
+                    "a proved two-lane position rotation reaches the exact "
                     "query/key attention score operands")),))
     if len(candidates) > 1:
         from .reader_result import Ambiguity
@@ -235,7 +245,7 @@ def _rotary_at_attention(
                 item.application_call.span for item in candidates)))
     return ReaderResult.failed(owner, (ReaderFailure(
         "incomplete_graph",
-        "no exact two-lane half-turn→query/key score path was proven"),))
+        "no exact two-lane position-rotation→query/key path was proven"),))
 
 
 def _binding_call(index, callable_symbol, binding):
@@ -265,7 +275,7 @@ def _rotary_helper_protocol(index, caller, call):
     record = index.callable_by_symbol(helper)
     params = tuple(item.name for item in record.params
                    if item.kind in {"positional", "posonly"})
-    if len(params) < 4:
+    if len(params) < 3:
         return None
     returns = tuple(item for item in index.return_observations_in(helper)
                     if not item.guard and item.value is not None)
@@ -310,13 +320,21 @@ def _rotary_helper_protocol(index, caller, call):
             interleaved = _interleaved_pair_protocol(
                 index, helper, tuple(output_names), params, bindings,
                 returns[0].span)
-            if interleaved is None:
-                return None
-            direct_factor, rotated_factor = interleaved
-            rotation = helper
-            factor_indices = (
-                params.index(direct_factor), params.index(rotated_factor))
-            rotation_protocol = "interleaved_pair"
+            if interleaved is not None:
+                direct_factor, rotated_factor = interleaved
+                rotation = helper
+                factor_indices = (
+                    params.index(direct_factor), params.index(rotated_factor))
+                rotation_protocol = "interleaved_pair"
+            else:
+                complex_factor = _complex_pair_protocol(
+                    index, helper, tuple(output_names), params, bindings,
+                    returns[0].span)
+                if complex_factor is None:
+                    return None
+                rotation = helper
+                factor_indices = (params.index(complex_factor),)
+                rotation_protocol = "complex_pair"
     spans = tuple(dict.fromkeys(
         span for span in (
             call.span, record.span, returns[0].span,
@@ -327,16 +345,185 @@ def _rotary_helper_protocol(index, caller, call):
 
 
 def _transparent_return_name(expression):
-    """Name returned directly or through an exact dtype-only tensor ``to``."""
+    """Name returned directly or through an exact dtype-only conversion."""
     if expression.kind == "name":
         return expression.name
     if expression.kind == "call" and expression.children:
         callee = expression.children[0]
-        if callee.kind == "attribute" and callee.name == "to" \
+        if callee.kind == "attribute" and callee.name in {"to", "type_as"} \
                 and len(callee.children) == 1 \
                 and callee.children[0].kind == "name":
             return callee.children[0].name
     return None
+
+
+def _complex_pair_protocol(
+        index, helper, output_names, params, bindings, return_span):
+    """Prove real-pair -> complex multiply -> real-pair on Q and K.
+
+    This recognizes tensor algebra, not the helper or factor spelling.  Each
+    lane must reshape its entire final dimension into exact pairs, convert to
+    complex, multiply by the same broadcast-only factor, convert back to real,
+    and flatten the pair dimensions.  Any slice/narrowing or missing lane makes
+    the protocol unprovable.
+    """
+    if len(params) < 3:
+        return None
+    factor_names = frozenset(params[2:])
+    factors = []
+    for base, output_name in zip(params[:2], output_names):
+        expression = _unique_value_before(bindings, output_name, return_span)
+        factor = _complex_output_factor(
+            index, helper, bindings, expression, base, factor_names)
+        if factor is None:
+            return None
+        factors.append(factor)
+    return factors[0] if len(set(factors)) == 1 else None
+
+
+def _complex_output_factor(
+        index, helper, bindings, expression, base, factor_names):
+    if expression is None or expression.kind != "call" \
+            or len(expression.children) != 2:
+        return None
+    flatten, start = expression.children
+    if flatten.kind != "attribute" or flatten.name != "flatten" \
+            or len(flatten.children) != 1 \
+            or not _integer_value(start, 3):
+        return None
+    real_call = flatten.children[0]
+    if not _exact_protocol_call(
+            index, helper, real_call, _VIEW_AS_REAL_PROTOCOLS, argument_count=1):
+        return None
+    product = real_call.children[1]
+    if product.kind != "binop" or product.operator != "*" \
+            or len(product.children) != 2:
+        return None
+    possibilities = []
+    for complex_value, factor_value in (
+            (product.children[0], product.children[1]),
+            (product.children[1], product.children[0])):
+        if complex_value.kind != "name":
+            continue
+        complex_expression = _unique_value_before(
+            bindings, complex_value.name, product.span)
+        if not _complex_pair_conversion(
+                index, helper, complex_expression, base):
+            continue
+        factor = _broadcast_factor_origin(
+            bindings, factor_value, factor_value.span, factor_names)
+        if factor is not None:
+            possibilities.append(factor)
+    return possibilities[0] if len(possibilities) == 1 else None
+
+
+def _complex_pair_conversion(index, helper, expression, base):
+    if not _exact_protocol_call(
+            index, helper, expression, _VIEW_AS_COMPLEX_PROTOCOLS,
+            argument_count=1):
+        return False
+    reshape = expression.children[1]
+    if reshape.kind != "call" or len(reshape.children) != 4:
+        return False
+    callee, shape_prefix, inferred, pair = reshape.children
+    if callee.kind != "attribute" or callee.name != "reshape" \
+            or len(callee.children) != 1 \
+            or not _integer_value(inferred, -1) \
+            or not _integer_value(pair, 2):
+        return False
+    receiver = callee.children[0]
+    if receiver.kind != "call" or len(receiver.children) != 1:
+        return False
+    float_method = receiver.children[0]
+    if float_method.kind != "attribute" or float_method.name != "float" \
+            or len(float_method.children) != 1 \
+            or float_method.children[0].kind != "name" \
+            or float_method.children[0].name != base:
+        return False
+    return _all_but_last_shape(shape_prefix, base)
+
+
+def _all_but_last_shape(expression, base):
+    if expression.kind != "starred" or len(expression.children) != 1:
+        return False
+    shape_slice = expression.children[0]
+    if shape_slice.kind != "subscript" or len(shape_slice.children) != 2:
+        return False
+    shape, selector = shape_slice.children
+    return (
+        shape.kind == "attribute" and shape.name == "shape"
+        and len(shape.children) == 1
+        and shape.children[0].kind == "name"
+        and shape.children[0].name == base
+        and selector.kind == "slice" and len(selector.children) == 3
+        and selector.children[0] is None
+        and _integer_value(selector.children[1], -1)
+        and selector.children[2] is None)
+
+
+def _broadcast_factor_origin(
+        bindings, expression, before, factors, seen=frozenset()):
+    """Trace a factor through aliases and full slices/None-axis insertion."""
+    if expression is None:
+        return None
+    if expression.kind == "name":
+        if expression.name not in factors:
+            return None
+        if expression.name in seen:
+            return expression.name
+        value = _unique_value_before(bindings, expression.name, before)
+        if value is None:
+            return expression.name
+        return _broadcast_factor_origin(
+            bindings, value, value.span, factors, seen | {expression.name})
+    if expression.kind != "subscript" or len(expression.children) != 2:
+        return None
+    base, selector = expression.children
+    if not _broadcast_only_selector(selector):
+        return None
+    return _broadcast_factor_origin(
+        bindings, base, base.span, factors, seen)
+
+
+def _broadcast_only_selector(selector):
+    items = selector.children if selector.kind == "tuple" else (selector,)
+    if not items:
+        return False
+    for item in items:
+        if item is None:
+            return False
+        if item.kind == "constant" and item.const_value is None:
+            continue
+        if item.kind != "slice" or len(item.children) != 3 \
+                or any(child is not None for child in item.children):
+            return False
+    return True
+
+
+def _exact_protocol_call(
+        index, callable_symbol, expression, protocols, *, argument_count):
+    if expression is None or expression.kind != "call" \
+            or not expression.children \
+            or len(expression.children) != argument_count + 1:
+        return False
+    call = next((item for item in index.calls_in(callable_symbol)
+                 if item.span == expression.span), None)
+    proof = (resolve_import_reference(
+        index, callable_symbol.source, callable_symbol, call.callee)
+        if call is not None else None)
+    return proof is not None and proof.qualified_target in protocols
+
+
+def _integer_value(expression, value):
+    if expression is None or isinstance(value, bool):
+        return False
+    if expression.kind == "constant":
+        return expression.const_value == value
+    return (
+        value < 0 and expression.kind == "unaryop"
+        and expression.operator == "-" and len(expression.children) == 1
+        and expression.children[0].kind == "constant"
+        and expression.children[0].const_value == -value)
 
 
 def _paired_single_lane_protocol(
