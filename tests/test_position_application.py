@@ -221,11 +221,11 @@ def test_bloom_is_a_negative_control_not_mislabelled_as_rotation():
     assert result.status == "failed"
 
 
-def test_real_llama_gemma_and_qwen_controls_resolve():
+def test_real_llama_gemma_qwen_and_olmo_controls_resolve():
     from transformers import AutoConfig
     from model_unfolder.evidence.context import ParseContext
 
-    for model_type in ("llama", "gemma2", "qwen3"):
+    for model_type in ("llama", "gemma2", "qwen3", "olmo2"):
         context = ParseContext.build(AutoConfig.for_model(model_type))
         result = decoder_qk_half_turn_application_for_path(
             context.program_index(), context.source_bundle, (),

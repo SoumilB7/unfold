@@ -65,6 +65,7 @@ class QKHalfTurnApplicationEvidence:
     half_turn_callable: SymbolId
     storage_mode: str
     qk_projection_sources: tuple[ConstructionOccurrenceId, ...]
+    factor_parameter_indices: tuple[int, ...]
     factor_arguments: tuple[ExprNode, ...]
     spans: tuple[SourceSpan, ...]
 
@@ -88,12 +89,19 @@ class QKHalfTurnApplicationEvidence:
         if (self.storage_mode == "split" and unique_sources != 2) \
                 or (self.storage_mode == "fused_qkv" and unique_sources != 1):
             raise ValueError("rotary Q/K lanes agree with projection storage")
+        if len(self.factor_parameter_indices) != 2 \
+                or len(set(self.factor_parameter_indices)) != 2 \
+                or any(not isinstance(item, int) or item < 2
+                       for item in self.factor_parameter_indices):
+            raise TypeError("half-turn application carries direct/rotated factor indices")
         if len(self.factor_arguments) != 2 or any(
                 not isinstance(item, ExprNode) or item.span is None
                 for item in self.factor_arguments):
             raise TypeError("half-turn application carries exact factor arguments")
-        if len(self.application_call.args) < 4 \
-                or self.factor_arguments != self.application_call.args[2:4]:
+        if max(self.factor_parameter_indices) >= len(self.application_call.args) \
+                or self.factor_arguments != tuple(
+                    self.application_call.args[item]
+                    for item in self.factor_parameter_indices):
             raise ValueError("factor arguments belong to the exact application call")
         if any(item.parent != self.attention_occurrence
                for item in self.qk_projection_sources):
@@ -167,9 +175,11 @@ def _rotary_at_attention(index, root, storage):
         protocol = _rotary_helper_protocol(index, callable_symbol, call)
         if protocol is None:
             continue
-        helper, half_turn, protocol_spans = protocol
+        helper, half_turn, factor_indices, protocol_spans = protocol
         qk_args = tuple(call.args[:2])
-        factor_args = tuple(call.args[2:4])
+        if max(factor_indices) >= len(call.args):
+            continue
+        factor_args = tuple(call.args[item] for item in factor_indices)
         if len(qk_args) != 2 or len(factor_args) != 2 or call.span is None:
             continue
         lane_sources = []
@@ -205,7 +215,8 @@ def _rotary_at_attention(index, root, storage):
             ) if isinstance(span, SourceSpan)))
         candidates.append(QKHalfTurnApplicationEvidence(
             child.block_occurrence, owner, call, helper, half_turn,
-            storage.mode, tuple(lane_sources), factor_args, spans))
+            storage.mode, tuple(lane_sources), factor_indices,
+            factor_args, spans))
 
     if len(candidates) == 1:
         value = candidates[0]
@@ -286,11 +297,12 @@ def _rotary_helper_protocol(index, caller, call):
             or len(returns[0].value.children) != 2:
         return None
     outputs = returns[0].value.children
-    if any(item.kind != "name" for item in outputs):
+    output_names = tuple(_transparent_return_name(item) for item in outputs)
+    if any(item is None for item in output_names):
         return None
     bindings = index.bindings_in(helper)
     expressions = tuple(_unique_value_before(
-        bindings, item.name, returns[0].span) for item in outputs)
+        bindings, name, returns[0].span) for name in output_names)
     if any(item is None for item in expressions):
         return None
     formulas = tuple(_rotation_formula(
@@ -304,6 +316,9 @@ def _rotary_helper_protocol(index, caller, call):
     if len(half_turns) != 1 or len(factor_pairs) != 1:
         return None
     half_turn = next(iter(half_turns))
+    direct_factor, rotated_factor = next(iter(factor_pairs))
+    factor_indices = (
+        params.index(direct_factor), params.index(rotated_factor))
     if not _half_turn_protocol(index, half_turn):
         return None
     spans = tuple(dict.fromkeys(
@@ -312,7 +327,20 @@ def _rotary_helper_protocol(index, caller, call):
             *(item.span for item in bindings),
             index.callable_by_symbol(half_turn).span,
         ) if isinstance(span, SourceSpan)))
-    return helper, half_turn, spans
+    return helper, half_turn, factor_indices, spans
+
+
+def _transparent_return_name(expression):
+    """Name returned directly or through an exact dtype-only tensor ``to``."""
+    if expression.kind == "name":
+        return expression.name
+    if expression.kind == "call" and expression.children:
+        callee = expression.children[0]
+        if callee.kind == "attribute" and callee.name == "to" \
+                and len(callee.children) == 1 \
+                and callee.children[0].kind == "name":
+            return callee.children[0].name
+    return None
 
 
 def _rotation_formula(index, helper, expression, base, factors, bindings):

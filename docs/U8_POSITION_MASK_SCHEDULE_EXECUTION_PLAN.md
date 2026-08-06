@@ -416,6 +416,49 @@ Focused receipt on the final local tree:
 - affected U2 structural writer/blocking gates: **14 passed**;
 - `py_compile`, `pyflakes`, `git diff --check`: clean.
 
-Real controls: Llama, Gemma-2 and Qwen3 resolve; BLOOM remains a negative
+Real controls: Llama, Gemma-2, Qwen3 and OLMo2 resolve; BLOOM remains a negative
 control. Full RoPE evidence remains blocked on U8-B2 factor provenance, then
 geometry and layer selection. No parser/render cutover is authorized yet.
+
+### U8-B2 — TRIGONOMETRIC FACTOR PROVENANCE SHADOW GREEN (local, not pushed)
+
+Added two narrowly separated boundaries:
+
+- `evidence/call_arguments.py` binds explicit caller expressions to the exact
+  callee `forward` formals only after an owner invocation is graph-resolved;
+- `evidence/position_factors.py` follows the two B1 factor lanes backward over
+  those exact calls to one constructed producer and proves its ordered output
+  lanes are cosine and sine of one shared phase.
+
+The call rail is neutral. Parameter names serve only as Python keyword
+addresses. The implicit method receiver is bound by addressed-instance call
+semantics, not by a `self` spelling. `*args`, `**kwargs`, invalid/duplicate
+arguments and omitted explicit values stay partial or fail; exact bindings are
+retained without claiming the unresolved expansion.
+
+The factor proof additionally requires:
+
+- direct-factor lineage ends at producer output lane 0 and rotated-factor
+  lineage ends at lane 1, across tuple transport and owner boundaries;
+- the producer is one exact addressed construction occurrence (an uninvoked
+  trig-looking sibling is irrelevant);
+- output lane 0 is an exact zero-argument tensor cosine call and lane 1 an
+  exact zero-argument tensor sine call;
+- both calls share one exact phase expression;
+- that phase contains exact matrix multiplication between stored owner state
+  and one producer formal explicitly bound at the producer call.
+
+This closes the prior semantic gap where half-turn math with arbitrary factors
+could have been mislabeled RoPE. Geometry and per-layer application are still
+required before a RoPE fact may be authored.
+
+Focused receipt on the final local tree:
+
+- neutral call-binding controls: **8 passed**;
+- factor-provenance controls: **10 passed**;
+- B1/B2 plus affected structural writer/blocking gates: **48 passed**;
+- real Llama, Gemma-2, Qwen3 and OLMo2 factor paths resolve; BLOOM does not;
+- `py_compile`, `pyflakes`, `git diff --check`: clean.
+
+No parser, fact, IR, renderer, params, Sable, manifest or gallery consumer was
+added. The entire B1/B2 position rail remains shadow-only.
