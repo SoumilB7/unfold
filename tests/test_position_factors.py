@@ -189,6 +189,18 @@ def test_real_llama_gemma_qwen_and_olmo_factor_paths_resolve():
         assert result.status == "resolved", (model_type, result)
 
 
+def test_real_gpt_oss_chunk_pair_factor_path_resolves():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+
+    context = ParseContext.build(AutoConfig.for_model("gpt_oss"))
+    result = decoder_position_trig_factors_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result
+    assert result.value.application.rotation_protocol == "chunk_pair"
+
+
 def test_bloom_is_not_promoted_from_alibi_to_rotary_factors():
     from transformers import AutoConfig
     from model_unfolder.evidence.context import ParseContext

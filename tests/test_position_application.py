@@ -84,7 +84,8 @@ def test_exact_two_lane_half_turn_protocol_resolves(tmp_path):
     result = _result(tmp_path, _BASE)
     assert result.status == "resolved"
     assert result.value.helper_callable.qualified_name == "apply_pair"
-    assert result.value.half_turn_callable.qualified_name == "half_turn"
+    assert result.value.rotation_callable.qualified_name == "half_turn"
+    assert result.value.rotation_protocol == "split_half_turn"
     assert len(result.value.qk_projection_sources) == 2
     assert tuple(item.source_segment for item in result.value.factor_arguments) \
         == ("first_factor", "second_factor")
@@ -94,6 +95,8 @@ def test_evidence_closure_rejects_forged_storage_and_factor_links(tmp_path):
     value = _result(tmp_path, _BASE).value
     with pytest.raises(ValueError):
         replace(value, storage_mode="fused_qkv")
+    with pytest.raises(ValueError):
+        replace(value, rotation_protocol="name_says_rope")
     with pytest.raises(ValueError):
         replace(value, qk_projection_sources=(
             value.qk_projection_sources[0], value.qk_projection_sources[0]))
@@ -139,6 +142,49 @@ def test_only_one_rotated_lane_does_not_resolve(tmp_path):
         "out_b = b")
     result = _result(tmp_path, source)
     assert result.status == "failed"
+
+
+def test_exact_chunk_pair_rotation_protocol_resolves(tmp_path):
+    chunk_helpers = """
+def apply_one(x, direct, rotated):
+    first_half, second_half = torch.chunk(x, 2, dim=-1)
+    first_out = first_half * direct - second_half * rotated
+    second_out = second_half * direct + first_half * rotated
+    return torch.cat((first_out, second_out), dim=-1)
+
+def apply_pair(a, b, factor_a, factor_b):
+    factor_a = factor_a.unsqueeze(1)
+    factor_b = factor_b.unsqueeze(1)
+    out_a = apply_one(a, factor_a, factor_b)
+    out_b = apply_one(b, factor_a, factor_b)
+    return out_a, out_b
+"""
+    start = _BASE.index("def apply_pair")
+    end = _BASE.index("\nclass AttentionLane")
+    source = _BASE[:start] + chunk_helpers + _BASE[end:]
+    result = _result(tmp_path, source)
+    assert result.status == "resolved"
+    assert result.value.rotation_callable.qualified_name == "apply_one"
+    assert result.value.rotation_protocol == "chunk_pair"
+
+
+def test_chunk_pair_wrong_sign_does_not_resolve(tmp_path):
+    chunk_helpers = """
+def apply_one(x, direct, rotated):
+    first_half, second_half = torch.chunk(x, 2, dim=-1)
+    first_out = first_half * direct + second_half * rotated
+    second_out = second_half * direct + first_half * rotated
+    return torch.cat((first_out, second_out), dim=-1)
+
+def apply_pair(a, b, factor_a, factor_b):
+    out_a = apply_one(a, factor_a, factor_b)
+    out_b = apply_one(b, factor_a, factor_b)
+    return out_a, out_b
+"""
+    start = _BASE.index("def apply_pair")
+    end = _BASE.index("\nclass AttentionLane")
+    source = _BASE[:start] + chunk_helpers + _BASE[end:]
+    assert _result(tmp_path, source).status == "failed"
 
 
 def test_half_turn_must_preserve_the_exact_half_order(tmp_path):
@@ -231,3 +277,15 @@ def test_real_llama_gemma_qwen_and_olmo_controls_resolve():
             context.program_index(), context.source_bundle, (),
             allow_root_stage=True)
         assert result.status == "resolved", (model_type, result)
+
+
+def test_real_gpt_oss_chunk_pair_control_resolves():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+
+    context = ParseContext.build(AutoConfig.for_model("gpt_oss"))
+    result = decoder_qk_half_turn_application_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result
+    assert result.value.rotation_protocol == "chunk_pair"

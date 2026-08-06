@@ -462,3 +462,27 @@ Focused receipt on the final local tree:
 
 No parser, fact, IR, renderer, params, Sable, manifest or gallery consumer was
 added. The entire B1/B2 position rail remains shadow-only.
+
+### U8-B3 — SECOND EXACT ROTATION PROTOCOL (local, not pushed)
+
+The first application proof covered the common `x*cos + rotate_half(x)*sin`
+form, including dtype-only return wrappers needed by OLMo2. A second exact
+protocol now covers implementations such as GPT-OSS that:
+
+1. split one lane with an exact framework `chunk(x, 2, dim=-1)`;
+2. compute `(first*cos - second*sin, second*cos + first*sin)`;
+3. concatenate the pair in exact source order; and
+4. invoke that same proved one-lane kernel independently for Q and K.
+
+The two protocols are closed typed values (`split_half_turn`, `chunk_pair`). A
+helper/function spelling never selects one. Wrong signs, wrong chunk width or
+axis, reversed concatenation, different Q/K kernels, factor laundering and an
+uninvoked valid-looking kernel all fail.
+
+Real positive controls now include Llama, Gemma-2, Qwen3, OLMo2, Granite,
+StableLM and GPT-OSS. BLOOM remains negative. DeepSeek-style latent/conditional
+projection paths and Qwen3.5's dynamically constructed embedded text stage
+remain typed gaps; they are not patched with identity or config conventions.
+
+Focused receipt: application plus factor controls **30 passed**; static checks
+clean. The expansion remains shadow-only and causes no output delta.

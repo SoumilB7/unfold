@@ -52,6 +52,7 @@ _CAT_PROTOCOLS = frozenset({
     "torch.cat",
     "torch.concat",
 })
+_CHUNK_PROTOCOLS = frozenset({"torch.chunk"})
 
 
 @dataclass(frozen=True)
@@ -62,7 +63,8 @@ class QKHalfTurnApplicationEvidence:
     attention_occurrence: OwnerOccurrenceId
     application_call: CallObservation
     helper_callable: SymbolId
-    half_turn_callable: SymbolId
+    rotation_callable: SymbolId
+    rotation_protocol: str
     storage_mode: str
     qk_projection_sources: tuple[ConstructionOccurrenceId, ...]
     factor_parameter_indices: tuple[int, ...]
@@ -77,8 +79,10 @@ class QKHalfTurnApplicationEvidence:
                 or self.application_call.span is None:
             raise TypeError("half-turn application carries its exact call")
         if not isinstance(self.helper_callable, SymbolId) \
-                or not isinstance(self.half_turn_callable, SymbolId):
+                or not isinstance(self.rotation_callable, SymbolId):
             raise TypeError("half-turn application carries exact helper symbols")
+        if self.rotation_protocol not in {"split_half_turn", "chunk_pair"}:
+            raise ValueError("half-turn application carries a proved rotation protocol")
         if self.storage_mode not in {"split", "fused_qkv"}:
             raise ValueError("half-turn application carries a known storage mode")
         if len(self.qk_projection_sources) != 2 or any(
@@ -109,7 +113,7 @@ class QKHalfTurnApplicationEvidence:
         source = self.attention_occurrence.root.source
         if self.application_call.enclosing_callable.source != source \
                 or self.helper_callable.source != source \
-                or self.half_turn_callable.source != source:
+                or self.rotation_callable.source != source:
             raise ValueError("half-turn application and helpers share exact source")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  or span.source != source for span in self.spans):
@@ -175,7 +179,7 @@ def _rotary_at_attention(index, root, storage):
         protocol = _rotary_helper_protocol(index, callable_symbol, call)
         if protocol is None:
             continue
-        helper, half_turn, factor_indices, protocol_spans = protocol
+        helper, rotation, rotation_protocol, factor_indices, protocol_spans = protocol
         qk_args = tuple(call.args[:2])
         if max(factor_indices) >= len(call.args):
             continue
@@ -214,8 +218,8 @@ def _rotary_at_attention(index, root, storage):
                 *protocol_spans,
             ) if isinstance(span, SourceSpan)))
         candidates.append(QKHalfTurnApplicationEvidence(
-            child.block_occurrence, owner, call, helper, half_turn,
-            storage.mode, tuple(lane_sources), factor_indices,
+            child.block_occurrence, owner, call, helper, rotation,
+            rotation_protocol, storage.mode, tuple(lane_sources), factor_indices,
             factor_args, spans))
 
     if len(candidates) == 1:
@@ -309,25 +313,35 @@ def _rotary_helper_protocol(index, caller, call):
         index, helper, expression, base,
         frozenset(params[2:4]), bindings)
         for expression, base in zip(expressions, params[:2]))
-    if any(item is None for item in formulas):
-        return None
-    half_turns = {item[0] for item in formulas}
-    factor_pairs = {item[1] for item in formulas}
-    if len(half_turns) != 1 or len(factor_pairs) != 1:
-        return None
-    half_turn = next(iter(half_turns))
-    direct_factor, rotated_factor = next(iter(factor_pairs))
-    factor_indices = (
-        params.index(direct_factor), params.index(rotated_factor))
-    if not _half_turn_protocol(index, half_turn):
-        return None
+    if not any(item is None for item in formulas):
+        rotations = {item[0] for item in formulas}
+        factor_pairs = {item[1] for item in formulas}
+        if len(rotations) != 1 or len(factor_pairs) != 1:
+            return None
+        rotation = next(iter(rotations))
+        direct_factor, rotated_factor = next(iter(factor_pairs))
+        factor_indices = (
+            params.index(direct_factor), params.index(rotated_factor))
+        if not _half_turn_protocol(index, rotation):
+            return None
+        rotation_protocol = "split_half_turn"
+    else:
+        paired = _paired_single_lane_protocol(
+            index, helper, tuple(output_names), params, bindings,
+            returns[0].span)
+        if paired is None:
+            return None
+        rotation, direct_factor, rotated_factor = paired
+        factor_indices = (
+            params.index(direct_factor), params.index(rotated_factor))
+        rotation_protocol = "chunk_pair"
     spans = tuple(dict.fromkeys(
         span for span in (
             call.span, record.span, returns[0].span,
             *(item.span for item in bindings),
-            index.callable_by_symbol(half_turn).span,
+            index.callable_by_symbol(rotation).span,
         ) if isinstance(span, SourceSpan)))
-    return helper, half_turn, factor_indices, spans
+    return helper, rotation, rotation_protocol, factor_indices, spans
 
 
 def _transparent_return_name(expression):
@@ -341,6 +355,168 @@ def _transparent_return_name(expression):
                 and callee.children[0].kind == "name":
             return callee.children[0].name
     return None
+
+
+def _paired_single_lane_protocol(
+        index, helper, output_names, params, bindings, return_span):
+    """Prove an outer Q/K helper delegating both lanes to one chunk kernel."""
+    calls = []
+    for output_name, base in zip(output_names, params[:2]):
+        expression = _unique_value_before(bindings, output_name, return_span)
+        if expression is None or expression.kind != "call" \
+                or not expression.children:
+            return None
+        rotation = _exact_local_function(index, helper, expression.children[0])
+        args = expression.children[1:]
+        if rotation is None or len(args) < 3 \
+                or _parameter_origins(
+                    bindings, args[0], args[0].span) != {base}:
+            return None
+        calls.append((rotation, args))
+    if calls[0][0] != calls[1][0]:
+        return None
+    rotation = calls[0][0]
+    kernel_pair = _chunk_rotation_protocol(index, rotation)
+    if kernel_pair is None:
+        return None
+    kernel_params, direct_position, rotated_position = kernel_pair
+    outer_pairs = []
+    for _rotation, args in calls:
+        if max(direct_position, rotated_position) >= len(args):
+            return None
+        factor_formals = frozenset(params[2:])
+        direct_origin = _shape_factor_origin(
+            bindings, args[direct_position],
+            args[direct_position].span, factor_formals)
+        rotated_origin = _shape_factor_origin(
+            bindings, args[rotated_position],
+            args[rotated_position].span, factor_formals)
+        if direct_origin is None or rotated_origin is None \
+                or direct_origin == rotated_origin:
+            return None
+        outer_pairs.append((direct_origin, rotated_origin))
+    if len(set(outer_pairs)) != 1:
+        return None
+    direct_factor, rotated_factor = outer_pairs[0]
+    # Kernel positions are proven from its own exact formal order; the outer
+    # calls above map those positions to the outer helper's factor formals.
+    if len(kernel_params) <= max(direct_position, rotated_position):
+        return None
+    return rotation, direct_factor, rotated_factor
+
+
+def _chunk_rotation_protocol(index, symbol):
+    """Prove contiguous halves recombined by exact complex-rotation algebra."""
+    record = index.callable_by_symbol(symbol)
+    if record is None or record.owner is not None:
+        return None
+    params = tuple(item.name for item in record.params
+                   if item.kind in {"positional", "posonly"})
+    if len(params) < 3:
+        return None
+    bindings = tuple(item for item in index.bindings_in(symbol)
+                     if not item.guard and item.value is not None)
+    chunks = []
+    for binding in bindings:
+        targets = _two_target_names(binding)
+        if targets is None or binding.value.kind != "call" \
+                or not binding.value.children:
+            continue
+        call = next((item for item in index.calls_in(symbol)
+                     if item.span == binding.value.span), None)
+        if call is None:
+            continue
+        proof = resolve_import_reference(
+            index, symbol.source, symbol, call.callee)
+        if proof is None or proof.qualified_target not in _CHUNK_PROTOCOLS \
+                or len(call.args) < 2 \
+                or call.args[0].kind != "name" \
+                or call.args[0].name != params[0] \
+                or call.args[1].kind != "constant" \
+                or call.args[1].const_value != 2:
+            continue
+        dim = dict(call.kwargs).get("dim")
+        if dim is None or not _is_negative_one(dim):
+            continue
+        chunks.append((binding, targets))
+    if len(chunks) != 1:
+        return None
+    _chunk_binding, (first_half, second_half) = chunks[0]
+    returns = tuple(item for item in index.return_observations_in(symbol)
+                    if not item.guard and item.value is not None)
+    if len(returns) != 1 or returns[0].value.kind != "call" \
+            or not returns[0].value.children:
+        return None
+    return_call = next((item for item in index.calls_in(symbol)
+                        if item.span == returns[0].value.span), None)
+    if return_call is None or not return_call.args:
+        return None
+    proof = resolve_import_reference(
+        index, symbol.source, symbol, return_call.callee)
+    values = return_call.args[0]
+    if proof is None or proof.qualified_target not in _CAT_PROTOCOLS \
+            or values.kind not in {"tuple", "list"} \
+            or len(values.children) != 2 \
+            or any(item.kind != "name" for item in values.children):
+        return None
+    output_names = tuple(item.name for item in values.children)
+    output_values = tuple(_unique_value_before(
+        bindings, name, returns[0].span) for name in output_names)
+    if any(item is None for item in output_values):
+        return None
+    first_terms = _signed_products(output_values[0])
+    second_terms = _signed_products(output_values[1])
+    if first_terms is None or second_terms is None:
+        return None
+    factor_names = set(params[1:])
+    direct = _factor_for_half(first_terms, first_half, factor_names, sign=1)
+    rotated = _factor_for_half(first_terms, second_half, factor_names, sign=-1)
+    if direct is None or rotated is None or direct == rotated:
+        return None
+    if _factor_for_half(second_terms, second_half, factor_names, sign=1) \
+            != direct \
+            or _factor_for_half(second_terms, first_half, factor_names, sign=1) \
+            != rotated:
+        return None
+    return params, params.index(direct), params.index(rotated)
+
+
+def _signed_products(expression):
+    if expression.kind != "binop" or expression.operator not in {"+", "-"} \
+            or len(expression.children) != 2:
+        return None
+    left = _name_product(expression.children[0])
+    right = _name_product(expression.children[1])
+    if left is None or right is None:
+        return None
+    return ((1, left), (1 if expression.operator == "+" else -1, right))
+
+
+def _name_product(expression):
+    if expression.kind != "binop" or expression.operator != "*" \
+            or len(expression.children) != 2 \
+            or any(item.kind != "name" for item in expression.children):
+        return None
+    return frozenset(item.name for item in expression.children)
+
+
+def _factor_for_half(terms, half, factors, *, sign):
+    matches = []
+    for term_sign, names in terms:
+        if term_sign != sign or half not in names:
+            continue
+        candidate = tuple(names & factors)
+        if len(candidate) == 1 and len(names) == 2:
+            matches.append(candidate[0])
+    return matches[0] if len(matches) == 1 else None
+
+
+def _is_negative_one(expression):
+    return ((expression.kind == "constant" and expression.const_value == -1)
+            or (expression.kind == "unaryop" and expression.operator == "-"
+                and len(expression.children) == 1
+                and expression.children[0].kind == "constant"
+                and expression.children[0].const_value == 1))
 
 
 def _rotation_formula(index, helper, expression, base, factors, bindings):
