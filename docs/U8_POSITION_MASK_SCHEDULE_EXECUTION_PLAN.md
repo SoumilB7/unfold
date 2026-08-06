@@ -1,6 +1,6 @@
 # U8 — Exact position, mask and layer-schedule execution plan
 
-Status: **ACTIVE — U8-A and U8-B application/factor substrate shadow-green; U8-B geometry and non-RoPE mechanisms next**
+Status: **ACTIVE — U8-A, U8-B rotary and learned-absolute application substrate shadow-green; fixed/score-bias mechanisms next**
 Parent: `docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.11
 Precondition: U7 is `DONE` at `37f3b1b` with receipt `5c2eaa5`.
 
@@ -174,6 +174,14 @@ Prove independently:
 - partial rotary width from the applied slice/constructor expression;
 - per-layer RoPE/NoPE selection;
 - genuine no-position only from a complete position-operation census.
+
+Implementation checkpoint: the learned-absolute reader is deliberately a
+positive shadow proof before parser cutover.  It requires an exact coordinate
+producer, exact embedding primitive, exact unconditional addition, and exact
+reachability into the repeated-child invocation.  An embedding field, a
+familiar class/model name, or a configured maximum position count is never
+sufficient.  Fixed/sinusoidal positions, ALiBi and relative bias remain
+separate proofs; failure here must not be interpreted as their absence.
 
 Delete the two raw AST helpers in `position.py`, the whole-file RoPE-dimension
 reader, `position_declared` as a mechanism channel, and any
