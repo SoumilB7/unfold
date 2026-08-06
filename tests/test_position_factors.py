@@ -201,6 +201,25 @@ def test_real_gpt_oss_chunk_pair_factor_path_resolves():
     assert result.value.application.rotation_protocol == "chunk_pair"
 
 
+def test_real_deepseek_interleaved_factor_path_resolves_with_exact_guard():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+
+    config = AutoConfig.for_model("deepseek_v3")
+    context = ParseContext.build(config)
+
+    def select(path):
+        if path == ("rope_interleave",):
+            return True, config.rope_interleave, "config_declared"
+        return False, None, ""
+
+    result = decoder_position_trig_factors_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, config_selector=select)
+    assert result.status == "resolved", result
+    assert result.value.application.rotation_protocol == "interleaved_pair"
+
+
 def test_bloom_is_not_promoted_from_alibi_to_rotary_factors():
     from transformers import AutoConfig
     from model_unfolder.evidence.context import ParseContext

@@ -127,6 +127,7 @@ def decoder_position_trig_factors_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[PositionTrigFactorEvidence]:
     """Prove position-derived cosine/sine feeding exact Q/K rotation."""
     if not isinstance(index, ProgramIndex):
@@ -136,7 +137,8 @@ def decoder_position_trig_factors_for_path(
     block_result = decoder_block_path_for_config(
         index, bundle, tuple(config_path), allow_root_stage=allow_root_stage)
     application_result = decoder_qk_half_turn_application_for_path(
-        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage)
+        index, bundle, tuple(config_path), allow_root_stage=allow_root_stage,
+        config_selector=config_selector)
     if block_result.status != "resolved":
         return _forward_failure(block_result, "decoder block address")
     if application_result.status != "resolved":

@@ -1,6 +1,6 @@
 # U8 — Exact position, mask and layer-schedule execution plan
 
-Status: **ACTIVE — U8-A selector substrate shadow-green; U8-B next**
+Status: **ACTIVE — U8-A and U8-B application/factor substrate shadow-green; U8-B geometry and non-RoPE mechanisms next**
 Parent: `docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.11
 Precondition: U7 is `DONE` at `37f3b1b` with receipt `5c2eaa5`.
 
@@ -486,3 +486,64 @@ remain typed gaps; they are not patched with identity or config conventions.
 
 Focused receipt: application plus factor controls **30 passed**; static checks
 clean. The expansion remains shadow-only and causes no output delta.
+
+### U8-B4 — SCORE-OPERAND DECOUPLING + GUARDED INTERLEAVED ROTATION
+
+The B1 prototype coupled positional application to the projection-storage
+classifier. That was unsound as a boundary: projection storage and use as the
+query/key attention-score operands are separate facts. It rejected exact
+latent, sliced or config-conditional projection programs even when their
+rotation and eventual score participation were directly visible.
+
+`evidence/attention_operands.py` now derives the two exact score operands from
+the already-proven attention computation:
+
+- a direct SDPA/framework protocol supplies its first two exact tensor
+  operands;
+- a dot/softmax helper must have one exact dot call whose result reaches the
+  exact softmax call;
+- exact versioned dataflow maps those dot inputs to compute formals and exact
+  Python argument binding maps the formals back to the attention entry call;
+- owner state can support reshaping/repetition but cannot masquerade as a
+  score value;
+- multiple score producers, uncertain flow, index/root
+  mismatch or missing bindings remain unknown/failure.
+
+`QKHalfTurnApplicationEvidence` now terminates at this operand proof rather
+than requiring simple Linear projection occurrences. It no longer authors or
+contains a projection-storage fact. Permanent controls show that conditional
+or sliced projection production still resolves when the exact rotated outputs
+reach query and key, while query/value substitution, overwritten outputs and
+duplicate unpack targets fail.
+
+The application boundary also gained exact source-guard selection through the
+existing config guard interpreter. A config value is used only to execute the
+source predicate; it never names the mechanism. The selected call retains the
+exact deciding config path and provenance. Missing/non-boolean/unprovable
+guards cannot choose a branch.
+
+A third algebraic protocol, `interleaved_pair`, proves the even/odd-coordinate
+formula independently for both lanes:
+
+`(even*cos - odd*sin, odd*cos + even*sin)`.
+
+The proof requires exact stride-2 slices, exact signs/products, exact ordered
+concatenation and the same factor pair for both Q and K. A wrong sign or
+one-lane match fails. DeepSeek-V3 is the real positive control: its
+`rope_interleave` source guard selects the interleaved implementation, its
+latent/conditional projection storage is irrelevant to this proof, and its
+exact cosine/sine producer provenance resolves. No DeepSeek spelling exists in
+production evidence code.
+
+Focused receipt on the current shadow tree:
+
+- application + factor counterexamples: **38 passed**;
+- real Llama, Gemma-2, Qwen3, OLMo2, Granite, StableLM, GPT-OSS and
+  DeepSeek-V3 positive paths checked;
+- BLOOM remains a negative control;
+- `py_compile`, `pyflakes`, `git diff --check`: clean.
+
+This section supersedes B1's provisional projection-storage coupling. The
+code remains shadow-only: no parser, fact, IR, renderer, params, Sable,
+manifest or gallery consumer exists yet. Geometry, layer selection and
+non-RoPE mechanism proofs remain mandatory before cutover.

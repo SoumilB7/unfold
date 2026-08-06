@@ -3,12 +3,13 @@
 This reader recognizes a mathematical/dataflow protocol, never a function,
 class, field, or model spelling:
 
-* two exact Q/K projection lanes enter one local helper call;
+* one local helper returns two exact tensor lanes;
 * that helper returns two outputs, each computed as
   ``x * factor_a + half_turn(x) * factor_b``;
 * ``half_turn`` is itself proved as an exact half split followed by
   concatenation of ``(-second_half, first_half)``; and
-* the two helper outputs reach the exact attention-compute entry.
+* the two helper outputs reach the exact query/key score operands proven by
+  the attention computation itself.
 
 It proves only positive Q/K half-turn rotation.  It does *not* prove that the
 two factors are position-derived trigonometric values, so it cannot by itself
@@ -21,14 +22,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .attention_child import attention_child_evidence
-from .attention_storage import (
-    attention_projection_storage_for_child_evidence,
-    producer_sources_reaching_expressions,
+from .attention_operands import (
+    AttentionQKOperandsEvidence,
+    attention_qk_operands_evidence,
 )
 from .component_owner import OwnerOccurrenceId
+from .config_guard import ExactConfigGuardResolver
 from .construction_calls import (
-    ConstructionOccurrenceId,
-    resolve_construction_call,
     resolve_import_reference,
 )
 from .decoder_block import decoder_block_path_for_config
@@ -44,10 +44,6 @@ from .program_index import (
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 
 
-_LINEAR_PROTOCOLS = frozenset({
-    "torch.nn.Linear",
-    "torch.nn.modules.linear.Linear",
-})
 _CAT_PROTOCOLS = frozenset({
     "torch.cat",
     "torch.concat",
@@ -65,10 +61,11 @@ class QKHalfTurnApplicationEvidence:
     helper_callable: SymbolId
     rotation_callable: SymbolId
     rotation_protocol: str
-    storage_mode: str
-    qk_projection_sources: tuple[ConstructionOccurrenceId, ...]
+    attention_operands: AttentionQKOperandsEvidence
     factor_parameter_indices: tuple[int, ...]
     factor_arguments: tuple[ExprNode, ...]
+    guard_config_paths: tuple[tuple[str, ...], ...]
+    guard_source_kinds: tuple[tuple[tuple[str, ...], str], ...]
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -81,18 +78,13 @@ class QKHalfTurnApplicationEvidence:
         if not isinstance(self.helper_callable, SymbolId) \
                 or not isinstance(self.rotation_callable, SymbolId):
             raise TypeError("half-turn application carries exact helper symbols")
-        if self.rotation_protocol not in {"split_half_turn", "chunk_pair"}:
+        if self.rotation_protocol not in {
+                "split_half_turn", "chunk_pair", "interleaved_pair"}:
             raise ValueError("half-turn application carries a proved rotation protocol")
-        if self.storage_mode not in {"split", "fused_qkv"}:
-            raise ValueError("half-turn application carries a known storage mode")
-        if len(self.qk_projection_sources) != 2 or any(
-                not isinstance(item, ConstructionOccurrenceId)
-                for item in self.qk_projection_sources):
-            raise TypeError("half-turn application carries ordered Q/K producers")
-        unique_sources = len(set(self.qk_projection_sources))
-        if (self.storage_mode == "split" and unique_sources != 2) \
-                or (self.storage_mode == "fused_qkv" and unique_sources != 1):
-            raise ValueError("rotary Q/K lanes agree with projection storage")
+        if not isinstance(self.attention_operands, AttentionQKOperandsEvidence) \
+                or self.attention_operands.attention_occurrence \
+                != self.attention_occurrence:
+            raise ValueError("half-turn application cites exact attention operands")
         if len(self.factor_parameter_indices) != 2 \
                 or len(set(self.factor_parameter_indices)) != 2 \
                 or any(not isinstance(item, int) or item < 2
@@ -107,9 +99,21 @@ class QKHalfTurnApplicationEvidence:
                     self.application_call.args[item]
                     for item in self.factor_parameter_indices):
             raise ValueError("factor arguments belong to the exact application call")
-        if any(item.parent != self.attention_occurrence
-               for item in self.qk_projection_sources):
-            raise ValueError("rotary Q/K producers belong to the attention owner")
+        if tuple(dict.fromkeys(self.guard_config_paths)) \
+                != self.guard_config_paths \
+                or any(not path or any(not isinstance(part, str) or not part
+                                       for part in path)
+                       for path in self.guard_config_paths):
+            raise ValueError("guard config paths are exact and unique")
+        if tuple(dict.fromkeys(self.guard_source_kinds)) \
+                != self.guard_source_kinds \
+                or any(path not in self.guard_config_paths
+                       or kind not in {"config_declared", "class_default"}
+                       for path, kind in self.guard_source_kinds):
+            raise ValueError("guard provenance belongs to exact selected paths")
+        if not self.application_call.guard \
+                and (self.guard_config_paths or self.guard_source_kinds):
+            raise ValueError("an unguarded application carries no selector evidence")
         source = self.attention_occurrence.root.source
         if self.application_call.enclosing_callable.source != source \
                 or self.helper_callable.source != source \
@@ -120,8 +124,9 @@ class QKHalfTurnApplicationEvidence:
             raise ValueError("rotary provenance is exact and source-qualified")
         required = {
             self.application_call.span,
-            *(item.site.span for item in self.qk_projection_sources),
+            *self.attention_operands.spans,
             *(item.span for item in self.factor_arguments),
+            *(item.span for item in self.application_call.guard),
         }
         if None in required or not required.issubset(self.spans):
             raise ValueError("rotary provenance cites call and every Q/K producer")
@@ -133,6 +138,7 @@ def decoder_qk_half_turn_application_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_selector=None,
 ) -> ReaderResult[QKHalfTurnApplicationEvidence]:
     """Prove exact Q/K half-turn application for one selected decoder path."""
     if not isinstance(index, ProgramIndex):
@@ -148,79 +154,71 @@ def decoder_qk_half_turn_application_for_path(
         index, root, block.value.block_occurrence)
     if attention.status != "resolved":
         return _forward_failure(attention, "attention child address")
-    storage = attention_projection_storage_for_child_evidence(
-        index, root, block.value.block_occurrence, attention.value)
-    if storage.status != "resolved":
-        return _forward_failure(storage, "attention projection storage")
-    return _rotary_at_attention(index, root, storage.value)
+    operands = attention_qk_operands_evidence(
+        index, root, attention.value)
+    if operands.status != "resolved":
+        return _forward_failure(operands, "attention score operands")
+    return _rotary_at_attention(
+        index, root, attention.value, operands.value,
+        config_selector=config_selector)
 
 
-def _rotary_at_attention(index, root, storage):
-    child = storage.attention
+def _rotary_at_attention(
+        index, root, child, operands, *, config_selector=None):
     owner = child.compute_occurrence
     node = root.graph.node_for(owner)
     if node is None or index.class_by_symbol(node.symbol) is None:
         return ReaderResult.failed(owner, (ReaderFailure(
             "out_of_owner", "attention occurrence does not round-trip"),))
-    entry = storage.compute_entry
+    entry = operands.entry_call
     callable_symbol = entry.enclosing_callable
-    linear_calls = _projection_calls(
-        index, root, owner, callable_symbol, storage.projections)
-    if set(linear_calls) != set(storage.projections):
-        return ReaderResult.failed(owner, (ReaderFailure(
-            "incomplete_graph", "exact Q/K/V projection calls are unavailable"),))
 
     candidates = []
     for binding in index.bindings_in(callable_symbol):
         call = _binding_call(index, callable_symbol, binding)
         targets = _two_target_names(binding)
-        if call is None or targets is None or call.guard:
+        if call is None or targets is None:
             continue
+        guard_paths = ()
+        guard_source_kinds = ()
+        guard_spans = ()
+        if call.guard:
+            resolver = ExactConfigGuardResolver(
+                index, node,
+                (config_selector if config_selector is not None
+                 else lambda _path: (False, None, "")),
+                config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+            if resolver.enabled(call.guard, callable_symbol) is not True:
+                continue
+            guard_paths = tuple(dict.fromkeys(resolver.paths))
+            guard_source_kinds = tuple(dict.fromkeys(resolver.source_kinds))
+            guard_spans = tuple(dict.fromkeys((
+                *(item.span for item in call.guard), *resolver.spans)))
         protocol = _rotary_helper_protocol(index, callable_symbol, call)
         if protocol is None:
             continue
         helper, rotation, rotation_protocol, factor_indices, protocol_spans = protocol
-        qk_args = tuple(call.args[:2])
         if max(factor_indices) >= len(call.args):
             continue
         factor_args = tuple(call.args[item] for item in factor_indices)
-        if len(qk_args) != 2 or len(factor_args) != 2 or call.span is None:
-            continue
-        lane_sources = []
-        lane_uncertain = False
-        for argument in qk_args:
-            sources, _widths, _dependencies, uncertain = \
-                producer_sources_reaching_expressions(
-                    index, callable_symbol,
-                    ((call.span, (argument,)),), linear_calls,
-                    preserve_local_tuple_lanes=True)
-            if uncertain or len(sources) != 1:
-                lane_uncertain = True
-                break
-            lane_sources.append(next(iter(sources)))
-        if lane_uncertain or len(lane_sources) != 2 \
-                or not set(lane_sources).issubset(set(storage.projections)) \
-                or (storage.mode == "split"
-                    and lane_sources[0] == lane_sources[1]) \
-                or (storage.mode == "fused_qkv"
-                    and lane_sources[0] != lane_sources[1]):
+        if len(call.args) < 2 or len(factor_args) != 2 or call.span is None:
             continue
         if not _two_targets_reach_qk_operands(
-                index, callable_symbol, index.bindings_in(callable_symbol),
-                binding, targets, entry, linear_calls,
-                frozenset(storage.projections)):
+                index.bindings_in(callable_symbol), binding, targets,
+                (operands.query_operand, operands.key_operand), entry.span):
             continue
         spans = tuple(dict.fromkeys(
             span for span in (
                 call.span, binding.span, entry.span,
-                *(item.site.span for item in lane_sources),
+                *operands.spans,
                 *(item.span for item in factor_args),
                 *protocol_spans,
+                *guard_spans,
             ) if isinstance(span, SourceSpan)))
         candidates.append(QKHalfTurnApplicationEvidence(
             child.block_occurrence, owner, call, helper, rotation,
-            rotation_protocol, storage.mode, tuple(lane_sources), factor_indices,
-            factor_args, spans))
+            rotation_protocol, operands, factor_indices,
+            factor_args, guard_paths, guard_source_kinds, spans))
 
     if len(candidates) == 1:
         value = candidates[0]
@@ -228,8 +226,8 @@ def _rotary_at_attention(index, root, storage):
             ReaderProvenance(
                 "source", spans=value.spans,
                 detail=(
-                    "exact Q/K projections enter a proved two-lane half-turn "
-                    "rotation whose outputs reach attention compute")),))
+                    "a proved two-lane half-turn rotation reaches the exact "
+                    "query/key attention score operands")),))
     if len(candidates) > 1:
         from .reader_result import Ambiguity
         return ReaderResult.ambiguous(
@@ -237,26 +235,7 @@ def _rotary_at_attention(index, root, storage):
                 item.application_call.span for item in candidates)))
     return ReaderResult.failed(owner, (ReaderFailure(
         "incomplete_graph",
-        "no exact projection→two-lane half-turn→attention path was proven"),))
-
-
-def _projection_calls(index, root, owner, callable_symbol, occurrences):
-    expected = set(occurrences)
-    found = {}
-    for call in index.calls_in(callable_symbol):
-        if _self_field(call.callee) is None:
-            continue
-        construction = resolve_construction_call(index, root, owner, call)
-        if construction.status != "resolved" \
-                or construction.selected.occurrence not in expected:
-            continue
-        selected = construction.selected
-        if selected.kind != "external" \
-                or selected.external_reference.qualified_target \
-                not in _LINEAR_PROTOCOLS:
-            continue
-        found[selected.occurrence] = call
-    return found
+        "no exact two-lane half-turn→query/key score path was proven"),))
 
 
 def _binding_call(index, callable_symbol, binding):
@@ -268,20 +247,13 @@ def _binding_call(index, callable_symbol, binding):
     return matches[0] if len(matches) == 1 else None
 
 
-def _self_field(expression):
-    if expression.kind != "attribute" or len(expression.children) != 1:
-        return None
-    root = expression.children[0]
-    return (expression.name
-            if root.kind == "name" and root.name == "self" else None)
-
-
 def _two_target_names(binding: BindingObservation):
     if len(binding.targets) != 1:
         return None
     target = binding.targets[0]
     if target.kind not in {"tuple", "list"} or len(target.children) != 2 \
-            or any(item.kind != "name" for item in target.children):
+            or any(item.kind != "name" for item in target.children) \
+            or len({item.name for item in target.children}) != 2:
         return None
     return tuple(item.name for item in target.children)
 
@@ -329,12 +301,22 @@ def _rotary_helper_protocol(index, caller, call):
         paired = _paired_single_lane_protocol(
             index, helper, tuple(output_names), params, bindings,
             returns[0].span)
-        if paired is None:
-            return None
-        rotation, direct_factor, rotated_factor = paired
-        factor_indices = (
-            params.index(direct_factor), params.index(rotated_factor))
-        rotation_protocol = "chunk_pair"
+        if paired is not None:
+            rotation, direct_factor, rotated_factor = paired
+            factor_indices = (
+                params.index(direct_factor), params.index(rotated_factor))
+            rotation_protocol = "chunk_pair"
+        else:
+            interleaved = _interleaved_pair_protocol(
+                index, helper, tuple(output_names), params, bindings,
+                returns[0].span)
+            if interleaved is None:
+                return None
+            direct_factor, rotated_factor = interleaved
+            rotation = helper
+            factor_indices = (
+                params.index(direct_factor), params.index(rotated_factor))
+            rotation_protocol = "interleaved_pair"
     spans = tuple(dict.fromkeys(
         span for span in (
             call.span, record.span, returns[0].span,
@@ -479,6 +461,86 @@ def _chunk_rotation_protocol(index, symbol):
             != rotated:
         return None
     return params, params.index(direct), params.index(rotated)
+
+
+def _interleaved_pair_protocol(
+        index, helper, output_names, params, bindings, return_span):
+    """Prove exact even/odd complex rotation independently on Q and K.
+
+    This is the interleaved-coordinate equivalent of a half-turn rotation:
+    ``(even*c - odd*s, odd*c + even*s)``.  The proof is algebraic and
+    position-based; helper/local spellings carry no semantic authority.
+    """
+    if len(params) < 4:
+        return None
+    factor_names = frozenset(params[2:])
+    factor_pairs = []
+    for base, output_name in zip(params[:2], output_names):
+        halves = None
+        for binding in bindings:
+            targets = _two_target_names(binding)
+            value = binding.value
+            if targets is None or value is None \
+                    or value.kind not in {"tuple", "list"} \
+                    or len(value.children) != 2:
+                continue
+            if _interleaved_slice_side(value.children[0], base) == "even" \
+                    and _interleaved_slice_side(value.children[1], base) == "odd":
+                halves = targets
+        if halves is None:
+            return None
+        expression = _unique_value_before(bindings, output_name, return_span)
+        if expression is None or expression.kind != "call" \
+                or not expression.children:
+            return None
+        call = next((item for item in index.calls_in(helper)
+                     if item.span == expression.span), None)
+        proof = (resolve_import_reference(
+            index, helper.source, helper, call.callee)
+                 if call is not None else None)
+        if proof is None or proof.qualified_target not in _CAT_PROTOCOLS \
+                or not call.args:
+            return None
+        values = call.args[0]
+        if values.kind not in {"tuple", "list"} \
+                or len(values.children) != 2:
+            return None
+        first_terms = _signed_products(values.children[0])
+        second_terms = _signed_products(values.children[1])
+        if first_terms is None or second_terms is None:
+            return None
+        even, odd = halves
+        direct = _factor_for_half(first_terms, even, factor_names, sign=1)
+        rotated = _factor_for_half(first_terms, odd, factor_names, sign=-1)
+        if direct is None or rotated is None or direct == rotated \
+                or _factor_for_half(
+                    second_terms, odd, factor_names, sign=1) != direct \
+                or _factor_for_half(
+                    second_terms, even, factor_names, sign=1) != rotated:
+            return None
+        factor_pairs.append((direct, rotated))
+    return factor_pairs[0] if len(set(factor_pairs)) == 1 else None
+
+
+def _interleaved_slice_side(expression, parameter):
+    if expression.kind != "subscript" or len(expression.children) != 2:
+        return None
+    base, selector = expression.children
+    if base.kind != "name" or base.name != parameter:
+        return None
+    selector = (selector.children[-1]
+                if selector.kind == "tuple" and selector.children else selector)
+    if selector.kind != "slice" or len(selector.children) != 3:
+        return None
+    lower, upper, step = selector.children
+    if upper is not None or step is None \
+            or step.kind != "constant" or step.const_value != 2:
+        return None
+    if lower is None or (lower.kind == "constant" and lower.const_value == 0):
+        return "even"
+    if lower.kind == "constant" and lower.const_value == 1:
+        return "odd"
+    return None
 
 
 def _signed_products(expression):
@@ -680,36 +742,14 @@ def _unique_value_before(bindings, name, before):
 
 
 def _two_targets_reach_qk_operands(
-        index, callable_symbol, bindings, origin, targets, entry,
-        producer_calls, projection_occurrences):
-    """Require both exact unpacked outputs to reach distinct entry operands."""
-    # Framework dispatch may prepend a module/self argument.  Identify Q/K as
-    # the first two *projection-derived* entry operands, not as bare positions
-    # and never by parameter spelling.  This excludes self, mask and dropout
-    # while retaining exact evidence through dispatch wrappers.
-    all_expressions = (*entry.args, *(value for _name, value in entry.kwargs))
-    projected = []
-    for expression in all_expressions:
-        sources, _widths, _dependencies, uncertain = \
-            producer_sources_reaching_expressions(
-                index, callable_symbol,
-                ((entry.span, (expression,)),), producer_calls,
-                preserve_local_tuple_lanes=True)
-        if uncertain:
-            return False
-        if sources:
-            if not sources.issubset(projection_occurrences):
-                return False
-            projected.append(expression)
-    if len(projected) < 2:
-        return False
-    expressions = projected[:2]
+        bindings, origin, targets, expressions, entry_span):
+    """Require both exact unpacked outputs to reach distinct score operands."""
     reaching = []
     for target in targets:
         positions = {
             number for number, expression in enumerate(expressions)
             if _expression_reaches_origin(
-                bindings, expression, entry.span, origin, target, frozenset())
+                bindings, expression, entry_span, origin, target, frozenset())
         }
         if not positions:
             return False

@@ -7,6 +7,11 @@ import textwrap
 import pytest
 
 from model_unfolder.evidence.models import SourceBundle
+from model_unfolder.evidence.attention_child import attention_child_evidence
+from model_unfolder.evidence.attention_operands import (
+    attention_qk_operands_evidence,
+)
+from model_unfolder.evidence.decoder_block import decoder_block_path_for_config
 from model_unfolder.evidence.position_application import (
     decoder_qk_half_turn_application_for_path,
 )
@@ -86,20 +91,23 @@ def test_exact_two_lane_half_turn_protocol_resolves(tmp_path):
     assert result.value.helper_callable.qualified_name == "apply_pair"
     assert result.value.rotation_callable.qualified_name == "half_turn"
     assert result.value.rotation_protocol == "split_half_turn"
-    assert len(result.value.qk_projection_sources) == 2
+    assert result.value.attention_operands.query_operand.source_segment == "q"
+    assert result.value.attention_operands.key_operand.source_segment == "k"
     assert tuple(item.source_segment for item in result.value.factor_arguments) \
         == ("first_factor", "second_factor")
 
 
-def test_evidence_closure_rejects_forged_storage_and_factor_links(tmp_path):
+def test_evidence_closure_rejects_forged_operand_and_factor_links(tmp_path):
     value = _result(tmp_path, _BASE).value
     with pytest.raises(ValueError):
-        replace(value, storage_mode="fused_qkv")
+        replace(value, attention_operands=replace(
+            value.attention_operands,
+            attention_occurrence=value.block_occurrence))
     with pytest.raises(ValueError):
         replace(value, rotation_protocol="name_says_rope")
     with pytest.raises(ValueError):
-        replace(value, qk_projection_sources=(
-            value.qk_projection_sources[0], value.qk_projection_sources[0]))
+        replace(value.attention_operands,
+                key_operand=value.factor_arguments[0])
     with pytest.raises(ValueError):
         replace(value, factor_arguments=tuple(reversed(value.factor_arguments)))
     with pytest.raises(ValueError):
@@ -187,6 +195,90 @@ def apply_pair(a, b, factor_a, factor_b):
     assert _result(tmp_path, source).status == "failed"
 
 
+def _interleaved_source(*, wrong_sign=False):
+    helper = """
+def apply_interleaved(a, b, factor_a, factor_b):
+    factor_a = factor_a[..., : factor_a.shape[-1] // 2].unsqueeze(1)
+    factor_b = factor_b[..., : factor_b.shape[-1] // 2].unsqueeze(1)
+    a0, a1 = a[..., 0::2], a[..., 1::2]
+    b0, b1 = b[..., 0::2], b[..., 1::2]
+    out_a = torch.cat([a0 * factor_a - a1 * factor_b,
+                       a1 * factor_a + a0 * factor_b], dim=-1)
+    out_b = torch.cat([b0 * factor_a - b1 * factor_b,
+                       b1 * factor_a + b0 * factor_b], dim=-1)
+    return out_a, out_b
+"""
+    if wrong_sign:
+        helper = helper.replace(
+            "a0 * factor_a - a1 * factor_b",
+            "a0 * factor_a + a1 * factor_b")
+    source = _BASE.replace(
+        "import torch\n", "import torch\n" + helper + "\n")
+    source = source.replace(
+        "self.three = nn.Linear(config.hidden_size, config.hidden_size)",
+        "self.three = nn.Linear(config.hidden_size, config.hidden_size)\n"
+        "        self.config = config")
+    source = source.replace(
+        "q, k = apply_pair(q, k, first_factor, second_factor)",
+        "if self.config.interleaved:\n"
+        "            q, k = apply_interleaved(\n"
+        "                q, k, first_factor, second_factor)\n"
+        "        else:\n"
+        "            q, k = apply_pair(q, k, first_factor, second_factor)")
+    return source
+
+
+@pytest.mark.parametrize(("selected", "protocol"), [
+    (True, "interleaved_pair"),
+    (False, "split_half_turn"),
+])
+def test_exact_config_guard_selects_the_proven_rotation_branch(
+        tmp_path, selected, protocol):
+    path = tmp_path / "modeling_protocol.py"
+    path.write_text(textwrap.dedent(_interleaved_source()), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    result = decoder_qk_half_turn_application_for_path(
+        build_program_index(bundle), bundle, (), allow_root_stage=True,
+        config_selector=lambda path: (
+            (True, selected, "config_declared")
+            if path == ("interleaved",) else (False, None, "")))
+    assert result.status == "resolved", result
+    assert result.value.rotation_protocol == protocol
+    assert result.value.guard_config_paths == (("interleaved",),)
+
+
+def test_missing_guard_operand_cannot_choose_a_rotation_branch(tmp_path):
+    path = tmp_path / "modeling_protocol.py"
+    path.write_text(textwrap.dedent(_interleaved_source()), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    result = decoder_qk_half_turn_application_for_path(
+        build_program_index(bundle), bundle, (), allow_root_stage=True,
+        config_selector=lambda _path: (False, None, ""))
+    assert result.status == "failed"
+
+
+def test_selected_interleaved_branch_requires_exact_rotation_algebra(tmp_path):
+    path = tmp_path / "modeling_protocol.py"
+    path.write_text(
+        textwrap.dedent(_interleaved_source(wrong_sign=True)), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"}, architecture="Wrapper")
+    result = decoder_qk_half_turn_application_for_path(
+        build_program_index(bundle), bundle, (), allow_root_stage=True,
+        config_selector=lambda path: (
+            (True, True, "config_declared")
+            if path == ("interleaved",) else (False, None, "")))
+    assert result.status == "failed"
+
+
 def test_half_turn_must_preserve_the_exact_half_order(tmp_path):
     source = _BASE.replace(
         "return torch.cat((-second, first), dim=-1)",
@@ -219,18 +311,32 @@ def test_rotation_outputs_must_reach_both_attention_operands(tmp_path):
     assert result.status == "failed"
 
 
-def test_rotation_must_consume_exact_projection_lanes(tmp_path):
+def test_rotation_proof_does_not_require_simple_projection_storage(tmp_path):
     source = _BASE.replace(
-        "q, k = apply_pair(q, k, first_factor, second_factor)",
-        "q, k = apply_pair(hidden, hidden, first_factor, second_factor)")
+        "q = self.one(hidden)\n        k = self.two(hidden)\n"
+        "        v = self.three(hidden)",
+        "if hidden.shape[-1] > 1:\n"
+        "            q = self.one(hidden)\n"
+        "        else:\n"
+        "            q = self.two(hidden)\n"
+        "        packed = self.three(hidden)\n"
+        "        k = packed[..., : packed.shape[-1] // 2]\n"
+        "        v = packed[..., packed.shape[-1] // 2 :]")
     result = _result(tmp_path, source)
-    assert result.status == "failed"
+    assert result.status == "resolved"
 
 
-def test_each_rotation_lane_has_one_exact_projection_origin(tmp_path):
+def test_unpack_targets_must_be_two_distinct_score_lanes(tmp_path):
     source = _BASE.replace(
         "q, k = apply_pair(q, k, first_factor, second_factor)",
-        "q, k = apply_pair(q + k, k, first_factor, second_factor)")
+        "q, q = apply_pair(q, k, first_factor, second_factor)")
+    assert _result(tmp_path, source).status == "failed"
+
+
+def test_rotating_query_and_value_cannot_masquerade_as_query_and_key(tmp_path):
+    source = _BASE.replace(
+        "scaled_dot_product_attention(q, k, v)",
+        "scaled_dot_product_attention(q, v, k)")
     assert _result(tmp_path, source).status == "failed"
 
 
@@ -289,3 +395,44 @@ def test_real_gpt_oss_chunk_pair_control_resolves():
         allow_root_stage=True)
     assert result.status == "resolved", result
     assert result.value.rotation_protocol == "chunk_pair"
+
+
+def test_real_deepseek_score_operands_resolve_without_projection_storage():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+
+    context = ParseContext.build(AutoConfig.for_model("deepseek_v3"))
+    index = context.program_index()
+    block = decoder_block_path_for_config(
+        index, context.source_bundle, (), allow_root_stage=True)
+    assert block.status == "resolved"
+    attention = attention_child_evidence(
+        index, block.value.component_root, block.value.block_occurrence)
+    assert attention.status == "resolved"
+    operands = attention_qk_operands_evidence(
+        index, block.value.component_root, attention.value)
+    assert operands.status == "resolved", operands
+    assert operands.value.protocol == "dot_softmax"
+    assert tuple(item.source_segment for item in (
+        operands.value.query_operand, operands.value.key_operand)) == (
+            "query_states", "key_states")
+
+
+def test_real_deepseek_interleaved_application_uses_exact_config_guard():
+    from transformers import AutoConfig
+    from model_unfolder.evidence.context import ParseContext
+
+    config = AutoConfig.for_model("deepseek_v3")
+    context = ParseContext.build(config)
+
+    def select(path):
+        if path == ("rope_interleave",):
+            return True, config.rope_interleave, "config_declared"
+        return False, None, ""
+
+    result = decoder_qk_half_turn_application_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, config_selector=select)
+    assert result.status == "resolved", result
+    assert result.value.rotation_protocol == "interleaved_pair"
+    assert result.value.guard_config_paths == (("rope_interleave",),)
