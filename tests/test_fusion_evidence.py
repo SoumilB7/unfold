@@ -10,6 +10,7 @@ from model_unfolder.diagram import Diagram
 from model_unfolder.evidence.conformance import check_fact_conformance
 from model_unfolder.evidence.context import ParseContext
 from model_unfolder.evidence.fusion import fusion_evidence
+from model_unfolder.evidence.fusion import fusion_result_for_context
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.sources import resolve_source_files
 from model_unfolder.parser import config_to_ir
@@ -101,6 +102,49 @@ def test_unknown_wrapper_is_ambiguous_instead_of_receiving_a_template(tmp_path):
     html = diagram.to_html(standalone=True)
     assert "Code-defined fusion" in html
     assert "scatter vision features into image-token slots" not in html
+
+
+def test_parser_and_conformance_share_one_call_local_fusion_result(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "class Root:\n"
+        "    def forward(self, inputs_embeds, image_features):\n"
+        "        return torch.cat([image_features, inputs_embeds], dim=1)\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(source),), architecture="Root")
+    context = ParseContext(bundle)
+    first = fusion_result_for_context(context)
+    second = fusion_result_for_context(context)
+    assert first is second
+    assert context.reader_results[("root.fusion", ())] is first
+    assert fusion_evidence({}, parse_context=context).kind == "prefix_soft_tokens"
+
+
+def test_non_equivalent_exact_owner_routes_are_ambiguous(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "class Prefix:\n"
+        "    def forward(self, inputs_embeds, image_features):\n"
+        "        return torch.cat([image_features, inputs_embeds], dim=1)\n"
+        "class Scatter:\n"
+        "    def forward(self, inputs_embeds, image_features, mask):\n"
+        "        return inputs_embeds.masked_scatter(mask, image_features)\n"
+        "class Root:\n"
+        "    def __init__(self):\n"
+        "        self.prefix = Prefix()\n"
+        "        self.scatter = Scatter()\n"
+        "    def forward(self, x):\n"
+        "        return x\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(source),), architecture="Root")
+    context = ParseContext(bundle)
+    result = fusion_result_for_context(context)
+    assert result.status == "ambiguous"
+    assert len(result.ambiguity.sites) == 2
 
 
 def test_multi_input_wrapper_keeps_only_configured_modality_routes():

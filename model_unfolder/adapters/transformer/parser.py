@@ -4290,7 +4290,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
             from ...evidence.fusion import fusion_evidence
             modality_extras = apply_fusion_evidence(
                 modality_extras,
-                fusion_evidence(cfg, bundle=context.source_bundle),
+                fusion_evidence(
+                    cfg, parse_context=context),
                 cfg,
                 text_cfg,
             )

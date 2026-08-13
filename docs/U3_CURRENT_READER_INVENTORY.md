@@ -9,10 +9,10 @@ This is the current authority/deletion worklist. The older
 ## Summary
 
 - quarantined semantic readers: **17**
-- exact evidence-layer `ast.parse` sites: **28**
-- legacy model-source parse sites: **17**
+- exact evidence-layer `ast.parse` sites: **27**
+- legacy model-source parse sites: **16**
 - frozen reader/helper implementation digest: `fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc`
-- frozen legacy-parse caller digest: `c5c4beb51b1c0ec0c22a57505bc1c7eb8695fe5d71a87ed7b24191f8d978c487`
+- frozen legacy-parse caller digest: `7de85c55c0429f80073781e8f4c673e9f8568d2740b377bd7e12614a2dd4ad14`
 
 ## Authority classes
 
@@ -59,7 +59,6 @@ This is the current authority/deletion worklist. The older
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_init_helper_block_classes` | U14 | conformance-local helper/block scan |
 | `legacy_model_source` | `model_unfolder/evidence/conformance.py::_selected_init_refs` | U14 | conformance-local constructor selection |
 | `legacy_model_source` | `model_unfolder/evidence/forward_ops.py::_parse_file` | U14 | parallel forward-op parser shared by legacy facts/conformance |
-| `legacy_model_source` | `model_unfolder/evidence/fusion.py::_class_node` | U9 | fusion evidence reparses its component source |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::_parse_defs` | U10 | diffusion-only semantic parser retained for the U10 migration |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::attention_score_scaling_from_files` | U10 | whole-file diffusion score-scaling interpreter |
 | `legacy_model_source` | `model_unfolder/evidence/patterns.py::diffusion_axes_dims_rope_from_files` | U10 | diffusion positional interpreter |

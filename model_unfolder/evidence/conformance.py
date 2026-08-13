@@ -322,14 +322,17 @@ def _check_audio_facts(target, ir: dict, *, bundle: SourceBundle,
 
 
 def _check_fusion_facts(target, ir: dict, *, bundle: SourceBundle,
-                        source: str) -> list[ConformanceProblem]:
+                        source: str, program_index=None,
+                        parse_context=None) -> list[ConformanceProblem]:
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
     inputs = modalities.get("inputs") or {}
     fusion = modalities.get("fusion")
     if not isinstance(fusion, dict):
         return []
     from .fusion import fusion_evidence
-    evidence = fusion_evidence(target, source=source, bundle=bundle)
+    evidence = fusion_evidence(
+        target, source=source, bundle=bundle, index=program_index,
+        parse_context=parse_context)
     view = f"{evidence.component}/fusion"
     if evidence.status == "ambiguous":
         return [ConformanceProblem(
@@ -551,7 +554,9 @@ def check_fact_conformance(
                 code.class_name, code.source_file, code.forward_line, code.component))
     problems.extend(_check_vision_facts(target, ir, bundle=bundle, source=source))
     problems.extend(_check_projector_facts(target, ir, bundle=bundle, source=source))
-    problems.extend(_check_fusion_facts(target, ir, bundle=bundle, source=source))
+    problems.extend(_check_fusion_facts(
+        target, ir, bundle=bundle, source=source,
+        program_index=program_index, parse_context=parse_context))
     problems.extend(_check_audio_facts(target, ir, bundle=bundle, source=source))
     return problems
 

@@ -24,7 +24,7 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
     "fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "c5c4beb51b1c0ec0c22a57505bc1c7eb8695fe5d71a87ed7b24191f8d978c487")
+    "7de85c55c0429f80073781e8f4c673e9f8568d2740b377bd7e12614a2dd4ad14")
 
 
 @dataclass(frozen=True)
@@ -236,9 +236,6 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/forward_ops.py", "_parse_file",
            "legacy_model_source", "U14",
            "parallel forward-op parser shared by legacy facts/conformance"),
-    _parse("model_unfolder/evidence/fusion.py", "_class_node",
-           "legacy_model_source", "U9",
-           "fusion evidence reparses its component source"),
     _parse("model_unfolder/evidence/patterns.py", "_parse_defs",
            "legacy_model_source", "U10",
            "diffusion-only semantic parser retained for the U10 migration"),
