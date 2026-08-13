@@ -169,6 +169,64 @@ def test_constructed_but_uninvoked_fusion_child_is_not_architecture(tmp_path):
     assert fusion_evidence({}, parse_context=context).status == "ambiguous"
 
 
+def test_exact_same_file_helper_is_followed_instead_of_hidden(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "def merge(inputs_embeds, image_features):\n"
+        "    return torch.cat([image_features, inputs_embeds], dim=1)\n"
+        "class Root:\n"
+        "    def forward(self, inputs_embeds, image_features):\n"
+        "        return merge(inputs_embeds, image_features)\n",
+        encoding="utf-8",
+    )
+    context = ParseContext(SourceBundle(
+        source="test", files=(str(source),), architecture="Root"))
+    result = fusion_result_for_context(context)
+    assert result.status == "resolved"
+    assert result.value.kind == "prefix_soft_tokens"
+    assert result.value.operation == "prepend_soft_tokens"
+
+
+def test_unresolved_helper_cannot_prove_fusion_absent(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "from elsewhere import merge\n"
+        "class Root:\n"
+        "    def forward(self, inputs_embeds, image_features):\n"
+        "        return merge(inputs_embeds, image_features)\n",
+        encoding="utf-8",
+    )
+    context = ParseContext(SourceBundle(
+        source="test", files=(str(source),), architecture="Root"))
+    result = fusion_result_for_context(context)
+    assert result.status == "failed"
+    assert result.failures[0].kind == "unsupported_syntax"
+    assert fusion_evidence({}, parse_context=context).status == "ambiguous"
+
+
+def test_visible_fusion_plus_unresolved_rival_is_incomplete(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "from elsewhere import maybe_merge\n"
+        "class Root:\n"
+        "    def forward(self, inputs_embeds, image_features, flag):\n"
+        "        joined = torch.cat([image_features, inputs_embeds], dim=1)\n"
+        "        if flag:\n"
+        "            joined = maybe_merge(inputs_embeds, image_features)\n"
+        "        return joined\n",
+        encoding="utf-8",
+    )
+    context = ParseContext(SourceBundle(
+        source="test", files=(str(source),), architecture="Root"))
+    result = fusion_result_for_context(context)
+    assert result.status == "incomplete"
+    assert result.value.kind == "prefix_soft_tokens"
+    assert result.failures[0].kind == "unsupported_syntax"
+    assert fusion_evidence({}, parse_context=context).status == "ambiguous"
+
+
 def test_multi_input_wrapper_keeps_only_configured_modality_routes():
     from test_support import _gemma4_e2b_vision_config
 

@@ -63,8 +63,14 @@ def _project_result(result):
         reason = "multiple non-equivalent exact wrapper fusion paths"
     elif result.status == "absent":
         reason = "no exact wrapper fusion operation resolved"
+    code_unknown = (
+        result.status == "failed" and result.failures
+        and all(item.kind in {"unsupported_syntax", "dynamic_dispatch",
+                              "incomplete_graph"}
+                for item in result.failures))
     return FusionEvidence(
-        "ambiguous" if result.status in {"ambiguous", "absent", "incomplete"}
+        "ambiguous" if result.status in {
+            "ambiguous", "absent", "incomplete"} or code_unknown
         else "oracle_missing",
         owner_class=owner,
         reason=reason or result.status,
@@ -135,11 +141,20 @@ def fusion_result(
     evidence = candidates[0][1]
     spans = tuple(dict.fromkeys(
         span for _, _, span in candidates if span is not None))
+    provenance = (ReaderProvenance(
+        "source", spans=spans,
+        detail="equivalent exact owner-occurrence fusion relations"),)
+    if unresolved_execution:
+        gaps = tuple(ReaderFailure(
+            "unsupported_syntax",
+            "a competing fusion path remains unsupported/unresolved",
+            item)
+            for item in unresolved_execution)
+        return ReaderResult.incomplete(
+            root.occurrence, evidence, failures=gaps,
+            provenance=provenance)
     return ReaderResult.resolved(
-        root.occurrence, evidence,
-        provenance=(ReaderProvenance(
-            "source", spans=spans,
-            detail="equivalent exact owner-occurrence fusion relations"),))
+        root.occurrence, evidence, provenance=provenance)
 
 
 def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
@@ -245,17 +260,28 @@ def _reachable_execution_callables(index, root):
                 continue
             seen_callables.add(callable_symbol)
             record = index.callable_by_symbol(callable_symbol)
-            if record is None or record.owner != node.symbol:
+            if record is None or record.owner not in {node.symbol, None}:
                 continue
             out.append((occurrence, node.symbol, callable_symbol))
+            folded_methods = set()
             for method in record.self_method_calls:
                 folded = SymbolId(
                     node.symbol.source, f"{node.symbol.qualified_name}.{method}")
                 if index.callable_by_symbol(folded) is not None:
                     callable_queue.append(folded)
+                    folded_methods.add(method)
             for call in index.calls_in(callable_symbol):
                 field = _self_field(call.callee)
                 if field is None:
+                    helper = _exact_local_helper(index, callable_symbol, call.callee)
+                    if helper is not None:
+                        callable_queue.append(helper)
+                    elif _could_hide_fusion(
+                            index, callable_symbol, call) \
+                            and call.span is not None:
+                        unresolved.append(call.span)
+                    continue
+                if field in folded_methods:
                     continue
                 children = tuple(child for child in node.children
                                  if child.via_field == field)
@@ -264,9 +290,94 @@ def _reachable_execution_callables(index, root):
                 if len(children) == 1 and not blocked:
                     owner_queue.append(children[0].occurrence)
                 elif len(children) != 0 or blocked:
-                    if call.span is not None:
+                    if _could_hide_fusion(
+                            index, callable_symbol, call) \
+                            and call.span is not None:
                         unresolved.append(call.span)
+                elif _could_hide_fusion(
+                        index, callable_symbol, call) and call.span is not None:
+                    # ``self.<name>(...)`` is neither an indexed method nor an
+                    # exact constructed child.  It may be a dynamically
+                    # supplied callable; absence is therefore unprovable.
+                    unresolved.append(call.span)
     return tuple(out), tuple(dict.fromkeys(unresolved))
+
+
+def _exact_local_helper(index, caller, expression):
+    """Resolve one same-source helper by lexical address, never by proximity.
+
+    Nested helpers are tried at the caller's exact lexical address.  Module
+    helpers require one unconditional module ``function`` binding.  Imported,
+    rebound and rival spellings stay unresolved; this reader never opens a
+    second source or guesses which helper Python would call.
+    """
+    if expression.kind != "name" or not expression.name:
+        return None
+    name = expression.name
+    parent = caller.qualified_name.rpartition(".")[0]
+    nested = SymbolId(
+        caller.source, f"{caller.qualified_name}.{name}")
+    sibling = SymbolId(caller.source, f"{parent}.{name}" if parent else name)
+    module = SymbolId(caller.source, name)
+    exact = tuple(dict.fromkeys((nested, sibling, module)))
+    matches = tuple(
+        symbol for symbol in exact
+        if (record := index.callable_by_symbol(symbol)) is not None
+        and record.owner is None)
+    if len(matches) != 1:
+        return None
+    if matches[0].qualified_name == name:
+        bindings = tuple(
+            item for item in index.module_bindings_in(caller.source)
+            if item.name == name)
+        if len(bindings) != 1 or bindings[0].kind != "function":
+            return None
+    return matches[0]
+
+
+def _could_hide_fusion(index, caller, call):
+    """Whether an unresolved invocation receives both token lanes.
+
+    This is only an incompleteness predicate.  It never proves a fusion kind or
+    modality; it prevents a false negative when a locally unresolved callable
+    receives a text/token lane together with a modality-looking lane.
+    """
+    leaf = _call_leaf(call.callee)
+    if leaf in {
+            "masked_scatter", "cat", "concat", "concatenate",
+            "compute_3d_position_ids"}:
+        return False
+    if not _call_result_used(index, caller, call):
+        return False
+    if call.callee.kind == "name" and any(
+            binding.name == call.callee.name and binding.kind == "class"
+            for binding in index.module_bindings_in(caller.source)):
+        return False
+    expressions = (*call.args, *(value for _, value in call.kwargs))
+    names = {name.lower() for name in _names(expressions)}
+    token_lane = any(
+        token in name for name in names
+        for token in ("inputs_embeds", "text_embeds", "token_embeddings",
+                      "hidden_states"))
+    modality_lane = any(
+        token in name for name in names
+        for token in ("image_features", "vision_features", "pixel_values",
+                      "audio_features", "video_features"))
+    return token_lane and modality_lane
+
+
+def _call_result_used(index, caller, call):
+    if call.span is None:
+        return False
+    expressions = [
+        binding.value for binding in index.bindings_in(caller)
+        if binding.value is not None]
+    expressions.extend(
+        item.value for item in index.return_observations_in(caller)
+        if item.value is not None)
+    return any(
+        item.span == call.span
+        for expression in expressions for item in _expressions(expression))
 
 
 def _forward(index, owner):
