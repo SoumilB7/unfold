@@ -1,5 +1,12 @@
 # U3 runbook — the single raw program index and owner resolver (LIVE)
 
+> **Closure correction (2026-08-14): U3 is DONE.**  The binding completion
+> plan's C0–C5 bracket closed on `4bd1395`; that commit is an ancestor of the
+> current branch.  The generated inventory is current and every surviving
+> semantic reader/parse authority is frozen under its actual owner unit
+> (U9/U10/U11/U14).  Historical `[~]` mechanism rows below describe work later
+> accepted by those semantic units; they are not unfinished U3 scope.
+
 Spec: docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md §20.6 (lines 1457-1503).
 Started 2026-07-19 immediately after U2 closure (1d0c72b). Soumil: "go ahead".
 
@@ -348,7 +355,9 @@ then proceed autonomously to U3-B.
       most-plausible-child / YAML family tables; no new ProgramIndex record family.
       This boundary does not itself classify a norm or a repeated child; those
       separate F2/F3 mechanisms are now present below.
-- [ ] U3-F..H nested-mechanism / modality / conformance clusters + old-parser
+- [x] U3-F..H handoff complete — neutral ownership infrastructure landed;
+      surviving modality/conformance semantics are frozen and assigned to
+      U9/U10/U11/U14 rather than reimplemented in U3
       eradication (per-reader commits, U2 receipt discipline each)
       - [x] U3-F0: occurrence-exact repeated-child reconnaissance
         (`docs/U3_F0_REPEATED_CHILD_RECON.md`).
@@ -683,12 +692,10 @@ Binding source: `docs/U3_COMPLETION_MASTER_PLAN.md` §10.
 - [x] U3-C3: 25-reader non-growing quarantine, including definition/caller,
       body/helper and legacy-parse-caller pins.
 - [x] U3-C4: generated current inventory is blocking and current.
-- [ ] U3-C5: **HELD by inherited unblessed semantic output**, not by missing U3
-      substrate. Static/collection/focused/U2-authority are green, and an exact
-      26-witness parent→current comparison is byte-identical. The project-wide
-      receipt remains red on the pre-existing CLIP/gallery/preservation deltas,
-      which U3 is forbidden to bless.
+- [x] U3-C5: **DONE** on `4bd1395`; Soumil approved the named semantic output,
+      the guarded re-bless landed, and the isolated committed-tree receipt was
+      fully green with identical fingerprints (authoritative details in
+      `docs/U3_COMPLETION_MASTER_PLAN.md`, current closure addendum).
 
-Do not add another U3 mechanism reader to clear C5. Resolve the retained
-semantic candidates in their assigned U6–U9/U14 units (revert or approve with
-their own receipts), then rerun C5 and formally unlock U4.
+Do not add another U3 mechanism reader.  New semantic work begins in the
+assigned U9–U14 unit and consumes the closed U3 substrate.
