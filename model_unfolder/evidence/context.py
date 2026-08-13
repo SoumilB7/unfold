@@ -208,6 +208,10 @@ class ParseContext:
     # migrate onto it from U3-D), so building it never runs on the render hot
     # path and preservation stays byte-identical.
     _program_index: Any = None
+    # U9-A: the ONE exact root/nested-component ownership inventory derived
+    # from this context's ProgramIndex.  It is address evidence only and stays
+    # lazy until a modality reader asks for it.
+    _component_inventory: Any = None
 
     def program_index(self):
         """The single immutable :class:`~.program_index.ProgramIndex` for this
@@ -217,6 +221,14 @@ class ParseContext:
             from .program_index import build_program_index
             self._program_index = build_program_index(self.source_bundle)
         return self._program_index
+
+    def component_inventory(self):
+        """One call-local U9 component inventory, derived once from the index."""
+        if self._component_inventory is None:
+            from .component_inventory import resolve_component_inventory
+            self._component_inventory = resolve_component_inventory(
+                self.program_index(), self.source_bundle)
+        return self._component_inventory
 
     def cached_reader_result(self, reader: str, config_path, factory):
         if not isinstance(reader, str) or not reader:
