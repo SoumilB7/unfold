@@ -28,7 +28,9 @@ PROJECTED_STATUSES = frozenset({
 # The owner family-segments that have a v1 render surface.  A ledger key like
 # ``decoder.attention.scores_scale`` has family segment ``attention`` (the
 # second-to-last dotted segment); ``model.tie_word_embeddings`` -> ``model``.
-DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
+DRAWABLE_FAMILY_SEGMENTS = frozenset({
+    "attention", "ffn", "layer", "model", "decoder", "input",
+})
 
 # Per-surface: the fact LEAF names each surface visibly draws today.
 #   * the attention detail draws the Q/K/V projections (projection_mode), the
@@ -40,15 +42,22 @@ DRAWABLE_FAMILY_SEGMENTS = frozenset({"attention", "ffn", "layer", "model"})
 #   * the architecture view draws the norm cells (norm_kind), their pre/post
 #     placement (norm_placement), and the head-tying note (tie_word_embeddings).
 ATTENTION_DRAWN = frozenset({
-    "mechanism", "scores_scale", "projection_mode", "mask", "bias", "position_kind",
-    "qk_norm", "output_gate", "gated_delta_geometry", "sinks",
+    "mechanism", "head_geometry", "head_geometry_schedule", "scores_scale",
+    "projection_mode", "mask",
+    "mask_schedule", "position_schedule", "rope_theta",
+    "rope_initialization", "mixer_schedule",
+    "cross_attention_schedule", "bias",
+    "qk_norm", "qk_norm_schedule", "kv_sharing_schedule", "output_gate",
+    "gated_delta_geometry", "sinks",
     "logit_softcap", "qkv_clip", "cached", "output_projection",
 })
 ORDINARY_FFN_DRAWN = frozenset({
     "activation", "gated", "projection_mode", "intermediate_size",
+    "ffn_schedule",
 })
 EXPERT_FFN_DRAWN = frozenset({
     "expert_projection_mode", "expert_activation_formula",
+    "expert_intermediate_size", "shared_expert_count",
 })
 ROUTER_DRAWN = frozenset({"routing_policy"})
 # Surface-level compatibility/obligation view.  Owner-qualified gates use the
@@ -61,6 +70,10 @@ LAYER_DRAWN = frozenset({
 MODEL_DRAWN = frozenset({
     "tie_word_embeddings", "embedding_norm_kind", "final_norm_kind",
 })
+DECODER_DRAWN = frozenset({
+    "codebook_streams", "mtp_modules", "per_layer_embedding_pathway",
+})
+INPUT_DRAWN = frozenset({"position_addition"})
 
 # Soumil's final vet (round 2): the drawn structural inventory is
 # OWNER-QUALIFIED — each drawn leaf is claimed by the owner whose serializer
@@ -74,6 +87,8 @@ DRAWN_PAIRS = frozenset(
     + [("decoder.ffn.expert", leaf) for leaf in EXPERT_FFN_DRAWN]
     + [("decoder.layer", leaf) for leaf in LAYER_DRAWN]
     + [("model", leaf) for leaf in MODEL_DRAWN]
+    + [("decoder", leaf) for leaf in DECODER_DRAWN]
+    + [("decoder.input", leaf) for leaf in INPUT_DRAWN]
 )
 
 
@@ -118,14 +133,18 @@ def router_facts(ir) -> frozenset:
 
 
 def layer_and_model_facts(ir) -> frozenset:
-    return projected_keys(ir, "layer", LAYER_DRAWN) | projected_keys(ir, "model", MODEL_DRAWN)
+    return (projected_keys(ir, "layer", LAYER_DRAWN)
+            | projected_keys(ir, "model", MODEL_DRAWN)
+            | projected_keys(ir, "decoder", DECODER_DRAWN)
+            | projected_keys(ir, "input", INPUT_DRAWN))
 
 
 __all__ = [
     "PROJECTED_STATUSES", "DRAWABLE_FAMILY_SEGMENTS",
     "ATTENTION_DRAWN", "DRAWN_PAIRS", "FFN_DRAWN", "ORDINARY_FFN_DRAWN",
     "ROUTER_DRAWN",
-    "EXPERT_FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN",
+    "EXPERT_FFN_DRAWN", "LAYER_DRAWN", "MODEL_DRAWN", "DECODER_DRAWN",
+    "INPUT_DRAWN",
     "family_segment", "fact_provenance", "projected_keys",
     "attention_facts", "ffn_facts", "router_facts",
     "layer_and_model_facts",

@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -120,6 +121,18 @@
   },
   "hash_signature": [
     "1ecde1de24e3672114dc67e2d1478bd2",
+    "335dc4a5c8ffd40fc2e4b5cb87d8d71d",
+    "50db28fc1d577733f8359144c130243f",
+    "5649037dd75f6c481afb2ae7124aaf39",
+    "617ce03749b7fbeb4ed3b7ef445ab849",
+    "83c8fe154dcb28363220709618b13902",
+    "c60a53f2855d5be4f7f54c6cc0fb7484",
+    "f3df89820579dc3b4bf7ee5b51fc79e9"
+  ],
+  "model": "gpt-oss-20b",
+  "source": "local",
+  "superseded_hash_signature": [
+    "1ecde1de24e3672114dc67e2d1478bd2",
     "5649037dd75f6c481afb2ae7124aaf39",
     "5bef34caff87e659f8458a1b572c6bbd",
     "617ce03749b7fbeb4ed3b7ef445ab849",
@@ -127,18 +140,6 @@
     "83c8fe154dcb28363220709618b13902",
     "9332108e4c63fe0daab0992915d8c14a",
     "c60a53f2855d5be4f7f54c6cc0fb7484"
-  ],
-  "model": "gpt-oss-20b",
-  "source": "local",
-  "superseded_hash_signature": [
-    "12f0bfdd7bda43f63a570ca3b63905ce",
-    "1ecde1de24e3672114dc67e2d1478bd2",
-    "54adee4682da58bdd96cc2c26108589b",
-    "5bef34caff87e659f8458a1b572c6bbd",
-    "6e3c7c8d95d5f3292407b726a9318360",
-    "7367636be11969f17c0e65d482635959",
-    "7cdec5283fff59daba7373c02e0b1a3c",
-    "9332108e4c63fe0daab0992915d8c14a"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/gpt-oss-20b",

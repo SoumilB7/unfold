@@ -201,6 +201,7 @@ def test_real_full_prefix_and_suffix_geometry_controls():
 
     expected = {
         "llama": ("full", "full"),
+        "qwen3": ("full", "full"),
         "stablelm": ("partial", "prefix"),
         "deepseek_v3": ("partial", "suffix"),
     }
@@ -233,3 +234,16 @@ def test_real_full_prefix_and_suffix_geometry_controls():
             assert result.value.rotated_width == expected_width
         elif model_type == "deepseek_v3":
             assert result.value.rotated_width == config.qk_rope_head_dim
+
+
+def test_arbitrary_self_field_transform_is_not_a_full_lane(tmp_path):
+    source = _SOURCE.replace(
+        "query, key = apply_pair(query, key, direct, rotated)",
+        "query = self.opaque(query)\n"
+        "        key = self.opaque(key)\n"
+        "        query, key = apply_pair(query, key, direct, rotated)")
+    source = source.replace(
+        "self.pass_width = config.pass_width",
+        "self.pass_width = config.pass_width\n"
+        "        self.opaque = nn.Linear(config.hidden_size, config.hidden_size)")
+    assert _result(tmp_path, source).status == "failed"

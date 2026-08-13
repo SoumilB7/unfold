@@ -9,7 +9,7 @@ constructor or proves an exact ``super().__init__`` call.
 from __future__ import annotations
 
 from .construction_calls import ConstructionAlternative, resolve_import_reference
-from .program_index import CallObservation, ProgramIndex, SymbolId
+from .program_index import CallObservation, ConstructionSite, ProgramIndex, SymbolId
 
 
 AFFINE_CONSTRUCTION_PROTOCOLS = frozenset({
@@ -59,6 +59,20 @@ def construction_is_affine(
     init = SymbolId(symbol.source, f"{symbol.qualified_name}.__init__")
     return index.callable_by_symbol(init) is None \
         or _calls_exact_super_init(index, init)
+
+
+def site_is_affine(index: ProgramIndex, site: ConstructionSite) -> bool:
+    """Classify one exact external construction site without choosing rivals."""
+    if not isinstance(index, ProgramIndex) \
+            or not isinstance(site, ConstructionSite):
+        raise TypeError("affine site classification requires index + site")
+    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
+        return False
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        site.candidates[0].reference)
+    return proof is not None and proof.qualified_target \
+        in AFFINE_CONSTRUCTION_PROTOCOLS
 
 
 def _calls_exact_super_init(index: ProgramIndex, init: SymbolId) -> bool:
@@ -166,4 +180,7 @@ def _is_super_init_call(call: CallObservation) -> bool:
     return target.kind == "name" and target.name == "super"
 
 
-__all__ = ["AFFINE_CONSTRUCTION_PROTOCOLS", "construction_is_affine"]
+__all__ = [
+    "AFFINE_CONSTRUCTION_PROTOCOLS", "construction_is_affine",
+    "site_is_affine",
+]

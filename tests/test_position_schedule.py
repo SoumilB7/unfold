@@ -73,6 +73,7 @@ class Stage(nn.Module):
         self.maker = FactorMaker(config)
 
     def forward(self, hidden, coordinate):
+        coordinate = torch.arange(hidden.shape[1], device=hidden.device)
         phase = self.maker(hidden, coordinate)
         for cell in self.cells:
             hidden = cell(hidden, phase)
@@ -215,7 +216,7 @@ def test_schedule_closure_rejects_missing_index_and_cross_owner_transport(
         replace(value, decisions=value.decisions[:-1])
     with pytest.raises(ValueError):
         replace(value.transport,
-                attention_binding=value.transport.block_binding)
+                attention_bindings=(value.transport.block_binding,))
 
 
 def test_constructor_binder_rejects_a_forged_copy_of_an_indexed_site(tmp_path):

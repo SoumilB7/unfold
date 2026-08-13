@@ -1,6 +1,6 @@
 # 6 DISTINCT diagram views (architecture + every drill, to the leaves)
 # 7 baked svgs total — 1 identical per-layer-group copies collapsed
-# 54 description-only leaf cards skipped (no diagram)
+# 52 description-only leaf cards skipped (no diagram)
 # amber border = clickable block (opens a card); no border = static port/glyph
 
 00__architecture.png

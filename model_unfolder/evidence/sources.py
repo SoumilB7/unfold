@@ -141,9 +141,11 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         file = _transformers_file_for_class(str(models_root), architecture or "")
         if file:
             files = (file,)
+            supporting = _transformers_supporting_files(Path(file).parent)
             return SourceBundle(
                 source="local", files=files, architecture=architecture,
                 model_id=model_id, component_files={"root": files},
+                supporting_files={"root": supporting} if supporting else {},
                 component_architectures={"root": architecture} if architecture else {},
             )
         return SourceBundle(
@@ -154,6 +156,7 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
     warnings: list[str] = []
     seen_files: set[str] = set()
     component_files: dict[str, tuple[str, ...]] = {}
+    supporting_files: dict[str, tuple[str, ...]] = {}
     component_model_types: dict[str, str] = {}
     component_architectures: dict[str, str] = {}
 
@@ -197,6 +200,9 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         component_paths = tuple(str(path) for path in modeling_files)
         if component_paths:
             component_files[component] = component_paths
+        support_paths = _transformers_supporting_files(models_root / family_dir)
+        if support_paths:
+            supporting_files[component] = support_paths
         for path in component_paths:
             value = path
             if value not in seen_files:
@@ -212,6 +218,7 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
         class_file = _transformers_file_for_class(str(models_root), architecture)
         if class_file:
             class_files = (class_file,)
+            supporting = _transformers_supporting_files(Path(class_file).parent)
             return SourceBundle(
                 source="local",
                 files=class_files,
@@ -220,6 +227,7 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
                 model_id=model_id,
                 warnings=tuple(warnings),
                 component_files={"root": class_files},
+                supporting_files={"root": supporting} if supporting else {},
                 component_architectures={"root": architecture},
             )
 
@@ -233,9 +241,54 @@ def _installed_transformers_bundle(target: Any) -> SourceBundle:
             f"No modeling*.py files found for model_type={model_type!r}.",
         )),
         component_files=component_files,
+        supporting_files=supporting_files,
         component_model_types=component_model_types,
         component_architectures=component_architectures,
     )
+
+
+def _transformers_supporting_files(family_dir: Path) -> tuple[str, ...]:
+    """Exact support sources, kept off legacy modeling-file surfaces.
+
+    Configuration sources are always part of the component's address closure.
+    A framework source is added only when this exact installed modeling source
+    imports its closed interface.  This is source-address plumbing, not a
+    mechanism claim: readers still have to resolve the import, registry entry,
+    selected callable and its dataflow before any architecture fact exists.
+    """
+    paths = [path for path in sorted(family_dir.glob("configuration*.py"))
+             if path.is_file()]
+    framework_rope = family_dir.parent.parent / "modeling_rope_utils.py"
+    if framework_rope.is_file():
+        imported = False
+        for modeling in sorted(family_dir.glob("modeling*.py")):
+            try:
+                source = modeling.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^from\s+\.{2,}modeling_rope_utils\s+import\s+",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_rope)
+    framework_config = family_dir.parent.parent / "configuration_utils.py"
+    if framework_config.is_file():
+        imported = False
+        for configuration in sorted(family_dir.glob("configuration*.py")):
+            try:
+                source = configuration.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(
+                    r"^from\s+\.{2,}configuration_utils\s+import\s+",
+                    source, re.M):
+                imported = True
+                break
+        if imported:
+            paths.append(framework_config)
+    return tuple(str(path) for path in dict.fromkeys(paths))
 
 
 @functools.lru_cache(maxsize=128)
@@ -445,6 +498,7 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
             continue
         if pat.search(text):
             component_files = {"root": (str(f),)}
+            supporting_files: dict[str, tuple[str, ...]] = {}
             component_model_types: dict = {}
             component_architectures = {"root": cls}
             files = [str(f)]
@@ -465,6 +519,10 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_files[key] = tuple(sub_files)
                     files.extend(p for p in sub_files if p not in files)
+                for sub_key, sub_files in (
+                        enc_bundle.supporting_files or {}).items():
+                    key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
+                    supporting_files[key] = tuple(sub_files)
                 for sub_key, value in (enc_bundle.component_model_types or {}).items():
                     key = enc_name if sub_key == "root" else f"{enc_name}.{sub_key}"
                     component_model_types[key] = value
@@ -474,6 +532,7 @@ def _installed_diffusers_bundle(target: Any) -> SourceBundle | None:
             return SourceBundle(source="local", files=tuple(files),
                                 architecture=cls, model_id=model_id,
                                 component_files=component_files,
+                                supporting_files=supporting_files,
                                 component_model_types=component_model_types,
                                 component_architectures=component_architectures,
                                 pipeline_components=tuple(pipeline_components))

@@ -239,14 +239,6 @@ def test_each_provenance_kind_requires_its_real_evidence_channel():
     assert ReaderProvenance("derived", detail="premises: attention.kind")
 
 
-def test_wraps_real_domain_evidence_dataclass():
-    from model_unfolder.evidence.models import PositionalEvidence
-    evidence = PositionalEvidence(status="proven")
-    result: ReaderResult[PositionalEvidence] = ReaderResult.resolved(
-        _owner(), evidence, provenance=_provenance())
-    assert isinstance(result.require_value(), PositionalEvidence)
-
-
 def test_ambiguity_from_conflicts_preserves_exact_records():
     owner_conflict = ConflictRecord(
         "rival_owner_chain", _owner_rivals(), (_span(),))

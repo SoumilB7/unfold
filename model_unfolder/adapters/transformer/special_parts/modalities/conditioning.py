@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .accessors import architecture, first, present_paths
+from .accessors import architecture, first, first_resolution, present_paths
 from .schema import Stage, assemble_path
 
 
@@ -79,10 +79,6 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         hidden = first(slot_doc, "hidden_size", "d_model")
         num_layers = first(slot_doc, "num_hidden_layers", "num_layers",
                            "encoder_layers")
-        num_heads = first(slot_doc, "num_attention_heads", "num_heads",
-                          "encoder_attention_heads")
-        intermediate_size = first(slot_doc, "intermediate_size", "d_ff",
-                                  "encoder_ffn_dim", "ffn_dim")
         vocab = first(slot_doc, "vocab_size")
         _slot_trace = present_paths(cfg, slot_doc,
                                     [("model_type", slot_doc)])
@@ -101,10 +97,8 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         Stage("input", "prompt_tokens", "input", "prompt_tokens",
               {"vocab_size": vocab}),
         Stage("encoder", "conditioning_encoder", "encode", "conditioning_encoder",
-              {"architecture": _slot_architecture, "model_type": model_type,
+               {"architecture": _slot_architecture, "model_type": model_type,
                "hidden_size": hidden, "num_layers": num_layers,
-               "num_attention_heads": num_heads,
-               "intermediate_size": intermediate_size,
                "evidence_status": "unresolved"},
               step_fields={"hidden_size": hidden, "num_layers": num_layers}),
         *([Stage("projector", "conditioning_projector", "project_to_decoder_width",
@@ -143,7 +137,9 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         )
         _slot_ctx = (slot_parse_context(active_parse_context.get(),
                                         _slot_key,
-                                        namespace="root.conditioning")
+                                        namespace="root.conditioning",
+                                        document=slot_doc,
+                                        binding=_binding)
                      if _slot_key else None)
         with _config_access.owner_scope("root.conditioning"), \
                 _config_access.bound_document(_binding):
@@ -162,9 +158,33 @@ def conditioning_path(cfg: Any, text_cfg: Any, sub_cfg: Any,
         encoder = path.get("encoder") or {}
         encoder["sub_model"] = spec["sub_model"]
         for key in ("activation", "gated", "norm", "ffn_evidence",
-                    "attention_detail", "position_evidence"):
+                    "attention_detail"):
             if spec.get(key) is not None:
                 encoder[key] = spec[key]
+
+        # Flat summary geometry is a projection of the SAME canonical encoder
+        # parse, never a second config-shaped architecture reader.  In
+        # particular, a composite T5 config may declare ``num_heads`` while
+        # its exact encoder-vs-decoder stage is unresolved; copying that number
+        # here would manufacture confidence that the typed sub-model correctly
+        # withholds.  Proven canonical facts may populate the prose summary;
+        # unknown remains absent at both depths.
+        _attention = spec.get("attention_detail") or {}
+        if _attention.get("num_heads") is not None:
+            encoder["num_attention_heads"] = _attention["num_heads"]
+        else:
+            # The declaration is real, but the exact encoder-stage owner is
+            # not yet provable for every composite (T5Model constructs rival
+            # encoder/decoder stages).  Inspect the precise document-relative
+            # occurrence so it enters the U9 owner-bound debt ledger; do not
+            # consume it or copy it into the card until that stage resolves.
+            with _config_access.owner_scope("root.conditioning"), \
+                    _config_access.bound_document(_binding):
+                first_resolution(
+                    slot_doc, "num_attention_heads", "num_heads",
+                    "encoder_attention_heads")
+        if spec.get("ffn") is not None:
+            encoder["intermediate_size"] = spec["ffn"]
     return path
 
 

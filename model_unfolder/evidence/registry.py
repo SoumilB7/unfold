@@ -137,6 +137,22 @@ class ProjectionRoute:
         return (self.owner_pattern, self.mechanism)
 
 
+def _layer_map_route(owner: str, mechanism: str) -> ProjectionRoute:
+    """The one canonical per-layer schedule surface.
+
+    Mask, position, mixer, Q/K-normalization, K/V sharing, cross-attention and
+    FFN placement are independent facts, but the HTML layer map is their shared
+    real consumer: it reads every serialized layer occurrence and renders the
+    resulting grouping/legend.  Keeping this mechanical route constructor here
+    avoids seven independently drifting copies of that same projection policy.
+    """
+    return ProjectionRoute(
+        owner, mechanism, "html", mechanism, frozenset({"field"}),
+        frozenset({("layer_map",)}),
+        frozenset({"renderers.html.views._build_layer_map"}),
+    )
+
+
 @dataclass(frozen=True)
 class FactDefinition:
     """The closed-world contract for one structural fact name."""
@@ -216,10 +232,9 @@ def _definition_map(definitions) -> dict[str, FactDefinition]:
 # behaviors (census §0.3 pins the leaks as ``legacy_convention``); parameter
 # consumers from params.py's assumption channel.
 #
-# Known debt stated where it lives:
-# * ``position_kind`` remains a DRAWN leaf without a complete typed route;
-#   the other attention leaves are registered as their U6 migrations land.
-#   (census §0.6); they get definitions when H8 gives them writers.
+# A per-layer positional kind is not an independent fact: it is one element of
+# the registered ``position_schedule``.  Keeping a second ``position_kind``
+# authority would let a leaf disagree with the schedule that owns it.
 # ---------------------------------------------------------------------------
 REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
@@ -249,14 +264,59 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="intermediate_size",
         value_types=frozenset({"int"}),
-        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
         owner_patterns=frozenset({"decoder.ffn"}),
         projections=frozenset({"ffn_detail", "params_annotation", "json"}),
         unknown_policy="omit",
         parameter_consumer=True,
         notes="U7: exact output-projection input expression evaluated through "
-              "the FFN occurrence chain; every config operand is cited and a "
-              "class-supplied operand keeps the weaker class_default tier.",
+              "the FFN occurrence chain; a literal geometry is code-proven, "
+              "every config operand is cited, and a class-supplied operand "
+              "keeps the weaker class_default tier.",
+        conformance="nested_callable",
+    ),
+    FactDefinition(
+        key="ffn_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.ffn"}),
+        projections=frozenset({"ffn_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.ffn", "ffn_schedule"),
+        ),
+        unknown_policy="unknown_banner",
+        notes=("U8-E: every layer joins the exact repeated-block index, "
+               "selected FFN construction, exact block invocation and a "
+               "positive ordinary/routed mechanism proof"),
+    ),
+    FactDefinition(
+        key="expert_intermediate_size",
+        value_types=frozenset({"int"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.ffn.expert"}),
+        projections=frozenset({"ffn_detail", "params_annotation", "json"}),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=("U7: exact literal two-lane fused expert parameter geometry "
+               "joined to the same down-parameter dimension; flattened "
+               "split storage remains unknown."),
+        conformance="nested_callable",
+    ),
+    FactDefinition(
+        key="shared_expert_count",
+        value_types=frozenset({"int"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.ffn.expert"}),
+        projections=frozenset({"ffn_detail", "params_annotation", "json"}),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=("U8-E: one exact ordinary FFN is added to the routed-expert "
+               "output and its constructor width is the proved per-expert "
+               "width multiplied by this exact config operand."),
         conformance="nested_callable",
     ),
     FactDefinition(
@@ -267,8 +327,9 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
             "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.ffn"}),
-        projections=frozenset({"ffn_detail", "json"}),
+        projections=frozenset({"ffn_detail", "params_annotation", "json"}),
         unknown_policy="pale_undeclared",
+        parameter_consumer=True,
         notes="U7/T-12: the exact route callable owns operation presence and "
               "order; config supplies only exact operands cited by that code.",
         conformance="nested_callable",
@@ -296,7 +357,7 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         key="mechanism",
         value_types=frozenset({"str", "NoneType"}),
         allowed_statuses=frozenset({
-            "code_and_config", "ambiguous", "oracle_missing",
+            "code_and_config", "class_default", "ambiguous", "oracle_missing",
         }),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({
@@ -307,15 +368,193 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
               "U1 checkpoint occurrences; head counts alone are powerless",
     ),
     FactDefinition(
+        key="head_geometry",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default",
+        }),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({
+            "attention_detail", "params_annotation", "json"}),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=("U6 qualification: one structured value binds mechanism, query "
+               "heads, KV heads and the exact source-evaluated head factor; "
+               "unused head_dim declarations are powerless."),
+    ),
+    FactDefinition(
+        key="head_geometry_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({
+            "attention_detail", "params_annotation", "json"}),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=("U8-E: exact per-layer constructor fields are projected only "
+               "after they reach the exact Q/K/V projection, reshape and "
+               "K/V-repeat application sites."),
+    ),
+    FactDefinition(
         key="mask",
         # U2-R9: declared decoderness (is_decoder / is_encoder_decoder) is
         # config EVIDENCE for the mask fact — the final-vet consumption tier.
         value_types=frozenset({"str"}),
-        allowed_statuses=frozenset({"code_proven", "config_declared"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default",
+            "config_declared", "ambiguous", "oracle_missing"}),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({"attention_detail", "json"}),
         unknown_policy="unknown_banner",
         conformance="fact_markers",
+    ),
+    FactDefinition(
+        key="mask_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({
+            "attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.attention", "mask_schedule"),
+        ),
+        unknown_policy="unknown_banner",
+        notes=("U8-C: one exact source-enacted mask decision per repeated "
+               "layer slot; config tokens only select already-proven builders "
+               "and window/chunk values require exact builder consumption"),
+    ),
+    FactDefinition(
+        key="position_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.attention", "position_schedule"),
+        ),
+        unknown_policy="unknown_banner",
+        notes=("U8-B: each layer projects only an exact applied Q/K rotation, "
+               "or score-side bias. Inactive "
+               "rotation is unknown—not fabricated NoPE—and config geometry "
+               "is consumed only after the operation binds its exact path."),
+    ),
+    FactDefinition(
+        key="rope_theta",
+        value_types=frozenset({"int", "float"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "position_frequency_initialization",
+                "opgraph", "rope_theta", frozenset({"field"}),
+                frozenset({
+                    ("q_rope", "k_rope"),
+                    ("mla_q_rope_apply",),
+                    ("mla_k_rope_apply",),
+                }),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                    "renderers.html.block_views.attention."
+                    "build_mla_query_path_view",
+                    "renderers.html.block_views.attention."
+                    "build_mla_kv_cache_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes=("U8-B: the exact selected local initializer returns the "
+               "inverse-power base stored into the exact frequency state "
+               "that reaches the proven Q/K rotation; parameter presence "
+               "alone cannot author this fact."),
+    ),
+    FactDefinition(
+        key="rope_initialization",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.attention", "position_frequency_initialization",
+                "opgraph", "rope_initialization", frozenset({"field"}),
+                frozenset({
+                    ("q_rope", "k_rope"),
+                    ("mla_q_rope_apply",),
+                    ("mla_k_rope_apply",),
+                }),
+                frozenset({
+                    "renderers.html.block_views.attention."
+                    "build_attention_view",
+                    "renderers.html.block_views.attention."
+                    "build_mla_query_path_view",
+                    "renderers.html.block_views.attention."
+                    "build_mla_kv_cache_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes=("U8-B: exact selected local or imported-registry frequency "
+               "initializer plus every present config operand observed by its "
+               "callable; the registry token is an address, never semantics."),
+    ),
+    FactDefinition(
+        key="position_addition",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_proven"}),
+        owner_patterns=frozenset({"decoder.input"}),
+        projections=frozenset({"architecture_view", "card_chip", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder.input", "position_addition", "html",
+                "position_addition", frozenset({"field"}),
+                frozenset({("position_ids", "position_embed", "position_add")}),
+                frozenset({
+                    "renderers.html.views._build_architecture_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes=("U8-B: an exact learned or fixed positional vector is added "
+               "to the token embedding before the repeated stack; this fact "
+               "must never be copied onto an attention layer."),
+    ),
+    FactDefinition(
+        key="mixer_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.attention", "mixer_schedule"),
+        ),
+        unknown_policy="unknown_banner",
+        notes=("U8-D: every layer joins the exact repeated-block index, "
+               "selected child construction, exact block invocation and the "
+               "child's U6 mechanism; config tokens are selector operands only"),
+    ),
+    FactDefinition(
+        key="cross_attention_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route(
+                "decoder.attention", "cross_attention_schedule"),
+        ),
+        unknown_policy="omit",
+        notes=("U8-F: replacement cross-attention joins the exact heterogeneous "
+               "container invocation, per-layer selected block and Q-vs-K/V "
+               "formal lineage; additive cross-attention joins two distinct "
+               "exact attention constructions. Config lists cannot author it."),
     ),
     FactDefinition(
         key="sinks",
@@ -354,7 +593,8 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
     FactDefinition(
         key="qk_norm",
         value_types=frozenset({"bool"}),
-        allowed_statuses=frozenset({"code_proven", "code_and_config"}),
+        allowed_statuses=frozenset({
+            "code_proven", "code_and_config", "class_default"}),
         owner_patterns=frozenset({"decoder.attention"}),
         projections=frozenset({"attention_detail", "json"}),
         projection_routes=(
@@ -375,6 +615,35 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
         notes="U6: two exact norm applications descend from selected Q/K "
               "projections and feed the exact score operands. Only uniform "
               "stacks author this owner-level fact; schedules belong to U8.",
+    ),
+    FactDefinition(
+        key="qk_norm_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.attention", "qk_norm_schedule"),
+        ),
+        unknown_policy="unknown_banner",
+        notes=("U8-E: exact U6 Q/K normalization, exact mixer occurrence, "
+               "repeated-block index and every source-named gate agree per "
+               "layer; None is proven not-applicable to another mixer."),
+    ),
+    FactDefinition(
+        key="kv_sharing_schedule",
+        value_types=frozenset({"tuple"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder.attention"}),
+        projections=frozenset({"attention_detail", "json"}),
+        projection_routes=(
+            _layer_map_route("decoder.attention", "kv_sharing_schedule"),
+        ),
+        unknown_policy="omit",
+        notes=("U8-E: the exact attention forward reads and writes one "
+               "shared K/V mapping, and exact constructor selectors resolve "
+               "one earlier producer for every sharing layer. A raw count "
+               "or mixer-label scan cannot author this fact."),
     ),
     FactDefinition(
         key="qkv_clip",
@@ -657,6 +926,77 @@ REGISTRY: dict[str, FactDefinition] = _definition_map([
             "primary-return relation; unsupported return shapes, guarded or "
             "rival paths, and excessive path alternatives abstain; never "
             "borrows a repeated-layer norm"),
+    ),
+    FactDefinition(
+        key="codebook_streams",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder"}),
+        projections=frozenset({
+            "architecture_view", "params_annotation", "json",
+        }),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder", "codebook_streams", "html",
+                "codebook_streams", frozenset({"field"}),
+                frozenset({("tok_text", "embed", "lm_head")}),
+                frozenset({
+                    "renderers.html.views._build_architecture_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=(
+            "U8-F: exact repeated embedding and output-head containers are "
+            "summed/stacked by exact comprehensions and cite one shared exact "
+            "count operand; a num_codebooks declaration alone is powerless"),
+    ),
+    FactDefinition(
+        key="mtp_modules",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder"}),
+        projections=frozenset({"architecture_view", "json"}),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder", "mtp_modules", "html", "mtp_modules",
+                frozenset({"field"}), frozenset({("mtp",)}),
+                frozenset({
+                    "renderers.html.views._build_architecture_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        notes=("U8-F: an exact repeated auxiliary module executes two exact "
+               "norm lanes, concat, projection, one repeated-block-class "
+               "call and one output head; its exact count is only a bound "
+               "operand and cannot create the mechanism."),
+    ),
+    FactDefinition(
+        key="per_layer_embedding_pathway",
+        value_types=frozenset({"dict"}),
+        allowed_statuses=frozenset({"code_and_config", "class_default"}),
+        owner_patterns=frozenset({"decoder"}),
+        projections=frozenset({
+            "architecture_view", "card_chip", "json", "params_annotation",
+        }),
+        projection_routes=(
+            ProjectionRoute(
+                "decoder", "per_layer_embedding_pathway", "html",
+                "per_layer_embedding_pathway", frozenset({"field"}),
+                frozenset({("ple",)}),
+                frozenset({
+                    "renderers.html.views._build_architecture_view",
+                }),
+            ),
+        ),
+        unknown_policy="omit",
+        parameter_consumer=True,
+        notes=(
+            "U8-F: exact stage-side tensor construction is joined to an exact "
+            "loop-indexed repeated-block operand and a gated multiply/projection/"
+            "norm/state-add chain; width/vocabulary are config operands only"),
     ),
     # U2-R5 pilot: the vision/video projector out-width.  FactDefinition is the
     # SOLE projection-route authority (the policy no longer lives on a

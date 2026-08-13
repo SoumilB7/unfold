@@ -22,9 +22,9 @@ _VALID_UNITS = frozenset({"U7", "U8", "U10", "U11"})
 # model-source parse authority.  A future owning unit updates/shrinks these only
 # in the same commit that deletes or migrates the old authority.
 LEGACY_READER_IMPLEMENTATION_FINGERPRINT = (
-    "fa1e6452c14b6bd31b060f3044058facf9d0f12a7f5b74c69b9289b451a0fbb3")
+    "fa20fcd9f0d6620374b4ac24c9cd54f4fe7f46e5d6fe398271ffff548b0960dc")
 LEGACY_PARSE_CALLER_FINGERPRINT = (
-    "fb858b985a61052d95d7c852dd3a6d4f8b6d3ed58421e4141e59dce49e0a1480")
+    "c5c4beb51b1c0ec0c22a57505bc1c7eb8695fe5d71a87ed7b24191f8d978c487")
 
 
 @dataclass(frozen=True)
@@ -101,21 +101,6 @@ LEGACY_SEMANTIC_READERS = (
          "whole-file diffusion-attention score-scaling interpretation",
          callers=(
              "model_unfolder/adapters/diffusor/parser.py:_code_scores_scaled",
-         )),
-    _row("attention_causality_from_files", "U8",
-         "whole-file mask/causality interpretation",
-         callers=(
-             "model_unfolder/adapters/transformer/parser.py:_code_attention_causality",
-         )),
-    _row("decoder_moe_schedule_from_files", "U8",
-         "whole-file per-layer MoE selector interpretation",
-         callers=(
-             "model_unfolder/adapters/transformer/parser.py:_code_moe_schedule",
-         )),
-    _row("decoder_rope_dim_from_files", "U8",
-         "whole-file positional dimension interpretation",
-         callers=(
-             "model_unfolder/adapters/transformer/parser.py:_code_rope_dim",
          )),
     _row("denoiser_block_timestep_conditioning_from_files", "U10",
          "diffusion block conditioning interpretation",
@@ -254,15 +239,9 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/fusion.py", "_class_node",
            "legacy_model_source", "U9",
            "fusion evidence reparses its component source"),
-    _parse("model_unfolder/evidence/patterns.py", "_find_decoder_layer",
-           "legacy_model_source", "U8",
-           "shared transformer semantic class selector"),
     _parse("model_unfolder/evidence/patterns.py", "_parse_defs",
-           "legacy_model_source", "U8",
-           "shared transformer/diffusion semantic parser"),
-    _parse("model_unfolder/evidence/patterns.py",
-           "attention_causality_from_files", "legacy_model_source", "U8",
-           "whole-file causality interpreter"),
+           "legacy_model_source", "U10",
+           "diffusion-only semantic parser retained for the U10 migration"),
     _parse("model_unfolder/evidence/patterns.py",
            "attention_score_scaling_from_files", "legacy_model_source", "U10",
            "whole-file diffusion score-scaling interpreter"),
@@ -278,12 +257,6 @@ PARSE_AUTHORITY_SITES = (
     _parse("model_unfolder/evidence/patterns.py",
            "diffusion_single_stream_fusion_from_files", "legacy_model_source",
            "U10", "diffusion stream interpreter"),
-    _parse("model_unfolder/evidence/position.py", "_call_line",
-           "legacy_model_source", "U8",
-           "position reader reparses source for a call span"),
-    _parse("model_unfolder/evidence/position.py", "_class_forward",
-           "legacy_model_source", "U8",
-           "position reader reparses source for a class forward"),
     _parse("model_unfolder/evidence/projector.py", "_class_node",
            "legacy_model_source", "U9",
            "projector evidence reparses its component source"),

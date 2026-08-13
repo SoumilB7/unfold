@@ -15,10 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .attention_storage import producer_sources_reaching_expressions
-from .construction_calls import (
-    resolve_construction_call,
-    resolve_import_reference,
-)
+from .construction_calls import resolve_construction_call
 from .container_inventory import resolve_container_inventory
 from .decoder_block import DecoderBlockPath, decoder_block_path_for_config
 from .execution_flow import resolve_addressed_invocations
@@ -27,6 +24,7 @@ from .primitive_semantics import (
     classify_primitive_alternative,
     classify_primitive_call,
 )
+from .position_coordinate import coordinate_origin
 from .program_index import (
     BindingObservation,
     CallObservation,
@@ -41,13 +39,6 @@ from .reader_result import (
     ReaderProvenance,
     ReaderResult,
 )
-
-
-_COORDINATE_PROTOCOLS = frozenset({"torch.arange"})
-_COORDINATE_WRAPPERS = frozenset({
-    "clone", "contiguous", "expand", "expand_as", "long", "reshape",
-    "to", "type_as", "unsqueeze", "view",
-})
 
 
 @dataclass(frozen=True)
@@ -172,31 +163,20 @@ def read_learned_absolute_position(
         construction = resolve_construction_call(
             index, root, owner, invocation.call)
         primitive = classify_primitive_call(index, construction)
-        internal_coordinate = _internal_coordinate_embedding_protocol(
-            index, construction)
         if primitive.status == "resolved" and primitive.value == "embedding":
             primitive_calls.append((
                 invocation.call_site, invocation.call, primitive.provenance,
-                internal_coordinate))
-        elif internal_coordinate is not None:
-            # A subclass may override ``forward`` solely to construct exact
-            # coordinates before delegating to its exact nn.Embedding base.
-            # The generic primitive reader intentionally does not assume that
-            # every override preserves base semantics; this narrower protocol
-            # proves both the delegation and the coordinate construction.
-            primitive_calls.append((
-                invocation.call_site, invocation.call, (),
-                internal_coordinate))
+                None))
 
     coordinate_calls = []
     for site, call, primitive_provenance, internal_coordinate in primitive_calls:
         if not call.args:
             continue
-        coordinate = internal_coordinate or _coordinate_origin(
-            index, callable_symbol, call.args[0], call.span, frozenset())
+        coordinate = coordinate_origin(
+            index, callable_symbol, call.args[0], call.span)
         if coordinate is not None:
             coordinate_calls.append((
-                site, call, tuple(coordinate), primitive_provenance))
+                site, call, coordinate.spans, primitive_provenance))
     if not coordinate_calls:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
@@ -204,7 +184,7 @@ def read_learned_absolute_position(
 
     qualified = []
     for site, call, coordinate_spans, primitive_provenance in coordinate_calls:
-        additions = _qualifying_additions(
+        additions = pre_stack_additions_for_producer(
             index, callable_symbol, site, call, repeated_calls)
         for addition in additions:
             spans = [call.span, addition.span, *coordinate_spans]
@@ -241,8 +221,14 @@ def read_learned_absolute_position(
                 "unconditional addition -> exact repeated-child invocation")),))
 
 
-def _qualifying_additions(index, callable_symbol, producer_site, producer_call,
-                          repeated_calls):
+def pre_stack_additions_for_producer(
+        index, callable_symbol, producer_site, producer_call, repeated_calls):
+    """Exact producer -> addition -> repeated-child positive relation.
+
+    This helper is mechanism-neutral.  The caller must independently prove
+    what the producer is (learned embedding, fixed sinusoid, or another future
+    mechanism); a call reaching an addition is never itself position evidence.
+    """
     producer_calls = {producer_site: producer_call}
     out = []
     for binding in index.bindings_in(callable_symbol):
@@ -289,202 +275,6 @@ def _qualifying_additions(index, callable_symbol, producer_site, producer_call,
     return tuple(out)
 
 
-def _coordinate_origin(index, callable_symbol, expression, before, seen):
-    if expression is None or expression.span is None:
-        return None
-    key = (expression.kind, expression.span)
-    if key in seen:
-        return None
-    seen = seen | {key}
-    if expression.kind == "call" and expression.children:
-        target = _resolved_call_target(index, callable_symbol, expression)
-        if target in _COORDINATE_PROTOCOLS:
-            return (expression.span,)
-        callee = expression.children[0]
-        if callee.kind == "attribute" and callee.name in _COORDINATE_WRAPPERS \
-                and callee.children:
-            inner = _coordinate_origin(
-                index, callable_symbol, callee.children[0], expression.span, seen)
-            return ((*(inner or ()), expression.span) if inner else None)
-        return None
-    if expression.kind == "binop" and expression.operator in {"+", "-"} \
-            and len(expression.children) == 2:
-        origins = tuple(
-            _coordinate_origin(index, callable_symbol, child, before, seen)
-            for child in expression.children)
-        present = tuple(item for item in origins if item is not None)
-        if len(present) == 1:
-            return (*present[0], expression.span)
-        return None
-    if expression.kind == "name" and expression.name:
-        bindings = tuple(
-            item for item in index.bindings_in(callable_symbol)
-            if item.span is not None and _span_before(item.span, before)
-            and len(item.targets) == 1
-            and item.targets[0].kind == "name"
-            and item.targets[0].name == expression.name
-            and item.value is not None)
-        if not bindings:
-            return None
-        latest = max(bindings, key=lambda item: _span_key(item.span))
-        if latest.guard and not _exact_none_default_guard(
-                index, callable_symbol, expression.name, latest.guard):
-            return None
-        origin = _coordinate_origin(
-            index, callable_symbol, latest.value, latest.span, seen)
-        return ((*(origin or ()), latest.span) if origin else None)
-    return None
-
-
-def _exact_none_default_guard(index, callable_symbol, name, guard):
-    record = index.callable_by_symbol(callable_symbol)
-    param = next((item for item in (record.params if record else ())
-                  if item.name == name), None)
-    if param is None or not param.has_default or param.default is None \
-            or param.default.kind != "constant" \
-            or param.default.const_value is not None:
-        return False
-    step = guard[-1] if guard else None
-    test = step.test if step is not None and step.kind in {"if", "elif"} else None
-    if test is None or test.kind != "compare" or test.operator != "is" \
-            or len(test.children) != 2:
-        return False
-    left, right = test.children
-    return (
-        left.kind == "name" and left.name == name
-        and right.kind == "constant" and right.const_value is None
-    ) or (
-        right.kind == "name" and right.name == name
-        and left.kind == "constant" and left.const_value is None
-    )
-
-
-def _internal_coordinate_embedding_protocol(index, construction):
-    """Prove a coordinate-building override of one exact nn.Embedding base.
-
-    This covers source shapes such as OPT without teaching the generic
-    primitive classifier that every subclass override preserves its base.  The
-    protocol requires an exact external embedding base, a None-defaulted
-    coordinate formal, an exact cumsum branch for that formal, and one direct
-    unguarded ``super().forward(coordinate_expr)`` return.
-    """
-    if construction.status != "resolved" \
-            or construction.selected.kind != "internal":
-        return None
-    symbol = construction.selected.internal_symbol
-    class_record = index.class_by_symbol(symbol)
-    if class_record is None:
-        return None
-    embedding_bases = []
-    for base in class_record.bases:
-        proof = resolve_import_reference(index, symbol.source, None, base)
-        if proof is not None and proof.qualified_target in {
-                "torch.nn.Embedding",
-                "torch.nn.modules.sparse.Embedding"}:
-            embedding_bases.append((base, proof))
-    if len(embedding_bases) != 1:
-        return None
-    forward = type(symbol)(symbol.source, f"{symbol.qualified_name}.forward")
-    callable_record = index.callable_by_symbol(forward)
-    if callable_record is None:
-        return None
-    coordinate_params = tuple(
-        item for item in callable_record.params
-        if item.name != "self" and item.has_default
-        and item.default is not None
-        and item.default.kind == "constant"
-        and item.default.const_value is None)
-    if len(coordinate_params) != 1:
-        return None
-    coordinate_name = coordinate_params[0].name
-    bindings = tuple(
-        item for item in index.bindings_in(forward)
-        if len(item.targets) == 1
-        and item.targets[0].kind == "name"
-        and item.targets[0].name == coordinate_name
-        and item.value is not None)
-    if not bindings or any(
-            not _exact_none_default_guard(
-                index, forward, coordinate_name, item.guard)
-            for item in bindings):
-        return None
-    cumsum_calls = tuple(
-        call
-        for item in bindings
-        for call in _calls_in(item.value)
-        if _resolved_call_target(index, forward, call) == "torch.cumsum"
-        and len(call.children) >= 2
-        and call.children[1].kind == "name"
-        and call.children[1].name != coordinate_name)
-    if len(cumsum_calls) != 1:
-        return None
-    returns = tuple(index.return_observations_in(forward))
-    if len(returns) != 1 or returns[0].guard \
-            or returns[0].value is None \
-            or not _direct_super_forward_of(
-                returns[0].value, coordinate_name):
-        return None
-    base, proof = embedding_bases[0]
-    spans = tuple(dict.fromkeys(
-        span for span in (
-            class_record.span,
-            base.span,
-            proof.binding.span,
-            *(item.span for item in bindings),
-            cumsum_calls[0].span,
-            returns[0].span,
-        ) if isinstance(span, SourceSpan)))
-    return spans or None
-
-
-def _direct_super_forward_of(expression, coordinate_name):
-    if expression.kind != "call" or len(expression.children) != 2:
-        return False
-    callee, argument = expression.children
-    if callee.kind != "attribute" or callee.name != "forward" \
-            or len(callee.children) != 1:
-        return False
-    receiver = callee.children[0]
-    if receiver.kind != "call" or not receiver.children:
-        return False
-    super_callee = receiver.children[0]
-    return (
-        super_callee.kind == "name" and super_callee.name == "super"
-        and _contains_name(argument, coordinate_name)
-    )
-
-
-def _contains_name(expression, name):
-    return (
-        expression.kind == "name" and expression.name == name
-    ) or any(
-        _contains_name(child, name)
-        for child in expression.children
-        if isinstance(child, ExprNode)
-    ) or any(
-        _contains_name(child, name)
-        for _, child in expression.keyword_children
-        if isinstance(child, ExprNode)
-    )
-
-
-def _calls_in(expression):
-    out = [expression] if expression.kind == "call" else []
-    for child in expression.children:
-        if isinstance(child, ExprNode):
-            out.extend(_calls_in(child))
-    for _, child in expression.keyword_children:
-        if isinstance(child, ExprNode):
-            out.extend(_calls_in(child))
-    return tuple(out)
-
-
-def _resolved_call_target(index, caller, expression):
-    proof = resolve_import_reference(
-        index, caller.source, caller, expression.children[0])
-    return proof.qualified_target if proof is not None else None
-
-
 def _addition_nodes(expression):
     out = []
     if expression.kind == "binop" and expression.operator == "+" \
@@ -523,4 +313,5 @@ __all__ = [
     "LearnedAbsolutePositionEvidence",
     "decoder_learned_absolute_position_for_path",
     "read_learned_absolute_position",
+    "pre_stack_additions_for_producer",
 ]

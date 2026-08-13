@@ -24,6 +24,7 @@ from .construction_calls import (
 )
 from .expression_value import evaluate_owner_expression
 from .models import SourceBundle
+from .primitive_semantics import classify_primitive_call
 from .position_application import (
     QKHalfTurnApplicationEvidence,
     decoder_qk_half_turn_application_for_path,
@@ -46,7 +47,10 @@ _TRANSPARENT_METHODS = frozenset({
     "contiguous", "expand", "reshape", "to", "transpose", "view",
 })
 _FULL_VALUE_METHODS = frozenset({
-    "contiguous", "expand", "flatten", "reshape", "squeeze", "to",
+    # Closed Tensor methods that preserve every lane element.  ``clamp`` may
+    # change values, but never selects/drops/reorders an element; admitting it
+    # is therefore geometry-only and cannot itself prove a rotary mechanism.
+    "clamp", "contiguous", "expand", "flatten", "reshape", "squeeze", "to",
     "transpose", "unsqueeze", "view",
 })
 _FUSED_LANE_PROTOCOLS = frozenset({
@@ -116,12 +120,16 @@ class PositionApplicationGeometryEvidence:
                        for path, kind, _value in self.width_config_values):
             raise ValueError("geometry config values cite exact typed paths")
         source = self.owner_occurrence.root.source
-        if not self.spans or any(not isinstance(span, SourceSpan)
-                                 or span.source != source for span in self.spans):
-            raise ValueError("position geometry provenance is source-qualified")
+        config_spans = set(self.application.guard_spans)
+        source_spans = set(self.spans) - config_spans
+        if not self.spans or not config_spans.issubset(self.spans) \
+                or any(not isinstance(span, SourceSpan) for span in self.spans) \
+                or any(span.source != source for span in source_spans):
+            raise ValueError(
+                "position geometry source and config provenance are qualified")
         required = {self.application.application_call.span}
         required.update(item.span for item in expressions if item is not None)
-        if None in required or not required.issubset(self.spans):
+        if None in required or not required.issubset(source_spans):
             raise ValueError("position geometry cites application and every expression")
 
 
@@ -316,6 +324,8 @@ def _full_projection_inputs(index, root, block_occurrence, application):
                 index, callable_symbol, expression,
                 application.application_call.span,
                 frozenset(call.span for call in producer_calls.values()),
+                root=root,
+                owner=application.attention_occurrence,
                 allow_fused_split=storage.value.mode == "fused_qkv",
                 seen=frozenset()):
             return False
@@ -328,7 +338,7 @@ def _full_projection_inputs(index, root, block_occurrence, application):
 
 def _whole_projection_lane(
         index, callable_symbol, expression, before, producer_spans, *,
-        allow_fused_split, seen):
+        root, owner, allow_fused_split, seen):
     """Prove that an expression retains every element of one Q/K lane.
 
     Producer reachability alone is insufficient: a subscript or narrowing call
@@ -352,7 +362,8 @@ def _whole_projection_lane(
         binding = matches[-1]
         return _whole_projection_lane(
             index, callable_symbol, binding.value, binding.span,
-            producer_spans, allow_fused_split=allow_fused_split,
+            producer_spans, root=root, owner=owner,
+            allow_fused_split=allow_fused_split,
             seen=seen | {key})
     if expression.kind != "call" or not expression.children:
         return False
@@ -364,7 +375,8 @@ def _whole_projection_lane(
         if callee.name in _FULL_VALUE_METHODS:
             return _whole_projection_lane(
                 index, callable_symbol, callee.children[0], expression.span,
-                producer_spans, allow_fused_split=allow_fused_split,
+                producer_spans, root=root, owner=owner,
+                allow_fused_split=allow_fused_split,
                 seen=seen)
         # The storage proof has already established one producer feeding an
         # exact >=3-lane unpack.  At this boundary the method is therefore a
@@ -372,7 +384,22 @@ def _whole_projection_lane(
         if allow_fused_split and callee.name in _FUSED_LANE_METHODS:
             return _whole_projection_lane(
                 index, callable_symbol, callee.children[0], expression.span,
-                producer_spans, allow_fused_split=True, seen=seen)
+                producer_spans, root=root, owner=owner,
+                allow_fused_split=True, seen=seen)
+    # A source-proven LayerNorm/RMSNorm is value-preserving in lane extent:
+    # it changes values but neither slices nor drops tensor elements.  This is
+    # admitted only through the exact construction occurrence and primitive
+    # classifier; an arbitrary self-field call remains opaque.  Qwen3's
+    # q_norm(q_proj(...)) / k_norm(k_proj(...)) is the real counterexample.
+    if call is not None and len(call.args) == 1 and not call.kwargs:
+        construction = resolve_construction_call(index, root, owner, call)
+        primitive = classify_primitive_call(index, construction)
+        if primitive.status == "resolved" \
+                and primitive.value in {"layernorm", "rmsnorm"}:
+            return _whole_projection_lane(
+                index, callable_symbol, call.args[0], expression.span,
+                producer_spans, root=root, owner=owner,
+                allow_fused_split=allow_fused_split, seen=seen)
     if allow_fused_split and call is not None and call.args:
         proof = resolve_import_reference(
             index, callable_symbol.source, callable_symbol, call.callee)
@@ -380,7 +407,8 @@ def _whole_projection_lane(
                 and proof.qualified_target in _FUSED_LANE_PROTOCOLS:
             return _whole_projection_lane(
                 index, callable_symbol, call.args[0], expression.span,
-                producer_spans, allow_fused_split=True, seen=seen)
+                producer_spans, root=root, owner=owner,
+                allow_fused_split=True, seen=seen)
     return False
 
 

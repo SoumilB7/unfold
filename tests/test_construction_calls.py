@@ -88,6 +88,26 @@ def test_internal_call_round_trips_to_real_owner_graph_node(tmp_path):
     assert selected.occurrence.site == selected.site.site_id
 
 
+def test_graph_selected_conditional_constructor_candidate_is_not_rejected(
+        tmp_path):
+    source = _SOURCE.replace(
+        "class Child:",
+        "class Other:\n"
+        "        def __init__(self, config): pass\n"
+        "        def forward(self, x): return x\n"
+        "    class Child:").replace(
+        "def __init__(self, config):\n            self.internal = Child(config)",
+        "def __init__(self, config, choose_other=False):\n"
+        "            chosen = Other if choose_other else Child\n"
+        "            self.internal = chosen(config)")
+    index, root, stage = _pipeline(tmp_path, source)
+    result = resolve_construction_call(
+        index, root, stage.occurrence, _call(index, stage, "internal"))
+    assert result.status == "resolved"
+    assert len(result.selected.site.candidates) == 2
+    assert result.selected.internal_symbol.qualified_name == "Child"
+
+
 @pytest.mark.parametrize("field,target", [
     ("embedding", "torch.nn.Embedding"),
     ("norm", "torch.nn.LayerNorm"),

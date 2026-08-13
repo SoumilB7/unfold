@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -97,20 +98,21 @@
   },
   "hash_signature": [
     "0751c0064be790891edf52f8bed807bb",
+    "1b8324f57879475acf6c39e7365f7354",
     "2c40b324832c488a353ff4a3ac719206",
+    "446dbdf34699f8ac07a5717439470221",
     "48125ea1e7d6a56703533d06cb377d75",
     "565270f4d8543fb166a76073d87e00cc",
-    "5833df436272502545aff43d0ec2b0a5",
-    "6edb93fbf90f9845aa37908a0e28c450",
-    "98b551a864d0cf05de9cdc1f9a12919e",
     "a90de20e846dafb09ac1ab7b744f0556",
     "af157e1f2aadd364958e472166241ee2",
     "b354d4cb12016360e1a9612e0000ac6e",
     "ba0a8422185c20fb776481aa67bfa522",
     "badaa1497d2255d8845e9ce6ea4314aa",
     "bf7b50ecd75684e8a39b4248976719b8",
+    "c5cc5eee15e31c66f7795620d62aae28",
     "c9cee6b79d339d76616db6a1f685c359",
     "cab11650142d0a456aca749072e2d76c",
+    "d5bf84f9a38ff56360a296307e6402ed",
     "ecfc076a5de5fdabf3744363aaa85405",
     "f3b14960315185f1921ac056d77d57be",
     "f9cd9d6b2d90fbb0fe4c826bad7ef102"
@@ -130,16 +132,16 @@
     "b354d4cb12016360e1a9612e0000ac6e",
     "ba0a8422185c20fb776481aa67bfa522",
     "badaa1497d2255d8845e9ce6ea4314aa",
-    "bc4aa7b8151ce2268abd3302cea99711",
-    "be709b713c6bdb1e00cfd4b8acdede4d",
     "bf7b50ecd75684e8a39b4248976719b8",
     "c9cee6b79d339d76616db6a1f685c359",
     "cab11650142d0a456aca749072e2d76c",
-    "ecfc076a5de5fdabf3744363aaa85405"
+    "ecfc076a5de5fdabf3744363aaa85405",
+    "f3b14960315185f1921ac056d77d57be",
+    "f9cd9d6b2d90fbb0fe4c826bad7ef102"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/fluxtransformer2dmodel",
     "manifest": true,
-    "png_count": 18
+    "png_count": 19
   }
 }

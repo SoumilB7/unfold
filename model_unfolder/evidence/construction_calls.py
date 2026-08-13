@@ -107,9 +107,11 @@ class ConstructionAlternative:
                     or self.internal_occurrence.sites[:-1] != self.occurrence.parent.sites \
                     or self.internal_occurrence.sites[-1] != self.site.site_id:
                 raise ValueError("the internal occurrence is the exact immediate site child")
-            if len(self.site.candidates) != 1 \
-                    or self.site.candidates[0].symbol != self.internal_symbol:
-                raise ValueError("the unique construction candidate is the internal symbol")
+            if not any(candidate.symbol == self.internal_symbol
+                       for candidate in self.site.candidates):
+                raise ValueError(
+                    "the graph-selected internal symbol belongs to the exact "
+                    "construction candidate census")
         elif self.kind == "external":
             if self.external_reference is None:
                 raise ValueError("an external alternative carries exact import proof")

@@ -184,8 +184,8 @@ def test_gemma2_class_supplied_schedule_is_class_default_never_checkpoint():
     assert provenance["sliding_window"] == ca.CHECKPOINT_DECLARED
 
 
-def test_gemma2_class_schedule_is_a_U8_counterfactual_not_a_U2_success():
-    """§3.3: the class-supplied schedule is DEFERRED to U8, not authored in U2.
+def test_gemma2_missing_executable_schedule_stays_unknown_after_u8():
+    """A class overlay is still not checkpoint evidence after U8.
 
     An earlier version of this test asserted the EMBEDDED encoder builds the
     heterogeneous stack — but that only happened because the embedded prep used
@@ -204,12 +204,13 @@ def test_gemma2_class_schedule_is_a_U8_counterfactual_not_a_U2_success():
         f"the class overlay authored an embedded schedule (tags={tags}) — §3.3 "
         "forbids a merge-driven structural delta before U8")
 
-    # standalone: identical shadow behaviour — uniformly sliding
+    # Standalone is equally honest: the raw checkpoint omits the executable
+    # selector operand, so source cannot choose a schedule and stays unknown.
     flat = mu.unfold(_gemma2_raw()).to_ir()
     masks = {(layer.get("attention") or {}).get("mask")
              for layer in (flat.get("layers") or [])}
-    assert masks == {"sliding"}, (
-        f"standalone must match embedded in shadow mode, got {masks}")
+    assert masks == {"unknown"}, (
+        f"missing executable schedule evidence must stay unknown, got {masks}")
 
 
 def test_a_class_supplied_field_is_not_a_checkpoint_occurrence():

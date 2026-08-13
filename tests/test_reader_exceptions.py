@@ -55,7 +55,7 @@ _BASELINE = {
     "adapters/transformer/debug.py": 1,
     # U7: the retired whole-file FFN-width reader removed another broad
     # compatibility wrapper.  Lock the real 14 -> 13 reduction.
-    "adapters/transformer/parser.py": 10,
+    "adapters/transformer/parser.py": 6,
     "adapters/transformer/special_parts/modalities/conditioning.py": 2,
     # U2 substrate: the duplicate hydration impl was DELETED, converting one
     # broad except away (2 -> 1) — the win is locked here.
@@ -66,7 +66,9 @@ _BASELINE = {
     # TYPED PreparationFailure — the "reader failure becomes a typed failure"
     # the ratchet wants — so this one is pinned, not silenced.
     "evidence/document.py": 1,
-    "evidence/context.py": 1,
+    # U6/U7 qualification audit: config-class candidates now use the ONE typed
+    # document-preparation primitive; the duplicate broad wrapper is gone.
+    "evidence/context.py": 0,
     "evidence/identity_guard.py": 1,
     "evidence/patterns.py": 1,
     "evidence/sources.py": 2,

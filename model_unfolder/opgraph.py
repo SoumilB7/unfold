@@ -556,8 +556,10 @@ def _unknown_attention_region(attn: dict, hidden: int | None) -> Region:
 
 def _head_geometry(attn: dict, hidden: int | None) -> tuple[int, int, int, int | None, int | None]:
     heads = attn.get("num_heads") or 0
-    kv_heads = attn.get("num_kv_heads") or heads
-    head_dim = attn.get("head_dim") or ((hidden // heads) if hidden and heads else 0)
+    kv_heads = attn.get("num_kv_heads") or 0
+    # U6 qualification: neither the opgraph nor any later consumer may
+    # reconstruct a withheld source factor as hidden//heads.
+    head_dim = attn.get("head_dim") or 0
     q_w = heads * head_dim if heads and head_dim else None
     kv_w = kv_heads * head_dim if kv_heads and head_dim else None
     return heads, kv_heads, head_dim, q_w, kv_w
@@ -870,6 +872,12 @@ def _sdpa_region(attn: dict, hidden: int | None) -> Region:
                    and 0 < rope_dim < head_dim)
         rope_caption = ([f"rot {rope_dim} · pass {head_dim - rope_dim} dims"]
                         if partial else [])
+        if attn.get("rope_theta") is not None:
+            rope_caption.append(f"θ {attn['rope_theta']:g}")
+        initialization = attn.get("rope_initialization")
+        if isinstance(initialization, dict) \
+                and initialization.get("kind") == "imported_registry":
+            rope_caption.append("scaled frequency initialization")
         ops += [
             Op("q_rope", "rope", ["apply RoPE", "Q"] + rope_caption),
             Op("k_rope", "rope", ["apply RoPE", "K"] + rope_caption),

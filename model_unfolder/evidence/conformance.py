@@ -514,30 +514,12 @@ def check_fact_conformance(
             problems.append(ConformanceProblem(
                 "fabricated_attention", "mla", f"{family}/attention_kind",
                 source_component=component))
-    if _model_type(target):
-        from .position import decoder_positional_evidence
-        position = decoder_positional_evidence(target, source=source, bundle=bundle)
-        if position.status == "ambiguous":
-            problems.append(ConformanceProblem(
-                "unresolved", "position", f"{family}/position",
-                source_component=position.component,
-            ))
-        elif position.status == "proven":
-            code_kinds = set(position.kinds)
-            drawn_kinds = _drawn_position_kinds(ir)
-            evidence = position.mechanisms[0] if position.mechanisms else None
-            for kind in sorted(drawn_kinds - code_kinds):
-                problems.append(ConformanceProblem(
-                    "fabricated_position", kind, f"{family}/position",
-                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
-                    getattr(evidence, "line", None), position.component,
-                ))
-            for kind in sorted(code_kinds - drawn_kinds):
-                problems.append(ConformanceProblem(
-                    "missing_position", kind, f"{family}/position",
-                    getattr(evidence, "class_name", ""), getattr(evidence, "source_file", ""),
-                    getattr(evidence, "line", None), position.component,
-                ))
+    # Position is deliberately not re-read here.  The parser's exact
+    # occurrence-qualified readers author ``decoder.attention.position_schedule``
+    # and Sable's blocking qualification net joins that same fact to every
+    # canonical layer projection.  The retired whole-file reader was a second
+    # architectural authority and could disagree with the parser's owner and
+    # selected occurrence.
     for key, spec in representatives.items():
         view = key.split("/", 1)[1]
         code = resolve_view_code(family, view, spec, forward_ops, cmap, architecture)
@@ -823,31 +805,6 @@ def _storage_config_path_for_conformance(
         path = tuple(part for part in source_component.split(".") if part)
         return path or None
     return () if not groups or set(groups) <= {"root"} else None
-
-
-def _drawn_position_kinds(ir: dict) -> set[str]:
-    kinds: set[str] = set()
-    value = (ir.get("extras") or {}).get("position_encoding")
-    if isinstance(value, dict) and value.get("kind"):
-        kinds.add(str(value["kind"]))
-    elif isinstance(value, str):
-        kinds.add(value)
-    model_block_ids = {
-        block.get("id")
-        for block in (((ir.get("extras") or {}).get("render") or {}).get("model_blocks") or [])
-        if isinstance(block, dict)
-    }
-    if {"position_embed", "position_add"} <= model_block_ids and isinstance(value, dict):
-        for item in value.get("mechanisms") or []:
-            if isinstance(item, dict) and item.get("application") == "embedding_add":
-                kinds.add(str(item.get("kind")))
-    for layer in ir.get("layers") or []:
-        attn = layer.get("attention") or {}
-        if attn.get("position_kind"):
-            kinds.add(str(attn["position_kind"]))
-        elif attn.get("rope") and attn.get("kind") != "gated_delta":
-            kinds.add("rope")
-    return kinds
 
 
 def check_nested_conformance(

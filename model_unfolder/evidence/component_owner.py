@@ -62,6 +62,29 @@ class OwnerOccurrenceId:
 
 
 @dataclass(frozen=True)
+class ConfigOverride:
+    """One exact literal write to a config clone before child construction.
+
+    This is value/address evidence only.  It does not assign architectural
+    meaning to the path; a mechanism reader must still prove that its exact
+    owner consumes the value.
+    """
+
+    path: ConfigPrefix
+    value: object
+    span: SourceSpan
+
+    def __post_init__(self) -> None:
+        if not self.path or any(
+                not isinstance(part, str) or not part for part in self.path):
+            raise ValueError("a config override has one exact non-empty path")
+        if not isinstance(self.value, (str, int, float, bool, type(None))):
+            raise TypeError("a config override carries a scalar literal")
+        if not isinstance(self.span, SourceSpan):
+            raise TypeError("a config override retains its exact assignment span")
+
+
+@dataclass(frozen=True)
 class ConfigBinding:
     """All config-prefix candidates proven for one child parameter."""
 
@@ -69,6 +92,7 @@ class ConfigBinding:
     prefixes: tuple[ConfigPrefix, ...]
     origin: str = "constructor_argument"
     invalidated_paths: tuple[ConfigPrefix, ...] = ()
+    normalized_overrides: tuple[ConfigOverride, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.parameter:
@@ -87,6 +111,15 @@ class ConfigBinding:
         invalidated = tuple(dict.fromkeys(self.invalidated_paths))
         if invalidated != self.invalidated_paths:
             object.__setattr__(self, "invalidated_paths", invalidated)
+        if any(not isinstance(item, ConfigOverride)
+               for item in self.normalized_overrides):
+            raise TypeError("normalized overrides are typed ConfigOverride values")
+        if len({item.path for item in self.normalized_overrides}) \
+                != len(self.normalized_overrides):
+            raise ValueError("one config binding carries one override per path")
+        if any(item.path not in self.invalidated_paths
+               for item in self.normalized_overrides):
+            raise ValueError("a normalized override closes an invalidated path")
 
     @property
     def resolved_prefix(self) -> ConfigPrefix | None:
@@ -108,6 +141,17 @@ class ConfigBinding:
             return None
         return (*self.prefixes[0], *local_path)
 
+    def normalized_override(
+            self, local_path: ConfigPrefix) -> ConfigOverride | None:
+        """The exact literal replacing ``local_path``, if uniquely proven."""
+        if not isinstance(local_path, tuple) or any(
+                not isinstance(part, str) or not part for part in local_path):
+            raise TypeError("a local config path is tuple[str, ...]")
+        matches = tuple(
+            item for item in self.normalized_overrides
+            if item.path == local_path)
+        return matches[0] if len(matches) == 1 else None
+
 
 @dataclass(frozen=True)
 class _ConfigFlow:
@@ -117,6 +161,7 @@ class _ConfigFlow:
     invalidated_paths: tuple[ConfigPrefix, ...] = ()
     origin: str = "alias"
     clone_span: SourceSpan | None = None
+    normalized_overrides: tuple[ConfigOverride, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -333,6 +378,7 @@ def resolve_owner_graph(
         root_symbol,
         occurrence=occurrence,
         config_bindings=bindings,
+        argument_values=resolver.root_argument_values(root_symbol),
         prefix_candidates=((),),
         via_site=None,
         via_field="",
@@ -393,7 +439,8 @@ def resolve_child_config_bindings(
         raise ValueError("the child is an exact candidate of the construction site")
     flows = {
         binding.parameter: _ConfigFlow(
-            binding.prefixes, binding.invalidated_paths, binding.origin)
+            binding.prefixes, binding.invalidated_paths, binding.origin,
+            normalized_overrides=binding.normalized_overrides)
         for binding in parent.config_bindings
     }
     return _Resolver(index, 64)._child_bindings(
@@ -443,9 +490,24 @@ class _Resolver:
         )
         return (), (unresolved,)
 
+    def root_argument_values(self, root_symbol):
+        """Literal defaults known without inventing loader-supplied values."""
+        from .expression_eval import ConfigExpressionEvaluator
+
+        evaluator = ConfigExpressionEvaluator((), {})
+        out = {}
+        for param in self._params(root_symbol):
+            if not param.has_default:
+                continue
+            value = evaluator.expression(param.default)
+            if value is not None:
+                out[param.name] = value
+        return out
+
     # -- recursive graph ------------------------------------------------- #
 
     def build(self, owner_symbol, *, occurrence, config_bindings,
+              argument_values,
               prefix_candidates, via_site, via_field, via_kind,
               ancestor_symbols, inherited_unresolved=()):
         unresolved = list(inherited_unresolved)
@@ -470,7 +532,8 @@ class _Resolver:
 
         children: list[OwnerNode] = []
         param_prefixes = {binding.parameter: _ConfigFlow(
-            binding.prefixes, binding.invalidated_paths, binding.origin)
+            binding.prefixes, binding.invalidated_paths, binding.origin,
+            normalized_overrides=binding.normalized_overrides)
                           for binding in config_bindings}
         next_ancestors = ancestor_symbols + (owner_symbol,)
         sites = self._owner_sites(owner_symbol)
@@ -479,6 +542,7 @@ class _Resolver:
             if site.target_kind == "field" and site.target in rival_fields:
                 continue
             self._process_site(site, owner_symbol, occurrence, param_prefixes,
+                               argument_values,
                                children, unresolved, next_ancestors)
         return OwnerNode(occurrence, owner_symbol, tuple(config_bindings),
                          tuple(prefix_candidates), via_site, via_field, via_kind,
@@ -535,7 +599,7 @@ class _Resolver:
         return rivals
 
     def _process_site(self, site, owner_symbol, parent_occurrence,
-                      param_prefixes, children, unresolved,
+                      param_prefixes, argument_values, children, unresolved,
                       ancestor_symbols) -> None:
         method = self._self_helper(site, owner_symbol)
         if method is None:
@@ -543,6 +607,7 @@ class _Resolver:
                 site, field=site.target, via_kind=site.target_kind or "field",
                 owner_symbol=owner_symbol, parent_occurrence=parent_occurrence,
                 occurrence_sites=(site.site_id,), param_prefixes=param_prefixes,
+                argument_values=argument_values,
                 children=children, unresolved=unresolved,
                 ancestor_symbols=ancestor_symbols,
             )
@@ -583,15 +648,16 @@ class _Resolver:
             returned, field=site.target, via_kind="return",
             owner_symbol=owner_symbol, parent_occurrence=parent_occurrence,
             occurrence_sites=(site.site_id, returned.site_id),
-            param_prefixes=param_prefixes, children=children,
+            param_prefixes=param_prefixes, argument_values=argument_values,
+            children=children,
             unresolved=unresolved, ancestor_symbols=ancestor_symbols,
         )
 
     def _resolve_and_recurse(self, site, *, field, via_kind, owner_symbol,
                              parent_occurrence, occurrence_sites,
-                             param_prefixes, children, unresolved,
+                             param_prefixes, argument_values, children, unresolved,
                              ancestor_symbols) -> None:
-        child_symbol, kind = self._resolve_child(site)
+        child_symbol, kind = self._resolve_child(site, argument_values)
         if child_symbol is None:
             unresolved.append(UnresolvedChild(
                 parent_occurrence, field, kind, site.site_id, site.span,
@@ -614,12 +680,15 @@ class _Resolver:
         child_occurrence = parent_occurrence.child(*occurrence_sites)
         bindings = self._child_bindings(
             site, child_symbol, param_prefixes, parent_occurrence)
+        child_argument_values = self._child_argument_values(
+            site, child_symbol, argument_values)
         prefix_candidates = _unique_prefixes(*(
             prefix for binding in bindings for prefix in binding.prefixes))
         children.append(self.build(
             child_symbol,
             occurrence=child_occurrence,
             config_bindings=bindings,
+            argument_values=child_argument_values,
             prefix_candidates=prefix_candidates,
             via_site=occurrence_sites[-1],
             via_field=field,
@@ -629,9 +698,18 @@ class _Resolver:
 
     # -- exact child symbol resolution ---------------------------------- #
 
-    def _resolve_child(self, site):
+    def _resolve_child(self, site, argument_values):
         candidates = site.candidates
         if len(candidates) >= 2:
+            selected = self._selected_local_constructor_alias(
+                site, candidates, argument_values)
+            if selected is not None:
+                if selected.symbol is not None:
+                    return selected.symbol, "resolved_local_alias"
+                imported = self._resolve_import_binding(
+                    site.owner.source, selected)
+                if len(imported) == 1:
+                    return imported[0], "resolved_local_alias_import"
             return None, "rival_owner"
         if not candidates:
             return None, "dynamic"
@@ -644,6 +722,86 @@ class _Resolver:
         if len(imported) > 1:
             return None, "ambiguous_import"
         return None, "external"
+
+    def _selected_local_constructor_alias(
+            self, site, candidates, argument_values):
+        """Select one preserved local class alias from exact literal inputs."""
+        constructor = site.constructor
+        if constructor.kind != "call" or not constructor.children:
+            return None
+        callee = constructor.children[0]
+        if callee.kind != "name" or not callee.name \
+                or not site.via.startswith("local_constructor_alias:"):
+            return None
+        bindings = tuple(
+            item for item in self.program_index.bindings_in(
+                site.enclosing_callable)
+            if item.span is not None and site.span is not None
+            and item.span.source == site.span.source
+            and (item.span.line, item.span.col) < (site.span.line, site.span.col)
+            and not item.guard and len(item.targets) == 1
+            and item.targets[0].kind == "name"
+            and item.targets[0].name == callee.name)
+        if len(bindings) != 1 or bindings[0].value is None \
+                or bindings[0].value.kind != "ifexp" \
+                or len(bindings[0].value.children) != 3:
+            return None
+        from .expression_eval import ConfigExpressionEvaluator
+
+        expression = bindings[0].value
+        body, test, alternative = expression.children
+        evaluator = ConfigExpressionEvaluator(
+            (), {}, env=dict(argument_values or {}))
+        decision = evaluator.expression(test)
+        if decision is None or not isinstance(decision.value, bool):
+            return None
+        selected_reference = body if decision.value else alternative
+        matches = tuple(
+            item for item in candidates
+            if item.reference == selected_reference)
+        return matches[0] if len(matches) == 1 else None
+
+    def _child_argument_values(self, site, child_symbol, parent_values):
+        """Bind exact constructor literals/defaults for address decisions only."""
+        from .expression_eval import ConfigExpressionEvaluator, locals_before
+
+        init = self._init_of(child_symbol)
+        if init is None:
+            return {}
+        evaluator = ConfigExpressionEvaluator(
+            (), {}, env=dict(parent_values or {}))
+        if site.span is not None:
+            locals_before(
+                self.program_index, site.enclosing_callable,
+                site.span, evaluator)
+        params = tuple(
+            item for item in init.params
+            if item.name != "self" and item.kind not in {"vararg", "kwarg"})
+        positional = tuple(
+            item for item in params if item.kind in {"positional", "posonly"})
+        out = {}
+        supplied = set()
+        for param, actual in zip(positional, site.args):
+            supplied.add(param.name)
+            value = evaluator.expression(actual)
+            if value is not None:
+                out[param.name] = value
+        by_name = {item.name: item for item in params}
+        for name, actual in site.kwargs:
+            if name not in by_name:
+                continue
+            supplied.add(name)
+            value = evaluator.expression(actual)
+            if value is not None:
+                out[name] = value
+        literal = ConfigExpressionEvaluator((), {})
+        for param in params:
+            if param.name in supplied or not param.has_default:
+                continue
+            value = literal.expression(param.default)
+            if value is not None:
+                out[param.name] = value
+        return out
 
     def _resolve_import_binding(self, source, candidate) -> tuple[SymbolId, ...]:
         reference = candidate.reference
@@ -724,12 +882,14 @@ class _Resolver:
         for index, argument in enumerate(site.args):
             if index >= len(positional):
                 break
-            flow = _arg_config_flow(argument, param_prefixes)
+            flow = self._argument_config_flow_at_site(
+                argument, site, param_prefixes)
             if flow and flow.prefixes:
                 found[positional[index].name] = flow
         for name, argument in site.kwargs:
             if name in all_params:
-                flow = _arg_config_flow(argument, param_prefixes)
+                flow = self._argument_config_flow_at_site(
+                    argument, site, param_prefixes)
                 if flow and flow.prefixes:
                     found[name] = flow
 
@@ -737,10 +897,55 @@ class _Resolver:
             name, flow.prefixes,
             ("transformed_constructor_argument"
              if flow.invalidated_paths else "constructor_argument"),
-            flow.invalidated_paths)
+            flow.invalidated_paths, flow.normalized_overrides)
                          for name, flow in found.items())
         self._record_prefix_conflicts(site, bindings, parent_occurrence)
         return bindings
+
+    def _argument_config_flow_at_site(self, argument, site, environment):
+        """Resolve one constructor argument to an exact config address.
+
+        Besides direct/local flows, support the common value-preserving relay
+        ``self.config = config; self.child = Child(self.config)``.  The relay is
+        lawful only when the exact field has one prior, unguarded whole-value
+        assignment and no competing or nested write before the construction.
+        A field spelling alone is never evidence and no source is searched.
+        """
+        direct = _arg_config_flow(argument, environment)
+        if direct is not None:
+            return direct
+        chain = _self_attribute_chain(argument)
+        if chain is None or site.span is None:
+            return None
+        field, *suffix = chain
+        assignments = tuple(
+            item for item in self.program_index.bindings_in(
+                site.enclosing_callable)
+            if item.span is not None and _span_before(item.span, site.span)
+            and _target_mentions_self_field(item.targets, field))
+        whole = tuple(
+            item for item in assignments
+            if not item.guard and item.assignment_kind == "assign"
+            and item.value is not None
+            and _targets_exact_self_field(item.targets, field))
+        # Rival, guarded, augmented or nested writes invalidate the relay.  A
+        # later construction cannot inherit a stale address merely because an
+        # earlier assignment once pointed at config.
+        if len(assignments) != 1 or len(whole) != 1:
+            return None
+        base = _arg_config_flow(
+            whole[0].value, environment,
+            index=self.program_index,
+            callable_symbol=site.enclosing_callable)
+        if base is None or not base.prefixes:
+            return None
+        suffix = tuple(suffix)
+        return _ConfigFlow(
+            _unique_prefixes(*(
+                (*prefix, *suffix) for prefix in base.prefixes)),
+            _invalidations_below(base.invalidated_paths, suffix),
+            "stored_field_argument", base.clone_span,
+            _overrides_below(base.normalized_overrides, suffix))
 
     def _local_prefixes_at_site(self, site, initial) -> dict:
         environment = dict(initial)
@@ -761,11 +966,21 @@ class _Resolver:
                 root_name, segments = attribute_target
                 flow = environment.get(root_name)
                 if flow is not None:
+                    path = tuple(segments)
+                    overrides = tuple(
+                        item for item in flow.normalized_overrides
+                        if not _paths_overlap(item.path, path))
+                    if not binding.guard \
+                            and binding.assignment_kind == "assign" \
+                            and binding.value is not None \
+                            and binding.value.kind == "constant":
+                        overrides = (*overrides, ConfigOverride(
+                            path, binding.value.const_value, binding.span))
                     environment[root_name] = _ConfigFlow(
                         flow.prefixes,
                         tuple(dict.fromkeys((
-                            *flow.invalidated_paths, tuple(segments)))),
-                        flow.origin, flow.clone_span)
+                            *flow.invalidated_paths, path))),
+                        flow.origin, flow.clone_span, overrides)
                 continue
             targets = tuple(
                 target.name for target in binding.targets
@@ -896,7 +1111,8 @@ def _arg_config_flow(expr, param_prefixes, *, index=None,
         if copied is not None:
             return _ConfigFlow(
                 copied.prefixes, copied.invalidated_paths,
-                "stdlib_deepcopy", expr.span)
+                "stdlib_deepcopy", expr.span,
+                copied.normalized_overrides)
     if expr.kind == "ifexp" and len(expr.children) == 3:
         return _merge_config_flows(
             _arg_config_flow(expr.children[0], param_prefixes),
@@ -918,10 +1134,11 @@ def _arg_config_flow(expr, param_prefixes, *, index=None,
             source = _ConfigFlow(tuple(source))
         suffix = tuple(reversed(segments))
         invalidated = _invalidations_below(source.invalidated_paths, suffix)
+        overrides = _overrides_below(source.normalized_overrides, suffix)
         return _ConfigFlow(
             _unique_prefixes(*(
                 (*prefix, *suffix) for prefix in source.prefixes)),
-            invalidated, source.origin, source.clone_span)
+            invalidated, source.origin, source.clone_span, overrides)
     return None
 
 
@@ -943,7 +1160,8 @@ def _merge_config_flows(*flows) -> _ConfigFlow | None:
                             for path in flow.invalidated_paths)),
         "conditional",
         next((flow.clone_span for flow in present
-              if flow.clone_span is not None), None))
+              if flow.clone_span is not None), None),
+        _common_overrides(present))
 
 
 def _invalidations_below(paths, suffix):
@@ -956,6 +1174,34 @@ def _invalidations_below(paths, suffix):
     return tuple(dict.fromkeys(out))
 
 
+def _overrides_below(overrides, suffix):
+    out = []
+    for item in overrides:
+        if item.path[:len(suffix)] == suffix \
+                and len(item.path) > len(suffix):
+            out.append(ConfigOverride(
+                item.path[len(suffix):], item.value, item.span))
+    return tuple(out)
+
+
+def _common_overrides(flows):
+    """Only a literal override identical on every rival flow survives."""
+    if not flows:
+        return ()
+    common = set(
+        (item.path, item.value, item.span)
+        for item in flows[0].normalized_overrides)
+    for flow in flows[1:]:
+        common.intersection_update(
+            (item.path, item.value, item.span)
+            for item in flow.normalized_overrides)
+    return tuple(ConfigOverride(path, value, span)
+                 for path, value, span in sorted(
+                     common,
+                     key=lambda item: (
+                         item[0], item[2].line, item[2].col)))
+
+
 def _paths_overlap(left, right) -> bool:
     length = min(len(left), len(right))
     return left[:length] == right[:length]
@@ -963,6 +1209,28 @@ def _paths_overlap(left, right) -> bool:
 
 def _plain_name(expr):
     return expr.name if expr is not None and expr.kind == "name" else None
+
+
+def _self_attribute_chain(expression):
+    segments = []
+    current = expression
+    while current is not None and current.kind == "attribute" \
+            and current.children and current.name:
+        segments.append(current.name)
+        current = current.children[0]
+    if current is None or current.kind != "name" or current.name != "self" \
+            or not segments:
+        return None
+    return tuple(reversed(segments))
+
+
+def _targets_exact_self_field(targets, field):
+    return len(targets) == 1 and _self_attribute_chain(targets[0]) == (field,)
+
+
+def _target_mentions_self_field(targets, field):
+    return any((chain := _self_attribute_chain(target)) is not None
+               and chain[0] == field for target in targets)
 
 
 def _attribute_target(targets):
@@ -1720,13 +1988,15 @@ def _own_declaration(index, symbol, attrs):
     record = index.class_by_symbol(symbol)
     if record is None:
         return None, None, False
-    assigns = [ba for ba in record.body_assigns if ba.attr in attrs]
+    assigns = [ba for ba in record.body_assigns
+               if ba.attr in attrs and ba.value is not None]
     if not assigns:
         return None, None, False
     last = max(assigns, key=lambda ba: (ba.span.line if ba.span else 0,
                                         ba.span.col if ba.span else 0))
     value = last.value
-    if value.kind == "constant" and isinstance(value.const_value, str):
+    if value is not None and value.kind == "constant" \
+            and isinstance(value.const_value, str):
         return value.const_value, last.span, False
     return None, last.span, True
 
@@ -1873,7 +2143,8 @@ def _reference_display(reference) -> str:
 
 
 __all__ = [
-    "ConfigPrefix", "OwnerOccurrenceId", "ConfigBinding", "OwnerRival",
+    "ConfigPrefix", "OwnerOccurrenceId", "ConfigOverride", "ConfigBinding",
+    "OwnerRival",
     "ConfigPrefixRival", "UnresolvedChild", "OwnerNode", "OwnerGraph",
     "ConstructedComponentRoot", "require_resolved_component_root",
     "resolve_owner_graph", "resolve_construction_candidate_symbols",

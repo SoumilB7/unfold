@@ -539,6 +539,39 @@ def test_attention_bias_preserves_real_nested_mixed_projection_layout():
     assert not result.value.config_paths
 
 
+def test_real_conditional_attention_bias_reuses_exact_geometry_schedule():
+    from transformers import AutoConfig
+
+    from model_unfolder.evidence.attention_geometry import (
+        decoder_attention_geometry_schedule_for_path,
+    )
+    from model_unfolder.evidence.context import ParseContext
+
+    document = AutoConfig.for_model("gemma4_text").to_dict()
+    context = ParseContext.build(document)
+
+    def selector(path):
+        current = document
+        for part in path:
+            if not isinstance(current, dict) or part not in current:
+                return False, None, ""
+            current = current[part]
+        return True, current, "config_declared"
+
+    geometry = decoder_attention_geometry_schedule_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, config_selector=selector)
+    assert geometry.status == "resolved", geometry.failures
+    result = decoder_attention_bias_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, geometry_schedule_result=geometry)
+    assert result.status == "resolved", result.failures
+    assert result.value.value is None
+    assert result.value.config_path == ("attention_bias",)
+    assert len(result.value.projections) == 4
+    assert len({item.site for item in result.value.projections}) == 4
+
+
 def test_equivalent_projection_bias_rejects_cross_branch_disagreement():
     from model_unfolder.evidence.context import ParseContext
 

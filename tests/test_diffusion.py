@@ -289,9 +289,17 @@ def test_text_encoder_breaks_into_drillable_ops():
     """
     html = unfold(FLUX).to_html(standalone=True)
     for op in ("embed", "selfattn", "ffn"):
-        for enc in ("encoder_0", "encoder_1"):
-            assert f'data-id="{enc}_op_{op}"' in html
-            assert f'data-card-id="{enc}_op_{op}"' in html
+        assert f'data-id="encoder_0_op_{op}"' in html
+        assert f'data-card-id="encoder_0_op_{op}"' in html
+    assert 'data-id="encoder_1_op_embed"' in html
+    assert 'data-card-id="encoder_1_op_embed"' in html
+    # T5 is occurrence-exact: block 0 owns the relative-bias producer while
+    # later blocks have no proved loop-carried bias transport.  Both groups
+    # keep their independently known attention/FFN drills.
+    for group in ("g0", "g1"):
+        for op in ("selfattn", "ffn"):
+            assert f'data-id="encoder_1_{group}_op_{op}"' in html
+            assert f'data-card-id="encoder_1_{group}_op_{op}"' in html
     for op in ("norm", "add"):
         assert f'data-id="encoder_0_op_{op}"' in html
         assert f'data-id="encoder_1_op_{op}"' not in html
@@ -303,7 +311,7 @@ def test_text_encoder_shows_real_config_dims():
     specs = diffusor._text_encoder_specs(FLUX)
     structural = [{k: v for k, v in spec.items()
                    if k not in {"ffn_evidence", "ffn_projection_mode",
-                                "attention_detail", "position_evidence",
+                                "attention_detail",
                                 "sub_model"}}
                   for spec in specs]
     # U7 binds each activation to the exact selected FFN occurrence: CLIP's
@@ -323,27 +331,44 @@ def test_text_encoder_shows_real_config_dims():
     assert [(s["attention_detail"]["kind"], s["attention_detail"]["num_heads"],
              s["attention_detail"]["num_kv_heads"], s["attention_detail"]["head_dim"])
             for s in specs] == [("mha", 12, 12, 64), ("mha", 64, 64, 64)]
-    # No parallel free-form FFN envelope remains.  The canonical group fact and
-    # its exact mechanism provenance are the sole shape/owner surfaces.
-    assert [(s["sub_model"]["groups"][0]["ffn_source_owner"],
-             s["sub_model"]["groups"][0]["ffn"]["projection_mode"])
-            for s in specs] == [
-        ("CLIPMLP", "dense"),
-        ("T5DenseGatedActDense", "split"),
-    ]
+    # No parallel free-form FFN envelope OR caller-relayed owner/file remains.
+    # The canonical recursively parsed FFN fact is the sole authority; its
+    # storage result survives embedded projection without a second source path.
+    assert all(
+        not ({"ffn_source_owner", "ffn_source_file"} & set(group))
+        for spec in specs for group in spec["sub_model"]["groups"])
+    assert [s["sub_model"]["groups"][0]["ffn"]["projection_mode"]
+            for s in specs] == ["dense", "split"]
     # The typed attention facts ride the same spec: positional scheme + score
     # scaling are evidence, per encoder (CLIP learned-absolute + scaled;
-    # T5 relative-bias + code-proven UNscaled scores).
+    # T5's exact first layer carries relative bias while its dominant 23-layer
+    # group remains unknown + code-proven UNscaled scores).
+    # Model-input position addition is not copied onto the attention fact.
+    # The flat attention_detail is deliberately the dominant group, not a
+    # majority-to-all claim.  The exact first-layer proof stays separately in
+    # the canonical grouped schedule.
     assert [(s["attention_detail"]["position_kind"],
-             s["attention_detail"].get("scores_scaled", True),
-             s["position_evidence"]["status"]) for s in specs] == [
-        ("learned_absolute", True, "proven"),
-        ("relative_bias", False, "proven"),
+             s["attention_detail"].get("scores_scaled", True))
+            for s in specs] == [
+        ("unknown", True),
+        ("unknown", False),
     ]
+    t5_groups = specs[1]["sub_model"]["groups"]
+    assert [(group["layers"], group["attention"]["position_kind"])
+            for group in t5_groups] == [([0], "relative_bias"),
+                                        (list(range(1, 24)), "unknown")]
     html = unfold(FLUX).to_html(standalone=True)
-    assert "× 12" in html and "× 24" in html   # real depths
+    # CLIP is homogeneous; T5 is occurrence-honestly split into its one
+    # relative-bias owner and 23 reuse-unproved owners.  The tower still names
+    # the total depth, but it may not collapse those into a false ×24 cell.
+    assert "× 12" in html and "24 layers" in html
+    assert "1 of 24" in html and "23 of 24" in html
     assert "12 heads" in html and "64 heads" in html
-    assert "768 → 3,072" in html and "4,096 → 10,240" in html
+    # Width remains an exact typed operand in both group facts, but an
+    # unresolved FFN mechanism may not be strengthened into a conventional
+    # two-layer arrow merely because both dimensions are known.
+    assert [s["sub_model"]["groups"][0]["ffn"]["intermediate_size"]
+            for s in specs] == [3072, 10240]
 
 
 def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
@@ -367,9 +392,9 @@ def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
     assert "Two-layer MLP" in clip["description"]
     assert "Gated MLP" in t5["description"] and "SwiGLU" not in t5["description"]
     assert {c["id"] for c in t5["children"]} == {
-        "encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
-        "encoder_1_ffn_activation", "encoder_1_ffn_multiply",
-        "encoder_1_ffn_down_proj",
+        "encoder_1_g0_ffn_gate_proj", "encoder_1_g0_ffn_up_proj",
+        "encoder_1_g0_ffn_activation", "encoder_1_g0_ffn_multiply",
+        "encoder_1_g0_ffn_down_proj",
     }
     assert not ({c["id"] for c in clip["children"]} & {c["id"] for c in t5["children"]})
 
@@ -377,17 +402,21 @@ def test_text_encoder_ffn_summary_drill_and_cards_share_one_region():
     html = diagram.to_html(standalone=True)
     # The summary card itself contains the canonical SVG, and every drawn op is
     # coupled to its namespaced leaf card at the next interaction depth.
-    for cid in ("encoder_0_op_ffn", "encoder_1_op_ffn"):
+    for cid in ("encoder_0_op_ffn", "encoder_1_g0_op_ffn"):
         start = html.index(f'data-card-id="{cid}"')
         assert '<div class="uf-card-svg"><svg' in html[start:start + 25000]
-    for nid in ("encoder_1_ffn_gate_proj", "encoder_1_ffn_up_proj",
-                "encoder_1_ffn_multiply", "encoder_1_ffn_down_proj"):
+    for nid in ("encoder_1_g0_ffn_gate_proj", "encoder_1_g0_ffn_up_proj",
+                "encoder_1_g0_ffn_multiply", "encoder_1_g0_ffn_down_proj"):
         assert f'data-id="{nid}"' in html and f'data-card-id="{nid}"' in html
     assert validate_click_coupling(html) == []
     owners = {(event.block_path, event.source_owner, event.component)
               for event in diagram.render_events() if event.view == "ffn"}
+    # The drill cites the exact mechanism callable, not the enclosing model
+    # stage.  This is what lets nested conformance inspect the same FFN that
+    # supplied the typed shape without a family/role search.
     assert (("encoder_0_op_ffn",), "CLIPMLP", "text_encoder") in owners
-    assert (("encoder_1_op_ffn",), "T5DenseGatedActDense", "text_encoder_2") in owners
+    assert (("encoder_1_g0_op_ffn",),
+            "T5DenseGatedActDense", "text_encoder_2") in owners
 
 
 def test_text_encoder_ffn_missing_source_stays_opaque():
@@ -1845,26 +1874,36 @@ def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
 
     loop = ((ir.get("extras") or {}).get("render") or {}).get("loop_blocks")
     clip = find_block(loop, "encoder_0_op_selfattn")
-    t5 = find_block(loop, "encoder_1_op_selfattn")
+    # T5 constructs the learned relative-bias table only in block 0.  The
+    # returned bias is loop-carried to later blocks, but that transport is not
+    # yet an exact execution-flow fact, so U8 must split the tower rather than
+    # laundering block 0's producer across all 24 layers.
+    t5 = find_block(loop, "encoder_1_g0_op_selfattn")
+    t5_later = find_block(loop, "encoder_1_g1_op_selfattn")
     assert clip and clip.get("view") == "attention" and clip.get("children")
     assert t5 and t5.get("view") == "attention" and t5.get("children")
+    assert t5_later and t5_later.get("view") == "attention"
 
     clip_ids = {c["id"] for c in clip["children"]}
     t5_ids = {c["id"] for c in t5["children"]}
     # Namespaced so two encoders at the same depth cannot satisfy each other.
     assert all(i.startswith("encoder_0_attn_") for i in clip_ids)
-    assert all(i.startswith("encoder_1_attn_") for i in t5_ids)
+    assert all(i.startswith("encoder_1_g0_attn_") for i in t5_ids)
     # CLIP: learned absolute positions live at the embedding, NOT in attention.
     assert not any(i.endswith(("q_rope", "k_rope")) for i in clip_ids)
     assert not any(i.endswith(("rel_pos_bias", "alibi_bias")) for i in clip_ids)
     # T5: the learned relative bias enters the scores; RoPE would be fabricated.
-    assert {"encoder_1_attn_rel_pos_bias", "encoder_1_attn_rel_bias_offsets",
-            "encoder_1_attn_score_bias_add"} <= t5_ids
+    assert {"encoder_1_g0_attn_rel_pos_bias",
+            "encoder_1_g0_attn_rel_bias_offsets",
+            "encoder_1_g0_attn_score_bias_add"} <= t5_ids
     assert not any(i.endswith(("q_rope", "k_rope")) for i in t5_ids)
+    assert not any(i.endswith(("rel_pos_bias", "rel_bias_offsets",
+                               "score_bias_add"))
+                   for i in {c["id"] for c in t5_later["children"]})
     # Unscaled scores: the T5 drill draws raw QK^T (no fabricated sqrt(dim)),
     # while CLIP keeps the standard scaled fraction.
-    assert 'data-id="encoder_1_attn_scaled_scores"' in html
-    t5_panel = html.split('data-card-id="encoder_1_op_selfattn"', 1)[1]
+    assert 'data-id="encoder_1_g0_attn_scaled_scores"' in html
+    t5_panel = html.split('data-card-id="encoder_1_g0_op_selfattn"', 1)[1]
     t5_svg = t5_panel.split("</svg>", 1)[0]
     assert "sqrt(dim)" not in t5_svg
     clip_panel = html.split('data-card-id="encoder_0_op_selfattn"', 1)[1]
@@ -1880,11 +1919,14 @@ def test_text_encoder_attention_drills_are_canonical_and_positionally_honest():
 
 
 
-def test_heterogeneous_encoder_renders_grouped_layer_types():
-    """A text encoder whose stack alternates layer types renders EVERY distinct
-    type — per-group cells inside one cycle frame (the code's loop body), each
-    with its own namespaced drill — instead of layer-0 standing in for all.
-    The tag names only the distinction (mask flavour); the schedule stays data."""
+def test_config_only_heterogeneous_encoder_schedule_cannot_split_the_tower():
+    """A ``layer_types`` list is not execution evidence.
+
+    This fixture resolves to ordinary Llama source, whose repeated block always
+    receives one causal mask builder.  Injecting alternating familiar tokens
+    must therefore leave one homogeneous source-proven group; preserving the
+    former two-group expectation would restore the config-authored U8 bug.
+    """
     import re
     d = unfold(HYBRID_ENC)
     ir = d.to_ir()
@@ -1902,26 +1944,21 @@ def test_heterogeneous_encoder_renders_grouped_layer_types():
     det = enc.get("detail") or {}
     sub_model = det.get("sub_model") or {}
     groups = sub_model.get("groups")
-    assert [(g["count"], g["tag"]) for g in groups] == [
-        (12, "sliding window"), (12, "global")]
-    assert sub_model.get("schedule", {}).get("period") == 2
+    assert [(g["count"], g["tag"]) for g in groups] == [(24, "")]
+    assert sub_model.get("schedule", {}).get("period") == 1
 
     child_ids = [c.get("id") for c in enc.get("children") or []]
-    assert "encoder_0_g0_op_selfattn" in child_ids and "encoder_0_g1_op_selfattn" in child_ids
-    assert "encoder_0_op_selfattn" not in child_ids     # no layer-0 stand-in card
+    assert "encoder_0_op_selfattn" in child_ids
+    assert not any(item.startswith("encoder_0_g") for item in child_ids)
 
     html = d.to_html()
     seg = html.split('data-card-id="encoder_0"', 1)[1]
     svg = seg.split("</svg>", 1)[0]
     node_ids = set(re.findall(r'data-id="([^"]+)"', svg))
-    assert {"encoder_0_g0_op_selfattn", "encoder_0_g1_op_selfattn",
-            "encoder_0_g0_op_ffn", "encoder_0_g1_op_ffn"} <= node_ids
-    labels = re.findall(r"<text[^>]*>([^<]{2,40})</text>", svg)
-    assert "× 12" in labels                              # one frame per CYCLE, not per layer
-    assert "sliding window" in labels and "global" in labels
-    # Both groups' attention drills exist and are namespaced apart.
-    assert 'data-card-id="encoder_0_g0_op_selfattn"' in html
-    assert 'data-card-id="encoder_0_g1_op_selfattn"' in html
+    assert {"encoder_0_op_selfattn", "encoder_0_op_ffn"} <= node_ids
+    assert "sliding window" not in svg
+    assert 'data-card-id="encoder_0_op_selfattn"' in html
+    assert 'data-card-id="encoder_0_g0_op_selfattn"' not in html
     assert d.wiring_problems() == []
 
     # A homogeneous encoder is untouched: no groups, the original single-cell ids.
@@ -1932,20 +1969,18 @@ def test_heterogeneous_encoder_renders_grouped_layer_types():
     assert "encoder_0_op_selfattn" in [c.get("id") for c in flat.get("children") or []]
 
 
-def test_distinct_layer_groups_and_period_detection():
-    """The typed grouping utilities: distinct-signature collapse in encounter
-    order with contiguous runs, and smallest-true-period detection."""
+def test_config_tokens_do_not_change_typed_grouping_or_period_detection():
+    """Typed grouping follows source-proven layer facts, not a config list."""
     from model_unfolder.ir import detect_layer_period, distinct_layer_groups
     from model_unfolder.evidence.context import ParseContext
     sub = HYBRID_ENC["_text_encoder_configs"]["text_encoder"]
     ir = transformer.parse(sub, context=ParseContext.build(sub, source="local"))
     groups = distinct_layer_groups(ir.layers)
-    assert len(groups) == 2
-    assert groups[0]["indices"] == list(range(0, 24, 2))
-    assert groups[1]["indices"] == list(range(1, 24, 2))
-    assert all(start == end for start, end in groups[0]["runs"])  # alternation: runs of 1
+    assert len(groups) == 1
+    assert groups[0]["indices"] == list(range(24))
+    assert groups[0]["runs"] == [(0, 23)]
     sigs = [layer.signature() for layer in ir.layers]
-    assert detect_layer_period(sigs) == 2
+    assert detect_layer_period(sigs) == 1
     assert detect_layer_period(sigs[:1]) is None
     assert detect_layer_period([sigs[0]] * 6) == 1
 

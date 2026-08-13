@@ -12,13 +12,17 @@ from ..theme import C, FONT_MONO
 def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str:
     """One MTP module, drawn bottom-to-top with its two inputs merging.
 
-    Two inputs — the trunk's previous hidden state (left) and the next-token
-    embedding (right) — are each RMSNorm'd, concatenated, projected ``2d -> d``
-    (``eh_proj``), passed through one transformer block, then the shared output
-    head. Every box is a clickable child of the MTP block.
+    Two inputs — the repeated-stage hidden state (left) and the embedding lane
+    (right) — are normalized, concatenated, projected ``2d -> d``, passed
+    through one exact-class-matched block, then an output head. Labels come
+    from the source-proven fact; this view does not assume RMSNorm or sharing.
     """
     detail = block.get("detail") or {}
     n = detail.get("num_modules") or 1
+    hnorm_kind = detail.get("hidden_norm_kind") or "Norm"
+    enorm_kind = detail.get("embedding_norm_kind") or "Norm"
+    shared_embedding = detail.get("shares_embedding") is True
+    shared_head = detail.get("shares_output_head") is True
     arrow_id, shadow_id = _ids(mount_id, "mtp-head")
     parts: list[str] = []
 
@@ -26,15 +30,15 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
         return _block_label(info, node_id, default)
 
     # Centre column (merge -> output) and two input branches either side.
-    head   = _rect_block(parts, info, shadow_id, "mtp_head",   -120, -360, 240, 46, lbl("mtp_head", "Shared output head"))
-    tblock = _rect_block(parts, info, shadow_id, "mtp_block",  -120, -268, 240, 54, lbl("mtp_block", "Transformer block"))
+    head   = _rect_block(parts, info, shadow_id, "mtp_head",   -120, -360, 240, 46, lbl("mtp_head", "Shared output head" if shared_head else "Auxiliary output head"))
+    tblock = _rect_block(parts, info, shadow_id, "mtp_block",  -120, -268, 240, 54, lbl("mtp_block", "Repeated model block"))
     proj   = _rect_block(parts, info, shadow_id, "mtp_proj",   -110, -176, 220, 46, lbl("mtp_proj", "Linear  2d -> d"))
     # Joining the two RMSNorm'd lanes is a true two-lane merge → a ‖ connector
     # glyph (clickable, its card explains the concat), not a box.
     concat = _plus_block(parts, info, shadow_id, "mtp_concat", 0, -61, sym="‖")
-    hnorm  = _rect_block(parts, info, shadow_id, "mtp_hnorm",  -310,    0, 160, 46, lbl("mtp_hnorm", ["RMSNorm", "(hidden)"]))
-    enorm  = _rect_block(parts, info, shadow_id, "mtp_enorm",   150,    0, 160, 46, lbl("mtp_enorm", ["RMSNorm", "(embedding)"]))
-    emb    = _rect_block(parts, info, shadow_id, "mtp_emb",     135,   86, 190, 46, lbl("mtp_emb", ["Next-token", "embedding"]))
+    hnorm  = _rect_block(parts, info, shadow_id, "mtp_hnorm",  -310,    0, 160, 46, lbl("mtp_hnorm", [hnorm_kind, "(hidden)"]))
+    enorm  = _rect_block(parts, info, shadow_id, "mtp_enorm",   150,    0, 160, 46, lbl("mtp_enorm", [enorm_kind, "(embedding)"]))
+    emb    = _rect_block(parts, info, shadow_id, "mtp_emb",     135,   86, 190, 46, lbl("mtp_emb", ["Shared" if shared_embedding else "Auxiliary", "embedding"]))
 
     # Centre flow (bottom -> top) and the right embedding branch.
     parts.append(_v_line(concat, proj, arrow_id))
@@ -53,7 +57,7 @@ def build_mtp_head_view(ir: dict, info: dict, mount_id: str, block: dict) -> str
         "marker-end": f"url(#{arrow_id})", "fill": "none",
     }))
     parts.append(_svg_text(
-        head["cx"], head["top"] - 42, "logits  ->  token t+k+1",
+        head["cx"], head["top"] - 42, "auxiliary token logits",
         {"text-anchor": "middle", "fill": C["muted"], "font-family": FONT_MONO, "font-size": 11},
     ))
 

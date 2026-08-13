@@ -234,6 +234,12 @@ def _projection_audit_findings(ir: dict, render_log) -> list[str]:
     return findings
 
 
+def _qualified_projection_findings(ir: dict) -> list[str]:
+    """Value-exact reverse projection audit for migrated geometry families."""
+    from .evidence.qualification import qualification_findings
+    return qualification_findings(ir)
+
+
 def _numbers_only(cfg_dict: dict) -> dict:
     """The census D-quadrant config: address keys verbatim + numeric fields only.
 
@@ -393,7 +399,8 @@ def sable(model_or_id, *, token=None, source: str = "local",
     # call-local context so another model's drills cannot enter conformance.
     from .renderers.html.render_context import RenderContext, activate_render_context
     render_context = RenderContext(
-        theme=str((((ir.get("extras") or {}).get("render") or {}).get("theme")) or "teal")
+        theme=str((((ir.get("extras") or {}).get("render") or {}).get("theme")) or "teal"),
+        fact_rows=dict((ir.get("extras") or {}).get("fact_provenance") or {}),
     )
     with activate_render_context(render_context):
         html = diagram.to_html(standalone=True)
@@ -510,6 +517,16 @@ def sable(model_or_id, *, token=None, source: str = "local",
             "projection_audit",
             _projection_audit_findings(ir, render_log),
             blocking=_PROJECTION_AUDIT_BLOCKING,
+        ),
+        # Schema lawfulness is not instance authority.  This complementary
+        # reverse net joins the concrete CANONICAL SPEC value to THIS model's
+        # owner-qualified typed fact.  Cards/JSON/params/opgraph are forbidden
+        # to decide independently and have their own consumer poisons; claiming
+        # they were all rendered inside this net would be a false receipt.
+        # A registered leaf with no instance fact, or a mismatch, blocks.
+        SableCheck(
+            "qualified_projection_values",
+            _qualified_projection_findings(ir),
         ),
         # U2 P4 net #14 — zero-asserted census (the permanent measuring stick):
         # strip this model's config to numbers+address, re-parse against an EMPTY

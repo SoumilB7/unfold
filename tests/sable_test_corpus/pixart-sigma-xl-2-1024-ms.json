@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -190,14 +191,15 @@
     "4aba2ecfbdf02367e04c9dc1739143e3",
     "60aa81ee2e8b34e9dd6e540e00bb8b65",
     "7b5219bb6f6212f9422861177d522259",
+    "7cbe2600c93fa5f5550e1b4d4ae9c060",
     "9123288ffb8512f9c3f1d71719e41833",
-    "98b551a864d0cf05de9cdc1f9a12919e",
     "9f198a62053f6939aaa6682f5757e736",
     "b27da72d8797da4f23c882340fe81c3f",
     "b31abab691626c72dde789ac736cc3b0",
     "b38dcb2f6c9289cc9b810d9bbdfa6610",
     "c14d2bb319a4941f8ed14b35f374c206",
-    "e366724fd4f25161cb2c4d14aef76c92",
+    "c45c29cddbcd04cabd8bf688f26a7477",
+    "c5cc5eee15e31c66f7795620d62aae28",
     "f8c0f6c893ff6bc3aa7f3e8490d60356"
   ],
   "model": "PixArt-Sigma-XL-2-1024-MS",
@@ -210,11 +212,11 @@
     "4aba2ecfbdf02367e04c9dc1739143e3",
     "60aa81ee2e8b34e9dd6e540e00bb8b65",
     "7b5219bb6f6212f9422861177d522259",
-    "8f52c2ad2a24445ceca898723636f2af",
     "9123288ffb8512f9c3f1d71719e41833",
     "98b551a864d0cf05de9cdc1f9a12919e",
     "9f198a62053f6939aaa6682f5757e736",
     "b27da72d8797da4f23c882340fe81c3f",
+    "b31abab691626c72dde789ac736cc3b0",
     "b38dcb2f6c9289cc9b810d9bbdfa6610",
     "c14d2bb319a4941f8ed14b35f374c206",
     "e366724fd4f25161cb2c4d14aef76c92",
@@ -223,6 +225,6 @@
   "visual_evidence": {
     "gallery_dir": "galleries/pixart-sigma-xl-2-1024-ms",
     "manifest": true,
-    "png_count": 16
+    "png_count": 17
   }
 }

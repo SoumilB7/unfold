@@ -195,13 +195,21 @@ def _expression_root_name(expression):
 
 class ExactConfigGuardResolver:
     def __init__(self, index, owner_node, config_selector, *, config_prefix=(),
-                 parameter_values=None):
+                 parameter_values=None, framework_config_alias=None):
         # Avoid the public ``index`` structural-spec spelling: this is a
         # private interpreter handle, not an IR/spec field or mutation sink.
         self._program_index = index
         self.owner_node = owner_node
         self.config_selector = config_selector
         self.config_prefix = tuple(config_prefix)
+        if framework_config_alias is not None:
+            from .framework_config import FrameworkConfigAlias
+            if not isinstance(framework_config_alias, FrameworkConfigAlias):
+                raise TypeError("framework_config_alias is typed address evidence")
+            if framework_config_alias.owner_symbol != owner_node.symbol:
+                raise ValueError("framework config alias belongs to the exact owner")
+        self.framework_config_alias = framework_config_alias
+        self.framework_alias_used = False
         parameter_values = parameter_values or {}
         if not isinstance(parameter_values, dict) or any(
                 not isinstance(name, str) or not name
@@ -251,8 +259,31 @@ class ExactConfigGuardResolver:
         path = exact_config_path_for_expression(
             self._program_index, self.owner_node, expression,
             config_prefix=self.config_prefix)
+        normalized_override = None
+        if path is None and self.framework_config_alias is not None:
+            from .framework_config import (
+                config_override_from_framework_alias,
+                config_path_from_framework_alias,
+            )
+            path = config_path_from_framework_alias(
+                expression, self.framework_config_alias,
+                config_prefix=self.config_prefix)
+            if path is None:
+                normalized_override = config_override_from_framework_alias(
+                    expression, self.framework_config_alias)
+            self.framework_alias_used = self.framework_alias_used or (
+                path is not None or normalized_override is not None)
+        if normalized_override is not None:
+            self.spans.append(normalized_override.span)
+            return normalized_override.value
         if path is not None:
             selected = self.config_selector(path)
+            from .framework_config import FrameworkConfigDefaultValue
+            if isinstance(selected, FrameworkConfigDefaultValue):
+                self.paths.append(path)
+                self.source_kinds.append((path, "class_default"))
+                self.spans.extend(selected.spans)
+                return selected.value
             if isinstance(selected, NormalizedConfigValue):
                 self.paths.extend(
                     dependency for dependency, _kind
@@ -345,6 +376,8 @@ class ExactConfigGuardResolver:
                 ">=": lambda: left >= right,
                 "<": lambda: left < right,
                 "<=": lambda: left <= right,
+                "in": lambda: left in right,
+                "not in": lambda: left not in right,
             }
             if expression.operator not in operations:
                 return _UNKNOWN

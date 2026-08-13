@@ -288,12 +288,17 @@ def test_explicit_diffusion_root_selection_no_fallback(tmp_path):
 
 def test_sibling_path_is_never_laundered_into_a_count_citation(tmp_path):
     """config.num_hidden_layers is read directly (a sibling) AND inside the count;
-    the sibling read's span is OUTSIDE the count expression, and the count's own
-    read is not separately observed -> None, never the sibling."""
+    the sibling read's span is OUTSIDE the count expression.  The ProgramIndex
+    now observes the count's own contained read, so B2 must cite that exact
+    occurrence rather than the sibling."""
     idx, cr, b1, inv = _model_stage(tmp_path, _STACK_SRC)
     (container,) = inv.containers
     assert container.count_expression is not None
-    assert container.count_config_path is None                    # sibling never laundered
+    citation = container.count_config_path
+    assert citation is not None
+    assert tuple(segment.name for segment in citation.segments) == \
+        ("num_hidden_layers",)
+    assert citation.span == container.count_expression.children[1].span
 
 
 # --------------------------------------------------------------------------- #

@@ -23,6 +23,7 @@ import pathlib
 import pytest
 
 import model_unfolder as mu
+from test_support import LLAMA
 from model_unfolder.evidence.receipts import (
     ProjectionReceipt,
     RECEIPTED_SCOPES,
@@ -34,7 +35,6 @@ from model_unfolder.evidence.receipts import (
 from model_unfolder.evidence.registry import (
     PROJECTION_ROUTE_SURFACES,
     ProjectionRoute,
-    REGISTRY,
 )
 from model_unfolder.sable import sable
 
@@ -198,6 +198,14 @@ def test_drifted_value_hash_blocks():
     result = _join([_receipt(
         fact_value_status_hash=value_status_hash(9999, "code_and_config"))])
     assert any("does not match the typed fact" in f for f in result["findings"])
+
+
+def test_json_equivalent_list_and_tuple_share_one_receipt_fingerprint():
+    """IR serialization may turn an immutable schedule tuple into a list."""
+    assert value_status_hash(("full", "sliding"), "code_and_config") == \
+        value_status_hash(["full", "sliding"], "code_and_config")
+    assert value_status_hash(("full", "sliding"), "code_and_config") != \
+        value_status_hash(["sliding", "full"], "code_and_config")
 
 
 def test_silent_registry_blocks():
@@ -478,7 +486,9 @@ def _render_chain(cfg_dict):
     ctx = ParseContext.build(cfg, source="local")
     ir = config_to_ir(cfg, parse_context=ctx)
     diagram = Diagram(ir)
-    rc = RenderContext(theme="teal")
+    rc = RenderContext(
+        theme="teal",
+        fact_rows=dict((ir.extras or {}).get("fact_provenance") or {}))
     with activate_render_context(rc):
         diagram.to_html(standalone=True)
     receipts = [r for e in rc.events for r in getattr(e, "receipts", ()) or ()]
@@ -502,15 +512,134 @@ def test_qwen2vl_positive_one_exact_chain():
     result = join_obligation_receipts(obls, receipts, facts,
                                       context_token=rc.context_token)
     assert result["findings"] == []
-    assert len(result["receipted_targets"]) == 2
+    projector_targets = [item for item in result["receipted_targets"]
+                         if item[1].endswith(".projector_out_features")]
+    assert len(projector_targets) == 2
 
 
-@pytest.mark.parametrize("witness", ["flux-2-dev", "qwen-image"])
-def test_negative_controls_no_phantom_consumption_or_receipt(witness):
-    """FLUX / Qwen-Image: no TOP-LEVEL vision modality, so no root.vision
-    projector consumption, fact, or receipt.  The embedded encoder's own tower
-    (root.text_encoder.vision) keeps its consumption VISIBLE on the advisory
-    census — an unmigrated scope, exact R6 debt, never silently cleared."""
+def test_u8_layer_schedules_are_receipted_by_the_real_layer_map():
+    """The per-layer renderer cites canonical layers, never its own fact row."""
+    extras, receipts, rc = _render_chain(LLAMA)
+    schedules = {r.fact_id: r for r in receipts
+                 if r.node_ids == ("layer_map",)}
+    assert {
+        "decoder.attention.mask_schedule",
+        "decoder.attention.position_schedule",
+        "decoder.attention.mixer_schedule",
+        "decoder.ffn.ffn_schedule",
+    } <= set(schedules)
+    assert all(r.surface == "html"
+               and r.projector_symbol ==
+               "renderers.html.views._build_layer_map"
+               and r.context_token == rc.context_token
+               for r in schedules.values())
+    result = join_obligation_receipts(
+        (extras.get("config_access") or {}).get(
+            "projection_obligations") or (),
+        receipts, extras.get("fact_provenance") or {},
+        context_token=rc.context_token)
+    assert result["findings"] == []
+
+
+def test_u8_position_addition_is_receipted_by_the_real_architecture_view():
+    """MusicGen's fixed positional vector is drawn before the stack.
+
+    The architecture projector hashes the canonical ``position_add`` block;
+    it cannot copy the fact value back into its own receipt.
+    """
+    cfg = json.loads(
+        (_CORPUS / "musicgen-small.json").read_text())["config"]
+    extras, receipts, rc = _render_chain(cfg)
+    position = [item for item in receipts
+                if item.fact_id == "decoder.input.position_addition"]
+    assert len(position) == 1
+    receipt = position[0]
+    assert (
+        receipt.surface,
+        receipt.structural_target,
+        receipt.projector_symbol,
+        receipt.node_ids,
+        receipt.context_token,
+    ) == (
+        "html",
+        "position_addition",
+        "renderers.html.views._build_architecture_view",
+        ("position_ids", "position_embed", "position_add"),
+        rc.context_token,
+    )
+    assert receipt.fact_value_status_hash == value_status_hash(
+        {"position_kind": "fixed_absolute",
+         "position_application": "embedding_add"},
+        "code_proven")
+    assert not fabrication_findings(
+        receipts, extras.get("fact_provenance") or {}, set())
+
+
+def test_u8_rope_theta_is_receipted_by_the_real_rotation_nodes():
+    """The selected initializer's base is drawn only on proven Q/K RoPE."""
+    cfg = json.loads(
+        (_CORPUS / "llama-7b.json").read_text())["config"]
+    extras, receipts, rc = _render_chain(cfg)
+    theta = [item for item in receipts
+             if item.fact_id == "decoder.attention.rope_theta"]
+    assert len(theta) == 1
+    receipt = theta[0]
+    assert (
+        receipt.surface,
+        receipt.structural_target,
+        receipt.node_ids,
+        receipt.projector_symbol,
+        receipt.context_token,
+    ) == (
+        "opgraph", "rope_theta", ("q_rope", "k_rope"),
+        "renderers.html.block_views.attention.build_attention_view",
+        rc.context_token,
+    )
+    obligations = [
+        item for item in extras["config_access"]["projection_obligations"]
+        if item["target"]["key"] == "rope_theta"]
+    assert {item["source"]["path"] for item in obligations} == {
+        "rope_parameters.rope_theta"}
+    result = join_obligation_receipts(
+        obligations, receipts, extras["fact_provenance"],
+        context_token=rc.context_token)
+    assert result["findings"] == []
+    assert result["receipted_targets"] == [(
+        "decoder.attention", "decoder.attention.rope_theta",
+        "position_frequency_initialization")]
+
+    initialization = [item for item in receipts
+                      if item.fact_id
+                      == "decoder.attention.rope_initialization"]
+    assert len(initialization) == 1
+    assert initialization[0].node_ids == ("q_rope", "k_rope")
+    initialization_obligations = [
+        item for item in extras["config_access"]["projection_obligations"]
+        if item["target"]["key"] == "rope_initialization"]
+    assert {item["source"]["path"]
+            for item in initialization_obligations} == {
+        "rope_parameters.rope_type"}
+    result = join_obligation_receipts(
+        initialization_obligations, receipts, extras["fact_provenance"],
+        context_token=rc.context_token)
+    assert result["findings"] == []
+
+
+@pytest.mark.parametrize("witness,has_embedded_projector", [
+    ("flux-2-dev", True), ("qwen-image", True),
+])
+def test_negative_controls_no_phantom_consumption_or_receipt(
+        witness, has_embedded_projector):
+    """Neither witness may fabricate a TOP-LEVEL vision projector.
+
+    Both witnesses carry a source-proven embedded encoder projector, so each
+    exact advisory consumption remains visible.  In particular, FLUX2 embeds
+    Mistral3: ``Mistral3Model.multi_modal_projector`` terminates in a Linear
+    whose output is ``config.text_config.hidden_size``.  That real nested
+    mechanism must remain owned by ``root.text_encoder.vision``; it must never
+    be promoted into a top-level fact or receipt merely because the leaf fact
+    name is registered there.
+    """
     cfg = json.loads((_CORPUS / f"{witness}.json").read_text())["config"]
     extras, receipts, rc = _render_chain(cfg)
     assert not [r for r in receipts if r.fact_key == "projector_out_features"]
@@ -519,7 +648,7 @@ def test_negative_controls_no_phantom_consumption_or_receipt(witness):
     obls = [o for o in ((extras.get("config_access") or {})
                         .get("projection_obligations") or [])
             if o["target"]["key"] == "projector_out_features"]
-    assert obls, "the embedded consumption must stay VISIBLE"
+    assert bool(obls) is has_embedded_projector
     for o in obls:      # visible, embedded-owned, unmigrated
         assert o["target"]["owner"].startswith("root.text_encoder"), o
     result = join_obligation_receipts(

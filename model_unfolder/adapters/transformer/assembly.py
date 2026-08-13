@@ -128,6 +128,7 @@ def decoder_extras(
     final_norm: str | None = None,
     final_logit_softcap: float | None = None,
     codebooks: dict | None = None,
+    mtp: dict | None = None,
 ) -> dict:
     """Build top-level extras shared by decoder-only transformer models."""
     extras = {
@@ -139,10 +140,9 @@ def decoder_extras(
             final_norm=final_norm,
             final_logit_softcap=final_logit_softcap,
             codebooks=codebooks,
+            mtp=mtp,
         )
     }
-    if codebooks:
-        extras["codebooks"] = dict(codebooks)   # only-when-present (byte-stable)
     for extra in extra_maps:
         if not extra:
             continue

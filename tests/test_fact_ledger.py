@@ -44,15 +44,17 @@ def test_parse_folds_asserted_tags_into_extras():
     ir = config_to_ir(LLAMA_MINIMAL)
     prov = ir.extras.get("fact_provenance")
     assert prov is not None
-    # every entry carries a valid status. P1 default-kill: mask is no longer
-    # an asserted dataclass default. U2 P2d strengthening: llama's INSTALLED
-    # source proves causality (unconditional create_causal_mask), which
-    # outranks the config-decoderness declaration.
+    # Every entry carries a valid status.  U8-C proves the enacted framework
+    # builder, its score application and the exact layer count together.
     assert all(rec["status"] in FACT_STATUSES for rec in prov.values())
     mask_rec = prov["decoder.attention.mask"]
-    assert mask_rec["status"] == "code_proven"
+    assert mask_rec["status"] == "code_and_config"
     assert mask_rec["value"] == "causal"
-    assert mask_rec.get("source") == "attention_causality_from_files"
+    assert mask_rec.get("source") == \
+        "decoder_attention_mask_execution_for_path"
+    schedule = prov["decoder.attention.mask_schedule"]
+    assert schedule["value"] == (("causal", None), ("causal", None))
+    assert schedule["source"] == "decoder_attention_mask_execution_for_path"
     asserted = [k for k, rec in prov.items() if rec["status"] == "asserted"]
     assert not any(k.endswith(".mask") for k in asserted)
     # H3 Phase B activation (§11 step 4): the geometry/embedding family is
@@ -137,8 +139,9 @@ def test_evidence_backed_values_are_unchanged_and_status_real():
     assert prov["decoder.ffn.activation"]["source"] == \
         "decoder_ffn_mechanism_for_path:hidden_act"
     assert prov["model.tie_word_embeddings"]["status"] == "config_declared"
-    # U2 P2d strengthening: installed llama source proves the causal mask.
-    assert prov["decoder.attention.mask"]["status"] == "code_proven"
+    # U8-C: installed source proves the builder/application while the exact
+    # repeated-container count is supplied by the checkpoint.
+    assert prov["decoder.attention.mask"]["status"] == "code_and_config"
     # llama's installed source proves these two
     assert prov["decoder.ffn.gated"]["status"] == "code_proven"
     assert prov["decoder.layer.norm_placement"]["status"] == "code_proven"
@@ -179,53 +182,44 @@ def test_tie_class_default_tier_fixes_absent_flag():
     assert rec["status"] == "class_default"
 
 
-def test_mask_counterexample_classes():
-    """Same numbers, different declarations — the mask follows the config's
-    decoder-ness channel, never a dataclass default."""
+def test_mask_declarations_without_source_stay_unknown():
+    """Architecture suffixes and decoder flags are declarations, not masks."""
     base = dict(ZERO_EVIDENCE)
-    # (1) causal-LM architecture suffix → causal, config_declared
+    # Neither a wrapper suffix nor a config boolean proves mask construction,
+    # application or per-layer placement without source.
     ir = config_to_ir(dict(base, architectures=["FrobnitzForCausalLM"]))
-    assert ir.layers[0].attention.mask == "causal"
-    # (2) is_decoder flag → causal
+    assert ir.layers[0].attention.mask == "unknown"
     ir = config_to_ir(dict(base, is_decoder=True))
-    assert ir.layers[0].attention.mask == "causal"
-    # (3) enc-dec generation wrapper → NOT decoder-declared → unknown
+    assert ir.layers[0].attention.mask == "unknown"
     ir = config_to_ir(dict(base, architectures=["FrobnitzForConditionalGeneration"],
                            is_encoder_decoder=True))
     assert ir.layers[0].attention.mask == "unknown"
-    # (4) decoder-only generation wrapper (VLM shape) → causal
     ir = config_to_ir(dict(base, architectures=["FrobnitzForConditionalGeneration"]))
-    assert ir.layers[0].attention.mask == "causal"
+    assert ir.layers[0].attention.mask == "unknown"
 
 
-def test_mask_code_channel_bert_bidirectional():
-    """U2 P2d witness shape: a BERT config (installed source, is_decoder
-    absent → PretrainedConfig base default False) yields a CODE-PROVEN
-    bidirectional mask AND the label says so — the census's headline fixed
-    at both the fact and the label tier."""
-    from model_unfolder.labels import mask_short
+def test_bert_mask_uses_exact_helper_and_nested_owner_join():
+    """BERT resolves only through the exact helper and nested owner proof."""
     bert = {"architectures": ["BertForMaskedLM"], "model_type": "bert",
             "hidden_size": 768, "intermediate_size": 3072,
             "num_attention_heads": 12, "num_hidden_layers": 12,
             "vocab_size": 30522, "hidden_act": "gelu",
-            "layer_norm_eps": 1e-12, "max_position_embeddings": 512}
+            "layer_norm_eps": 1e-12, "max_position_embeddings": 512,
+            "is_decoder": False}
     ir = config_to_ir(bert)
-    assert ir.layers[0].attention.mask == "bidirectional"
-    rec = _prov(ir)["decoder.attention.mask"]
-    assert rec["status"] == "code_proven"
-    assert rec["source"] == "attention_causality_from_files"
-    assert mask_short({"mask": "bidirectional"}) == "bidirectional"
+    assert {layer.attention.mask for layer in ir.layers} == {"bidirectional"}
+    rec = _prov(ir)["decoder.attention.mask_schedule"]
+    assert rec["status"] in {"code_and_config", "class_default"}
 
-    # SAME source, decoder checkpoint: the config value flips the verdict
+    # The flag selects the already-proven helper protocol; it does not invent
+    # the mask mechanism by itself.
     ir2 = config_to_ir(dict(bert, is_decoder=True,
                             architectures=["BertLMHeadModel"]))
-    assert ir2.layers[0].attention.mask == "causal"
+    assert {layer.attention.mask for layer in ir2.layers} == {"causal"}
 
 
-def test_mask_code_causal_discarded_on_flat_encdec(tmp_path):
-    """The Whisper shape: a flat enc-dec config draws the ENCODER half while
-    the file also contains the (undrawn) decoder's causal machinery — a
-    causal-only verdict must be discarded, the mask stays a typed unknown."""
+def test_unaddressed_mask_call_cannot_author_a_stack_fact(tmp_path):
+    """A matching call in a file is not an enacted owner-qualified mask."""
     from model_unfolder.evidence.models import SourceBundle
 
     src = tmp_path / "modeling_fake.py"
@@ -240,12 +234,13 @@ def test_mask_code_causal_discarded_on_flat_encdec(tmp_path):
     ir = config_to_ir(dict(ZERO_EVIDENCE, is_encoder_decoder=True),
                       parse_context=ctx)
     assert ir.layers[0].attention.mask == "unknown"
-    # the same verdict on a plain (non enc-dec) config IS the stack's fact
+    # Removing the enc-dec declaration cannot turn an unaddressed file scan
+    # into exact construction/application evidence.
     ctx2 = ParseContext(source_bundle=SourceBundle(source="local",
                                                    files=(str(src),)))
     ir2 = config_to_ir(dict(ZERO_EVIDENCE), parse_context=ctx2)
-    assert ir2.layers[0].attention.mask == "causal"
-    assert _prov(ir2)["decoder.attention.mask"]["status"] == "code_proven"
+    assert ir2.layers[0].attention.mask == "unknown"
+    assert _prov(ir2)["decoder.attention.mask"]["status"] == "ambiguous"
 
 
 def test_t5_declarations_stay_unknown_until_the_exact_encoder_ffn_is_bound():
@@ -276,45 +271,29 @@ def test_position_declaration_cannot_author_qk_rotation():
     ir = config_to_ir(dict(ZERO_EVIDENCE, rope_theta=500000.0))
     a = ir.layers[0].attention
     assert a.rope is None and a.position_kind == "unknown"
-    assert a.position_application == "none"
-    assert a.position_declared is False
-    assert "decoder.attention.position" not in _prov(ir)
+    assert a.position_application == "unknown"
+    assert "decoder.attention.position_schedule" not in _prov(ir)
     assert any("positional scheme remains unknown" in w for w in ir.warnings)
 
     # the modern nested spelling (rope_scaling/rope_parameters dict) counts
     ir2 = config_to_ir(dict(ZERO_EVIDENCE, rope_scaling={"rope_type": "linear",
                                                          "factor": 2.0}))
     a2 = ir2.layers[0].attention
-    assert a2.rope is None and a2.position_declared is False
-    assert "decoder.attention.position" not in _prov(ir2)
+    assert a2.rope is None and a2.position_kind == "unknown"
+    assert "decoder.attention.position_schedule" not in _prov(ir2)
 
     # NEGATIVE: no declaration → typed unknown + the honest banner stays
     ir3 = config_to_ir(ZERO_EVIDENCE)
     a3 = ir3.layers[0].attention
     assert a3.rope is None and a3.position_kind == "unknown"
-    assert a3.position_declared is False
     assert any("positional scheme remains unknown" in w for w in ir3.warnings)
 
-    # CODE-PROVEN control (llama): the declared-tier marker never rides a
-    # proven parse — serialized output stays byte-identical.
+    # CODE-PROVEN control (llama): the source-applied schedule, not the
+    # declaration, is the only structural authority.
     ir4 = config_to_ir(dict(LLAMA_MINIMAL, rope_theta=10000.0))
     a4 = ir4.layers[0].attention
-    assert a4.position_declared is False
-    from model_unfolder.ir import _attention_to_dict
-    assert "position_declared" not in _attention_to_dict(a4)
-    assert "rope_theta_declared" not in _attention_to_dict(a4)
-
-
-def test_position_declared_chip_text():
-    """The θ chip states the tier on the attention card."""
-    from model_unfolder.labels import attention_summary
-    _, facts = attention_summary({
-        "kind": "mha", "num_heads": 32, "num_kv_heads": 32, "head_dim": 128,
-        "mask": "unknown", "rope": True, "position_kind": "rope",
-        "position_application": "qk_rotation", "position_declared": True,
-        "rope_theta_declared": 640000.0,
-    })
-    assert any("θ=640,000" in f and "config-declared" in f for f in facts)
+    assert a4.position_kind == "rope"
+    assert "decoder.attention.position_schedule" in _prov(ir4)
 
 
 def test_bias_declaration_without_constructor_binding_stays_unknown():
@@ -401,7 +380,7 @@ def test_param_estimate_annotates_unknowns_never_silently_branches():
     est = estimate_params(ir)
     notes = est.get("assumptions") or []
     assert any("tying unknown" in n for n in notes)
-    assert any("FFN structure unknown" in n for n in notes)
+    assert any("ordinary/shared FFN inner width unknown" in n for n in notes)
     # A populated config is not code evidence for model-stage bookends. U7 now
     # proves Llama's final RMSNorm from the exact model-stage execution path,
     # so that real norm is charged; only the still-unproved embedding-stage
@@ -409,8 +388,6 @@ def test_param_estimate_annotates_unknowns_never_silently_branches():
     est2 = estimate_params(config_to_ir(dict(LLAMA_MINIMAL, tie_word_embeddings=False)))
     assert est2.get("assumptions") == [
         "embedding-stage normalization not proven — its parameters omitted",
-        "attention mechanism unknown — Q/K/V/O parameter estimate is a temporary "
-        "estimation convention, not code-proven architecture",
     ]
 
 

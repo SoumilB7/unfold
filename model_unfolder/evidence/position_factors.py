@@ -28,6 +28,7 @@ from .position_application import (
     QKHalfTurnApplicationEvidence,
     decoder_qk_half_turn_application_for_path,
 )
+from .position_coordinate import coordinate_origin
 from .program_index import (
     CallObservation,
     ExprNode,
@@ -391,9 +392,15 @@ def _complex_phase_protocol(index, root, invocation):
     if phase_binding is None:
         return ReaderFailure(
             "incomplete_graph", "phase coordinate has no explicit producer input")
+    coordinate = coordinate_origin(
+        index, phase_binding.call.enclosing_callable,
+        phase_binding.actual, phase_binding.call.span)
+    if coordinate is None:
+        return ReaderFailure(
+            "incomplete_graph", "complex phase input has no exact coordinate origin")
     spans = tuple(dict.fromkeys((
         returns[0].span, polar_call.span, phase_expression.span,
-        *phase_binding.spans,
+        *phase_binding.spans, *coordinate.spans,
     )))
     return callable_symbol, phase_binding, polar_call, phase_expression, spans
 
@@ -620,9 +627,15 @@ def _trig_protocol(index, root, invocation):
     if phase_binding is None:
         return ReaderFailure(
             "incomplete_graph", "phase coordinate has no explicit producer input")
+    coordinate = coordinate_origin(
+        index, phase_binding.call.enclosing_callable,
+        phase_binding.actual, phase_binding.call.span)
+    if coordinate is None:
+        return ReaderFailure(
+            "incomplete_graph", "phase input has no exact coordinate origin")
     spans = tuple(dict.fromkeys((
         returns[0].span, cos_call.span, sin_call.span,
-        cos_phase.span, *phase_binding.spans,
+        cos_phase.span, *phase_binding.spans, *coordinate.spans,
     )))
     return (callable_symbol, phase_binding, cos_call, sin_call,
             cos_phase, spans)

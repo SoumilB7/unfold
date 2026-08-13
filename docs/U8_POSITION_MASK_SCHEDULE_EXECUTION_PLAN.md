@@ -1,6 +1,8 @@
 # U8 — Exact position, mask and layer-schedule execution plan
 
-Status: **ACTIVE — U8-A, U8-B rotary and learned-absolute application substrate shadow-green; fixed/score-bias mechanisms next**
+Status: **ACTIVE — semantic implementation and the full-corpus non-view audit
+are complete through U8-G; exhaustive/preservation acceptance is still in
+progress. No manifest or gallery has been re-blessed.**
 Parent: `docs/EVIDENCE_CODE_AUTHORITY_MASTER_PLAN.md` §20.11
 Precondition: U7 is `DONE` at `37f3b1b` with receipt `5c2eaa5`.
 
@@ -702,3 +704,602 @@ builtins, guarded rival fields and forged ProgramIndex-site copies. Focused
 position application/factor/geometry/schedule tests and affected U2 authority
 gates pass; static checks are clean. The rail remains shadow-only and has not
 changed parser, facts, IR, renderer, params, manifest or pixels.
+
+### U8-B8 — LEARNED-ABSOLUTE PRE-STACK ADDITION (local, not pushed)
+
+`evidence/position_absolute.py` proves one exact learned-position mechanism:
+an exact coordinate producer reaches one exact embedding primitive, that
+lookup is added to the hidden stream, and the resulting stream reaches the
+exact repeated layer call. The reader is model-stage and occurrence-scoped;
+it never infers the mechanism from an embedding-shaped field, a class name or
+a config key. Fixed/sinusoidal addition, score-side bias and rotary application
+remain separate evidence families. Failure therefore stays unknown rather
+than becoming a fabricated NoPE claim.
+
+Real GPT-2/learned-position controls and adversarial source fixtures pin exact
+coordinate origin, call ownership, addition order and pre-stack reachability.
+The unit is shadow-only: no parser/fact/IR/renderer/params projection exists.
+
+### U8-B9 — NEUTRAL SCORE-SIDE ADDITIVE APPLICATION (local, not pushed)
+
+`evidence/attention_score_additives.py` begins the independent score-side rail.
+It does **not** classify an operand as ALiBi, relative bias or a mask. The
+result is an ordered inventory because several independently meaningful
+operands can reach one score lane. Its first closed protocol composes the
+existing exact attention score-product-to-softmax proof with an exact
+`baddbmm` receiver, exact matrix operands and an explicit finite, non-zero
+`beta` proven from the exact owner constructor and/or exact config occurrence.
+An implicit framework default is refused because it is not present in
+ProgramIndex. `beta == 0` proves the receiver is inactive;
+dynamic/unsupported beta remains a typed failure. The second protocol proves
+ordinary `score = score + operand` and `score += operand` only from the exact
+live path plus its exact dataflow operation.
+
+Real BLOOM exposes two distinct ordered applications: its enabled `baddbmm`
+receiver, then its causal mask. Real Llama exposes only its mask addition. Real
+T5 exposes the exact combined `position_bias_masked` augmented operand without
+yet assigning that operand a semantic kind. A plain score-to-softmax fixture
+proves absence. Synthetic controls pin zero and dynamic beta,
+malformed/implicit argument shapes, config-value joining, complete local
+renaming, inventory ordering and DTO-forgery rejection: **14 passed**. Static
+checks are clean. This remains shadow-only and cannot author an ALiBi,
+relative-bias or mask fact until separate producer proofs reach the exact
+inventory entry.
+
+### U8-B10 — END-TO-END LINEAR POSITION BIAS / ALIBI (local, not pushed)
+
+`evidence/position_linear_bias.py` joins one exact enabled `baddbmm` receiver
+to its exact producer across all ownership boundaries:
+
+`attention formal -> exact block-to-attention argument`
+`-> exact repeated block argument -> exact model-stage definition`
+`-> exact direct model-stage wrapper -> exact local producer return`.
+
+The producer is classified only when its returned value is an exact product
+of a cumulative masked coordinate and head-dependent slopes. The coordinate
+requires the same formal on both the exact `.cumsum(dim=-1) - 1` lane and its
+masking multiplication. The slope lane requires an exact imported
+`torch.pow`, an exact `torch.arange` controlling its count, and only closed
+guarded extensions that concatenate the prior slopes with another exact pow
+lane. The head-count formal is derived specifically from the arange count
+arguments; device/dtype formals cannot impersonate it.
+
+The wrapper is intentionally direct-only. An inherited method is not selected
+through the older first-base shortcut because that is not a reusable exact
+Python-MRO proof; such a source remains unknown until the B1 precedence rail
+offers exact method resolution. A sibling producer, disconnected producer,
+wrong coordinate, wrong slope, additive instead of multiplicative producer,
+or disabled `baddbmm` receiver cannot author ALiBi.
+
+Real BLOOM resolves end-to-end. Real Llama and Gemma-2 remain negative
+controls despite their mask additions. A completely renamed synthetic model
+resolves, while the producer/application attacks above fail: **10 passed**.
+The combined U8/attention/U2-authority bracket is **277 passed**. This remains
+shadow-only; no parser, fact, IR, renderer, params, manifest or gallery output
+has changed.
+
+### U8-B11 — FIXED SINUSOIDAL PRE-STACK ADDITION (local, not pushed)
+
+`evidence/position_fixed.py` proves the fixed/sinusoidal mechanism separately
+from learned lookup and score bias. It requires one exact constructed child to
+return an exact generated-buffer lookup at a code-proven coordinate, that
+exact call to be added into the hidden stream, and the result to reach the
+exact repeated layer call. The buffer must be installed by an exact
+`register_buffer(..., persistent=False)` call from a direct builder whose
+returned table contains exact `torch.cos` and `torch.sin` of the same
+position-derived angle. A guarded extension may only append exact zero
+padding. Parameter/field/class/helper spellings are never role evidence.
+
+The coordinate kernel gained one neutral missing observation: `ParamRecord`
+now retains structural annotations, and an exact annotated tensor
+`a, b, n = tensor.size()` unpack can supply an arange bound. Exact `int`/`float`
+formals can supply scalar offsets. Untyped receivers, shadowed scalar types,
+`.size(...)` calls with arguments, unrelated local objects and rival/guarded
+unpacks remain unsupported. This fixes the kernel once instead of granting a
+MusicGen-specific exception.
+
+Real MusicGen resolves at its exact nested `decoder` occurrence. BLOOM and
+Llama remain negative controls. A fully renamed synthetic source resolves;
+persistent buffers, cos/cos lookalikes, non-multiplicative angles and a
+disconnected hidden-stream application fail: fixed-position controls **9
+passed**, coordinate + ProgramIndex + learned-absolute regression controls
+**81 passed**. The rail remains shadow-only with no output projection.
+
+### U8-B12 — LEARNED RELATIVE-BUCKET SCORE BIAS (local, not pushed)
+
+`evidence/position_relative_bias.py` replaces the old transitive-marker guess
+with two joined, independently closed source proofs. The producer proof starts
+at one exact neutral score-additive operand and walks backward inside the exact
+attention occurrence through its alias and guarded compute definition. The
+compute callable must construct two exact imported `torch.arange` coordinate
+lanes, subtract query coordinate from key coordinate, call one exact bucket
+callable, use that bucket as the sole input to one exact learned
+`torch.nn.Embedding`, and return the resulting table. The bucket callable must
+contain one exact absolute-value lane, one exact logarithmic large-distance
+lane, and one exact `torch.where(small, relative, large)` merge whose returned
+state reaches the producer return. Class, method, field, formal, local and model
+spellings have no semantic authority.
+
+The ownership proof is code-only and symbolic. It transports the exact
+constructor flag across every authoritative OwnerGraph hop from repeated block
+to attention and proves the flag is selected by exact unshadowed
+`bool(comprehension_index == 0)`. It therefore establishes only that repeated
+index zero owns the learned table. It deliberately does **not** enumerate the
+checkpoint's layer count and does **not** claim that later layers reuse the
+returned table; loop-carried sharing is a separate execution-flow fact.
+
+This work exposed and repaired a neutral construction-binding defect:
+`ModuleList.append(...)` sites can occur identically on the general
+construction and container-element index surfaces. `bind_construction_site`
+now deduplicates identical authoritative records before checking uniqueness,
+so one `ConstructionSiteId` can no longer be mistaken for two rival sites.
+
+The real installed T5 source resolves end-to-end. Real Llama, BLOOM and the
+non-T5 text-encoder control do not. Adversarial copies of the real HF source
+cover total class/field/formal/local renaming, wrong embedding primitive, wrong
+coordinate arithmetic, missing logarithmic bucket lane, reversed bucket
+branches, disconnected table lookup, disconnected score application, wrong
+first-index predicate, constant ownership, duplicate-index-surface binding and
+DTO forgery: **16 passed**. This remains shadow-only; parser, facts, IR,
+renderer, params, manifests, galleries and pixels are unchanged.
+
+### U8-B13 — EXACT MASK BUILDER TO REPEATED-BLOCK FORMAL (local, not pushed)
+
+`evidence/attention_mask.py` begins U8-C without reintroducing the old
+whole-file causality scan. It resolves only closed framework mask APIs through
+their exact unshadowed imports, retains the exact builder call and definition,
+and uses local reaching definitions plus the exact repeated-child invocation
+binding to prove which builder result reaches which formal of which exact block
+occurrence. A local helper with a familiar `create_causal_mask` spelling has no
+semantic authority. Model, class, field, formal and local names do not select a
+mask kind.
+
+This is deliberately a producer-to-block boundary, not yet the final mask
+schedule. An exact single reaching builder resolves `causal`, `bidirectional`
+or `sliding_causal`. Rival or conditional builders remain an incomplete typed
+inventory; the reader cannot label the selector token. When the neutral
+reaching-definition helper reports a conditional rewrite, the inventory
+recovers every builder definition targeting the exact selected lane so an
+earlier guarded producer cannot disappear merely because a later guarded
+assignment was visited last. That recovery is a rival census only and never a
+selection.
+
+Real Llama and BLOOM resolve causal. Real Gemma-2 and GPT-OSS preserve the
+exact causal and sliding-causal builders selected by
+`causal_mask_mapping[self.config.layer_types[i]]` and remain incomplete until
+the per-layer selector is proven. The real T5 encoder source preserves its
+reachable bidirectional lane but remains incomplete because the current bundle
+does not index the external `PreTrainedModel` assignment that would prove
+`self.config` and the absent `PretrainedConfig.is_decoder` default. U8 must not
+restore the old hand-written universal default to force this green; exact
+external-framework config ownership is the prerequisite.
+
+Synthetic same-source controls prove causal and bidirectional selection from
+one exact constructor-bound config flag, unused builders do not qualify, local
+lookalike helpers do not qualify, complete local/formal renaming is invariant,
+and DTO cross-stage forgery is rejected.
+
+The same module also closes the producer-to-score join. It consumes the exact
+positive attention-child `invocation_path`, binds the mask formal across every
+owner hop, crosses an indexed compute helper only through its exact entry call
+and Python actual-to-formal binding, then requires that transported source to
+reach the exact neutral score-additive operand. This is what prevents a T5
+encoder-side cross-attention mask from certifying its self-attention lane: the
+block exposes both mask formals, but only the self-attention formal reaches the
+selected score application. Llama's free eager-attention helper, BLOOM's direct
+attention forward and T5's two-hop self-attention wrapper are all covered. A
+poison retaining the helper parameter spelling while replacing its actual with
+`None` fails, pinning the cross-callable anti-laundering rule.
+
+Mask controls now total **16 passed**. Gemma-2's exact score join succeeds but
+the overall result stays incomplete at its still-unproven per-layer selector;
+this is the intended separation between mechanism and schedule. The boundary
+remains shadow-only: no parser, fact, IR, renderer, params, manifest, gallery or
+pixel surface consumes it.
+
+### U8-B14 — FRAMEWORK CONFIG ADDRESS + EXACT MASK SCHEDULE (local, not pushed)
+
+The first U8-C schedule slice is now closed without turning `self.config` into
+a magical config root. `evidence/framework_config.py` proves the missing address
+edge through one exact owner constructor, one unshadowed
+`super().__init__(config)` call, one owner-graph `ConfigBinding`, a conservative
+single-base inheritance trace with no intervening constructor, and the closed
+external `transformers.modeling_utils.PreTrainedModel` config-storage protocol.
+This is framework address semantics only: it neither reads a value nor assigns
+meaning to a config field. A local lookalike base, wrong external target,
+shadowed `super`, transformed actual, intervening constructor, rival binding or
+forged DTO fails. Transformed config objects remain path-exact: T5's exact
+invalidated paths stay unavailable while unaffected paths can still resolve.
+
+`decoder_attention_mask_layer_schedule_for_path` then accepts only an exact
+enumerated selector of this form: the exact repeated-block call indexes one
+literal source dictionary of already-proven mask builders with an exact config
+sequence and the exact `enumerate` target. The repeated container count must be
+an unshadowed builtin `range` over one exact config path, and it must equal the
+selector sequence length. Each sequence value selects the dictionary entry the
+source actually binds; no token spelling carries mask semantics. Unknown keys,
+short lists, constant/wrong indices, shadowed `range`, rival maps and count
+disagreement fail.
+
+Real Gemma-2 now resolves its full per-layer causal/sliding-causal schedule from
+the exact `layer_types` sequence and exact `num_hidden_layers` count. The result
+retains the exact framework config alias, repeated invocation, literal map,
+builder calls, score consumer and both config paths. The same code does not
+force GPT-OSS green: GPT-OSS adds its mask before concatenating learned attention
+sinks and subtracting a row maximum, so the current U6 exact score-to-softmax
+reader stops at that unsupported transformation. This is recorded as a separate
+score-lane prerequisite; U8 does not add a GPT-OSS branch or pretend the mask was
+not built. T5 also remains honestly incomplete where its checkpoint omits the
+decoder flag and the source bundle cannot yet prove the external config-class
+default.
+
+Focused controls: framework-config **11 passed** and complete mask boundary/
+schedule **23 passed** (34 combined). The earlier mask/attention/identity
+bracket remains **184 passed**. All work remains shadow-only; no parser, fact,
+IR, renderer, params, manifest, gallery or pixel surface consumes it.
+
+### U8-B15 — SCORE-TRANSFORM CLOSURE, SOURCE CONFIG DEFAULTS, UNIFORM
+SCHEDULES AND EXACT MASK GEOMETRY (local, not pushed)
+
+This slice supersedes the two upstream limitations recorded at the end of
+U8-B14 without introducing a model/family exception.
+
+The exact attention score reader now recognizes two closed algebraic
+transformations between an already-proven score-plus-mask state and softmax:
+concatenation with an independently-proven score fragment, and translation by
+the row maximum.  The recognition is structural and dataflow-bound; neither a
+function name nor a GPT-OSS identity participates.  That lets the same
+per-layer schedule reader prove GPT-OSS's alternating causal/sliding-causal
+schedule while renamed equivalents remain equivalent and disconnected or
+wrong-axis transformations remain unresolved.
+
+`SourceBundle.supporting_files` and `framework_config.py` add a separate,
+strict source-default boundary.  Same-revision `configuration_*.py` files are
+indexed by the one `ProgramIndex` but remain excluded from legacy whole-file
+reader surfaces.  A default is usable only when the exact model-stage
+constructor annotation resolves through an exact import to one indexed config
+class and that class owns a literal default for the requested field.  A
+checkpoint declaration always wins.  Computed defaults, unresolvable imports,
+sibling components and annotation-name matching cannot supply a value.  This
+proves T5's omitted `is_decoder=False` as `class_default`, so the exact same
+installed `T5Stack` source resolves bidirectional for an encoder and causal for
+a decoder.  The score join also keeps self- and cross-attention mask lanes
+separate: an encoder-side formal cannot certify the selected self-attention
+lane.
+
+`decoder_uniform_attention_mask_layer_schedule_for_path` covers the other
+lawful schedule shape: one exact score-applied builder repeated across one
+exact config-bound container count.  Llama and BLOOM resolve uniform causal;
+the real T5 encoder resolves uniform bidirectional.  This does not weaken the
+alternating reader or turn an absent selector into guessed semantics.
+
+`decoder_attention_mask_geometry_for_path` makes window/chunk values
+architectural only after an exact enacted framework builder consumes the exact
+stage config object.  For `**mask_kwargs`, the config actual must come from one
+exact earlier dict definition on the same guard path; a nearby field, sibling
+dict or rival rewrite cannot certify it.  The geometry path is selected by the
+closed framework protocol, then resolved through the exact `ConfigBinding` and
+typed config/default selector.  Real Gemma-2 resolves sliding window **4096**;
+real GPT-OSS resolves **128**.  A source-proven chunked fixture resolves
+`attention_chunk_size=256`.  Qwen3 remains absent even when a plausible
+positive `sliding_window` value is injected, because its enacted source path
+does not select the sliding builder.  Foreign config objects, rival kwargs
+maps, unavailable values and non-positive geometry fail.
+
+The remaining Qwen3 limitation is honest and separate: callers may supply an
+already-built runtime mask mapping, so source alone cannot prove that the local
+builder owns every invocation.  Qwen3.5's mixed gated-delta/softmax placement
+belongs to U8-D rather than being folded into mask geometry.  This slice is
+still shadow-only; parser, facts, IR, renderer, params, manifest, gallery and
+pixel surfaces do not consume it yet.
+
+### U8-C16 — SINGLE MASK EXECUTION AUTHORITY CUTOVER (local, not pushed)
+
+The transformer parser now consumes one `AttentionMaskExecution`: the exact
+framework builder, exact score-additive lane, exact per-layer schedule and
+every required geometry operand. It writes one typed `mask_schedule` fact and
+derives both the summary `mask` fact and every `AttentionSpec.mask/window_size`
+from that same value. Config-only architecture suffixes, decoder flags, window
+fields and schedule tokens no longer author masks; absent or incomplete source
+remains `unknown` at every layer.
+
+The old `attention_causality_from_files` whole-file interpreter, parser wrapper,
+quarantine row and parse-authority row are deleted. Its implementation and
+parse-caller fingerprints, generated U3 reader inventory and structural-write
+baseline shrink in the same tree. The raw `extras.sliding_window` author and
+its three debt/writer pins are also deleted. Exact config dependencies are
+joined back to their owner-qualified U1 occurrences; legacy mask declarations
+which the enacted code does not consume are recorded as scoped non-deciding
+reads rather than global bare-key exemptions.
+
+Real parser controls now project exactly: Llama uniform causal; BLOOM uniform
+causal; Gemma-2 alternating sliding-4096/global; GPT-OSS alternating
+sliding-128/global; Qwen3 uniform causal even when an unused positive window is
+injected; Qwen2-VL uniform causal. MusicGen and Qwen3.5 remain honest unknowns
+instead of borrowing a majority/family answer. All eight high-risk witnesses
+pass every blocking Sable net, and parser/fact/IR equality is pinned directly.
+
+The required BERT control is now closed through neutral boundaries rather than
+an identity branch. `self_method_return.py` proves the exact same-class helper
+call, Python argument binding, unique unguarded return lanes and caller-side
+destructuring. The mask reader then binds the selected returned lane through
+the exact `BertModel` -> `BertEncoder` call and into the repeated `BertLayer`
+formal. The owner graph separately preserves a local conditional constructor
+alias as rival candidates and selects one only from an exact literal
+constructor actual/default. At a block with multiple attention children, the
+score join admits only the child whose exact Q/K/V lineage proves self
+attention; the replacement-cross child cannot certify or block that lane.
+
+Installed BERT now resolves 12 bidirectional encoder layers when
+`is_decoder=False` and 12 causal decoder layers when `is_decoder=True`, with
+`num_hidden_layers` transported through the exact parent-to-stage config
+address. The parser projects both through the same `mask_schedule` fact used by
+all other models. Dynamic/reassigned constructor aliases, forged helper lanes,
+disconnected formals and cross-attention replacement lanes remain unresolved.
+Single-child BLOOM and T5 paths retain their exact formal-to-score proof even
+when their fused projection layout is outside the stricter three-affine Q/K/V
+classifier. No BERT/class/field spelling selects a mechanism.
+
+### U8-D17 — OCCURRENCE-EXACT MIXER PLACEMENT (local, not pushed)
+
+`evidence/mixer_schedule.py` replaces the parser's config-authored mixer
+schedule with one exact proof chain:
+
+`range(exact layer count)` -> repeated-block constructor index -> exact child
+construction selector -> exact block-forward child invocation -> that exact
+child's positive mechanism proof.
+
+Ordinary attention is classified per occurrence by the positive
+attention-computation census. Gated-delta is classified by a new
+`gated_delta_geometry_at_occurrence` boundary. The schedule therefore does not
+union sibling modules and does not collapse two construction sites merely
+because they instantiate the same class. Every resolved layer round-trips
+through the selected construction decision, invoked child occurrence and
+mechanism evidence. An unknown selector value, short list, constructor/forward
+disagreement, opaque child, multiple live candidates or incomplete index
+transport fails the whole schedule; none becomes a conventional attention
+layer.
+
+The transformer parser consumes the schedule's exact config dependencies and
+writes one typed `decoder.attention.mixer_schedule` fact. Every
+`AttentionSpec.kind` is projected from that schedule plus the independently
+qualified U6 geometry fact for the selected mechanism. The qualification net
+compares the fact against every layer occurrence, so swapping two otherwise
+valid mechanisms is a blocking mismatch. Config tokens, integer labels and
+field/class spellings remain operands only.
+
+The former authorities are deleted: `layer_schedules.yaml`,
+`layer_types.yaml`, their loaders, `_normalize_layer_schedule`,
+`_mixer_kind_for`, semantic mixer maps, frequency/list synthesis and the dead
+compression alias. Config-only `attn_type_list`, `block_types`,
+`attention_types`, dense intervals, `layer_types`, `compress_ratios` and MoE
+membership lists now author no structure. Compressed-attention geometry stays
+unknown until a separate exact operation reader exists.
+
+The same cutover removes a remaining positional lie. A gated-delta mechanism
+does not prove that no independent positional operation exists, and the old
+positional reader used familiar `layer_types` tokens to invent NoPE. That
+branch is deleted. Qwen3.5's mixer placement remains exact, while positional
+application is honestly unknown until its independent per-occurrence
+application schedule is complete. NoPE is never inferred from a mixer token or
+from the absence of a detected RoPE call.
+
+Permanent controls include installed Qwen3.5 and Qwen3-Next hybrid sources,
+plain Llama with injected mixer-looking tokens, integer dispatch, complete
+class/field renaming, the same attention class at two construction sites,
+constructor/forward disagreement, short/unknown schedules, an opaque recurrent
+candidate, and an exact fact-versus-layer placement mismatch. U8-D does not
+claim MoE/dense selection, per-layer QK/KV geometry, KV sharing,
+cross-attention or auxiliary module placement; those remain U8-E/F.
+
+### U8-F18 — CROSS-ATTENTION + PER-LAYER SIDE INPUT (local, not pushed)
+
+Replacement cross-attention is now an exact per-occurrence schedule.  The
+reader joins the heterogeneous repeated-block selector to the selected block's
+graph-authoritative attention child and proves Q uses one callable formal while
+K/V projections use the other.  MusicGen additive cross-attention remains a
+separate exact two-attention construction proof.  One typed
+`decoder.attention.cross_attention_schedule` fact owns both shapes; a config
+list without the two source mechanisms is powerless.  Real Mllama resolves its
+40-layer schedule with replacement layers 3, 8, 13, 18, 23, 28, 33 and 38;
+bare source-unaddressable text configs remain unknown.
+
+Per-layer side-input rendering is no longer activated by
+`hidden_size_per_layer_input`.  `evidence/per_layer_side_input.py` proves the
+exact model-stage tensor, its exact loop-indexed repeated-call operand and the
+block's gate -> activation -> multiply -> projection -> norm -> state-add
+chain.  Only then may the exact width/vocabulary paths be consumed and one
+typed `decoder.per_layer_embedding_pathway` fact project the pathway.  Real
+Gemma3n resolves; Gemma4 and Llama do not.  Removing the multiply, removing the
+layer index, or injecting plausible dimensions into Llama cannot create it;
+complete operational-field renaming preserves the result.
+
+The old config-only MTP renderer has also been switched off.  Installed
+DeepSeek-V3 and GLM sources declare `num_nextn_predict_layers` but do not
+construct or execute the detailed norm/embedding/concat/projection/block/shared-
+head pipeline that was drawn.  Those declarations are now audited but
+powerless, and the five raw MTP extras/debt/writer entries are deleted.  U8-F
+was not accepted as evidence. A generic HF-shaped positive now proves the full
+construction/execution/sharing path and authors one typed `mtp_modules` fact.
+The architecture card consumes that fact and emits a strict real-consumer
+receipt. Its inner repeated block remains opaque: equality of the block class
+does not identify which occurrence in a heterogeneous main schedule may donate
+internals. MusicGen's codebook-stream fact likewise carries its expected value
+and status from consumption to the real architecture receipt; the card calls
+them parallel embedding banks and does not invent codec semantics.
+
+### U8-G19 — PARITY, DEBT RETIREMENT AND QUALIFICATION CLOSURE (local, not pushed)
+
+Embedded text towers no longer receive manual norm or FFN-source relay
+arguments. The recursively parsed `LayerSpec` is the sole norm authority, and
+FFN provenance remains with the typed reader/fact rather than a caller-supplied
+file/owner hint. Standalone and embedded schedules are compared occurrence by
+occurrence; T5's one relative-bias layer followed by 23 unresolved layers is no
+longer flattened into a false homogeneous summary.
+
+RoPE initialization is now a separate exact boundary. It follows the selected
+attention occurrence into the exact initializer return/buffer/local-helper
+dependency closure and consumes theta only when that initializer actually uses
+the exact config path. The boundary also follows an explicitly imported
+framework registry only after the selected callable independently proves the
+inverse-frequency formula and all of its required operands. Framework config
+normalization is source-proven rather than alias-declared: the exact config
+class, base/mixin closure, post-init conversion, legacy-key pops, runtime-map
+writes and selector default must all be indexed. Llama earns direct theta;
+GPT-OSS and DeepSeek retain exact external-YaRN dependencies; Granite's raw
+legacy theta/scaling become runtime `rope_parameters` only through the proved
+framework conversion. An altered conversion or familiar selector routed to a
+different callable stays unknown. The real Q/K application drill emits the
+corresponding receipt, including MLA's separate query/key RoPE consumers.
+
+DBRX exposed a distinct and deliberately uncollapsed boundary. Its exact
+applied rotation crosses a two-hop block-wrapper→attention constructor path and
+a fused QKV lane containing a value-preserving clamp; both are now proved
+structurally. The applied frequency initializer uses the framework's exact
+source literal default `10000`, while the checkpoint's nested
+`attn_config.rope_theta=500000` is copied into attention state but is not an
+operand of that rotation. It remains one owner-exact U11 classification row:
+the attention object is also passed to a selectable backend, so absence of a
+direct field read is not yet a sound global deadness proof. U8 does not hide or
+project the contradictory declaration.
+
+All U8 `StructuralDebt` rows are retired. The live register contains zero U8
+rows; the DBRX declaration above is an explicit U11 carry-forward, not U8
+semantic debt. The generated config census contains zero standing occurrences
+outside registered exact debt. This
+does not let parser consumption certify rendering: parse-time obligations stay
+unreceipted until the actual HTML consumer emits the matching receipt.
+
+The closed registry now has two explicit evidence populations. The frozen
+corpus remains the preservation population. A separate qualification
+population runs exact HF and HF-shaped frontier sources through the production
+parser for mechanisms absent from the gallery (heterogeneous head schedules,
+per-layer side inputs and MTP). It supplies IR/fact rows, never a hand-written
+fact-name allowlist; a registered fact that neither population really emits is
+still blocking stale registry debt.
+
+Focused receipts at this checkpoint: U8 semantic matrix **232 passed**;
+registry contract/closed-world matrix **30 passed**; reverse-fabrication and
+reader-exception ratchets **11 passed**. The broad authority, full-suite,
+preservation and representative-unfold brackets remain required before U8 may
+be proposed for acceptance. No re-bless, commit or push is authorized by this
+checkpoint.
+
+Post-checkpoint hardening receipts: position initialization/schedule/geometry
+plus StructuralDebt **81 passed**; blocking Sable controls are clean for real
+Granite, DBRX, GPT-OSS, DeepSeek-V3 and Llama. MusicGen remains covered by the
+dedicated audio/mixer suite because its Transformers validation logger disrupts
+the ad-hoc console probe. No manifest/gallery re-bless, commit or push has been
+performed.
+
+Final pre-bless hardening exposed two more boundaries and closed them without
+weakening a gate. First, Qwen2-VL's exact `text_config` component can now be
+addressed even when the unavailable outer wrapper cannot be resolved: the
+component key and selected config path must agree exactly, and no wrapper
+construction claim is invented. Its ordinary decoder position reader still
+does **not** claim multimodal RoPE. The `rope_parameters` mapping is classified
+only as an address namespace, while its four exact child operands
+(`mrope_section`, `rope_theta`, `rope_type`, legacy `type`) remain visible,
+owner-exact U9 projection debt for the wrapper/modality coordinate mechanism.
+They cannot author a U8 decoder position fact or be hidden by the projector
+audit.
+
+Second, the old heterogeneous-encoder fixture was found to be a config-authored
+counterexample: it pointed at ordinary Llama source and injected an alternating
+`layer_types` list which that source never reads. U8 correctly returns one
+uniform causal group. The two former preservation assertions are now permanent
+anti-fabrication controls: familiar config tokens cannot split a tower or alter
+its detected period without an exact enacted mask-builder schedule.
+
+Current unchanged-tree semantic receipts: position **133 passed**; attention,
+mask and score mechanics **195 passed**; FFN/mixer/layer selection **91 passed**;
+authority, receipts, debt and structural writers **152 passed**; representative
+cross-model parser/render controls **50 passed**; coverage invariants **6
+passed**; the two corrected heterogeneous anti-fabrication controls **2
+passed**. `git diff --check` is clean. The full non-preservation suite is the
+last engineering bracket in progress; preservation remains deliberately held
+for Soumil's explicit visual/manifest decision.
+
+### U8-G20 — FULL-CORPUS OUTLIER CLOSURE (local, not pushed)
+
+The first corpus-wide non-view regression sweep exposed four independent
+boundary losses. They were fixed at shared evidence/address boundaries rather
+than by model or family exceptions:
+
+- embedded text-tower attention groups had lost the exact occurrence/file
+  coordinate already proved by the mixer schedule. `submodel_spec` now projects
+  an attention source only when every layer in that group has one identical
+  exact mixer-decision owner; mixed or incomplete groups remain unqualified.
+  This closes Flux2's nested attention conformance without searching by class
+  name or borrowing a sibling source;
+- some RoPE helpers rotate only a prefix of Q/K internally and concatenate the
+  untouched suffix. The position-application reader now accepts that algebra
+  only when both lanes use complementary slices at one identical boundary,
+  recombine prefix then suffix with `cat(..., dim=-1)`, and the rotated result
+  actually depends on the prefix. Gap, overlap, reversal, wrong axis and
+  one-lane-only poisons all fail;
+- a framework base may install `self.config`, after which a parent constructs a
+  rotary child from that stored value. `FrameworkConfigChildRelay` proves this
+  one exact address edge from the closed framework-storage protocol, the exact
+  parent occurrence and construction actual, then delegates to the canonical
+  child-binding resolver. It neither changes `OwnerGraph` nor treats a field
+  spelling as evidence. Conflicting bindings, unrelated/rival actuals and
+  cross-site DTO forgeries fail. StableLM therefore retains exact initializer
+  operands without adding a StableLM path;
+- local as well as imported inverse-frequency initializers now enumerate their
+  exact optional config operands. Once the enacted nested
+  `rope_parameters.partial_rotary_factor` input is proved, a duplicate legacy
+  top-level spelling is classified as an unselected alias occurrence rather
+  than globally ignored. GLM and StableLM are clean without converting config
+  presence into a mechanism claim.
+
+Qwen3.5 is deliberately not over-claimed. Its ordinary text rotation algebra
+is proved, but the multimodal wrapper owns the phase-coordinate construction,
+so the exact `mrope`/theta/type/partial declarations remain owner-qualified U9
+`StructuralDebt`. Those rows have explicit deletion conditions and cannot
+project a U8 decoder position fact.
+
+Permanent boundary receipts after this hardening: owner/framework/application
+**116 passed**; position semantics **74 passed**; embedded diffusion/submodel
+projection **114 passed**; structural debt/writer/registry authority **75
+passed**. The one-time parallel scan of every blessed witness passed with **zero
+non-view findings** in **458.17s** and was removed afterward so it does not add
+eight minutes to every routine test run. `git diff --check` and the affected
+module compile gate are clean. Exhaustive suite and preservation/artifact
+approval remain the final gates; this section does not mark U8 `DONE`.
+
+The diagnostic exhaustive run completed after the outlier fixes: **3,151
+passed, 14 skipped, 2 expected xfailed**. Its only **30 failures** were the two
+deliberately blocking acceptance mechanisms: all 29 parametrized canonical
+preservation witnesses still cite the pre-U8 manifest, and the Sable corpus
+stops at AuraFlow's first stale SVG lock. There were zero engineering-test
+failures outside those acceptance locks. Because this execution record was
+edited while that diagnostic run was active, it is evidence about the failure
+set but is not claimed as an unchanged-tree final receipt.
+
+A candidate manifest was generated only under `/private/tmp`; no blessed file
+was touched. Against the reviewed pre-U8 manifest, all 29 witnesses change
+`ir`, `ledgers`, `html_meta` and Sable evidence; 20 change expanded output and
+18 change parameter estimates. AuraFlow's only visual change is its final
+layer-map architecture occurrence (15 views remain 15): both layer groups now
+state `position unresolved`; topology, group counts, storage uncertainty and
+ordering are unchanged. The remaining model-specific view deltas are the
+already-recorded U8 position/mask/mixer/cross-attention/auxiliary honesty
+changes. A manifest/gallery rebuild still requires Soumil's explicit approval,
+after which the final gate must run on one frozen tree.
+
+### U8-G21 — ARTIFACT RULING AND GUARDED RE-BLESS (approved)
+
+Soumil approved the reviewed U8 honesty delta and the 29-witness artifact
+transition.  This approval covers the already-audited position, mask, mixer,
+cross-attention and auxiliary-view changes; it does not authorize unrelated
+visual changes or a weaker preservation gate.
+
+Every corpus entry was regenerated through the production Sable path with
+`render_images=True`.  A fixture was blessed only after its mechanical report
+passed, its oracle was present and its review state was explicitly set to
+`CLEAN`.  All 29 fixtures and their occurrence-exact galleries completed that
+guarded path.  The canonical expected manifest and the legacy shadow baseline
+were then rebuilt independently from the reviewed corpus; both contain exactly
+29 witnesses.  The final committed-tree verification receipt is still required
+before U8 may be called complete or pushed.

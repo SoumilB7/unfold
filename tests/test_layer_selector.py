@@ -46,6 +46,28 @@ def _build(tmp_path, body, *, prefix="", name="modeling_selector.py"):
     return index, root, callable_symbol
 
 
+def _build_loop_selector(tmp_path, body, *, prefix=""):
+    path = tmp_path / "modeling_loop_selector.py"
+    source = (
+        "class Dense: pass\nclass Sparse: pass\n"
+        + (f"{prefix}\n" if prefix else "")
+        + "class Root:\n"
+        + "    def __init__(self, config):\n"
+        + textwrap.indent(textwrap.dedent(body).strip(), " " * 8)
+        + "\n")
+    path.write_text(source, encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),),
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Root"})
+    index = build_program_index(bundle)
+    root = resolve_component_root(
+        index, bundle, "root", root_param_prefixes={"config": ()})
+    assert root.status == "resolved"
+    callable_symbol = SymbolId(root.occurrence.root.source, "Root.__init__")
+    return index, root, callable_symbol
+
+
 def _selector(values, *, kinds=None):
     kinds = kinds or {}
 
@@ -121,6 +143,25 @@ def test_literal_registry_dispatch_selects_exact_candidate_edge(tmp_path):
     assert _selected_names(result) == ("Dense", "Sparse", "Dense", "Sparse")
     assert {item.selected_candidates[0].candidate_index
             for item in result.decisions} == {0, 1}
+
+
+def test_fully_observed_ternary_selects_the_exact_branch(tmp_path):
+    case = _build(tmp_path, """
+        self.choice = Sparse() if layer_idx >= config.first else Dense()
+    """)
+    result = _resolve(case, {("first",): 2})
+    assert result.status == "resolved"
+    assert result.coverage_gaps == ()
+    assert _selected_names(result) == ("Dense", "Dense", "Sparse", "Sparse")
+
+
+def test_symbol_less_ternary_branch_keeps_the_generic_gap_blocking(tmp_path):
+    case = _build(tmp_path, """
+        self.choice = external.Builder() if layer_idx else Dense()
+    """)
+    result = _resolve(case, {}, indices=(0, 1))
+    assert result.status == "incomplete"
+    assert result.coverage_gaps
 
 
 def test_dynamic_registry_key_is_unresolved(tmp_path):
@@ -240,6 +281,64 @@ def test_unsupported_region_blocks_an_empty_census_from_claiming_absence(tmp_pat
     assert result.status == "incomplete"
     assert result.candidates == () and result.decisions == ()
     assert result.coverage_gaps
+
+
+def test_unique_constructor_loop_target_is_an_exact_layer_index(tmp_path):
+    case = _build_loop_selector(tmp_path, """
+        layers = []
+        for layer_idx in range(config.num_layers):
+            if layer_idx in config.sparse_layers:
+                layers.append(Sparse())
+            else:
+                layers.append(Dense())
+        self.layers = ModuleList(layers)
+    """, prefix="class ModuleList:\n    def __init__(self, value): pass")
+    index, root, callable_symbol = case
+    result = resolve_layer_selector(
+        index, root, root.occurrence, callable_symbol, "layers", (0, 1, 2, 3),
+        "layer_idx", config_selector=_selector({
+            ("num_layers",): 4,
+            ("sparse_layers",): [1, 3],
+        }))
+    assert result.status == "resolved"
+    assert _selected_names(result) == ("Dense", "Sparse", "Dense", "Sparse")
+    assert {operand.path for decision in result.decisions
+            for operand in decision.operands} == {
+                ("num_layers",), ("sparse_layers",)}
+
+
+def test_loop_target_is_not_assumed_live_outside_its_exact_iteration(tmp_path):
+    case = _build_loop_selector(tmp_path, """
+        layers = []
+        for layer_idx in range(config.num_layers):
+            layers.append(Dense())
+        layers.append(Sparse())
+        self.layers = ModuleList(layers)
+    """, prefix="class ModuleList:\n    def __init__(self, value): pass")
+    index, root, callable_symbol = case
+    result = resolve_layer_selector(
+        index, root, root.occurrence, callable_symbol, "layers", (0, 1),
+        "layer_idx", config_selector=_selector({("num_layers",): 2}))
+    assert result.status == "ambiguous"
+    assert all(item.state == "ambiguous" for item in result.decisions)
+
+
+def test_two_same_named_loops_do_not_guess_the_selector_loop(tmp_path):
+    case = _build_loop_selector(tmp_path, """
+        layers = []
+        for layer_idx in range(config.num_layers):
+            layers.append(Dense())
+        for layer_idx in range(config.other_layers):
+            layers.append(Sparse())
+        self.layers = ModuleList(layers)
+    """, prefix="class ModuleList:\n    def __init__(self, value): pass")
+    index, root, callable_symbol = case
+    result = resolve_layer_selector(
+        index, root, root.occurrence, callable_symbol, "layers", (0,),
+        "layer_idx", config_selector=_selector({
+            ("num_layers",): 1, ("other_layers",): 1}))
+    assert result.status == "failed"
+    assert result.failure_kind == "index_parameter_missing"
 
 
 def test_single_symbol_less_candidate_is_unresolved_not_selected(tmp_path):

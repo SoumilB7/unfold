@@ -22,11 +22,9 @@ import math
 from typing import Any
 
 from . import debug
-from ...everchanging import (load_aliases, load_layer_type_labels,
-                            load_layer_schedules)
+from ...everchanging import load_aliases
 from ...ir import AttentionSpec, CrossLayerEdge, FFNSpec, ModelIR
 from .assembly import decoder_extras, decoder_layer, parallel_decoder_layer
-from .blocks import mtp_head_block
 from .common import architecture_name, get_config_value as _g, model_name
 from .special_parts.per_layer_embedding import (
     per_layer_embedding_blocks,
@@ -38,7 +36,6 @@ from ...evidence import config_access as _config_access
 from .special_parts.modalities.fusion import apply_fusion_evidence
 from .special_parts.modalities.vision import apply_projector_evidence, apply_vision_evidence
 from .special_parts.modalities.audio import apply_audio_evidence
-from .special_parts.modalities.detect import cross_attention_layers as _cross_attention_layers
 
 
 # ---------------------------------------------------------------------------
@@ -50,23 +47,6 @@ from .special_parts.modalities.detect import cross_attention_layers as _cross_at
 
 _ALIASES: dict[str, list[str]] = load_aliases()
 
-
-# Per-layer attention-type label vocabulary — data, not code (everchanging/
-# transformer/layer_types.yaml).  Add a new spelling there, not here.
-_LAYER_TYPE_LABELS = load_layer_type_labels()
-_SLIDING_LABELS = set(_LAYER_TYPE_LABELS["sliding"])
-_FULL_LABELS    = set(_LAYER_TYPE_LABELS["full"])
-_COMPRESSED_SPARSE_LABELS = set(_LAYER_TYPE_LABELS["compressed_sparse"])
-_HEAVILY_COMPRESSED_LABELS = set(_LAYER_TYPE_LABELS["heavily_compressed"])
-
-# Per-layer TYPE-SCHEDULE vocabulary — the six config spellings of "which type
-# is layer i" normalized into the canonical layer_types / MoE-membership readers
-# (everchanging/transformer/layer_schedules.yaml).  Data, not code — a new
-# dialect is a row there.  U3.
-_LAYER_SCHEDULES = load_layer_schedules()
-# canonical layer_types token -> the token-MIXER cell it draws (non-softmax
-# mixer that replaces attention on that layer).
-_MIXER_KINDS: dict[str, str] = _LAYER_SCHEDULES["mixer_kinds"]
 
 def _declared_scores_scale(multiplier, query_pre_attn_scalar, head_dim):
     """The EFFECTIVE config-declared QK^T scale, or None when it equals the
@@ -354,7 +334,8 @@ def _attention_storage_result(context, config_path):
     )
 
 
-def _attention_mechanism_result(context=None, *, config_path=()):
+def _attention_mechanism_result(
+        cfg: Any = None, context=None, *, config_path=()):
     """One call-local exact-owner attention mechanism binding."""
     if context is None:
         return None
@@ -365,8 +346,25 @@ def _attention_mechanism_result(context=None, *, config_path=()):
         config_path,
         lambda: decoder_attention_mechanism_for_path(
             context.program_index(), context.source_bundle, config_path,
-            allow_root_stage=True,
+            allow_root_stage=True, config_document=cfg,
         ),
+    )
+
+
+def _attention_head_geometry_result(
+        cfg: Any, context=None, *, config_path=()):
+    """One call-local evaluation of the source-proven Q/K/V common factor."""
+    if context is None:
+        return None
+    from ...evidence.attention_geometry import (
+        decoder_attention_head_geometry_for_path,
+    )
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.attention.head_geometry", path,
+        lambda: decoder_attention_head_geometry_for_path(
+            context.program_index(), context.source_bundle, path, cfg,
+            allow_root_stage=True),
     )
 
 
@@ -395,74 +393,9 @@ def _code_attention_storage_mode(
     return "split_qkv" if result.value == "split" else result.value
 
 
-def _qk_norm_result(context=None, *, config_path=()):
-    """One call-local exact-owner Q/K-normalization result."""
-    if context is None:
-        return None
-    from ...evidence.qk_norm import decoder_qk_norm_evidence_for_path
-    config_path = tuple(config_path)
-    return context.cached_reader_result(
-        "decoder.attention.qk_norm",
-        config_path,
-        lambda: decoder_qk_norm_evidence_for_path(
-            context.program_index(),
-            context.source_bundle,
-            config_path,
-            allow_root_stage=True,
-        ),
-    )
-
-
-def _resolve_qk_norm_layers(
-        code_ev, cfg, num_layers: int, *,
-        context=None, config_path=()) -> list[bool | None]:
-    """Per-layer Q/K-norm facts from the code evidence.
-
-    Code-first resolution: unconditional construction → True everywhere (the
-    config is not consulted); gated → AND of the values of the exact config
-    fields the code itself names, read from THIS checkpoint (per-layer when the
-    code indexes by layer index); no positive source proof / unresolvable gate
-    → unknown. A declaration without an exact owner-bound use is not a
-    mechanism fact. Source silence never proves absence."""
-    n = max(int(num_layers or 0), 0)
-    if code_ev is None:
-        return [None] * n
-    if code_ev.present is True:
-        return [True] * n
-    per_layer = [True] * n
-    for atom in code_ev.gate:
-        if tuple(atom.config_path[:-1]) != tuple(config_path):
-            return [None] * n
-        if context is None:
-            missing = object()
-            raw = _g(cfg, atom.field, missing)
-            if raw is missing:
-                return [None] * n
-        else:
-            resolution = _config_access.resolve(
-                cfg, atom.field, (), path=tuple(config_path))
-            if resolution.ambiguous or not resolution.present:
-                return [None] * n
-            raw = resolution.consume_decision(
-                mechanism="qk_norm_gate",
-                fact_owner="decoder.attention",
-                fact_key="qk_norm",
-                reader="adapters.transformer.parser._resolve_qk_norm_layers",
-                status="code_and_config",
-            ).value
-        if atom.per_layer:
-            if not isinstance(raw, (list, tuple)) or len(raw) < n:
-                return [None] * n
-            per_layer = [p and bool(raw[i]) for i, p in enumerate(per_layer)]
-        else:
-            if raw is None:
-                return [None] * n
-            per_layer = [p and bool(raw) for p in per_layer]
-    return per_layer
-
-
 def _projection_bias_result(
     context, mechanism, config_path, *, ffn_mechanism_result=None,
+    geometry_schedule_result=None,
 ):
     """Call-local exact-owner projection bias evidence."""
     if context is None:
@@ -484,13 +417,18 @@ def _projection_bias_result(
             context.program_index(), context.source_bundle, path,
             allow_root_stage=True,
             **({"mechanism_result": ffn_mechanism_result}
-               if mechanism == "ordinary_ffn" else {})),
+               if mechanism == "ordinary_ffn" else
+               {"geometry_schedule_result": geometry_schedule_result})),
     )
 
 
-def _code_attention_bias(cfg: Any, context=None, *, config_path=()):
+def _code_attention_bias(
+        cfg: Any, context=None, *, config_path=(),
+        geometry_schedule_result=None):
     """Uniform exact Q/K/V/O bias or their one exact bound config path."""
-    result = _projection_bias_result(context, "attention", config_path)
+    result = _projection_bias_result(
+        context, "attention", config_path,
+        geometry_schedule_result=geometry_schedule_result)
     return result if result is not None and result.status == "resolved" else None
 
 
@@ -509,23 +447,6 @@ def _attention_output_projection_result(context=None, *, config_path=()):
             context.program_index(), context.source_bundle, path,
             allow_root_stage=True),
     )
-
-
-def _code_moe_schedule(cfg: Any, context=None, num_layers: int = 0):
-    """Per-layer MoE?/dense schedule READ FROM THE DECODER LAYER's CONSTRUCTION —
-    the code-authoritative replacement for the config schedule flags: which
-    layers build an experts class (name-independent) as their FFN field, gated
-    per layer.  Returns ``list[bool]`` (len num_layers) or None on any doubt
-    (hybrid SSM-MoE, exotic gate, no source) → caller stays unknown.
-    Best-effort, never raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_moe_schedule_from_files
-        sched = decoder_moe_schedule_from_files(_source_files(cfg, context), cfg)
-        if sched is not None and num_layers and len(sched) == num_layers:
-            return sched
-        return None
-    except Exception:
-        return None
 
 
 def _router_result(
@@ -711,14 +632,8 @@ def _cross_attention_schedule_result(context=None, *, config_path=()):
     )
 
 
-def _code_cross_attention_all_layers(context=None, *, config_path=()):
-    """Positive-only exact dual-attention construction evidence."""
-    result = _cross_attention_schedule_result(
-        context, config_path=config_path)
-    return result is not None and result.status == "resolved"
-
-
-def _code_intermediate_size(cfg: Any, context=None, *, config_path=()):
+def _code_intermediate_size(
+        cfg: Any, context=None, *, config_path=(), mechanism_result=None):
     """Exact-owner FFN width from its output-projection input expression."""
     if context is None:
         return None
@@ -729,20 +644,8 @@ def _code_intermediate_size(cfg: Any, context=None, *, config_path=()):
         "decoder.ffn.intermediate_width", path,
         lambda: decoder_ffn_intermediate_width_for_path(
             context.program_index(), context.source_bundle, path, cfg,
-            allow_root_stage=True),
+            allow_root_stage=True, mechanism_result=mechanism_result),
     )
-
-
-def _code_rope_dim(cfg: Any, context=None) -> int | None:
-    """The rotated head-width read from an explicit-dim rotary CONSTRUCTION
-    (ChatGLM's ``RotaryEmbedding(rotary_dim // 2)``) — only consulted when
-    every config spelling of the fraction is silent.  Best-effort, never
-    raises into the parse."""
-    try:
-        from ...evidence.patterns import decoder_rope_dim_from_files
-        return decoder_rope_dim_from_files(_source_files(cfg, context), cfg=cfg)
-    except Exception:
-        return None
 
 
 def _expert_storage_result(context=None, *, config_path=()):
@@ -761,6 +664,36 @@ def _expert_storage_result(context=None, *, config_path=()):
             config_path,
             allow_root_stage=True,
         ),
+    )
+
+
+def _expert_width_result(cfg: Any, context=None, *, config_path=()):
+    """Exact per-expert width from the proved routed-expert parameter shapes."""
+    if context is None:
+        return None
+    from ...evidence.expert_width import \
+        decoder_expert_intermediate_width_for_path
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.ffn.expert_intermediate_width", path,
+        lambda: decoder_expert_intermediate_width_for_path(
+            context.program_index(), context.source_bundle, path, cfg,
+            allow_root_stage=True),
+    )
+
+
+def _shared_expert_count_result(cfg: Any, context=None, *, config_path=()):
+    """Exact shared-FFN application and multiplicative count evidence."""
+    if context is None:
+        return None
+    from ...evidence.expert_width import \
+        decoder_shared_expert_count_for_path
+    path = tuple(config_path)
+    return context.cached_reader_result(
+        "decoder.ffn.shared_expert_count", path,
+        lambda: decoder_shared_expert_count_for_path(
+            context.program_index(), context.source_bundle, path, cfg,
+            allow_root_stage=True),
     )
 
 
@@ -787,33 +720,6 @@ def _code_lm_head_tying(
     result = manual_weight_tying_for_path(
         context.program_index(), context.source_bundle, tuple(config_path))
     return True if result.status == "resolved" else None
-
-
-def _code_attention_causality(cfg: Any, context=None) -> str | None:
-    """The mask DIRECTION read from mask-machinery calls / ``self.is_causal``
-    literals in the modeling source (U2 P2d) — ``"causal"`` /
-    ``"bidirectional"`` / ``None``.  ``if …is_decoder…`` gates around the
-    calls are resolved from the checkpoint config, so one source file
-    honestly yields either direction (BERT / T5-encoder)."""
-    try:
-        from ...evidence.patterns import attention_causality_from_files
-        return attention_causality_from_files(_source_files(cfg, context), cfg)
-    except Exception:
-        return None
-
-
-def _code_position(cfg: Any, context=None):
-    """Typed positional evidence shared verbatim with fact-conformance."""
-    try:
-        from ...evidence.position import decoder_positional_evidence
-        bundle = context.source_bundle if context is not None else None
-        return decoder_positional_evidence(cfg, source="local", bundle=bundle)
-    except Exception:
-        # A detector failure is not permission to assert a source-derived fact.
-        # Treat it as present-but-unresolved; fact-conformance will expose the
-        # same state when the source oracle is available.
-        from ...evidence.models import PositionalEvidence
-        return PositionalEvidence("ambiguous", reason="positional detector raised")
 
 
 from .common import TEXT_WRAPPER_KEYS as _TEXT_WRAPPER_KEYS
@@ -985,7 +891,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             _facts.record(owner, name, value, status, source)
 
     def _note_bound_attention_fact(
-            bound, reader_result, actual_config_paths):
+            bound, reader_result, actual_config_paths, operand_resolutions):
         """Publish the U6 mechanism with its exact typed evidence channels."""
         if _facts is None:
             return
@@ -994,20 +900,32 @@ def parse(cfg: Any, context=None) -> ModelIR:
         spans = tuple(dict.fromkeys(
             span for provenance in reader_result.provenance
             for span in provenance.spans))
-        fact_spans = tuple(FactSourceSpan(
+        fact_spans = tuple(dict.fromkeys(FactSourceSpan(
             component=span.source.component_key or "root",
             file=span.source.canonical_path,
             line=span.line,
-        ) for span in spans)
+        ) for span in spans))
+        premise_paths = tuple(path for path, _value in bound.premises)
+        resolutions = tuple(
+            operand_resolutions[path]
+            for path in premise_paths if path in operand_resolutions)
+        status = (
+            "class_default"
+            if any(item.provenance == "class_default"
+                   or item.source_kind == "class_default"
+                   for item in resolutions)
+            else "code_and_config")
         config_paths = tuple(
-            ".".join(actual)
-            for path, _value in bound.premises
-            if (actual := actual_config_paths.get(path)) is not None)
+            ".".join(selected)
+            for path in premise_paths
+            if (selected := (
+                actual_config_paths[path]
+                if path in actual_config_paths else path)) is not None)
         _facts.record_typed(EvidenceFact(
             key="mechanism",
             owner="decoder.attention",
             value=bound.kind,
-            status="code_and_config",
+            status=status,
             completeness="presence_only",
             source_spans=fact_spans,
             config_paths=config_paths,
@@ -1040,11 +958,11 @@ def parse(cfg: Any, context=None) -> ModelIR:
             value=value,
             status=status,
             completeness=completeness,
-            source_spans=tuple(FactSourceSpan(
+            source_spans=tuple(dict.fromkeys(FactSourceSpan(
                 component=span.source.component_key or "root",
                 file=span.source.canonical_path,
                 line=span.line,
-            ) for span in spans),
+            ) for span in spans)),
             config_paths=tuple(".".join(path) for path in config_paths),
             legacy_source=reader,
             reason=reason,
@@ -1076,6 +994,44 @@ def parse(cfg: Any, context=None) -> ModelIR:
     _fact_class_defaults = (
         _selected_class_defaults
         if _text_path else (getattr(context, "class_defaults", None) or {}))
+    # Exact source expressions may consume class-supplied defaults, but those
+    # operands must remain class_default provenance rather than masquerading as
+    # checkpoint declarations.  Give geometry readers an evaluation document
+    # with the selected component's defaults overlaid; their returned paths are
+    # then resolved again through ConfigAccess below, which assigns the honest
+    # weakest tier before any fact is authored.
+    _evidence_text_cfg = text_cfg
+    if isinstance(text_cfg, dict):
+        from ...evidence.expression_eval import canonical_alias_view
+        _evidence_text_cfg = dict(_selected_class_defaults or {})
+        _evidence_text_cfg.update(text_cfg)
+        _evidence_text_cfg = canonical_alias_view(
+            _evidence_text_cfg, _ALIASES)
+
+    def _replace_component(document, path, replacement):
+        if not path:
+            return replacement
+        if not isinstance(document, dict) or path[0] not in document:
+            return document
+        out = dict(document)
+        out[path[0]] = _replace_component(
+            document[path[0]], path[1:], replacement)
+        return out
+
+    _evidence_config_document = _replace_component(
+        cfg, _text_path, _evidence_text_cfg)
+    # U8 mask execution must distinguish checkpoint declarations from source
+    # config-class defaults.  Unlike the general expression-evaluation view
+    # above, this document contains checkpoint values only (with syntax aliases
+    # normalized); the exact framework-config reader supplies omitted literal
+    # class defaults through its own typed source proof.
+    _mask_checkpoint_text_cfg = text_cfg
+    if isinstance(text_cfg, dict):
+        from ...evidence.expression_eval import canonical_alias_view
+        _mask_checkpoint_text_cfg = canonical_alias_view(
+            dict(text_cfg), _ALIASES)
+    _mask_checkpoint_document = _replace_component(
+        cfg, _text_path, _mask_checkpoint_text_cfg)
     # Nested text_config (multimodal wrapper) is fully supported — no warning needed.
 
     from ...evidence import config_access as _config_access
@@ -1118,6 +1074,29 @@ def parse(cfg: Any, context=None) -> ModelIR:
         (ffn_cfg, (*_text_path, "ffn_config")),
     )
 
+    # A nested rotary-parameter dictionary is an ADDRESS NAMESPACE, not one
+    # indivisible architectural fact.  Its independently resolved children
+    # may become operands only when an exact source reader proves their use.
+    # Classifying the container here keeps the recursive unread audit honest:
+    # the mapping parent is accounted for while every untouched child remains
+    # independently visible (and, for multimodal coordinate semantics, exact
+    # U9 debt).  The spellings are syntax vocabulary from aliases.yaml; no
+    # model/family identity participates.
+    for _rope_namespace in _ALIASES.get("rope_scaling", ()):
+        _carries_namespace = (
+            _rope_namespace in text_cfg if isinstance(text_cfg, dict)
+            else hasattr(text_cfg, _rope_namespace))
+        if not _carries_namespace:
+            continue
+        _namespace_resolution = _config_access.resolve(
+            text_cfg, _rope_namespace, (), path=_text_path)
+        if _namespace_resolution.present \
+                and isinstance(_namespace_resolution.value, dict):
+            _namespace_resolution.ignore(
+                reason=(f"{_rope_namespace} is a positional-parameter "
+                        "namespace; only source-selected child operands can "
+                        "author positional facts"))
+
     def _scoped(field):
         """REC-3 (§9.2/§9.3): text_config / attn_config / ffn_config are
         STRUCTURAL SCOPES, not aliases of one unordered object — the FIRST
@@ -1137,6 +1116,59 @@ def parse(cfg: Any, context=None) -> ModelIR:
             text_cfg if text_cfg is not None else {}, field,
             _ALIASES.get(field, ()), path=_text_path,
             class_defaults=_shape_completion_defaults)
+
+    def _ignore_unselected_alias_spellings(canonical, exact_paths, reason):
+        """Classify syntax aliases that the exact source path did not read.
+
+        Alias vocabulary may explain equivalent checkpoint spellings; it may
+        never outvote the concrete spelling cited by modeling code.  Recording
+        the other present spellings as scoped ignored occurrences prevents a
+        duplicate metadata key from becoming either architecture or audit
+        noise, including when its value conflicts with the enacted source.
+        """
+        exact_paths = {tuple(item) for item in exact_paths if item}
+        for tier_cfg, tier_path in _TIERS:
+            for spelling in _spellings(canonical):
+                present = (
+                    spelling in tier_cfg if isinstance(tier_cfg, dict)
+                    else hasattr(tier_cfg, spelling))
+                occurrence = (*tier_path, spelling)
+                if not present or occurrence in exact_paths:
+                    continue
+                _config_access.resolve(
+                    tier_cfg, spelling, (), path=tier_path).ignore(reason)
+
+    def _classify_exact_nested_alias_group(vocabulary_key, selected_paths):
+        """Classify spellings only inside an exact source-proven mapping.
+
+        Some framework APIs accept a legacy spelling beside the canonical
+        spelling within one nested parameter dictionary.  The vocabulary is
+        safe only at that already-proven parent: applying a leaf such as
+        ``type`` to the unordered root config would make unrelated metadata an
+        architecture candidate.  Unequal co-present spellings remain a typed
+        ambiguity; equal redundancy is classified by ConfigAccess itself.
+        """
+        spellings = tuple(_ALIASES.get(vocabulary_key, ()))
+        if len(spellings) < 2:
+            return
+        canonical, aliases = spellings[0], spellings[1:]
+        for exact in dict.fromkeys(tuple(path) for path in selected_paths):
+            if not exact or exact[-1] != canonical:
+                continue
+            parent = cfg
+            for segment in exact[:-1]:
+                parent = (
+                    parent.get(segment) if isinstance(parent, dict)
+                    else getattr(parent, segment, None))
+                if parent is None:
+                    break
+            if parent is None:
+                continue
+            # ConfigAccess emits a scoped ignore for equal redundant aliases
+            # and a typed ambiguity for unequal ones.  It never selects a
+            # winner from conflicting declarations.
+            _config_access.resolve(
+                parent, canonical, aliases, path=exact[:-1])
 
     def get(field, default=None):
         """Inspect a scoped value (a branch may read and discard it).  An
@@ -1162,11 +1194,37 @@ def parse(cfg: Any, context=None) -> ModelIR:
         return default if value is None else value
 
     _attention_actual_config_paths = {}
+    _attention_operand_resolutions = {}
 
-    def _consume_code_bound_path(field, exact_path, *, fact_key=None):
+    def _consume_code_bound_path(
+            field, exact_path, *, fact_key=None,
+            fact_owner="decoder.attention",
+            mechanism="attention_mechanism", status=None,
+            expected_value=_config_access.MISSING):
         """Consume only when U1 selected the exact path proven by source code."""
-        res = _scoped(field)
         exact = tuple(exact_path)
+        # The source may read an audited input spelling directly (BLOOM's
+        # ``n_head``) while the config class also exposes an equal canonical
+        # property (``num_attention_heads``).  Canonical arbitration is useful
+        # before source selection, but after the exact reader names a spelling
+        # we must resolve THAT occurrence rather than reject it because an equal
+        # property won the alias display order.
+        res = None
+        if exact and exact[-1] in _spellings(field):
+            parent = cfg
+            for part in exact[:-1]:
+                parent = (
+                    parent.get(part) if isinstance(parent, dict)
+                    else getattr(parent, part, None))
+                if parent is None:
+                    break
+            if parent is not None:
+                exact_res = _config_access.resolve(
+                    parent, exact[-1], (), path=exact[:-1])
+                if exact_res.present and not exact_res.ambiguous:
+                    res = exact_res
+        if res is None:
+            res = _scoped(field)
         # A complete, exact source reader may name a config-class property that
         # the checkpoint omits.  In that one case the installed class default
         # is a lawful operand of the code proof (Falcon's alternate dispatch
@@ -1195,11 +1253,14 @@ def parse(cfg: Any, context=None) -> ModelIR:
         if res.ambiguous or (
                 not class_default and selected != exact and not same_property):
             return None
+        _attention_operand_resolutions[exact] = res
         decision = res.consume_decision(
             reader="adapters.transformer.parser.parse",
-            fact_owner="decoder.attention",
+            fact_owner=fact_owner,
             fact_key=fact_key or field,
-            mechanism="attention_mechanism",
+            mechanism=mechanism,
+            status=status,
+            expected_value=expected_value,
         )
         _attention_actual_config_paths[exact] = (
             None if class_default else selected)
@@ -1228,71 +1289,58 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 container = getattr(container, segment)
             else:
                 return None
+        # Source code reads the config CLASS's runtime property.  A checkpoint
+        # may serialize an audited input spelling for that same property
+        # (``hidden_size`` <- ``n_embd``).  This bridge is syntax-only and is
+        # permitted only when the source leaf is itself the canonical key;
+        # source code that names an alias directly still resolves that exact
+        # occurrence without widening its authority.
+        _source_aliases = (
+            _ALIASES.get(exact[-1], ())
+            if exact[-1] in _ALIASES else ())
         resolution = _config_access.resolve(
-            container, exact[-1], (), path=exact[:-1])
-        return resolution if resolution.state == "present" else None
+            container, exact[-1], _source_aliases, path=exact[:-1])
+        if resolution.state == "absent":
+            defaults = _defaults_by_path.get(exact[:-1], {})
+            if not isinstance(defaults, dict) and exact[:-1] == _text_path:
+                defaults = _fact_class_defaults
+            if isinstance(defaults, dict) and exact[-1] in defaults:
+                resolution = _config_access.resolve(
+                    container, exact[-1], (), path=exact[:-1],
+                    class_defaults={exact[-1]: defaults[exact[-1]]})
+        if resolution.state == "present":
+            return resolution
+        return resolution if resolution.source_kind == "class_default" else None
+
+    def _actual_checkpoint_path(source_path, resolution):
+        """Return the exact supplying checkpoint spelling, or no path.
+
+        Source readers cite the runtime property used by modeling code.  The
+        U1 resolver may bind that property to a different serialized spelling
+        (for example ``hidden_size`` to GPT-2's ``n_embd``).  Facts must cite
+        the selected checkpoint occurrence, while a class-supplied default has
+        no checkpoint path and therefore contributes only its fact status.
+        """
+        if resolution.provenance == "class_default" \
+                or resolution.source_kind == "class_default":
+            return None
+        if isinstance(resolution.selected_path, str) \
+                and resolution.selected_path:
+            return tuple(resolution.selected_path.split("."))
+        return tuple(source_path)
 
     num_layers   = consume("num_hidden_layers", fact_owner="model", fact_key="num_layers")
     hidden_size  = consume("hidden_size", fact_owner="model", fact_key="hidden_size")
-    num_heads    = consume("num_attention_heads", fact_owner="decoder.attention", fact_key="num_heads")
-    num_kv_heads = consume("num_key_value_heads", fact_owner="decoder.attention", fact_key="num_kv_heads") or num_heads
-    head_dim     = consume("head_dim", fact_owner="decoder.attention", fact_key="head_dim") or (hidden_size // num_heads if (num_heads and hidden_size) else None)
-    intermediate_size = consume("intermediate_size", fact_owner="decoder.ffn", fact_key="intermediate_size")
-    # OLMo-style: intermediate_size derived from mlp_ratio * hidden_size.
-    if not intermediate_size:
-        mlp_ratio = consume("mlp_ratio", fact_owner="decoder.ffn", fact_key="mlp_ratio")
-        if mlp_ratio and hidden_size:
-            intermediate_size = int(hidden_size * float(mlp_ratio))
-    # GPT-J/GPT-2/CodeGen: config's ``n_inner`` is None and the layer computes
-    # ``4 * n_embd`` itself — read that default EXPRESSION from the source so the
-    # FFN width (and thus the param count) isn't undercounted to zero.
-    if not intermediate_size:
-        _width_result = _code_intermediate_size(
-            cfg, context, config_path=_text_path)
-        if _width_result is not None and _width_result.status == "resolved":
-            _width_resolutions = []
-            for _path, _expected in _width_result.value.premises:
-                _resolution = _resolve_exact_config_path(_path)
-                # ``""`` is legal only for a caller-supplied runtime
-                # PretrainedConfig: it proves the value the current model code
-                # will consume, but the access event keeps origin unestablished
-                # and is never promoted to checkpoint_declared.  Loader stamps
-                # remain powerless.
-                if _resolution is None or _resolution.value != _expected \
-                        or _resolution.provenance not in {
-                            "", "checkpoint_declared", "class_default"}:
-                    _width_resolutions = []
-                    break
-                _width_resolutions.append(_resolution)
-            if len(_width_resolutions) == len(_width_result.value.premises):
-                _width_status = (
-                    "class_default"
-                    if any(item.provenance == "class_default"
-                           for item in _width_resolutions)
-                    else "code_and_config")
-                for _resolution in _width_resolutions:
-                    _resolution.consume_decision(
-                        reader="decoder_ffn_intermediate_width_for_path",
-                        fact_owner="decoder.ffn",
-                        fact_key="intermediate_size",
-                        mechanism="ffn_intermediate_width",
-                        status=_width_status)
-                intermediate_size = _width_result.value.value
-                _note_typed_fact(
-                    key="intermediate_size", owner="decoder.ffn",
-                    value=intermediate_size, status=_width_status,
-                    reader_result=_width_result,
-                    config_paths=tuple(
-                        path for path, _value
-                        in _width_result.value.premises),
-                    reader="decoder_ffn_intermediate_width_for_path",
-                    reason=("the exact FFN output-projection input expression "
-                            "evaluates from the cited config operands"),
-                )
-    # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
-    # Read the declared value for the config ledger, but project it only when
-    # the exact-owner mechanism reader proves either a literal activation or
-    # the exact config-dispatch path that selects this value.
+    # U6 qualification law: numeric declarations do not select attention
+    # geometry.  The exact mechanism reader below identifies which config
+    # occurrences are count operands; the exact head-geometry reader evaluates
+    # the source's shared Q/K/V factor.  Until those joins succeed, geometry is
+    # unknown rather than a conventional hidden//heads reconstruction.
+    num_heads = num_kv_heads = head_dim = None
+    # Resolve the ordinary mechanism ONCE before any dependent FFN fact.  A
+    # config-selected exhaustive branch (T5-style gated vs dense) is part of
+    # this exact result; width, activation and bias must all consume it rather
+    # than independently reintroducing the unresolved rival constructions.
     _ffn_mechanism = _ffn_mechanism_result(
         context, config_path=_text_path, config_root=cfg)
     _ffn_mechanism_value = (
@@ -1301,6 +1349,80 @@ def parse(cfg: Any, context=None) -> ModelIR:
         and _ffn_mechanism.status == "resolved"
         else None
     )
+    # U7 qualification law: a declaration is an operand, never width
+    # authority.  Run the exact-owner reader for EVERY ordinary FFN, including
+    # the common case where ``intermediate_size`` is present.  The old
+    # ``consume(...) or code_reader(...)`` ordering let a plausible config
+    # number bypass source qualification entirely (and even survive when the
+    # source was missing).  Only the output-projection input expression may
+    # select the value; every config operand it actually uses is then joined
+    # and consumed below.
+    intermediate_size = None
+    _width_result = _code_intermediate_size(
+        _evidence_config_document, context, config_path=_text_path,
+        mechanism_result=_ffn_mechanism)
+    if _width_result is not None and _width_result.status == "resolved":
+        _width_resolutions = []
+        for _path, _expected in _width_result.value.premises:
+            _resolution = _resolve_exact_config_path(_path)
+            # ``""`` is legal only for a caller-supplied runtime
+            # PretrainedConfig: it proves the value the current model code
+            # will consume, but the access event keeps origin unestablished
+            # and is never promoted to checkpoint_declared.  Loader stamps
+            # remain powerless.
+            if _resolution is None or _resolution.value != _expected \
+                    or _resolution.provenance not in {
+                        "", "checkpoint_declared", "class_default"}:
+                _width_resolutions = []
+                break
+            _width_resolutions.append(_resolution)
+        if len(_width_resolutions) == len(_width_result.value.premises):
+            _width_status = (
+                "class_default"
+                if any(item.provenance == "class_default"
+                       or item.source_kind == "class_default"
+                       for item in _width_resolutions)
+                else "code_and_config" if _width_resolutions
+                else "code_proven")
+            for _resolution in _width_resolutions:
+                _resolution.consume_decision(
+                    reader="decoder_ffn_intermediate_width_for_path",
+                    fact_owner="decoder.ffn",
+                    fact_key="intermediate_size",
+                    mechanism="ffn_intermediate_width",
+                    status=_width_status)
+            intermediate_size = _width_result.value.value
+            _width_fact_paths = tuple(
+                selected
+                for (source_path, _expected), resolution in zip(
+                    _width_result.value.premises, _width_resolutions)
+                if (selected := _actual_checkpoint_path(
+                    source_path, resolution)) is not None)
+            _note_typed_fact(
+                key="intermediate_size", owner="decoder.ffn",
+                value=intermediate_size, status=_width_status,
+                reader_result=_width_result,
+                config_paths=_width_fact_paths,
+                reader="decoder_ffn_intermediate_width_for_path",
+                reason=("the exact FFN output-projection input expression "
+                        "evaluates from the cited config operands"),
+            )
+    if intermediate_size is None:
+        # Preserve an exact audit disposition for a declared candidate without
+        # letting that declaration author architecture.  This is intentionally
+        # after every source-qualification attempt: successful readers consume
+        # their own exact premise occurrences, while an unresolved reader leaves
+        # the candidate visible as powerless input rather than unread debt.
+        _ordinary_width_candidate = _scoped("intermediate_size")
+        if _ordinary_width_candidate.present:
+            _ordinary_width_candidate.ignore(
+                reason=(
+                    "candidate FFN width; no exact ordinary output-projection "
+                    "input expression qualifies this occurrence"))
+    # DBRX-style: activation lives in a nested dict like ``ffn_act_fn = {"name": "silu"}``.
+    # Read the declared value for the config ledger, but project it only when
+    # the exact-owner mechanism reader proves either a literal activation or
+    # the exact config-dispatch path that selects this value.
     _activation_res = _scoped("hidden_act")
     _activation_decision_res = _activation_res
     # Inspect the alternate declaration regardless of which spelling wins.
@@ -1464,58 +1586,585 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 reason=(
                     "candidate FFN declaration; only the exact source-bound "
                     "activation dispatch is consumed into architecture"))
-    sliding_window = consume("sliding_window", fact_owner="decoder.attention", fact_key="sliding_window")
-    # ---- Sliding-window enable toggle (Qwen2/2.5/3) ----
-    # A config may declare a window size but turn SWA *off* (use_sliding_window
-    # = False); honor that, otherwise we'd draw sliding attention on what is
-    # really a full-attention model.  When absent (Mistral), the window applies.
-    # U2-R7: these reads touch the (possibly nested) text config — NAME the
-    # object so the ledger records an exact located path instead of an honest
-    # bare leaf (wrapper_path is () when text IS the root; the container is
-    # obj-qualified either way, so host reads are never mislabeled).
-    with _config_access.config_container(_text_path, obj=text_cfg):
-        # U2-R7: both flow into the sliding-window schedule (the enable toggle
-        # and the bottom-full split) — consumed like ``sliding_window`` above.
-        use_sliding_window = consume("use_sliding_window",
-                                     fact_owner="decoder.attention",
-                                     fact_key="use_sliding_window")
-        max_window_layers  = consume("max_window_layers",
-                                     fact_owner="decoder.attention",
-                                     fact_key="first_full_layers")
-    if use_sliding_window is False:
-        sliding_window = None
-        max_window_layers = None
-    with _config_access.config_container(_text_path, obj=text_cfg):
-        # U2-R7: the canonical per-layer mask/kind schedule — consumed into the
-        # attention schedule fact it becomes.
-        layer_types  = consume("layer_types", fact_owner="decoder.attention",
-                               fact_key="layer_types") or []
-        full_attention_interval = _g(text_cfg, "full_attention_interval") or 0
-    if not layer_types and full_attention_interval and num_layers:
-        layer_types = [
-            "linear_attention" if (i + 1) % int(full_attention_interval) else "full_attention"
-            for i in range(num_layers or 0)
-        ]
-    # Resolved through aliases so dialect spellings (DeepSeek-V4 ``compress_rates``)
-    # are picked up — see everchanging/aliases.yaml.
-    compress_ratios = get("compress_ratios") or []
-    if not layer_types and compress_ratios:
-        layer_types = _layer_types_from_compress_ratios(compress_ratios, num_layers)
-    # U3: the six per-layer TYPE-SCHEDULE spellings (attn_type_list / block_types
-    # / attention_types / dense_attention_every_n_layers) normalize into the SAME
-    # layer_types list the working schedules flow through — the config channel,
-    # consulted ONLY when no canonical layer_types list exists.  This proves
-    # placement of declared opaque mixers and full-attention routes; it does
-    # NOT classify the full route as MHA/GQA when modeling source is missing.
-    _schedule_source = None
-    if not layer_types:
-        _sched, _schedule_source = _normalize_layer_schedule(
-            text_cfg, num_layers, sliding_window)
-        layer_types = _sched or []
-        if _schedule_source:
-            _note_fact("decoder.layer", "layer_schedule",
-                       f"{len(set(layer_types))} layer types over {num_layers}",
-                       "config_declared", _schedule_source)
+    # ---- U8-C: one source-derived mask execution authority ----
+    # The evidence selector reads a checkpoint-only canonical syntax view.  It
+    # performs no U1 consumption while candidates are being tested.  Only paths
+    # retained by the resolved execution are joined back to their exact U1
+    # occurrences below; source config-class defaults remain source provenance.
+    def _mask_checkpoint_selector(path):
+        current = _mask_checkpoint_document
+        for part in tuple(path):
+            if isinstance(current, dict):
+                if part not in current:
+                    return False, None, ""
+                current = current[part]
+            elif hasattr(current, part):
+                current = getattr(current, part)
+            else:
+                return False, None, ""
+        origin = _config_access.provenance_of(".".join(tuple(path)))
+        if origin == _config_access.CLASS_DEFAULT:
+            return True, current, "class_default"
+        if origin in {_config_access.CHECKPOINT_DECLARED, ""}:
+            # ``""`` remains necessary for isolated adapter/unit calls that
+            # deliberately provide no PreparedDocument scope.  In a real parse
+            # U2's provenance nets reject unestablished structural reads.
+            return True, current, "config_declared"
+        return False, None, ""
+
+    # ---- U8-B: exact positional-operation authority -----------------------
+    # Five independent positive readers answer five different mechanism
+    # questions.  Their results are joined only after exact source ownership;
+    # a declaration such as rope_theta/alibi/max_position_embeddings is never
+    # itself a mechanism vote.  Inactive rotation means only that this proved
+    # Q/K application is disabled at that layer—not that the layer is NoPE.
+    from ...evidence.position_schedule import \
+        decoder_position_application_schedule_for_path
+    from ...evidence.position_absolute import \
+        decoder_learned_absolute_position_for_path
+    from ...evidence.position_fixed import \
+        decoder_fixed_absolute_position_for_path
+    from ...evidence.position_linear_bias import \
+        decoder_alibi_score_bias_for_path
+    from ...evidence.position_relative_bias import \
+        decoder_relative_position_bias_for_path
+
+    _position_reader_args = (
+        context.program_index(), context.source_bundle, tuple(_text_path))
+    _position_rope_result = decoder_position_application_schedule_for_path(
+        *_position_reader_args, allow_root_stage=True,
+        config_selector=_mask_checkpoint_selector)
+    _position_learned_result = decoder_learned_absolute_position_for_path(
+        *_position_reader_args, allow_root_stage=True)
+    _position_fixed_result = decoder_fixed_absolute_position_for_path(
+        *_position_reader_args, allow_root_stage=True)
+    _position_alibi_result = decoder_alibi_score_bias_for_path(
+        *_position_reader_args, allow_root_stage=True,
+        config_selector=_mask_checkpoint_selector)
+    _position_relative_result = decoder_relative_position_bias_for_path(
+        *_position_reader_args, allow_root_stage=True,
+        config_selector=_mask_checkpoint_selector)
+    for _position_name, _position_result in (
+            ("rope_schedule", _position_rope_result),
+            ("learned_absolute", _position_learned_result),
+            ("fixed_absolute", _position_fixed_result),
+            ("alibi", _position_alibi_result),
+            ("relative_bias", _position_relative_result)):
+        context.reader_results[(
+            f"decoder.attention.position.{_position_name}",
+            tuple(_text_path),
+        )] = _position_result
+
+    _position_layers = None
+    _position_stage_kind = None
+    _position_fact_result = None
+    _position_fact_status = None
+    _position_fact_paths = ()
+    _rope_theta = None
+    _rope_initialization = None
+
+    _stage_position_hits = tuple(
+        (kind, result) for kind, result in (
+            ("learned_absolute", _position_learned_result),
+            ("fixed_absolute", _position_fixed_result))
+        if result.status == "resolved")
+    _attention_position_hits = tuple(
+        (kind, result) for kind, result in (
+            ("rope", _position_rope_result),
+            ("alibi", _position_alibi_result),
+            ("relative_bias", _position_relative_result))
+        if result.status == "resolved")
+
+    # Rival mechanisms are retained as typed reader results above.  The parser
+    # never chooses a precedence merely because one is familiar.  One
+    # model-stage addition may coexist with one attention-stage mechanism.
+    if len(_stage_position_hits) == 1:
+        _position_stage_kind = _stage_position_hits[0][0]
+        _stage_position_result = _stage_position_hits[0][1]
+        _note_typed_fact(
+            key="position_addition", owner="decoder.input",
+            value={"position_kind": _position_stage_kind,
+                   "position_application": "embedding_add"},
+            status="code_proven", reader_result=_stage_position_result,
+            config_paths=(),
+            reader=(
+                "decoder_learned_absolute_position_for_path"
+                if _position_stage_kind == "learned_absolute" else
+                "decoder_fixed_absolute_position_for_path"),
+            reason=("the exact model-stage coordinate producer and position "
+                    "vector reach one unconditional token-embedding addition"),
+        )
+
+    if len(_attention_position_hits) == 1 \
+            and _attention_position_hits[0][0] == "rope":
+        _position_fact_result = _position_rope_result
+        _schedule = _position_rope_result.value
+        _dependencies = {
+            _schedule.transport.count_config_path:
+                (_schedule.transport.count_source_kind,
+                 _schedule.transport.layer_count),
+            **{
+                path: (kind, value)
+                for path, kind, value in _schedule.selector_config_values
+            },
+            **{
+                path: (kind, value)
+                for path, kind, value in _schedule.geometry.width_config_values
+            },
+        }
+        _position_fact_status = (
+            "class_default"
+            if any(kind == "class_default"
+                   for kind, _value in _dependencies.values())
+            else "code_and_config")
+        _rotated_width = (
+            _schedule.geometry.rotated_width
+            if _schedule.geometry.mode == "partial" else None)
+        _candidate_position_layers = tuple({
+            "position_kind": (
+                "rope" if decision.state == "active" else "unknown"),
+            "position_application": (
+                "qk_rotation" if decision.state == "active" else "unknown"),
+            "rope_dim": (
+                _rotated_width if decision.state == "active" else None),
+        } for decision in _schedule.decisions)
+        _position_join_ok = bool(
+            num_layers and len(_schedule.decisions) == int(num_layers))
+        for _path, (_kind, _expected) in _dependencies.items():
+            if _kind == "class_default":
+                continue
+            _actual = _consume_code_bound_path(
+                _path[-1], _path, fact_key="position_schedule",
+                mechanism="position_schedule", status=_position_fact_status,
+                expected_value=_candidate_position_layers)
+            if _actual != _expected:
+                _position_join_ok = False
+        if _position_join_ok:
+            _position_layers = tuple({
+                "position_kind": (
+                    "rope" if decision.state == "active" else "unknown"),
+                "position_application": (
+                    "qk_rotation" if decision.state == "active" else "unknown"),
+                "rope_dim": (
+                    _rotated_width if decision.state == "active" else None),
+                "rope": True if decision.state == "active" else None,
+                "no_rope": False,
+            } for decision in _schedule.decisions)
+            _position_fact_paths = tuple(_dependencies)
+    elif len(_attention_position_hits) == 1:
+        _kind, _position_fact_result = _attention_position_hits[0]
+        _application = (
+            "attention_bias" if _kind in {"alibi", "relative_bias"}
+            else "unknown")
+        if num_layers:
+            # Relative-bias evidence proves the table-owning first occurrence;
+            # it explicitly does not prove loop-carried reuse by later layers.
+            _position_layers = tuple({
+                "position_kind": (
+                    _kind if _kind != "relative_bias" or index == 0
+                    else "unknown"),
+                "position_application": (
+                    _application if _kind != "relative_bias" or index == 0
+                    else "unknown"),
+                "rope_dim": None, "rope": False, "no_rope": False,
+            } for index in range(int(num_layers)))
+            _position_fact_status = "code_proven"
+
+    # The rotary base is an independent operand fact.  It can be projected
+    # only after the exact position schedule has proved an ACTIVE Q/K rotation
+    # and the exact selected local initializer has proved which config value
+    # initializes the stored frequency state used by that rotation.
+    if _position_layers is not None \
+            and _position_fact_result is _position_rope_result \
+            and any(item["position_application"] == "qk_rotation"
+                    for item in _position_layers):
+        from ...evidence.position_initialization import \
+            position_frequency_initialization
+        _rope_initialization_result = position_frequency_initialization(
+            context.program_index(), _position_rope_result.value,
+            config_selector=_mask_checkpoint_selector)
+        context.reader_results[(
+            "decoder.attention.position.frequency_initialization",
+            tuple(_text_path),
+        )] = _rope_initialization_result
+        if _rope_initialization_result.status == "resolved" \
+                and _rope_initialization_result.value is not None:
+            _initialization = _rope_initialization_result.value
+            _theta_status = (
+                "class_default"
+                if any(kind == "class_default"
+                       for _path, kind, _value
+                       in _initialization.config_dependencies)
+                else "code_and_config"
+                if _initialization.config_dependencies else "code_proven")
+            _theta_join_ok = True
+            _rope_initialization = {
+                "kind": _initialization.initializer_kind,
+                "callable": _initialization.initializer_callable.qualified_name,
+                "selector": _initialization.selector_value,
+                "parameters": {
+                    ".".join(path): value
+                    for path, _kind, value
+                    in _initialization.config_dependencies
+                },
+            }
+            for _path, _kind, _expected in \
+                    _initialization.base_dependencies:
+                if _kind == "class_default":
+                    continue
+                _actual = _consume_code_bound_path(
+                    _path[-1], _path, fact_key="rope_theta",
+                    mechanism="position_frequency_initialization",
+                    status=_theta_status,
+                    expected_value=_initialization.base_value)
+                if _actual != _expected:
+                    _theta_join_ok = False
+            for _path, _kind, _expected in \
+                    _initialization.config_dependencies:
+                if _kind == "class_default":
+                    continue
+                if (_path, _kind, _expected) \
+                        in _initialization.base_dependencies:
+                    continue
+                _actual = _consume_code_bound_path(
+                    _path[-1], _path, fact_key="rope_initialization",
+                    mechanism="position_frequency_initialization",
+                    status=_theta_status,
+                    expected_value=_rope_initialization)
+                if _actual != _expected:
+                    _theta_join_ok = False
+            if _theta_join_ok:
+                _rope_theta = _initialization.base_value
+                _position_layers = tuple({
+                    **item,
+                    **({"rope_theta": _rope_theta}
+                       if item["position_application"] == "qk_rotation"
+                       else {}),
+                    **({"rope_initialization": _rope_initialization}
+                       if item["position_application"] == "qk_rotation"
+                       else {}),
+                } for item in _position_layers)
+                _note_typed_fact(
+                    key="rope_theta", owner="decoder.attention",
+                    value=_rope_theta, status=_theta_status,
+                    reader_result=_rope_initialization_result,
+                    config_paths=tuple(
+                        path for path, _kind, _value
+                        in _initialization.base_dependencies),
+                    reader="position_frequency_initialization",
+                    reason=("the exact selected local initializer returns the "
+                            "inverse-power base stored into the frequency "
+                            "state consumed by the proved Q/K rotation"),
+                    completeness="presence_only",
+                )
+                _classify_exact_nested_alias_group(
+                    "rope_parameter_selector",
+                    tuple(path for path, _kind, _value
+                          in _initialization.config_dependencies))
+                _partial_paths = tuple(
+                    path for path, _kind, _value
+                    in _initialization.config_dependencies
+                    if path and path[-1] == "partial_rotary_factor")
+                if _partial_paths:
+                    _ignore_unselected_alias_spellings(
+                        "partial_rotary_factor", _partial_paths,
+                        "unselected duplicate rotary-width declaration; the "
+                        "exact frequency initializer names the enacted nested "
+                        "operand")
+                _note_typed_fact(
+                    key="rope_initialization", owner="decoder.attention",
+                    value=_rope_initialization, status=_theta_status,
+                    reader_result=_rope_initialization_result,
+                    config_paths=tuple(
+                        path for path, _kind, _value
+                        in _initialization.config_dependencies
+                        if (path, _kind, _value)
+                        not in _initialization.base_dependencies),
+                    reader="position_frequency_initialization",
+                    reason=("the exact selected initializer callable and its "
+                            "present config operands produce the frequency "
+                            "state consumed by the proved Q/K rotation"),
+                    completeness="presence_only",
+                )
+    if _position_layers is not None and _position_fact_result is not None:
+        _position_fact_value = tuple({
+            "position_kind": item["position_kind"],
+            "position_application": item["position_application"],
+            "rope_dim": item["rope_dim"],
+        } for item in _position_layers)
+        _note_typed_fact(
+            key="position_schedule", owner="decoder.attention",
+            value=_position_fact_value, status=_position_fact_status,
+            reader_result=_position_fact_result,
+            config_paths=_position_fact_paths,
+            reader=(
+                "decoder_position_application_schedule_for_path"
+                if _position_fact_result is _position_rope_result else
+                "decoder_alibi_score_bias_for_path"
+                if _position_fact_result is _position_alibi_result else
+                "decoder_relative_position_bias_for_path"),
+            reason=("one exact owner-qualified positional operation is "
+                    "projected at its proven execution altitude"),
+        )
+    elif _position_stage_kind is None:
+        warnings.append(
+            "Modeling source is unavailable; the positional scheme remains unknown."
+            if not _source_present else
+            "Modeling source is present but the exact positional operation is unresolved."
+        )
+
+    # U8-D: one construction + invocation + U6 mechanism authority decides
+    # ordinary-attention versus recurrent-mixer placement.  The checkpoint
+    # selector is syntax/operand input only; a familiar token cannot create a
+    # candidate mechanism or certify that the block invokes it.
+    from ...evidence.mixer_schedule import decoder_mixer_schedule_for_path
+    _mixer_schedule_result = decoder_mixer_schedule_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+    # An embedded attention drill must cite the exact callable that supplied
+    # its mechanism, not the enclosing model-stage wrapper.  Retain the typed
+    # schedule that already proves that coordinate; projection may consume it
+    # as provenance, but may not use it to change the architectural fact.
+    context.reader_results[(
+        "decoder.attention.mixer_schedule",
+        tuple(_text_path))] = _mixer_schedule_result
+    _bound_mixer_layers = None
+    if _mixer_schedule_result.status == "resolved" \
+            and _mixer_schedule_result.value is not None:
+        _mixer_schedule = _mixer_schedule_result.value
+        _mixer_fact_status = (
+            "class_default"
+            if any(kind == "class_default" for _path, kind
+                   in _mixer_schedule.config_dependencies)
+            else "code_and_config")
+        _candidate_mixer_layers = tuple(
+            decision.state for decision in _mixer_schedule.decisions)
+        _mixer_join_ok = True
+        for _path, _kind in _mixer_schedule.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0]:
+                _mixer_join_ok = False
+                break
+            _consumed = _consume_code_bound_path(
+                _path[-1], _path, fact_key="mixer_schedule",
+                mechanism="mixer_schedule", status=_mixer_fact_status,
+                expected_value=_candidate_mixer_layers)
+            if _consumed != _selected[1]:
+                _mixer_join_ok = False
+                break
+        if _mixer_join_ok \
+                and len(_mixer_schedule.decisions) == (num_layers or 0):
+            _bound_mixer_layers = _candidate_mixer_layers
+            _note_typed_fact(
+                key="mixer_schedule", owner="decoder.attention",
+                value=_bound_mixer_layers,
+                status=_mixer_fact_status,
+                reader_result=_mixer_schedule_result,
+                config_paths=tuple(
+                    path for path, _kind
+                    in _mixer_schedule.config_dependencies),
+                reader="decoder_mixer_schedule_for_path",
+                reason=("exact repeated-block index, selected construction, "
+                        "block invocation and U6 mechanism agree per layer"),
+            )
+
+    # Conditional Q/K/V construction (for example K/V sharing or an
+    # alternative global-attention lane) cannot be collapsed into U6's one
+    # global three-producer proof.  The schedule composes the exact mixer
+    # occurrence with constructor field evaluation and actual reshape/repeat
+    # use; config fields alone remain powerless.
+    from ...evidence.attention_geometry import \
+        decoder_attention_geometry_schedule_for_path
+    _geometry_schedule_result = decoder_attention_geometry_schedule_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+
+    # U8-E: dense-versus-routed placement uses the same exact block-index
+    # transport, but an independent mechanism census.  Expert-count and
+    # schedule declarations are operands/geometry only; they cannot turn a
+    # construction into MoE or dense by themselves.
+    from ...evidence.ffn_schedule import decoder_ffn_schedule_for_path
+    _ffn_schedule_result = decoder_ffn_schedule_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+    # Projection provenance is not an architectural fact, but an embedded
+    # drill still has to cite the exact callable that proved its shape.  Keep
+    # the already-computed schedule on the call-local reader-result rail so
+    # ``submodel_spec`` can derive that citation without reopening source,
+    # selecting by class/family name, or accepting caller-supplied owner/file
+    # hints.  The cache key is occurrence-qualified by the selected config
+    # path, just like every other U3 reader result.
+    context.reader_results[(
+        "decoder.ffn.schedule", tuple(_text_path))] = _ffn_schedule_result
+    _bound_ffn_layers = None
+    if _ffn_schedule_result.status == "resolved" \
+            and _ffn_schedule_result.value is not None:
+        _ffn_schedule = _ffn_schedule_result.value
+        _ffn_fact_status = (
+            "class_default"
+            if any(kind == "class_default" for _path, kind
+                   in _ffn_schedule.config_dependencies)
+            else "code_and_config")
+        _candidate_ffn_layers = tuple(
+            decision.state for decision in _ffn_schedule.decisions)
+        _ffn_join_ok = True
+        for _path, _kind in _ffn_schedule.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0]:
+                _ffn_join_ok = False
+                break
+            _consumed = _consume_code_bound_path(
+                _path[-1], _path, fact_key="ffn_schedule",
+                fact_owner="decoder.ffn", mechanism="ffn_schedule",
+                status=_ffn_fact_status,
+                expected_value=_candidate_ffn_layers)
+            if _consumed != _selected[1]:
+                _ffn_join_ok = False
+                break
+        if _ffn_join_ok \
+                and len(_ffn_schedule.decisions) == (num_layers or 0):
+            _bound_ffn_layers = _candidate_ffn_layers
+            _note_typed_fact(
+                key="ffn_schedule", owner="decoder.ffn",
+                value=_bound_ffn_layers, status=_ffn_fact_status,
+                reader_result=_ffn_schedule_result,
+                config_paths=tuple(
+                    path for path, _kind
+                    in _ffn_schedule.config_dependencies),
+                reader="decoder_ffn_schedule_for_path",
+                reason=("exact repeated-block index, selected construction, "
+                        "block invocation and U7 FFN mechanism agree per layer"),
+            )
+            # These legacy schedule declarations were formerly structural
+            # authority.  Once an exact source selector owns every layer they
+            # are dead checkpoint metadata unless that exact selector cites
+            # them.  Keep the retirement visible and occurrence-scoped rather
+            # than restoring a frequency/list interpreter to silence audit.
+            _ffn_dependency_paths = {
+                tuple(path) for path, _kind
+                in _ffn_schedule.config_dependencies}
+            for _retired_field in ("moe_layer_freq", "moe_layers"):
+                _retired_path = (*_text_path, _retired_field)
+                if _retired_path in _ffn_dependency_paths:
+                    continue
+                _retired_present = (
+                    _retired_field in text_cfg
+                    if isinstance(text_cfg, dict)
+                    else hasattr(text_cfg, _retired_field))
+                if _retired_present:
+                    _config_access.resolve(
+                        text_cfg, _retired_field, (), path=_text_path).ignore(
+                            "retired schedule metadata; the exact block "
+                            "constructor selector is authoritative")
+
+    from ...evidence.attention_mask import (
+        decoder_attention_mask_execution_for_path,
+    )
+    _mask_execution_result = decoder_attention_mask_execution_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+    _bound_mask_layers = None
+    _mask_fact_status = None
+    _mask_dependency_paths = set()
+    if _mask_execution_result.status == "resolved" \
+            and _mask_execution_result.value is not None:
+        _execution = _mask_execution_result.value
+        _mask_fact_status = (
+            "class_default"
+            if any(kind == "class_default"
+                   for _path, kind in _execution.config_dependencies)
+            else "code_and_config")
+        _mask_dependency_paths = {
+            path for path, _kind in _execution.config_dependencies}
+        _config_join_ok = True
+        for _path, _kind in _execution.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0]:
+                _config_join_ok = False
+                break
+        _decisions = _execution.schedule.decisions
+        if len(_decisions) != (num_layers or 0):
+            _config_join_ok = False
+        if _config_join_ok:
+            _geometry_by_builder = {
+                item.builder: item.value for item in _execution.geometries}
+            _has_sliding = any(
+                item.builder.mechanism in {
+                    "sliding_causal", "sliding_bidirectional"}
+                for item in _decisions)
+            _bound_mask_layers = []
+            for _decision in _decisions:
+                _mechanism = _decision.builder.mechanism
+                if _mechanism in {"sliding_causal", "sliding_bidirectional"}:
+                    _bound_mask_layers.append((
+                        "sliding", _geometry_by_builder[_decision.builder], False))
+                elif _mechanism == "chunked_causal":
+                    _bound_mask_layers.append((
+                        "chunked", _geometry_by_builder[_decision.builder], False))
+                elif _mechanism == "bidirectional":
+                    _bound_mask_layers.append((
+                        "global" if _has_sliding else "bidirectional",
+                        None, _has_sliding))
+                elif _mechanism == "causal":
+                    _bound_mask_layers.append((
+                        "global" if _has_sliding else "causal",
+                        None, _has_sliding))
+                else:
+                    _config_join_ok = False
+                    break
+            if not _config_join_ok:
+                _bound_mask_layers = None
+        if _bound_mask_layers is not None:
+            _mask_fact_value = tuple(
+                (mask, window)
+                for mask, window, _full in _bound_mask_layers)
+            for _path, _kind in _execution.config_dependencies:
+                if _kind == "class_default":
+                    continue
+                _selected = _mask_checkpoint_selector(_path)
+                _consumed = _consume_code_bound_path(
+                    _path[-1], _path, fact_key="mask_schedule",
+                    mechanism="mask_schedule", status=_mask_fact_status,
+                    expected_value=_mask_fact_value)
+                if not _selected[0] or _consumed != _selected[1]:
+                    _bound_mask_layers = None
+                    break
+        if _bound_mask_layers is not None:
+            _note_typed_fact(
+                key="mask_schedule", owner="decoder.attention",
+                value=_mask_fact_value,
+                status=_mask_fact_status,
+                reader_result=_mask_execution_result,
+                config_paths=tuple(
+                    path for path, _kind in _execution.config_dependencies),
+                reader="decoder_attention_mask_execution_for_path",
+                reason=("exact enacted framework mask builders, score lane, "
+                        "layer schedule and geometry"),
+            )
+
+    # Legacy mask declarations remain auditable, but a declaration the exact
+    # enacted source path did not consume is explicitly non-deciding.  This is
+    # scoped per occurrence; it is not a global bare-key exemption.
+    for _legacy_mask_field in (
+            "sliding_window", "use_sliding_window", "max_window_layers",
+            "sliding_window_pattern", "use_bidirectional_attention"):
+        _legacy_resolution = _scoped(_legacy_mask_field)
+        if not _legacy_resolution.present or _legacy_resolution.ambiguous:
+            continue
+        _legacy_selected_path = tuple(
+            _legacy_resolution.selected_path.split(".")) \
+            if _legacy_resolution.selected_path else ()
+        if _legacy_selected_path not in _mask_dependency_paths:
+            _legacy_resolution.ignore(
+                reason=("the exact source-enacted mask execution does not "
+                        "consume this legacy declaration"))
+
     # Granite-style declared SCALE family: a constant multiplier on each
     # sublayer's residual contribution (drawn as a × connector with its
     # constant operand), plus embedding/attention/logits scales (card facts).
@@ -1656,7 +2305,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
     )
     _code_attention_storage = _code_attention_storage_mode(
         text_cfg, context, config_path=_text_path)
-    _code_position_evidence = _code_position(cfg, context)
     # Projection storage is mechanism-scoped too.  Do not manufacture an
     # ordinary ``split`` fact when only a routed-expert mechanism exists.
     if _code_storage_mode is not None:
@@ -1738,25 +2386,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "decoder.layer", "norm_placement", "unknown", _unknown_status)
     if not norm_placement:
         norm_placement = "unknown"
-    # Position application is a mechanism fact. A declared theta/scaling value
-    # remains visible to the config ledger, but cannot create Q/K rotation.
-    _position_mechanisms = list(_code_position_evidence.mechanisms)
-    # U2-R7: the rope container DICT occurrence itself feeds the uses_rope
-    # decision — consumed once here; every later reader reuses this value.
-    _declared_scaling = consume("rope_scaling",
-                                fact_owner="decoder.attention", fact_key="rope")
-    if _code_position_evidence.status == "proven":
-        uses_rope = "rope" in _code_position_evidence.kinds
-    else:
-        uses_rope = None
-        if _code_position_evidence.status == "oracle_missing":
-            warnings.append(
-                "Modeling source is unavailable; the positional scheme remains unknown."
-            )
-        else:
-            warnings.append(
-                "Modeling source is present but the configured positional scheme is unresolved."
-            )
+    # U8-B owns position below, after the checkpoint-only selector exists.
+    # Nothing at this earlier altitude may infer a position mechanism from a
+    # config field, parameter container, model identity, or whole-file token.
 
     # REC-3 (§9.6, Law D): a CONFLICTED field is not a MISSING field — the
     # warning names the true condition; the structured record + blocking
@@ -1779,30 +2411,16 @@ def parse(cfg: Any, context=None) -> ModelIR:
             if _ambiguous_here("hidden_size") else
             "Config missing hidden_size (and aliases) — geometry will be incomplete.")
 
-    # ---- Per-layer dual KV (Gemma 4 sliding vs global; might appear elsewhere) ----
-    num_kv_global   = _g(text_cfg, "num_global_key_value_heads") or num_kv_heads
-    head_dim_global = _g(text_cfg, "global_head_dim") or head_dim
-
     # ---- Attention shape ----
     # U2-R7: the five MLA geometry fields flow straight into the attention
     # spec/param math — consumed under their canonical names.
-    q_lora_rank  = consume("q_lora_rank", fact_owner="decoder.attention",
-                           fact_key="q_lora_rank")
-    kv_lora_rank = consume("kv_lora_rank", fact_owner="decoder.attention",
-                           fact_key="kv_lora_rank")
-    is_mla       = bool(kv_lora_rank)
+    q_lora_rank = kv_lora_rank = None
+    is_mla = False
     # MLA decoupled head geometry — Q/K split into nope + rope, V its own width
     # (DeepSeek/Kimi). Needed for an accurate MLA parameter count.
-    qk_nope_head_dim = consume("qk_nope_head_dim",
-                               fact_owner="decoder.attention",
-                               fact_key="qk_nope_head_dim")
-    qk_rope_head_dim = consume("qk_rope_head_dim",
-                               fact_owner="decoder.attention",
-                               fact_key="qk_rope_head_dim")
-    v_head_dim_cfg   = consume("v_head_dim", fact_owner="decoder.attention",
-                               fact_key="v_head_dim")
+    qk_nope_head_dim = qk_rope_head_dim = v_head_dim_cfg = None
     _attention_mechanism_evidence = _attention_mechanism_result(
-        context, config_path=_text_path)
+        _evidence_config_document, context, config_path=_text_path)
     _bound_attention = None
     if _attention_mechanism_evidence is not None \
             and _attention_mechanism_evidence.status == "resolved":
@@ -1826,8 +2444,24 @@ def parse(cfg: Any, context=None) -> ModelIR:
                         "num_key_value_heads",
                         _binding.key_value_heads_path,
                         fact_key="num_kv_heads")
+            for _path, _expected in _binding.selection_premises:
+                _resolution = _resolve_exact_config_path(_path)
+                if _resolution is None or _resolution.value != _expected:
+                    _bound_values[_path] = None
+                    continue
+                _attention_operand_resolutions[_path] = _resolution
+                _attention_actual_config_paths[_path] = (
+                    None if _resolution.source_kind == "class_default"
+                    else tuple(_resolution.selected_path.split("."))
+                    if _resolution.selected_path else None)
+                _decision = _resolution.consume_decision(
+                    reader="decoder_attention_mechanism_for_path",
+                    fact_owner="decoder.attention",
+                    fact_key="mechanism",
+                    mechanism="attention_mechanism")
+                _bound_values[_path] = _decision.value
         elif isinstance(_binding, LatentAttentionBinding):
-            for _field, _path, _fact_key in (
+            _latent_fields = [
                 ("num_attention_heads", _binding.num_heads_path, "num_heads"),
                 ("kv_lora_rank", _binding.kv_lora_rank_path, "kv_lora_rank"),
                 ("qk_rope_head_dim", _binding.qk_rope_head_dim_path,
@@ -1835,7 +2469,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 ("qk_nope_head_dim", _binding.qk_nope_head_dim_path,
                  "qk_nope_head_dim"),
                 ("v_head_dim", _binding.value_head_dim_path, "v_head_dim"),
-            ):
+            ]
+            if _binding.q_lora_rank_path is not None:
+                _latent_fields.insert(1, (
+                    "q_lora_rank", _binding.q_lora_rank_path,
+                    "q_lora_rank"))
+            for _field, _path, _fact_key in _latent_fields:
                 _bound_values[_path] = _consume_code_bound_path(
                     _field, _path, fact_key=_fact_key)
         elif isinstance(
@@ -1862,12 +2501,223 @@ def parse(cfg: Any, context=None) -> ModelIR:
         num_heads = _bound_attention.num_heads
         num_kv_heads = _bound_attention.num_kv_heads
         is_mla = _bound_attention.kind == "mla"
-        if not is_mla:
+        if is_mla:
+            # The mechanism binder is also the authority for MLA's auxiliary
+            # dimensions.  Resetting the old config-first variables above is
+            # intentional; repopulate them only from the exact paths selected
+            # by the LatentAttentionBinding.  Otherwise the diagram can retain
+            # the ``mla`` label while silently losing the compressed/query and
+            # decoupled Q/K/V widths used by its drill and parameter estimate.
+            _mla_values = dict(_bound_attention.premises)
+            q_lora_rank = (
+                _mla_values.get(getattr(_binding, "q_lora_rank_path", ()))
+                if getattr(_binding, "q_lora_rank_path", None) else None)
+            kv_lora_rank = _mla_values[_binding.kv_lora_rank_path]
+            qk_nope_head_dim = _mla_values[_binding.qk_nope_head_dim_path]
+            qk_rope_head_dim = _mla_values[_binding.qk_rope_head_dim_path]
+            v_head_dim_cfg = _mla_values[_binding.value_head_dim_path]
+
+            # A latent-attention protocol owns head geometry through the exact
+            # operands named by its projection/split code.  Generic
+            # ``head_dim`` and ``num_key_value_heads`` declarations are not
+            # alternate authorities for that mechanism: consulting them would
+            # let an unrelated conventional-attention field leak back into an
+            # MLA drill.  Keep the declarations visible in the audit, but
+            # classify only their exact occurrences as non-architectural for
+            # this source-proven mechanism.  This is mechanism-scoped, never a
+            # model/family exception.
+            _mla_operand_paths = {
+                path for path, _value in _bound_attention.premises
+            }
+            for _generic_field in ("head_dim", "num_key_value_heads"):
+                _generic_path = (*_text_path, _generic_field)
+                if _generic_path in _mla_operand_paths:
+                    continue
+                _generic_resolution = _resolve_exact_config_path(_generic_path)
+                if _generic_resolution is not None \
+                        and _generic_resolution.state == "present":
+                    _generic_resolution.ignore(
+                        "generic attention geometry is not consumed by the "
+                        "exact latent-attention projection/split protocol; "
+                        "the source-bound latent Q/K/V operands own this "
+                        "mechanism")
+        else:
             q_lora_rank = kv_lora_rank = None
             qk_nope_head_dim = qk_rope_head_dim = v_head_dim_cfg = None
         _note_bound_attention_fact(
             _bound_attention, _attention_mechanism_evidence,
-            _attention_actual_config_paths)
+            _attention_actual_config_paths,
+            _attention_operand_resolutions)
+        _head_geometry_result = _attention_head_geometry_result(
+            _evidence_config_document, context, config_path=_text_path)
+        _head_geometry_value = (
+            _head_geometry_result.value
+            if _head_geometry_result is not None
+            and _head_geometry_result.status == "resolved" else None)
+        _head_geometry_resolutions = []
+        if _head_geometry_value is not None:
+            for _path, _expected in _head_geometry_value.premises:
+                _resolution = _resolve_exact_config_path(_path)
+                if _resolution is None or _resolution.value != _expected \
+                        or _resolution.provenance not in {
+                            "", "checkpoint_declared", "class_default"}:
+                    _head_geometry_resolutions = []
+                    _head_geometry_value = None
+                    break
+                _head_geometry_resolutions.append(_resolution)
+                _attention_operand_resolutions[_path] = _resolution
+                _attention_actual_config_paths[_path] = (
+                    _actual_checkpoint_path(_path, _resolution))
+        if _head_geometry_value is not None:
+            _head_fact_paths = tuple(dict.fromkeys((
+                *(path for path, _value in _bound_attention.premises),
+                *(path for path, _value in _head_geometry_value.premises),
+            )))
+            _head_fact_resolutions = tuple(
+                _attention_operand_resolutions[path]
+                for path in _head_fact_paths
+                if path in _attention_operand_resolutions)
+            _head_geometry_status = (
+                "class_default"
+                if any(item.provenance == "class_default"
+                       or item.source_kind == "class_default"
+                       for item in _head_fact_resolutions)
+                else "code_and_config"
+                if _head_fact_resolutions else "code_proven")
+            for _resolution in _head_fact_resolutions:
+                _resolution.consume_decision(
+                    reader="decoder_attention_head_geometry_for_path",
+                    fact_owner="decoder.attention",
+                    fact_key="head_geometry",
+                    mechanism="attention_head_geometry",
+                    status=_head_geometry_status)
+            head_dim = _head_geometry_value.head_dim
+            _note_typed_fact(
+                key="head_geometry", owner="decoder.attention",
+                value={
+                    "kind": _bound_attention.kind,
+                    "num_heads": _bound_attention.num_heads,
+                    "num_kv_heads": _bound_attention.num_kv_heads,
+                    "head_dim": head_dim,
+                    "q_lora_rank": q_lora_rank,
+                    "kv_lora_rank": kv_lora_rank,
+                    "qk_nope_head_dim": qk_nope_head_dim,
+                    "qk_rope_head_dim": qk_rope_head_dim,
+                    "v_head_dim": v_head_dim_cfg,
+                },
+                status=_head_geometry_status,
+                reader_result=_head_geometry_result,
+                config_paths=tuple(
+                    selected for path in _head_fact_paths
+                    if (selected := (
+                        _attention_actual_config_paths[path]
+                        if path in _attention_actual_config_paths
+                        else path)) is not None),
+                reader="decoder_attention_head_geometry_for_path",
+                reason=("the exact Q/K/V projection protocol supplies the "
+                        "head counts and its exact common factor supplies "
+                        "the per-head dimension"),
+            )
+        elif is_mla and qk_nope_head_dim and qk_rope_head_dim:
+            # MLA's exact mechanism binding already consumes its separately
+            # proven no-PE and RoPE dimensions.  Their sum is the query/key
+            # width; V keeps its separately proven width below.
+            head_dim = qk_nope_head_dim + qk_rope_head_dim
+            _mla_head_paths = tuple(
+                path for path, _value in _bound_attention.premises)
+            _mla_head_resolutions = tuple(
+                _attention_operand_resolutions[path]
+                for path in _mla_head_paths
+                if path in _attention_operand_resolutions)
+            _mla_head_status = (
+                "class_default"
+                if any(
+                    item.provenance == "class_default"
+                    or item.source_kind == "class_default"
+                    for item in _mla_head_resolutions)
+                else "code_and_config")
+            for _resolution in _mla_head_resolutions:
+                _resolution.consume_decision(
+                    reader="decoder_attention_mechanism_for_path",
+                    fact_owner="decoder.attention",
+                    fact_key="head_geometry",
+                    mechanism="attention_head_geometry",
+                    status=_mla_head_status)
+            _note_typed_fact(
+                key="head_geometry", owner="decoder.attention",
+                value={
+                    "kind": _bound_attention.kind,
+                    "num_heads": _bound_attention.num_heads,
+                    "num_kv_heads": _bound_attention.num_kv_heads,
+                    "head_dim": head_dim,
+                    "q_lora_rank": q_lora_rank,
+                    "kv_lora_rank": kv_lora_rank,
+                    "qk_nope_head_dim": qk_nope_head_dim,
+                    "qk_rope_head_dim": qk_rope_head_dim,
+                    "v_head_dim": v_head_dim_cfg,
+                },
+                status=_mla_head_status,
+                reader_result=_attention_mechanism_evidence,
+                config_paths=tuple(
+                    selected for path in _mla_head_paths
+                    if (selected := (
+                        _attention_actual_config_paths[path]
+                        if path in _attention_actual_config_paths
+                        else path)) is not None),
+                reader="decoder_attention_mechanism_for_path",
+                reason=("the exact latent-attention protocol binds both Q/K "
+                        "dimension lanes and their head count"),
+            )
+        else:
+            # MQA and any future mechanism may be classified independently of
+            # its dimension.  Do not fill the missing geometry from a familiar
+            # config spelling; a dedicated exact factor proof must land first.
+            head_dim = None
+            _partial_head_paths = tuple(
+                path for path, _value in _bound_attention.premises)
+            _partial_head_resolutions = tuple(
+                _attention_operand_resolutions[path]
+                for path in _partial_head_paths
+                if path in _attention_operand_resolutions)
+            _partial_head_status = (
+                "class_default"
+                if any(
+                    item.provenance == "class_default"
+                    or item.source_kind == "class_default"
+                    for item in _partial_head_resolutions)
+                else "code_and_config")
+            for _resolution in _partial_head_resolutions:
+                _resolution.consume_decision(
+                    reader="decoder_attention_mechanism_for_path",
+                    fact_owner="decoder.attention",
+                    fact_key="head_geometry",
+                    mechanism="attention_head_geometry",
+                    status=_partial_head_status)
+            _note_typed_fact(
+                key="head_geometry", owner="decoder.attention",
+                value={
+                    "kind": _bound_attention.kind,
+                    "num_heads": _bound_attention.num_heads,
+                    "num_kv_heads": _bound_attention.num_kv_heads,
+                    "head_dim": None,
+                    "q_lora_rank": q_lora_rank,
+                    "kv_lora_rank": kv_lora_rank,
+                    "qk_nope_head_dim": qk_nope_head_dim,
+                    "qk_rope_head_dim": qk_rope_head_dim,
+                    "v_head_dim": v_head_dim_cfg,
+                },
+                status=_partial_head_status,
+                reader_result=_attention_mechanism_evidence,
+                config_paths=tuple(
+                    selected for path in _partial_head_paths
+                    if (selected := (
+                        _attention_actual_config_paths[path]
+                        if path in _attention_actual_config_paths
+                        else path)) is not None),
+                reader="decoder_attention_mechanism_for_path",
+                reason=("the exact mechanism proves both head counts; the "
+                        "per-head factor remains honestly unresolved"),
+            )
         _output_gate = getattr(_binding, "output_gate", None)
         if _output_gate is not None:
             _note_typed_fact(
@@ -1893,6 +2743,51 @@ def parse(cfg: Any, context=None) -> ModelIR:
         _note_fact(
             "decoder.attention", "mechanism", None,
             _unknown_status, None)
+
+    # U8-E per-layer geometry is a fallback only when the stronger homogeneous
+    # U6 mechanism/head binding abstains.  This preserves every already-proven
+    # model while allowing one exact occurrence to vary by layer without a
+    # global compromise.
+    _bound_head_geometry_layers = None
+    if _bound_attention is None \
+            and _geometry_schedule_result.status == "resolved" \
+            and _geometry_schedule_result.value is not None:
+        _geometry_schedule = _geometry_schedule_result.value
+        _geometry_join_ok = True
+        _geometry_status = (
+            "class_default"
+            if any(kind == "class_default" for _path, kind
+                   in _geometry_schedule.config_dependencies)
+            else "code_and_config")
+        for _path, _kind in _geometry_schedule.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0] or _consume_code_bound_path(
+                    _path[-1], _path, fact_key="head_geometry_schedule",
+                    mechanism="attention_head_geometry_schedule",
+                    status=_geometry_status) != _selected[1]:
+                _geometry_join_ok = False
+                break
+        if _geometry_join_ok \
+                and len(_geometry_schedule.decisions) == (num_layers or 0):
+            _bound_head_geometry_layers = tuple(
+                None if item is None else (
+                    item.kind, item.num_heads,
+                    item.num_kv_heads, item.head_dim)
+                for item in _geometry_schedule.decisions)
+            _note_typed_fact(
+                key="head_geometry_schedule", owner="decoder.attention",
+                value=_bound_head_geometry_layers,
+                status=_geometry_status,
+                reader_result=_geometry_schedule_result,
+                config_paths=tuple(
+                    path for path, _kind
+                    in _geometry_schedule.config_dependencies),
+                reader="decoder_attention_geometry_schedule_for_path",
+                reason=("exact per-layer attention construction fields reach "
+                        "all Q/K/V reshape/projection and K/V repeat sites"),
+            )
     # Hybrid linear-recurrent geometry is a code-and-config join.  The reader
     # assigns all five roles from split/reshape/repeat/Conv1d/recurrent uses;
     # the familiar config spellings cannot populate a detailed mixer alone.
@@ -1959,136 +2854,38 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # above is the authority.
     _g(text_cfg, "attn_output_gate")
     _g(text_cfg, "output_gate_type")
-    # Determine if the stack mixes sliding + full layers — affects mask labeling
-    # (a full layer in a sliding stack is labeled "global", not "causal").
-    sliding_window_pattern = _g(text_cfg, "sliding_window_pattern") or 0
-    # Qwen splits the stack: the bottom ``max_window_layers`` use full attention
-    # and the rest slide — so a partial split also makes this a mixed stack.
-    has_max_window_split = bool(
-        sliding_window and max_window_layers and 0 < max_window_layers < num_layers
-    )
-    has_sliding_in_stack = (
-        any(_is_sliding_label(lt) for lt in layer_types)
-        or bool(sliding_window_pattern and sliding_window)
-        or has_max_window_split
-    )
-
-    # ---- Position encoding ----
-    no_rope_interval     = _g(text_cfg, "no_rope_layer_interval") or 0
-    no_rope_list_declared = _g(text_cfg, "no_rope_layers")
-    # These values announce a per-layer selector but do not prove its source
-    # semantics. Until U8 binds the selector, projecting model-wide RoPE onto
-    # every layer would be as wrong as fabricating NoPE on selected layers.
-    position_schedule_unresolved = bool(
-        no_rope_interval or isinstance(no_rope_list_declared, (list, tuple))
-    )
-    _g(text_cfg, "alibi")  # config ownership; source proves how the switch is used
-    rotary_pct           = _g(text_cfg, "rotary_pct")
-    rotary_dim           = _g(text_cfg, "rotary_dim")
-    # U2-R7: consumed into the derived rope_dim (decoder.attention.rope_dim).
-    partial_rotary_fac   = consume("partial_rotary_factor",
-                                   fact_owner="decoder.attention",
-                                   fact_key="rope_dim")
-    # Multimodal RoPE (Qwen2-VL / Qwen3-VL): rope_scaling.mrope_section splits the
-    # rotary dims across (temporal, height, width) position axes — a Tier-3 property.
-    # U2.2a: the container names the spelling the DOCUMENT supplies — chosen by
-    # literal presence, never by an alias-resolving read (``_g`` answers a
-    # request for ``rope_parameters`` with a document's ``rope_scaling`` value,
-    # which would assert a path that exists nowhere).  Absent both, no container
-    # is declared and the enclosed reads stay honestly inexact.
-    _rope_container      = _config_access.present_spelling(
-        text_cfg, ("rope_parameters", "rope_scaling"))
-    # U2-R7: the rope dict occurrence was already resolved and CONSUMED once at
-    # the position-scheme decision above — REUSE that value (one resolve per
-    # occurrence; a second located read would re-record the same occurrence).
-    _rope_scaling        = _declared_scaling or {}
-    _rope_path           = (*_text_path, _rope_container) if _rope_container else ()
-    # The modern transformers rope dialect NESTS the partial factor inside the
-    # rope-parameters dict (GPT-NeoX's legacy top-level ``rotary_pct`` no longer
-    # exists on the config class) — the SAME fact in two spellings.
-    #
-    # COR-4 (§9) alias law: rival spellings are READ and COMPARED — equal ones
-    # are redundant evidence, disagreeing ones are structured ambiguity that
-    # authors nothing.  Never a silent first-match: guarding the nested read
-    # behind ``top-level is None`` left the rival spelling unread whenever both
-    # were declared, so whichever the parser happened to reach won unexamined
-    # and a real disagreement could not be seen.
-    _nested_prf = (_rope_scaling.get("partial_rotary_factor")
-                   if isinstance(_rope_scaling, dict) else None)
-    if _nested_prf is not None:
-        if partial_rotary_fac is None:
-            # U2-R7: the nested spelling is the SUPPLYING occurrence — consumed
-            # at its exact nested path into the same derived rope_dim target.
-            # The rival-spelling comparison below is untouched: this branch is
-            # exactly the old ``top-level is None`` assignment.
-            with _config_access.config_container(_rope_path, obj=_rope_scaling):
-                partial_rotary_fac = _config_access.resolve(
-                    _rope_scaling, "partial_rotary_factor", (),
-                    path=_rope_path).consume_decision(
-                        mechanism="rope_dim",
-                        fact_owner="decoder.attention", fact_key="rope_dim",
-                        reader="adapters.transformer.parser.parse").value
-        elif partial_rotary_fac == _nested_prf:
-            # Redundant equal rival — recorded as the inspection it is.
-            with _config_access.config_container(_rope_path, obj=_rope_scaling):
-                debug.note_access("partial_rotary_factor",
-                                  source_obj=_rope_scaling)
-        else:
-            with _config_access.config_container(_rope_path, obj=_rope_scaling):
-                debug.note_access("partial_rotary_factor",
-                                  source_obj=_rope_scaling)
-            _config_access.emit(
-                "partial_rotary_factor", intent="ambiguous", present=True,
-                config_path=".".join((*_rope_path, "partial_rotary_factor")),
-                reason=(
-                    "rival spellings of one fact disagree: "
-                    f"{'.'.join((*_text_path, 'partial_rotary_factor'))}="
-                    f"{partial_rotary_fac!r} vs "
-                    f"{'.'.join((*_rope_path, 'partial_rotary_factor'))}="
-                    f"{_nested_prf!r}"))
-            partial_rotary_fac = None
-    rope_dim_value       = _rope_dim(rotary_pct, rotary_dim, partial_rotary_fac, head_dim)
-    if rope_dim_value is None:
-        # Config silent on the fraction — the CODE may still state it (ChatGLM
-        # constructs ``RotaryEmbedding(rotary_dim // 2)``; the halving exists
-        # nowhere in config).  A full-width value is not "partial" — drop it.
-        _code_rd = _code_rope_dim(text_cfg, context)
-        if _code_rd and head_dim and 0 < _code_rd < head_dim:
-            rope_dim_value = _code_rd
-    mrope_section        = _rope_scaling.get("mrope_section") if isinstance(_rope_scaling, dict) else None
-    if mrope_section is not None:
-        # U2-R7: the nested mrope split flows into the attention position fact
-        # — consumed at its exact nested occurrence (ONE resolve; the guard
-        # above is a raw membership probe, not a ledger read).
-        with _config_access.config_container(_rope_path, obj=_rope_scaling):
-            mrope_section = _config_access.resolve(
-                _rope_scaling, "mrope_section", (),
-                path=_rope_path).consume_decision(
-                    mechanism="mrope",
-                    fact_owner="decoder.attention", fact_key="mrope_section",
-                    reader="adapters.transformer.parser.parse").value
+    # ---- Position encoding -------------------------------------------------
+    # U8-B already computed the only live position authority above.  Legacy
+    # parameter-presence arithmetic and raw extras are intentionally absent.
+    # Axis-specific multimodal factor geometry remains unknown until an exact
+    # factor/coordinate reader proves the split; a raw mrope_section cannot do
+    # so by itself.
+    mrope_section = None
 
     # ---- QK-Norm ----
     # Config is consulted only for the exact gate paths named by the source
     # reader below.  A familiar qk_norm/use_qk_norm spelling on its own is not
     # an architectural input and must not create an audit occurrence.
     use_qk_norm = None
-    _qk_code_result = _qk_norm_result(context, config_path=_text_path)
-    _qk_code = (
-        _qk_code_result.value
-        if _qk_code_result is not None
-        and _qk_code_result.status == "resolved" else None)
+    from ...evidence.qk_norm_schedule import (
+        decoder_qk_norm_schedule_for_path,
+    )
+    _qk_schedule_result = decoder_qk_norm_schedule_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+    _qk_schedule = (
+        _qk_schedule_result.value
+        if _qk_schedule_result.status == "resolved" else None)
     # A failed mechanism reader may still prove that one exact config
     # occurrence controls distinct Q/K transformations.  Bind that occurrence
     # to the unresolved claim, but do not consume its value and do not assert
     # Q/K normalization until the child primitive is itself proven.  This is
     # the honest boundary for composite/repeated transforms whose execution is
     # outside the current ProgramIndex contract.
-    if _qk_code_result is not None \
-            and _qk_code_result.status != "resolved":
+    if _qk_schedule_result.status != "resolved":
         _unresolved_qk_paths = tuple(dict.fromkeys(
             path
-            for provenance in _qk_code_result.provenance
+            for provenance in _qk_schedule_result.provenance
             for path in provenance.config_paths))
         for _bound_path in _unresolved_qk_paths:
             _prefix = tuple(_text_path)
@@ -2103,36 +2900,131 @@ def parse(cfg: Any, context=None) -> ModelIR:
             _resolution.bind(
                 "decoder_qk_norm_evidence_for_path:unclassified_qk_transform",
                 fact_owner="decoder.attention", fact_key="qk_norm")
-    qk_norm_layers = _resolve_qk_norm_layers(
-        _qk_code,
-        text_cfg, num_layers,
-        context=context, config_path=_text_path)
-    # U6 owns the uniform attention fact.  A heterogeneous per-layer schedule
-    # is deliberately not collapsed into one model-wide boolean; U8 will emit
-    # occurrence-qualified schedule facts.  This preserves the exact source
-    # reader's strength instead of laundering a mixed stack through ``any``.
-    if _qk_code_result is not None and _qk_code_result.status == "resolved" \
-            and qk_norm_layers \
-            and all(value is not None for value in qk_norm_layers) \
-            and len(set(qk_norm_layers)) == 1:
-        _qk_value = bool(qk_norm_layers[0])
-        _qk_status = (
-            "code_proven" if _qk_code.present is True
+    qk_norm_layers = [None] * max(int(num_layers or 0), 0)
+    if _qk_schedule is not None:
+        _qk_schedule_status = (
+            "class_default"
+            if any(kind == "class_default" for _path, kind
+                   in _qk_schedule.config_dependencies)
             else "code_and_config")
-        _note_typed_fact(
-            key="qk_norm",
-            owner="decoder.attention",
-            value=_qk_value,
-            status=_qk_status,
-            reader_result=_qk_code_result,
-            config_paths=tuple(atom.config_path for atom in _qk_code.gate),
-            reader="decoder_qk_norm_evidence_for_path",
-            reason=(
-                "two exact normalization applications independently feed the "
-                "selected attention score's Q and K lanes"
-                + (" under the exact selected config gate"
-                   if _qk_code.gate else "")),
-        )
+        _candidate_qk_layers = tuple(_qk_schedule.decisions)
+        _qk_join_ok = True
+        for _path, _kind in _qk_schedule.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0] or _consume_code_bound_path(
+                    _path[-1], _path, fact_key="qk_norm_schedule",
+                    mechanism="qk_norm_schedule",
+                    status=_qk_schedule_status,
+                    expected_value=_candidate_qk_layers) != _selected[1]:
+                _qk_join_ok = False
+                break
+        if _qk_join_ok \
+                and len(_qk_schedule.decisions) == len(qk_norm_layers):
+            qk_norm_layers = list(_candidate_qk_layers)
+            _note_typed_fact(
+                key="qk_norm_schedule", owner="decoder.attention",
+                value=tuple(qk_norm_layers), status=_qk_schedule_status,
+                reader_result=_qk_schedule_result,
+                config_paths=tuple(
+                    path for path, _kind
+                    in _qk_schedule.config_dependencies),
+                reader="decoder_qk_norm_schedule_for_path",
+                reason=("exact mixer occurrence, repeated-block index and "
+                        "source-named Q/K-normalization gates agree per layer"),
+            )
+
+    # Preserve the U6 owner-level fact only when every applicable ordinary
+    # attention layer agrees.  Not-applicable recurrent layers are excluded;
+    # they do not turn an attention mechanism fact into False.
+    _applicable_qk = tuple(
+        value for value in qk_norm_layers if isinstance(value, bool))
+    if _qk_schedule is not None and _applicable_qk \
+            and len(set(_applicable_qk)) == 1:
+        _qk_value = _applicable_qk[0]
+        _qk_gate_paths = tuple(
+            atom.config_path for atom in _qk_schedule.mechanism.gate)
+        _qk_gate_kinds = dict(_qk_schedule.config_dependencies)
+        _qk_status = (
+            "code_proven" if _qk_schedule.mechanism.present is True
+            else "class_default"
+            if any(_qk_gate_kinds.get(path) == "class_default"
+                   for path in _qk_gate_paths)
+            else "code_and_config")
+        _qk_fact_join_ok = True
+        for _path in _qk_gate_paths:
+            if _qk_gate_kinds.get(_path) == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0] or _consume_code_bound_path(
+                    _path[-1], _path, fact_key="qk_norm",
+                    mechanism="qk_norm_gate",
+                    status=_qk_status) != _selected[1]:
+                _qk_fact_join_ok = False
+                break
+        if _qk_fact_join_ok:
+            _note_typed_fact(
+                key="qk_norm",
+                owner="decoder.attention",
+                value=_qk_value,
+                status=_qk_status,
+                reader_result=_qk_schedule_result,
+                config_paths=_qk_gate_paths,
+                reader="decoder_qk_norm_schedule_for_path",
+                reason=(
+                    "the exact ordinary-attention occurrences agree on their "
+                    "source-proven Q/K normalization application"),
+            )
+
+    # ---- Cross-layer K/V reuse ----
+    # The old path subtracted a raw count and guessed the source by scanning
+    # mixer labels.  The U8-E boundary instead proves the exact attention
+    # forward reads and writes one shared-state mapping, evaluates its exact
+    # constructor selectors per layer, and resolves one earlier producer.
+    from ...evidence.kv_sharing_schedule import (
+        decoder_kv_sharing_schedule_for_path,
+    )
+    _kv_sharing_result = decoder_kv_sharing_schedule_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True, config_selector=_mask_checkpoint_selector)
+    _kv_source_layers = [None] * max(int(num_layers or 0), 0)
+    _kv_sharing = (
+        _kv_sharing_result.value
+        if _kv_sharing_result.status == "resolved" else None)
+    if _kv_sharing is not None:
+        _candidate_kv_layers = tuple(_kv_sharing.decisions)
+        _kv_join_ok = True
+        _kv_status = (
+            "class_default"
+            if any(kind == "class_default" for _path, kind
+                   in _kv_sharing.config_dependencies)
+            else "code_and_config")
+        for _path, _kind in _kv_sharing.config_dependencies:
+            if _kind == "class_default":
+                continue
+            _selected = _mask_checkpoint_selector(_path)
+            if not _selected[0] or _consume_code_bound_path(
+                    _path[-1], _path, fact_key="kv_sharing_schedule",
+                    mechanism="kv_sharing_schedule",
+                    status=_kv_status,
+                    expected_value=_candidate_kv_layers) != _selected[1]:
+                _kv_join_ok = False
+                break
+        if _kv_join_ok and len(_kv_sharing.decisions) == len(_kv_source_layers):
+            _kv_source_layers = list(_candidate_kv_layers)
+            _note_typed_fact(
+                key="kv_sharing_schedule", owner="decoder.attention",
+                value=tuple(_kv_source_layers), status=_kv_status,
+                reader_result=_kv_sharing_result,
+                config_paths=tuple(
+                    path for path, _kind
+                    in _kv_sharing.config_dependencies),
+                reader="decoder_kv_sharing_schedule_for_path",
+                reason=("the exact attention forward shared-state read/write "
+                        "and exact per-layer constructor selectors identify "
+                        "one earlier K/V producer"),
+            )
 
     # ---- Bias terms on the Q/K/V/O projections (Qwen2, GPT-2, Phi, ...) ----
     # CODE construction is authoritative. QKV alone cannot certify an output
@@ -2148,7 +3040,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # declaration is not even structural input and cannot create audit debt.
     _declared_bias_resolution = None
     _code_bias = _code_attention_bias(
-        text_cfg, context, config_path=_text_path)
+        text_cfg, context, config_path=_text_path,
+        geometry_schedule_result=_geometry_schedule_result)
     from ...evidence.projection_bias import ProjectionBiasPatternEvidence
     if _code_bias is not None and isinstance(
             _code_bias.value, ProjectionBiasPatternEvidence):
@@ -2448,52 +3341,21 @@ def parse(cfg: Any, context=None) -> ModelIR:
         ffn_mechanism_result=_ffn_mechanism)
     if _code_mlp is not None:
         use_mlp_bias = _code_mlp
-    # An encoder-reuse switch (Gemma-2 5.x spelling): when TRUE the stack runs
-    # bidirectional attention — a MASK fact, consumed here so a positive value
-    # can never be silently dropped.
-    forced_bidirectional = bool(consume("use_bidirectional_attention",
-                                        fact_owner="decoder.attention",
-                                        fact_key="mask"))
-    # U2 mask default-kill: "causal" may only be DRAWN when the config
-    # declares decoder-ness (is_decoder / causal-LM architecture suffix /
-    # decoder-only wrapper / composite decoder slot — general vocabulary in
-    # everchanging/transformer/decoderness.yaml). Otherwise the mask is a
-    # typed "unknown" (pale chip) — BERT/T5 encoders stop being drawn causal.
-    # The declaration is RESOLVED ON THE CONTEXT (ParseContext.build), so the
-    # name-blind guard's scrubbed parse consumes the identical declaration;
-    # a nested text-scope is_decoder flag (never scrubbed) still counts.
-    _decoderness_src = (getattr(context, "declared_decoderness", None)
-                        or ("is_decoder"
-                            if consume("is_decoder",
-                                       fact_owner="decoder.attention",
-                                       fact_key="mask") is True else None))
-    # U2 P2d — the CODE channel, wired ABOVE config-decoderness: mask-machinery
-    # calls (is_decoder gates resolved from the checkpoint) / is_causal
-    # literals.  BERT/T5-encoder become code-proven BIDIRECTIONAL; plain
-    # decoders code-proven causal.  One honest discard: on a flat enc-dec
-    # config with no declared decoder slot the drawn stack is the ENCODER
-    # half, while the file provably also contains the (undrawn) decoder —
-    # a causal-only verdict there is the other half's machinery (Whisper),
-    # never this stack's fact.
-    _code_causality = _code_attention_causality(text_cfg, context)
-    if (_code_causality == "causal" and _is_enc_dec
-            and not _decoderness_src):
-        _code_causality = None
-    if forced_bidirectional:
-        _note_fact("decoder.attention", "mask", "bidirectional",
-                   "config_declared", "use_bidirectional_attention")
-    elif _code_causality is not None:
-        _note_fact("decoder.attention", "mask", _code_causality,
-                   "code_proven", "attention_causality_from_files")
-    elif _decoderness_src:
-        _note_fact("decoder.attention", "mask", "causal",
-                   "config_declared", _decoderness_src)
-    elif layer_types or sliding_window:
-        # U8 owns per-layer mask/schedule SEMANTICS (including deriving the fact's
-        # status from the deciding read's origin).  U2 keeps the existing
-        # behaviour-preserving fact and does not arbitrate the schedule.
-        _note_fact("decoder.attention", "mask", "windowed schedule",
-                   "config_declared", "layer_types/sliding_window")
+    if _bound_mask_layers is not None:
+        _mask_values = tuple(mask for mask, _window, _full in _bound_mask_layers)
+        _mask_summary = (
+            _mask_values[0]
+            if len(set(_mask_values)) == 1 else "windowed schedule")
+        _note_typed_fact(
+            key="mask", owner="decoder.attention", value=_mask_summary,
+            status=_mask_fact_status,
+            reader_result=_mask_execution_result,
+            config_paths=tuple(
+                path for path, _kind
+                in _mask_execution_result.value.config_dependencies),
+            reader="decoder_attention_mask_execution_for_path",
+            reason="summary of the exact enacted per-layer mask schedule",
+        )
     else:
         _note_fact("decoder.attention", "mask", "unknown", _unknown_status, None)
     # The exact cell equations above now own the residual tap.  This historical
@@ -2636,19 +3498,79 @@ def parse(cfg: Any, context=None) -> ModelIR:
         )
 
     # ---- MoE ----
-    num_experts = consume(
-        "num_experts", fact_owner="decoder.ffn", fact_key="num_experts")
-    num_experts_per_tok = consume(
-        "num_experts_per_tok", fact_owner="decoder.ffn",
-        fact_key="num_experts_per_tok")
-    num_shared_experts = consume(
-        "num_shared_experts", fact_owner="decoder.ffn",
-        fact_key="num_shared_experts")
-    moe_intermediate_size = consume(
-        "moe_intermediate_size", fact_owner="decoder.ffn",
-        fact_key="moe_intermediate_size")
-    enable_moe_block    = _g(text_cfg, "enable_moe_block")
-    moe_active          = bool(num_experts) and (enable_moe_block is not False)
+    _has_routed_ffn = (
+        _bound_ffn_layers is not None and "moe" in _bound_ffn_layers)
+    num_experts = num_experts_per_tok = num_shared_experts = None
+    if not _has_routed_ffn:
+        for _candidate in (
+                _scoped("num_experts"), _scoped("num_experts_per_tok"),
+                _scoped("num_shared_experts")):
+            if _candidate.present:
+                _candidate.ignore(
+                    "the exact per-layer FFN schedule selects no routed "
+                    "mechanism; expert-looking geometry cannot create one")
+    # Expert width is an independent exact parameter-shape fact.  The fused
+    # reader must prove a literal two-lane dimension and the same exact width
+    # in the down parameter; split/flattened layouts remain withheld because
+    # storage alone cannot identify their per-expert factor.
+    _moe_width_candidate = _scoped("moe_intermediate_size")
+    moe_intermediate_size = None
+    _expert_width_reader = _expert_width_result(
+        _evidence_config_document, context, config_path=_text_path)
+    _expert_width_resolutions = []
+    if _expert_width_reader is not None \
+            and _expert_width_reader.status == "resolved":
+        for _path, _expected in _expert_width_reader.value.premises:
+            _resolution = _resolve_exact_config_path(_path)
+            if _resolution is None or _resolution.value != _expected \
+                    or _resolution.provenance not in {
+                        "", "checkpoint_declared", "class_default"}:
+                _expert_width_resolutions = []
+                break
+            _expert_width_resolutions.append(_resolution)
+    _expert_width_premises = (
+        _expert_width_reader.value.premises
+        if _expert_width_reader is not None
+        and _expert_width_reader.status == "resolved" else ())
+    if _expert_width_reader is not None \
+            and _expert_width_reader.status == "resolved" \
+            and len(_expert_width_resolutions) == len(_expert_width_premises):
+        _expert_width_status = (
+            "class_default"
+            if any(item.provenance == "class_default"
+                   or item.source_kind == "class_default"
+                   for item in _expert_width_resolutions)
+            else "code_and_config" if _expert_width_premises
+            else "code_proven")
+        for _resolution in _expert_width_resolutions:
+            _resolution.consume_decision(
+                reader="decoder_expert_intermediate_width_for_path",
+                fact_owner="decoder.ffn.expert",
+                fact_key="expert_intermediate_size",
+                mechanism="expert_intermediate_width",
+                status=_expert_width_status)
+        moe_intermediate_size = _expert_width_reader.value.value
+        _expert_width_fact_paths = tuple(
+            selected
+            for (source_path, _expected), resolution in zip(
+                _expert_width_premises, _expert_width_resolutions)
+            if (selected := _actual_checkpoint_path(
+                source_path, resolution)) is not None)
+        _note_typed_fact(
+            key="expert_intermediate_size", owner="decoder.ffn.expert",
+            value=moe_intermediate_size, status=_expert_width_status,
+            reader_result=_expert_width_reader,
+            config_paths=_expert_width_fact_paths,
+            reader="decoder_expert_intermediate_width_for_path",
+            reason=("the proved fused expert parameter carries one literal "
+                    "two-lane width and its down parameter carries the same "
+                    "exact dimension"),
+        )
+    elif _moe_width_candidate.present:
+        _moe_width_candidate.ignore(
+            reason=("candidate routed-expert width; the exact expert parameter "
+                    "geometry does not uniquely prove this occurrence"))
+    moe_active = _has_routed_ffn
     _expert_storage_result_value = (
         _expert_storage_result(context, config_path=_text_path)
         if moe_active else None)
@@ -2744,34 +3666,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     "the exact routed-expert gate lane applies this activation "
                     "formula before its proven gate/up product"),
             )
-    # Schedule declarations stay visible as inputs to the legacy source reader,
-    # but are not consumed as a diagram fact merely because they exist.
-    # U7 owns their exact source/config binding.  Until then only the
-    # source-resolved schedule below may author per-layer kind or the
-    # ``every_layer`` summary.
-    _g(text_cfg, "first_k_dense_replace")
-    _g(text_cfg, "moe_layer_freq")
-    _g(text_cfg, "interleave_moe_layer_step")
-    _g(text_cfg, "decoder_sparse_step")
-    _g(text_cfg, "mlp_only_layers")
-    _g(text_cfg, "moe_layers")
-    for _field in _LAYER_SCHEDULES["moe_comma_string_fields"]:
-        _g(text_cfg, _field)
-    # CODE-AUTHORITATIVE per-layer MoE schedule (which layers build an experts
-    # class as their FFN field) — read from the decoder layer's construction,
-    # name-independent.  Supplies the per-layer SHAPE; ``moe_active``
-    # (num_experts>0) stays the is-this-MoE-at-all geometry gate.  None when the
-    # code can't resolve it (hybrid SSM-MoE / exotic gate / no source) → the
-    # schedule stays unknown. Config schedule fields remain visible evidence
-    # for U7, but never select layer architecture here.
-    code_moe_schedule = (
-        _code_moe_schedule(text_cfg, context, num_layers)
-        if moe_active else None
-    )
-    moe_every_layer = (
-        all(code_moe_schedule)
-        if code_moe_schedule is not None else None
-    )
     # Router behaviour: gating fn, grouped/node-limited routing, top-k renorm,
     # routed-output scale (DeepSeek-V3, Kimi-K2, GLM, Qwen3-MoE).
     moe_routing = (_moe_routing(
@@ -2779,6 +3673,88 @@ def parse(cfg: Any, context=None) -> ModelIR:
         note_typed_fact=_note_typed_fact,
         class_defaults=_fact_class_defaults)
                    if moe_active else None)
+    if isinstance(moe_routing, dict):
+        num_experts = moe_routing.get("num_experts")
+        num_experts_per_tok = moe_routing.get("num_experts_per_tok")
+        _router_reader = _router_result(
+            text_cfg, context, config_path=_text_path,
+            class_defaults=_fact_class_defaults)
+        if _router_reader is not None \
+                and _router_reader.status == "resolved":
+            _ignore_unselected_alias_spellings(
+                "num_experts", (_router_reader.value.expert_count_path,),
+                "unselected expert-count alias; exact router score width "
+                "names the enacted config spelling")
+            _selection_path = _router_reader.value.selection_count_path
+            if _selection_path:
+                _ignore_unselected_alias_spellings(
+                    "num_experts_per_tok", (_selection_path,),
+                    "unselected top-k alias; exact selection call names the "
+                    "enacted config spelling")
+
+    _shared_count_reader = (
+        _shared_expert_count_result(
+            _evidence_config_document, context, config_path=_text_path)
+        if moe_active else None)
+    _shared_count_resolutions = []
+    if _shared_count_reader is not None \
+            and _shared_count_reader.status == "resolved":
+        for _path, _expected in _shared_count_reader.value.premises:
+            _resolution = _resolve_exact_config_path(_path)
+            if _resolution is None or _resolution.value != _expected \
+                    or _resolution.provenance not in {
+                        "", "checkpoint_declared", "class_default"}:
+                _shared_count_resolutions = []
+                break
+            _shared_count_resolutions.append(_resolution)
+    _shared_count_premises = (
+        _shared_count_reader.value.premises
+        if _shared_count_reader is not None
+        and _shared_count_reader.status == "resolved" else ())
+    if _shared_count_reader is not None \
+            and _shared_count_reader.status == "resolved" \
+            and len(_shared_count_resolutions) == len(_shared_count_premises):
+        _shared_count_status = (
+            "class_default"
+            if any(item.provenance == "class_default"
+                   or item.source_kind == "class_default"
+                   for item in _shared_count_resolutions)
+            else "code_and_config")
+        for _resolution in _shared_count_resolutions:
+            _resolution.consume_decision(
+                reader="decoder_shared_expert_count_for_path",
+                fact_owner="decoder.ffn.expert",
+                fact_key="shared_expert_count",
+                mechanism="shared_expert_count",
+                status=_shared_count_status)
+        num_shared_experts = _shared_count_reader.value.value
+        _shared_count_paths = tuple(
+            selected
+            for (source_path, _expected), resolution in zip(
+                _shared_count_premises, _shared_count_resolutions)
+            if (selected := _actual_checkpoint_path(
+                source_path, resolution)) is not None)
+        _note_typed_fact(
+            key="shared_expert_count", owner="decoder.ffn.expert",
+            value=num_shared_experts, status=_shared_count_status,
+            reader_result=_shared_count_reader,
+            config_paths=_shared_count_paths,
+            reader="decoder_shared_expert_count_for_path",
+            reason=("the exact ordinary shared FFN is added to routed output "
+                    "and its constructor width is per-expert width multiplied "
+                    "by this exact count operand"),
+        )
+        _ignore_unselected_alias_spellings(
+            "num_shared_experts",
+            (_shared_count_reader.value.count_path,),
+            "unselected shared-count alias; exact multiplicative shared-FFN "
+            "width names the enacted config spelling")
+    elif moe_active:
+        _raw_shared_count = _scoped("num_shared_experts")
+        if _raw_shared_count.present:
+            _raw_shared_count.ignore(
+                "a shared-expert count cannot create a shared FFN; exact "
+                "application and multiplicative width evidence are unresolved")
     # A clip declaration is not enough to prove which exact activation consumes
     # it (GPT-OSS applies this inside routed experts, not the ordinary/shared
     # mechanism read above). Keep it inspected until U7 binds the exact expert
@@ -2799,17 +3775,87 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 "routed-expert formula because this exact callable proves its "
                 "own literal clamp; a callable that read the config path would "
                 "have to consume it instead"))
-    # ---- Cross-layer KV
-    #  sharing (the last N layers reuse K/V from earlier) ----
-    num_kv_shared_layers   = _g(text_cfg, "num_kv_shared_layers") or 0
-    first_shared_layer     = (num_layers - num_kv_shared_layers) if num_kv_shared_layers else num_layers
+    # ---- Per-layer side-input pathway ------------------------------------
+    # The config numbers parameterize a pathway; they never create it.  The
+    # source reader must prove the exact stage tensor, loop-indexed block
+    # operand, and gated multiply/projection/norm injection first.
+    from ...evidence.per_layer_side_input import (
+        decoder_per_layer_side_input_for_path,
+    )
+    _ple_result = decoder_per_layer_side_input_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True)
+    ple_dim = ple_vocab = 0
+    if _ple_result.status == "resolved":
+        _ple_width_path = _ple_result.value.width_path
+        _ple_vocab_path = _ple_result.value.vocabulary_path
+        _ple_paths = tuple(path for path in (
+            _ple_width_path, _ple_vocab_path) if path is not None)
+        _ple_resolutions = tuple(
+            _resolve_exact_config_path(path) for path in _ple_paths)
+        if _ple_resolutions and all(
+                item is not None and item.present and not item.ambiguous
+                for item in _ple_resolutions):
+            ple_dim = _ple_resolutions[0].value
+            ple_vocab = (
+                _ple_resolutions[1].value if len(_ple_resolutions) > 1 else 0)
+        if isinstance(ple_dim, int) and not isinstance(ple_dim, bool) \
+                and ple_dim > 0:
+            _ple_status = (
+                "class_default" if any(
+                    item.provenance == "class_default"
+                    or item.source_kind == "class_default"
+                    for item in _ple_resolutions)
+                else "code_and_config")
+            _ple_fact_value = {
+                "hidden": int(ple_dim),
+                "vocab": (
+                    int(ple_vocab)
+                    if isinstance(ple_vocab, int)
+                    and not isinstance(ple_vocab, bool) and ple_vocab > 0
+                    else None),
+            }
+            for _ple_path, _ple_resolution in zip(
+                    _ple_paths, _ple_resolutions):
+                _attention_operand_resolutions[_ple_path] = _ple_resolution
+                _ple_resolution.consume_decision(
+                    reader="adapters.transformer.parser.parse",
+                    fact_owner="decoder",
+                    fact_key="per_layer_embedding_pathway",
+                    mechanism="per_layer_embedding_pathway",
+                    status=_ple_status,
+                    expected_value=_ple_fact_value)
+            _note_typed_fact(
+                key="per_layer_embedding_pathway", owner="decoder",
+                value=_ple_fact_value,
+                status=_ple_status, reader_result=_ple_result,
+                config_paths=tuple(
+                    selected for path in _ple_paths
+                    if (selected := _actual_checkpoint_path(
+                        path, _attention_operand_resolutions[path])) is not None),
+                reader="decoder_per_layer_side_input_for_path",
+                reason=("exact stage-side tensor is indexed by the repeated "
+                        "layer loop and consumed through a gated multiply, "
+                        "projection, normalization and state addition"),
+            )
+    else:
+        for _field in (
+                "hidden_size_per_layer_input", "vocab_size_per_layer_input"):
+            _raw_ple = _scoped(_field)
+            if _raw_ple.present:
+                _raw_ple.ignore(
+                    "a dimension declaration cannot create a per-layer side-"
+                    "input pathway without exact source application evidence")
 
-    # ---- Per-Layer Embedding side pathway ----
-    ple_dim   = _g(text_cfg, "hidden_size_per_layer_input") or 0
-    ple_vocab = _g(text_cfg, "vocab_size_per_layer_input") or get("vocab_size", 0)
-
-    # ---- Decoder layers that read external modality states through cross-attention ----
-    cross_attn_layer_set = set(_cross_attention_layers(cfg, text_cfg) or [])
+    # ---- Decoder layers that read external states through cross-attention ----
+    # One typed schedule owns both shapes:
+    #   * replacement_cross — a heterogeneous stage container selects a block
+    #     whose Q/K/V lineage proves Q != shared K/V input;
+    #   * additive_cross — every repeated block constructs and invokes a second
+    #     attention module with its own exact K/V-only input.
+    # Config lists and encoder declarations are operands/context only.  They
+    # cannot manufacture either schedule.
+    cross_attn_layer_set = set()
     # Seq2seq composite (MusicGen): the schedule is CONSTRUCTION evidence —
     # the decoder-layer class builds its cross-attention module
     # unconditionally in __init__, so EVERY layer cross-attends the declared
@@ -2822,12 +3868,69 @@ def parse(cfg: Any, context=None) -> ModelIR:
     # proven shape keeps self-attention AND gains a cross sublayer — unlike a
     # declared mllama schedule, whose cross layers REPLACE self-attention.
     cross_attention_additive = False
-    if (not cross_attn_layer_set and num_layers
-            and _is_enc_dec and composite_encoder_type):
-        if _code_cross_attention_all_layers(
-                context, config_path=_text_path):
-            cross_attn_layer_set = set(range(num_layers or 0))
-            cross_attention_additive = True
+    from ...evidence.cross_attention_replacement import (
+        decoder_replacement_cross_attention_schedule_for_path,
+    )
+    _replacement_cross_result = \
+        decoder_replacement_cross_attention_schedule_for_path(
+            context.program_index(), context.source_bundle,
+            tuple(_text_path), int(num_layers or 0),
+            allow_root_stage=True,
+            config_selector=_mask_checkpoint_selector,
+        ) if num_layers else None
+    _cross_fact_result = None
+    _cross_fact_value = None
+    _cross_fact_paths = ()
+    _cross_fact_status = None
+
+    def _frozen_selector_value(value):
+        if isinstance(value, (list, tuple)):
+            return tuple(_frozen_selector_value(item) for item in value)
+        if isinstance(value, set):
+            return frozenset(_frozen_selector_value(item) for item in value)
+        if isinstance(value, dict):
+            return tuple((_frozen_selector_value(key),
+                          _frozen_selector_value(item))
+                         for key, item in value.items())
+        return value
+
+    if _replacement_cross_result is not None \
+            and _replacement_cross_result.status == "resolved":
+        _replacement = _replacement_cross_result.value
+        _replacement_status = (
+            "class_default"
+            if any(item.source_kind == "class_default"
+                   for item in _replacement.operands)
+            else "code_and_config")
+        _replacement_fact_value = tuple(_replacement.layers)
+        _cross_join_ok = True
+        for _operand in _replacement.operands:
+            if _operand.source_kind == "class_default":
+                continue
+            if _frozen_selector_value(_consume_code_bound_path(
+                    _operand.path[-1], _operand.path,
+                    fact_key="cross_attention_schedule",
+                    mechanism="cross_attention_schedule",
+                    status=_replacement_status,
+                    expected_value=_replacement_fact_value)) != _operand.value:
+                _cross_join_ok = False
+                break
+        if _cross_join_ok and len(_replacement.layers) == int(num_layers or 0):
+            _cross_fact_result = _replacement_cross_result
+            _cross_fact_value = _replacement_fact_value
+            _cross_fact_paths = tuple(
+                dict.fromkeys(item.path for item in _replacement.operands))
+            _cross_fact_status = _replacement_status
+    if _cross_fact_value is None and num_layers \
+            and _is_enc_dec and composite_encoder_type:
+        _additive_result = _cross_attention_schedule_result(
+            context, config_path=_text_path)
+        if _additive_result is not None \
+                and _additive_result.status == "resolved":
+            _cross_fact_result = _additive_result
+            _cross_fact_value = tuple(
+                "additive_cross" for _ in range(int(num_layers)))
+            _cross_fact_status = "code_proven"
         else:
             # Declared enc-dec composite whose decoder SOURCE we can't read
             # (custom package not installed — Parler-TTS): the schedule stays
@@ -2836,6 +3939,23 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 "Cross-attention schedule unproven (the decoder's modeling "
                 "source is not installed) — the declared encoder conditioning "
                 "is shown, but no per-layer cross-attention is drawn.")
+    if _cross_fact_value is not None:
+        cross_attn_layer_set = {
+            index for index, kind in enumerate(_cross_fact_value)
+            if kind != "self"}
+        cross_attention_additive = any(
+            kind == "additive_cross" for kind in _cross_fact_value)
+        _note_typed_fact(
+            key="cross_attention_schedule", owner="decoder.attention",
+            value=_cross_fact_value, status=_cross_fact_status,
+            reader_result=_cross_fact_result,
+            config_paths=_cross_fact_paths,
+            reader=("decoder_replacement_cross_attention_schedule_for_path"
+                    if _cross_fact_status != "code_proven"
+                    else "decoder_cross_attention_all_layers_for_path"),
+            reason=("each decoder layer retains an exact selected block and "
+                    "Q/K/V lineage, or an exact additive dual-attention proof"),
+        )
     has_vision_side_state = (_g(cfg, "vision_config") is not None
                              or _g(cfg, "vision_model_config") is not None)
     has_cross_attention_side_state = bool(
@@ -2854,91 +3974,82 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 mechanism="embedding_scale", fact_owner="model",
                 fact_key="embedding_scale",
                 reader="adapters.transformer.parser.parse").value)
-    _declared_rope = _g(text_cfg, "rope_embeddings")       # declared positional flag
     _cross_kv_heads_declared = _g(text_cfg, "num_cross_attention_key_value_heads")
-    if _declared_rope and _code_position_evidence.status != "proven":
-        warnings.append(
-            "Config declares rope_embeddings but the positional drawing is "
-            "unresolved from source — the declared flag is not yet folded in.")
 
     # ---- Walk the layer stack ----
-    unknown_layer_types: set[str] = set()
     cross_layer_edges: list[CrossLayerEdge] = []
 
     layers = []
     for i in range(num_layers or 0):
-        mask, window, is_full_in_sliding_stack = _layer_mask(
-            i, layer_types, sliding_window, sliding_window_pattern,
-            has_sliding_in_stack, unknown_layer_types, max_window_layers,
-        )
-        if forced_bidirectional and mask in ("causal", "global"):
-            mask = "bidirectional"       # encoder-reuse switch: a MASK fact
-        elif _code_causality == "bidirectional" and mask in ("causal", "global"):
-            # U2 P2d: the source PROVES this stack's self-attention is
-            # bidirectional (BERT/T5-encoder machinery, is_decoder resolved
-            # from the checkpoint) — same flip as the declared switch above.
-            mask = "bidirectional"
-        elif mask == "causal" and not _decoderness_src and _code_causality != "causal":
-            # U2 default-kill: nothing declared OR code-proved this stack a
-            # decoder — the causal fall-through is a typed unknown, not an
-            # asserted fact (the census's headline: T5/BERT drawn causal).
-            mask = "unknown"
-        compress_ratio = _compress_ratio_for_layer(i, compress_ratios, layer_types)
-
-        # Per-layer dual KV: full layers in a sliding stack use the global counts.
-        if is_full_in_sliding_stack:
-            layer_kv_heads = num_kv_global
-            layer_head_dim = head_dim_global
+        if _bound_mask_layers is not None:
+            mask, window = _bound_mask_layers[i][:2]
         else:
+            mask, window = "unknown", None
+        # U8-D removes config-token compression/mixer authoring.  A future
+        # exact compressed-attention mechanism may restore this geometry from
+        # its own code-bound reader; a raw ratio/list cannot do so.
+        compress_ratio = None
+
+        _scheduled_geometry = (
+            _bound_head_geometry_layers[i]
+            if _bound_head_geometry_layers is not None else None)
+        if _scheduled_geometry is not None:
+            (_scheduled_kind, layer_num_heads,
+             layer_kv_heads, layer_head_dim) = _scheduled_geometry
+        else:
+            _scheduled_kind = None
+            layer_num_heads = num_heads
             layer_kv_heads = num_kv_heads
             layer_head_dim = head_dim
 
-        layer_type = layer_types[i] if i < len(layer_types) else None
-        # U3: a canonical layer_types token may name a NON-softmax token mixer
-        # (Qwen3-Next linear_attention -> gated_delta; MiniMax lightning ->
-        # linear; recurrentgemma recurrent -> recurrent).  is_gated_delta keeps
-        # its exact meaning for byte-stability; is_mixer covers all three.
-        mixer_kind = _mixer_kind_for(layer_type)
+        mixer_state = (
+            _bound_mixer_layers[i]
+            if _bound_mixer_layers is not None else None)
+        # The schedule carries a U6-proven mechanism, not a token mapping.
+        # Ordinary attention intentionally uses ``None`` here so its exact
+        # head-sharing kind continues to come from the separate U6 binding.
+        mixer_kind = "gated_delta" if mixer_state == "gated_delta" else None
         is_gated_delta = mixer_kind == "gated_delta"
-        is_mixer = mixer_kind is not None
-        if mixer_kind:
+        if _scheduled_kind is not None:
+            attn_kind = _scheduled_kind
+        elif mixer_kind:
             attn_kind = mixer_kind
-        elif _bound_attention is not None \
+        elif mixer_state in {None, "ordinary_attention"} \
+                and _bound_attention is not None \
                 and layer_kv_heads == _bound_attention.num_kv_heads:
             attn_kind = _bound_attention.kind
         else:
             attn_kind = None
-        # The layer TYPE follows the declared schedule alone: a bare component
-        # config (mllama_text_model) declares cross_attention_layers without a
-        # vision_config sibling, and its cross layers ARE cross-attention
-        # layers — suppressing them drew 8 wrong layer types on the standalone
-        # parse (caught by the U4 schedule lock).  The vision gate only decides
-        # what the side-state SOURCE honestly says.
+        # The layer type follows only the source-proven schedule above.  An
+        # unaddressed bare component or a config list without the enacted
+        # heterogeneous construction cannot create cross-attention layers.
         is_cross_attn_layer = i in cross_attn_layer_set
 
-        kv_source: int | None = None
-        if i >= first_shared_layer:
-            kv_source = _last_matching_layer(layer_types, i, first_shared_layer)
-            if kv_source is not None:
-                cross_layer_edges.append(
-                    CrossLayerEdge(kind="kv_share", from_layer=kv_source, to_layer=i, shared=["K", "V"])
-                )
+        kv_source = (
+            _kv_source_layers[i]
+            if i < len(_kv_source_layers) else None)
+        if kv_source is not None:
+            cross_layer_edges.append(CrossLayerEdge(
+                kind="kv_share", from_layer=kv_source, to_layer=i,
+                shared=["K", "V"]))
 
-        position_mechanism = (
-            ("unknown", "unknown")
-            if position_schedule_unresolved
-            else _position_for_layer(
-                _code_position_evidence, mixer_kind=mixer_kind,
-            )
-        )
-        layer_uses_rope = None if position_schedule_unresolved else uses_rope
-        # NoPE is a mechanism claim. U8 will restore interleaved schedules after
-        # proving the exact source selector; raw list/interval values cannot
-        # author it in U4.
-        is_nope = position_mechanism == ("none", "none")
+        _position_projection = (
+            _position_layers[i]
+            if _position_layers is not None and i < len(_position_layers)
+            else {
+                "position_kind": "unknown",
+                "position_application": "unknown",
+                "rope_dim": None,
+                "rope_theta": None,
+                "rope_initialization": None,
+                "rope": None,
+                "no_rope": False,
+            })
         attn = AttentionSpec(
             kind=attn_kind,
-            num_heads=(linear_num_v_heads or num_heads) if is_gated_delta else num_heads,
+            num_heads=(linear_num_v_heads or layer_num_heads)
+            if is_gated_delta else layer_num_heads,
+            mixer_state=mixer_state,
             num_kv_heads=(linear_num_k_heads or layer_kv_heads) if is_gated_delta else layer_kv_heads,
             head_dim=(linear_k_head_dim or layer_head_dim) if is_gated_delta else layer_head_dim,
             kv_lora_rank=kv_lora_rank if is_mla else None,
@@ -2946,18 +4057,25 @@ def parse(cfg: Any, context=None) -> ModelIR:
             qk_nope_head_dim=qk_nope_head_dim if is_mla else None,
             qk_rope_head_dim=qk_rope_head_dim if is_mla else None,
             v_head_dim=(linear_v_head_dim if is_gated_delta else v_head_dim_cfg if is_mla else None),
-            rope_dim=rope_dim_value,
+            rope_dim=_position_projection["rope_dim"],
+            rope_theta=_position_projection.get("rope_theta"),
+            rope_initialization=_position_projection.get(
+                "rope_initialization"),
             mask=mask,
             window_size=window,
             kv_source_layer=kv_source,
             qk_norm=qk_norm_layers[i] if i < len(qk_norm_layers) else use_qk_norm,
-            rope=(layer_uses_rope and not is_mixer),
-            position_kind=position_mechanism[0],
-            position_application=position_mechanism[1],
-            position_declared=False,
-            rope_theta_declared=None,
+            # A proved mixer mechanism is not itself proof of positional
+            # absence.  Until the exact position-application schedule joins
+            # this occurrence, neither RoPE nor NoPE is projected onto it.
+            # The position reader resolves the exact attention occurrence. A
+            # separately-proven mixer schedule cannot erase or invent it.
+            rope=_position_projection["rope"],
+            position_kind=_position_projection["position_kind"],
+            position_application=_position_projection[
+                "position_application"],
             bias=use_attention_bias,
-            no_rope=is_nope,
+            no_rope=_position_projection["no_rope"],
             cross_attention=is_cross_attn_layer and not cross_attention_additive,
             cross_kv_source=(("projected image states"
                               if has_vision_side_state and has_cross_attention_side_state
@@ -2983,8 +4101,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
                     if _attention_multiplier_proven else None,
                     query_pre_attn_scalar
                     if _query_pre_attn_scalar_proven else None,
-                    layer_head_dim or (hidden_size // num_heads
-                                       if hidden_size and num_heads else None)
+                    layer_head_dim
                 )
                 if _applied_declared_scale else None
             ),
@@ -3004,27 +4121,12 @@ def parse(cfg: Any, context=None) -> ModelIR:
             variant=_mixer_variant(mixer_kind),
         )
 
-        # Code decides per-layer kind only when exact construction resolution
-        # succeeds. A config schedule remains visible evidence for U8 but is
-        # not a fallback architecture selector.
-        # U4-C: per-layer kind is projected only from source-resolved
-        # construction. Config schedules remain visible evidence/debt for U7;
-        # they no longer manufacture dense/MoE variants on reader abstention.
-        code_layer_is_moe = (
-            bool(code_moe_schedule[i])
-            if code_moe_schedule is not None else None
-        )
+        # U8-E: the outer kind comes only from the occurrence-exact schedule.
+        # Numeric expert geometry and familiar config spellings cannot fill an
+        # unknown construction/invocation/mechanism join.
         ffn_kind = (
-            "moe" if code_layer_is_moe is True
-            # The exact construction schedule proves the layer selects its
-            # ordinary (non-routed) FFN occurrence. That is sufficient for the
-            # outer kind "dense"; gate/storage/activation remain independent
-            # and may still be unknown.
-            else "dense" if code_layer_is_moe is False
-            else "dense"
-            if not moe_active and _ffn_mechanism_value is not None
-            else None
-        )
+            _bound_ffn_layers[i]
+            if _bound_ffn_layers is not None else None)
 
         if ffn_kind == "moe":
             ffn = FFNSpec(
@@ -3074,7 +4176,7 @@ def parse(cfg: Any, context=None) -> ModelIR:
             # (num_cross_attention_key_value_heads) — its own GQA geometry.
             cross_spec = AttentionSpec(
                 kind=attn_kind,
-                num_heads=num_heads,
+                num_heads=layer_num_heads,
                 num_kv_heads=(int(_cross_kv_heads_declared)
                               if _cross_kv_heads_declared else layer_kv_heads),
                 head_dim=layer_head_dim,
@@ -3091,7 +4193,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
                                  "conditioning encoder tower)"),
             )
 
-        extra_blocks = list(per_layer_embedding_blocks(hidden_size, ple_dim, activation="gelu")) if ple_dim else []
+        extra_blocks = list(
+            per_layer_embedding_blocks(hidden_size, ple_dim, activation=None)
+        ) if ple_dim else []
         if is_cross_attn_layer:
             extra_blocks.append(_cross_attention_states_side_block(
                 "conditioning" if (composite_encoder_type and not has_vision_side_state)
@@ -3116,9 +4220,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
                 residual_scale=residual_multiplier,
                 cross_attention_spec=cross_spec,
             ))
-
-    for lt in sorted(unknown_layer_types):
-        warnings.append(f"Config layer_types contains unrecognized value {lt!r} — treated as causal.")
 
     vocab_size = consume("vocab_size", fact_owner="model", fact_key="vocab_size") or 0  # embed-table count; ambiguity already blocks
     # U2 default-kill (the live wrong-value fix): absence of the tie flag is
@@ -3208,53 +4309,143 @@ def parse(cfg: Any, context=None) -> ModelIR:
             # As with the tower extractor, failure leaves one honest generic
             # connector.  Config dimensions survive; callable structure does not.
             pass
-    # Multi-codebook token streams (MusicGen family): K is the decoder
-    # config's OWN num_codebooks; the summed-embeddings / stacked-heads SHAPE
-    # comes from construction+forward evidence — only-when-present so every
-    # single-stream decoder stays byte-stable.
+    # Multi-codebook token streams.  The config count is powerless until the
+    # exact selected component proves BOTH the repeated embedding bank summed
+    # at input and the repeated output-head bank stacked at output, and both
+    # containers cite the same exact repetition operand.
     codebooks = None
-    # U2-R9: name the (possibly slot-nested) text config for these reads —
-    # a MusicGen decoder document's codebook fields must ledger located.
-    with _config_access.config_container(_text_path, obj=text_cfg):
-        _cb_res = _config_access.resolve(text_cfg, "num_codebooks", ())
-        _num_codebooks = (None if _cb_res.ambiguous else
-                          (_cb_res.value if _cb_res.state == "present"
-                           else None))
-    if isinstance(_num_codebooks, int) and _num_codebooks > 1:
-        # These declarations AUTHOR the drawn K-codebook structure — consumed
-        # (typed decision), matching the register's extras:codebooks row.
-        with _config_access.config_container(_text_path, obj=text_cfg):
-            _cb_res.consume_decision(
-                mechanism="codebooks", fact_owner="decoder",
-                fact_key="num_codebooks",
-                reader="adapters.transformer.parser.parse")
-            _ac_res = _config_access.resolve(text_cfg, "audio_channels", ())
-            _located_audio_channels = (
-                None if _ac_res.ambiguous or _ac_res.state != "present"
-                else _ac_res.consume_decision(
-                    mechanism="codebooks", fact_owner="decoder",
-                    fact_key="audio_channels",
-                    reader="adapters.transformer.parser.parse").value)
-        from ...evidence.codebook_streams import \
-            decoder_codebook_streams_for_path
-        _cb_result = decoder_codebook_streams_for_path(
-            context.program_index(), context.source_bundle, _text_path)
-        streams = {
-            "embeddings_summed": None,
-            "heads_stacked": None,
-        }
-        if _cb_result.has_value:
-            streams = {
-                "embeddings_summed":
-                    _cb_result.value.embeddings_summed,
-                "heads_stacked": _cb_result.value.heads_stacked,
+    from ...evidence.codebook_streams import \
+        decoder_codebook_streams_for_path
+    _cb_result = decoder_codebook_streams_for_path(
+        context.program_index(), context.source_bundle, _text_path)
+    _cb_count_path = (
+        _cb_result.value.count_path
+        if _cb_result.status == "resolved" else None)
+    _cb_count_resolution = (
+        _resolve_exact_config_path(_cb_count_path)
+        if _cb_count_path else None)
+    if _cb_count_resolution is not None \
+            and not _cb_count_resolution.ambiguous:
+        _num_codebooks = _cb_count_resolution.value
+        if isinstance(_num_codebooks, int) \
+                and not isinstance(_num_codebooks, bool) \
+                and _num_codebooks > 1:
+            _cb_fact_value = {
+                "num": _num_codebooks,
+                "embeddings_summed": True,
+                "heads_stacked": True,
             }
-        codebooks = {
-            "num": _num_codebooks,
-            "vocab_per_book": vocab_size,
-            "audio_channels": _located_audio_channels,
-            **streams,
-        }
+            _cb_status = (
+                "class_default"
+                if _cb_count_resolution.provenance == "class_default"
+                or _cb_count_resolution.source_kind == "class_default"
+                else "code_and_config")
+            _cb_count_resolution.consume_decision(
+                mechanism="codebook_streams", fact_owner="decoder",
+                fact_key="codebook_streams",
+                reader="adapters.transformer.parser.parse",
+                status=_cb_status, expected_value=_cb_fact_value)
+            codebooks = {
+                "num": _num_codebooks,
+                "vocab_per_book": vocab_size,
+                "audio_channels": None,
+                "embeddings_summed": True,
+                "heads_stacked": True,
+            }
+            _cb_actual_path = _actual_checkpoint_path(
+                _cb_count_path, _cb_count_resolution)
+            _note_typed_fact(
+                key="codebook_streams", owner="decoder",
+                value=_cb_fact_value,
+                status=_cb_status, reader_result=_cb_result,
+                config_paths=(
+                    (_cb_actual_path,) if _cb_actual_path else ()),
+                reader="decoder_codebook_streams_for_path",
+                reason=(
+                    "the exact selected component constructs repeated input "
+                    "embedding and output-head banks, sums/stacks their exact "
+                    "comprehensions, and both cite this repetition operand"),
+            )
+    # A declared channel count describes codec packing, not the transformer
+    # construction proven above.  It cannot alter the codebook architecture.
+    with _config_access.config_container(_text_path, obj=text_cfg):
+        _audio_channels = _config_access.resolve(
+            text_cfg, "audio_channels", ())
+        if _audio_channels.present:
+            _audio_channels.ignore(
+                "codec packing metadata is not transformer codebook structure")
+
+    # U8-F: a count never creates an auxiliary predictor.  The exact source
+    # reader must prove the complete invoked module path (two norm lanes,
+    # concat, projection, repeated-block-class call and output head) before the
+    # count can be consumed as that mechanism's repetition operand.
+    from ...evidence.mtp import decoder_mtp_construction_for_path
+    _mtp_result = decoder_mtp_construction_for_path(
+        context.program_index(), context.source_bundle, tuple(_text_path),
+        allow_root_stage=True)
+    context.reader_results[("decoder.mtp_modules", tuple(_text_path))] = \
+        _mtp_result
+    mtp = None
+    _mtp_count_path = (
+        _mtp_result.value.count_path
+        if _mtp_result.status == "resolved" and _mtp_result.value is not None
+        else None)
+    _mtp_count_resolution = (
+        _resolve_exact_config_path(_mtp_count_path)
+        if _mtp_count_path else None)
+    if _mtp_count_resolution is not None \
+            and not _mtp_count_resolution.ambiguous:
+        _num_mtp_modules = _mtp_count_resolution.value
+        if isinstance(_num_mtp_modules, int) \
+                and not isinstance(_num_mtp_modules, bool) \
+                and _num_mtp_modules > 0:
+            _mtp_proof = _mtp_result.value.modules
+            mtp = {
+                "num_modules": _num_mtp_modules,
+                "shares_embedding": _mtp_result.value.shares_embedding,
+                "shares_output_head": _mtp_result.value.shares_output_head,
+                "hidden_norm_kind": _mtp_proof.hidden_norm_kind,
+                "embedding_norm_kind": _mtp_proof.embedding_norm_kind,
+                "reuses_stage_block_class": True,
+            }
+            _mtp_status = (
+                "class_default"
+                if _mtp_count_resolution.provenance == "class_default"
+                or _mtp_count_resolution.source_kind == "class_default"
+                else "code_and_config")
+            _mtp_count_resolution.consume_decision(
+                mechanism="mtp_modules", fact_owner="decoder",
+                fact_key="mtp_modules",
+                reader="adapters.transformer.parser.parse",
+                status=_mtp_status, expected_value=mtp)
+            _mtp_actual_path = _actual_checkpoint_path(
+                _mtp_count_path, _mtp_count_resolution)
+            _note_typed_fact(
+                key="mtp_modules", owner="decoder", value=mtp,
+                status=_mtp_status, reader_result=_mtp_result,
+                config_paths=(
+                    (_mtp_actual_path,) if _mtp_actual_path else ()),
+                reader="decoder_mtp_construction_for_path",
+                reason=(
+                    "the exact selected stage invokes a repeated auxiliary "
+                    "module whose two norm lanes, concat, projection, "
+                    "repeated-block-class call and output head are all "
+                    "source-proven; this exact config occurrence only binds "
+                    "its repetition count"),
+            )
+
+    # Declarations not selected by the exact source proof remain explicit
+    # non-authority.  This covers today's count-only HF inference configs as
+    # well as rival legacy spellings without hiding them from the audit.
+    for _mtp_field in ("num_nextn_predict_layers", "num_mtp_layers"):
+        if _mtp_count_resolution is not None \
+                and _mtp_count_resolution.selected_alias == _mtp_field:
+            continue
+        _mtp_declaration = _scoped(_mtp_field)
+        if _mtp_declaration.present:
+            _mtp_declaration.ignore(
+                "an auxiliary-predictor count cannot create a module; the "
+                "exact invoked MTP construction did not select this occurrence")
     # U2-R7: ONE consumption for the occurrence — the LM-head card here and the
     # block-diffusion canvas path below share this value (never two consumes
     # of one occurrence in a single parse).
@@ -3304,19 +4495,15 @@ def parse(cfg: Any, context=None) -> ModelIR:
         # head card states it (only-when-present; everyone else byte-stable).
         final_logit_softcap=final_logit_softcap,
         codebooks=codebooks,
+        mtp=mtp,
     )
     if _scale_embedding:
         for block in extras["render"]["model_blocks"]:
             if block.get("id") == "embed":
                 block["facts"] = (block.get("facts") or []) + [
                     "scaled × √d (scale_embedding)"]
-    extras["position_encoding"] = {
-        **_code_position_evidence.to_dict(),
-    }
-    absolute_item = next((item for item in _position_mechanisms
-                          if item.kind in {"learned_absolute", "fixed_absolute"}), None)
-    if absolute_item is not None:
-        learned = absolute_item.kind == "learned_absolute"
+    if _position_stage_kind in {"learned_absolute", "fixed_absolute"}:
+        learned = _position_stage_kind == "learned_absolute"
         position_label = "Learned Position Embedding" if learned else "Fixed Position Encoding"
         extras["render"]["model_blocks"].extend([
             {
@@ -3336,6 +4523,10 @@ def parse(cfg: Any, context=None) -> ModelIR:
             {
                 "id": "position_add", "role": "residual", "kind": "residual_add",
                 "label": "+", "title": "Token + position embedding",
+                "detail": {
+                    "position_kind": _position_stage_kind,
+                    "position_application": "embedding_add",
+                },
                 "description": (
                     "Adds the learned positional vector to the token embedding before the decoder stack."
                     if learned else
@@ -3387,89 +4578,9 @@ def parse(cfg: Any, context=None) -> ModelIR:
             "& decoder (bidirectional)",
         ]
 
-    # ---- Multi-Token Prediction heads (DeepSeek-V3 style next-token modules) ----
-    # U2-R7: consumed into the MTP-modules fact (extras["mtp"]).
-    mtp_modules = (consume("num_nextn_predict_layers", fact_owner="model",
-                           fact_key="mtp_modules")
-                   or _g(text_cfg, "num_mtp_layers"))
-    try:
-        mtp_modules = int(mtp_modules) if mtp_modules else 0
-    except (TypeError, ValueError):
-        mtp_modules = 0
-    if mtp_modules > 0:
-        extras["mtp"] = {
-            "num_modules": mtp_modules,
-            "predicts_extra_tokens": mtp_modules,
-            "shares_embedding": True,
-            "shares_output_head": True,
-        }
-        # The MTP transformer block is a decoder layer, so hand it a
-        # representative layer's own blocks; the router renders each (attention,
-        # FFN/MoE, …) wherever it appears — no MTP-specific plumbing.
-        rep_blocks = layers[-1].blocks if layers else []
-        extras["render"]["model_blocks"].append(
-            mtp_head_block(
-                mtp_modules, hidden_size, vocab_size, tie_word_embeddings,
-                block_children=rep_blocks,
-            )
-        )
-
-    if sliding_window:
-        extras["sliding_window"] = {
-            "window": sliding_window,
-            "first_full_layers": max_window_layers or 0,
-        }
-    if moe_active:
-        extras["moe"] = {
-            "num_experts": num_experts,
-            "num_experts_per_tok": num_experts_per_tok,
-            "num_shared_experts": num_shared_experts,
-            "every_layer": moe_every_layer,
-        }
-        if moe_routing:
-            extras["moe"]["routing"] = moe_routing
-    if no_rope_interval:
-        extras["irope"] = {"no_rope_interval": no_rope_interval}
-    if num_kv_shared_layers:
-        extras["num_kv_shared_layers"] = num_kv_shared_layers
-    if rope_dim_value and head_dim:
-        extras.setdefault("rope", {})["partial_pct"] = round(rope_dim_value / head_dim, 3)
-
-    # RoPE scaling (YaRN, linear, dynamic, ntk, ...) reported as info-only.
-    # U2-R7: name the text config for these reads (located, not bare leaves).
-    with _config_access.config_container(_text_path, obj=text_cfg):
-        rope_params = _g(text_cfg, "rope_parameters") or _g(text_cfg, "rope_scaling")
-    if isinstance(rope_params, dict):
-        rope_type = rope_params.get("rope_type") or rope_params.get("type")
-        with _config_access.config_container(_text_path, obj=text_cfg):
-            _theta_fallback = _g(text_cfg, "rope_theta")
-        scaling = {
-            "type": rope_type,
-            "factor": rope_params.get("factor"),
-            "original_max_position_embeddings": rope_params.get("original_max_position_embeddings"),
-            "rope_theta": rope_params.get("rope_theta") or _theta_fallback,
-        }
-        extras.setdefault("rope", {}).update({k: v for k, v in scaling.items() if v is not None})
-        # These SUBKEYS are inspected above via plain dict reads. Record the
-        # inspection so ownership is visible; do not label it consumption until
-        # the corresponding rendered-fact receipts exist.
-        with _config_access.config_container(_rope_path, obj=rope_params):
-            for inspected in ("rope_type", "type", "factor",
-                              "original_max_position_embeddings", "rope_theta"):
-                if inspected in rope_params:
-                    debug.note_access(inspected, source_obj=rope_params)
-
-    # RoPE base frequency — present on most rotary models even without a scaling
-    # dict (the block above only fires when one is declared); surface it always.
-    with _config_access.config_container(_text_path, obj=text_cfg):
-        rope_theta = _g(text_cfg, "rope_theta")
-    if rope_theta is None and attn_cfg:
-        with _config_access.config_container(
-                (*_text_path, "attn_config"), obj=attn_cfg):
-            rope_theta = _g(attn_cfg, "rope_theta")
-    if rope_theta is not None:
-        extras.setdefault("rope", {}).setdefault("rope_theta", rope_theta)
-
+    # Raw ``extras.position_encoding`` / ``extras.rope`` / ``extras.irope``
+    # were competing structural authoring channels.  Exact position facts and
+    # per-layer AttentionSpec values are now the sole canonical representation.
     # Logit / query softcap (Gemma 2/3 style) — info-only annotation.
     # The attention cap and query-score operand now live on their typed U6
     # facts/specs.  Keep only the distinct model-head cap in this legacy extras
@@ -3478,17 +4589,6 @@ def parse(cfg: Any, context=None) -> ModelIR:
         val = _g(text_cfg, cap_key)
         if val is not None:
             extras.setdefault("softcap", {})[cap_key] = val
-
-    # Surface the raw partial-rotary fraction the config declared, when present.
-    if partial_rotary_fac is not None:
-        extras["partial_rotary_factor"] = partial_rotary_fac
-
-    # Per-layer dual-KV info, when both sides differ.
-    if _g(text_cfg, "num_global_key_value_heads") or _g(text_cfg, "global_head_dim"):
-        extras["dual_kv"] = {
-            "sliding": {"num_kv_heads": num_kv_heads, "head_dim": head_dim},
-            "global":  {"num_kv_heads": num_kv_global, "head_dim": head_dim_global},
-        }
 
     # U2: ONE consolidated banner line for every fact the ledger left
     # unresolved (position warns separately, unchanged) — the render tier
@@ -3536,123 +4636,8 @@ def parse(cfg: Any, context=None) -> ModelIR:
 # ---------------------------------------------------------------------------
 
 
-def _is_sliding_label(lt: str) -> bool:
-    return lt in _SLIDING_LABELS or "sliding" in lt
-
-
-def _is_full_label(lt: str) -> bool:
-    return lt in _FULL_LABELS
-
-
-def _is_compressed_sparse_label(lt: str) -> bool:
-    return lt in _COMPRESSED_SPARSE_LABELS
-
-
-def _is_heavily_compressed_label(lt: str) -> bool:
-    return lt in _HEAVILY_COMPRESSED_LABELS
-
-
-def _layer_mask(i, layer_types, sliding_window, sliding_window_pattern, has_sliding_in_stack, unknown, max_window_layers=None):
-    """Resolve (mask, window, is_full_in_sliding_stack) for a single layer."""
-    if layer_types and i < len(layer_types):
-        lt = layer_types[i]
-        if _is_sliding_label(lt):
-            return "sliding", sliding_window, False
-        if _is_compressed_sparse_label(lt):
-            return "compressed_sparse", None, False
-        if _is_heavily_compressed_label(lt):
-            return "heavily_compressed", None, False
-        if _is_full_label(lt):
-            mask = "global" if has_sliding_in_stack else "causal"
-            return mask, None, has_sliding_in_stack
-        if _mixer_kind_for(lt):
-            # A token-MIXER (linear_attention / lightning / recurrent) replaces
-            # attention — it carries no attention mask (drawn as its own cell).
-            return "causal", None, False
-        unknown.add(lt)
-        return "causal", None, False
-    if sliding_window_pattern and sliding_window:
-        # Every Nth layer is full; rest are sliding.
-        if (i + 1) % sliding_window_pattern == 0:
-            return "global", None, True
-        return "sliding", sliding_window, False
-    if sliding_window:
-        # Qwen: the bottom ``max_window_layers`` layers use full attention; the
-        # rest slide.  (HF: SWA applies only where layer_idx >= max_window_layers.)
-        if max_window_layers and i < max_window_layers:
-            return ("global" if has_sliding_in_stack else "causal"), None, has_sliding_in_stack
-        return "sliding", sliding_window, False
-    return "causal", None, False
-
-
-def _layer_types_from_compress_ratios(compress_ratios: Any, num_layers: int) -> list[str]:
-    """DeepSeek-V4 style compress ratios are structural layer-type data.
-
-    Public configs declare ``compress_ratio=0`` for SWA, ``4`` for compressed
-    sparse attention (CSA), and ``128`` for hierarchical compressed attention
-    (HCA).  Preserve unknown positive ratios as compressed sparse variants
-    rather than warning as an unknown mask.
-    """
-    if not isinstance(compress_ratios, (list, tuple)):
-        return []
-    values = list(compress_ratios)
-    if num_layers and len(values) > num_layers:
-        values = values[:num_layers]
-    out: list[str] = []
-    for raw in values:
-        try:
-            ratio = int(raw)
-        except (TypeError, ValueError):
-            out.append(str(raw))
-            continue
-        if ratio == 0:
-            out.append("sliding_attention")
-        elif ratio == 128:
-            out.append("heavily_compressed_attention")
-        else:
-            out.append("compressed_sparse_attention")
-    return out
-
-
-def _compress_ratio_for_layer(i: int, compress_ratios: Any, layer_types: list[str]) -> int | None:
-    if isinstance(compress_ratios, (list, tuple)) and i < len(compress_ratios):
-        try:
-            ratio = int(compress_ratios[i])
-        except (TypeError, ValueError):
-            ratio = 0
-        return ratio or None
-    if layer_types and i < len(layer_types):
-        lt = layer_types[i]
-        if _is_compressed_sparse_label(lt):
-            return 4
-        if _is_heavily_compressed_label(lt):
-            return 128
-    return None
-
-
-# ---------------------------------------------------------------------------
-# Per-layer TYPE-SCHEDULE normalizers (U3) — one engine, six spellings.
-# Each config dialect below answers the SAME question ("which type is layer i?")
-# in a different vocabulary; all normalize into the canonical layer_types list
-# (mixer/mask dimension) or the MoE membership list the per-layer walk already
-# consumes.  The vocabulary (fields, forms, value maps) lives in
-# everchanging/transformer/layer_schedules.yaml — data, not code.
-# ---------------------------------------------------------------------------
-
-def _mixer_kind_for(layer_type) -> str | None:
-    """Return the safest IR kind justified by a scheduled mixer token.
-
-    A schedule proves placement and its declared type name, not the internal
-    operation graph. Source-unresolved types therefore resolve to an opaque
-    ``declared_*`` kind. ``gated_delta`` is the pre-existing legacy path.
-    """
-    if not isinstance(layer_type, str):
-        return None
-    return _MIXER_KINDS.get(layer_type.lower())
-
-
 def _mixer_variant(mixer_kind: str | None) -> dict | None:
-    """The variant card for a scheduled token-mixer layer."""
+    """The variant card for a source-proven token-mixer mechanism."""
     if mixer_kind == "gated_delta":
         return {
             "short": "Gated DeltaNet",
@@ -3664,109 +4649,7 @@ def _mixer_variant(mixer_kind: str | None) -> dict | None:
                 "cached decoding switches to the recurrent update path."
             ),
         }
-    if mixer_kind == "declared_lightning_mixer":
-        return {
-            "short": "Lightning Attention",
-            "tag": "declared mixer; internals unresolved",
-            "label": ["Lightning Attention", "Token Mixer"],
-            "title": "Lightning attention (config-declared)",
-            "desc": (
-                "The per-layer config schedule declares a Lightning-attention "
-                "mixer here. Its operation graph was not resolved from source, "
-                "so no kernel, state, mask, or positional mechanism is invented."
-            ),
-        }
-    if mixer_kind == "declared_recurrent_mixer":
-        return {
-            "short": "Recurrent mixer",
-            "tag": "declared mixer; internals unresolved",
-            "label": ["Recurrent block", "Token Mixer"],
-            "title": "Recurrent mixer (config-declared)",
-            "desc": (
-                "The per-layer config schedule declares a recurrent mixer here. "
-                "Its recurrence, convolution, state, and gating graph were not "
-                "resolved from source and are intentionally not drawn."
-            ),
-        }
     return None
-
-
-def _schedule_alias(token) -> str:
-    """Normalize one raw per-layer schedule token (int / string) to its canonical
-    layer_types value via layer_schedules.yaml value_aliases (identity when no
-    alias is declared)."""
-    key = str(token).strip().lower()
-    return _LAYER_SCHEDULES["value_aliases"].get(key, key)
-
-
-def _expand_nested_tile(raw) -> list[str] | None:
-    """gpt-neo ``attention_types = [[["global","local"], N], …]`` -> the flat
-    per-layer token list (the pattern repeated N times, concatenated).  None when
-    the value isn't the nested ``[[pattern, repeat], …]`` form (None-on-doubt)."""
-    if not isinstance(raw, (list, tuple)) or not raw:
-        return None
-    out: list[str] = []
-    for item in raw:
-        if not (isinstance(item, (list, tuple)) and len(item) == 2):
-            return None
-        pattern, repeat = item
-        if not isinstance(pattern, (list, tuple)) or not isinstance(repeat, int):
-            return None
-        for _ in range(int(repeat)):
-            out.extend(_schedule_alias(t) for t in pattern)
-    return out or None
-
-
-def _fit_schedule(tokens, num_layers: int) -> list[str] | None:
-    """Fit a per-layer token list to ``num_layers`` — exact, or truncate a longer
-    list.  None when shorter than the stack (a partial schedule is doubt)."""
-    if not num_layers or not tokens or len(tokens) < num_layers:
-        return None
-    return list(tokens[:num_layers])
-
-
-def _normalize_layer_schedule(text_cfg, num_layers: int, sliding_window):
-    """Normalize the per-layer TYPE-SCHEDULE spellings into the canonical
-    ``layer_types`` list — the CONFIG channel, consulted ONLY when the canonical
-    ``layer_types`` list is absent (so families that already build it stay
-    byte-identical).  Returns ``(layer_types, source_field)`` or ``(None, None)``;
-    None-on-doubt so an unresolvable shape never fabricates a schedule."""
-    sched = _LAYER_SCHEDULES
-    # value_list (attn_type_list): the field IS the per-layer list.
-    for field in sched["value_list_fields"]:
-        raw = _g(text_cfg, field)
-        if isinstance(raw, (list, tuple)) and raw:
-            fitted = _fit_schedule([_schedule_alias(t) for t in raw], num_layers)
-            if fitted is not None:
-                return fitted, field
-    # pattern_tile (block_types): a short pattern tiled to num_layers.
-    for field in sched["pattern_tile_fields"]:
-        raw = _g(text_cfg, field)
-        if isinstance(raw, (list, tuple)) and raw and num_layers:
-            pat = [_schedule_alias(t) for t in raw]
-            tiled = (pat * (num_layers // len(pat) + 1))[:num_layers]
-            # Griffin/Hawk hybrid: the "attention" blocks are LOCAL (windowed)
-            # when the config declares a window (recurrentgemma
-            # attention_window_size) — only in a stack that also has recurrent
-            # mixer layers, so the plain full-attention "attention" label of a
-            # non-hybrid stack is never touched.
-            if sliding_window and any(_mixer_kind_for(t) for t in tiled):
-                tiled = ["sliding_attention" if t in ("attention", "full_attention")
-                         else t for t in tiled]
-            return list(tiled), field
-    # nested_tile (attention_types): [[pattern, repeat], …].
-    for field in sched["nested_tile_fields"]:
-        expanded = _expand_nested_tile(_g(text_cfg, field))
-        fitted = _fit_schedule(expanded, num_layers) if expanded else None
-        if fitted is not None:
-            return fitted, field
-    # dense_interval (dense_attention_every_n_layers): i % N == 0 -> dense.
-    for field in sched["dense_interval_fields"]:
-        n = _g(text_cfg, field)
-        if isinstance(n, int) and n > 0 and num_layers:
-            on, off = sched["dense_interval_on"], sched["dense_interval_off"]
-            return [on if i % n == 0 else off for i in range(num_layers or 0)], field
-    return None, None
 
 
 def _moe_routing(
@@ -3884,8 +4767,15 @@ def _moe_routing(
         "score_source_kind": code.score_source_kind,
         "bias_correction": code.bias_correction,
     }
+    if code.expert_count_path:
+        expert_count = _operand(code.expert_count_path)
+        if isinstance(expert_count, int) \
+                and not isinstance(expert_count, bool) \
+                and expert_count > 0:
+            routing["num_experts"] = expert_count
     if code.selection_count_literal is not None:
         routing["selection_count"] = code.selection_count_literal
+        routing["num_experts_per_tok"] = code.selection_count_literal
     elif code.selection_count_path:
         selection_count = _operand(code.selection_count_path)
         if not isinstance(selection_count, int) \
@@ -3897,6 +4787,7 @@ def _moe_routing(
                 "reason": "source-bound selection count is unresolved",
             }}
         routing["selection_count"] = selection_count
+        routing["num_experts_per_tok"] = selection_count
     if code.selection_kind == "sparse_mixer":
         routing["sparsemixer"] = True       # compatibility projection only
 
@@ -4046,55 +4937,6 @@ def _norm_kind_evidence_src(cfg: Any, explicit_norm_type: Any = None,
     # The reads remain classified migration debt for U7.
     _ = (rms_eps, ln_eps, ln_eps2)
     return None, None
-
-
-def _rope_dim(rotary_pct, rotary_dim, partial_rotary_factor, head_dim) -> int | None:
-    """Compute the actual rotary dim from any of the config flavours."""
-    if rotary_dim:
-        return int(rotary_dim)
-    if rotary_pct and head_dim:
-        return int(head_dim * float(rotary_pct))
-    if partial_rotary_factor and head_dim:
-        return int(head_dim * float(partial_rotary_factor))
-    return None
-
-
-def _position_for_layer(evidence, *, mixer_kind: str | None) -> tuple[str, str]:
-    """Project model evidence onto one concrete layer without moving altitudes.
-    An opaque scheduled mixer has unknown internals, so model-level attention
-    evidence must not be projected into it. The legacy gated-delta path may
-    select a proven ``none`` mechanism as before."""
-    if mixer_kind and mixer_kind != "gated_delta":
-        return "unknown", "none"
-    if evidence.status == "proven":
-        mechanisms = list(evidence.mechanisms)
-        if mixer_kind == "gated_delta":
-            selected = next((item for item in mechanisms if item.kind == "none"), None)
-            if selected is not None:
-                return selected.kind, selected.application
-        # Attention-stage mechanisms take precedence on the attention card.  A
-        # model may independently add an absolute position vector before the
-        # stack; that operation remains represented by the model-level blocks.
-        selected = next((item for item in mechanisms
-                         if item.kind in {"rope", "alibi", "none"}), None)
-        if selected is None and mechanisms:
-            selected = mechanisms[0]
-        if selected is not None:
-            return selected.kind, selected.application
-    if evidence.status == "ambiguous":
-        return "unknown", "none"
-    return "unknown", "none"
-
-
-def _last_matching_layer(layer_types, i: int, first_shared: int) -> int | None:
-    """For cross-layer KV sharing: most recent non-shared layer of the same type."""
-    if not layer_types or i >= len(layer_types):
-        return None
-    target_type = layer_types[i]
-    for j in range(min(first_shared, len(layer_types)) - 1, -1, -1):
-        if layer_types[j] == target_type:
-            return j
-    return None
 
 
 def _cross_attention_states_side_block(source_kind: str = "vision",

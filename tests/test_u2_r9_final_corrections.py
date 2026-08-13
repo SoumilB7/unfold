@@ -179,10 +179,21 @@ def test_drawn_debt_carries_owner_identity_into_the_gate():
     """Round 2: the pairs PARTICIPATE in the gate — a sibling owner cannot
     launder a leaf name (names() is display-only, never a gate input)."""
     from model_unfolder.evidence.structural_debt import (
-        drawn_leaf_is_lawful, drawn_unledgered_pairs,
+        StructuralDebt, drawn_leaf_is_lawful, drawn_unledgered_pairs,
     )
     pairs = drawn_unledgered_pairs()
-    assert pairs and all(owner for owner, _ in pairs)
-    owner, leaf = sorted(pairs)[0]
-    assert drawn_leaf_is_lawful(owner, leaf)
-    assert not drawn_leaf_is_lawful(owner + ".ghost_sibling", leaf)
+    assert all(owner for owner, _ in pairs)
+    # U8 legitimately retires the last drawn-leaf debt row.  Keep the
+    # owner-qualified anti-laundering law non-vacuous with one synthetic row.
+    row = StructuralDebt(
+        owner="decoder.attention", source_occurrence=None,
+        writer_module="model_unfolder/ghost.py", writer_symbol="ghost_writer",
+        sink_kind="drawn_leaf", structural_target="ghost_leaf",
+        reason="test-only owner join",
+        last_consumer="model_unfolder/ghost.py::ghost_consumer",
+        migration_unit="U11",
+        deletion_condition=(
+            "symbol_deleted:model_unfolder/ghost.py::ghost_writer"))
+    assert drawn_leaf_is_lawful("decoder.attention", "ghost_leaf", (row,))
+    assert not drawn_leaf_is_lawful(
+        "decoder.ffn", "ghost_leaf", (row,))

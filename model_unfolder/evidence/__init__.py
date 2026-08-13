@@ -24,14 +24,11 @@ from .models import (
     CodeEvidence,
     CodeFinding,
     ForwardOps,
-    PositionalEvidence,
-    PositionalMechanism,
     SourceOp,
     SourceBundle,
     VisionLayerEvidence,
     VisionTowerEvidence,
 )
-from .position import decoder_positional_evidence
 from .vision import vision_tower_evidence
 from .projector import projector_evidence
 from .fusion import fusion_evidence
@@ -54,14 +51,11 @@ __all__ = [
     "CodeEvidence",
     "CodeFinding",
     "ForwardOps",
-    "PositionalEvidence",
-    "PositionalMechanism",
     "SourceBundle",
     "SourceOp",
     "VisionLayerEvidence",
     "VisionTowerEvidence",
     "ParseContext",
-    "decoder_positional_evidence",
     "vision_tower_evidence",
     "projector_evidence",
     "fusion_evidence",

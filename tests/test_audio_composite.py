@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model_unfolder import unfold, config_to_ir
 from model_unfolder.block_schema import validate_click_coupling
+from model_unfolder.evidence.context import ParseContext
 
 # facebook/musicgen-small config.json — the composite contract: bare slots
 # text_encoder / audio_encoder / decoder, each declaring its own model_type.
@@ -25,7 +26,8 @@ from test_support import MUSICGEN_SMALL, STABLE_AUDIO
 
 
 def test_musicgen_composite_parses_the_decoder_stack():
-    ir = config_to_ir(MUSICGEN_SMALL)
+    context = ParseContext.build(MUSICGEN_SMALL)
+    ir = config_to_ir(MUSICGEN_SMALL, parse_context=context)
     assert ir.num_layers == 24
     assert ir.hidden_size == 1024
     assert ir.vocab_size == 2048
@@ -34,6 +36,15 @@ def test_musicgen_composite_parses_the_decoder_stack():
     assert layer.ffn.intermediate_size == 4096       # ffn_dim alias
     assert layer.ffn.activation == "gelu"
     assert layer.ffn.gated is False
+    mixer = context.facts.typed["decoder.attention.mixer_schedule"]
+    assert mixer.status == "code_and_config"
+    assert mixer.value == ("ordinary_attention",) * 24
+    # The primary mixer fact cites only the exact self-attention occurrence;
+    # the second proven attention occurrence remains owned by the independent
+    # additive cross-attention schedule.
+    assert context.facts.typed[
+        "decoder.attention.cross_attention_schedule"].value \
+        == ("additive_cross",) * 24
 
 
 def test_musicgen_cross_attention_is_construction_proven_and_additive():
@@ -45,7 +56,10 @@ def test_musicgen_cross_attention_is_construction_proven_and_additive():
     for layer in ir.layers:
         assert layer.cross_attention is not None          # additive sublayer
         assert layer.attention.cross_attention is False   # self-attn KEPT
-        assert layer.attention.mask == "causal"
+        # Cross-attention construction does not prove the independent self-mask
+        # lane. MusicGen's exact mask transport is still unresolved, so U8
+        # withholds it instead of reviving the former decoder/config default.
+        assert layer.attention.mask == "unknown"
     cross = ir.layers[0].cross_attention
     assert cross.cross_attention is True and cross.mask == "full"
     assert cross.cross_kv_source == "encoded prompt states (the conditioning encoder tower)"
@@ -85,6 +99,15 @@ def test_musicgen_conditioning_tower_rides_the_universal_roundtrip():
     assert group_ffn["gated"] is None
     assert group_ffn["projection_mode"] is None
     assert group_ffn["activation"] is None
+    # The flat card follows the same typed tower.  A raw config declaration
+    # cannot restore geometry the exact stage reader withheld.
+    assert "num_attention_heads" not in encoder
+    assert "intermediate_size" not in encoder
+    audit = ir.extras["config_audit"]
+    assert "text_encoder.num_heads" not in audit["unread"]
+    exact_debt = ir.extras["config_access"]["accessed_unconsumed_exact"]
+    assert any(row["component"] == "root.conditioning"
+               and row["path"] == "num_heads" for row in exact_debt)
     # Width projection is shape-REQUIRED (768 -> 1024).
     assert cond["projector"] == {"kind": "code_defined_projector",
                                  "in_features": 768, "out_features": 1024}
@@ -115,19 +138,46 @@ def test_bare_decoder_flag_is_never_mistaken_for_a_composite():
 
 def test_musicgen_codebook_streams_are_construction_proven():
     ir = config_to_ir(MUSICGEN_SMALL)
-    cb = ir.extras["codebooks"]
-    assert cb["num"] == 4 and cb["vocab_per_book"] == 2048
+    cb = ir.extras["fact_provenance"]["decoder.codebook_streams"]["value"]
+    assert cb["num"] == 4
     assert cb["embeddings_summed"] is True
     assert cb["heads_stacked"] is True
     blocks = {b["id"]: b for b in ir.extras["render"]["model_blocks"]}
     # Labels stay COUNT-FREE (label-lint law: numbers live on cards as chips).
-    assert blocks["tok_text"]["label"] == ["Audio tokens", "(codebooks)"]
+    assert blocks["tok_text"]["label"] == ["Parallel token", "streams"]
     assert "4" not in " ".join(blocks["tok_text"]["label"])
-    assert blocks["embed"]["title"] == "Codebook embeddings (×4, summed)"
+    assert blocks["embed"]["title"] == "Parallel embedding banks (×4, summed)"
     assert "4 × (2,048 vocab)" in blocks["embed"]["facts"]
-    assert blocks["lm_head"]["label"] == ["Audio-token", "heads"]
+    assert blocks["lm_head"]["label"] == ["Parallel token", "heads"]
     assert "4 × (1,024 → 2,048)" in blocks["lm_head"]["facts"]
     assert "×4" in blocks["lm_head"]["title"]
+
+
+def test_musicgen_architecture_emits_codebook_fact_receipt():
+    from model_unfolder import unfold
+    from model_unfolder.evidence.receipts import join_obligation_receipts
+    diagram = unfold(MUSICGEN_SMALL)
+    extras = diagram.to_ir()["extras"]
+    receipts = [
+        receipt
+        for event in diagram.render_events()
+        for receipt in event.receipts
+        if receipt.fact_key == "codebook_streams"
+    ]
+    assert receipts
+    assert {(item.owner, item.mechanism, item.surface,
+             item.structural_target, item.node_ids)
+            for item in receipts} == {(
+                "decoder", "codebook_streams", "html",
+                "codebook_streams", ("tok_text", "embed", "lm_head"))}
+    obligations = [
+        item for item in extras["config_access"]["projection_obligations"]
+        if item["target"]["key"] == "codebook_streams"]
+    assert len(obligations) == 1
+    joined = join_obligation_receipts(
+        obligations, receipts, extras["fact_provenance"],
+        context_token=receipts[0].context_token)
+    assert joined["findings"] == []
 
 
 def test_single_stream_decoders_stay_byte_stable():

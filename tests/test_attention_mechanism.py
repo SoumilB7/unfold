@@ -84,6 +84,20 @@ class Mixer:
 """
 
 
+def _sink_stabilized_attention(
+        *, concat="torch.cat([score, sink], dim=-1)",
+        stabilize="joined - joined.max(dim=-1, keepdim=True).values"):
+    """A score lane with the two neutral transforms used by learned sinks."""
+    return _split_attention(
+        "config.query_groups", "config.query_groups").replace(
+        "        return torch.matmul(F.softmax(score, dim=-1), three)",
+        "        sink = x\n"
+        f"        joined = {concat}\n"
+        f"        joined = {stabilize}\n"
+        "        weights = F.softmax(joined, dim=-1)\n"
+        "        return torch.matmul(weights[..., :-1], three)")
+
+
 def _gated_query_attention(*, activation="sigmoid", multiplier=2,
                            apply_gate=True):
     application = (
@@ -381,6 +395,57 @@ def test_unknown_score_helper_cannot_be_reported_as_raw_or_scaled(tmp_path):
     assert result.status == "failed"
 
 
+def test_last_axis_score_concat_and_exact_max_translation_preserve_lineage(
+        tmp_path):
+    attention = _sink_stabilized_attention().replace(
+        "        score = torch.matmul(one, two.transpose(-1, -2))",
+        "        score = torch.matmul(one, two.transpose(-1, -2)) * self.scale"
+    ).replace(
+        "        self.width = config.hidden // config.query_groups",
+        "        self.width = config.hidden // config.query_groups\n"
+        "        self.scale = config.scale")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is True
+    assert result.value.config_paths == (("scale",),)
+
+
+@pytest.mark.parametrize("concat", [
+    "torch.cat([score, sink], dim=0)",
+    "torch.cat([score, score], dim=-1)",
+    "local_cat([score, sink], dim=-1)",
+])
+def test_unproved_score_concat_cannot_preserve_score_lineage(tmp_path, concat):
+    attention = _sink_stabilized_attention(concat=concat)
+    if concat.startswith("local_cat"):
+        attention = "def local_cat(*args, **kwargs):\n    return args[0]\n" \
+            + attention
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    assert result.status == "failed"
+
+
+@pytest.mark.parametrize("stabilize", [
+    "joined - joined.max(dim=0, keepdim=True).values",
+    "joined - joined.max(dim=-1, keepdim=False).values",
+    "joined - other.max(dim=-1, keepdim=True).values",
+])
+def test_unproved_max_reduction_cannot_claim_softmax_translation(
+        tmp_path, stabilize):
+    attention = _sink_stabilized_attention(stabilize=stabilize).replace(
+        "        sink = x", "        sink = x\n        other = x")
+    index, _bundle, root, block = _pipeline(tmp_path, attention)
+    result = attention_score_scaling_at_block(index, root, block)
+    # An unrelated value is a lawful additive score operand, but it is not the
+    # special self-translation protocol.  Wrong-axis/self reductions use the
+    # score lane twice and therefore remain unsupported.
+    if stabilize.startswith("joined - other"):
+        assert result.status == "resolved", result.failures
+    else:
+        assert result.status == "failed"
+
+
 def test_score_scaling_dto_rejects_protocol_and_call_forgery(tmp_path):
     index, _bundle, root, block = _pipeline(
         tmp_path, _split_attention(
@@ -656,6 +721,16 @@ def test_real_qwen35_gated_delta_geometry_is_code_bound():
     assert {(item.num_kv_heads, item.num_heads, item.head_dim,
              item.v_head_dim, item.conv_kernel_size)
             for item in delta} == {(16, 48, 128, 128, 4)}
+    ordinary = tuple(
+        layer.attention for layer in ir.layers
+        if layer.attention.kind == "gqa")
+    assert len(ordinary) == 16
+    assert {(item.num_heads, item.num_kv_heads, item.head_dim)
+            for item in ordinary} == {(24, 4, 256)}
+    ordinary_fact = parsed_context.facts.typed[
+        "decoder.attention.head_geometry"]
+    assert ordinary_fact.config_paths == (
+        "num_attention_heads", "num_key_value_heads", "head_dim")
     diagram = Diagram(ir)
     diagram.to_html(standalone=True)
     receipts = tuple(
@@ -950,6 +1025,121 @@ def test_real_bloom_fused_qkv_proves_equal_head_protocol():
     assert result.value.query_heads_path == ("n_head",)
 
 
+def test_real_gpt2_qualifies_self_attention_branch_and_transposed_affine():
+    """The checkpoint omits ``add_cross_attention``; the installed class's
+    exact false default may exclude that construction occurrence, but must be
+    retained as a class-default premise rather than credited to the file.
+    """
+    from model_unfolder import config_to_ir
+
+    config = {
+        "model_type": "gpt2", "architectures": ["GPT2LMHeadModel"],
+        "n_embd": 64, "n_layer": 2, "n_head": 4, "n_inner": 256,
+        "vocab_size": 50257,
+    }
+    context = ParseContext.build(config)
+    evidence_document = dict(context.class_defaults or {})
+    evidence_document.update(config)
+    result = decoder_attention_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, config_document=evidence_document)
+    assert result.status == "resolved", result.failures
+    assert result.value.protocol == "equal_heads"
+    assert result.value.storage_mode == "fused_qkv"
+    assert result.value.query_heads_path == ("num_attention_heads",)
+    assert result.value.selection_premises == ((
+        ("add_cross_attention",), False),)
+
+    ir = config_to_ir(config, parse_context=context)
+    attention = ir.layers[0].attention
+    assert (attention.kind, attention.num_heads,
+            attention.num_kv_heads, attention.head_dim) == (
+                "mha", 4, 4, 16)
+    fact = context.facts.typed["decoder.attention.mechanism"]
+    assert fact.status == "class_default"
+    assert fact.config_paths == ("n_head",)
+    geometry_fact = context.facts.typed["decoder.attention.head_geometry"]
+    assert geometry_fact.status == "class_default"
+    assert geometry_fact.config_paths == ("n_head", "n_embd")
+    assert "num_attention_heads" not in geometry_fact.config_paths
+    assert "hidden_size" not in geometry_fact.config_paths
+
+
+def test_gpt2_conflicting_runtime_property_spellings_remain_unknown():
+    """A syntax alias may bridge one spelling; it may never arbitrate rivals."""
+    from model_unfolder import config_to_ir
+
+    config = {
+        "model_type": "gpt2", "architectures": ["GPT2LMHeadModel"],
+        "hidden_size": 96, "n_embd": 64,
+        "n_layer": 2, "n_head": 4, "n_inner": 256,
+        "vocab_size": 50257,
+    }
+    context = ParseContext.build(config)
+    ir = config_to_ir(config, parse_context=context)
+    attention = ir.layers[0].attention
+    assert attention.head_dim is None
+    fact = context.facts.typed["decoder.attention.head_geometry"]
+    assert fact.value["head_dim"] is None
+    assert any(
+        event.intent == "ambiguous" and event.canonical == "hidden_size"
+        for event in context.config_access.events)
+
+
+def test_unresolved_conditional_attention_construction_never_selects_a_lane(
+        tmp_path):
+    source = _PREFIX + _split_attention(
+        "config.query_groups", "config.shared_groups") + """
+class Cell:
+    def __init__(self, config):
+        if config.choose_left:
+            self.left = Mixer(config)
+        else:
+            self.right = Mixer(config)
+    def forward(self, x):
+        if x is not None:
+            return self.left(x)
+        return self.right(x)
+class Core:
+    def __init__(self, config):
+        self.items = nn.ModuleList(
+            [Cell(config) for _ in range(config.layers)])
+    def forward(self, x):
+        for item in self.items:
+            x = item(x)
+        return x
+class Wrapper:
+    base_model_prefix = "core"
+    def __init__(self, config):
+        self.core = Core(config)
+"""
+    path = tmp_path / "modeling_conditional.py"
+    path.write_text(source)
+    bundle = SourceBundle(
+        "path", (str(path),), model_type="x", architecture="Wrapper",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Wrapper"})
+    index = pi.build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    block = decoder_block_path_at_root(
+        index, root, allow_root_stage=True).value.block_occurrence
+
+    unknown = attention_head_binding_at_block(
+        index, root, block,
+        config_document={"layers": 2, "query_groups": 4,
+                         "shared_groups": 4, "hidden": 32})
+    assert unknown.status != "resolved"
+
+    selected = attention_head_binding_at_block(
+        index, root, block,
+        config_document={"layers": 2, "query_groups": 4,
+                         "shared_groups": 4, "hidden": 32,
+                         "choose_left": True})
+    assert selected.status == "resolved", selected.failures
+    assert selected.value.selection_premises == ((
+        ("choose_left",), True),)
+
+
 @pytest.mark.parametrize(("slug", "expected"), [
     ("llama-7b", True),
     ("bloom", True),
@@ -993,6 +1183,20 @@ def test_real_gemma_scale_survives_its_exact_softcap_path():
         ("query_pre_attn_scalar",), ("attn_logit_softcapping",))
 
 
+def test_real_gpt_oss_scale_survives_sink_concat_and_max_translation():
+    config = json.loads(
+        (_CORPUS / "gpt-oss-20b.json").read_text(
+            encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_attention_score_scaling_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.scaled is True
+    assert result.value.config_paths == (
+        ("hidden_size",), ("num_attention_heads",))
+
+
 def test_real_t5_proves_raw_scores_at_its_exact_embedded_owner():
     root_config = json.loads(
         (_CORPUS / "fluxtransformer2dmodel.json").read_text(
@@ -1004,6 +1208,74 @@ def test_real_t5_proves_raw_scores_at_its_exact_embedded_owner():
         allow_root_stage=True)
     assert result.status == "resolved", result.failures
     assert result.value.scaled is False
+
+
+def test_real_t5_cache_branches_do_not_erase_split_projection_storage():
+    """A runtime cache can bypass K/V computation, but it cannot change the
+    three affine modules constructed by the exact T5 attention owner.
+
+    This pins the storage/forward-control boundary: a proven-false runtime lane
+    is excluded, while a true-or-unknown cache lane remains a possible use of
+    already-constructed storage and does not relabel that storage conditional.
+    """
+    root_config = json.loads(
+        (_CORPUS / "fluxtransformer2dmodel.json").read_text(
+            encoding="utf-8"))["config"]
+    sub_config = root_config["_text_encoder_configs"]["text_encoder_2"]
+    context = slot_parse_context(
+        ParseContext.build(root_config), "text_encoder_2",
+        document=sub_config)
+    evidence_document = dict(context.class_defaults or {})
+    evidence_document.update(sub_config)
+    result = decoder_attention_mechanism_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True, config_document=evidence_document)
+    assert result.status == "resolved", result.failures
+    assert result.value.storage_mode == "split"
+    assert result.value.protocol == "equal_heads"
+    assert result.value.query_heads_path == ("num_heads",)
+
+
+def test_musicgen_dual_attention_uses_the_source_proven_self_lane():
+    """A block with additive self- and cross-attention must not be selected by
+    field name or source order.  The lane whose optional K/V-only input remains
+    at its exact ``None`` default is the self-attention mechanism.
+    """
+    from test_support import MUSICGEN_SMALL
+    from model_unfolder.evidence.cross_attention_schedule import (
+        decoder_cross_attention_all_layers_for_path,
+    )
+    from model_unfolder.evidence.decoder_block import (
+        decoder_block_path_for_config,
+    )
+
+    context = ParseContext.build(MUSICGEN_SMALL)
+    index = context.program_index()
+    config_path = ("decoder",)
+    block = decoder_block_path_for_config(
+        index, context.source_bundle, config_path,
+        allow_root_stage=True)
+    assert block.status == "resolved", block.failures
+    dual = decoder_cross_attention_all_layers_for_path(
+        index, context.source_bundle, config_path,
+        allow_root_stage=True)
+    assert dual.status == "resolved", (dual.failures, dual.ambiguity)
+    selected = attention_head_binding_at_block(
+        index, block.value.component_root, block.value.block_occurrence,
+        config_document=MUSICGEN_SMALL["decoder"],
+        child_evidence=dual.value.self_evidence)
+    assert selected.status == "resolved", (
+        selected.failures, selected.ambiguity)
+    assert selected.value.protocol == "equal_heads"
+    assert selected.value.query_heads_path == (
+        "decoder", "num_attention_heads")
+
+    result = decoder_attention_mechanism_for_path(
+        index, context.source_bundle, config_path,
+        allow_root_stage=True, config_document=MUSICGEN_SMALL)
+    assert result.status == "resolved", (result.failures, result.ambiguity)
+    assert result.value.attention_occurrence \
+        == selected.value.attention_occurrence
 
 
 def test_latent_real_model_remains_typed_until_its_protocol_lands():
@@ -1134,6 +1406,7 @@ def test_real_deepseek_latent_paths_are_source_bound():
     assert value.qk_rope_head_dim_path == ("qk_rope_head_dim",)
     assert value.qk_nope_head_dim_path == ("qk_nope_head_dim",)
     assert value.value_head_dim_path == ("v_head_dim",)
+    assert value.q_lora_rank_path == ("q_lora_rank",)
 
 
 def test_latent_result_closure_rejects_cross_owner_and_path_laundering(

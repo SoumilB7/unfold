@@ -33,7 +33,7 @@ from model_unfolder.block_schema import (
     validate_unique_ref_ids,
 )
 from model_unfolder.renderers.html.block_views import registry as reg
-from test_support import _BASE, _VISION_CFG, _GRID_VISION, CORPUS  # §16.1 shared fixtures
+from test_support import CORPUS  # §16.1 shared fixtures
 
 
 
@@ -45,7 +45,13 @@ from test_support import _BASE, _VISION_CFG, _GRID_VISION, CORPUS  # §16.1 shar
 # built-in block sets view="ffn" directly — they stamp the concrete gated_ffn/dense_ffn/
 # moe keys, which ARE exercised and route through the same build_ffn_view. So `ffn` is a
 # dispatch alias, legitimately model-unexercised (covered by the FFN tests in test_smoke).
-_FALLBACK_VIEWS = {"ops", "tower", "ffn"}
+_FALLBACK_VIEWS = {
+    "ops", "tower", "ffn",
+    # U8 qualification-only mechanisms: each is rendered/coupling-tested by
+    # its exact-source unit control rather than fabricated into the frozen
+    # config-only catalogue merely to satisfy this coverage census.
+    "mtp_head", "mtp_transformer_block", "per_layer_embedding",
+}
 
 
 def test_every_registered_view_is_exercised_and_couples():

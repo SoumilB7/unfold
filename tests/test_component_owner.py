@@ -858,6 +858,30 @@ def test_exact_deepcopy_preserves_only_unmodified_config_paths(tmp_path):
     assert binding.resolved_prefix is None
     assert binding.resolved_path(("selector",)) == ("selector",)
     assert binding.resolved_path(("runtime_only",)) is None
+    override = binding.normalized_override(("runtime_only",))
+    assert override is not None
+    assert override.value is False
+    assert override.span.line == 8
+
+
+def test_dynamic_clone_mutation_invalidates_without_inventing_an_override(
+        tmp_path):
+    src = """
+        import copy
+        class Stage:
+            def __init__(self, config): pass
+        class Wrapper:
+            def __init__(self, config):
+                cloned = copy.deepcopy(config)
+                cloned.runtime_only = choose(config)
+                self.stage = Stage(cloned)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "m.py", src),)})
+    stage = _child(
+        resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
+    binding = stage.config_bindings[0]
+    assert binding.resolved_path(("runtime_only",)) is None
+    assert binding.normalized_override(("runtime_only",)) is None
 
 
 def test_mutating_a_parent_path_invalidates_its_descendants(tmp_path):
@@ -924,3 +948,114 @@ def test_mutation_after_construction_does_not_rewrite_prior_address_proof(
     stage = _child(
         resolve_owner_graph(idx, _root(idx, "Wrapper")).root, "stage")
     assert stage.config_bindings[0].resolved_path(("selector",)) == ("selector",)
+
+
+@pytest.mark.parametrize("actual,expected", [
+    ("", "DenseImpl"),
+    ("True", "CrossImpl"),
+])
+def test_local_conditional_constructor_alias_uses_exact_actual_or_default(
+        tmp_path, actual, expected):
+    source = f"""
+        class DenseImpl:
+            def __init__(self): pass
+        class CrossImpl:
+            def __init__(self): pass
+        class Choice:
+            def __init__(self, cross=False):
+                implementation = CrossImpl if cross else DenseImpl
+                self.inner = implementation()
+        class Root:
+            def __init__(self, config):
+                self.choice = Choice({actual})
+    """
+    idx = _index(tmp_path, {
+        "root": (_write(tmp_path, "conditional_alias.py", source),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Root"))
+    choice = _child(graph.root, "choice")
+    inner = _child(choice, "inner")
+    assert inner is not None
+    assert inner.symbol.qualified_name == expected
+    site = next(item for item in idx.construction_sites_of(choice.symbol)
+                if item.target == "inner")
+    assert len(site.candidates) == 2
+    assert site.via == "local_constructor_alias:implementation"
+
+
+def test_unknown_or_reassigned_local_constructor_alias_is_never_selected(
+        tmp_path):
+    unknown = """
+        class Left: pass
+        class Right: pass
+        class Choice:
+            def __init__(self, flag):
+                implementation = Left if flag else Right
+                self.inner = implementation()
+    """
+    idx = _index(tmp_path, {
+        "root": (_write(tmp_path, "unknown_alias.py", unknown),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Choice"))
+    assert _child(graph.root, "inner") is None
+    assert any(item.field == "inner" and item.kind == "rival_owner"
+               for item in graph.root.unresolved)
+
+    reassigned = unknown.replace(
+        "self.inner = implementation()",
+        "implementation = Left\n        self.inner = implementation()")
+    idx = _index(tmp_path, {
+        "root": (_write(tmp_path, "reassigned_alias.py", reassigned),)})
+    graph = resolve_owner_graph(idx, _root(idx, "Choice"))
+    assert _child(graph.root, "inner") is None
+
+
+@pytest.mark.parametrize("actual", ("self.config", "config=self.config"))
+def test_stored_config_field_propagates_exact_child_address(tmp_path, actual):
+    src = f"""
+        class Child:
+            def __init__(self, config): pass
+        class Root:
+            def __init__(self, config):
+                self.config = config
+                self.child = Child({actual})
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "stored.py", src),)})
+    child = _child(resolve_owner_graph(idx, _root(idx, "Root")).root, "child")
+    assert child.config_bindings == (
+        ConfigBinding("config", ((),), "constructor_argument"),)
+
+
+@pytest.mark.parametrize("mutation", [
+    "self.config = other",
+    "self.config.section = other",
+    "self.config += other",
+])
+def test_mutated_or_rival_stored_config_field_never_propagates(
+        tmp_path, mutation):
+    src = f"""
+        class Child:
+            def __init__(self, config): pass
+        class Root:
+            def __init__(self, config, other, flag=False):
+                self.config = config
+                {mutation}
+                self.child = Child(config=self.config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "stored.py", src),)})
+    child = _child(resolve_owner_graph(idx, _root(idx, "Root")).root, "child")
+    assert child.config_bindings == ()
+
+
+def test_guarded_stored_config_field_never_propagates(tmp_path):
+    src = """
+        class Child:
+            def __init__(self, config): pass
+        class Root:
+            def __init__(self, config, other, flag=False):
+                self.config = config
+                if flag:
+                    self.config = other
+                self.child = Child(config=self.config)
+    """
+    idx = _index(tmp_path, {"root": (_write(tmp_path, "stored.py", src),)})
+    child = _child(resolve_owner_graph(idx, _root(idx, "Root")).root, "child")
+    assert child.config_bindings == ()

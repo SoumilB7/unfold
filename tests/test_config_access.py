@@ -329,6 +329,26 @@ def test_consume_present_emits_under_the_selected_spelling_with_fact_linkage():
     assert ("root", "hidden_size") in ledger.consumed()
 
 
+def test_composite_fact_consumption_fingerprints_the_completed_decision():
+    """A schedule operand owes the whole typed schedule, not its raw token."""
+    from model_unfolder.evidence.config_access import capture_events
+    from model_unfolder.evidence.receipts import value_status_hash
+
+    schedule = (("sliding", 128), ("global", None))
+    with capture_events() as ledger:
+        res = resolve({"layer_types": ["window", "full"]},
+                      "layer_types", [], component="root")
+        res.consume(
+            fact_owner="decoder.attention", fact_key="mask_schedule",
+            mechanism="mask_schedule", status="code_and_config",
+            expected_value=schedule)
+    [consumed] = _events_of(ledger, "consumed")
+    assert consumed.value_status_hash == value_status_hash(
+        schedule, "code_and_config")
+    assert consumed.value_status_hash != value_status_hash(
+        ["window", "full"], "code_and_config")
+
+
 def test_consume_absent_is_an_absent_default_premise_with_fact_linkage():
     with capture_events() as ledger:
         res = resolve({}, "num_key_value_heads", [], component="root")
@@ -607,9 +627,10 @@ def test_exact_path_pending_entry_cannot_excuse_a_sibling_path():
 
 def test_unavailable_receipts_are_reported_not_clean():
     """§7 case 7, as cut over by U2: the global ``projection_receipts_available``
-    boolean is GONE — coverage is owner/mechanism-SCOPED.  LLAMA's obligations
-    fall outside every receipted scope, so Net 2 never presents them as
-    projected: it reports zero findings (advisory) rather than clean proof."""
+    boolean is GONE — coverage is owner/mechanism-SCOPED.  U8 has migrated
+    Llama's position/mask/mixer/FFN schedules onto real-consumer receipts, while
+    unrelated legacy obligations remain outside coverage.  Net 2 must validate
+    the covered subset without promoting the uncovered subset to clean proof."""
     import model_unfolder as mu
     from model_unfolder.sable import sable
     from test_support import LLAMA
@@ -619,8 +640,18 @@ def test_unavailable_receipts_are_reported_not_clean():
     assert "receipted_scopes" in (ca.get("projection_coverage") or {})
     assert ca.get("projection_obligations"), "obligations must be published"
     receipted = {tuple(s) for s in ca["projection_coverage"]["receipted_scopes"]}
-    for ob in ca["projection_obligations"]:
-        assert (ob["target"]["owner"], ob["mechanism"]) not in receipted
+    covered = [ob for ob in ca["projection_obligations"]
+               if (ob["target"]["owner"], ob["mechanism"]) in receipted]
+    uncovered = [ob for ob in ca["projection_obligations"]
+                 if (ob["target"]["owner"], ob["mechanism"]) not in receipted]
+    assert {(ob["target"]["owner"], ob["mechanism"])
+            for ob in covered} == {
+        ("decoder.attention", "position_schedule"),
+        ("decoder.attention", "mask_schedule"),
+        ("decoder.attention", "mixer_schedule"),
+        ("decoder.ffn", "ffn_schedule"),
+    }
+    assert uncovered, "unmigrated obligations must remain visibly advisory"
     rep = sable(LLAMA, render_images=False)
     check = next(c for c in rep.checks if c.name == "config_consumed_unreceipted")
     assert check.blocking and check.passed and check.findings == []
@@ -654,3 +685,118 @@ def test_class_default_address_census_keeps_shared_sibling_paths(monkeypatch):
     defaults = context_module._installed_config_defaults_by_path({
         "left": shared, "right": shared})
     assert defaults[("left",)] == defaults[("right",)]
+
+
+def test_class_overlay_is_hydrated_from_the_checkpoint_values():
+    """A class-derived operand is relative to this checkpoint, not stock HF.
+
+    LlamaConfig derives ``head_dim`` from ``hidden_size / num_attention_heads``.
+    Instantiating the class with no checkpoint values yields the stock 128 and
+    silently corrupts a small/custom architecture whose exact result is 16.
+    """
+    from model_unfolder.evidence.context import _installed_config_defaults
+
+    overlay = _installed_config_defaults({
+        "model_type": "llama",
+        "hidden_size": 64,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 4,
+        "intermediate_size": 128,
+        "num_hidden_layers": 2,
+        "vocab_size": 100,
+    })
+
+    assert overlay is not None
+    assert overlay["head_dim"] == 16
+
+
+def test_class_overlay_keeps_checkpoint_and_class_candidates_separate():
+    """Hydration may expose a rival; it may not rewrite the checkpoint claim."""
+    from model_unfolder.evidence.context import _installed_config_defaults
+
+    checkpoint = {
+        "model_type": "falcon",
+        "hidden_size": 4544,
+        "num_attention_heads": 71,
+        "multi_query": True,
+        "num_hidden_layers": 32,
+        "vocab_size": 65024,
+    }
+    overlay = _installed_config_defaults(checkpoint)
+
+    assert checkpoint["multi_query"] is True
+    assert "num_kv_heads" not in checkpoint
+    assert overlay is not None and overlay["num_kv_heads"] == 71
+
+
+def test_embedded_slot_overlay_uses_its_checkpoint_not_stock_identity():
+    """The root and embedded document boundaries obey the same hydration law."""
+    from model_unfolder.evidence.context import ParseContext, slot_parse_context
+    from model_unfolder.evidence.models import SourceBundle
+
+    bundle = SourceBundle(
+        source="local",
+        component_files={"text_encoder": ("modeling_llama.py",)},
+        component_model_types={"text_encoder": "llama"},
+        component_architectures={"text_encoder": "LlamaModel"},
+    )
+    outer = ParseContext(source_bundle=bundle)
+    checkpoint = {
+        "model_type": "llama",
+        "hidden_size": 64,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 4,
+        "intermediate_size": 128,
+        "num_hidden_layers": 2,
+        "vocab_size": 100,
+    }
+
+    embedded = slot_parse_context(
+        outer, "text_encoder", document=checkpoint)
+    assert embedded is not None
+    assert embedded.class_defaults["head_dim"] == 16
+
+    # Source ownership remains usable without a document, but identity alone
+    # may not manufacture a stock overlay.
+    address_only = slot_parse_context(outer, "text_encoder")
+    assert address_only is not None
+    assert address_only.class_defaults is None
+
+
+def test_embedded_slot_reuses_original_defaults_only_through_its_binding():
+    """Name-blind replay may reuse an identity-as-address result, but a loose
+    path/document pair cannot borrow a sibling component's class overlay."""
+    from model_unfolder.evidence.context import ParseContext, slot_parse_context
+    from model_unfolder.evidence.document import DocumentBinding, prepare_document
+    from model_unfolder.evidence.models import SourceBundle
+
+    path = ("_text_encoder_configs", "text_encoder_2")
+    bundle = SourceBundle(
+        source="local",
+        component_files={"text_encoder_2": ("modeling_t5.py",)},
+        component_model_types={"text_encoder_2": "t5"},
+        component_architectures={"text_encoder_2": "T5EncoderModel"})
+    outer = ParseContext(
+        source_bundle=bundle,
+        class_defaults_by_path={path: {"d_kv": 64}})
+    scrubbed = {"model_type": "__scrubbed__", "d_model": 4096,
+                "num_heads": 64}
+    prepared = prepare_document(scrubbed, merge=False)
+    binding = DocumentBinding("root.text_encoder_2", path, prepared)
+
+    embedded = slot_parse_context(
+        outer, "text_encoder_2", document=prepared.document,
+        binding=binding)
+    assert embedded.class_defaults == {"d_kv": 64}
+
+    sibling_binding = DocumentBinding(
+        "root.text_encoder", ("_text_encoder_configs", "text_encoder"),
+        prepared)
+    with pytest.raises(ValueError, match="requested slot"):
+        slot_parse_context(
+            outer, "text_encoder_2", document=prepared.document,
+            binding=sibling_binding)
+    with pytest.raises(ValueError, match="does not describe"):
+        slot_parse_context(
+            outer, "text_encoder_2", document=dict(prepared.document),
+            binding=binding)

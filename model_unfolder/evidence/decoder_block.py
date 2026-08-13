@@ -69,9 +69,13 @@ class DecoderBlockPath:
                 raise ValueError(
                     "a constructed decoder path retains construction and "
                     "installation provenance")
-        elif self.config_path or self.address_spans:
-            raise ValueError(
-                "a declared root decoder has no nested config address payload")
+        else:
+            expected_path = (() if root.component_key == "root" else
+                             tuple(root.component_key.split(".")))
+            if self.config_path != expected_path or self.address_spans:
+                raise ValueError(
+                    "a declared component decoder carries its exact bundle "
+                    "component path and no construction provenance")
         if not isinstance(self.stage_occurrence, OwnerOccurrenceId):
             raise TypeError("decoder stage is an exact OwnerOccurrenceId")
         if not isinstance(self.repeated_child, RepeatedChildResolution) \
@@ -139,10 +143,15 @@ class DecoderBlockCandidates:
             if {root.construction_span, root.installation_span} \
                     - set(self.address_spans):
                 raise ValueError("nested candidates retain exact address provenance")
-        elif self.config_path:
-            raise ValueError("declared-root candidates have an empty config path")
-        elif self.address_spans:
-            raise ValueError("declared-root candidates carry no nested address spans")
+        else:
+            expected_path = (() if root.component_key == "root" else
+                             tuple(root.component_key.split(".")))
+            if self.config_path != expected_path:
+                raise ValueError(
+                    "declared-component candidates carry their exact bundle path")
+            if self.address_spans:
+                raise ValueError(
+                    "declared-component candidates carry no construction spans")
         if any(not isinstance(span, SourceSpan) for span in self.address_spans) \
                 or len(set(self.address_spans)) != len(self.address_spans):
             raise ValueError("candidate address spans are typed and unique")
@@ -211,7 +220,9 @@ def decoder_block_candidates_at_root(
 
     config_path = (
         tuple(root.config_path)
-        if isinstance(root, ConstructedComponentRoot) else ()
+        if isinstance(root, ConstructedComponentRoot)
+        else (() if root.component_key == "root"
+              else tuple(root.component_key.split(".")))
     )
     address_spans = (
         tuple(dict.fromkeys((
@@ -384,9 +395,23 @@ def decoder_block_candidates_for_config(
 
     outer = resolve_component_root(index, bundle, "root")
     if outer.status != "resolved":
+        # A composite checkpoint may have no installed wrapper architecture
+        # while source resolution still yields an exact, declared component
+        # for the parser-selected dotted config path.  That component-key
+        # address is sufficient for mechanism readers; it is never treated as
+        # proof that the unavailable wrapper constructs the child.
+        if config_path:
+            selected = resolve_component_root(
+                index, bundle, ".".join(config_path))
+            if selected.status == "resolved":
+                return decoder_block_candidates_at_root(
+                    index, selected, allow_root_stage=allow_root_stage)
+            selected_detail = f"; selected component is {selected.status}"
+        else:
+            selected_detail = ""
         return ReaderResult.failed(None, (ReaderFailure(
             "incomplete_graph",
-            f"root component address is {outer.status}"),))
+            f"root component address is {outer.status}{selected_detail}"),))
     if not config_path:
         return decoder_block_candidates_at_root(
             index, outer, allow_root_stage=allow_root_stage)

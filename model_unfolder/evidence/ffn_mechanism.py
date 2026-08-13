@@ -350,6 +350,167 @@ class ConfigSelectedFFNMechanism:
         )))
 
 
+@dataclass(frozen=True)
+class OrdinaryFFNPositiveCensus:
+    """Every positively proven ordinary/shared FFN candidate at one block.
+
+    This is intentionally not a negative census.  In a mixed dense/MoE
+    constructor, a routed candidate may contain an ordinary shared expert; the
+    placement reader must join these proofs by their exact outer construction
+    site and let routed storage own that site's outer kind.
+    """
+
+    block_occurrence: OwnerOccurrenceId
+    candidates: tuple[FFNMechanism | ConfigSelectedFFNMechanism, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("an FFN census names one exact decoder block")
+        if not self.candidates:
+            raise ValueError("an FFN census carries at least one positive proof")
+        if any(not isinstance(item, (FFNMechanism, ConfigSelectedFFNMechanism))
+               for item in self.candidates):
+            raise TypeError("an FFN census carries closed mechanism values")
+        identities = tuple(_positive_candidate_identity(item)
+                           for item in self.candidates)
+        if len(identities) != len(set(identities)):
+            raise ValueError("positive FFN candidate identities are unique")
+
+
+def ordinary_ffn_positive_census(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+    *,
+    config_selector=None,
+) -> ReaderResult[OrdinaryFFNPositiveCensus]:
+    """Return exact positive ordinary/shared mechanisms without union voting.
+
+    Unlike :func:`ffn_mechanism_at_block`, this boundary does not require every
+    conditional alternative to have the same semantics.  It preserves each
+    independently proven construction occurrence so a later per-layer selector
+    can join it to the exact layer index.  Missing candidates remain missing;
+    they are never inferred to be routed or dense by contrast.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("ordinary_ffn_positive_census requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="ordinary_ffn_positive_census")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("ordinary FFN census requires an exact block occurrence")
+    block = root.graph.node_for(block_occurrence)
+    if block is None or index.class_by_symbol(block.symbol) is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "the block does not round-trip through graph and index"),))
+
+    inventory = resolve_container_inventory(index, root, block_occurrence)
+    invocations = resolve_addressed_invocations(
+        index, root, block_occurrence, inventory)
+    if invocations.status == "failed":
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph", invocations.failure_detail
+            or invocations.failure_kind),))
+
+    candidates: list[FFNMechanism | ConfigSelectedFFNMechanism] = []
+    if invocations.status == "resolved":
+        by_owner = {}
+        for invocation in invocations.addressed:
+            by_owner.setdefault(
+                invocation.callee_owner_occurrence, []).append(invocation)
+        for child_occurrence, child_invocations in by_owner.items():
+            if len(child_invocations) > 1 \
+                    and not _invocations_are_exact_alternatives(
+                        index, block.symbol, tuple(child_invocations)):
+                continue
+            child = root.graph.node_for(child_occurrence)
+            if child is None:
+                continue
+            evidence = _mechanism_for_owner(
+                index, root.graph, _config_path_prefix(root),
+                block_occurrence, child.occurrence, child.symbol,
+                tuple(child_invocations))
+            if evidence is not None:
+                candidates.append(evidence)
+        if config_selector is not None:
+            for invocation in invocations.addressed:
+                selected = _config_selected_nested_ffn(
+                    index, root, block_occurrence, invocation,
+                    config_selector)
+                if selected is not None:
+                    candidates.append(selected)
+
+    inline = _mechanism_for_owner(
+        index, root.graph, _config_path_prefix(root),
+        block_occurrence, block_occurrence, block.symbol, ())
+    if inline is not None:
+        candidates.append(inline)
+    conditional = _conditional_ffn_alternatives(
+        index, root, block_occurrence, block.symbol, positive_only=True)
+    if conditional:
+        candidates.extend(conditional)
+
+    unique = {}
+    for candidate in candidates:
+        unique[_positive_candidate_identity(candidate)] = candidate
+    ordered = tuple(sorted(unique.values(), key=lambda item: _span_key(
+        item.spans[0])))
+    if not ordered:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "no exact occurrence positively proves an ordinary/shared FFN"),))
+    spans = tuple(dict.fromkeys(
+        span for item in ordered for span in item.spans))
+    return ReaderResult.resolved(
+        block_occurrence,
+        OrdinaryFFNPositiveCensus(block_occurrence, ordered),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=("positive exact-owner ordinary/shared FFN mechanisms; "
+                    "no negative or per-layer selection claim")),))
+
+
+def ordinary_ffn_mechanism_at_symbol(
+    index: ProgramIndex,
+    symbol: SymbolId,
+) -> ReaderResult[FFNMechanism]:
+    """Prove the ordinary FFN implemented by one exact candidate symbol.
+
+    This positive boundary exists for a candidate edge inside a conditional
+    expression, where the component OwnerGraph correctly refuses to choose an
+    occurrence.  It proves only the candidate's own implementation; callers
+    must separately retain the authoritative construction site and selector.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(symbol, SymbolId):
+        raise TypeError("ordinary FFN implementation proof needs index + symbol")
+    if index.class_by_symbol(symbol) is None:
+        return ReaderResult.failed(None, (ReaderFailure(
+            "out_of_owner", "candidate symbol is absent from the index"),))
+    graph = resolve_owner_graph(index, symbol)
+    occurrence = graph.root.occurrence
+    mechanism = _mechanism_for_owner(
+        index, graph, (), occurrence, occurrence, symbol, ())
+    if mechanism is None:
+        return ReaderResult.failed(occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "candidate does not prove an inline ordinary FFN implementation"),))
+    return ReaderResult.resolved(
+        occurrence, mechanism,
+        provenance=(ReaderProvenance(
+            "source", spans=mechanism.spans,
+            detail="exact candidate-local ordinary FFN dataflow"),))
+
+
+def _positive_candidate_identity(candidate):
+    value = (candidate.selected
+             if isinstance(candidate, ConfigSelectedFFNMechanism)
+             else candidate)
+    entry = value.conditional_entry
+    return (
+        "conditional", entry.site.site_id, value.owner_symbol
+    ) if entry is not None else (
+        "occurrence", value.owner_occurrence, value.owner_symbol)
+
+
 def ffn_mechanism_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -622,8 +783,44 @@ def decoder_ffn_mechanism_for_path(
         provenance=(*block.provenance, *result.provenance))
 
 
+def ffn_mechanism_owner_graph(index, component_graph, mechanism):
+    """Return the exact graph that owns one already-proven FFN mechanism.
+
+    Ordinary mechanisms live in the component graph.  A config-selected
+    exhaustive construction branch deliberately does not: the component graph
+    retains the rival field, while the mechanism proof inspects the selected
+    alternative in an isolated graph.  Downstream readers must reconstruct
+    that same graph from the retained construction site and parent config
+    binding instead of re-selecting the branch or pretending it is a component
+    child.
+    """
+    value = (
+        mechanism.selected
+        if isinstance(mechanism, ConfigSelectedFFNMechanism)
+        else mechanism)
+    if not isinstance(value, FFNMechanism):
+        return None
+    node = component_graph.node_for(value.owner_occurrence)
+    if node is not None and node.symbol == value.owner_symbol:
+        return component_graph
+    entry = value.conditional_entry
+    if entry is None:
+        return None
+    parent = component_graph.node_for(entry.block_occurrence)
+    if parent is None:
+        return None
+    prefixes = _alternative_root_param_prefixes(
+        index, parent, entry.site, entry.candidate)
+    graph = resolve_owner_graph(
+        index, entry.candidate, root_param_prefixes=prefixes)
+    node = graph.node_for(value.owner_occurrence)
+    return (
+        graph if node is not None and node.symbol == value.owner_symbol
+        else None)
+
+
 def _conditional_ffn_alternatives(
-    index, root, block_occurrence, block_symbol,
+    index, root, block_occurrence, block_symbol, *, positive_only=False,
 ):
     """Prove the ordinary/shared FFN on every exhaustive field alternative.
 
@@ -682,6 +879,8 @@ def _conditional_ffn_alternatives(
     for site in sites:
         candidates = resolve_construction_candidate_symbols(index, site)
         if len(candidates) != 1:
+            if positive_only:
+                continue
             return ()
         candidate = candidates[0]
         root_param_prefixes = _alternative_root_param_prefixes(
@@ -699,6 +898,8 @@ def _conditional_ffn_alternatives(
                 index, graph, _config_path_prefix(root),
                 block_occurrence, entry)
         if mechanism is None:
+            if positive_only:
+                continue
             return ()
         variants.append(mechanism)
     return tuple(variants)
@@ -1429,6 +1630,10 @@ __all__ = [
     "ConfigSelectedFFNMechanism",
     "FFNMechanism",
     "EquivalentFFNMechanism",
+    "OrdinaryFFNPositiveCensus",
     "decoder_ffn_mechanism_for_path",
+    "ffn_mechanism_owner_graph",
     "ffn_mechanism_at_block",
+    "ordinary_ffn_positive_census",
+    "ordinary_ffn_mechanism_at_symbol",
 ]

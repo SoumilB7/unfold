@@ -35,6 +35,7 @@ from .construction_calls import (
 from .config_guard import ExactConfigGuardResolver
 from .decoder_block import decoder_block_path_for_config
 from .expert_storage import routed_expert_storage_at_block
+from .expert_storage import _parameter_dimensions
 from .models import SourceBundle
 from .program_index import (
     CallObservation,
@@ -71,6 +72,10 @@ _ROUTING_OP_PROTOCOLS = frozenset({
 _FUNCTIONAL_AFFINE_PROTOCOLS = frozenset({
     "torch.nn.functional.linear",
     "torch._C._nn.linear",
+})
+_LINEAR_CONSTRUCTION_PROTOCOLS = frozenset({
+    "torch.nn.Linear",
+    "torch.nn.modules.linear.Linear",
 })
 
 
@@ -150,6 +155,8 @@ class RouterSelectionEvidence:
     scoring_before_topk: bool | None
     score_source_kind: str | None = None
     score_source_calls: tuple[CallObservation, ...] = ()
+    expert_count_path: tuple[str, ...] = ()
+    expert_count_spans: tuple[SourceSpan, ...] = ()
     selection_count_path: tuple[str, ...] = ()
     selection_count_literal: int | None = None
     bias_correction: bool = False
@@ -225,6 +232,9 @@ class RouterSelectionEvidence:
         if any(not isinstance(item, CallObservation)
                for item in self.score_source_calls):
             raise TypeError("router score sources are exact call observations")
+        if bool(self.expert_count_path) != bool(self.expert_count_spans):
+            raise ValueError(
+                "router expert count has an exact score-width proof")
         if self.selection_count_literal is not None and (
                 not isinstance(self.selection_count_literal, int)
                 or isinstance(self.selection_count_literal, bool)
@@ -253,6 +263,7 @@ class RouterSelectionEvidence:
         if bool(self.scale_path) != bool(self.scale_spans):
             raise ValueError("router scaling is backed by exact proof spans")
         for path in (
+                self.expert_count_path,
                 self.selection_count_path,
                 self.group_count_path, self.topk_group_path,
                 self.normalization_path, self.scale_path):
@@ -284,6 +295,12 @@ class RouterSelectionEvidence:
         if self.score_source_calls != expected_score_sources:
             raise ValueError(
                 "router score sources must re-prove against their exact dataflow")
+        expected_count = _expert_count_path(
+            index, self.owner_address, self.score_source_calls)
+        if (self.expert_count_path, self.expert_count_spans) != expected_count:
+            raise ValueError(
+                "router expert count must re-prove from the exact affine "
+                "score-output dimension")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
             raise ValueError("router evidence retains exact provenance")
@@ -294,6 +311,7 @@ class RouterSelectionEvidence:
             *self.group_spans,
             *self.normalization_spans,
             *self.scale_spans,
+            *self.expert_count_spans,
             *self.branch_spans,
         }
         if any(not isinstance(span, SourceSpan) for span in mechanism_spans):
@@ -493,6 +511,8 @@ def _router_proof(
     score_source_calls = _affine_score_source_calls(
         index, owner_address, callables,
         related_scores, related_selections)
+    expert_count_path, expert_count_spans = _expert_count_path(
+        index, owner_address, score_source_calls)
     selection_count_path, selection_count_literal = _selection_count(
         index, owner, final_selection)
     bias_spans = tuple(dict.fromkeys(
@@ -511,6 +531,7 @@ def _router_proof(
             *(call.span for call in related_scores),
             *(call.span for call in related_selections),
             *(call.span for call in score_source_calls),
+            *expert_count_spans,
             *bias_spans,
             *group_spans,
             *normalization_spans,
@@ -528,6 +549,8 @@ def _router_proof(
         scoring_before_topk=before,
         score_source_kind="affine" if score_source_calls else None,
         score_source_calls=score_source_calls,
+        expert_count_path=expert_count_path,
+        expert_count_spans=expert_count_spans,
         selection_count_path=selection_count_path,
         selection_count_literal=selection_count_literal,
         bias_correction=bool(bias_spans),
@@ -622,15 +645,19 @@ def _sparse_mixer_proof(
             continue
         score_source_calls = _affine_score_source_calls(
             index, owner_address, callables, scores, selections)
-        spans = tuple(dict.fromkeys(
-            call.span for call in (
+        expert_count_path, expert_count_spans = _expert_count_path(
+            index, owner_address, score_source_calls)
+        spans = tuple(dict.fromkeys((
+            *(call.span for call in (
                 *selections, *scores, *returned_concats,
                 *score_source_calls,
                 *by_protocol["gather"], *by_protocol["scatter"],
                 *by_protocol["scatter_"],
                 *(call for protocol in _MASK_PROTOCOLS
                   for call in by_protocol[protocol]),
-            ) if isinstance(call.span, SourceSpan)))
+            ) if isinstance(call.span, SourceSpan)),
+            *expert_count_spans,
+        )))
         return RouterSelectionEvidence(
             block_occurrence=block_occurrence,
             owner_address=owner_address,
@@ -642,6 +669,8 @@ def _sparse_mixer_proof(
             scoring_before_topk=None,
             score_source_kind="affine" if score_source_calls else None,
             score_source_calls=score_source_calls,
+            expert_count_path=expert_count_path,
+            expert_count_spans=expert_count_spans,
             selection_count_literal=2,
             bias_correction=False,
             spans=spans,
@@ -717,6 +746,163 @@ def _affine_score_source_calls(
         if len(invocations) == 1:
             proven.extend(invocations[0])
     return tuple(dict.fromkeys(proven))
+
+
+def _expert_count_path(index, owner_address, score_source_calls):
+    """Return the config operand fixing the exact router-logit width.
+
+    A router selects among the last dimension of its score tensor.  Therefore
+    the output width of the already-proven affine score source is the expert
+    count.  This proof follows only the addressed score producer: functional
+    linear storage, an exact ``Linear`` construction, or an exact internal
+    wrapper returning one of those.  Field/class/model spellings are never
+    consulted, and a rival/dynamic wrapper simply withholds the path.
+    """
+    if not score_source_calls:
+        return (), ()
+    values = tuple(
+        _affine_output_config_path(
+            index, owner_address.owner_graph,
+            owner_address.owner_occurrence, call, depth=0)
+        for call in score_source_calls)
+    if any(value is None for value in values):
+        return (), ()
+    paths = tuple(dict.fromkeys(value[0] for value in values))
+    if len(paths) != 1:
+        return (), ()
+    spans = tuple(dict.fromkeys(
+        span for _path, item_spans in values for span in item_spans))
+    return paths[0], spans
+
+
+def _affine_output_config_path(index, graph, caller_occurrence, call, *, depth):
+    """The exact config path supplying one affine call's output dimension."""
+    if depth > 3:
+        return None
+    caller = graph.node_for(caller_occurrence)
+    if caller is None or caller.symbol != call.owner:
+        return None
+    proof = resolve_import_reference(
+        index, call.enclosing_callable.source,
+        call.enclosing_callable, call.callee)
+    if proof is not None:
+        if proof.qualified_target not in _FUNCTIONAL_AFFINE_PROTOCOLS:
+            return None
+        weight = (
+            call.args[1] if len(call.args) > 1
+            else _keyword(call, "weight"))
+        return _functional_linear_output_path(
+            index, caller, call, weight)
+    if _self_field(call.callee) is None:
+        return None
+    resolution = resolve_construction_call_in_graph(
+        index, graph, caller_occurrence, call)
+    if resolution.status != "resolved":
+        return None
+    selected = resolution.selected
+    if selected.kind == "external":
+        target = selected.external_reference.qualified_target
+        if target not in _LINEAR_CONSTRUCTION_PROTOCOLS:
+            return None
+        expression = (
+            selected.site.args[1] if len(selected.site.args) > 1
+            else next((value for name, value in selected.site.kwargs
+                       if name == "out_features"), None))
+        path = _expression_config_path(
+            index, caller, expression, selected.site.enclosing_callable)
+        if not path or expression is None or expression.span is None:
+            return None
+        return path, tuple(dict.fromkeys((
+            call.span, selected.site.span, expression.span)))
+    if selected.kind != "internal":
+        return None
+    child = graph.node_for(selected.internal_occurrence)
+    if child is None or child.symbol != selected.internal_symbol:
+        return None
+    forward = SymbolId(
+        child.symbol.source, f"{child.symbol.qualified_name}.forward")
+    returns = tuple(
+        item for item in index.return_observations_in(forward)
+        if not item.guard and item.value is not None)
+    if len(returns) != 1 or index.unsupported_execution_in(forward):
+        return None
+    candidates = tuple(
+        candidate for candidate in index.calls_in(forward)
+        if not candidate.guard
+        and _call_is_affine_in_graph(
+            index, graph, child.occurrence, candidate)
+        and _call_reaches_return(index, forward, candidate))
+    if len(candidates) != 1:
+        return None
+    nested = _affine_output_config_path(
+        index, graph, child.occurrence, candidates[0], depth=depth + 1)
+    if nested is None:
+        return None
+    return nested[0], tuple(dict.fromkeys((call.span, *nested[1])))
+
+
+def _call_is_affine_in_graph(index, graph, caller_occurrence, call):
+    proof = resolve_import_reference(
+        index, call.enclosing_callable.source,
+        call.enclosing_callable, call.callee)
+    if proof is not None:
+        return proof.qualified_target in _FUNCTIONAL_AFFINE_PROTOCOLS
+    if _self_field(call.callee) is None:
+        return False
+    resolved = resolve_construction_call_in_graph(
+        index, graph, caller_occurrence, call)
+    return resolved.status == "resolved" \
+        and construction_is_affine(index, resolved.selected)
+
+
+def _functional_linear_output_path(index, owner, call, weight):
+    if weight is None:
+        return None
+    fields = tuple(dict.fromkeys(
+        chain[0] for expression in _walk_expr(weight)
+        if (chain := _self_attribute_chain(expression))
+        and len(chain) == 1))
+    matches = tuple(
+        record for record in index.field_assigns_of(owner.symbol)
+        if record.field in fields
+        and (dimensions := _parameter_dimensions(index, record)) is not None
+        and len(dimensions) >= 2)
+    if len(matches) != 1:
+        return None
+    record = matches[0]
+    dimensions = _parameter_dimensions(index, record)
+    output_dimension = dimensions[0]
+    path = _expression_config_path(
+        index, owner, output_dimension, record.enclosing_callable)
+    if not path or output_dimension.span is None:
+        return None
+    return path, tuple(dict.fromkeys((
+        call.span, record.span, output_dimension.span)))
+
+
+def _expression_config_path(index, owner, expression, callable_symbol):
+    """Bind one exact expression to one owner-qualified config path."""
+    if expression is None or expression.span is None:
+        return ()
+    direct = _field_config_path(index, owner, expression)
+    if direct:
+        return direct
+    observations = tuple(
+        item for item in index.config_paths_in(callable_symbol)
+        if item.span is not None and _span_within(item.span, expression.span)
+        and item.segments and all(
+            segment.name and not segment.dynamic for segment in item.segments))
+    if len(observations) != 1:
+        return ()
+    observation = observations[0]
+    root_name = observation.root_binding.name \
+        if observation.root_binding.kind == "name" else None
+    bindings = tuple(
+        item for item in owner.config_bindings if item.parameter == root_name)
+    if len(bindings) != 1:
+        return ()
+    return bindings[0].resolved_path(tuple(
+        segment.name for segment in observation.segments)) or ()
 
 
 def _operation_input(index, call):

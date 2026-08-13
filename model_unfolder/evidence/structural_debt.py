@@ -161,8 +161,6 @@ _DP = "model_unfolder/adapters/diffusor/parser.py"
 _TA = "model_unfolder/adapters/transformer/assembly.py"
 _MB = ("model_unfolder/adapters/transformer/special_parts/modalities/"
        "builder.py")
-_OG = "model_unfolder/opgraph.py"
-_AT = "model_unfolder/adapters/transformer/blocks/attention.py"
 # "JSON document only": no renderer reads the raw key — it reaches the product
 # solely through ModelIR.to_dict serialization (the U14 JSON-contract surface).
 _JSON_DOC = "model_unfolder/ir.py::to_dict"
@@ -201,95 +199,6 @@ def _config(target, owner, path, reason, unit, condition) -> StructuralDebt:
 STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
     # ---- raw ``ir.extras`` writes (former LEGACY_EXTRAS, per-target EXACT:
     # ---- a top-level row excuses nothing below it) ------------------------ #
-    _extras("moe", "root.decoder.layer[i].ffn",
-            "per-layer MoE schedule (experts/shared/top-k) as raw extras",
-            "U8", "fact_registered:moe_schedule",
-            occurrence="num_experts + num_experts_per_tok + "
-                       "num_shared_experts (text_cfg)"),
-    _extras("moe.every_layer", "root.decoder.layer[i].ffn",
-            "which layers are MoE vs dense, as a raw extras leaf",
-            "U8", "fact_registered:moe_schedule"),
-    _extras("moe.num_experts", "root.decoder.layer[i].ffn",
-            "routed expert count as a raw extras leaf",
-            "U8", "fact_registered:moe_schedule",
-            occurrence="text_cfg num_experts"),
-    _extras("moe.num_experts_per_tok", "root.decoder.layer[i].ffn",
-            "per-token expert fan-out as a raw extras leaf",
-            "U8", "fact_registered:moe_schedule",
-            occurrence="text_cfg num_experts_per_tok"),
-    _extras("moe.num_shared_experts", "root.decoder.layer[i].ffn",
-            "shared-expert count as a raw extras leaf",
-            "U8", "fact_registered:moe_schedule",
-            occurrence="text_cfg num_shared_experts"),
-    _extras("mtp", "root",
-            "multi-token-prediction module structure as raw extras",
-            "U8", "fact_registered:mtp",
-            occurrence="text_cfg num_nextn_predict_layers | num_mtp_layers",
-            consumer="model_unfolder/renderers/html/views.py::"
-                     "_build_architecture_view"),
-    _extras("mtp.num_modules", "root",
-            "MTP module count as a raw extras leaf", "U8",
-            "fact_registered:mtp"),
-    _extras("mtp.predicts_extra_tokens", "root",
-            "MTP extra-token count as a raw extras leaf", "U8",
-            "fact_registered:mtp"),
-    _extras("mtp.shares_embedding", "root",
-            "MTP embedding-sharing flag as a raw extras leaf", "U8",
-            "fact_registered:mtp"),
-    _extras("mtp.shares_output_head", "root",
-            "MTP head-sharing flag as a raw extras leaf", "U8",
-            "fact_registered:mtp"),
-    _extras("sliding_window", "root.decoder.attention",
-            "sliding-window schedule (window + first-full layers)",
-            "U8", "fact_registered:window_schedule",
-            occurrence="text_cfg sliding_window/use_sliding_window/"
-                       "max_window_layers"),
-    _extras("sliding_window.window", "root.decoder.attention",
-            "window size as a raw extras leaf", "U8",
-            "fact_registered:window_schedule"),
-    _extras("sliding_window.first_full_layers", "root.decoder.attention",
-            "first-full-attention layer count as a raw extras leaf", "U8",
-            "fact_registered:window_schedule"),
-    _extras("dual_kv", "root.decoder.attention",
-            "dual global/sliding KV schedule as raw extras",
-            "U8", "fact_registered:kv_schedule",
-            occurrence="text_cfg num_global_key_value_heads | "
-                       "global_head_dim"),
-    _extras("dual_kv.global", "root.decoder.attention",
-            "global-lane KV geometry as a raw extras leaf", "U8",
-            "fact_registered:kv_schedule"),
-    _extras("dual_kv.sliding", "root.decoder.attention",
-            "sliding-lane KV geometry as a raw extras leaf", "U8",
-            "fact_registered:kv_schedule"),
-    _extras("irope", "root.decoder.attention",
-            "interleaved-RoPE (NoPE-interval) schedule as raw extras",
-            "U8", "fact_routed:position_kind",
-            occurrence="text_cfg no_rope_layer_interval"),
-    _extras("irope.no_rope_interval", "root.decoder.attention",
-            "NoPE interval as a raw extras leaf", "U8",
-            "fact_routed:position_kind"),
-    _extras("num_kv_shared_layers", "root.decoder.attention",
-            "cross-layer KV-sharing count as raw extras (drawn sharing "
-            "comes from CrossLayerEdge spec fields)",
-            "U8", "fact_registered:kv_shared_layers",
-            occurrence="text_cfg num_kv_shared_layers"),
-    _extras("partial_rotary_factor", "root.decoder.attention",
-            "partial-rotary fraction as raw extras (drawn partial rotary "
-            "comes from AttentionSpec.rope_dim)",
-            "U8", "fact_registered:partial_rotary",
-            occurrence="text_cfg partial_rotary_factor | "
-                       "rope_scaling.partial_rotary_factor"),
-    _extras("position_encoding", "root.decoder.attention",
-            "code-derived position-mechanism descriptor as raw extras",
-            "U8", "fact_routed:position_kind",
-            occurrence="_code_position_evidence (modeling source)",
-            consumer="model_unfolder/evidence/conformance.py::"
-                     "_drawn_position_kinds"),
-    _extras("rope", "root.decoder.attention",
-            "RoPE theta/scaling descriptor as raw extras (drawn rope reads "
-            "AttentionSpec.rope via attention_detail)",
-            "U8", "fact_registered:rope_theta",
-            occurrence="text_cfg rope_theta + rope_parameters|rope_scaling"),
     _extras("softcap", "model",
             "final vocabulary-logit softcap descriptor as raw extras; the "
             "attention cap and query-score operand have left this legacy lane",
@@ -306,13 +215,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "fact_registered:block_diffusion_canvas",
             consumer="model_unfolder/renderers/html/views_diffusion.py::"
                      "_build_block_diffusion_view"),
-    _extras("codebooks", "root.decoder",
-            "audio K-codebook structure as raw extras (render blocks consume "
-            "the codebooks ARG, not this key)",
-            "U8", "fact_registered:codebooks",
-            occurrence="text_cfg num_codebooks + audio_channels + "
-                       "decoder_codebook_streams_for_path",
-            module=_TA, symbol="decoder_extras"),
     _extras("render", "root",
             "PRESENTATION render-spec (theme/layout/blocks) — renderer "
             "semantics, not architecture; retires by reclassification to a "
@@ -373,24 +275,9 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             module=_DP, symbol="_parse_unet_model",
             consumer="model_unfolder/renderers/html/block_views/unet.py::"
                      "build_unet_view"),
-    # ---- drawn-but-unledgered leaves (former DRAWN_UNLEDGERED_DEBT) ------- #
-    _drawn("position_kind", "root.decoder.attention",
-           "positional scheme (rope/alibi/learned/none) drawn from the "
-           "AttentionSpec tri-state; no ledger writer yet",
-           "U8", "fact_routed:position_kind",
-           occurrence="AttentionSpec.position_kind (tri-state)",
-           module=_OG, symbol="_sdpa_region",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
-    _drawn("qk_norm", "root.decoder.attention",
-           "the uniform owner-level Q/K-norm fact is routed in U6, but a "
-           "heterogeneous layer schedule still projects from per-layer specs "
-           "without occurrence-qualified facts; U8 must close that schedule",
-           "U8", "fact_registered:qk_norm_schedule",
-           occurrence="AttentionSpec.qk_norm on a mixed layer schedule",
-           module=_AT, symbol="_sdpa_detailed_child_blocks",
-           consumer="model_unfolder/renderers/html/fact_projection.py::"
-                    "attention_facts"),
+    # U8 retired the former position_kind/qk_norm drawn-leaf debts: the exact
+    # per-layer position_schedule and qk_norm_schedule facts now authorize the
+    # canonical layer-map projection and are receipted by that real consumer.
     # ---- config occurrences awaiting their consumer (former
     # ---- PENDING_PROJECTION_DEBT; owner + EXACT dotted path) -------------- #
     _config("the conditioning card on the denoiser view",
@@ -398,43 +285,13 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "max text-token sequence the denoiser conditions on (Mochi) — "
             "a declared conditioning limit",
             "U10", "fact_registered:denoiser_conditioning_limit"),
-    # Per-layer MoE placement is a U8 schedule/selector question. Expert-local
-    # activation/storage/router semantics are already closed by U7.
-    _config("the decoder routed-FFN layer schedule",
-            "root", "first_k_dense_replace",
-            "the checkpoint supplies the dense-prefix value, but U8 must bind "
-            "that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "moe_layer_freq",
-            "the checkpoint supplies the routed-layer frequency, but U8 must "
-            "bind that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "interleave_moe_layer_step",
-            "the checkpoint supplies an interleave interval, but U8 must bind "
-            "that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "decoder_sparse_step",
-            "the checkpoint supplies a sparse-layer step, but U8 must bind "
-            "that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "mlp_only_layers",
-            "the checkpoint supplies an ordinary-MLP membership list, but U8 "
-            "must bind it to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "moe_layers",
-            "the checkpoint supplies routed-layer membership, but U8 must bind "
-            "that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
-    _config("the decoder routed-FFN layer schedule",
-            "root", "moe_layers_enum",
-            "the checkpoint supplies a serialized membership set, but U8 must "
-            "bind that path to the exact source schedule before consuming it",
-            "U8", "fact_registered:moe_schedule_binding"),
+    _config("the composite conditioning encoder's attention geometry",
+            "root.conditioning", "num_heads",
+            "the checkpoint declares the encoder's head count, but the "
+            "embedded T5 source currently exposes rival encoder/decoder "
+            "stage occurrences; the canonical tower withholds the value "
+            "until U9 proves the exact conditioning-stage owner",
+            "U9", "fact_registered:conditioning_attention_geometry"),
     _config("the denoiser FFN activation dispatch",
             "root.denoiser", "activation_fn",
             "the activation operand is visible, but only an exact denoiser "
@@ -475,14 +332,64 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.vae", "_vae_config.attention_head_dim",
             "DC-AE decoder attention head width (Sana) — V-05",
             "U12", "fact_registered:vae_decoder_attention"),
-    # Qwen3.5's position declaration remains exact U8 work.  Its five
-    # recurrent-mixer geometry paths left this register in U6 once the exact
-    # split/reshape/repeat/Conv1d/recurrent protocol bound them.
+    # Multimodal position coordinates are U9 work.  The text attention reader
+    # can prove the Q/K rotation algebra, but it must not invent the origin of
+    # cos/sin supplied by the wrapper's T/H/W coordinate pipeline.  Each exact
+    # checkpoint occurrence stays visible here until that wrapper→phase→Q/K
+    # chain is proved.  This is mechanism debt, never a family exemption.
     _config("the interleaved multimodal rotary application", "root",
             "rope_parameters.mrope_interleaved",
-            "the checkpoint declaration is visible, but U8 must bind it to "
-            "the exact rotary application before projecting the schedule",
-            "U8", "fact_registered:mrope_interleaving"),
+            "the checkpoint declaration is visible, but the modality-owned "
+            "T/H/W coordinate split and its exact rotary application belong "
+            "to U9, not the text-layer position schedule",
+            "U9", "fact_registered:mrope_interleaving"),
+    _config("the multimodal rotary coordinate partition", "root",
+            "rope_parameters.mrope_section",
+            "the exact checkpoint operand is visible, but only the U9 "
+            "wrapper coordinate construction can prove how its T/H/W "
+            "sections reach the text attention's supplied phase",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary frequency base", "root",
+            "rope_parameters.rope_theta",
+            "the text attention proves rotation but not the wrapper-owned "
+            "phase producer that consumes this frequency base",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary initializer selector", "root",
+            "rope_parameters.rope_type",
+            "the selector cannot author a mechanism; U9 must bind the exact "
+            "selected wrapper phase initializer",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary width operand", "root",
+            "rope_parameters.partial_rotary_factor",
+            "the operand changes wrapper-produced phase width, but its exact "
+            "coordinate/phase chain is outside the U8 text-layer boundary",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the duplicate multimodal rotary width declaration", "root",
+            "partial_rotary_factor",
+            "the root duplicate remains visible until U9 proves which exact "
+            "wrapper normalization/initializer spelling is enacted",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary coordinate partition", "root",
+            "text_config.rope_parameters.mrope_section",
+            "the exact checkpoint operand is visible, but only the U9 "
+            "wrapper/modality coordinate construction can prove how its "
+            "T/H/W sections reach Q/K rotation",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary frequency base", "root",
+            "text_config.rope_parameters.rope_theta",
+            "the numeric operand cannot author rotation; U9 must bind it to "
+            "the exact multimodal frequency initializer used by the wrapper",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the multimodal rotary initializer selector", "root",
+            "text_config.rope_parameters.rope_type",
+            "selector syntax is not mechanism evidence; U9 must resolve the "
+            "selected callable and its multimodal application",
+            "U9", "fact_registered:mrope_coordinates"),
+    _config("the legacy multimodal rotary initializer selector", "root",
+            "text_config.rope_parameters.type",
+            "the legacy selector spelling remains exact visible debt until "
+            "U9 proves and classifies the selected multimodal callable",
+            "U9", "fact_registered:mrope_coordinates"),
     _config("the denoiser projection-bias fact", "root.denoiser",
             "attention_bias",
             "declaration awaits exact denoiser projection-construction binding",
@@ -498,8 +405,9 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "U10", "fact_registered:position_kind"),
     _config("the denoiser rotary-geometry fact", "root.denoiser",
             "rope_theta",
-            "numeric rotary operand awaits its U8 owner-bound position fact",
-            "U8", "fact_registered:rope_theta"),
+            "numeric rotary operand awaits the denoiser-owned positional "
+            "application and geometry proof in U10",
+            "U10", "fact_registered:denoiser_rope_parameters"),
     _config("the UNet ResNet-cell norm chip",
             "root.denoiser", "norm_num_groups",
             "GroupNorm group count declared on UNet/legacy-DiT denoisers — "
@@ -565,66 +473,20 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "the checkpoint value affects the root output head, whose exact "
             "source-bound output projection is U14 work",
             "U14", "fact_registered:logits_scale"),
-    _config("the root decoder rotary base", "root", "rope_theta",
-            "the declared theta remains separate from proof that the exact "
-            "attention owner applies rotary position encoding",
-            "U8", "fact_registered:rope_theta"),
-    # RoPE scaling-descriptor subkeys: feed only raw extras.rope + the
-    # declared-tier chip; the rope_theta fact retires the whole family.
-    _config("the rope card's scaling-factor line", "root",
-            "rope_parameters.factor",
-            "scaling descriptor subkey feeds only raw extras.rope",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's original-context line", "root",
-            "rope_parameters.original_max_position_embeddings",
-            "scaling descriptor subkey feeds only raw extras.rope",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line", "root",
-            "rope_parameters.rope_theta",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (nested attention config)", "root",
-            "attn_config.rope_theta",
-            "feeds extras.rope + the declared-tier chip only; the exact "
-            "rotary application remains U8 work",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line", "root",
-            "rope_parameters.rope_type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (legacy spelling)", "root",
-            "rope_parameters.type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (wrapper path)", "root",
-            "text_config.rope_parameters.rope_theta",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (wrapper path)", "root",
-            "text_config.rope_parameters.rope_type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (wrapper path, legacy "
-            "spelling)", "root", "text_config.rope_parameters.type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (text-encoder slot)",
-            "root.text_encoder", "rope_parameters.rope_theta",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (text-encoder slot)",
-            "root.text_encoder", "rope_parameters.rope_type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (text-encoder slot, wrapper path)",
-            "root.text_encoder", "text_config.rope_parameters.rope_theta",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (text-encoder slot, wrapper "
-            "path)", "root.text_encoder",
-            "text_config.rope_parameters.rope_type",
-            "feeds extras.rope + the declared-tier chip only",
-            "U8", "fact_registered:rope_theta"),
+    _config(
+        "classification of a config value copied into attention state but "
+        "excluded from the proved position initializer",
+        "root", "attn_config.rope_theta",
+        "the exact attention constructor stores this checkpoint value, while "
+        "the exact applied Q/K rotation is initialized independently from a "
+        "framework-normalized code default; because the attention object is "
+        "also passed to a selectable backend, absence of a direct field read "
+        "is not yet a complete global deadness proof",
+        "U11", "classified:attn_config.rope_theta"),
+    # U8 rotary debt is closed: exact applied-position and initializer readers
+    # consume only source-selected operands into typed schedule/theta facts.
+    # Unused scaling metadata is scoped-ignored at its read site; completed
+    # receipt obligations are never kept artificially pending by debt rows.
     # UNet structure reaches render only through raw extras.unet — these
     # declared fields await the U11 source-derived component graph (the
     # register's extras:unet row is the write-side twin).
@@ -692,40 +554,6 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root.denoiser", "cross_attention_head_dim",
             "pairs with num_cross_attention_heads",
             "U10", "fact_registered:cross_attention_geometry"),
-    # ---- raw-spelling twins the boundary fix surfaced (checkpoints that
-    # ---- declare rope_scaling/rope_theta literally; same U8 family) ------- #
-    _config("the rope card's theta line (raw spelling)",
-            "root.text_encoder", "rope_scaling.rope_theta",
-            "raw rope_scaling twin of the rope_parameters row",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (raw spelling)",
-            "root.text_encoder", "rope_scaling.rope_type",
-            "raw rope_scaling twin", "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (bare sibling declaration)",
-            "root.text_encoder", "rope_theta",
-            "top-level theta beside a scaling dict",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (wrapper, raw spelling)",
-            "root.text_encoder", "text_config.rope_scaling.rope_theta",
-            "raw rope_scaling twin under the text wrapper",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (wrapper, raw spelling)",
-            "root.text_encoder", "text_config.rope_scaling.rope_type",
-            "raw rope_scaling twin under the text wrapper",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's scaling-type line (wrapper, raw legacy "
-            "spelling)", "root.text_encoder", "text_config.rope_scaling.type",
-            "raw rope_scaling twin under the text wrapper",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's theta line (wrapper, bare sibling)",
-            "root.text_encoder", "text_config.rope_theta",
-            "top-level theta beside a scaling dict, under the text wrapper",
-            "U8", "fact_registered:rope_theta"),
-    _config("the rope card's partial-rotary line (redundant-equal rival "
-            "occurrence)", "root", "rope_parameters.partial_rotary_factor",
-            "the supplying occurrence is consumed; a witness declaring BOTH "
-            "spellings equal leaves this rival as a noted inspection",
-            "U8", "fact_registered:partial_rotary"),
     # ---- vision residue: reads whose consuming form awaits the named
     # ---- vision facts (per-occurrence, exact paths) ----------------------- #
     _config("the vision tower position table (raw spelling probe)",
@@ -766,12 +594,12 @@ STRUCTURAL_DEBT: tuple[StructuralDebt, ...] = (
             "root", "text_config.is_encoder_decoder",
             "class-serialized copy the parse never reads (the root-level "
             "occurrence is the consumed decoderness read)",
-            "U8", "classified:text_config.is_encoder_decoder"),
+            "U9", "classified:text_config.is_encoder_decoder"),
     _config("class-stamped decoderness boilerplate on the vision sub-config",
             "root.vision", "vision_config.is_encoder_decoder",
             "class-serialized copy the parse never reads (the root-level "
             "occurrence is the consumed decoderness read)",
-            "U8", "classified:vision_config.is_encoder_decoder"),
+            "U9", "classified:vision_config.is_encoder_decoder"),
 )
 
 
@@ -796,7 +624,6 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/evidence/conformance.py', '_config_field_value', 'conformance', 'raw_config', 'f9c05d8e8878f612'),
     ('model_unfolder/evidence/conformance.py', '_constructor_envs', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
     ('model_unfolder/evidence/conformance.py', '_drawn_fusion_routes', 'conformance', 'raw_extras', '342c661d01d15158'),
-    ('model_unfolder/evidence/conformance.py', '_drawn_position_kinds', 'conformance', 'raw_extras', '2e884d5ab0b3db2d'),
     ('model_unfolder/evidence/conformance.py', '_family', 'conformance', 'raw_config', '6aed1a33205d116b'),
     ('model_unfolder/evidence/conformance.py', '_imported_model_files', 'conformance', 'source_reopen', '7fef0151ecf6fcd9'),
     ('model_unfolder/evidence/conformance.py', '_init_helper_block_classes', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
@@ -805,7 +632,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/evidence/conformance.py', '_reachable_forward_ops', 'conformance', 'backward_import', 'd3dd4554c4cd31a7'),
     ('model_unfolder/evidence/conformance.py', '_selected_init_refs', 'conformance', 'source_reopen', 'a821dd49ada1014e'),
     ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'backward_import', 'd0e50b755ed393d8'),
-    ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'raw_config', 'e9e2a14f8eec059c'),
+    ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'raw_config', 'acbeae587f3e1678'),
     ('model_unfolder/evidence/conformance.py', 'check_fact_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
     ('model_unfolder/evidence/conformance.py', 'check_model_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
     ('model_unfolder/evidence/conformance.py', 'check_nested_conformance', 'conformance', 'source_reopen', 'ffcbd4ee3efa2a75'),
@@ -824,8 +651,8 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/expanded/sections.py', '_diffusion_io', 'json', 'raw_extras', '720bc5b7888319bc'),
     ('model_unfolder/expanded/sections.py', '_is_diffusion', 'json', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/expanded/sections.py', 'build_dimensions', 'json', 'raw_extras', 'ab038e67ecaac4d6'),
-    ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', '5a84fc171da4bbf5'),
-    ('model_unfolder/params.py', '_attn_params', 'params', 'spec_default', 'afaeb4c00bd9dee4'),
+    ('model_unfolder/expanded/sections.py', 'build_io', 'json', 'raw_extras', '067eb5393d4cbecb'),
+    ('model_unfolder/params.py', '_attn_params', 'params', 'spec_default', 'ee4e0ed83a8c6b3f'),
     ('model_unfolder/params.py', '_ffn_params', 'params', 'spec_default', '949c0c547ad432a2'),
     ('model_unfolder/renderers/html/block_views/declared_ops.py', 'build_declared_ops_view', 'renderer', 'raw_extras', 'ba8f51d3eafee8db'),
     ('model_unfolder/renderers/html/block_views/modality_views/common.py', 'audio_input', 'renderer', 'raw_extras', '680261edc5f7acee'),
@@ -856,8 +683,7 @@ _CONSUMER_DEBT_BASELINE = (
     ('model_unfolder/renderers/html/metadata_modalities.py', '_vision_cell_cards', 'renderer', 'backward_import', '962109a2344e67b0'),
     ('model_unfolder/renderers/html/sections.py', '_diffusion_stats', 'renderer', 'raw_extras', 'da27bb4cf97df230'),
     ('model_unfolder/renderers/html/sections.py', '_stats_banner', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
-    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', 'c2f7729c70d3b7ef'),
-    ('model_unfolder/renderers/html/views.py', '_draw_mtp_head', 'renderer', 'raw_extras', '9254d402d9451cd0'),
+    ('model_unfolder/renderers/html/views.py', '_build_architecture_view', 'renderer', 'raw_extras', '8b5136957d2d757c'),
     ('model_unfolder/renderers/html/views.py', '_is_diffusion_architecture', 'renderer', 'raw_extras', '538efc70e7a2bf65'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_loop_cards', 'renderer', 'raw_extras', '261bebf740a7e89d'),
     ('model_unfolder/renderers/html/views_diffusion.py', '_build_block_diffusion_view', 'renderer', 'raw_extras', '1c3216f252696602'),

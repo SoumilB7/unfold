@@ -158,12 +158,12 @@ def bind_construction_site(
     parent = root.graph.node_for(parent_occurrence)
     child_occurrence = OwnerOccurrenceId(
         parent_occurrence.root, (*parent_occurrence.sites, site.site_id))
-    indexed_sites = tuple(
+    indexed_sites = tuple(dict.fromkeys(
         item for item in (
             *index.construction_sites,
             *(element for record in index.containers
               for element in record.elements))
-        if item.site_id == site.site_id)
+        if item.site_id == site.site_id))
     if len(indexed_sites) != 1 or indexed_sites[0] != site:
         return _failure(
             root, site, parent_occurrence, child_occurrence,

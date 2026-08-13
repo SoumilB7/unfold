@@ -25,7 +25,6 @@ head_dim: [head_dim, d_head, head_size, kv_channels]
 tie_word_embeddings: [tie_word_embeddings, tie_embeddings, tie_word_embedding_weights]
 norm_type: [norm_type]
 mlp_ratio: [mlp_ratio]
-compress_ratios: [compress_ratios, compress_rates]
 
 # RoPE declaration spellings (U2 P3a): the config-declared position channel
 # consulted ONLY when code evidence is oracle_missing/ambiguous — a declared
@@ -33,7 +32,12 @@ compress_ratios: [compress_ratios, compress_rates]
 # silently.  rotary_emb_base: internlm/persimmon legacy · rope_parameters:
 # the modern transformers nesting.
 rope_theta: [rope_theta, rotary_emb_base, rope_base]
+partial_rotary_factor: [partial_rotary_factor]
 rope_scaling: [rope_scaling, rope_parameters]
+# Scope-local selector spellings inside the already source-proven
+# ``rope_parameters`` mapping.  This vocabulary must never be passed to the
+# root config resolver: ``type`` is far too broad outside that exact parent.
+rope_parameter_selector: [rope_type, type]
 
 # Granite declared-scale family (constant multipliers; residual one is DRAWN
 # as a × connector, the rest are card facts).

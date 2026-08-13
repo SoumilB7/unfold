@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -110,13 +111,13 @@
   },
   "hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
-    "27b21fb0fe667354b04d7eb72363edc4",
     "38433759c72140f5833413de64e0bf5c",
     "392a52b0932b100dedc639a5dcaa3125",
     "41775f1b911b015df5720f7528286587",
     "44928e6fc5754eae24b47f4634f6b9e8",
     "455fcad6f15a7a8642673b21b0f8fcd7",
-    "86cc7e6da609750be2d4e60a0f52b528",
+    "8337bb24bb131952bceebd5200e91ab7",
+    "9b6938eb70f3013ae1cd3c1ec2974489",
     "b71eb6feae06badfeaa50453bc0725f5"
   ],
   "model": "prxpixel-t2i",
@@ -124,11 +125,11 @@
   "superseded_hash_signature": [
     "0201f62f45d46c90dc7b5b7e64e90ad2",
     "27b21fb0fe667354b04d7eb72363edc4",
+    "38433759c72140f5833413de64e0bf5c",
     "392a52b0932b100dedc639a5dcaa3125",
     "41775f1b911b015df5720f7528286587",
     "44928e6fc5754eae24b47f4634f6b9e8",
     "455fcad6f15a7a8642673b21b0f8fcd7",
-    "4b2014faefb4b62e7de73bd1ea4c0c76",
     "86cc7e6da609750be2d4e60a0f52b528",
     "b71eb6feae06badfeaa50453bc0725f5"
   ],

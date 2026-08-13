@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -112,18 +113,18 @@
     "vocab_size": 151936
   },
   "hash_signature": [
+    "069fdfe1cc0759670a1717944c1c8071",
     "12b1bdce7140cb545f7989138979cbfe",
-    "41811790be9b767cca73c728dc262951",
-    "9f8549df9150cd0b80187967a0a06c9d",
+    "b4bd3816cdf9f112b262e9982bb785b0",
     "f9c16fdd17c8ff0fe852745adbfee5ad"
   ],
   "model": "Qwen3-8B",
   "source": "local",
   "superseded_hash_signature": [
-    "09eb9ede3df8036573c7142d0e33eb36",
     "12b1bdce7140cb545f7989138979cbfe",
     "41811790be9b767cca73c728dc262951",
-    "9f8549df9150cd0b80187967a0a06c9d"
+    "9f8549df9150cd0b80187967a0a06c9d",
+    "f9c16fdd17c8ff0fe852745adbfee5ad"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/qwen3-8b",

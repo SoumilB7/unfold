@@ -186,6 +186,41 @@ def attention_output_projection_at_block(
         storage.projections)
 
 
+def attention_output_projection_for_sources_at_block(
+    index: ProgramIndex,
+    root,
+    block_occurrence: OwnerOccurrenceId,
+    attention: AttentionChildEvidence,
+    input_projections: tuple[ConstructionOccurrenceId, ...],
+) -> ReaderResult[AttentionOutputProjectionEvidence]:
+    """Prove output storage from an already-proven alternative Q/K/V census.
+
+    Conditional constructors can have more than the conventional three input
+    occurrences or can reuse a lane on selected layers.  This boundary assigns
+    no roles: another source reader must supply exact Q/K/V construction
+    occurrences, and this function only applies the existing terminal-to-output
+    dataflow proof to that addressed census.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("attention output projection requires a ProgramIndex")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("attention output projection requires an exact block")
+    if not isinstance(attention, AttentionChildEvidence) \
+            or attention.block_occurrence != block_occurrence:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "attention evidence belongs to another block"),))
+    if not input_projections or any(
+            not isinstance(item, ConstructionOccurrenceId)
+            or item.parent != attention.compute_occurrence
+            for item in input_projections) \
+            or len(set(input_projections)) != len(input_projections):
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "alternative input projections are not one exact owner census"),))
+    return _attention_output_projection_for_sources(
+        index, root, block_occurrence, attention, input_projections)
+
+
 def _attention_output_projection_for_sources(
     index, root, block_occurrence, attention, input_projections,
 ):

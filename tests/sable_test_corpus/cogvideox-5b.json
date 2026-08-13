@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -170,19 +171,20 @@
   },
   "hash_signature": [
     "034c793ae3e5acd9fce6c0bd159ecd6a",
+    "67ba8cb5e7c47043fa5e69d804de52f6",
     "68a15e11ae644cd2c62c97d9bb926534",
-    "691f89a66b323bcb0a38fe46f6854c93",
     "6eabcdc83515c7b99964efc1de4da6d1",
     "79014d44ce1efb8b5e5885c9236ab40e",
     "88e5b2033f64d9ba94922cd766243f35",
-    "98b551a864d0cf05de9cdc1f9a12919e",
     "990639c19760198453e28e3b61ecd3ee",
     "a99b54ef057a9be8af7f1638e5315428",
     "b08f4423fef372283566c0aea18020cf",
     "b52492e9f2340abd8bb03a36c8116a80",
     "b7eafb19db8b53e0f5790078c3d1f62a",
     "c2c5f6e7564d2669ac3370a233d4ec38",
-    "cdd40226ad21413bbe1904a814c8750b"
+    "c5cc5eee15e31c66f7795620d62aae28",
+    "cdd40226ad21413bbe1904a814c8750b",
+    "f174c29ca628d59c7087401466310055"
   ],
   "model": "CogVideoX-5b",
   "source": "local",
@@ -197,14 +199,14 @@
     "990639c19760198453e28e3b61ecd3ee",
     "a99b54ef057a9be8af7f1638e5315428",
     "b08f4423fef372283566c0aea18020cf",
+    "b52492e9f2340abd8bb03a36c8116a80",
     "b7eafb19db8b53e0f5790078c3d1f62a",
     "c2c5f6e7564d2669ac3370a233d4ec38",
-    "cdd40226ad21413bbe1904a814c8750b",
-    "e03e1b31c560cc8c848a4317bcf3e600"
+    "cdd40226ad21413bbe1904a814c8750b"
   ],
   "visual_evidence": {
     "gallery_dir": "galleries/cogvideox-5b",
     "manifest": true,
-    "png_count": 14
+    "png_count": 15
   }
 }

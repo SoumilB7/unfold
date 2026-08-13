@@ -69,7 +69,10 @@ def test_params_format_requires_a_transformer_shape_and_parses_without_identity(
     ir = config_to_ir(cfg)
     assert len(ir.layers) == 32
     assert ir.hidden_size == 4096
-    assert ir.layers[0].attention.num_heads == 32
+    # Shape-only params JSON has no source owner.  It may establish the outer
+    # layer/hidden-size scaffold, but its plausible count cannot author U6
+    # attention geometry.
+    assert ir.layers[0].attention.num_heads is None
 
 
 def test_params_json_rejects_conflicting_format_local_aliases():

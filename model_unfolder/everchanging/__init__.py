@@ -110,15 +110,6 @@ def load_transformer_typing() -> dict[str, list[str]]:
     return {"stages": data.get("stages") or []}
 
 
-def load_layer_type_labels() -> dict[str, list[str]]:
-    """Per-layer attention-type label groups (``transformer/layer_types.yaml``):
-    the ``layer_types`` config spellings mapped to the mask the renderer draws
-    (``full`` / ``sliding`` / ``compressed_sparse``)."""
-    data = load("transformer", "layer_types")
-    return {k: data.get(k) or []
-            for k in ("full", "sliding", "compressed_sparse", "heavily_compressed")}
-
-
 def load_decoderness() -> dict[str, list[str]]:
     """Config-declared decoder-ness vocabulary (``transformer/decoderness.yaml``):
     the ``architectures[]`` class-role suffixes that declare an autoregressive
@@ -153,42 +144,6 @@ def load_composite_slots() -> dict:
     return {"slots": slots,
             "cross_attn_fields": list(data.get("cross_attn_fields") or []),
             "undrawn_component_fields": undrawn}
-
-
-def _pairs(rows) -> dict[str, str]:
-    """``["raw=canonical", …]`` -> ``{"raw": "canonical"}`` (lowercased keys)."""
-    out: dict[str, str] = {}
-    for item in rows or []:
-        if isinstance(item, str) and "=" in item:
-            k, _, v = item.partition("=")
-            out[k.strip().lower()] = v.strip()
-    return out
-
-
-def load_layer_schedules() -> dict:
-    """Per-layer TYPE-SCHEDULE spellings (``transformer/layer_schedules.yaml``):
-    the config keys that encode "which type is layer i", grouped by their input
-    FORM, plus the canonical value map and the mixer-kind map.  U3.
-
-    Returns ``{"value_list_fields": [...], "pattern_tile_fields": [...],
-    "nested_tile_fields": [...], "dense_interval_fields": [...],
-    "dense_interval_on": str, "dense_interval_off": str,
-    "moe_comma_string_fields": [...], "value_aliases": {raw: canonical},
-    "mixer_kinds": {canonical_token: mixer_cell}}``."""
-    data = load("transformer", "layer_schedules")
-    on = (data.get("dense_interval_on") or ["full_attention"])
-    off = (data.get("dense_interval_off") or ["compressed_sparse_attention"])
-    return {
-        "value_list_fields": list(data.get("value_list_fields") or []),
-        "pattern_tile_fields": list(data.get("pattern_tile_fields") or []),
-        "nested_tile_fields": list(data.get("nested_tile_fields") or []),
-        "dense_interval_fields": list(data.get("dense_interval_fields") or []),
-        "dense_interval_on": (on[0] if isinstance(on, list) else on),
-        "dense_interval_off": (off[0] if isinstance(off, list) else off),
-        "moe_comma_string_fields": list(data.get("moe_comma_string_fields") or []),
-        "value_aliases": _pairs(data.get("value_aliases")),
-        "mixer_kinds": _pairs(data.get("mixer_kinds")),
-    }
 
 
 # --- diffusor domain --------------------------------------------------------
@@ -508,8 +463,6 @@ __all__ = [
     "load_input_format_aliases",
     "load_ignored_fields",
     "load_transformer_typing",
-    "load_layer_type_labels",
-    "load_layer_schedules",
     "load_diffusion_aliases",
     "load_diffusion_typing",
     "load_diffusion_text_encoders",

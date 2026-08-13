@@ -184,6 +184,32 @@ def test_uninvoked_repeated_sibling_cannot_vote(tmp_path):
         result.value.stage_occurrence).symbol.qualified_name == "Stage"
 
 
+def test_optional_nonrepeated_output_head_does_not_hide_the_repeated_stage(
+        tmp_path):
+    _index, root, result = _read(tmp_path, """
+        hidden = self.stage(x)
+        pooled = self.post(hidden) if x else None
+        return Output(last_hidden_state=hidden, pooler_output=pooled)
+    """)
+    assert result.status == "resolved", result.failures
+    assert root.graph.node_for(
+        result.value.stage_occurrence).symbol.qualified_name == "Stage"
+
+
+def test_optional_repeated_output_rival_still_blocks_stage_selection(tmp_path):
+    _index, _root, result = _read(
+        tmp_path,
+        """
+        hidden = self.stage(x)
+        rival = self.other(hidden) if x else None
+        return Output(last_hidden_state=hidden, rival_state=rival)
+        """,
+        init="self.other = OtherStage(config)",
+        extra=_STAGE.replace("class Stage", "class OtherStage"),
+    )
+    assert result.status in {"ambiguous", "failed"}
+
+
 def test_unresolved_self_child_on_the_output_path_blocks_selection(tmp_path):
     _index, _root, result = _read(
         tmp_path,

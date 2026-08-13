@@ -22,6 +22,7 @@ from __future__ import annotations
 from model_unfolder.evidence.registry import REGISTRY
 from model_unfolder.evidence.structural_debt import (
     STRUCTURAL_DEBT,
+    StructuralDebt,
     drawn_leaf_is_lawful,
     drawn_unledgered_names,
     drawn_unledgered_pairs,
@@ -32,15 +33,18 @@ from model_unfolder.renderers.html.fact_projection import (
     FFN_DRAWN,
     LAYER_DRAWN,
     MODEL_DRAWN,
+    DECODER_DRAWN,
+    INPUT_DRAWN,
 )
 
 # registry projection surface -> the renderer drawn-leaf set for that surface
 _SURFACE_DRAWN = {
     "attention_detail": ATTENTION_DRAWN,
     "ffn_detail": FFN_DRAWN,
-    "architecture_view": LAYER_DRAWN | MODEL_DRAWN,
+    "architecture_view": LAYER_DRAWN | MODEL_DRAWN | DECODER_DRAWN | INPUT_DRAWN,
 }
-_ALL_DRAWN = ATTENTION_DRAWN | FFN_DRAWN | LAYER_DRAWN | MODEL_DRAWN
+_ALL_DRAWN = (ATTENTION_DRAWN | FFN_DRAWN | LAYER_DRAWN | MODEL_DRAWN
+              | DECODER_DRAWN | INPUT_DRAWN)
 _DEBT_NAMES = drawn_unledgered_names()
 
 
@@ -58,11 +62,30 @@ def test_every_drawn_leaf_is_registered_or_pinned_debt():
 
 def test_poison_sibling_owner_debt_cannot_authorize_a_drawing():
     """Owner A holds unledgered debt for leaf X; owner B drawing X must FAIL.
-    (position_kind debt is carried by decoder.attention only.)"""
-    assert ("decoder.attention", "position_kind") in drawn_unledgered_pairs()
-    assert drawn_leaf_is_lawful("decoder.attention", "position_kind")
-    assert not drawn_leaf_is_lawful("decoder.ffn", "position_kind")
-    assert not drawn_leaf_is_lawful("model", "position_kind")
+    The poison supplies its own debt: a retired production debt row must not be
+    kept alive merely so this owner-qualification law remains exercised."""
+    row = StructuralDebt(
+        owner="root.decoder.attention",
+        source_occurrence=None,
+        writer_module="model_unfolder/adapters/transformer/parser.py",
+        writer_symbol="parse",
+        sink_kind="drawn_leaf",
+        structural_target="poison_owner_scoped_leaf",
+        reason="synthetic owner-qualification poison",
+        last_consumer=(
+            "model_unfolder/renderers/html/fact_projection.py::attention_facts"),
+        migration_unit="U8",
+        deletion_condition="fact_registered:poison_owner_scoped_leaf",
+    )
+    rows = (row,)
+    assert ("decoder.attention", "poison_owner_scoped_leaf") \
+        in drawn_unledgered_pairs(rows)
+    assert drawn_leaf_is_lawful(
+        "decoder.attention", "poison_owner_scoped_leaf", rows)
+    assert not drawn_leaf_is_lawful(
+        "decoder.ffn", "poison_owner_scoped_leaf", rows)
+    assert not drawn_leaf_is_lawful(
+        "model", "poison_owner_scoped_leaf", rows)
 
 
 def test_names_view_is_display_only_and_never_gates():

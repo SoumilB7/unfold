@@ -12,30 +12,44 @@ from .ir import ModelIR, AttentionSpec, FFNSpec
 def _attn_params(a: AttentionSpec, hidden: int) -> int:
     h = _as_count(hidden)
     nq = _as_count(a.num_heads)
-    head_dim = _as_count(a.head_dim) or (h // max(nq, 1))
-    nkv = _as_count(a.num_kv_heads) or nq
+    head_dim = _as_count(a.head_dim)
+    nkv = _as_count(a.num_kv_heads)
+
+    if a.kind in {None, "", "unknown"}:
+        return 0
 
     if a.kind == "mla":
         # MLA splits each head into a non-positional (nope) part and a rotary
         # (rope) part for Q/K, with V its own width.  These dims are what make
         # the count correct — falling back to head_dim (hidden/num_heads) badly
         # undercounts (DeepSeek heads are 192/128 wide, not hidden/num_heads).
-        qk_rope = a.qk_rope_head_dim or a.rope_dim or 0
-        qk_nope = a.qk_nope_head_dim or max(head_dim - qk_rope, 0) or head_dim
+        qk_rope = _as_count(a.qk_rope_head_dim)
+        qk_nope = _as_count(a.qk_nope_head_dim)
+        v_head = _as_count(a.v_head_dim)
+        kv_lora = _as_count(a.kv_lora_rank)
+        if not all((h, nq, qk_rope, qk_nope, v_head, kv_lora)):
+            return 0
         qk_head = qk_nope + qk_rope          # Q/K per-head width
-        v_head = a.v_head_dim or head_dim    # V per-head width
         # Q path: hidden -> [q_lora] -> nq*qk_head  (LoRA down/up when present)
         if a.q_lora_rank:
             q = h * a.q_lora_rank + a.q_lora_rank * (nq * qk_head)
         else:
             q = h * (nq * qk_head)
         # KV path: hidden -> (kv_lora + rope), then kv_lora -> nq*(nope + v)
-        kv_lora = a.kv_lora_rank or 0
         kv_a = h * (kv_lora + qk_rope)
         kv_b = kv_lora * (nq * (qk_nope + v_head))
         out = (nq * v_head) * h
         return q + kv_a + kv_b + out
 
+    # Gated-delta attention is not ordinary Q/K/V/O attention.  Its recurrent
+    # projections, gates, convolution and normalization need their own U14
+    # formula.  Exact U6 geometry makes the mechanism drawable; it does not
+    # authorize laundering those values through the ordinary attention count.
+    if a.kind == "gated_delta":
+        return 0
+
+    if not all((h, nq, nkv, head_dim)):
+        return 0
     qkv = h * (nq + 2 * nkv) * head_dim
     out = nq * head_dim * h
     return qkv + out
@@ -161,6 +175,24 @@ def estimate_params(ir: ModelIR) -> dict:
         if layer.attention.kind in {None, "", "unknown"} \
                 and _ATTENTION_UNKNOWN_NOTE not in assumptions:
             assumptions.append(_ATTENTION_UNKNOWN_NOTE)
+        elif layer.attention.kind == "gated_delta" \
+                and _GATED_DELTA_FORMULA_NOTE not in assumptions:
+            assumptions.append(_GATED_DELTA_FORMULA_NOTE)
+        elif layer.attention.kind in {"mha", "gqa", "mqa"} \
+                and not all((
+                    _as_count(layer.attention.num_heads),
+                    _as_count(layer.attention.num_kv_heads),
+                    _as_count(layer.attention.head_dim),
+                )) and _ATTENTION_GEOMETRY_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_GEOMETRY_NOTE)
+        elif layer.attention.kind == "mla" and not all((
+                _as_count(layer.attention.num_heads),
+                _as_count(layer.attention.kv_lora_rank),
+                _as_count(layer.attention.qk_nope_head_dim),
+                _as_count(layer.attention.qk_rope_head_dim),
+                _as_count(layer.attention.v_head_dim),
+        )) and _ATTENTION_GEOMETRY_NOTE not in assumptions:
+            assumptions.append(_ATTENTION_GEOMETRY_NOTE)
         if layer.ffn.kind == "moe":
             is_sparse = True
         pending_notes = (
@@ -243,8 +275,14 @@ def estimate_params(ir: ModelIR) -> dict:
 
 #: U2: the one-line annotation for an unknown FFN gate structure.
 _ATTENTION_UNKNOWN_NOTE = (
-    "attention mechanism unknown — Q/K/V/O parameter estimate is a "
-    "temporary estimation convention, not code-proven architecture"
+    "attention mechanism unknown — Q/K/V/O matrix terms omitted"
+)
+_ATTENTION_GEOMETRY_NOTE = (
+    "attention geometry unresolved — Q/K/V/O matrix terms omitted"
+)
+_GATED_DELTA_FORMULA_NOTE = (
+    "gated-delta parameter formula not yet migrated — recurrent matrix "
+    "terms omitted"
 )
 _GATED_NOTE = ("FFN structure unknown — counted as 2 projections "
                "(a gated FFN would add hidden x inner per layer)")

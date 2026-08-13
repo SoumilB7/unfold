@@ -55,21 +55,16 @@ def validate_ir_with_evidence(ir: ModelIR, evidence: CodeEvidence) -> list[str]:
 
 
 def _ir_uses_alibi(ir: ModelIR) -> bool:
-    extras = ir.extras or {}
-    if extras.get("position_encoding") == "alibi" or extras.get("uses_alibi"):
-        return True
-    for layer in ir.layers:
-        attn_extras = getattr(layer.attention, "extras", None) or {}
-        if isinstance(attn_extras, dict) and attn_extras.get("alibi"):
-            return True
-    return False
+    return any(
+        layer.attention.position_kind == "alibi"
+        and layer.attention.position_application == "attention_bias"
+        for layer in ir.layers
+    )
 
 
 def _ir_has_mtp(ir: ModelIR) -> bool:
     extras = ir.extras or {}
-    if extras.get("mtp") or extras.get("multi_token_prediction"):
-        return True
     return any(
         isinstance(block, dict) and (block.get("role") == "mtp" or block.get("kind") == "mtp")
-        for block in (extras.get("model_blocks") or [])
+        for block in ((extras.get("render") or {}).get("model_blocks") or [])
     )

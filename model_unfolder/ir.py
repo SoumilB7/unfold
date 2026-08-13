@@ -20,11 +20,22 @@ class AttentionSpec:
                                     # still be known, but consumers must not
                                     # manufacture Q/K/V or SDPA from omission.
     num_heads: int
+    mixer_state: Optional[str] = None  # exact per-layer schedule lane:
+                                    # ordinary_attention | gated_delta | ...
+                                    # This is independent of the attention
+                                    # subtype; an unresolved MHA/GQA split must
+                                    # not erase a proved ordinary-attention lane.
     num_kv_heads: Optional[int] = None
     head_dim: Optional[int] = None
     kv_lora_rank: Optional[int] = None
     q_lora_rank: Optional[int] = None
     rope_dim: Optional[int] = None
+    rope_theta: Optional[float] = None  # exact base of the frequency state
+                                    # consumed by this applied Q/K rotation;
+                                    # declaration alone is powerless.
+    rope_initialization: Optional[dict] = None  # exact selected initializer
+                                    # protocol + present code-read operands;
+                                    # never inferred from rope_type spelling.
     # MLA decoupled head geometry (DeepSeek/Kimi): Q/K split into nope+rope, V
     # has its own width. Needed for an accurate MLA parameter count.
     qk_nope_head_dim: Optional[int] = None
@@ -59,14 +70,6 @@ class AttentionSpec:
                                     # position_application="qk_rotation".
     position_kind: Optional[str] = None       # rope | alibi | learned_absolute | none | unknown
     position_application: Optional[str] = None  # qk_rotation | attention_bias | embedding_add | none
-    position_declared: bool = False  # U2 P3a: the positional scheme comes from the
-                                    # CONFIG's declaration (rope_theta/rope_scaling),
-                                    # consulted only when code evidence is
-                                    # oracle_missing/ambiguous — the chip states
-                                    # "(config-declared)".  Emitted only when True
-                                    # so every code-proven model stays byte-identical.
-    rope_theta_declared: Optional[float] = None  # the declared θ carried onto the chip
-                                    # (emitted only alongside position_declared).
     bias: Optional[bool | str] = None  # uniform True/False or exact "mixed"
                                     # bias terms across the attention affine path (Qwen2,
                                     # GPT-2, Phi). True/False/"mixed" are
@@ -509,12 +512,18 @@ def detect_layer_period(sigs: list) -> int | None:
 def _attention_to_dict(a: AttentionSpec) -> dict:
     return {
         "kind": a.kind,
+        **({"mixer_state": a.mixer_state}
+           if a.mixer_state is not None else {}),
         "num_heads": a.num_heads,
         "num_kv_heads": a.num_kv_heads,
         "head_dim": a.head_dim,
         "kv_lora_rank": a.kv_lora_rank,
         "q_lora_rank": a.q_lora_rank,
         "rope_dim": a.rope_dim,
+        **({"rope_theta": a.rope_theta}
+           if a.rope_theta is not None else {}),
+        **({"rope_initialization": dict(a.rope_initialization)}
+           if a.rope_initialization is not None else {}),
         "mask": a.mask,
         "window_size": a.window_size,
         "kv_source_layer": a.kv_source_layer,
@@ -543,11 +552,6 @@ def _attention_to_dict(a: AttentionSpec) -> dict:
         "projection_mode": a.projection_mode,
         "scores_scaled": a.scores_scaled,
         "variant": a.variant,
-        # U2 P3a: emitted only on the config-declared fallback so every
-        # code-proven model stays byte-identical.
-        **({"position_declared": True} if a.position_declared else {}),
-        **({"rope_theta_declared": a.rope_theta_declared}
-           if a.position_declared and a.rope_theta_declared is not None else {}),
         # emitted only when DECLARED so undeclared models' output is byte-stable
         **({"scores_scale": a.scores_scale} if a.scores_scale is not None else {}),
         # emitted only when code proves learned sink logits join the softmax

@@ -47,6 +47,106 @@ ALTITUDE_TRANSFORMS: dict[str, dict[str, dict[str, Any]]] = {
 }
 
 
+def _ffn_projection_sources(context, layer_count: int):
+    """Return the exact FFN callable coordinate for each repeated layer.
+
+    This is a projection citation, not a mechanism reader.  It consumes only
+    the U8 schedule result already cached by the transformer parser and joins
+    each concrete decision back to its exact candidate.  There is deliberately
+    no class-name search, source reopening, first-candidate choice, or fallback
+    to the model-stage owner.
+    """
+    if context is None:
+        return (None,) * layer_count
+    results = getattr(context, "reader_results", {}) or {}
+    matches = [
+        result for (reader, _path), result in results.items()
+        if reader == "decoder.ffn.schedule"
+    ]
+    if len(matches) != 1:
+        return (None,) * layer_count
+    result = matches[0]
+    if getattr(result, "status", None) != "resolved" \
+            or getattr(result, "value", None) is None:
+        return (None,) * layer_count
+    schedule = result.value
+    decisions = tuple(getattr(schedule, "decisions", ()) or ())
+    candidates = tuple(getattr(schedule, "candidates", ()) or ())
+    if len(decisions) != layer_count:
+        return (None,) * layer_count
+    by_identity = {
+        (candidate.kind, candidate.site.site_id, candidate.candidate_symbol):
+        candidate
+        for candidate in candidates
+    }
+    rows = []
+    for decision in decisions:
+        candidate = by_identity.get((
+            decision.state, decision.site_id, decision.candidate_symbol))
+        if candidate is None:
+            rows.append(None)
+            continue
+        mechanism = candidate.mechanism
+        # A config-selected wrapper retains the exact inner mechanism that the
+        # code-bound selector chose.  Routed storage and ordinary FFNs both
+        # expose the same exact owner-symbol contract.
+        mechanism = getattr(mechanism, "selected", mechanism)
+        owner = getattr(mechanism, "owner_symbol", None)
+        source = getattr(owner, "source", None)
+        owner_name = getattr(owner, "qualified_name", "")
+        source_file = getattr(source, "canonical_path", "")
+        if not owner_name or not source_file:
+            rows.append(None)
+            continue
+        rows.append((owner_name.split(".", 1)[0], source_file))
+    return tuple(rows)
+
+
+def _attention_projection_sources(context, layer_count: int):
+    """Return the exact attention/mixer callable coordinate per layer.
+
+    Like :func:`_ffn_projection_sources`, this is an evidence-envelope join,
+    not a reader and not architectural authority.  The U8 mixer schedule has
+    already joined construction, invocation and mechanism for every repeated
+    layer.  Projection is allowed to cite that exact candidate; it may not
+    search for a plausible attention class or fall back to the model stage.
+    """
+    if context is None:
+        return (None,) * layer_count
+    results = getattr(context, "reader_results", {}) or {}
+    matches = [
+        result for (reader, _path), result in results.items()
+        if reader == "decoder.attention.mixer_schedule"
+    ]
+    if len(matches) != 1:
+        return (None,) * layer_count
+    result = matches[0]
+    if getattr(result, "status", None) != "resolved" \
+            or getattr(result, "value", None) is None:
+        return (None,) * layer_count
+    schedule = result.value
+    decisions = tuple(getattr(schedule, "decisions", ()) or ())
+    candidates = tuple(getattr(schedule, "candidates", ()) or ())
+    if len(decisions) != layer_count:
+        return (None,) * layer_count
+    by_identity = {
+        (candidate.kind, candidate.occurrence): candidate
+        for candidate in candidates
+    }
+    rows = []
+    for decision in decisions:
+        candidate = by_identity.get((decision.state, decision.occurrence))
+        owner = getattr(candidate, "owner_symbol", None)
+        source = getattr(owner, "source", None)
+        owner_name = getattr(owner, "qualified_name", "")
+        source_file = getattr(source, "canonical_path", "")
+        if not owner_name or not source_file:
+            rows.append(None)
+            continue
+        rows.append((owner_name.split(".", 1)[0], source_file))
+    return tuple(rows)
+
+
 # ---------------------------------------------------------------------------
 # Spec derivation — ModelIR -> facts-only recursive spec (ONE function)
 # ---------------------------------------------------------------------------
@@ -56,11 +156,8 @@ def submodel_spec(
     *,
     component: str = "",
     altitude: str = "tower",
-    norm_label: str | None = None,
-    position_evidence: dict | None = None,
-    ffn_source_owner: str | None = None,
-    ffn_source_file: str | None = None,
     sub_models: list[dict] | None = None,
+    evidence_context=None,
 ) -> dict:
     """Derive the embedded-model spec from a full sub-parse ``ModelIR``.
 
@@ -68,16 +165,15 @@ def submodel_spec(
     time from these facts through the same canonical builders the root model
     uses, so the spec can never hold a stale copy of a drawable.
 
-    ``FFNSpec`` is the sole FFN authority.  The universal parser already keeps
-    mechanism, activation, gating and projection storage independently
-    tri-state; projecting a second caller-supplied copy here would allow an
-    embedded tower to disagree with the same config parsed standalone.
-    ``norm_label`` remains a presentation override while the norm-bookend
-    migration is incomplete.  ``ffn_source_owner``/``ffn_source_file`` are
-    provenance copied from that same exact mechanism result; they cannot alter
-    the serialized FFN fact.  ``sub_models`` nests further embedded specs (a
-    tower inside a tower) — the projector recurses through them with composed
-    namespaces and dotted component paths.
+    ``AttentionSpec``, ``FFNSpec`` and each exact layer's norm fields are the
+    sole architecture authorities.  A caller cannot relay a second norm label,
+    FFN owner or FFN file: that manual plumbing is precisely how embedded and
+    standalone views used to diverge.  ``evidence_context`` is narrower: it
+    exposes the already-computed typed reader results so this function can cite
+    the callable that proved a group.  It never changes a fact or supplies a
+    fallback.  ``sub_models`` nests further embedded specs (a tower inside a
+    tower) — the projector recurses through them with composed namespaces and
+    dotted component paths.
     """
     from .adapters.transformer.blocks.attention import attention_detail
     from .adapters.transformer.blocks.feed_forward import ffn_detail
@@ -85,6 +181,9 @@ def submodel_spec(
     groups = distinct_layer_groups(ir.layers)
     sigs = [layer.signature() for layer in ir.layers]
     attn_overrides = dict(ALTITUDE_TRANSFORMS.get(altitude, {}).get("attention", {}))
+    attention_sources = _attention_projection_sources(
+        evidence_context, len(ir.layers))
+    ffn_sources = _ffn_projection_sources(evidence_context, len(ir.layers))
 
     def _attention_fact(group_layer) -> dict:
         fact = attention_detail(group_layer.attention)
@@ -102,23 +201,19 @@ def submodel_spec(
         return fact
 
     def _norm_for(group_layer) -> str | None:
-        if not norm_label:
-            return None
         return {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-            group_layer.norm_kind) or norm_label
+            group_layer.norm_kind)
 
     tags = submodel_group_tags(groups) if len(groups) > 1 else [""] * len(groups)
-    spec_groups = [
-        {
+    spec_groups = []
+    for k, group in enumerate(groups):
+        row = {
             "count": len(group["indices"]),
             "layers": list(group["indices"]),
             "runs": [list(run) for run in group["runs"]],
             "tag": tags[k],
             "attention": _attention_fact(group["layer"]),
             "ffn": _ffn_fact(group["layer"]),
-            **({"ffn_source_owner": ffn_source_owner,
-                "ffn_source_file": ffn_source_file}
-               if ffn_source_owner else {}),
             "norm": _norm_for(group["layer"]),
             # Norm PLACEMENT is a per-group structural fact (pre / post /
             # double sandwich), code-derived by the sub-parse's topology
@@ -127,8 +222,46 @@ def submodel_spec(
             # silently mis-draws a Gemma-2 sandwich or a BERT post-norm tower).
             "norm_placement": group["layer"].norm_placement,
         }
-        for k, group in enumerate(groups)
-    ]
+        attention_source_rows = {
+            attention_sources[index]
+            for index in group["indices"]
+            if index < len(attention_sources)
+            and attention_sources[index] is not None
+        }
+        # A source citation has the same completeness law as the mechanism
+        # fact it annotates: every layer in this rendered group must resolve to
+        # the same exact callable.  Partial or mixed coordinates remain absent.
+        if row["attention"].get("kind") is not None \
+                and len(attention_source_rows) == 1 \
+                and len(group["indices"]) == sum(
+                    1 for index in group["indices"]
+                    if index < len(attention_sources)
+                    and attention_sources[index] is not None):
+            owner, source_file = next(iter(attention_source_rows))
+            row["evidence"] = {"attention": {
+                "owner_class": owner,
+                "source_file": source_file,
+            }}
+        source_rows = {
+            ffn_sources[index]
+            for index in group["indices"]
+            if index < len(ffn_sources) and ffn_sources[index] is not None
+        }
+        # A group citation is legal only when EVERY layer in the group has the
+        # same exact source coordinate.  Partial/mixed evidence must remain
+        # unresolved; selecting the first source would recreate the union bug.
+        if row["ffn"].get("kind") is not None \
+                and len(source_rows) == 1 \
+                and len(group["indices"]) == sum(
+                1 for index in group["indices"]
+                if index < len(ffn_sources)
+                and ffn_sources[index] is not None):
+            owner, source_file = next(iter(source_rows))
+            row.setdefault("evidence", {})["ffn"] = {
+                "owner_class": owner,
+                "source_file": source_file,
+            }
+        spec_groups.append(row)
 
     sig_to_group = {group["sig"]: k for k, group in enumerate(groups)}
     runs: list[list[int]] = []
@@ -139,6 +272,9 @@ def submodel_spec(
         else:
             runs.append([k, 1])
 
+    dominant_norm = (
+        max(spec_groups, key=lambda group: group["count"]).get("norm")
+        if spec_groups else None)
     return {
         "component": component,
         "altitude": altitude,
@@ -146,22 +282,12 @@ def submodel_spec(
         "hidden": ir.hidden_size,
         "vocab": ir.vocab_size,
         "max_pos": ir.max_position_embeddings,
-        "norm": norm_label,
+        "norm": dominant_norm,
         "groups": spec_groups,
         "schedule": {
             "period": detect_layer_period(sigs),
             "runs": [tuple(run) for run in runs],
             "total": len(sigs),
-        },
-        # Envelope dicts are COPIED: the caller may also carry them as flat
-        # fields, and ownership qualification mutates in place — sharing one
-        # object would double-prefix the component path.
-        "evidence": {
-            "position": dict(position_evidence) if isinstance(position_evidence, dict) else None,
-            # FFN provenance is carried by the typed fact ledger/read result.
-            # A second free-form envelope previously came from the retired
-            # whole-file detector and could disagree with the FFNSpec above.
-            "ffn": None,
         },
         "sub_models": list(sub_models or []),
     }
@@ -225,16 +351,8 @@ def qualify_component(spec: dict, component: str) -> None:
 # Projection — spec -> blocks/cards (ONE recursive projector)
 # ---------------------------------------------------------------------------
 
-def _owning_component(spec: dict, evidence: dict | None) -> str | None:
-    """The MOST QUALIFIED ownership path wins.
-
-    A composite tower (a VL wrapper as prompt encoder) resolves its facts one
-    component deeper than its pipeline slot — the evidence envelope carries the
-    dotted path (``text_encoder.text_config``), which is the exact oracle
-    conformance must bind to; the slot path is only the fallback.
-    """
-    if isinstance(evidence, dict) and evidence.get("component"):
-        return str(evidence["component"])
+def _owning_component(spec: dict) -> str | None:
+    """Return the recursively-qualified component address on the spec itself."""
     return spec.get("component") or None
 
 
@@ -251,10 +369,18 @@ def submodel_attention_block(spec: dict, group: dict, prefix: str, *,
     from .opgraph import attention_region, prefix_region
 
     fact = group["attention"]
+    evidence = group.get("evidence") if isinstance(
+        group.get("evidence"), dict) else {}
+    attention_evidence = evidence.get("attention") if isinstance(
+        evidence.get("attention"), dict) else {}
+    source_fields = ({
+        "source_owner": attention_evidence["owner_class"],
+        "source_file": attention_evidence["source_file"],
+    } if attention_evidence.get("owner_class")
+        and attention_evidence.get("source_file") else {})
     namespace = f"{prefix}_attn_"
     region = attention_region(fact, fact.get("hidden"))
     namespaced = prefix_region(region, namespace)
-    evidence = (spec.get("evidence") or {}).get("position")
     return {
         "id": f"{prefix}_op_selfattn",
         "role": "attention",
@@ -263,13 +389,10 @@ def submodel_attention_block(spec: dict, group: dict, prefix: str, *,
         "description": description,
         "facts": facts,
         "view": "attention",
-        "source_component": _owning_component(spec, evidence),
-        **({"source_owner": group["source_owner"],
-            "source_file": group.get("source_file")}
-           if group.get("source_owner") else {}),
+        "source_component": _owning_component(spec),
+        **source_fields,
         "detail": {
             "attention": {**fact, "node_prefix": namespace},
-            "evidence": evidence if isinstance(evidence, dict) else {},
         },
         "children": cards_from_region(namespaced),
     }
@@ -286,9 +409,16 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
     from .opgraph import ffn_region, rename_ops
 
     fact = dict(group["ffn"])
-    evidence = (spec.get("evidence") or {}).get("ffn")
-    evidence = evidence if isinstance(evidence, dict) else {}
-    component = _owning_component(spec, evidence)
+    component = _owning_component(spec)
+    evidence = group.get("evidence") if isinstance(
+        group.get("evidence"), dict) else {}
+    ffn_evidence = evidence.get("ffn") if isinstance(
+        evidence.get("ffn"), dict) else {}
+    source_fields = ({
+        "source_owner": ffn_evidence["owner_class"],
+        "source_file": ffn_evidence["source_file"],
+    } if ffn_evidence.get("owner_class")
+        and ffn_evidence.get("source_file") else {})
 
     if fact.get("kind") == "moe":
         desc, facts = ffn_summary(fact)
@@ -301,7 +431,8 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
             "facts": facts,
             "view": "ffn",              # dispatcher routes kind=moe -> moe view
             "source_component": component,
-            "detail": {"ffn": fact, "evidence": evidence},
+            **source_fields,
+            "detail": {"ffn": fact},
             "children": _moe_children_from_fact(fact, component),
         }
 
@@ -324,13 +455,10 @@ def submodel_ffn_block(spec: dict, group: dict, prefix: str) -> Block:
         "facts": facts,
         "view": "ffn",
         "source_component": component,
-        **({"source_owner": group["ffn_source_owner"],
-            "source_file": group.get("ffn_source_file")}
-           if group.get("ffn_source_owner") else {}),
+        **source_fields,
         "detail": {
             "ffn": fact,
             "op_namespace": namespace,
-            "evidence": evidence,
         },
         "children": cards_from_region(namespaced),
     }

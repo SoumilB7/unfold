@@ -15,6 +15,7 @@ from types import SimpleNamespace
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
+from transformers import AutoConfig
 
 from model_unfolder import unfold
 from model_unfolder.adapters.transformer.parser import parse
@@ -147,16 +148,23 @@ def test_dotted_boundary_validator_flags_regions_without_double_reporting_arrows
     assert not validate_no_dotted_boundaries(arrow)
 
 
-def test_per_layer_embedding_uses_solid_wiring():
-    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+@pytest.fixture(scope="module")
+def _source_proven_ple_html():
+    return unfold(
+        AutoConfig.for_model("gemma3n_text").to_dict()).to_html(standalone=True)
+
+
+def test_per_layer_embedding_uses_solid_wiring(_source_proven_ple_html):
+    html = _source_proven_ple_html
     assert validate_no_dotted_arrows(html) == []
 
 
-def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks():
+def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks(
+        _source_proven_ple_html):
     """PLE projection widths are card facts, never text beside diagram boxes."""
     import re
 
-    html = unfold(CORPUS["per_layer_embedding"]).to_html(standalone=True)
+    html = _source_proven_ple_html
     match = re.search(
         r'<svg[^>]*aria-label="[^"]*per-layer embeddings block".*?</svg>',
         html,
@@ -164,9 +172,9 @@ def test_per_layer_embedding_keeps_dimensions_on_cards_not_svg_blocks():
     )
     assert match
     svg = match.group(0)
-    assert "64  -&gt;  128" not in svg
-    assert "128  -&gt;  64" not in svg
-    assert "64 → 128" in html and "128 → 64" in html  # retained as card chips
+    assert "256  -&gt;  2,048" not in svg
+    assert "2,048  -&gt;  256" not in svg
+    assert "256 → 2,048" in html and "2,048 → 256" in html
 
 
 def test_known_keys_cover_the_real_tree():

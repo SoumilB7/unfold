@@ -88,57 +88,19 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     # full/linear mixers) additionally carries one entry per distinct signature
     # so the tower renders every real layer type — same collapse the main
     # architecture view uses (ir.distinct_layer_groups).
-    from .adapters.transformer.parser import _norm_kind_evidence, _unwrap_text
     from .ir import distinct_layer_groups
     groups = distinct_layer_groups(ir.layers)
     dominant = max(groups, key=lambda group: len(group["indices"]))
     layer = dominant["layer"]
     ffn = layer.ffn
 
-    # The universal parser fills modern-LM *defaults* (RMSNorm, gated) when a
-    # config is silent — right for decoder LLMs, invented facts for encoders.
-    # Carry norm/gated only when EVIDENCE states them (config declaration, eps
-    # spelling, or the norm class's forward() math — the same channel stack the
-    # universal parser uses, so a frozen minimal config with no eps field still
-    # gets its norm from the installed modeling source, never from a default).
-    inner = c.get("text_config") if isinstance(c.get("text_config"), dict) else {}
-    def _has(*keys):
-        return any(k in src for src in (c, inner) for k in keys)
-    text_cfg = _unwrap_text(c)
-    # U2-R7: the norm-evidence helper reads eps spellings off the (possibly
-    # nested) text config — name the object here so those reads are located.
-    from .adapters.transformer.common import wrapper_path as _wrapper_path
-    from .evidence import config_access as _config_access
-    with _config_access.config_container(_wrapper_path(c, text_cfg),
-                                         obj=text_cfg):
-        norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
-            str(_norm_kind_evidence(
-                text_cfg,
-                (inner.get("norm_type") if isinstance(inner, dict) else None)
-                or c.get("norm_type"),
-                context) or "").lower())
-    # The transformer parse above already resolved this exact decoder-block
-    # occurrence through ``decoder_ffn_mechanism_for_path``.  Re-scanning the
-    # component here used to create a second, whole-file FFN authority and let
-    # config selectors filter its answer.  Project the canonical typed fact
-    # directly instead: embedded and standalone parses now share one result.
+    # The recursively parsed ModelIR is the ONLY source.  Re-reading norm
+    # spellings or relaying an FFN source owner here creates a second embedded-
+    # only authority and breaks standalone parity.
+    norm = {"rmsnorm": "RMSNorm", "layernorm": "LayerNorm"}.get(
+        layer.norm_kind)
     gated = ffn.gated
     act = ffn.activation
-    # Preserve the exact mechanism owner as render provenance.  This replaces
-    # the retired whole-file evidence envelope; it is copied from the SAME
-    # cached ReaderResult that authored FFNSpec and cannot change the fact.
-    _ffn_result = context.reader_results.get(
-        ("decoder.ffn.mechanism", tuple(_wrapper_path(c, text_cfg))))
-    _ffn_value = (
-        _ffn_result.value if _ffn_result is not None
-        and _ffn_result.status == "resolved" else None)
-    _ffn_symbol = getattr(_ffn_value, "owner_symbol", None)
-    _ffn_source_owner = (
-        _ffn_symbol.qualified_name.rsplit(".", 1)[0]
-        if _ffn_symbol is not None else None)
-    _ffn_source_file = (
-        _ffn_symbol.source.canonical_path
-        if _ffn_symbol is not None else None)
     # Flat fields are PROSE/legacy-display only — attention geometry lives on
     # the sub-model spec's typed facts (attention_detail per group), never
     # duplicated here.
@@ -154,8 +116,6 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     out = {k: v for k, v in fields.items() if v}
     if gated is not None:
         out["gated"] = bool(gated)
-    position = (ir.extras or {}).get("position_encoding")
-
     # The ONE facts-only sub-model spec — groups, schedule, per-group typed
     # attention/FFN facts, evidence envelopes — replaces every hand-plumbed
     # structural key.  Drill children/cards/regions derive from it at
@@ -163,22 +123,17 @@ def _project_encoder_spec(c: dict, ir, context) -> dict:
     # new IR fact reaches every embedded context (at any nesting depth) with
     # zero relay edits here.
     from .submodel import submodel_spec
+    # The context is evidence metadata only: ``submodel_spec`` derives exact
+    # callable citations from its already-computed typed ReaderResults.  The
+    # caller cannot relay an FFN owner/file (the old drift-prone path), and the
+    # architectural shape remains solely the typed ModelIR.
     out["sub_model"] = submodel_spec(
-        ir,
-        altitude="tower",
-        norm_label=norm,
-        position_evidence=position if isinstance(position, dict) else None,
-        ffn_source_owner=_ffn_source_owner,
-        ffn_source_file=_ffn_source_file,
-    )
+        ir, altitude="tower", evidence_context=context)
     # Flat prose fields (title/chips wording) derive from the spec's dominant
     # group — never hand-built a second time.
     spec_groups = out["sub_model"]["groups"]
     dominant_group = max(spec_groups, key=lambda group: group["count"])
     out["attention_detail"] = dominant_group["attention"]
-    if isinstance(position, dict):
-        out["position_evidence"] = position
-
     return out
 
 __all__ = ["hydrate_encoder_config_facts", "normalize_encoder_config"]

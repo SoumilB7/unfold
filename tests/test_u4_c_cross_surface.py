@@ -96,12 +96,15 @@ def test_all_layer_grouping_consumers_use_the_same_signature():
 
 _ATTENTION_MUTATIONS = {
     "kind": "gqa",
+    "mixer_state": "ordinary_attention",
     "num_heads": 16,
     "num_kv_heads": 2,
     "head_dim": 32,
     "kv_lora_rank": 4,
     "q_lora_rank": 5,
     "rope_dim": 8,
+    "rope_theta": 500000.0,
+    "rope_initialization": {"protocol": "inverse_frequency"},
     "qk_nope_head_dim": 12,
     "qk_rope_head_dim": 4,
     "v_head_dim": 14,
@@ -115,8 +118,6 @@ _ATTENTION_MUTATIONS = {
     "rope": True,
     "position_kind": "rope",
     "position_application": "qk_rotation",
-    "position_declared": True,
-    "rope_theta_declared": 10000.0,
     "bias": True,
     "shared": True,
     "no_rope": True,
@@ -146,10 +147,6 @@ def test_every_attention_architecture_field_changes_every_grouping_consumer():
     assert structural == set(_ATTENTION_MUTATIONS)
     for name, value in _ATTENTION_MUTATIONS.items():
         updates = {name: value}
-        if name == "rope_theta_declared":
-            # The serializer lawfully carries theta only with its declaration
-            # provenance; mutate the smallest valid fact pair.
-            updates["position_declared"] = True
         candidate = replace(base, attention=replace(base.attention, **updates))
         signatures = _all_signatures(candidate)
         assert signatures.count(signatures[0]) == len(signatures), name

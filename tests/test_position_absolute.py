@@ -154,7 +154,62 @@ class Decoy(nn.Module):
     assert result.status != "resolved"
 
 
-def test_internal_embedding_coordinate_protocol_is_code_proven(tmp_path):
+def test_arange_plus_a_tensor_is_not_a_coordinate_offset(tmp_path):
+    source = _SOURCE.replace(
+        "coordinate_ids = torch.arange(token_vectors.shape[1])",
+        "coordinate_ids = torch.arange(token_vectors.shape[1]) + token_ids")
+    assert _result(tmp_path, source).status != "resolved"
+
+
+def test_arange_of_an_arbitrary_tensor_is_not_a_coordinate_origin(tmp_path):
+    source = _SOURCE.replace(
+        "torch.arange(token_vectors.shape[1])",
+        "torch.arange(token_vectors)")
+    assert _result(tmp_path, source).status != "resolved"
+
+
+def test_method_name_alone_cannot_prove_a_cache_length_offset(tmp_path):
+    source = _SOURCE.replace(
+        "torch.arange(token_vectors.shape[1])",
+        "torch.arange(token_vectors.shape[1]) + token_vectors.get_seq_length()")
+    assert _result(tmp_path, source).status != "resolved"
+
+
+def test_exact_optional_framework_cache_offset_is_a_scalar_coordinate(tmp_path):
+    source = (_SOURCE.replace(
+        "def forward(self, token_ids, coordinate_ids=None):",
+        "def forward(self, token_ids, coordinate_ids=None, past_key_values=None):")
+        .replace(
+            "coordinate_ids = torch.arange(token_vectors.shape[1])",
+            "past = (past_key_values.get_seq_length() "
+            "if past_key_values is not None else 0)\n"
+            "            coordinate_ids = torch.arange("
+            "past, past + token_vectors.shape[1])"))
+    assert _result(tmp_path, source).status == "resolved"
+
+
+@pytest.mark.parametrize("old,new", [
+    ("past_key_values=None", "past_key_values=object()"),
+    ("past_key_values is not None", "coordinate_ids is not None"),
+    ("past_key_values.get_seq_length()",
+     "past_key_values.get_seq_length(1)"),
+])
+def test_cache_method_near_miss_cannot_certify_a_coordinate(
+        tmp_path, old, new):
+    source = (_SOURCE.replace(
+        "def forward(self, token_ids, coordinate_ids=None):",
+        "def forward(self, token_ids, coordinate_ids=None, past_key_values=None):")
+        .replace(
+            "coordinate_ids = torch.arange(token_vectors.shape[1])",
+            "past = (past_key_values.get_seq_length() "
+            "if past_key_values is not None else 0)\n"
+            "            coordinate_ids = torch.arange("
+            "past, past + token_vectors.shape[1])")
+        .replace(old, new))
+    assert _result(tmp_path, source).status != "resolved"
+
+
+def test_arbitrary_cumsum_is_not_position_evidence(tmp_path):
     source = _SOURCE.replace(
         "class Stage(nn.Module):",
         """class CoordinateEmbedding(nn.Embedding):
@@ -174,8 +229,7 @@ class Stage(nn.Module):""",
     ).replace(
         "coordinate_ids = torch.arange(token_vectors.shape[1])",
         "coordinate_ids = token_ids")
-    result = _result(tmp_path, source)
-    assert result.status == "resolved", result
+    assert _result(tmp_path, source).status != "resolved"
 
 
 @pytest.mark.parametrize("old,new", [
@@ -224,7 +278,7 @@ def test_real_gpt2_source_proves_the_same_relation():
     assert result.value.kind == "learned_absolute"
 
 
-def test_real_opt_internal_coordinate_embedding_proves_the_same_relation():
+def test_real_opt_waits_for_the_u8_mask_to_coordinate_join():
     from transformers import AutoConfig
     from model_unfolder.evidence.sources import resolve_source_files
 
@@ -232,5 +286,4 @@ def test_real_opt_internal_coordinate_embedding_proves_the_same_relation():
     bundle = resolve_source_files(config)
     result = decoder_learned_absolute_position_for_path(
         build_program_index(bundle), bundle, (), allow_root_stage=True)
-    assert result.status == "resolved", result
-    assert result.value.kind == "learned_absolute"
+    assert result.status != "resolved"

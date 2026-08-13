@@ -152,6 +152,53 @@ def test_only_one_rotated_lane_does_not_resolve(tmp_path):
     assert result.status == "failed"
 
 
+def _internal_partial_pair_source():
+    helper = """
+def apply_pair(a, b, factor_a, factor_b, width):
+    a_prefix, a_suffix = a[..., :width], a[..., width:]
+    b_prefix, b_suffix = b[..., :width], b[..., width:]
+    out_a = (a_prefix * factor_a) + (half_turn(a_prefix) * factor_b)
+    out_b = (b_prefix * factor_a) + (half_turn(b_prefix) * factor_b)
+    out_a = torch.cat([out_a, a_suffix], dim=-1)
+    out_b = torch.cat([out_b, b_suffix], dim=-1)
+    return out_a, out_b
+"""
+    start = _BASE.index("def apply_pair")
+    end = _BASE.index("\nclass AttentionLane")
+    source = _BASE[:start] + helper + _BASE[end:]
+    return source.replace(
+        "apply_pair(q, k, first_factor, second_factor)",
+        "apply_pair(q, k, first_factor, second_factor, q.shape[-1] // 2)")
+
+
+def test_exact_internal_prefix_rotation_and_suffix_recombination_resolves(
+        tmp_path):
+    result = _result(tmp_path, _internal_partial_pair_source())
+    assert result.status == "resolved", result
+    assert result.value.rotation_protocol == "split_half_turn"
+
+
+@pytest.mark.parametrize(("old", "new"), [
+    ("b[..., width:]", "b[..., width + 1:]"),
+    ("[out_a, a_suffix]", "[a_suffix, out_a]"),
+    ("[out_b, b_suffix]", "[b_suffix, out_b]"),
+    ("torch.cat([out_a, a_suffix], dim=-1)",
+     "torch.cat([out_a, a_suffix], dim=1)"),
+])
+def test_internal_partial_rotation_requires_exact_complementary_recombination(
+        tmp_path, old, new):
+    source = _internal_partial_pair_source().replace(old, new, 1)
+    assert source != _internal_partial_pair_source()
+    assert _result(tmp_path, source).status == "failed"
+
+
+def test_internal_partial_rotation_must_recombine_both_q_and_k_lanes(tmp_path):
+    source = _internal_partial_pair_source().replace(
+        "out_b = torch.cat([out_b, b_suffix], dim=-1)",
+        "out_b = b")
+    assert _result(tmp_path, source).status == "failed"
+
+
 def test_exact_chunk_pair_rotation_protocol_resolves(tmp_path):
     chunk_helpers = """
 def apply_one(x, direct, rotated):

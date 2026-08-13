@@ -18,6 +18,10 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "kv_lora_rank": attention.kv_lora_rank,
         "q_lora_rank": attention.q_lora_rank,
         "rope_dim": attention.rope_dim,
+        **({"rope_theta": attention.rope_theta}
+           if attention.rope_theta is not None else {}),
+        **({"rope_initialization": attention.rope_initialization}
+           if attention.rope_initialization is not None else {}),
         "qk_nope_head_dim": attention.qk_nope_head_dim,
         "qk_rope_head_dim": attention.qk_rope_head_dim,
         "v_head_dim": attention.v_head_dim,
@@ -58,12 +62,6 @@ def attention_detail(attention: AttentionSpec) -> dict:
         "projection_mode": attention.projection_mode,
         "scores_scaled": attention.scores_scaled,
         "variant": attention.variant,
-        # U2 P3a: emitted only on the config-declared position fallback so
-        # every code-proven model's block detail stays byte-stable
-        **({"position_declared": True} if attention.position_declared else {}),
-        **({"rope_theta_declared": attention.rope_theta_declared}
-           if attention.position_declared
-           and attention.rope_theta_declared is not None else {}),
         # emitted only when DECLARED (same rule as the IR projection) so
         # undeclared models' block detail stays byte-stable
         **({"scores_scale": attention.scores_scale}
@@ -143,11 +141,11 @@ def attention_child_blocks(attention: AttentionSpec, hidden_size: int, *,
 def _sdpa_child_blocks(attention: AttentionSpec, hidden_size: int, *, generic: bool = False) -> list[Block]:
     hidden = _fmt(hidden_size)
     num_heads = attention.num_heads or 0
-    num_kv_heads = attention.num_kv_heads or num_heads
+    num_kv_heads = attention.num_kv_heads or 0
     head_dim = attention.head_dim or 0
     q_per_group = num_heads // num_kv_heads if (num_heads and num_kv_heads and num_heads % num_kv_heads == 0) else None
-    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
-    kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
+    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else "?"
+    kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else "?"
     d_k = _fmt(head_dim) if head_dim else "d_k"
     if attention.kind in {"mha", "gqa", "mqa"}:
         return _sdpa_detailed_child_blocks(
@@ -484,13 +482,20 @@ def _sdpa_detailed_child_blocks(
             if (attention.kind != "mla" and isinstance(_prd, int)
                 and isinstance(_hd, int) and 0 < _prd < _hd) else ""
         )
+        theta_note = (
+            f" The exact initialized frequency base is θ={attention.rope_theta:g}."
+            if attention.rope_theta is not None else "")
         cards += [
             {"id": "q_rope", "title": "Apply RoPE (Q)",
              "description": "Rotary position embedding applied to the query heads before the scores."
-                            + rot_note},
+                            + rot_note + theta_note,
+             **({"facts": [f"frequency base θ={attention.rope_theta:g}"]}
+                if attention.rope_theta is not None else {})},
             {"id": "k_rope", "title": "Apply RoPE (K)",
              "description": "Rotary position embedding applied to the key heads before the scores."
-                            + rot_note},
+                            + rot_note + theta_note,
+             **({"facts": [f"frequency base θ={attention.rope_theta:g}"]}
+                if attention.rope_theta is not None else {})},
         ]
     if (attention.position_kind == "alibi"
             and attention.position_application == "attention_bias" and not cross_attention):
@@ -574,12 +579,12 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
     kv_rank = _fmt(attention.kv_lora_rank)
     num_heads = attention.num_heads or 0
     head_dim = attention.head_dim or 0
-    # Per-head slice widths — straight from the config (DeepSeek/Kimi declare
-    # them); the noPE width falls back to head_dim minus the RoPE width.
-    rope_v = attention.rope_dim or attention.qk_rope_head_dim or 0
+    # Per-head slice widths are independent qualified facts.  A missing noPE
+    # or V width may not be reconstructed from the other lanes.
+    rope_v = attention.qk_rope_head_dim or 0
     rope = _fmt(rope_v) if rope_v else "?"
-    nope_v = attention.qk_nope_head_dim or ((head_dim - rope_v) if (head_dim and rope_v) else None)
-    v_v = attention.v_head_dim or nope_v
+    nope_v = attention.qk_nope_head_dim
+    v_v = attention.v_head_dim
     nope_fact = [f"{_fmt(nope_v)} per head"] if nope_v else []
     concat_fact = ([f"head dim {_fmt(nope_v + rope_v)} = {_fmt(nope_v)} + {_fmt(rope_v)}"]
                    if (nope_v and rope_v) else [])
@@ -589,7 +594,7 @@ def _mla_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]
         and attention.position_application == "qk_rotation"
         and not attention.no_rope
     )
-    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
+    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else "?"
     query_children = [
         {
             "id": "mla_q",
@@ -977,10 +982,10 @@ def _rwkv_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block
 def _linear_attention_child_blocks(attention: AttentionSpec, hidden_size: int) -> list[Block]:
     hidden = _fmt(hidden_size)
     num_heads = attention.num_heads or 0
-    num_kv_heads = attention.num_kv_heads or num_heads
+    num_kv_heads = attention.num_kv_heads or 0
     head_dim = attention.head_dim or 0
-    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else hidden
-    kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else hidden
+    q_out = _fmt(num_heads * head_dim) if (num_heads and head_dim) else "?"
+    kv_out = _fmt(num_kv_heads * head_dim) if (num_kv_heads and head_dim) else "?"
     return [
         {
             "id": "q_proj",

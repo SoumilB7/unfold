@@ -250,19 +250,27 @@ class ParseContext:
 
 @identity_address
 def _installed_config_defaults(target: Any) -> dict | None:
-    """The installed config CLASS defaults for the target's declared
-    ``model_type`` — the hydration channel (parser's
-    ``_hydrate_config_class_defaults``) exposed as an evidence TIER.
-    Never raises; never executes model code."""
-    model_type = (target.get("model_type") if isinstance(target, dict)
-                  else getattr(target, "model_type", None))
-    if not model_type:
+    """The config CLASS overlay for this exact checkpoint document.
+
+    This must use the same preparation primitive as the parser boundary.  A
+    stock ``AutoConfig.for_model(model_type)`` instance is *not* the class
+    overlay for a checkpoint: derived defaults can depend on values the
+    checkpoint supplied (for example Llama's ``head_dim`` depends on its
+    hidden width and head count).  Building an empty stock config therefore
+    fabricated dimensions for small/custom checkpoints.
+
+    The returned mapping contains only class-supplied or class-normalized
+    candidates.  Checkpoint declarations stay in their original document and
+    are arbitrated separately; this preserves the Falcon ``multi_query`` law.
+    Never executes model code.
+    """
+    if not isinstance(target, dict) or not target.get("model_type"):
         return None
-    try:
-        from transformers import AutoConfig
-        return AutoConfig.for_model(str(model_type)).to_dict()
-    except Exception:
+    from .document import prepare_document
+    prepared = prepare_document(target, merge=False)
+    if prepared.failure is not None:
         return None
+    return dict(prepared.class_overlay)
 
 
 def _installed_config_defaults_by_path(
@@ -307,7 +315,9 @@ __all__ = ["ParseContext", "FactLedger", "FactRecord", "FACT_STATUSES"]
 # depends on it: a sub-parse must never re-resolve source/identity
 # from its own, possibly scrubbed, sub-config).
 def slot_parse_context(root_context, slot: str, *,
-                       namespace: str | None = None):
+                       namespace: str | None = None,
+                       document: Any = None,
+                       binding: Any = None):
     """A ParseContext for one pipeline SLOT (text_encoder / text_encoder_2 / …),
     derived from the root's ALREADY-RESOLVED bundle.  The sub-parse must not
     re-resolve source from its own sub-config: the pipeline resolution already
@@ -337,6 +347,10 @@ def slot_parse_context(root_context, slot: str, *,
                 out[key[len(prefix):]] = value
         return out
     component_files = {k: tuple(v) for k, v in _reroot(all_files).items()}
+    supporting_files = {
+        k: tuple(v) for k, v in _reroot(
+            getattr(bundle, "supporting_files", {}) or {}).items()
+    }
     files: list[str] = []
     for group in component_files.values():
         files.extend(f for f in group if f not in files)
@@ -348,6 +362,7 @@ def slot_parse_context(root_context, slot: str, *,
         model_type=component_model_types.get("root"),
         architecture=component_architectures.get("root"),
         component_files=component_files,
+        supporting_files=supporting_files,
         component_model_types=component_model_types,
         component_architectures=component_architectures,
     )
@@ -363,7 +378,40 @@ def slot_parse_context(root_context, slot: str, *,
         "architectures": ([component_architectures.get("root")]
                           if component_architectures.get("root") else None),
     }
-    _slot_defaults = _installed_config_defaults(_slot_identity)
+    # A class overlay must be derived from THIS slot's checkpoint values.  The
+    # old identity-only hydration (``{model_type, architectures}``) recreated
+    # stock dimensions for embedded/custom encoders even after the root path
+    # had been fixed.  When the caller does not possess the slot document, no
+    # overlay is safer than a fabricated one; source/address resolution remains
+    # available through the pre-resolved bundle either way.
+    # Reuse the exact class overlay resolved from the ORIGINAL root document.
+    # A name-blind replay deliberately scrubs the child ``model_type``; asking
+    # the scrubbed child to resolve its config class again would lose valid
+    # class-default operands (for example T5 ``d_kv``) and make architecture
+    # depend on an identity value whose address was already resolved.  The
+    # exact DocumentBinding is the join authority—never a loose path or the
+    # slot spelling alone.  It self-verifies object identity, and the final
+    # address segment must be this exact source-bundle component.  A
+    # standalone/direct caller without that bound root-path evidence retains
+    # the ordinary local preparation path.
+    _document_path: tuple[str, ...] = ()
+    if binding is not None:
+        from .document import DocumentBinding
+        if not isinstance(binding, DocumentBinding):
+            raise TypeError("slot context binding must be a DocumentBinding")
+        if binding.prepared.document is not document:
+            raise ValueError(
+                "slot context binding does not describe the supplied document")
+        _document_path = tuple(binding.document_path)
+        if not _document_path or _document_path[-1] != slot:
+            raise ValueError(
+                "slot context binding path does not end at the requested slot")
+    _root_defaults = (
+        getattr(root_context, "class_defaults_by_path", None) or {})
+    _slot_defaults = (
+        dict(_root_defaults[_document_path])
+        if _document_path and _document_path in _root_defaults
+        else _installed_config_defaults(document))
     return ParseContext(
         source_bundle=sub_bundle, source=root_context.source,
         # Ownership namespace: this slot's facts are owned under

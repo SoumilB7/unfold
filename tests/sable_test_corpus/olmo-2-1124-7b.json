@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -70,17 +71,17 @@
     "vocab_size": 100352
   },
   "hash_signature": [
-    "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
     "375ae74c9482f6208152cd7e1e00c56b",
-    "e0e970b04bc1418c5ee3791eeb168410"
+    "d666bddcd4b65fb7b24c84d32815ae72",
+    "f0d17fa4a2e99755bf631734911bbc50"
   ],
   "model": "OLMo-2-1124-7B",
   "source": "local",
   "superseded_hash_signature": [
     "096978f4d011ae27b31036406b74f73f",
     "1ae3e6e5656fd8d7a8df14271e75d850",
-    "e07deb5f9eea6adf9aa6471c6494a672",
+    "375ae74c9482f6208152cd7e1e00c56b",
     "e0e970b04bc1418c5ee3791eeb168410"
   ],
   "visual_evidence": {

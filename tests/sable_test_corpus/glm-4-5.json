@@ -2,7 +2,7 @@
   "checks": {
     "asserted_facts": true,
     "click_coupling": true,
-    "config_accessed_unprojected": false,
+    "config_accessed_unprojected": true,
     "config_ambiguity": true,
     "config_audit_incomplete": true,
     "config_consumed_unreceipted": true,
@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -91,6 +92,19 @@
     "14116d9baf3e2c6b075d22750390f718",
     "1a58f54930d25fa7f9b24be19fed4cbb",
     "20889ca7018c025f4eda94dc2502ad2e",
+    "4540bfe30e21c2e05a867cabbc8da8cd",
+    "6358d38fa166c25631200a061e77e894",
+    "9f154ffd8f9114a8e742be3f83a85319",
+    "bdefc6faf978f47be8662e9e530a4ebb",
+    "cddd9ec335dc291ea738c45740c8a245",
+    "d08a31aea8f3894b54d243ea115ebb9e"
+  ],
+  "model": "GLM-4.5",
+  "source": "local",
+  "superseded_hash_signature": [
+    "14116d9baf3e2c6b075d22750390f718",
+    "1a58f54930d25fa7f9b24be19fed4cbb",
+    "20889ca7018c025f4eda94dc2502ad2e",
     "3038c56cf8d0752a2fcb5d658a191654",
     "57a17415a46443e0608bdecd6f278bd6",
     "6358d38fa166c25631200a061e77e894",
@@ -100,24 +114,9 @@
     "cdd24b992ae172e22e40afcd4ef44d95",
     "d4affbb2b425f1465ae8d40d6fa79c4e"
   ],
-  "model": "GLM-4.5",
-  "source": "local",
-  "superseded_hash_signature": [
-    "1903aeb488913c2a82ebb14153dd2502",
-    "1a58f54930d25fa7f9b24be19fed4cbb",
-    "20889ca7018c025f4eda94dc2502ad2e",
-    "3038c56cf8d0752a2fcb5d658a191654",
-    "57a17415a46443e0608bdecd6f278bd6",
-    "6011140c3b8d6e2edc5898d33cb25127",
-    "92ab533f54b291b7decea0d22b41fd34",
-    "972ca4cf6b4086ea85a6eef96bfb4917",
-    "bdefc6faf978f47be8662e9e530a4ebb",
-    "c0735937d6e21aaf8d36d1b1de7b24f2",
-    "cdd24b992ae172e22e40afcd4ef44d95"
-  ],
   "visual_evidence": {
     "gallery_dir": "galleries/glm-4-5",
     "manifest": true,
-    "png_count": 11
+    "png_count": 9
   }
 }

@@ -191,6 +191,7 @@ def test_real_musicgen_positive_and_llama_negative():
     assert result.status == "resolved", result
     assert result.value.embeddings_summed is True
     assert result.value.heads_stacked is True
+    assert result.value.count_path == ("decoder", "num_codebooks")
 
     llama = json.loads(
         (_CORPUS / "llama-7b.json").read_text())["config"]
@@ -220,3 +221,10 @@ def test_lane_closure_rejects_self_certified_aggregate_argument(tmp_path):
     forged = replace(call, args=value.embedding_sum.aggregate_call.args)
     with pytest.raises(ValueError):
         replace(value.head_stack, aggregate_call=forged)
+
+
+def test_count_path_cannot_be_forged_from_an_uncited_container(tmp_path):
+    value = _reader(tmp_path).value
+    assert value.embedding_sum.count_path is None
+    with pytest.raises(ValueError):
+        replace(value.embedding_sum, count_path=("num_codebooks",))

@@ -81,10 +81,25 @@ def build_io(raw: dict) -> dict[str, Any]:
             "trace":         {"ir_path": "extras.render.model_blocks.embed"},
         }),
     }
-    position = ((raw.get("extras") or {}).get("position_encoding") or {})
-    mechanisms = position.get("mechanisms") or [] if isinstance(position, dict) else []
-    if any(item.get("kind") in {"learned_absolute", "fixed_absolute"} for item in mechanisms
-           if isinstance(item, dict)):
+    # Model-stage positional addition is projected from the canonical layer
+    # specs plus the canonical model-block graph.  The retired raw
+    # ``extras.position_encoding`` envelope was a second structural authority.
+    model_blocks = tuple(
+        block for block in
+        (((raw.get("extras") or {}).get("render") or {})
+         .get("model_blocks") or [])
+        if isinstance(block, dict))
+    model_block_ids = {block.get("id") for block in model_blocks}
+    position_add = next(
+        (block for block in model_blocks if block.get("id") == "position_add"),
+        None)
+    position_add_detail = (position_add or {}).get("detail") or {}
+    if (position_add_detail.get("position_kind")
+            in {"learned_absolute", "fixed_absolute"}
+            and position_add_detail.get("position_application")
+            == "embedding_add"
+            and {"position_ids", "position_embed", "position_add"}
+            <= model_block_ids):
         out["position_ids"] = {
             "kind": "position_ids",
             "shape": ["batch", "sequence"],

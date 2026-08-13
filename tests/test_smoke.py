@@ -66,7 +66,9 @@ def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately
     ir = unfold(cfg).to_ir()
     assert [ir["layers"][i]["attention"]["kind"] for i in (0, 3)] == ["gated_delta", "gqa"]
     delta = ir["layers"][0]["attention"]
-    assert delta["rope"] is False and delta["conv_kernel_size"] == 4
+    # Mixer placement is exact; position application is an independent
+    # per-occurrence proof and remains unknown rather than inferred NoPE.
+    assert delta["rope"] is None and delta["conv_kernel_size"] == 4
     assert delta["output_gate"] is None
     assert ir["layers"][3]["attention"]["output_gate"] == "sigmoid"
     assert len({layer.signature() for layer in parse(cfg).layers}) == 2
@@ -76,8 +78,12 @@ def test_hybrid_layer_schedule_renders_gated_delta_and_full_attention_separately
     assert "Gate attention output" in html
 
 
-def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
-    from model_unfolder.evidence.models import PositionalEvidence
+def test_failed_exact_position_readers_never_consult_identity_fallback(monkeypatch):
+    from model_unfolder.evidence.reader_result import ReaderFailure, ReaderResult
+    from model_unfolder.evidence import (
+        position_absolute, position_fixed, position_linear_bias,
+        position_relative_bias, position_schedule,
+    )
     from model_unfolder.adapters.transformer import parser as parser_module
 
     cfg = {
@@ -85,36 +91,38 @@ def test_positional_ambiguity_never_consults_identity_fallback(monkeypatch):
         "intermediate_size": 128, "num_hidden_layers": 1,
         "num_attention_heads": 4, "hidden_act": "gelu",
     }
-    monkeypatch.setattr(
-        parser_module, "_code_position",
-        lambda _cfg, _context=None: PositionalEvidence("ambiguous", reason="negative control"),
-    )
+    failed = ReaderResult(
+        "failed", failures=(ReaderFailure(
+            "incomplete_graph", "negative control"),))
+    for module, name in (
+        (position_schedule, "decoder_position_application_schedule_for_path"),
+        (position_absolute, "decoder_learned_absolute_position_for_path"),
+        (position_fixed, "decoder_fixed_absolute_position_for_path"),
+        (position_linear_bias, "decoder_alibi_score_bias_for_path"),
+        (position_relative_bias, "decoder_relative_position_bias_for_path"),
+    ):
+        monkeypatch.setattr(module, name, lambda *args, **kwargs: failed)
     ir = parser_module.parse(cfg)
     assert ir.layers[0].attention.position_kind == "unknown"
     assert ir.layers[0].attention.rope is None
-    assert any("positional scheme is unresolved" in warning for warning in ir.warnings)
+    assert any("positional operation is unresolved" in warning for warning in ir.warnings)
 
 
-def test_oracle_missing_position_is_unknown_independent_of_model_identity(monkeypatch):
-    from model_unfolder.evidence.models import PositionalEvidence
+def test_source_missing_position_is_unknown_independent_of_model_identity():
     from model_unfolder.adapters.transformer import parser as parser_module
 
     base = {
         "vocab_size": 100, "hidden_size": 64, "intermediate_size": 128,
         "num_hidden_layers": 1, "num_attention_heads": 4, "hidden_act": "gelu",
     }
-    monkeypatch.setattr(
-        parser_module, "_code_position",
-        lambda _cfg, _context=None: PositionalEvidence("oracle_missing", reason="negative control"),
-    )
-    bloom = parser_module.parse({**base, "model_type": "bloom"})
+    bloom = parser_module.parse({**base, "model_type": "bloom_like_uninstalled"})
     unknown = parser_module.parse({**base, "model_type": "unseen_decoder"})
     assert bloom.layers[0].attention.rope is None
     assert unknown.layers[0].attention.rope is None
     assert bloom.layers[0].attention.position_kind == "unknown"
     assert unknown.layers[0].attention.position_kind == "unknown"
-    assert "fallback_rope" not in bloom.extras["position_encoding"]
-    assert "fallback_rope" not in unknown.extras["position_encoding"]
+    assert "position_encoding" not in bloom.extras
+    assert "position_encoding" not in unknown.extras
     assert any("source is unavailable" in warning for warning in bloom.warnings)
 
 
@@ -125,8 +133,12 @@ def test_learned_absolute_position_is_drawn_at_model_input_with_two_input_add():
     ir = diagram.to_ir()
     ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
     assert {"position_ids", "position_embed", "position_add"} <= ids
-    assert ir["layers"][0]["attention"]["position_kind"] == "learned_absolute"
-    assert ir["layers"][0]["attention"]["rope"] is False
+    assert ir["layers"][0]["attention"]["position_kind"] == "unknown"
+    assert ir["extras"]["fact_provenance"][
+        "decoder.input.position_addition"]["value"] == {
+            "position_kind": "learned_absolute",
+            "position_application": "embedding_add",
+        }
     assert diagram.wiring_problems() == []
     html = diagram.to_html(standalone=True)
     assert "Learned Position Embedding" in html
@@ -142,8 +154,12 @@ def test_fixed_absolute_position_uses_the_same_exact_model_input_topology():
     ir = diagram.to_ir()
     ids = {block["id"] for block in ir["extras"]["render"]["model_blocks"]}
     assert {"position_ids", "position_embed", "position_add"} <= ids
-    assert ir["layers"][0]["attention"]["position_kind"] == "fixed_absolute"
-    assert ir["layers"][0]["attention"]["rope"] is False
+    assert ir["layers"][0]["attention"]["position_kind"] == "unknown"
+    assert ir["extras"]["fact_provenance"][
+        "decoder.input.position_addition"]["value"] == {
+            "position_kind": "fixed_absolute",
+            "position_application": "embedding_add",
+        }
     assert diagram.wiring_problems() == []
     html = diagram.to_html(standalone=True)
     assert "Fixed Position Encoding" in html
@@ -510,13 +526,10 @@ def test_layer_repeat_badge_is_per_variant_not_global_total():
 
 
 def test_reused_router_drill_resolves_its_own_routing_not_the_ambient_variant():
-    """An MTP block reuses the grouped-MoE decoder layer; its Top-k drill must show
-    the SAME grouped torch sequence everywhere — never collapse to a plain (non-grouped)
-    torch.topk just because a dense-layer variant tab is the ambient dominant. Regression:
-    the drill read info['dominant'] instead of its own block-local detail.ffn."""
+    """Every grouped-MoE variant resolves its block-local routing drill."""
     from model_unfolder.preview import svg_views
     # Needs all three: dense+MoE variants (first_k_dense_replace), GROUPED routing
-    # (so the drill is multi-step), and an MTP block that reuses the layer.
+    # (so the drill is multi-step).
     cfg = {**DEEPSEEK_V3_CONFIG, "num_hidden_layers": 4, "first_k_dense_replace": 1,
            "num_nextn_predict_layers": 1, "scoring_func": "sigmoid", "topk_method": "noaux_tc",
            "n_group": 8, "topk_group": 4, "norm_topk_prob": True, "routed_scaling_factor": 2.5}
@@ -527,42 +540,17 @@ def test_reused_router_drill_resolves_its_own_routing_not_the_ambient_variant():
     assert all(drills), "a reused-router drill rendered non-grouped — variant leaked into block resolution"
 
 
-def test_mtp_head_detected_and_rendered():
+def test_mtp_count_without_constructed_modules_is_not_rendered():
     d = unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 1})
     ir = d.to_ir()
-
-    assert ir["extras"]["mtp"]["num_modules"] == 1
-    mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
-    assert mtp["role"] == "mtp" and mtp["view"] == "mtp_head"
-
-    # Surfaced in the prose-free expanded schema too.
-    assert d.to_json()["multi_token_prediction"]["num_modules"] == 1
-
+    assert "mtp" not in ir["extras"]
+    assert all(block["id"] != "mtp"
+               for block in ir["extras"]["render"]["model_blocks"])
+    assert "multi_token_prediction" not in d.to_json()
     html = d.to_html(standalone=True)
-    assert "MTP head" in html
-    assert 'data-card-id="mtp"' in html
-    assert "eh_proj" in html  # detail-view internals rendered
-
-    # The transformer block opens into its own tower (like the vision encoder),
-    # but it is ONE block — no repeat pill/frame pretending it is a region.
-    assert "decoder layer" not in html
-    assert "Multi-Head Latent" in html
-
-    # The block REUSES the real decoder-layer blocks as its children (no
-    # synthesized internals, no per-block plumbing), so they route through the
-    # central router into the same MLA / MoE drill-downs as the main stack.
-    mtp = next(b for b in ir["extras"]["render"]["model_blocks"] if b["id"] == "mtp")
-    tblock = next(c for c in mtp["children"] if c["id"] == "mtp_block")
-    child_kinds = {c.get("kind") for c in tblock["children"]}
-    assert {"attention", "ffn", "norm"} <= child_kinds
-    attn = next(c for c in tblock["children"] if c.get("kind") == "attention")
-    assert attn["view"] == "attention"
-    assert {"mla_query_path", "mla_kv_path"} <= {c["id"] for c in attn.get("children", [])}
-    # the reused attention's drill-downs are present as cards
-    assert 'data-card-id="mla_query_path"' in html
-
-    # The module count is surfaced when > 1.
-    assert "MTP head x2" in unfold({**DEEPSEEK_V3_CONFIG, "num_nextn_predict_layers": 2}).to_html()
+    assert "MTP head" not in html
+    assert 'data-card-id="mtp"' not in html
+    assert "eh_proj" not in html
 
 
 def test_models_without_mtp_have_no_mtp_block():
@@ -578,27 +566,30 @@ def test_gemma4_31b():
     assert ir["name"] == "gemma-4-31B"
     assert len(ir["layers"]) == 60
 
-    # Sliding/full pattern: every 6th layer is full, rest are sliding.
-    for i, layer in enumerate(ir["layers"]):
+    # This future/custom fixture has no resolvable modeling source.  Its
+    # config-carried mask schedule cannot prove an applied mask mechanism, and
+    # its plausible head/FFN numbers likewise cannot author architecture.
+    # Every affected field therefore stays honestly unknown.
+    for layer in ir["layers"]:
         attn = layer["attention"]
-        if (i % 6) == 5:
-            assert attn["mask"] == "global", f"layer {i} should be full attention"
-            assert attn["num_kv_heads"] == 4
-            assert attn["head_dim"] == 512
-        else:
-            assert attn["mask"] == "sliding", f"layer {i} should be sliding"
-            assert attn["window_size"] == 1024
-            assert attn["num_kv_heads"] == 16
-            assert attn["head_dim"] == 256
-        assert attn["num_heads"] == 32
+        assert attn["mask"] == "unknown"
+        assert attn["window_size"] is None
+        assert attn["kind"] is None
+        assert attn["num_heads"] is None
+        assert attn["num_kv_heads"] is None
+        assert attn["head_dim"] is None
         # This future/custom architecture has no exact FFN owner source in the
         # fixture. U4-C keeps its width but does not infer "dense" from absence
         # of expert fields.
         assert layer["ffn"]["kind"] is None
 
-    # Two distinct layer signatures → layer-map shows two colored groups.
+    assert "decoder.attention.mask_schedule" not in (
+        ir["extras"].get("fact_provenance") or {})
+
+    # No source-proven schedule means one unresolved layer signature, not a
+    # fabricated alternating map copied from config.
     sigs = {(l["attention"]["mask"], l["attention"]["window_size"]) for l in ir["layers"]}
-    assert sigs == {("sliding", 1024), ("global", None)}
+    assert sigs == {("unknown", None)}
 
     assert ir["params"]["is_sparse"] is False
 
@@ -699,8 +690,13 @@ def test_diffusion_gemma_block_worthiness():
     assert validate_click_coupling(html) == []
 
 
-def test_sliding_window_toggle_and_split():
-    """AP-1: respect use_sliding_window and the Qwen max_window_layers split."""
+def test_config_only_sliding_window_toggles_cannot_author_a_mask_schedule():
+    """U8: declarations alone cannot invent a per-layer mask schedule.
+
+    The three configs intentionally suggest three different layouts.  Without
+    an exact construction/forward proof they must remain structurally equal
+    and unknown rather than reviving the retired config-driven branch.
+    """
     base = dict(
         model_type="qwen2", num_hidden_layers=6, hidden_size=64,
         num_attention_heads=8, intermediate_size=128, vocab_size=100,
@@ -710,21 +706,23 @@ def test_sliding_window_toggle_and_split():
         architectures=["Qwen2ForCausalLM"],
     )
 
-    # Window declared but explicitly disabled -> every layer is full attention.
-    ir = unfold({**base, "sliding_window": 4096, "use_sliding_window": False}).to_ir()
-    assert all(l["attention"]["mask"] == "causal" for l in ir["layers"])
-    assert "sliding_window" not in ir.get("extras", {})
-
-    # Mistral-style: window set, no toggle flag -> all layers slide (preserved).
-    ir = unfold({**base, "sliding_window": 4096}).to_ir()
-    assert all(l["attention"]["mask"] == "sliding" for l in ir["layers"])
-    assert all(l["attention"]["window_size"] == 4096 for l in ir["layers"])
-
-    # Enabled with a split: bottom max_window_layers full, the rest slide.
-    ir = unfold({**base, "sliding_window": 4096,
-                 "use_sliding_window": True, "max_window_layers": 2}).to_ir()
-    masks = [l["attention"]["mask"] for l in ir["layers"]]
-    assert masks == ["global", "global", "sliding", "sliding", "sliding", "sliding"]
+    variants = (
+        {"sliding_window": 4096, "use_sliding_window": False},
+        {"sliding_window": 4096},
+        {"sliding_window": 4096, "use_sliding_window": True,
+         "max_window_layers": 2},
+    )
+    signatures = []
+    for declaration in variants:
+        ir = unfold({**base, **declaration}).to_ir()
+        signature = tuple(
+            (layer["attention"]["mask"],
+             layer["attention"].get("window_size"))
+            for layer in ir["layers"])
+        assert signature == (("unknown", None),) * 6
+        assert "sliding_window" not in ir.get("extras", {})
+        signatures.append(signature)
+    assert len(set(signatures)) == 1
 
 
 def test_qwen3_moe_source_schedule_keeps_kind_independent_of_inner_form():
@@ -762,7 +760,11 @@ def test_omni_nested_thinker_text_config_unwrapped():
     }
     ir = unfold(cfg).to_ir()
     assert len(ir["layers"]) == 4
-    assert ir["layers"][0]["attention"]["num_heads"] == 8
+    assert ir["hidden_size"] == 64
+    # The unwrap is proven independently from attention geometry.  This
+    # synthetic qwen3_moe variant has no exact resolved modeling source, so its
+    # plausible head count cannot author a U6 fact.
+    assert ir["layers"][0]["attention"]["num_heads"] is None
     # U2: this stripped-down synthetic inner config leaves several code-owned
     # facts honestly unresolved — that banner line is expected; anything else
     # (missing geometry, dropped nesting) is a real unwrap failure.
@@ -770,8 +772,8 @@ def test_omni_nested_thinker_text_config_unwrapped():
                 if not w.startswith("Unresolved code-defined facts")]
 
 
-def test_unbound_attention_bias_is_powerless_and_rope_theta_is_visible():
-    """A declaration cannot author bias; the numeric RoPE operand stays visible."""
+def test_unbound_attention_bias_and_rope_theta_are_architecturally_powerless():
+    """Declarations cannot author projection bias or a rotary mechanism."""
     base = dict(
         model_type="qwen2", num_hidden_layers=2, hidden_size=64,
         num_attention_heads=8, intermediate_size=128, vocab_size=100,
@@ -787,8 +789,13 @@ def test_unbound_attention_bias_is_powerless_and_rope_theta_is_visible():
         assert {l["attention"]["bias"] for l in d.to_ir()["layers"]} == {"mixed"}
         assert "mixed projection bias" in d.to_html()
 
-    # The bare rope_theta (no scaling dict) is surfaced on the IR extras.
-    assert parse({**base, "attention_bias": True}).extras["rope"]["rope_theta"] == 1000000
+    # A bare numeric theta is not an architectural fact.  U8 keeps it in the
+    # owner-scoped config audit until exact source proves which constructed
+    # rotary producer consumes it; it must not reappear as raw ``extras.rope``.
+    parsed = parse({**base, "attention_bias": True})
+    assert "rope" not in parsed.extras
+    assert "decoder.attention.position_schedule" not in (
+        parsed.extras.get("fact_provenance") or {})
 
     # Llama's exact source binds all four projections to the one declaration;
     # the checkpoint value therefore decides a uniform result only after that
@@ -802,16 +809,17 @@ def test_unbound_attention_bias_is_powerless_and_rope_theta_is_visible():
         } == {declared}
 
 
-def test_compress_rates_alias_derives_csa_hca_masks():
-    """DeepSeek-V4 'compress_rates' is an alias of compress_ratios (0/4/128 -> SWA/CSA/HCA)."""
+def test_compress_rates_alias_cannot_author_mask_or_compression_semantics():
+    """A syntax alias is not an architectural compression classifier."""
     cfg = dict(
         model_type="deepseek_v4", num_hidden_layers=4, hidden_size=128,
         num_attention_heads=16, num_key_value_heads=16, intermediate_size=512,
         vocab_size=1000, rms_norm_eps=1e-6, kv_lora_rank=64, q_lora_rank=96,
         compress_rates=[0, 4, 128, 4],
     )
-    masks = [l["attention"]["mask"] for l in unfold(cfg).to_ir()["layers"]]
-    assert masks == ["sliding", "compressed_sparse", "heavily_compressed", "compressed_sparse"]
+    attention = [l["attention"] for l in unfold(cfg).to_ir()["layers"]]
+    assert {item["mask"] for item in attention} == {"unknown"}
+    assert {item["compress_ratio"] for item in attention} == {None}
 
 
 def test_moe_routing_detail():
@@ -840,6 +848,8 @@ def test_moe_routing_detail():
         # resolved keys the render reads are present.
         "bias_correction": True,
         "scoring_before_topk": True,
+        "num_experts": 64,
+        "num_experts_per_tok": 8,
     }
     from model_unfolder.labels import router_facts
     facts = router_facts(ffn)
@@ -1078,7 +1088,7 @@ def test_dsa_indexer_is_surfaced_but_declared_swiglu_clip_needs_source_binding()
     assert "activation_clip" not in ffn
     assert not any("clamped" in f for f in ffn_summary(ffn)[1])
 
-    # M-RoPE: Qwen-VL's rope_scaling.mrope_section becomes a Tier-3 chip.
+    # M-RoPE: a bare declaration cannot manufacture the source application.
     vl = parse(dict(
         model_type="qwen2_vl", num_hidden_layers=2, hidden_size=128,
         num_attention_heads=8, num_key_value_heads=2, intermediate_size=256,
@@ -1086,8 +1096,8 @@ def test_dsa_indexer_is_surfaced_but_declared_swiglu_clip_needs_source_binding()
         rope_scaling={"type": "mrope", "mrope_section": [16, 24, 24]},
     )).to_dict()
     att = vl["layers"][0]["attention"]
-    assert att["mrope_section"] == [16, 24, 24]
-    assert any("M-RoPE 16/24/24" in f for f in attention_summary(att)[1])
+    assert att["mrope_section"] is None
+    assert not any("M-RoPE 16/24/24" in f for f in attention_summary(att)[1])
 
 
 def test_dsa_indexer_is_a_clickable_subblock_only_when_declared():
@@ -1189,13 +1199,17 @@ def test_single_kv_gemma4_keeps_geometry_without_inventing_gqa():
     ir = d.to_ir()
     # The installed Gemma4 wrapper delegates through AutoModel.from_config.
     # Until that framework dispatch is resolved to one exact text-model owner,
-    # the checkpoint's 8/1 counts remain geometry—not proof of GQA.
-    assert ir["layers"][0]["attention"]["kind"] is None
-    assert ir["layers"][0]["attention"]["num_kv_heads"] == 1
+    # the checkpoint's 8/1 numbers are only unqualified candidates.  Neither
+    # the mechanism nor its geometry may be projected.
+    attention = ir["layers"][0]["attention"]
+    assert attention["kind"] is None
+    assert attention["num_heads"] is None
+    assert attention["num_kv_heads"] is None
+    assert attention["head_dim"] is None
 
     html = d.to_html(standalone=True)
     assert "Attention mechanism unresolved" in html
-    assert "1 KV head" in html  # known geometry survives unknown mechanism
+    assert "1 KV head" not in html
     assert "Grouped-query attention" not in html
     assert "Grouped scaled dot-product attention" not in html
     assert "GQA 8/1" not in html
@@ -1205,23 +1219,25 @@ def test_single_kv_gemma4_keeps_geometry_without_inventing_gqa():
     assert "Multi-query scaled dot-product attention" not in html
 
 
-def test_gemma4_ple_uses_reusable_part_contract():
+def test_gemma4_ple_shaped_config_cannot_create_an_unproved_pathway():
+    """PLE dimensions do not substitute for a source-proven mechanism.
+
+    The reusable positive/receipt contract is pinned against the installed
+    Gemma3n implementation in ``test_per_layer_side_input``.  This synthetic
+    Gemma4 fixture has the same tempting field spellings but no exact PLE
+    owner, so it is the permanent identity/config-fabrication negative.
+    """
     d = unfold(_gemma4_e4b_config())
     ir = d.to_ir()
     blocks = ir["layers"][0]["blocks"]
-    ple = next(block for block in blocks if block["id"] == "ple")
-
-    assert ple["view"] == "per_layer_embedding"
-    assert ple["detail"]["view"] == "per_layer_embedding"
-    assert ple["detail"]["nodes"]["multiply"] == "ple_mul"
-    assert ir["extras"]["per_layer_embeddings"]["hidden"] == 1024
-    assert ir["extras"]["external_pathways"][0]["tap_block"] == "ple_mul"
+    assert not [block for block in blocks if block["id"] == "ple"]
+    assert not ir["extras"].get("external_pathways")
 
     html = d.to_html(standalone=True)
-    assert "uf-card-ple" in html
-    assert 'data-card-id="ple_gate"' in html
-    assert 'data-card-id="per_layer_input"' in html
-    assert "per_layer_input[L]" in html
+    assert "uf-card-ple" not in html
+    assert 'data-card-id="ple_gate"' not in html
+    assert 'data-card-id="per_layer_input"' not in html
+    assert "per_layer_input[L]" not in html
     assert "gelu_pytorch_tanh" not in html.lower()
 
 
@@ -1399,7 +1415,15 @@ def test_qwen2_audio_sparse_text_config_is_completed():
     assert len(ir["layers"]) == 32
     assert ir["layers"][0]["attention"]["kind"] == "mha"
     assert ir["layers"][0]["attention"]["num_heads"] == 32
+    assert ir["layers"][0]["attention"]["head_dim"] == 128
     assert ir["layers"][0]["ffn"]["intermediate_size"] == 11008
+    # Every projected count/dimension is class-supplied for this sparse child;
+    # neither the mechanism nor its complete geometry may claim the stronger
+    # checkpoint/code-and-config tier.
+    assert ir["extras"]["fact_provenance"][
+        "decoder.attention.mechanism"]["status"] == "class_default"
+    assert ir["extras"]["fact_provenance"][
+        "decoder.attention.head_geometry"]["status"] == "class_default"
 
     audio = ir["extras"]["modalities"]["inputs"]["audio"]
     assert audio["input"]["feature_size"] == 128
@@ -1552,6 +1576,11 @@ def test_new_should_support_family_routes():
                 "Modeling source is unavailable; the positional scheme remains unknown."
             ]
             assert layer["attention"]["position_kind"] == "unknown"
+        elif cfg is PHI2_CONFIG:
+            assert hard == [
+                "Modeling source is present but the exact positional operation is unresolved."
+            ]
+            assert layer["attention"]["position_kind"] == "unknown"
         else:
             assert not hard
         assert layer["attention"]["kind"] == attn_kind
@@ -1560,7 +1589,11 @@ def test_new_should_support_family_routes():
 
     phi = unfold(PHI2_CONFIG).to_ir()
     assert phi["layers"][0]["ffn"]["gated"] is False
-    assert phi["extras"]["partial_rotary_factor"] == 0.4
+    # A configured fraction does not become an architectural field until the
+    # exact applied Q/K slice binds it.  This source-less synthetic fixture
+    # therefore stays unknown instead of carrying a raw structural extra.
+    assert "partial_rotary_factor" not in phi["extras"]
+    assert phi["layers"][0]["attention"]["rope_dim"] is None
 
     olmoe = unfold(OLMOE_CONFIG).to_ir()
     assert olmoe["layers"][0]["attention"]["qk_norm"] is True
@@ -1586,8 +1619,10 @@ def test_dbrx_nested_config_routes_to_gqa_moe():
     assert layer["ffn"]["kind"] == "moe"
     assert layer["ffn"]["num_experts"] == 16
     assert layer["ffn"]["num_experts_per_tok"] == 4
-    # The nested ordinary width cannot certify the routed expert lane.
-    assert layer["ffn"]["intermediate_size"] == 3584
+    # DBRX has no independently proved ordinary/shared FFN owner.  Its
+    # flattened expert parameter shape also does not distinguish expert count
+    # from per-expert width, so neither width lane may borrow ffn_hidden_size.
+    assert layer["ffn"]["intermediate_size"] is None
     assert layer["ffn"]["expert_intermediate_size"] is None
     assert layer["attention"]["qkv_clip"] == 8
     assert "attention" not in ir["extras"]
@@ -1660,8 +1695,9 @@ def test_param_estimation_never_crashes_on_list_valued_counts():
                 num_shared_experts=[1])
     total, active = _ffn_params(f, 128)
     assert total > 0 and active > 0
-    a = AttentionSpec(kind="gqa", num_heads=[8, 8], num_kv_heads=[2], head_dim=None)
-    assert _attn_params(a, 128) > 0
+    a = AttentionSpec(
+        kind="gqa", num_heads=[8, 8], num_kv_heads=[2], head_dim=None)
+    assert _attn_params(a, 128) == 0
 
 
 def test_model_id_uses_hf_token_env_and_explicit_override():
@@ -1960,10 +1996,9 @@ def test_multi_query_flag_defers_to_declared_group_count():
            "ffn_hidden_size": 13696, "padded_vocab_size": 65024,
            "seq_length": 8192, "kv_channels": 128}
     a = unfold(glm).to_ir()["layers"][0]["attention"]
-    # The group count is valid geometry, but counts + a config flag do not
-    # prove the exact projection/compute mechanism when this source owner is
-    # unresolved.  U6 therefore keeps the mechanism honest-unknown.
-    assert (a["num_kv_heads"], a["kind"]) == (2, None)
+    # Counts + a config flag do not prove either geometry or mechanism when
+    # this custom source owner is unresolved.
+    assert (a["num_kv_heads"], a["kind"]) == (None, None)
     falcon = {"model_type": "falcon", "architectures": ["FalconForCausalLM"],
               "hidden_size": 4544, "num_hidden_layers": 32,
               "num_attention_heads": 71, "multi_query": True, "vocab_size": 65024}
@@ -2061,10 +2096,10 @@ def _restore_env(name, value):
 if __name__ == "__main__":
     test_kimi_k2()
     test_deepseek_v3_phase_change()
-    test_mtp_head_detected_and_rendered()
+    test_mtp_count_without_constructed_modules_is_not_rendered()
     test_models_without_mtp_have_no_mtp_block()
     test_gemma4_31b()
-    test_gemma4_ple_uses_reusable_part_contract()
+    test_gemma4_ple_shaped_config_cannot_create_an_unproved_pathway()
     test_llama3()
     test_new_should_support_family_routes()
     test_dbrx_nested_config_routes_to_gqa_moe()

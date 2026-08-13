@@ -217,6 +217,19 @@ def test_config_field_audit_is_blocking():
     assert not report.mechanical_passed
 
 
+def test_config_field_audit_clears_only_a_read_mapping_parent():
+    """An exact child read covers its address container, not its siblings."""
+    from model_unfolder.adapters.transformer import debug
+
+    cfg = {"rope_parameters": {"rope_theta": 10000, "factor": 8}}
+    assert debug.unparsed_fields(
+        [cfg], recursive=True,
+        owner_touched={"root": {"rope_theta"}}, root_owner="root",
+        owner_paths={"root": {"rope_parameters.rope_theta"}},
+        owner_exact_leaves={"root": {"rope_theta"}},
+    ) == ["rope_parameters.factor"]
+
+
 def test_u2_projection_and_census_nets_are_wired_blocking_and_clean():
     """U2 P4: net #13 (projection-audit) and net #14 (zero-asserted census) are
     both blocking mechanical nets and both pass on a real decoder; the
@@ -305,15 +318,21 @@ def test_fact_conformance_is_symmetric_for_fabricated_rope_and_missing_learned_p
 
     cfg = AutoConfig.for_model("gpt_bigcode").to_dict()
     ir = mu.unfold(cfg).to_ir()
-    ir["extras"].pop("position_encoding", None)
     for layer in ir["layers"]:
         attn = layer["attention"]
         attn["rope"] = True
         attn["position_kind"] = "rope"
         attn["position_application"] = "qk_rotation"
-    probs = check_fact_conformance(cfg, ir)
-    assert any(p.kind == "fabricated_position" and p.op == "rope" for p in probs)
-    assert any(p.kind == "missing_position" and p.op == "learned_absolute" for p in probs)
+    ir["extras"]["render"]["model_blocks"] = [
+        block for block in ir["extras"]["render"]["model_blocks"]
+        if block.get("id") not in {"position_ids", "position_embed", "position_add"}
+    ]
+    from model_unfolder.evidence.qualification import qualification_findings
+    findings = qualification_findings(ir)
+    assert any("decoder.attention.position_schedule projects" in item
+               for item in findings)
+    assert any("decoder.input.position_addition is ledgered" in item
+               for item in findings)
 
 
 def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
@@ -325,21 +344,36 @@ def test_fact_conformance_flags_one_non_rope_scheme_substituted_for_another():
     for layer in ir["layers"]:
         layer["attention"]["position_kind"] = "learned_absolute"
         layer["attention"]["position_application"] = "embedding_add"
-    probs = check_fact_conformance(cfg, ir)
-    assert any(p.kind == "fabricated_position" and p.op == "learned_absolute" for p in probs)
-    assert any(p.kind == "missing_position" and p.op == "alibi" for p in probs)
+    from model_unfolder.evidence.qualification import qualification_findings
+    findings = qualification_findings(ir)
+    assert any("decoder.attention.position_schedule fact schedule" in item
+               for item in findings)
 
 
-def test_present_but_ambiguous_position_is_blocking_unresolved(monkeypatch):
-    from model_unfolder.evidence.models import PositionalEvidence
-    from model_unfolder.evidence import position as position_module
+def test_position_schedule_without_its_exact_fact_is_blocking():
+    ir = mu.unfold(LLAMA).to_ir()
+    ir["extras"]["fact_provenance"].pop(
+        "decoder.attention.position_schedule", None)
+    from model_unfolder.evidence.qualification import qualification_findings
+    assert any("decoder.attention.position_schedule projects" in item
+               for item in qualification_findings(ir))
 
-    monkeypatch.setattr(
-        position_module, "decoder_positional_evidence",
-        lambda *a, **k: PositionalEvidence("ambiguous", reason="negative control"),
-    )
-    probs = check_fact_conformance(LLAMA, mu.unfold(LLAMA).to_ir())
-    assert any(p.kind == "unresolved" and p.op == "position" for p in probs)
+
+def test_unresolved_position_withheld_as_unknown_is_qualification_clean():
+    """Unknown is the honest projection of unresolved source, not a mismatch."""
+    ir = mu.unfold(LLAMA).to_ir()
+    ir["extras"]["fact_provenance"].pop(
+        "decoder.attention.position_schedule", None)
+    for layer in ir["layers"]:
+        attention = layer["attention"]
+        attention["rope"] = None
+        attention["no_rope"] = False
+        attention["position_kind"] = "unknown"
+        attention["position_application"] = "unknown"
+        attention["rope_dim"] = None
+    from model_unfolder.evidence.qualification import qualification_findings
+    assert not any("position_schedule" in item
+                   for item in qualification_findings(ir))
 
 
 def test_true_oracle_missing_remains_visible_in_sable_report():

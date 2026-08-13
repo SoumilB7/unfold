@@ -47,6 +47,10 @@ class RenderContext:
     wiring_findings: list[str] = field(default_factory=list)
     events: list[RenderEvent] = field(default_factory=list)
     block_stack: list[dict] = field(default_factory=list)
+    # Canonical fact rows are injected once by the Diagram/Sable render
+    # boundary.  Individual projectors cite this typed channel and never reopen
+    # ``ir.extras`` to manufacture their own expected evidence/status.
+    fact_rows: dict = field(default_factory=dict)
     id_sequence: int = 0
     # U2-R5: THIS render's own identity.  The context stamps it onto every
     # receipt it records, so a receipt from another parse/render carries a
@@ -101,7 +105,8 @@ class RenderContext:
             receipts=_stamp_context(tuple(receipts or ()), self.context_token),
         ))
 
-    def note_facts_projected(self, view: str, facts_projected, *, node_ids=()) -> None:
+    def note_facts_projected(self, view: str, facts_projected, *, node_ids=(),
+                             receipts=()) -> None:
         """Record a facts-only projection witness (U2 P4 net #13).
 
         For surfaces that visibly carry ledger facts WITHOUT going through the
@@ -112,7 +117,9 @@ class RenderContext:
         it carries no ``drawn_ops`` and so never enters an op/closure diff."""
         if not facts_projected:
             return
-        self.record_graph(view, (), node_ids, facts_projected=facts_projected)
+        self.record_graph(
+            view, (), node_ids, facts_projected=facts_projected,
+            receipts=receipts)
 
 
 _CURRENT: ContextVar[RenderContext | None] = ContextVar(

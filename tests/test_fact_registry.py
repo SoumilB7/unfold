@@ -161,6 +161,32 @@ def corpus_fact_rows(corpus_irs):
 
 
 @pytest.fixture(scope="session")
+def qualification_fact_rows(tmp_path_factory):
+    """Fact rows from exact frontier witnesses run through the real parser.
+
+    This is not an exemption list.  A row exists only when production parsing
+    of HF or HF-shaped source authors the typed fact.
+    """
+    from test_support.qualification_facts import qualification_irs
+
+    rows = []
+    directory = tmp_path_factory.mktemp("fact-qualification")
+    for name, ir in qualification_irs(directory):
+        for key, row in ((ir.extras or {}).get("fact_provenance") or {}).items():
+            owner, _, fact = key.rpartition(".")
+            rows.append((name, _INDEX.sub("[i]", owner) or "<root>", fact,
+                         row["status"], type(row["value"]).__name__))
+    assert rows, "qualification sources produced no fact_provenance rows"
+    return rows
+
+
+@pytest.fixture(scope="session")
+def evidence_fact_rows(corpus_fact_rows, qualification_fact_rows):
+    """All accepted evidence populations: preservation + exact qualification."""
+    return [*corpus_fact_rows, *qualification_fact_rows]
+
+
+@pytest.fixture(scope="session")
 def corpus_extras_keys(corpus_irs):
     """The union of top-level ``ir.extras`` keys the corpus produces — the
     raw-structural-write SURFACE for the H2.4 census."""
@@ -170,12 +196,12 @@ def corpus_extras_keys(corpus_irs):
     return frozenset(keys)
 
 
-def test_every_corpus_fact_is_registered_within_contract(corpus_fact_rows):
+def test_every_evidence_fact_is_registered_within_contract(evidence_fact_rows):
     """Closed world: an unregistered fact name, an unregistered owner pattern,
     an unregistered status, or an unregistered value type is a build failure —
     registration is a conscious act, never a drive-by write."""
     from model_unfolder.evidence.registry import census_problems
-    problems = census_problems(corpus_fact_rows)
+    problems = census_problems(evidence_fact_rows)
     assert not problems, "\n".join(problems[:20])
 
 
@@ -285,12 +311,26 @@ def test_structural_debt_extras_rows_are_not_stale(corpus_extras_keys):
         f"corpus-exercised): {sorted(stale)}")
 
 
-def test_every_registered_fact_is_observed_in_corpus(corpus_fact_rows):
-    """Bidirectional closed world on the frozen corpus: a definition nothing
-    produces is stale (or landed before its writer — land them together)."""
-    observed = {fact for _, _, fact, _, _ in corpus_fact_rows}
+def test_every_registered_fact_is_observed_in_an_evidence_population(
+        evidence_fact_rows):
+    """Bidirectional closed world over preservation and qualification.
+
+    A definition must be emitted by the production parser.  Frontier source
+    shapes need not be forced into the blessed preservation corpus, but a fact
+    name written directly into a test still cannot satisfy this gate.
+    """
+    observed = {fact for _, _, fact, _, _ in evidence_fact_rows}
     stale = set(REGISTRY) - observed
     assert not stale, f"registered but never observed: {sorted(stale)}"
+
+
+def test_qualification_population_is_non_vacuous_and_additive(
+        corpus_fact_rows, qualification_fact_rows):
+    corpus = {fact for _, _, fact, _, _ in corpus_fact_rows}
+    qualified = {fact for _, _, fact, _, _ in qualification_fact_rows}
+    assert qualified - corpus, (
+        "qualification must exercise a real parser fact absent from the "
+        "preservation corpus; otherwise this second population is vacuous")
 
 
 def test_asserted_population_matches_pinned_baseline(corpus_fact_rows):

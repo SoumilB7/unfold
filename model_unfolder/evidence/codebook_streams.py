@@ -69,6 +69,7 @@ class CodebookAggregateLane:
     element_primitive: ExternalReferenceProof
     comprehension: ComprehensionObservation
     aggregate_call: CallObservation
+    count_path: tuple[str, ...] | None
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -106,6 +107,17 @@ class CodebookAggregateLane:
                 or self.aggregate_call.args[0].span != self.comprehension.span:
             raise ValueError(
                 "the aggregate consumes the exact comprehension expression")
+        if self.count_path is not None:
+            observed = self.container.count_config_path
+            if observed is None:
+                raise ValueError(
+                    "a codebook count path requires the container's exact citation")
+            segments = tuple(segment.name for segment in observed.segments)
+            if any(segment.dynamic for segment in observed.segments) \
+                    or not segments \
+                    or self.count_path[-len(segments):] != segments:
+                raise ValueError(
+                    "the codebook count path is the exact cited config operand")
         if not _comprehension_uses_container(
                 self.kind, self.comprehension, self.container.field):
             raise ValueError(
@@ -159,6 +171,15 @@ class CodebookStreamsEvidence:
     def heads_stacked(self) -> bool | None:
         return True if self.head_stack is not None else None
 
+    @property
+    def count_path(self) -> tuple[str, ...] | None:
+        """One exact shared repetition operand, never a config-only count."""
+        if self.embedding_sum is None or self.head_stack is None:
+            return None
+        left = self.embedding_sum.count_path
+        right = self.head_stack.count_path
+        return left if left is not None and left == right else None
+
 
 def decoder_codebook_streams_for_path(
     index: ProgramIndex,
@@ -185,8 +206,9 @@ def decoder_codebook_streams_for_path(
     root_owner = root.graph.root.occurrence
     stage_owner = selected.stage_occurrence
     embedding = _lane(
-        index, root, stage_owner, "embeddings_summed")
-    heads = _lane(index, root, root_owner, "heads_stacked")
+        index, root, stage_owner, "embeddings_summed", config_path)
+    heads = _lane(
+        index, root, root_owner, "heads_stacked", config_path)
 
     ambiguous_spans = tuple(dict.fromkeys(
         span for result in (embedding, heads)
@@ -228,7 +250,7 @@ def decoder_codebook_streams_for_path(
         stage_owner, value, provenance=provenance)
 
 
-def _lane(index, root, owner, kind):
+def _lane(index, root, owner, kind, config_prefix):
     inventory = resolve_container_inventory(index, root, owner)
     if inventory.status != "resolved":
         return inventory.status, None, ()
@@ -292,15 +314,26 @@ def _lane(index, root, owner, kind):
                 comprehension.span,
                 call.span,
             ) if isinstance(span, SourceSpan)))
+        count_path = _container_count_path(container, config_prefix)
         proofs.append(CodebookAggregateLane(
             kind, owner, container, primitive,
-            comprehension, call, spans))
+            comprehension, call, count_path, spans))
     if len(proofs) > 1:
         return "ambiguous", None, tuple(
             proof.aggregate_call.span for proof in proofs)
     if len(proofs) != 1:
         return "absent", None, ()
     return "resolved", proofs[0], ()
+
+
+def _container_count_path(container, config_prefix):
+    observed = container.count_config_path
+    if observed is None or any(segment.dynamic for segment in observed.segments):
+        return None
+    segments = tuple(segment.name for segment in observed.segments)
+    if not segments:
+        return None
+    return (*config_prefix, *segments)
 
 
 def _aggregate_protocol(index, call, kind):

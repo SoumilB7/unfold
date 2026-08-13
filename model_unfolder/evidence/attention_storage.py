@@ -21,6 +21,7 @@ from .attention_child import (
     attention_child_evidence,
     attention_child_positive_census,
 )
+from .affine import construction_is_affine, site_is_affine
 from .component_owner import (
     ComponentRootResolution,
     ConstructedComponentRoot,
@@ -39,6 +40,12 @@ from .decoder_block import (
     decoder_block_path_for_config,
 )
 from .execution_flow import resolve_addressed_invocations
+from .expression_eval import (
+    ConfigExpressionEvaluator,
+    callable_argument_env,
+    construction_guard_state,
+    guard_path_state,
+)
 from .models import SourceBundle
 from .program_index import (
     CallObservation,
@@ -433,6 +440,8 @@ def attention_projection_storage_for_child_evidence(
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
     child: AttentionChildEvidence,
+    *,
+    config_document=None,
 ) -> ReaderResult[AttentionProjectionStorage]:
     """Classify storage for one already-proven exact attention child."""
     if not isinstance(index, ProgramIndex):
@@ -458,25 +467,78 @@ def attention_projection_storage_for_child_evidence(
             "out_of_owner",
             "the compute entry is not owned by the exact attention child"),))
 
+    runtime_env = (
+        callable_argument_env(
+            index, callable_symbol, child.invocation_path[-1].call)
+        if config_document is not None else None)
+
+    def runtime_guard_state(guard, cutoff):
+        if config_document is None:
+            return None
+        if runtime_env is None:
+            return True if not guard else None
+        evaluator = ConfigExpressionEvaluator(
+            root.graph.node_for(child.compute_occurrence).config_bindings,
+            config_document, runtime_env)
+        return guard_path_state(
+            index, callable_symbol, guard, evaluator, cutoff)
+
     linear_calls: dict[ConstructionOccurrenceId, CallObservation] = {}
+    duplicate_affine: set[ConstructionOccurrenceId] = set()
     for call in index.calls_in(callable_symbol):
         if _self_field(call.callee) is None:
             continue
+        call_state = runtime_guard_state(call.guard, call.span)
+        if call_state is False:
+            continue
         construction = resolve_construction_call(
             index, root, child.compute_occurrence, call)
-        if construction.status != "resolved" \
-                or construction.selected.kind != "external" \
-                or construction.selected.external_reference.qualified_target \
-                not in _LINEAR_PROTOCOLS:
+        alternatives = construction.alternatives
+        if config_document is not None and alternatives:
+            states = tuple(
+                (alternative, construction_guard_state(
+                    index, root.graph, child.compute_occurrence,
+                    alternative.site, config_document))
+                for alternative in alternatives)
+            active = tuple(item for item, state in states if state is True)
+            unknown = tuple(item for item, state in states if state is None)
+            if len(active) == 1 and not unknown:
+                alternatives = active
+            elif not active and not unknown:
+                continue
+            else:
+                continue
+        if len(alternatives) != 1 \
+                or not (
+                    construction_is_affine(index, alternatives[0])
+                    or site_is_affine(index, alternatives[0].site)):
             continue
-        linear_calls[construction.selected.occurrence] = call
+        occurrence = alternatives[0].occurrence
+        # Storage is an initialization fact.  Runtime cache/cross-attention
+        # branches may invoke the same stored K/V projection on several paths;
+        # they cannot change how many affine modules the owner constructed.
+        # Construction guards above still use ``config_document`` and remain
+        # authoritative.  Runtime tensor guards stay in the dataflow union,
+        # exactly as they do when no checkpoint document is supplied.
+        if occurrence in linear_calls and config_document is not None:
+            duplicate_affine.add(occurrence)
+            continue
+        linear_calls[occurrence] = call
     if not linear_calls:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph",
-            "the exact attention entry has no code-proven Linear producers"),))
+            "the exact attention entry has no code-proven affine producers"),))
 
     sources, unpack_widths, dependencies, uncertain = projection_sources_reaching_calls(
-        index, callable_symbol, child.compute.input_calls, linear_calls)
+        index, callable_symbol, child.compute.input_calls, linear_calls,
+        # A proven-false runtime lane is absent.  Every other runtime branch is
+        # retained as a possible invocation of the already-constructed affine
+        # module, but does not make STORAGE conditional: cache hits can bypass
+        # a projection without changing the stored projection topology.
+        binding_guard_state=(
+            (lambda guard, cutoff:
+                runtime_guard_state(guard, cutoff) is not False)
+            if config_document is not None else None))
     ordered_sources = tuple(sorted(sources, key=_occurrence_sort_key))
     mode = None
     if len(ordered_sources) == 3 \
@@ -492,7 +554,7 @@ def attention_projection_storage_for_child_evidence(
     elif not uncertain and len(ordered_sources) == 1 \
             and unpack_widths.get(ordered_sources[0], 0) >= 3:
         mode = "fused_qkv"
-    if mode is None:
+    if mode is None or duplicate_affine.intersection(ordered_sources):
         chained = sum(
             bool(dependencies.get(source)) for source in ordered_sources)
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
@@ -513,6 +575,7 @@ def attention_projection_storage_for_child_evidence(
             *source_spans,
             entry.span,
             *child.compute.spans,
+            *child.selection_spans,
         ) if isinstance(span, SourceSpan)))
     value = AttentionProjectionStorage(
         mode, child, ordered_sources, entry, spans)
@@ -529,6 +592,7 @@ def attention_projection_storage_for_child_evidence(
 def projection_sources_reaching_calls(
     index, callable_symbol, input_calls, linear_calls, *,
     method_resolver=None,
+    binding_guard_state=None,
 ):
     """Conservative local reaching definitions at exact compute-input calls."""
     consumers = tuple(
@@ -541,7 +605,8 @@ def projection_sources_reaching_calls(
     )
     return producer_sources_reaching_expressions(
         index, callable_symbol, consumers, linear_calls,
-        method_resolver=method_resolver)
+        method_resolver=method_resolver,
+        binding_guard_state=binding_guard_state)
 
 
 def producer_sources_reaching_expressions(
@@ -550,6 +615,8 @@ def producer_sources_reaching_expressions(
     preserve_local_tuple_lanes=False,
     include_guarded_bindings=True,
     binding_predicate=None,
+    binding_guard_state=None,
+    binding_lane_states=None,
 ):
     """Conservative local reaching definitions for exact consumer expressions.
 
@@ -589,8 +656,15 @@ def producer_sources_reaching_expressions(
             if binding_predicate is not None \
                     and not binding_predicate(binding):
                 continue
+            guard_state = (
+                binding_guard_state(binding.guard, binding.span)
+                if binding_guard_state is not None else None)
+            if guard_state is False:
+                continue
             if binding.guard and not include_guarded_bindings:
                 continue
+            binding_is_conditional = bool(binding.guard) \
+                and guard_state is not True
             sources, source_uncertain = _expression_sources(
                 binding.value, env, calls_by_span, dependencies)
             targets = tuple(_target_names(target) for target in binding.targets)
@@ -608,17 +682,21 @@ def producer_sources_reaching_expressions(
                 sources = frozenset((*sources, *prior_sources))
                 source_uncertain = source_uncertain or prior_uncertain
             lane_states = (
-                _tuple_expression_lane_states(
+                binding_lane_states(binding, tuple(flat_targets))
+                if binding_lane_states is not None else None)
+            if lane_states is not None and len(lane_states) != len(flat_targets):
+                raise ValueError(
+                    "an exact binding-lane override covers every target lane")
+            if lane_states is None and preserve_local_tuple_lanes \
+                    and len(flat_targets) >= 2:
+                lane_states = _tuple_expression_lane_states(
                     index, callable_symbol, binding.value, len(flat_targets),
                     env, calls_by_span, dependencies)
-                if preserve_local_tuple_lanes and len(flat_targets) >= 2
-                else None
-            )
             existing_sources = frozenset(
                 source
                 for known_sources, _ in env.values()
                 for source in known_sources)
-            introduces_conditional_producer = bool(binding.guard) and (
+            introduces_conditional_producer = binding_is_conditional and (
                 not sources or not sources.issubset(existing_sources))
             for position, name in enumerate(flat_targets):
                 previous_uncertain = env.get(
@@ -638,10 +716,10 @@ def producer_sources_reaching_expressions(
                     # after an optional mask update).  Guarded writes keep the
                     # rival path; augmented assignments already read the prior
                     # value explicitly above.
-                    or (previous_uncertain if binding.guard else False)
+                    or (previous_uncertain if binding_is_conditional else False)
                     or introduces_conditional_producer,
                 )
-            if not binding.guard and not source_uncertain \
+            if not binding_is_conditional and not source_uncertain \
                     and len(flat_targets) >= 3 and len(sources) == 1 \
                     and _proves_lane_unpack(
                         index, callable_symbol, binding, env, calls_by_span,
@@ -882,8 +960,13 @@ def _proves_tensor_lane_unpack(
         return False
     declared = args[0]
     if callee.name == "split":
-        return declared.kind in {"list", "tuple"} \
-            and len(declared.children) == width
+        if declared.kind in {"list", "tuple"}:
+            return len(declared.children) == width
+        # Exact tuple destructuring is itself a runtime arity assertion:
+        # ``q, k, v = tensor.split(size)`` cannot continue unless this exact
+        # call returned three lanes.  This proves lane count only; dimension
+        # equality remains the mechanism reader's separate obligation.
+        return width == 3
     return declared.kind == "constant" \
         and isinstance(declared.const_value, int) \
         and not isinstance(declared.const_value, bool) \

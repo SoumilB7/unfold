@@ -159,6 +159,31 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
         and attn.get("output_projection") is True
         and "o_proj" in graph.by_id()
         and not attn.get("node_prefix") else ())
+    rope_theta_node_ids = tuple(
+        node_id for node_id in ("q_rope", "k_rope")
+        if node_id in graph.by_id())
+    rope_theta_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "rope_theta",
+            "mechanism": "position_frequency_initialization",
+            "value": attn.get("rope_theta"),
+        },)
+        if "decoder.attention.rope_theta" in fact_rows
+        and attn.get("rope_theta") is not None
+        and rope_theta_node_ids == ("q_rope", "k_rope")
+        and not attn.get("node_prefix") else ())
+    rope_initialization_projects = (
+        ({
+            "owner": "decoder.attention",
+            "fact": "rope_initialization",
+            "mechanism": "position_frequency_initialization",
+            "value": attn.get("rope_initialization"),
+        },)
+        if "decoder.attention.rope_initialization" in fact_rows
+        and isinstance(attn.get("rope_initialization"), dict)
+        and rope_theta_node_ids == ("q_rope", "k_rope")
+        and not attn.get("node_prefix") else ())
     receipts = (
         receipts_from_projects(
             softcap_projects,
@@ -216,6 +241,22 @@ def build_attention_view(ir: dict, info: dict, mount_id: str, *, clickable: bool
             node_ids=("o_proj",), projection_kind="op",
             fact_rows=fact_rows,
         )
+        + receipts_from_projects(
+            rope_theta_projects,
+            surface="opgraph", structural_target="rope_theta",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=rope_theta_node_ids, projection_kind="field",
+            fact_rows=fact_rows,
+        )
+        + receipts_from_projects(
+            rope_initialization_projects,
+            surface="opgraph", structural_target="rope_initialization",
+            projector_symbol=(
+                "renderers.html.block_views.attention.build_attention_view"),
+            node_ids=rope_theta_node_ids, projection_kind="field",
+            fact_rows=fact_rows,
+        )
     )
     return render_graph(
         graph, info, mount_id, key,
@@ -230,10 +271,14 @@ def build_mla_query_path_view(ir: dict, info: dict, mount_id: str, child: dict) 
     attn = info["dominant"]["spec"].get("attention") or {}
     region = mla_query_region(attn, ir.get("hidden_size"))
     graph = region_to_graph(region, clickable=True, out_label="→ scores (Q)")
+    receipts = _mla_rope_receipts(
+        ir, attn, "mla_q_rope_apply",
+        "renderers.html.block_views.attention.build_mla_query_path_view")
     return render_graph(
         graph, info, mount_id, "mla-query",
         f"{ir.get('name', 'model')} MLA query path", min_width=640,
         facts_projected=attention_facts(ir),
+        receipts=receipts,
     )
 
 
@@ -242,11 +287,51 @@ def build_mla_kv_cache_view(ir: dict, info: dict, mount_id: str, child: dict) ->
     attn = info["dominant"]["spec"].get("attention") or {}
     region = mla_kv_region(attn, ir.get("hidden_size"))
     graph = region_to_graph(region, clickable=True, out_label="→ scores (K)")
+    receipts = _mla_rope_receipts(
+        ir, attn, "mla_k_rope_apply",
+        "renderers.html.block_views.attention.build_mla_kv_cache_view")
     return render_graph(
         graph, info, mount_id, "mla-kv",
         f"{ir.get('name', 'model')} MLA KV cache path", min_width=720,
         facts_projected=attention_facts(ir),
+        receipts=receipts,
     )
+
+
+def _mla_rope_receipts(
+        ir: dict, attn: dict, node_id: str, projector_symbol: str) -> tuple:
+    """Receipt frequency facts at the actual MLA Q/K rotation consumer.
+
+    The parent MLA graph contains only subgraph placeholders, so it cannot
+    certify either rotation.  Each child view receipts only its own canonical
+    apply node.  The registry accepts these two exact lanes as alternatives to
+    the ordinary attention graph's joint Q/K route.
+    """
+    rows = fact_provenance(ir)
+    theta_projects = ()
+    if "decoder.attention.rope_theta" in rows \
+            and attn.get("rope_theta") is not None:
+        theta_projects = ({
+            "owner": "decoder.attention", "fact": "rope_theta",
+            "mechanism": "position_frequency_initialization",
+            "value": attn.get("rope_theta"),
+        },)
+    initialization_projects = ()
+    if "decoder.attention.rope_initialization" in rows \
+            and isinstance(attn.get("rope_initialization"), dict):
+        initialization_projects = ({
+            "owner": "decoder.attention", "fact": "rope_initialization",
+            "mechanism": "position_frequency_initialization",
+            "value": attn.get("rope_initialization"),
+        },)
+    return receipts_from_projects(
+        theta_projects, surface="opgraph", structural_target="rope_theta",
+        projector_symbol=projector_symbol, node_ids=(node_id,),
+        projection_kind="field", fact_rows=rows) + receipts_from_projects(
+            initialization_projects, surface="opgraph",
+            structural_target="rope_initialization",
+            projector_symbol=projector_symbol, node_ids=(node_id,),
+            projection_kind="field", fact_rows=rows)
 
 
 # ---------------------------------------------------------------------------
@@ -271,7 +356,7 @@ def _apply_presentation(graph, attn: dict) -> None:
 def _kv_sharing_aside(attn: dict) -> dict | None:
     kind = attn.get("kind")
     heads = attn.get("num_heads") or 0
-    kv_heads = attn.get("num_kv_heads") or heads
+    kv_heads = attn.get("num_kv_heads") or 0
     # A prompt encoder runs once — there is no autoregressive KV cache to
     # shrink; the sharing still cuts the K/V projections themselves.
     cached = attn.get("cached")

@@ -78,7 +78,10 @@ class Diagram:
         (⊕ / × / ⊙) drawn with a missing input (empty list = clean). Treat a
         non-empty result as a build-blocking bug, not a warning."""
         from .renderers.html.render_context import RenderContext, activate_render_context
-        context = RenderContext(theme=self._theme_name())
+        context = RenderContext(
+            theme=self._theme_name(), fact_rows=dict(
+                (self.to_ir().get("extras") or {}).get(
+                    "fact_provenance") or {}))
         self._html_cache.pop(True, None)         # force a fresh render so the detector runs
         with activate_render_context(context):
             self.to_html(standalone=True)
@@ -159,7 +162,10 @@ class Diagram:
             )
             context = current_render_context()
             if context is None:
-                context = RenderContext(theme=self._theme_name())
+                context = RenderContext(
+                    theme=self._theme_name(), fact_rows=dict(
+                        (self.to_ir().get("extras") or {}).get(
+                            "fact_provenance") or {}))
                 with activate_render_context(context):
                     rendered = (
                         render_document(self.to_ir(), self._mount_id) if standalone

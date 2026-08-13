@@ -27,8 +27,10 @@ from .attention import (
 )
 from .attention_output import (
     attention_output_projection_at_block,
+    attention_output_projection_for_sources_at_block,
     decoder_attention_output_projection_for_path,
 )
+from .attention_geometry import DecoderAttentionGeometrySchedule
 from .component_owner import OwnerNode
 from .construction_calls import (
     ConstructionOccurrenceId,
@@ -215,6 +217,7 @@ def decoder_attention_bias_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    geometry_schedule_result=None,
 ) -> ReaderResult[ProjectionBiasEvidence | ProjectionBiasPatternEvidence]:
     """Read bias from the exact attention projections for ``config_path``."""
     block = decoder_block_path_for_config(
@@ -230,6 +233,29 @@ def decoder_attention_bias_for_path(
             storage.value)
         input_provenance = storage.provenance
         owner_occurrence = storage.value.attention.compute_occurrence
+    elif geometry_schedule_result is not None \
+            and geometry_schedule_result.status == "resolved" \
+            and isinstance(
+                geometry_schedule_result.value,
+                DecoderAttentionGeometrySchedule) \
+            and geometry_schedule_result.value.mixer_schedule.block_occurrence \
+            == block.value.block_occurrence \
+            and len(geometry_schedule_result.value.applications) == 1:
+        # The homogeneous storage DTO deliberately rejects conditional Q/K/V
+        # construction.  Reuse the exact geometry application's three proven
+        # semantic lanes and retain every affine construction variant; this
+        # reader neither searches field spellings nor reclassifies their role.
+        application = geometry_schedule_result.value.applications[0]
+        input_projections = tuple(dict.fromkeys(
+            item for variants in application.projection_variants
+            for item in variants))
+        output = attention_output_projection_for_sources_at_block(
+            index, block.value.component_root,
+            block.value.block_occurrence,
+            application.candidate.mechanism,
+            input_projections)
+        input_provenance = geometry_schedule_result.provenance
+        owner_occurrence = application.candidate.mechanism.compute_occurrence
     else:
         latent = latent_attention_binding_at_block(
             index, block.value.component_root, block.value.block_occurrence)

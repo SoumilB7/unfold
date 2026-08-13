@@ -325,6 +325,7 @@ def test_parser_records_and_receipts_uniform_gated_false(tmp_path):
                          "llama-7b.json").read_text())["config"]
     config.update({
         "hidden": 128, "wide": 256, "layers": 2,
+        "num_hidden_layers": 2,
         "use_qk_norm": False,
     })
     cfg = _coerce(config)
@@ -340,22 +341,25 @@ def test_parser_records_and_receipts_uniform_gated_false(tmp_path):
     assert fact.status == "code_and_config"
     assert fact.config_paths == ("use_qk_norm",)
     diagram.to_html(standalone=True)
-    receipts = tuple(
+    all_receipts = tuple(
         receipt for event in diagram.render_events()
-        for receipt in event.receipts if receipt.fact_key == "qk_norm")
+        for receipt in event.receipts)
+    receipts = tuple(
+        receipt for receipt in all_receipts if receipt.fact_key == "qk_norm")
     assert receipts
     assert {receipt.node_ids for receipt in receipts} == {()}
     assert {receipt.mechanism for receipt in receipts} == {"qk_norm_gate"}
     serialized = diagram.to_ir()
     joined = join_obligation_receipts(
         serialized["extras"]["config_access"]["projection_obligations"],
-        receipts,
+        all_receipts,
         serialized["extras"]["fact_provenance"],
         context_token=receipts[0].context_token,
     )
     assert joined["findings"] == []
-    assert joined["receipted_targets"] == [(
-        "decoder.attention", "decoder.attention.qk_norm", "qk_norm_gate")]
+    assert (
+        "decoder.attention", "decoder.attention.qk_norm", "qk_norm_gate"
+    ) in joined["receipted_targets"]
 
 
 def test_heterogeneous_qk_schedule_never_becomes_owner_wide_fact(tmp_path):

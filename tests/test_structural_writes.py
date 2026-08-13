@@ -13,8 +13,6 @@ from __future__ import annotations
 
 from collections import Counter
 
-import pytest
-
 from model_unfolder.evidence.structural_writes import (
     STRUCTURAL_SURFACE,
     new_structural_writes,
@@ -82,7 +80,8 @@ def test_shrink_rule_deleting_a_writer_strands_its_row():
     from model_unfolder.evidence.structural_debt import (
         STRUCTURAL_DEBT, unbacked_debt_rows)
     row = next(r for r in STRUCTURAL_DEBT
-               if r.sink_kind == "extras" and r.structural_target == "rope")
+               if r.sink_kind == "extras"
+               and r.structural_target == "block_diffusion")
     from model_unfolder.evidence.structural_writes import (
         scan_structural_write_multiset)
     keys = {(k.module, k.enclosing_symbol, k.sink_kind, k.normalized_target)
@@ -170,7 +169,8 @@ def test_poison_controls_do_not_fire_on_known_targets(tmp_path):
     leaf, an existing op kind) is not flagged — only genuinely new ones are."""
     pkg = _pkg(tmp_path)
     (pkg / "poison.py").write_text(
-        "def f(ir):\n    ir.extras['moe'] = {'num_experts': 8}\n"
+        "def f(ir):\n    ir.extras['block_diffusion'] = {'canvas_length': 8}\n"
         "def g():\n    return Op(kind='q_proj')\n")
     new = new_structural_writes(root=pkg)
-    assert not any(w.target in ("moe.num_experts", "Op:q_proj") for w in new)
+    assert not any(
+        w.target in ("block_diffusion.canvas_length", "Op:q_proj") for w in new)

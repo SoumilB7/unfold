@@ -7,7 +7,7 @@ Two things are printed while a config is turned into the IR:
    handle, instead of silently dropping them.
 2. **Why the structure is partial** — the warnings that drive the
    "⚠ partial config" badge (missing ``num_hidden_layers``, unrecognized
-   ``layer_types`` value, …), printed with their reasons.
+   exact per-layer mechanism value, …), printed with their reasons.
 
 Disable *everything* from this one place: set :data:`DEBUG` to ``False`` below,
 or export ``MODEL_UNFOLDER_DEBUG=0`` in the environment.
@@ -21,8 +21,6 @@ from __future__ import annotations
 
 import os
 import sys
-from contextlib import contextmanager
-from contextvars import ContextVar
 from typing import Any
 
 from ...everchanging import load_ignored_fields
@@ -206,13 +204,16 @@ def unparsed_fields(
     prefixes = (component_prefix_owners(root_owner)
                 if owner_touched is not None or owner_paths is not None else None)
     present: dict[str, str] = {}
+    present_values: dict[str, Any] = {}
     for cfg in cfgs:
-        for path, key in _config_entries(cfg, recursive=recursive):
+        for path, key, value in _config_value_entries(
+                cfg, recursive=recursive):
             # COR-1 (§6): an explicit null is a PRESENT declaration — it is
             # covered by the exact read events like any other occurrence,
             # never globally skipped (missing keys were never yielded here,
             # so this loop's paths are all real occurrences).
             present[path] = key
+            present_values[path] = value
     def _owned_by_declaration(path: str) -> bool:
         # A declared-ignored key and an opaque scope both OWN their subtree:
         # `id2label` ignored ⇒ `id2label.0` is not a finding; an opaque scope
@@ -230,6 +231,15 @@ def unparsed_fields(
         if owner_paths is not None:
             if path in (owner_paths.get(owner) or ()):
                 return True     # exact occurrence identity (§12.2)
+            # A mapping container is an address scope, not an independent
+            # architectural leaf.  Once this owner reads an exact descendant,
+            # the parent is covered while every unread sibling leaf remains
+            # independently visible (``rope_parameters.rope_theta`` may clear
+            # the container but never ``rope_parameters.factor``).
+            if isinstance(present_values.get(path), dict) and any(
+                    exact.startswith(path + ".")
+                    for exact in (owner_paths.get(owner) or ())):
+                return True
             if key in (owner_exact_leaves or {}).get(owner, ()):
                 return False    # this owner resolved the leaf EXACTLY elsewhere
                                 # — a sibling container cannot ride that read
@@ -294,6 +304,17 @@ def _config_entries(cfg: Any, *, recursive: bool, prefix: str = ""):
                     yield from _config_entries(
                         item, recursive=True, prefix=f"{path}[{index}]"
                     )
+
+
+def _config_value_entries(cfg: Any, *, recursive: bool, prefix: str = ""):
+    mapping = _config_mapping(cfg)
+    for key, value in mapping.items():
+        key = str(key)
+        path = f"{prefix}.{key}" if prefix else key
+        yield path, key, value
+        if recursive and key not in _OPAQUE_SCOPES and isinstance(value, dict):
+            yield from _config_value_entries(
+                value, recursive=True, prefix=path)
 
 
 def _config_mapping(cfg: Any) -> dict:

@@ -288,6 +288,18 @@ class ParamRecord:
     has_default: bool = False
     default: ExprNode | None = None
     kind: str = "positional"     # positional | keyword_only | vararg | kwarg
+    annotation: ExprNode | None = None
+
+    def __post_init__(self) -> None:
+        if not self.name:
+            raise ValueError("a parameter has a non-empty Python address")
+        if self.kind not in {"positional", "keyword_only", "vararg", "kwarg"}:
+            raise ValueError(f"unknown parameter kind {self.kind!r}")
+        if self.has_default != (self.default is not None):
+            raise ValueError("parameter default presence is represented exactly")
+        if self.annotation is not None \
+                and not isinstance(self.annotation, ExprNode):
+            raise TypeError("a parameter annotation is a structural ExprNode")
 
 
 @dataclass(frozen=True)
@@ -376,11 +388,23 @@ class IdentifierObservation:
 
 @dataclass(frozen=True)
 class ClassBodyAssign:
-    """A class-BODY assignment (config_class = ..., is_causal = True, ...)."""
+    """A class-body value and/or annotation at one exact address."""
 
     attr: str
-    value: ExprNode
+    value: ExprNode | None
     span: SourceSpan
+    annotation: ExprNode | None = None
+
+    def __post_init__(self) -> None:
+        if not self.attr or not isinstance(self.span, SourceSpan):
+            raise ValueError("a class-body declaration has an exact address")
+        if self.value is None and self.annotation is None:
+            raise ValueError("a class-body declaration has a value or annotation")
+        if self.value is not None and not isinstance(self.value, ExprNode):
+            raise TypeError("a class-body value is an ExprNode")
+        if self.annotation is not None \
+                and not isinstance(self.annotation, ExprNode):
+            raise TypeError("a class-body annotation is an ExprNode")
 
 
 @dataclass(frozen=True)
@@ -1304,6 +1328,11 @@ class _SourceWalker:
         # callable walk completes.  This is syntax-only container membership;
         # execution/address resolution remains outside ProgramIndex.
         self._container_appends: list = []
+        # ``items = []; items.append(Block(...)); self.layers = ModuleList(items)``
+        # is the same neutral storage pattern with one exact local bridge.  The
+        # bridge is folded only when the local list has one empty initialization
+        # and no rival assignment; otherwise every append stays unassociated.
+        self._local_container_sources: list = []
 
     # -- passes ------------------------------------------------------------- #
 
@@ -1336,7 +1365,7 @@ class _SourceWalker:
                     self._collect_definitions(
                         node.orelse, scope=scope,
                         guard=(*guard, alternative))
-            elif isinstance(node, ast.Assign) and scope == "":
+            elif isinstance(node, (ast.Assign, ast.AnnAssign)) and scope == "":
                 self._maybe_registry(node)
 
     # -- imports / registries ---------------------------------------------- #
@@ -1362,11 +1391,15 @@ class _SourceWalker:
                 self.imports.append(
                     ImportRecord(self.sid, local, target, span, guard))
 
-    def _maybe_registry(self, node: ast.Assign) -> None:
-        if not (len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
-                and isinstance(node.value, ast.Dict)):
+    def _maybe_registry(self, node: ast.Assign | ast.AnnAssign) -> None:
+        target = (
+            node.targets[0]
+            if isinstance(node, ast.Assign) and len(node.targets) == 1
+            else node.target if isinstance(node, ast.AnnAssign) else None)
+        if not isinstance(target, ast.Name) \
+                or not isinstance(node.value, ast.Dict):
             return
-        name = node.targets[0].id
+        name = target.id
         entries = []
         values = []
         for k, v in zip(node.value.keys, node.value.values):
@@ -1392,9 +1425,11 @@ class _SourceWalker:
                         body_assigns.append(ClassBodyAssign(
                             tgt.id, self._expr(stmt.value), self._span(stmt)))
             elif isinstance(stmt, ast.AnnAssign) and \
-                    isinstance(stmt.target, ast.Name) and stmt.value is not None:
+                    isinstance(stmt.target, ast.Name):
                 body_assigns.append(ClassBodyAssign(
-                    stmt.target.id, self._expr(stmt.value), self._span(stmt)))
+                    stmt.target.id,
+                    self._expr(stmt.value) if stmt.value is not None else None,
+                    self._span(stmt), self._expr(stmt.annotation)))
         self.classes.append(ClassRecord(sym, bases, tuple(body_assigns),
                                         self._span(node)))
         for stmt in node.body:
@@ -1432,23 +1467,38 @@ class _SourceWalker:
         for i, a in enumerate(positional):
             di = i - n_no_default
             if di >= 0:
-                out.append(self._param(a.arg, defaults[di], "positional"))
+                out.append(self._param(a, defaults[di], "positional"))
             else:
-                out.append(ParamRecord(a.arg, has_default=False, kind="positional"))
+                out.append(ParamRecord(
+                    a.arg, has_default=False, kind="positional",
+                    annotation=self._expr(a.annotation)
+                    if a.annotation is not None else None))
         if args.vararg:
-            out.append(ParamRecord(args.vararg.arg, has_default=False, kind="vararg"))
+            out.append(ParamRecord(
+                args.vararg.arg, has_default=False, kind="vararg",
+                annotation=self._expr(args.vararg.annotation)
+                if args.vararg.annotation is not None else None))
         for a, d in zip(args.kwonlyargs, args.kw_defaults):
             if d is None:
-                out.append(ParamRecord(a.arg, has_default=False, kind="keyword_only"))
+                out.append(ParamRecord(
+                    a.arg, has_default=False, kind="keyword_only",
+                    annotation=self._expr(a.annotation)
+                    if a.annotation is not None else None))
             else:
-                out.append(self._param(a.arg, d, "keyword_only"))
+                out.append(self._param(a, d, "keyword_only"))
         if args.kwarg:
-            out.append(ParamRecord(args.kwarg.arg, has_default=False, kind="kwarg"))
+            out.append(ParamRecord(
+                args.kwarg.arg, has_default=False, kind="kwarg",
+                annotation=self._expr(args.kwarg.annotation)
+                if args.kwarg.annotation is not None else None))
         return tuple(out)
 
-    def _param(self, name: str, default_ast, kind: str) -> ParamRecord:
-        return ParamRecord(name, has_default=True,
-                           default=self._expr(default_ast), kind=kind)
+    def _param(self, argument, default_ast, kind: str) -> ParamRecord:
+        return ParamRecord(
+            argument.arg, has_default=True,
+            default=self._expr(default_ast), kind=kind,
+            annotation=self._expr(argument.annotation)
+            if argument.annotation is not None else None)
 
     # -- statement visiting (guard stack + lexical order) ------------------ #
 
@@ -1726,6 +1776,10 @@ class _SourceWalker:
         elements: list = []
         count: ExprNode | None = None
         for arg in call.args:
+            if isinstance(arg, ast.Name):
+                self._local_container_sources.append((
+                    scan.owner, scan.enclosing, field_name, arg.id,
+                    self._span(arg), self._span(call)))
             elems, cnt = self._container_elements(arg)
             for e in elems:
                 elements.append(self._site(field_name, "element", e, guard,
@@ -1766,17 +1820,26 @@ class _SourceWalker:
                 or not isinstance(value.args[0], ast.Call):
             return
         callee = value.func
-        if not isinstance(callee, ast.Attribute) or callee.attr != "append" \
-                or not isinstance(callee.value, ast.Attribute) \
-                or not isinstance(callee.value.value, ast.Name) \
-                or callee.value.value.id != "self":
+        if not isinstance(callee, ast.Attribute) or callee.attr != "append":
             return
-        field = callee.value.attr
+        if isinstance(callee.value, ast.Attribute) \
+                and isinstance(callee.value.value, ast.Name) \
+                and callee.value.value.id == "self":
+            receiver_kind, field = "field", callee.value.attr
+        elif isinstance(callee.value, ast.Name):
+            receiver_kind, field = "local", callee.value.id
+        else:
+            return
         site = self._site(
-            field, "element", value.args[0], guard, scan, via="append")
+            field, "element", value.args[0], guard, scan,
+            via=("append" if receiver_kind == "field" else "local_append"))
         self._container_appends.append((
-            scan.owner, scan.enclosing, field, site, self._span(value)))
-        self.sites.append(site)
+            scan.owner, scan.enclosing, receiver_kind, field,
+            site, self._span(value)))
+        # Local appends are added to the authoritative site census only after
+        # the exact empty-list -> ModuleList(local) bridge is proven below.
+        if receiver_kind == "field":
+            self.sites.append(site)
 
     def _fold_container_appends(self) -> None:
         """Attach append sites only to one exact, never-reassigned container.
@@ -1792,22 +1855,73 @@ class _SourceWalker:
             assignments.setdefault(
                 (item.owner, item.enclosing_callable, item.field), []).append(item)
         mutations: dict[tuple, list] = {}
-        for owner, callable_symbol, field, site, span in self._container_appends:
-            mutations.setdefault((owner, callable_symbol, field), []).append(
-                (site, span))
+        for (owner, callable_symbol, receiver_kind, field,
+             site, span) in self._container_appends:
+            if receiver_kind == "field":
+                mutations.setdefault((owner, callable_symbol, field), []).append(
+                    (site, span))
+
+        local_bindings: dict[tuple, list] = {}
+        for binding in self.bindings:
+            for target in binding.targets:
+                if target.kind == "name" and target.name:
+                    local_bindings.setdefault(
+                        (binding.owner, binding.enclosing_callable,
+                         target.name), []).append(binding)
+        local_appends: dict[tuple, list] = {}
+        for (owner, callable_symbol, receiver_kind, name,
+             site, span) in self._container_appends:
+            if receiver_kind == "local":
+                local_appends.setdefault(
+                    (owner, callable_symbol, name), []).append((site, span))
+        local_sources = {
+            (owner, callable_symbol, field): (name, name_span, container_span)
+            for (owner, callable_symbol, field, name,
+                 name_span, container_span) in self._local_container_sources
+        }
 
         replaced = []
         for record in self.containers:
             key = (record.owner, record.enclosing_callable, record.field)
             additions = mutations.get(key, ())
             field_writes = assignments.get(key, ())
-            if additions and len(field_writes) == 1:
+            local_elements = ()
+            local = local_sources.get(key)
+            if local is not None:
+                name, _name_span, container_span = local
+                bindings = local_bindings.get(
+                    (record.owner, record.enclosing_callable, name), ())
+                local_mutations = local_appends.get(
+                    (record.owner, record.enclosing_callable, name), ())
+                exact_empty_init = (
+                    len(bindings) == 1
+                    and bindings[0].value is not None
+                    and bindings[0].value.kind == "list"
+                    and not bindings[0].value.children
+                    and not bindings[0].guard
+                    and _span_after(container_span, bindings[0].span))
+                if exact_empty_init and local_mutations:
+                    bridged = []
+                    for site, span in local_mutations:
+                        if not _span_after(span, bindings[0].span) \
+                                or not _span_after(container_span, span):
+                            continue
+                        bridged.append(ConstructionSite(
+                            site.site_id, site.owner, site.enclosing_callable,
+                            "element", record.field, site.constructor,
+                            site.args, site.kwargs, site.guard,
+                            site.candidates, "local_append_bridge", site.span))
+                    if bridged:
+                        local_elements = tuple(bridged)
+                        self.sites.extend(bridged)
+            if (additions or local_elements) and len(field_writes) == 1:
                 later = tuple(
                     site for site, span in additions
                     if _span_after(span, record.span))
-                if later:
+                if later or local_elements:
                     elements = tuple(sorted(
-                        (*record.elements, *later), key=lambda item: (
+                        (*record.elements, *local_elements, *later),
+                        key=lambda item: (
                             item.span.line if item.span else 0,
                             item.span.col if item.span else 0,
                             item.site_id.ordinal)))
@@ -1825,6 +1939,13 @@ class _SourceWalker:
         span = self._span(call)
         site_id = ConstructionSiteId(scan.owner, scan.enclosing, span, ordinal)
         candidates, resolved_via = self._candidates(call.func)
+        if len(candidates) == 1 and candidates[0].symbol is None \
+                and isinstance(call.func, ast.Name):
+            local_candidates = self._local_constructor_alias_candidates(
+                scan.enclosing, call.func.id, span)
+            if local_candidates:
+                candidates = local_candidates
+                resolved_via = f"local_constructor_alias:{call.func.id}"
         if not candidates:
             kind = ("unresolved_registry" if isinstance(call.func, ast.Subscript)
                     else "dynamic_construction")
@@ -1838,6 +1959,45 @@ class _SourceWalker:
                          for k in call.keywords),
             guard=guard, candidates=candidates,
             via=resolved_via or via, span=span)
+
+    def _local_constructor_alias_candidates(
+            self, callable_symbol, name, cutoff):
+        """Preserve the complete exact class census of one local ``ifexp``.
+
+        This observes only ``chosen = ClassA if condition else ClassB`` before
+        ``chosen(...)`` in the same callable.  It never evaluates ``condition``;
+        owner resolution may do so later from exact constructor arguments.
+        Rival/reassigned/guarded aliases stay dynamic.
+        """
+        matches = tuple(
+            item for item in self.bindings
+            if item.enclosing_callable == callable_symbol
+            and item.span is not None and cutoff is not None
+            and item.span.source == cutoff.source
+            and (item.span.line, item.span.col) < (cutoff.line, cutoff.col)
+            and not item.guard and len(item.targets) == 1
+            and item.targets[0].kind == "name"
+            and item.targets[0].name == name)
+        if len(matches) != 1 or matches[0].value is None \
+                or matches[0].value.kind != "ifexp" \
+                or len(matches[0].value.children) != 3:
+            return ()
+        body, _test, alternative = matches[0].value.children
+        out = []
+        for expression in (body, alternative):
+            symbol = None
+            provenance = f"local_ifexp_alias:{name}"
+            if expression.kind == "name" and expression.name:
+                if expression.name in self._local_classes:
+                    symbol = SymbolId(self.sid, expression.name)
+                elif expression.name in self._import_aliases:
+                    provenance += f":import:{expression.name}"
+                else:
+                    return ()
+            elif expression.kind != "attribute":
+                return ()
+            out.append(ChildCandidate(expression, symbol, provenance))
+        return tuple(dict.fromkeys(out))
 
     def _opaque_construction_site(
             self, target: str, expression, guard: tuple,
@@ -1965,6 +2125,15 @@ class _SourceWalker:
             self.comprehensions.append(ComprehensionObservation(
                 scan.owner, scan.enclosing, expression_kind,
                 outputs, clauses, guard, self._span(node)))
+            # ``ast.comprehension`` is not an ``ast.expr``, so the generic
+            # child walk below cannot reach its iterable or filters.  Observe
+            # those expressions explicitly; otherwise a construction count
+            # such as ``range(config.num_codebooks)`` loses the exact config
+            # occurrence while an unrelated sibling read remains visible.
+            for generator in node.generators:
+                self._walk_expr(generator.iter, guard, scan)
+                for condition in generator.ifs:
+                    self._walk_expr(condition, guard, scan)
         # Publish known executable value forms that carry or defer a call as
         # unsupported regions.  This list is deliberately non-exhaustive; absence
         # of one of these records is never a completeness certificate.
@@ -2580,6 +2749,7 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
     component_files = dict(getattr(bundle, "component_files", {}) or {})
     if not component_files and getattr(bundle, "files", None):
         component_files = {"root": tuple(bundle.files)}
+    supporting_files = dict(getattr(bundle, "supporting_files", {}) or {})
 
     source_nodes: list = []
     parse_failures: list = []
@@ -2592,8 +2762,15 @@ def build_program_index(bundle, *, external_nodes=()) -> ProgramIndex:
         "bindings", "loops", "comprehensions", "returns", "transfers",
         "unsupported_exec")}
 
-    for component in sorted(component_files):
-        for raw_path in component_files[component]:
+    all_component_sources = {
+        component: tuple(dict.fromkeys((
+            *component_files.get(component, ()),
+            *supporting_files.get(component, ()),
+        )))
+        for component in sorted(set(component_files) | set(supporting_files))
+    }
+    for component in sorted(all_component_sources):
+        for raw_path in all_component_sources[component]:
             path = _canonical_path(str(raw_path))
             try:
                 with open(path, "rb") as fh:

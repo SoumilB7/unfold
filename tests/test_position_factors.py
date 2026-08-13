@@ -69,7 +69,9 @@ class Stage(nn.Module):
             [Cell(config) for _ in range(config.num_hidden_layers)])
         self.maker = FactorMaker(config)
 
-    def forward(self, hidden, coordinate):
+    def forward(self, hidden, coordinate=None):
+        if coordinate is None:
+            coordinate = torch.arange(hidden.shape[1])
         factors = self.maker(hidden, coordinate=coordinate)
         for cell in self.cells:
             hidden = cell(hidden, factors=factors)
@@ -136,7 +138,9 @@ class Stage(nn.Module):
             [Cell(config) for _ in range(config.num_hidden_layers)])
         self.maker = FactorMaker(config)
 
-    def forward(self, hidden, coordinate):
+    def forward(self, hidden, coordinate=None):
+        if coordinate is None:
+            coordinate = torch.arange(hidden.shape[1])
         phase = self.maker(hidden, coordinate)
         for cell in self.cells:
             hidden = cell(hidden, phase)
@@ -259,6 +263,20 @@ def test_phase_coordinate_must_be_explicitly_bound_at_producer_call(tmp_path):
               .replace("self.maker(hidden, coordinate=coordinate)",
                        "self.maker(hidden)"))
     assert _result(tmp_path, source).status == "failed"
+
+
+def test_hidden_state_cannot_masquerade_as_trig_coordinate(tmp_path):
+    source = _SOURCE.replace(
+        "self.maker(hidden, coordinate=coordinate)",
+        "self.maker(hidden, coordinate=hidden)")
+    assert _result(tmp_path, source).status == "failed"
+
+
+def test_hidden_state_cannot_masquerade_as_complex_coordinate(tmp_path):
+    source = _COMPLEX_SOURCE.replace(
+        "self.maker(hidden, coordinate)",
+        "self.maker(hidden, hidden)")
+    assert _complex_result(tmp_path, source).status == "failed"
 
 
 def test_valid_uninvoked_trig_sibling_cannot_launder_bad_producer(tmp_path):

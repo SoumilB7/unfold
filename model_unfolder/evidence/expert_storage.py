@@ -65,6 +65,7 @@ _STORAGE_PROTOCOLS = frozenset({
 _FUNCTIONAL_LINEAR_PROTOCOLS = frozenset({
     "torch.nn.functional.linear",
 })
+_BATCHED_MATMUL_PROTOCOLS = frozenset({"torch.bmm"})
 _SPLIT_PROTOCOLS = frozenset({"chunk", "split", "tensor_split"})
 _LANE_0 = ("lane", 0)
 _LANE_1 = ("lane", 1)
@@ -203,6 +204,61 @@ class RoutedExpertStorage:
             raise ValueError("expert provenance retains path and storage spans")
 
 
+@dataclass(frozen=True)
+class RoutedExpertPositiveCensus:
+    """Every positively proven routed-expert storage path below one block."""
+
+    block_occurrence: OwnerOccurrenceId
+    candidates: tuple[RoutedExpertStorage, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.block_occurrence, OwnerOccurrenceId):
+            raise TypeError("an expert census names one exact decoder block")
+        if not self.candidates or any(
+                not isinstance(item, RoutedExpertStorage)
+                or item.block_occurrence != self.block_occurrence
+                for item in self.candidates):
+            raise ValueError("an expert census carries exact block-local proofs")
+        identities = tuple(
+            (item.owner_symbol, item.construction_path)
+            for item in self.candidates)
+        if len(identities) != len(set(identities)):
+            raise ValueError("routed-expert candidate paths are unique")
+
+
+def routed_expert_storage_positive_census(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[RoutedExpertPositiveCensus]:
+    """Return exact positive routed-storage paths without choosing a winner."""
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("routed expert census requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="routed_expert_storage_positive_census")
+    if not isinstance(block_occurrence, OwnerOccurrenceId):
+        raise TypeError("an exact block occurrence is required")
+    block = root.graph.node_for(block_occurrence)
+    if block is None:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner", "the block does not round-trip through the owner graph"),))
+    ordered = _routed_expert_candidates(
+        index, root, block_occurrence, block.symbol)
+    if not ordered:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "no exact invoked variant proves fused or split expert storage"),))
+    spans = tuple(dict.fromkeys(
+        span for item in ordered for span in item.spans))
+    return ReaderResult.resolved(
+        block_occurrence,
+        RoutedExpertPositiveCensus(block_occurrence, ordered),
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=("positive exact construction paths proving routed-expert "
+                    "storage; no candidate or layer selection claim")),))
+
+
 def routed_expert_storage_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
@@ -220,25 +276,8 @@ def routed_expert_storage_at_block(
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "out_of_owner", "the block does not round-trip through the owner graph"),))
 
-    candidates = []
-    for symbol, trace, sites in _reachable_invoked_classes(index, block.symbol):
-        evidence = _fused_expert_evidence(
-            index, root, block_occurrence, block.symbol, symbol, trace, sites)
-        if evidence is None:
-            evidence = _split_expert_evidence(
-                index, root, block_occurrence, block.symbol, symbol, trace, sites)
-        if evidence is not None:
-            candidates.append(evidence)
-    distinct = {
-        (item.owner_symbol, item.construction_path): item
-        for item in candidates
-    }
-    ordered = tuple(sorted(distinct.values(), key=lambda item: (
-        item.owner_symbol.source.canonical_path,
-        item.construction_path[-1].span.line
-        if item.construction_path else 0,
-        item.owner_symbol.qualified_name,
-    )))
+    ordered = _routed_expert_candidates(
+        index, root, block_occurrence, block.symbol)
     if not ordered:
         return ReaderResult.failed(block_occurrence, (ReaderFailure(
             "incomplete_graph",
@@ -256,6 +295,29 @@ def routed_expert_storage_at_block(
                 "exact construction path, repeated expert storage and local "
                 "gate/up/down dataflow prove the routed-expert projection mode")),),
     )
+
+
+def _routed_expert_candidates(index, root, block_occurrence, block_symbol):
+    candidates = []
+    for symbol, trace, sites in _reachable_invoked_classes(index, block_symbol):
+        evidence = _fused_expert_evidence(
+            index, root, block_occurrence, block_symbol, symbol, trace, sites)
+        if evidence is None:
+            evidence = _split_expert_evidence(
+                index, root, block_occurrence, block_symbol, symbol, trace, sites)
+        if evidence is not None:
+            candidates.append(evidence)
+    distinct = {
+        (item.owner_symbol, item.construction_path): item
+        for item in candidates
+    }
+    ordered = tuple(sorted(distinct.values(), key=lambda item: (
+        item.owner_symbol.source.canonical_path,
+        item.construction_path[-1].span.line
+        if item.construction_path else 0,
+        item.owner_symbol.qualified_name,
+    )))
+    return ordered
 
 
 def decoder_routed_expert_storage_for_path(
@@ -311,7 +373,16 @@ def _reachable_invoked_classes(index, block_symbol, max_depth=3):
             site for site in index.construction_sites_of(symbol)
             if site.target_kind == "field" and site.target in called_fields)
         for site in sorted(sites, key=_site_key):
-            candidates = resolve_construction_candidate_symbols(index, site)
+            # A conditional-expression construction carries several exact
+            # candidate edges at one site.  This is a POSITIVE census, so walk
+            # every locally indexed edge without choosing one; per-layer
+            # selection remains the schedule reader's separate obligation.
+            local = tuple(
+                item.symbol for item in site.candidates
+                if item.symbol is not None)
+            candidates = (
+                local if local else
+                resolve_construction_candidate_symbols(index, site))
             for candidate in sorted(candidates, key=_symbol_key):
                 queue.append((
                     candidate, (*trace, candidate),
@@ -322,7 +393,7 @@ def _fused_expert_evidence(
     index, root, block_occurrence, block_symbol, owner, trace, path,
 ):
     forward = SymbolId(owner.source, f"{owner.qualified_name}.forward")
-    if index.callable_by_symbol(forward) is None or not index.loops_in(forward):
+    if index.callable_by_symbol(forward) is None:
         return None
     parameters = tuple(
         record for record in index.field_assigns_of(owner)
@@ -332,29 +403,27 @@ def _fused_expert_evidence(
     loop_spans = tuple(
         loop.body_span for loop in index.loops_in(forward)
         if loop.kind == "for" and loop.body_span is not None)
-    referenced = {
-        record.field for record in parameters
-        if _field_referenced_in_spans(
-            index, forward, record.field, loop_spans)
-    }
     proofs = []
     for fused_record in parameters:
-        if fused_record.field not in referenced:
-            continue
         for down_record in parameters:
-            if down_record == fused_record \
-                    or down_record.field not in referenced:
+            if down_record == fused_record:
                 continue
-            flow = _two_lane_flow_spans(
-                index, owner, forward,
-                fused_record.field, down_record.field, loop_spans)
+            flow = (
+                _two_lane_flow_spans(
+                    index, owner, forward,
+                    fused_record.field, down_record.field, loop_spans)
+                if loop_spans else
+                _vectorized_two_lane_bmm_flow(
+                    index, forward,
+                    fused_record.field, down_record.field))
             if not flow:
                 continue
             flow_spans, affine_protocol = flow
             dimensions = _stacked_parameter_dimensions(index, fused_record)
             lane_dimension = (
                 dimensions[-2] if affine_protocol == "functional_linear"
-                else dimensions[-1] if affine_protocol == "matmul"
+                else dimensions[-1]
+                if affine_protocol in {"matmul", "batched_matmul"}
                 else None)
             if lane_dimension is not None \
                     and _shape_has_two_lane_factor((lane_dimension,)):
@@ -1081,6 +1150,112 @@ def _two_lane_flow_spans(
         index, owner, forward, fused_field, down_field, loop_spans)
 
 
+def _vectorized_two_lane_bmm_flow(
+    index, forward, fused_field, down_field,
+):
+    """Prove the loop-free equivalent of stacked expert execution.
+
+    Some implementations batch the expert axis instead of selecting a weight
+    inside a Python loop.  The proof remains storage/dataflow exact: one local
+    is produced by ``torch.bmm(..., self.<stacked gate+up>)``; that exact local
+    is split into two lanes; both lanes meet at a multiplication; and that
+    product is consumed by ``torch.bmm(..., self.<different stacked down>)``.
+    A 3-D parameter or a batched matmul alone is deliberately insufficient.
+    """
+    producers = []
+    for binding in index.bindings_in(forward):
+        targets = _target_names(binding.targets)
+        if len(targets) != 1 or binding.value is None:
+            continue
+        calls = tuple(
+            expression for expression in _expressions(binding.value)
+            if _call_has_protocol(
+                index, forward, expression, _BATCHED_MATMUL_PROTOCOLS)
+            and any(_contains_self_field(arg, fused_field)
+                    for arg in expression.children[1:]))
+        if len(calls) == 1:
+            producers.append((targets[0], binding, calls[0]))
+    proofs = []
+    for produced, producer_binding, producer_call in producers:
+        for split_binding in index.bindings_in(forward):
+            lane_names = _target_names(split_binding.targets)
+            if len(lane_names) != 2 or split_binding.value is None \
+                    or _span_key(split_binding.span) \
+                    <= _span_key(producer_binding.span):
+                continue
+            split_calls = tuple(
+                expression for expression in _expressions(split_binding.value)
+                if expression.kind == "call" and expression.children
+                and expression.children[0].kind == "attribute"
+                and expression.children[0].name in _SPLIT_PROTOCOLS
+                and expression.children[0].children
+                and expression.children[0].children[0].kind == "name"
+                and expression.children[0].children[0].name == produced
+                and any(child.kind == "constant" and child.const_value == 2
+                        for child in expression.children[1:]))
+            if len(split_calls) != 1:
+                continue
+            state = {lane_names[0]: {_LANE_0}, lane_names[1]: {_LANE_1}}
+            observations = [
+                (binding.span, binding.value, binding)
+                for binding in index.bindings_in(forward)
+                if binding.value is not None
+            ]
+            observations.extend(
+                (returned.span, returned.value, None)
+                for returned in index.return_observations_in(forward)
+                if returned.value is not None)
+            for observation_span, value, binding in sorted(
+                    observations, key=lambda item: _span_key(item[0])):
+                if _span_key(observation_span) <= _span_key(split_binding.span):
+                    continue
+                down_calls = tuple(
+                    expression for expression in _expressions(value)
+                    if _call_has_protocol(
+                        index, forward, expression, _BATCHED_MATMUL_PROTOCOLS)
+                    and any(_contains_self_field(arg, down_field)
+                            for arg in expression.children[1:]))
+                for down_call in down_calls:
+                    data_args = tuple(
+                        arg for arg in down_call.children[1:]
+                        if not _contains_self_field(arg, down_field))
+                    if len(data_args) != 1:
+                        continue
+                    dependencies = _lane_dependencies(data_args[0], state)
+                    if dependencies == {_LANE_0, _LANE_1} and any(
+                            expression.kind == "binop"
+                            and expression.operator == "*"
+                            for expression in _expressions(data_args[0])):
+                        proofs.append((
+                            (producer_binding.span, producer_call.span,
+                             split_binding.span, split_calls[0].span,
+                             observation_span, down_call.span),
+                            "batched_matmul"))
+                targets = (_target_names(binding.targets)
+                           if binding is not None else ())
+                if len(targets) == 1:
+                    state[targets[0]] = _lane_dependencies(
+                        value, state)
+    unique = tuple(dict.fromkeys(proofs))
+    return unique[0] if len(unique) == 1 else None
+
+
+def _call_has_protocol(index, callable_symbol, expression, protocols):
+    if expression.kind != "call" or not expression.children:
+        return False
+    proof = resolve_import_reference(
+        index, callable_symbol.source, callable_symbol,
+        expression.children[0])
+    return proof is not None and proof.qualified_target in protocols
+
+
+def _lane_dependencies(expression, state):
+    dependencies = set()
+    for name in _names(expression):
+        dependencies.update(state.get(name, ()))
+    return dependencies
+
+
 def _direct_split_lane_flow(
     index, forward, fused_field, down_field, loop_spans,
 ):
@@ -1374,6 +1549,8 @@ def _symbol_key(symbol):
 
 __all__ = [
     "RoutedExpertStorage",
+    "RoutedExpertPositiveCensus",
     "routed_expert_storage_at_block",
+    "routed_expert_storage_positive_census",
     "decoder_routed_expert_storage_for_path",
 ]

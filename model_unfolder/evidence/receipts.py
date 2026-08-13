@@ -32,6 +32,7 @@ shadow compatibility until parity is proven for each migrated route.
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass, replace
 
 
@@ -77,7 +78,24 @@ def value_status_hash(value, status: str) -> str:
     """Stable short hash of a fact's value and its evidence status — the handle
     the validator uses to prove the drawing did not drift from the ledgered
     fact.  Never identity-derived (no class/model name)."""
-    return hashlib.sha256(f"{status}\x00{value!r}".encode()).hexdigest()[:16]
+    def _canonical(item):
+        # Typed facts often retain immutable tuples while their HTML/IR
+        # projection crosses a JSON-shaped list boundary.  Those are the same
+        # ordered value, not renderer drift.  Mapping keys remain sorted and
+        # scalar types remain distinct, so changing any actual value/status
+        # still changes the fingerprint.
+        if isinstance(item, (list, tuple)):
+            return [ _canonical(value) for value in item ]
+        if isinstance(item, dict):
+            return {str(key): _canonical(item[key])
+                    for key in sorted(item, key=lambda key: str(key))}
+        return item
+
+    payload = json.dumps(
+        {"status": status, "value": _canonical(value)},
+        sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        default=repr)
+    return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
 def receipts_from_projects(projects, *, surface: str, structural_target: str,
@@ -412,7 +430,8 @@ def fabrication_findings(receipts, facts, claimed_targets) -> list[str]:
 
 __all__ = [
     "ProjectionReceipt", "value_status_hash", "receipts_from_projects",
-    "stamp_context", "projection_routes", "receipted_scopes", "routes_for",
+    "stamp_context", "projection_routes_by_fact", "projection_routes",
+    "receipted_scopes",
     "RECEIPTED_SCOPES", "is_receipted_scope", "join_obligation_receipts",
     "fabrication_findings",
 ]

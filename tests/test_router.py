@@ -191,6 +191,8 @@ def test_grouped_bias_router_carries_only_code_bound_operands(tmp_path):
     assert (value.scoring_fn, value.scoring_before_topk) == ("sigmoid", True)
     assert value.score_source_kind == "affine"
     assert len(value.score_source_calls) == 1
+    assert value.expert_count_path == ("num_experts",)
+    assert value.expert_count_spans
     assert value.selection_count_path == ("top_k",)
     assert value.selection_count_literal is None
     assert value.bias_correction is True
@@ -605,6 +607,33 @@ def test_real_router_controls(slug, expected):
         value.group_score_kind,
         value.normalization_kind,
     ) == expected
+
+
+@pytest.mark.parametrize(("slug", "path"), (
+    ("deepseek-v3", ("n_routed_experts",)),
+    ("glm-4-5", ("n_routed_experts",)),
+    ("gpt-oss-20b", ("num_local_experts",)),
+    ("dbrx-base", ("ffn_config", "moe_num_experts")),
+))
+def test_real_router_expert_count_is_the_exact_score_output_dimension(
+        slug, path):
+    config = json.loads(
+        (_CORPUS / f"{slug}.json").read_text(encoding="utf-8"))["config"]
+    context = ParseContext.build(config)
+    result = decoder_router_selection_for_path(
+        context.program_index(), context.source_bundle, (),
+        allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.expert_count_path == path
+    assert result.value.expert_count_spans
+
+
+def test_router_dto_cannot_claim_a_different_expert_count_path(tmp_path):
+    value = _read(tmp_path, _DEEPSEEK).value
+    with pytest.raises(ValueError):
+        replace(value, expert_count_path=("hidden",))
+    with pytest.raises(ValueError):
+        replace(value, expert_count_spans=())
 
 
 def test_real_dense_control_has_no_router_policy():

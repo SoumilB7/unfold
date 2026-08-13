@@ -276,11 +276,12 @@ def describe_attention(attention: dict) -> str:
         return variant["desc"]
     kind = attention.get("kind")
     if attention.get("cross_attention"):
-        kv_heads = attention.get("num_kv_heads") or attention.get("num_heads")
+        kv_heads = attention.get("num_kv_heads")
         text = (
             "Cross-attention; decoder hidden states produce Q; "
             "cross_attention_states produce K/V; "
-            f"{attention.get('num_heads')} Q / {kv_heads} KV heads; "
+            f"{_fmt_int(attention.get('num_heads'))} Q / "
+            f"{_fmt_int(kv_heads)} KV heads; "
             f"head dim {_fmt_int(attention.get('head_dim'))}"
         )
     elif kind == "mla":
@@ -379,8 +380,11 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
     elif attention.get("cross_attention"):
         desc = ("Cross-attention — decoder hidden states produce the queries; "
                 "the projected image states produce K and V.")
-        kv = attention.get("num_kv_heads") or attention.get("num_heads")
-        facts += [f"{attention.get('num_heads')} Q heads", f"{kv} KV heads"]
+        kv = attention.get("num_kv_heads")
+        if attention.get("num_heads") is not None:
+            facts.append(f"{attention.get('num_heads')} Q heads")
+        if kv is not None:
+            facts.append(f"{kv} KV heads")
         _dim_fact(attention, facts)
     elif kind == "mla":
         desc = ("Multi-head latent attention — K/V are stored as one compressed "
@@ -396,8 +400,10 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         _dim_fact(attention, facts)
     elif kind == "gqa":
         desc = "Grouped-query attention — query heads share a smaller set of K/V heads."
-        facts += [f"{attention.get('num_heads')} Q heads",
-                  f"{attention.get('num_kv_heads')} KV heads"]
+        if attention.get("num_heads") is not None:
+            facts.append(f"{attention.get('num_heads')} Q heads")
+        if attention.get("num_kv_heads") is not None:
+            facts.append(f"{attention.get('num_kv_heads')} KV heads")
         _dim_fact(attention, facts)
     elif kind == "ssm":
         desc = "Selective state-space mixer (Mamba) — a recurrence replaces attention."
@@ -454,6 +460,10 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         # as a chip so the block reads as VIDEO (a 3rd, time, dimension) without
         # drilling into the attention's "apply RoPE" leaves.
         facts.append("3D RoPE · T·H·W")
+    if (attention.get("position_kind") == "rope"
+            and attention.get("position_application") == "qk_rotation"
+            and attention.get("rope_theta") is not None):
+        facts.append(f"RoPE θ {_fmt_int(attention['rope_theta'])}")
     if attention.get("output_gate"):
         facts.append(f"{attention['output_gate']} output gate")
     position_kind = attention.get("position_kind")
@@ -466,12 +476,6 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
         facts.append("no positional transform")
     elif position_kind == "unknown":
         facts.append("position scheme unresolved")
-    # U2 P3a: the config-declared RoPE fallback states its TIER — the θ chip
-    # replaces the honest-unknown banner, never a silent assertion.
-    if attention.get("position_declared"):
-        theta = attention.get("rope_theta_declared")
-        facts.append(f"RoPE θ={_fmt_int(theta)} (config-declared)" if theta
-                     else "RoPE (config-declared)")
     # U2 honest-unknown chips (the position-chip discipline, generalized):
     # an unresolved mask/bias states itself instead of silently rendering
     # like the evidence-backed causal/bias-less case.
@@ -517,11 +521,12 @@ def attention_summary(attention: dict) -> tuple[str, list[str]]:
 
 def _head_facts(attention: dict, facts: list[str]) -> None:
     q, kv = attention.get("num_heads"), attention.get("num_kv_heads")
-    if q and (not kv or kv == q):
+    if q and kv == q:
         facts.append(f"{q} heads")
     elif q:
         facts.append(f"{q} Q heads")
-        facts.append(f"{kv} KV heads")
+        if kv:
+            facts.append(f"{kv} KV heads")
     _dim_fact(attention, facts)
 
 

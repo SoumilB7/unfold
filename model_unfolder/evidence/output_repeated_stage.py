@@ -40,6 +40,7 @@ from .program_index import (
     ExprNode,
     ProgramIndex,
     SourceSpan,
+    SymbolId,
 )
 from .reader_result import (
     Ambiguity,
@@ -189,7 +190,8 @@ def resolve_output_repeated_stage(
     owner: OwnerOccurrenceId,
 ) -> ReaderResult[OutputRepeatedStage]:
     """Resolve one exact repeated child contributing to a structured return."""
-    children = _output_child_candidates(index, root, owner)
+    children = _output_child_candidates(
+        index, root, owner, repeated_only=True)
     if children.status != "resolved":
         return children
     root = require_resolved_component_root(
@@ -260,6 +262,8 @@ def _output_child_candidates(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     owner: OwnerOccurrenceId,
+    *,
+    repeated_only: bool = False,
 ) -> ReaderResult[tuple[OutputChildStage, ...]]:
     """Return the complete positively-addressed output-child candidate set."""
     if not isinstance(index, ProgramIndex):
@@ -282,7 +286,17 @@ def _output_child_candidates(
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "the output owner's invocation/dataflow graph is unavailable"),))
-    if flow.unsupported_regions or flow.loops:
+    # A loop can hide arbitrarily many executions and is therefore never a
+    # lawful wrapper-output boundary.  A conditional expression is narrower:
+    # the ProgramIndex still publishes every call inside it.  It may be crossed
+    # only when that exact call census is present; its unresolved self-child is
+    # checked against the return lineage below.  Other unsupported regions stay
+    # blocking.  This admits an optional non-repeated output head without
+    # weakening the repeated-stage address proof.
+    uncensused_regions = tuple(
+        region for region in flow.unsupported_regions
+        if not _conditional_call_region_is_censused(flow, region))
+    if uncensused_regions or flow.loops:
         return ReaderResult.failed(owner, (ReaderFailure(
             "unsupported_syntax",
             "open execution regions prevent an exact output-lineage census"),))
@@ -313,13 +327,20 @@ def _output_child_candidates(
             owner, invocation.callee_owner_occurrence, invocation,
             sink, path, spans))
 
-    unresolved_nodes = {
-        InvocationNodeId(item.call_site, "observed")
-        for item in flow.unresolved_invocations
+    unresolved_on_path = tuple(
+        item for item in flow.unresolved_invocations
         if _could_be_self_child(item.call.callee)
-    }
-    if any(_one_path(node, sink, relations) is not None
-           for node in unresolved_nodes):
+        and not _is_exact_self_method(
+            index, owner_node.symbol, item.call.callee)
+        and _one_path(
+            InvocationNodeId(item.call_site, "observed"),
+            sink, relations) is not None)
+    if repeated_only:
+        unresolved_on_path = tuple(
+            item for item in unresolved_on_path
+            if _unresolved_child_may_repeat(
+                index, owner_node.symbol, item.call.callee))
+    if unresolved_on_path:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
             "an unresolved self-child invocation also reaches the returned call"),))
@@ -408,6 +429,113 @@ def _could_be_self_child(expr: ExprNode):
     if expr.kind == "subscript" and expr.children:
         return _could_be_self_child(expr.children[0])
     return False
+
+
+def _within(inner: SourceSpan, outer: SourceSpan) -> bool:
+    if inner.source != outer.source:
+        return False
+    return (outer.line, outer.col) <= (inner.line, inner.col) \
+        and (inner.end_line or inner.line, inner.end_col or inner.col) <= (
+            outer.end_line or outer.line, outer.end_col or outer.col)
+
+
+def _conditional_call_region_is_censused(flow, region) -> bool:
+    """Whether one unsupported IfExp is closed by the exact call-site census.
+
+    This is deliberately not a general CFG-completeness claim.  The walker
+    labels an IfExp unsupported because its branch execution is conditional,
+    while still observing every nested call.  Requiring at least one exact call
+    inside the exact region prevents an empty/unknown region from becoming a
+    silent proof.  Return-path rival handling remains separate below.
+    """
+    if region.construct_kind != "ifexp" or region.span is None:
+        return False
+    nested = tuple(
+        node for node in flow.nodes
+        if _within(node.call_site.span, region.span))
+    return bool(nested)
+
+
+def _self_field(expr: ExprNode) -> str | None:
+    if expr.kind != "attribute" or len(expr.children) != 1:
+        return None
+    base = expr.children[0]
+    if base.kind == "name" and base.name == "self" and expr.name:
+        return expr.name
+    return None
+
+
+def _is_none_candidate(candidate) -> bool:
+    reference = getattr(candidate, "reference", None)
+    return reference is not None \
+        and reference.kind == "constant" \
+        and reference.const_value is None
+
+
+def _symbol_may_repeat(index, symbol) -> bool:
+    """Whether the exact candidate itself may own a repeated container.
+
+    ``resolve_output_repeated_stage`` asks about the immediate invoked child;
+    it does not recursively call a child-of-child a repeated stage.  External
+    leaf modules constructed inside that candidate therefore do not vote.  A
+    later decoder traversal can descend through an exact output child in its
+    own separately proved step.
+    """
+    if any(item.owner == symbol for item in index.containers):
+        return True
+    init_name = f"{symbol.qualified_name}.__init__"
+    if any(item.owner == symbol and (
+            item.enclosing_callable is None
+            or item.enclosing_callable.qualified_name == init_name)
+            for item in index.unsupported_syntax):
+        return True
+    return False
+
+
+def _unresolved_child_may_repeat(index, owner_symbol, callee) -> bool:
+    """Prove only the narrow negative needed by repeated-stage descent.
+
+    An unresolved output child is harmless only when every exact construction
+    candidate is locally indexed and its complete constructor closure contains
+    no repeated container.  Unknown/external/dynamic candidates remain
+    blocking.  No field or class spelling carries a role.
+    """
+    field = _self_field(callee)
+    if field is None:
+        return True
+    sites = tuple(
+        site for site in index.construction_sites
+        if site.owner == owner_symbol
+        and site.target_kind == "field" and site.target == field)
+    if not sites:
+        return True
+    saw_real_candidate = False
+    for site in sites:
+        if not site.candidates:
+            if site.constructor.kind == "constant" \
+                    and site.constructor.const_value is None:
+                continue
+            return True
+        for candidate in site.candidates:
+            if candidate.symbol is None:
+                if _is_none_candidate(candidate):
+                    continue
+                return True
+            saw_real_candidate = True
+            if _symbol_may_repeat(index, candidate.symbol):
+                return True
+    return False if saw_real_candidate else False
+
+
+def _is_exact_self_method(index, owner_symbol, callee) -> bool:
+    """Separate an indexed ``self.method`` call from a constructed child call."""
+    field = _self_field(callee)
+    if field is None:
+        return False
+    symbol = SymbolId(
+        owner_symbol.source, f"{owner_symbol.qualified_name}.{field}")
+    record = index.callable_by_symbol(symbol)
+    return record is not None and record.owner == owner_symbol
 
 
 __all__ = [

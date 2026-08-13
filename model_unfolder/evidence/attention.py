@@ -18,10 +18,12 @@ from dataclasses import dataclass
 
 from .attention_storage import (
     attention_projection_storage_evidence,
+    attention_projection_storage_for_child_evidence,
     projection_sources_reaching_calls,
     producer_sources_reaching_expressions,
 )
 from .attention_child import (
+    AttentionChildEvidence,
     attention_child_evidence,
     attention_child_positive_census,
 )
@@ -44,8 +46,15 @@ from .dispatch_attention_mechanism import (
     EquivalentDispatchMultiQueryBinding,
     dispatch_multi_query_attention_binding_at_block,
 )
+from .expression_eval import (
+    ConfigExpressionEvaluator,
+    callable_argument_env,
+    guard_path_state,
+    scoped_document as _scoped_config_document,
+)
 from .models import SourceBundle
 from .program_index import (
+    BindingObservation,
     CallObservation,
     ConfigPathObservation,
     ExprNode,
@@ -65,6 +74,11 @@ _LINEAR_PROTOCOLS = frozenset({
     "torch.nn.Linear",
     "torch.nn.modules.linear.Linear",
 })
+_TRANSPOSED_AFFINE_PROTOCOLS = frozenset({
+    "transformers.pytorch_utils.Conv1D",
+    "...pytorch_utils.Conv1D",
+})
+_AFFINE_PROTOCOLS = _LINEAR_PROTOCOLS | _TRANSPOSED_AFFINE_PROTOCOLS
 
 _SIGMOID_PROTOCOLS = frozenset({
     "torch.sigmoid",
@@ -84,6 +98,12 @@ _SOFTMAX_PROTOCOLS = frozenset({
 
 _TANH_PROTOCOLS = frozenset({
     "torch.tanh",
+})
+
+_SCORE_CONCAT_PROTOCOLS = frozenset({
+    "torch.cat",
+    "torch.concat",
+    "torch.concatenate",
 })
 
 _SPLIT_PROTOCOLS = frozenset({
@@ -116,6 +136,7 @@ class AttentionScoreScalingBinding:
     softmax_call: CallObservation
     spans: tuple[SourceSpan, ...]
     config_paths: tuple[tuple[str, ...], ...] = ()
+    path_bindings: tuple[BindingObservation, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -131,19 +152,32 @@ class AttentionScoreScalingBinding:
         if self.score_call.enclosing_callable \
                 != self.softmax_call.enclosing_callable:
             raise ValueError("score and softmax calls belong to one callable")
-        if self.score_call.enclosing_callable.source \
-                != self.attention_occurrence.root.source \
-                or self.softmax_call.enclosing_callable.source \
-                != self.attention_occurrence.root.source:
-            raise ValueError("score scaling calls belong to the attention source")
+        if self.score_call.enclosing_callable.source != \
+                self.softmax_call.enclosing_callable.source \
+                or self.score_call.enclosing_callable.source.component_key != \
+                self.attention_occurrence.root.source.component_key:
+            raise ValueError(
+                "score scaling calls belong to one attention component source")
         if self.score_call.span is None or self.softmax_call.span is None:
             raise ValueError("score scaling calls carry exact spans")
         if self.protocol == "sdpa_terminal":
-            if not self.scaled or self.score_call != self.softmax_call:
+            if not self.scaled or self.score_call != self.softmax_call \
+                    or self.path_bindings:
                 raise ValueError("SDPA is one exact scaled score/softmax terminal")
         elif self.score_call == self.softmax_call \
                 or not _span_before(self.score_call.span, self.softmax_call.span):
             raise ValueError("the explicit score call precedes its softmax")
+        elif not self.path_bindings or any(
+                not isinstance(item, BindingObservation)
+                or item.enclosing_callable != self.score_call.enclosing_callable
+                or item.span is None
+                or not _span_before(item.span, self.softmax_call.span)
+                for item in self.path_bindings):
+            raise ValueError(
+                "an explicit score path carries its exact live bindings")
+        elif len({item.statement for item in self.path_bindings}) \
+                != len(self.path_bindings):
+            raise ValueError("score-path bindings are occurrence-unique")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
             raise ValueError("score scaling evidence carries exact spans")
@@ -226,7 +260,8 @@ class AttentionLogitSoftcapBinding:
                 or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
             raise TypeError("softcap evidence names exact occurrences")
         if not isinstance(self.compute_callable, SymbolId) \
-                or self.compute_callable.source != self.attention_occurrence.root.source:
+                or self.compute_callable.source.component_key != \
+                self.attention_occurrence.root.source.component_key:
             raise TypeError("softcap evidence names its exact compute callable")
         if not self.config_path or any(
                 not isinstance(part, str) or not part
@@ -279,17 +314,18 @@ class AttentionQKVClipBinding:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
                 or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
             raise TypeError("QKV clipping names exact owner occurrences")
+        if not isinstance(self.projection, ConstructionOccurrenceId) \
+                or self.projection.parent != self.attention_occurrence:
+            raise ValueError("the clipped projection belongs to the attention")
         if not isinstance(self.compute_callable, SymbolId) \
-                or self.compute_callable.source \
-                != self.attention_occurrence.root.source:
+                or self.compute_callable.source != self.projection.site.owner.source \
+                or self.compute_callable.source.component_key != \
+                self.attention_occurrence.root.source.component_key:
             raise TypeError("QKV clipping names its exact callable")
         if not self.config_path or any(
                 not isinstance(part, str) or not part
                 for part in self.config_path):
             raise TypeError("QKV clipping carries one exact config path")
-        if not isinstance(self.projection, ConstructionOccurrenceId) \
-                or self.projection.parent != self.attention_occurrence:
-            raise ValueError("the clipped projection belongs to the attention")
         for call in (self.clamp_call, self.compute_entry):
             if not isinstance(call, CallObservation) or call.span is None \
                     or call.enclosing_callable != self.compute_callable:
@@ -340,9 +376,18 @@ class AttentionCacheBinding:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
                 or not isinstance(self.attention_occurrence, OwnerOccurrenceId):
             raise TypeError("cache evidence names exact owner occurrences")
+        if len(self.input_projections) != 2 or any(
+                not isinstance(item, ConstructionOccurrenceId)
+                or item.parent != self.attention_occurrence
+                for item in self.input_projections):
+            raise ValueError("cache inputs are exact attention projections")
+        projection_source = self.input_projections[0].site.owner.source
         if not isinstance(self.compute_callable, SymbolId) \
-                or self.compute_callable.source \
-                != self.attention_occurrence.root.source:
+                or self.compute_callable.source != projection_source \
+                or any(item.site.owner.source != projection_source
+                       for item in self.input_projections) \
+                or self.compute_callable.source.component_key != \
+                self.attention_occurrence.root.source.component_key:
             raise TypeError("cache evidence names its exact attention callable")
         if self.storage_mode not in {"split", "fused_qkv"}:
             raise ValueError("cache evidence carries exact projection storage")
@@ -366,11 +411,6 @@ class AttentionCacheBinding:
                 or _self_field(self.layer_index) is None:
             raise ValueError(
                 "cache update carries its exact owner layer-index operand")
-        if len(self.input_projections) != 2 or any(
-                not isinstance(item, ConstructionOccurrenceId)
-                or item.parent != self.attention_occurrence
-                for item in self.input_projections):
-            raise ValueError("cache inputs are exact attention projections")
         if self.storage_mode == "split" \
                 and len(set(self.input_projections)) != 2:
             raise ValueError("split K/V inputs are two distinct projections")
@@ -434,20 +474,21 @@ class AttentionOutputGateBinding:
             raise ValueError("query and output projections are distinct")
         calls = (self.split_call, self.query_projection_call,
                  self.output_projection_call)
+        owner_source = self.query_projection.site.owner.source
         if any(not isinstance(call, CallObservation)
-               or call.owner.source != self.attention_occurrence.root.source
+               or call.owner.source != owner_source
                or call.span is None for call in calls):
             raise TypeError("the gate carries its exact owner calls")
         if any(call.owner != self.split_call.owner for call in calls[1:]):
             raise ValueError("gate calls belong to one exact attention class")
         if not isinstance(self.application_span, SourceSpan) \
-                or self.application_span.source != self.attention_occurrence.root.source:
+                or self.application_span.source != owner_source:
             raise TypeError("the gate carries its exact application span")
         if self.activation != "sigmoid" or self.lane_multiplier != 2:
             raise ValueError("the proven output-gate protocol is sigmoid over two lanes")
         if not self.spans or any(
                 not isinstance(span, SourceSpan)
-                or span.source != self.attention_occurrence.root.source
+                or span.source != owner_source
                 for span in self.spans):
             raise ValueError("output-gate provenance belongs to its owner")
         required = {
@@ -513,11 +554,14 @@ class GatedDeltaGeometryBinding:
                or call.enclosing_callable != forward or call.span is None
                for call in calls):
             raise TypeError("gated-delta calls belong to one exact forward")
-        if forward.source != self.mixer_occurrence.root.source:
-            raise ValueError("gated-delta forward belongs to the mixer source")
         if not isinstance(self.conv_site, ConstructionOccurrenceId) \
                 or self.conv_site.parent != self.mixer_occurrence:
             raise ValueError("gated-delta convolution belongs to the exact mixer")
+        mixer_source = self.conv_site.site.owner.source
+        if forward.source != mixer_source \
+                or forward.source.component_key != \
+                self.mixer_occurrence.root.source.component_key:
+            raise ValueError("gated-delta forward belongs to the mixer source")
         required = {
             self.conv_site.site.span,
             *(call.span for call in calls),
@@ -525,7 +569,7 @@ class GatedDeltaGeometryBinding:
         if None in required or not self.spans \
                 or not required.issubset(self.spans) \
                 or any(not isinstance(span, SourceSpan)
-                       or span.source != self.mixer_occurrence.root.source
+                       or span.source != mixer_source
                        for span in self.spans):
             raise ValueError("gated-delta provenance cites every decisive site")
 
@@ -555,6 +599,7 @@ class AttentionHeadBinding:
     common_factor: ExprNode
     spans: tuple[SourceSpan, ...]
     output_gate: AttentionOutputGateBinding | None = None
+    selection_premises: tuple[tuple[tuple[str, ...], object], ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -587,9 +632,10 @@ class AttentionHeadBinding:
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
             raise ValueError("head evidence carries exact source provenance")
-        source = self.attention_occurrence.root.source
-        if any(span.source != source for span in self.spans):
-            raise ValueError("head evidence provenance belongs to its source")
+        component = self.attention_occurrence.root.source.component_key
+        if any(span.source.component_key != component for span in self.spans):
+            raise ValueError(
+                "head evidence provenance belongs to its exact component")
         required = {item.site.span for item in self.projections}
         if not required.issubset(self.spans):
             raise ValueError("head evidence cites every projection construction")
@@ -602,6 +648,12 @@ class AttentionHeadBinding:
                     "head evidence carries an exact gate for its query lane")
             if not set(self.output_gate.spans).issubset(self.spans):
                 raise ValueError("head provenance includes the output-gate proof")
+        if any(not path or any(not isinstance(part, str) or not part
+                               for part in path)
+               for path, _value in self.selection_premises) \
+                or len({path for path, _value in self.selection_premises}) \
+                != len(self.selection_premises):
+            raise ValueError("head selection premises are exact and unique")
 
 
 @dataclass(frozen=True)
@@ -619,6 +671,10 @@ class LatentAttentionBinding:
     qk_nope_head_dim_path: tuple[str, ...]
     value_head_dim_path: tuple[str, ...]
     spans: tuple[SourceSpan, ...]
+    # Present only when the exact query path proves a low-rank input
+    # projection feeding the head-expansion projection.  A direct query
+    # projection lawfully carries ``None``; config field presence is powerless.
+    q_lora_rank_path: tuple[str, ...] | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId) \
@@ -647,12 +703,20 @@ class LatentAttentionBinding:
             raise TypeError("latent attention carries five exact config paths")
         if len(set(paths)) != len(paths):
             raise ValueError("latent attention roles bind distinct config paths")
+        if self.q_lora_rank_path is not None:
+            if not self.q_lora_rank_path or any(
+                    not isinstance(part, str) or not part
+                    for part in self.q_lora_rank_path):
+                raise TypeError("query low-rank evidence carries an exact path")
+            if self.q_lora_rank_path in paths:
+                raise ValueError("query low-rank path is a distinct role")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  for span in self.spans):
             raise ValueError("latent attention carries exact source provenance")
-        source = self.attention_occurrence.root.source
-        if any(span.source != source for span in self.spans):
-            raise ValueError("latent attention provenance belongs to its source")
+        component = self.attention_occurrence.root.source.component_key
+        if any(span.source.component_key != component for span in self.spans):
+            raise ValueError(
+                "latent attention provenance belongs to its component")
         required = {item.site.span for item in self.input_projections}
         if not required.issubset(self.spans):
             raise ValueError("latent attention cites every proven input site")
@@ -690,9 +754,10 @@ class MultiQueryAttentionBinding:
         if not isinstance(self.split_call, CallObservation) \
                 or self.split_call.span is None:
             raise TypeError("multi-query evidence carries its exact split call")
-        source = self.attention_occurrence.root.source
+        source = self.attention_symbol.source
         if self.split_call.owner != self.attention_symbol \
-                or self.attention_symbol.source != source:
+                or source.component_key != \
+                self.attention_occurrence.root.source.component_key:
             raise ValueError("the split call belongs to the attention source")
         if not self.spans or any(not isinstance(span, SourceSpan)
                                  or span.source != source
@@ -786,8 +851,14 @@ def bind_attention_mechanism(
         if not isinstance(q, int) or isinstance(q, bool) or q <= 0:
             return None
         if binding.protocol == "equal_heads":
-            premises = ((binding.query_heads_path, q),)
-            return BoundAttentionMechanism("mha", q, q, binding, premises)
+            premises = (
+                (binding.query_heads_path, q),
+                *binding.selection_premises)
+            if any(values_by_path.get(path) != expected
+                   for path, expected in binding.selection_premises):
+                return None
+            return BoundAttentionMechanism(
+                "mha", q, q, binding, tuple(dict(premises).items()))
         kv = values_by_path.get(binding.key_value_heads_path)
         if not isinstance(kv, int) or isinstance(kv, bool) or kv <= 0 \
                 or kv > q or q % kv:
@@ -796,7 +867,12 @@ def bind_attention_mechanism(
         premises = (
             (binding.query_heads_path, q),
             (binding.key_value_heads_path, kv),
+            *binding.selection_premises,
         )
+        if any(values_by_path.get(path) != expected
+               for path, expected in binding.selection_premises):
+            return None
+        premises = tuple(dict(premises).items())
         return BoundAttentionMechanism(kind, q, kv, binding, premises)
 
     if isinstance(
@@ -828,6 +904,8 @@ def bind_attention_mechanism(
         binding.qk_nope_head_dim_path,
         binding.value_head_dim_path,
     )
+    if binding.q_lora_rank_path is not None:
+        paths = (*paths, binding.q_lora_rank_path)
     selected = tuple((path, values_by_path.get(path)) for path in paths)
     if any(not isinstance(value, int) or isinstance(value, bool) or value <= 0
            for _path, value in selected):
@@ -1090,9 +1168,11 @@ def _score_scaling_for_attention_child(
             candidates.append((score, softmax, *classified))
     distinct = {
         (score.span, softmax.span, scaled,
-         tuple(_expr_key(item) for item in scale_operands)):
-            (score, softmax, scaled, spans, scale_operands)
-        for score, softmax, scaled, spans, scale_operands in candidates}
+         tuple(_expr_key(item) for item in scale_operands),
+         tuple(item.statement for item in path_bindings)):
+            (score, softmax, scaled, spans, scale_operands, path_bindings)
+        for score, softmax, scaled, spans, scale_operands, path_bindings
+        in candidates}
     if len(distinct) > 1:
         return ReaderResult.ambiguous(
             block_occurrence,
@@ -1105,7 +1185,7 @@ def _score_scaling_for_attention_child(
             "unsupported_syntax",
             "the exact score-to-softmax path is not a supported scaled or "
             "raw-score protocol"),), provenance=provenance)
-    score, softmax, scaled, path_spans, scale_operands = next(
+    score, softmax, scaled, path_spans, scale_operands, path_bindings = next(
         iter(distinct.values()))
     node = root.graph.node_for(child.compute_occurrence)
     if node is None:
@@ -1127,7 +1207,7 @@ def _score_scaling_for_attention_child(
         if isinstance(span, SourceSpan)))
     value = AttentionScoreScalingBinding(
         block_occurrence, child.compute_occurrence, "explicit_product",
-        scaled, score, softmax, spans, config_paths)
+        scaled, score, softmax, spans, config_paths, path_bindings)
     return ReaderResult.resolved(
         block_occurrence, value,
         provenance=(ReaderProvenance(
@@ -1673,6 +1753,7 @@ def decoder_attention_mechanism_for_path(
     config_path: tuple[str, ...],
     *,
     allow_root_stage: bool,
+    config_document=None,
 ) -> ReaderResult[
         AttentionHeadBinding | LatentAttentionBinding
         | MultiQueryAttentionBinding
@@ -1691,7 +1772,33 @@ def decoder_attention_mechanism_for_path(
     if block.status != "resolved":
         return block
     head = attention_head_binding_at_block(
-        index, block.value.component_root, block.value.block_occurrence)
+        index, block.value.component_root, block.value.block_occurrence,
+        config_document=(
+            _scoped_config_document(config_document, config_path)))
+    dual_provenance = ()
+    if head.status == "ambiguous":
+        # An additive self+cross block contains two genuine attention children.
+        # The ordinary head fact belongs to the lane whose exact invocation
+        # leaves the proven optional K/V-only formal at ``None``.  Reuse the
+        # existing source/dataflow proof that distinguishes those lanes; never
+        # choose by field/class spelling or source order.
+        from .cross_attention_schedule import \
+            decoder_cross_attention_all_layers_for_path
+        dual = decoder_cross_attention_all_layers_for_path(
+            index, bundle, config_path,
+            allow_root_stage=allow_root_stage)
+        if dual.status == "resolved" \
+                and dual.value.block_occurrence \
+                == block.value.block_occurrence:
+            selected = attention_head_binding_at_block(
+                index, block.value.component_root,
+                block.value.block_occurrence,
+                config_document=(
+                    _scoped_config_document(config_document, config_path)),
+                child_evidence=dual.value.self_evidence)
+            if selected.status == "resolved":
+                head = selected
+                dual_provenance = dual.provenance
     if head.status == "resolved":
         result = head
     else:
@@ -1716,7 +1823,8 @@ def decoder_attention_mechanism_for_path(
         return result
     return ReaderResult.resolved(
         result.owner, result.value,
-        provenance=(*block.provenance, *result.provenance))
+        provenance=(
+            *block.provenance, *dual_provenance, *result.provenance))
 
 
 def decoder_gated_delta_geometry_for_path(
@@ -1779,6 +1887,59 @@ def decoder_gated_delta_geometry_for_path(
                 "exact Q/K/V split widths, reshape widths, repeat ratio, "
                 "Conv1d kernel and sigmoid/softplus recurrent terminals bind "
                 "five geometry paths")),))
+
+
+def gated_delta_geometry_at_occurrence(
+    index: ProgramIndex,
+    root: ComponentRootResolution | ConstructedComponentRoot,
+    block_occurrence: OwnerOccurrenceId,
+    mixer_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[GatedDeltaGeometryBinding]:
+    """Prove gated-delta geometry for one exact invoked child occurrence.
+
+    The decoder-level reader above intentionally answers a global geometry
+    question and is therefore ambiguous when two genuine recurrent children
+    coexist.  A per-layer schedule must not inherit that union.  This boundary
+    validates one graph-authoritative immediate child and classifies only that
+    occurrence; it does not select the occurrence or infer a role from its
+    class/field spelling.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("gated-delta occurrence evidence requires ProgramIndex")
+    root = require_resolved_component_root(
+        root, caller="gated_delta_geometry_at_occurrence")
+    if not isinstance(block_occurrence, OwnerOccurrenceId) \
+            or not isinstance(mixer_occurrence, OwnerOccurrenceId):
+        raise TypeError("gated-delta occurrence evidence requires exact owners")
+    block_node = root.graph.node_for(block_occurrence)
+    node = root.graph.node_for(mixer_occurrence)
+    if block_node is None or node is None \
+            or mixer_occurrence.sites[:-1] != block_occurrence.sites \
+            or node not in block_node.children:
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the requested mixer is not an exact immediate block child"),))
+    config_prefix = (
+        tuple(root.config_path)
+        if isinstance(root, ConstructedComponentRoot) else ())
+    value = _gated_delta_geometry_for_node(
+        index, node, block_occurrence, config_prefix=config_prefix)
+    if value is None:
+        return ReaderResult.failed(mixer_occurrence, (ReaderFailure(
+            "unsupported_syntax",
+            "this exact child does not prove the gated-delta geometry protocol"),))
+    return ReaderResult.resolved(
+        mixer_occurrence, value,
+        provenance=(ReaderProvenance(
+            "code_and_config", spans=value.spans,
+            config_paths=(
+                value.key_heads_path, value.value_heads_path,
+                value.key_head_dim_path, value.value_head_dim_path,
+                value.conv_kernel_path,
+            ),
+            detail=(
+                "the exact invoked child proves split/reshape/repeat/conv/"
+                "recurrent gated-delta geometry")),))
 
 
 def _gated_delta_geometry_for_node(
@@ -1994,6 +2155,9 @@ def attention_head_binding_at_block(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
+    *,
+    config_document=None,
+    child_evidence: AttentionChildEvidence | None = None,
 ) -> ReaderResult[AttentionHeadBinding]:
     """Prove the split-QKV head binding at one exact block occurrence."""
     if not isinstance(index, ProgramIndex):
@@ -2006,8 +2170,39 @@ def attention_head_binding_at_block(
     if not isinstance(block_occurrence, OwnerOccurrenceId):
         raise TypeError("attention head binding requires an exact block")
 
-    storage = attention_projection_storage_evidence(
-        index, root, block_occurrence)
+    if child_evidence is not None and (
+            not isinstance(child_evidence, AttentionChildEvidence)
+            or child_evidence.block_occurrence != block_occurrence
+            or root.graph.node_for(child_evidence.child_occurrence) is None
+            or root.graph.node_for(child_evidence.compute_occurrence) is None):
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "out_of_owner",
+            "the supplied attention lane does not belong to this exact block"),))
+
+    if child_evidence is None and config_document is None:
+        storage = attention_projection_storage_evidence(
+            index, root, block_occurrence)
+    else:
+        child = None
+        if child_evidence is None:
+            child = attention_child_evidence(
+                index, root, block_occurrence,
+                config_document=config_document)
+            if child.status == "ambiguous":
+                return ReaderResult.ambiguous(
+                    block_occurrence, child.ambiguity,
+                    provenance=child.provenance)
+            if child.status != "resolved":
+                return ReaderResult.failed(
+                    block_occurrence,
+                    child.failures or (ReaderFailure(
+                        "incomplete_graph",
+                        "attention child is unresolved under the selected config"),),
+                    provenance=child.provenance)
+            child_evidence = child.value
+        storage = attention_projection_storage_for_child_evidence(
+            index, root, block_occurrence, child_evidence,
+            config_document=config_document)
     if storage.status == "ambiguous":
         return ReaderResult.ambiguous(
             block_occurrence, storage.ambiguity,
@@ -2027,7 +2222,8 @@ def attention_head_binding_at_block(
     if storage.value.mode == "fused_qkv":
         fused = _fused_head_binding(
             index, root, node, storage.value,
-            config_prefix=config_prefix)
+            config_prefix=config_prefix,
+            config_document=config_document)
         if fused is None:
             return ReaderResult.failed(block_occurrence, (ReaderFailure(
                 "unsupported_syntax",
@@ -2042,12 +2238,16 @@ def attention_head_binding_at_block(
         value = AttentionHeadBinding(
             block_occurrence, attention.compute_occurrence,
             "fused_qkv", protocol, query_path, kv_path,
-            storage.value.projections, common, spans)
+            storage.value.projections, common, spans,
+            selection_premises=attention.selection_premises)
         return ReaderResult.resolved(
             block_occurrence, value,
             provenance=(ReaderProvenance(
                 "code_and_config", spans=spans,
-                config_paths=tuple(dict.fromkeys((query_path, kv_path))),
+                config_paths=tuple(dict.fromkeys((
+                    query_path, kv_path,
+                    *(path for path, _value
+                      in attention.selection_premises)))),
                 detail=(
                     "one exact packed projection, exact three-lane split and "
                     "reshape, and exact count×head-width relations prove "
@@ -2187,12 +2387,15 @@ def attention_head_binding_at_block(
     value = AttentionHeadBinding(
         block_occurrence, attention.compute_occurrence, "split", protocol,
         query_path, kv_path, storage.value.projections, common, spans,
-        output_gate)
+        output_gate, attention.selection_premises)
     return ReaderResult.resolved(
         block_occurrence, value,
         provenance=(ReaderProvenance(
             "code_and_config", spans=spans,
-            config_paths=tuple(dict.fromkeys((query_path, kv_path))),
+            config_paths=tuple(dict.fromkeys((
+                query_path, kv_path,
+                *(path for path, _value
+                  in attention.selection_premises)))),
             detail=(
                 "exact split Q/K/V producers share one structural factor and "
                 "bind their count factors to exact config paths")),))
@@ -2238,8 +2441,18 @@ def _split_equal_head_reshape_protocol(
                     or len(relation.children) != 2:
                 continue
             left, right = relation.children
+            # Constructors commonly retain the count as ``self.num_heads``
+            # but compute the dimension from the corresponding formal before
+            # that field is referenced (``self.head_dim = embed_dim //
+            # num_heads``).  The exact unconditional field assignment binds
+            # those two expressions; requiring the RHS spelling itself to be
+            # ``self.<field>`` rejects a real relation without adding evidence.
+            count_value_matches = (
+                _expr_key(right) == _expr_key(count_assignment.value))
             if _expr_key(left) != _expr_key(base) \
-                    or _self_field(right) != count_assignment.field:
+                    or not (
+                        _self_field(right) == count_assignment.field
+                        or count_value_matches):
                 continue
             proven = _projection_head_reshape_chain(
                 index, root, node, storage, widths,
@@ -2300,11 +2513,17 @@ def _projection_head_reshape_chain(
             for argument in call.args)
         if not (count_is_explicit or inferred_lane):
             continue
-        sources, _widths, _deps, uncertain = \
+        sources, _widths, _deps, _uncertain = \
             producer_sources_reaching_expressions(
                 index, forward, ((call.span, (receiver,)),),
                 projection_calls)
-        if uncertain or len(sources) != 1:
+        # This is a positive path proof, not a claim that every invocation
+        # executes the reshape.  Cache/cross-attention control may guard K/V,
+        # but one exact projection must still be the unique producer on the
+        # path where that reshape executes.  Rival producers remain rejected
+        # by the cardinality check; guard uncertainty is retained by the
+        # enclosing mechanism provenance and never upgraded to universality.
+        if len(sources) != 1:
             continue
         source = next(iter(sources))
         if source not in projection_ids or source in shaped:
@@ -2745,6 +2964,10 @@ def latent_attention_binding_at_block(
 
     compressed, expanded, proof = next(iter(distinct.values()))
     num_heads, latent, rope_dim, nope_dim, value_dim, proof_spans = proof
+    q_lora_rank = _latent_query_rank_path(
+        index, node, linear_calls, sources, dependencies,
+        excluded=frozenset((num_heads, latent, rope_dim, nope_dim, value_dim)),
+        config_prefix=config_prefix)
     # Keep every proven affine input path, not only the terminal producers.
     # DeepSeek-style latent attention has q_a -> q_b and kv_a -> kv_b chains;
     # retaining only q_b/kv_b would make downstream construction facts (for
@@ -2762,8 +2985,10 @@ def latent_attention_binding_at_block(
         block_occurrence, child.compute_occurrence,
         compressed, expanded, input_projections,
         num_heads, latent, rope_dim, nope_dim,
-        value_dim, spans)
-    paths = (num_heads, latent, rope_dim, nope_dim, value_dim)
+        value_dim, spans, q_lora_rank)
+    paths = tuple(path for path in (
+        num_heads, latent, rope_dim, nope_dim, value_dim, q_lora_rank)
+        if path is not None)
     return ReaderResult.resolved(
         block_occurrence, value,
         provenance=(ReaderProvenance(
@@ -3284,6 +3509,7 @@ def _classify_score_path(index, callable_symbol, score, softmax, producers):
         tuple(dict.fromkeys(
             span for span in spans if isinstance(span, SourceSpan))),
         tuple(dict.fromkeys(scale_operands)),
+        tuple(binding for binding, _state in path_bindings),
     )
 
 
@@ -3418,6 +3644,14 @@ def _score_transform_state(
             return True
         return False if operator in {"+", "-"} else None
     if value.kind == "binop" and len(value.children) == 2:
+        if _is_exact_softmax_translation(
+                index, callable_symbol, value, score, lanes):
+            # ``x - x.max(dim=-1, keepdim=True)`` is exactly invariant under
+            # the following last-axis softmax.  The proof is deliberately
+            # narrower than a generic ``max`` heuristic: both operands must
+            # name the same live score lane and the tensor-method reduction
+            # must retain the reduced axis.
+            return False
         carrying = [
             _expr_contains_span(child, score.span)
             or _expression_uses_lane_value(child, lanes)
@@ -3434,6 +3668,13 @@ def _score_transform_state(
     if value.kind == "call" and value.children:
         callee = value.children[0]
         if value.span == score.span:
+            return False
+        if _is_exact_score_concat(
+                index, callable_symbol, value, score, lanes):
+            # Concatenating other logits onto the last axis preserves the
+            # multiplicative lineage of the exact attention-score entries.
+            # Learned-sink semantics belong to ``attention_sinks``; this
+            # reader proves only that the score lane survives to softmax.
             return False
         leaf = callee.name if callee.kind == "attribute" else ""
         if leaf == "tanh":
@@ -3456,6 +3697,72 @@ def _score_transform_state(
             return False
         return None
     return False if value.kind in {"attribute", "subscript"} else None
+
+
+def _is_exact_score_concat(index, callable_symbol, value, score, lanes):
+    """Whether ``value`` is one exact last-axis framework concat of the lane."""
+    calls = tuple(
+        call for call in index.calls_in(callable_symbol)
+        if call.span == value.span)
+    if len(calls) != 1 or not _call_has_external_protocol(
+            index, calls[0], _SCORE_CONCAT_PROTOCOLS):
+        return False
+    call = calls[0]
+    if len(call.args) != 1 or call.args[0].kind not in {"list", "tuple"} \
+            or len(call.args[0].children) < 2:
+        return False
+    kwargs = dict(call.kwargs)
+    if set(kwargs) != {"dim"} or not _is_negative_one(kwargs["dim"]):
+        return False
+    carrying = tuple(
+        _expr_contains_span(item, score.span)
+        or _expression_uses_lane_value(item, lanes)
+        for item in call.args[0].children)
+    return sum(carrying) == 1
+
+
+def _is_exact_softmax_translation(
+        index, callable_symbol, value, score, lanes):
+    """Prove the narrow ``x - x.max(-1, keepdim=True).values`` protocol."""
+    if value.operator != "-":
+        return False
+    left, right = value.children
+    lane_names = _lane_names_in_expression(left, lanes)
+    if left.kind != "name" or len(lane_names) != 1 \
+            or lane_names[0] != left.name:
+        return False
+    if right.kind != "attribute" or right.name != "values" \
+            or len(right.children) != 1:
+        return False
+    maximum = right.children[0]
+    if maximum.kind != "call" or maximum.span is None:
+        return False
+    calls = tuple(
+        call for call in index.calls_in(callable_symbol)
+        if call.span == maximum.span)
+    if len(calls) != 1:
+        return False
+    call = calls[0]
+    if call.callee.kind != "attribute" or call.callee.name != "max" \
+            or call.receiver is None or call.receiver.kind != "name" \
+            or call.receiver.name != left.name or call.args:
+        return False
+    kwargs = dict(call.kwargs)
+    return set(kwargs) == {"dim", "keepdim"} \
+        and _is_negative_one(kwargs["dim"]) \
+        and kwargs["keepdim"].kind == "constant" \
+        and kwargs["keepdim"].const_value is True
+
+
+def _is_negative_one(expression):
+    return (
+        expression.kind == "constant" and expression.const_value == -1
+    ) or (
+        expression.kind == "unaryop" and expression.operator == "-"
+        and len(expression.children) == 1
+        and expression.children[0].kind == "constant"
+        and expression.children[0].const_value == 1
+    )
 
 
 def _expression_uses_lane_value(expression, lanes):
@@ -3587,7 +3894,7 @@ def _site_is_external_linear(index, site):
     proof = resolve_import_reference(
         index, site.owner.source, site.enclosing_callable,
         site.candidates[0].reference)
-    return proof is not None and proof.qualified_target in _LINEAR_PROTOCOLS
+    return proof is not None and proof.qualified_target in _AFFINE_PROTOCOLS
 
 
 def _site_has_external_protocol(index, site, protocols):
@@ -3742,10 +4049,21 @@ def _linear_output_width(index, occurrence: ConstructionOccurrenceId):
     if len(sites) != 1:
         return None
     site = sites[0]
-    if len(site.args) >= 2:
+    proof = (
+        resolve_import_reference(
+            index, site.owner.source, site.enclosing_callable,
+            site.candidates[0].reference)
+        if len(site.candidates) == 1
+        and site.candidates[0].symbol is None else None)
+    protocol = proof.qualified_target if proof is not None else ""
+    if protocol in _TRANSPOSED_AFFINE_PROTOCOLS:
+        if site.args:
+            return site.args[0]
+        return dict(site.kwargs).get("nf")
+    if protocol in _LINEAR_PROTOCOLS and len(site.args) >= 2:
         return site.args[1]
     kwargs = dict(site.kwargs)
-    return kwargs.get("out_features")
+    return kwargs.get("out_features") if protocol in _LINEAR_PROTOCOLS else None
 
 
 def _exact_field_value(index, node, expression, *, seen):
@@ -3772,6 +4090,17 @@ def _linear_input_width(index, occurrence: ConstructionOccurrenceId):
     site = _construction_site(index, occurrence)
     if site is None:
         return None
+    proof = (
+        resolve_import_reference(
+            index, site.owner.source, site.enclosing_callable,
+            site.candidates[0].reference)
+        if len(site.candidates) == 1
+        and site.candidates[0].symbol is None else None)
+    protocol = proof.qualified_target if proof is not None else ""
+    if protocol in _TRANSPOSED_AFFINE_PROTOCOLS:
+        if len(site.args) >= 2:
+            return site.args[1]
+        return dict(site.kwargs).get("nx")
     if site.args:
         return site.args[0]
     return dict(site.kwargs).get("in_features")
@@ -3878,6 +4207,39 @@ def _latent_projection_pair(
     )
 
 
+def _latent_query_rank_path(
+        index, node, linear_calls, sources, dependencies, *, excluded,
+        config_prefix):
+    """Return a query low-rank path only from an exact two-projection chain.
+
+    An exact attention-input projection must consume ``rank`` and have one
+    exact upstream linear producer whose output is that same config-bound
+    dimension.  The already-proven latent K/V rank is excluded, leaving the
+    independently enacted query-compression chain.  A direct query projection
+    has no such producer and returns ``None``.  This keeps a familiar config
+    spelling powerless unless the code enacts it.
+    """
+    candidates = []
+    for terminal in sources:
+        rank_expression = _linear_input_width(index, terminal)
+        rank_path = _exact_config_path_for_expression(
+            index, node, rank_expression, seen=frozenset(),
+            config_prefix=config_prefix)
+        if rank_path is None or rank_path in excluded:
+            continue
+        upstream = _dependency_closure(
+            dependencies.get(terminal, ()), dependencies).intersection(
+                linear_calls)
+        producers = tuple(
+            item for item in upstream
+            if _exact_config_path_for_expression(
+                index, node, _linear_output_width(index, item),
+                seen=frozenset(), config_prefix=config_prefix) == rank_path)
+        if len(producers) == 1:
+            candidates.append(rank_path)
+    return candidates[0] if len(set(candidates)) == 1 else None
+
+
 def _split_call_for_paths(
         index, node, forward, linear_calls, source, expected_paths, *,
         config_prefix):
@@ -3934,7 +4296,9 @@ def _binary_factors(expression, operator):
     return None
 
 
-def _fused_head_binding(index, root, node, storage, *, config_prefix):
+def _fused_head_binding(
+        index, root, node, storage, *, config_prefix,
+        config_document=None):
     grouped = _fused_grouped_head_binding(
         index, root, node, storage, config_prefix=config_prefix)
     if grouped is not None:
@@ -3942,6 +4306,11 @@ def _fused_head_binding(index, root, node, storage, *, config_prefix):
         return "grouped_kv", query_path, kv_path, common, spans
     equal = _fused_equal_head_binding(
         index, node, storage, config_prefix=config_prefix)
+    if equal is None and config_document is not None:
+        equal = _fused_scalar_equal_head_binding(
+            index, root, node, storage,
+            config_prefix=config_prefix,
+            config_document=config_document)
     if equal is None:
         return None
     count_path, common, spans = equal
@@ -4100,7 +4469,8 @@ def _packed_width_matches_lanes(index, node, packed, query, kv):
 
 
 def _fused_lane_reshape_chain(
-        index, forward, storage, split_binding, split_call, lane_names, common):
+        index, forward, storage, split_binding, split_call, lane_names, common,
+        *, binding_guard_state=None):
     dim_field = _self_field(common)
     if dim_field is None:
         return None
@@ -4112,6 +4482,9 @@ def _fused_lane_reshape_chain(
                 or call.callee.kind != "attribute" \
                 or call.callee.name not in {"view", "reshape"} \
                 or not call.callee.children:
+            continue
+        if binding_guard_state is not None \
+                and binding_guard_state(call.guard, call.span) is not True:
             continue
         if not any(_resolved_expression_has_field(
                 index, forward, argument, dim_field, call.span,
@@ -4126,7 +4499,8 @@ def _fused_lane_reshape_chain(
                 index, forward, ((call.span, (call.callee.children[0],)),), {},
                 initial_sources=dict(zip(lane_names, lane_keys)),
                 binding_predicate=lambda item: _span_before(
-                    split_binding.span, item.span))
+                    split_binding.span, item.span),
+                binding_guard_state=binding_guard_state)
         closure = _dependency_closure(sources, dependencies)
         if uncertain or len(closure) != 1:
             continue
@@ -4149,7 +4523,8 @@ def _fused_lane_reshape_chain(
         return None
     sources, _widths, dependencies, _uncertain = \
         producer_sources_reaching_expressions(
-            index, forward, consumers, shape_producers)
+            index, forward, consumers, shape_producers,
+            binding_guard_state=binding_guard_state)
     if not frozenset(shape_producers).issubset(
             _dependency_closure(sources, dependencies)):
         return None
@@ -4216,6 +4591,133 @@ def _exact_field_expression(index, node, expression, seen):
             (name, _exact_field_expression(index, node, child, seen))
             for name, child in expression.keyword_children),
         span=expression.span, source_segment=expression.source_segment)
+
+
+def _fused_scalar_equal_head_binding(
+        index, root, node, storage, *, config_prefix, config_document):
+    """Prove equal heads through an exact three-target scalar split.
+
+    Transposed-storage affine implementations commonly write
+    ``q, k, v = packed(x).split(hidden)``.  Destructuring proves three lanes;
+    packed width, split width and the reshape factor still have to close
+    algebraically at this exact occurrence.
+    """
+    if len(storage.projections) != 1:
+        return None
+    occurrence = storage.projections[0]
+    width = _linear_output_width(index, occurrence)
+    factors = _multiplication_factors(width) if width is not None else None
+    constants = tuple(
+        item for item in (factors or ())
+        if item.kind == "constant" and item.const_value == 3)
+    if factors is None or len(constants) != 1:
+        return None
+    base = factors[1 - factors.index(constants[0])]
+
+    assignments = tuple(
+        item for item in index.field_assigns_of(node.symbol)
+        if not item.guard)
+    relations = []
+    for count_assignment in assignments:
+        count_expr = ExprNode(
+            "attribute", name=count_assignment.field,
+            children=(ExprNode("name", name="self"),))
+        count_path = _exact_config_path_for_expression(
+            index, node, count_expr, seen=frozenset(),
+            config_prefix=config_prefix)
+        if count_path is None:
+            continue
+        for dim_assignment in assignments:
+            relation = dim_assignment.value
+            if relation.kind != "binop" or relation.operator != "//" \
+                    or len(relation.children) != 2:
+                continue
+            left, right = relation.children
+            if _expanded_expr_key(index, node, left) \
+                    != _expanded_expr_key(index, node, base) \
+                    or _self_field(right) != count_assignment.field:
+                continue
+            common = ExprNode(
+                "attribute", name=dim_assignment.field,
+                children=(ExprNode("name", name="self"),),
+                span=dim_assignment.span)
+            relations.append((count_path, common, (
+                count_assignment.span, dim_assignment.span)))
+    distinct_relations = {
+        (path, _expr_key(common)): (path, common, spans)
+        for path, common, spans in relations}
+    if len(distinct_relations) != 1:
+        return None
+    count_path, common, relation_spans = next(
+        iter(distinct_relations.values()))
+
+    forward = SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.forward")
+    if index.callable_by_symbol(forward) is None:
+        return None
+    runtime_env = callable_argument_env(
+        index, forward, storage.attention.invocation_path[-1].call)
+    if runtime_env is None:
+        return None
+
+    def state(guard, cutoff):
+        evaluator = ConfigExpressionEvaluator(
+            node.config_bindings, config_document, runtime_env)
+        return guard_path_state(index, forward, guard, evaluator, cutoff)
+
+    producer_calls = tuple(
+        call for call in index.calls_in(forward)
+        if _call_matches_occurrence(index, call, occurrence)
+        and state(call.guard, call.span) is True)
+    if len(producer_calls) != 1:
+        return None
+    producer_call = producer_calls[0]
+
+    candidates = []
+    for binding in index.bindings_in(forward):
+        targets = tuple(
+            name for target in binding.targets
+            for name in _target_names(target))
+        value = binding.value
+        if len(targets) != 3 or value is None or value.kind != "call" \
+                or not value.children \
+                or state(binding.guard, binding.span) is not True:
+            continue
+        callee = value.children[0]
+        if callee.kind != "attribute" or not callee.children \
+                or callee.name != "split":
+            continue
+        args = tuple(
+            item for item in value.children[1:]
+            if isinstance(item, ExprNode))
+        if not args or _expanded_expr_key(index, node, args[0]) \
+                != _expanded_expr_key(index, node, base):
+            continue
+        receiver = callee.children[0]
+        sources, _widths, dependencies, uncertain = \
+            producer_sources_reaching_expressions(
+                index, forward, ((binding.span, (receiver,)),),
+                {occurrence: producer_call}, binding_guard_state=state)
+        if uncertain or _dependency_closure(sources, dependencies) \
+                != {occurrence}:
+            continue
+        split_call = next((
+            call for call in index.calls_in(forward)
+            if call.span == value.span), None)
+        if split_call is None:
+            continue
+        shape_spans = _fused_lane_reshape_chain(
+            index, forward, storage, binding, split_call,
+            targets, common, binding_guard_state=state)
+        if shape_spans is not None:
+            candidates.append((
+                count_path, common,
+                (occurrence.site.span, width.span, binding.span,
+                 split_call.span, *relation_spans, *shape_spans)))
+    distinct = {
+        (path, _expr_key(dim)): (path, dim, spans)
+        for path, dim, spans in candidates}
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
 
 
 def _fused_equal_head_binding(index, node, storage, *, config_prefix):
@@ -4311,8 +4813,18 @@ def _fused_equal_head_binding(index, node, storage, *, config_prefix):
                 if has_three and has_count and has_dim \
                         and _shape_call_reaches_return_lanes(
                             index, helper, call):
+                    # The proved common lane factor is the per-head dimension
+                    # used by the exact reshape, not the packed projection's
+                    # whole hidden-width factor.  Returning ``base`` here made
+                    # downstream geometry report BLOOM's hidden size as one
+                    # head dimension while grouped fused QKV returned the
+                    # correct per-head factor—a cross-protocol DTO lie.
+                    dim_expr = ExprNode(
+                        "attribute", name=dim_assignment.field,
+                        children=(ExprNode("name", name="self"),),
+                        span=dim_assignment.span)
                     matches.append((
-                        count_path, base,
+                        count_path, dim_expr,
                         (occurrence.site.span, width.span,
                          count_assignment.span, dim_assignment.span,
                          unpack_span, call.span)))
@@ -4442,6 +4954,22 @@ def _exact_config_path_for_expression(
     the same owner.  Any rival, guard, cycle, dynamic segment or unbound config
     parameter makes the path unknown.
     """
+    # A literal mapping subscript is an exact address segment, including when
+    # its base reaches config through an owner field (for example
+    # ``self.config.section["kind"]``).  Handle it before the attribute-chain
+    # cases so the final key cannot be silently truncated to its container.
+    if expression.kind == "subscript" and len(expression.children) == 2:
+        base_expression, key_expression = expression.children
+        if key_expression.kind != "constant" \
+                or not isinstance(key_expression.const_value, str) \
+                or not key_expression.const_value:
+            return None
+        base = _exact_config_path_for_expression(
+            index, node, base_expression, seen=seen,
+            config_prefix=config_prefix)
+        return ((*base, key_expression.const_value)
+                if base is not None else None)
+
     self_chain = _self_attribute_chain(expression)
     if self_chain:
         field, *trailing = self_chain
@@ -4477,15 +5005,15 @@ def _exact_config_path_for_expression(
     local = _local_attribute_chain(expression)
     if local is not None:
         local_name, trailing = local
-        direct_bindings = tuple(
-            item for item in node.config_bindings
+        direct_paths = tuple(
+            item.resolved_path(trailing)
+            for item in node.config_bindings
             if item.parameter == local_name
-            and item.resolved_prefix is not None)
-        if len(direct_bindings) == 1:
+            and item.resolved_path(trailing) is not None)
+        if len(direct_paths) == 1:
             return (
                 *config_prefix,
-                *direct_bindings[0].resolved_prefix,
-                *trailing,
+                *direct_paths[0],
             )
         callable_symbol = _enclosing_callable_for_expression(
             index, node, expression)
@@ -4641,5 +5169,6 @@ __all__ = [
     "decoder_attention_score_scaling_for_path",
     "decoder_attention_mechanism_for_path",
     "decoder_gated_delta_geometry_for_path",
+    "gated_delta_geometry_at_occurrence",
     "exact_config_path_for_expression",
 ]

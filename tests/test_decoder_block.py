@@ -262,6 +262,50 @@ def test_unconstructed_config_path_never_falls_back_to_root_decoder():
     assert result.status != "resolved"
 
 
+def test_exact_declared_nested_component_survives_an_absent_wrapper_root():
+    """A selected bundle component is an address, never a wrapper guess."""
+    config = {
+        "model_type": "qwen3_omni_moe",
+        "thinker_config": {
+            "model_type": "thinker",
+            "text_config": {
+                "model_type": "qwen3_moe",
+                "num_hidden_layers": 2,
+                "hidden_size": 64,
+                "num_attention_heads": 8,
+                "intermediate_size": 128,
+                "vocab_size": 100,
+            },
+        },
+    }
+    context = ParseContext.build(config)
+    assert resolve_component_root(
+        context.program_index(), context.source_bundle, "root").status == "absent"
+    result = decoder_block_path_for_config(
+        context.program_index(), context.source_bundle,
+        ("thinker_config", "text_config"), allow_root_stage=True)
+    assert result.status == "resolved", result.failures
+    assert result.value.config_path == ("thinker_config", "text_config")
+    assert result.value.component_root.component_key == \
+        "thinker_config.text_config"
+
+
+def test_absent_wrapper_cannot_pick_an_unselected_sibling_component():
+    config = {
+        "model_type": "qwen3_omni_moe",
+        "thinker_config": {
+            "model_type": "thinker",
+            "text_config": {"model_type": "qwen3_moe"},
+        },
+    }
+    context = ParseContext.build(config)
+    result = decoder_block_path_for_config(
+        context.program_index(), context.source_bundle,
+        ("thinker_config", "missing"), allow_root_stage=True)
+    assert result.status == "failed"
+    assert "selected component is absent" in result.failures[0].detail
+
+
 def test_decoder_path_rejects_a_non_exact_config_path_shape():
     config = json.loads(
         (_CORPUS / "bloom.json").read_text())["config"]

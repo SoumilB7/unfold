@@ -180,9 +180,32 @@ def config_to_ir(
     # from the ONE StructuralDebt register (config_read rows), which pins the
     # excusal writer/consumer and a checkable deletion condition per row.
     _pending_exact = pending_projection_paths()
+
+    def _pending_matches_unread(owner: str, path: str, pending) -> bool:
+        """Join a raw-root audit path to owner-relative component debt.
+
+        Config-access occurrences inside a prepared component document are
+        deliberately document-relative (``root.conditioning:num_heads``),
+        while the recursive raw-config audit sees the same exact occurrence
+        from the checkpoint root (``text_encoder.num_heads``).  Compose only
+        through that owner's verified document root; never strip a prefix by
+        spelling or let sibling owners clear one another.
+        """
+        if (owner, path) in pending:
+            return True
+        document_root = tuple(
+            _access_ledger.document_roots().get(owner, ()))
+        segments = tuple(path.split(".")) if path else ()
+        if not document_root \
+                or segments[:len(document_root)] != document_root:
+            return False
+        relative = ".".join(segments[len(document_root):])
+        return bool(relative) and (owner, relative) in pending
+
     pending_projection = sorted(
         path for path in unread
-        if (_unread_path_owner(path), path) in _pending_exact)
+        if _pending_matches_unread(
+            _unread_path_owner(path), path, _pending_exact))
     unread = [path for path in unread if path not in set(pending_projection)]
     # COR-1/COR-2: EXACT-path pending classifications (an occurrence whose
     # consumer does not exist yet) — joined on owner + exact dotted path,
@@ -190,7 +213,8 @@ def config_to_ir(
     _pending_cls = pending_classification_paths()
     pending_classification = sorted(
         path for path in unread
-        if (_unread_path_owner(path), path) in _pending_cls)
+        if _pending_matches_unread(
+            _unread_path_owner(path), path, _pending_cls))
     unread = [path for path in unread if path not in set(pending_classification)]
     ir.extras["config_audit"] = {
         "unread": unread,

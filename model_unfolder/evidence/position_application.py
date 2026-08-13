@@ -66,6 +66,7 @@ class QKHalfTurnApplicationEvidence:
     factor_arguments: tuple[ExprNode, ...]
     guard_config_paths: tuple[tuple[str, ...], ...]
     guard_source_kinds: tuple[tuple[tuple[str, ...], str], ...]
+    guard_spans: tuple[SourceSpan, ...]
     spans: tuple[SourceSpan, ...]
 
     def __post_init__(self) -> None:
@@ -116,23 +117,33 @@ class QKHalfTurnApplicationEvidence:
                        for path, kind in self.guard_source_kinds):
             raise ValueError("guard provenance belongs to exact selected paths")
         if not self.application_call.guard \
-                and (self.guard_config_paths or self.guard_source_kinds):
+                and (self.guard_config_paths or self.guard_source_kinds
+                     or self.guard_spans):
             raise ValueError("an unguarded application carries no selector evidence")
+        if tuple(dict.fromkeys(self.guard_spans)) != self.guard_spans \
+                or any(not isinstance(span, SourceSpan)
+                       for span in self.guard_spans) \
+                or not set(self.guard_spans).issubset(self.spans):
+            raise ValueError("guard provenance is exact and included")
         source = self.attention_occurrence.root.source
         if self.application_call.enclosing_callable.source != source \
                 or self.helper_callable.source != source \
                 or self.rotation_callable.source != source:
             raise ValueError("half-turn application and helpers share exact source")
+        operation_spans = set(self.spans) - set(self.guard_spans)
         if not self.spans or any(not isinstance(span, SourceSpan)
-                                 or span.source != source for span in self.spans):
-            raise ValueError("rotary provenance is exact and source-qualified")
-        required = {
+                                 for span in self.spans) \
+                or any(span.source != source for span in operation_spans):
+            raise ValueError(
+                "rotary operation provenance is exact and source-qualified")
+        required_operation = {
             self.application_call.span,
             *self.attention_operands.spans,
             *(item.span for item in self.factor_arguments),
             *(item.span for item in self.application_call.guard),
         }
-        if None in required or not required.issubset(self.spans):
+        if None in required_operation \
+                or not required_operation.issubset(operation_spans):
             raise ValueError("rotary provenance cites call and every Q/K producer")
 
 
@@ -200,8 +211,9 @@ def _rotary_at_attention(
                 continue
             guard_paths = tuple(dict.fromkeys(resolver.paths))
             guard_source_kinds = tuple(dict.fromkeys(resolver.source_kinds))
-            guard_spans = tuple(dict.fromkeys((
-                *(item.span for item in call.guard), *resolver.spans)))
+            guard_spans = tuple(dict.fromkeys(
+                span for span in resolver.spans
+                if span.source != owner.root.source))
         protocol = _rotary_helper_protocol(index, callable_symbol, call)
         if protocol is None:
             continue
@@ -223,12 +235,14 @@ def _rotary_at_attention(
                 *operands.spans,
                 *(item.span for item in factor_args),
                 *protocol_spans,
+                *(item.span for item in call.guard),
                 *guard_spans,
             ) if isinstance(span, SourceSpan)))
         candidates.append(QKHalfTurnApplicationEvidence(
             child.block_occurrence, owner, call, helper, rotation,
             rotation_protocol, operands, factor_indices,
-            factor_args, guard_paths, guard_source_kinds, spans))
+            factor_args, guard_paths, guard_source_kinds,
+            guard_spans, spans))
 
     if len(candidates) == 1:
         value = candidates[0]
@@ -291,6 +305,21 @@ def _rotary_helper_protocol(index, caller, call):
         bindings, name, returns[0].span) for name in output_names)
     if any(item is None for item in expressions):
         return None
+    # A mathematically equivalent partial-rotation helper may split each Q/K
+    # lane inside the helper, rotate the prefix, then concatenate the untouched
+    # suffix before returning it.  Peel that exact recombination back to the
+    # prefix formula only after proving complementary slices and ``cat`` on the
+    # last dimension.  This is syntax/algebra, never a helper/model name.
+    prefix_expressions = tuple(
+        _prefix_rotation_expression(
+            index, helper, bindings, output_name, expression, base)
+        for output_name, expression, base
+        in zip(output_names, expressions, params[:2]))
+    if all(item is not None for item in prefix_expressions):
+        expressions = prefix_expressions
+    elif any(item is not None for item in prefix_expressions):
+        # One lane recombined and the other did not: not a proved Q/K pair.
+        return None
     formulas = tuple(_rotation_formula(
         index, helper, expression, base,
         frozenset(params[2:4]), bindings)
@@ -342,6 +371,152 @@ def _rotary_helper_protocol(index, caller, call):
             index.callable_by_symbol(rotation).span,
         ) if isinstance(span, SourceSpan)))
     return helper, rotation, rotation_protocol, factor_indices, spans
+
+
+def _prefix_rotation_expression(
+        index, helper, bindings, output_name, expression, base):
+    """Peel ``cat([rotated_prefix, untouched_suffix], dim=-1)`` exactly.
+
+    The returned expression is the prior value of ``rotated_prefix``.  A
+    result exists only when prefix/suffix slice the same source parameter at
+    one identical boundary, in that order, and the rotated expression actually
+    depends on the prefix variable.  Gaps, overlaps, reversed lanes, arbitrary
+    concatenation and non-last-axis concatenation are rejected.
+    """
+    if expression is None or expression.kind != "call" \
+            or not expression.children:
+        return None
+    call = next((item for item in index.calls_in(helper)
+                 if item.span == expression.span), None)
+    proof = (resolve_import_reference(
+        index, helper.source, helper, call.callee)
+             if call is not None else None)
+    if proof is None or proof.qualified_target not in _CAT_PROTOCOLS \
+            or not call.args:
+        return None
+    dim = dict(call.kwargs).get("dim")
+    if dim is None or not _is_negative_one(dim):
+        return None
+    values = call.args[0]
+    if values.kind not in {"tuple", "list"} \
+            or len(values.children) != 2:
+        return None
+    rotated_ref, pass_ref = values.children
+    if rotated_ref.kind != "name" or rotated_ref.name != output_name \
+            or pass_ref.kind != "name":
+        return None
+    rotated = _unique_value_before(bindings, output_name, expression.span)
+    passed = _unique_target_value_before(
+        bindings, pass_ref.name, expression.span)
+    if rotated is None or passed is None:
+        return None
+    suffix = _boundary_slice(passed, base, side="suffix")
+    if suffix is None:
+        return None
+    prefixes = []
+    # The common source form binds both complementary lanes in one tuple
+    # assignment.  Preserve that shared statement as the strongest proof that
+    # the prefix and suffix belong to one partition of the same base.
+    for binding in bindings:
+        if len(binding.targets) != 1 \
+                or binding.targets[0].kind not in {"tuple", "list"} \
+                or len(binding.targets[0].children) != 2 \
+                or binding.value is None \
+                or binding.value.kind not in {"tuple", "list"} \
+                or len(binding.value.children) != 2 \
+                or not _span_before(binding.span, rotated.span):
+            continue
+        prefix_target, suffix_target = binding.targets[0].children
+        prefix_value, suffix_value = binding.value.children
+        if prefix_target.kind != "name" or suffix_target.kind != "name" \
+                or suffix_target.name != pass_ref.name \
+                or prefix_target.name not in _expression_names(rotated):
+            continue
+        prefix = _boundary_slice(prefix_value, base, side="prefix")
+        paired_suffix = _boundary_slice(suffix_value, base, side="suffix")
+        if prefix is not None and paired_suffix is not None \
+                and _expression_shape(prefix) == _expression_shape(paired_suffix) \
+                and _expression_shape(paired_suffix) == _expression_shape(suffix):
+            prefixes.append(prefix_target.name)
+    for binding in bindings:
+        if len(binding.targets) != 1 \
+                or binding.targets[0].kind != "name" \
+                or binding.value is None \
+                or not _span_before(binding.span, rotated.span):
+            continue
+        boundary = _boundary_slice(binding.value, base, side="prefix")
+        if boundary is not None and _expression_shape(boundary) \
+                == _expression_shape(suffix) \
+                and binding.targets[0].name in _expression_names(rotated):
+            prefixes.append(binding.targets[0].name)
+    return rotated if len(set(prefixes)) == 1 else None
+
+
+def _boundary_slice(expression, parameter, *, side):
+    if expression.kind != "subscript" or len(expression.children) != 2:
+        return None
+    base, selector = expression.children
+    if base.kind != "name" or base.name != parameter:
+        return None
+    selector = (selector.children[-1]
+                if selector.kind == "tuple" and selector.children else selector)
+    if selector.kind != "slice" or len(selector.children) != 3:
+        return None
+    lower, upper, step = selector.children
+    if step is not None:
+        return None
+    if side == "prefix" and lower is None and upper is not None:
+        return upper
+    if side == "suffix" and upper is None and lower is not None:
+        return lower
+    return None
+
+
+def _expression_names(expression):
+    if expression is None:
+        return frozenset()
+    out = {expression.name} if expression.kind == "name" else set()
+    for child in (*expression.children,
+                  *(value for _key, value in expression.keyword_children)):
+        if child is not None:
+            out.update(_expression_names(child))
+    return frozenset(out)
+
+
+def _expression_shape(expression):
+    """Span-free expression identity for two repeated boundary spellings."""
+    if expression is None:
+        return None
+    return (
+        expression.kind, expression.name, expression.const_value,
+        expression.operator,
+        tuple(_expression_shape(child) if child is not None else None
+              for child in expression.children),
+        tuple((key, _expression_shape(value))
+              for key, value in expression.keyword_children),
+    )
+
+
+def _unique_target_value_before(bindings, name, before):
+    """Latest exact value for a scalar or tuple/list target occurrence."""
+    matches = []
+    for binding in bindings:
+        if binding.guard or binding.value is None \
+                or not _span_before(binding.span, before) \
+                or len(binding.targets) != 1:
+            continue
+        target = binding.targets[0]
+        if target.kind == "name" and target.name == name:
+            matches.append(binding.value)
+            continue
+        if target.kind not in {"tuple", "list"} \
+                or binding.value.kind not in {"tuple", "list"} \
+                or len(target.children) != len(binding.value.children):
+            continue
+        for index, item in enumerate(target.children):
+            if item.kind == "name" and item.name == name:
+                matches.append(binding.value.children[index])
+    return matches[-1] if matches else None
 
 
 def _transparent_return_name(expression):
@@ -780,16 +955,16 @@ def _rotation_formula(index, helper, expression, base, factors, bindings):
                 or len(term.children) != 2:
             return None
         left, right = term.children
-        left_origins = _parameter_origins(bindings, left, left.span)
-        right_origins = _parameter_origins(bindings, right, right.span)
         right_factor = _shape_factor_origin(
             bindings, right, right.span, factors)
         left_factor = _shape_factor_origin(
             bindings, left, left.span, factors)
-        if left_origins == {base} and right_factor is not None:
+        if _is_exact_lane_origin(
+                bindings, left, left.span, base) and right_factor is not None:
             direct_factor = right_factor
             continue
-        if right_origins == {base} and left_factor is not None:
+        if _is_exact_lane_origin(
+                bindings, right, right.span, base) and left_factor is not None:
             direct_factor = left_factor
             continue
         call_expr, factor = (
@@ -801,13 +976,42 @@ def _rotation_formula(index, helper, expression, base, factors, bindings):
             if call_expr.children else None
         args = call_expr.children[1:]
         if called is None or len(args) != 1 \
-                or _parameter_origins(bindings, args[0], args[0].span) != {base}:
+                or not _is_exact_lane_origin(
+                    bindings, args[0], args[0].span, base):
             return None
         rotated = (called, factor)
     if direct_factor is None or rotated is None \
             or direct_factor == rotated[1]:
         return None
     return rotated[0], (direct_factor, rotated[1])
+
+
+def _is_exact_lane_origin(bindings, expression, before, base):
+    """A whole formal or one exact slice of it, through local aliases only."""
+    if expression.kind == "name":
+        if expression.name == base:
+            return True
+        value = _unique_target_value_before(
+            bindings, expression.name, before)
+        if value is None:
+            return False
+        return _is_exact_lane_origin(
+            bindings, value, value.span, base)
+    if expression.kind != "subscript" or len(expression.children) != 2:
+        return False
+    receiver, selector = expression.children
+    if receiver.kind != "name" or receiver.name != base:
+        return False
+    selectors = selector.children if selector.kind == "tuple" else (selector,)
+    # A slice may select a prefix, suffix or whole dimension, but never an
+    # index/gather/stride.  Geometry separately proves how wide the rotated
+    # lane is; this boundary proves only that the values come from Q or K.
+    return bool(selectors) and all(
+        item is not None and (
+            item.kind == "slice" and len(item.children) == 3
+            and item.children[2] is None
+            or item.kind == "constant" and item.const_value is Ellipsis)
+        for item in selectors)
 
 
 def _half_turn_protocol(index, symbol):
@@ -1038,9 +1242,11 @@ def _parameter_origins(bindings, expression, before, seen=frozenset()):
             bindings, value, value.span, seen | {expression.name})
     origins = set()
     for child in expression.children:
-        origins |= _parameter_origins(bindings, child, child.span, seen)
+        if child is not None:
+            origins |= _parameter_origins(bindings, child, child.span, seen)
     for _key, child in expression.keyword_children:
-        origins |= _parameter_origins(bindings, child, child.span, seen)
+        if child is not None:
+            origins |= _parameter_origins(bindings, child, child.span, seen)
     return origins
 
 

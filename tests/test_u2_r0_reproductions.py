@@ -18,10 +18,6 @@ import pytest
 
 from model_unfolder.evidence import arbitration as arb
 from model_unfolder.evidence import structural_writes as sw
-from model_unfolder.evidence.config_access import (
-    CHECKPOINT_DECLARED,
-    CLASS_DEFAULT,
-)
 from model_unfolder.evidence.document import prepare_document
 
 
@@ -95,18 +91,17 @@ def _gemma2():
             "intermediate_size": 512, "sliding_window": 128, "head_dim": 64}
 
 
-def test_r0_class_overlay_does_not_author_ir_in_shadow_mode():
-    """§3.3: during U2 the class overlay is audited but never authors structure.
+def test_r0_class_overlay_still_cannot_author_ir_after_u8():
+    """A class overlay remains non-checkpoint evidence after U8.
 
     A Gemma-2 config whose alternating schedule lives only in the config class
-    must, parsed as a plain checkpoint (no class merge), stay uniform — the
-    overlay is recorded, not applied."""
+    must, parsed as a plain checkpoint (no class merge), stay unknown — the
+    overlay is recorded, not applied and source lacks its selector operand."""
     import model_unfolder as mu
     masks = {(layer.get("attention") or {}).get("mask")
              for layer in (mu.unfold(_gemma2()).to_ir().get("layers") or [])}
-    assert masks == {"sliding"}, (
-        f"class overlay authored a schedule during U2 (masks={masks}) — §3.3 "
-        "forbids a merge-driven structural delta before U8")
+    assert masks == {"unknown"}, (
+        f"class overlay authored a schedule without checkpoint evidence: {masks}")
 
 
 def test_r0_embedded_and_standalone_agree_in_shadow_mode():

@@ -80,8 +80,9 @@ class AttentionQKOperandsEvidence:
         if any(not isinstance(item, ExprNode) or item.span is None
                for item in (self.query_operand, self.key_operand)):
             raise TypeError("attention operands carry exact source expressions")
-        source = self.attention_occurrence.root.source
-        if self.attention_symbol.source != source \
+        source = self.attention_symbol.source
+        if source.component_key != \
+                self.attention_occurrence.root.source.component_key \
                 or self.entry_call.owner != self.attention_symbol \
                 or self.entry_call.enclosing_callable.source != source \
                 or self.compute_callable.source != source \

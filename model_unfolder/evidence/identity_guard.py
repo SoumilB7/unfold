@@ -493,9 +493,8 @@ def _identity_names_in_source(source: str) -> set[str]:
 
     Sources look like ``config:model_type`` / ``reader_name`` / ``file.py:12``.
     Split on the separators that sit between a scope and a field (``: . / space``)
-    and match a whole segment EXACTLY — so a reader named
-    ``attention_causality_from_files`` never trips on the generic word
-    ``architecture``, while ``config:model_type`` does trip on ``model_type``."""
+    and match a whole segment EXACTLY — so a reader name containing a generic
+    architectural word does not trip, while ``config:model_type`` does."""
     import re
     segments = {seg for seg in re.split(r"[:./\s]+", source or "") if seg}
     return segments & _PROVENANCE_IDENTITY_NAMES

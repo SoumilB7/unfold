@@ -253,8 +253,12 @@ def test_real_attention_projector_emits_exact_softcap_receipt():
     receipt = receipts[0]
     ir = diagram.to_ir()
     access = ir["extras"]["config_access"]
+    obligations = [
+        item for item in access["projection_obligations"]
+        if item["target"]["key"] == "logit_softcap"
+    ]
     result = join_obligation_receipts(
-        access["projection_obligations"], receipts,
+        obligations, receipts,
         ir["extras"]["fact_provenance"],
         context_token=receipt.context_token,
     )

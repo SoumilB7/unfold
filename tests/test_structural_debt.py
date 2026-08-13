@@ -313,3 +313,14 @@ def test_debt_problems_aggregates_every_gate_and_is_empty_when_lawful():
 
 def test_debt_keys_join_surface_shape():
     assert debt_keys((_row(),)) == frozenset({("extras", "attention")})
+
+
+def test_u8_debt_is_fully_retired():
+    """U8 completion cannot leave its old config-read excusals alive.
+
+    Those rows previously made a real theta receipt appear merely pending;
+    future U8 growth must be an explicit new design decision, never a silent
+    reintroduction under the old register.
+    """
+    from model_unfolder.evidence.structural_debt import STRUCTURAL_DEBT
+    assert [row for row in STRUCTURAL_DEBT if row.migration_unit == "U8"] == []

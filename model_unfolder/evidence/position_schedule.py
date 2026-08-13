@@ -22,6 +22,11 @@ from .construction_arguments import (
     bind_construction_site,
 )
 from .decoder_block import DecoderBlockPath, decoder_block_path_for_config
+from .framework_config import (
+    FrameworkConfigDefaultValue,
+    framework_config_alias,
+    framework_config_default_selector,
+)
 from .models import SourceBundle
 from .position_application import (
     QKHalfTurnApplicationEvidence,
@@ -51,7 +56,7 @@ class LayerIndexTransportEvidence:
     """Exact construction chain carrying the comprehension index to attention."""
 
     block_binding: ConstructionArgumentBinding
-    attention_binding: ConstructionArgumentBinding
+    attention_bindings: tuple[ConstructionArgumentBinding, ...]
     comprehension: ComprehensionObservation
     count_expression: ExprNode
     count_config_path: tuple[str, ...]
@@ -61,12 +66,22 @@ class LayerIndexTransportEvidence:
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_binding, ConstructionArgumentBinding) \
-                or not isinstance(
-                    self.attention_binding, ConstructionArgumentBinding):
+                or not self.attention_bindings or any(
+                    not isinstance(item, ConstructionArgumentBinding)
+                    for item in self.attention_bindings):
             raise TypeError("index transport carries exact constructor bindings")
-        if self.attention_binding.parent_occurrence \
-                != self.block_binding.child_occurrence:
-            raise ValueError("attention construction descends from the exact block")
+        parent = self.block_binding.child_occurrence
+        expected_name = self.block_binding.formal.name
+        for binding in self.attention_bindings:
+            if binding.parent_occurrence != parent:
+                raise ValueError(
+                    "attention index transport is one contiguous owner chain")
+            if binding.actual.kind != "name" \
+                    or binding.actual.name != expected_name:
+                raise ValueError(
+                    "every owner hop transports the exact preceding formal")
+            parent = binding.child_occurrence
+            expected_name = binding.formal.name
         if not isinstance(self.comprehension, ComprehensionObservation) \
                 or len(self.comprehension.clauses) != 1:
             raise TypeError("index transport carries one exact comprehension")
@@ -76,10 +91,6 @@ class LayerIndexTransportEvidence:
                 or self.block_binding.actual.kind != "name" \
                 or self.block_binding.actual.name != clause.target.name:
             raise ValueError("block actual is the exact comprehension index binding")
-        if self.attention_binding.actual.kind != "name" \
-                or self.attention_binding.actual.name \
-                != self.block_binding.formal.name:
-            raise ValueError("attention actual is the exact block index formal")
         if not isinstance(self.count_expression, ExprNode) \
                 or self.count_expression != clause.iterable:
             raise ValueError("count expression is the exact comprehension iterable")
@@ -95,13 +106,18 @@ class LayerIndexTransportEvidence:
             raise ValueError("layer count is a positive integer")
         required = {
             self.block_binding.site.span,
-            self.attention_binding.site.span,
+            *(item.site.span for item in self.attention_bindings),
             self.comprehension.span,
             self.count_expression.span,
         }
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(span, SourceSpan) for span in self.spans):
             raise ValueError("index transport retains every exact boundary span")
+
+    @property
+    def attention_binding(self) -> ConstructionArgumentBinding:
+        """The final compute-owner formal (compatibility/query convenience)."""
+        return self.attention_bindings[-1]
 
 
 @dataclass(frozen=True)
@@ -145,7 +161,7 @@ class PositionApplicationScheduleEvidence:
             raise ValueError("application and geometry belong to one attention")
         if self.transport.block_binding.child_occurrence \
                 != self.block_path.block_occurrence \
-                or self.transport.attention_binding.child_occurrence \
+                or self.transport.attention_bindings[-1].child_occurrence \
                 != self.attention_occurrence:
             raise ValueError("index transport joins the exact decoder path")
         if not isinstance(
@@ -199,13 +215,20 @@ def decoder_position_application_schedule_for_path(
         return _forward_failure(block_result, "decoder block address")
     block = block_result.value
     root = block.component_root
+    effective_selector = config_selector
+    stage_alias = framework_config_alias(
+        index, root, block.repeated_child.model_stage)
+    if stage_alias.status == "resolved" and callable(effective_selector):
+        effective_selector = framework_config_default_selector(
+            index, stage_alias.value, effective_selector,
+            config_prefix=tuple(config_path))
     attention_result = attention_child_evidence(
         index, root, block.block_occurrence)
     if attention_result.status != "resolved":
         return _forward_failure(attention_result, "attention child address")
     attention = attention_result.value
     transport = _index_transport(
-        index, root, block, attention.compute_occurrence, config_selector)
+        index, root, block, attention.compute_occurrence, effective_selector)
     if isinstance(transport, ReaderFailure):
         return ReaderResult.failed(attention.compute_occurrence, (transport,))
 
@@ -215,7 +238,7 @@ def decoder_position_application_schedule_for_path(
         result = decoder_qk_half_turn_application_for_path(
             index, bundle, tuple(config_path),
             allow_root_stage=allow_root_stage,
-            config_selector=config_selector,
+            config_selector=effective_selector,
             constructor_parameter_values={parameter: layer_index})
         applications.append(result)
     resolved = tuple(item.value for item in applications
@@ -236,8 +259,8 @@ def decoder_position_application_schedule_for_path(
     selector_spans = []
     for layer_index, result in enumerate(applications):
         resolver = ExactConfigGuardResolver(
-            index, node, config_selector,
-            config_prefix=tuple(getattr(root, "config_path", ()) or ()),
+            index, node, effective_selector,
+            config_prefix=tuple(block.config_path),
             parameter_values={parameter: layer_index})
         enabled = resolver.enabled(
             canonical.application_call.guard,
@@ -273,18 +296,18 @@ def decoder_position_application_schedule_for_path(
         factor_result = decoder_position_complex_factors_for_path(
             index, bundle, tuple(config_path),
             allow_root_stage=allow_root_stage,
-            config_selector=config_selector,
+            config_selector=effective_selector,
             constructor_parameter_values=parameter_values)
     else:
         factor_result = decoder_position_trig_factors_for_path(
             index, bundle, tuple(config_path),
             allow_root_stage=allow_root_stage,
-            config_selector=config_selector,
+            config_selector=effective_selector,
             constructor_parameter_values=parameter_values)
     geometry_result = decoder_position_application_geometry_for_path(
         index, bundle, tuple(config_path),
         allow_root_stage=allow_root_stage,
-        config_selector=config_selector,
+        config_selector=effective_selector,
         constructor_parameter_values=parameter_values)
     if factor_result.status != "resolved":
         return _forward_failure(factor_result, "position factor provenance")
@@ -300,7 +323,7 @@ def decoder_position_application_schedule_for_path(
             "conflict", "representative application proofs do not coincide"),))
     values = []
     for path, kind in dict.fromkeys(selector_kinds):
-        selected = _selected_value(config_selector, path)
+        selected = _selected_value(effective_selector, path)
         if selected is None or selected[0] != kind:
             return ReaderResult.failed(attention.compute_occurrence, (ReaderFailure(
                 "conflict", "selector provenance changed during schedule proof"),))
@@ -362,27 +385,38 @@ def _index_transport(index, root, block, attention_occurrence, selector):
     if len(block_index) != 1:
         return ReaderFailure(
             "incomplete_graph", "comprehension index has no exact block formal")
-    if attention_occurrence.sites[:-1] != block.block_occurrence.sites:
+    if attention_occurrence.sites[:len(block.block_occurrence.sites)] \
+            != block.block_occurrence.sites \
+            or len(attention_occurrence.sites) \
+            <= len(block.block_occurrence.sites):
         return ReaderFailure(
             "unsupported_syntax", "attention index crosses an unproved owner hop")
-    attention_site = next(
-        (item for item in index.construction_sites
-         if item.site_id == attention_occurrence.sites[-1]), None)
-    if attention_site is None:
-        return ReaderFailure(
-            "incomplete_graph", "attention construction site is unavailable")
-    attention_bindings = bind_construction_site(
-        index, root, block.block_occurrence, attention_site)
-    if attention_bindings.status not in {"resolved", "partial"}:
-        return ReaderFailure(
-            "incomplete_graph", "attention constructor arguments are not exact")
-    attention_index = tuple(
-        item for item in attention_bindings.bindings
-        if item.actual.kind == "name"
-        and item.actual.name == block_index[0].formal.name)
-    if len(attention_index) != 1:
-        return ReaderFailure(
-            "incomplete_graph", "block index has no exact attention formal")
+    index_chain = []
+    parent = block.block_occurrence
+    expected_name = block_index[0].formal.name
+    for site_id in attention_occurrence.sites[
+            len(block.block_occurrence.sites):]:
+        sites = tuple(item for item in index.construction_sites
+                      if item.site_id == site_id)
+        if len(sites) != 1:
+            return ReaderFailure(
+                "incomplete_graph", "attention construction site is unavailable")
+        resolution = bind_construction_site(index, root, parent, sites[0])
+        if resolution.status not in {"resolved", "partial"}:
+            return ReaderFailure(
+                "incomplete_graph", "attention constructor arguments are not exact")
+        matches = tuple(
+            item for item in resolution.bindings
+            if item.actual.kind == "name"
+            and item.actual.name == expected_name)
+        if len(matches) != 1:
+            return ReaderFailure(
+                "incomplete_graph",
+                "one owner hop does not transport the exact layer index")
+        binding = matches[0]
+        index_chain.append(binding)
+        parent = binding.child_occurrence
+        expected_name = binding.formal.name
     count = clause.iterable
     if count.kind != "call" or len(count.children) != 2 \
             or count.children[0].kind != "name" \
@@ -395,18 +429,19 @@ def _index_transport(index, root, block, attention_occurrence, selector):
     stage_node = root.graph.node_for(proof.model_stage)
     path = exact_config_path_for_expression(
         index, stage_node, count_value,
-        config_prefix=tuple(getattr(root, "config_path", ()) or ()))
+        config_prefix=tuple(block.config_path))
     selected = _selected_value(selector, path) if path is not None else None
     if selected is None or isinstance(selected[1], bool) \
             or not isinstance(selected[1], int) or selected[1] <= 0:
         return ReaderFailure(
             "incomplete_graph", "layer count is not exact positive config evidence")
     spans = tuple(dict.fromkeys((
-        *block_index[0].spans, *attention_index[0].spans,
+        *block_index[0].spans,
+        *(span for binding in index_chain for span in binding.spans),
         comprehension.span, clause.target.span, count.span, count_value.span,
     )))
     return LayerIndexTransportEvidence(
-        block_index[0], attention_index[0], comprehension, count,
+        block_index[0], tuple(index_chain), comprehension, count,
         path, selected[0], selected[1], spans)
 
 
@@ -422,6 +457,8 @@ def _selected_value(selector, path):
     if selector is None or path is None:
         return None
     selected = selector(path)
+    if isinstance(selected, FrameworkConfigDefaultValue):
+        return "class_default", _freeze(selected.value)
     if isinstance(selected, NormalizedConfigValue):
         return None
     kind = "config_declared"

@@ -100,6 +100,60 @@ def _count_source_walks(monkeypatch):
     return lambda: count[0]
 
 
+def test_comprehension_iterable_config_path_is_observed(tmp_path):
+    """A comprehension's ``ast.comprehension`` wrapper must not hide reads."""
+    index = _index(tmp_path, "model.py", """
+        class Model:
+            def __init__(self, config):
+                self.items = [object() for _ in range(config.count)]
+    """)
+    constructor = _callable(index, "Model.__init__").symbol
+    paths = index.config_paths_in(constructor)
+    assert any(
+        tuple(segment.name for segment in item.segments) == ("count",)
+        and item.root_binding.name == "config"
+        for item in paths)
+
+
+def test_exact_local_list_appends_fold_into_installed_container(tmp_path):
+    index = _index(tmp_path, "model.py", """
+        class A: pass
+        class B: pass
+        class Model:
+            def __init__(self, config):
+                items = []
+                for i in range(config.count):
+                    if i in config.special:
+                        items.append(B(config, i))
+                    else:
+                        items.append(A(config, i))
+                self.layers = ModuleList(items)
+    """)
+    record = next(item for item in index.containers
+                  if item.field == "layers")
+    assert [site.target for site in record.elements] == ["layers", "layers"]
+    assert {site.candidates[0].symbol.qualified_name
+            for site in record.elements} == {"A", "B"}
+    assert all(site.via == "local_append_bridge" for site in record.elements)
+    assert {step.kind for site in record.elements for step in site.guard} \
+        >= {"for", "if", "else"}
+
+
+def test_reassigned_local_list_cannot_be_folded_into_container(tmp_path):
+    index = _index(tmp_path, "model.py", """
+        class A: pass
+        class Model:
+            def __init__(self):
+                items = []
+                items.append(A())
+                items = []
+                self.layers = ModuleList(items)
+    """)
+    record = next(item for item in index.containers
+                  if item.field == "layers")
+    assert record.elements == ()
+
+
 # --------------------------------------------------------------------------- #
 # Exact callable-scoped identifier observations (U3-A1)
 # --------------------------------------------------------------------------- #
@@ -1140,3 +1194,16 @@ def test_append_is_not_folded_when_container_field_is_reassigned(tmp_path):
     records = tuple(item for item in idx.containers if item.field == "parts")
     assert len(records) == 2
     assert all(record.elements == () for record in records)
+
+
+def test_annotated_literal_registry_is_observed_without_interpretation(tmp_path):
+    idx = _index(tmp_path, "annotated_registry.py", """
+        def first(): pass
+        def second(): pass
+        ROUTES: dict[str, object] = {"one": first, "two": second}
+    """)
+    (record,) = tuple(item for item in idx.dispatch_registries
+                      if item.symbol.qualified_name == "ROUTES")
+    assert [(key.const_value, value.name)
+            for key, value in record.entries] == [
+        ("one", "first"), ("two", "second")]

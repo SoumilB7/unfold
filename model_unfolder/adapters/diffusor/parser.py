@@ -2389,10 +2389,11 @@ def _resolve_conditioning(cfg: Any, encoders: list) -> dict:
     return out
 
 
-def _slot_context(root_context, slot: str):
+def _slot_context(root_context, slot: str, *, document=None, binding=None):
     """Delegates to the ONE shared slot-context builder (evidence/context.py)."""
     from ...evidence.context import slot_parse_context
-    return slot_parse_context(root_context, slot)
+    return slot_parse_context(
+        root_context, slot, document=document, binding=binding)
 
 
 def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
@@ -2456,7 +2457,10 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
                     _config_access.bound_document(_binding):
                 spec.update(_normalize_encoder_config(
                     _prepared.document,
-                    context=_slot_context(context, key), binding=_binding))
+                    context=_slot_context(
+                        context, key, document=_prepared.document,
+                        binding=_binding),
+                    binding=_binding))
             # QUALIFY ownership onto the sub-model spec, recursively — inner
             # component paths (a VL wrapper's ``text_config``) become dotted
             # (``text_encoder.text_config``), which the source bundle
@@ -2466,7 +2470,7 @@ def _text_encoder_specs(cfg: Any, context=None) -> list[dict]:
             from ...submodel import qualify_component
             if isinstance(spec.get("sub_model"), dict):
                 qualify_component(spec["sub_model"], key)
-            for envelope_key in ("ffn_evidence", "position_evidence"):
+            for envelope_key in ("ffn_evidence",):
                 evidence = spec.get(envelope_key)
                 if isinstance(evidence, dict):
                     evidence = dict(evidence)

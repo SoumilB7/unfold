@@ -19,7 +19,7 @@ closed-world census of every possible attention child in the block.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .component_owner import (
     ComponentRootResolution,
@@ -29,6 +29,7 @@ from .component_owner import (
 )
 from .construction_calls import resolve_import_reference
 from .container_inventory import resolve_container_inventory
+from .expression_eval import construction_guard_evidence, unique_premises
 from .execution_flow import AddressedInvocation, resolve_addressed_invocations
 from .program_index import (
     CallObservation,
@@ -132,6 +133,8 @@ class AttentionChildEvidence:
     compute_owner_symbol: SymbolId
     invocation_path: tuple[AddressedInvocation, ...]
     compute: AttentionComputeProof
+    selection_premises: tuple[tuple[tuple[str, ...], object], ...] = ()
+    selection_spans: tuple[SourceSpan, ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.block_occurrence, OwnerOccurrenceId):
@@ -167,8 +170,21 @@ class AttentionChildEvidence:
             raise ValueError("the compute path ends at the exact compute owner")
         if self.compute.child_symbol != self.compute_owner_symbol:
             raise ValueError("the compute proof names the exact compute owner symbol")
-        if self.compute_owner_symbol.source != self.compute_occurrence.root.source:
-            raise ValueError("the compute symbol and owner share exact source identity")
+        if self.compute_owner_symbol.source.component_key != \
+                self.compute_occurrence.root.source.component_key:
+            raise ValueError(
+                "the compute symbol and occurrence share one exact component")
+        if any(not path or any(not isinstance(part, str) or not part
+                               for part in path)
+               for path, _value in self.selection_premises) \
+                or len({path for path, _value in self.selection_premises}) \
+                != len(self.selection_premises):
+            raise ValueError("attention-child selection premises are exact")
+        if any(not isinstance(span, SourceSpan)
+               or span.source.component_key
+               != self.compute_owner_symbol.source.component_key
+               for span in self.selection_spans):
+            raise ValueError("attention-child selection spans share its component")
 
 
 @dataclass(frozen=True)
@@ -203,6 +219,7 @@ def attention_child_positive_census(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
+    config_document=None,
 ) -> ReaderResult[AttentionChildCensus]:
     """Return all exact child invocations with positive attention computation."""
     if not isinstance(index, ProgramIndex):
@@ -238,12 +255,81 @@ def attention_child_positive_census(
             "incomplete_graph", "the exact block forward is absent"),))
 
     candidates: list[AttentionChildEvidence] = []
+    conditional_candidates: list[AttentionChildEvidence] = []
+    exclusion_premises = ()
+    exclusion_spans = ()
     for invocation in invocations.addressed:
         child = graph.node_for(invocation.callee_owner_occurrence)
         if child is None or index.class_by_symbol(child.symbol) is None:
             continue
-        candidates.extend(_attention_descents(
-            index, root, block_occurrence, invocation, child.occurrence))
+        descents = _attention_descents(
+            index, root, block_occurrence, invocation, child.occurrence)
+        if config_document is None:
+            candidates.extend(descents)
+            continue
+        sites = tuple(
+            item for item in index.construction_sites_of(block_node.symbol)
+            if item.site_id == child.via_site)
+        guard_evidence = (
+            construction_guard_evidence(
+                index, graph, block_occurrence, sites[0], config_document)
+            if len(sites) == 1 else None)
+        if guard_evidence is not None and guard_evidence.value is True:
+            candidates.extend(replace(
+                item,
+                selection_premises=guard_evidence.premises,
+                selection_spans=guard_evidence.spans)
+                for item in descents)
+        elif guard_evidence is None:
+            conditional_candidates.extend(descents)
+        elif descents:
+            exclusion_premises = unique_premises((
+                *exclusion_premises, *guard_evidence.premises))
+            if exclusion_premises is None:
+                conditional_candidates.extend(descents)
+                exclusion_premises = ()
+            exclusion_spans = tuple(dict.fromkeys((
+                *exclusion_spans, *guard_evidence.spans)))
+        # ``False`` is an exact negative about this construction occurrence,
+        # not about the child class generally.  It alone may be discarded.
+    if conditional_candidates:
+        # This boundary is a POSITIVE mechanism census, not a proof that the
+        # lane executes in every repeated-block occurrence.  One uniquely
+        # positive attention implementation may therefore remain useful when
+        # its occurrence guard depends on a per-layer selector that this
+        # symbolic block occurrence cannot evaluate (hybrid schedules).  What
+        # it may never do is use that uncertainty to choose between rival
+        # attention implementations: one active + one possible, or two
+        # possible implementations, stays ambiguous.
+        possible = {
+            (item.child_occurrence, item.compute_occurrence,
+             tuple(step.call_site for step in item.invocation_path)): item
+            for item in (*candidates, *conditional_candidates)
+        }
+        if len(possible) == 1:
+            candidates = list(possible.values())
+            conditional_candidates = []
+    if conditional_candidates:
+        sites = tuple(sorted(
+            (item.invocation.call.span
+             for item in (*candidates, *conditional_candidates)),
+            key=_span_sort_key))
+        if candidates:
+            return ReaderResult.ambiguous(
+                block_occurrence, Ambiguity(sites=sites))
+        return ReaderResult.failed(block_occurrence, (ReaderFailure(
+            "incomplete_graph",
+            "attention-compute child presence depends on an unresolved "
+            "exact construction guard",
+            sites[0] if sites else None),))
+    if exclusion_premises or exclusion_spans:
+        candidates = [replace(
+            item,
+            selection_premises=unique_premises((
+                *item.selection_premises, *exclusion_premises)) or (),
+            selection_spans=tuple(dict.fromkeys((
+                *item.selection_spans, *exclusion_spans))))
+            for item in candidates]
     unique = {
         (item.child_occurrence, item.compute_occurrence,
          tuple(step.call_site for step in item.invocation_path)): item
@@ -288,6 +374,7 @@ def attention_child_evidence(
     index: ProgramIndex,
     root: ComponentRootResolution | ConstructedComponentRoot,
     block_occurrence: OwnerOccurrenceId,
+    config_document=None,
 ) -> ReaderResult[AttentionChildEvidence]:
     """Prove one exact invoked child performs attention computation.
 
@@ -295,7 +382,7 @@ def attention_child_evidence(
     incomplete graph, never evidence that attention is absent.
     """
     census = attention_child_positive_census(
-        index, root, block_occurrence)
+        index, root, block_occurrence, config_document=config_document)
     if census.status != "resolved":
         return census
     candidates = census.value.candidates

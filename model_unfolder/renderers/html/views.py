@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from ...block_schema import DIFFUSION_BLOCK_IDS, DIFFUSION_STAGES
 from ...labels import kind_short, mask_short
+from ...evidence.receipts import receipts_from_projects
 from .fact_projection import layer_and_model_facts
 from .metadata import _block_label, _indices_summary, _signature
 from .render_context import current_render_context
@@ -132,14 +133,15 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     branch_blocks = [b for b in layer_blocks if b.get("branch_side")]
 
     modalities = ((ir.get("extras") or {}).get("modalities") or {})
-    position_evidence = ((ir.get("extras") or {}).get("position_encoding") or {})
-    position_mechanisms = position_evidence.get("mechanisms") or [] \
-        if isinstance(position_evidence, dict) else []
-    has_absolute_position = any(
-        item.get("kind") in {"learned_absolute", "fixed_absolute"}
-        and item.get("application") == "embedding_add"
-        for item in position_mechanisms if isinstance(item, dict)
-    )
+    model_block_ids = {
+        block.get("id") for block in
+        (((ir.get("extras") or {}).get("render") or {}).get(
+            "model_blocks") or ())
+        if isinstance(block, dict)
+    }
+    has_absolute_position = {
+        "position_ids", "position_embed", "position_add",
+    } <= model_block_ids
     modality_inputs = modalities.get("inputs") or {}
     fusion_spec = modalities.get("fusion") or {}
     has_modality_fusion = bool(modality_inputs) and bool(fusion_spec)
@@ -198,7 +200,10 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
 
     # Multi-Token Prediction heads draw as a stack above lm_head; reserve top
     # headroom by pushing the fixed top anchors (and total height) down.
-    mtp = (ir.get("extras") or {}).get("mtp")
+    canonical_blocks = info.get("blocks") or {}
+    mtp_block = canonical_blocks.get("mtp") or {}
+    mtp = (mtp_block.get("detail")
+           if isinstance(mtp_block, dict) else None)
     mtp_pad = 108 if mtp else 0
 
     inner_y = 200 + mtp_pad
@@ -206,7 +211,6 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     position_pad = 56 if has_absolute_position and not has_modality_fusion else 0
     # An embedding-stage norm (BLOOM's word-embedding LayerNorm) adds one quiet
     # bookend box between the embedding and the stack — reserve its slot.
-    canonical_blocks = info.get("blocks") or {}
     has_embed_norm = bool(canonical_blocks.get("embed_norm"))
     embed_norm_pad = 64 if has_embed_norm else 0
     # A model-level ENTRY STAGE (a latent refiner between patchify and the
@@ -567,7 +571,100 @@ def _build_architecture_view(ir: dict, info: dict, mount_id: str) -> str:
     # active inside a full render (sable / to_html); a lone view call is a no-op.
     ctx = current_render_context()
     if ctx is not None:
-        ctx.note_facts_projected("architecture", layer_and_model_facts(ir))
+        fact_rows = ctx.fact_rows
+        receipts = []
+        position_row = fact_rows.get("decoder.input.position_addition") or {}
+        position_value = (position_row.get("value")
+                          if isinstance(position_row, dict) else None)
+        position_block = canonical_blocks.get("position_add") or {}
+        position_detail = (position_block.get("detail")
+                           if isinstance(position_block, dict) else None)
+        if isinstance(position_value, dict) \
+                and isinstance(position_detail, dict):
+            # The actual architecture block is the drawn value.  The fact row
+            # is consulted only to decide that this migrated fact owes a
+            # receipt and to cite its status; a mismatching block therefore
+            # produces a mismatching hash instead of self-healing.
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder.input", "fact": "position_addition",
+                    "mechanism": "position_addition",
+                    "value": {
+                        "position_kind": position_detail.get("position_kind"),
+                        "position_application": position_detail.get(
+                            "position_application"),
+                    },
+                }], surface="html", structural_target="position_addition",
+                projector_symbol=(
+                    "renderers.html.views._build_architecture_view"),
+                node_ids=("position_ids", "position_embed", "position_add"),
+                projection_kind="field", fact_rows=fact_rows))
+        codebook_row = fact_rows.get("decoder.codebook_streams") or {}
+        codebooks = (codebook_row.get("value")
+                     if isinstance(codebook_row, dict) else None)
+        if isinstance(codebooks, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder", "fact": "codebook_streams",
+                    "mechanism": "codebook_streams",
+                    "value": {
+                        "num": codebooks.get("num"),
+                        "embeddings_summed": codebooks.get("embeddings_summed"),
+                        "heads_stacked": codebooks.get("heads_stacked"),
+                    },
+                }], surface="html", structural_target="codebook_streams",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("tok_text", "embed", "lm_head"),
+                projection_kind="field", fact_rows=fact_rows))
+        mtp_row = fact_rows.get("decoder.mtp_modules") or {}
+        mtp_value = (mtp_row.get("value")
+                     if isinstance(mtp_row, dict) else None)
+        mtp_block = canonical_blocks.get("mtp") or {}
+        mtp_detail = (mtp_block.get("detail")
+                      if isinstance(mtp_block, dict) else None)
+        if isinstance(mtp_value, dict) and isinstance(mtp_detail, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder", "fact": "mtp_modules",
+                    "mechanism": "mtp_modules",
+                    "value": {
+                        "num_modules": mtp_detail.get("num_modules"),
+                        "shares_embedding": mtp_detail.get("shares_embedding"),
+                        "shares_output_head": mtp_detail.get(
+                            "shares_output_head"),
+                        "hidden_norm_kind": mtp_detail.get(
+                            "hidden_norm_kind"),
+                        "embedding_norm_kind": mtp_detail.get(
+                            "embedding_norm_kind"),
+                        "reuses_stage_block_class": mtp_detail.get(
+                            "reuses_stage_block_class"),
+                    },
+                }], surface="html", structural_target="mtp_modules",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("mtp",), projection_kind="field",
+                fact_rows=fact_rows))
+        ple_row = fact_rows.get("decoder.per_layer_embedding_pathway") or {}
+        ple = ple_row.get("value") if isinstance(ple_row, dict) else None
+        if isinstance(ple, dict):
+            receipts.extend(receipts_from_projects(
+                [{
+                    "owner": "decoder",
+                    "fact": "per_layer_embedding_pathway",
+                    "mechanism": "per_layer_embedding_pathway",
+                    "value": {"hidden": ple.get("hidden"),
+                              "vocab": ple.get("vocab")},
+                }], surface="html",
+                structural_target="per_layer_embedding_pathway",
+                projector_symbol="renderers.html.views._build_architecture_view",
+                node_ids=("ple",), projection_kind="field",
+                fact_rows=fact_rows))
+        ctx.note_facts_projected(
+            "architecture",
+            layer_and_model_facts(ir) | frozenset(
+                receipt.fact_id for receipt in receipts),
+            node_ids=tuple(
+                node for receipt in receipts for node in receipt.node_ids),
+            receipts=tuple(receipts))
 
     return _svg(w, h, f"{ir.get('name', 'model')} architecture", parts)
 
@@ -665,8 +762,7 @@ def _draw_mtp_head(
     lm_head: dict,
     mtp: dict,
 ) -> None:
-    """Draw the Multi-Token Prediction head as a small stacked-card glyph above
-    lm_head, fed from the shared trunk output and emitting the final logits."""
+    """Draw source-proven repeated auxiliary token-prediction modules."""
     n = mtp.get("num_modules") or 1
     cx = lm_head["cx"]
     w, h = 224, 46
@@ -684,7 +780,7 @@ def _draw_mtp_head(
     label = _block_label(info, "mtp", f"MTP head x{n}" if n > 1 else "MTP head")
     geom = _rect_block(parts, info, shadow_id, "mtp", cx - w / 2, top, w, h, label, font_size=15)
 
-    # Shared trunk output -> MTP, then MTP -> logits.
+    # Repeated-stage output -> auxiliary modules -> auxiliary logits.
     parts.append(_svg_tag("line", {
         "x1": cx, "y1": lm_head["top"], "x2": cx, "y2": geom["bottom"] + 4,
         "stroke": C["arrow"], "stroke-width": 1.6, "stroke-linecap": "round",
@@ -697,7 +793,7 @@ def _draw_mtp_head(
     }))
     parts.append(_svg_text(
         geom["right"] + 12, geom["cy"],
-        f"+{n} future token{'s' if n != 1 else ''}",
+        f"{n} auxiliary prediction module{'s' if n != 1 else ''}",
         {"dominant-baseline": "central", "fill": C["muted"],
          "font-family": FONT_MONO, "font-size": 10},
     ))
@@ -1156,7 +1252,8 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
         ffn_kind = ffn_short(spec["ffn"])
         attn = spec.get("attention", {})
         label = (
-            f"{kind_short(attn)} + {ffn_kind} ({mask_short(attn)})"
+            f"{kind_short(attn)} + {ffn_kind} "
+            f"({mask_short(attn)} · {_position_short(attn)})"
             f"  ·  {_indices_summary(group, info)}"
         )
         color = sig_to_color[group["sig"]]
@@ -1201,7 +1298,83 @@ def _build_layer_map(ir: dict, info: dict, mount_id: str) -> str:
             )
         )
 
+    # U8/U2: this is the real per-layer schedule consumer.  It derives what it
+    # drew from the canonical serialized layers above—not from the fact row—so
+    # a parser fact and renderer structure can neither certify nor repair each
+    # other.  One receipt per present schedule closes the exact
+    # config-occurrence -> fact -> visible layer-map chain.
+    ctx = current_render_context()
+    if ctx is not None:
+        receipts = _layer_schedule_receipts(ir, ctx.fact_rows)
+        ctx.note_facts_projected(
+            "layer_map", frozenset(item.fact_id for item in receipts),
+            node_ids=("layer_map",), receipts=receipts)
+
     return _svg(w, h, f"{ir.get('name', 'model')} layer map", parts)
+
+
+def _position_short(attention: dict) -> str:
+    """Compact, mechanism-exact position label for the per-layer legend."""
+    kind = attention.get("position_kind")
+    application = attention.get("position_application")
+    if (kind, application) == ("rope", "qk_rotation"):
+        return "RoPE"
+    if (kind, application) == ("alibi", "attention_bias"):
+        return "ALiBi"
+    if (kind, application) == ("relative_bias", "attention_bias"):
+        return "relative bias"
+    if (kind, application) == ("none", "none"):
+        return "no attention position op"
+    return "position unresolved"
+
+
+def _layer_schedule_receipts(ir: dict, fact_rows: dict) -> tuple:
+    """Receipt the schedule values the layer-map projector actually consumed."""
+    layers = tuple(ir.get("layers") or ())
+    if not layers:
+        return ()
+    attention = tuple((layer or {}).get("attention") or {} for layer in layers)
+    ffn = tuple((layer or {}).get("ffn") or {} for layer in layers)
+    schedules = {
+        "mask_schedule": tuple(
+            (item.get("mask"), item.get("window_size")) for item in attention),
+        "position_schedule": tuple({
+            "position_kind": item.get("position_kind"),
+            "position_application": item.get("position_application"),
+            "rope_dim": item.get("rope_dim"),
+        } for item in attention),
+        "mixer_schedule": tuple(
+            item.get("mixer_state") for item in attention),
+        "qk_norm_schedule": tuple(
+            item.get("qk_norm") for item in attention),
+        "kv_sharing_schedule": tuple(
+            item.get("kv_source_layer") for item in attention),
+        "cross_attention_schedule": tuple(
+            "additive_cross"
+            if isinstance((layer or {}).get("cross_attention"), dict)
+            else "replacement_cross"
+            if ((layer or {}).get("attention") or {}).get(
+                "cross_attention") is True
+            else "self" for layer in layers),
+        "ffn_schedule": tuple(item.get("kind") for item in ffn),
+    }
+    owners = {
+        "ffn_schedule": "decoder.ffn",
+    }
+    receipts = []
+    for fact_key, value in schedules.items():
+        owner = owners.get(fact_key, "decoder.attention")
+        if f"{owner}.{fact_key}" not in fact_rows:
+            continue
+        receipts.extend(receipts_from_projects(
+            [{
+                "owner": owner, "fact": fact_key,
+                "mechanism": fact_key, "value": value,
+            }], surface="html", structural_target=fact_key,
+            projector_symbol="renderers.html.views._build_layer_map",
+            node_ids=("layer_map",), projection_kind="field",
+            fact_rows=fact_rows))
+    return tuple(receipts)
 
 
 def _hatch_pattern(mount_id: str) -> str:

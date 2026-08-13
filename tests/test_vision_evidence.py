@@ -260,6 +260,12 @@ def test_rec5_projector_width_is_code_bound_or_honest_debt():
     audit = extras.get("config_audit", {})
     assert audit.get("unread") == []
     assert "vision_config.hidden_size" not in (audit.get("pending_projection") or [])
+    assert set(audit.get("pending_projection") or []) >= {
+        "text_config.rope_parameters.mrope_section",
+        "text_config.rope_parameters.rope_theta",
+        "text_config.rope_parameters.rope_type",
+        "text_config.rope_parameters.type",
+    }
     rows = (extras.get("config_access") or {}).get("projection_obligations") or []
     bound = [r for r in rows
              if (r.get("source") or {}).get("path") == "vision_config.hidden_size"]

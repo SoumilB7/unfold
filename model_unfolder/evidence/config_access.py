@@ -933,7 +933,8 @@ class ConfigResolution:
 
     # -- explicit transitions (Contract A.5) ---------------------------------
     def consume(self, fact_owner: str = "", fact_key: str = "",
-                mechanism: str = "", status: str = "") -> Any:
+                mechanism: str = "", status: str = "",
+                expected_value: Any = MISSING) -> Any:
         """The value reached a fact/geometry decision.  PRESENT consumes are
         recorded under the SELECTED SPELLING (never a fictional canonical
         read); an ABSENT consume is an ``absent_default`` PREMISE with the same
@@ -957,7 +958,16 @@ class ConfigResolution:
         expected = ""
         if status and self.state == "present":
             from .receipts import value_status_hash
-            expected = value_status_hash(self.value, status)
+            # Most facts project the consumed scalar directly.  Composite
+            # facts (per-layer schedules, geometry records) instead project a
+            # source-derived value assembled from several exact operands.  The
+            # caller already owns that completed decision at consumption time;
+            # carrying it here keeps the expectation upstream while avoiding
+            # the impossible requirement that every operand equal the whole
+            # fact.  MISSING—not None—distinguishes the default scalar path.
+            projected_value = (
+                self.value if expected_value is MISSING else expected_value)
+            expected = value_status_hash(projected_value, status)
         emit(self.canonical,
              intent="consumed" if self.state == "present" else "absent_default",
              present=self.state == "present", alias=self.selected_alias,
@@ -973,7 +983,8 @@ class ConfigResolution:
 
     def consume_decision(self, *, mechanism: str, fact_owner: str,
                          fact_key: str, reader: str,
-                         status: "str | None" = None) -> "ConsumedConfigDecision":
+                         status: "str | None" = None,
+                         expected_value: Any = MISSING) -> "ConsumedConfigDecision":
         """U2-R2 (§5.2): consume, and return value AND origin bound together.
 
         Emits exactly the same single event ``consume()`` does (they share one
@@ -986,7 +997,8 @@ class ConfigResolution:
                 f"cannot consume ambiguous {self.canonical!r} for "
                 f"{self.component!r}: {self.reason}")
         self.consume(fact_owner=fact_owner, fact_key=fact_key,
-                     mechanism=mechanism, status=status or "")
+                     mechanism=mechanism, status=status or "",
+                     expected_value=expected_value)
         occurrence = None
         if self.state == "present" and self.selected_path is not None:
             occurrence = ConfigOccurrenceKey(

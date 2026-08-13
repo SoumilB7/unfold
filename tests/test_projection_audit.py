@@ -684,7 +684,8 @@ def test_final_negative_control_flux_qwen_image_author_no_top_level_vision():
     from model_unfolder.evidence.config_access import capture_events, owner_scope
 
     corpus = pathlib.Path(mu.__file__).parent.parent / "tests" / "sable_test_corpus"
-    for slug in ("flux-2-dev", "qwen-image"):
+    for slug, has_embedded_vision in (
+            ("flux-2-dev", True), ("qwen-image", True)):
         cfg = json.loads((corpus / f"{slug}.json").read_text())["config"]
         rows = {r["scope"]: r for r in _claim_rows_of(cfg)}
         # no top-level projector or encoder consumption is claimed
@@ -697,8 +698,10 @@ def test_final_negative_control_flux_qwen_image_author_no_top_level_vision():
                 mu.unfold(cfg).to_ir()
         vision_owners = {e.component for e in led.events if "vision" in e.component}
         assert "root.vision" not in vision_owners, (slug, vision_owners)
-        assert any(o.startswith("root.text_encoder") and o.endswith("vision")
-                   for o in vision_owners), (slug, vision_owners)
+        assert bool(any(
+            o.startswith("root.text_encoder") and o.endswith("vision")
+            for o in vision_owners)) is has_embedded_vision, (
+                slug, vision_owners)
 
 
 def test_final_positive_control_qwen2vl_encoder_and_projector():

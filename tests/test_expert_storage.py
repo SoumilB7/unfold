@@ -114,6 +114,33 @@ class ShardedCompute(nn.Module):
 """
 
 
+def _vectorized_expert_class(*, split=True, product=True, down=True):
+    split_line = (
+        "gate, up = gate_up.chunk(2, dim=-1)" if split else
+        "gate, up = gate_up, hidden"
+    )
+    product_expr = "up * torch.sigmoid(gate)" if product else "gate"
+    down_line = (
+        f"return torch.bmm({product_expr}, self.omega)" if down else
+        f"return {product_expr}"
+    )
+    return f"""
+class ShardedCompute(nn.Module):
+    def __init__(self, config):
+        self.count = config.num_experts
+        self.width = config.intermediate
+        self.hidden = config.hidden
+        self.fused = nn.Parameter(torch.zeros(
+            self.count, self.hidden, 2 * self.width))
+        self.omega = nn.Parameter(torch.empty(
+            self.count, self.width, self.hidden))
+    def forward(self, hidden, routes, weights):
+        gate_up = torch.bmm(hidden, self.fused)
+        {split_line}
+        {down_line}
+"""
+
+
 def _split_expert_with_dead_product():
     """A dead gate/up product must not certify a different down path."""
     return _split_expert_class().replace(
@@ -207,6 +234,29 @@ def test_fused_expert_requires_exact_stacked_two_lane_flow(tmp_path):
     assert result.value.activation is not None
     assert result.value.activation.kind is None
     assert result.value.activation.config_path == ("hidden_act",)
+
+
+def test_vectorized_fused_expert_proves_the_same_storage_without_a_loop(
+        tmp_path):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_vectorized_expert_class())
+    result = routed_expert_storage_at_block(index, root, block)
+    assert result.status == "resolved", result.failures
+    assert result.value.projection_mode == "fused_gate_up"
+    assert result.value.owner_symbol.qualified_name == "ShardedCompute"
+
+
+@pytest.mark.parametrize(("split", "product", "down"), [
+    (False, True, True),
+    (True, False, True),
+    (True, True, False),
+])
+def test_vectorized_parameter_stack_without_the_full_flow_abstains(
+        tmp_path, split, product, down):
+    index, root, block = _bundle(
+        tmp_path, expert_source=_vectorized_expert_class(
+            split=split, product=product, down=down))
+    assert routed_expert_storage_at_block(index, root, block).status == "failed"
 
 
 def test_unrelated_activation_cannot_launder_the_expert_gate(tmp_path):

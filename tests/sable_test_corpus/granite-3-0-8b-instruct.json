@@ -19,6 +19,7 @@
     "no_dotted_boundaries": true,
     "op_conformance": true,
     "projection_audit": true,
+    "qualified_projection_values": true,
     "receipt_fabrication": true,
     "structural_debt_register": true,
     "unique_ref_ids": true,
@@ -59,13 +60,19 @@
     "vocab_size": 49155
   },
   "hash_signature": [
+    "154318821bfdf4e94f21004e6cfdff94",
+    "b9d53f917b41a0bafc1fbe12bed67e26",
+    "d1d530f72fec8999b870279effde1a6b",
+    "f376dac6afe792efff0fa70af99d2a58"
+  ],
+  "model": "granite-3.0-8b-instruct",
+  "source": "local",
+  "superseded_hash_signature": [
     "039c81cea67150b83b26c4a99d4d5fec",
     "a92927fff08b606bc3e3c248855ce592",
     "b9d53f917b41a0bafc1fbe12bed67e26",
     "d1d530f72fec8999b870279effde1a6b"
   ],
-  "model": "granite-3.0-8b-instruct",
-  "source": "local",
   "visual_evidence": {
     "gallery_dir": "galleries/granite-3-0-8b-instruct",
     "manifest": true,
