@@ -124,11 +124,19 @@ def resolve_component_inventory(
         raise TypeError("component inventory requires a SourceBundle")
     root = resolve_component_root(index, bundle, "root")
     entries = [_root_entry(root)]
-    pipeline = set(bundle.pipeline_components or ())
+    pipeline = tuple(bundle.pipeline_components or ())
     keys = set((bundle.component_files or {}).keys()) \
         | set((bundle.component_architectures or {}).keys())
     keys.discard("root")
-    keys.difference_update(pipeline)
+    # Pipeline components are sibling models owned by U10.  Their recursively
+    # exposed descendants (``text_encoder.vision_config``) remain inside that
+    # sibling too; treating them as U9 root children would falsely label them
+    # declared-unused merely because the root denoiser never constructs them.
+    keys = {
+        key for key in keys
+        if not any(key == slot or key.startswith(f"{slot}.")
+                   for slot in pipeline)
+    }
     for component_key in sorted(keys):
         path = tuple(component_key.split("."))
         architecture = (bundle.component_architectures or {}).get(component_key)

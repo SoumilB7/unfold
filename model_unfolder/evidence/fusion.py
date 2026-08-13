@@ -104,25 +104,25 @@ def fusion_result(
         return ReaderResult.failed(None, failures)
 
     candidates = []
+    reachable, unresolved_execution = _reachable_execution_callables(index, root)
     unsupported = []
-    for node in root.graph.walk():
-        forward = _forward(index, node.symbol)
-        if forward is None:
-            continue
-        evidence = _fusion_at_forward(index, node.symbol, forward)
+    for occurrence, owner, callable_symbol in reachable:
+        evidence = _fusion_at_forward(index, owner, callable_symbol)
         if evidence is not None:
-            callable_record = index.callable_by_symbol(forward)
+            callable_record = index.callable_by_symbol(callable_symbol)
             candidates.append((
-                node.occurrence, evidence,
+                occurrence, evidence,
                 callable_record.span if callable_record is not None else None))
-        unsupported.extend(index.unsupported_execution_in(forward))
+        unsupported.extend(index.unsupported_execution_in(callable_symbol))
 
     if not candidates:
-        if unsupported:
+        if unsupported or unresolved_execution:
+            span = (unsupported[0].span if unsupported
+                    else unresolved_execution[0])
             return ReaderResult.failed(root.occurrence, (ReaderFailure(
                 "unsupported_syntax",
-                "fusion may be hidden in unsupported execution regions",
-                unsupported[0].span),))
+                "fusion may be hidden in an unsupported/unresolved execution path",
+                span),))
         return ReaderResult.absent(root.occurrence)
     signatures = {_signature(evidence) for _, evidence, _ in candidates}
     if len(signatures) != 1:
@@ -212,6 +212,63 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
     return None
 
 
+def _reachable_execution_callables(index, root):
+    """Exact positive execution closure over owner calls + self-method folds.
+
+    Construction alone is not reachability.  We begin at the D0 root's forward,
+    follow an invoked ``self.<field>`` only when it maps to one exact child
+    occurrence, and fold only indexed self-method calls on the same owner.  A
+    rival/unresolved invoked child is retained as unresolved execution evidence;
+    an uncalled constructed child is never inspected for fusion.
+    """
+    graph = root.graph
+    owner_queue = [root.occurrence]
+    seen_owners = set()
+    out = []
+    unresolved = []
+    while owner_queue:
+        occurrence = owner_queue.pop(0)
+        if occurrence in seen_owners:
+            continue
+        seen_owners.add(occurrence)
+        node = graph.node_for(occurrence)
+        if node is None:
+            continue
+        entry = _forward(index, node.symbol)
+        if entry is None:
+            continue
+        callable_queue = [entry]
+        seen_callables = set()
+        while callable_queue:
+            callable_symbol = callable_queue.pop(0)
+            if callable_symbol in seen_callables:
+                continue
+            seen_callables.add(callable_symbol)
+            record = index.callable_by_symbol(callable_symbol)
+            if record is None or record.owner != node.symbol:
+                continue
+            out.append((occurrence, node.symbol, callable_symbol))
+            for method in record.self_method_calls:
+                folded = SymbolId(
+                    node.symbol.source, f"{node.symbol.qualified_name}.{method}")
+                if index.callable_by_symbol(folded) is not None:
+                    callable_queue.append(folded)
+            for call in index.calls_in(callable_symbol):
+                field = _self_field(call.callee)
+                if field is None:
+                    continue
+                children = tuple(child for child in node.children
+                                 if child.via_field == field)
+                blocked = tuple(item for item in node.unresolved
+                                if item.field == field)
+                if len(children) == 1 and not blocked:
+                    owner_queue.append(children[0].occurrence)
+                elif len(children) != 0 or blocked:
+                    if call.span is not None:
+                        unresolved.append(call.span)
+    return tuple(out), tuple(dict.fromkeys(unresolved))
+
+
 def _forward(index, owner):
     symbol = SymbolId(owner.source, f"{owner.qualified_name}.forward")
     return symbol if index.callable_by_symbol(symbol) is not None else None
@@ -228,6 +285,14 @@ def _call_leaf(expression):
     if expression.kind == "attribute":
         return expression.name
     return ""
+
+
+def _self_field(expression):
+    if expression.kind != "attribute" or len(expression.children) != 1:
+        return None
+    base = expression.children[0]
+    return (expression.name
+            if base.kind == "name" and base.name == "self" else None)
 
 
 def _keyword_route(index, forward, keyword):

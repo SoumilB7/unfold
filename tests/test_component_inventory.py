@@ -118,6 +118,18 @@ def test_pipeline_slot_is_not_relabelled_as_nested_component(tmp_path):
     assert inventory.entry("text_encoder") is None
 
 
+def test_pipeline_slot_descendant_is_not_relabelled_as_root_child(tmp_path):
+    bundle, _ = _bundle(tmp_path, """
+        class Tower: pass
+        class Wrapper: pass
+    """, components=("text_encoder.vision_config",))
+    bundle = SourceBundle(
+        **{**bundle.__dict__, "pipeline_components": ("text_encoder",)})
+    inventory = resolve_component_inventory(
+        ParseContext(bundle).program_index(), bundle)
+    assert inventory.entry("text_encoder.vision_config") is None
+
+
 def test_two_sibling_paths_do_not_launder_ownership(tmp_path):
     bundle, index = _bundle(tmp_path, """
         class Tower:

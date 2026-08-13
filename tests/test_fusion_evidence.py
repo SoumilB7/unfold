@@ -136,8 +136,9 @@ def test_non_equivalent_exact_owner_routes_are_ambiguous(tmp_path):
         "    def __init__(self):\n"
         "        self.prefix = Prefix()\n"
         "        self.scatter = Scatter()\n"
-        "    def forward(self, x):\n"
-        "        return x\n",
+        "    def forward(self, x, image_features, mask):\n"
+        "        a = self.prefix(x, image_features)\n"
+        "        return self.scatter(a, image_features, mask)\n",
         encoding="utf-8",
     )
     bundle = SourceBundle(source="test", files=(str(source),), architecture="Root")
@@ -145,6 +146,27 @@ def test_non_equivalent_exact_owner_routes_are_ambiguous(tmp_path):
     result = fusion_result_for_context(context)
     assert result.status == "ambiguous"
     assert len(result.ambiguity.sites) == 2
+
+
+def test_constructed_but_uninvoked_fusion_child_is_not_architecture(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "class Unused:\n"
+        "    def forward(self, inputs_embeds, image_features):\n"
+        "        return torch.cat([image_features, inputs_embeds], dim=1)\n"
+        "class Root:\n"
+        "    def __init__(self):\n"
+        "        self.unused = Unused()\n"
+        "    def forward(self, x):\n"
+        "        return x\n",
+        encoding="utf-8",
+    )
+    bundle = SourceBundle(source="test", files=(str(source),), architecture="Root")
+    context = ParseContext(bundle)
+    result = fusion_result_for_context(context)
+    assert result.status == "absent"
+    assert fusion_evidence({}, parse_context=context).status == "ambiguous"
 
 
 def test_multi_input_wrapper_keeps_only_configured_modality_routes():
