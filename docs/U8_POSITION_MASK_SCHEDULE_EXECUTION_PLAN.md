@@ -1303,3 +1303,18 @@ guarded path.  The canonical expected manifest and the legacy shadow baseline
 were then rebuilt independently from the reviewed corpus; both contain exactly
 29 witnesses.  The final committed-tree verification receipt is still required
 before U8 may be called complete or pushed.
+
+### U8-G22 — FINAL COMMITTED-TREE RECEIPT
+
+U8 closed on commit `fd20ac4e66260a1c7fcfd8a7d6a8885fb8b6c7c2`.
+The detached-worktree coordinator reported: static clean across 151 changed
+Python files; 3,197 tests collected; focused 245 passed; U2 authority 44
+passed; preservation 52 passed with zero drift; full suite 3,085 passed, 14
+skipped and 2 expected xfailed with zero failures.  Every lane's complete-tree
+fingerprint was identical before and after.  The clean-checkout gallery poison
+also proved every newly occurrence-named reviewed PNG is committed rather than
+available only through a local ignored artifact.
+
+This receipt completes U8's source-evidence migration and reviewed artifact
+transition.  It does not complete later U9 coordinate/modality ownership debt
+or authorize family/config-driven architectural fallbacks.

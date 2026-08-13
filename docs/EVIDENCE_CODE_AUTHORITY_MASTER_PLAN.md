@@ -2941,6 +2941,11 @@ position/mask/mixer honesty transition.  Re-blessing was performed only through
 mechanically-passing, oracle-present Sable reports explicitly marked `CLEAN`,
 followed by deterministic regeneration of both preservation layers.  This
 ruling is scoped to U8 and does not weaken the zero-drift rule for later units.
+The closing committed-tree receipt at `fd20ac4` is green: 3,197 collected;
+3,085 passed, 14 skipped, 2 expected xfailed; preservation 52/zero drift;
+focused 245; U2 authority 44; static clean; every isolated lane fingerprint
+identical.  U8 is `DONE` under this receipt, while its explicitly assigned U9
+coordinate/modality debt remains open.
 
 ### 22.10 Mandatory adversarial probes
 

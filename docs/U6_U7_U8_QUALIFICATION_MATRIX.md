@@ -365,3 +365,10 @@ shadow preservation artifacts were regenerated at the same 29-witness
 boundary.  This is an approved qualification transition, not permission to
 normalize future drift.  U8 remains under final committed-tree verification
 until the closing receipt is recorded.
+
+Closing receipt: `fd20ac4` passed static (151 changed Python files), focused
+245, U2 authority 44, preservation 52/zero drift and the full 3,197-test
+collection (`3,085 passed, 14 skipped, 2 expected xfailed, 0 failed`).  All
+detached-worktree fingerprints were identical.  U8 is therefore `DONE`; the
+explicit Qwen3.5 multimodal-coordinate rows remain later-unit debt rather than
+being laundered into U8.
