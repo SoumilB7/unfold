@@ -138,7 +138,51 @@ def test_exact_loop_append_value_path_is_a_symbolic_operation_template(tmp_path)
     """)
     assert result.status == "resolved"
     assert [op.kind for op in result.value.operations] == [
-        "reshape", "reshape", "linear"]
+        "reshape", "reshape", "concatenate", "linear"]
+
+
+def test_exact_frontend_primitives_are_code_classified(tmp_path):
+    result = _chain(tmp_path, """
+        from torch.nn import Conv2d, AvgPool2d, PixelShuffle, Sequential
+        class Root:
+            def __init__(self):
+                self.path = Sequential(
+                    Conv2d(3, 8, 4), AvgPool2d(2), PixelShuffle(2))
+            def forward(self, x):
+                return self.path(x)
+    """)
+    assert result.status == "resolved", result.failures
+    assert [op.kind for op in result.value.operations] == [
+        "conv2d", "pooling", "pixel_shuffle"]
+
+
+def test_exact_functional_reduction_and_concat_are_not_config_inferences(
+        tmp_path):
+    result = _chain(tmp_path, """
+        import torch
+        import torch.nn.functional as F
+        class Root:
+            def forward(self, x, y):
+                x = F.avg_pool2d(x, 2)
+                return torch.cat((x, y), dim=1)
+    """)
+    assert result.status == "resolved", result.failures
+    assert [op.kind for op in result.value.operations] == [
+        "pooling", "concatenate"]
+
+
+def test_frontend_primitive_spelling_without_framework_binding_proves_nothing(
+        tmp_path):
+    result = _chain(tmp_path, """
+        class Conv2d:
+            def __init__(self, *args): pass
+            def forward(self, x): return x
+        class Root:
+            def __init__(self): self.path = Conv2d(3, 8, 4)
+            def forward(self, x): return self.path(x)
+    """)
+    assert result.status != "resolved"
+    assert result.value is None
 
 
 def test_unknown_accumulator_mutation_keeps_chain_incomplete(tmp_path):

@@ -70,6 +70,48 @@ _ACCUMULATOR_MUTATIONS = frozenset({
     "append", "extend", "insert", "add", "update",
 })
 
+_CONSTRUCTION_OPERATIONS = {
+    "torch.nn.Conv1d": ("conv1d", "1D convolution"),
+    "torch.nn.Conv2d": ("conv2d", "2D convolution"),
+    "torch.nn.Conv3d": ("conv3d", "3D convolution"),
+    "torch.nn.AvgPool1d": ("pooling", "Average pooling"),
+    "torch.nn.AvgPool2d": ("pooling", "Average pooling"),
+    "torch.nn.AvgPool3d": ("pooling", "Average pooling"),
+    "torch.nn.AdaptiveAvgPool1d": ("pooling", "Adaptive average pooling"),
+    "torch.nn.AdaptiveAvgPool2d": ("pooling", "Adaptive average pooling"),
+    "torch.nn.AdaptiveAvgPool3d": ("pooling", "Adaptive average pooling"),
+    "torch.nn.PixelShuffle": ("pixel_shuffle", "Pixel shuffle"),
+    "torch.nn.PixelUnshuffle": ("pixel_unshuffle", "Pixel unshuffle"),
+    "torch.nn.Embedding": ("embedding", "Embedding lookup"),
+}
+
+_FUNCTION_OPERATIONS = {
+    "torch.cat": ("concatenate", "Concatenate tensors"),
+    "torch.concat": ("concatenate", "Concatenate tensors"),
+    "torch.concatenate": ("concatenate", "Concatenate tensors"),
+    "torch.stack": ("stack", "Stack tensors"),
+    "torch.split": ("split", "Split tensor"),
+    "torch.chunk": ("split", "Chunk tensor"),
+    "torch.nn.functional.avg_pool1d": ("pooling", "Average pooling"),
+    "torch.nn.functional.avg_pool2d": ("pooling", "Average pooling"),
+    "torch.nn.functional.avg_pool3d": ("pooling", "Average pooling"),
+    "torch.nn.functional.adaptive_avg_pool1d": (
+        "pooling", "Adaptive average pooling"),
+    "torch.nn.functional.adaptive_avg_pool2d": (
+        "pooling", "Adaptive average pooling"),
+    "torch.nn.functional.adaptive_avg_pool3d": (
+        "pooling", "Adaptive average pooling"),
+    "torch.nn.functional.pixel_shuffle": ("pixel_shuffle", "Pixel shuffle"),
+    "torch.nn.functional.pixel_unshuffle": (
+        "pixel_unshuffle", "Pixel unshuffle"),
+    "torch.nn.functional.interpolate": ("resize", "Resize tensor"),
+}
+
+_METHOD_OPERATIONS = {
+    "split": ("split", "Split tensor"),
+    "chunk": ("split", "Chunk tensor"),
+}
+
 
 @dataclass(frozen=True)
 class ProjectorOperationChain:
@@ -323,6 +365,13 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
                 "activation", activation.upper() if activation != "gelu" else "GELU",
                 _construction_label(selected), owner_symbol.source.canonical_path,
                 call.span.line, fn=activation),), (call.span,), None)
+        operation = _construction_operation(selected)
+        if operation is not None:
+            kind, label = operation
+            return ((SourceOp(
+                kind, label, _construction_label(selected),
+                owner_symbol.source.canonical_path, call.span.line),),
+                (call.span,), None)
         if selected.kind == "internal":
             child_occurrence = selected.internal_occurrence
             if child_occurrence in seen_owners:
@@ -345,10 +394,22 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
             "activation", fn.upper() if fn != "gelu" else "GELU",
             owner_symbol.qualified_name, owner_symbol.source.canonical_path,
             call.span.line, fn=fn),), (call.span,), None)
+    if proof is not None and proof.qualified_target in _FUNCTION_OPERATIONS:
+        kind, label = _FUNCTION_OPERATIONS[proof.qualified_target]
+        return ((SourceOp(
+            kind, label, owner_symbol.qualified_name,
+            owner_symbol.source.canonical_path, call.span.line),),
+            (call.span,), None)
     leaf = _call_leaf(call.callee)
     if leaf in _SHAPE_METHODS and call.receiver is not None:
         return ((SourceOp(
             "reshape", _SHAPE_METHODS[leaf], owner_symbol.qualified_name,
+            owner_symbol.source.canonical_path, call.span.line),),
+            (call.span,), None)
+    if leaf in _METHOD_OPERATIONS and call.receiver is not None:
+        kind, label = _METHOD_OPERATIONS[leaf]
+        return ((SourceOp(
+            kind, label, owner_symbol.qualified_name,
             owner_symbol.source.canonical_path, call.span.line),),
             (call.span,), None)
     return None
@@ -467,6 +528,15 @@ def _sequential_operations(index, container):
                 site.owner.source.canonical_path, site.span.line if site.span else None))
             spans.append(site.span)
             continue
+        construction = _site_construction_operation(index, site)
+        if construction is not None:
+            kind, label = construction
+            ops.append(SourceOp(
+                kind, label, _site_label(site),
+                site.owner.source.canonical_path,
+                site.span.line if site.span else None))
+            spans.append(site.span)
+            continue
         activation = _activation_site(index, site)
         if activation is not None:
             ops.append(SourceOp(
@@ -477,6 +547,23 @@ def _sequential_operations(index, container):
             continue
         failures.append("a Sequential element has no registered primitive protocol")
     return tuple(ops), tuple(spans), tuple(failures)
+
+
+def _construction_operation(selected):
+    if selected.kind != "external":
+        return None
+    return _CONSTRUCTION_OPERATIONS.get(
+        selected.external_reference.qualified_target)
+
+
+def _site_construction_operation(index, site):
+    if len(site.candidates) != 1 or site.candidates[0].symbol is not None:
+        return None
+    proof = resolve_import_reference(
+        index, site.owner.source, site.enclosing_callable,
+        site.candidates[0].reference)
+    return (_CONSTRUCTION_OPERATIONS.get(proof.qualified_target)
+            if proof is not None else None)
 
 
 def _activation_registry_field(index, owner, field):
