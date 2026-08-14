@@ -130,6 +130,28 @@ def test_exact_transformed_output_lineage_resolves_the_repeated_stage(tmp_path):
         "proven_def_use", "transformed_candidate"}
 
 
+def test_straight_line_returned_local_resolves_its_latest_exact_call(tmp_path):
+    _index, root, result = _read(tmp_path, """
+        hidden = self.prep(x)
+        hidden = self.stage(hidden)
+        return hidden
+    """)
+    assert result.status == "resolved", result.failures
+    assert root.graph.node_for(
+        result.value.stage_occurrence).symbol.qualified_name == "Stage"
+
+
+def test_guarded_returned_local_is_not_source_ordered_into_one_call(tmp_path):
+    _index, _root, result = _read(tmp_path, """
+        if x:
+            hidden = self.stage(x)
+        else:
+            hidden = self.post(x)
+        return hidden
+    """)
+    assert result.status in {"failed", "ambiguous"}
+
+
 def test_class_field_and_local_renaming_do_not_change_the_address_proof(
         tmp_path):
     _index, root, result = _read(
@@ -231,13 +253,13 @@ def test_unresolved_self_child_on_the_output_path_blocks_selection(tmp_path):
     assert "unresolved self-child" in result.failures[0].detail
 
 
-def test_returning_a_bare_name_is_not_upgraded_to_a_structured_sink(tmp_path):
+def test_returning_one_exact_straight_line_local_keeps_the_call_sink(tmp_path):
     _index, _root, result = _read(tmp_path, """
         hidden = self.stage(x)
         return hidden
     """)
-    assert result.status == "failed"
-    assert "returned expression" in result.failures[0].detail
+    assert result.status == "resolved", result.failures
+    assert result.value.lineage == ()
 
 
 def test_unique_output_child_allows_an_exact_nested_stage_descent(tmp_path):

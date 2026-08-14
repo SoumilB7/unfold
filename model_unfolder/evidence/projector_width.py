@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from .component_owner import OwnerGraph
 from .construction_calls import resolve_import_reference
+from .framework_config import framework_factory_config_binding_in_graph
 from .program_index import ConstructionSite, ExprNode, ProgramIndex, SymbolId
 from .projector_lineage import ProjectorProducerCandidate
 
@@ -84,7 +85,7 @@ def _affine_sites(index, graph, candidate):
     for span in wanted:
         matches = []
         for node in descendants:
-            for site in index.construction_sites_of(node.symbol):
+            for site in _owner_construction_sites(index, node.symbol):
                 if site.span == span and _linear_operands(index, site) is not None:
                     matches.append((node, site))
             forward = SymbolId(
@@ -95,7 +96,8 @@ def _affine_sites(index, graph, candidate):
                 field = _self_field(call.callee)
                 if field is None:
                     continue
-                sites = tuple(site for site in index.construction_sites_of(node.symbol)
+                sites = tuple(site for site in _owner_construction_sites(
+                              index, node.symbol)
                               if site.target == field and site.target_kind == "field")
                 if len(sites) == 1 and _linear_operands(index, sites[0]) is not None:
                     matches.append((node, sites[0]))
@@ -145,15 +147,43 @@ def _constructor_env(index, graph, occurrence, visiting):
     if occurrence in visiting:
         return {}
     node = graph.node_for(occurrence)
-    if node is None or not occurrence.sites:
+    if node is None:
         return {}
+    # OwnerGraph already proves exact constructor-parameter config flows.  A
+    # component graph may intentionally start at the constructed child, so its
+    # parent construction site is outside this graph while these bindings
+    # remain authoritative.  Seed from them before optionally replaying the
+    # in-graph parent call; otherwise component-root affine wrappers (for
+    # example a vision merger) lose their scalar width paths.
+    env = {
+        binding.parameter: WidthOperand(
+            "config_bound", path=binding.resolved_prefix)
+        for binding in node.config_bindings
+        if binding.resolved_prefix
+    }
+    # An inherited ``PreTrainedModel._from_config`` is intentionally opaque in
+    # the neutral owner graph: it retains ``@factory_input`` instead of
+    # pretending to know the external method's forwarding contract.  Promote
+    # that address only through the closed framework protocol, then expose the
+    # exact constructor formal to the ordinary operand resolver.
+    if any(binding.parameter == "@factory_input"
+           for binding in node.config_bindings):
+        factory = framework_factory_config_binding_in_graph(
+            index, graph, occurrence)
+        if factory.status == "resolved":
+            binding = factory.value.constructor_binding
+            if binding.resolved_prefix is not None:
+                env[binding.parameter] = WidthOperand(
+                    "config_bound", path=binding.resolved_prefix)
+    if not occurrence.sites:
+        return env
     parent = _parent_node(graph, occurrence)
     if parent is None or node.via_site is None:
-        return {}
-    sites = tuple(site for site in index.construction_sites_of(parent.symbol)
+        return env
+    sites = tuple(site for site in _owner_construction_sites(index, parent.symbol)
                   if site.site_id == node.via_site)
     if len(sites) != 1:
-        return {}
+        return env
     site = sites[0]
     init = index.callable_by_symbol(SymbolId(
         node.symbol.source, f"{node.symbol.qualified_name}.__init__"))
@@ -165,15 +195,18 @@ def _constructor_env(index, graph, occurrence, visiting):
                    if item.name != "self" and item.kind not in {"vararg", "kwarg"})
     positional = tuple(item for item in params
                        if item.kind in {"positional", "posonly"})
-    env = {}
     for param, expression in zip(positional, site.args):
-        env[param.name] = _resolve_operand(
+        resolved = _resolve_operand(
             index, parent, site, expression, parent_env, set())
+        if resolved.source != "unavailable" or param.name not in env:
+            env[param.name] = resolved
     by_name = {item.name: item for item in params}
     for name, expression in site.kwargs:
         if name in by_name:
-            env[name] = _resolve_operand(
+            resolved = _resolve_operand(
                 index, parent, site, expression, parent_env, set())
+            if resolved.source != "unavailable" or name not in env:
+                env[name] = resolved
     for param in params:
         if param.name not in env and param.has_default:
             env[param.name] = _resolve_operand(
@@ -190,7 +223,7 @@ def _resolve_operand(index, node, site, expression, env, visiting):
     if expression.kind == "constant" and isinstance(expression.const_value, int) \
             and not isinstance(expression.const_value, bool):
         return WidthOperand("code_bound", value=expression.const_value)
-    path = _config_path(node, expression)
+    path = _config_path(node, expression, env)
     if path is not None:
         return WidthOperand("config_bound", path=path)
     if expression.kind == "name" and expression.name:
@@ -238,7 +271,7 @@ def _resolve_operand(index, node, site, expression, env, visiting):
     return WidthOperand("unavailable")
 
 
-def _config_path(node, expression):
+def _config_path(node, expression, env):
     segments = []
     current = expression
     while current.kind == "attribute" and len(current.children) == 1:
@@ -248,6 +281,14 @@ def _config_path(node, expression):
     if not segments:
         # The config object itself is not a scalar width operand.
         return None
+    # Constructor forwarding can rename the config formal.  The environment
+    # holds the exact address proven at that call edge; append only the source
+    # attribute chain actually consumed by this operand.
+    inherited = env.get(current.name)
+    if isinstance(inherited, WidthOperand) \
+            and inherited.source == "config_bound":
+        segments.reverse()
+        return (*inherited.path, *segments)
     bindings = tuple(item for item in node.config_bindings
                      if item.parameter == current.name)
     if len(bindings) != 1:
@@ -275,6 +316,29 @@ def _literal_arithmetic(operator, values):
 def _parent_node(graph, occurrence):
     return next((node for node in graph.walk()
                  if any(child.occurrence == occurrence for child in node.children)), None)
+
+
+def _owner_construction_sites(index, owner):
+    """All exact constructions owned by one class, including container items.
+
+    Container element constructions deliberately live on the authoritative
+    ``ContainerElementsRecord`` rather than being duplicated into the flat
+    site census.  Width binding must join both structural author surfaces or a
+    Sequential/ModuleList projector loses the constructor operands that the
+    operation reader has already proven.
+    """
+    sites = list(index.construction_sites_of(owner))
+    sites.extend(
+        site for record in index.containers
+        if record.owner == owner for site in record.elements)
+    out = []
+    seen = set()
+    for site in sites:
+        if site.site_id in seen:
+            continue
+        seen.add(site.site_id)
+        out.append(site)
+    return tuple(out)
 
 
 def _occurrence_prefix(prefix, value):

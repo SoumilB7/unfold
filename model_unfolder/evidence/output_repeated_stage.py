@@ -117,15 +117,17 @@ class OutputChildStage:
             raise ValueError("the exact owner invokes the exact output child")
         if not isinstance(self.return_sink, InvocationNodeId):
             raise TypeError("output-child evidence names the exact return call")
-        if not self.lineage or any(
-                not isinstance(item, OutputLineageRelation)
-                for item in self.lineage):
+        if any(not isinstance(item, OutputLineageRelation)
+               for item in self.lineage):
             raise TypeError("output-child evidence carries a typed lineage")
         start = InvocationNodeId(self.invocation.call_site, "addressed")
-        if self.lineage[0].source != start \
-                or self.lineage[-1].target != self.return_sink \
-                or any(left.target != right.source
-                       for left, right in zip(self.lineage, self.lineage[1:])):
+        if ((not self.lineage and start != self.return_sink)
+                or (self.lineage and (
+                    self.lineage[0].source != start
+                    or self.lineage[-1].target != self.return_sink
+                    or any(left.target != right.source
+                           for left, right in zip(
+                               self.lineage, self.lineage[1:]))))):
             raise ValueError("the lineage is one contiguous child-to-return path")
         required = {
             self.invocation.call.span,
@@ -164,16 +166,18 @@ class OutputRepeatedStage:
             raise ValueError("the output stage positively carries repetition")
         if not isinstance(self.return_sink, InvocationNodeId):
             raise TypeError("output-stage evidence names the exact return call")
-        if not self.lineage or any(
-                not isinstance(item, OutputLineageRelation)
-                for item in self.lineage):
+        if any(not isinstance(item, OutputLineageRelation)
+               for item in self.lineage):
             raise TypeError("output-stage evidence carries a typed lineage")
         start = InvocationNodeId(
             self.invocation.call_site, "addressed")
-        if self.lineage[0].source != start \
-                or self.lineage[-1].target != self.return_sink \
-                or any(left.target != right.source
-                       for left, right in zip(self.lineage, self.lineage[1:])):
+        if ((not self.lineage and start != self.return_sink)
+                or (self.lineage and (
+                    self.lineage[0].source != start
+                    or self.lineage[-1].target != self.return_sink
+                    or any(left.target != right.source
+                           for left, right in zip(
+                               self.lineage, self.lineage[1:]))))):
             raise ValueError("the lineage is one contiguous stage-to-return path")
         required = {
             self.invocation.call.span,
@@ -305,7 +309,9 @@ def _output_child_candidates(
     if len(returns) != 1 or returns[0].guard or returns[0].value is None:
         spans = tuple(item.span for item in returns)
         return ReaderResult.ambiguous(owner, Ambiguity(sites=spans))
-    sink = _return_sink(flow, returns[0].value)
+    returned_call, return_binding_spans = _returned_call_expression(
+        index, flow.callable_symbol, returns[0].value, returns[0].span)
+    sink = _return_sink(flow, returned_call)
     if sink is None:
         return ReaderResult.failed(owner, (ReaderFailure(
             "incomplete_graph",
@@ -316,11 +322,12 @@ def _output_child_candidates(
     for invocation in invocations.addressed:
         start = InvocationNodeId(invocation.call_site, "addressed")
         path = _one_path(start, sink, relations)
-        if not path:
+        if path is None:
             continue
         spans = tuple(dict.fromkeys(
             span for span in (
                 *invocation.provenance_spans,
+                *return_binding_spans,
                 *(item for relation in path for item in relation.spans),
             ) if isinstance(span, SourceSpan)))
         paths.append(OutputChildStage(
@@ -346,6 +353,7 @@ def _output_child_candidates(
             "an unresolved self-child invocation also reaches the returned call"),))
     spans = tuple(dict.fromkeys((
         returns[0].span,
+        *return_binding_spans,
         *(span for item in paths for span in item.spans),
     )))
     return ReaderResult.resolved(
@@ -356,13 +364,71 @@ def _output_child_candidates(
 
 
 def _return_sink(flow, returned: ExprNode):
-    if returned.kind != "call" or returned.span is None:
+    if returned is None or returned.kind != "call" or returned.span is None:
         return None
     matches = tuple(
         node for node in flow.nodes
         if node.call_site.enclosing_callable == flow.callable_symbol
         and node.call_site.span == returned.span)
     return matches[0] if len(matches) == 1 else None
+
+
+def _returned_call_expression(index, callable_symbol, expression, cutoff,
+                              seen=frozenset()):
+    """Resolve one straight-line returned local to its exact call value.
+
+    A return often names the final reassigned accumulator rather than spelling
+    the call inline.  Sequential reassignments have exact Python semantics, so
+    the latest unguarded definition before the return is authoritative.  Any
+    guarded rival that could reach the return blocks this narrow proof; it is
+    never source-ordered away.
+    """
+    if expression is None:
+        return None, ()
+    if expression.kind == "call":
+        return expression, ()
+    if expression.kind != "name" or not expression.name \
+            or expression.name in seen or cutoff is None:
+        return None, ()
+    matches = tuple(
+        binding for binding in index.bindings_in(callable_symbol)
+        if binding.span is not None and _span_before(binding.span, cutoff)
+        and any(_simple_target_name(target) == expression.name
+                for target in binding.targets))
+    if not matches:
+        return None, ()
+    latest = max(matches, key=lambda item: _span_key(item.span))
+    # A guarded assignment is not the unique reaching definition.  Likewise,
+    # a rival guard at the same/later program point cannot be discarded merely
+    # because another textual assignment appears last.
+    if latest.guard or any(
+            item.guard and _span_key(item.span) >= _span_key(latest.span)
+            for item in matches):
+        return None, ()
+    resolved, spans = _returned_call_expression(
+        index, callable_symbol, latest.value, latest.span,
+        seen | {expression.name})
+    return resolved, ((latest.span, *spans) if resolved is not None else ())
+
+
+def _simple_target_name(expression):
+    return (expression.name if isinstance(expression, ExprNode)
+            and expression.kind == "name" else None)
+
+
+def _span_before(left, right):
+    if left is None or right is None or left.source != right.source:
+        return False
+    return (left.end_line or left.line, left.end_col or left.col) <= \
+        (right.line, right.col)
+
+
+def _span_key(span):
+    return (
+        span.line, span.col,
+        span.end_line or span.line,
+        span.end_col or span.col,
+    )
 
 
 def _lineage_relations(flow):

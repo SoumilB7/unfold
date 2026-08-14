@@ -22,6 +22,7 @@ from .component_owner import (
     ConfigOverride,
     ComponentRootResolution,
     ConstructedComponentRoot,
+    OwnerGraph,
     OwnerNode,
     OwnerOccurrenceId,
     require_resolved_component_root,
@@ -174,6 +175,64 @@ class FrameworkConfigChildRelay:
         if None in required or not required <= set(self.spans) \
                 or any(not isinstance(span, SourceSpan) for span in self.spans):
             raise ValueError("framework child relay retains every address edge")
+
+
+@dataclass(frozen=True)
+class FrameworkFactoryConfigBinding:
+    """Exact ``PreTrainedModel._from_config`` actual -> constructor binding.
+
+    ProgramIndex observes the inherited factory call but correctly refuses to
+    invent how an unindexed framework method forwards its argument.  This
+    closed protocol supplies only that address edge after proving the selected
+    child inherits the exact Transformers ``PreTrainedModel`` protocol.
+    """
+
+    owner_occurrence: OwnerOccurrenceId
+    owner_symbol: SymbolId
+    factory_site: ConstructionSite
+    factory_input: ConfigBinding
+    constructor_binding: ConfigBinding
+    external_base: ExternalReferenceProof
+    inheritance_symbols: tuple[SymbolId, ...]
+    spans: tuple[SourceSpan, ...]
+
+    def __post_init__(self):
+        if not isinstance(self.owner_occurrence, OwnerOccurrenceId) \
+                or not isinstance(self.owner_symbol, SymbolId):
+            raise TypeError("framework factory evidence is owner-qualified")
+        if not isinstance(self.factory_site, ConstructionSite) \
+                or self.factory_site.via != "factory:_from_config" \
+                or self.factory_site.site_id \
+                != self.owner_occurrence.sites[-1]:
+            raise ValueError("framework factory evidence carries its exact site")
+        if not isinstance(self.factory_input, ConfigBinding) \
+                or self.factory_input.parameter != "@factory_input" \
+                or self.factory_input.resolved_prefix is None:
+            raise ValueError("the inherited factory has one exact input address")
+        if not isinstance(self.constructor_binding, ConfigBinding) \
+                or self.constructor_binding.prefixes \
+                != self.factory_input.prefixes \
+                or self.constructor_binding.invalidated_paths \
+                != self.factory_input.invalidated_paths \
+                or self.constructor_binding.normalized_overrides \
+                != self.factory_input.normalized_overrides \
+                or self.constructor_binding.origin \
+                != "framework_factory_forwarding":
+            raise ValueError("the constructor binding exactly preserves factory input")
+        if not isinstance(self.external_base, ExternalReferenceProof) \
+                or self.external_base.qualified_target not in _PROTOCOL_BY_TARGET:
+            raise ValueError("the inherited factory belongs to a closed framework base")
+        if not self.inheritance_symbols \
+                or self.inheritance_symbols[0] != self.owner_symbol:
+            raise ValueError("the inheritance proof starts at the exact child")
+        required = {
+            self.factory_site.span,
+            self.external_base.reference.span,
+            self.external_base.binding.span,
+        }
+        if None in required or not required <= set(self.spans) \
+                or any(not isinstance(span, SourceSpan) for span in self.spans):
+            raise ValueError("framework factory provenance retains every edge")
 
 
 @dataclass(frozen=True)
@@ -447,6 +506,106 @@ def framework_config_child_relay(
         provenance=(ReaderProvenance(
             "source", spans=spans,
             detail="exact framework-stored config relayed into child"),))
+
+
+def framework_factory_config_binding(
+    index: ProgramIndex,
+    root_resolution: ComponentRootResolution | ConstructedComponentRoot,
+    owner_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[FrameworkFactoryConfigBinding]:
+    """Prove inherited ``PreTrainedModel._from_config`` forwards its input.
+
+    This is deliberately narrower than accepting any method named
+    ``_from_config``: the exact construction site, child symbol, one-parameter
+    constructor, single-base inheritance trace, and imported framework base
+    must all close.
+    """
+    if not isinstance(index, ProgramIndex):
+        raise TypeError("framework factory evidence requires a ProgramIndex")
+    root = require_resolved_component_root(
+        root_resolution, caller="framework_factory_config_binding")
+    return framework_factory_config_binding_in_graph(
+        index, root.graph, owner_occurrence)
+
+
+def framework_factory_config_binding_in_graph(
+    index: ProgramIndex,
+    graph: OwnerGraph,
+    owner_occurrence: OwnerOccurrenceId,
+) -> ReaderResult[FrameworkFactoryConfigBinding]:
+    """Prove the same closed factory edge inside an authoritative graph.
+
+    Some mechanism readers already carry the exact graph selected by a
+    stronger producer-lineage proof rather than a component-root DTO.  This
+    entry point accepts only that graph plus an occurrence which round-trips
+    through it; it does not select a root or widen the framework protocol.
+    """
+    if not isinstance(index, ProgramIndex) or not isinstance(graph, OwnerGraph):
+        raise TypeError(
+            "framework factory graph evidence requires ProgramIndex + OwnerGraph")
+    if not isinstance(owner_occurrence, OwnerOccurrenceId) \
+            or not owner_occurrence.sites:
+        raise TypeError("framework factory evidence requires a child occurrence")
+    node = graph.node_for(owner_occurrence)
+    if node is None or node.via_site is None \
+            or index.class_by_symbol(node.symbol) is None:
+        return _failed(owner_occurrence, "out_of_owner",
+                       "the factory child does not round-trip through graph/index")
+    parent_occurrence = OwnerOccurrenceId(
+        owner_occurrence.root, owner_occurrence.sites[:-1])
+    parent = graph.node_for(parent_occurrence)
+    if parent is None:
+        return _failed(owner_occurrence, "out_of_owner",
+                       "the factory child's exact parent is unavailable")
+    sites = tuple(
+        site for site in index.construction_sites_of(parent.symbol)
+        if site.site_id == node.via_site)
+    if len(sites) != 1 or sites[0].via != "factory:_from_config":
+        return _failed(owner_occurrence, "unsupported_syntax",
+                       "the child is not built by one exact _from_config site")
+    site = sites[0]
+    factory_inputs = tuple(
+        item for item in node.config_bindings
+        if item.parameter == "@factory_input"
+        and item.resolved_prefix is not None)
+    if len(factory_inputs) != 1:
+        return _failed(owner_occurrence, "incomplete_graph",
+                       "the inherited factory has no unique config input")
+    init = index.callable_by_symbol(SymbolId(
+        node.symbol.source, f"{node.symbol.qualified_name}.__init__"))
+    ordinary = tuple(
+        item for item in (init.params if init is not None else ())
+        if item.name != "self" and item.kind == "positional")
+    if len(ordinary) != 1:
+        return _failed(owner_occurrence, "unsupported_syntax",
+                       "the factory child constructor has no unique config formal")
+
+    inherited = _single_base_protocol(index, node.symbol)
+    if isinstance(inherited, ReaderFailure):
+        return ReaderResult.failed(owner_occurrence, (inherited,))
+    external, symbols, inheritance_spans = inherited
+    if external.qualified_target not in _PROTOCOL_BY_TARGET:
+        return _failed(owner_occurrence, "external_unavailable",
+                       "the exact external base has no _from_config protocol")
+    factory_input = factory_inputs[0]
+    binding = ConfigBinding(
+        ordinary[0].name, factory_input.prefixes,
+        "framework_factory_forwarding", factory_input.invalidated_paths,
+        factory_input.normalized_overrides)
+    spans = tuple(dict.fromkeys((
+        site.span, external.reference.span, external.binding.span,
+        *inheritance_spans,
+    )))
+    value = FrameworkFactoryConfigBinding(
+        owner_occurrence, node.symbol, site, factory_input, binding,
+        external, symbols, spans)
+    return ReaderResult.resolved(
+        owner_occurrence, value,
+        provenance=(ReaderProvenance(
+            "source", spans=spans,
+            detail=(
+                "exact inherited PreTrainedModel._from_config input forwarded "
+                "to the unique constructor config formal")),))
 
 
 def framework_config_class(
@@ -852,11 +1011,14 @@ __all__ = [
     "FrameworkConfigStorageProtocol",
     "FrameworkConfigAlias",
     "FrameworkConfigChildRelay",
+    "FrameworkFactoryConfigBinding",
     "FrameworkConfigClass",
     "FrameworkConfigClassDefault",
     "FrameworkConfigDefaultValue",
     "framework_config_alias",
     "framework_config_child_relay",
+    "framework_factory_config_binding",
+    "framework_factory_config_binding_in_graph",
     "framework_config_class",
     "framework_config_class_default",
     "framework_config_default_selector",

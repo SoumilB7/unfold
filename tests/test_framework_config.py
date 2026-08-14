@@ -16,10 +16,12 @@ from model_unfolder.evidence.context import ParseContext, slot_parse_context
 from model_unfolder.evidence.decoder_block import decoder_block_candidates_for_config
 from model_unfolder.evidence.framework_config import (
     FrameworkConfigChildRelay,
+    FrameworkFactoryConfigBinding,
     FrameworkConfigDefaultValue,
     config_path_from_framework_alias,
     framework_config_alias,
     framework_config_child_relay,
+    framework_factory_config_binding,
     framework_config_class,
     framework_config_class_default,
     framework_config_default_selector,
@@ -144,6 +146,58 @@ def test_framework_stored_config_relays_to_one_exact_child_actual(tmp_path):
     assert result.value.child_binding.resolved_prefix == ()
     assert result.value.child_actual.source_segment == "self.config"
     assert result.value.child_actual.span in result.value.spans
+
+
+def test_inherited_from_config_forwards_one_exact_factory_input(tmp_path):
+    path = tmp_path / "modeling_framework_factory.py"
+    path.write_text(textwrap.dedent("""
+        from transformers.modeling_utils import PreTrainedModel
+        class Child(PreTrainedModel):
+            def __init__(self, config):
+                super().__init__(config)
+        class Root:
+            def __init__(self, config):
+                self.child = Child._from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),), architecture="Root",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Root"})
+    index = build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    assert root.status == "resolved"
+    (child,) = root.graph.root.children
+    result = framework_factory_config_binding(
+        index, root, child.occurrence)
+    assert result.status == "resolved", result.failures
+    assert isinstance(result.value, FrameworkFactoryConfigBinding)
+    assert result.value.constructor_binding.parameter == "config"
+    assert result.value.constructor_binding.resolved_prefix == ("child",)
+
+
+def test_same_spelling_on_an_unregistered_base_is_not_a_factory_protocol(
+        tmp_path):
+    path = tmp_path / "modeling_unrelated_factory.py"
+    path.write_text(textwrap.dedent("""
+        class LocalBase:
+            @classmethod
+            def _from_config(cls, supplied): return cls(supplied)
+        class Child(LocalBase):
+            def __init__(self, config): pass
+        class Root:
+            def __init__(self, config):
+                self.child = Child._from_config(config.child)
+    """), encoding="utf-8")
+    bundle = SourceBundle(
+        source="local", files=(str(path),), architecture="Root",
+        component_files={"root": (str(path),)},
+        component_architectures={"root": "Root"})
+    index = build_program_index(bundle)
+    root = resolve_component_root(index, bundle, "root")
+    (child,) = root.graph.root.children
+    result = framework_factory_config_binding(
+        index, root, child.occurrence)
+    assert result.status == "failed"
 
 
 def test_framework_child_relay_rejects_unrelated_or_rival_actuals(tmp_path):

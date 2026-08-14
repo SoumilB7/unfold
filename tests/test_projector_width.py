@@ -90,3 +90,28 @@ def test_dynamic_operand_stays_unavailable(tmp_path):
     """)
     assert widths.input.source == "unavailable"
     assert widths.output.path == ("width",)
+
+
+def test_sequential_elements_keep_the_exact_first_and_last_widths(tmp_path):
+    widths = _widths(tmp_path, """
+        from torch.nn import GELU, Linear, Sequential
+        class Merge:
+            def __init__(self, hidden, context, repeat):
+                self.inner = context * repeat
+                self.mlp = Sequential(
+                    Linear(self.inner, self.inner),
+                    GELU(),
+                    Linear(self.inner, hidden),
+                )
+            def forward(self, x): return self.mlp(x)
+        class Root:
+            def __init__(self, config):
+                self.merge = Merge(
+                    config.hidden, config.context, config.repeat)
+            def forward(self, inputs_embeds, image_features, mask):
+                image_features = self.merge(image_features)
+                return inputs_embeds.masked_scatter(mask, image_features)
+    """)
+    assert widths.input.source == "derived"
+    assert widths.output.source == "config_bound"
+    assert widths.output.path == ("hidden",)

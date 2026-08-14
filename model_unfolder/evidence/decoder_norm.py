@@ -52,7 +52,7 @@ def decoder_norm_kind_for_path(
         return candidates
     root = candidates.value.component_root
     classified_candidates = tuple(
-        _norm_kind_at_block(index, root, occurrence)
+        norm_kind_at_owner(index, root, occurrence)
         for occurrence in candidates.value.occurrences)
     ambiguous = tuple(
         result for result in classified_candidates
@@ -98,8 +98,13 @@ def decoder_norm_kind_for_path(
         ))
 
 
-def _norm_kind_at_block(index, root, owner):
-    """Classify normalization invocations on one exact block occurrence."""
+def norm_kind_at_owner(index, root, owner):
+    """Classify norm invocations on one exact resolved owner occurrence.
+
+    Decoder-path selection remains in :func:`decoder_norm_kind_for_path`;
+    recursive modality readers may reuse this positive mechanism boundary only
+    after separately proving their exact owner occurrence.
+    """
     inventory = resolve_container_inventory(index, root, owner)
     invocations = resolve_addressed_invocations(
         index, root, owner, inventory)
@@ -177,4 +182,4 @@ def _span_key(span):
     )
 
 
-__all__ = ["decoder_norm_kind_for_path"]
+__all__ = ["decoder_norm_kind_for_path", "norm_kind_at_owner"]

@@ -370,12 +370,46 @@ def projector_operation_chain_in_graph(index, graph, occurrence, seen=()):
         if item is None:
             continue
         op_items, op_spans, failure = item
+        elementwise = _immediate_tensor_elementwise(call, node.symbol)
+        if elementwise is not None:
+            ops.append(elementwise[0]); spans.append(elementwise[1])
         ops.extend(op_items); spans.extend(op_spans)
         if failure is not None:
             failures.append(failure)
     ops, spans = _label_affine_positions(ops, spans)
     failure = failures[0] if failures else None
     return tuple(ops), tuple(spans), failure
+
+
+def _immediate_tensor_elementwise(call, owner_symbol):
+    """Observe an immediate tensor binary expression feeding this operation.
+
+    This is intentionally narrower than walking every binary expression under
+    a call: shape/axis arithmetic is metadata, not a projector operation.  A
+    supported forward operation consumes its receiver or first positional
+    argument as the tensor value, so only that immediate expression is
+    eligible.
+    """
+    tensor = None
+    if call.receiver is not None and not (
+            call.receiver.kind == "name" and call.receiver.name == "self"):
+        tensor = call.receiver
+    elif call.args:
+        tensor = call.args[0]
+    if tensor is None or tensor.kind != "binop" or tensor.span is None:
+        return None
+    labels = {
+        "*": "Multiply",
+        "+": "Add",
+        "-": "Subtract",
+        "/": "Divide",
+    }
+    label = labels.get(tensor.operator)
+    if label is None:
+        return None
+    return (SourceOp(
+        "elementwise", label, owner_symbol.qualified_name,
+        owner_symbol.source.canonical_path, tensor.span.line), tensor.span)
 
 
 def projector_call_operation_in_graph(index, graph, occurrence, call):
