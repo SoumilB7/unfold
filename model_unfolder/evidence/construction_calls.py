@@ -38,8 +38,11 @@ class ConstructionOccurrenceId:
             raise TypeError("a construction occurrence has an OwnerOccurrenceId parent")
         if not isinstance(self.site, ConstructionSiteId):
             raise TypeError("a construction occurrence has an exact ConstructionSiteId")
-        if self.site.owner.source.component_key != self.parent.root.source.component_key:
-            raise ValueError("construction and parent belong to the same component")
+        # ``parent.root`` identifies the owner graph, not necessarily the
+        # immediate parent's source component.  Exact imported child classes
+        # can live in a separately-qualified component while retaining the
+        # root graph's occurrence chain.  ConstructionAlternative closes the
+        # immediate parent/site relationship against that authoritative graph.
 
 
 @dataclass(frozen=True)
@@ -81,6 +84,7 @@ class ConstructionAlternative:
     field: str
     site: ConstructionSite
     kind: str                  # internal | external | unresolved
+    owner_graph: OwnerGraph | None = None
     internal_occurrence: OwnerOccurrenceId | None = None
     internal_symbol: SymbolId | None = None
     external_reference: ExternalReferenceProof | None = None
@@ -99,24 +103,31 @@ class ConstructionAlternative:
         if self.kind not in {"internal", "external", "unresolved"}:
             raise ValueError(f"unknown construction-alternative kind {self.kind!r}")
         if self.kind == "internal":
-            if self.internal_occurrence is None or self.internal_symbol is None:
-                raise ValueError("an internal alternative carries graph occurrence + symbol")
+            if self.internal_occurrence is None or self.internal_symbol is None \
+                    or not isinstance(self.owner_graph, OwnerGraph):
+                raise ValueError(
+                    "an internal alternative carries graph + occurrence + symbol")
             if self.external_reference is not None or self.unresolved_kind:
                 raise ValueError("an internal alternative carries no external/unresolved payload")
             if self.internal_occurrence.root != self.occurrence.parent.root \
                     or self.internal_occurrence.sites[:-1] != self.occurrence.parent.sites \
                     or self.internal_occurrence.sites[-1] != self.site.site_id:
                 raise ValueError("the internal occurrence is the exact immediate site child")
-            if not any(candidate.symbol == self.internal_symbol
-                       for candidate in self.site.candidates):
+            parent = self.owner_graph.node_for(self.occurrence.parent)
+            child = self.owner_graph.node_for(self.internal_occurrence)
+            if parent is None or child is None or child.symbol != self.internal_symbol \
+                    or child not in parent.children \
+                    or child.via_field != self.field \
+                    or child.via_site != self.site.site_id \
+                    or self.site.owner != parent.symbol:
                 raise ValueError(
-                    "the graph-selected internal symbol belongs to the exact "
-                    "construction candidate census")
+                    "the authoritative graph binds the internal symbol to the "
+                    "exact parent field and construction site")
         elif self.kind == "external":
             if self.external_reference is None:
                 raise ValueError("an external alternative carries exact import proof")
             if self.internal_occurrence is not None or self.internal_symbol is not None \
-                    or self.unresolved_kind:
+                    or self.owner_graph is not None or self.unresolved_kind:
                 raise ValueError("an external alternative carries no internal/unresolved payload")
             if len(self.site.candidates) != 1 \
                     or self.site.candidates[0].symbol is not None \
@@ -126,6 +137,7 @@ class ConstructionAlternative:
             if not self.unresolved_kind:
                 raise ValueError("an unresolved alternative names its unresolved kind")
             if self.internal_occurrence is not None or self.internal_symbol is not None \
+                    or self.owner_graph is not None \
                     or self.external_reference is not None:
                 raise ValueError("an unresolved alternative carries no resolved target")
 
@@ -280,7 +292,8 @@ def _site_alternative(index, graph, node, caller, field, site):
         child = children[0]
         return ConstructionAlternative(
             occurrence, field, site, "internal",
-            internal_occurrence=child.occurrence, internal_symbol=child.symbol)
+            owner_graph=graph, internal_occurrence=child.occurrence,
+            internal_symbol=child.symbol)
     if len(children) > 1:
         return ConstructionAlternative(
             occurrence, field, site, "unresolved",

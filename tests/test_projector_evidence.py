@@ -9,7 +9,25 @@ from model_unfolder import unfold
 from model_unfolder.evidence.conformance import check_fact_conformance
 from model_unfolder.evidence.models import SourceBundle
 from model_unfolder.evidence.projector import projector_evidence
+from model_unfolder.evidence.program_index import build_program_index
 from model_unfolder.evidence.sources import resolve_source_files
+
+
+def _exact_projector_evidence(cfg, bundle=None):
+    bundle = bundle or resolve_source_files(cfg)
+    return projector_evidence(
+        cfg, bundle=bundle, index=build_program_index(bundle),
+        config_selector=lambda path: _select(cfg, path))
+
+
+def _select(cfg, path):
+    value = cfg
+    for part in path:
+        if isinstance(value, dict) and part in value:
+            value = value[part]
+        else:
+            return False, None, ""
+    return True, value, "config_declared"
 
 
 @pytest.mark.parametrize(("model_type", "expected_class", "expected_kind", "expected_ops"), [
@@ -30,8 +48,12 @@ def test_real_projector_counterexample_matrix(
     model_type, expected_class, expected_kind, expected_ops,
 ):
     transformers = pytest.importorskip("transformers")
-    cfg = transformers.AutoConfig.for_model(model_type).to_dict()
-    evidence = projector_evidence(cfg)
+    if model_type == "gemma4":
+        from test_support import _gemma4_e2b_vision_config
+        cfg = _gemma4_e2b_vision_config()
+    else:
+        cfg = transformers.AutoConfig.for_model(model_type).to_dict()
+    evidence = _exact_projector_evidence(cfg)
     assert evidence.status == "proven"
     assert evidence.projector_class == expected_class
     assert evidence.kind == expected_kind
@@ -60,7 +82,7 @@ def test_out_width_binding_is_construction_site_exact(
 ):
     transformers = pytest.importorskip("transformers")
     cfg = transformers.AutoConfig.for_model(model_type).to_dict()
-    evidence = projector_evidence(cfg)
+    evidence = _exact_projector_evidence(cfg)
     assert evidence.out_width_source == out_source
     assert tuple(evidence.out_width_path) == out_path
     assert evidence.in_width_source == in_source
@@ -69,13 +91,21 @@ def test_out_width_binding_is_construction_site_exact(
         # consumer through the evented accessor, never inside evidence
 
 
-def test_width_binding_refuses_conflicting_construction_evidence(tmp_path):
-    """COR-4 (§9): conflicting construction evidence binds NOTHING — a class
-    handed DIFFERENT configs at different sites (its internal config reads
-    have no single exact path) and a field assigned at two differing sites
-    both refuse; a single unambiguous chain binds through two hops (control)."""
+def test_inactive_optional_component_does_not_author_a_projector():
+    transformers = pytest.importorskip("transformers")
+    cfg = transformers.AutoConfig.for_model("gemma4").to_dict()
+    assert cfg.get("vision_config") is None
+    evidence = _exact_projector_evidence(cfg)
+    assert evidence.status != "proven"
+    assert evidence.ops == ()
+
+
+def test_width_binding_is_occurrence_exact_and_rivals_refuse(tmp_path):
+    """The same class at two prefixes is not a union: the terminal occurrence
+    reaching fusion binds its own path. Rival writes to that occurrence refuse."""
     prefix_conflict = tmp_path / "modeling_prefix_conflict.py"
     prefix_conflict.write_text(
+        "from torch.nn import Linear\n"
         "class Proj:\n"
         "    def __init__(self, config):\n"
         "        self.out = Linear(4, config.width)\n"
@@ -90,35 +120,40 @@ def test_width_binding_refuses_conflicting_construction_evidence(tmp_path):
         "    def __init__(self, config):\n"
         "        self.projector = Proj(config.audio_config)\n"
         "        self.wrap = Wrap(config)\n"
-        "    def forward(self, x):\n"
-        "        return self.wrap(self.projector(x))\n",
+        "    def forward(self, inputs_embeds, image_features, mask):\n"
+        "        image_features = self.projector(image_features)\n"
+        "        image_features = self.wrap(image_features)\n"
+        "        return inputs_embeds.masked_scatter(mask, image_features)\n",
         encoding="utf-8",
     )
     bundle = SourceBundle(source="test", files=(str(prefix_conflict),), architecture="Root")
-    evidence = projector_evidence({}, bundle=bundle)
+    evidence = _exact_projector_evidence({}, bundle)
     assert evidence.status == "proven"
-    assert evidence.out_width_source == "unavailable"
-    assert evidence.out_width_path == ()
+    assert evidence.out_width_source == "config_bound"
+    assert evidence.out_width_path == ("vision_config", "width")
 
     field_conflict = tmp_path / "modeling_field_conflict.py"
     field_conflict.write_text(
+        "from torch.nn import Linear\n"
         "class Root:\n"
         "    def __init__(self, config, flag):\n"
         "        if flag:\n"
         "            self.projector = Linear(4, config.a_width)\n"
         "        else:\n"
         "            self.projector = Linear(4, config.b_width)\n"
-        "    def forward(self, x):\n"
-        "        return self.projector(x)\n",
+        "    def forward(self, inputs_embeds, image_features, mask):\n"
+        "        image_features = self.projector(image_features)\n"
+        "        return inputs_embeds.masked_scatter(mask, image_features)\n",
         encoding="utf-8",
     )
     bundle = SourceBundle(source="test", files=(str(field_conflict),), architecture="Root")
-    evidence = projector_evidence({}, bundle=bundle)
-    assert evidence.status == "proven"
+    evidence = _exact_projector_evidence({}, bundle)
+    assert evidence.status != "proven"
     assert evidence.out_width_source == "unavailable"
 
     control = tmp_path / "modeling_control.py"
     control.write_text(
+        "from torch.nn import Linear\n"
         "class Proj:\n"
         "    def __init__(self, config):\n"
         "        self.out = Linear(4, config.width)\n"
@@ -132,12 +167,13 @@ def test_width_binding_refuses_conflicting_construction_evidence(tmp_path):
         "class Root:\n"
         "    def __init__(self, config):\n"
         "        self.wrap = Wrap(config)\n"
-        "    def forward(self, x):\n"
-        "        return self.wrap(x)\n",
+        "    def forward(self, inputs_embeds, image_features, mask):\n"
+        "        image_features = self.wrap(image_features)\n"
+        "        return inputs_embeds.masked_scatter(mask, image_features)\n",
         encoding="utf-8",
     )
     bundle = SourceBundle(source="test", files=(str(control),), architecture="Root")
-    proven = projector_evidence({}, bundle=bundle)
+    proven = _exact_projector_evidence({}, bundle)
     assert proven.status == "proven"
     assert proven.out_width_source == "config_bound"
     assert tuple(proven.out_width_path) == ("vision_config", "width")
@@ -165,9 +201,10 @@ def test_idefics_connector_follows_factory_resampler_and_learned_queries():
     assert "cross-attend" in layer.description and "MLP" in layer.description
 
 
-def test_generic_projection_requires_execution_shaped_wrapper_proof(tmp_path):
+def test_generic_projection_without_fusion_is_not_relabelled_multimodal(tmp_path):
     source = tmp_path / "modeling_custom.py"
     source.write_text(
+        "from torch.nn import Linear, LayerNorm\n"
         "class Root:\n"
         "    def __init__(self):\n"
         "        self.embedding_projection = Linear()\n"
@@ -177,14 +214,12 @@ def test_generic_projection_requires_execution_shaped_wrapper_proof(tmp_path):
         encoding="utf-8",
     )
     bundle = SourceBundle(source="test", files=(str(source),), architecture="Root")
-    evidence = projector_evidence({}, bundle=bundle)
-    assert evidence.status == "proven"
-    assert evidence.owner_class == "Root"
-    assert evidence.projector_class == "Root"
-    assert evidence.kind == "linear_projector"
-    assert [op.kind for op in evidence.ops] == ["norm", "linear"]
+    evidence = _exact_projector_evidence({}, bundle)
+    assert evidence.status == "ambiguous"
+    assert evidence.ops == ()
 
     source.write_text(
+        "from torch.nn import Linear\n"
         "class Root:\n"
         "    def __init__(self):\n"
         "        self.projection = Linear()\n"
@@ -192,7 +227,7 @@ def test_generic_projection_requires_execution_shaped_wrapper_proof(tmp_path):
         "        return self.projection(x)\n",
         encoding="utf-8",
     )
-    evidence = projector_evidence({}, bundle=bundle)
+    evidence = _exact_projector_evidence({}, bundle)
     assert evidence.status == "ambiguous"
 
 

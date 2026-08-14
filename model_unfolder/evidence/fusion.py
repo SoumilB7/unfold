@@ -7,9 +7,10 @@ only; class/family names and diagnostic source strings never select a route.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
-from .component_owner import resolve_component_root
+from .component_owner import OwnerOccurrenceId, resolve_component_root
 from .models import FusionEvidence, FusionRouteEvidence, SourceBundle
 from .program_index import ExprNode, ProgramIndex, SymbolId
 from .reader_result import (
@@ -28,6 +29,40 @@ _MODALITY_WORDS = {
     "vision": "vision",
     "pixel": "vision",
 }
+
+
+@dataclass(frozen=True)
+class FusionExecutionObservation:
+    """Exact operation site plus the value expressions entering fusion.
+
+    This is the single internal observation consumed by both the fusion fact
+    and U9 projector lineage.  It does not classify a projector or infer an
+    operand role from a class/field name.
+    """
+
+    occurrence: OwnerOccurrenceId
+    owner: SymbolId
+    callable_symbol: SymbolId
+    evidence: FusionEvidence
+    consumer_expressions: tuple[ExprNode, ...]
+    operation_calls: tuple = ()
+
+    def __post_init__(self):
+        if not isinstance(self.occurrence, OwnerOccurrenceId):
+            raise TypeError("fusion execution observations are occurrence-qualified")
+        if not isinstance(self.owner, SymbolId) \
+                or not isinstance(self.callable_symbol, SymbolId):
+            raise TypeError("fusion execution observations carry exact symbols")
+        if not isinstance(self.evidence, FusionEvidence):
+            raise TypeError("fusion execution observations carry FusionEvidence")
+        if not self.consumer_expressions \
+                or any(not isinstance(item, ExprNode)
+                       for item in self.consumer_expressions):
+            raise ValueError("fusion execution observations carry exact consumers")
+        if not self.operation_calls or any(
+                call.enclosing_callable != self.callable_symbol
+                for call in self.operation_calls):
+            raise ValueError("fusion observations carry their exact operation calls")
 
 
 def fusion_evidence(
@@ -113,24 +148,26 @@ def fusion_result(
     reachable, unresolved_execution = _reachable_execution_callables(index, root)
     unsupported = []
     for occurrence, owner, callable_symbol in reachable:
-        evidence = _fusion_at_forward(index, owner, callable_symbol)
-        if evidence is not None:
+        observation = _fusion_at_forward(
+            index, occurrence, owner, callable_symbol)
+        if observation is not None:
             callable_record = index.callable_by_symbol(callable_symbol)
             candidates.append((
-                occurrence, evidence,
+                occurrence, observation,
                 callable_record.span if callable_record is not None else None))
         unsupported.extend(index.unsupported_execution_in(callable_symbol))
 
     if not candidates:
         if unsupported or unresolved_execution:
             span = (unsupported[0].span if unsupported
-                    else unresolved_execution[0])
+                    else unresolved_execution[0][1])
             return ReaderResult.failed(root.occurrence, (ReaderFailure(
                 "unsupported_syntax",
                 "fusion may be hidden in an unsupported/unresolved execution path",
                 span),))
         return ReaderResult.absent(root.occurrence)
-    signatures = {_signature(evidence) for _, evidence, _ in candidates}
+    signatures = {_signature(observation.evidence)
+                  for _, observation, _ in candidates}
     if len(signatures) != 1:
         spans = tuple(dict.fromkeys(
             span for _, _, span in candidates if span is not None))
@@ -138,17 +175,19 @@ def fusion_result(
             root.occurrence, Ambiguity(sites=spans))
     # Equivalent exact occurrences agree on the mechanism.  The root is the
     # wrapper-level fact owner; every agreeing source occurrence remains cited.
-    evidence = candidates[0][1]
+    evidence = candidates[0][1].evidence
     spans = tuple(dict.fromkeys(
         span for _, _, span in candidates if span is not None))
     provenance = (ReaderProvenance(
         "source", spans=spans,
         detail="equivalent exact owner-occurrence fusion relations"),)
+    unresolved_execution = _competing_unresolved_calls(
+        index, candidates, unresolved_execution)
     if unresolved_execution:
         gaps = tuple(ReaderFailure(
             "unsupported_syntax",
             "a competing fusion path remains unsupported/unresolved",
-            item)
+            item[1])
             for item in unresolved_execution)
         return ReaderResult.incomplete(
             root.occurrence, evidence, failures=gaps,
@@ -157,7 +196,20 @@ def fusion_result(
         root.occurrence, evidence, provenance=provenance)
 
 
-def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
+def fusion_execution_observations(index, bundle):
+    """Return exact observations from the same reader that authors fusion."""
+    root = resolve_component_root(index, bundle, "root")
+    if root.status != "resolved":
+        return ()
+    reachable, _unresolved = _reachable_execution_callables(index, root)
+    return tuple(
+        observation
+        for occurrence, owner, callable_symbol in reachable
+        if (observation := _fusion_at_forward(
+            index, occurrence, owner, callable_symbol)) is not None)
+
+
+def _fusion_at_forward(index, occurrence, owner, forward):
     calls = index.calls_in(forward)
     routes = []
     for call in calls:
@@ -171,7 +223,7 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
     grid_positions = _grid_position_relation(index, forward)
     if routes:
         routes = _unique_routes(routes)
-        return FusionEvidence(
+        evidence = FusionEvidence(
             "proven", owner_class=owner.qualified_name,
             source_file=owner.source.canonical_path,
             line=_callable_line(index, forward),
@@ -181,10 +233,18 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
                        if grid_positions
                        else "scatter_soft_tokens_into_placeholder_slots"),
             routes=tuple(routes), grid_positions=grid_positions)
+        consumers = tuple(
+            call.args[1] for call in calls
+            if _call_leaf(call.callee) == "masked_scatter"
+            and len(call.args) >= 2)
+        fusion_calls = tuple(call for call in calls
+                             if _call_leaf(call.callee) == "masked_scatter")
+        return FusionExecutionObservation(
+            occurrence, owner, forward, evidence, consumers, fusion_calls)
 
     cross = _keyword_route(index, forward, "cross_attention_states")
     if cross and _owns_name(index, forward, "cross_attention_states"):
-        return FusionEvidence(
+        evidence = FusionEvidence(
             "proven", owner_class=owner.qualified_name,
             source_file=owner.source.canonical_path,
             line=_callable_line(index, forward), kind="cross_attention",
@@ -192,10 +252,14 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
             routes=(FusionRouteEvidence(
                 "vision", "cross_attention_states",
                 owner.source.canonical_path, cross.span.line if cross.span else None),))
+        value = next(value for name, value in cross.kwargs
+                     if name == "cross_attention_states")
+        return FusionExecutionObservation(
+            occurrence, owner, forward, evidence, (value,), (cross,))
 
     encoder = _keyword_route(index, forward, "encoder_hidden_states")
     if encoder and _owns_name(index, forward, "encoder_hidden_states"):
-        return FusionEvidence(
+        evidence = FusionEvidence(
             "proven", owner_class=owner.qualified_name,
             source_file=owner.source.canonical_path,
             line=_callable_line(index, forward), kind="cross_attention",
@@ -204,6 +268,10 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
                 "conditioning", "cross_attention_states",
                 owner.source.canonical_path,
                 encoder.span.line if encoder.span else None),))
+        value = next(value for name, value in encoder.kwargs
+                     if name == "encoder_hidden_states")
+        return FusionExecutionObservation(
+            occurrence, owner, forward, evidence, (value,), (encoder,))
 
     prefix = []
     for call in calls:
@@ -219,11 +287,25 @@ def _fusion_at_forward(index, owner, forward) -> FusionEvidence | None:
                 modality, "prefix_concat", owner.source.canonical_path,
                 call.span.line if call.span else None))
     if prefix:
-        return FusionEvidence(
+        evidence = FusionEvidence(
             "proven", owner_class=owner.qualified_name,
             source_file=owner.source.canonical_path,
             line=_callable_line(index, forward), kind="prefix_soft_tokens",
             operation="prepend_soft_tokens", routes=tuple(_unique_routes(prefix)))
+        consumers = []
+        for call in calls:
+            if _call_leaf(call.callee) not in {"cat", "concat", "concatenate"}:
+                continue
+            for expression in call.args:
+                consumers.extend(
+                    expression.children
+                    if expression.kind in {"list", "tuple"}
+                    else (expression,))
+        fusion_calls = tuple(call for call in calls
+                             if _call_leaf(call.callee)
+                             in {"cat", "concat", "concatenate"})
+        return FusionExecutionObservation(
+            occurrence, owner, forward, evidence, tuple(consumers), fusion_calls)
     return None
 
 
@@ -279,7 +361,7 @@ def _reachable_execution_callables(index, root):
                     elif _could_hide_fusion(
                             index, callable_symbol, call) \
                             and call.span is not None:
-                        unresolved.append(call.span)
+                        unresolved.append((callable_symbol, call.span))
                     continue
                 if field in folded_methods:
                     continue
@@ -293,14 +375,94 @@ def _reachable_execution_callables(index, root):
                     if _could_hide_fusion(
                             index, callable_symbol, call) \
                             and call.span is not None:
-                        unresolved.append(call.span)
+                        unresolved.append((callable_symbol, call.span))
                 elif _could_hide_fusion(
                         index, callable_symbol, call) and call.span is not None:
                     # ``self.<name>(...)`` is neither an indexed method nor an
                     # exact constructed child.  It may be a dynamically
                     # supplied callable; absence is therefore unprovable.
-                    unresolved.append(call.span)
+                    unresolved.append((callable_symbol, call.span))
     return tuple(out), tuple(dict.fromkeys(unresolved))
+
+
+def _competing_unresolved_calls(index, candidates, unresolved):
+    """Keep only unresolved calls that can replace a proven fusion result.
+
+    Exact target identity, never variable vocabulary, is the join.  A direct
+    return is always a competitor.  Otherwise the unresolved result must write
+    one of the exact targets written by a fusion operation in the same callable.
+    """
+    targets = {}
+    for _occurrence, observation, _span in candidates:
+        for call in observation.operation_calls:
+            keys = _call_result_targets(index, call.enclosing_callable, call)
+            targets.setdefault(call.enclosing_callable, set()).update(keys)
+    out = []
+    for callable_symbol, span in unresolved:
+        calls = tuple(call for call in index.calls_in(callable_symbol)
+                      if call.span == span)
+        if len(calls) != 1:
+            out.append((callable_symbol, span))
+            continue
+        keys = _call_result_targets(index, callable_symbol, calls[0])
+        # A direct return competes only inside a callable that itself authors
+        # the proven fusion relation.  An unresolved return in an invoked
+        # feature tower (for example a typed ModelOutput constructor) produces
+        # an operand; it cannot replace the wrapper's later scatter/concat.
+        same_callable_targets = targets.get(callable_symbol)
+        if same_callable_targets is None:
+            continue
+        if keys & same_callable_targets:
+            out.append((callable_symbol, span))
+            continue
+        if "$return" in keys:
+            # A return-call that consumes the proven fusion result is output
+            # packaging downstream of fusion, not a rival implementation.
+            consumed = _expression_target_roots(
+                (*calls[0].args,
+                 *(value for _name, value in calls[0].kwargs)))
+            if not consumed & same_callable_targets:
+                out.append((callable_symbol, span))
+    return tuple(out)
+
+
+def _call_result_targets(index, caller, call):
+    keys = set()
+    for binding in index.bindings_in(caller):
+        if binding.value is not None and any(
+                item.span == call.span for item in _expressions(binding.value)):
+            keys.update(_target_key(target) for target in binding.targets
+                        if _target_key(target) is not None)
+    for returned in index.return_observations_in(caller):
+        if returned.value is not None and any(
+                item.span == call.span for item in _expressions(returned.value)):
+            keys.add("$return")
+    return keys
+
+
+def _target_key(expression):
+    if expression.kind == "name" and expression.name:
+        return f"name:{expression.name}"
+    if expression.kind == "attribute" and expression.name \
+            and expression.children:
+        base = _target_key(expression.children[0])
+        return f"{base}.{expression.name}" if base else None
+    if expression.kind == "subscript" and expression.children:
+        base = _target_key(expression.children[0])
+        return f"{base}[]" if base else None
+    return None
+
+
+def _expression_target_roots(expressions):
+    roots = set()
+    for expression in expressions:
+        for item in _expressions(expression):
+            key = _target_key(item)
+            if key:
+                roots.add(key)
+                if key.startswith("name:"):
+                    roots.add(key.split(".", 1)[0])
+    return roots
 
 
 def _exact_local_helper(index, caller, expression):
@@ -348,6 +510,11 @@ def _could_hide_fusion(index, caller, call):
     if leaf in {
             "masked_scatter", "cat", "concat", "concatenate",
             "compute_3d_position_ids"}:
+        return False
+    if any(name in {"cross_attention_states", "encoder_hidden_states"}
+           for name, _value in call.kwargs):
+        # This exact call is the already-observed fusion consumer, not an
+        # unresolved rival to itself.  Callee spelling is irrelevant.
         return False
     if not _call_result_used(index, caller, call):
         return False
@@ -485,4 +652,5 @@ def _program_index(bundle):
 
 __all__ = [
     "fusion_evidence", "fusion_result", "fusion_result_for_context",
+    "FusionExecutionObservation", "fusion_execution_observations",
 ]

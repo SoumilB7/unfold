@@ -78,7 +78,8 @@ operation that consumes it.
 |---|---|---|
 | U9-A | DONE | `a6e334a`, corrected by `dd58aea`: exact active/unused/rival component inventory |
 | U9-B | DONE | `ed7e2fc`, corrected by `dd58aea` and `db02668`: exact executable fusion closure, including unresolved-rival negative proof |
-| U9-C0 | COMPLETE IN WORKING TREE | ProgramIndex now observes direct positional constructors in the closed `Sequential(A(), B())` protocol as element storage sites. This closes the exact Qwen2-VL projector observation gap without asserting execution order. Synthetic ModuleList non-control plus real Qwen2-VL PatchMerger controls pass. |
-| U9-C1 | COMPLETE IN WORKING TREE | Explicit-owner return-path operation reader: exact external/internal affine, norm, registered activation operand and Sequential protocols; unused siblings excluded. Synthetic rename control plus real PaliGemma and LLaVA chains pass. It does not select a projector. |
-| U9-C | ACTIVE | Exact projector producer lineage, operation chain, width operand binding, shared parser/conformance result; delete the legacy projector parser in the same behavior-changing unit |
+| U9-C0 | DONE | `b9708a6`: ProgramIndex observes direct positional constructors in the closed `Sequential(A(), B())` protocol as element storage sites without asserting execution order. |
+| U9-C1 | DONE | `c54abc8`: explicit-owner return-path operation reader for exact affine, norm, registered activation and Sequential operations; it does not select a projector. |
+| U9-C2 | READY FOR COMMIT RECEIPT | Exact fusion-operand producer lineage, occurrence-qualified width operands and guarded-constructor provenance. The counterexample matrix covers PaliGemma, LLaVA, Qwen2-VL, Mistral-3, Gemma-4 and Mllama; shape/device/index metadata and helper calls cannot launder sibling producers. |
+| U9-C | ACTIVE | The exact reader is intentionally not a production authority yet. Idefics2's repeated Perceiver connector is completed in U9-D; U9-F/G then atomically cut parser + conformance to the typed result, consume its config dependencies, add facts/receipts and delete `_legacy_projector_evidence`. |
 | U9-D..H | PENDING | Begin only after U9-C's committed-tree receipt |

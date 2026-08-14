@@ -32,7 +32,13 @@ from .primitive_semantics import (
     classify_primitive_alternative,
     primitive_kind_for_site,
 )
-from .program_index import ExprNode, ProgramIndex, SourceSpan, SymbolId
+from .program_index import (
+    CallObservation,
+    ExprNode,
+    ProgramIndex,
+    SourceSpan,
+    SymbolId,
+)
 from .reader_result import ReaderFailure, ReaderProvenance, ReaderResult
 
 
@@ -47,9 +53,22 @@ _SHAPE_METHODS = {
     "flatten": "Flatten features",
     "permute": "Reorder tensor axes",
     "transpose": "Transpose tensor axes",
+    "t": "Transpose tensor axes",
     "unsqueeze": "Add tensor axis",
     "squeeze": "Remove tensor axis",
 }
+
+_TENSOR_PRESERVING_RECEIVER_METHODS = frozenset({
+    "to", "contiguous", "clone", "detach",
+})
+
+_FIRST_ARGUMENT_TENSOR_FUNCTIONS = frozenset({
+    "split", "chunk", "cat", "concat", "concatenate", "stack",
+})
+
+_ACCUMULATOR_MUTATIONS = frozenset({
+    "append", "extend", "insert", "add", "update",
+})
 
 
 @dataclass(frozen=True)
@@ -150,7 +169,8 @@ def _return_path_calls(index, callable_symbol):
                 "unsupported_syntax", "a return carries no value", returned.span))
             continue
         calls, incomplete = _trace_expression(
-            index, callable_symbol, returned.value, returned.span, set())
+            index, callable_symbol, returned.value, returned.span, set(),
+            returned.guard)
         if incomplete:
             failures.append(ReaderFailure(
                 "unsupported_syntax",
@@ -167,39 +187,80 @@ def _return_path_calls(index, callable_symbol):
     return signatures[0], tuple(failures)
 
 
-def _trace_expression(index, callable_symbol, expression, cutoff, visiting):
+def _trace_expression(
+        index, callable_symbol, expression, cutoff, visiting,
+        allowed_guard=()):
     if expression is None:
         return [], False
     if expression.kind == "name" and expression.name:
         key = (expression.name, cutoff)
         if key in visiting:
             return [], True
-        bindings = tuple(
+        mutations = tuple(
+            call for call in index.calls_in(callable_symbol)
+            if call.span is not None and _before(call.span, cutoff)
+            and call.receiver is not None
+            and call.receiver.kind == "name"
+            and call.receiver.name == expression.name
+            and _call_leaf(call.callee) in _ACCUMULATOR_MUTATIONS)
+        appends = tuple(call for call in mutations
+                        if _call_leaf(call.callee) == "append"
+                        and len(call.args) == 1)
+        if mutations:
+            if not appends:
+                return [], True
+            calls = []
+            incomplete = any(
+                call not in appends for call in mutations)
+            for append in appends:
+                nested, problem = _trace_expression(
+                    index, callable_symbol, append.args[0], append.span,
+                    {*visiting, key}, append.guard)
+                calls.extend(nested)
+                incomplete = incomplete or problem
+            return _unique_calls(calls), incomplete
+        all_bindings = tuple(
             item for item in index.bindings_in(callable_symbol)
             if _before(item.span, cutoff)
             and any(_simple_target(target) == expression.name
                     for target in item.targets))
+        bindings = tuple(item for item in all_bindings
+                         if _guard_prefix(item.guard, allowed_guard))
         if not bindings:
-            return [], False
+            return [], bool(all_bindings)
         binding = sorted(bindings, key=lambda item: _span_key(item.span))[-1]
         calls, incomplete = _trace_expression(
             index, callable_symbol, binding.value, binding.span,
-            {*visiting, key})
-        return calls, incomplete or bool(binding.guard)
+            {*visiting, key}, allowed_guard)
+        return calls, incomplete
 
     out = []
     incomplete = expression.kind in {"ifexp", "boolop", "unsupported", "lambda"}
-    # Python evaluates a fluent receiver and arguments before the outer call.
-    for child in expression.children:
+    # Python evaluates a fluent data receiver and arguments before the outer
+    # call. ``self.<field>`` is an address, not a tensor dependency.
+    children = expression.children
+    if expression.kind == "call" and expression.children:
+        callee = expression.children[0]
+        receiver = (
+            callee.children[0]
+            if callee.kind == "attribute" and callee.children
+            and not (callee.children[0].kind == "name"
+                     and callee.children[0].name == "self")
+            else None)
+        children = ((receiver,) if receiver is not None else ()) \
+            + expression.children[1:]
+    for child in children:
         if isinstance(child, ExprNode):
             child_calls, child_incomplete = _trace_expression(
-                index, callable_symbol, child, cutoff, visiting)
+                index, callable_symbol, child, cutoff, visiting,
+                allowed_guard)
             out.extend(child_calls)
             incomplete = incomplete or child_incomplete
     for _name, child in expression.keyword_children:
         if isinstance(child, ExprNode):
             child_calls, child_incomplete = _trace_expression(
-                index, callable_symbol, child, cutoff, visiting)
+                index, callable_symbol, child, cutoff, visiting,
+                allowed_guard)
             out.extend(child_calls)
             incomplete = incomplete or child_incomplete
     if expression.kind == "call" and expression.span is not None:
@@ -267,7 +328,7 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
             if child_occurrence in seen_owners:
                 return ((), (), ReaderFailure(
                     "conflict", "recursive operation-owner call", call.span))
-            child = read_projector_operation_chain_in_graph(
+            child = projector_operation_chain_in_graph(
                 index, graph, child_occurrence, {*seen_owners, occurrence})
             if child[0]:
                 return child
@@ -293,7 +354,9 @@ def _operation_for_call(index, graph, occurrence, owner_symbol, call, seen_owner
     return None
 
 
-def read_projector_operation_chain_in_graph(index, graph, occurrence, seen):
+def projector_operation_chain_in_graph(index, graph, occurrence, seen=()):
+    """Graph-local recursion for an occurrence whose root proof is held by a
+    higher-level reader.  It never establishes or substitutes a component root."""
     node = graph.node_for(occurrence)
     if node is None:
         return (), (), ReaderFailure(
@@ -313,6 +376,44 @@ def read_projector_operation_chain_in_graph(index, graph, occurrence, seen):
     ops, spans = _label_affine_positions(ops, spans)
     failure = failures[0] if failures else None
     return tuple(ops), tuple(spans), failure
+
+
+def projector_call_operation_in_graph(index, graph, occurrence, call):
+    """Classify one exact call as a supported operation, if applicable.
+
+    Producer-lineage uses this to distinguish data transformations (norm,
+    activation, reshape) from affine-bearing producer boundaries without
+    duplicating primitive semantics.
+    """
+    node = graph.node_for(occurrence)
+    if node is None or call.owner != node.symbol:
+        return None
+    return _operation_for_call(
+        index, graph, occurrence, node.symbol, call, set())
+
+
+def projector_call_lineage_inputs(call):
+    """Return the tensor-carrying inputs for a supported shape call.
+
+    Shape operands (dimensions, axis numbers, and similar metadata) describe
+    the transformation but do not produce the tensor being transformed.  The
+    producer-lineage reader therefore follows only the fluent receiver (or the
+    first argument for a functional form).  ``None`` means the call has no
+    special input contract and the caller must retain its conservative walk.
+    """
+    if not isinstance(call, CallObservation):
+        raise TypeError("projector lineage input selection requires a call")
+    leaf = _call_leaf(call.callee)
+    if leaf not in _SHAPE_METHODS \
+            and leaf not in _TENSOR_PRESERVING_RECEIVER_METHODS \
+            and leaf not in _FIRST_ARGUMENT_TENSOR_FUNCTIONS:
+        return None
+    if leaf in _FIRST_ARGUMENT_TENSOR_FUNCTIONS:
+        return tuple(call.args[:1])
+    if call.receiver is not None and not (
+            call.receiver.kind == "name" and call.receiver.name == "self"):
+        return (call.receiver,)
+    return tuple(call.args[:1])
 
 
 def _sequential_operations(index, container):
@@ -401,6 +502,10 @@ def _before(first, second):
         (second.line, second.col)
 
 
+def _guard_prefix(prefix, full):
+    return len(prefix) <= len(full) and tuple(full[:len(prefix)]) == tuple(prefix)
+
+
 def _span_key(span):
     return (span.line, span.col, span.end_line or span.line, span.end_col or span.col)
 
@@ -439,5 +544,7 @@ def _site_label(site):
 
 __all__ = [
     "ACTIVATION_REGISTRY_PROTOCOLS", "ProjectorOperationChain",
-    "read_projector_operation_chain",
+    "projector_call_operation_in_graph",
+    "projector_call_lineage_inputs",
+    "projector_operation_chain_in_graph", "read_projector_operation_chain",
 ]

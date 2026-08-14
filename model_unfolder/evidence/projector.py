@@ -6,17 +6,184 @@ from pathlib import Path
 from typing import Any
 
 from .ast_scanner import _call_name
+from .component_owner import resolve_component_root
 from .forward_ops import _method, _role_of, _self_field
 from .models import ProjectorEvidence, SourceBundle, SourceOp
 from .sources import resolve_source_files
 from .transitive import resolve_architecture_anchor,  CallableInfo, build_registry
+from .program_index import ProgramIndex
+from .projector_lineage import projector_lineage_result
+from .projector_width import ProjectorWidthEvidence, WidthOperand, projector_width_evidence
+from .reader_result import ReaderFailure, ReaderResult
 
 _EXPLICIT_FIELD_MARKERS = ("projector", "merger", "connector", "resampler")
 _MODALITY_FIELD_MARKERS = ("vision", "image", "visual", "multimodal", "multi_modal")
 
 
 def projector_evidence(target: Any, *, source: str = "local",
-                       bundle: SourceBundle | None = None) -> ProjectorEvidence:
+                       bundle: SourceBundle | None = None,
+                       index: ProgramIndex | None = None,
+                       parse_context=None,
+                       config_selector=None) -> ProjectorEvidence:
+    """Compatibility projection of the exact producer-lineage result."""
+    if index is None and parse_context is None and config_selector is None:
+        # U9-C builds and vets the replacement before U9-F/G cut over parser,
+        # conformance, facts and receipts atomically.  The production caller
+        # remains on the quarantined legacy projection until that cutover.
+        return _legacy_projector_evidence(
+            target, source=source, bundle=bundle)
+    if parse_context is not None:
+        from .context import ParseContext
+        if not isinstance(parse_context, ParseContext):
+            raise TypeError("parse_context must be a ParseContext")
+        return _projector_result_value(projector_result_for_context(
+            parse_context,
+            config_selector=config_selector or _document_selector(target)))
+    bundle = bundle or resolve_source_files(target, source=source)
+    if not bundle.files:
+        return ProjectorEvidence("oracle_missing", reason="no modeling source")
+    from .program_index import build_program_index
+    result = projector_result(
+        index or build_program_index(bundle), bundle,
+        config_selector=config_selector or _document_selector(target))
+    return _projector_result_value(result)
+
+
+def projector_result_for_context(context, *, config_selector=None):
+    """The one call-local projector result shared by parser and conformance."""
+    from .context import ParseContext
+    if not isinstance(context, ParseContext):
+        raise TypeError("projector_result_for_context requires a ParseContext")
+    key = ("root.projector", ())
+    result = context.reader_results.get(key)
+    if result is None:
+        result = projector_result(
+            context.program_index(), context.source_bundle,
+            config_selector=config_selector)
+        context.reader_results[key] = result
+    return result
+
+
+def projector_result(index: ProgramIndex, bundle: SourceBundle, *,
+                     config_selector=None):
+    """Resolve projector facts from exact fusion producer occurrences."""
+    if not isinstance(index, ProgramIndex) or not isinstance(bundle, SourceBundle):
+        raise TypeError("projector_result requires ProgramIndex + SourceBundle")
+    lineage = projector_lineage_result(
+        index, bundle, config_selector=config_selector)
+    if lineage.status == "absent":
+        return ReaderResult.absent(lineage.owner)
+    if lineage.status == "ambiguous":
+        return ReaderResult.ambiguous(lineage.owner, lineage.ambiguity)
+    if lineage.status == "failed":
+        return ReaderResult.failed(lineage.owner, lineage.failures)
+
+    root = resolve_component_root(index, bundle, "root")
+    candidates = lineage.value.candidates
+    chains = tuple(item.chain for item in candidates)
+    signature = tuple((op.kind, op.label, op.fn) for op in chains[0].operations)
+    if any(tuple((op.kind, op.label, op.fn) for op in chain.operations) != signature
+           for chain in chains[1:]):
+        # Defensive: the lineage reader already enforces this equivalence.
+        return ReaderResult.failed(lineage.owner, (ReaderFailure(
+            "conflict", "equivalent lineage candidates changed operation shape"),))
+    widths = tuple(projector_width_evidence(index, item.owner_graph, item)
+                   for item in candidates)
+    width = ProjectorWidthEvidence(
+        _common_width_operand(widths, "input"),
+        _common_width_operand(widths, "output"),
+    )
+    caller_names = tuple(dict.fromkeys(
+        root.graph.node_for(item.caller_occurrence).symbol.qualified_name
+        for item in candidates))
+    fields = tuple(dict.fromkeys(item.field for item in candidates))
+    projector_names = tuple(dict.fromkeys(
+        (item.chain.owner_symbol.qualified_name
+         if item.constructed_occurrence is not None
+         # A primitive has no constructed class occurrence of its own.  Keep
+         # the compatibility/display field at the operation's code-derived
+         # label; the fully-qualified primitive remains in SourceOp.fn.
+         else item.chain.operations[-1].label)
+        for item in candidates))
+    ops = chains[0].operations
+    evidence = ProjectorEvidence(
+        "proven",
+        owner_class=caller_names[0] if len(caller_names) == 1 else "",
+        field_name=fields[0] if len(fields) == 1 else "",
+        projector_class=(projector_names[0]
+                         if len(projector_names) == 1 else "Code-defined projector"),
+        source_file=ops[0].source_file,
+        line=ops[0].line,
+        ops=ops,
+        kind=_derive_kind(list(ops)),
+        learned_queries=False,
+        out_width_source=width.output.source,
+        out_width_path=width.output.path,
+        out_width_value=width.output.value,
+        in_width_source=width.input.source,
+        in_width_path=width.input.path,
+        in_width_value=width.input.value,
+    )
+    if lineage.status == "incomplete":
+        return ReaderResult.incomplete(
+            lineage.owner, evidence, failures=lineage.failures,
+            provenance=lineage.provenance)
+    return ReaderResult.resolved(
+        lineage.owner, evidence, provenance=lineage.provenance)
+
+
+def _common_width_operand(widths, attribute):
+    if not widths:
+        return WidthOperand("unavailable")
+    values = tuple(getattr(item, attribute) for item in widths)
+    return values[0] if all(item == values[0] for item in values[1:]) \
+        else WidthOperand("unavailable")
+
+
+def _document_selector(target):
+    """Read one exact path for branch selection; no mechanism semantics."""
+    def select(path):
+        current = target
+        for part in tuple(path):
+            if isinstance(current, dict):
+                if part not in current:
+                    return False, None, ""
+                current = current[part]
+            elif hasattr(current, part):
+                current = getattr(current, part)
+            else:
+                return False, None, ""
+        return True, current, "config_declared"
+    return select
+
+
+def _projector_result_value(result):
+    if result.status == "resolved":
+        return result.value
+    if result.status == "incomplete":
+        return ProjectorEvidence(
+            "ambiguous",
+            owner_class=result.value.owner_class,
+            source_file=result.value.source_file,
+            reason="; ".join(item.detail for item in result.failures))
+    if result.status == "ambiguous":
+        return ProjectorEvidence(
+            "ambiguous", reason="multiple non-equivalent exact projector producers")
+    if result.status == "absent":
+        return ProjectorEvidence(
+            "ambiguous", reason="no affine producer reaches a proven fusion operand")
+    return ProjectorEvidence(
+        "oracle_missing", reason="; ".join(item.detail for item in result.failures))
+
+
+def _legacy_projector_evidence(target: Any, *, source: str = "local",
+                               bundle: SourceBundle | None = None) -> ProjectorEvidence:
+    """Temporary audio-only legacy implementation; deleted in U9-D.
+
+    No U9 projector caller reaches this function.  Keeping the old body named
+    makes the remaining audio dependency explicit instead of silently mixing
+    authorities in :func:`projector_evidence`.
+    """
     bundle = bundle or resolve_source_files(target, source=source)
     if not bundle.files:
         return ProjectorEvidence("oracle_missing", reason="no modeling source")

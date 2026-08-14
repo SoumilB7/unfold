@@ -227,6 +227,47 @@ def test_visible_fusion_plus_unresolved_rival_is_incomplete(tmp_path):
     assert fusion_evidence({}, parse_context=context).status == "ambiguous"
 
 
+def test_unresolved_feature_tower_return_does_not_compete_with_wrapper_fusion(tmp_path):
+    """An operand producer cannot replace a later wrapper fusion operation."""
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "import torch\n"
+        "from elsewhere import Output\n"
+        "class Tower:\n"
+        "    def forward(self, image_features):\n"
+        "        return Output(pooler_output=image_features)\n"
+        "class Root:\n"
+        "    def __init__(self): self.tower = Tower()\n"
+        "    def forward(self, inputs_embeds, image_features, mask):\n"
+        "        image_features = self.tower(image_features).pooler_output\n"
+        "        return inputs_embeds.masked_scatter(mask, image_features)\n",
+        encoding="utf-8",
+    )
+    context = ParseContext(SourceBundle(
+        source="test", files=(str(source),), architecture="Root"))
+    result = fusion_result_for_context(context)
+    assert result.status == "resolved"
+    assert result.value.kind == "placeholder_replace"
+
+
+def test_unresolved_output_packaging_downstream_of_fusion_is_not_a_rival(tmp_path):
+    source = tmp_path / "modeling_custom.py"
+    source.write_text(
+        "from elsewhere import Output\n"
+        "class Root:\n"
+        "    def forward(self, x, cross_attention_states):\n"
+        "        cross_attention_states = cross_attention_states.to(x.device)\n"
+        "        outputs = consume(x, cross_attention_states=cross_attention_states)\n"
+        "        return Output(last_hidden_state=outputs.last_hidden_state)\n",
+        encoding="utf-8",
+    )
+    context = ParseContext(SourceBundle(
+        source="test", files=(str(source),), architecture="Root"))
+    result = fusion_result_for_context(context)
+    assert result.status == "resolved"
+    assert result.value.kind == "cross_attention"
+
+
 def test_multi_input_wrapper_keeps_only_configured_modality_routes():
     from test_support import _gemma4_e2b_vision_config
 

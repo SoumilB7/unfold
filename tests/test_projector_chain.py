@@ -120,3 +120,37 @@ def test_exact_internal_child_is_followed_without_class_or_field_markers(tmp_pat
     """)
     assert result.status == "resolved"
     assert [op.kind for op in result.value.operations] == ["linear", "linear"]
+
+
+def test_exact_loop_append_value_path_is_a_symbolic_operation_template(tmp_path):
+    result = _chain(tmp_path, """
+        import torch
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, xs):
+                gathered = []
+                for item in xs:
+                    value = item.reshape(-1, 4).transpose(0, 1)
+                    gathered.append(value)
+                joined = torch.cat(gathered, dim=0)
+                return self.out(joined)
+    """)
+    assert result.status == "resolved"
+    assert [op.kind for op in result.value.operations] == [
+        "reshape", "reshape", "linear"]
+
+
+def test_unknown_accumulator_mutation_keeps_chain_incomplete(tmp_path):
+    result = _chain(tmp_path, """
+        import torch
+        from torch.nn import Linear
+        class Root:
+            def __init__(self): self.out = Linear(4, 4)
+            def forward(self, x):
+                gathered = []
+                gathered.extend(x)
+                return self.out(torch.cat(gathered, dim=0))
+    """)
+    assert result.status == "incomplete"
+    assert result.failures[0].kind == "unsupported_syntax"
