@@ -31,11 +31,11 @@ The inventory is strictly NEUTRAL and observation-only:
 - it reads no config VALUE and never touches the U1 ledger; it infers no role,
   migrates no reader, changes no rendering.
 
-Element-coverage honesty: element extraction follows ProgramIndex exactly.  Direct
-positional arguments to a container constructor — ``Sequential(A(), B())`` — are
-NOT currently emitted as elements by ProgramIndex, so ``record.elements`` can be
-empty even when the source lists elements.  B2 reports the record honestly and
-makes NO claim of complete element coverage.
+Element-coverage honesty: element extraction follows ProgramIndex exactly.  The
+closed ``Sequential(A(), B())`` protocol emits its positional constructors as
+exact element sites; their order remains source/storage order only.  Other
+container calls are not generalized from arbitrary positional arguments, and B2
+makes no claim of runtime execution order.
 """
 from __future__ import annotations
 

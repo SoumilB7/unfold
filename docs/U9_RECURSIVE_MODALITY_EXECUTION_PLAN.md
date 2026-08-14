@@ -71,3 +71,13 @@ the ProgramIndex lacks a needed neutral observation, a code relation is only
 locally positive but the proposed fact requires whole-callable completeness,
 or a config value would have to select the mechanism before code proves the
 operation that consumes it.
+
+## 6. Execution tracker
+
+| Unit | Status | Receipt / exact remaining boundary |
+|---|---|---|
+| U9-A | DONE | `a6e334a`, corrected by `dd58aea`: exact active/unused/rival component inventory |
+| U9-B | DONE | `ed7e2fc`, corrected by `dd58aea` and `db02668`: exact executable fusion closure, including unresolved-rival negative proof |
+| U9-C0 | COMPLETE IN WORKING TREE | ProgramIndex now observes direct positional constructors in the closed `Sequential(A(), B())` protocol as element storage sites. This closes the exact Qwen2-VL projector observation gap without asserting execution order. Synthetic ModuleList non-control plus real Qwen2-VL PatchMerger controls pass. |
+| U9-C | ACTIVE | Exact projector producer lineage, operation chain, width operand binding, shared parser/conformance result; delete the legacy projector parser in the same behavior-changing unit |
+| U9-D..H | PENDING | Begin only after U9-C's committed-tree receipt |

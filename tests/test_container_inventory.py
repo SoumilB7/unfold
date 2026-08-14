@@ -153,7 +153,7 @@ def test_literal_list_emits_each_element_site(tmp_path):
     assert container.count_expression is None                      # a literal list has no count
 
 
-def test_kind_is_observed_syntax_and_sequential_coverage_is_honest(tmp_path):
+def test_kind_is_observed_syntax_and_sequential_membership_is_exact(tmp_path):
     idx, cr, b1, inv = _model_stage(tmp_path, """
         class A:
             def __init__(self, config): pass
@@ -169,8 +169,9 @@ def test_kind_is_observed_syntax_and_sequential_coverage_is_honest(tmp_path):
     kinds = {c.field: c.syntactic_kind for c in inv.containers}
     assert kinds == {"seq": "sequential", "experts": "moduledict"}
     seq = next(c for c in inv.containers if c.field == "seq")
-    # ProgramIndex does not emit direct positional args as elements -> honest 0.
-    assert seq.element_sites == ()
+    assert len(seq.element_sites) == 2
+    assert [_child(site).qualified_name for site in seq.element_sites] == ["A", "A"]
+    assert not hasattr(seq, "happens_before")
 
 
 # --------------------------------------------------------------------------- #

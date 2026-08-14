@@ -1182,6 +1182,37 @@ def test_modulelist_append_constructors_join_the_unique_container(tmp_path):
     assert all(site in idx.construction_sites for site in record.elements)
 
 
+def test_sequential_direct_constructor_arguments_are_exact_element_sites(tmp_path):
+    idx = _index(tmp_path, "sequential_args.py", """
+        class A:
+            def __init__(self, config): pass
+        class B:
+            def __init__(self, config): pass
+        class Model:
+            def __init__(self, config):
+                self.projection = Sequential(A(config), B(config))
+    """)
+    (record,) = tuple(item for item in idx.containers
+                      if item.field == "projection")
+    assert record.kind == "sequential"
+    assert [site.candidates[0].symbol.qualified_name
+            for site in record.elements] == ["A", "B"]
+    assert [site.via for site in record.elements] == ["sequential", "sequential"]
+
+
+def test_nonsequential_bare_call_argument_is_not_fabricated_as_an_element(tmp_path):
+    idx = _index(tmp_path, "modulelist_bare_call.py", """
+        class A:
+            def __init__(self, config): pass
+        class Model:
+            def __init__(self, config):
+                self.layers = ModuleList(make_items(config))
+    """)
+    (record,) = tuple(item for item in idx.containers if item.field == "layers")
+    assert record.kind == "modulelist"
+    assert record.elements == ()
+
+
 def test_append_is_not_folded_when_container_field_is_reassigned(tmp_path):
     idx = _index(tmp_path, "reassigned_container.py", """
         class First: pass

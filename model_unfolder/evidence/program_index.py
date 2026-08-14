@@ -1780,7 +1780,15 @@ class _SourceWalker:
                 self._local_container_sources.append((
                     scan.owner, scan.enclosing, field_name, arg.id,
                     self._span(arg), self._span(call)))
-            elems, cnt = self._container_elements(arg)
+            # In the closed ``Sequential(A(...), B(...))`` protocol, each
+            # positional argument is itself an element construction.  Record
+            # those exact sites as storage membership only; their source order
+            # is not a claim about runtime execution order.  ModuleList and
+            # ModuleDict still require an observed collection argument.
+            if kind == "sequential" and isinstance(arg, ast.Call):
+                elems, cnt = [arg], None
+            else:
+                elems, cnt = self._container_elements(arg)
             for e in elems:
                 elements.append(self._site(field_name, "element", e, guard,
                                            scan, via=kind))
