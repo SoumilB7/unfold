@@ -10,7 +10,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .attention import decoder_attention_mechanism_for_path
 from .attention_child import AttentionChildEvidence, attention_child_evidence
+from .attention_geometry import decoder_attention_head_geometry_for_path
+from .attention_storage import decoder_attention_projection_storage_for_path
 from .component_inventory import (
     ComponentOwnerEntry,
     ComponentOwnerInventory,
@@ -167,6 +170,9 @@ class ComponentTowerMechanisms:
     candidates: DecoderBlockCandidates
     stage_symbol: SymbolId
     variants: tuple[TowerVariantMechanisms, ...]
+    attention_mechanism_result: ReaderResult
+    attention_head_geometry_result: ReaderResult
+    attention_projection_storage_result: ReaderResult[str]
     final_norm_result: ReaderResult[str]
     cell_topology_result: ReaderResult[DecoderCellTopologyEvidence]
     position: TowerPositionMechanisms
@@ -191,6 +197,23 @@ class ComponentTowerMechanisms:
         if any(root.graph.node_for(item.block_occurrence).symbol \
                 != item.block_symbol for item in self.variants):
             raise ValueError("every tower variant round-trips through its graph node")
+        attention_results = (
+            self.attention_mechanism_result,
+            self.attention_head_geometry_result,
+            self.attention_projection_storage_result,
+        )
+        if any(not isinstance(result, ReaderResult)
+               for result in attention_results):
+            raise TypeError("component attention facts retain their U6 ReaderResults")
+        if any(result.owner is not None
+               and result.owner not in self.candidates.occurrences
+               for result in attention_results):
+            raise ValueError(
+                "component attention facts belong to an exact carried block")
+        if self.attention_projection_storage_result.status == "resolved" \
+                and self.attention_projection_storage_result.value \
+                not in {"split", "fused_qkv"}:
+            raise ValueError("resolved attention storage is code-proven")
         if not isinstance(self.final_norm_result, ReaderResult) \
                 or self.final_norm_result.owner \
                 != self.candidates.stage_occurrence:
@@ -211,7 +234,12 @@ class ComponentTowerMechanisms:
     @property
     def status(self) -> str:
         values = {item.status for item in self.variants} \
-            | {_status(self.final_norm_result)}
+            | {
+                _status(self.attention_mechanism_result),
+                _status(self.attention_head_geometry_result),
+                _status(self.attention_projection_storage_result),
+                _status(self.final_norm_result),
+            }
         if values == {"resolved"}:
             return "resolved"
         if "ambiguous" in values:
@@ -289,6 +317,14 @@ def recursive_component_mechanisms(
             for occurrence in candidates.occurrences)
         final_norm = norm_kind_at_owner(
             index, component.component_root, candidates.stage_occurrence)
+        attention_mechanism = decoder_attention_mechanism_for_path(
+            index, bundle, component.config_path,
+            allow_root_stage=True, config_document=config_document)
+        attention_geometry = decoder_attention_head_geometry_for_path(
+            index, bundle, component.config_path, config_document,
+            allow_root_stage=True)
+        attention_storage = decoder_attention_projection_storage_for_path(
+            index, bundle, component.config_path, allow_root_stage=True)
         position = _position_results(
             index, bundle, component.config_path, config_selector)
         cell = _cell_result(
@@ -304,6 +340,7 @@ def recursive_component_mechanisms(
             ) if isinstance(span, SourceSpan)))
         towers.append(ComponentTowerMechanisms(
             component, candidates, stage.symbol, variants,
+            attention_mechanism, attention_geometry, attention_storage,
             final_norm, cell, position,
             spans))
     return RecursiveComponentMechanisms(

@@ -55,6 +55,16 @@ def test_real_nested_towers_are_occurrence_separated(qwen2vl_components):
     assert vision.norm_kind == "layernorm"
     assert text.block_occurrence != vision.block_occurrence
     assert towers["text_config"].cell_topology_result.status == "resolved"
+    # D2 carries the complete U6 attention contract separately from the
+    # positive child-compute proof.  These results may fail honestly, but no
+    # later projector has to reconstruct a mechanism from a child/class name.
+    assert towers["text_config"].attention_mechanism_result.status == "resolved"
+    assert towers["text_config"].attention_projection_storage_result.status \
+        == "resolved"
+    assert towers["text_config"].attention_projection_storage_result.value \
+        in {"split", "fused_qkv"}
+    assert towers["text_config"].attention_head_geometry_result.status \
+        in {"resolved", "failed", "ambiguous", "incomplete", "absent"}
     assert towers["text_config"].position.config_path == ("text_config",)
     assert towers["vision_config"].position.config_path == ("vision_config",)
     # Qwen2-VL's multimodal position route is not one of U8's ordinary
@@ -80,6 +90,10 @@ def test_unknown_nested_attention_is_not_defaulted_to_mha(qwen2vl_components):
     assert vision.attention_result.failures
     assert all("mha" not in failure.detail.lower()
                for failure in vision.attention_result.failures)
+    assert towers["vision_config"].attention_mechanism_result.status \
+        != "resolved"
+    assert towers["vision_config"].attention_projection_storage_result.status \
+        != "resolved"
 
 
 def test_tower_dto_rejects_cross_component_laundering(qwen2vl_components):
