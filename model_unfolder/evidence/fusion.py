@@ -145,7 +145,7 @@ def fusion_result(
         return ReaderResult.failed(None, failures)
 
     candidates = []
-    reachable, unresolved_execution = _reachable_execution_callables(index, root)
+    reachable, unresolved_execution = reachable_execution_callables(index, root)
     unsupported = []
     for occurrence, owner, callable_symbol in reachable:
         observation = _fusion_at_forward(
@@ -201,7 +201,7 @@ def fusion_execution_observations(index, bundle):
     root = resolve_component_root(index, bundle, "root")
     if root.status != "resolved":
         return ()
-    reachable, _unresolved = _reachable_execution_callables(index, root)
+    reachable, _unresolved = reachable_execution_callables(index, root)
     return tuple(
         observation
         for occurrence, owner, callable_symbol in reachable
@@ -309,7 +309,7 @@ def _fusion_at_forward(index, occurrence, owner, forward):
     return None
 
 
-def _reachable_execution_callables(index, root):
+def reachable_execution_callables(index, root):
     """Exact positive execution closure over owner calls + self-method folds.
 
     Construction alone is not reachability.  We begin at the D0 root's forward,
@@ -653,4 +653,5 @@ def _program_index(bundle):
 __all__ = [
     "fusion_evidence", "fusion_result", "fusion_result_for_context",
     "FusionExecutionObservation", "fusion_execution_observations",
+    "reachable_execution_callables",
 ]
