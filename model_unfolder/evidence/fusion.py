@@ -336,11 +336,13 @@ def _exact_local_helper(index, caller, expression):
 
 
 def _could_hide_fusion(index, caller, call):
-    """Whether an unresolved invocation receives both token lanes.
+    """Whether an unresolved invocation can still decide a multi-input value.
 
     This is only an incompleteness predicate.  It never proves a fusion kind or
-    modality; it prevents a false negative when a locally unresolved callable
-    receives a text/token lane together with a modality-looking lane.
+    modality.  An unresolved call blocks a negative only when its result is
+    actually bound/returned and it receives at least two non-literal operands.
+    Operand spellings are deliberately irrelevant: names such as
+    ``image_features`` are not architectural evidence.
     """
     leaf = _call_leaf(call.callee)
     if leaf in {
@@ -354,16 +356,9 @@ def _could_hide_fusion(index, caller, call):
             for binding in index.module_bindings_in(caller.source)):
         return False
     expressions = (*call.args, *(value for _, value in call.kwargs))
-    names = {name.lower() for name in _names(expressions)}
-    token_lane = any(
-        token in name for name in names
-        for token in ("inputs_embeds", "text_embeds", "token_embeddings",
-                      "hidden_states"))
-    modality_lane = any(
-        token in name for name in names
-        for token in ("image_features", "vision_features", "pixel_values",
-                      "audio_features", "video_features"))
-    return token_lane and modality_lane
+    operands = tuple(item for item in expressions
+                     if item.kind not in {"constant", "none"})
+    return len(operands) >= 2
 
 
 def _call_result_used(index, caller, call):
